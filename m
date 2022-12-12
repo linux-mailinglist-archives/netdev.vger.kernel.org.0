@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF2EF64A9AF
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 22:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DEA464A9B5
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 22:48:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233576AbiLLVqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 16:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
+        id S233533AbiLLVsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 16:48:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233502AbiLLVqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 16:46:08 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C4D19C20
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 13:46:02 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id d82so851810pfd.11
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 13:46:02 -0800 (PST)
+        with ESMTP id S233466AbiLLVsS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 16:48:18 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADD415A2B
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 13:48:14 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id r18so9125238pgr.12
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 13:48:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=zucWMnYpA+9lAVSxvp3xaxbGQIBgGxTkjhUBcYvLz9g=;
-        b=IBlL8R7HunBjKQXv9O58vJ1CUChSDUMnc7OSeLQ3LMSCH+H8VBzs6BSmBbfUhur6Ua
-         5YK+MNkiNC+TIuNdQhcboKl2P0OTUGRk7dUiZNJkkqn47E0cjsoQGyXiOiK5e2Oli42W
-         w4lSBIU2MAxqObERZEAwl14BZA7wOrzs8uIotV8ixRLvNWXeAo2JwIB1T5G7xRSkq14x
-         Zspnwrpon0lTlQebkaThl5br6Wald6dFLKbz2TnIr4AXUzNQX2j1IcmebEAK83CdRPHx
-         H54ez8aZ24SZC328DPxyJoytEXVsogpyJnbGmuyXPkAnE0Fm6H/IettFq/umsyrf3kf+
-         m1og==
+        bh=PNR/l0ULK/kMsMHHgPtajMRj1Pvr/PHmTYKsH3Rgbxw=;
+        b=ILz7QCbjV1k+1+/TVOaGruQgL/VvgLKjpQXwt/7i+cUdTzTvddGl00cNYTfFsWQdo4
+         RGnH9d9QBH9FSMdFMSf0hIjvGmmQ9NUmT9ogncZzF3uw2X6aogG+xkaqdTDCkYjI5P7S
+         joPcCAeBLhXx6tJpJyBjvd8NNqVaBMpSkXjYMLT+mMoC+/gOEVIjixjGv4UtMqFCEIwz
+         IB1sn3EbjTRxvzBj0pkapoFUGG20Lo1EnA6WAQ02GrBfALCSAUJ7199xmR4V0qmOK7U1
+         b3HzjiVAIl8EFFbyvcyxNJd9I0pc3r7UMEYd8mj2W+OkHrwcijzEKfdZ+Z8Ii7q68FQ4
+         sm1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=zucWMnYpA+9lAVSxvp3xaxbGQIBgGxTkjhUBcYvLz9g=;
-        b=nG+dRgwSLYQ469p7za3pKJiNNMjULL0uC+juCZKYrezDYqOLZs2Maza9LvoUTUkXgl
-         TaQjMic8K8BnmUlc2ynP4qIK6Ed4xXVJpO1Y2GPub3mMIOzs8NNN5Kp+DpxpKqf8TZTF
-         h6cxacpt+6hDhRVErW1MgD0a5U2GskjTetOWylQYZoGYIPz4KTWetgm+RODjPH++9n92
-         doehcoeGmAe4eGKst722zDgq9h8ElpZzw6w0xmtk9PSWUHRrAyHx9hC2WJzFkCZYbOUx
-         nbypOtW1Dd31OToY+6mwC85ry1npCxsBPbVSgQLT255Usa8LXraLxzA9NwAky4jxnWzg
-         oD3A==
-X-Gm-Message-State: ANoB5pn28S08GDMtfeLfbIxVOSMoU1UJ6nyHG82dvIbr9LIeQxF/QYhU
-        d7rvrmYhKbvdJ7rQfC+F5ltjH5DFLp8=
-X-Google-Smtp-Source: AA0mqf6dDEod0nkyy2edoxtAkUWMO7Udsf9d6Lu/ScsnrA9UPst7n6x3oWFlkh9cOTJcjhsoeJIK6Q==
-X-Received: by 2002:aa7:9f04:0:b0:577:4168:b5ef with SMTP id g4-20020aa79f04000000b005774168b5efmr17544130pfr.3.1670881561842;
-        Mon, 12 Dec 2022 13:46:01 -0800 (PST)
+        bh=PNR/l0ULK/kMsMHHgPtajMRj1Pvr/PHmTYKsH3Rgbxw=;
+        b=KSalZ4yU7n757Hrza7dWiOt/bQ0p4idTS7+GwpPoTgzatnw22cJ7i5TJ9PlqrRhJVd
+         td5z+RfWw+AIF/UJKBwuRdxS4znwsmbDakpg/3YTRU1bLSe9bk5gAu4UO1c10JZ4zpE3
+         45iSjaCwO4sCCWUA7FZcMsxsVbiWlfBgL/k3mMgq8r8v+kudwtreledASdjyPCcvS5ye
+         gvmikafjI0OlrQ1FRtxeVDlh9MIrK9O+ENjJt/0Nswnaj3Jp8bS9lsz1pD6atKegk3eI
+         78lpqnzN+8Ctr6VBHl6TSPNNhF/p1fC3f7n1vWV9t+DXaBVm3IZYdGI1OExWnHQmJhKB
+         D4+w==
+X-Gm-Message-State: ANoB5pnxXi23cBFFVUcTBTcSVyQReip37U1s5UUx4Y5BYTmY5onZKner
+        mhyCyKH7F+cwaTxeXXcPBzg=
+X-Google-Smtp-Source: AA0mqf5O8JuqNB7n/lmfHsqBuwrTLR5wyWj+KdUK7pCVdXnsfjNPZ90qdF0tr7h0+k2jA818xc6TYA==
+X-Received: by 2002:a05:6a00:278c:b0:578:3bc0:57d7 with SMTP id bd12-20020a056a00278c00b005783bc057d7mr7620338pfb.13.1670881693469;
+        Mon, 12 Dec 2022 13:48:13 -0800 (PST)
 Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id y130-20020a62ce88000000b0056d73ef41fdsm6237753pfg.75.2022.12.12.13.45.59
+        by smtp.googlemail.com with ESMTPSA id i125-20020a628783000000b00576b603a913sm6292950pfe.0.2022.12.12.13.48.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Dec 2022 13:46:01 -0800 (PST)
-Message-ID: <94f08a44b4c25ef041e43a6731413e6efcb73161.camel@gmail.com>
-Subject: Re: [PATCH net v2 1/3] mISDN: hfcsusb: don't call
+        Mon, 12 Dec 2022 13:48:13 -0800 (PST)
+Message-ID: <cb96792bdc95682b79c1f1adcf615ae8b999cbd7.camel@gmail.com>
+Subject: Re: [PATCH net v2 2/3] mISDN: hfcpci: don't call
  dev_kfree_skb/kfree_skb() under spin_lock_irqsave()
 From:   Alexander H Duyck <alexander.duyck@gmail.com>
 To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
 Cc:     isdn@linux-pingi.de, davem@davemloft.net, kuba@kernel.org,
-        jiri@resnulli.us, Martin Bachem <m.bachem@gmx.de>
-Date:   Mon, 12 Dec 2022 13:45:57 -0800
-In-Reply-To: <20221212084139.3277913-2-yangyingliang@huawei.com>
+        jiri@resnulli.us
+Date:   Mon, 12 Dec 2022 13:48:11 -0800
+In-Reply-To: <20221212084139.3277913-3-yangyingliang@huawei.com>
 References: <20221212084139.3277913-1-yangyingliang@huawei.com>
-         <20221212084139.3277913-2-yangyingliang@huawei.com>
+         <20221212084139.3277913-3-yangyingliang@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
@@ -78,41 +78,32 @@ On Mon, 2022-12-12 at 16:41 +0800, Yang Yingliang wrote:
 > It is not allowed to call kfree_skb() or consume_skb() from hardware
 > interrupt context or with hardware interrupts being disabled.
 >=20
-> It should use dev_kfree_skb_irq() or dev_consume_skb_irq() instead.
-> The difference between them is free reason, dev_kfree_skb_irq() means
-> the SKB is dropped in error and dev_consume_skb_irq() means the SKB
-> is consumed in normal.
->=20
-> skb_queue_purge() is called under spin_lock_irqsave() in hfcusb_l2l1D(),
+> skb_queue_purge() is called under spin_lock_irqsave() in hfcpci_l2l1D(),
 > kfree_skb() is called in it, to fix this, use skb_queue_splice_init()
 > to move the dch->squeue to a free queue, also enqueue the tx_skb and
 > rx_skb, at last calling __skb_queue_purge() to free the SKBs afer unlock.
 >=20
-> In tx_iso_complete(), dev_kfree_skb() is called to consume the transmitte=
-d
-> SKB, so replace it with dev_consume_skb_irq().
->=20
-> Fixes: 69f52adb2d53 ("mISDN: Add HFC USB driver")
+> Fixes: 1700fe1a10dc ("Add mISDN HFC PCI driver")
 > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
->  drivers/isdn/hardware/mISDN/hfcsusb.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
+>  drivers/isdn/hardware/mISDN/hfcpci.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 >=20
-> diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardwar=
-e/mISDN/hfcsusb.c
-> index 651f2f8f685b..1efd17979f24 100644
-> --- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-> +++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-> @@ -326,20 +326,24 @@ hfcusb_l2l1D(struct mISDNchannel *ch, struct sk_buf=
-f *skb)
+> diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware=
+/mISDN/hfcpci.c
+> index e964a8dd8512..c0331b268010 100644
+> --- a/drivers/isdn/hardware/mISDN/hfcpci.c
+> +++ b/drivers/isdn/hardware/mISDN/hfcpci.c
+> @@ -1617,16 +1617,19 @@ hfcpci_l2l1D(struct mISDNchannel *ch, struct sk_b=
+uff *skb)
 >  		test_and_clear_bit(FLG_L2_ACTIVATED, &dch->Flags);
-> =20
->  		if (hw->protocol =3D=3D ISDN_P_NT_S0) {
+>  		spin_lock_irqsave(&hc->lock, flags);
+>  		if (hc->hw.protocol =3D=3D ISDN_P_NT_S0) {
 > +			struct sk_buff_head free_queue;
 > +
 > +			__skb_queue_head_init(&free_queue);
->  			hfcsusb_ph_command(hw, HFC_L1_DEACTIVATE_NT);
->  			spin_lock_irqsave(&hw->lock, flags);
+>  			/* prepare deactivation */
+>  			Write_hfc(hc, HFCPCI_STATES, 0x40);
 > -			skb_queue_purge(&dch->squeue);
 > +			skb_queue_splice_init(&dch->squeue, &free_queue);
 >  			if (dch->tx_skb) {
@@ -127,21 +118,25 @@ f *skb)
 >  				dch->rx_skb =3D NULL;
 >  			}
 >  			test_and_clear_bit(FLG_TX_BUSY, &dch->Flags);
->  			spin_unlock_irqrestore(&hw->lock, flags);
+> @@ -1639,10 +1642,12 @@ hfcpci_l2l1D(struct mISDNchannel *ch, struct sk_b=
+uff *skb)
+>  			hc->hw.mst_m &=3D ~HFCPCI_MASTER;
+>  			Write_hfc(hc, HFCPCI_MST_MODE, hc->hw.mst_m);
+>  			ret =3D 0;
+> +			spin_unlock_irqrestore(&hc->lock, flags);
 > +			__skb_queue_purge(&free_queue);
->  #ifdef FIXME
->  			if (test_and_clear_bit(FLG_L1_BUSY, &dch->Flags))
->  				dchannel_sched_event(&hc->dch, D_CLEARBUSY);
-> @@ -1330,7 +1334,7 @@ tx_iso_complete(struct urb *urb)
->  					printk("\n");
->  				}
-> =20
-> -				dev_kfree_skb(tx_skb);
-> +				dev_consume_skb_irq(tx_skb);
->  				tx_skb =3D NULL;
->  				if (fifo->dch && get_next_dframe(fifo->dch))
->  					tx_skb =3D fifo->dch->tx_skb;
+>  		} else {
+>  			ret =3D l1_event(dch->l1, hh->prim);
+> +			spin_unlock_irqrestore(&hc->lock, flags);
+>  		}
+> -		spin_unlock_irqrestore(&hc->lock, flags);
+>  		break;
+>  	}
+>  	if (!ret)
 
-Looks good to me.
+Looks good to me, though I wonder if we couldn't look at moving the
+locking so that this code was handled more like patch 3 with the
+locking only covering the freeing path instead of also having to wrap
+the l1_event.
 
 Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
