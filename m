@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05AEF649B5B
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F14D649B70
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:50:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231918AbiLLJkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 04:40:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58220 "EHLO
+        id S231797AbiLLJuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 04:50:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229744AbiLLJkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:40:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5633293;
-        Mon, 12 Dec 2022 01:40:17 -0800 (PST)
+        with ESMTP id S231773AbiLLJuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:50:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFEBA195;
+        Mon, 12 Dec 2022 01:50:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C2CB60F6E;
-        Mon, 12 Dec 2022 09:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 85BA3C433EF;
-        Mon, 12 Dec 2022 09:40:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09252B80BA4;
+        Mon, 12 Dec 2022 09:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BD6C3C433F1;
+        Mon, 12 Dec 2022 09:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670838016;
-        bh=cAYUCTY/5WWtYaiqZHend8wBnBtisqH62rk7e9xJbDk=;
+        s=k20201202; t=1670838614;
+        bh=KnsL4KWSHtWzanbpgeKsKtos90grrMjVEnvc3TFDe6o=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TMtLOOE/wK0EZAVP9NFshKIqzIoKM6UsZfhA6MK7B3cHf6aaRaQNiUj07fj4+1WfZ
-         PJx6nSWNMfqXVL5tSOTFEDOd2wnHghfeOAKI6yC5lUdnUpnZpHfuEd86htuFDKq1gc
-         Tb1SPWBfVHzVd/JpniG57POGXuVeIA0+PJ9zDcfOT38y2QFzf7MURoFf+dFQpclGGT
-         IkgF/HnFyRwV1HO3SWyeu9wOP2FjkAaG2/2FrB+vc1lp4i3jxOgrxq+N9oQJ7hIOqd
-         /CDFS0E3xB3gnIvyCJu5ZT/AjWBDxmAQWshLNyatSJM8qqAKtqmddqm+oS0YhiB3dE
-         6XEGiUSz8zEEw==
+        b=Sh6VbmrEFHrscHu/5kbMWudzQAokWDjW6dRNvQiUb8Z+smEKY7lHmDvLaW1E5HsPK
+         Vf4b9uCtCsnDtWEyEVgQU0KET8SiGuaIkNI9O/gDL3DumjF5zcabRKBV6oZc9Irgcz
+         6lKHGWod6/imPY1y+yFbxEs2dV52TriJr6YYjID7V8pqypn6/KoiQr3mTE091QN6MD
+         WADPXm3qMpVKyh0l+nTnLEQjJ3iABv9CPf2fH3U+6mGIxK8uKShFwmEjpaWseF+yAr
+         tMuiQfiWW3k75G6ERWJWAZ2rR/DhUt9u/j5B70oqlu2O6Xwh6eK30oE99vbjynIUWg
+         KRw7NcdD1Eo0w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6FB28C00448;
-        Mon, 12 Dec 2022 09:40:16 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A35A1C41612;
+        Mon, 12 Dec 2022 09:50:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v5 0/6] TUN/VirtioNet USO features support.
+Subject: Re: [PATCH] net: farsync: Fix kmemleak when rmmods farsync
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167083801644.1612.10899833484454840061.git-patchwork-notify@kernel.org>
-Date:   Mon, 12 Dec 2022 09:40:16 +0000
-References: <20221207113558.19003-1-andrew@daynix.com>
-In-Reply-To: <20221207113558.19003-1-andrew@daynix.com>
-To:     Andrew Melnychenko <andrew@daynix.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, yan@daynix.com,
-        yuri.benditovich@daynix.com
+Message-Id: <167083861466.6188.11052191900852417459.git-patchwork-notify@kernel.org>
+Date:   Mon, 12 Dec 2022 09:50:14 +0000
+References: <20221208120540.3758720-1-lizetao1@huawei.com>
+In-Reply-To: <20221208120540.3758720-1-lizetao1@huawei.com>
+To:     Li Zetao <lizetao1@huawei.com>
+Cc:     kevin.curtis@farsite.co.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,38 +58,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed,  7 Dec 2022 13:35:52 +0200 you wrote:
-> Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-> Technically they enable NETIF_F_GSO_UDP_L4
-> (and only if USO4 & USO6 are set simultaneously).
-> It allows the transmission of large UDP packets.
+On Thu, 8 Dec 2022 20:05:40 +0800 you wrote:
+> There are two memory leaks reported by kmemleak:
 > 
-> UDP Segmentation Offload (USO/GSO_UDP_L4) - ability to split UDP packets
-> into several segments. It's similar to UFO, except it doesn't use IP
-> fragmentation. The drivers may push big packets and the NIC will split
-> them(or assemble them in case of receive), but in the case of VirtioNet
-> we just pass big UDP to the host. So we are freeing the driver from doing
-> the unnecessary job of splitting. The same thing for several guests
-> on one host, we can pass big packets between guests.
+>   unreferenced object 0xffff888114b20200 (size 128):
+>     comm "modprobe", pid 4846, jiffies 4295146524 (age 401.345s)
+>     hex dump (first 32 bytes):
+>       e0 62 57 09 81 88 ff ff e0 62 57 09 81 88 ff ff  .bW......bW.....
+>       01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     backtrace:
+>       [<ffffffff815bcd82>] kmalloc_trace+0x22/0x60
+>       [<ffffffff83d35c78>] __hw_addr_add_ex+0x198/0x6c0
+>       [<ffffffff83d3989d>] dev_addr_init+0x13d/0x230
+>       [<ffffffff83d1063d>] alloc_netdev_mqs+0x10d/0xe50
+>       [<ffffffff82b4a06e>] alloc_hdlcdev+0x2e/0x80
+>       [<ffffffffa016a741>] fst_add_one+0x601/0x10e0 [farsync]
+>       ...
 > 
 > [...]
 
 Here is the summary with links:
-  - [v5,1/6] udp: allow header check for dodgy GSO_UDP_L4 packets.
-    https://git.kernel.org/netdev/net-next/c/1fd54773c267
-  - [v5,2/6] uapi/linux/if_tun.h: Added new offload types for USO4/6.
-    https://git.kernel.org/netdev/net-next/c/b22bbdd17a5a
-  - [v5,3/6] driver/net/tun: Added features for USO.
-    https://git.kernel.org/netdev/net-next/c/399e0827642f
-  - [v5,4/6] uapi/linux/virtio_net.h: Added USO types.
-    https://git.kernel.org/netdev/net-next/c/34061b348ae9
-  - [v5,5/6] linux/virtio_net.h: Support USO offload in vnet header.
-    https://git.kernel.org/netdev/net-next/c/860b7f27b8f7
-  - [v5,6/6] drivers/net/virtio_net.c: Added USO support.
-    https://git.kernel.org/netdev/net-next/c/418044e1de30
+  - net: farsync: Fix kmemleak when rmmods farsync
+    https://git.kernel.org/netdev/net/c/2f623aaf9f31
 
 You are awesome, thank you!
 -- 
