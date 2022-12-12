@@ -2,123 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE0A64AA16
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 23:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81D3464AA25
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 23:23:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233719AbiLLWRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 17:17:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
+        id S233732AbiLLWX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 17:23:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233686AbiLLWRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 17:17:48 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F217D112A
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 14:17:45 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id tz12so9246042ejc.9
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 14:17:45 -0800 (PST)
+        with ESMTP id S233473AbiLLWX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 17:23:26 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4547FB7C1;
+        Mon, 12 Dec 2022 14:23:25 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id js9so1349982pjb.2;
+        Mon, 12 Dec 2022 14:23:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6Au9qlT6wQS4rSTp9qQXb5lOw+Cmspjxz5l3a10oAZA=;
-        b=PpyW9wEWob7ugQ9UfAklrEfAHvcIrGMMREYPmNMD1jCXgLqO6eGte6sC16tGCY0HSF
-         RXvXf78UTBEKE8b/Xk/FPOR/3kL5Yi2VJjdm4DZz5pKkjTudL6pw1QQhHDWU4CMfO6xe
-         xDgS+fsRDQ1DfdAkuPvuHslrfOy80wV/pRGvKBoG/fL/MjMSTdJtl7SgyqkP9Zd3hU5f
-         tfLWhD7tEdOoRPPr+QFWhIZerqtga7FXqvxkVe0LxOW6cgibWxKNefINZvflb3Hz5T99
-         YcTkHZVvnWq04MS4aA/D44zByVU5Uk+u/yiPLvbwHzD1fmt+ziZFkfsBiAzYkRunqyRZ
-         5D2A==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8XdeAWxI9ZFQ2kkTJY7b4Lpxs5vKZ4OtFA8H35eWfcg=;
+        b=dpF3bjjvVdLu2YyxcYts6VoYYKlG4193SSnqOrVKDJS/jExlEpyNQoXXI94d7pF4fX
+         3xNayRm2fqnpdWsi7nLI6DT9VgNVrcMza2Bw7kg0f7SzEW4aICbqoL0P8Bv20BVncINo
+         3cB5TWSIa0PVJOR4pZPpqsr5/S8azRbt7kkkR+yI8Un/+lpy9aOrkr0q4H6SGdH5GSVo
+         lLm0wAloj7AKK7GKsRY++gVqP0YOpo5keOPthk4troiUgjHB5UsgVF/uldxjhWXElcOM
+         8nsWw+lz/9ZZWxQy/u8o4Iof/2ylfeCFY8jZTigSigW3JknSJsgXDrYEEO72WyB2/7eX
+         YvkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6Au9qlT6wQS4rSTp9qQXb5lOw+Cmspjxz5l3a10oAZA=;
-        b=NBt0RHEgcf+xtV9Cf7pKavnKUdBUKhZoUJkYdkjNjibQzzONw2OECG3sGzpij8q7UZ
-         TqqWMTXlJQ/4KFu3Wy/EEQnrPxNZ4As2Ni4HYVsm60hIHqtMiAs/AvQTiaJ8ASX848bH
-         72R75A5PE2osR+rxUeImxA2YEsWqhqgQg85RLAhGsX+o9oPRdIo4YjEzsmX8SdnyFEXt
-         xPNUuHxAj/BE5J7bJOfrKNU+c8aUmZK7AQtqOIEcGcmrKmstsR5VWuCawM6JTw8BfO1G
-         GBWEAM8D/9RRGBCUeUU5WIR/QZBJVG1/D4UXWeoDtxvMJqnrLrcDlMz3deXAOOwPb6gS
-         jZcw==
-X-Gm-Message-State: ANoB5pmXhE2OcEHEFoPqNsvA5jzSzgduv+3KdymdwpH4Dyc6RyrKTC+1
-        bNTHjCIoUXW7QT1mZCX0rck=
-X-Google-Smtp-Source: AA0mqf7w6yMdFQn2FNLcEleYP2GiN0F7zO89uBvOFteXk4xW7SY4eBC6UDdXDW9hVdVkIuaRQY7K5w==
-X-Received: by 2002:a17:906:f9cc:b0:7c0:ad62:a25f with SMTP id lj12-20020a170906f9cc00b007c0ad62a25fmr12140315ejb.51.1670883464250;
-        Mon, 12 Dec 2022 14:17:44 -0800 (PST)
-Received: from ?IPV6:2a01:c22:7731:9700:b095:7045:f75f:727d? (dynamic-2a01-0c22-7731-9700-b095-7045-f75f-727d.c22.pool.telefonica.de. [2a01:c22:7731:9700:b095:7045:f75f:727d])
-        by smtp.googlemail.com with ESMTPSA id kz21-20020a17090777d500b007c0c91eae04sm3755890ejc.151.2022.12.12.14.17.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Dec 2022 14:17:43 -0800 (PST)
-Message-ID: <b3ded529-3676-3d7c-4ed8-a94de470b5d7@gmail.com>
-Date:   Mon, 12 Dec 2022 23:17:39 +0100
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8XdeAWxI9ZFQ2kkTJY7b4Lpxs5vKZ4OtFA8H35eWfcg=;
+        b=OgewGoS5LVoy3K7RlaAiNDe7nsOeO/KIMCebRkg3UwFGGZksm3GFC4c4hngSG2dx5a
+         8oDZ2peG9VZZukAJtrOOoPBrfs0T9uUC6IiAhUvBxAs/4yYJkvzKHVIi7r5bJ5EqK2Z/
+         +FskIsh2grUDJzBK6RmuOVo5FzDptV3p/xMHl/TX+YpwZLfjlX0+lLTxU0jKSBSx31YC
+         Cao0OfXi+IUivB4AXE2JrgFewIRnOScdu2h4m/K8Bnt6CUaI+9qD3jfx1sse2dDvUjx/
+         7riDvMBTQ2HzLF24mOV80EpMK8VF5bOXFblOwgXejEyvXrlrOdLdMFUoyAv9YM0bdVao
+         c9eQ==
+X-Gm-Message-State: ANoB5pnGmjOVlJuAp6CJK4gkakmDtQqjGV8mJ6d+RG4pj9NqqrMkJNec
+        pMK6hXNPu+4cwBQRl3t7ThNwbzJPt88HIQ==
+X-Google-Smtp-Source: AA0mqf4Adp9WP5xDAhdlA9qxHig5VwqTQGTuC23qGriOVFsOnNPpV0r2FOlunW6Fs++qIWp389Al4A==
+X-Received: by 2002:a17:903:3317:b0:189:e14a:318e with SMTP id jk23-20020a170903331700b00189e14a318emr18346034plb.27.1670883804705;
+        Mon, 12 Dec 2022 14:23:24 -0800 (PST)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id d1-20020a170903230100b00186f0f59c85sm6876350plh.235.2022.12.12.14.23.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Dec 2022 14:23:23 -0800 (PST)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth-next 2022-12-12
+Date:   Mon, 12 Dec 2022 14:23:22 -0800
+Message-Id: <20221212222322.1690780-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Content-Language: en-US
-To:     Hau <hau@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
-References: <20221201143911.4449-1-hau@realtek.com>
- <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
- <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
- <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
- <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
- <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
- <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
- <6de467f2-e811-afbb-ab6f-f43f5456a857@gmail.com>
- <3395f909ef24454ca984a1b7977e0af4@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) +
- rtl8211fs fiber application
-In-Reply-To: <3395f909ef24454ca984a1b7977e0af4@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.12.2022 15:11, Hau wrote:
->> On 09.12.2022 16:29, Hau wrote:
->>>>
->>>> OK, I think I get a better idea of your setup.
->>>> So it seems RTL8211FS indeed acts as media converter. Link status on
->>>> MDI side of RTL8211FS reflects link status on fiber/serdes side.
->>>> RTL8168H PHY has no idea whether it's connected to RJ45 magnetics or
->>>> to the MDI side of a RTL8211FS.
->>>>
->>>> I think for configuring RTL8211FS you have two options:
->>>> 1. Extend the Realtek PHY driver to support RTL8211FS fiber mode 2.
->>>> Configure RTL8211FS from userspace (phytool, mii-tool, ..). However
->>>> to be able to do this you may need to add a dummy netdevice
->>>>    that RTL8211FS is attached to. When going with this option it may
->>>> be better to avoid phylib taking control of RTL8211FS.
->>>>    This can be done by setting the phy_mask of the bit-banged mii_bus.
->>>
->>> Thanks for your advaice.
->>> Is that possible for us to register a PHY fixup function(phy_register_fixup())
->> to setup rtl8211fs instead of setup it in PHY driver?
->>>
->> From where would you like to register the PHY fixup? r8169 would be the
->> wrong place here.
->> There are very few drivers using a PHY fixup and AFAICS typically PHY drivers
->> apply fixups from the config_init callback.
->> Having said that, if possible I'd recommend to avoid using a PHY fixup.
->>
-> Thanks for your prompt reply. I think in next patch I will remove the rtl8211fs phy parameter setting.
-> And only keep non speed down patch.
-> If there's any possibility I'd like to avoid the non speed down patch.
-You would have to think also about the case that a user uses ethtool
-to restrict advertisement to 100Mbps, what would break the connection.
-r8169 isn't the right place for a workaround for a broken media converter.
-The media converter should be fully transparent to r8169.
+The following changes since commit 15eb1621762134bd3a0f81020359b0c7745d1080:
 
-RTL8211FS should align the advertisement on MDI side with the link
-speed on fiber side, based on SGMII in-band information.
-If the fiber link is 1Gbps it must not advertise 100Mbps on MDI side.
+  dt-bindings: net: Convert Socionext NetSec Ethernet to DT schema (2022-12-12 13:03:45 -0800)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-12-12
+
+for you to fetch changes up to 7aca0ac4792e6cb0f35ef97bfcb39b1663a92fb7:
+
+  Bluetooth: Wait for HCI_OP_WRITE_AUTH_PAYLOAD_TO to complete (2022-12-12 14:19:26 -0800)
+
+----------------------------------------------------------------
+bluetooth-next pull request for net-next:
+
+ - Add a new VID/PID 0489/e0f2 for MT7922
+ - Add Realtek RTL8852BE support ID 0x0cb8:0xc559
+ - Add a new PID/VID 13d3/3549 for RTL8822CU
+ - Add support for broadcom BCM43430A0 & BCM43430A1
+ - Add CONFIG_BT_HCIBTUSB_POLL_SYNC
+ - Add CONFIG_BT_LE_L2CAP_ECRED
+ - Add support for CYW4373A0
+ - Add support for RTL8723DS
+ - Add more device IDs for WCN6855
+ - Add Broadcom BCM4377 family PCIe Bluetooth
+
+----------------------------------------------------------------
+Andy Chi (1):
+      Bluetooth: btusb: Add a new VID/PID 0489/e0f2 for MT7922
+
+Archie Pusaka (2):
+      Bluetooth: btusb: Introduce generic USB reset
+      Bluetooth: hci_sync: cancel cmd_timer if hci_open failed
+
+Artem Lukyanov (1):
+      Bluetooth: btusb: Add Realtek RTL8852BE support ID 0x0cb8:0xc559
+
+Chethan Tumkur Narayan (1):
+      btusb: Avoid reset of ISOC endpoint alt settings to zero
+
+Christophe JAILLET (1):
+      Bluetooth: Fix EALREADY and ELOOP cases in bt_status()
+
+Gongwei Li (1):
+      Bluetooth: btusb: Add a new PID/VID 13d3/3549 for RTL8822CU
+
+Hilda Wu (2):
+      Bluetooth: btrtl: Add btrealtek data struct
+      Bluetooth: btusb: Ignore zero length of USB packets on ALT 6 for specific chip
+
+Igor Skalkin (1):
+      virtio_bt: Fix alignment in configuration struct
+
+Inga Stotland (1):
+      Bluetooth: MGMT: Fix error report for ADD_EXT_ADV_PARAMS
+
+Jiapeng Chong (1):
+      Bluetooth: Use kzalloc instead of kmalloc/memset
+
+Kang Minchul (1):
+      Bluetooth: Use kzalloc instead of kmalloc/memset
+
+Luca Weiss (1):
+      dt-bindings: bluetooth: broadcom: add BCM43430A0 & BCM43430A1
+
+Luiz Augusto von Dentz (11):
+      Bluetooth: hci_sync: Fix not setting static address
+      Bluetooth: hci_sync: Fix not able to set force_static_address
+      Bluetooth: btusb: Add CONFIG_BT_HCIBTUSB_POLL_SYNC
+      Bluetooth: btusb: Default CONFIG_BT_HCIBTUSB_POLL_SYNC=y
+      Bluetooth: Add CONFIG_BT_LE_L2CAP_ECRED
+      Bluetooth: btusb: Fix new sparce warnings
+      Bluetooth: btusb: Fix existing sparce warning
+      Bluetooth: btintel: Fix existing sparce warnings
+      Bluetooth: hci_conn: Fix crash on hci_create_cis_sync
+      Bluetooth: ISO: Avoid circular locking dependency
+      Bluetooth: Wait for HCI_OP_WRITE_AUTH_PAYLOAD_TO to complete
+
+Marek Vasut (2):
+      dt-bindings: net: broadcom-bluetooth: Add CYW4373A0 DT binding
+      Bluetooth: hci_bcm: Add CYW4373A0 support
+
+Michael S. Tsirkin (1):
+      Bluetooth: virtio_bt: fix device removal
+
+Nicolas Cavallari (1):
+      Bluetooth: Work around SCO over USB HCI design defect
+
+Pauli Virtanen (1):
+      Bluetooth: hci_conn: use HCI dst_type values also for BIS
+
+Raman Varabets (1):
+      Bluetooth: btusb: Add Realtek 8761BUV support ID 0x2B89:0x8761
+
+Samuel Holland (1):
+      dt-bindings: net: realtek-bluetooth: Add RTL8723DS
+
+Shengyu Qu (1):
+      Bluetooth: btusb: Add more device IDs for WCN6855
+
+Sven Peter (7):
+      dt-bindings: net: Add generic Bluetooth controller
+      dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
+      arm64: dts: apple: t8103: Add Bluetooth controller
+      Bluetooth: hci_event: Ignore reserved bits in LE Extended Adv Report
+      Bluetooth: Add quirk to disable extended scanning
+      Bluetooth: Add quirk to disable MWS Transport Configuration
+      Bluetooth: hci_bcm4377: Add new driver for BCM4377 PCIe boards
+
+Wang ShaoBo (1):
+      Bluetooth: btintel: Fix missing free skb in btintel_setup_combined()
+
+Yang Yingliang (9):
+      Bluetooth: hci_core: fix error handling in hci_register_dev()
+      Bluetooth: hci_bcm4377: Fix missing pci_disable_device() on error in bcm4377_probe()
+      Bluetooth: btusb: don't call kfree_skb() under spin_lock_irqsave()
+      Bluetooth: hci_qca: don't call kfree_skb() under spin_lock_irqsave()
+      Bluetooth: hci_ll: don't call kfree_skb() under spin_lock_irqsave()
+      Bluetooth: hci_h5: don't call kfree_skb() under spin_lock_irqsave()
+      Bluetooth: hci_bcsp: don't call kfree_skb() under spin_lock_irqsave()
+      Bluetooth: hci_core: don't call kfree_skb() under spin_lock_irqsave()
+      Bluetooth: RFCOMM: don't call kfree_skb() under spin_lock_irqsave()
+
+Zhengping Jiang (1):
+      Bluetooth: hci_qca: only assign wakeup with serial port support
+
+ .../devicetree/bindings/net/bluetooth.txt          |    5 -
+ .../net/bluetooth/bluetooth-controller.yaml        |   29 +
+ .../net/bluetooth/brcm,bcm4377-bluetooth.yaml      |   81 +
+ .../net/{ => bluetooth}/qualcomm-bluetooth.yaml    |    6 +-
+ .../bindings/net/broadcom-bluetooth.yaml           |    3 +
+ .../devicetree/bindings/net/realtek-bluetooth.yaml |    1 +
+ .../devicetree/bindings/soc/qcom/qcom,wcnss.yaml   |    8 +-
+ MAINTAINERS                                        |    2 +
+ arch/arm64/boot/dts/apple/t8103-j274.dts           |    4 +
+ arch/arm64/boot/dts/apple/t8103-j293.dts           |    4 +
+ arch/arm64/boot/dts/apple/t8103-j313.dts           |    4 +
+ arch/arm64/boot/dts/apple/t8103-j456.dts           |    4 +
+ arch/arm64/boot/dts/apple/t8103-j457.dts           |    4 +
+ arch/arm64/boot/dts/apple/t8103-jxxx.dtsi          |    8 +
+ drivers/bluetooth/Kconfig                          |   23 +
+ drivers/bluetooth/Makefile                         |    1 +
+ drivers/bluetooth/btintel.c                        |   21 +-
+ drivers/bluetooth/btrtl.c                          |    7 +
+ drivers/bluetooth/btrtl.h                          |   21 +
+ drivers/bluetooth/btusb.c                          |  236 +-
+ drivers/bluetooth/hci_bcm.c                        |   13 +-
+ drivers/bluetooth/hci_bcm4377.c                    | 2514 ++++++++++++++++++++
+ drivers/bluetooth/hci_bcsp.c                       |    2 +-
+ drivers/bluetooth/hci_h5.c                         |    2 +-
+ drivers/bluetooth/hci_ll.c                         |    2 +-
+ drivers/bluetooth/hci_qca.c                        |    5 +-
+ drivers/bluetooth/virtio_bt.c                      |   35 +-
+ include/net/bluetooth/hci.h                        |   21 +
+ include/net/bluetooth/hci_core.h                   |    8 +-
+ include/uapi/linux/virtio_bt.h                     |    8 +
+ net/bluetooth/Kconfig                              |   11 +
+ net/bluetooth/hci_conn.c                           |   17 +-
+ net/bluetooth/hci_core.c                           |    4 +-
+ net/bluetooth/hci_debugfs.c                        |    2 +-
+ net/bluetooth/hci_event.c                          |   24 +-
+ net/bluetooth/hci_sync.c                           |   21 +-
+ net/bluetooth/iso.c                                |   67 +-
+ net/bluetooth/l2cap_core.c                         |    2 +-
+ net/bluetooth/lib.c                                |    4 +-
+ net/bluetooth/mgmt.c                               |    2 +-
+ net/bluetooth/rfcomm/core.c                        |    2 +-
+ 41 files changed, 3117 insertions(+), 121 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/bluetooth.txt
+ create mode 100644 Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
+ rename Documentation/devicetree/bindings/net/{ => bluetooth}/qualcomm-bluetooth.yaml (96%)
+ create mode 100644 drivers/bluetooth/hci_bcm4377.c
