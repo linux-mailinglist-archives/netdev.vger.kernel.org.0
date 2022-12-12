@@ -2,85 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 559FC64AB3F
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 00:14:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C671864AB80
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 00:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233466AbiLLXOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 18:14:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37286 "EHLO
+        id S233973AbiLLXUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 18:20:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232244AbiLLXOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 18:14:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C30C48
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 15:14:40 -0800 (PST)
+        with ESMTP id S234018AbiLLXUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 18:20:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E990C1CB06
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 15:20:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFB90B80EC1
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:14:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D76A8C433EF;
-        Mon, 12 Dec 2022 23:14:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 894F46125E
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E4FE8C433D2;
+        Mon, 12 Dec 2022 23:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670886877;
-        bh=8Iud0Iqu9JJY+RHtIc/cDRjThAndQJI4b4nJjK1ldU4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=caZ40ALXYQEVgViajiHFmtPZ/uTPGC4DCjA6hXFiXeSOJAS3UXD7o4EJ95fFXc1N5
-         VeipkP1vAQSWd6rIq1lt/vKv3W6F7nrHuGvZ1lH35+IbR9Et9rPzhdN8JGmDFtr1Lq
-         JHr/Tr3bBDIOu7vP+gauN7MGQf7sdjyO+9P4Pr+/EY/z53M/xZ1wSuj9GeovteUFfr
-         gPX3U5xuKDdQp4EwOGTuvUUaL5+0vi/78sISK6llDRpDh+mQvotaaopLzyhMvHZM9l
-         OPMQfPKufVaMKayITjByYhmhZ20OcWH71zrQsYj0JDWFQBToU17CYjCEZRlGpwRjhX
-         JqkqALclnvTLA==
-Date:   Mon, 12 Dec 2022 15:14:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Benjamin Coddington <bcodding@redhat.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Christoph =?UTF-8?B?QsO2aG13YWxkZXI=?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Steve French <sfrench@samba.org>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v3 1/3] net: Introduce sk_use_task_frag in struct
- sock.
-Message-ID: <20221212151434.71617530@kernel.org>
-In-Reply-To: <1a369325ac2d4a604a074428f58fa72a6065e197.1670756903.git.bcodding@redhat.com>
-References: <20221209201127.65dc2cdb@kernel.org>
-        <1a369325ac2d4a604a074428f58fa72a6065e197.1670756903.git.bcodding@redhat.com>
+        s=k20201202; t=1670887216;
+        bh=3q3pQEENBpble+P8HsWtHWtvJIPA8Ye9B9LhfPUcY3Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qVWLamxf3u2UpXouIQPLAwCq9mC6psCwUbeicUWcdDL64+/DhL3sUFDpWirkGy8BY
+         kD8NlH3pOt5sBYPQ2wI5wuCExEqu4QOQVWtXI/NCDscL4kmt+Uq8IyX8OWP8wcbDZC
+         0opqS257zut6awjMhhZEkQTRi1sH6fJhC4XCP5excmaXKcOcrdyUL1LecCJ4C/394z
+         NcwagLW95j0Zz7zXALFnEQRdx8doTf/be0r67iUed21tc8tD5RbXF/00OqMjt2N4aB
+         MhejsyOIxnB3RXVYbOhyUEnFaAD9rb1APYt5F4BOrqaASeFaKzC7NxWeol02Jt42ZU
+         mJT3YZrWLp0Ew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CABB3C41606;
+        Mon, 12 Dec 2022 23:20:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net 1/1] stmmac: fix potential division by 0
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167088721582.27199.17800143260465196314.git-patchwork-notify@kernel.org>
+Date:   Mon, 12 Dec 2022 23:20:15 +0000
+References: <de4c64ccac9084952c56a06a8171d738604c4770.1670678513.git.piergiorgio.beruto@gmail.com>
+In-Reply-To: <de4c64ccac9084952c56a06a8171d738604c4770.1670678513.git.piergiorgio.beruto@gmail.com>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, julien.beraud@orolia.com,
+        netdev@vger.kernel.org, andrew@lunn.ch
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -90,7 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 11 Dec 2022 06:20:03 -0500 Benjamin Coddington wrote:
-> [PATCH net v3 1/3] net: Introduce sk_use_task_frag in struct sock.
+Hello:
 
-You need to repost the entire series, please.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sat, 10 Dec 2022 23:37:22 +0100 you wrote:
+> When the MAC is connected to a 10 Mb/s PHY and the PTP clock is derived
+> from the MAC reference clock (default), the clk_ptp_rate becomes too
+> small and the calculated sub second increment becomes 0 when computed by
+> the stmmac_config_sub_second_increment() function within
+> stmmac_init_tstamp_counter().
+> 
+> Therefore, the subsequent div_u64 in stmmac_init_tstamp_counter()
+> operation triggers a divide by 0 exception as shown below.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net,1/1] stmmac: fix potential division by 0
+    https://git.kernel.org/netdev/net/c/ede5a389852d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
