@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DCA649853
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 04:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 427A3649865
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 05:37:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbiLLD5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Dec 2022 22:57:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
+        id S231215AbiLLEgz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Dec 2022 23:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231175AbiLLD5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 22:57:12 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32735DE84
-        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 19:57:11 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id js9so9623166pjb.2
-        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 19:57:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n0IAccI+ena8a5cGOPI0uhJr/srTgh5m/76JVySycbA=;
-        b=F2HkU+cZaV7/nLGx2wa8iGsSD9xQyOkqvKktIgLmWayyCIHjpuu4GyeIq0FkTX18mN
-         5aDEItTHdYMXYgNrV5QmvUZunQ8D5ufNMiu9EkDknegGP9ybASRH+uvKoAfCW+99pncv
-         8X1Gq7Ud5XJhJr970UaJhg5T2kyll3wLKAV71koR3uvKvB/nG6w7u3ptAGw+oxEa/qdL
-         8WQOFRUS+VCdJoc/E9hTZ7N1YBu/hUmbcMRJIipdr8bR/r4IgPenJm0M/s0UnJeBSOgk
-         zCJDiXGBiHWvAZlZd31Cj66F92CxOHsOvcXU01JJywQhPlGVNjLOkIky/zcCOfyBWEEw
-         BbUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=n0IAccI+ena8a5cGOPI0uhJr/srTgh5m/76JVySycbA=;
-        b=fJpHqMRWp5UWW+Ze5kJA3ip5NhFSO6X1HGGM0619LH9+dckV0Ycd77YcgRuPRiYf2m
-         BK1QXTadbtPOlJv+39/tuJ9VipNSD1rSbQbtfrzJBd1fEWASMDsVWJQUeIQgFfVAZ3HW
-         Z22fk19EgBSVRhEBUQjycQTG1q+FTh9GfsTIubP4dr8JgKSNMUcTY7FD48b9JgKcpVY9
-         pwIHEFOdalizA8FZOHByjsP0ySQV7Zgm2scumiWSfHSqVD+QJRMW1Hr4uXd/SZ2tg5GR
-         ejRLyZ6zGAQo1B35KF3Ny5AaCy+LeJaIwq2I5yCCn+KxeTillNmOCecE027A0xlB5JFT
-         8A3g==
-X-Gm-Message-State: ANoB5plt7M+DP3mJf0AtvACJ8+7mZTp8rYnvSG4uXtJ1ik1Us7H4b/9r
-        eXceBUzYy5BU4XWfd7ACJaHqcSzMTyeYbBAR
-X-Google-Smtp-Source: AA0mqf5GoFnxiAZvy+gEVDlDUXswVYMGNUzAOUKxELdwLarysc7IO5V0JcJjniu78QUFRu+Hqo5nEw==
-X-Received: by 2002:a05:6a21:6d9c:b0:aa:4010:2789 with SMTP id wl28-20020a056a216d9c00b000aa40102789mr24550924pzb.53.1670817430223;
-        Sun, 11 Dec 2022 19:57:10 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w190-20020a6362c7000000b00476dc914262sm4231207pgb.1.2022.12.11.19.57.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Dec 2022 19:57:09 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, liali <liali@redhat.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net 3/3] selftests: bonding: add bonding prio option test
-Date:   Mon, 12 Dec 2022 11:56:47 +0800
-Message-Id: <20221212035647.1053865-4-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221212035647.1053865-1-liuhangbin@gmail.com>
-References: <20221212035647.1053865-1-liuhangbin@gmail.com>
+        with ESMTP id S230493AbiLLEgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 23:36:53 -0500
+Received: from mxout012.mail.hostpoint.ch (mxout012.mail.hostpoint.ch [IPv6:2a00:d70:0:e::312])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478CABC99
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 20:36:51 -0800 (PST)
+Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
+        by mxout012.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.95 (FreeBSD))
+        (envelope-from <thomas@kupper.org>)
+        id 1p4aYa-000NGQ-GS;
+        Mon, 12 Dec 2022 05:36:48 +0100
+Received: from [82.197.179.206] (helo=Jeffs-RMBP.hsh.patient0.xyz)
+        by asmtp014.mail.hostpoint.ch with esmtpa (Exim 4.95 (FreeBSD))
+        (envelope-from <thomas@kupper.org>)
+        id 1p4aYa-000F0u-AQ;
+        Mon, 12 Dec 2022 05:36:48 +0100
+X-Authenticated-Sender-Id: thomas@kupper.org
+Subject: Re: [PATCH v2 net 1/1] amd-xgbe: fix active cable
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     netdev@vger.kernel.org
+References: <b65b029d-c6c4-000f-dc9d-2b5cabad3a5c@kupper.org>
+ <b2dedffc-a740-ed01-b1d4-665c53537a08@amd.com>
+ <28351727-f1ba-5b57-2f84-9eccff6d627f@kupper.org>
+ <64edbded-51af-f055-9c2f-c1f81b0d3698@kupper.org>
+ <9180965b-fe96-7500-d139-013d1987c498@amd.com>
+ <5fb7e87f-83fb-252b-1590-c6ff5862bbaa@kupper.org>
+ <e80db268-3aca-e5f7-6eb0-4ba88999a7a8@amd.com>
+From:   Thomas Kupper <thomas@kupper.org>
+Autocrypt: addr=thomas@kupper.org; keydata=
+ mQGiBE5Q8TYRBAC8Lhkq+EVXqfx0trczkTLEgP+4+ZStk6i4HyDj/xzHaY0wHrOP3jF+NuFZ
+ WlhSVab0LjXdT/r9n3voQ18CDRy9uPEmDrx9uMSK5zdPIZMMeeFJmdFrvmKPTVUu44i4fSc3
+ LdclicSDpLEBaSxYrKmL07HmD2pp6CIIxDq1Q+q1vwCg4YeXIY66WUWYZCpxbdofqpX1yXUD
+ /3RFtGGMqyPIzGVbuvRdv4IiBikYkbHB40AteWyrOica9sleEeWobPwuXiQn7b/EO+XSeEjc
+ IrY+XUxSzpBaJqQeg6XvRkViMe0rKYhGJsmhxtm3J0FX9hft3A2t8ySY0rHTqOg0G06QI9l3
+ pJ8L54U2mEsY1YiwLiLNzh+wXTYOBACsrmRBkDmV+3e1T4P2mYXHsDQrRohO5vjXQoAHyLIA
+ hVNkT/phV3VBTA+TcKmEbdjHkIsCW4G164m5rE6uaABaVS0UFF1gzxMRWD8ifIP/yBM60THj
+ EtFB5cmTKrAoTVyiRlA4JRTSp7Qi+7VkgR6auO2lN/2+OLUjIcLL5HzysrQhVGhvbWFzIEt1
+ cHBlciA8dGhvbWFzQGt1cHBlci5vcmc+iHcEExECADcCGyMGCwkIBwMCBBUCCAMEFgIDAQIe
+ AQIXgBYhBESxWB9l55+zHfb85Bl75joxn+H7BQJeU91EAAoJEBl75joxn+H7yN8An2rTPo7F
+ QOqJ+pNaVr0W6grPnOqRAKC62QKLptTDnXIx8W88qvI6TZ+LFrkCDQROUPE2EAgAn8LqC/Zr
+ F6wCQBkQ7e2fNZXAlEOJCGEMMdydTH9W8TUvbu4y9ZqYC3OrM60G7eTgxOH6H967ENHbr9OC
+ cH9UYVTQH2ntajj5lglVrmkYUbou2NDpv1F6aQs1RuIHaeIzrQ7vpBjO/05lywI0hmFVtF3W
+ 808a2r1wNsXkBvSsDLWoLH89FoIgyNGRZ60GBJv9Z9lkSppnBPcdze+WyXoXXzVQleyIN7Cv
+ 23kOLl9/FPI0MOXzEevrzJ49dHJZALh98mOtIL8YzpM/kp0EF2J3zb6jdQOBSFcQ9hLGoZ70
+ 33K4cFgU6MBNyGKyzRi6u0Fg8ix/3YCs1KoFl46NIhDbAwADBQf/V/voyBkRo3EZC1uFUu/T
+ s0pTbe4ZqMeUGny8B2Hnst+YkGyjd4VS1ozREYXAnFt7w7cI0M5xNJw3ep9hC1QnMhcSrR/7
+ Q5IDneFDcrrYiXifehRvlRsqRvbscY4UY9JoFW/lD3OxTgGQ4sKXUOOL1PRHmyrGZMx1jDHD
+ qa3NkHuQEMN3zfSOlLMgBuuwUzc3HcMcpyjc1AWRyoa/yMa1gYOUyMMpF2rP/SVgX9mBrOl8
+ fTHG4oZ9i4dCOvt3KQlY9XKlz7zEXVi8YfMk3f2v1yV8ofNjTiPcjb+EhLdySqzvbJCwm8/7
+ yc9VOntZU2qZM8iMpuUC6SYVkN1XTDXU0IhgBBgRAgAgAhsMFiEERLFYH2Xnn7Md9vzkGXvm
+ OjGf4fsFAl5T6kAACgkQGXvmOjGf4ftTUQCfYZRcWffw98s7Pyn3eS7Lg+/OUzoAn0fylB57
+ c+yOSFuuz3ylO/keOQ4b
+Message-ID: <7d87b5d9-0b8b-e1af-33f7-348815ffaa24@kupper.org>
+Date:   Mon, 12 Dec 2022 05:36:47 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:52.0)
+ Gecko/20100101 PostboxApp/7.0.59
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <e80db268-3aca-e5f7-6eb0-4ba88999a7a8@amd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Content-Language: en-US
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,297 +79,207 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Liang Li <liali@redhat.com>
 
-Add a test for bonding prio option. Here is the test result:
+Tom Lendacky wrote on 14.11.22 21:51:
+> On 11/14/22 13:20, Thomas Kupper wrote:
+>> On 11/14/22 18:39, Tom Lendacky wrote:
+>>> On 11/12/22 13:12, Thomas Kupper wrote:
+>>>> On 11/11/22 17:00, Thomas Kupper wrote:
+>>>>> On 11/11/22 15:18, Tom Lendacky wrote:
+>>>>>> On 11/11/22 02:46, Thomas Kupper wrote:
+>>>>>>> When determine the type of SFP, active cables were not handled.
+>>>>>>>
+>>>>>>> Add the check for active cables as an extension to the passive
+>>>>>>> cable check.
+>>>>>>
+>>>>>> Is this fixing a particular problem? What SFP is this failing
+>>>>>> for? A more descriptive commit message would be good.
+>>>>>>
+>>>>>> Also, since an active cable is supposed to be advertising it's
+>>>>>> capabilities in the eeprom, maybe this gets fixed via a quirk and
+>>>>>> not a general check this field.
+>>>>
+>>>> Tom,
+>>>>
+>>>> are you sure that an active cable has to advertising it's speed?
+>>>> Searching for details about it I read in "SFF-8472 Rev 12.4",
+>>>> 5.4.2, Table 5-5 Transceiver Identification Examples:
+>>>>
+>>>> Transceiver Type Transceiver Description    Byte    Byte    Byte   
+>>>> Byte    Byte    Byte    Byte    Byte
+>>>>                          3    4    5    6    7     8    9    10
+>>>> ...
+>>>>          10GE Active cable with SFP(3,4)     00h    00h    00h   
+>>>> 00h    00h    08h    00h    00h
+>>>>
+>>>> And footnotes:
+>>>> 3) See A0h Bytes 60 and 61 for compliance of these media to
+>>>> industry electrical specifications
+>>>> 4) For Ethernet and SONET applications, rate capability of a link
+>>>> is identified in A0h Byte 12 [nominal signaling
+>>>> rate identifier]. This is due to no formal IEEE designation for
+>>>> passive and active cable interconnects, and lack
+>>>> of corresponding identifiers in Table 5-3.
+>>>>
+>>>> Wouldn't that suggest that byte 3 to 10 are all zero, except byte 8?
+>>>
+>>> This issue seems to be from my misinterpretation of active vs passive.
+>>> IIUC now, active and passive only applies to copper cables with SFP+
+>>> end
+>>> connectors. In which case the driver likely needs an additional enum
+>>> cable
+>>> type, XGBE_SFP_CABLE_FIBER, as the default cable type and slightly
+>>> different logic.
+>>>
+>>> Can you try the below patch? If it works, I'll work with Shyam to do
+>>> some
+>>> testing to ensure it doesn't break anything.
+>>
+>> Thanks Tom for getting back to me so soon.
+>>
+>> Your patch works well for me, with a passive, an active cable and a
+>> GBIC.
+>>
+>> But do you think it's a good idea to just check for !=
+>> XGBE_SFP_CABLE_FIBER? That would also be true for
+>> XGBE_SFP_CABLE_UNKNOWN.
+>
+> Except the if-then-else block above will set the cable type to one of
+> the three valid values, so this is ok.
+>
+> I'll work with Shyam to do some internal testing and get a patch sent
+> up if everything looks ok on our end.
+>
+> Thanks,
+> Tom
+>
+>>
+>>       /* Determine the type of SFP */
+>> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+>> +    if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
+>>           xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] &
+>> XGBE_SFP_BASE_10GBE_CC_SR)
+>>
+>> Cheers
+>> Thomas
+>>
+>>>
+>>>
+>>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> index 4064c3e3dd49..868a768f424c 100644
+>>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>> @@ -189,6 +189,7 @@ enum xgbe_sfp_cable {
+>>>       XGBE_SFP_CABLE_UNKNOWN = 0,
+>>>       XGBE_SFP_CABLE_ACTIVE,
+>>>       XGBE_SFP_CABLE_PASSIVE,
+>>> +    XGBE_SFP_CABLE_FIBER,
+>>>   };
+>>>     enum xgbe_sfp_base {
+>>> @@ -1149,16 +1150,18 @@ static void xgbe_phy_sfp_parse_eeprom(struct
+>>> xgbe_prv_data *pdata)
+>>>       phy_data->sfp_tx_fault = xgbe_phy_check_sfp_tx_fault(phy_data);
+>>>       phy_data->sfp_rx_los = xgbe_phy_check_sfp_rx_los(phy_data);
+>>>   -    /* Assume ACTIVE cable unless told it is PASSIVE */
+>>> +    /* Assume FIBER cable unless told otherwise */
+>>>       if (sfp_base[XGBE_SFP_BASE_CABLE] &
+>>> XGBE_SFP_BASE_CABLE_PASSIVE) {
+>>>           phy_data->sfp_cable = XGBE_SFP_CABLE_PASSIVE;
+>>>           phy_data->sfp_cable_len =
+>>> sfp_base[XGBE_SFP_BASE_CU_CABLE_LEN];
+>>> -    } else {
+>>> +    } else if (sfp_base[XGBE_SFP_BASE_CABLE] &
+>>> XGBE_SFP_BASE_CABLE_ACTIVE) {
+>>>           phy_data->sfp_cable = XGBE_SFP_CABLE_ACTIVE;
+>>> +    } else {
+>>> +        phy_data->sfp_cable = XGBE_SFP_CABLE_FIBER;
+>>>       }
+>>>         /* Determine the type of SFP */
+>>> -    if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+>>> +    if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
+>>>           xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>           phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>>>       else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] &
+>>> XGBE_SFP_BASE_10GBE_CC_SR)
+>>>
+>>>>
+>>>>
+>>>> /Thomas
+>>>>
+>>>>>
+>>>>> It is fixing a problem regarding a Mikrotik S+AO0005 AOC cable (we
+>>>>> were in contact back in Feb to May). And your right I should have
+>>>>> been more descriptive in the commit message.
+>>>>>
+>>>>>>>
+>>>>>>> Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
+>>>>>>> Signed-off-by: Thomas Kupper <thomas.kupper@gmail.com>
+>>>>>>> ---
+>>>>>>>   ??drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 5 +++--
+>>>>>>>   ??1 file changed, 3 insertions(+), 2 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>>> b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>>> index 4064c3e3dd49..1ba550d5c52d 100644
+>>>>>>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+>>>>>>> @@ -1158,8 +1158,9 @@ static void
+>>>>>>> xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
+>>>>>>>   ????? }
+>>>>>>>
+>>>>>>>   ????? /* Determine the type of SFP */
+>>>>>>> -??? if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
+>>>>>>> -??? ??? xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>>>>> +??? if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE ||
+>>>>>>> +??? ???? phy_data->sfp_cable == XGBE_SFP_CABLE_ACTIVE) &&
+>>>>>>> +??? ???? xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>>>>
+>>>>>> This is just the same as saying:
+>>>>>>
+>>>>>>   ????if (xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
+>>>>>>
+>>>>>> since the sfp_cable value is either PASSIVE or ACTIVE.
+>>>>>>
+>>>>>> I'm not sure I like fixing whatever issue you have in this way,
+>>>>>> though. If anything, I would prefer this to be a last case
+>>>>>> scenario and be placed at the end of the if-then-else block. But
+>>>>>> it may come down to applying a quirk for your situation.
+>>>>>
+>>>>> I see now that this cable is probably indeed not advertising its
+>>>>> capabilities correctly, I didn't understand what Shyam did refer
+>>>>> to in his mail from June 6.
+>>>>>
+>>>>> Unfortunately I haven't hear back from you guys after June 6 so I
+>>>>> tried to fix it myself ... but do lack the knowledge in that area.
+>>>>>
+>>>>> A quirk seems a good option.
+>>>>>
+>>>>>   From my point of view this patch can be cancelled/aborted/deleted.
+>>>>> I'll look into how to fix it using a quirk but maybe I'm not the
+>>>>> hest suited candidate to do it.
+>>>>>
+>>>>> /Thomas
+>>>>>
+>>>>>>
+>>>>>> Thanks,
+>>>>>> Tom
+>>>>>>
+>>>>>>>   ????? ??? phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
+>>>>>>>   ????? else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] &
+>>>>>>> XGBE_SFP_BASE_10GBE_CC_SR)
+>>>>>>>   ????? ??? phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
+>>>>>>> -- 
+>>>>>>> 2.34.1
+>>>>>>>
+Morning Tom,
 
-]# ./option_prio.sh
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=arp_ip_target and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=arp_ip_target and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=arp_ip_target and primary_reselect=2)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=miimon and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=miimon and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=miimon and primary_reselect=2)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=5 monitor=miimon and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=5 monitor=miimon and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=5 monitor=miimon and primary_reselect=2)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=6 monitor=miimon and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=6 monitor=miimon and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=6 monitor=miimon and primary_reselect=2)  [ OK ]
+The patches you supplied work well for me, thanks.
 
-Signed-off-by: Liang Li <liali@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- .../selftests/drivers/net/bonding/Makefile    |   3 +-
- .../drivers/net/bonding/option_prio.sh        | 245 ++++++++++++++++++
- 2 files changed, 247 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/drivers/net/bonding/option_prio.sh
+Can you cancel/abort/close my submitted patch?
 
-diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-index 6b8d2e2f23c2..82250dd7a25d 100644
---- a/tools/testing/selftests/drivers/net/bonding/Makefile
-+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-@@ -5,7 +5,8 @@ TEST_PROGS := \
- 	bond-arp-interval-causes-panic.sh \
- 	bond-break-lacpdu-tx.sh \
- 	bond-lladdr-target.sh \
--	dev_addr_lists.sh
-+	dev_addr_lists.sh \
-+	option_prio.sh
- 
- TEST_FILES := \
- 	lag_lib.sh \
-diff --git a/tools/testing/selftests/drivers/net/bonding/option_prio.sh b/tools/testing/selftests/drivers/net/bonding/option_prio.sh
-new file mode 100755
-index 000000000000..c32eebff5005
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/option_prio.sh
-@@ -0,0 +1,245 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test bonding option prio
-+#
-+
-+ALL_TESTS="
-+	prio_arp_ip_target_test
-+	prio_miimon_test
-+"
-+
-+REQUIRE_MZ=no
-+REQUIRE_JQ=no
-+NUM_NETIFS=0
-+lib_dir=$(dirname "$0")
-+source "$lib_dir"/net_forwarding_lib.sh
-+
-+destroy()
-+{
-+	ip link del bond0 &>/dev/null
-+	ip link del br0 &>/dev/null
-+	ip link del veth0 &>/dev/null
-+	ip link del veth1 &>/dev/null
-+	ip link del veth2 &>/dev/null
-+	ip netns del ns1 &>/dev/null
-+	ip link del veth3 &>/dev/null
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	destroy
-+}
-+
-+skip()
-+{
-+        local skip=1
-+	ip link add name bond0 type bond mode 1 miimon 100 &>/dev/null
-+	ip link add name veth0 type veth peer name veth0_p
-+	ip link set veth0 master bond0
-+
-+	# check if iproute support prio option
-+	ip link set dev veth0 type bond_slave prio 10
-+	[[ $? -ne 0 ]] && skip=0
-+
-+	# check if bonding support prio option
-+	ip -d link show veth0 | grep -q "prio 10"
-+	[[ $? -ne 0 ]] && skip=0
-+
-+	ip link del bond0 &>/dev/null
-+	ip link del veth0
-+
-+	return $skip
-+}
-+
-+active_slave=""
-+check_active_slave()
-+{
-+	local target_active_slave=$1
-+	active_slave="$(cat /sys/class/net/bond0/bonding/active_slave)"
-+	test "$active_slave" = "$target_active_slave"
-+	check_err $? "Current active slave is $active_slave but not $target_active_slave"
-+}
-+
-+
-+# Test bonding prio option with mode=$mode monitor=$monitor
-+# and primary_reselect=$primary_reselect
-+prio_test()
-+{
-+	RET=0
-+
-+	local monitor=$1
-+	local mode=$2
-+	local primary_reselect=$3
-+
-+	local bond_ip4="192.169.1.2"
-+	local peer_ip4="192.169.1.1"
-+	local bond_ip6="2009:0a:0b::02"
-+	local peer_ip6="2009:0a:0b::01"
-+
-+
-+	# create veths
-+	ip link add name veth0 type veth peer name veth0_p
-+	ip link add name veth1 type veth peer name veth1_p
-+	ip link add name veth2 type veth peer name veth2_p
-+
-+	# create bond
-+	if [[ "$monitor" == "miimon" ]];then
-+		ip link add name bond0 type bond mode $mode miimon 100 primary veth1 primary_reselect $primary_reselect
-+	elif [[ "$monitor" == "arp_ip_target" ]];then
-+		ip link add name bond0 type bond mode $mode arp_interval 1000 arp_ip_target $peer_ip4 primary veth1 primary_reselect $primary_reselect
-+	elif [[ "$monitor" == "ns_ip6_target" ]];then
-+		ip link add name bond0 type bond mode $mode arp_interval 1000 ns_ip6_target $peer_ip6 primary veth1 primary_reselect $primary_reselect
-+	fi
-+	ip link set bond0 up
-+	ip link set veth0 master bond0
-+	ip link set veth1 master bond0
-+	ip link set veth2 master bond0
-+	# check bonding member prio value
-+	ip link set dev veth0 type bond_slave prio 0
-+	ip link set dev veth1 type bond_slave prio 10
-+	ip link set dev veth2 type bond_slave prio 11
-+	ip -d link show veth0 | grep -q 'prio 0'
-+	check_err $? "veth0 prio is not 0"
-+	ip -d link show veth1 | grep -q 'prio 10'
-+	check_err $? "veth0 prio is not 10"
-+	ip -d link show veth2 | grep -q 'prio 11'
-+	check_err $? "veth0 prio is not 11"
-+
-+	ip link set veth0 up
-+	ip link set veth1 up
-+	ip link set veth2 up
-+	ip link set veth0_p up
-+	ip link set veth1_p up
-+	ip link set veth2_p up
-+
-+	# prepare ping target
-+	ip link add name br0 type bridge
-+	ip link set br0 up
-+	ip link set veth0_p master br0
-+	ip link set veth1_p master br0
-+	ip link set veth2_p master br0
-+	ip link add name veth3 type veth peer name veth3_p
-+	ip netns add ns1
-+	ip link set veth3_p master br0 up
-+	ip link set veth3 netns ns1 up
-+	ip netns exec ns1 ip addr add $peer_ip4/24 dev veth3
-+	ip netns exec ns1 ip addr add $peer_ip6/64 dev veth3
-+	ip addr add $bond_ip4/24 dev bond0
-+	ip addr add $bond_ip6/64 dev bond0
-+	sleep 5
-+
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 1."
-+	ping6 $peer_ip6 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping6 failed 1."
-+
-+	# active salve should be the primary slave
-+	check_active_slave veth1
-+
-+	# active slave should be the higher prio slave
-+	ip link set $active_slave down
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 2."
-+	check_active_slave veth2
-+
-+	# when only 1 slave is up
-+	ip link set $active_slave down
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 3."
-+	check_active_slave veth0
-+
-+	# when a higher prio slave change to up
-+	ip link set veth2 up
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 4."
-+	case $primary_reselect in
-+		"0")
-+			check_active_slave "veth2"
-+			;;
-+		"1")
-+			check_active_slave "veth0"
-+			;;
-+		"2")
-+			check_active_slave "veth0"
-+			;;
-+	esac
-+	local pre_active_slave=$active_slave
-+
-+	# when the primary slave change to up
-+	ip link set veth1 up
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 5."
-+	case $primary_reselect in
-+		"0")
-+			check_active_slave "veth1"
-+			;;
-+		"1")
-+			check_active_slave "$pre_active_slave"
-+			;;
-+		"2")
-+			check_active_slave "$pre_active_slave"
-+			ip link set $active_slave down
-+			ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+			check_err $? "ping failed 6."
-+			check_active_slave "veth1"
-+			;;
-+	esac
-+
-+	# Test changing bond salve prio
-+	if [[ "$primary_reselect" == "0" ]];then
-+		ip link set dev veth0 type bond_slave prio 1000000
-+		ip link set dev veth1 type bond_slave prio 0
-+		ip link set dev veth2 type bond_slave prio -50
-+		ip -d link show veth0 | grep -q 'prio 1000000'
-+		check_err $? "veth0 prio is not 1000000"
-+		ip -d link show veth1 | grep -q 'prio 0'
-+		check_err $? "veth1 prio is not 0"
-+		ip -d link show veth2 | grep -q 'prio -50'
-+		check_err $? "veth3 prio is not -50"
-+		check_active_slave "veth1"
-+
-+		ip link set $active_slave down
-+		ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+		check_err $? "ping failed 7."
-+		check_active_slave "veth0"
-+	fi
-+
-+	cleanup
-+
-+	log_test "prio_test" "Test bonding option 'prio' with mode=$mode monitor=$monitor and primary_reselect=$primary_reselect"
-+}
-+
-+prio_miimon_test()
-+{
-+	local mode
-+	local primary_reselect
-+
-+	for mode in 1 5 6; do
-+		for primary_reselect in 0 1 2; do
-+			prio_test "miimon" $mode $primary_reselect
-+		done
-+	done
-+}
-+
-+prio_arp_ip_target_test()
-+{
-+	local primary_reselect
-+
-+	for primary_reselect in 0 1 2; do
-+		prio_test "arp_ip_target" 1 $primary_reselect
-+	done
-+}
-+
-+if skip;then
-+	log_test_skip "option_prio.sh" "Current iproute doesn't support 'prio'."
-+	exit 0
-+fi
-+
-+trap cleanup EXIT
-+
-+tests_run
-+
-+exit "$EXIT_STATUS"
--- 
-2.38.1
+/Thomas
+
 
