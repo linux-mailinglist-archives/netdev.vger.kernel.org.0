@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CB6649E44
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D000649E8E
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 13:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232095AbiLLLzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 06:55:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
+        id S231922AbiLLMUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 07:20:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231967AbiLLLzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:55:43 -0500
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE74FF596;
-        Mon, 12 Dec 2022 03:55:39 -0800 (PST)
-Received: by mail-ej1-f43.google.com with SMTP id n20so27387557ejh.0;
-        Mon, 12 Dec 2022 03:55:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9agZglOKPdWwX0fuJjm0Z+bcOfHu+FauaBqawzsErgU=;
-        b=QQOMybWZQL7u+hMQ3143TUFYReZDuQZBEqaV/J4yO4alduBlN0CxXiayzdw/Y2ZvqR
-         ri6tIUlMWNdROBK769g273cNPKkoBqAnT9OROFHyycZ/r2Z4hVorT3sF1hK9q8hdPNNp
-         znaAL+fX4xMgbfCyzf0GfMHg4BcjsCZm6foXi0Pf2zGm26tmgKZBQxiCezMzgEdRDskX
-         IB7z7ZYqkTMNbgi45HAf5pQsheZBkE8O1XS+HF/TqutkAOp/H1HTXSr6ord2DsObzCWh
-         SFvxXIUJc6Y4/JsCnwlz3OjJ/DDgQkxPZ05ZbyUtFtui7/lusdEwqZQXe5d9BOZE9v+x
-         yPDg==
-X-Gm-Message-State: ANoB5pk2jybHbg1oLXeYgmTwlvIVH6uM7updY4w3px4tGvoECpRMmSvM
-        Waj1XR+pXDBwWL7q1f8mgaivlLPyXKA=
-X-Google-Smtp-Source: AA0mqf4ZIX1732j+6YhMn9QhXq8AGAnZTjX5jhF114NHcHM0q0+s9okxNdxs5OhjYtxDzMhQzfnxlg==
-X-Received: by 2002:a17:906:8543:b0:7c0:d88e:4b37 with SMTP id h3-20020a170906854300b007c0d88e4b37mr11320312ejy.52.1670846138130;
-        Mon, 12 Dec 2022 03:55:38 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id kz21-20020a17090777d500b007b2a58e31dasm3242433ejc.145.2022.12.12.03.55.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Dec 2022 03:55:37 -0800 (PST)
-Message-ID: <5fb6ba13-3300-917a-4e7b-e8b7a1e71e45@kernel.org>
-Date:   Mon, 12 Dec 2022 12:55:35 +0100
+        with ESMTP id S229452AbiLLMUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 07:20:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A7E62E5
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 04:20:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E056B61007
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 12:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4561EC433D2;
+        Mon, 12 Dec 2022 12:20:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670847622;
+        bh=aTyTIPTjTZYbLmyBEIrbRxk7euI2/MxtExgmBtnrjTY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PLrgYNOSsJWiLPkt62GvWOIvHJwzCNzFfxD2D2xZwArjPaq4K8S6NOfD0oooNKdjh
+         +7k0zQgdmxCIPWE9XZaa3NfOEs1ZRupyd4W+5r1D6+3CED5ZncIplj4EzY1s2Y66aW
+         aRN6dW54x6vXBBemppLcSWqETisk2OutCYqQOveG8GtNJ61z/zuPLy4/DVq0mmAt9q
+         aiDqLXnPLWSEKUPpOmlObGnQTvNAH6i3+Q29neCiG6YDyk2BY2KZ0AY5sMHypRDNFp
+         Hmk1pdw1NdLuNMS8ekhZ42TLQE/bmLeg/Cyhk23ZkuAOkMrDlLgeEKnaqmTHAoopk9
+         Rqpyd3G/4DnGw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2D67AE21EF1;
+        Mon, 12 Dec 2022 12:20:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH] i40e (gcc13): synchronize allocate/free functions return
- type & values
-Content-Language: en-US
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
-        Jan Sokolowski <jan.sokolowski@intel.com>,
-        jesse.brandeburg@intel.com, linux-kernel@vger.kernel.org,
-        Martin Liska <mliska@suse.cz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-References: <20221031114456.10482-1-jirislaby@kernel.org>
- <20221102204110.26a6f021@kernel.org>
- <bf584d22-8aca-3867-5e3a-489d62a61929@kernel.org>
- <003bc385-dc14-12ba-d3d6-53de3712a5dc@intel.com>
- <20221104114730.42294e1c@kernel.org>
- <eb9c26db-d265-33c1-5c25-daf9f06f91d4@intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <eb9c26db-d265-33c1-5c25-daf9f06f91d4@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv4 net-next 0/5] net: eliminate the duplicate code in the ct
+ nat functions of ovs and tc
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167084762217.17523.15812017198532370715.git-patchwork-notify@kernel.org>
+Date:   Mon, 12 Dec 2022 12:20:22 +0000
+References: <cover.1670518439.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1670518439.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        pshelar@ovn.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, pablo@netfilter.org, fw@strlen.de,
+        marcelo.leitner@gmail.com, dcaratti@redhat.com, ozsh@nvidia.com,
+        paulb@nvidia.com, i.maximets@ovn.org, echaudro@redhat.com,
+        aconole@redhat.com, saeed@kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04. 11. 22, 21:28, Tony Nguyen wrote:
-> 
-> 
-> On 11/4/2022 11:47 AM, Jakub Kicinski wrote:
->> On Fri, 4 Nov 2022 11:33:07 -0700 Tony Nguyen wrote:
->>> As Jiri mentioned, this is propagated up throughout the driver. We could
->>> change this function to return int but all the callers would then need
->>> to convert these errors to i40e_status to propagate. This doesn't really
->>> gain much other than having this function return int. To adjust the
->>> entire call chain is going to take more work. As this is resolving a
->>> valid warning and returning what is currently expected, what are your
->>> thoughts on taking this now to resolve the issue and our i40e team will
->>> take the work on to convert the functions to use the standard errnos?
->>
->> My thoughts on your OS abstraction layers should be pretty evident.
->> If anything I'd like to be more vigilant about less flagrant cases.
->>
->> I don't think this is particularly difficult, let's patch it up
->> best we can without letting the "status" usage grow.
-> 
-> Ok thanks will do.
+Hello:
 
-Just heads-up: have you managed to remove the abstraction yet?
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-thanks,
+On Thu,  8 Dec 2022 11:56:07 -0500 you wrote:
+> The changes in the patchset:
+> 
+>   "net: add helper support in tc act_ct for ovs offloading"
+> 
+> had moved some common ct code used by both OVS and TC into netfilter.
+> 
+> There are still some big functions pretty similar defined and used in
+> each of OVS and TC. It is not good to maintain such big function in 2
+> places. This patchset is to extract the functions for NAT processing
+> from OVS and TC to netfilter.
+> 
+> [...]
+
+Here is the summary with links:
+  - [PATCHv4,net-next,1/5] openvswitch: delete the unncessary skb_pull_rcsum call in ovs_ct_nat_execute
+    https://git.kernel.org/netdev/net-next/c/bf14f4923d51
+  - [PATCHv4,net-next,2/5] openvswitch: return NF_ACCEPT when OVS_CT_NAT is not set in info nat
+    https://git.kernel.org/netdev/net-next/c/779592892133
+  - [PATCHv4,net-next,3/5] openvswitch: return NF_DROP when fails to add nat ext in ovs_ct_nat
+    https://git.kernel.org/netdev/net-next/c/2b85144ab36e
+  - [PATCHv4,net-next,4/5] net: sched: update the nat flag for icmp error packets in ct_nat_execute
+    https://git.kernel.org/netdev/net-next/c/0564c3e51bc7
+  - [PATCHv4,net-next,5/5] net: move the nat function to nf_nat_ovs for ovs and tc
+    https://git.kernel.org/netdev/net-next/c/ebddb1404900
+
+You are awesome, thank you!
 -- 
-js
-suse labs
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
