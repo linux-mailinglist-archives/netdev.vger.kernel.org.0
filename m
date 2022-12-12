@@ -2,50 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A652464ABC2
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 00:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3629D64ABCA
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 00:49:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiLLXrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 18:47:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        id S232930AbiLLXtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 18:49:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233513AbiLLXr1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 18:47:27 -0500
+        with ESMTP id S233863AbiLLXte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 18:49:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD911CB01;
-        Mon, 12 Dec 2022 15:47:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B452A959B
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 15:49:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE8F8611C2;
-        Mon, 12 Dec 2022 23:47:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B40AC433EF;
-        Mon, 12 Dec 2022 23:47:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E93D61277
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 789A2C433F0;
+        Mon, 12 Dec 2022 23:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670888845;
-        bh=J2zDtlm/ALtvFqZGZbzpV/1roC/oaCDFbTYkcBWFjao=;
+        s=k20201202; t=1670888972;
+        bh=ORV4KQ45g8ddn0p3gDoqfFEntHmTWcgpJkxXxKrN2+g=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GlKr5knLODLMCPriZ4DhxaSM7p9TnhDc7WBNutZUOhsO2CTFN6WFxTpNK4Vn9dGVI
-         0YsprihGpgL2Otpt/BLFU3FiJuvcyUtDxlFhy8dGmUaVPe1NyOvD5C4gb2rzpAhIAD
-         lA6RBH+fSw8PkFx8TidrYn/YFqXmNrqh1mxeeV0r+wgerhDwbKZoEvTfmuqhIUXbzS
-         UCv9//P+T+Ql7yWVRtyAkV2GvfhDanesR1tQJpqfAbQzE7LhbCS8YxqGtgUIWaABxi
-         4ZmReZXB3p7lye2JGOLjZXWprKZJp/Z+jKiFQZieyz1jLixOkKYOjwQr/PxL9tRahC
-         y2qXPKHl+j8xQ==
-Date:   Mon, 12 Dec 2022 15:47:23 -0800
+        b=ZHtLAcj5W5QBw8rJGZyhzUPFPN5euNZmLeqCKC6cGFFZnR8nZIevBdz8UeWHlp5Hc
+         /fUof3aD50aorod4shTfmT37bP2rtsnCCcYDRZ0d33n/4saQaqEJ98JSz5MZbYNjkp
+         C9BUhFf02H7fZYT5o5HsyWW+laki3aF2qDhxJIjh1mW2hDV4H1QnbqG1p+DuiMu9qB
+         xr7DXLojh33AUh4NvVOmQbuO96GncdRIOleDhHReEF9B/3lanNveeiLkuchn0y5uRF
+         QLeKCaxoZfHUrPhhNUlDvSXNIO8yxKYZV2YQ+4WRK/7Iu/xU1dkLNNvXjzZfroRDSj
+         2r3mQrSn8qh4A==
+Date:   Mon, 12 Dec 2022 15:49:31 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
-        <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: Re: [Patch net-next v4 00/13] net: dsa: microchip: add PTP support
- for KSZ9563/KSZ8563 and LAN937x
-Message-ID: <20221212154723.4a7cebcf@kernel.org>
-In-Reply-To: <20221212102639.24415-1-arun.ramadoss@microchip.com>
-References: <20221212102639.24415-1-arun.ramadoss@microchip.com>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next v5] net: ngbe: Add ngbe mdio bus driver.
+Message-ID: <20221212154931.3066376f@kernel.org>
+In-Reply-To: <20221212104152.40082-1-mengyuanlou@net-swift.com>
+References: <20221212104152.40082-1-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,24 +51,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Dec 2022 15:56:26 +0530 Arun Ramadoss wrote:
-> KSZ9563/KSZ8563 and  LAN937x switch are capable for supporting IEEE 1588 PTP
-> protocol.  LAN937x has the same PTP register set similar to KSZ9563, hence the
-> implementation has been made common for the KSZ switches.  KSZ9563 does not
-> support two step timestamping but LAN937x supports both.  Tested the 1step &
-> 2step p2p timestamping in LAN937x and p2p1step timestamping in KSZ9563.
-> 
-> This patch series is based on the Christian Eggers PTP support for KSZ9563.
-> Applied the Christian patch and updated as per the latest refactoring of KSZ
-> series code. The features added on top are PTP packet Interrupt
-> implementation based on nested handler, LAN937x two step timestamping and
-> programmable per_out pins.
+On Mon, 12 Dec 2022 18:41:52 +0800 Mengyuan Lou wrote:
+> Add mdio bus register for ngbe.
+> The internal phy and external phy need to be handled separately.
+> Add phy changed event detection.
 
-The merge window has now begun, this set is rather large and Linus said
-that he will be particularly strict about applying patches late:
-
-https://lore.kernel.org/all/CAHk-=wj_HcgFZNyZHTLJ7qC2613zphKDtLh6ndciwopZRfH0aQ@mail.gmail.com/
-
-So let's defer this for after 6.2-rc1 is cut. Feed free to switch to
-RFC postings if you want to keep revising the set and make review
-progress during the merge window.
+v6.1 has been tagged upstream, so for the next two weeks (until 6.2-rc1
+is pushed by Linus) we will only be accepting fixes. Please repost in
+two weeks or so. (You can keep posting as RFC in the meantime if you
+want to get the code reviewed and ready for merging.)
