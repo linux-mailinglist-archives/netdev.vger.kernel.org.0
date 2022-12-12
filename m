@@ -2,87 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5020B649B26
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:29:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0E4649B2A
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiLLJ3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 04:29:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52598 "EHLO
+        id S231776AbiLLJay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 04:30:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231376AbiLLJ3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:29:20 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40C7E05;
-        Mon, 12 Dec 2022 01:29:18 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1670837297; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=mBWd13yG1YrtEsMFwDnYexpnES9Qx4y5RO9fYvg04eCPJwMGHXU1sGJoVwVcpGvsWkN/DK4SxtFz61m1yXB8UjeWbPh8UdYwCcmYgRcEZKtUf+/hG6kKVvajsvX3O3cmf6ZQZwmKePP7XXU8fDuE0irYyJNC9FWOgZCj2bUP/t0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1670837297; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=+NiYbpQ61V0IWmDEj33HiUlIc9JpdcOdwbfOwK7rNM8=; 
-        b=iBv6mdzXcJaditRxO69venXFwRrLiZLAYo1jta0xq2Wf9Zjhsz8Bd9ZcGaolUbfhV3TLlPN+5EoTia/MM8a+e0ji9o1vVc/r9HxA+7jiYgON5vs9FqyL/UBnVzJ2KffSieN8Zh1nwzsEm+F4xpZiXRmk3i2E3v3fqz5q1OI/dD0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670837297;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=+NiYbpQ61V0IWmDEj33HiUlIc9JpdcOdwbfOwK7rNM8=;
-        b=iLipqTgNQhtK8mAPaVTfRkGgzQVfg1N8GVKxiy1+XFiTkqNlHCvH1bXMN+SG3+HE
-        fYfXeQd3OPD0ODRHljY2HlrmS63d186Sm3h7TaUTISOCEpKYaVq8ZlC90qBDVps0y4t
-        KkjMRsuagFvtVu4s+ZBG5fZ/0yxcaxPbJYx/VVRY=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1670837294654318.4242339559728; Mon, 12 Dec 2022 01:28:14 -0800 (PST)
-Message-ID: <c1e40b58-4459-2929-64f3-3e20f36f6947@arinc9.com>
-Date:   Mon, 12 Dec 2022 12:28:06 +0300
+        with ESMTP id S231908AbiLLJab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:30:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8917A6435;
+        Mon, 12 Dec 2022 01:30:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42BE7B80BE8;
+        Mon, 12 Dec 2022 09:30:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C5AEC433D2;
+        Mon, 12 Dec 2022 09:30:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670837426;
+        bh=yOb3x1WaiL7gvgdAJPPGuqahy5lGVVX2BBG2Zalqifs=;
+        h=From:Subject:To:Cc:Date:From;
+        b=qq3SrtfymrFJcI+z7Ud8MTkALa5Ivso5364pfJrxoHsVz/GEbYTh6OJFi6LAhQ3v5
+         HgkaBKLfrU0+vEFGiMv5lKf4auOMxhpQ3AmN2U2dMfT4dEiB4vZUWbMKvzcv0gFBcp
+         ZdplXaLehH6Xrdo6AvgoY9EEbk8twGWeiTr0VjSgnFeAGWnI17W6vYzwPzX5r8vPGO
+         SpOWM/R8lAfp/ea5BiKYBaMnZORb26aMobhrxxIk2Wlfh/w4g5QLJCKvTInYKsRQDv
+         QCTmK8dG6ouiUcncB5DVzu09DwL3eUhKYDZMadG8ScrrkLI7xiSjKfBIE5a7Cl4Duy
+         WpSr8MHa2ZaXQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v5 net-next 04/10] dt-bindings: net: dsa: utilize base
- definitions for standard dsa switches
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>,
-        Rob Herring <robh@kernel.org>
-References: <20221210033033.662553-1-colin.foster@in-advantage.com>
- <20221210033033.662553-5-colin.foster@in-advantage.com>
- <1df417b5-a924-33d4-a302-eb526f7124b4@arinc9.com> <Y5TJw+zcEDf2ItZ5@euler>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <Y5TJw+zcEDf2ItZ5@euler>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 7bit
+From:   Kalle Valo <kvalo@kernel.org>
+Subject: pull-request: wireless-next-2022-12-12
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Message-Id: <20221212093026.5C5AEC433D2@smtp.kernel.org>
+Date:   Mon, 12 Dec 2022 09:30:26 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,127 +49,214 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.12.2022 21:02, Colin Foster wrote:
-> Hi Arınç,
-> On Sat, Dec 10, 2022 at 07:24:42PM +0300, Arınç ÜNAL wrote:
->> On 10.12.2022 06:30, Colin Foster wrote:
->>> DSA a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
->>> @@ -58,4 +58,26 @@ oneOf:
->>>    additionalProperties: true
->>> +$defs:
->>> +  ethernet-ports:
->>> +    description: A DSA switch without any extra port properties
->>> +    $ref: '#/'
->>> +
->>> +    patternProperties:
->>> +      "^(ethernet-)?ports$":
->>> +        type: object
->>> +        additionalProperties: false
->>> +
->>> +        properties:
->>> +          '#address-cells':
->>> +            const: 1
->>> +          '#size-cells':
->>> +            const: 0
->>> +
->>> +        patternProperties:
->>> +          "^(ethernet-)?port@[0-9]+$":
->>> +            description: Ethernet switch ports
->>> +            $ref: dsa-port.yaml#
->>> +            unevaluatedProperties: false
->>
->> I've got moderate experience in json-schema but shouldn't you put 'type:
->> object' here like you did for "^(ethernet-)?ports$"?
-> 
-> I can't say for sure, but adding "type: object" here and removing it
-> from mediatek,mt7530.yaml still causes the same issue I mention below.
-> 
-> Rob's initial suggestion for this patch set (which was basically the
-> entire implementation... many thanks again Rob) can be found here:
-> https://lore.kernel.org/netdev/20221104200212.GA2315642-robh@kernel.org/
-> 
->  From what I can tell, the omission of "type: object" here was
-> intentional. At the very least, it doesn't seem to have any effect on
-> warnings.
-> 
->>
->>> +
->>>    ...
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
->>> index 73b774eadd0b..748ef9983ce2 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
->>> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->>>    title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
->>>    allOf:
->>> -  - $ref: dsa.yaml#
->>> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->>>    maintainers:
->>>      - Andrew Lunn <andrew@lunn.ch>
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> index f2e9ff3f580b..20312f5d1944 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> @@ -157,9 +157,6 @@ patternProperties:
->>>        patternProperties:
->>>          "^(ethernet-)?port@[0-9]+$":
->>>            type: object
->>
->> This line was being removed on the previous version. Must be related to
->> above.
-> 
-> Without the 'object' type here, I get the following warning:
-> 
-> Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml: patternProperties:^(ethernet-)?ports$:patternProperties:^(ethernet-)?port@[0-9]+$: 'anyOf' conditional failed, one must be fixed:
->          'type' is a required property
->          '$ref' is a required property
->          hint: node schemas must have a type or $ref
->          from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-> ./Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml: Error in referenced schema matching $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml
->    SCHEMA  Documentation/devicetree/bindings/processed-schema.json
-> /home/colin/src/work/linux_vsc/linux-imx/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml: ignoring, error in schema: patternProperties: ^(ethernet-)?ports$: patternProperties: ^(ethernet-)?port@[0-9]+$
-> 
-> 
-> I'm testing this now and I'm noticing something is going on with the
-> "ref: dsa-port.yaml"
-> 
-> 
-> Everything seems to work fine (in that I don't see any warnings) when I
-> have this diff:
-> 
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index 20312f5d1944..db0122020f98 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yam
-> @@ -156,8 +156,7 @@ patternProperties:
-> 
->       patternProperties:
->         "^(ethernet-)?port@[0-9]+$":
-> -        type: object
-> -
-> +        $ref: dsa-port.yaml#
->           properties:
->             reg:
->               description:
-> @@ -165,7 +164,6 @@ patternProperties:
->                 for user ports.
-> 
->           allOf:
-> -          - $ref: dsa-port.yaml#
->             - if:
->                 required: [ ethernet ]
->               then:
-> 
-> 
-> 
-> This one has me [still] scratching my head...
+Hi,
 
-Right there with you. In addition to this, having or deleting type 
-object on/from "^(ethernet-)?ports$" and "^(ethernet-)?port@[0-9]+$" on 
-dsa.yaml doesn't cause any warnings (checked with make dt_binding_check 
-DT_SCHEMA_FILES=net/dsa) which makes me question why it's there in the 
-first place.
+here's a pull request to net-next tree, more info below. Please let me know if
+there are any problems.
 
-Arınç
+Kalle
+
+The following changes since commit 65e6af6cebefbf7d8d8ac52b71cd251c2071ad00:
+
+  net: ethernet: mtk_wed: fix sleep while atomic in mtk_wed_wo_queue_refill (2022-12-02 21:23:02 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2022-12-12
+
+for you to fetch changes up to 832c3f66f53f1eb20f424b916a311ad82074ef0d:
+
+  Merge tag 'iwlwifi-next-for-kalle-2022-12-07' of http://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-next (2022-12-08 16:54:33 +0200)
+
+----------------------------------------------------------------
+wireless-next patches for v6.2
+
+Fourth set of patches for v6.2. Few final patches, a big change is
+that rtw88 now has USB support.
+
+Major changes:
+
+rtw88
+
+* support USB devices rtw8821cu, rtw8822bu, rtw8822cu and rtw8723du
+
+----------------------------------------------------------------
+Arend van Spriel (7):
+      wifi: brcmfmac: add function to unbind device to bus layer api
+      wifi: brcmfmac: add firmware vendor info in driver info
+      wifi: brcmfmac: add support for vendor-specific firmware api
+      wifi: brcmfmac: add support for Cypress firmware api
+      wifi: brcmfmac: add support Broadcom BCA firmware api
+      wifi: brcmfmac: add vendor name in revinfo debugfs file
+      wifi: brcmfmac: introduce BRCMFMAC exported symbols namespace
+
+Bitterblue Smith (3):
+      wifi: rtl8xxxu: Add __packed to struct rtl8723bu_c2h
+      wifi: rtl8xxxu: Fix the channel width reporting
+      wifi: rtl8xxxu: Introduce rtl8xxxu_update_ra_report
+
+Jakob Koschel (1):
+      wifi: iwlwifi: mvm: replace usage of found with dedicated list iterator variable
+
+Jiapeng Chong (1):
+      wifi: ipw2x00: Remove some unused functions
+
+Johannes Berg (3):
+      wifi: iwlwifi: nvm-parse: enable WiFi7 for Fm radio for now
+      wifi: iwlwifi: modify new queue allocation command
+      wifi: iwlwifi: fw: use correct IML/ROM status register
+
+Jun ASAKA (1):
+      wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+
+Kalle Valo (1):
+      Merge tag 'iwlwifi-next-for-kalle-2022-12-07' of http://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-next
+
+Miri Korenblit (1):
+      wifi: iwlwifi: mvm: Don't use deprecated register
+
+Mordechay Goodstein (1):
+      wifi: iwlwifi: mvm: don't access packet before checking len
+
+Mukesh Sisodiya (3):
+      wifi: iwlwifi: dump: Update check for valid FW address
+      wifi: iwlwifi: pcie: Add reading and storing of crf and cdb id.
+      wifi: iwlwifi: dump: Update check for UMAC valid FW address
+
+Naftali Goldstein (1):
+      wifi: iwlwifi: mvm: d3: add TKIP to the GTK iterator
+
+Peter Kosyh (2):
+      wifi: rtlwifi: rtl8192se: remove redundant rtl_get_bbreg() call
+      wifi: rtlwifi: btcoexist: fix conditions branches that are never executed
+
+Po-Hao Huang (4):
+      wifi: rtw89: add mac TSF sync function
+      wifi: rtw89: stop mac port function when stop_ap()
+      wifi: rtw89: fix unsuccessful interface_add flow
+      wifi: rtw89: add join info upon create interface
+
+Sascha Hauer (11):
+      wifi: rtw88: print firmware type in info message
+      wifi: rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex held
+      wifi: rtw88: Drop rf_lock
+      wifi: rtw88: Drop h2c.lock
+      wifi: rtw88: Drop coex mutex
+      wifi: rtw88: iterate over vif/sta list non-atomically
+      wifi: rtw88: Add common USB chip support
+      wifi: rtw88: Add rtw8821cu chipset support
+      wifi: rtw88: Add rtw8822bu chipset support
+      wifi: rtw88: Add rtw8822cu chipset support
+      wifi: rtw88: Add rtw8723du chipset support
+
+Tom Rix (1):
+      wifi: iwlwifi: mei: clean up comments
+
+Wang Yufen (1):
+      wifi: brcmfmac: Fix error return code in brcmf_sdio_download_firmware()
+
+Zong-Zhe Yang (2):
+      wifi: rtw89: don't request partial firmware if SECURITY_LOADPIN_ENFORCE
+      wifi: rtw89: request full firmware only once if it's early requested
+
+ .../wireless/broadcom/brcm80211/brcmfmac/Makefile  |  11 +
+ .../broadcom/brcm80211/brcmfmac/bca/Makefile       |  12 +
+ .../broadcom/brcm80211/brcmfmac/bca/core.c         |  27 +
+ .../broadcom/brcm80211/brcmfmac/bca/module.c       |  27 +
+ .../broadcom/brcm80211/brcmfmac/bca/vops.h         |  11 +
+ .../wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c  |  52 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/bus.h |  30 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/core.c    |  12 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/core.h    |   8 +
+ .../broadcom/brcm80211/brcmfmac/cyw/Makefile       |  12 +
+ .../broadcom/brcm80211/brcmfmac/cyw/core.c         |  27 +
+ .../broadcom/brcm80211/brcmfmac/cyw/module.c       |  27 +
+ .../broadcom/brcm80211/brcmfmac/cyw/vops.h         |  11 +
+ .../wireless/broadcom/brcm80211/brcmfmac/fwvid.c   | 199 +++++
+ .../wireless/broadcom/brcm80211/brcmfmac/fwvid.h   |  47 ++
+ .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    |  72 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/sdio.c    |  13 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/usb.c |  27 +-
+ .../broadcom/brcm80211/brcmfmac/wcc/Makefile       |  12 +
+ .../broadcom/brcm80211/brcmfmac/wcc/core.c         |  27 +
+ .../broadcom/brcm80211/brcmfmac/wcc/module.c       |  27 +
+ .../broadcom/brcm80211/brcmfmac/wcc/vops.h         |  11 +
+ drivers/net/wireless/intel/ipw2x00/ipw2100.c       |  11 -
+ .../net/wireless/intel/iwlwifi/fw/api/datapath.h   |  16 +-
+ drivers/net/wireless/intel/iwlwifi/fw/dump.c       |   7 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |   2 +
+ drivers/net/wireless/intel/iwlwifi/iwl-trans.h     |   4 +
+ drivers/net/wireless/intel/iwlwifi/mei/iwl-mei.h   |   6 +-
+ drivers/net/wireless/intel/iwlwifi/mei/main.c      |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mei/sap.h       |  10 +-
+ .../net/wireless/intel/iwlwifi/mei/trace-data.h    |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mei/trace.h     |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/d3.c        |   9 +-
+ .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |  12 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c        |   6 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c       |   9 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c      |  38 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |  26 +-
+ .../net/wireless/intel/iwlwifi/mvm/time-event.c    |   7 +-
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |  33 +-
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h   |   2 +-
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c |  73 +-
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 101 +--
+ .../realtek/rtlwifi/btcoexist/halbtc8723b1ant.c    |   5 +-
+ .../net/wireless/realtek/rtlwifi/rtl8192se/phy.c   |   3 -
+ drivers/net/wireless/realtek/rtw88/Kconfig         |  47 ++
+ drivers/net/wireless/realtek/rtw88/Makefile        |  15 +
+ drivers/net/wireless/realtek/rtw88/coex.c          |   3 +-
+ drivers/net/wireless/realtek/rtw88/debug.c         |  15 +
+ drivers/net/wireless/realtek/rtw88/fw.c            |  13 +-
+ drivers/net/wireless/realtek/rtw88/hci.h           |   9 +-
+ drivers/net/wireless/realtek/rtw88/mac.c           |   3 +
+ drivers/net/wireless/realtek/rtw88/mac80211.c      |   2 +-
+ drivers/net/wireless/realtek/rtw88/main.c          |  12 +-
+ drivers/net/wireless/realtek/rtw88/main.h          |  12 +-
+ drivers/net/wireless/realtek/rtw88/phy.c           |   6 +-
+ drivers/net/wireless/realtek/rtw88/ps.c            |   2 +-
+ drivers/net/wireless/realtek/rtw88/reg.h           |   1 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c      |  28 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h      |  13 +-
+ drivers/net/wireless/realtek/rtw88/rtw8723du.c     |  36 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c      |  18 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h      |  21 +
+ drivers/net/wireless/realtek/rtw88/rtw8821cu.c     |  50 ++
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c      |  19 +
+ drivers/net/wireless/realtek/rtw88/rtw8822bu.c     |  90 ++
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c      |  24 +
+ drivers/net/wireless/realtek/rtw88/rtw8822cu.c     |  44 +
+ drivers/net/wireless/realtek/rtw88/tx.h            |  31 +
+ drivers/net/wireless/realtek/rtw88/usb.c           | 911 +++++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/usb.h           | 107 +++
+ drivers/net/wireless/realtek/rtw88/util.c          | 103 +++
+ drivers/net/wireless/realtek/rtw88/util.h          |  12 +-
+ drivers/net/wireless/realtek/rtw89/core.c          |   6 +-
+ drivers/net/wireless/realtek/rtw89/fw.c            |  60 +-
+ drivers/net/wireless/realtek/rtw89/fw.h            |  22 +-
+ drivers/net/wireless/realtek/rtw89/mac.c           |  64 +-
+ drivers/net/wireless/realtek/rtw89/mac.h           |   3 +
+ drivers/net/wireless/realtek/rtw89/mac80211.c      |   3 +
+ drivers/net/wireless/realtek/rtw89/reg.h           |  17 +
+ 80 files changed, 2613 insertions(+), 297 deletions(-)
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/Makefile
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/core.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/module.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/vops.h
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/Makefile
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/core.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/module.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/vops.h
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwvid.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwvid.h
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/Makefile
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/core.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/module.c
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/vops.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
