@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F2B649A43
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 09:44:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C421E649A44
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 09:44:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbiLLIoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 03:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        id S231302AbiLLIoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 03:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbiLLIoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 03:44:19 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E94E01D
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 00:44:19 -0800 (PST)
+        with ESMTP id S231321AbiLLIoV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 03:44:21 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889CBE02C
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 00:44:20 -0800 (PST)
 Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NVwBd4tZZz15NKt;
-        Mon, 12 Dec 2022 16:43:21 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NVwBc4VwkzRpyc;
+        Mon, 12 Dec 2022 16:43:20 +0800 (CST)
 Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
  (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 12 Dec
- 2022 16:44:16 +0800
+ 2022 16:44:18 +0800
 From:   Yang Yingliang <yangyingliang@huawei.com>
 To:     <netdev@vger.kernel.org>
 CC:     <isdn@linux-pingi.de>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <jiri@resnulli.us>, Yang Yingliang <yangyingliang@huawei.com>,
-        Martin Bachem <m.bachem@gmx.de>
-Subject: [PATCH net v2 1/3] mISDN: hfcsusb: don't call dev_kfree_skb/kfree_skb() under spin_lock_irqsave()
-Date:   Mon, 12 Dec 2022 16:41:37 +0800
-Message-ID: <20221212084139.3277913-2-yangyingliang@huawei.com>
+        <jiri@resnulli.us>, Yang Yingliang <yangyingliang@huawei.com>
+Subject: [PATCH net v2 2/3] mISDN: hfcpci: don't call dev_kfree_skb/kfree_skb() under spin_lock_irqsave()
+Date:   Mon, 12 Dec 2022 16:41:38 +0800
+Message-ID: <20221212084139.3277913-3-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221212084139.3277913-1-yangyingliang@huawei.com>
 References: <20221212084139.3277913-1-yangyingliang@huawei.com>
@@ -50,38 +49,30 @@ X-Mailing-List: netdev@vger.kernel.org
 It is not allowed to call kfree_skb() or consume_skb() from hardware
 interrupt context or with hardware interrupts being disabled.
 
-It should use dev_kfree_skb_irq() or dev_consume_skb_irq() instead.
-The difference between them is free reason, dev_kfree_skb_irq() means
-the SKB is dropped in error and dev_consume_skb_irq() means the SKB
-is consumed in normal.
-
-skb_queue_purge() is called under spin_lock_irqsave() in hfcusb_l2l1D(),
+skb_queue_purge() is called under spin_lock_irqsave() in hfcpci_l2l1D(),
 kfree_skb() is called in it, to fix this, use skb_queue_splice_init()
 to move the dch->squeue to a free queue, also enqueue the tx_skb and
 rx_skb, at last calling __skb_queue_purge() to free the SKBs afer unlock.
 
-In tx_iso_complete(), dev_kfree_skb() is called to consume the transmitted
-SKB, so replace it with dev_consume_skb_irq().
-
-Fixes: 69f52adb2d53 ("mISDN: Add HFC USB driver")
+Fixes: 1700fe1a10dc ("Add mISDN HFC PCI driver")
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/isdn/hardware/mISDN/hfcsusb.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/isdn/hardware/mISDN/hfcpci.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index 651f2f8f685b..1efd17979f24 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -326,20 +326,24 @@ hfcusb_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
+diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
+index e964a8dd8512..c0331b268010 100644
+--- a/drivers/isdn/hardware/mISDN/hfcpci.c
++++ b/drivers/isdn/hardware/mISDN/hfcpci.c
+@@ -1617,16 +1617,19 @@ hfcpci_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
  		test_and_clear_bit(FLG_L2_ACTIVATED, &dch->Flags);
- 
- 		if (hw->protocol == ISDN_P_NT_S0) {
+ 		spin_lock_irqsave(&hc->lock, flags);
+ 		if (hc->hw.protocol == ISDN_P_NT_S0) {
 +			struct sk_buff_head free_queue;
 +
 +			__skb_queue_head_init(&free_queue);
- 			hfcsusb_ph_command(hw, HFC_L1_DEACTIVATE_NT);
- 			spin_lock_irqsave(&hw->lock, flags);
+ 			/* prepare deactivation */
+ 			Write_hfc(hc, HFCPCI_STATES, 0x40);
 -			skb_queue_purge(&dch->squeue);
 +			skb_queue_splice_init(&dch->squeue, &free_queue);
  			if (dch->tx_skb) {
@@ -96,20 +87,20 @@ index 651f2f8f685b..1efd17979f24 100644
  				dch->rx_skb = NULL;
  			}
  			test_and_clear_bit(FLG_TX_BUSY, &dch->Flags);
- 			spin_unlock_irqrestore(&hw->lock, flags);
+@@ -1639,10 +1642,12 @@ hfcpci_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
+ 			hc->hw.mst_m &= ~HFCPCI_MASTER;
+ 			Write_hfc(hc, HFCPCI_MST_MODE, hc->hw.mst_m);
+ 			ret = 0;
++			spin_unlock_irqrestore(&hc->lock, flags);
 +			__skb_queue_purge(&free_queue);
- #ifdef FIXME
- 			if (test_and_clear_bit(FLG_L1_BUSY, &dch->Flags))
- 				dchannel_sched_event(&hc->dch, D_CLEARBUSY);
-@@ -1330,7 +1334,7 @@ tx_iso_complete(struct urb *urb)
- 					printk("\n");
- 				}
- 
--				dev_kfree_skb(tx_skb);
-+				dev_consume_skb_irq(tx_skb);
- 				tx_skb = NULL;
- 				if (fifo->dch && get_next_dframe(fifo->dch))
- 					tx_skb = fifo->dch->tx_skb;
+ 		} else {
+ 			ret = l1_event(dch->l1, hh->prim);
++			spin_unlock_irqrestore(&hc->lock, flags);
+ 		}
+-		spin_unlock_irqrestore(&hc->lock, flags);
+ 		break;
+ 	}
+ 	if (!ret)
 -- 
 2.25.1
 
