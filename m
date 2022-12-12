@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 613FF64A9B6
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 22:49:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E125B64A9DA
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 22:56:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233650AbiLLVtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 16:49:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
+        id S232934AbiLLV4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 16:56:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233598AbiLLVtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 16:49:02 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321AA1A22A
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 13:48:38 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id b13-20020a17090a5a0d00b0021906102d05so1414650pjd.5
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 13:48:38 -0800 (PST)
+        with ESMTP id S229638AbiLLV4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 16:56:51 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03361DF3;
+        Mon, 12 Dec 2022 13:56:50 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id f20so1411890lja.4;
+        Mon, 12 Dec 2022 13:56:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Cl/ziKDdK71kgpACc3PSlk5j/uH5Bj1azq3L6ViaBe4=;
-        b=iTkLBmupQLWZABaA+IV9cU/P6vm3SG61uKFtAwG+jBPlGB0z+w0aJvcn4QJpjS3eAu
-         f23eaMb3kYVnaDEMxjenA2Bv5ERK1h5MfuZ4A1J1WBoS6gkTiLHDlsu8NCxd0v8jwtn7
-         YXgN+QXSCtT1GwYajyqJV5LH4t2aG9iewBit8Z9TW/mcmpnuDO2ji6xuNkhMkS7CSMfL
-         mf2I8JdtTWkhaIiqKUETo8rzGVhUVnvFybZWHb31aySwIRX9NItnwUfLdKNac8io4JnE
-         xAKkAhXVDHgGShi6G6D5xzVXB6wGMEPGjU8APFmkQg035vbiuvswD/ZdpTx3tgPydyHd
-         4DfQ==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ONvWVsTXgcQGQxqYReYDCDgwMkH4rdX0rn2zZJpZl1o=;
+        b=cCqZ6Id7gIwRoo6xdAl4DcHZMS4nxDoO2ogIdXTS2+JyiPd3lc+MWHvB9iMgBjcZWs
+         +SndWPx6BUJg6IoKySiuj0up3S+uHAwpqzFc55zq1kgf5SFECypMUCWGFBcyhtHAeOYC
+         ap/MAXiwZM195oxqwNL2Zt1tH8GBpH0tyirbwzY3QMgywmgWZ1T2Q5URozedoKmfuQki
+         nJAh3yYFO4WMJjm+hlro7XbJsogUTNw05fiaP6BNmlmxd9La0X3bZPXir8A8e8SHSbgX
+         0XXDiSwLqkcbSqqbynwF+7/R+fRKoe9BbKTchCNLz18gtL75eKRlukeF4Yeu3GO//o9L
+         2j7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Cl/ziKDdK71kgpACc3PSlk5j/uH5Bj1azq3L6ViaBe4=;
-        b=WWodGNqV9qWkLdxuCSJn38NP9hLx+17diCx0v9r9jVuyNl6Fg6X4c2ii3ZSYnGJwH8
-         juAN936jKKV4Bn3PhqrL1fQkKy3BEnDWP2saL3YjLlryJBV+TcInv+/Wmm3T614tODWk
-         og3l+mnU7k5i+WGK1bG2vxqIbn21rriJy8UpND7tOaR3rkwhZQaAdSnmgrUxtdvmCM5S
-         OSM3QWHsl4QC7iGfQEUpMy8UIQK6t+MTKyzrjAO0ci3e7smUgc2+J25XUsNPb5W2j4iw
-         +MJFN1pAPfxniW0CX+ovefaoLQUfvX1eu41J8yu+wX7S6BqWfcJ67MzPCqeZFwHTM7Ra
-         zdDQ==
-X-Gm-Message-State: ANoB5pke+yRKpCxgbeWb/QV8F6DM4TNrF7VJk4549ilMKs4XnwgmMNgY
-        UknzWbru6ys6kGaDLBfm8gNrF4/njyw=
-X-Google-Smtp-Source: AA0mqf5Bb7A4Webtz4p/adKLDJ4XlfwWcGHQisjsnC6Ksf10AMrJ2fLVhydNXEj8W8yJHB9grU4tkg==
-X-Received: by 2002:a17:902:d18c:b0:189:df3c:1ba1 with SMTP id m12-20020a170902d18c00b00189df3c1ba1mr16335931plb.38.1670881718129;
-        Mon, 12 Dec 2022 13:48:38 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id q7-20020a170902dac700b001837b19ebb8sm6853284plx.244.2022.12.12.13.48.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Dec 2022 13:48:37 -0800 (PST)
-Message-ID: <dcf35b9828f5450b45d537dfdac8838d9063c3b5.camel@gmail.com>
-Subject: Re: [PATCH net v2 3/3] mISDN: hfcmulti: don't call
- dev_kfree_skb/kfree_skb() under spin_lock_irqsave()
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
-Cc:     isdn@linux-pingi.de, davem@davemloft.net, kuba@kernel.org,
-        jiri@resnulli.us
-Date:   Mon, 12 Dec 2022 13:48:35 -0800
-In-Reply-To: <20221212084139.3277913-4-yangyingliang@huawei.com>
-References: <20221212084139.3277913-1-yangyingliang@huawei.com>
-         <20221212084139.3277913-4-yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ONvWVsTXgcQGQxqYReYDCDgwMkH4rdX0rn2zZJpZl1o=;
+        b=2QrmHwlq9IO93/ufevCDClH3f6s9311fb+gw+PG6ozazcoor5QkEONDHgyH2Agijxl
+         k8M/4fV/L+DuXH3M74J3V9UgdqhHOGS9Kvaf6FGcEVFq2aoZrRToiwAlueXszYJnDcku
+         rfKQ2fKTeWffZQU4JHlkLF3/QviycS9+/RclUHFrnP+65yud0g16TnL809HR9Q8smdTe
+         srn+v2jVIv6NxsPEd1Dcr8yiRKoPkWVqtezSvTwQ1ejiHxq4MOwqGzDBxz7J3gwnKc1V
+         XcDjkl11hRe2sbufKTyIC16O3Afpc+UXt2x6YvsOQ++pU7bLa6cw5UJmpOpeX8xiWY/f
+         ABuQ==
+X-Gm-Message-State: ANoB5plrAO5xkcKB+GjFIaI5adYbW61l0Zyu5NIp2xdnl8Do2EZb2427
+        /axP65oK215Fs/Hus0XDBqg2XhFWCOPZmZLH1z0=
+X-Google-Smtp-Source: AA0mqf5wMuw0NZFJ8wD4hdKEL46gYVw1QCQ0mk9/jt1JQMplAcQpPMzNdRDacTg3nAQPIDXgIAR5zHZVrHkIaMPDQQE=
+X-Received: by 2002:a05:651c:c8b:b0:277:f8b:bb4f with SMTP id
+ bz11-20020a05651c0c8b00b002770f8bbb4fmr27176266ljb.161.1670882207986; Mon, 12
+ Dec 2022 13:56:47 -0800 (PST)
 MIME-Version: 1.0
+References: <20221210013456.1085082-1-luiz.dentz@gmail.com> <20221212123624.6c797838@kernel.org>
+In-Reply-To: <20221212123624.6c797838@kernel.org>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Mon, 12 Dec 2022 13:56:36 -0800
+Message-ID: <CABBYNZKnCoP1LBUeprS6MVxQBHZQafAT9hBNZQTBQjY+HHDjkg@mail.gmail.com>
+Subject: Re: pull request: bluetooth-next 2022-12-09
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -74,108 +66,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-12-12 at 16:41 +0800, Yang Yingliang wrote:
-> It is not allowed to call kfree_skb() or consume_skb() from hardware
-> interrupt context or with hardware interrupts being disabled.
->=20
-> skb_queue_purge() is called under spin_lock_irqsave() in handle_dmsg()
-> and hfcm_l1callback(), kfree_skb() is called in them, to fix this, use
-> skb_queue_splice_init() to move the dch->squeue to a free queue, also
-> enqueue the tx_skb and rx_skb, at last calling __skb_queue_purge() to
-> free the SKBs afer unlock.
->=20
-> Fixes: af69fb3a8ffa ("Add mISDN HFC multiport driver")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/isdn/hardware/mISDN/hfcmulti.c | 19 +++++++++++++------
->  1 file changed, 13 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardwa=
-re/mISDN/hfcmulti.c
-> index 4f7eaa17fb27..e840609c50eb 100644
-> --- a/drivers/isdn/hardware/mISDN/hfcmulti.c
-> +++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
-> @@ -3217,6 +3217,7 @@ static int
->  hfcm_l1callback(struct dchannel *dch, u_int cmd)
->  {
->  	struct hfc_multi	*hc =3D dch->hw;
-> +	struct sk_buff_head	free_queue;
->  	u_long	flags;
-> =20
->  	switch (cmd) {
-> @@ -3245,6 +3246,7 @@ hfcm_l1callback(struct dchannel *dch, u_int cmd)
->  		l1_event(dch->l1, HW_POWERUP_IND);
->  		break;
->  	case HW_DEACT_REQ:
-> +		__skb_queue_head_init(&free_queue);
->  		/* start deactivation */
->  		spin_lock_irqsave(&hc->lock, flags);
->  		if (hc->ctype =3D=3D HFC_TYPE_E1) {
-> @@ -3264,20 +3266,21 @@ hfcm_l1callback(struct dchannel *dch, u_int cmd)
->  				plxsd_checksync(hc, 0);
->  			}
->  		}
-> -		skb_queue_purge(&dch->squeue);
-> +		skb_queue_splice_init(&dch->squeue, &free_queue);
->  		if (dch->tx_skb) {
-> -			dev_kfree_skb(dch->tx_skb);
-> +			__skb_queue_tail(&free_queue, dch->tx_skb);
->  			dch->tx_skb =3D NULL;
->  		}
->  		dch->tx_idx =3D 0;
->  		if (dch->rx_skb) {
-> -			dev_kfree_skb(dch->rx_skb);
-> +			__skb_queue_tail(&free_queue, dch->rx_skb);
->  			dch->rx_skb =3D NULL;
->  		}
->  		test_and_clear_bit(FLG_TX_BUSY, &dch->Flags);
->  		if (test_and_clear_bit(FLG_BUSY_TIMER, &dch->Flags))
->  			del_timer(&dch->timer);
->  		spin_unlock_irqrestore(&hc->lock, flags);
-> +		__skb_queue_purge(&free_queue);
->  		break;
->  	case HW_POWERUP_REQ:
->  		spin_lock_irqsave(&hc->lock, flags);
-> @@ -3384,6 +3387,9 @@ handle_dmsg(struct mISDNchannel *ch, struct sk_buff=
- *skb)
->  	case PH_DEACTIVATE_REQ:
->  		test_and_clear_bit(FLG_L2_ACTIVATED, &dch->Flags);
->  		if (dch->dev.D.protocol !=3D ISDN_P_TE_S0) {
-> +			struct sk_buff_head free_queue;
+Hi Jakub,
+
+On Mon, Dec 12, 2022 at 12:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri,  9 Dec 2022 17:34:56 -0800 Luiz Augusto von Dentz wrote:
+> > bluetooth-next pull request for net-next:
+> >
+> >  - Add a new VID/PID 0489/e0f2 for MT7922
+> >  - Add Realtek RTL8852BE support ID 0x0cb8:0xc559
+> >  - Add a new PID/VID 13d3/3549 for RTL8822CU
+> >  - Add support for broadcom BCM43430A0 & BCM43430A1
+> >  - Add CONFIG_BT_HCIBTUSB_POLL_SYNC
+> >  - Add CONFIG_BT_LE_L2CAP_ECRED
+> >  - Add support for CYW4373A0
+> >  - Add support for RTL8723DS
+> >  - Add more device IDs for WCN6855
+> >  - Add Broadcom BCM4377 family PCIe Bluetooth
+>
+> Hm, it's pulling in the commits we merged into net and which
+> are already present in net-next but with a different hash/id.
+>
+> With a small overlap which git can't figure out:
+>
+> diff --cc drivers/bluetooth/btusb.c
+> index f05018988a17,2ad4efdd9e40..24a8ed3f0458
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@@ -2052,17 -2206,17 +2206,22 @@@ static int btusb_setup_csr(struct hci_d
+>                 bt_dev_err(hdev, "CSR: Local version length mismatch");
+>                 kfree_skb(skb);
+>                 return -EIO;
+>         }
+>
+> -       rp = (struct hci_rp_read_local_version *)skb->data;
+> +       bt_dev_info(hdev, "CSR: Setting up dongle with HCI ver=%u rev=%04x",
+> +                   rp->hci_ver, le16_to_cpu(rp->hci_rev));
 > +
-> +			__skb_queue_head_init(&free_queue);
->  			spin_lock_irqsave(&hc->lock, flags);
->  			if (debug & DEBUG_HFCMULTI_MSG)
->  				printk(KERN_DEBUG
-> @@ -3405,14 +3411,14 @@ handle_dmsg(struct mISDNchannel *ch, struct sk_bu=
-ff *skb)
->  				/* deactivate */
->  				dch->state =3D 1;
->  			}
-> -			skb_queue_purge(&dch->squeue);
-> +			skb_queue_splice_init(&dch->squeue, &free_queue);
->  			if (dch->tx_skb) {
-> -				dev_kfree_skb(dch->tx_skb);
-> +				__skb_queue_tail(&free_queue, dch->tx_skb);
->  				dch->tx_skb =3D NULL;
->  			}
->  			dch->tx_idx =3D 0;
->  			if (dch->rx_skb) {
-> -				dev_kfree_skb(dch->rx_skb);
-> +				__skb_queue_tail(&free_queue, dch->rx_skb);
->  				dch->rx_skb =3D NULL;
->  			}
->  			test_and_clear_bit(FLG_TX_BUSY, &dch->Flags);
-> @@ -3424,6 +3430,7 @@ handle_dmsg(struct mISDNchannel *ch, struct sk_buff=
- *skb)
->  #endif
->  			ret =3D 0;
->  			spin_unlock_irqrestore(&hc->lock, flags);
-> +			__skb_queue_purge(&free_queue);
->  		} else
->  			ret =3D l1_event(dch->l1, hh->prim);
->  		break;
+> +       bt_dev_info(hdev, "LMP ver=%u subver=%04x; manufacturer=%u",
+> +                   rp->lmp_ver, le16_to_cpu(rp->lmp_subver),
+> +                   le16_to_cpu(rp->manufacturer));
+>
+>  +      bt_dev_info(hdev, "CSR: Setting up dongle with HCI ver=%u rev=%04x; LMP ver=%u subver=%04x; manufacturer=%u",
+>  +              le16_to_cpu(rp->hci_ver), le16_to_cpu(rp->hci_rev),
+>  +              le16_to_cpu(rp->lmp_ver), le16_to_cpu(rp->lmp_subver),
+>  +              le16_to_cpu(rp->manufacturer));
+>  +
+>
+> Could you rebase on top of net-next and resend so that the commits
+> which are already applied disappear?
 
-Looks good to me.
+Sure, I will resend it shortly.
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+-- 
+Luiz Augusto von Dentz
