@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1D7649DE1
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:33:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 600D5649DCE
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:33:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbiLLLcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 06:32:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S232017AbiLLLcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 06:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbiLLLbO (ORCPT
+        with ESMTP id S232153AbiLLLbO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:31:14 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF0560FF
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DD264D0
         for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 03:31:08 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1p4h1W-0000bx-Tt
+        id 1p4h1W-0000bJ-KX
         for netdev@vger.kernel.org; Mon, 12 Dec 2022 12:31:06 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 5EF4613CC43
+        by bjornoya.blackshift.org (Postfix) with SMTP id 2427613CC3A
         for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 11:30:57 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id C8DB513CBDB;
-        Mon, 12 Dec 2022 11:30:54 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1907913CBE7;
+        Mon, 12 Dec 2022 11:30:55 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 069c0a86;
-        Mon, 12 Dec 2022 11:30:47 +0000 (UTC)
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ed81f713;
+        Mon, 12 Dec 2022 11:30:48 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        kernel@pengutronix.de, Vivek Yadav <vivek.2311@samsung.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 25/39] can: gs_usb: remove gs_can::iface
-Date:   Mon, 12 Dec 2022 12:30:31 +0100
-Message-Id: <20221212113045.222493-26-mkl@pengutronix.de>
+Subject: [PATCH net-next 26/39] can: m_can: Call the RAM init directly from m_can_chip_config
+Date:   Mon, 12 Dec 2022 12:30:32 +0100
+Message-Id: <20221212113045.222493-27-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221212113045.222493-1-mkl@pengutronix.de>
 References: <20221212113045.222493-1-mkl@pengutronix.de>
@@ -59,131 +58,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Vivek Yadav <vivek.2311@samsung.com>
 
-The iface field of struct gs_can is only used to retrieve the
-usb_device which is already available in gs_can::udev.
+When we try to access the mcan message ram addresses during the probe,
+hclk is gated by any other drivers or disabled, because of that probe
+gets failed.
 
-Replace each occurrence of interface_to_usbdev(dev->iface) with
-dev->udev. This done, remove gs_can::iface.
+Move the mram init functionality to mcan chip config called by
+m_can_start from mcan open function, by that time clocks are
+enabled.
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Link: https://lore.kernel.org/all/20221208081142.16936-3-mailhol.vincent@wanadoo.fr
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
+Link: https://lore.kernel.org/all/20221207100632.96200-2-vivek.2311@samsung.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/gs_usb.c | 29 +++++++++--------------------
- 1 file changed, 9 insertions(+), 20 deletions(-)
+ drivers/net/can/m_can/m_can.c          | 32 +++++++++++++++++++++-----
+ drivers/net/can/m_can/m_can_platform.c |  4 ----
+ drivers/net/can/m_can/tcan4x5x-core.c  |  5 ----
+ 3 files changed, 26 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
-index 838744d2ce34..d476c2884008 100644
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -299,7 +299,6 @@ struct gs_can {
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index b1893bb27d59..be8f4b662f95 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1243,10 +1243,17 @@ static int m_can_set_bittiming(struct net_device *dev)
+  * - setup bittiming
+  * - configure timestamp generation
+  */
+-static void m_can_chip_config(struct net_device *dev)
++static int m_can_chip_config(struct net_device *dev)
+ {
+ 	struct m_can_classdev *cdev = netdev_priv(dev);
+ 	u32 cccr, test;
++	int err;
++
++	err = m_can_init_ram(cdev);
++	if (err) {
++		dev_err(cdev->dev, "Message RAM configuration failed\n");
++		return err;
++	}
  
- 	struct net_device *netdev;
- 	struct usb_device *udev;
--	struct usb_interface *iface;
+ 	m_can_config_endisable(cdev, true);
  
- 	struct can_bittiming_const bt_const, data_bt_const;
- 	unsigned int channel;	/* channel number */
-@@ -383,8 +382,7 @@ static int gs_cmd_reset(struct gs_can *dev)
- 		.mode = GS_CAN_MODE_RESET,
- 	};
+@@ -1370,18 +1377,25 @@ static void m_can_chip_config(struct net_device *dev)
  
--	return usb_control_msg_send(interface_to_usbdev(dev->iface), 0,
--				    GS_USB_BREQ_MODE,
-+	return usb_control_msg_send(dev->udev, 0, GS_USB_BREQ_MODE,
- 				    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				    dev->channel, 0, &dm, sizeof(dm), 1000,
- 				    GFP_KERNEL);
-@@ -396,8 +394,7 @@ static inline int gs_usb_get_timestamp(const struct gs_can *dev,
- 	__le32 timestamp;
- 	int rc;
+ 	if (cdev->ops->init)
+ 		cdev->ops->init(cdev);
++
++	return 0;
+ }
  
--	rc = usb_control_msg_recv(interface_to_usbdev(dev->iface), 0,
--				  GS_USB_BREQ_TIMESTAMP,
-+	rc = usb_control_msg_recv(dev->udev, 0, GS_USB_BREQ_TIMESTAMP,
- 				  USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				  dev->channel, 0,
- 				  &timestamp, sizeof(timestamp),
-@@ -674,8 +671,7 @@ static int gs_usb_set_bittiming(struct net_device *netdev)
- 	};
+-static void m_can_start(struct net_device *dev)
++static int m_can_start(struct net_device *dev)
+ {
+ 	struct m_can_classdev *cdev = netdev_priv(dev);
++	int ret;
  
- 	/* request bit timings */
--	return usb_control_msg_send(interface_to_usbdev(dev->iface), 0,
--				    GS_USB_BREQ_BITTIMING,
-+	return usb_control_msg_send(dev->udev, 0, GS_USB_BREQ_BITTIMING,
- 				    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				    dev->channel, 0, &dbt, sizeof(dbt), 1000,
- 				    GFP_KERNEL);
-@@ -698,8 +694,7 @@ static int gs_usb_set_data_bittiming(struct net_device *netdev)
- 		request = GS_USB_BREQ_QUIRK_CANTACT_PRO_DATA_BITTIMING;
+ 	/* basic m_can configuration */
+-	m_can_chip_config(dev);
++	ret = m_can_chip_config(dev);
++	if (ret)
++		return ret;
  
- 	/* request data bit timings */
--	return usb_control_msg_send(interface_to_usbdev(dev->iface), 0,
--				    request,
-+	return usb_control_msg_send(dev->udev, 0, request,
- 				    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				    dev->channel, 0, &dbt, sizeof(dbt), 1000,
- 				    GFP_KERNEL);
-@@ -941,8 +936,7 @@ static int gs_can_open(struct net_device *netdev)
- 	/* finally start device */
- 	dev->can.state = CAN_STATE_ERROR_ACTIVE;
- 	dm.flags = cpu_to_le32(flags);
--	rc = usb_control_msg_send(interface_to_usbdev(dev->iface), 0,
--				  GS_USB_BREQ_MODE,
-+	rc = usb_control_msg_send(dev->udev, 0, GS_USB_BREQ_MODE,
- 				  USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				  dev->channel, 0, &dm, sizeof(dm), 1000,
- 				  GFP_KERNEL);
-@@ -969,8 +963,7 @@ static int gs_usb_get_state(const struct net_device *netdev,
- 	struct gs_device_state ds;
- 	int rc;
+ 	cdev->can.state = CAN_STATE_ERROR_ACTIVE;
  
--	rc = usb_control_msg_recv(interface_to_usbdev(dev->iface), 0,
--				  GS_USB_BREQ_GET_STATE,
-+	rc = usb_control_msg_recv(dev->udev, 0, GS_USB_BREQ_GET_STATE,
- 				  USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				  dev->channel, 0,
- 				  &ds, sizeof(ds),
-@@ -1064,8 +1057,7 @@ static int gs_usb_set_identify(struct net_device *netdev, bool do_identify)
- 	else
- 		imode.mode = cpu_to_le32(GS_CAN_IDENTIFY_OFF);
+ 	m_can_enable_all_interrupts(cdev);
++
++	return 0;
+ }
  
--	return usb_control_msg_send(interface_to_usbdev(dev->iface), 0,
--				    GS_USB_BREQ_IDENTIFY,
-+	return usb_control_msg_send(dev->udev, 0, GS_USB_BREQ_IDENTIFY,
- 				    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				    dev->channel, 0, &imode, sizeof(imode), 100,
- 				    GFP_KERNEL);
-@@ -1118,8 +1110,7 @@ static int gs_usb_get_termination(struct net_device *netdev, u16 *term)
- 	struct gs_device_termination_state term_state;
- 	int rc;
+ static int m_can_set_mode(struct net_device *dev, enum can_mode mode)
+@@ -1809,7 +1823,9 @@ static int m_can_open(struct net_device *dev)
+ 	}
  
--	rc = usb_control_msg_recv(interface_to_usbdev(dev->iface), 0,
--				  GS_USB_BREQ_GET_TERMINATION,
-+	rc = usb_control_msg_recv(dev->udev, 0, GS_USB_BREQ_GET_TERMINATION,
- 				  USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				  dev->channel, 0,
- 				  &term_state, sizeof(term_state), 1000,
-@@ -1145,8 +1136,7 @@ static int gs_usb_set_termination(struct net_device *netdev, u16 term)
- 	else
- 		term_state.state = cpu_to_le32(GS_CAN_TERMINATION_STATE_OFF);
+ 	/* start the m_can controller */
+-	m_can_start(dev);
++	err = m_can_start(dev);
++	if (err)
++		goto exit_irq_fail;
  
--	return usb_control_msg_send(interface_to_usbdev(dev->iface), 0,
--				    GS_USB_BREQ_SET_TERMINATION,
-+	return usb_control_msg_send(dev->udev, 0, GS_USB_BREQ_SET_TERMINATION,
- 				    USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 				    dev->channel, 0,
- 				    &term_state, sizeof(term_state), 1000,
-@@ -1210,7 +1200,6 @@ static struct gs_can *gs_make_candev(unsigned int channel,
- 	dev->bt_const.brp_inc = le32_to_cpu(bt_const.brp_inc);
+ 	if (!cdev->is_peripheral)
+ 		napi_enable(&cdev->napi);
+@@ -2068,9 +2084,13 @@ int m_can_class_resume(struct device *dev)
+ 		ret = m_can_clk_start(cdev);
+ 		if (ret)
+ 			return ret;
++		ret  = m_can_start(ndev);
++		if (ret) {
++			m_can_clk_stop(cdev);
++
++			return ret;
++		}
  
- 	dev->udev = interface_to_usbdev(intf);
--	dev->iface = intf;
- 	dev->netdev = netdev;
- 	dev->channel = channel;
+-		m_can_init_ram(cdev);
+-		m_can_start(ndev);
+ 		netif_device_attach(ndev);
+ 		netif_start_queue(ndev);
+ 	}
+diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+index b5a5bedb3116..9c1dcf838006 100644
+--- a/drivers/net/can/m_can/m_can_platform.c
++++ b/drivers/net/can/m_can/m_can_platform.c
+@@ -140,10 +140,6 @@ static int m_can_plat_probe(struct platform_device *pdev)
  
+ 	platform_set_drvdata(pdev, mcan_class);
+ 
+-	ret = m_can_init_ram(mcan_class);
+-	if (ret)
+-		goto probe_fail;
+-
+ 	pm_runtime_enable(mcan_class->dev);
+ 	ret = m_can_class_register(mcan_class);
+ 	if (ret)
+diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
+index 41645a24384c..a3aeb83de152 100644
+--- a/drivers/net/can/m_can/tcan4x5x-core.c
++++ b/drivers/net/can/m_can/tcan4x5x-core.c
+@@ -234,11 +234,6 @@ static int tcan4x5x_init(struct m_can_classdev *cdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Zero out the MCAN buffers */
+-	ret = m_can_init_ram(cdev);
+-	if (ret)
+-		return ret;
+-
+ 	ret = regmap_update_bits(tcan4x5x->regmap, TCAN4X5X_CONFIG,
+ 				 TCAN4X5X_MODE_SEL_MASK, TCAN4X5X_MODE_NORMAL);
+ 	if (ret)
 -- 
 2.35.1
 
