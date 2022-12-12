@@ -2,191 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 905F864A4A2
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 17:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5340F64A52A
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 17:42:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232672AbiLLQPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 11:15:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
+        id S232911AbiLLQjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 11:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232628AbiLLQPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 11:15:20 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F2C1262E;
-        Mon, 12 Dec 2022 08:15:19 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id q17-20020a17090aa01100b002194cba32e9so339444pjp.1;
-        Mon, 12 Dec 2022 08:15:19 -0800 (PST)
+        with ESMTP id S232606AbiLLQjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 11:39:08 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E964165BC
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 08:37:21 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id i9so804791edj.4
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 08:37:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HS57fphfFTIlMzwugZ21RzL6OQ71Fiy4HloGefZfE88=;
-        b=PqssKBggY+VkFwF/yUyJov7nLggm1wBUnLrq6/DIltCxHAhU63PNf1/q6m5OQ01sy+
-         /4ueqZ1GXg8mUoxDQjbCiyXhH3HusdMI/8CcdohKk5UVChLAwErMEBPqOHu7lGz7LHDF
-         e609s/byD/3BH0ARoEYeWpoKLf9Gx+JEWx4MP+4RMZcVMSYBgYBQ00XfJkMePwm6KWgn
-         eDG7UIGWQKTj685W18OvYYOXJWekX5oP83AmI+4IIFNNDUb+plrwCyoEtQSvn6ye6JrE
-         cC6agR/FQLZ9/Bk5YzSjJqTQNv+BhS+p4sTXsN5LFxnsszM8RGI9LyfZK8OYGlhLt5CB
-         YbPw==
+        bh=lvYON1Uq6UT3Qph7OPPr0NH47G6rUYR8O1BO9MFwJow=;
+        b=lIFXcScE+1mmzH1SBNLfPzmU2yyZ22FDa7zo6/O0Bw9aIOxDeXxYkEVfus52JWuhda
+         4ouELocZnEhmnwFppolEYq4c3c7RHYAqD4pax4M3unQDLONiM/9+ejXSM9E2FE+Z0v02
+         plxbNMhSLCExfq6g58BwEJLatQLzpt/xLWOhKWfMwSgaHbhPuPfGnoShEU2Q/8V0GhBe
+         I8mO/6POKEHTvHhiQrSmT3i/DlcfyH1o4pAMtSuNXvNoHj+mOy3GKKCsRTSQGVPFd3Z7
+         AQYI0FN6wamo3RnZf0VXDCwVvMRjPWjYDkKYXDeP5o/vQIFIn9FanCQzU/XNFNQHrfWF
+         2geA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HS57fphfFTIlMzwugZ21RzL6OQ71Fiy4HloGefZfE88=;
-        b=XL2BxKJ+E/sJB7HvgdI5ChJwDDrVaYZSey4fOxuQ2SUe+AYlsx9hwhfXIv+1Ev0/uP
-         TE6dzIBkyQVk16a65Y2ty6UmsghhXsKILmLyc+Ub0Rv87/8zGODtorw9b2P4TfyiYb45
-         Uh8eMMg6kEEiNCJ6k84E5XDZ7/CPR79viQdn1KBqWDzwVT7hbaKQJOzgKf/r5U1M7/Xd
-         SeZzytolBpiTVFHj+FDh01QB+xEycIP6lDRJan9LYbbVnrZIQfRTGmCGBS4uF95vBzoK
-         hBb02EfhtA73LixqC9rSN32JY2SvdW09JW7B75Kt7G9PcWr3qEQv+LkF+xrX7oU/5Z8+
-         Qllw==
-X-Gm-Message-State: ANoB5pnX6CNQHbKitlIRtIQVNecKcCBeJN6RWP2LEV+B9ZoC03Mot4Kv
-        UY2rNlXqSwBpaOd/zjmhsPk=
-X-Google-Smtp-Source: AA0mqf5uMvp0937uVwVDwegtQ/2ptKx8MdHduS5AA3tUNPLVj6h9At9b0V4aHGCCiXR3sZqdP1i8CQ==
-X-Received: by 2002:a05:6a20:8b27:b0:ad:a09c:5734 with SMTP id l39-20020a056a208b2700b000ada09c5734mr3944892pzh.44.1670861719391;
-        Mon, 12 Dec 2022 08:15:19 -0800 (PST)
-Received: from localhost ([1.83.247.150])
-        by smtp.gmail.com with ESMTPSA id w13-20020aa79a0d000000b0057709fd0fccsm5991989pfj.153.2022.12.12.08.15.17
+        bh=lvYON1Uq6UT3Qph7OPPr0NH47G6rUYR8O1BO9MFwJow=;
+        b=Rz2hGQdF0M/5BOG64lFSM4+8W96cqkKtoWYcn8LZrEvPn5HCuCcxlH/OWQkxAtWg/7
+         IN//JPrTW+vonYv+70Jw5faP1Ff+xz/tZYriPCSeiICPhwzrTSshtJ/ea0dGQPA1nYEE
+         wr1T9DvWM2XBmkhW49E9eeQhsjvdDXH7LltYHXBk5iuATcm62FS6+/NotyZdSt5HB3T4
+         kmtO/e9AnX29XgnPA8IASLQpfuVxlN9Eijj25LcAWYqWaaI19gGGbZkLm5kGrlcDH0sK
+         vcy1qHAxPjqMqZu6B1F84aC/tHc3qPKkASqeX26JuXt32X4EfWJQeWu56YP05wf6W++3
+         OD4g==
+X-Gm-Message-State: ANoB5pm660AI+PNH1/TAUr5p5+9mbCDk1gLIJaD7RXQln0Txgn0+oSOG
+        pGGjwUZ2ykmNcSWLApIovt819NLZhTjG6bmV
+X-Google-Smtp-Source: AA0mqf5ppTTyM6N0bPOAfBX//eKXVRPakyRimeYdkY/8NocUbAvjnOSiYLmQOcD2W7tmhBu2XO410g==
+X-Received: by 2002:a05:6402:702:b0:46f:68d0:76 with SMTP id w2-20020a056402070200b0046f68d00076mr10093614edx.34.1670863020790;
+        Mon, 12 Dec 2022 08:37:00 -0800 (PST)
+Received: from prec5560.. ([2001:bf7:830:a7a8:ff97:7d8d:1f2e:ffaa])
+        by smtp.gmail.com with ESMTPSA id m15-20020a50930f000000b00463597d2c25sm4051979eda.74.2022.12.12.08.36.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Dec 2022 08:15:18 -0800 (PST)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     xiyou.wangcong@gmail.com
-Cc:     18801353760@163.com, cong.wang@bytedance.com, davem@davemloft.net,
-        dvyukov@google.com, edumazet@google.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Subject: Re: [PATCH v3] net: sched: fix memory leak in tcindex_set_parms
-Date:   Tue, 13 Dec 2022 00:14:06 +0800
-Message-Id: <20221212161406.10137-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <Y5T6Mrb7cs6o/BqS@pop-os.localdomain>
-References: <Y5T6Mrb7cs6o/BqS@pop-os.localdomain>
+        Mon, 12 Dec 2022 08:37:00 -0800 (PST)
+From:   Robert Foss <robert.foss@linaro.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
+        Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Grant Likely <grant.likely@linaro.org>
+Cc:     Robert Foss <robert.foss@linaro.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-actions@lists.infradead.org,
+        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-media@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-crypto@vger.kernel.org, chrome-platform@lists.linux.dev,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-input@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-integrity@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-serial@vger.kernel.org, Purism Kernel Team <kernel@puri.sm>,
+        linux-staging@lists.linux.dev, alsa-devel@alsa-project.org,
+        linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-pm@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
+        linux-mtd@lists.infradead.org, linux-renesas-soc@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-fbdev@vger.kernel.org
+Subject: Re: (subset) [PATCH 000/606] i2c: Complete conversion to i2c_probe_new
+Date:   Mon, 12 Dec 2022 17:36:51 +0100
+Message-Id: <167086288411.3041259.17824406556561546642.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
+References: <20221118224540.619276-1-uwe@kleine-koenig.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 11 Dec 2022 at 05:29, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, Dec 05, 2022 at 11:19:56PM +0800, Hawkins Jiawei wrote:
-> > To be more specific, the simplified logic about original
-> > tcindex_set_parms() is as below:
-> >
-> > static int
-> > tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-> >                 u32 handle, struct tcindex_data *p,
-> >                 struct tcindex_filter_result *r, struct nlattr **tb,
-> >                 struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
-> > {
-> >       ...
-> >       if (p->perfect) {
-> >               int i;
-> >
-> >               if (tcindex_alloc_perfect_hash(net, cp) < 0)
-> >                       goto errout;
-> >               cp->alloc_hash = cp->hash;
-> >               for (i = 0; i < min(cp->hash, p->hash); i++)
-> >                       cp->perfect[i].res = p->perfect[i].res;
-> >               balloc = 1;
-> >       }
-> >       cp->h = p->h;
-> >
-> >       ...
-> >
-> >       if (cp->perfect)
-> >               r = cp->perfect + handle;
->
-> We can reach here if p->perfect is non-NULL.
->
-> >       else
-> >               r = tcindex_lookup(cp, handle) ? : &new_filter_result;
-> >
-> >       if (old_r && old_r != r) {
-> >               err = tcindex_filter_result_init(old_r, cp, net);
-> >               if (err < 0) {
-> >                       kfree(f);
-> >                       goto errout_alloc;
-> >               }
-> >       }
-> >       ...
-> > }
-> >
-> > - cp's h field is directly copied from p's h field
-> >
-> > - if `old_r` is retrieved from struct tcindex_filter, in other word,
-> > is retrieved from p's h field. Then the `r` should get the same value
-> > from `tcindex_loopup(cp, handle)`.
->
-> See above, 'r' can be 'cp->perfect + handle' which is newly allocated,
-> hence different from 'old_r'.
+On Fri, 18 Nov 2022 23:35:34 +0100, Uwe Kleine-König wrote:
+> since commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
+> call-back type") from 2016 there is a "temporary" alternative probe
+> callback for i2c drivers.
+> 
+> This series completes all drivers to this new callback (unless I missed
+> something). It's based on current next/master.
+> A part of the patches depend on commit 662233731d66 ("i2c: core:
+> Introduce i2c_client_get_device_id helper function"), there is a branch that
+> you can pull into your tree to get it:
+> 
+> [...]
 
-But if `r` is `cp->perfect + handle`, this means `cp->perfect` is not
-NULL. So `p->perfect` should not be NULL, which means `old_r` should be
-`p->perfect + handle`, according to tcindex_lookup(). This is not
-correct with the assumption that `old_r` is retrieved from p's h field.
+Applied, thanks!
 
->
-> >
-> > - so `old_r == r` is true, code will never uses tcindex_filter_result_init()
-> > to clear the old_r in such case.
->
-> Not always.
->
-> >
-> > So I think this patch still can fix this memory leak caused by
-> > tcindex_filter_result_init(), But maybe I need to improve my
-> > commit message.
-> >
->
-> I think your patch may introduce other memory leaks and 'old_r' may
-> be left as obsoleted too.
-
-I still think this patch should not introduce any memory leaks.
-
-* If the `old_r` is not NULL, it should have only two source according
-to the tcindex_lookup() - `old_r` is retrieved from `p->perfect`; or
-`old_r` is retrieved from `p->h`. And if `old_r` is retrieved from `p->h`,
-this means `p->perfect` is NULL.
+Repo: https://cgit.freedesktop.org/drm/drm-misc/
 
 
-* If the `old_r` is retrieved from `p->perfect`, kernel uses
-tcindex_alloc_perfect_hash() to newly allocate the filter results.
-And `r` should be `cp->perfect + handle`, which is newly allocated.
-
-So `r != old_r` in this situation, but kernel will clears the `old_r`
-at tc_filter_wq workqueue in tcindex_partial_destroy_work(), by
-destroying the p->perfect. So here kernel doesn't need
-tcindex_filter_result_init() to clear the old filter result, and
-there is no memory leak.
-
-
-* If the `old_r` is retrieved from `p->h`, then `p->perfect` is NULL
-discussed above. Considering that `cp->h` is directly copied from
-`p->h`, `r` should get the same value as `old_r` from tcindex_lookup().
-
-So `r == old_r`, it will ignore the part that kernel uses
-tcindex_filter_result_init() to clear the old filter result. So removing
-this part of code should have no effect in this situation.
+[014/606] drm/bridge: adv7511: Convert to i2c's .probe_new()
+          commit: 1c546894ff82f8b7c070998c03f9b15a3499f326
+[028/606] drm/bridge: parade-ps8622: Convert to i2c's .probe_new()
+          commit: d6b522e9bbb0cca1aeae4ef6188800534794836f
+[035/606] drm/bridge: ti-sn65dsi83: Convert to i2c's .probe_new()
+          commit: 0f6548807fa77e87bbc37964c6b1ed9ba6e1155d
 
 
 
-It seems that whether `old_r` is retrived from `p->h` or `p->perfect`,
-it is okay to directly deleting the part that kernel uses
-tcindex_filter_result_init() to clear the old filter result, without any
-memory leak. But this can fix the memory leak caused by
-tcindex_filter_result_init().
+rob
 
-As for `old_r` may be left as obsoleted, do you mean `old_r` becomes
-unused(set but not used)? I think we can directly removing `old_r`.
-
->
-> Thanks.
