@@ -2,128 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D5B649F8F
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 14:12:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E1564A17C
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 14:41:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbiLLNMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 08:12:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40528 "EHLO
+        id S232957AbiLLNlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 08:41:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232584AbiLLNLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 08:11:38 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1A512A99
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 05:11:31 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id z18so3315726ils.3
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 05:11:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gvrl4AgOpffK6XUxCxPp7bpXCu3gynENsW0aGqM5Df8=;
-        b=DrgD9c7AREPKQOblN0GMrGIZC0uSxwypztZcVz2l5QmQo4c6a769cF1HJsF6PwfNu3
-         peSGTkChjCi9uTlK+EJh2B+Ci2ZJxXNXfxytIPfWW8ngOI4Y0hI/z8rigSN09hEpliwx
-         FzNHevXPCTD1wq44/0foJap3Bb6xVK7XN091s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gvrl4AgOpffK6XUxCxPp7bpXCu3gynENsW0aGqM5Df8=;
-        b=DyPTzt9UltDCIsBv+td3zK6VvhXCCQaFdZ62p2YVr3DQm5x4hgb5GTUyICSc2IEXhn
-         BLrxpZnXzhkkqbUTHjnv+SfdcKm3qq8Y1BAraHSYlvsbgq4AFYkYV17s/0C9tmMVcyxy
-         pR8tbEId9Izhz8y2gx1oa1KdG5lLNtla232D52AICQLM2d2LljRcRx82znsgChckDdmN
-         V8QeEmH87LrphCDHslfXEJKOipOaDhvC9tPCBodse1bc2HnIz/AQgDk+5dDKeXl0h4cZ
-         K02fQh72ZAlp/tYR7cMkW7Z254fN9gaE0LbIaR+Z3Ph0MN7Itc6/PWNWUwSE54+qx3j4
-         Sajg==
-X-Gm-Message-State: ANoB5pnPGLPNLYDJZhsoA0JBzDhEi2+qT1XP7bzBnMgProXIyG/wLHzs
-        rZkaeFZ2JN6McLGRwMIFiwF8v2f3fG8GZSJe
-X-Google-Smtp-Source: AA0mqf4kRKyrpIH8gZB2TBhWAayXSxMY879hs+s0LqrpRQ5SCl6CKEwHPZ+WuorSjBUx1t498kLJ9g==
-X-Received: by 2002:a05:6e02:58d:b0:303:7270:845e with SMTP id c13-20020a056e02058d00b003037270845emr9515931ils.26.1670850689500;
-        Mon, 12 Dec 2022 05:11:29 -0800 (PST)
-Received: from [10.211.55.3] ([98.61.227.136])
-        by smtp.googlemail.com with ESMTPSA id l11-20020a92d94b000000b003024928a9afsm2988694ilq.83.2022.12.12.05.11.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Dec 2022 05:11:28 -0800 (PST)
-Message-ID: <3d13301c-c3fa-5a59-d4b6-cb45bf3fa18c@ieee.org>
-Date:   Mon, 12 Dec 2022 07:11:27 -0600
+        with ESMTP id S232688AbiLLNkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 08:40:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C9613F15;
+        Mon, 12 Dec 2022 05:39:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3381D61072;
+        Mon, 12 Dec 2022 13:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBE80C433D2;
+        Mon, 12 Dec 2022 13:39:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1670852387;
+        bh=h7In0NnjjbjZjxsJxGv5gfNAMW3C+AdRTJoqS9JIxNk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xfQFscjwMaEnnPqf+NaismneBhThGyIY7Qyac5d1Py4sJpwkK8HoVbgNDKWZLb/Kq
+         HMamvIOHA0WQqsEfWRJxIoChaDG8CsJR04L3X96EJc/oWIuh+fiXtal/5q46iyfTkB
+         Ex9upYYAegNecPTy2HEGKgDy1ZZyqwny85Oy0hUw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        patches@lists.linux.dev,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 6.0 070/157] can: can327: flush TX_work on ldisc .close()
+Date:   Mon, 12 Dec 2022 14:16:58 +0100
+Message-Id: <20221212130937.442350836@linuxfoundation.org>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221212130934.337225088@linuxfoundation.org>
+References: <20221212130934.337225088@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH] net: ipa: Remove redundant dev_err()
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Kang Minchul <tegongkang@gmail.com>,
-        Alex Elder <elder@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221211144722.754398-1-tegongkang@gmail.com>
- <f04435d8-9af3-1fde-c2bf-fadd045b10a1@gmail.com>
-Content-Language: en-US
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <f04435d8-9af3-1fde-c2bf-fadd045b10a1@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/11/22 10:34 AM, Heiner Kallweit wrote:
-> On 11.12.2022 15:47, Kang Minchul wrote:
->> Function dev_err() is redundant because platform_get_irq_byname()
->> already prints an error.
->>
->> Signed-off-by: Kang Minchul <tegongkang@gmail.com>
->> ---
->>   drivers/net/ipa/gsi.c | 5 +----
->>   1 file changed, 1 insertion(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
->> index 55226b264e3c..585cfd3f9ec0 100644
->> --- a/drivers/net/ipa/gsi.c
->> +++ b/drivers/net/ipa/gsi.c
->> @@ -1967,11 +1967,8 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
->>   
->>   	/* Get the GSI IRQ and request for it to wake the system */
->>   	ret = platform_get_irq_byname(pdev, "gsi");
->> -	if (ret <= 0) {
->> -		dev_err(gsi->dev,
->> -			"DT error %d getting \"gsi\" IRQ property\n", ret);
->> +	if (ret <= 0)
-> 
-> According to the function description it can't return 0.
+From: Max Staudt <max@enpas.org>
 
-That's great!  I explicitly checked for 0 because at the
-time I couldn't *prove* that 0 was an invalid return, and
-there was nothing obvious in the function saying so.  I
-*thought* it was invalid but lacked the guidance in the
-code to know for sure.
+commit f4a4d121ebecaa6f396f21745ce97de014281ccc upstream.
 
-Here is the commit that fixed that:
-   a85a6c86c25be driver core: platform: Clarify that IRQ 0 is invalid
+Additionally, remove it from .ndo_stop().
 
-And it turns out that this particular block of code got
-moved but not modified after that comment commit:
-   0b8d676108451 net: ipa: request GSI IRQ later
+This ensures that the worker is not called after being freed, and that
+the UART TX queue remains active to send final commands when the
+netdev is stopped.
 
-Anyway, I'm very pleased this can be simplified.
+Thanks to Jiri Slaby for finding this in slcan:
 
-					-Alex
+  https://lore.kernel.org/linux-can/20221201073426.17328-1-jirislaby@kernel.org/
 
-> You can further simplify the code.
-> And you patch should be annotated net-next.
-> 
->>   		return ret ? : -EINVAL;
->> -	}
->>   	irq = ret;
->>   
->>   	ret = request_irq(irq, gsi_isr, 0, "gsi", gsi);
-> 
+A variant of this patch for slcan, with the flush in .ndo_stop() still
+present, has been tested successfully on physical hardware:
+
+  https://bugzilla.suse.com/show_bug.cgi?id=1205597
+
+Fixes: 43da2f07622f ("can: can327: CAN/ldisc driver for ELM327 based OBD-II adapters")
+Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: Max Staudt <max@enpas.org>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: linux-can@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Max Staudt <max@enpas.org>
+Link: https://lore.kernel.org/all/20221202160148.282564-1-max@enpas.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/can/can327.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/can/can327.c b/drivers/net/can/can327.c
+index ed3d0b8989a0..dc7192ecb001 100644
+--- a/drivers/net/can/can327.c
++++ b/drivers/net/can/can327.c
+@@ -796,9 +796,9 @@ static int can327_netdev_close(struct net_device *dev)
+ 
+ 	netif_stop_queue(dev);
+ 
+-	/* Give UART one final chance to flush. */
+-	clear_bit(TTY_DO_WRITE_WAKEUP, &elm->tty->flags);
+-	flush_work(&elm->tx_work);
++	/* We don't flush the UART TX queue here, as we want final stop
++	 * commands (like the above dummy char) to be flushed out.
++	 */
+ 
+ 	can_rx_offload_disable(&elm->offload);
+ 	elm->can.state = CAN_STATE_STOPPED;
+@@ -1069,12 +1069,15 @@ static void can327_ldisc_close(struct tty_struct *tty)
+ {
+ 	struct can327 *elm = (struct can327 *)tty->disc_data;
+ 
+-	/* unregister_netdev() calls .ndo_stop() so we don't have to.
+-	 * Our .ndo_stop() also flushes the TTY write wakeup handler,
+-	 * so we can safely set elm->tty = NULL after this.
+-	 */
++	/* unregister_netdev() calls .ndo_stop() so we don't have to. */
+ 	unregister_candev(elm->dev);
+ 
++	/* Give UART one final chance to flush.
++	 * No need to clear TTY_DO_WRITE_WAKEUP since .write_wakeup() is
++	 * serialised against .close() and will not be called once we return.
++	 */
++	flush_work(&elm->tx_work);
++
+ 	/* Mark channel as dead */
+ 	spin_lock_bh(&elm->lock);
+ 	tty->disc_data = NULL;
+-- 
+2.38.1
+
+
 
