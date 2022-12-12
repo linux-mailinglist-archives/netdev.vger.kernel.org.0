@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97FAC649C29
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 11:29:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA501649C2B
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 11:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231847AbiLLK3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 05:29:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
+        id S231609AbiLLK3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 05:29:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbiLLK1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 05:27:52 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A4CAE6A;
-        Mon, 12 Dec 2022 02:27:49 -0800 (PST)
+        with ESMTP id S231343AbiLLK2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 05:28:00 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643B3BC98;
+        Mon, 12 Dec 2022 02:27:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670840869; x=1702376869;
+  t=1670840876; x=1702376876;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TBiocUlMd4lgD3UieKC9lMwBVyukIc3JWqKRD/9Iuek=;
-  b=uu18TjB5JwlCRXpE2dHk8fF45TWNHVGXmRTnWdRYd6Nw0P0AH4Sxcm4H
-   LAJ/A8P4lBWnRtlM7+c4ncmTWouMaKlyAvtGLGK6hEb4hdK0k31ujLDx0
-   ZI8EhuL+QqLlkIhbUCo39fpHp5RzY5tMoFYlYpted6U5olE1937XXX+LF
-   3dUhKTSRzhOSLQqkiMpm86AiotgrkXff6Uj1f5SkKUczGUcw+5H79GF4b
-   IGjOhaZJulztP0MMPoTKKejV36utc03HKKEq4wvXxghjBMq05VvwwA7QU
-   fKPgAh8t5SwF4joSzW7Q107giU4NWdx6VtfWgCSDLqbtCj0RAeeNVpJcP
+  bh=1cLHGJOeVGMkC9vEWdfOtsZjxNZWsDW2YCwQo5kyzCM=;
+  b=v//i7iO/NbYJ+OPwJZQSliXAUF6Fo67NqQDEsCgAYqIgio8dahIXWoLp
+   deNAAfAKnsdDNaLRjXxgMDEQB6Pqqi4Q+/YrcPIBLm4Wdns4obL0exieG
+   olwmHdnboLXEYelo8wngb0o2LVVPNpuxeLtGO1YHcvz6ESBI1QZNyDQ6M
+   ya3mFRxt4NjoGpN/2+tEC6YBTwakgL1/R1cCVTSwDJI0LH5mmGrYOvERx
+   NS6g8R3rBnpQbY8FMGZ2v6lDIHY1uy9NNovZ19PJ96PyGNFChlGn/h7Kl
+   fC3mOWqs4HQfL/ipWCrffA2/JMmrlY46oWHC+wOQkUHIAlolgwOfLGQTX
    g==;
 X-IronPort-AV: E=Sophos;i="5.96,238,1665471600"; 
-   d="scan'208";a="127655416"
+   d="scan'208";a="192683520"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Dec 2022 03:27:48 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Dec 2022 03:27:55 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 12 Dec 2022 03:27:47 -0700
+ 15.1.2507.16; Mon, 12 Dec 2022 03:27:54 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 12 Dec 2022 03:27:41 -0700
+ 15.1.2507.16 via Frontend Transport; Mon, 12 Dec 2022 03:27:49 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -46,9 +46,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: [Patch net-next v4 06/13] net: ptp: add helper for one-step P2P clocks
-Date:   Mon, 12 Dec 2022 15:56:32 +0530
-Message-ID: <20221212102639.24415-7-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v4 07/13] net: dsa: microchip: ptp: add packet reception timestamping
+Date:   Mon, 12 Dec 2022 15:56:33 +0530
+Message-ID: <20221212102639.24415-8-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20221212102639.24415-1-arun.ramadoss@microchip.com>
 References: <20221212102639.24415-1-arun.ramadoss@microchip.com>
@@ -67,137 +67,245 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Christian Eggers <ceggers@arri.de>
 
-For P2P delay measurement, the ingress time stamp of the PDelay_Req is
-required for the correction field of the PDelay_Resp. The application
-echoes back the correction field of the PDelay_Req when sending the
-PDelay_Resp.
-
-Some hardware (like the ZHAW InES PTP time stamping IP core) subtracts
-the ingress timestamp autonomously from the correction field, so that
-the hardware only needs to add the egress timestamp on tx. Other
-hardware (like the Microchip KSZ9563) reports the ingress time stamp via
-an interrupt and requires that the software provides this time stamp via
-tail-tag on tx.
-
-In order to avoid introducing a further application interface for this,
-the driver can simply emulate the behavior of the InES device and
-subtract the ingress time stamp in software from the correction field.
-
-On egress, the correction field can either be kept as it is (and the
-time stamp field in the tail-tag is set to zero) or move the value from
-the correction field back to the tail-tag.
-
-Changing the correction field requires updating the UDP checksum (if UDP
-is used as transport).
+Rx Timestamping is done through 4 additional bytes in tail tag.
+Whenever the ptp packet is received, the 4 byte hardware time stamped
+value is added before 1 byte tail tag. Also, bit 7 in tail tag indicates
+it as PTP frame. This 4 byte value is extracted from the tail tag and
+reconstructed to absolute time and assigned to skb hwtstamp.
+If the packet received in PDelay_Resp, then partial ingress timestamp
+is subtracted from the correction field. Since user space tools expects
+to be done in hardware.
 
 Signed-off-by: Christian Eggers <ceggers@arri.de>
 Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
-v1 -> v2
-- Fixed compilation issue when PTP_CLASSIFY not selected in menuconfig
-as reported by kernel test robot <lkp@intel.com>
----
- include/linux/ptp_classify.h | 71 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+v3 - v4
+- replaced 0 with false in return value of port_rxtstamp
 
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index 2b6ea36ad162..6e5869c2504c 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -10,8 +10,12 @@
- #ifndef _PTP_CLASSIFY_H_
- #define _PTP_CLASSIFY_H_
+v2 - v3
+- Replaced tagger_data->meta_timestamper handler with port_rxtstamp
+routine
+
+v1 - v2
+- Checkpatch warning line limit to 80chars
+
+RFC v2 -> Patch v1
+- Fixed compilation issue
+---
+ drivers/net/dsa/microchip/ksz_common.c |  1 +
+ drivers/net/dsa/microchip/ksz_ptp.c    | 63 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ptp.h    |  4 ++
+ include/linux/dsa/ksz_common.h         | 21 +++++++++
+ net/dsa/tag_ksz.c                      | 25 +++++++---
+ 5 files changed, 108 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 1611f8f5cd6c..127fdbc25141 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -2992,6 +2992,7 @@ static const struct dsa_switch_ops ksz_switch_ops = {
+ 	.get_ts_info            = ksz_get_ts_info,
+ 	.port_hwtstamp_get      = ksz_hwtstamp_get,
+ 	.port_hwtstamp_set      = ksz_hwtstamp_set,
++	.port_rxtstamp		= ksz_port_rxtstamp,
+ };
  
-+#include <asm/unaligned.h>
- #include <linux/ip.h>
-+#include <linux/ktime.h>
- #include <linux/skbuff.h>
-+#include <linux/udp.h>
-+#include <net/checksum.h>
- 
- #define PTP_CLASS_NONE  0x00 /* not a PTP event message */
- #define PTP_CLASS_V1    0x01 /* protocol version 1 */
-@@ -129,6 +133,67 @@ static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
- 	return msgtype;
+ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
+diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
+index 86b634a66355..68049466632e 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp.c
++++ b/drivers/net/dsa/microchip/ksz_ptp.c
+@@ -169,6 +169,69 @@ int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
+ 	return copy_to_user(ifr->ifr_data, &config, sizeof(config));
  }
  
-+/**
-+ * ptp_check_diff8 - Computes new checksum (when altering a 64-bit field)
-+ * @old: old field value
-+ * @new: new field value
-+ * @oldsum: previous checksum
-+ *
-+ * This function can be used to calculate a new checksum when only a single
-+ * field is changed. Similar as ip_vs_check_diff*() in ip_vs.h.
-+ *
-+ * Return: Updated checksum
-+ */
-+static inline __wsum ptp_check_diff8(__be64 old, __be64 new, __wsum oldsum)
++static ktime_t ksz_tstamp_reconstruct(struct ksz_device *dev, ktime_t tstamp)
 +{
-+	__be64 diff[2] = { ~old, new };
++	struct timespec64 ptp_clock_time;
++	struct ksz_ptp_data *ptp_data;
++	struct timespec64 diff;
++	struct timespec64 ts;
 +
-+	return csum_partial(diff, sizeof(diff), oldsum);
++	ptp_data = &dev->ptp_data;
++	ts = ktime_to_timespec64(tstamp);
++
++	spin_lock_bh(&ptp_data->clock_lock);
++	ptp_clock_time = ptp_data->clock_time;
++	spin_unlock_bh(&ptp_data->clock_lock);
++
++	/* calculate full time from partial time stamp */
++	ts.tv_sec = (ptp_clock_time.tv_sec & ~3) | ts.tv_sec;
++
++	/* find nearest possible point in time */
++	diff = timespec64_sub(ts, ptp_clock_time);
++	if (diff.tv_sec > 2)
++		ts.tv_sec -= 4;
++	else if (diff.tv_sec < -2)
++		ts.tv_sec += 4;
++
++	return timespec64_to_ktime(ts);
 +}
 +
-+/**
-+ * ptp_header_update_correction - Update PTP header's correction field
-+ * @skb: packet buffer
-+ * @type: type of the packet (see ptp_classify_raw())
-+ * @hdr: ptp header
-+ * @correction: new correction value
-+ *
-+ * This updates the correction field of a PTP header and updates the UDP
-+ * checksum (if UDP is used as transport). It is needed for hardware capable of
-+ * one-step P2P that does not already modify the correction field of Pdelay_Req
-+ * event messages on ingress.
-+ */
-+static inline
-+void ptp_header_update_correction(struct sk_buff *skb, unsigned int type,
-+				  struct ptp_header *hdr, s64 correction)
++bool ksz_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
++		       unsigned int type)
 +{
-+	__be64 correction_old;
-+	struct udphdr *uhdr;
++	struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
++	struct ksz_device *dev = ds->priv;
++	struct ptp_header *ptp_hdr;
++	u8 ptp_msg_type;
++	ktime_t tstamp;
++	s64 correction;
 +
-+	/* previous correction value is required for checksum update. */
-+	memcpy(&correction_old,  &hdr->correction, sizeof(correction_old));
++	tstamp = KSZ_SKB_CB(skb)->tstamp;
++	memset(hwtstamps, 0, sizeof(*hwtstamps));
++	hwtstamps->hwtstamp = ksz_tstamp_reconstruct(dev, tstamp);
 +
-+	/* write new correction value */
-+	put_unaligned_be64((u64)correction, &hdr->correction);
++	ptp_hdr = ptp_parse_header(skb, type);
++	if (!ptp_hdr)
++		goto out;
 +
-+	switch (type & PTP_CLASS_PMASK) {
-+	case PTP_CLASS_IPV4:
-+	case PTP_CLASS_IPV6:
-+		/* locate udp header */
-+		uhdr = (struct udphdr *)((char *)hdr - sizeof(struct udphdr));
-+		break;
-+	default:
-+		return;
-+	}
++	ptp_msg_type = ptp_get_msgtype(ptp_hdr, type);
++	if (ptp_msg_type != PTP_MSGTYPE_PDELAY_REQ)
++		goto out;
 +
-+	/* update checksum */
-+	uhdr->check = csum_fold(ptp_check_diff8(correction_old,
-+						hdr->correction,
-+						~csum_unfold(uhdr->check)));
-+	if (!uhdr->check)
-+		uhdr->check = CSUM_MANGLED_0;
++	/* Only subtract the partial time stamp from the correction field.  When
++	 * the hardware adds the egress time stamp to the correction field of
++	 * the PDelay_Resp message on tx, also only the partial time stamp will
++	 * be added.
++	 */
++	correction = (s64)get_unaligned_be64(&ptp_hdr->correction);
++	correction -= ktime_to_ns(tstamp) << 16;
++
++	ptp_header_update_correction(skb, type, ptp_hdr, correction);
++
++out:
++	return false;
 +}
 +
- /**
-  * ptp_msg_is_sync - Evaluates whether the given skb is a PTP Sync message
-  * @skb: packet buffer
-@@ -166,5 +231,11 @@ static inline bool ptp_msg_is_sync(struct sk_buff *skb, unsigned int type)
+ static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts)
  {
- 	return false;
- }
+ 	u32 nanoseconds;
+diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
+index 7c5679372705..9bb8fb059ac2 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp.h
++++ b/drivers/net/dsa/microchip/ksz_ptp.h
+@@ -30,6 +30,8 @@ int ksz_get_ts_info(struct dsa_switch *ds, int port,
+ 		    struct ethtool_ts_info *ts);
+ int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
+ int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
++bool ksz_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
++		       unsigned int type);
+ int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p);
+ void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
+ 
+@@ -60,6 +62,8 @@ static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
+ 
+ #define ksz_hwtstamp_set NULL
+ 
++#define ksz_port_rxtstamp NULL
 +
-+static inline
-+void ptp_header_update_correction(struct sk_buff *skb, unsigned int type,
-+				  struct ptp_header *hdr, s64 correction)
-+{
-+}
+ #endif	/* End of CONFIG_NET_DSA_MICROCHIP_KSZ_PTP */
+ 
  #endif
- #endif /* _PTP_CLASSIFY_H_ */
+diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
+index d2a54161be97..a256b08d837d 100644
+--- a/include/linux/dsa/ksz_common.h
++++ b/include/linux/dsa/ksz_common.h
+@@ -9,10 +9,31 @@
+ 
+ #include <net/dsa.h>
+ 
++/* All time stamps from the KSZ consist of 2 bits for seconds and 30 bits for
++ * nanoseconds. This is NOT the same as 32 bits for nanoseconds.
++ */
++#define KSZ_TSTAMP_SEC_MASK  GENMASK(31, 30)
++#define KSZ_TSTAMP_NSEC_MASK GENMASK(29, 0)
++
++static inline ktime_t ksz_decode_tstamp(u32 tstamp)
++{
++	u64 ns = FIELD_GET(KSZ_TSTAMP_SEC_MASK, tstamp) * NSEC_PER_SEC +
++		 FIELD_GET(KSZ_TSTAMP_NSEC_MASK, tstamp);
++
++	return ns_to_ktime(ns);
++}
++
+ struct ksz_tagger_data {
+ 	void (*hwtstamp_set_state)(struct dsa_switch *ds, bool on);
+ };
+ 
++struct ksz_skb_cb {
++	u32 tstamp;
++};
++
++#define KSZ_SKB_CB(skb) \
++	((struct ksz_skb_cb *)((skb)->cb))
++
+ static inline struct ksz_tagger_data *
+ ksz_tagger_data(struct dsa_switch *ds)
+ {
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 420a12853676..6603eaa234d2 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -151,10 +151,11 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ8795, KSZ8795_NAME);
+  * tag0 : Prioritization (not used now)
+  * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x10=port5)
+  *
+- * For Egress (KSZ9477 -> Host), 1 byte is added before FCS.
++ * For Egress (KSZ9477 -> Host), 1/5 bytes is added before FCS.
+  * ---------------------------------------------------------------------------
+- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
++ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
+  * ---------------------------------------------------------------------------
++ * ts   : time stamp (Present only if bit 7 of tag0 is set)
+  * tag0 : zero-based value represents port
+  *	  (eg, 0x00=port1, 0x02=port3, 0x06=port7)
+  */
+@@ -166,6 +167,15 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ8795, KSZ8795_NAME);
+ #define KSZ9477_TAIL_TAG_OVERRIDE	BIT(9)
+ #define KSZ9477_TAIL_TAG_LOOKUP		BIT(10)
+ 
++static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag)
++{
++	u8 *tstamp_raw = tag - KSZ_PTP_TAG_LEN;
++	ktime_t tstamp;
++
++	tstamp = ksz_decode_tstamp(get_unaligned_be32(tstamp_raw));
++	KSZ_SKB_CB(skb)->tstamp = tstamp;
++}
++
+ /* Time stamp tag *needs* to be inserted if PTP is enabled in hardware.
+  * Regardless of Whether it is a PTP frame or not.
+  */
+@@ -216,8 +226,10 @@ static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	unsigned int len = KSZ_EGRESS_TAG_LEN;
+ 
+ 	/* Extra 4-bytes PTP timestamp */
+-	if (tag[0] & KSZ9477_PTP_TAG_INDICATION)
+-		len += KSZ9477_PTP_TAG_LEN;
++	if (tag[0] & KSZ9477_PTP_TAG_INDICATION) {
++		ksz_rcv_timestamp(skb, tag);
++		len += KSZ_PTP_TAG_LEN;
++	}
+ 
+ 	return ksz_common_rcv(skb, dev, port, len);
+ }
+@@ -284,10 +296,11 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893, KSZ9893_NAME);
+  * tag0 : represents tag override, lookup and valid
+  * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
+  *
+- * For rcv, 1 byte is added before FCS.
++ * For rcv, 1/5 bytes is added before FCS.
+  * ---------------------------------------------------------------------------
+- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
++ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
+  * ---------------------------------------------------------------------------
++ * ts   : time stamp (Present only if bit 7 of tag0 is set)
+  * tag0 : zero-based value represents port
+  *	  (eg, 0x00=port1, 0x02=port3, 0x07=port8)
+  */
 -- 
 2.36.1
 
