@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCD2649DD5
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:33:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5BF0649DD8
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232160AbiLLLc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 06:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        id S232178AbiLLLce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 06:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232191AbiLLLbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:31:17 -0500
+        with ESMTP id S232194AbiLLLbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:31:18 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2637495BE
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5680D9FC9
         for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 03:31:13 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1p4h1b-0000lx-8a
+        id 1p4h1b-0000p0-JV
         for netdev@vger.kernel.org; Mon, 12 Dec 2022 12:31:11 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id E85FA13CC7B
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 11:30:58 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 2FD1113CC82
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 11:30:59 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id F2A9B13CC32;
-        Mon, 12 Dec 2022 11:30:56 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 33DBD13CC3B;
+        Mon, 12 Dec 2022 11:30:57 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 4df766ef;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 6ba7e7c8;
         Mon, 12 Dec 2022 11:30:48 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -38,9 +38,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
         Markus Schneider-Pargmann <msp@baylibre.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 35/39] can: m_can: Batch acknowledge rx fifo
-Date:   Mon, 12 Dec 2022 12:30:41 +0100
-Message-Id: <20221212113045.222493-36-mkl@pengutronix.de>
+Subject: [PATCH net-next 36/39] can: tcan4x5x: Remove invalid write in clear_interrupts
+Date:   Mon, 12 Dec 2022 12:30:42 +0100
+Message-Id: <20221212113045.222493-37-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221212113045.222493-1-mkl@pengutronix.de>
 References: <20221212113045.222493-1-mkl@pengutronix.de>
@@ -61,64 +61,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-Instead of acknowledging every item of the fifo, only acknowledge the
-last item read. This behavior is documented in the datasheet. The new
-getindex will be the acknowledged item + 1.
+Register 0x824 TCAN4X5X_MCAN_INT_REG is a read-only register. Any writes
+to this register do not have any effect.
 
+Remove this write. The m_can driver aldready clears the interrupts in
+m_can_isr() by writing to M_CAN_IR which is translated to register
+0x1050 which is a writable version of this register.
+
+Fixes: 5443c226ba91 ("can: tcan4x5x: Add tcan4x5x driver to the kernel")
 Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Link: https://lore.kernel.org/all/20221206115728.1056014-8-msp@baylibre.com
+Link: https://lore.kernel.org/all/20221206115728.1056014-9-msp@baylibre.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/m_can.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/can/m_can/tcan4x5x-core.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 656d2daafad1..8e83d6963d85 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -530,9 +530,6 @@ static int m_can_read_fifo(struct net_device *dev, u32 fgi)
- 	}
- 	stats->rx_packets++;
+diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
+index a3aeb83de152..a77f4d4f6299 100644
+--- a/drivers/net/can/m_can/tcan4x5x-core.c
++++ b/drivers/net/can/m_can/tcan4x5x-core.c
+@@ -204,11 +204,6 @@ static int tcan4x5x_clear_interrupts(struct m_can_classdev *cdev)
+ 	if (ret)
+ 		return ret;
  
--	/* acknowledge rx fifo 0 */
--	m_can_write(cdev, M_CAN_RXF0A, fgi);
+-	ret = tcan4x5x_write_tcan_reg(cdev, TCAN4X5X_MCAN_INT_REG,
+-				      TCAN4X5X_ENABLE_MCAN_INT);
+-	if (ret)
+-		return ret;
 -
- 	timestamp = FIELD_GET(RX_BUF_RXTS_MASK, fifo_header.dlc) << 16;
- 
- 	m_can_receive_skb(cdev, skb, timestamp);
-@@ -553,8 +550,9 @@ static int m_can_do_rx_poll(struct net_device *dev, int quota)
- 	u32 rxfs;
- 	u32 rx_count;
- 	u32 fgi;
-+	int ack_fgi = -1;
- 	int i;
--	int err;
-+	int err = 0;
- 
- 	rxfs = m_can_read(cdev, M_CAN_RXF0S);
- 	if (!(rxfs & RXFS_FFL_MASK)) {
-@@ -568,13 +566,20 @@ static int m_can_do_rx_poll(struct net_device *dev, int quota)
- 	for (i = 0; i < rx_count && quota > 0; ++i) {
- 		err = m_can_read_fifo(dev, fgi);
- 		if (err)
--			return err;
-+			break;
- 
- 		quota--;
- 		pkts++;
-+		ack_fgi = fgi;
- 		fgi = (++fgi >= cdev->mcfg[MRAM_RXF0].num ? 0 : fgi);
- 	}
- 
-+	if (ack_fgi != -1)
-+		m_can_write(cdev, M_CAN_RXF0A, ack_fgi);
-+
-+	if (err)
-+		return err;
-+
- 	return pkts;
- }
- 
+ 	ret = tcan4x5x_write_tcan_reg(cdev, TCAN4X5X_INT_FLAGS,
+ 				      TCAN4X5X_CLEAR_ALL_INT);
+ 	if (ret)
 -- 
 2.35.1
 
