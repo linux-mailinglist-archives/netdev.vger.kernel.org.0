@@ -2,126 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 493B664A625
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 18:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E846564A63C
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 18:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232557AbiLLRqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 12:46:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
+        id S232746AbiLLRvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 12:51:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232552AbiLLRqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 12:46:35 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EED13F72;
-        Mon, 12 Dec 2022 09:46:34 -0800 (PST)
+        with ESMTP id S232100AbiLLRvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 12:51:47 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB4BF01F;
+        Mon, 12 Dec 2022 09:51:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670867507; x=1702403507;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=vf6HCrLBOUnsAZvCFsneO4Q1H1UgIVjlvf8KRduxLoY=;
+  b=PK+v/Ko73zNIaiIXo1Hq4TiNYBn7VBKnp5o3nm8pXLAIFr3fal6x6y4p
+   eOWR08NgUx8az5L5e5/upA9f7CPDq+PMZ/W01eKrTL6kPQPPKklsHDCcf
+   p+1YSlW5ZISBThb7Cx8uItlWcQKSTF15TASmJ1VygTqLuNEasPu2VLbYE
+   nimPXYE4amNHnLpsukD2sdAyDFJcwCPsXaxfLy6Wi9Zo9M4AmQErH3j48
+   0hTsXBdYfx77SAd7KmJQdU2LyWT0Srs9WfXj4T8eCzNEQEAlAuwNoyJTU
+   XjwBrCJvauJEZ1Nf90lQlRka4SeAf2ojIv11rR/3pZHHVALg9NOSGQlKJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10559"; a="317949700"
+X-IronPort-AV: E=Sophos;i="5.96,239,1665471600"; 
+   d="scan'208";a="317949700"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2022 09:51:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10559"; a="716885204"
+X-IronPort-AV: E=Sophos;i="5.96,239,1665471600"; 
+   d="scan'208";a="716885204"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga004.fm.intel.com with ESMTP; 12 Dec 2022 09:51:46 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 12 Dec 2022 09:51:46 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 12 Dec 2022 09:51:45 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 12 Dec 2022 09:51:45 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 12 Dec 2022 09:51:45 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h9pe78o33tcb7MGbsJ0w4jskxVepezLaFITBzo17iuRO+aVqUF4KUghe6ekkdBhloPOwhy/mwHPs2jj2HzqbvCDggwaTHLCATJJbZBnidSHhThKdiJE0khSl9rRE6t1zWHZca6h9CxnmbQrB/fpIO+A9PIfyt6/qceVvT59dkYv3+IWJAG3NG6w5dn/Kn4K9VZZMQEdCSiYLXM021fu76hqEGvcM+1UFSO1eCbz02QjT5yCHDEg8KeRKsF+MxctcYT+lb3lyx8btKH/UVMxE/J7V3PW0ScRa9woiFKbcR9T9cgBldmlXViGJM7Qi6IX9/RaNj1YQ9Wm5x8dYiL11aA==
+ b=TOJtHWn4Y9d/pJShb2A5ZBdlDVqm4oMd8yqYxr0tJcVz/Ym/iIE6xCHL8oaa9q/0sKnqMlDwrVBYwPh7BeKru8Mb+WRZCKM4532kpnddCOnnQMp9R5aCVqyth2OTWhZofpRRhwYNSiwPCSdYILhFgjtRbc8OSV6xvhcZP3BDudPEms0blbJpFLnYOuerWvFqoqXKIDpXXHrJPJv9BNmKARYKVlmLZjeGYHS8UpppJmuOMvn6WTUnjcaA4u4txqHT/Vxuk74jRz6n4qqDN89o5xm4U4MKlpAK93SmujP3g4gbb/W9EY15myop3x9e46C3LgPASLOILJ72CDtYmKl2kA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oY33JL3P+L1jz7I6uypdJ8U+iEIODE2+oXCCa20siTw=;
- b=GXxMfaDC2cG5d2oEg+GrybAw6zeC2CM4pxAPxtb5LO8tIoWjItdDMyiAePHye18jQUPjKZgIxRi5ndo8Sad+EDBWRjyAHkgbU20b3HGLJM1vukGhdJgmRkDSvjBoLllD6P6n8pebDTlZu87u0mL3rOdFOCOinrXfQr7vNLh2DGT8/Jr4T1OfQN00SRUaG9yyYtMBRU+Prag4jfjDkemCpZQBuIC+07T/0n0wN+6XPpV2MqmjxNypwslQCws5hyNGJeap4Mjq3jHMHHUAwzuLhQrgl8gHOCvQPaEL6KuVhAzPUP3WJmSFDiLPJFdYv+b0/KuGpJD5r5v8IRrSmQbzzQ==
+ bh=T1NZYzTcz5Zo0k7aKPj6RpNSceTgjStZWtpIL9no2AI=;
+ b=Xy57GHwUii23XBKkUIpaVetyeBYvFSFK9U6Jet3LXZxRWkM53EFsaCDwrApkKa/QddTL2Lxn4mnCTLpBc5vUDJYdce5eWzSjmcXjsfV+qzX0yD4Gd1PMWMzJGLQifJ055wloE85X59oYSjIbe2jizidrE7VX8Zy5PB2n2FWjbWg0EvxFOr/u3+qwnj8/tQlSkZsWeflfka/wTeFcEUhK5n+r3i5c/Y+Pjazg/+HZqA2RCwgHBwq0QedJwyWSHR9fUMHHP5jnyj/4y7nd7SphvlpgBdvd/Hdl9IURFivHvWByZkOR/CU/ayIdqSsF2LP37l/29h7jOnUj5e/El3EWYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oY33JL3P+L1jz7I6uypdJ8U+iEIODE2+oXCCa20siTw=;
- b=UOl1Um0tAJnWKWg5SWpmdf73wQatN9rZxDPuSHkn8qzzIDA7TwmbeItiMhT5mAem5ngkOkZtVbd5SLvPIUwZ+tuWOTO+Xpu0P3YQ8rtpPl3AK90iFct3o8tW45nNIqWlD5ahO6DeuKj6ZaZfU7T5Cv0CURD6wmozwvIM3OIUFYg=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MWHPR12MB1390.namprd12.prod.outlook.com (2603:10b6:300:12::13)
- by DS7PR12MB6141.namprd12.prod.outlook.com (2603:10b6:8:9b::15) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by LV2PR11MB5975.namprd11.prod.outlook.com (2603:10b6:408:17d::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Mon, 12 Dec
- 2022 17:46:30 +0000
-Received: from MWHPR12MB1390.namprd12.prod.outlook.com
- ([fe80::6fb5:a904:643a:4a5e]) by MWHPR12MB1390.namprd12.prod.outlook.com
- ([fe80::6fb5:a904:643a:4a5e%7]) with mapi id 15.20.5880.019; Mon, 12 Dec 2022
- 17:46:30 +0000
-Message-ID: <873fbfbf-13af-e413-cfc0-2dd01ff821be@amd.com>
-Date:   Mon, 12 Dec 2022 09:46:29 -0800
+ 2022 17:51:37 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::933:90f8:7128:f1c5]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::933:90f8:7128:f1c5%5]) with mapi id 15.20.5880.019; Mon, 12 Dec 2022
+ 17:51:37 +0000
+Message-ID: <9942e904-6f96-5ff5-34d6-7756add65c0a@intel.com>
+Date:   Mon, 12 Dec 2022 09:51:35 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.1
-Subject: Re: [RFC PATCH vfio 0/7] pds vfio driver
+Subject: Re: [PATCH] i40e (gcc13): synchronize allocate/free functions return
+ type & values
+To:     Jiri Slaby <jirislaby@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+CC:     "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
+        Jan Sokolowski <jan.sokolowski@intel.com>,
+        <jesse.brandeburg@intel.com>, <linux-kernel@vger.kernel.org>,
+        Martin Liska <mliska@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
+References: <20221031114456.10482-1-jirislaby@kernel.org>
+ <20221102204110.26a6f021@kernel.org>
+ <bf584d22-8aca-3867-5e3a-489d62a61929@kernel.org>
+ <003bc385-dc14-12ba-d3d6-53de3712a5dc@intel.com>
+ <20221104114730.42294e1c@kernel.org>
+ <eb9c26db-d265-33c1-5c25-daf9f06f91d4@intel.com>
+ <5fb6ba13-3300-917a-4e7b-e8b7a1e71e45@kernel.org>
 Content-Language: en-US
-From:   Brett Creeley <bcreeley@amd.com>
-To:     Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Brett Creeley <brett.creeley@amd.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, alex.williamson@redhat.com,
-        cohuck@redhat.com, jgg@nvidia.com, yishaih@nvidia.com,
-        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com
-Cc:     shannon.nelson@amd.com, drivers@pensando.io,
-        Oren Duer <oren@nvidia.com>
-References: <20221207010705.35128-1-brett.creeley@amd.com>
- <1352e2f7-4822-4e49-cf3b-d8a9d537a172@nvidia.com>
- <2f809066-1157-e84e-4d83-f9dcb66135ab@amd.com>
-In-Reply-To: <2f809066-1157-e84e-4d83-f9dcb66135ab@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MW4PR03CA0136.namprd03.prod.outlook.com
- (2603:10b6:303:8c::21) To MWHPR12MB1390.namprd12.prod.outlook.com
- (2603:10b6:300:12::13)
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+In-Reply-To: <5fb6ba13-3300-917a-4e7b-e8b7a1e71e45@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0115.namprd05.prod.outlook.com
+ (2603:10b6:a03:334::30) To SN6PR11MB3229.namprd11.prod.outlook.com
+ (2603:10b6:805:ba::28)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1390:EE_|DS7PR12MB6141:EE_
-X-MS-Office365-Filtering-Correlation-Id: ae75fcec-9211-4fbe-152d-08dadc68ccf3
+X-MS-TrafficTypeDiagnostic: SN6PR11MB3229:EE_|LV2PR11MB5975:EE_
+X-MS-Office365-Filtering-Correlation-Id: 742431d6-161a-4ffb-9e4f-08dadc698453
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n8U1L4oFzUxa/jjMP99JvqCReegYiSKNd36QN8kvxkS8Xl2ewqrAMeWqVmA5Pq6dGBDMnGMLtuB8sBLkg0d1al/o6oOqwMMIRcqha7L0IboUF27JuI2YRBKpn/6ywMOuoIvlcbNZNLqzff55/5kuc1y6unCE5jOPi8Y4U475V9kDj5l5OdXF5KcihO0UF7G3W5y3p6McGbhBl2OIWcm+n+YktOOSNJoSB+R0da51e05rwXGjYU2Q1qPRngklBAiDGCKCbgnixh2KkBX8MLOIScBHc1Gi2KSf5NwQD/lK5gFFE00CJJWxTUzPvnQFpnt0iItqCtnYaeGn/o3+AjJzat+MRjxTP+TMivSunbez5wVZLq5nmLXNmYwNsIY7TA+oSodg/gsNQyZkKGRhMchcxFNdLRl/aT81jXfJY2tBl8xuY7QwNd05MoP8yqe1nqnuN+dX3xiirtXLrIuoquxvclapFWpKc4fPMWvb9HacuOQ2ITZHG0UOAXkOD7e9Phh6HCVJso4qd82ohsDu4Grgoc9sPXidYQOz8jdA4bO4dTIUL43pVnsDDD+jtRePSjd41JlM6sUaPkuJJNXiJjYpMssJdYmpWxASPH5aF7J3Bl0+tq0oKBNPSac+PvF7LFEGDtdf0DHwSXccewiz8ZAK6EEX4wsojeyKkaLUmbXoprWocx8UI2Po7ni7/FoWNxZpJ9CCmbwKcgSt8VDqTTQJuHx8BXhGerXMWDg2VP3nlTVZ/sXy5yyVaQFCNox0pubjL3AnZXrx28NcwrqkZ6MwyQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR12MB1390.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(39860400002)(366004)(346002)(136003)(451199015)(921005)(2906002)(2616005)(38100700002)(5660300002)(8936002)(110136005)(316002)(83380400001)(41300700001)(26005)(6512007)(36756003)(7416002)(6486002)(478600001)(966005)(31696002)(186003)(6506007)(31686004)(45080400002)(4326008)(66476007)(8676002)(53546011)(66946007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zBCNWV4QV3f2JLoOXdJ/JZVpA6Tx2wgnfJOPIRQEDddw8XQFrTs2+Nn8Cn/++ukTeAQpUsoVJoZ3G0xzDgWSjCVRxh07UpmvTg1xqnxq4tWY3XhuybmCPqJykrZTQCHc3yTWLYWBMxi1G4V8yxVVgLS1YTRXITgFRUL9IMTctDiIHaUt7V9hafGGwia9ilRlPV/LFkFAoGaH7JiSIKzO3f6fdiFUBvPLBEdk6pPfYRuLrg98NuDBsWzS3G4fiMm+GItU08hR2Zjj4MgqdSDIQ+1B9SvElRPZd80Ib+luHJc+1GzFUWs+yZBcikm/hcYU/UCcdV/6WlT1ruZRSmpvnAROYEEu4Dy4VfEDVbaZTQ1QgpCofRchr1Wu0DH5Uae29VE2qU7xQa5Vx74Q+BM8ilqby6IyWVJn7BWwoPIAS/ikSKfiYrtiFpbyddHS/7n8WTR9ddX9bTzge2DrkYzHMzg68x6PkCEg9xD88GYh6LTjhASzdofHomtXpeU7uAoINgSGNHeBcQUWsy+yHjUkTjrqxksF7gswcmzMLq0mNP22WYgTofLsHXbqry6XzYufjvoJ8C1AmXu5FFFrT9dTXpgf42pzxcKN6gdIzdAg0/gcK6frVxklGX5JfsUzLkGfLIjhxBmGUtDJkzE4EVe9CGflROa9kPWJELXpam9tRjZDp42aHNDk5AJ/ZMfftQjbKaI3vtFY3734LTqTKCaa/qLSekC5PlApr6xs3pUSd6p5O/pQMxKnq3U6fOnpRcCcTV0mQ9eH97DHzxUCEM/Bcw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(346002)(136003)(366004)(39860400002)(396003)(451199015)(966005)(6506007)(316002)(54906003)(478600001)(110136005)(6486002)(8936002)(2906002)(2616005)(66946007)(66556008)(66476007)(4326008)(8676002)(41300700001)(186003)(83380400001)(5660300002)(31686004)(53546011)(36756003)(38100700002)(86362001)(82960400001)(6512007)(31696002)(26005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SG40RjBUM2JmWHgrOUtVZWxCNVUreG1vR3p6bjZtaUhwazVxZHpDM1JQQ2pw?=
- =?utf-8?B?THUrZzFPa2RpTmhhUUFoemEyeVJsYlBjZmhGa25qSkFobEIwVitiSkFmSTUw?=
- =?utf-8?B?QXN0cG84cjQzaUIrS0YrMThPblJsODVSRDY0UGdUWHo3QkRMK0k1ald0MXA2?=
- =?utf-8?B?R0swNE9IOWtDNWZUMkFNQU5ETWFyREpEMTVPNVFibVp6dlFFOTlCZngrYWEr?=
- =?utf-8?B?M1NRSUttUkRRRkpsQVhWcS94OGZ1Nmk3cDF0cjJ0ekNENTRveU4xVE9nTWFY?=
- =?utf-8?B?U1gycGQwdFVVS2dlQjNWeUJhczU1dFpVZUhyamVoUy8vekg5NkRUNTFLTUcr?=
- =?utf-8?B?UFlsYUdxRXpwTVowT0JRcmNweFdWZHlGam1Ram9vb3RaVThsVWxmQ3lMZDB2?=
- =?utf-8?B?c2c1cERnc3VRSnhpQjRxUFMya2dXU2FvTTMycEkva1VXd1NZS1FBUENuQjVr?=
- =?utf-8?B?ODJrVnhqYzVYUWlQUTQ5bVE5WFB4eXhRVEJsQ05yUXk2Z1BlMHZYZjljR3R3?=
- =?utf-8?B?UmxzTXl4MnZXcE5JVzZXclpsRHFWRlA2dDVXVGNDZmFnOXpnakxabWZIanFH?=
- =?utf-8?B?SUdlYzY1K2RwNkZZSHpHTUxxUW1LNzVmTGZZdjhaMWhvRS9taUMvZjR1WFA5?=
- =?utf-8?B?citDbS9yZU54R1pCZzBBWldqVHV6NjBoS1FpVHFTRlE1WlRFTklIMlQ1SmhQ?=
- =?utf-8?B?L05SWk1VbVRPMis2WGZIUW5ZcVhEQ2JmNm93NC9tUWRqVmhROEl5N0V1dWkv?=
- =?utf-8?B?cTVaS2VwZlRmeUtPZE0zeVRvck9aQjErQ1dpeXpYTXhOUG9iS3Y2OWk4QU91?=
- =?utf-8?B?RjcrRjdWb25ETm4vd1NaVGd5Z3dxWVFENUt2Qm1RNDFPQkl2MHFHS2tPZWV0?=
- =?utf-8?B?UDFUQXJNQm9aN3BOTWkwZndMbFFXdERyTnZOaFZxaXJ1dHNiM24zdXNydWJu?=
- =?utf-8?B?V2xROFpuZWY1VldJWklHa2VhUlRDZXlaTXNnZFJsRjBWbisyMnpVQis3ZDZV?=
- =?utf-8?B?VUNNcS85dmRMaGRMeDVra2ZYd0NwVFMwbW4rTnQyeHJYUkdkUlZ0cGtqZk5y?=
- =?utf-8?B?cUs4bnY1bm5FL3JoeS84VzBQOC9Ba0Z2TndiL1g2UWZYa3VxdkVmT2dqY0VJ?=
- =?utf-8?B?TWFPc2hIbUtLYVB3L1lsUVVhbDErVFBwdjFBbHFQRXpkL3NnNkgzUVZ5emds?=
- =?utf-8?B?R2NURWVhRHRYZGQ0RWlxRVlEdSs2VUcxMzE3ZDI3Ukg5RHEzY25rS3hIbUwv?=
- =?utf-8?B?dlZSOU1CSThyV1hibFIwNVZYMEhLSnVkaXFkV0Fzd2k0eFZkMGJrdDNWNXVj?=
- =?utf-8?B?RkFkUStwbTlXVWkvT2p5My9UTlp5SGRJcWJvKzVGUXcvaUMvb0crbVdzODVh?=
- =?utf-8?B?czh0alorM1hNYThJWlg0dGNxTHpXMnRsTk51KzJ0TlQxclVIZWU4bndobWkw?=
- =?utf-8?B?eWFpTkZwQ1o2TWRUelVQNEh0RGVCUTc5a0FHYlZNYmxNZW82a0Q2WG5CRTVy?=
- =?utf-8?B?M0MzVjMydGRWS2lTMEFCRjUrQ0JIellaaW5JaUlyNlVmUytsWk1FajZteGV0?=
- =?utf-8?B?RzhoTFZlK01jVGplZzZuSzlsUVIrWTg5N1pMSWc5M2NwREtoVFJNSTNNbWs2?=
- =?utf-8?B?Smh5aURzV1FLakZqZjZ1SllNc05uZGNWMlZ5WmNqQ3FCVVROaTlwdEdQZG9M?=
- =?utf-8?B?eVgxWkdibWoxZFh1dnhpKzZwUDhIZW9iVUxPYm5qTWg0ZVJBYm5VMURocFNC?=
- =?utf-8?B?eG4yRnJrYWJ3QVhSRTNZSXp3blc2K3hhalRRRnNsMnNWZnYwdVdKQmdlN014?=
- =?utf-8?B?cUNiOVp4bGpBcGVEcHlVRk5RQ0dlM2dGSkdVT3JlMkoyR3JyRVg3clh6d3pX?=
- =?utf-8?B?Ni92Mi9rUFRmWklKY0c4QXFoUFFZZjlIUjVjSTJoUFRGUjlsb3Ztc3V4Sit5?=
- =?utf-8?B?MlVyRjkvdmZHZGZiM3NuN285N2tKM2ZiQmVvam1pMDhaeTlNc2dUYWpkUmxS?=
- =?utf-8?B?dUpoQ0RHY01TZ3l4ejVOSjYrQzR1N2xrN05PbEVObXJ0QkZkTEl2OVArVUpO?=
- =?utf-8?B?b2VLN0FBVGJzc2pPSTVCQXRMeDFrdkpiZlcyK2xpMVJMb1dCNEhvelFDb0d0?=
- =?utf-8?Q?p4pH+CysqSFM+2tTYQe7eflCs?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae75fcec-9211-4fbe-152d-08dadc68ccf3
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR12MB1390.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aXBMOHR4RG5VRUt3eTVmSkdBWWkzZXFjeWY5eXBmS2ExL3FKbmY3SnR5VGU3?=
+ =?utf-8?B?ZkYvUm1aOWJ6dkI4RS92ZDU2UjBTblRXYzBTQzNjZU5odE9NbW9mbTlrM3NH?=
+ =?utf-8?B?YldSa29wK0pVTjZub3BCSU9ZY0hmYUtEMWI4cjJUbUc0Nk93a1RXZk1Jd0pJ?=
+ =?utf-8?B?WUs4RkhXa0FmSHg1a2V0TDJNTjREdGJBN3JHZS9McjlCOHdndFB3L0c0eEpS?=
+ =?utf-8?B?UGtSMmp2U2dZT0ZSaHUvTUljazBiMEZKeDBpWGphS3dtMktoblUwZGdINXJq?=
+ =?utf-8?B?R0VyOGFmcE9hd0RDa0xjVnhGaGl2YWM0c1FhTjRqODJkV1BIZC84ZFI1Y2lN?=
+ =?utf-8?B?dFlxNDIzLzBINlNwcDBoWDhHTkdMZ0sxMnhJRGJBKzdrRVNQTnhHclNvQTQy?=
+ =?utf-8?B?U3NIWlQ5NDE0b0UxejRYVUVnWGRqT01mTlBJRm55L2VTYU1DUUpiaFo1d3dH?=
+ =?utf-8?B?c0JoNHBjV2RLTml4bDBwL0NJaUlod2tGYUUvZWIzdXA4U3NCYUh3ZnBOUDFR?=
+ =?utf-8?B?TnI4VWE5OXRoZWZ3V0pJMHFoTnErRUh2MCtVdEJrTEE5anp0NkRQNnQxdVF0?=
+ =?utf-8?B?ajJjNGNReksyTkM0QUZKY2xsZCtMTEdHYnVNVlZvM1RZZ0JVbWpZMFJubWRQ?=
+ =?utf-8?B?d2l0VHZMWTRvbFJFMHVPUU5qY0FjRXBSTXRLUHVTRFJwMkFyNXp0ZVJ6QXdr?=
+ =?utf-8?B?bUhvS0x6OXFwWjFrNXZoSHN4Z0JENXNUWkg2ZE5vUFhtajNGSE14T3dTTEZF?=
+ =?utf-8?B?MHM5VUh2UjA5amluSEo0M0hNQ0RqQ3VrY2VSb3QwbG55Y216LzVQbkV1SGFM?=
+ =?utf-8?B?akRGdWt0azNQaFY5aVM4VkhGc0p3NWVGVlZpUStuZENYRStvVTg4U0lNRWNI?=
+ =?utf-8?B?WVAyYjM0d3J6VVlXb2l3VGhSV1RMajBZTzRVUnBUUXhiUDZ6cmVOTHdoT1Y3?=
+ =?utf-8?B?cGhJbk5WU2s0VEUxdlpLS2ZsMjhiY0FBTE9kNkJreFFCSmE2MTdXdnRNdjEv?=
+ =?utf-8?B?akFMRWx5bjZ2NWR5K2s1anJnZnJHbXE5aXpHZHRaZ0JjVlBOM1g2NTJIbElO?=
+ =?utf-8?B?ckc4d3hEVDRJQnZXZlJZYlFhK3lFdUtSaWc4VDI0UjhkVFRGNFhhcnBoTG9Q?=
+ =?utf-8?B?czBVU3B3ZkkzL2ttTmdoa0dFa2VxajV3WHVFTVJteFBPUVBFTm5mdSt3Z0NV?=
+ =?utf-8?B?dzQyZWU3a3BiQktMeFNkdHI1QkRNQ2xhRkRCUGdmaVdVUzBjbFBzNytyRStv?=
+ =?utf-8?B?MXJ1ZmRXdFY2SjNhMm5GdW9hWlpnVFpCWFVhRWJGYTg2bGQ0Ukp2Nm0yUnli?=
+ =?utf-8?B?T1RSSEJvU0dDYkhMZ1VMaFNsMytsc0pLalNtUXVtcWltc3hOSzl4Vm04WG03?=
+ =?utf-8?B?QnZjcWdXMU9aVUtXUWNBenRFSVUxdTdEMDRhU21LMzBGWDhXN2ZiU0NHVnhF?=
+ =?utf-8?B?c0VXa2JudmdoRlQ4bXpoZHdlMFo1ZDhHUWN4UFl4L0szZ1pua0xTUG5tMisv?=
+ =?utf-8?B?czlickpURU50d1JkTFRjNS9zNk1qY00vSVZKcFpMamYrZlpraEYrUk83V29Q?=
+ =?utf-8?B?aVRYVEpwZGZOQmlpMGx1bTlWSEtOU0JDZlMzdkVFRnlpdUFZN3RUMzRjbWJG?=
+ =?utf-8?B?cjlWckt0dTFGamVSVVFkcmZMcng2Zy9mczAvWnJaTG1TajN2ckR3aklpUDMr?=
+ =?utf-8?B?VmZhWHdxR1FiaGhNSEJLdjgxc1Jvb1lua0h5TlFWN2RRZ0Rha25XWDk0NlA3?=
+ =?utf-8?B?d0pvTml5Y2o0NDY0VHl2R2NKcU5EZTJ0dGRzbEVzOTdmU1d0d2NIOGdkVmUw?=
+ =?utf-8?B?WXFmMXg2MS9td2pHcldwdHp0c1dNbzRDUTlCakE5Y2JFZVYzcWFyMWg0K0RV?=
+ =?utf-8?B?Q25rY3JjeEg0eWVmUmpQZXloM3M5bUFFQnF6Y0w4UEp1SkRBOTc1b0Q3U2J5?=
+ =?utf-8?B?eE9oZ1luQm9qRnZZdXVxdVAyMlJGQjM1NndkclpVNlVFN2YwSmpTazJQRlJv?=
+ =?utf-8?B?V3NzZjc1cmZUWUVGZ1JXZVNTakVqdVNpTzV6YWd5Ri8wYW9LODN0SEFCcnJv?=
+ =?utf-8?B?NmJOK3RaR2IyR0F3bXVWWFFJQlJuSW1LemhiQy9hMHpDbU1YMXlxTlZsSGlP?=
+ =?utf-8?B?L2pTZklYRWh0dHdYT0g3VmluRG9oeDVLMDBaemppY2g5ZFErbFUxK3F0bElT?=
+ =?utf-8?B?RlE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 742431d6-161a-4ffb-9e4f-08dadc698453
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2022 17:46:30.1101
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2022 17:51:37.7658
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 388lHstHqNpRReItOERUTHfAlov4qyYlYkNsyDtPE9KvsxBRQsBCHaBRafWmGJr8Lth0RUBfGCVu/o7lzAWuwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6141
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5Q3KHxHLR2Yj7JuohoTgwsvaVb2GHuomLinkffrygMT4TQv41mBFu1Jr+nBw/caMiqsZ/vtSVljbcQJhvgbFXli54GRouVnRc9FQlMEeXjI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR11MB5975
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -129,145 +173,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 12/12/2022 3:55 AM, Jiri Slaby wrote:
+> On 04. 11. 22, 21:28, Tony Nguyen wrote:
+>>
+>>
+>> On 11/4/2022 11:47 AM, Jakub Kicinski wrote:
+>>> On Fri, 4 Nov 2022 11:33:07 -0700 Tony Nguyen wrote:
+>>>> As Jiri mentioned, this is propagated up throughout the driver. We 
+>>>> could
+>>>> change this function to return int but all the callers would then need
+>>>> to convert these errors to i40e_status to propagate. This doesn't 
+>>>> really
+>>>> gain much other than having this function return int. To adjust the
+>>>> entire call chain is going to take more work. As this is resolving a
+>>>> valid warning and returning what is currently expected, what are your
+>>>> thoughts on taking this now to resolve the issue and our i40e team will
+>>>> take the work on to convert the functions to use the standard errnos?
+>>>
+>>> My thoughts on your OS abstraction layers should be pretty evident.
+>>> If anything I'd like to be more vigilant about less flagrant cases.
+>>>
+>>> I don't think this is particularly difficult, let's patch it up
+>>> best we can without letting the "status" usage grow.
+>>
+>> Ok thanks will do.
+> 
+> Just heads-up: have you managed to remove the abstraction yet?
 
-On 12/11/2022 5:16 PM, Brett Creeley wrote:
-> 
-> On 12/11/2022 4:54 AM, Max Gurtovoy wrote:
->> Caution: This message originated from an External Source. Use proper 
->> caution when opening attachments, clicking links, or responding.
->>
->>
->> On 12/7/2022 3:06 AM, Brett Creeley wrote:
->>> This is a first draft patchset for a new vendor specific VFIO driver for
->>> use with the AMD/Pensando Distributed Services Card (DSC). This driver
->>> (pds_vfio) is a client of the newly introduced pds_core driver.
->>>
->>> Reference to the pds_core patchset:
->>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fnetdev%2F20221207004443.33779-1-shannon.nelson%40amd.com%2F&amp;data=05%7C01%7Cbrett.creeley%40amd.com%7C0591fe11a7c24bf8789908dadb76db84%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C638063600829691750%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3VMvNtUto4HwCap65NvWrIADbLzGk4Ef9ZnA9fAB458%3D&amp;reserved=0
->>>
->>> AMD/Pensando already supports a NVMe VF device (1dd8:1006) in the
->>> Distributed Services Card (DSC). This patchset adds the new pds_vfio
->>> driver in order to support NVMe VF live migration.
->>>
->>> This driver will use the pds_core device and auxiliary_bus as the VFIO
->>> control path to the DSC. The pds_core device creates auxiliary_bus 
->>> devices
->>> for each live migratable VF. The devices are named by their feature plus
->>> the VF PCI BDF so the auxiliary_bus driver implemented by pds_vfio 
->>> can find
->>> its related VF PCI driver instance. Once this auxiliary bus connection
->>> is configured, the pds_vfio driver can send admin queue commands to the
->>> device and receive events from pds_core.
->>>
->>> An ASCII diagram of a VFIO instance looks something like this and can
->>> be used with the VFIO subsystem to provide devices VFIO and live
->>> migration support.
->>>
->>>                                 .------.  .--------------------------.
->>>                                 | QEMU |--|  VM     .-------------.  |
->>>                                 '......'  |         | nvme driver |  |
->>>                                    |      |         .-------------.  |
->>>                                    |      |         |  SR-IOV VF  |  |
->>>                                    |      |         '-------------'  |
->>>                                    |      '---------------||---------'
->>>                                 .--------------.          ||
->>>                                 |/dev/<vfio_fd>|          ||
->>>                                 '--------------'          ||
->>> Host Userspace                         |                 ||
->>> ===================================================      ||
->>> Host Kernel                            |                 ||
->>>                                         |                 ||
->>>             pds_core.LM.2305 <--+   .--------.            ||
->>>                     |           |   |vfio-pci|            ||
->>>                     |           |   '--------'            ||
->>>                     |           |       |                 ||
->>>           .------------.       .-------------.            ||
->>>           |  pds_core  |       |   pds_vfio  |            ||
->>>           '------------'       '-------------'            ||
->>>                 ||                   ||                   ||
->>>               09:00.0              09:00.1                ||
->>> == PCI ==================================================||=====
->>>                 ||                   ||                   ||
->>>            .----------.         .----------.              ||
->>>      ,-----|    PF    |---------|    VF    |-------------------,
->>>      |     '----------'         '----------'  |      nvme      |
->>>      |                     DSC                |  data/control  |
->>>      |                                        |      path      |
->>>      -----------------------------------------------------------
->>
->> Hi Brett,
->>
->> what is the class code of the pds_core device ?
->>
->> I see that pds_vfio class_code is PCI_CLASS_STORAGE_EXPRESS.
-> 
-> The pds_core driver has the following as its only pci_device_id
-> entry:
-> 
-> PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_CORE_PF)
 
-The PCI class code for this device is 0x12 (Processing accelerator).
+Hi Jiri,
+
+It's being worked on: 
+https://lore.kernel.org/intel-wired-lan/20221207144800.1257060-1-jan.sokolowski@intel.com/
 
 Thanks,
-
-Brett
-> 
->>
->>>
->>>
->>> The pds_vfio driver is targeted to reside in drivers/vfio/pci/pds.
->>> It makes use of and introduces new files in the common include/linux/pds
->>> include directory.
->>>
->>> Brett Creeley (7):
->>>    pds_vfio: Initial support for pds_vfio VFIO driver
->>>    pds_vfio: Add support to register as PDS client
->>>    pds_vfio: Add VFIO live migration support
->>>    vfio: Commonize combine_ranges for use in other VFIO drivers
->>>    pds_vfio: Add support for dirty page tracking
->>>    pds_vfio: Add support for firmware recovery
->>>    pds_vfio: Add documentation files
->>>
->>>   .../ethernet/pensando/pds_vfio.rst            |  88 +++
->>>   drivers/vfio/pci/Kconfig                      |   2 +
->>>   drivers/vfio/pci/mlx5/cmd.c                   |  48 +-
->>>   drivers/vfio/pci/pds/Kconfig                  |  10 +
->>>   drivers/vfio/pci/pds/Makefile                 |  12 +
->>>   drivers/vfio/pci/pds/aux_drv.c                | 216 +++++++
->>>   drivers/vfio/pci/pds/aux_drv.h                |  30 +
->>>   drivers/vfio/pci/pds/cmds.c                   | 486 ++++++++++++++++
->>>   drivers/vfio/pci/pds/cmds.h                   |  44 ++
->>>   drivers/vfio/pci/pds/dirty.c                  | 541 ++++++++++++++++++
->>>   drivers/vfio/pci/pds/dirty.h                  |  49 ++
->>>   drivers/vfio/pci/pds/lm.c                     | 484 ++++++++++++++++
->>>   drivers/vfio/pci/pds/lm.h                     |  53 ++
->>>   drivers/vfio/pci/pds/pci_drv.c                | 134 +++++
->>>   drivers/vfio/pci/pds/pci_drv.h                |   9 +
->>>   drivers/vfio/pci/pds/vfio_dev.c               | 238 ++++++++
->>>   drivers/vfio/pci/pds/vfio_dev.h               |  42 ++
->>>   drivers/vfio/vfio_main.c                      |  48 ++
->>>   include/linux/pds/pds_core_if.h               |   1 +
->>>   include/linux/pds/pds_lm.h                    | 356 ++++++++++++
->>>   include/linux/vfio.h                          |   3 +
->>>   21 files changed, 2847 insertions(+), 47 deletions(-)
->>>   create mode 100644 
->>> Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst
->>>   create mode 100644 drivers/vfio/pci/pds/Kconfig
->>>   create mode 100644 drivers/vfio/pci/pds/Makefile
->>>   create mode 100644 drivers/vfio/pci/pds/aux_drv.c
->>>   create mode 100644 drivers/vfio/pci/pds/aux_drv.h
->>>   create mode 100644 drivers/vfio/pci/pds/cmds.c
->>>   create mode 100644 drivers/vfio/pci/pds/cmds.h
->>>   create mode 100644 drivers/vfio/pci/pds/dirty.c
->>>   create mode 100644 drivers/vfio/pci/pds/dirty.h
->>>   create mode 100644 drivers/vfio/pci/pds/lm.c
->>>   create mode 100644 drivers/vfio/pci/pds/lm.h
->>>   create mode 100644 drivers/vfio/pci/pds/pci_drv.c
->>>   create mode 100644 drivers/vfio/pci/pds/pci_drv.h
->>>   create mode 100644 drivers/vfio/pci/pds/vfio_dev.c
->>>   create mode 100644 drivers/vfio/pci/pds/vfio_dev.h
->>>   create mode 100644 include/linux/pds/pds_lm.h
->>>
->>> -- 
->>> 2.17.1
->>>
+Tony
