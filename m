@@ -2,130 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EDF564A7D7
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 20:03:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6457B64A7DE
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 20:05:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbiLLTC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 14:02:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
+        id S232938AbiLLTEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 14:04:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233406AbiLLTCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 14:02:05 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9943B313;
-        Mon, 12 Dec 2022 11:01:44 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id jl24so13043795plb.8;
-        Mon, 12 Dec 2022 11:01:44 -0800 (PST)
+        with ESMTP id S233271AbiLLTDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 14:03:40 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2131.outbound.protection.outlook.com [40.107.94.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E72D13F7D;
+        Mon, 12 Dec 2022 11:03:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VCIJJOzZgTI6se0rUenmKuEJyxpp4RMTfMkMaPAglsM22BOjlRgOl11TCTRIGzeTlJ9vPmbfsu4xDHoK/jpNBgD0iOJShB/j13aW0wm52FjRGA3lBpUX6m2+XCPPaqNXgZUgsuIv1+kHoQ33g0Hme+t0f3WtUIyt3VrEiW7w4OErmHhsixTsJ/QYwDqzfCJwbsu6qTZVDIvwLFue8oO8ex/wrnJ15khu3xnFbjT8iQe5p8xsVdwgEZmvrpn51R2L+Rk3mfKytAWE/SvOlVDWwWIOYYkEWV97EI/tt9hQ4sH8XMMOa1fhasXHMbZaBmJSOIdqb4n5PmQPoEQHQp4vjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xmjJDiYArf/X/0pc3R36M4T7Q8PKtSoHxEoDFCztk94=;
+ b=PL+/AXNNa50YW0O1++I9NYyNrJZFANipGo7IeKKWfi6HxSuI436fKfRGrjIB8RRqemHndvqNfit53MN0sS1guEi4biVIsz+7PIbbX3gUChRASV+oOmjnqQGPxPrct9rcxeLvC9hN19HGJAqC2f8mwoAznNnItCCw8cjnji+awD9pzT9y5VB1I1XKbsog26ooRENMGLo4PWw54Wv7004dFQxYZd37RbSp+lHrl3XoqVPXqAS7e4RIiNgZl5mC2qqwNnUSh7wmUL9LUXKB/RetrP+2lrbzpZNqJUNP646YTDlZsjYGMfCxPBbTotstU5gLKTqWqc0JIEx0C1GshRT2mQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=jXiYAyiEKIzocsl5NzqmaacJdcUm5UXG1kgIVkOG/n0=;
-        b=qjdG8SL+m9W7uH+If41w2e6S/DNskVQVQlzod3pjlLA40ep41oDNvZHWwI/AE+r+kE
-         yR3I/i7UBrTxIfDv+/jpPAvwogrwNg2JZ6SmeHn+a86rHnvb0N57HczIFoGwyrT3Zlnk
-         PNepCf6M28d//2kuLN6mOaJF8ZZlpN4qMthHlxgfxrHdsqkW7nlhhucoeLk72cnd5/e/
-         gft0/DY+U+zOBu6CSfBSzaeBzCnmqWlHLh7BI0pPlL477+U83XU841GfBwKkvG6UiyJT
-         WP3ZVC0CmDHhbuFhSrIgdJKizbCD7scMKDN9nqFj+jaVaM87dLbKG8duI9eagp0kZU5i
-         /zqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jXiYAyiEKIzocsl5NzqmaacJdcUm5UXG1kgIVkOG/n0=;
-        b=Dkiw4kIRC6XgHEAFsUA03viB6FnqDnHs+sdJybatSaXKV35Jc3S9MvKcwuVCWSVDd4
-         5zAs+0yBbsw4D9KRpgPTYVWMORQck1x9eZOo7Ai3vA1zjH+VoEWj2DScMo+AKZXdi0Gw
-         keGjLL6UbpSyz4xq15t9nr6Xm2wZG9wZ3RBnO/VxmkDD6ykpLae/OBzlMYuvEraf+mOd
-         VR4Ax9RheNkhmTJm6bl36YRhVrDFRmJWCaqrddpiJT6hfkMqKO9uEEIGnYHNfuRgUw0f
-         1A2aeYHyewMFOx7B33iyEt9mBbJOYiEcqvdHOmIWbHVPqe7rojRLyEUtvReY6gMvrEoe
-         NpwA==
-X-Gm-Message-State: ANoB5pl5gjsuOxjMe2lP8BJKYsAWZCooi7jyACR+szo0g0AGJy3SJgyP
-        Ewe6nGtODYP50CFskyPPBvc9XgSKUn+i8HKsCSg=
-X-Google-Smtp-Source: AA0mqf6ywgPV6ixT/JKHYQHS5vnWMLGv5H5QT3Oa20cy+YfMiCg1cCcKnS49cbY+WI3V/ELjcv/H4nkHMjLkEbr+Z+o=
-X-Received: by 2002:a17:902:b40b:b0:188:75bb:36d4 with SMTP id
- x11-20020a170902b40b00b0018875bb36d4mr81059962plr.55.1670871704005; Mon, 12
- Dec 2022 11:01:44 -0800 (PST)
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xmjJDiYArf/X/0pc3R36M4T7Q8PKtSoHxEoDFCztk94=;
+ b=wGcELf4+JMnGRhGAsJl5v0/yCDFucldIW3xLzFKbvJz/VadPVzUeY/JfaFazMaxdfx873+YDozFDuVpjL7h6qrRPDD7P3fFQvV3phZ3F1MXyoF8KdUMAghr42zKJiOYPPINcrRA2VRPN3WILCIWScpfwVft3/0uK6ywaz/6QAks=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by IA0PR10MB6746.namprd10.prod.outlook.com
+ (2603:10b6:208:43e::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Mon, 12 Dec
+ 2022 19:03:15 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::45b5:a860:9cea:a74c]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::45b5:a860:9cea:a74c%4]) with mapi id 15.20.5880.019; Mon, 12 Dec 2022
+ 19:03:15 +0000
+Date:   Mon, 12 Dec 2022 11:03:09 -0800
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: Re: [PATCH v5 net-next 00/10] dt-binding preparation for ocelot
+ switches
+Message-ID: <Y5d67SPMc/YCr0Rq@COLIN-DESKTOP1.localdomain>
+References: <20221210033033.662553-1-colin.foster@in-advantage.com>
+ <20221212102958.0948b360@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221212102958.0948b360@kernel.org>
+X-ClientProxiedBy: SJ0PR05CA0001.namprd05.prod.outlook.com
+ (2603:10b6:a03:33b::6) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-References: <CAOMZO5AFsvwbC4Pr49WPFmZt7OnKjuJnYSf3cApGqtoZ_fFPPA@mail.gmail.com>
-In-Reply-To: <CAOMZO5AFsvwbC4Pr49WPFmZt7OnKjuJnYSf3cApGqtoZ_fFPPA@mail.gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Mon, 12 Dec 2022 16:01:25 -0300
-Message-ID: <CAOMZO5AWRDLu5t0O=AG7CxNLv20HTmMTRh=so=s7+nTH0_qYgQ@mail.gmail.com>
-Subject: Re: imx7: USB modem reset causes modem to not re-connect
-To:     bjorn@mork.no, Peter Chen <peter.chen@kernel.org>,
-        Marek Vasut <marex@denx.de>, Li Jun <jun.li@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Schrempf Frieder <frieder.schrempf@kontron.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|IA0PR10MB6746:EE_
+X-MS-Office365-Filtering-Correlation-Id: cb8050f0-071f-4e73-e0c8-08dadc738613
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eFOlNLbudeJmFiy5QmIgPQAaXprjmfzfJEoeNGFVNDIAssaMgk8KvI0/v47CmiDnzaKG0yf72g+ZR/xkw8+xceDCd21FxUJHeTwzuHLDGZ75f3xEqwDUs2WfebZZo8yFlQ2vOZXV90vmRALnYFucxCaXR6xY0JARVjkHNyJsD7ZLsoP5F5POTojw2I9OwtjiM97zrDuhYrqaUS476d3QcyAMDlbKZimEqg2Sm3/I2vV0UEO/wqE+yD2g4HsqLUMPEpGo04tcYIzLuk47e1s/4z+gpsYqXjh0IF74wgLf33ZjhrFlj+hMhO1Cw4x8h/4q6Goi6hPEJ1pfgaWu0pfAxGplN2jY9sBwAXzlDoj6nslcSrHnHjQ+a+hRBnyKqqZQiE8sOLngA/I+qinvLgZ7EALm5yYLjqExZMuqAPG5k8LbnfluM5Sdp6fPitk1B1cXfbTnNYVAWPMwBcPR5Ib8/ljGkfClvn+mJLDktcPF1ltnoZLihMKaz3ZBt/gnFfxn7nMdYsvUbSvHi96uk2JnMFn/GWm4amlSpPe4ghrTLt2YOZ+KCZh8NUsE5y97E7uan9hKy6ACTX7bQxsva85j3K/vG+pe2ewBPu09HvbSxfQ5qRGVtksdOOg+IxeHUzo5FE7ijLsWL+1RdoTaZZZT7w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39830400003)(396003)(366004)(376002)(136003)(346002)(451199015)(66946007)(41300700001)(8936002)(38100700002)(8676002)(4326008)(66476007)(5660300002)(66556008)(7406005)(44832011)(7416002)(83380400001)(478600001)(6506007)(6486002)(6666004)(316002)(6916009)(54906003)(2906002)(9686003)(26005)(6512007)(66899015)(86362001)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b0JXdzBTQlBVY1JnT2xEN1ZnYkdoMHFoL21hOHJIcy9RMGx2T0pmTVBndmF3?=
+ =?utf-8?B?MTFYRzhJTmxvTndhRzNhRlBZRVNKSE5Idm1TY09MRldWbVBSNnRqSy9YTng3?=
+ =?utf-8?B?UkE3N0FRaTgzaTBucTBPUG9LSUhuWkphWXNPYjRkbVY5aEl3Nm9wVy9wb0Vv?=
+ =?utf-8?B?RU9PR21OMzZHL3EyTHRwcTM0VFIzeU1MaXl1MjRqSFU4UzFhWlJPNU9zSVl6?=
+ =?utf-8?B?UW1TQ2JQbU5ySFBwMTlFZ1czUWhlYkl6UnBES2pJL2NqcHhMTVdSb2xzcTZv?=
+ =?utf-8?B?N09kcTNEcGVkV1F5dk9LaEh6N1BTTHl1YVRNYzJnbWllSFdJeHhjUjBQYldn?=
+ =?utf-8?B?UTJ0SUhSa3REVWJWb2sxZUg0VkJ3ZnY5YnJTaHplQUdpZWRmbEVkZWo1d0pF?=
+ =?utf-8?B?a2NtZ2tDalRhWGVFcUdkQTgxTHBxLy81MGIySDRRRHlMejZidDhkNlRKMEIv?=
+ =?utf-8?B?bDVEMWdqa2dBREI3SXlzNlc0NG9tWEltQnQ1N2pYWHZNdTB4aHo1dVFGYnlD?=
+ =?utf-8?B?cGw4aTdYQ1pkcGhBaHZpT1ZRZ1IxK1JHMEdrTFBQUmVEN01TelBBamVPMFNU?=
+ =?utf-8?B?Yms4LzNYUkZtcW1Cb2dJSHVTWXFXa09nWVJPUDJrWG1ndmJRVlVKa0RBSm5Q?=
+ =?utf-8?B?c21GQjVTZlc3c3UzV2lvRjg1VjBtakMwNUk2c3o5SWV5UzVjdUFhYkhSRGQ5?=
+ =?utf-8?B?c3FyZmNoVGtHMDM5RE5KOTRKQWlVd1JSOXF2SExyT0t2TFpXOGlRbTFJcElC?=
+ =?utf-8?B?SHUyZXBoNGs5OEhvc2NreHc1Y3dHZHUvMHMyU2UranFqTENqU1pnc3U5dEVx?=
+ =?utf-8?B?eGpqSzduODFpbjlnMmJDbzhIcytJUkdsdlNiUlkwYk5jRFA5OW45N2tmY3hN?=
+ =?utf-8?B?UFNvL2VCbE16a0JPVzhHSVQ3WThSS0xKZ0RIM1VaNzVVUzRhK1NiTHYwQnB0?=
+ =?utf-8?B?RTlRaktJK2dLd29XMHVEOGhrNmVtcXg4RTVhMUsyQ3pIaHllVXVQbXJCMEZI?=
+ =?utf-8?B?d3hWaGlDRnVhWHA5TFlPM0podUE4c01xYys0eEsxRVloRk5LWFN5U2FuSmUy?=
+ =?utf-8?B?bTdQSUdpZUV0aWZNV0NFMGUyaGJJOHFjSisxQmxsL21VNFJQL0cyUmZmbXFr?=
+ =?utf-8?B?dUJtV2gxam1vYVp5VVlJdlgrQWZROWNheEV6TTlWaU11RUpUNHA1bVM1UkZm?=
+ =?utf-8?B?RDRKYTRYZzFNZ1ZEc3VvYUkxb01iUjd1N1FndjRaMXhRcldUQU41V0dVQ3F6?=
+ =?utf-8?B?d0k0UWNETkh5SnZrbSs2VjZNeGpuY3NnbUE5RThGclNHNVNkc0hZUEhHWUw0?=
+ =?utf-8?B?UDR3OXhGa1QyL3JuN25ialVIU3F6RkJmc2NMSktyVGlleXZCSFBvY2tKSFQr?=
+ =?utf-8?B?NU5KR1IyeWxnZEtWVjVVNUdubjZKa2dyemV0aHdDcDcyYkZHNkZpbEVCY012?=
+ =?utf-8?B?dTlQMkJDVjlMcXY5MVBmQytvUXQ5N3VJSDRmWW1lV21vRUQ0SmNjSjV5VlR1?=
+ =?utf-8?B?dWtCSVp4Wi8wcXRiNlRCZCtnVGIxTkZzcmlLZWp1R21CVjBYYnNJTkJ6ZzRD?=
+ =?utf-8?B?c3VhU01XVTRKRG1JbE5rSXp3Mk15U0xZdHdoYVpXTXFKcTdpSC9paE5ETXpw?=
+ =?utf-8?B?N0toZXdVcVVnRE1Jc3h0SDV4NmYzUjYvNU1xQlFrU1pPMlU4WGszbmVBVlI0?=
+ =?utf-8?B?OWFiU0xPWWZGMDZqUlYvNGo2LzJwVjhuZFl0MlZGQVFZWmZjV1IzOURhc0hl?=
+ =?utf-8?B?eVU5UzlEdXBySU8zUzFZNlhONlk4dDE3M1NxSmYzU3VjUTZXanNMMmsyQ29Q?=
+ =?utf-8?B?eVdBUnBMNHFyU29uUHJmUjVRWGs0T2kzOVcwMVN5RzliQUMreUh6SWRyOWRR?=
+ =?utf-8?B?RkFnZXVlREEyNkU5eEgvYVpybFdKOWR1dkFJUDBZT29XOVFOYnZLbWJaZFFH?=
+ =?utf-8?B?MmdmVkl1RmQvYkdHS2s2SzByZXM3b2VBY294b3dwdm5ML1diSk43T3NVV2dq?=
+ =?utf-8?B?d0s4MHVaOUdEdXpwcFBtR2hYZDdsMzdEb3liMDBUVCtJWDFvdGNLeFhCcVBk?=
+ =?utf-8?B?dlJ0ckd2L3Zvald1U2tjQnRsUVdZMGErTW9rWUViYUl2bDFrSWtKNTBXcmJR?=
+ =?utf-8?B?SFltNVJHeFp0THdzbVNNS1JiZnEwbUFXcVB0eHNhTzl5RU0xZWlZRXZ6SXkr?=
+ =?utf-8?Q?iPJLpArBOTzjxs5pEWgnA9k=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb8050f0-071f-4e73-e0c8-08dadc738613
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2022 19:03:15.7801
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pEKAAegcuM+ksZkIJqqUbO5tL5CD126av13MU149HPHGFKw57VnoywiM2pnUgmqGSptFQ3/z5z4XcomqlJmv2wXPvMqEJAZEWamzfm3BkWA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR10MB6746
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 12, 2022 at 3:10 PM Fabio Estevam <festevam@gmail.com> wrote:
->
-> Hi,
->
-> On an imx7d-based board running kernel 5.10.158, I noticed that a
-> Quectel BG96 modem is gone after sending a reset command via AT:
+On Mon, Dec 12, 2022 at 10:29:58AM -0800, Jakub Kicinski wrote:
+> On Fri,  9 Dec 2022 19:30:23 -0800 Colin Foster wrote:
+> > Ocelot switches have the abilitiy to be used internally via
+> > memory-mapped IO or externally via SPI or PCIe. This brings up issues
+> > for documentation, where the same chip might be accessed internally in a
+> > switchdev manner, or externally in a DSA configuration. This patch set
+> > is perparation to bring DSA functionality to the VSC7512, utilizing as
+> > much as possible with an almost identical VSC7514 chip.
+> > 
+> > This patch set changed quite a bit from v2, so I'll omit the background
+> > of how those sets came to be. Rob offered a lot of very useful guidance.
+> > My thanks.
+> > 
+> > At the end of the day, with this patch set, there should be a framework
+> > to document Ocelot switches (and any switch) in scenarios where they can
+> > be controlled internally (ethernet-switch) or externally (dsa-switch).
+> 
+> A lot of carried over review tags here, so please let me know if
+> there's anything that needs to be reviewed here, otherwise I'd like 
+> to merge the series for 6.2 by the end of the day.
 
-Disabling runtime pm like this:
-
-diff --git a/drivers/usb/chipidea/ci_hdrc_imx.c
-b/drivers/usb/chipidea/ci_hdrc_imx.c
-index 9ffcecd3058c..e2a263d583f9 100644
---- a/drivers/usb/chipidea/ci_hdrc_imx.c
-+++ b/drivers/usb/chipidea/ci_hdrc_imx.c
-@@ -62,7 +62,6 @@ static const struct ci_hdrc_imx_platform_flag
-imx6ul_usb_data = {
- };
-
- static const struct ci_hdrc_imx_platform_flag imx7d_usb_data = {
--       .flags = CI_HDRC_SUPPORTS_RUNTIME_PM,
- };
-
- static const struct ci_hdrc_imx_platform_flag imx7ulp_usb_data = {
-
-makes the USB modem to stay connected after the reset command:
-
-# microcom /dev/ttyUSB3
->AT+CFUN=1,1
-OK
-[   31.339416] usb 2-1: USB disconnect, device number 2
-[   31.349480] option1 ttyUSB0: GSM modem (1-port) converter now
-disconnected from ttyUSB0
-[   31.358298] option 2-1:1.0: device disconnected
-[   31.366390] option1 ttyUSB1: GSM modem (1-port) converter now
-disconnected from ttyUSB1
-[   31.374883] option 2-1:1.1: device disconnected
-[   31.383359] option1 ttyUSB2: GSM modem (1-port) converter now
-disconnected from ttyUSB2
-[   31.391800] option 2-1:1.2: device disconnected
-[   31.404700] option1 ttyUSB3: GSM modem (1-port) converter now
-disconnected from ttyUSB3
-# [   31.413261] option 2-1:1.3: device disconnected
-[   36.151388] usb 2-1: new high-speed USB device number 3 using ci_hdrc
-[   36.354398] usb 2-1: New USB device found, idVendor=2c7c,
-idProduct=0296, bcdDevice= 0.00
-[   36.362768] usb 2-1: New USB device strings: Mfr=3, Product=2, SerialNumber=4
-[   36.370031] usb 2-1: Product: Qualcomm CDMA Technologies MSM
-[   36.375818] usb 2-1: Manufacturer: Qualcomm, Incorporated
-[   36.381355] usb 2-1: SerialNumber: 7d1563c1
-[   36.389915] option 2-1:1.0: GSM modem (1-port) converter detected
-[   36.397679] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB0
-[   36.412591] option 2-1:1.1: GSM modem (1-port) converter detected
-[   36.420237] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB1
-[   36.434988] option 2-1:1.2: GSM modem (1-port) converter detected
-[   36.442792] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB2
-[   36.457745] option 2-1:1.3: GSM modem (1-port) converter detected
-[   36.465709] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB3
-
-Does anyone have any suggestions as to what could be the problem with
-runtime pm?
+I just responded to patch 4, which has a small (?) outstanding issue /
+discussion. I asked Rob and Arınç's opinions as to whether it should
+hold up this series. Everything else is good to go, as far as I
+understand.
