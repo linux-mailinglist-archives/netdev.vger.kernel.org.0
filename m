@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F07649AC6
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:11:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6BA649AFF
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiLLJLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 04:11:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41880 "EHLO
+        id S231855AbiLLJWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 04:22:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231766AbiLLJLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:11:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E897671
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 01:10:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670836239;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=js5jlF3yTN3u8DK/CNDR5RCWPJzXAeH4KJeogte/M2c=;
-        b=fQbJEVuXs6zOX1A+HXNomLbQPw4h+/PVnCZ+15LVm9qgjIgTDRuW1zI8BNQUFIaokN8wv+
-        7y75CmyiLQL+4YoiE6TxJ94xrWqqrgTfikjatxj1Oh4WdH36I3v5g/T7x7POLmmCUp2/Ft
-        XA3duokg1ObVk55oStwm4bYSa79MBsM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-RVzAPNIxNYiHJkzms2wBpw-1; Mon, 12 Dec 2022 04:10:36 -0500
-X-MC-Unique: RVzAPNIxNYiHJkzms2wBpw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S231956AbiLLJV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:21:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C840D50;
+        Mon, 12 Dec 2022 01:21:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0159B81173A;
-        Mon, 12 Dec 2022 09:10:36 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-12-186.pek2.redhat.com [10.72.12.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3082B2166B26;
-        Mon, 12 Dec 2022 09:10:31 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] virtio-net: correctly enable callback during start_xmit
-Date:   Mon, 12 Dec 2022 17:10:29 +0800
-Message-Id: <20221212091029.54390-1-jasowang@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1805E60F39;
+        Mon, 12 Dec 2022 09:21:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC63BC433D2;
+        Mon, 12 Dec 2022 09:20:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670836861;
+        bh=lC6luI6DCbVTais4yXR5+kEUwbcuUmGiAsYYh+6zc8Y=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=lKqCbvpPP275sYFbjwH4DF6Ydmerw6HU4eYdDcn8E1vSCj1sEV8mmt4JaoNXiyt75
+         FDHm467qkI9WuOEh7qN6op7obJjyWhfDPtpBk4dKxk3NtAv/SIaRfy0AUVcinbTnZm
+         PwV+xUQ3cZudkqOiG0GuO7MJfxt5/H9bkJdU8YRG6T+/48Lfbi6k7iOb2qZIoY0bmu
+         TMfnoRVFtk+ucadZR9ldC7ULO5VTI1StELMdV2dnJE8/shBDtfOg24B3DwfBkfyhMe
+         bN5U4VHvlTsDyWZPe6y2HA7Lh7/lPRDlu9+tRl/LV3pX+0KaR+ctoTjTIr3UeQ/6AA
+         6WSN7AHzrR1PQ==
+Message-ID: <f5076356-495b-c42d-e22a-7207dfb1fb3b@kernel.org>
+Date:   Mon, 12 Dec 2022 11:20:56 +0200
 MIME-Version: 1.0
-Content-type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpsw: Fix PM runtime
+ leakage in am65_cpsw_nuss_ndo_slave_open()
+Content-Language: en-US
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org,
+        andrew@lunn.ch, edumazet@google.com, pabeni@redhat.com,
+        vigneshr@ti.com, s-vadapalli@ti.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221208105534.63709-1-rogerq@kernel.org> <Y5PY1Cdp3px3vRqE@x130>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <Y5PY1Cdp3px3vRqE@x130>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,41 +59,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
-virtqueue callback via the following statement:
 
-        do {
-           ......
-	} while (use_napi && kick &&
-               unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
 
-This will cause a missing call to virtqueue_enable_cb_delayed() when
-kick is false. Fixing this by removing the checking of the kick from
-the condition to make sure callback is enabled correctly.
+On 10/12/2022 02:54, Saeed Mahameed wrote:
+> On 08 Dec 12:55, Roger Quadros wrote:
+>> Ensure pm_runtime_put() is issued in error path.
+>>
+>> Reported-by: Jakub Kicinski <kuba@kernel.org>
+>> Signed-off-by: Roger Quadros <rogerq@kernel.org>
+> 
+> 
+> Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+> 
+> 
+> [...]
+> 
+>> @@ -622,6 +623,10 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
+>> error_cleanup:
+>>     am65_cpsw_nuss_ndo_slave_stop(ndev);
+> 
+> BTW, while looking at the ndo_slave_stop() call, it seems to abort if am65_cpsw_nuss_common_stop() fails, but looking deeper at that and it seems am65_cpsw_nuss_common_stop() can never fail, so you might want to fix that.
 
-Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
-The patch is needed for -stable.
----
- drivers/net/virtio_net.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+You mean we should change it to return void and get rid of error checks on that function. Right?
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 86e52454b5b5..44d7daf0267b 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1834,8 +1834,8 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 		free_old_xmit_skbs(sq, false);
- 
--	} while (use_napi && kick &&
--	       unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
-+	} while (use_napi &&
-+		 unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
- 
- 	/* timestamp packet in software */
- 	skb_tx_timestamp(skb);
--- 
-2.25.1
+> 
+>>     return ret;
+>> +
+>> +runtime_put:
+>> +    pm_runtime_put(common->dev);
+>> +    return ret;
+>> }
+>>
+>> static void am65_cpsw_nuss_rx_cleanup(void *data, dma_addr_t desc_dma)
+>> -- 
+>> 2.34.1
+>>
 
+cheers,
+-roger
