@@ -2,150 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE3C649D88
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:24:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19AAC649D95
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232017AbiLLLYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 06:24:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
+        id S231614AbiLLLax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 06:30:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231302AbiLLLYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:24:05 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19B6F4;
-        Mon, 12 Dec 2022 03:23:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670844218; x=1702380218;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4hyjin04xcLN2c4aQwMYUFRysfBo+OuGNZ4sZbmy7iY=;
-  b=JMp47GQvRETmeC+FBbsA7kdC7NNXbHechA4zaW6WGEJ4k4POLpM6fh8P
-   tR9voUcrl2HeLUwYUszFbbjCaqtq09xAy7ft+dENyjCWTfphUojT4HKDn
-   mHYwMCZrfKDjuJvdZTrT3fpilAhFSt/3ccnF3q/eDQxKW1xDY4dLZlZpk
-   7Abr8ezx/pTbHvpvJbw6k9brh0CNiGiRdWWzcjzOwyw4QH6+Q6xUqk/Zh
-   xkKrALvOnrRsNm4yiEmICZuuLW3Ds2j08kUoYNxoRPQw4bQYRUt/prQ1b
-   8kj2eZ+glSjl6d/VTxkzyPoSXIxq0hrCVcN9AzY9XKEiZ9EvPsRrEZM66
-   g==;
-X-IronPort-AV: E=Sophos;i="5.96,238,1665471600"; 
-   d="scan'208";a="127662353"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Dec 2022 04:23:38 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 12 Dec 2022 04:23:38 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 12 Dec 2022 04:23:35 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <andrew@lunn.ch>, <hkallweit1@gmail.com>
-CC:     <sergiu.moga@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 2/2] net: macb: use phylink_suspend()/phylink_resume()
-Date:   Mon, 12 Dec 2022 13:28:45 +0200
-Message-ID: <20221212112845.73290-3-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20221212112845.73290-1-claudiu.beznea@microchip.com>
-References: <20221212112845.73290-1-claudiu.beznea@microchip.com>
+        with ESMTP id S229607AbiLLLaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:30:52 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C95A60FC
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 03:30:51 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1p4h1F-0008Pd-R1
+        for netdev@vger.kernel.org; Mon, 12 Dec 2022 12:30:49 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id BBB2E13CB3A
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 11:30:48 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 6BBEA13CB2D;
+        Mon, 12 Dec 2022 11:30:47 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c3c03821;
+        Mon, 12 Dec 2022 11:30:46 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/39] pull-request: can-next 2022-12-12
+Date:   Mon, 12 Dec 2022 12:30:06 +0100
+Message-Id: <20221212113045.222493-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use phylink_suspend() and phylink_resume() for macb driver instead
-of phylink_start()/phylink_stop(). This helps on fixing
-commit bf0ad1893442 ("net: macb: Specify PHY PM management done by MAC").
+Hello Jakub, hello David,
 
-Commit bf0ad1893442 ("net: macb: Specify PHY PM management done by MAC")
-signals to PHY layer that the PHY PM management is done by the MAC driver
-itself. In case this is done the mdio_bus_phy_suspend() and
-mdio_bus_phy_resume() will return just at its beginning letting the MAC
-driver to handle the PHY power management.
+this is a pull request of 39 patches for net-next/master.
 
-AT91 devices (e.g. SAMA7G5, SAMA5D2) has a special power saving mode
-called backup and self-refresh where most of the SoCs parts are shutdown
-on suspend and RAM is switched to self-refresh. The rail powering the
-on-board ethernet PHY could also be closed.
+The first 2 patches are by me fix a warning and coding style in the
+kvaser_usb driver.
 
-For scenarios where backup and self-refresh is used the MACB driver needs
-to re-initialize the PHY device itself when resuming. Otherwise there is
-poor or missing connectivity (e.g. SAMA7G5-EK uses KSZ9131 in RGMII mode
-which needs its DLL settings to satisfy RGMII timings). For this call
-phylink_suspend()/phylink_resume() on suspend/resume path.
+Vivek Yadav's patch sorts the includes of the m_can driver.
 
-The patch has been tested on SAMA7G5EK (with KSZ9131 and KSZ8081 PHYs)
-and SAM9X60EK (with KSZ8081 PHY) boards.
+Biju Das contributes 5 patches for the rcar_canfd driver improve the
+support for different IP core variants.
 
-Fixes: bf0ad1893442 ("net: macb: Specify PHY PM management done by MAC")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Jean Delvare's patch for the ctucanfd drops the dependency on
+COMPILE_TEST.
+
+Vincent Mailhol's patch sorts the includes of the etas_es58x driver.
+
+Haibo Chen's contributes 2 patches that add i.MX93 support to the
+flexcan driver.
+
+Lad Prabhakar's patch updates the dt-bindings documentation of the
+rcar_canfd driver.
+
+Minghao Chi's patch converts the c_can platform driver to
+devm_platform_get_and_ioremap_resource().
+
+In the next 7 patches Vincent Mailhol adds devlink support to the
+etas_es58x driver to report firmware, bootloader and hardware version.
+
+Xu Panda's patch converts a strncpy() -> strscpy() in the ucan driver.
+
+Ye Bin's patch removes a useless parameter from the AF_CAN protocol.
+
+The next 2 patches by Vincent Mailhol and remove unneeded or unused
+pointers to struct usb_interface in device's priv struct in the ucan
+and gs_usb driver.
+
+Vivek Yadav's patch cleans up the usage of the RAM initialization in
+the m_can driver.
+
+A patch by me add support for SO_MARK to the AF_CAN protocol.
+
+Geert Uytterhoeven's patch fixes the number of CAN channels in the
+rcan_canfd bindings documentation.
+
+In the last 11 patches Markus Schneider-Pargmann optimizes the
+register access in the t_can driver and cleans up the tcan glue
+driver.
+
+regards,
+Marc
+
 ---
 
-This patch depends on patch 1/2 from this series. For proper backporting
-to older kernel (in case this series is integrated as is) please add the
-Depends-on tag on this patch after patch 1/2 is integrated in networking
-tree.
+The following changes since commit dd8b3a802b64adf059a49a68f1bdca7846e492fc:
 
-Thank you,
-Claudiu Beznea
+  Merge tag 'ipsec-next-2022-12-09' of git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next (2022-12-09 20:06:35 -0800)
 
- drivers/net/ethernet/cadence/macb_main.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+are available in the Git repository at:
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 95667b979fab..bcd394093d1c 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -5142,9 +5142,13 @@ static int __maybe_unused macb_suspend(struct device *dev)
- 		napi_disable(&queue->napi_tx);
- 	}
- 
--	if (!(bp->wol & MACB_WOL_ENABLED)) {
-+	if (bp->wol & MACB_WOL_ENABLED) {
- 		rtnl_lock();
--		phylink_stop(bp->phylink);
-+		phylink_suspend(bp->phylink, true);
-+		rtnl_unlock();
-+	} else {
-+		rtnl_lock();
-+		phylink_suspend(bp->phylink, false);
- 		phy_exit(bp->sgmii_phy);
- 		rtnl_unlock();
- 		spin_lock_irqsave(&bp->lock, flags);
-@@ -5209,13 +5213,6 @@ static int __maybe_unused macb_resume(struct device *dev)
- 		spin_unlock_irqrestore(&bp->lock, flags);
- 
- 		disable_irq_wake(bp->queues[0].irq);
--
--		/* Now make sure we disable phy before moving
--		 * to common restore path
--		 */
--		rtnl_lock();
--		phylink_stop(bp->phylink);
--		rtnl_unlock();
- 	}
- 
- 	for (q = 0, queue = bp->queues; q < bp->num_queues;
-@@ -5238,7 +5235,7 @@ static int __maybe_unused macb_resume(struct device *dev)
- 	if (!device_may_wakeup(&bp->dev->dev))
- 		phy_init(bp->sgmii_phy);
- 
--	phylink_start(bp->phylink);
-+	phylink_resume(bp->phylink);
- 	rtnl_unlock();
- 
- 	netif_device_attach(netdev);
--- 
-2.34.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-6.2-20221212
+
+for you to fetch changes up to 47bf2b2393ea1aacdefbe4e9d643599e057bb3a2:
+
+  Merge patch series "can: m_can: Optimizations for tcan and peripheral chips" (2022-12-12 12:01:26 +0100)
+
+----------------------------------------------------------------
+linux-can-next-for-6.2-20221212
+
+----------------------------------------------------------------
+Biju Das (5):
+      can: rcar_canfd: rcar_canfd_probe: Add struct rcar_canfd_hw_info to driver data
+      can: rcar_canfd: Add max_channels to struct rcar_canfd_hw_info
+      can: rcar_canfd: Add shared_global_irqs to struct rcar_canfd_hw_info
+      can: rcar_canfd: Add postdiv to struct rcar_canfd_hw_info
+      can: rcar_canfd: Add multi_channel_irqs to struct rcar_canfd_hw_info
+
+Geert Uytterhoeven (1):
+      dt-bindings: can: renesas,rcar-canfd: Fix number of channels for R-Car V3U
+
+Haibo Chen (2):
+      can: flexcan: add auto stop mode for IMX93 to support wakeup
+      dt-bindings: can: fsl,flexcan: add imx93 compatible
+
+Jean Delvare (1):
+      can: ctucanfd: Drop obsolete dependency on COMPILE_TEST
+
+Lad Prabhakar (1):
+      dt-bindings: can: renesas,rcar-canfd: Document RZ/Five SoC
+
+Marc Kleine-Budde (7):
+      can: kvaser_usb: kvaser_usb_set_bittiming(): fix redundant initialization warning for err
+      can: kvaser_usb: kvaser_usb_set_{,data}bittiming(): remove empty lines in variable declaration
+      Merge patch series "R-Car CAN FD driver enhancements"
+      Merge patch series "can: etas_es58x: report firmware, bootloader and hardware version"
+      Merge patch series "can: usb: remove pointers to struct usb_interface in device's priv structures"
+      can: raw: add support for SO_MARK
+      Merge patch series "can: m_can: Optimizations for tcan and peripheral chips"
+
+Markus Schneider-Pargmann (11):
+      can: m_can: Eliminate double read of TXFQS in tx_handler
+      can: m_can: Avoid reading irqstatus twice
+      can: m_can: Read register PSR only on error
+      can: m_can: Count TXE FIFO getidx in the driver
+      can: m_can: Count read getindex in the driver
+      can: m_can: Batch acknowledge transmit events
+      can: m_can: Batch acknowledge rx fifo
+      can: tcan4x5x: Remove invalid write in clear_interrupts
+      can: tcan4x5x: Fix use of register error status mask
+      can: tcan4x5x: Fix register range of first two blocks
+      can: tcan4x5x: Specify separate read/write ranges
+
+Minghao Chi (1):
+      can: c_can: use devm_platform_get_and_ioremap_resource()
+
+Vincent Mailhol (10):
+      can: etas_es58x: sort the includes by alphabetic order
+      can: etas_es58x: add devlink support
+      can: etas_es58x: add devlink port support
+      USB: core: export usb_cache_string()
+      net: devlink: add DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
+      can: etas_es58x: export product information through devlink_ops::info_get()
+      can: etas_es58x: remove es58x_get_product_info()
+      Documentation: devlink: add devlink documentation for the etas_es58x driver
+      can: ucan: remove unused ucan_priv::intf
+      can: gs_usb: remove gs_can::iface
+
+Vivek Yadav (2):
+      can: m_can: sort header inclusion alphabetically
+      can: m_can: Call the RAM init directly from m_can_chip_config
+
+Xu Panda (1):
+      can: ucan: use strscpy() to instead of strncpy()
+
+Ye Bin (1):
+      net: af_can: remove useless parameter 'err' in 'can_rx_register()'
+
+ .../devicetree/bindings/net/can/fsl,flexcan.yaml   |   1 +
+ .../bindings/net/can/renesas,rcar-canfd.yaml       | 135 ++++++------
+ Documentation/networking/devlink/devlink-info.rst  |   5 +
+ Documentation/networking/devlink/etas_es58x.rst    |  36 ++++
+ MAINTAINERS                                        |   1 +
+ drivers/net/can/c_can/c_can_platform.c             |   3 +-
+ drivers/net/can/ctucanfd/Kconfig                   |   2 +-
+ drivers/net/can/flexcan/flexcan-core.c             |  37 +++-
+ drivers/net/can/flexcan/flexcan.h                  |   2 +
+ drivers/net/can/m_can/m_can.c                      | 130 ++++++++----
+ drivers/net/can/m_can/m_can.h                      |  16 +-
+ drivers/net/can/m_can/m_can_platform.c             |   6 +-
+ drivers/net/can/m_can/tcan4x5x-core.c              |  18 +-
+ drivers/net/can/m_can/tcan4x5x-regmap.c            |  47 ++++-
+ drivers/net/can/rcar/rcar_canfd.c                  |  85 +++++---
+ drivers/net/can/usb/Kconfig                        |   1 +
+ drivers/net/can/usb/etas_es58x/Makefile            |   2 +-
+ drivers/net/can/usb/etas_es58x/es581_4.c           |   4 +-
+ drivers/net/can/usb/etas_es58x/es58x_core.c        | 104 ++++-----
+ drivers/net/can/usb/etas_es58x/es58x_core.h        |  58 ++++-
+ drivers/net/can/usb/etas_es58x/es58x_devlink.c     | 235 +++++++++++++++++++++
+ drivers/net/can/usb/etas_es58x/es58x_fd.c          |   4 +-
+ drivers/net/can/usb/gs_usb.c                       |  29 +--
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c   |   4 +-
+ drivers/net/can/usb/ucan.c                         |   7 +-
+ drivers/usb/core/message.c                         |   1 +
+ drivers/usb/core/usb.h                             |   1 -
+ include/linux/usb.h                                |   1 +
+ include/net/devlink.h                              |   2 +
+ net/can/af_can.c                                   |   3 +-
+ net/can/raw.c                                      |   1 +
+ 31 files changed, 696 insertions(+), 285 deletions(-)
+ create mode 100644 Documentation/networking/devlink/etas_es58x.rst
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_devlink.c
+
 
