@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E48DB64B06E
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 08:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D550164B069
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 08:30:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234667AbiLMHb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 02:31:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
+        id S234656AbiLMHak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 02:30:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234485AbiLMHbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 02:31:25 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C261AF26;
-        Mon, 12 Dec 2022 23:31:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1670916683; x=1702452683;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9366RXwxTTJ4NdfsIPFfbNX3LynlC5Fa1dlBXeQMq+I=;
-  b=naLgdqBiH4SJakqf26hAphukKn0faTm6YJHJ7VHhctm2S/LZVbz59PGY
-   ehCWxs81vDKwOFf2BDAst6cRyJMQ5mf88kNyrjA+5ud3NC+GS08QY8qED
-   WGIZIR1eRYYUjI+jFJHevBWGOgTmkT0uzHYk4NTlC0/7lL33cpET7bBsY
-   FtlEVKlqNWwJNMfUe9i4EGOLvXFCH42+IjyYu29XwU9iYSDTHcFHO4bIS
-   kKQhJ3IXqnZX+9xLlPeG5e60UKU0U0A5ResokMF2i7prKl/yriXb67UqG
-   6jt7ZZxzKyTbhC8NvDcduePv9LGIm3XXfESlhtlxdFm82Hiascdoh/VlM
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,240,1665439200"; 
-   d="scan'208";a="27910777"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 13 Dec 2022 08:31:21 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 13 Dec 2022 08:31:21 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 13 Dec 2022 08:31:21 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1670916681; x=1702452681;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9366RXwxTTJ4NdfsIPFfbNX3LynlC5Fa1dlBXeQMq+I=;
-  b=hvLB55i0b3EbmEQTDq77D5sra8j8KoSdGh1nZH6W4t7+mHJ70HstWkyW
-   0pkyNIlihMDto4wWSZG+DepHDMBtgMUoxbQpi013oSJAVF0PflHvrnt2r
-   fzCvvaptixRLMWNWJU+kKgXbT8TFxlp3zSsG/9KNg2pi7sb//nzU5wE2h
-   Bncg5CvM7lDPK+pC00X4JjFgU3wuU4E632M8sUq6klqitpp9iyR0p2mJ4
-   eqMXbunE2xH/CftPudP/yTkYdPmJZAHcRcqsY5x+1Jhksls6pj9r9Owsr
-   P+RCbdV8uJVB5Lfry2mLlN5q6y+AUdOKOGDKinucq3+yA17E1BSH5vxo5
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,240,1665439200"; 
-   d="scan'208";a="27910776"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 13 Dec 2022 08:31:21 +0100
-Received: from steina-w.localnet (unknown [10.123.53.21])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 2493B280071;
-        Tue, 13 Dec 2022 08:31:21 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     bjorn@mork.no, Peter Chen <peter.chen@kernel.org>,
-        Marek Vasut <marex@denx.de>, Li Jun <jun.li@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Schrempf Frieder <frieder.schrempf@kontron.de>
-Subject: Re: imx7: USB modem reset causes modem to not re-connect
-Date:   Tue, 13 Dec 2022 08:31:17 +0100
-Message-ID: <12353052.O9o76ZdvQC@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <CAOMZO5AWRDLu5t0O=AG7CxNLv20HTmMTRh=so=s7+nTH0_qYgQ@mail.gmail.com>
-References: <CAOMZO5AFsvwbC4Pr49WPFmZt7OnKjuJnYSf3cApGqtoZ_fFPPA@mail.gmail.com> <CAOMZO5AWRDLu5t0O=AG7CxNLv20HTmMTRh=so=s7+nTH0_qYgQ@mail.gmail.com>
+        with ESMTP id S234538AbiLMHai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 02:30:38 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41391AF26;
+        Mon, 12 Dec 2022 23:30:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670916638; x=1702452638;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T/4fTI8XAOxsvA34xrnPsv9rjRhIMMEqFu1gCstvong=;
+  b=TxygkzsTjypPM5BTr4NwbAk6NKd2/gFJSG47zqkKIYkBxgaNVKmnDIzr
+   /0FfjKgG+We4cBnmtOsjTkfY43xsW5Eu1glLPiEMZJpdfXWftbkT+ZueD
+   t2/OuRgvL9ga3Q7FgsAgl/o9NvliCG1oKoUoVaGs2VKcH03CWQp9KLbzG
+   b5KB+GFcHy/+qBtu9nfGThOXumaPWCfet2eDu/oV7BC8Yok31aRx3AqgT
+   GlgonEpZfOh5DfW3ExDJq2mjAEdYt6XBl4oCKGI6d0BmmIw3O7k5BfvqJ
+   2tpWvgfV0rUMrXmHAm1XT/uoZHk2KyWjbCCcoLQ9/q0AsUecSgEXJAYfd
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,240,1665471600"; 
+   d="scan'208";a="192833257"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Dec 2022 00:30:37 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 13 Dec 2022 00:30:37 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
+ Transport; Tue, 13 Dec 2022 00:30:36 -0700
+Date:   Tue, 13 Dec 2022 08:35:45 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
+        <lars.povlsen@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        kernel test robot <lkp@intel.com>,
+        "Dan Carpenter" <error27@gmail.com>
+Subject: Re: [PATCH net-next] net: microchip: vcap: Fix initialization of
+ value and mask
+Message-ID: <20221213073545.vuel5l6k7cej6xk6@soft-dev3-1>
+References: <20221209120701.218937-1-horatiu.vultur@microchip.com>
+ <20221212130224.19bf695f@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20221212130224.19bf695f@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,82 +67,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Fabio,
+The 12/12/2022 13:02, Jakub Kicinski wrote:
+> 
+> On Fri, 9 Dec 2022 13:07:01 +0100 Horatiu Vultur wrote:
+> >       case VCAP_FIELD_U128:
+> > +             value = data->u128.value;
+> > +             mask = data->u128.value;
+> 
+> If setting both to value is intentional - please mention in the commit
+> message. Otherwise this looks odd.
 
-I had a problem regarding runtime suspend and detecting USB hub events on a 
-non-removable downstream hub. Disabling runtime suspend did work as well, but
-this was eventually fixed by 552ca27929ab2 ("ARM: dts: imx7: Move hsic_phy 
-power domain to HSIC PHY node").
-Maybe your USB device doesn't support some low power mode, but I'm not well 
-versed in that area.
+It should not be both set to value. Will fix this in th next version.
 
-Best regards,
-Alexander
-
-Am Montag, 12. Dezember 2022, 20:01:25 CET schrieb Fabio Estevam:
-> On Mon, Dec 12, 2022 at 3:10 PM Fabio Estevam <festevam@gmail.com> wrote:
-> > Hi,
-> > 
-> > On an imx7d-based board running kernel 5.10.158, I noticed that a
-> 
-> > Quectel BG96 modem is gone after sending a reset command via AT:
-> Disabling runtime pm like this:
-> 
-> diff --git a/drivers/usb/chipidea/ci_hdrc_imx.c
-> b/drivers/usb/chipidea/ci_hdrc_imx.c
-> index 9ffcecd3058c..e2a263d583f9 100644
-> --- a/drivers/usb/chipidea/ci_hdrc_imx.c
-> +++ b/drivers/usb/chipidea/ci_hdrc_imx.c
-> @@ -62,7 +62,6 @@ static const struct ci_hdrc_imx_platform_flag
-> imx6ul_usb_data = {
->  };
-> 
->  static const struct ci_hdrc_imx_platform_flag imx7d_usb_data = {
-> -       .flags = CI_HDRC_SUPPORTS_RUNTIME_PM,
->  };
-> 
->  static const struct ci_hdrc_imx_platform_flag imx7ulp_usb_data = {
-> 
-> makes the USB modem to stay connected after the reset command:
-> 
-> # microcom /dev/ttyUSB3
-> 
-> >AT+CFUN=1,1
-> 
-> OK
-> [   31.339416] usb 2-1: USB disconnect, device number 2
-> [   31.349480] option1 ttyUSB0: GSM modem (1-port) converter now
-> disconnected from ttyUSB0
-> [   31.358298] option 2-1:1.0: device disconnected
-> [   31.366390] option1 ttyUSB1: GSM modem (1-port) converter now
-> disconnected from ttyUSB1
-> [   31.374883] option 2-1:1.1: device disconnected
-> [   31.383359] option1 ttyUSB2: GSM modem (1-port) converter now
-> disconnected from ttyUSB2
-> [   31.391800] option 2-1:1.2: device disconnected
-> [   31.404700] option1 ttyUSB3: GSM modem (1-port) converter now
-> disconnected from ttyUSB3
-> # [   31.413261] option 2-1:1.3: device disconnected
-> [   36.151388] usb 2-1: new high-speed USB device number 3 using ci_hdrc
-> [   36.354398] usb 2-1: New USB device found, idVendor=2c7c,
-> idProduct=0296, bcdDevice= 0.00
-> [   36.362768] usb 2-1: New USB device strings: Mfr=3, Product=2,
-> SerialNumber=4 [   36.370031] usb 2-1: Product: Qualcomm CDMA Technologies
-> MSM
-> [   36.375818] usb 2-1: Manufacturer: Qualcomm, Incorporated
-> [   36.381355] usb 2-1: SerialNumber: 7d1563c1
-> [   36.389915] option 2-1:1.0: GSM modem (1-port) converter detected
-> [   36.397679] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB0
-> [   36.412591] option 2-1:1.1: GSM modem (1-port) converter detected [  
-> 36.420237] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB1 [ 
->  36.434988] option 2-1:1.2: GSM modem (1-port) converter detected [  
-> 36.442792] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB2 [ 
->  36.457745] option 2-1:1.3: GSM modem (1-port) converter detected [  
-> 36.465709] usb 2-1: GSM modem (1-port) converter now attached to ttyUSB3
-> 
-> Does anyone have any suggestions as to what could be the problem with
-> runtime pm?
-
-
-
-
+-- 
+/Horatiu
