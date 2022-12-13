@@ -2,76 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0256564BAE0
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 18:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A8464BB3B
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 18:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236243AbiLMRT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 12:19:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
+        id S236137AbiLMRlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 12:41:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236250AbiLMRTv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 12:19:51 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01BD22B3E
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 09:19:48 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id ja4-20020a05600c556400b003cf6e77f89cso1535656wmb.0
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 09:19:48 -0800 (PST)
+        with ESMTP id S236121AbiLMRlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 12:41:07 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD0223380;
+        Tue, 13 Dec 2022 09:41:05 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id z26so6113276lfu.8;
+        Tue, 13 Dec 2022 09:41:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3EhMA6MMSu4b3D077MyxeOEBc3NixPe7QR4AlMv00C8=;
-        b=6zr23JVIZwJKfOEfOAIHU80gTz21PGMoILrZJWuBVj2+3ReU+NUtdHX4lYRSlw1iwW
-         nNXXjro6uxrP9zFiG//8W0znYdENXyWwpxDu6IhYzrvXx1vzyrcdPd8d6+PmR7DaypUJ
-         YYGL287lOUoAR3Haq+2KREXNxFA/d1WQrc02txsK6LSDdFfXnQryWp9jeIW9vb+dBrCi
-         LmfVJ7X5LuUmebgKkeT/2xIurygLi1VDF1c99nt7pRzyIVgUmEYweV96Nl+5froTqzPV
-         sk5YEA3/M6KnNOWm8AhyadA3avXxB5P/BdzPILHThKNztUtZBW5ovpOc6kPKI9q6Guqi
-         rKbQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=MHaXp0mzcSuAY+PnbsFakfY5htA6vqOLH6b5U9mLwcc=;
+        b=eFJhfcBGzq8f6RGA6enz6RIwE8LfAwfADKdybqzk3CgbVYrvl01QdNWjemVZFcsE7M
+         Y/MJUMX2XhFpU7lLjKx0tC+jeHa8+tQeR8GWsJ3mtZZKVjMeyk3TH3tADN6UgTeIE/re
+         QnmiPbdtsP1jbBxzA6pza7vA93pzFGjZYTaEvUROCTUm2TW0+pG79wWrH/0qH7LOaebY
+         uSCQvRVBUPzUdaqUzxfxodQmvWVNt587TVsZ6UPV9AVrnhlIhmPrrs+yvm8CdGDuL1Sq
+         ddlWo1l4pv55OczEgyhluKwjJPXNMoT5Dk/Mho9Y4m8A4FywmYEO7/g/LwaF2iiToVlP
+         lsXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3EhMA6MMSu4b3D077MyxeOEBc3NixPe7QR4AlMv00C8=;
-        b=Wc4vZtAx34o86Hv+hGsTZ9NLpW30FxapnPRv2aWL5nb7z23U5LqbP5eFTS/iUupkMu
-         /gsqEglie9WO7+lvicXT5mVRcpXn7OYKg+91zbMwy/Yva2/ZZSVbo5r4PQhZk1wxF0d8
-         jnJay/fXdf0xiDbB8YzNn/8X9624E2sJcbGva2yySG5cRsMKMTY6CQSEmjlWyWa7Q92d
-         Mko4BczbjR72piOOSZKHUcGVmMPUr8p+o8vaTlLefvV0BWq4RjWOyZz0Vm0CgeOvWnKR
-         0NIDwZMCTUiF/Na7KUci8AKW36r2/n7l3/HRoUA+02mRnrggEQJUyTNfBksNIaJ3P6l/
-         Aqdg==
-X-Gm-Message-State: ANoB5pk7WjeM6quY/1AWc6RmXVga/Vx4QZAlBQ2vqMQHqOn3Wu8c5EA6
-        /xy1y+npdB4o0kRvGwyShnlLI0WUmGYsVoQc
-X-Google-Smtp-Source: AA0mqf6HuubEdSO6ViNbsmRGhbOFKBkYZ1FySXG5n3yoR1Uww9vgN0+1tuohDwdiPwnjF6shxTfySA==
-X-Received: by 2002:a05:600c:3acc:b0:3cf:9ac8:c537 with SMTP id d12-20020a05600c3acc00b003cf9ac8c537mr16411148wms.14.1670951987318;
-        Tue, 13 Dec 2022 09:19:47 -0800 (PST)
-Received: from blmsp ([2001:4091:a245:805c:8713:84e4:2a9e:cbe8])
-        by smtp.gmail.com with ESMTPSA id 18-20020a05600c22d200b003c6bd12ac27sm13255188wmg.37.2022.12.13.09.19.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 09:19:46 -0800 (PST)
-Date:   Tue, 13 Dec 2022 18:19:46 +0100
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
- level interrupt
-Message-ID: <20221213171946.ejrb2glgo77jueff@blmsp>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-5-msp@baylibre.com>
- <20221130171715.nujptzwnut7silbm@pengutronix.de>
- <20221201082521.3tqevaygz4nhw52u@blmsp>
- <20221201090508.jh5iymwmhs3orb2v@pengutronix.de>
- <20221201101220.r63fvussavailwh5@blmsp>
- <20221201110033.r7hnvpw6fp2fquni@pengutronix.de>
- <20221201165951.5a4srb7zjrsdr3vd@blmsp>
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MHaXp0mzcSuAY+PnbsFakfY5htA6vqOLH6b5U9mLwcc=;
+        b=Q85q7rqS38xpFIS4mZdHClilcF5XgJ+2NtvoikWSw2oCLWp1vuZoGzclHnK3znZ7gg
+         geONnOAhx1Cctji2Tnc/AorY//X9lI5JGz8ZnmG21Z367zYQhS2qqnNj3NVBWtX5U08f
+         nfmHczANFyGQzcu/ARMlXsxYAspOTscMSAS8J/8rrsdl2kb6hIyztUb282TUuNVpZiH9
+         M6GDkrHh+GBFZvKEK7Ln/rW7CYxwD/tCRG6uyTMzkMTqKtaZ0hTD7lBpNKF4ydL7/k+4
+         EK0jv9sIr8RrKCJVfN78gT4+TGwzfAFWkRTzHN2y8zg9LGO9b31WAcK24CMVp6fVucEo
+         qUGg==
+X-Gm-Message-State: ANoB5plD4lovsuFwjw3+6/qIQfuf0+9QSku0pzEPShI90AXTRrAVl5zF
+        7pW2HNlm+qqcE8m4GsxY+SxlMOPtbNFDiej+MQ==
+X-Google-Smtp-Source: AA0mqf4Bt4AkLkOAt1FeVPZCQFKvprAuuHSRUV1xyeyvcISgkqdJKoJJX2eNqY43NDlO2hMXPYDO7QYCCAK7cna+Zfk=
+X-Received: by 2002:a05:6512:3907:b0:4aa:cd5c:4c52 with SMTP id
+ a7-20020a056512390700b004aacd5c4c52mr26090068lfu.374.1670953263883; Tue, 13
+ Dec 2022 09:41:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221201165951.5a4srb7zjrsdr3vd@blmsp>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+From:   "Seija K." <doremylover123@gmail.com>
+Date:   Tue, 13 Dec 2022 12:40:52 -0500
+Message-ID: <CAA42iKxeinZ4gKfttg_K8PdRt+p-p=KjqgcbGjtxzOqn_C0F9g@mail.gmail.com>
+Subject: [PATCH] net: Fix for packets being rejected in the xHCI controller's
+ ring buffer
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,43 +68,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+When a packet larger than MTU arrives in Linux from the modem, it is
+discarded with -EOVERFLOW error (Babble error).
 
-On Thu, Dec 01, 2022 at 05:59:53PM +0100, Markus Schneider-Pargmann wrote:
-> On Thu, Dec 01, 2022 at 12:00:33PM +0100, Marc Kleine-Budde wrote:
-> > On 01.12.2022 11:12:20, Markus Schneider-Pargmann wrote:
-> > > > > For the upcoming receive side patch I already added a hrtimer. I may try
-> > > > > to use the same timer for both directions as it is going to do the exact
-> > > > > same thing in both cases (call the interrupt routine). Of course that
-> > > > > depends on the details of the coalescing support. Any objections on
-> > > > > that?
-> > > > 
-> > > > For the mcp251xfd I implemented the RX and TX coalescing independent of
-> > > > each other and made it configurable via ethtool's IRQ coalescing
-> > > > options.
-> > > > 
-> > > > The hardware doesn't support any timeouts and only FIFO not empty, FIFO
-> > > > half full and FIFO full IRQs and the on chip RAM for mailboxes is rather
-> > > > limited. I think the mcan core has the same limitations.
-> > > 
-> > > Yes and no, the mcan core provides watermark levels so it has more
-> > > options, but there is no hardware timer as well (at least I didn't see
-> > > anything usable).
-> > 
-> > Are there any limitations to the water mark level?
-> 
-> Anything specific? I can't really see any limitation. You can set the
-> watermark between 1 and 32. I guess we could also always use it instead
-> of the new-element interrupt, but I haven't tried that yet. That may
-> simplify the code.
+This is seen on USB3.0 and USB2.0 buses.
 
-Just a quick comment here after trying this, I decided against it.
-- I can't modify the watermark levels once the chip is active.
-- Using interrupt (un)masking I can change the behavior for tx and rx
-  with a single register write instead of two to the two fifo
-  configuration registers.
+This is because the MRU (Max Receive Size) is not a separate entity
+from the MTU (Max Transmit Size), and the received packets can be
+larger than those transmitted.
 
-You will see this in the second part of the series then.
+Following the babble error, there was an endless supply of zero-length
+URBs that were rejected with -EPROTO (increasing the rx input error
+counter each time).
 
-Best,
-Markus
+This is only seen on USB3.0. These continue to come ad infinitum until
+the modem is shut down.
+
+There appears to be a bug in the core USB handling code in Linux that
+doesn't deal with network MTUs smaller than 1500 bytes well.
+
+By default, the dev->hard_mtu (the real MTU) is in lockstep with
+dev->rx_urb_size (essentially an MRU), and the latter is causing
+trouble.
+
+This has nothing to do with the modems; the issue can be reproduced by
+getting a USB-Ethernet dongle, setting the MTU to 1430, and pinging
+with size greater than 1406.
+
+Signed-off-by: Seija Kijin <doremylover123@gmail.com>
+
+Co-Authored-By: TarAldarion <gildeap@tcd.ie>
+---
+drivers/net/usb/qmi_wwan.c | 7 +++++++
+1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 554d4e2a84a4..39db53a74b5a 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -842,6 +842,13 @@ static int qmi_wwan_bind(struct usbnet *dev,
+struct usb_interface *intf)
+}
+dev->net->netdev_ops = &qmi_wwan_netdev_ops;
+dev->net->sysfs_groups[0] = &qmi_wwan_sysfs_attr_group;
++ /* LTE Networks don't always respect their own MTU on the receiving side;
++ * e.g. AT&T pushes 1430 MTU but still allows 1500 byte packets from
++ * far-end networks. Make the receive buffer large enough to accommodate
++ * them, and add four bytes so MTU does not equal MRU on network
++ * with 1500 MTU. Otherwise, usbnet_change_mtu() will change both.
++ */
++ dev->rx_urb_size = ETH_DATA_LEN + 4;
+err:
+return status;
+}
+-- 
+2.38.2
