@@ -2,169 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF9564AE7E
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:57:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA4764AE8C
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 05:08:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233710AbiLMD5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 22:57:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
+        id S233933AbiLMEH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 23:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiLMD5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:57:16 -0500
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8955D62;
-        Mon, 12 Dec 2022 19:57:14 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=jiapeng.chong@linux.alibaba.com;NM=0;PH=DS;RN=13;SR=0;TI=SMTPD_---0VXC615N_1670903828;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VXC615N_1670903828)
-          by smtp.aliyun-inc.com;
-          Tue, 13 Dec 2022 11:57:12 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        sumit.semwal@linaro.org, christian.koenig@amd.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH v2] net: ksz884x: Remove some unused functions
-Date:   Tue, 13 Dec 2022 11:57:07 +0800
-Message-Id: <20221213035707.118309-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S232336AbiLMEH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 23:07:56 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354AB164BE;
+        Mon, 12 Dec 2022 20:07:52 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1p4wZz-0008NT-46; Tue, 13 Dec 2022 05:07:43 +0100
+Date:   Tue, 13 Dec 2022 04:07:35 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH net-next] net: dsa: mt7530: remove reduntant assignment
+Message-ID: <Y5f6h8q7rlnk1jnD@makrotopia.org>
+References: <Y5b/Tm4GwPGzd9sR@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y5b/Tm4GwPGzd9sR@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These functions are defined in the ksz884x.c file, but not called
-elsewhere, so delete these unused functions.
+Russell King correctly pointed out that the MAC_2500FD capability is
+already added for port 5 (if not in RGMII mode) and port 6 (which only
+supports SGMII) by mt7531_mac_port_get_caps. Remove the reduntant
+setting of this capability flag which was added by a previous commit.
 
-drivers/net/ethernet/micrel/ksz884x.c:2212:20: warning: unused function 'port_cfg_force_flow_ctrl'.
-
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3418
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Fixes: e19de30d20 ("net: dsa: mt7530: add support for in-band link status")
+Reported-by: Russell King <linux@armlinux.org.uk>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
-Changes in v2:
-  -Delete more unused functions.
+ drivers/net/dsa/mt7530.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
- drivers/net/ethernet/micrel/ksz884x.c | 89 ---------------------------
- 1 file changed, 89 deletions(-)
-
-diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-index e6acd1e7b263..5d6ed7a63e59 100644
---- a/drivers/net/ethernet/micrel/ksz884x.c
-+++ b/drivers/net/ethernet/micrel/ksz884x.c
-@@ -2209,102 +2209,13 @@ static inline void port_cfg_back_pressure(struct ksz_hw *hw, int p, int set)
- 		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE, set);
- }
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index e74c6b406172..908fa89444c9 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2919,9 +2919,6 @@ static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+ 				   MAC_10 | MAC_100 | MAC_1000FD;
  
--static inline void port_cfg_force_flow_ctrl(struct ksz_hw *hw, int p, int set)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL, set);
--}
+-	if ((priv->id == ID_MT7531) && mt753x_is_mac_port(port))
+-		config->mac_capabilities |= MAC_2500FD;
 -
--static inline int port_chk_back_pressure(struct ksz_hw *hw, int p)
--{
--	return port_chk(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE);
--}
--
--static inline int port_chk_force_flow_ctrl(struct ksz_hw *hw, int p)
--{
--	return port_chk(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL);
--}
--
- /* Spanning Tree */
- 
--static inline void port_cfg_rx(struct ksz_hw *hw, int p, int set)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_RX_ENABLE, set);
--}
--
--static inline void port_cfg_tx(struct ksz_hw *hw, int p, int set)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_TX_ENABLE, set);
--}
--
- static inline void sw_cfg_fast_aging(struct ksz_hw *hw, int set)
- {
- 	sw_cfg(hw, KS8842_SWITCH_CTRL_1_OFFSET, SWITCH_FAST_AGING, set);
- }
- 
--static inline void sw_flush_dyn_mac_table(struct ksz_hw *hw)
--{
--	if (!(hw->overrides & FAST_AGING)) {
--		sw_cfg_fast_aging(hw, 1);
--		mdelay(1);
--		sw_cfg_fast_aging(hw, 0);
--	}
--}
--
--/* VLAN */
--
--static inline void port_cfg_ins_tag(struct ksz_hw *hw, int p, int insert)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_1_OFFSET, PORT_INSERT_TAG, insert);
--}
--
--static inline void port_cfg_rmv_tag(struct ksz_hw *hw, int p, int remove)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_1_OFFSET, PORT_REMOVE_TAG, remove);
--}
--
--static inline int port_chk_ins_tag(struct ksz_hw *hw, int p)
--{
--	return port_chk(hw, p,
--		KS8842_PORT_CTRL_1_OFFSET, PORT_INSERT_TAG);
--}
--
--static inline int port_chk_rmv_tag(struct ksz_hw *hw, int p)
--{
--	return port_chk(hw, p,
--		KS8842_PORT_CTRL_1_OFFSET, PORT_REMOVE_TAG);
--}
--
--static inline void port_cfg_dis_non_vid(struct ksz_hw *hw, int p, int set)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_DISCARD_NON_VID, set);
--}
--
--static inline void port_cfg_in_filter(struct ksz_hw *hw, int p, int set)
--{
--	port_cfg(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_INGRESS_VLAN_FILTER, set);
--}
--
--static inline int port_chk_dis_non_vid(struct ksz_hw *hw, int p)
--{
--	return port_chk(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_DISCARD_NON_VID);
--}
--
--static inline int port_chk_in_filter(struct ksz_hw *hw, int p)
--{
--	return port_chk(hw, p,
--		KS8842_PORT_CTRL_2_OFFSET, PORT_INGRESS_VLAN_FILTER);
--}
--
- /* Mirroring */
- 
- static inline void port_cfg_mirror_sniffer(struct ksz_hw *hw, int p, int set)
+ 	/* This driver does not make use of the speed, duplex, pause or the
+ 	 * advertisement in its mac_config, so it is safe to mark this driver
+ 	 * as non-legacy.
 -- 
-2.20.1.7.g153144c
+2.39.0
 
