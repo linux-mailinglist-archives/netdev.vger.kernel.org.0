@@ -2,119 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 610AA64ACD7
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 02:11:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F90964ACF0
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 02:20:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233602AbiLMBLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 20:11:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
+        id S233922AbiLMBUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 20:20:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233891AbiLMBLV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 20:11:21 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1771CFE6
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 17:11:20 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id b192so972597iof.8
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 17:11:20 -0800 (PST)
+        with ESMTP id S229700AbiLMBUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 20:20:33 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066DF14D15
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 17:20:33 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id gt4so1749661pjb.1
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 17:20:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pAR7trYZxyJz6dDjjGtnhQhvH4CV37H8ORJAnU50YAI=;
-        b=OynFoN1pxipzXa/LRGcM80xD2vmYyGNwHBjBEuCjqZYJEqN9DZLh8crm+GMKI/72Fz
-         7HlpLIQy1Fpv7C+E1DZNIFKRvoT3XlW6fyxsdx3xupxod/KmnXyVMZ8ubid6KNxGnmoy
-         Qxxi4v+SuPsrHDtow570icb8+YuEWnNBfoizdLkwuKcg6pBcNGDanvcXDwknKuFX4dMS
-         VBJOFwk9CFUnXei7eiIcdlCoPVfj4DS2UVkQcxbwWFF8CS5rHJ7Egq79zImRfpYzqkqN
-         vDacxqXKTmpDqYbpVex7xMOsys3gZANZw5nYRnQ6czRCHKsbf6I36DaYapwrQ4bViBYw
-         JWKQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HdQGdgy32kDrdiyV0F6i+mJaHWsA6VyP6NCkB78lMg8=;
+        b=HAemoffiWfobLEcWHBoHFnQn/ZTPtxPaosPcu+4UtXhB5uS+kbsstiXfKIwwqolHz8
+         CZf0t1im5bhecXp5hako8ixU5WiRjORUuOZSN6NJKV6x3OAvn/FHPdvrFXXLrsjzQvoT
+         76VWNr8RUvoCy5Z/6ZHAagNQOmPP0aP4JGL3GqzTwspG24/+CnlAxvBNRkFBcb62RFAK
+         GR/86M9pgMH1lip/BuDsb9rhznHIHLTKWCTTz+QMq2r0stKnoq6/Ze+X+1g39mMvUlT1
+         HVJO8Sr0hGpooW+/BhUhQLEXded+9C2dLPw/PJOAAc8VK03kIbRpr2nG6evCasnA5rfD
+         Eslg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pAR7trYZxyJz6dDjjGtnhQhvH4CV37H8ORJAnU50YAI=;
-        b=bsYk4p7ZBt9RsBAlvt84zc1jfjZ38iP8fo8McUB6UNcvy4y4u8AlaDX2EZYNXDCO3F
-         w5/QCQi0JoRGmAiWMUBjUPQSzuKgpWx8I3+Ptef+jwOydVOgOMyTi/GNblxBzcE/snb0
-         MrnGvUVkOpElbsO2YNW/tTjoSDntt4CToOrhyzyHgr8F77fuCSUXSTjWbG2tV/RcR3Sc
-         1OgAcN0yMT9L+W24HC+CajeqBTTiHtyi25Fu4GQw7c2ghl+xicGuw7b8YlCtyP76e8sB
-         h0mnbkGz6Fra62tONjUTZO6l52SxbYvg6+lU9MPnu8eqDfhC8VPtR8TdffRgx8WR0s10
-         y00w==
-X-Gm-Message-State: ANoB5pkCKtBzUSNG1C0+eaFriuffiHsoQfTbuXb6YRfy5okdnM7QLY85
-        mnn3fOTcVfYHQ9CnDzdsnSQ/DQ==
-X-Google-Smtp-Source: AA0mqf5iT+UyD0qvn7NpOSGyfj+cr/V7nAI47f6cpKUqG428uF+45DFYJC396XBHW9j/HJIVVKMX7Q==
-X-Received: by 2002:a6b:fb0a:0:b0:6df:5a37:ed5 with SMTP id h10-20020a6bfb0a000000b006df5a370ed5mr9593060iog.17.1670893879743;
-        Mon, 12 Dec 2022 17:11:19 -0800 (PST)
-Received: from [10.211.55.3] ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id m13-20020a02a14d000000b0038a382d84c5sm414160jah.64.2022.12.12.17.11.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Dec 2022 17:11:19 -0800 (PST)
-Message-ID: <008d3e20-2c6b-c3f1-3fd3-ef4ef4dd061e@linaro.org>
-Date:   Mon, 12 Dec 2022 19:11:17 -0600
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HdQGdgy32kDrdiyV0F6i+mJaHWsA6VyP6NCkB78lMg8=;
+        b=d7m9Wbj53yYQYeWUjSMJRDSPDpAm9CRWi9/WJZ+SiJXYJtBfLyJ3CpdVSU/Pxg5m0e
+         qO/xfSU9lL7PQNsohXTXyWkZBFnhfVOUwKL1+ewTwkNdTYGnbFGHSPvRcW0138lX3CID
+         xqZ8i3NerjetA5Hf83RSxOIL8J7Y43u4v/IbUMbShlwQB8lkto+VzGJVHQkP0Rpdj0rc
+         QxlgvgQbWt3qGyq1bx62tJF2Je2R+YlcsEuS3Dv3qq3WzLsBxmJ4R9ud1Fhsv6Qzy8fG
+         HPjHFHrU+wCrWxGSY/MNnpKNodPpvLfMpsQlDS5xFfDm6RvjI3LowjOxdohYbsYAqMeP
+         oWOQ==
+X-Gm-Message-State: ANoB5plOjWdECKE2VjJbFMTbTmWc6giG4B+DUIIWr3qquKDHXm2CSOHz
+        cQgKB0inGUByQn/PxGeJAOGSlg==
+X-Google-Smtp-Source: AA0mqf56dvT2jhRrB0fTaeBXDQi6AjjY6ZyfdFBLIFtnE47pOKndmA5ZEqowxW8VyF+hHNBEIzOLzg==
+X-Received: by 2002:a05:6a21:1788:b0:aa:5c2d:6e59 with SMTP id nx8-20020a056a21178800b000aa5c2d6e59mr21505626pzb.7.1670894432458;
+        Mon, 12 Dec 2022 17:20:32 -0800 (PST)
+Received: from niej-dt-7B47.. (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id z12-20020a170903018c00b001891ea4d133sm7032695plg.12.2022.12.12.17.20.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Dec 2022 17:20:31 -0800 (PST)
+From:   Jun Nie <jun.nie@linaro.org>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net_sched: ematch: reject invalid data
+Date:   Tue, 13 Dec 2022 09:20:23 +0800
+Message-Id: <20221213012023.673544-1-jun.nie@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next 2/2] net: ipa: add IPA v4.7 support
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc:     Alex Elder <elder@linaro.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, andersson@kernel.org,
-        agross@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, elder@kernel.org,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>
-References: <20221208211529.757669-1-elder@linaro.org>
- <20221208211529.757669-3-elder@linaro.org>
- <47b2fb29-1c2e-db6e-b14f-6dfe90341825@linaro.org>
- <fa6d342e-0cfe-b870-b044-b0af476e3905@linaro.org>
- <48bef9dd-b71c-b6aa-e853-1cf821e88b50@linaro.org>
- <20221212155450.34fdae6b@kernel.org>
-From:   Alex Elder <alex.elder@linaro.org>
-In-Reply-To: <20221212155450.34fdae6b@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12/22 5:54 PM, Jakub Kicinski wrote:
->>> which in total gives us 0x146a8000-0x146aafff
->> Can you tell me where you found this information?
-> [1], [2]
-> 
->>    
->>> That would also mean all of your writes are kind of skewed, unless
->>> you already applied some offsets to them.
->> This region is used by the modem, but must be set up
->> by the AP.
->>    
->>> (IMEM on 6350 starts at 0x14680000 and is 0x2e000 long, as per
->>> the bootloader memory map)
->> On SM7250 (sorry, I don't know about 7225, or 6350 for that matter),
->> the IMEM starts at 0x14680000 and has length 0x2c000.  However that
->> memory is used by multiple entities.  The portion set aside for IPA
->> starts at 0x146a9000 and has size 0x2000.
+syzbot reported below bug. Refuse to compare for invalid data case to fix it.
 
-This is awesome, thank you!
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 0 PID: 6 Comm: kworker/0:0 Not tainted 5.15.77-syzkaller-00764-g7048384c9872 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Workqueue: wg-crypt-wg2 wg_packet_tx_worker
+RIP: 0010:em_cmp_match+0x4e/0x5f0 net/sched/em_cmp.c:25
+Call Trace:
+ <TASK>
+ tcf_em_match net/sched/ematch.c:492 [inline]
+ __tcf_em_tree_match+0x194/0x720 net/sched/ematch.c:518
+ tcf_em_tree_match include/net/pkt_cls.h:463 [inline]
+ basic_classify+0xd8/0x250 net/sched/cls_basic.c:48
+ __tcf_classify net/sched/cls_api.c:1549 [inline]
+ tcf_classify+0x161/0x430 net/sched/cls_api.c:1589
+ prio_classify net/sched/sch_prio.c:42 [inline]
+ prio_enqueue+0x1d3/0x6a0 net/sched/sch_prio.c:75
+ dev_qdisc_enqueue net/core/dev.c:3792 [inline]
+ __dev_xmit_skb+0x35c/0x1650 net/core/dev.c:3876
+ __dev_queue_xmit+0x8f3/0x1b50 net/core/dev.c:4193
+ dev_queue_xmit+0x17/0x20 net/core/dev.c:4261
+ neigh_hh_output include/net/neighbour.h:508 [inline]
+ neigh_output include/net/neighbour.h:522 [inline]
+ ip_finish_output2+0xc0f/0xf00 net/ipv4/ip_output.c:228
+ __ip_finish_output+0x163/0x370
+ ip_finish_output+0x20b/0x220 net/ipv4/ip_output.c:316
+ NF_HOOK_COND include/linux/netfilter.h:299 [inline]
+ ip_output+0x1e9/0x410 net/ipv4/ip_output.c:430
+ dst_output include/net/dst.h:450 [inline]
+ ip_local_out+0x92/0xb0 net/ipv4/ip_output.c:126
+ iptunnel_xmit+0x4a2/0x890 net/ipv4/ip_tunnel_core.c:82
+ udp_tunnel_xmit_skb+0x1b6/0x2c0 net/ipv4/udp_tunnel_core.c:175
+ send4+0x78d/0xd20 drivers/net/wireguard/socket.c:85
+ wg_socket_send_skb_to_peer+0xd5/0x1d0 drivers/net/wireguard/socket.c:175
+ wg_packet_create_data_done drivers/net/wireguard/send.c:251 [inline]
+ wg_packet_tx_worker+0x202/0x560 drivers/net/wireguard/send.c:276
+ process_one_work+0x6db/0xc00 kernel/workqueue.c:2313
+ worker_thread+0xb3e/0x1340 kernel/workqueue.c:2460
+ kthread+0x41c/0x500 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
 
-Yes I think there are a couple of minor corrections to make
-but I haven't had the time to go do the research yet, so
-hadn't yet responded.
+Change-Id: Id2411e5ddcf3091ba3f37bddd722eac051bc9d57
+Reported-by: syzbot+963f7637dae8becc038f@syzkaller.appspotmail.com
+Signed-off-by: Jun Nie <jun.nie@linaro.org>
+---
+ net/sched/em_cmp.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Nothing is "supported" upstream anyway until there's a
-system with a DTS that uses it, and that won't happen
-until after the end of the merge window.
-
-Again, thank you very much, it's a safe thing to take
-for now.
-
-					-Alex
+diff --git a/net/sched/em_cmp.c b/net/sched/em_cmp.c
+index f17b049ea530..0284394be53f 100644
+--- a/net/sched/em_cmp.c
++++ b/net/sched/em_cmp.c
+@@ -22,9 +22,14 @@ static int em_cmp_match(struct sk_buff *skb, struct tcf_ematch *em,
+ 			struct tcf_pkt_info *info)
+ {
+ 	struct tcf_em_cmp *cmp = (struct tcf_em_cmp *) em->data;
+-	unsigned char *ptr = tcf_get_base_ptr(skb, cmp->layer) + cmp->off;
++	unsigned char *ptr;
+ 	u32 val = 0;
+ 
++	if (!cmp)
++		return 0;
++
++	ptr = tcf_get_base_ptr(skb, cmp->layer) + cmp->off;
++
+ 	if (!tcf_valid_offset(skb, ptr, cmp->align))
+ 		return 0;
+ 
+-- 
+2.34.1
 
