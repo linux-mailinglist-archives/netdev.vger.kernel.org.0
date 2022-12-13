@@ -2,132 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C0164AC98
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 01:48:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 610AA64ACD7
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 02:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233011AbiLMAsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 19:48:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60852 "EHLO
+        id S233602AbiLMBLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 20:11:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiLMAsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 19:48:01 -0500
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EA2291;
-        Mon, 12 Dec 2022 16:47:59 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8A4425C0167;
-        Mon, 12 Dec 2022 19:47:56 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 12 Dec 2022 19:47:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pjd.dev; h=cc:cc
-        :content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1670892476; x=1670978876; bh=b/6U3Dsyg/OAcTxM7FPRAqkwl
-        KpPSObmH5aoZ/TKCSA=; b=SP1iddR05wcYU3fqLMeztGxYBEElhSNOud4h49Xx0
-        DngHBJ+32WY14wRUNMA6h/sMipPu+TFJEU3aLyY+O+F5pRtft4T147fVGJQP2ztK
-        e5kQ4hHd5CcW+aL8OqYJDx+2rfl4QKp3XuuJy3PG7gHb2OHjBH9kWvlatt0P8A6/
-        9CKUy6icKwsbMEiEQg62r5QseXWY5b+I9U+ZJ+Zw1kIKZBDhuew+0SD6jCBTEEgR
-        V6sIahJNEmadWo1tfmhtmfHW7hT96HdM/xMQYVrsVS3QL2UZTN5UPzCOtVDwqUI5
-        5vnfu0GDs/jdQiv2YbT5KwK13rRMuL1F7tga+PM4BK0gg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1670892476; x=1670978876; bh=b/6U3Dsyg/OAcTxM7FPRAqkwlKpPSObmH5a
-        oZ/TKCSA=; b=XriSMC0URg6AyIdk38qrITSp9/NhY60KNflAgnb+gMaDVIFWgi0
-        NEBfBdV4VDVMCMqMGylhQBY6g9R5C3ZropXi/isW7hcGNEWvXyIJ3A+g21lxyT6Q
-        IuxtCwQj7ecERVFDGPRvT1rKPJPxAMi9nOnxO7t1BaMMqHVfNMyOfkhIArOwiKCN
-        ET15S/a6UvqH+VPkFZJPw2lAMWXFxtjaCwBCJuCO1scUDFDhhh35kcDz6UxTocvA
-        0W214HqzhwmqhvPQD5kfds33ZwJ2jegPLCaZPhvKBbo4VBZOAn9BvsMdBDwzHnBY
-        NPW3jS4nbHJgVlJM6JMZvvdp1gz/tlOsqSQ==
-X-ME-Sender: <xms:vMuXY26v_zwZN74j0lN-mQp8FHuYzSYYKDSV0xperwR-iOvPZxXsgQ>
-    <xme:vMuXY_6h2BUPXGz2XgHUgO-SrK3l2WTxqvdVyZic0VNL5uCsMTSPhUCI7skIdHP9T
-    DuIwd1kP7ZBqB-dSpg>
-X-ME-Received: <xmr:vMuXY1eFT4BG121lIG-G8FEKsb8BG8TH2ThV0YGzfPPJJ3nOMLCGas-BpNAcwkbZopRsgD6Yc4M1oeemgg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdelgddvjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecuogfuuhhsphgvtghtffhomhgrihhnucdlgeelmdenmh
-    hishhsihhnghcuvffquchfihgvlhguucdlfedtmdenogetfedtuddqtdduucdludehmden
-    ucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefrvghtvghruc
-    ffvghlvghvohhrhigrshcuoehpvghtvghrsehpjhgurdguvghvqeenucggtffrrghtthgv
-    rhhnpeegveeivdefgedvteevvdeugfeuffeuhfelueffgfdvtedugfetvdegkeekledutd
-    enucffohhmrghinhepthhinhihuhhrlhdrtghomhenucevlhhushhtvghrufhiiigvpedt
-    necurfgrrhgrmhepmhgrihhlfhhrohhmpehpvghtvghrsehpjhgurdguvghv
-X-ME-Proxy: <xmx:vMuXYzJcv7aKq3gXC_mT1Hc685oLVVxXWk0u75TZJk_ZJBEjjG6KJw>
-    <xmx:vMuXY6LxqlJv_Z2FJ6PcZLHnR1S4X-xQziFTabNL8TaMbgtVtC11sA>
-    <xmx:vMuXY0wKH4bvP0g9SrSC0p1YPWFvX4oQ5li7l6oQifPiLQYbUG33zw>
-    <xmx:vMuXYy_Mj-VcjlS0noNz950RJWNwp_o9F-jEFVxM581_2ee49wWu1w>
-Feedback-ID: i9e814621:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 12 Dec 2022 19:47:55 -0500 (EST)
-From:   Peter Delevoryas <peter@pjd.dev>
-Cc:     peter@pjd.dev, sam@mendozajonas.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/ncsi: Always use unicast source MAC address
-Date:   Mon, 12 Dec 2022 16:47:54 -0800
-Message-Id: <20221213004754.2633429-1-peter@pjd.dev>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S233891AbiLMBLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 20:11:21 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1771CFE6
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 17:11:20 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id b192so972597iof.8
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 17:11:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pAR7trYZxyJz6dDjjGtnhQhvH4CV37H8ORJAnU50YAI=;
+        b=OynFoN1pxipzXa/LRGcM80xD2vmYyGNwHBjBEuCjqZYJEqN9DZLh8crm+GMKI/72Fz
+         7HlpLIQy1Fpv7C+E1DZNIFKRvoT3XlW6fyxsdx3xupxod/KmnXyVMZ8ubid6KNxGnmoy
+         Qxxi4v+SuPsrHDtow570icb8+YuEWnNBfoizdLkwuKcg6pBcNGDanvcXDwknKuFX4dMS
+         VBJOFwk9CFUnXei7eiIcdlCoPVfj4DS2UVkQcxbwWFF8CS5rHJ7Egq79zImRfpYzqkqN
+         vDacxqXKTmpDqYbpVex7xMOsys3gZANZw5nYRnQ6czRCHKsbf6I36DaYapwrQ4bViBYw
+         JWKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pAR7trYZxyJz6dDjjGtnhQhvH4CV37H8ORJAnU50YAI=;
+        b=bsYk4p7ZBt9RsBAlvt84zc1jfjZ38iP8fo8McUB6UNcvy4y4u8AlaDX2EZYNXDCO3F
+         w5/QCQi0JoRGmAiWMUBjUPQSzuKgpWx8I3+Ptef+jwOydVOgOMyTi/GNblxBzcE/snb0
+         MrnGvUVkOpElbsO2YNW/tTjoSDntt4CToOrhyzyHgr8F77fuCSUXSTjWbG2tV/RcR3Sc
+         1OgAcN0yMT9L+W24HC+CajeqBTTiHtyi25Fu4GQw7c2ghl+xicGuw7b8YlCtyP76e8sB
+         h0mnbkGz6Fra62tONjUTZO6l52SxbYvg6+lU9MPnu8eqDfhC8VPtR8TdffRgx8WR0s10
+         y00w==
+X-Gm-Message-State: ANoB5pkCKtBzUSNG1C0+eaFriuffiHsoQfTbuXb6YRfy5okdnM7QLY85
+        mnn3fOTcVfYHQ9CnDzdsnSQ/DQ==
+X-Google-Smtp-Source: AA0mqf5iT+UyD0qvn7NpOSGyfj+cr/V7nAI47f6cpKUqG428uF+45DFYJC396XBHW9j/HJIVVKMX7Q==
+X-Received: by 2002:a6b:fb0a:0:b0:6df:5a37:ed5 with SMTP id h10-20020a6bfb0a000000b006df5a370ed5mr9593060iog.17.1670893879743;
+        Mon, 12 Dec 2022 17:11:19 -0800 (PST)
+Received: from [10.211.55.3] ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id m13-20020a02a14d000000b0038a382d84c5sm414160jah.64.2022.12.12.17.11.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Dec 2022 17:11:19 -0800 (PST)
+Message-ID: <008d3e20-2c6b-c3f1-3fd3-ef4ef4dd061e@linaro.org>
+Date:   Mon, 12 Dec 2022 19:11:17 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next 2/2] net: ipa: add IPA v4.7 support
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc:     Alex Elder <elder@linaro.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, andersson@kernel.org,
+        agross@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, elder@kernel.org,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Luca Weiss <luca.weiss@fairphone.com>
+References: <20221208211529.757669-1-elder@linaro.org>
+ <20221208211529.757669-3-elder@linaro.org>
+ <47b2fb29-1c2e-db6e-b14f-6dfe90341825@linaro.org>
+ <fa6d342e-0cfe-b870-b044-b0af476e3905@linaro.org>
+ <48bef9dd-b71c-b6aa-e853-1cf821e88b50@linaro.org>
+ <20221212155450.34fdae6b@kernel.org>
+From:   Alex Elder <alex.elder@linaro.org>
+In-Reply-To: <20221212155450.34fdae6b@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I use QEMU for development, and I noticed that NC-SI packets get dropped by
-the Linux software bridge[1] because we use a broadcast source MAC address
-for the first few NC-SI packets.
+On 12/12/22 5:54 PM, Jakub Kicinski wrote:
+>>> which in total gives us 0x146a8000-0x146aafff
+>> Can you tell me where you found this information?
+> [1], [2]
+> 
+>>    
+>>> That would also mean all of your writes are kind of skewed, unless
+>>> you already applied some offsets to them.
+>> This region is used by the modem, but must be set up
+>> by the AP.
+>>    
+>>> (IMEM on 6350 starts at 0x14680000 and is 0x2e000 long, as per
+>>> the bootloader memory map)
+>> On SM7250 (sorry, I don't know about 7225, or 6350 for that matter),
+>> the IMEM starts at 0x14680000 and has length 0x2c000.  However that
+>> memory is used by multiple entities.  The portion set aside for IPA
+>> starts at 0x146a9000 and has size 0x2000.
 
-The spec requires that the destination MAC address is FF:FF:FF:FF:FF:FF,
-but it doesn't require anything about the source MAC address as far as I
-know. From testing on a few different NC-SI NIC's (Broadcom 57502, Nvidia
-CX4, CX6) I don't think it matters to the network card. I mean, Meta has
-been using this in mass production with millions of BMC's [2].
+This is awesome, thank you!
 
-In general, I think it's probably just a good idea to use a unicast MAC.
+Yes I think there are a couple of minor corrections to make
+but I haven't had the time to go do the research yet, so
+hadn't yet responded.
 
-This might have the effect of causing the NIC to learn 2 MAC addresses from
-an NC-SI link if the BMC uses OEM Get MAC Address commands to change its
-initial MAC address, but it shouldn't really matter. Who knows if NIC's
-even have MAC learning enabled from the out-of-band BMC link, lol.
+Nothing is "supported" upstream anyway until there's a
+system with a DTS that uses it, and that won't happen
+until after the end of the merge window.
 
-[1]: https://tinyurl.com/4933mhaj
-[2]: https://tinyurl.com/mr3tyadb
+Again, thank you very much, it's a safe thing to take
+for now.
 
-Signed-off-by: Peter Delevoryas <peter@pjd.dev>
----
- net/ncsi/ncsi-cmd.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
-
-diff --git a/net/ncsi/ncsi-cmd.c b/net/ncsi/ncsi-cmd.c
-index dda8b76b7798..fd090156cf0d 100644
---- a/net/ncsi/ncsi-cmd.c
-+++ b/net/ncsi/ncsi-cmd.c
-@@ -377,15 +377,7 @@ int ncsi_xmit_cmd(struct ncsi_cmd_arg *nca)
- 	eh = skb_push(nr->cmd, sizeof(*eh));
- 	eh->h_proto = htons(ETH_P_NCSI);
- 	eth_broadcast_addr(eh->h_dest);
--
--	/* If mac address received from device then use it for
--	 * source address as unicast address else use broadcast
--	 * address as source address
--	 */
--	if (nca->ndp->gma_flag == 1)
--		memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, ETH_ALEN);
--	else
--		eth_broadcast_addr(eh->h_source);
-+	memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, ETH_ALEN);
- 
- 	/* Start the timer for the request that might not have
- 	 * corresponding response. Given NCSI is an internal
--- 
-2.30.2
+					-Alex
 
