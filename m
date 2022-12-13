@@ -2,250 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D63C264B19E
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 09:56:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62BF064B237
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 10:21:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234734AbiLMI4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 03:56:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        id S234669AbiLMJVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 04:21:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234567AbiLMI4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 03:56:50 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1DE103;
-        Tue, 13 Dec 2022 00:56:49 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id s5so16707227edc.12;
-        Tue, 13 Dec 2022 00:56:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vD7l0fUYqcJCtpTMlWZg37cbVxsGWj34X8MRkehm6mE=;
-        b=SHBmyU+b2lRK80rBZEfIcDaHopEHdBDTjcH5vIcM/zOmnRcsy3669BEm6EiCEJQ+J5
-         n7BKvUJJsmQrdje6HL5S3EN9LOhY3FEmflH+T5cc8dFGBFFAX2vfp91vV9gACoH5mdej
-         Zz0Ccvy2JYz0rlgADxXP/UtuH9ozHFfsdqwnQL+MP9pMXHFmVnJBsg27RSizYW7e6G0U
-         V+jxdpWzb5mm7rATT/+qBnLeNYcrSfL7JJ2nSqvQbO1nR7WIo4CkejoGSk1Vh7KKH+B+
-         oAGRtPXUm+0VToZEOiADceMC6j+cPejGQO2/bMS/nK5hc02sItbA1/HTDDn26bBoug3p
-         IfSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vD7l0fUYqcJCtpTMlWZg37cbVxsGWj34X8MRkehm6mE=;
-        b=uX7DKPOxdiSWlrnxMn1qxOfSBvjdG1nZ+vpDgyKGAhR8DRWHM/9T7dzZg7DqDZnoZP
-         PX7eW91v2Kfa86Ls9v2NdNQWlgc3HOCCufZFasJSmG1Alr6h3kH650SwLyDOunDUQIgw
-         KOZL7Jr+f1JhcRhZpF6jLJ8XRYNYEyzZtsW3pDLBAx8FM5B4C8/w7TpnV29ZJm0A7lVQ
-         1v4rAMa7wvkTiHnlD3ksfCazkunWB2A/PJUm/T5A+zBK8gVHJr7i58icpAqCrb9w0bxW
-         xnTak4xgj8+z/Stb/8DkaTpp+jUGAZwu8TJa+uc8nvYj1j8d/58uD6hVBUyYjiBIAYzq
-         7Y6w==
-X-Gm-Message-State: ANoB5pnM4Iv4XpurFkP3yLosgfPFg3IdgbrzFjLyQT+h6c5LMPZLBRaX
-        57ZN3XOarc/DrVbWNsy4++o=
-X-Google-Smtp-Source: AA0mqf5sTX3/VfOMIcXu2bJVQJEQJ0z10LnHjIfefARxqoACw3p2aVbTEcawRtMF2xH3N/bdUlEyJA==
-X-Received: by 2002:a05:6402:5486:b0:461:aeeb:9ce1 with SMTP id fg6-20020a056402548600b00461aeeb9ce1mr16590533edb.32.1670921807545;
-        Tue, 13 Dec 2022 00:56:47 -0800 (PST)
-Received: from [192.168.1.115] ([77.124.106.18])
-        by smtp.gmail.com with ESMTPSA id j5-20020aa7ca45000000b0046bf7ebbbadsm4672327edt.42.2022.12.13.00.56.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Dec 2022 00:56:46 -0800 (PST)
-Message-ID: <a45cc7b7-8691-ff39-ddf8-df8fc7e6ab7c@gmail.com>
-Date:   Tue, 13 Dec 2022 10:56:44 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH bpf-next v4 11/15] net/mlx4_en: Support RX XDP metadata
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-References: <20221213023605.737383-1-sdf@google.com>
- <20221213023605.737383-12-sdf@google.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20221213023605.737383-12-sdf@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S234927AbiLMJUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 04:20:55 -0500
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5644D48;
+        Tue, 13 Dec 2022 01:20:53 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id C4B8D5C007F;
+        Tue, 13 Dec 2022 04:20:52 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Tue, 13 Dec 2022 04:20:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1670923252; x=1671009652; bh=B/U5i3u883
+        FE3HYgve/aglh3sfvqVqAT4dapVTpH9Bs=; b=AAcfMHZ/V8XdPQWn804Q/+YCAl
+        8JtOVvgEW+WgXdLj7p80oOqfCyEwRAWGJKaCdkoorWNPLtLLahVUgIlZsTkCOzNU
+        UGlNEa9ZN8bTjoLi4jP9h4LDvZzAgSIvwyVVLnCnNAVtVF3mojSTZpr/ndXbY6Jv
+        aDRYI4476ppEDk7ryW7cTtFAKJ/WNeKJcrC5DunoTSOEWitqkjx7O7GiwWPciroq
+        rMeju2bINwErdfe3Ds4HT9uxWWV2TIYBxr4Gk7Y04yHhU6QLqQAl8nQmjUGaaHhA
+        8Zs7PMORgPV75C9TMXPRl45Tz1wVVLjZyBTxjZIuW4BmQkSv6LkfFpBfBRmA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1670923252; x=1671009652; bh=B/U5i3u883FE3HYgve/aglh3sfvq
+        VqAT4dapVTpH9Bs=; b=J1DvYW0YJKnUMrML7EIqbMoMU8YeF7WTd/r90aNZ5Z2/
+        djU574dBj8CE1X3i9wqjXZKLhHD2eHkXHNX4RQplSDUw8j5ba2bXj4bmetAorW7G
+        +ssG2rpkhDTzMKETndGQQn+N367uXGisZ/Mxqd8tqaAf/FBm3rFa3kq6ypw1lPib
+        VIrrQOA/rPOTGy3a9fJOz/LNQKHLBGoIassIvZWspHidBvkaO99tnCQ0W2tB7I1D
+        sT+hGSMZSkU4yHY7rlMO8YzAuq/wBXmj/l1IPdVrXrajaqJImd1LKQyoYsrqUnhq
+        bzgXGXRAFKn7hBL+gyOC7wbnCCW8Z3lDyS0NB6SNfQ==
+X-ME-Sender: <xms:80OYY8eNmt8ORTVetcJjF-BkyY7pIxU019LdGNLey9vn3aEIHKMqAA>
+    <xme:80OYY-NDmZ2tsWF_sOFbYFR89hjc5Rbpln_dL5jI12h5IsI5XxtcfHp7w-vBtC0qC
+    YN8eClPwH51ub0cPKE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedtgddtfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpefhtdelhfettdetvdetvdeuueegvdeuleeuudevhfeuhfeugfdvtdevvedvfffh
+    udenucffohhmrghinheplhhinhgrrhhordhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:9EOYY9gx5DMlG-qag2FX-uA6qt3Ej0Cu2nhsk0_giwyyIWAcLmsJKA>
+    <xmx:9EOYYx-19KTw6Jv9F1CnFRVxj1GxV2l5a11dFg9gCyBlJZKqXWy3QQ>
+    <xmx:9EOYY4u8wi1d6AGKMvAYlLcUDxfwDRVzIxuGlc2akDSJv8N4dP4X_w>
+    <xmx:9EOYYzlzGNWaq4kwDu4vrh1HmsKZd67fRqPTS2D7hZTsaWManVXaiQ>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id EBD28B60089; Tue, 13 Dec 2022 04:20:51 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1115-g8b801eadce-fm-20221102.001-g8b801ead
+Mime-Version: 1.0
+Message-Id: <86c7e7a5-6457-49c5-a9e3-b28b8b8c1134@app.fastmail.com>
+In-Reply-To: <CA+G9fYv7tm9zQwVWnPMQMjFXtNDoRpdGkxZ4ehMjY9qAFF0QLQ@mail.gmail.com>
+References: <20221212130924.863767275@linuxfoundation.org>
+ <CA+G9fYv7tm9zQwVWnPMQMjFXtNDoRpdGkxZ4ehMjY9qAFF0QLQ@mail.gmail.com>
+Date:   Tue, 13 Dec 2022 10:20:30 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Naresh Kamboju" <naresh.kamboju@linaro.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Netdev <netdev@vger.kernel.org>
+Cc:     stable@vger.kernel.org, patches@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>,
+        srw@sladewatkins.net, rwarsow@gmx.de,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Anders Roxell" <anders.roxell@linaro.org>
+Subject: Re: [PATCH 5.10 000/106] 5.10.159-rc1 review
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 13, 2022, at 08:48, Naresh Kamboju wrote:
+> On Mon, 12 Dec 2022 at 18:43, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+>
+> Regression detected on arm64 Raspberry Pi 4 Model B the NFS mount failed.
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> Following changes have been noticed in the Kconfig file between good and bad.
+> The config files attached to this email.
+>
+> -CONFIG_BCMGENET=y
+> -CONFIG_BROADCOM_PHY=y
+> +# CONFIG_BROADCOM_PHY is not set
+> -CONFIG_BCM7XXX_PHY=y
+> +# CONFIG_BCM7XXX_PHY is not set
+> -CONFIG_BCM_NET_PHYLIB=y
 
+> Full test log details,
+>  - https://lkft.validation.linaro.org/scheduler/job/5946533#L392
+>  - 
+> https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10.158-107-gd2432186ff47/testrun/13594402/suite/log-parser-test/tests/
+>  - 
+> https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10.158-107-gd2432186ff47/testrun/13594402/suite/log-parser-test/test/check-kernel-panic/history/
 
-On 12/13/2022 4:36 AM, Stanislav Fomichev wrote:
-> RX timestamp and hash for now. Tested using the prog from the next
-> patch.
-> 
-> Also enabling xdp metadata support; don't see why it's disabled,
-> there is enough headroom..
-> 
-> Cc: Tariq Toukan <tariqt@nvidia.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> Cc: xdp-hints@xdp-project.net
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/en_clock.c | 13 +++++---
->   .../net/ethernet/mellanox/mlx4/en_netdev.c    |  6 ++++
->   drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 33 ++++++++++++++++++-
->   drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  5 +++
->   4 files changed, 52 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_clock.c b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-> index 98b5ffb4d729..9e3b76182088 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-> @@ -58,9 +58,7 @@ u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe)
->   	return hi | lo;
->   }
->   
-> -void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
-> -			    struct skb_shared_hwtstamps *hwts,
-> -			    u64 timestamp)
-> +u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp)
->   {
->   	unsigned int seq;
->   	u64 nsec;
-> @@ -70,8 +68,15 @@ void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
->   		nsec = timecounter_cyc2time(&mdev->clock, timestamp);
->   	} while (read_seqretry(&mdev->clock_lock, seq));
->   
-> +	return ns_to_ktime(nsec);
-> +}
-> +
-> +void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
-> +			    struct skb_shared_hwtstamps *hwts,
-> +			    u64 timestamp)
-> +{
->   	memset(hwts, 0, sizeof(struct skb_shared_hwtstamps));
-> -	hwts->hwtstamp = ns_to_ktime(nsec);
-> +	hwts->hwtstamp = mlx4_en_get_hwtstamp(mdev, timestamp);
->   }
->   
->   /**
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> index 8800d3f1f55c..af4c4858f397 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> @@ -2889,6 +2889,11 @@ static const struct net_device_ops mlx4_netdev_ops_master = {
->   	.ndo_bpf		= mlx4_xdp,
->   };
->   
-> +static const struct xdp_metadata_ops mlx4_xdp_metadata_ops = {
-> +	.xmo_rx_timestamp		= mlx4_en_xdp_rx_timestamp,
-> +	.xmo_rx_hash			= mlx4_en_xdp_rx_hash,
-> +};
-> +
->   struct mlx4_en_bond {
->   	struct work_struct work;
->   	struct mlx4_en_priv *priv;
-> @@ -3310,6 +3315,7 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
->   		dev->netdev_ops = &mlx4_netdev_ops_master;
->   	else
->   		dev->netdev_ops = &mlx4_netdev_ops;
-> +	dev->xdp_metadata_ops = &mlx4_xdp_metadata_ops;
->   	dev->watchdog_timeo = MLX4_EN_WATCHDOG_TIMEOUT;
->   	netif_set_real_num_tx_queues(dev, priv->tx_ring_num[TX]);
->   	netif_set_real_num_rx_queues(dev, priv->rx_ring_num);
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> index 014a80af2813..0869d4fff17b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> @@ -663,8 +663,35 @@ static int check_csum(struct mlx4_cqe *cqe, struct sk_buff *skb, void *va,
->   
->   struct mlx4_en_xdp_buff {
->   	struct xdp_buff xdp;
-> +	struct mlx4_cqe *cqe;
-> +	struct mlx4_en_dev *mdev;
-> +	struct mlx4_en_rx_ring *ring;
-> +	struct net_device *dev;
->   };
->   
-> +int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
-> +{
-> +	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
-> +
-> +	if (unlikely(_ctx->ring->hwtstamp_rx_filter != HWTSTAMP_FILTER_ALL))
-> +		return -EOPNOTSUPP;
-> +
-> +	*timestamp = mlx4_en_get_hwtstamp(_ctx->mdev,
-> +					  mlx4_en_get_cqe_ts(_ctx->cqe));
-> +	return 0;
-> +}
-> +
-> +int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
-> +{
-> +	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
-> +
-> +	if (unlikely(!(_ctx->dev->features & NETIF_F_RXHASH)))
-> +		return -EOPNOTSUPP;
-> +
-> +	*hash = be32_to_cpu(_ctx->cqe->immed_rss_invalid);
-> +	return 0;
-> +}
-> +
->   int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int budget)
->   {
->   	struct mlx4_en_priv *priv = netdev_priv(dev);
-> @@ -781,8 +808,12 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
->   						DMA_FROM_DEVICE);
->   
->   			xdp_prepare_buff(&mxbuf.xdp, va - frags[0].page_offset,
-> -					 frags[0].page_offset, length, false);
-> +					 frags[0].page_offset, length, true);
->   			orig_data = mxbuf.xdp.data;
-> +			mxbuf.cqe = cqe;
-> +			mxbuf.mdev = priv->mdev;
-> +			mxbuf.ring = ring;
-> +			mxbuf.dev = dev;
->   
->   			act = bpf_prog_run_xdp(xdp_prog, &mxbuf.xdp);
->   
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-> index e132ff4c82f2..2f8ef0b30083 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-> @@ -788,10 +788,15 @@ void mlx4_en_update_pfc_stats_bitmap(struct mlx4_dev *dev,
->   int mlx4_en_netdev_event(struct notifier_block *this,
->   			 unsigned long event, void *ptr);
->   
-> +struct xdp_md;
-> +int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp);
-> +int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash);
-> +
->   /*
->    * Functions for time stamping
->    */
->   u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe);
-> +u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp);
->   void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
->   			    struct skb_shared_hwtstamps *hwts,
->   			    u64 timestamp);
+Where does the kernel configuration come from? Is this
+a plain defconfig that used to work, or do you have
+a board specific config file?
 
+This is most likely caused by the added dependency on
+CONFIG_PTP_1588_CLOCK that would lead to the BCMGENET
+driver not being built-in if PTP support is in a module.
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+     Arnd
