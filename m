@@ -2,138 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD6C064B93F
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A1B64B949
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235769AbiLMQFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 11:05:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        id S235670AbiLMQJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 11:09:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234989AbiLMQFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:05:32 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D65920F49
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:05:31 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id f16so3743507ljc.8
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:05:31 -0800 (PST)
+        with ESMTP id S234989AbiLMQJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:09:21 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7982C26DB;
+        Tue, 13 Dec 2022 08:09:20 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id a9so235864pld.7;
+        Tue, 13 Dec 2022 08:09:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Md5BnzDKCo+Ixqvyz8wEbbhxUPDSLaf7mvzv+YJu9GA=;
-        b=yDR+1E0+9HVxTIEyGoGvb4UWDiWtOA8vsmZvRo2ahUjWNASrgP6i64Qjb5BATHr/8K
-         aiwiXTG71AsWPcuHhvYbJpGhBKymSZCQP9PwsmYaF7MtWS3CAo93UyJ5D2IGJp5NnAkX
-         c/fSyzMx9JbpvFBWCGjvqEwBlAeVP/Mbn0HF5dqSmcYYcgqlvHLNFehHu7VGuGR1IW4O
-         beTLh/H18ZvsSRI6+R9YtEeYZszKgC7zQJTqm4x5m/iQ5w0qf9flDFWt+nn0HfDC4+Oc
-         P+Y8O49ph3On+PXiJGaG7/LOmqDOhsxyKxkiZGr9LKGAESsOQVSGiFt7GBUtLLMRnWgM
-         4Z0A==
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=4tFhyWdl5CQaHxKakHlBhtPo8vjJLnu37GaGjpzYKLY=;
+        b=MuupRT6NiaoDaeXjN5QATL127R0tKhTu1TE4P+2wLMod31puoEKkRyT9g+l7oFEyxT
+         6RY/0hHTBc5pnb13fkPSpkP/PNCzPwZgE297i5Fif0mo3y9FwWaSFt/oNTuMxo3RgW+d
+         C/pN1LoNKRhqC7FRvaclEuxEGsk5cDOsEBFbzxkxCbNOvj/Wl83NoBV9DlAo2wQ1AI+2
+         Xy7iIqnsmpU+RVnVp42k5gJ3bD4jnabkUm9nnOjtj3r4GtRCrZK0sDLim5y236F403W3
+         ma2Phc24WjBxSuLjsmiwNENoXZzzzuRoOuS0WZZkbCnGa1VdRvmnzOs7FXP09gorlJL9
+         F96w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Md5BnzDKCo+Ixqvyz8wEbbhxUPDSLaf7mvzv+YJu9GA=;
-        b=sAlgYeEfFFojYb/GCF3pz6Vo10LenM96CgMG7+BIkjyzQSLR5O6W8Wc86JSfLwJXI1
-         x7bM65jCIfyqZoXaOwOcma7IH5bgebxwStNMSI0WDw6FqPuVKrjXxiqY61NMxFlXEzrx
-         e6aBdcb5goXgtmF6oed556s9g+YCT45/2S/4l2YzGGRPjDK+FTFRPc51Zu3fRw97+e4S
-         rrIrBkHw4QNQMOzd5Vrj1PaYzmWlgfbEiaZXGFpUOjjrEYKp2zR+4X1nOORdrabeS8Cj
-         8deNDiYtHcSIPs6ktHP0oNFH2Jm90//fsQYSGM+xS7uWNJt46bLw+IVVlDTEdpNnsnSG
-         2KKg==
-X-Gm-Message-State: ANoB5pmORAZi8Lre5ePV9vGC7c3MT9kv2yzU5vIpGkreMgpXMXvRWrgH
-        XQi9LUhW8AOS7wo2O41NVUT4jA==
-X-Google-Smtp-Source: AA0mqf6NpVWNi0HjErEZFi68jhRTsarHgIWM+qXSYk/XA52AnA3Vv8xex9wzwvw36/SutKGkoR6a2w==
-X-Received: by 2002:a2e:be1f:0:b0:26f:db35:7e42 with SMTP id z31-20020a2ebe1f000000b0026fdb357e42mr6705134ljq.17.1670947529514;
-        Tue, 13 Dec 2022 08:05:29 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id h5-20020a2eb0e5000000b0027973ba8718sm310623ljl.37.2022.12.13.08.05.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Dec 2022 08:05:28 -0800 (PST)
-Message-ID: <0fb173e7-8810-6e3f-eff2-446cbfcc2eab@linaro.org>
-Date:   Tue, 13 Dec 2022 17:05:27 +0100
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4tFhyWdl5CQaHxKakHlBhtPo8vjJLnu37GaGjpzYKLY=;
+        b=hz4VPde3I1V+DNyDLE1YNHnte23mo8JSd5NpBjOF5BENjXKnUnnXSvnUkObytY43X9
+         edSftxe4DktEiiXT/B8LR7Ga1+2FV9OIwxke+5BlBx+V6PG6iBrWxNRnK146uZ5E3LXy
+         szpzqhHXKmMaRKLRnS9WKziYdeGL2hFKChjm8V1zeTzSvSXPBf2NYTGTDNcG0tMQQDAD
+         MJ8ywYsP0qYleJZEybuJxZp4gWfdsVx6C4U9Z9TUtXuKkeO9gHGSB8Vrg90lCDU0Kfqr
+         gCTeZ0020O65kUU7wcy3ngwjaWz67hPMketzXP80g6AkeiBUr46T1gSK0YxP6j2pu8lb
+         eCUw==
+X-Gm-Message-State: ANoB5pmzLUtC3bfcK5l53UDRtiJ4yrnFVgYgJd61S/9cNBaDGHYiBxN1
+        Utt8sZwcseel7904tbqcJq0=
+X-Google-Smtp-Source: AA0mqf6XfsBTBfgwkOKZ89PyM+a95m8MvihGTHWxpAjBz/a9DFWDfJ1AFIzpueCySw4Gs2ZJOX7RKw==
+X-Received: by 2002:a17:902:d192:b0:189:c19a:2cd9 with SMTP id m18-20020a170902d19200b00189c19a2cd9mr18084608plb.25.1670947759749;
+        Tue, 13 Dec 2022 08:09:19 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.42.38])
+        by smtp.googlemail.com with ESMTPSA id x15-20020a170902ec8f00b00189371b5971sm44851plg.220.2022.12.13.08.09.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 08:09:19 -0800 (PST)
+Message-ID: <08bd63d5de4ea8814ddd58c51ca6d1c17d0990e6.camel@gmail.com>
+Subject: Re: [PATCH intel-next 4/5] i40e: pull out rx buffer allocation to
+ end of i40e_clean_rx_irq()
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Tirthendu Sarkar <tirthendu.sarkar@intel.com>, tirtha@gmail.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com
+Date:   Tue, 13 Dec 2022 08:09:15 -0800
+In-Reply-To: <20221213105023.196409-5-tirthendu.sarkar@intel.com>
+References: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
+         <20221213105023.196409-5-tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH net v2] nfc: pn533: Clear nfc_target before being used
-Content-Language: en-US
-To:     Minsuk Kang <linuxlovemin@yonsei.ac.kr>, netdev@vger.kernel.org
-Cc:     linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
-        linville@tuxdriver.com, dokyungs@yonsei.ac.kr,
-        jisoo.jang@yonsei.ac.kr
-References: <20221213142746.108647-1-linuxlovemin@yonsei.ac.kr>
- <decda09c-34ed-ce22-13c4-2f12085e99bd@linaro.org>
- <cd3a1383-9d6a-19ad-fd6e-c45da7e646b4@linaro.org>
- <20221213160358.GA109198@medve-MS-7D32>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221213160358.GA109198@medve-MS-7D32>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/12/2022 17:03, Minsuk Kang wrote:
-> On Tue, Dec 13, 2022 at 03:41:36PM +0100, Krzysztof Kozlowski wrote:
->> On 13/12/2022 15:38, Krzysztof Kozlowski wrote:
->>> On 13/12/2022 15:27, Minsuk Kang wrote:
->>>> Fix a slab-out-of-bounds read that occurs in nla_put() called from
->>>> nfc_genl_send_target() when target->sensb_res_len, which is duplicated
->>>> from an nfc_target in pn533, is too large as the nfc_target is not
->>>> properly initialized and retains garbage values. Clear nfc_targets with
->>>> memset() before they are used.
->>>>
->>>> Found by a modified version of syzkaller.
->>>>
->>>> BUG: KASAN: slab-out-of-bounds in nla_put
->>>> Call Trace:
->>>>  memcpy
->>>>  nla_put
->>>>  nfc_genl_dump_targets
->>>>  genl_lock_dumpit
->>>>  netlink_dump
->>>>  __netlink_dump_start
->>>>  genl_family_rcv_msg_dumpit
->>>>  genl_rcv_msg
->>>>  netlink_rcv_skb
->>>>  genl_rcv
->>>>  netlink_unicast
->>>>  netlink_sendmsg
->>>>  sock_sendmsg
->>>>  ____sys_sendmsg
->>>>  ___sys_sendmsg
->>>>  __sys_sendmsg
->>>>  do_syscall_64
->>>>
->>>> Fixes: 673088fb42d0 ("NFC: pn533: Send ATR_REQ directly for active device detection")
->>>> Fixes: 361f3cb7f9cf ("NFC: DEP link hook implementation for pn533")
->>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>>
->>> How did it happen? From where did you get it?
->>
->> I double checked - I did not send it. This is some fake tag. Please do
->> not add fake/invented/created tags with people's names.
-> 
-> Sorry for my confusion.
-> 
-> https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L505
-> 
-> I missed the definition of the tag as I did not read the document
-> carefully and misunderstood that the tag simply means I have got a
-> reply from maintainers and I should manually attach it if that is
-> the case. I will rewrite the patch after I make sure I fully
-> understand the whole rules.
+On Tue, 2022-12-13 at 16:20 +0530, Tirthendu Sarkar wrote:
+> Previously i40e_alloc_rx_buffers() was called for every 32 cleaned
+> buffers. For multi-buffers this may not be optimal as there may be more
+> cleaned buffers in each i40e_clean_rx_irq() call. So this is now pulled
+> out of the loop and moved to the end of i40e_clean_rx_irq().
+>=20
+> As a consequence instead of counting the number of buffers to be cleaned,
+> I40E_DESC_UNUSED() can be used to call i40e_alloc_rx_buffers().
+>=20
+> Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
 
-The document says:
-"By offering my Reviewed-by: tag, I state that:"
+I suspect this will lead to performance issues on systems configured
+with smaller ring sizes. Specifically with this change you are limiting
+things to only allocating every 64 (NAPI_POLL_WEIGHT/budget) packets.
 
-You need to receive it explicitly from the reviewer. Once received, but
-only then, add to the patch.
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/et=
+hernet/intel/i40e/i40e_txrx.c
+> index e01bcc91a196..dc9dc0acdd37 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> @@ -2425,7 +2425,6 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_r=
+ing, int budget,
+>  			     unsigned int *rx_cleaned)
+>  {
+>  	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0, frame_sz =3D=
+ 0;
+> -	u16 cleaned_count =3D I40E_DESC_UNUSED(rx_ring);
+>  	unsigned int offset =3D rx_ring->rx_offset;
+>  	struct sk_buff *skb =3D rx_ring->skb;
+>  	u16 ntp =3D rx_ring->next_to_process;
+> @@ -2450,13 +2449,6 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_=
+ring, int budget,
+>  		unsigned int size;
+>  		u64 qword;
+> =20
+> -		/* return some buffers to hardware, one at a time is too slow */
+> -		if (cleaned_count >=3D I40E_RX_BUFFER_WRITE) {
+> -			failure =3D failure ||
+> -				  i40e_alloc_rx_buffers(rx_ring, cleaned_count);
+> -			cleaned_count =3D 0;
+> -		}
+> -
+>  		rx_desc =3D I40E_RX_DESC(rx_ring, ntp);
+> =20
+>  		/* status_error_len will always be zero for unused descriptors
+> @@ -2479,7 +2471,6 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_r=
+ing, int budget,
+>  			rx_buffer =3D i40e_rx_bi(rx_ring, ntp);
+>  			I40E_INC_NEXT(ntp, ntc, rmax);
+>  			i40e_reuse_rx_page(rx_ring, rx_buffer);
+> -			cleaned_count++;
+>  			continue;
+>  		}
+> =20
+> @@ -2531,7 +2522,6 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_r=
+ing, int budget,
+>  		}
+> =20
+>  		i40e_put_rx_buffer(rx_ring, rx_buffer);
+> -		cleaned_count++;
+> =20
+>  		I40E_INC_NEXT(ntp, ntc, rmax);
+>  		if (i40e_is_non_eop(rx_ring, rx_desc))
+> @@ -2558,6 +2548,8 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_r=
+ing, int budget,
+>  	rx_ring->next_to_process =3D ntp;
+>  	rx_ring->next_to_clean =3D ntc;
+> =20
+> +	failure =3D i40e_alloc_rx_buffers(rx_ring, I40E_DESC_UNUSED(rx_ring));
+> +
+>  	i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
+>  	rx_ring->skb =3D skb;
 
-Best regards,
-Krzysztof
+I am not a fan of this "failure" approach either. I hadn't noticed it
+before but it is problematic. It would make much more sense to take an
+approach similar to what we did for Tx where we kick the ring
+periodically if it looks like it is stuck, in this case empty.
 
+The problem is if you have memory allocation issues the last thing you
+probably need is a NIC deciding to become memory hungry itself and
+sticking in an allocation loop.
