@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29CD664B911
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 16:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FEA864B92F
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:04:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235586AbiLMP6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 10:58:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
+        id S235529AbiLMQEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 11:04:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234624AbiLMP6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 10:58:22 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D863BDE;
-        Tue, 13 Dec 2022 07:58:22 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id t2so222410ply.2;
-        Tue, 13 Dec 2022 07:58:22 -0800 (PST)
+        with ESMTP id S231888AbiLMQEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:04:10 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D9920F41
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:04:04 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id 4so238330plj.3
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:04:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=L2KwEdJdz8SZz3waYhraeZmfXbWgedoNQcqshGcRjyQ=;
-        b=KnUh26J7JZRs5EIrjhCuhTh0mR4I4x0Ew2N5op3jpJnsa4Yw+nMuPEPNwrYmve9DTD
-         mVQP6RtncAKCTBt/N9udvh3n2Qzj+/bV0YsglSLWzr1jOJzGDAAu4jCbHzIxoO5L/vOo
-         bL0jAUFUW9baIcGA/BE9WAmdLJv6nCApYuhn5ngTkmwBewEjIK1QFFVlW1PHyDZ3/g2L
-         p2M3F4A5vCD7qzRU9rger8MO4NszpALiP3uT4bDvSdrEtRF4eAFwjW1oL6uS0bHFrElt
-         zIqvH2Dv7YdSjr/Sr0V/pdNih3GwgqcB6iHueHlz7D7VqIs92IBbm/lOTGO5+EFC34L7
-         1bxw==
+        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=p7nELjFEyt08qzaYX+tdhdA8OCWRgud90hr8qeI+kFU=;
+        b=FxpdeSdY5XArR0c1ht6LKaeUWTCIhUlmlKtTqgdL2G3GoG6vZpqVYmh/FjQA9GY+zv
+         NcY7+0uFaIg1keChvqT9PrXn7cHLdOMJKiccOHv6XmWhjZAbMjj91E5HdN9czaXasY1y
+         cuTERoMrgCxndxZ2qaIeilorAInyUDi530PSFtuIi9t//++m9hCYBz1eh6KJeZdoOG1Q
+         OnS2NnAqJ/us1xKCSKK/et527179SAxZv17wRJYts6URyeZZtRPGh2+ts3whNZz5KWZD
+         VyLT3RXLveb5KDWUreYCOAZmEwKE/ruQl0QzMt4NtO/uvfp5FglGZnRxCkzY1IC2p4SV
+         gxjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L2KwEdJdz8SZz3waYhraeZmfXbWgedoNQcqshGcRjyQ=;
-        b=CSHpSkiIjC2NgfMc+bzFAF9l4kprAAYDM/vym5Yl2C+c5NB+BrGNI/MyI+7EXsXiLx
-         OMpPxGELu7EQbCC3eROtCePq3cZvMtH2CoT5/9snEceyaVHNSFNA881YRoozSHVKUITi
-         EqLPXfpNGZRS88X9DsGRkBXS55BeUqL5sQssz6ym8ooYiP0myAz9QlS5V87S3+wqhTpK
-         KdsKvoHlTBPKvyH9+1/fSowyAQ+gclMuJp1QktnP5M+AXD1H6m6j3/XXAUOEhI9McRQV
-         r7Pa4XYjCQC6I/GRwBmP19iTFi9VMk0peBag9XUz9zQ8f+4CouAYDXMK3DS6B/DrK9p9
-         0S4A==
-X-Gm-Message-State: ANoB5pmusroe+ASTDNaaI/gDjxxgujeL8nNpvIPjynubzw0AByNVYgvD
-        3b6t5sHgqZqrdWKjIIFm5bG13TyLIEQ=
-X-Google-Smtp-Source: AA0mqf4ASAm91c18uzbgdF0yT/tzLVd89/CZlvbaX4MOqMjsoYKxBEikl31a3JskKH0GZN9iwuRcgg==
-X-Received: by 2002:a17:902:9a43:b0:187:16c2:d52c with SMTP id x3-20020a1709029a4300b0018716c2d52cmr19322313plv.50.1670947101435;
-        Tue, 13 Dec 2022 07:58:21 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id ix17-20020a170902f81100b001895f7c8a71sm71952plb.97.2022.12.13.07.58.20
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=p7nELjFEyt08qzaYX+tdhdA8OCWRgud90hr8qeI+kFU=;
+        b=XYVzhwOwlpW5pAqX0PZmMWIVfUr/fTNUAwM/HZZ4+OMCdpfv9yYbC2CO5wlQfa4AoH
+         MDO9rTS60Gl38gcD30ycBzA6ZrVE2YukK4a+FN08IPcqVz8Z+MUbTSPcTne7Q9WieoyK
+         DpwXVIwOUERkSj1r+oXNDpVNm/kJtqecAyYBw36xQQGfPDn0ZGxWXI2rVeOR5UHG7qUn
+         XluZR/EHekUYpL22nC8rlDqJrZmu/44xns4iMKn4tuWaEqoBwFE/ZWZC+u4JN83c4EVN
+         8N56SpYzglzGk8afnvjQ1+IZJwvnrp0IgJnjtiqDDjMgdJZrfA0GYpvF+pEraVYfZHOG
+         uiiQ==
+X-Gm-Message-State: ANoB5plAmuR+NIQS0eFFcTP2vUTK/U8jlZuFmwPAErkri1Rlzqh5nLDz
+        KtjX2wqMjP9Td1fVthLS9tbY6A==
+X-Google-Smtp-Source: AA0mqf7OWmxIyQKMOg/jafGnCfi3iLynbuwivtQ0ewOBgrZ5iLVR2NjrO9XtDyDT+T/jpaJwHdb2cg==
+X-Received: by 2002:a17:90b:4a8c:b0:219:e763:1d21 with SMTP id lp12-20020a17090b4a8c00b00219e7631d21mr21916572pjb.5.1670947444022;
+        Tue, 13 Dec 2022 08:04:04 -0800 (PST)
+Received: from medve-MS-7D32 ([165.132.118.52])
+        by smtp.gmail.com with ESMTPSA id lj12-20020a17090b344c00b0021828120643sm7387495pjb.45.2022.12.13.08.04.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 07:58:21 -0800 (PST)
-Message-ID: <cf6f03d04c8f2ad2627a924f7ee66645d661d746.camel@gmail.com>
-Subject: Re: [PATCH intel-next 0/5] i40e: support XDP multi-buffer
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Tirthendu Sarkar <tirthendu.sarkar@intel.com>, tirtha@gmail.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com
-Date:   Tue, 13 Dec 2022 07:58:19 -0800
-In-Reply-To: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
-References: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Tue, 13 Dec 2022 08:04:03 -0800 (PST)
+Date:   Wed, 14 Dec 2022 01:03:58 +0900
+From:   Minsuk Kang <linuxlovemin@yonsei.ac.kr>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org
+Cc:     linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
+        linville@tuxdriver.com, dokyungs@yonsei.ac.kr,
+        jisoo.jang@yonsei.ac.kr, Minsuk Kang <linuxlovemin@yonsei.ac.kr>
+Subject: Re: Re: [PATCH net v2] nfc: pn533: Clear nfc_target before being used
+Message-ID: <20221213160358.GA109198@medve-MS-7D32>
+References: <20221213142746.108647-1-linuxlovemin@yonsei.ac.kr>
+ <decda09c-34ed-ce22-13c4-2f12085e99bd@linaro.org>
+ <cd3a1383-9d6a-19ad-fd6e-c45da7e646b4@linaro.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cd3a1383-9d6a-19ad-fd6e-c45da7e646b4@linaro.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,31 +73,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-12-13 at 16:20 +0530, Tirthendu Sarkar wrote:
-> This patchset adds multi-buffer support for XDP. The first four patches
-> are prepatory patches while the fifth one contains actual multi-buffer
-> changes.=20
->=20
-> Tirthendu Sarkar (5):
->   i40e: add pre-xdp page_count in rx_buffer
->   i40e: avoid per buffer next_to_clean access from i40e_ring
->   i40e: introduce next_to_process to i40e_ring
->   i40e: pull out rx buffer allocation to end of i40e_clean_rx_irq()
->   i40e: add support for XDP multi-buffer Rx
->=20
->  drivers/net/ethernet/intel/i40e/i40e_main.c |  18 +-
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 378 ++++++++++++++------
->  drivers/net/ethernet/intel/i40e/i40e_txrx.h |  13 +-
->  3 files changed, 280 insertions(+), 129 deletions(-)
->=20
+On Tue, Dec 13, 2022 at 03:41:36PM +0100, Krzysztof Kozlowski wrote:
+> On 13/12/2022 15:38, Krzysztof Kozlowski wrote:
+> > On 13/12/2022 15:27, Minsuk Kang wrote:
+> >> Fix a slab-out-of-bounds read that occurs in nla_put() called from
+> >> nfc_genl_send_target() when target->sensb_res_len, which is duplicated
+> >> from an nfc_target in pn533, is too large as the nfc_target is not
+> >> properly initialized and retains garbage values. Clear nfc_targets with
+> >> memset() before they are used.
+> >>
+> >> Found by a modified version of syzkaller.
+> >>
+> >> BUG: KASAN: slab-out-of-bounds in nla_put
+> >> Call Trace:
+> >>  memcpy
+> >>  nla_put
+> >>  nfc_genl_dump_targets
+> >>  genl_lock_dumpit
+> >>  netlink_dump
+> >>  __netlink_dump_start
+> >>  genl_family_rcv_msg_dumpit
+> >>  genl_rcv_msg
+> >>  netlink_rcv_skb
+> >>  genl_rcv
+> >>  netlink_unicast
+> >>  netlink_sendmsg
+> >>  sock_sendmsg
+> >>  ____sys_sendmsg
+> >>  ___sys_sendmsg
+> >>  __sys_sendmsg
+> >>  do_syscall_64
+> >>
+> >> Fixes: 673088fb42d0 ("NFC: pn533: Send ATR_REQ directly for active device detection")
+> >> Fixes: 361f3cb7f9cf ("NFC: DEP link hook implementation for pn533")
+> >> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > 
+> > How did it happen? From where did you get it?
+> 
+> I double checked - I did not send it. This is some fake tag. Please do
+> not add fake/invented/created tags with people's names.
 
-This approach seems kind of convoluted to me. Basically you are trying
-to clean the ring without cleaning the ring in the cases where you
-encounter a non EOP descriptor.
+Sorry for my confusion.
 
-Why not just replace the skb pointer with an xdp_buff in the ring? Then
-you just build an xdp_buff w/ frags and then convert it after after
-i40e_is_non_eop? You should then still be able to use all the same page
-counting tricks and the pages would just be dropped into the shared
-info of an xdp_buff instead of an skb and function the same assuming
-you have all the logic in place to clean them up correctly.
+https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L505
+
+I missed the definition of the tag as I did not read the document
+carefully and misunderstood that the tag simply means I have got a
+reply from maintainers and I should manually attach it if that is
+the case. I will rewrite the patch after I make sure I fully
+understand the whole rules.
+
+Best regards,
+Minsuk
