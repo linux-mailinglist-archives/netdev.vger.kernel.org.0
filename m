@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DAF064BFCD
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 23:59:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51C2664C05B
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 00:17:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236527AbiLMW7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 17:59:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
+        id S236972AbiLMXRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 18:17:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236509AbiLMW7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 17:59:42 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F96C2;
-        Tue, 13 Dec 2022 14:59:41 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id y4so4943143ljc.9;
-        Tue, 13 Dec 2022 14:59:41 -0800 (PST)
+        with ESMTP id S236989AbiLMXRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 18:17:51 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B74915739;
+        Tue, 13 Dec 2022 15:17:46 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id tz12so17901445ejc.9;
+        Tue, 13 Dec 2022 15:17:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=STFi6H+MBU8VigS8FZFWUA3ZkDfUTV68jyE1RodUQ9k=;
-        b=nnvukaeMDUXHfGbsjIPmvmNUy7a7j5YVH7VnRTc86Uw9vuwJWyJ2WMHkVTnWQo5HVX
-         xIoUeKixNsHX95e0QkGcdOpZAIYWm//8tD/MR7LTi2BlFi6xjWMF3SQwZrU2E+YLadMQ
-         CJt/IN9/+yu+hMnIOaa7tihajEE0VhO3jLWimiJrNmIFSxxcHqR8ldE5vQeuD4BjMsti
-         TGNO7KjN+U5wUOm9d05eYrZF2AHRzJuA22jX4LZ2DETok99HT9ZU5eXQLYeNKeJWnpVS
-         Ew9xcS6/N0IrA4XNruIWz0Nt1wugh7cZ5QduSyJ3jF6G1TOy+5Ffsfu3+ZVhVvIHDwmP
-         aRkg==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=faJ0WTl3eQnRUQ7m5HgbJmMQHIzjsBzCYc4YbJMZ6oM=;
+        b=S3erkLj39vrQLnjplGoVVFQMpYx05kf2dVu5IlXEde2Jd0Mt/GjNI/hQcIZZjUeitM
+         T4ll3TEFD74KakfK+aeV0xAJ6hJvaWfmEEVvW7+onTWX3oLg489ZLv1CnyuwpO1O4PlS
+         RC6HNvXc6U2FbctR/gmy92wyhEuFsjqqORKU/VnImWywrymZ+qjeYYlmmP4z0Y0xc7yo
+         BGG0S7Vn1g+INZfdcaMDLWUFqTIxEbruZupDJWXdNPd6XvNKwJgFMI1JmoAgw1U/VfSA
+         eyWOCTwJMRXJNxUg7FQ/sWFDWD9OHfpfsBuNCoSVSq+OVWlwKq+VpPXAqSEeegD+MtYC
+         r7uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=STFi6H+MBU8VigS8FZFWUA3ZkDfUTV68jyE1RodUQ9k=;
-        b=4uCTmNj/U9FOSTg7q9EpL+thV9J+W1PzVS9Qy2VAxcj+pmqcFvhHxLVGo6hYlYXTkM
-         iZEh6wAUfPVTQNwIZaBZK30+eyaw0NHtj1+I4t4H40rAUgQzbTB8giokhqxHpGq1lbcM
-         pn+iDddltsFl92mCLsceyZdNcpyBHnzyT8b69YPSuBAx9bKr5yLdEWImeoymoc9q9TPP
-         vgf5UPaL9ZtDogf5PFoSELGRlx74EpvbKladEtocuH9K6LqAIiumzmJJDy5gUs1kyHSI
-         uoe4GpO7ljg/JV304hUQlG4urFzQazZLEz/iQOFODNl/e8owhqErRI5WHHNBUSkL9vqD
-         eu0w==
-X-Gm-Message-State: ANoB5pk8otuORiDo/iFINK5s297sWjIMpwon7VM2SFiNpdnXmLT2ATuQ
-        +mOhNi2TH0vFjVUhhgX+3uk=
-X-Google-Smtp-Source: AA0mqf62+cbLSzoob4lgSmFNFAAzpJrxxl1oe6wVF1FNgso/5S/fbJELw27opsloyNoHcNPc2o/1Mw==
-X-Received: by 2002:a05:651c:98d:b0:278:e5ce:f551 with SMTP id b13-20020a05651c098d00b00278e5cef551mr5245599ljq.10.1670972379307;
-        Tue, 13 Dec 2022 14:59:39 -0800 (PST)
-Received: from user-PC.. ([176.221.215.212])
-        by smtp.gmail.com with ESMTPSA id bf12-20020a2eaa0c000000b002773ac59697sm436501ljb.0.2022.12.13.14.59.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 14:59:38 -0800 (PST)
-From:   Maksim Kiselev <bigunclemax@gmail.com>
-To:     bigunclemax@gmail.com
-Cc:     fido_max@inbox.ru, mw@semihalf.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Subject: Locking mv88e6xxx_reg_lock twice leads deadlock for 88E6176 switch
-Date:   Wed, 14 Dec 2022 01:58:55 +0300
-Message-Id: <20221213225856.1506850-1-bigunclemax@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=faJ0WTl3eQnRUQ7m5HgbJmMQHIzjsBzCYc4YbJMZ6oM=;
+        b=nLFrqKKTH8qFaK6hd5uoy5/gKFSroeAlzl3X536Ik7uHE/tCe/6J6D/A2Sr/50MfK5
+         TpDzcBjNxj+gUflZRiA1aUEGIQn/sIb8lCuOA29cfvhnjop4Snm5+03faUGmMLF0Xq/u
+         SH4aP2PtJAKd/Iws6BDYU+Vph6ElR/coWb1ASzE5iiq79ZfIkkEbwCnJJzVx/3YrGPcO
+         sMicP/b0fh9VM9eVdv0ClvM+K6P5KnndEzboIDIbHsQXfK1+jcIMleEcXOm2EBhUzKxC
+         l+gRSlnkvuLsoRtJ1TkL7EQZO9rUKYD/6tfx2WG4r2PkfUXFDWaZN5D5jPLeWqgnTg9G
+         tUVQ==
+X-Gm-Message-State: ANoB5pmys5paLnoNRF0JXU3MnYHl7NIVOScISru/wX9zvUCdeaBc5OCV
+        BuK+WCkr886PHG1LPkvcyjkX2lYb3g8W5S9D/3w=
+X-Google-Smtp-Source: AA0mqf5TEA31paEQUUo/mVL3cViVZDFuTW1YjRqLLRktLG22zUN+2ayawGBPn4LK9YcpIYBihCVVu29DuUcXah+ir9A=
+X-Received: by 2002:a17:906:3e53:b0:7c1:1f2b:945f with SMTP id
+ t19-20020a1709063e5300b007c11f2b945fmr5894770eji.302.1670973464778; Tue, 13
+ Dec 2022 15:17:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20221209142622.154126-1-toke@redhat.com> <20221209142622.154126-2-toke@redhat.com>
+In-Reply-To: <20221209142622.154126-2-toke@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 13 Dec 2022 15:17:32 -0800
+Message-ID: <CAEf4Bzbub-YHv1c9nHttVwWCW8dbY6BvDsMfqf_rcwKfemUgJg@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 2/2] selftests/bpf: Add a test for using a cpumap
+ from an freplace-to-XDP program
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -76,107 +82,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subject: Locking mv88e6xxx_reg_lock twice leads deadlock for 88E6176 switch
+On Fri, Dec 9, 2022 at 6:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> This adds a simple test for inserting an XDP program into a cpumap that i=
+s
+> "owned" by an XDP program that was loaded as PROG_TYPE_EXT (as libxdp
+> does). Prior to the kernel fix this would fail because the map type
+> ownership would be set to PROG_TYPE_EXT instead of being resolved to
+> PROG_TYPE_XDP.
+>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 53 +++++++++++++++++++
+>  .../selftests/bpf/progs/freplace_progmap.c    | 24 +++++++++
+>  tools/testing/selftests/bpf/testing_helpers.c | 24 ++++++++-
+>  tools/testing/selftests/bpf/testing_helpers.h |  2 +
+>  4 files changed, 101 insertions(+), 2 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/freplace_progmap.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/too=
+ls/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+> index d1e32e792536..dac088217f0f 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+> @@ -500,6 +500,57 @@ static void test_fentry_to_cgroup_bpf(void)
+>         bind4_prog__destroy(skel);
+>  }
+>
+> +static void test_func_replace_progmap(void)
+> +{
+> +       struct bpf_cpumap_val value =3D { .qsize =3D 1 };
+> +       struct bpf_object *obj, *tgt_obj =3D NULL;
+> +       struct bpf_program *drop, *redirect;
+> +       struct bpf_map *cpumap;
+> +       int err, tgt_fd;
+> +       __u32 key =3D 0;
+> +
+> +       err =3D bpf_prog_test_open("freplace_progmap.bpf.o", BPF_PROG_TYP=
+E_UNSPEC, &obj);
+> +       if (!ASSERT_OK(err, "prog_open"))
+> +               return;
+> +
+> +       err =3D bpf_prog_test_load("xdp_dummy.bpf.o", BPF_PROG_TYPE_UNSPE=
+C, &tgt_obj, &tgt_fd);
+> +       if (!ASSERT_OK(err, "tgt_prog_load"))
+> +               goto out;
+> +
+> +       drop =3D bpf_object__find_program_by_name(obj, "xdp_drop_prog");
+> +       redirect =3D bpf_object__find_program_by_name(obj, "xdp_cpumap_pr=
+og");
+> +       cpumap =3D bpf_object__find_map_by_name(obj, "cpu_map");
+> +
+> +       if (!ASSERT_OK_PTR(drop, "drop") || !ASSERT_OK_PTR(redirect, "red=
+irect") ||
+> +           !ASSERT_OK_PTR(cpumap, "cpumap"))
+> +               goto out;
+> +
+> +       /* Change the 'redirect' program type to be a PROG_TYPE_EXT
+> +        * with an XDP target
+> +        */
+> +       bpf_program__set_type(redirect, BPF_PROG_TYPE_EXT);
+> +       bpf_program__set_expected_attach_type(redirect, 0);
+> +       err =3D bpf_program__set_attach_target(redirect, tgt_fd, "xdp_dum=
+my_prog");
+> +       if (!ASSERT_OK(err, "set_attach_target"))
+> +               goto out;
+> +
+> +       err =3D bpf_object__load(obj);
+> +       if (!ASSERT_OK(err, "obj_load"))
+> +               goto out;
+> +
+> +       /* This will fail if the map is "owned" by a PROG_TYPE_EXT progra=
+m,
+> +        * which, prior to fixing the kernel, it will be since the map is=
+ used
+> +        * from the 'redirect' prog above
+> +        */
+> +       value.bpf_prog.fd =3D bpf_program__fd(drop);
+> +       err =3D bpf_map_update_elem(bpf_map__fd(cpumap), &key, &value, 0)=
+;
+> +       ASSERT_OK(err, "map_update");
+> +
+> +out:
+> +       bpf_object__close(tgt_obj);
+> +       bpf_object__close(obj);
+> +}
+> +
+>  /* NOTE: affect other tests, must run in serial mode */
+>  void serial_test_fexit_bpf2bpf(void)
+>  {
+> @@ -525,4 +576,6 @@ void serial_test_fexit_bpf2bpf(void)
+>                 test_func_replace_global_func();
+>         if (test__start_subtest("fentry_to_cgroup_bpf"))
+>                 test_fentry_to_cgroup_bpf();
+> +       if (test__start_subtest("func_replace_progmap"))
+> +               test_func_replace_progmap();
+>  }
+> diff --git a/tools/testing/selftests/bpf/progs/freplace_progmap.c b/tools=
+/testing/selftests/bpf/progs/freplace_progmap.c
+> new file mode 100644
+> index 000000000000..68174c3d7b37
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/freplace_progmap.c
+> @@ -0,0 +1,24 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_CPUMAP);
+> +       __uint(key_size, sizeof(__u32));
+> +       __uint(value_size, sizeof(struct bpf_cpumap_val));
 
-Hello, friends.
+so old school... ;) have you tried:
 
-I have a device with Marvell 88E6176 switch. 
-After 'mv88e6xxx: fix speed setting for CPU/DSA ports (cc1049ccee20)'commit was applied to
-mainline kernel I faced with a problem that switch driver stuck at 'mv88e6xxx_probe' function.
+__type(key, __u32);
+__type(value, struct bpf_cpumap_val);
 
-I made some investigations and found that 'mv88e6xxx_reg_lock' called twice from the same thread which leads to deadlock.
+?
 
-I added logs to 'mv88e6xxx_reg_lock' and 'mv88e6xxx_reg_unlock' functions to see what happened.
+> +       __uint(max_entries, 1);
+> +} cpu_map SEC(".maps");
+> +
+> +SEC("xdp/cpumap")
+> +int xdp_drop_prog(struct xdp_md *ctx)
+> +{
+> +       return XDP_DROP;
+> +}
+> +
+> +SEC("xdp")
+> +int xdp_cpumap_prog(struct xdp_md *ctx)
+> +{
+> +       return bpf_redirect_map(&cpu_map, 0, XDP_PASS);
+> +}
+> +
+> +char _license[] SEC("license") =3D "GPL";
+> diff --git a/tools/testing/selftests/bpf/testing_helpers.c b/tools/testin=
+g/selftests/bpf/testing_helpers.c
+> index 9695318e8132..2050244e6f24 100644
+> --- a/tools/testing/selftests/bpf/testing_helpers.c
+> +++ b/tools/testing/selftests/bpf/testing_helpers.c
+> @@ -174,8 +174,8 @@ __u32 link_info_prog_id(const struct bpf_link *link, =
+struct bpf_link_info *info)
+>
+>  int extra_prog_load_log_flags =3D 0;
+>
+> -int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
+> -                      struct bpf_object **pobj, int *prog_fd)
+> +int bpf_prog_test_open(const char *file, enum bpf_prog_type type,
+> +                      struct bpf_object **pobj)
+>  {
+>         LIBBPF_OPTS(bpf_object_open_opts, opts,
+>                 .kernel_log_level =3D extra_prog_load_log_flags,
+> @@ -201,6 +201,26 @@ int bpf_prog_test_load(const char *file, enum bpf_pr=
+og_type type,
+>         flags =3D bpf_program__flags(prog) | BPF_F_TEST_RND_HI32;
+>         bpf_program__set_flags(prog, flags);
+>
+> +       *pobj =3D obj;
+> +       return 0;
+> +err_out:
+> +       bpf_object__close(obj);
+> +       return err;
+> +}
+> +
+> +int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
+> +                      struct bpf_object **pobj, int *prog_fd)
+> +{
+> +       struct bpf_program *prog;
+> +       struct bpf_object *obj;
+> +       int err;
+> +
+> +       err =3D bpf_prog_test_open(file, type, &obj);
+> +       if (err)
+> +               return err;
+> +
+> +       prog =3D bpf_object__next_program(obj, NULL);
+> +
 
-So, first lock called from mv88e6xxx_setup:
-
-static int mv88e6xxx_setup(struct dsa_switch *ds)
-{
-    ...
-
-	if (mv88e6xxx_has_pvt(chip))
-		ds->max_num_bridges = MV88E6XXX_MAX_PVT_SWITCHES -
-				      ds->dst->last_switch - 1;
-
-	mv88e6xxx_reg_lock(chip);
-
-And second lock called from mv88e6352_phylink_get_caps (only for port 4):
-static void mv88e6352_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
-				       struct phylink_config *config)
-{
-    ...
-
-	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100 |
-				   MAC_1000FD;
-
-	/* Port 4 supports automedia if the serdes is associated with it. */
-	if (port == 4) {
-        dump_stack(); // I added this to see where we came from
-		mv88e6xxx_reg_lock(chip);
+oh, wow, wait, do we really need to add more legacy stuff like this?
+Why can't you use BPF skeletons? Avoid all the lookups by name, no
+need for helpers like this?
 
 
-Here is kernel log with my debug output and call stack right before secondary lock:
-
-[    5.801203] mv88e6085 mdio@2d24000:0c: switch 0x1760 detected: Marvell 88E6176, revision 1
-[    5.950236] >>>>> (mv88e6xxx_reg_lock|797) from mv88e6xxx_mdio_read+0x54/0xfc [mv88e6xxx] thread_id: 287
-[    5.952884] >>>>> (mv88e6xxx_reg_unlock|804) from mv88e6xxx_mdio_read+0x88/0xfc [mv88e6xxx] thread_id: 287
-[    5.969373] >>>>> (mv88e6xxx_reg_lock|797) from mv88e6xxx_setup+0x5c/0x550 [mv88e6xxx] thread_id: 287
-[    6.023785] >>>>> (mv88e6xxx_reg_lock|797) from mv88e6xxx_g1_irq_thread_work+0x28/0x124 [mv88e6xxx] thread_id: 315
-
-[    6.069185] Backtrace: 
-[    6.069206]  dump_backtrace from show_stack+0x18/0x1c
-[    6.069266]  r7:f1221aa4 r6:00000004 r5:600b0013 r4:c08d684d
-[    6.069279]  show_stack from dump_stack_lvl+0x48/0x54
-[    6.069315]  dump_stack_lvl from dump_stack+0x14/0x1c
-[    6.069351]  r5:f1221ab4 r4:c1e40040
-[    6.069363]  dump_stack from mv88e6352_phylink_get_caps+0x58/0x164 [mv88e6xxx]
-[    6.069645]  mv88e6352_phylink_get_caps [mv88e6xxx] from mv88e6xxx_get_caps+0x2c/0x4c [mv88e6xxx]
-[    6.070106]  r7:c1ff31c0 r6:00000004 r5:c1ff31c0 r4:f1221aa4
-[    6.070118]  mv88e6xxx_get_caps [mv88e6xxx] from mv88e6xxx_setup_port+0x84/0x60c [mv88e6xxx]
-[    6.070575]  r7:c1ff31c0 r6:00000004 r5:c1e40040 r4:bf16e510
-[    6.070588]  mv88e6xxx_setup_port [mv88e6xxx] from mv88e6xxx_setup+0x3e0/0x550 [mv88e6xxx]
-[    6.071048]  r9:c1083600 r8:c1e40e04 r7:00000004 r6:c1ff31c0 r5:c1e40040 r4:bf16e510
-[    6.071062]  mv88e6xxx_setup [mv88e6xxx] from dsa_register_switch+0x738/0xba8 [dsa_core]
-[    6.071451]  r8:c23395c8 r7:c1ff31c0 r6:c23395c0 r5:c1ff31c0 r4:00000000
-[    6.071464]  dsa_register_switch [dsa_core] from mv88e6xxx_probe+0x640/0x6a8 [mv88e6xxx]
-[    6.071835]  r10:c1164000 r9:bf171a2c r8:ef7f00f8 r7:00000000 r6:00000000 r5:c1e40040
-[    6.071851]  r4:c13ea000
-[    6.071862]  mv88e6xxx_probe [mv88e6xxx] from mdio_probe+0x34/0x50
-[    6.072133]  r10:c1164000 r9:c1e6a5b8 r8:bf173c4c r7:00000000 r6:bf173000 r5:c13ea000
-[    6.072149]  r4:bf173000
-[    6.072160]  mdio_probe from really_probe+0x14c/0x2b8
-[    6.072206]  r5:c13ea000 r4:00000000
-[    6.072218]  really_probe from __driver_probe_device+0xcc/0xe0
-[    6.072260]  r7:00000039 r6:c13ea000 r5:bf173000 r4:c13ea000
-[    6.072273]  __driver_probe_device from driver_probe_device+0x40/0xbc
-[    6.072312]  r5:c13ea000 r4:c0cbdbc0
-[    6.072324]  driver_probe_device from __driver_attach+0xf0/0x104
-[    6.072367]  r7:c0c7c790 r6:bf173000 r5:c13ea000 r4:00000000
-[    6.072380]  __driver_attach from bus_for_each_dev+0x70/0xb4
-[    6.072434]  r7:c0c7c790 r6:c04e87e8 r5:bf173000 r4:c13ea000
-[    6.072446]  bus_for_each_dev from driver_attach+0x20/0x28
-[    6.072507]  r6:00000000 r5:c1e6a580 r4:bf173000
-[    6.072520]  driver_attach from bus_add_driver+0xbc/0x1cc
-[    6.072574]  bus_add_driver from driver_register+0xb4/0xfc
-[    6.072633]  r9:bf102000 r8:bf173c4c r7:f1221ea0 r6:c1ff8800 r5:bf173c40 r4:bf173000
-[    6.072647]  driver_register from mdio_driver_register+0x34/0x68
-[    6.072696]  r5:bf173c40 r4:bf173000
-[    6.072708]  mdio_driver_register from mdio_module_init+0x14/0x1000 [mv88e6xxx]
-[    6.072976]  r5:bf173c40 r4:c0c88000
-[    6.072988]  mdio_module_init [mv88e6xxx] from do_one_initcall+0x6c/0x1d8
-[    6.073239]  do_one_initcall from do_init_module+0x48/0x1c4
-[    6.073292]  r10:0000000c r9:00000000 r8:bf173c4c r7:f1221ea0 r6:c1ff8800 r5:bf173c40
-[    6.073308]  r4:bf173c40
-[    6.073319]  do_init_module from load_module+0x1558/0x1698
-[    6.073362]  r6:00000000 r5:bf173c40 r4:f1221f28
-[    6.073374]  load_module from sys_finit_module+0xdc/0xec
-[    6.073423]  r10:0000017b r9:c1164000 r8:c020029c r7:0000017b r6:0000000f r5:b6edbee8
-[    6.073439]  r4:00000000
-[    6.073450]  sys_finit_module from ret_fast_syscall+0x0/0x4c
-[    6.073485] Exception stack(0xf1221fa8 to 0xf1221ff0)
-[    6.073515] 1fa0:                   00020000 00000000 0000000f b6edbee8 00000000 004a3420
-[    6.073544] 1fc0: 00020000 00000000 00000000 0000017b 004a96a8 beb9292c 00000000 004a3420
-[    6.073567] 1fe0: beb92820 beb92810 b6ed5294 b6b98c30
-[    6.073589]  r6:00000000 r5:00000000 r4:00020000
-
-[    6.073658] >>>>> (mv88e6xxx_reg_lock|797) from mv88e6352_phylink_get_caps+0x60/0x164 [mv88e6xxx] thread_id: 287
+>         err =3D bpf_object__load(obj);
+>         if (err)
+>                 goto err_out;
+> diff --git a/tools/testing/selftests/bpf/testing_helpers.h b/tools/testin=
+g/selftests/bpf/testing_helpers.h
+> index 6ec00bf79cb5..977eb520d119 100644
+> --- a/tools/testing/selftests/bpf/testing_helpers.h
+> +++ b/tools/testing/selftests/bpf/testing_helpers.h
+> @@ -6,6 +6,8 @@
+>
+>  int parse_num_list(const char *s, bool **set, int *set_len);
+>  __u32 link_info_prog_id(const struct bpf_link *link, struct bpf_link_inf=
+o *info);
+> +int bpf_prog_test_open(const char *file, enum bpf_prog_type type,
+> +                      struct bpf_object **pobj);
+>  int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
+>                        struct bpf_object **pobj, int *prog_fd);
+>  int bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn=
+ *insns,
+> --
+> 2.38.1
+>
