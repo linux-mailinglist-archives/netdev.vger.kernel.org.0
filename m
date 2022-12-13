@@ -2,60 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D740D64B436
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 12:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE4764B43B
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 12:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235407AbiLML3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 06:29:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
+        id S234831AbiLMLaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 06:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiLML2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 06:28:39 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2127F1D0E9;
-        Tue, 13 Dec 2022 03:28:27 -0800 (PST)
-Date:   Tue, 13 Dec 2022 12:28:24 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Li Qiong <liqiong@nfschina.com>, Simon Horman <horms@verge.net.au>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, coreteam@netfilter.org,
-        Yu Zhe <yuzhe@nfschina.com>
-Subject: Re: [PATCH v2] ipvs: add a 'default' case in do_ip_vs_set_ctl()
-Message-ID: <Y5hh2NPmmkmD4VTt@salvia>
-References: <272315c8-5e3b-e8ca-3c7f-68eccd0f2430@nfschina.com>
- <20221212074351.26440-1-liqiong@nfschina.com>
- <c3ca27a-f923-6eb6-bbe4-5e99b65c5940@ssi.bg>
+        with ESMTP id S230093AbiLMLaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 06:30:13 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795C0B0B;
+        Tue, 13 Dec 2022 03:30:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=wTliCIUA9M4KMvDQxTYvjOzNAyuBpTA7+qAEQcAV1xI=; b=yBbX9KeHOK1dP/0r7d76dtnU09
+        Hct8B4/7K5EmLby6RB+zLXIDLMfxHhN4sIqorfJIpLRphopq6zhiowh+A5HU0dGzIfH//05HIunk+
+        Q0vEvqhQhZhWX7usY+r8e2DThKeYE2jgxDGWTTOgOzY2trb5F/XXayHpY7B9jG2lAn1r2CYt3mD7t
+        qTVPZaUENJf7w2lx23oKAraG1Qsi3/bLnSyIGQgUwfXFzPYpRuvcEAzLjjgc9zvAxkAs0FgG7cuFi
+        /xW8uzJX/nUR3d57COVb6HpefsoSmb5glbtpAcVhqgMd6LfzcIeF+00OLIaiAFgHE7IBboszUzoqd
+        4dGCneaw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35688)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p53U5-0006lw-Vq; Tue, 13 Dec 2022 11:30:06 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p53U0-0006PO-5A; Tue, 13 Dec 2022 11:30:00 +0000
+Date:   Tue, 13 Dec 2022 11:30:00 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: remove reduntant assignment
+Message-ID: <Y5hiOBaSDsx5RsmV@shell.armlinux.org.uk>
+References: <Y5b/Tm4GwPGzd9sR@shell.armlinux.org.uk>
+ <Y5f6h8q7rlnk1jnD@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c3ca27a-f923-6eb6-bbe4-5e99b65c5940@ssi.bg>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y5f6h8q7rlnk1jnD@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_FILL_THIS_FORM_SHORT autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 12, 2022 at 04:20:41PM +0200, Julian Anastasov wrote:
+On Tue, Dec 13, 2022 at 04:07:35AM +0000, Daniel Golle wrote:
+> Russell King correctly pointed out that the MAC_2500FD capability is
+> already added for port 5 (if not in RGMII mode) and port 6 (which only
+> supports SGMII) by mt7531_mac_port_get_caps. Remove the reduntant
+> setting of this capability flag which was added by a previous commit.
 > 
-> 	Hello,
-> 
-> On Mon, 12 Dec 2022, Li Qiong wrote:
-> 
-> > It is better to return the default switch case with
-> > '-EINVAL', in case new commands are added. otherwise,
-> > return a uninitialized value of ret.
-> > 
-> > Signed-off-by: Li Qiong <liqiong@nfschina.com>
-> > Reviewed-by: Simon Horman <horms@verge.net.au>
-> 
-> 	Change looks correct to me for -next, thanks!
-> 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
+> Fixes: e19de30d20 ("net: dsa: mt7530: add support for in-band link status")
+> Reported-by: Russell King <linux@armlinux.org.uk>
 
-Applied, thanks.
+Please update the name and email address as per my reviewed-by below
+(the "(Oracle)" bit is important since I now work for Oracle.)
+
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+
+Thanks!
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
