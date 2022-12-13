@@ -2,76 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE5A64AE45
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F264764AE4F
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:39:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233011AbiLMDex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 22:34:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43584 "EHLO
+        id S234275AbiLMDjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 22:39:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiLMDew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:34:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E54AE8B;
-        Mon, 12 Dec 2022 19:34:51 -0800 (PST)
+        with ESMTP id S234257AbiLMDjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:39:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD341B9CE;
+        Mon, 12 Dec 2022 19:39:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB12A612CB;
-        Tue, 13 Dec 2022 03:34:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D242CC433EF;
-        Tue, 13 Dec 2022 03:34:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AED3B810B0;
+        Tue, 13 Dec 2022 03:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8AD3C433EF;
+        Tue, 13 Dec 2022 03:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670902490;
-        bh=U81sidzaQaJy/rxfn5PHUydwwpgK0dI201eoQyqbyCM=;
+        s=k20201202; t=1670902739;
+        bh=doPFZQdrpo0V0DFdxQ+yws2d0FfMACnoMY1CMs2HpS0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mdw5ed2DjmHNGbFitiAgdH7uuiRirU07ByfHaJUafc2EhurrydQC8e+66t0L5Y+9x
-         g+6Fi4aFNL3y+hYpLMo92y0p/CJPpxl9g4pLt/0calOFSGrWH/ysNdkLmYuuGOOXo7
-         xB+cNcB7BYPJGJENlYxkW/dRecKJ2R2Tb03ZCiZ/HoiIJyIw3a/6HYkwDqHIAdzFw7
-         +8HErc9Poiyty2YGk1v71k2vZapexynaDfa1uYCqN5/E/LN5E7F6WxMmYQoGLLrOW9
-         oQjB3oq4YOlT7NcqE7CVYdrOWQUQ0GX/lXP8FnEHu7q0viASuHeeOlnYRQzNXcg0Th
-         W08Uo/ufavtQw==
-Date:   Mon, 12 Dec 2022 19:34:47 -0800
+        b=t20zNnEG6ozQvCuuceCAK5uTk4MBweKb8YsGpBoedtUtP0eGxOxnot6cVPQ6ZcL/U
+         Ft6vG1pBpKeXEoMfJH/P6L0oMsc931hlMglPMgmMXcBBjLRWz6LgxVO3+FxyDAAF3e
+         gblR2sjVOqsMPr0XM4tDfRJn8GTp3bG0KCQbbh4SIX0+g0w/GWD88WRC71Q/EGb9A4
+         annKSnxiqjgfRdrgYK5PkBwIw3/DRiFcp4nhkYv30XCm2F8WYZ/4Cym3mf+NLM0V8c
+         yqvGuGFJeJvbE5MVidyEqKykK2hcUqr1xjftAuc6WcJxCH1+INCO2HdV19YAT1EXGi
+         dwKG8WyHXuBaw==
+Date:   Mon, 12 Dec 2022 19:38:57 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [PATCH v5 net-next 00/10] dt-binding preparation for ocelot
- switches
-Message-ID: <20221212193447.0a69325e@kernel.org>
-In-Reply-To: <Y5d67SPMc/YCr0Rq@COLIN-DESKTOP1.localdomain>
-References: <20221210033033.662553-1-colin.foster@in-advantage.com>
-        <20221212102958.0948b360@kernel.org>
-        <Y5d67SPMc/YCr0Rq@COLIN-DESKTOP1.localdomain>
+To:     Jun Nie <jun.nie@linaro.org>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net_sched: ematch: reject invalid data
+Message-ID: <20221212193857.3656ae96@kernel.org>
+In-Reply-To: <20221213012023.673544-1-jun.nie@linaro.org>
+References: <20221213012023.673544-1-jun.nie@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -81,18 +53,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Dec 2022 11:03:09 -0800 Colin Foster wrote:
-> > A lot of carried over review tags here, so please let me know if
-> > there's anything that needs to be reviewed here, otherwise I'd like=20
-> > to merge the series for 6.2 by the end of the day. =20
->=20
-> I just responded to patch 4, which has a small (?) outstanding issue /
-> discussion. I asked Rob and Ar=C4=B1n=C3=A7's opinions as to whether it s=
-hould
-> hold up this series. Everything else is good to go, as far as I
-> understand.
+On Tue, 13 Dec 2022 09:20:23 +0800 Jun Nie wrote:
+> Change-Id: Id2411e5ddcf3091ba3f37bddd722eac051bc9d57
+> Reported-by: syzbot+963f7637dae8becc038f@syzkaller.appspotmail.com
 
-No reply :( Since this is "just" DT bindings (as in shouldn't
-functionally break anything) - if Rob gives us a green light
-we can still pull it into the mid-merge window follow up.
-But I'll drop it from pw for now so it doesn't distract us.
+Please repost with the following changes:
+ - no gerrit change-id
+ - [PATCH net] in the subject
+ - Fixes tag added
