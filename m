@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D7864BB5B
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 18:48:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE1664BB58
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 18:48:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236373AbiLMRsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 12:48:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
+        id S236371AbiLMRsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 12:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiLMRsL (ORCPT
+        with ESMTP id S236366AbiLMRsL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 12:48:11 -0500
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1007C3898;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1705F11A0F;
         Tue, 13 Dec 2022 09:48:08 -0800 (PST)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id A28FF18839AD;
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id E6C3F18839C0;
         Tue, 13 Dec 2022 17:48:06 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 8C7B02500015;
+        by mailout.gigahost.dk (Postfix) with ESMTP id D6BA72500015;
         Tue, 13 Dec 2022 17:48:06 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 84C3C9EC0027; Tue, 13 Dec 2022 17:48:06 +0000 (UTC)
+        id CAB329EC0027; Tue, 13 Dec 2022 17:48:06 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 3A73491201E4;
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 7E8F891201E3;
         Tue, 13 Dec 2022 17:48:06 +0000 (UTC)
 From:   "Hans J. Schultz" <netdev@kapio-technology.com>
 To:     davem@davemloft.net, kuba@kernel.org
@@ -36,9 +36,9 @@ Cc:     netdev@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 net-next 1/3] net: dsa: mv88e6xxx: change default return of mv88e6xxx_port_bridge_flags
-Date:   Tue, 13 Dec 2022 18:46:48 +0100
-Message-Id: <20221213174650.670767-2-netdev@kapio-technology.com>
+Subject: [PATCH v2 net-next 2/3] net: dsa: mv88e6xxx: disable hold of chip lock for handling
+Date:   Tue, 13 Dec 2022 18:46:49 +0100
+Message-Id: <20221213174650.670767-3-netdev@kapio-technology.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221213174650.670767-1-netdev@kapio-technology.com>
 References: <20221213174650.670767-1-netdev@kapio-technology.com>
@@ -53,33 +53,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The default return value -EOPNOTSUPP of mv88e6xxx_port_bridge_flags()
-came from the return value of the DSA method port_egress_floods() in
-commit 4f85901f0063 ("net: dsa: mv88e6xxx: add support for bridge flags"),
-but the DSA API was changed in commit a8b659e7ff75 ("net: dsa: act as
-passthrough for bridge port flags"), resulting in the return value
--EOPNOTSUPP not being valid anymore, and sections for new flags will not
-need to set the return value to zero on success, as with the new mab flag
-added in a following patch.
+As functions called under the interrupt handler will need to take the
+netlink lock, we need to release the chip lock before calling those
+functions as otherwise double lock deadlocks will occur as userspace
+calls towards the driver often take the netlink lock and then the
+chip lock.
+
+The deadlock would look like:
+
+Interrupt handler: chip lock taken, but cannot take netlink lock as
+                   userspace config call has netlink lock.
+Userspace config: netlink lock taken, but cannot take chip lock as
+                   the interrupt handler has the chip lock.
 
 Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/global1_atu.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index ba4fff8690aa..d5930b287db4 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -6546,7 +6546,7 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 				       struct netlink_ext_ack *extack)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
--	int err = -EOPNOTSUPP;
-+	int err = 0;
+diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+index 61ae2d61e25c..34203e112eef 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
++++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+@@ -409,11 +409,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
  
- 	mv88e6xxx_reg_lock(chip);
+ 	err = mv88e6xxx_g1_read_atu_violation(chip);
+ 	if (err)
+-		goto out;
++		goto out_unlock;
  
+ 	err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_OP, &val);
+ 	if (err)
+-		goto out;
++		goto out_unlock;
+ 
+ 	err = mv88e6xxx_g1_atu_fid_read(chip, &fid);
+ 	if (err)
+@@ -421,11 +421,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 
+ 	err = mv88e6xxx_g1_atu_data_read(chip, &entry);
+ 	if (err)
+-		goto out;
++		goto out_unlock;
+ 
+ 	err = mv88e6xxx_g1_atu_mac_read(chip, &entry);
+ 	if (err)
+-		goto out;
++		goto out_unlock;
++
++	mv88e6xxx_reg_unlock(chip);
+ 
+ 	spid = entry.state;
+ 
+@@ -449,13 +451,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 						   fid);
+ 		chip->ports[spid].atu_full_violation++;
+ 	}
+-	mv88e6xxx_reg_unlock(chip);
+ 
+ 	return IRQ_HANDLED;
+ 
+-out:
++out_unlock:
+ 	mv88e6xxx_reg_unlock(chip);
+ 
++out:
+ 	dev_err(chip->dev, "ATU problem: error %d while handling interrupt\n",
+ 		err);
+ 	return IRQ_HANDLED;
 -- 
 2.34.1
 
