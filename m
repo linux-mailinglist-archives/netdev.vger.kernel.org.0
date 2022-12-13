@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5A864AE21
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C1264AE4C
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:38:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233753AbiLMDUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 22:20:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        id S233965AbiLMDiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 22:38:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiLMDUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:20:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764311B7B3;
-        Mon, 12 Dec 2022 19:20:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E55F1612CB;
-        Tue, 13 Dec 2022 03:20:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA5C5C433EF;
-        Tue, 13 Dec 2022 03:20:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670901641;
-        bh=fNJ0HmIL0o/ygNc/5g8Y2/L+rcNUzRLfm5SoXCV5ny4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nn8AJtTWF6VS/D+U24ClC9evCfOXHIzOwm3bhhm3vjTtFxOcdR8lzQccO3Bc+kktm
-         CluQQZPXo+ud0mBk+YsLzFmUI6RrJu3CEcTkYJsnALoVqfxgb7vpxA5QgkfJidRn6S
-         1U06sipvsois9LY/GLZIEWZdeZE0I0JJesEMsaZri2foyOA7ljhs6gFBKDhzwtSvNV
-         xhYNGq30C0FF2xeKapXLRceBnA4WkGhfJYTFFlK/Jq1bSdZG9RalU+vJEcFNztfClc
-         hxChvPuS7N5MPefEZnWzWlzOOgw2DlypEXMftdMo5YKxk2rv6V2nzSjVjgI0ioEhEf
-         6S0RdlBo9h7Gg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, horms@verge.net.au,
-        ja@ssi.bg, pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        jwiesner@suse.de, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: [PATCH net-next] ipvs: fix type warning in do_div() on 32 bit
-Date:   Mon, 12 Dec 2022 19:20:37 -0800
-Message-Id: <20221213032037.844517-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233011AbiLMDiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:38:51 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9532165B0;
+        Mon, 12 Dec 2022 19:38:49 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VXC4qCa_1670902725;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VXC4qCa_1670902725)
+          by smtp.aliyun-inc.com;
+          Tue, 13 Dec 2022 11:38:46 +0800
+Message-ID: <1670902391.9610498-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net] virtio-net: correctly enable callback during start_xmit
+Date:   Tue, 13 Dec 2022 11:33:11 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
+        Jason Wang <jasowang@redhat.com>
+References: <20221212091029.54390-1-jasowang@redhat.com>
+ <20221212042144-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221212042144-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-32 bit platforms without 64bit div generate the following warning:
+On Mon, 12 Dec 2022 04:25:22 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Mon, Dec 12, 2022 at 05:10:29PM +0800, Jason Wang wrote:
+> > Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
+> > virtqueue callback via the following statement:
+> >
+> >         do {
+> >            ......
+> > 	} while (use_napi && kick &&
+> >                unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> >
+> > This will cause a missing call to virtqueue_enable_cb_delayed() when
+> > kick is false. Fixing this by removing the checking of the kick from
+> > the condition to make sure callback is enabled correctly.
+> >
+> > Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > ---
+> > The patch is needed for -stable.
+>
+> stable rules don't allow for theoretical fixes. Was a problem observed?
+>
+> > ---
+> >  drivers/net/virtio_net.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 86e52454b5b5..44d7daf0267b 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -1834,8 +1834,8 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> >
+> >  		free_old_xmit_skbs(sq, false);
+> >
+> > -	} while (use_napi && kick &&
+> > -	       unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > +	} while (use_napi &&
+> > +		 unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> >
+>
+> A bit more explanation pls.  kick simply means !netdev_xmit_more -
+> if it's false we know there will be another packet, then transmissing
+> that packet will invoke virtqueue_enable_cb_delayed. No?
 
-net/netfilter/ipvs/ip_vs_est.c: In function 'ip_vs_est_calc_limits':
-include/asm-generic/div64.h:222:35: warning: comparison of distinct pointer types lacks a cast
-  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
-      |                                   ^~
-net/netfilter/ipvs/ip_vs_est.c:694:17: note: in expansion of macro 'do_div'
-  694 |                 do_div(val, loops);
-      |                 ^~~~~~
-include/asm-generic/div64.h:222:35: warning: comparison of distinct pointer types lacks a cast
-  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
-      |                                   ^~
-net/netfilter/ipvs/ip_vs_est.c:700:33: note: in expansion of macro 'do_div'
-  700 |                                 do_div(val, min_est);
-      |                                 ^~~~~~
+It's just that there may be a next packet, but in fact there may not be.
+For example, the vq is full, and the driver stops the queue.
 
-first argument of do_div() should be unsigned. We can't just cast
-as do_div() updates it as well, so we need an lval.
-Make val unsigned in the first place, all paths check that the value
-they assign to this variables are non-negative already.
+Thanks.
 
-Fixes: 705dd3444081 ("ipvs: use kthreads for stats estimation")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: horms@verge.net.au
-CC: ja@ssi.bg
-CC: pablo@netfilter.org
-CC: kadlec@netfilter.org
-CC: fw@strlen.de
-CC: jwiesner@suse.de
-CC: lvs-devel@vger.kernel.org
-CC: netfilter-devel@vger.kernel.org
-CC: coreteam@netfilter.org
----
- net/netfilter/ipvs/ip_vs_est.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
-index df56073bb282..ce2a1549b304 100644
---- a/net/netfilter/ipvs/ip_vs_est.c
-+++ b/net/netfilter/ipvs/ip_vs_est.c
-@@ -640,9 +640,10 @@ static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
- 	int i, loops, ntest;
- 	s32 min_est = 0;
- 	ktime_t t1, t2;
--	s64 diff, val;
- 	int max = 8;
- 	int ret = 1;
-+	s64 diff;
-+	u64 val;
- 
- 	INIT_HLIST_HEAD(&chain);
- 	mutex_lock(&__ip_vs_mutex);
--- 
-2.38.1
-
+>
+>
+>
+>
+>
+> >  	/* timestamp packet in software */
+> >  	skb_tx_timestamp(skb);
+> > --
+> > 2.25.1
+>
+> _______________________________________________
+> Virtualization mailing list
+> Virtualization@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
