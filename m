@@ -2,139 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F2D64B986
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:23:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2D0264B98B
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235921AbiLMQWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 11:22:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
+        id S234825AbiLMQXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 11:23:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235875AbiLMQW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:22:27 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536D9218A6
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:22:26 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id f3so185738pgc.2
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:22:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zaap5+6k9xnl2/ObCLfBO94WYcDkHNOkC0txiUrIgO4=;
-        b=euXZR4jH9nYMgAAGI1LEi/VsADpnRoqacT9f+78IVn6QA3dnjcHBcKFx+Oy65eE7R4
-         SgOBCWdMm1kmOpZzRnmwIMvPy1EI0hTIyKEd9Y7SXTX+sj4arVFyK4SZXpACDjPrQPA9
-         wDpz4JkAyfT+b+du4h2CTumj4C5pHaAwJHcXNJSY1iA05Qxv+H9e288SFE8zc9rfg+T/
-         cX+ymydBJO4+V5PPkABQyyC0aAD1wdSrS4Z0lS8Ol2w+wFbmrMA5TEMNZ3jCa+JP8BZj
-         DYpd4jWX+9zJtevO7IdHuA3H4JYdO1orPdADFK37K9smMkrJ3bostS2VL0xIbXz9K5wf
-         epNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zaap5+6k9xnl2/ObCLfBO94WYcDkHNOkC0txiUrIgO4=;
-        b=3MDmKNh3PTOndmec5K2TG3UJa9QYORDKTvB8SdVrMK7KKUq00Uh9r7ScIamRZHtBOp
-         zgD2EGUWZWA+VBCw01M78VSOVHU1+YL+pGLJFPplFMzsMBFPld5PzeFMEl6N276hqBLc
-         Xc2ywIJ28JOgfIuLJGQzs14Vjvf7mcKNz+Z763A/z4UjXKAqinl+bwWpOHoitIIAuftj
-         oyha6vldwBvb6A+JCYcAnnNccEObkqbLBQphivpMVKjiidjg60M25bqCDFoSgQl8CuJB
-         48aEMpuSEuxzU5khuigSE10dSE6fBfS83yiVwEqqlGd3gfNzFy3vT+CtsJ1uhfMbLbiV
-         tf+w==
-X-Gm-Message-State: ANoB5pl6cnceDQpsuptTr7KrgFrup/Ig72iGpRzZAK10aydgaYapiuSw
-        V1yjkbHLEyaNDhfQwWHloiCGVw==
-X-Google-Smtp-Source: AA0mqf7myH0hLqmUJUprjanvVSZ8bftVut4ZN2MXprdtle75C+9cN/NFkwRDKvicphVjLW4pY75qgg==
-X-Received: by 2002:a05:6a00:26c5:b0:576:fb7c:7aa3 with SMTP id p5-20020a056a0026c500b00576fb7c7aa3mr19534636pfw.14.1670948545770;
-        Tue, 13 Dec 2022 08:22:25 -0800 (PST)
-Received: from medve-MS-7D32 ([165.132.118.52])
-        by smtp.gmail.com with ESMTPSA id k1-20020aa79721000000b00574f83c5d51sm7861239pfg.198.2022.12.13.08.22.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 08:22:25 -0800 (PST)
-Date:   Wed, 14 Dec 2022 01:22:20 +0900
-From:   Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
-        linville@tuxdriver.com, dokyungs@yonsei.ac.kr,
-        jisoo.jang@yonsei.ac.kr, Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Subject: Re: [PATCH net v2] nfc: pn533: Clear nfc_target before being used
-Message-ID: <20221213162220.GB109198@medve-MS-7D32>
-References: <20221213142746.108647-1-linuxlovemin@yonsei.ac.kr>
- <decda09c-34ed-ce22-13c4-2f12085e99bd@linaro.org>
- <cd3a1383-9d6a-19ad-fd6e-c45da7e646b4@linaro.org>
- <20221213160358.GA109198@medve-MS-7D32>
- <0fb173e7-8810-6e3f-eff2-446cbfcc2eab@linaro.org>
+        with ESMTP id S229999AbiLMQXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:23:30 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 353BEBF7
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:23:27 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BDGMMtzC007428, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BDGMMtzC007428
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 14 Dec 2022 00:22:22 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Wed, 14 Dec 2022 00:23:11 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 14 Dec 2022 00:23:10 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Wed, 14 Dec 2022 00:23:10 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: RE: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Thread-Topic: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a)
+ + rtl8211fs fiber application
+Thread-Index: AQHZBZK0jNmNF43ANUm+ON2R2qDGTK5d0aqAgATjHlD//8MxAIABsEYw///gi4CAAbFP8P//+V0AAJTwo+AAAFtNgAA2Y27A
+Date:   Tue, 13 Dec 2022 16:23:10 +0000
+Message-ID: <8f1ecb5c45d0438293baaf39ea1e0bea@realtek.com>
+References: <20221201143911.4449-1-hau@realtek.com>
+ <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
+ <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
+ <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
+ <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
+ <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
+ <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
+ <6de467f2-e811-afbb-ab6f-f43f5456a857@gmail.com>
+ <3395f909ef24454ca984a1b7977e0af4@realtek.com>
+ <b3ded529-3676-3d7c-4ed8-a94de470b5d7@gmail.com>
+In-Reply-To: <b3ded529-3676-3d7c-4ed8-a94de470b5d7@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.74]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzEzIOS4i+WNiCAwMjowMDowMA==?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0fb173e7-8810-6e3f-eff2-446cbfcc2eab@linaro.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 13, 2022 at 05:05:27PM +0100, Krzysztof Kozlowski wrote:
-> On 13/12/2022 17:03, Minsuk Kang wrote:
-> > On Tue, Dec 13, 2022 at 03:41:36PM +0100, Krzysztof Kozlowski wrote:
-> >> On 13/12/2022 15:38, Krzysztof Kozlowski wrote:
-> >>> On 13/12/2022 15:27, Minsuk Kang wrote:
-> >>>> Fix a slab-out-of-bounds read that occurs in nla_put() called from
-> >>>> nfc_genl_send_target() when target->sensb_res_len, which is duplicated
-> >>>> from an nfc_target in pn533, is too large as the nfc_target is not
-> >>>> properly initialized and retains garbage values. Clear nfc_targets with
-> >>>> memset() before they are used.
-> >>>>
-> >>>> Found by a modified version of syzkaller.
-> >>>>
-> >>>> BUG: KASAN: slab-out-of-bounds in nla_put
-> >>>> Call Trace:
-> >>>>  memcpy
-> >>>>  nla_put
-> >>>>  nfc_genl_dump_targets
-> >>>>  genl_lock_dumpit
-> >>>>  netlink_dump
-> >>>>  __netlink_dump_start
-> >>>>  genl_family_rcv_msg_dumpit
-> >>>>  genl_rcv_msg
-> >>>>  netlink_rcv_skb
-> >>>>  genl_rcv
-> >>>>  netlink_unicast
-> >>>>  netlink_sendmsg
-> >>>>  sock_sendmsg
-> >>>>  ____sys_sendmsg
-> >>>>  ___sys_sendmsg
-> >>>>  __sys_sendmsg
-> >>>>  do_syscall_64
-> >>>>
-> >>>> Fixes: 673088fb42d0 ("NFC: pn533: Send ATR_REQ directly for active device detection")
-> >>>> Fixes: 361f3cb7f9cf ("NFC: DEP link hook implementation for pn533")
-> >>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >>>
-> >>> How did it happen? From where did you get it?
-> >>
-> >> I double checked - I did not send it. This is some fake tag. Please do
-> >> not add fake/invented/created tags with people's names.
-> > 
-> > Sorry for my confusion.
-> > 
-> > https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L505
-> > 
-> > I missed the definition of the tag as I did not read the document
-> > carefully and misunderstood that the tag simply means I have got a
-> > reply from maintainers and I should manually attach it if that is
-> > the case. I will rewrite the patch after I make sure I fully
-> > understand the whole rules.
-> 
-> The document says:
-> "By offering my Reviewed-by: tag, I state that:"
-> 
-> You need to receive it explicitly from the reviewer. Once received, but
-> only then, add to the patch.
-
-Thank you for your comment.
-I won't forget it.
-
-Best regards,
-Minsuk
+PiANCj4gT24gMTIuMTIuMjAyMiAxNToxMSwgSGF1IHdyb3RlOg0KPiA+PiBPbiAwOS4xMi4yMDIy
+IDE2OjI5LCBIYXUgd3JvdGU6DQo+ID4+Pj4NCj4gPj4+PiBPSywgSSB0aGluayBJIGdldCBhIGJl
+dHRlciBpZGVhIG9mIHlvdXIgc2V0dXAuDQo+ID4+Pj4gU28gaXQgc2VlbXMgUlRMODIxMUZTIGlu
+ZGVlZCBhY3RzIGFzIG1lZGlhIGNvbnZlcnRlci4gTGluayBzdGF0dXMNCj4gPj4+PiBvbiBNREkg
+c2lkZSBvZiBSVEw4MjExRlMgcmVmbGVjdHMgbGluayBzdGF0dXMgb24gZmliZXIvc2VyZGVzIHNp
+ZGUuDQo+ID4+Pj4gUlRMODE2OEggUEhZIGhhcyBubyBpZGVhIHdoZXRoZXIgaXQncyBjb25uZWN0
+ZWQgdG8gUko0NSBtYWduZXRpY3MNCj4gPj4+PiBvciB0byB0aGUgTURJIHNpZGUgb2YgYSBSVEw4
+MjExRlMuDQo+ID4+Pj4NCj4gPj4+PiBJIHRoaW5rIGZvciBjb25maWd1cmluZyBSVEw4MjExRlMg
+eW91IGhhdmUgdHdvIG9wdGlvbnM6DQo+ID4+Pj4gMS4gRXh0ZW5kIHRoZSBSZWFsdGVrIFBIWSBk
+cml2ZXIgdG8gc3VwcG9ydCBSVEw4MjExRlMgZmliZXIgbW9kZSAyLg0KPiA+Pj4+IENvbmZpZ3Vy
+ZSBSVEw4MjExRlMgZnJvbSB1c2Vyc3BhY2UgKHBoeXRvb2wsIG1paS10b29sLCAuLikuIEhvd2V2
+ZXINCj4gPj4+PiB0byBiZSBhYmxlIHRvIGRvIHRoaXMgeW91IG1heSBuZWVkIHRvIGFkZCBhIGR1
+bW15IG5ldGRldmljZQ0KPiA+Pj4+ICAgIHRoYXQgUlRMODIxMUZTIGlzIGF0dGFjaGVkIHRvLiBX
+aGVuIGdvaW5nIHdpdGggdGhpcyBvcHRpb24gaXQNCj4gPj4+PiBtYXkgYmUgYmV0dGVyIHRvIGF2
+b2lkIHBoeWxpYiB0YWtpbmcgY29udHJvbCBvZiBSVEw4MjExRlMuDQo+ID4+Pj4gICAgVGhpcyBj
+YW4gYmUgZG9uZSBieSBzZXR0aW5nIHRoZSBwaHlfbWFzayBvZiB0aGUgYml0LWJhbmdlZCBtaWlf
+YnVzLg0KPiA+Pj4NCj4gPj4+IFRoYW5rcyBmb3IgeW91ciBhZHZhaWNlLg0KPiA+Pj4gSXMgdGhh
+dCBwb3NzaWJsZSBmb3IgdXMgdG8gcmVnaXN0ZXIgYSBQSFkgZml4dXANCj4gPj4+IGZ1bmN0aW9u
+KHBoeV9yZWdpc3Rlcl9maXh1cCgpKQ0KPiA+PiB0byBzZXR1cCBydGw4MjExZnMgaW5zdGVhZCBv
+ZiBzZXR1cCBpdCBpbiBQSFkgZHJpdmVyPw0KPiA+Pj4NCj4gPj4gRnJvbSB3aGVyZSB3b3VsZCB5
+b3UgbGlrZSB0byByZWdpc3RlciB0aGUgUEhZIGZpeHVwPyByODE2OSB3b3VsZCBiZQ0KPiA+PiB0
+aGUgd3JvbmcgcGxhY2UgaGVyZS4NCj4gPj4gVGhlcmUgYXJlIHZlcnkgZmV3IGRyaXZlcnMgdXNp
+bmcgYSBQSFkgZml4dXAgYW5kIEFGQUlDUyB0eXBpY2FsbHkgUEhZDQo+ID4+IGRyaXZlcnMgYXBw
+bHkgZml4dXBzIGZyb20gdGhlIGNvbmZpZ19pbml0IGNhbGxiYWNrLg0KPiA+PiBIYXZpbmcgc2Fp
+ZCB0aGF0LCBpZiBwb3NzaWJsZSBJJ2QgcmVjb21tZW5kIHRvIGF2b2lkIHVzaW5nIGEgUEhZIGZp
+eHVwLg0KPiA+Pg0KPiA+IFRoYW5rcyBmb3IgeW91ciBwcm9tcHQgcmVwbHkuIEkgdGhpbmsgaW4g
+bmV4dCBwYXRjaCBJIHdpbGwgcmVtb3ZlIHRoZQ0KPiBydGw4MjExZnMgcGh5IHBhcmFtZXRlciBz
+ZXR0aW5nLg0KPiA+IEFuZCBvbmx5IGtlZXAgbm9uIHNwZWVkIGRvd24gcGF0Y2guDQo+ID4gSWYg
+dGhlcmUncyBhbnkgcG9zc2liaWxpdHkgSSdkIGxpa2UgdG8gYXZvaWQgdGhlIG5vbiBzcGVlZCBk
+b3duIHBhdGNoLg0KPiBZb3Ugd291bGQgaGF2ZSB0byB0aGluayBhbHNvIGFib3V0IHRoZSBjYXNl
+IHRoYXQgYSB1c2VyIHVzZXMgZXRodG9vbCB0bw0KPiByZXN0cmljdCBhZHZlcnRpc2VtZW50IHRv
+IDEwME1icHMsIHdoYXQgd291bGQgYnJlYWsgdGhlIGNvbm5lY3Rpb24uDQo+IHI4MTY5IGlzbid0
+IHRoZSByaWdodCBwbGFjZSBmb3IgYSB3b3JrYXJvdW5kIGZvciBhIGJyb2tlbiBtZWRpYSBjb252
+ZXJ0ZXIuDQo+IFRoZSBtZWRpYSBjb252ZXJ0ZXIgc2hvdWxkIGJlIGZ1bGx5IHRyYW5zcGFyZW50
+IHRvIHI4MTY5Lg0KPiANCj4gUlRMODIxMUZTIHNob3VsZCBhbGlnbiB0aGUgYWR2ZXJ0aXNlbWVu
+dCBvbiBNREkgc2lkZSB3aXRoIHRoZSBsaW5rIHNwZWVkIG9uDQo+IGZpYmVyIHNpZGUsIGJhc2Vk
+IG9uIFNHTUlJIGluLWJhbmQgaW5mb3JtYXRpb24uDQo+IElmIHRoZSBmaWJlciBsaW5rIGlzIDFH
+YnBzIGl0IG11c3Qgbm90IGFkdmVydGlzZSAxMDBNYnBzIG9uIE1ESSBzaWRlLg0KPiANClRoZSBm
+dyBpbiBydGw4MjExZnMgd2lsbCBkZWZhdWx0IGFkdmVydGlzZSAxMDBNYnBzIGFuZCAxMDAwTWJw
+cyAgb24gTURJIHNpZGUuIA0KV2UgYXJlIHRyeWluZyB0byBmaW5kIGEgd2F5IHRvIGZpeCB0aGlz
+IGlzc3VlLiBJZiB3ZSBjYW5ub3QgZml4IHRoaXMgaXNzdWUgYnkgZncgdGhhbiB3ZQ0Kd2lsbCBz
+dWJtaXQgYSBwYXRjaCBmb3IgdGhpcyBpc3N1ZS4NCiAgDQotLS0tLS1QbGVhc2UgY29uc2lkZXIg
+dGhlIGVudmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg==
