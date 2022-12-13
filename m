@@ -2,110 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E901464AFF7
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 07:37:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6C764AFF9
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 07:39:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233843AbiLMGhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 01:37:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
+        id S234504AbiLMGjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 01:39:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbiLMGhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 01:37:43 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969F6F52
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 22:37:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670913461; x=1702449461;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OqFkktenWvRJT3uBFfhmwjcobPWl6vfKLitPa/v/UoU=;
-  b=cXtx9URpfMHvCN3Vtxiw0wumUlEnVXd6+cSGvUTT4LZXafDSkleEdHv6
-   5TkYzPC6zgkPCkZmyLpoRBUf3p+lHJJcP3hTb6LnfABJy2hX2XpcI9Dt7
-   vMYlbBkJX0wMU55NuyevDXz0tBvlQ+vVnXEpiX5AWcBIwRY5BEy/rsXMZ
-   WPyLm8t3wQRNZGKfUom22VMYuDo59+i2XTiAT2TR2xGQv4VYJWjlnIixv
-   Q/wPeJgF1L6XSPnsPiWbEC1BrSCt0nMq3cBI4yNkH+fX2z54YLsdoz/7m
-   KXJlACW4MYh/9S5NpsOQA5yY+G38DjkAj4AkLSusi3kCd5z+5d4Yc1hYG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10559"; a="404313611"
-X-IronPort-AV: E=Sophos;i="5.96,240,1665471600"; 
-   d="scan'208";a="404313611"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2022 22:37:41 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10559"; a="648455189"
-X-IronPort-AV: E=Sophos;i="5.96,240,1665471600"; 
-   d="scan'208";a="648455189"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2022 22:37:33 -0800
-Date:   Tue, 13 Dec 2022 07:37:26 +0100
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, intel-wired-lan@lists.osuosl.org,
-        alexandr.lobakin@intel.com, sridhar.samudrala@intel.com,
-        wojciech.drewek@intel.com, lukasz.czapnik@intel.com,
-        shiraz.saleem@intel.com, jesse.brandeburg@intel.com,
-        mustafa.ismail@intel.com, przemyslaw.kitszel@intel.com,
-        piotr.raczynski@intel.com, david.m.ertman@intel.com,
-        leszek.kaliszczuk@intel.com, benjamin.mikailenko@intel.com,
-        paul.m.stillwell.jr@intel.com, netdev@vger.kernel.org,
-        leon@kernel.org
-Subject: Re: [PATCH net-next v1 00/10] implement devlink reload in ice
-Message-ID: <Y5gdpoif/1zBUKDB@localhost.localdomain>
-References: <20221212111645.1198680-1-michal.swiatkowski@linux.intel.com>
- <20221212101505.403a4084@kernel.org>
- <f0078f0a-acbc-a9bd-effd-6d04507e71e2@intel.com>
+        with ESMTP id S234299AbiLMGjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 01:39:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6FAB1E4
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 22:38:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670913513;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pG8pk6806WunH38LK3XOKaKNRvcbToIEcrDuqWIIVJA=;
+        b=WPv/CugNotPkU+9cXluW0NQxlp2YZPVS4xulEBtd3ycVegMfgnqJJmkyJ7w7TXO57qHwha
+        Rjxw8ojjRz7oS5TFR6IFcaHByY0i/cWRoS7g7J5jUAOBCi8Bnbh+w6g3hFX1GZNMubfBBm
+        4LczDlgmO0MD6cgAq4espswqjnju3so=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-670-UhN-p7reO0mCLV92wg15sA-1; Tue, 13 Dec 2022 01:38:32 -0500
+X-MC-Unique: UhN-p7reO0mCLV92wg15sA-1
+Received: by mail-wm1-f71.google.com with SMTP id p14-20020a05600c204e00b003cf4cce4da5so2612761wmg.0
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 22:38:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pG8pk6806WunH38LK3XOKaKNRvcbToIEcrDuqWIIVJA=;
+        b=dviVq3pFdCqI+NE89l8l5PP0edreZYbvcRsrwKwyysHaN2LGOI48zYFzzkhBFHXPT1
+         7nLQpmLArM3PAk8uV/30cTILLUFJivnb/tUXnkkxDxzOaRU+B9djHYp0QmK3kDxfH+0R
+         UlLUjlMis7HG/4RKgnLPvbqoUkGIqG1nRoKWmSrGoAPlSXvUR7GxuAwwGxybwKQroAHB
+         o4YXxQJKowjrPJCXAfBOL23jeNnzATK9rveK0QN7OWDU3WbZ7GupCX/OHUywwhKuIKb/
+         u4QO7GcqhnKdU87D7lqFVw6NoexEvP3hm+wj2eTZXYc3h6RY8Ph6oba/j1u3V+JpysPK
+         Tjyw==
+X-Gm-Message-State: ANoB5pm3a7BFSFFjk2OMEU3NYwlallDPIAOCI3Rj8IMdR3cxLza4beu9
+        tuLICjU2g8AH9CsE+83nyV8i5IUJwczj9XLozQvchPT5KdFAE6UvukVTfd65spa7Si5H3yiqSPZ
+        UeEdxadV6HH4Do8rM
+X-Received: by 2002:a05:600c:5011:b0:3cf:91e9:f771 with SMTP id n17-20020a05600c501100b003cf91e9f771mr14680177wmr.36.1670913511086;
+        Mon, 12 Dec 2022 22:38:31 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7a0Jg5I3qlu4+RONkY5PwQtc+kv3pnp/OWxrJYOaFho0Wyum/OG/OEnozMktADLH8herMaKg==
+X-Received: by 2002:a05:600c:5011:b0:3cf:91e9:f771 with SMTP id n17-20020a05600c501100b003cf91e9f771mr14680167wmr.36.1670913510863;
+        Mon, 12 Dec 2022 22:38:30 -0800 (PST)
+Received: from redhat.com ([2.52.138.183])
+        by smtp.gmail.com with ESMTPSA id g23-20020a05600c4c9700b003cf4ec90938sm11063543wmp.21.2022.12.12.22.38.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Dec 2022 22:38:30 -0800 (PST)
+Date:   Tue, 13 Dec 2022 01:38:27 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
+Subject: Re: [PATCH net] virtio-net: correctly enable callback during
+ start_xmit
+Message-ID: <20221213013231-mutt-send-email-mst@kernel.org>
+References: <20221212091029.54390-1-jasowang@redhat.com>
+ <20221212042144-mutt-send-email-mst@kernel.org>
+ <1670902391.9610498-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEu=1CcoNvvV9M+QrG5sLUBoPYkZ3DvUe+pLc1fSvgLuHA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f0078f0a-acbc-a9bd-effd-6d04507e71e2@intel.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CACGkMEu=1CcoNvvV9M+QrG5sLUBoPYkZ3DvUe+pLc1fSvgLuHA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 12, 2022 at 10:46:09AM -0800, Jacob Keller wrote:
+On Tue, Dec 13, 2022 at 11:43:36AM +0800, Jason Wang wrote:
+> On Tue, Dec 13, 2022 at 11:38 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > On Mon, 12 Dec 2022 04:25:22 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > > On Mon, Dec 12, 2022 at 05:10:29PM +0800, Jason Wang wrote:
+> > > > Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
+> > > > virtqueue callback via the following statement:
+> > > >
+> > > >         do {
+> > > >            ......
+> > > >     } while (use_napi && kick &&
+> > > >                unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > > >
+> > > > This will cause a missing call to virtqueue_enable_cb_delayed() when
+> > > > kick is false. Fixing this by removing the checking of the kick from
+> > > > the condition to make sure callback is enabled correctly.
+> > > >
+> > > > Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
+> > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > ---
+> > > > The patch is needed for -stable.
+> > >
+> > > stable rules don't allow for theoretical fixes. Was a problem observed?
 > 
-> 
-> On 12/12/2022 10:15 AM, Jakub Kicinski wrote:
-> > On Mon, 12 Dec 2022 12:16:35 +0100 Michal Swiatkowski wrote:
-> > > This is a part of changes done in patchset [0]. Resource management is
-> > > kind of controversial part, so I split it into two patchsets.
-> > > 
-> > > It is the first one, covering refactor and implement reload API call.
-> > > The refactor will unblock some of the patches needed by SIOV or
-> > > subfunction.
-> > > 
-> > > Most of this patchset is about implementing driver reload mechanism.
-> > > Part of code from probe and rebuild is used to not duplicate code.
-> > > To allow this reuse probe and rebuild path are split into smaller
-> > > functions.
-> > > 
-> > > Patch "ice: split ice_vsi_setup into smaller functions" changes
-> > > boolean variable in function call to integer and adds define
-> > > for it. Instead of having the function called with true/false now it
-> > > can be called with readable defines ICE_VSI_FLAG_INIT or
-> > > ICE_VSI_FLAG_NO_INIT. It was suggested by Jacob Keller and probably this
-> > > mechanism will be implemented across ice driver in follow up patchset.
-> > 
-> > Does not apply, unfortunately, which makes it easier for me to answer
-> > to the question "should I try to squeeze this into 6.2"..
-> > Hopefully we can get some reviews, but the changes seem uncontroversial.
-> 
-> Yea it seems a bit late to make it into 6.2, as much as that would be nice.
-> 
-> We can always hold and test it on iwl until net-next re-opens.
-> 
+> Yes, running a pktgen sample script can lead to a tx timeout.
 
-It was targeted to Tony dev-queue to allow some tests as Jake said.
-Sorry, probably I should point it out in cover letter.
+Since April 2021 and we only noticed now? Are you sure it's the
+right Fixes tag?
 
-Most of the changes are refactor of probe / remove path, so it will be
-good to have some tests from iwl. I (or Tony as pull request) will send
-it when the net-next re-opens. Thanks
+> > >
+> > > > ---
+> > > >  drivers/net/virtio_net.c | 4 ++--
+> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index 86e52454b5b5..44d7daf0267b 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -1834,8 +1834,8 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> > > >
+> > > >             free_old_xmit_skbs(sq, false);
+> > > >
+> > > > -   } while (use_napi && kick &&
+> > > > -          unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > > > +   } while (use_napi &&
+> > > > +            unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > > >
+> > >
+> > > A bit more explanation pls.  kick simply means !netdev_xmit_more -
+> > > if it's false we know there will be another packet, then transmissing
+> > > that packet will invoke virtqueue_enable_cb_delayed. No?
+> >
+> > It's just that there may be a next packet, but in fact there may not be.
+> > For example, the vq is full, and the driver stops the queue.
+> 
+> Exactly, when the queue is about to be full we disable tx and wait for
+> the next tx interrupt to re-enable tx.
+> 
+> Thanks
 
-> Thanks,
-> Jake
+OK, it's a good idea to document that.
+And we should enable callbacks at that point, not here on data path.
+
+
+> >
+> > Thanks.
+> >
+> > >
+> > >
+> > >
+> > >
+> > >
+> > > >     /* timestamp packet in software */
+> > > >     skb_tx_timestamp(skb);
+> > > > --
+> > > > 2.25.1
+> > >
+> > > _______________________________________________
+> > > Virtualization mailing list
+> > > Virtualization@lists.linux-foundation.org
+> > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> >
+
