@@ -2,122 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D0264B98B
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:23:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F96364B9E7
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 17:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234825AbiLMQXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 11:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
+        id S236108AbiLMQhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 11:37:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiLMQXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:23:30 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 353BEBF7
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 08:23:27 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BDGMMtzC007428, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BDGMMtzC007428
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 14 Dec 2022 00:22:22 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Wed, 14 Dec 2022 00:23:11 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Wed, 14 Dec 2022 00:23:10 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Wed, 14 Dec 2022 00:23:10 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
-Subject: RE: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
-Thread-Topic: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a)
- + rtl8211fs fiber application
-Thread-Index: AQHZBZK0jNmNF43ANUm+ON2R2qDGTK5d0aqAgATjHlD//8MxAIABsEYw///gi4CAAbFP8P//+V0AAJTwo+AAAFtNgAA2Y27A
-Date:   Tue, 13 Dec 2022 16:23:10 +0000
-Message-ID: <8f1ecb5c45d0438293baaf39ea1e0bea@realtek.com>
-References: <20221201143911.4449-1-hau@realtek.com>
- <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
- <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
- <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
- <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
- <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
- <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
- <6de467f2-e811-afbb-ab6f-f43f5456a857@gmail.com>
- <3395f909ef24454ca984a1b7977e0af4@realtek.com>
- <b3ded529-3676-3d7c-4ed8-a94de470b5d7@gmail.com>
-In-Reply-To: <b3ded529-3676-3d7c-4ed8-a94de470b5d7@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.74]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzEzIOS4i+WNiCAwMjowMDowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S235937AbiLMQhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 11:37:36 -0500
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D1D218BA;
+        Tue, 13 Dec 2022 08:37:35 -0800 (PST)
+Received: by mail-qt1-f174.google.com with SMTP id i20so254441qtw.9;
+        Tue, 13 Dec 2022 08:37:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dkqo/f6TMEumBsXzKtrUT8iISRroziZrZAkikhWcpfE=;
+        b=Iho3HoVup2f5P1zUupcWZrgW4oWpS4knc3GBlUR6vYL+vVwtrE4X86e57ym1ZdlG4M
+         2/B8QyuJXRBuwbkr9Mz/mll8qxsR/lPHq/Vo8vpG5Ra1Aw4RyX2kSkjRx25cj/D+GTRT
+         D32F5eH6cZTqVDvqlMS+SGEy65wb2XQjJdUw8D2Df1hnoYYpQKiRKzOaReBsc+ft3h0m
+         CFkdM+nGLhHzPreLliT5+1qX6Oxn4vAZnlyQao5dTNjhAlfhF4BqaUlzK/+HYCR5SI87
+         xs14cIxn9ECPYrKwPwlEnSq3pvWi3Q8MdnQYZRgquy4W0d5R5lmPePNuKgHJj8bOyFdo
+         xuPA==
+X-Gm-Message-State: ANoB5pl/3UJ/XDfosUaJgFl8DPobHZ9bM5ZmzyQIv+it9m4ivO76fDdr
+        kiSshTroDEbknwwHQUx5q0U=
+X-Google-Smtp-Source: AA0mqf50bvyGGGPmiGQL2J9wi1SXO1PoY3/g5E6Pktn5hXRICzhQVBM5RJCTNWJ7SpLgad9eiZzXww==
+X-Received: by 2002:a05:622a:4a88:b0:3a6:9011:3de0 with SMTP id fw8-20020a05622a4a8800b003a690113de0mr30870665qtb.40.1670949453980;
+        Tue, 13 Dec 2022 08:37:33 -0800 (PST)
+Received: from maniforge.lan ([2620:10d:c091:480::1:8faa])
+        by smtp.gmail.com with ESMTPSA id cr26-20020a05622a429a00b0039853b7b771sm113274qtb.80.2022.12.13.08.37.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 08:37:33 -0800 (PST)
+Date:   Tue, 13 Dec 2022 10:37:32 -0600
+From:   David Vernet <void@manifault.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 01/15] bpf: Document XDP RX metadata
+Message-ID: <Y5iqTKnhtX2yaSAq@maniforge.lan>
+References: <20221213023605.737383-1-sdf@google.com>
+ <20221213023605.737383-2-sdf@google.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221213023605.737383-2-sdf@google.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiANCj4gT24gMTIuMTIuMjAyMiAxNToxMSwgSGF1IHdyb3RlOg0KPiA+PiBPbiAwOS4xMi4yMDIy
-IDE2OjI5LCBIYXUgd3JvdGU6DQo+ID4+Pj4NCj4gPj4+PiBPSywgSSB0aGluayBJIGdldCBhIGJl
-dHRlciBpZGVhIG9mIHlvdXIgc2V0dXAuDQo+ID4+Pj4gU28gaXQgc2VlbXMgUlRMODIxMUZTIGlu
-ZGVlZCBhY3RzIGFzIG1lZGlhIGNvbnZlcnRlci4gTGluayBzdGF0dXMNCj4gPj4+PiBvbiBNREkg
-c2lkZSBvZiBSVEw4MjExRlMgcmVmbGVjdHMgbGluayBzdGF0dXMgb24gZmliZXIvc2VyZGVzIHNp
-ZGUuDQo+ID4+Pj4gUlRMODE2OEggUEhZIGhhcyBubyBpZGVhIHdoZXRoZXIgaXQncyBjb25uZWN0
-ZWQgdG8gUko0NSBtYWduZXRpY3MNCj4gPj4+PiBvciB0byB0aGUgTURJIHNpZGUgb2YgYSBSVEw4
-MjExRlMuDQo+ID4+Pj4NCj4gPj4+PiBJIHRoaW5rIGZvciBjb25maWd1cmluZyBSVEw4MjExRlMg
-eW91IGhhdmUgdHdvIG9wdGlvbnM6DQo+ID4+Pj4gMS4gRXh0ZW5kIHRoZSBSZWFsdGVrIFBIWSBk
-cml2ZXIgdG8gc3VwcG9ydCBSVEw4MjExRlMgZmliZXIgbW9kZSAyLg0KPiA+Pj4+IENvbmZpZ3Vy
-ZSBSVEw4MjExRlMgZnJvbSB1c2Vyc3BhY2UgKHBoeXRvb2wsIG1paS10b29sLCAuLikuIEhvd2V2
-ZXINCj4gPj4+PiB0byBiZSBhYmxlIHRvIGRvIHRoaXMgeW91IG1heSBuZWVkIHRvIGFkZCBhIGR1
-bW15IG5ldGRldmljZQ0KPiA+Pj4+ICAgIHRoYXQgUlRMODIxMUZTIGlzIGF0dGFjaGVkIHRvLiBX
-aGVuIGdvaW5nIHdpdGggdGhpcyBvcHRpb24gaXQNCj4gPj4+PiBtYXkgYmUgYmV0dGVyIHRvIGF2
-b2lkIHBoeWxpYiB0YWtpbmcgY29udHJvbCBvZiBSVEw4MjExRlMuDQo+ID4+Pj4gICAgVGhpcyBj
-YW4gYmUgZG9uZSBieSBzZXR0aW5nIHRoZSBwaHlfbWFzayBvZiB0aGUgYml0LWJhbmdlZCBtaWlf
-YnVzLg0KPiA+Pj4NCj4gPj4+IFRoYW5rcyBmb3IgeW91ciBhZHZhaWNlLg0KPiA+Pj4gSXMgdGhh
-dCBwb3NzaWJsZSBmb3IgdXMgdG8gcmVnaXN0ZXIgYSBQSFkgZml4dXANCj4gPj4+IGZ1bmN0aW9u
-KHBoeV9yZWdpc3Rlcl9maXh1cCgpKQ0KPiA+PiB0byBzZXR1cCBydGw4MjExZnMgaW5zdGVhZCBv
-ZiBzZXR1cCBpdCBpbiBQSFkgZHJpdmVyPw0KPiA+Pj4NCj4gPj4gRnJvbSB3aGVyZSB3b3VsZCB5
-b3UgbGlrZSB0byByZWdpc3RlciB0aGUgUEhZIGZpeHVwPyByODE2OSB3b3VsZCBiZQ0KPiA+PiB0
-aGUgd3JvbmcgcGxhY2UgaGVyZS4NCj4gPj4gVGhlcmUgYXJlIHZlcnkgZmV3IGRyaXZlcnMgdXNp
-bmcgYSBQSFkgZml4dXAgYW5kIEFGQUlDUyB0eXBpY2FsbHkgUEhZDQo+ID4+IGRyaXZlcnMgYXBw
-bHkgZml4dXBzIGZyb20gdGhlIGNvbmZpZ19pbml0IGNhbGxiYWNrLg0KPiA+PiBIYXZpbmcgc2Fp
-ZCB0aGF0LCBpZiBwb3NzaWJsZSBJJ2QgcmVjb21tZW5kIHRvIGF2b2lkIHVzaW5nIGEgUEhZIGZp
-eHVwLg0KPiA+Pg0KPiA+IFRoYW5rcyBmb3IgeW91ciBwcm9tcHQgcmVwbHkuIEkgdGhpbmsgaW4g
-bmV4dCBwYXRjaCBJIHdpbGwgcmVtb3ZlIHRoZQ0KPiBydGw4MjExZnMgcGh5IHBhcmFtZXRlciBz
-ZXR0aW5nLg0KPiA+IEFuZCBvbmx5IGtlZXAgbm9uIHNwZWVkIGRvd24gcGF0Y2guDQo+ID4gSWYg
-dGhlcmUncyBhbnkgcG9zc2liaWxpdHkgSSdkIGxpa2UgdG8gYXZvaWQgdGhlIG5vbiBzcGVlZCBk
-b3duIHBhdGNoLg0KPiBZb3Ugd291bGQgaGF2ZSB0byB0aGluayBhbHNvIGFib3V0IHRoZSBjYXNl
-IHRoYXQgYSB1c2VyIHVzZXMgZXRodG9vbCB0bw0KPiByZXN0cmljdCBhZHZlcnRpc2VtZW50IHRv
-IDEwME1icHMsIHdoYXQgd291bGQgYnJlYWsgdGhlIGNvbm5lY3Rpb24uDQo+IHI4MTY5IGlzbid0
-IHRoZSByaWdodCBwbGFjZSBmb3IgYSB3b3JrYXJvdW5kIGZvciBhIGJyb2tlbiBtZWRpYSBjb252
-ZXJ0ZXIuDQo+IFRoZSBtZWRpYSBjb252ZXJ0ZXIgc2hvdWxkIGJlIGZ1bGx5IHRyYW5zcGFyZW50
-IHRvIHI4MTY5Lg0KPiANCj4gUlRMODIxMUZTIHNob3VsZCBhbGlnbiB0aGUgYWR2ZXJ0aXNlbWVu
-dCBvbiBNREkgc2lkZSB3aXRoIHRoZSBsaW5rIHNwZWVkIG9uDQo+IGZpYmVyIHNpZGUsIGJhc2Vk
-IG9uIFNHTUlJIGluLWJhbmQgaW5mb3JtYXRpb24uDQo+IElmIHRoZSBmaWJlciBsaW5rIGlzIDFH
-YnBzIGl0IG11c3Qgbm90IGFkdmVydGlzZSAxMDBNYnBzIG9uIE1ESSBzaWRlLg0KPiANClRoZSBm
-dyBpbiBydGw4MjExZnMgd2lsbCBkZWZhdWx0IGFkdmVydGlzZSAxMDBNYnBzIGFuZCAxMDAwTWJw
-cyAgb24gTURJIHNpZGUuIA0KV2UgYXJlIHRyeWluZyB0byBmaW5kIGEgd2F5IHRvIGZpeCB0aGlz
-IGlzc3VlLiBJZiB3ZSBjYW5ub3QgZml4IHRoaXMgaXNzdWUgYnkgZncgdGhhbiB3ZQ0Kd2lsbCBz
-dWJtaXQgYSBwYXRjaCBmb3IgdGhpcyBpc3N1ZS4NCiAgDQotLS0tLS1QbGVhc2UgY29uc2lkZXIg
-dGhlIGVudmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg==
+On Mon, Dec 12, 2022 at 06:35:51PM -0800, Stanislav Fomichev wrote:
+> Document all current use-cases and assumptions.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> Cc: Maryam Tahhan <mtahhan@redhat.com>
+> Cc: xdp-hints@xdp-project.net
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  Documentation/bpf/xdp-rx-metadata.rst | 90 +++++++++++++++++++++++++++
+>  1 file changed, 90 insertions(+)
+>  create mode 100644 Documentation/bpf/xdp-rx-metadata.rst
+> 
+> diff --git a/Documentation/bpf/xdp-rx-metadata.rst b/Documentation/bpf/xdp-rx-metadata.rst
+> new file mode 100644
+> index 000000000000..498eae718275
+> --- /dev/null
+> +++ b/Documentation/bpf/xdp-rx-metadata.rst
+
+I think you need to add this to Documentation/bpf/index.rst. Or even
+better, maybe it's time to add an xdp/ subdirectory and put all docs
+there? Don't want to block your patchset from bikeshedding on this
+point, so for now it's fine to just put it in
+Documentation/bpf/index.rst until we figure that out.
+
+> @@ -0,0 +1,90 @@
+> +===============
+> +XDP RX Metadata
+> +===============
+> +
+> +XDP programs support creating and passing custom metadata via
+> +``bpf_xdp_adjust_meta``. This metadata can be consumed by the following
+> +entities:
+
+Can you add a couple of sentences to this intro section that explains
+what metadata is at a high level?
+
+> +
+> +1. ``AF_XDP`` consumer.
+> +2. Kernel core stack via ``XDP_PASS``.
+> +3. Another device via ``bpf_redirect_map``.
+> +4. Other BPF programs via ``bpf_tail_call``.
+> +
+> +General Design
+> +==============
+> +
+> +XDP has access to a set of kfuncs to manipulate the metadata. Every
+
+"...to manipulate the metadata in an XDP frame." ?
+
+> +device driver implements these kfuncs. The set of kfuncs is
+
+"Every device driver implements these kfuncs" can you be a bit more
+specific about which types of device drivers will implement these?
+
+> +declared in ``include/net/xdp.h`` via ``XDP_METADATA_KFUNC_xxx``.
+
+Why is it suffixed with _xxx?
+
+> +
+> +Currently, the following kfuncs are supported. In the future, as more
+> +metadata is supported, this set will grow:
+> +
+> +- ``bpf_xdp_metadata_rx_timestamp_supported`` returns true/false to
+> +  indicate whether the device supports RX timestamps
+> +- ``bpf_xdp_metadata_rx_timestamp`` returns packet RX timestamp
+
+s/returns packet/returns a packet's
+
+> +- ``bpf_xdp_metadata_rx_hash_supported`` returns true/false to
+> +  indicate whether the device supports RX hash
+
+I don't see bpf_xdp_metadata_rx_timestamp_supported() or
+bpf_xdp_metadata_rx_hash_supported() being added in your patch set. Can
+you remove these entries until they're actually implemented?
+
+> +- ``bpf_xdp_metadata_rx_hash`` returns packet RX hash
+
+We should probably also add a note that these kfuncs currently just
+return -EOPNOTSUPP.
+
+Finally, should we add either some example code showing how to use these
+kfuncs, or at the very least some links to their selftests so readers
+have example code they can refer to?
+
+> +
+> +Within the XDP frame, the metadata layout is as follows::
+> +
+> +  +----------+-----------------+------+
+> +  | headroom | custom metadata | data |
+> +  +----------+-----------------+------+
+> +             ^                 ^
+> +             |                 |
+> +   xdp_buff->data_meta   xdp_buff->data
+> +
+> +AF_XDP
+> +======
+> +
+> +``AF_XDP`` use-case implies that there is a contract between the BPF program
+> +that redirects XDP frames into the ``XSK`` and the final consumer.
+
+Can you fully spell out what XSK stands for the first time it's used?
+Something like "...that redirects XDP frames into the ``AF_XDP`` socket
+(``XSK``) and the final consumer." Applies anywhere else you think
+appropriate as well.
+
+> +Thus the BPF program manually allocates a fixed number of
+> +bytes out of metadata via ``bpf_xdp_adjust_meta`` and calls a subset
+> +of kfuncs to populate it. User-space ``XSK`` consumer, looks
+
+s/User-space/The user-space
+
+Also, it feels like it might read better without the comma, and by
+doing something like s/looks at/computes. Wdyt?
+
+> +at ``xsk_umem__get_data() - METADATA_SIZE`` to locate its metadata.
+> +
+> +Here is the ``AF_XDP`` consumer layout (note missing ``data_meta`` pointer)::
+> +
+> +  +----------+-----------------+------+
+> +  | headroom | custom metadata | data |
+> +  +----------+-----------------+------+
+> +                               ^
+> +                               |
+> +                        rx_desc->address
+> +
+> +XDP_PASS
+> +========
+> +
+> +This is the path where the packets processed by the XDP program are passed
+> +into the kernel. The kernel creates ``skb`` out of the ``xdp_buff`` contents.
+
+s/creates ``skb``/creates the ``skb``
+
+> +Currently, every driver has a custom kernel code to parse the descriptors and
+> +populate ``skb`` metadata when doing this ``xdp_buff->skb`` conversion.
+> +In the future, we'd like to support a case where XDP program can override
+
+s/where XDP program/where an XDP program
+
+> +some of that metadata.
+> +
+> +The plan of record is to make this path similar to ``bpf_redirect_map``
+> +so the program can control which metadata is passed to the skb layer.
+> +
+> +bpf_redirect_map
+> +================
+> +
+> +``bpf_redirect_map`` can redirect the frame to a different device.
+> +In this case we don't know ahead of time whether that final consumer
+> +will further redirect to an ``XSK`` or pass it to the kernel via ``XDP_PASS``.
+> +Additionally, the final consumer doesn't have access to the original
+> +hardware descriptor and can't access any of the original metadata.
+> +
+> +For this use-case, only custom metadata is currently supported. If
+> +the frame is eventually passed to the kernel, the skb created from such
+> +a frame won't have any skb metadata. The ``XSK`` consumer will only
+> +have access to the custom metadata.
+> +
+> +bpf_tail_call
+> +=============
+> +
+> +No special handling here. Tail-called program operates on the same context
+
+s/Tail-called program/A tail-called program
+
+> +as the original one.
+> -- 
+> 2.39.0.rc1.256.g54fd8350bd-goog
+> 
