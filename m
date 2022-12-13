@@ -2,85 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E8364AE77
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEF9564AE7E
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbiLMDv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 22:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
+        id S233710AbiLMD5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 22:57:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234516AbiLMDvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:51:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1361F2E7;
-        Mon, 12 Dec 2022 19:50:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78551B808BB;
-        Tue, 13 Dec 2022 03:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E9D7C433F1;
-        Tue, 13 Dec 2022 03:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670903416;
-        bh=BT8OHaV2tjYMg1V3salQG9z9OJouBX098LNgTtQQFQM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=J5Dv3P5dOIhTaiZGoctHcYrBMaUynTGk+lHJUsPWglPqWh+Y4fNNPma5G3brsTEMt
-         MDpxao80aMlu4QsJep/Cr1w8TjZgCA8sJi+ZuB+I6Go/7BXXvQG72813MiqKOd0nXt
-         WYfdDvxMM4/kmBYc8/Jb9CQV0e+Qlf2rkz4kkGMnnztOv2dq1rjVy3IkB8pI7oQKBp
-         yOhGWThG2eUpLkjlAw1/oqJAMOPYy8zGBiSPdVmjzezJNPFfPcWMnMFITHO6GUV+Vk
-         8E3sIanjYS8DOYj8bcwZluGetF+am+QAAnDPyb98IwtPNs4REjPUup18cJlHHLBmh+
-         pT6LyBnWBkHWQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 174D3C41622;
-        Tue, 13 Dec 2022 03:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229557AbiLMD5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:57:16 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8955D62;
+        Mon, 12 Dec 2022 19:57:14 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=jiapeng.chong@linux.alibaba.com;NM=0;PH=DS;RN=13;SR=0;TI=SMTPD_---0VXC615N_1670903828;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VXC615N_1670903828)
+          by smtp.aliyun-inc.com;
+          Tue, 13 Dec 2022 11:57:12 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        sumit.semwal@linaro.org, christian.koenig@amd.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH v2] net: ksz884x: Remove some unused functions
+Date:   Tue, 13 Dec 2022 11:57:07 +0800
+Message-Id: <20221213035707.118309-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: lan966x: Remove a useless test in
- lan966x_ptp_add_trap()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167090341609.4783.16305690023365204184.git-patchwork-notify@kernel.org>
-Date:   Tue, 13 Dec 2022 03:50:16 +0000
-References: <27992ffcee47fc865ce87274d6dfcffe7a1e69e0.1670873784.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <27992ffcee47fc865ce87274d6dfcffe7a1e69e0.1670873784.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+These functions are defined in the ksz884x.c file, but not called
+elsewhere, so delete these unused functions.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+drivers/net/ethernet/micrel/ksz884x.c:2212:20: warning: unused function 'port_cfg_force_flow_ctrl'.
 
-On Mon, 12 Dec 2022 20:37:16 +0100 you wrote:
-> vcap_alloc_rule() can't return NULL.
-> 
-> So remove some dead-code
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c | 2 --
->  1 file changed, 2 deletions(-)
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3418
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+Changes in v2:
+  -Delete more unused functions.
 
-Here is the summary with links:
-  - [net-next] net: lan966x: Remove a useless test in lan966x_ptp_add_trap()
-    https://git.kernel.org/netdev/net-next/c/d1c722867f80
+ drivers/net/ethernet/micrel/ksz884x.c | 89 ---------------------------
+ 1 file changed, 89 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index e6acd1e7b263..5d6ed7a63e59 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -2209,102 +2209,13 @@ static inline void port_cfg_back_pressure(struct ksz_hw *hw, int p, int set)
+ 		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE, set);
+ }
+ 
+-static inline void port_cfg_force_flow_ctrl(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL, set);
+-}
+-
+-static inline int port_chk_back_pressure(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE);
+-}
+-
+-static inline int port_chk_force_flow_ctrl(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL);
+-}
+-
+ /* Spanning Tree */
+ 
+-static inline void port_cfg_rx(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_RX_ENABLE, set);
+-}
+-
+-static inline void port_cfg_tx(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_TX_ENABLE, set);
+-}
+-
+ static inline void sw_cfg_fast_aging(struct ksz_hw *hw, int set)
+ {
+ 	sw_cfg(hw, KS8842_SWITCH_CTRL_1_OFFSET, SWITCH_FAST_AGING, set);
+ }
+ 
+-static inline void sw_flush_dyn_mac_table(struct ksz_hw *hw)
+-{
+-	if (!(hw->overrides & FAST_AGING)) {
+-		sw_cfg_fast_aging(hw, 1);
+-		mdelay(1);
+-		sw_cfg_fast_aging(hw, 0);
+-	}
+-}
+-
+-/* VLAN */
+-
+-static inline void port_cfg_ins_tag(struct ksz_hw *hw, int p, int insert)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_INSERT_TAG, insert);
+-}
+-
+-static inline void port_cfg_rmv_tag(struct ksz_hw *hw, int p, int remove)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_REMOVE_TAG, remove);
+-}
+-
+-static inline int port_chk_ins_tag(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_INSERT_TAG);
+-}
+-
+-static inline int port_chk_rmv_tag(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_REMOVE_TAG);
+-}
+-
+-static inline void port_cfg_dis_non_vid(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_DISCARD_NON_VID, set);
+-}
+-
+-static inline void port_cfg_in_filter(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_INGRESS_VLAN_FILTER, set);
+-}
+-
+-static inline int port_chk_dis_non_vid(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_DISCARD_NON_VID);
+-}
+-
+-static inline int port_chk_in_filter(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_INGRESS_VLAN_FILTER);
+-}
+-
+ /* Mirroring */
+ 
+ static inline void port_cfg_mirror_sniffer(struct ksz_hw *hw, int p, int set)
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.20.1.7.g153144c
 
