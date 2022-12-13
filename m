@@ -2,155 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A6564B735
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 15:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 578CF64B745
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 15:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235692AbiLMOVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 09:21:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
+        id S235748AbiLMOXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 09:23:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234673AbiLMOVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 09:21:06 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0E115A2D
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 06:20:58 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id n3so2266364pfq.10
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 06:20:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rhdCATGaNa4PelTkR0mXXomKyQ8iesE1Yvm1J+BFYZc=;
-        b=phpZz2+Z+s/gRkVILEQsjV00v3WIme8/mR0LswBWh5F2pUjSKW7kh8rS+qvMVQ6kMo
-         Qy0yFTiiqjp/bJm6R+f+M1wsolK3SPJ0QJvuXoHog7IBtVZ/lWWoGCdpWGEYhJxGz0KZ
-         ym4AUzI9sziWOFZsIOVKlWTD48lX/gtzzqNFOeGXrKH3G1T8eBDqFncQAwhvo+jZEfjq
-         pE/CibRhxwgfU2qUIpc/+4b8CUHLpooNCLPTHFqw6mWTo8Dy8B+OwNVyprAnrcJ/sMjP
-         r+UvGCeRLM2806bvQ3/SxA8YebpgQwKKXlyYgg8hRmXlNusZkF2MM4Rbrv50FzwoZpLM
-         eGFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rhdCATGaNa4PelTkR0mXXomKyQ8iesE1Yvm1J+BFYZc=;
-        b=sMW5qW2uSnDB1SchWsMMZ/xkbzgSvrg9OQpMXZbkugogcuZwf587bb9ONj+Dhw38s3
-         Q9pk6xOLWzcnlmHUHDq2Lz8a9QuFfaPLtjK+JcszWP9DNu8kQjtpAN0voDaDGMJBBM0t
-         T8sc1y5VKpStzGCTohud9PMLPpASdzerU72y0Ubqv/jnLl04rpywPZgT63d4EUp7cAjz
-         ZmzoypGRayHWSee0uesbEhWJO+pQJYd9bFe+QClDjA2pNZ7TPUedqFdsljPtIqpl5PJp
-         Yzk+SemYd7KvqQI85DjZPWSoezePPdQPjqSMtjP6iDqU8pMi/piQd02lZGuIYM8EVxtH
-         qZ+g==
-X-Gm-Message-State: ANoB5plAmo30EWyJBR/kTde6RXhnOPijpjQYj63OvwszADP6yPWgl6b+
-        RCpTx2zAs4r996wZb91R9CsrEg==
-X-Google-Smtp-Source: AA0mqf44qqA52u29eg06LrWn8VjRle8akEcpRMJijnKAqF1/cz77YkUU2Wje5YqivZQmoRikOiRt9A==
-X-Received: by 2002:a05:6a00:324b:b0:574:3cde:385a with SMTP id bn11-20020a056a00324b00b005743cde385amr18504287pfb.32.1670941258370;
-        Tue, 13 Dec 2022 06:20:58 -0800 (PST)
-Received: from medve-MS-7D32 ([165.132.118.52])
-        by smtp.gmail.com with ESMTPSA id g204-20020a6252d5000000b00561d79f1064sm7733063pfb.57.2022.12.13.06.20.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 06:20:57 -0800 (PST)
-Date:   Tue, 13 Dec 2022 23:20:53 +0900
-From:   Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
-        dokyungs@yonsei.ac.kr, jisoo.jang@yonsei.ac.kr,
-        Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Subject: Re: Re: [PATCH net] nfc: pn533: Clear nfc_target in
- pn533_poll_dep_complete() before being used
-Message-ID: <20221213142053.GA107908@medve-MS-7D32>
-References: <20221213014120.969-1-linuxlovemin@yonsei.ac.kr>
- <15aba5c2-1f22-cb8a-742e-8bb8b1e8f0a0@linaro.org>
+        with ESMTP id S235447AbiLMOXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 09:23:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB462019A;
+        Tue, 13 Dec 2022 06:23:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED16CB8120C;
+        Tue, 13 Dec 2022 14:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 162ECC433EF;
+        Tue, 13 Dec 2022 14:23:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1670941412;
+        bh=s313XL+1OkI/sYPxToUUD8jO9asGoh5OQpwiWOtWwgY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QV/Xvn+/Cqc3JUsQDfDrm8kOK3XOcG17SjuCeTVAdwc1iOaC98aNoPSuxkH3tlPSL
+         Vq7/zdjr7rY61MFa3GqXexef3OVABJvnRFU8IA+0/ulbg7T0Fj/G0CbOkMkMbSupl6
+         Uuq+N/gzZXe1AUYa+XnfGIIL+qWn9j7Ti5ZOiD7U=
+Date:   Tue, 13 Dec 2022 15:23:30 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        Pavel Machek <pavel@denx.de>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        srw@sladewatkins.net, rwarsow@gmx.de,
+        Jakub Kicinski <kuba@kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: [PATCH 5.10 000/106] 5.10.159-rc1 review
+Message-ID: <Y5iK4kii6oPYi6g8@kroah.com>
+References: <20221212130924.863767275@linuxfoundation.org>
+ <CA+G9fYv7tm9zQwVWnPMQMjFXtNDoRpdGkxZ4ehMjY9qAFF0QLQ@mail.gmail.com>
+ <86c7e7a5-6457-49c5-a9e3-b28b8b8c1134@app.fastmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <15aba5c2-1f22-cb8a-742e-8bb8b1e8f0a0@linaro.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <86c7e7a5-6457-49c5-a9e3-b28b8b8c1134@app.fastmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 13, 2022 at 11:45:53AM +0100, Krzysztof Kozlowski wrote:
-> > This patch fixes a slab-out-of-bounds read in pn533 that occurs in
+On Tue, Dec 13, 2022 at 10:20:30AM +0100, Arnd Bergmann wrote:
+> On Tue, Dec 13, 2022, at 08:48, Naresh Kamboju wrote:
+> > On Mon, 12 Dec 2022 at 18:43, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> >
+> > Regression detected on arm64 Raspberry Pi 4 Model B the NFS mount failed.
+> >
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >
+> > Following changes have been noticed in the Kconfig file between good and bad.
+> > The config files attached to this email.
+> >
+> > -CONFIG_BCMGENET=y
+> > -CONFIG_BROADCOM_PHY=y
+> > +# CONFIG_BROADCOM_PHY is not set
+> > -CONFIG_BCM7XXX_PHY=y
+> > +# CONFIG_BCM7XXX_PHY is not set
+> > -CONFIG_BCM_NET_PHYLIB=y
 > 
-> Do not use "This commit/patch".
-> https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
+> > Full test log details,
+> >  - https://lkft.validation.linaro.org/scheduler/job/5946533#L392
+> >  - 
+> > https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10.158-107-gd2432186ff47/testrun/13594402/suite/log-parser-test/tests/
+> >  - 
+> > https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10.158-107-gd2432186ff47/testrun/13594402/suite/log-parser-test/test/check-kernel-panic/history/
 > 
-> > nla_put() called from nfc_genl_send_target() when target->sensb_res_len,
-> > which is duplicated from nfc_target in pn533_poll_dep_complete(), is
-> > too large as the nfc_target is not properly initialized and retains
-> > garbage values. The patch clears the nfc_target before it is used.
+> Where does the kernel configuration come from? Is this
+> a plain defconfig that used to work, or do you have
+> a board specific config file?
 > 
-> Same here
-> 
-> > 
-> > Found by a modified version of syzkaller.
-> > 
-> > ==================================================================
-> > BUG: KASAN: slab-out-of-bounds in nla_put+0xe0/0x120
-> > Read of size 94 at addr ffff888109d1dfa0 by task syz-executor/4367
-> > 
-> > CPU: 0 PID: 4367 Comm: syz-executor Not tainted 5.14.0+ #171
+> This is most likely caused by the added dependency on
+> CONFIG_PTP_1588_CLOCK that would lead to the BCMGENET
+> driver not being built-in if PTP support is in a module.
 
-[snip]
+I've dropped the patch that caused this and will push out a -rc2 in a
+bit.
 
-> > Memory state around the buggy address:
-> >  ffff888109d1de80: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-> >  ffff888109d1df00: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-> >> ffff888109d1df80: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-> >                                                        ^
-> >  ffff888109d1e000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> >  ffff888109d1e080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 
-> Drop unrelated pieces of OOPS and keep only things which are relevant.
->
+thanks all!
 
-Thank you for the comments. I will update the commit message as advised
-in v2.
-
-> > ==================================================================
-> > 
-> > Fixes: 673088fb42d0 ("NFC: pn533: Send ATR_REQ directly for active device detection")
-> > Reported-by: Dokyung Song <dokyungs@yonsei.ac.kr>
-> > Reported-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-> > Reported-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-> 
-> Reported-by is for crediting other people, not crediting yourself.
-> Otherwise all my patches would be reported-by, right? Please drop this
-> one and keep only credit for other people who actually reported it. It's
-> anyway weird to see three people reporting one bug.
-> 
-> Additionally I really dislike private reports because they sometimes
-> cannot be trusted (see all the fake report credits from running
-> coccinelle by Hulk Robot and others)... Care to provide link to the
-> reports of this bug?
-> 
-
-My intention was to credit all the people contributed to the
-modification of syzkaller that led to this bug. But I will drop them in
-v2.
-
-> > Signed-off-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-> > ---
-> >  drivers/nfc/pn533/pn533.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-> > index d9f6367b9993..c6a611622668 100644
-> > --- a/drivers/nfc/pn533/pn533.c
-> > +++ b/drivers/nfc/pn533/pn533.c
-> > @@ -1295,6 +1295,8 @@ static int pn533_poll_dep_complete(struct pn533 *dev, void *arg,
-> >  	if (IS_ERR(resp))
-> >  		return PTR_ERR(resp);
-> > 
-> > +	memset(&nfc_target, 0, sizeof(struct nfc_target));
-> 
-> There is one more place to fix in pn533_in_dep_link_up_complete()
-
-Thank you. I will add a fix for it in v2.
-
-Best regards,
-Minsuk
+greg k-h
