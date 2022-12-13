@@ -2,111 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B314B64BDAD
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 20:56:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D21464BE0E
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 21:42:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiLMT4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 14:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54072 "EHLO
+        id S237129AbiLMUmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 15:42:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236727AbiLMTz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 14:55:59 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2081.outbound.protection.outlook.com [40.107.20.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50E42655C
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 11:55:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dQmf31MLfLMvtuFBMCXxlTIO4yqmUhL59dWkzMEEHd41s93GKIrFMmUk/X78WiYsIaLsZGbVy61ikQlbNt3NdcAavfC9rmDBb2jUucDwCwvxA3iT9cr24K7SDlBAGchsn5FXlC23BIdfDtl8TPGLMdh0lFKgwm0sz8Iv5m/6ViQIgsyGqBO/IC9GwkW941eAM77BsXhjrYclkf1pu7wRFzDxWH3Y3TBvowMuDCkDou8PF6clPWjJlCxy64zPWn4SEe1DQd6k5ShHr/YuzVx7vwf8dGflYyLjHSV0QmogROcecKAkJ6YoN/ZDLg6y6EiGZAcyBJhYsyC4YyEeQxEbRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Li7WIUlODQ3EmUekvvLh5DOD6qMpmIYrZFpfE+nCeS0=;
- b=QYJXRhg7njJWkeAAJ7eSuQoe+ZPLnfeotbp9ftE1JUzhrGV14MXXaJEY4LDIqsBBfUF8u8sJMpbT+Kq8eMt752k+RSgv7KtyELD1lPJ1m1fPORxikwhAwPnF5UJvXZ1hxQwBMnwl3HFWC/wYs3T4zew/ql96Y9MhwNihqZQMLcjqjfmYDCiwQrUEv8UbS9vBnqIKN1KMwOybrgxi8rVsiUIVDZUsp8esTkdW7BuF0ONfKQUOn2GtaFKVSFJnVZVwfksIEJmkrk+CQgWTQn80JCoJNj38XBOhUgNfqikmVYs/CEQDRrU9vwN5RK8iuK2yrV9eo6BAMgXBA211VmuMOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Li7WIUlODQ3EmUekvvLh5DOD6qMpmIYrZFpfE+nCeS0=;
- b=Y7k1rb5C2G9WLEa/rUJ8hZhjkM+t8gCdXYcNaGu1I4s03x9Gjn2Mc172nO8wM0LUWaR7uPUBnf0dWyZ2yGPpDq7I0pW6w1lhMCvav4gSFbE92exOplctdJdHYBAkmrhHkjwLBUEKrKlg0mxoHDIUoSNPeOIbLNgXAl4tMkkglAY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PA4PR04MB7568.eurprd04.prod.outlook.com (2603:10a6:102:f1::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Tue, 13 Dec
- 2022 19:55:55 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5880.019; Tue, 13 Dec 2022
- 19:55:55 +0000
-Date:   Tue, 13 Dec 2022 21:55:51 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, claudiu.manoil@nxp.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, lorenzo.bianconi@redhat.com
-Subject: Re: [RFT] net: ethernet: enetc: do not always access skb_shared_info
- in the XDP path
-Message-ID: <20221213195551.iev4u5niyzvyflyc@skbuf>
-References: <8acb59077ff51eb58ca164e432be63194a92b0bf.1670924659.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8acb59077ff51eb58ca164e432be63194a92b0bf.1670924659.git.lorenzo@kernel.org>
-X-ClientProxiedBy: BE1P281CA0088.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:78::6) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S237130AbiLMUmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 15:42:45 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4E75F9A
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 12:42:43 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id x66so3049378pfx.3
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 12:42:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=XkHwLgn63fMXtP3ZcfbwPRrSo06n2QTz2CP/VYPmCsc=;
+        b=IJe8VaWxvgAbcCcXTkBgySJQyeS0PlsGQdltZooJoUdQLa9xq3GoZa58fC5e0itUok
+         Tn0OXC3go+kw3w+TriONeu+Kznt9JWRSxIjtqMkEa8ZX1lzDctPpRMZU5mcDGCK/HnIj
+         ww1BO5pVkav4S35W/oXfOp2PWnEEW9AxuWbxXZuyXfnhaxYHMBMav+fa2lMb9lsGP38W
+         0Ms6Vs9zrVKNXb5pkdZgDViT8AxWT/AlI9IAHXYU9yONNOru6oBguhkLmE+oqWcEsztT
+         RGiw0nBAJ0ewdxyRmqW6DrHUV2ymQ5h2uwJNGG4DgWIMK1OIpyJZptjy5AzpOv4qTpua
+         xAFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XkHwLgn63fMXtP3ZcfbwPRrSo06n2QTz2CP/VYPmCsc=;
+        b=uelfPSl4T9jUasqQ+lwXBWuLJELyHS+mOYdxSbLg4TWKH5iOo9olMay5DCIhZaktk+
+         V9m3aky5yqX9VMAb5gsuLdnn0Ye6lwUV8Qbm3Nfy1vxPxjVP9qjgEUZ58LIQcfxVC8DA
+         NVcq+fhMNlckgN5kjf7HSqR3CrpqA+uqSuOMtkoKIxEs8HQNXgfVIbwar4HTnFWCHUAy
+         YpJeOiejVyg77aS8gfEtGfhnpGp7IBpkk4wF2MpLLXSnM+VJcyZv1s/gZ/Ra2byV2X4A
+         PuIC9vgYXwt7t+5BbRITLS/wNv9HkU7fS+z9bHClthVDHjNPUyTRxPViQW23FWE/drtT
+         OHYA==
+X-Gm-Message-State: ANoB5pnrAIYnWXLbVQZtXLCmPYc7biyv6/9ymqcF8DY+idrI6k0ZXiYL
+        8JXnpv0InI/HPLfhQaWyBPrj5orB8cDNJ7qCv4Xfew==
+X-Google-Smtp-Source: AA0mqf6liYnI7MTSb0aiFsiwgvOdfPtstAEaXSYZItP8hh5VurVuu/s0R6kzwBGWiYInX3cAhqmDmPBc+mZNumw4H7Q=
+X-Received: by 2002:a63:2160:0:b0:46f:f26e:e8ba with SMTP id
+ s32-20020a632160000000b0046ff26ee8bamr72565608pgm.250.1670964162580; Tue, 13
+ Dec 2022 12:42:42 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PA4PR04MB7568:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7c05e232-8318-4afc-c4b5-08dadd440bc4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 83urNl+5Laz3jo7P5DR6xtXPPqU8lhMNtaIG7k/8tZ5Q/hr2CCiWDvc88amESTrctiJQu5m+O8DnLXhLUh05rSk3uo2R4T6R9ipcpem5yl5vc1r5GI/0YTzOit3O++qWQeatlku63rBAjp10ZSnXfiAZaZMbJi0TVDSfukFbWgcr1FoUnaw3LAMqK+KY+orC5XMD/ZgVMcyIaK2aSczKZgSZHzgqlatGjSSbuAzlaxC0gwstbfbcHqymaXi7cq90M0OMNV8aQwgPDqOlNFDrJ/wbnzmCKj9mEhtv6HjiL70RA4kxn6FdwtaQ2tNvr0spR4sJJUubT9Xxg6XdodOr2Iy8x6WFNyF0PXq3/FdKonucZBFc8HXTEgxy+1M9J6RulMCUdWsM7DlqrBRfUHf6bj9M48sMd0y++w7SaQT12amvKqwcCEa46mfbBpOHO4TbzxS9uOz0vw0BVynjhYdRLuPGPH8VLmps8v0CYO33DGo4XdEVT9VerRsP3e1xkdsUERZ+ez/Qk8PxVL7eLCNxrEGMZ6drJYz9TMNNutAtC+1yDF0LdjxG0K1cdbbsn8mduNG3sPfuekXJQ5Hjo9PGIlEpqiq1T00EnNF0f8Rw1L8VirqShCB+dEHsJFCR20A5RLGVq6la5QALXvIaVVx/v1hvyWY2Gy+H3faj2fQlxEQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(451199015)(6666004)(86362001)(316002)(6916009)(478600001)(966005)(33716001)(44832011)(6486002)(2906002)(66476007)(4326008)(5660300002)(66946007)(66556008)(8676002)(41300700001)(8936002)(6506007)(6512007)(9686003)(38100700002)(186003)(26005)(83380400001)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IAMH2ART6JeObk+tfTya84NtB8q3Q4vH8pr4dobjqgm5XvJjmiQauPCI3+Yt?=
- =?us-ascii?Q?dZeI574z5jHZoFHsAlpqeRdayN/1ZyfcwU7HdAsP2znmAmXyJisG1fIsfv0q?=
- =?us-ascii?Q?uYPbLh32RumDuV7jGttPNNMQxLUZ+/YHCk6u7waZxWgB7avHphe7F0RI6SUp?=
- =?us-ascii?Q?XVA6Yq8IzwfEoP3m68Vo8JhdSSRtpuGWSA3ZvWu2sWC2iEHBCEyLM/qfcHRw?=
- =?us-ascii?Q?/1X7xTIAExYm4Zd3iJ+468mwl6k91tun7o9LPB1OrtYoXyKBx1dFVq50pGzM?=
- =?us-ascii?Q?M5QqQHV9si+6LDsRgv3X6oxbB+jENUwD8AQkp+OsVWQgJBT4YAeSaUlK8blI?=
- =?us-ascii?Q?diBWp+FF7BuEhtmE+FTZePqDG67Uet5SUU6ILp4RfqUDIncvOq0w7KyQzJg2?=
- =?us-ascii?Q?QBPp/QGWBfjlb7X7uxGJQgbtn+GOdd6wwMuMzsNKVVGVzQ5JRNyJp3qQ4Ooy?=
- =?us-ascii?Q?sHg9RUBWG+4GrHccct/4K7QnShD1MQcVv/hJLaihqXgzli0SNw8eWE+mgEpU?=
- =?us-ascii?Q?fDvl0dyidf0IgCcnQYf4rR0mO/d1+ZLrBanrTGrQXbLuTSzOTjSB9Oc9riKz?=
- =?us-ascii?Q?7kSXvpuiUOuqJhVi/p2mw5bRGmHvrE21C8pCC7Azg0AHRN4rtB5XCAIyq/Mb?=
- =?us-ascii?Q?eoAikgvz+an4k3dYgAuoASdWFdtUUUDgT0Cggwr6CZTRQ9uzdE8lWNJM1V2r?=
- =?us-ascii?Q?pIA27FHOWqifhuWtI52HaP8ChWKkarxGq0ZS1kQan2rXFA0j+7T2FDkoxT0F?=
- =?us-ascii?Q?A/3+CLpA9kyAsYjOoHRE5F4oHPYJPnGe+m0DiX5RfIuoOrrZDl4tper1BDY3?=
- =?us-ascii?Q?j8LzhIXQzw68SvUajtJKyKaNaES/cb80Ve1OFpHJGhxe2+J02CFsWuOl1t2M?=
- =?us-ascii?Q?2QHPt/Yn+QSUG402nhYu4hXAIUWIk/igpm6hljS7TuDfEZYbK9Dj3gYf4/Se?=
- =?us-ascii?Q?uBPlI4G6C6KdjJCILLQmX3bsK2YnCBFbcf8dKqXImLoBEKhBHZC8dJOrFCj5?=
- =?us-ascii?Q?RG4zkBWg89lQVl8hW6sjWyWlzipXvN2SXAiObBRY0Benn1tgt/YvKWy2o9xu?=
- =?us-ascii?Q?7DI+EMr5/gPjASqHLpQvLsROpjuqMhpDuLuy/i6wB3da8qDyiq/hCL3rL2ME?=
- =?us-ascii?Q?r8+zieUjdn55ErHbMyq1zPJDOcz1eklYbveIFcLQvxhliUYIYAtjxFaUSnp7?=
- =?us-ascii?Q?+6yO1RIrWhVX7EP1uSM8/K7/IeiQVBFU3NpukD9GtbVcWNgc8MYbBL5ZdrCU?=
- =?us-ascii?Q?PF7qCSn1FkNzxsM+WyzRjUhzgC6pw6J9KNsgJEtP7q293/1Q4IrqwHGpx+GM?=
- =?us-ascii?Q?nGUVrKAzO5hoTujwDX8X+dm+qeZl3uw6ydj2KZyJWaREu6W8lpqEAFC6J0u1?=
- =?us-ascii?Q?uWLR68qi+MQ8s4PKlXjcuTF0miqAmXqLgTwk4ISrVJDI6G6XH6t3D9BCvC22?=
- =?us-ascii?Q?NBRtiBj1stO4z72kJ6mVTshW74kjwH8lechlwvJ/g+I3YXLVi7z0aq20TV3/?=
- =?us-ascii?Q?/mi///1sNvH02myDupD2JK6mABjl+KPXhC0Bt8n+Dxalsb0XVT0NjWxzmpqC?=
- =?us-ascii?Q?1xDzUimi3aq9uMNM1di2Q+YrTcw/qL7g6lLsJbx4RfHOvHClZFm378rlty1O?=
- =?us-ascii?Q?Nw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c05e232-8318-4afc-c4b5-08dadd440bc4
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2022 19:55:55.3805
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6oNhQsDYtFNeab/P1nNHmsO5QOgfEEGgwwaoersannNxg8TOSDpUMlkvSXZr3v/dqJdBDq3XLoQJ7XMhYEcjfA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7568
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <20221213023605.737383-1-sdf@google.com> <20221213023605.737383-6-sdf@google.com>
+ <Y5ivuUezkNpHUtCP@maniforge.lan>
+In-Reply-To: <Y5ivuUezkNpHUtCP@maniforge.lan>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 13 Dec 2022 12:42:30 -0800
+Message-ID: <CAKH8qBtU6_aeVrgfUVEyOW2JrGRWf4o=d=H3hnM+aD_UW-gcEA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 05/15] bpf: XDP metadata RX kfuncs
+To:     David Vernet <void@manifault.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -114,103 +79,369 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
-
-On Tue, Dec 13, 2022 at 10:46:43AM +0100, Lorenzo Bianconi wrote:
-> Move XDP skb_shared_info structure initialization in from
-> enetc_map_rx_buff_to_xdp() to enetc_add_rx_buff_to_xdp() and do not always
-> access skb_shared_info in the xdp_buff/xdp_frame since it is located in a
-> different cacheline with respect to hard_start and data xdp pointers.
-> Rely on XDP_FLAGS_HAS_FRAGS flag to check if it really necessary to access
-> non-linear part of the xdp_buff/xdp_frame.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
-> This patch is based on the following series not applied yet to next-next:
-> https://patchwork.kernel.org/project/netdevbpf/cover/cover.1670680119.git.lorenzo@kernel.org/
-> ---
->  drivers/net/ethernet/freescale/enetc/enetc.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-> index cd8f5f0c6b54..2ed6b163f3c8 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-> @@ -1305,6 +1305,10 @@ static int enetc_xdp_frame_to_xdp_tx_swbd(struct enetc_bdr *tx_ring,
->  	xdp_tx_swbd->xdp_frame = NULL;
->  
->  	n++;
-> +
-> +	if (!xdp_frame_has_frags(xdp_frame))
-> +		goto out;
-> +
-
-Tested this with single-buffer devmap XDP_REDIRECT, can't test with
-multi-buffer I think.
-
->  	xdp_tx_swbd = &xdp_tx_arr[n];
->  
->  	shinfo = xdp_get_shared_info_from_frame(xdp_frame);
-> @@ -1334,7 +1338,7 @@ static int enetc_xdp_frame_to_xdp_tx_swbd(struct enetc_bdr *tx_ring,
->  		n++;
->  		xdp_tx_swbd = &xdp_tx_arr[n];
->  	}
-> -
-> +out:
->  	xdp_tx_arr[n - 1].is_eof = true;
->  	xdp_tx_arr[n - 1].xdp_frame = xdp_frame;
->  
-> @@ -1390,16 +1394,12 @@ static void enetc_map_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
->  {
->  	struct enetc_rx_swbd *rx_swbd = enetc_get_rx_buff(rx_ring, i, size);
->  	void *hard_start = page_address(rx_swbd->page) + rx_swbd->page_offset;
-> -	struct skb_shared_info *shinfo;
->  
->  	/* To be used for XDP_TX */
->  	rx_swbd->len = size;
->  
->  	xdp_prepare_buff(xdp_buff, hard_start - rx_ring->buffer_offset,
->  			 rx_ring->buffer_offset, size, false);
-> -
-> -	shinfo = xdp_get_shared_info_from_buff(xdp_buff);
-> -	shinfo->nr_frags = 0;
->  }
->  
->  static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
-> @@ -1407,7 +1407,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
->  {
->  	struct skb_shared_info *shinfo = xdp_get_shared_info_from_buff(xdp_buff);
->  	struct enetc_rx_swbd *rx_swbd = enetc_get_rx_buff(rx_ring, i, size);
-> -	skb_frag_t *frag = &shinfo->frags[shinfo->nr_frags];
-> +	skb_frag_t *frag;
->  
->  	/* To be used for XDP_TX */
->  	rx_swbd->len = size;
-> @@ -1415,6 +1415,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
->  	if (!xdp_buff_has_frags(xdp_buff)) {
->  		xdp_buff_set_frags_flag(xdp_buff);
->  		shinfo->xdp_frags_size = size;
-> +		shinfo->nr_frags = 0;
-
-Tested this and enetc_map_rx_buff_to_xdp() with single-buffer and
-multi-buffer XDP_TX.
-
->  	} else {
->  		shinfo->xdp_frags_size += size;
->  	}
-> @@ -1422,6 +1423,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
->  	if (page_is_pfmemalloc(rx_swbd->page))
->  		xdp_buff_set_frag_pfmemalloc(xdp_buff);
->  
-> +	frag = &shinfo->frags[shinfo->nr_frags];
->  	skb_frag_off_set(frag, rx_swbd->page_offset);
->  	skb_frag_size_set(frag, size);
->  	__skb_frag_set_page(frag, rx_swbd->page);
-> -- 
-> 2.38.1
+On Tue, Dec 13, 2022 at 9:00 AM David Vernet <void@manifault.com> wrote:
 >
+> On Mon, Dec 12, 2022 at 06:35:55PM -0800, Stanislav Fomichev wrote:
+> > Define a new kfunc set (xdp_metadata_kfunc_ids) which implements all possible
+> > XDP metatada kfuncs. Not all devices have to implement them. If kfunc is not
+> > supported by the target device, the default implementation is called instead.
+> > The verifier, at load time, replaces a call to the generic kfunc with a call
+> > to the per-device one. Per-device kfunc pointers are stored in separate
+> > struct xdp_metadata_ops.
+> >
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: David Ahern <dsahern@gmail.com>
+> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Willem de Bruijn <willemb@google.com>
+> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> > Cc: Maryam Tahhan <mtahhan@redhat.com>
+> > Cc: xdp-hints@xdp-project.net
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  include/linux/bpf.h       |  2 ++
+> >  include/linux/netdevice.h |  7 +++++++
+> >  include/net/xdp.h         | 25 ++++++++++++++++++++++
+> >  kernel/bpf/core.c         |  7 +++++++
+> >  kernel/bpf/offload.c      | 23 ++++++++++++++++++++
+> >  kernel/bpf/verifier.c     | 29 +++++++++++++++++++++++++-
+> >  net/core/xdp.c            | 44 +++++++++++++++++++++++++++++++++++++++
+> >  7 files changed, 136 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index ca22e8b8bd82..de6279725f41 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -2477,6 +2477,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+> >                                      struct net_device *netdev);
+> >  bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+> >
+> > +void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id);
+> > +
+> >  void unpriv_ebpf_notify(int new_state);
+> >
+> >  #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 5aa35c58c342..63786091c60d 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -74,6 +74,7 @@ struct udp_tunnel_nic_info;
+> >  struct udp_tunnel_nic;
+> >  struct bpf_prog;
+> >  struct xdp_buff;
+> > +struct xdp_md;
+> >
+> >  void synchronize_net(void);
+> >  void netdev_set_default_ethtool_ops(struct net_device *dev,
+> > @@ -1613,6 +1614,11 @@ struct net_device_ops {
+> >                                                 bool cycles);
+> >  };
+> >
+> > +struct xdp_metadata_ops {
+> > +     int     (*xmo_rx_timestamp)(const struct xdp_md *ctx, u64 *timestamp);
+> > +     int     (*xmo_rx_hash)(const struct xdp_md *ctx, u32 *hash);
+> > +};
+> > +
+> >  /**
+> >   * enum netdev_priv_flags - &struct net_device priv_flags
+> >   *
+> > @@ -2044,6 +2050,7 @@ struct net_device {
+> >       unsigned int            flags;
+> >       unsigned long long      priv_flags;
+> >       const struct net_device_ops *netdev_ops;
+> > +     const struct xdp_metadata_ops *xdp_metadata_ops;
+> >       int                     ifindex;
+> >       unsigned short          gflags;
+> >       unsigned short          hard_header_len;
+> > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > index 55dbc68bfffc..152c3a9c1127 100644
+> > --- a/include/net/xdp.h
+> > +++ b/include/net/xdp.h
+> > @@ -409,4 +409,29 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
+> >
+> >  #define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
+> >
+> > +#define XDP_METADATA_KFUNC_xxx       \
+> > +     XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_TIMESTAMP, \
+> > +                        bpf_xdp_metadata_rx_timestamp) \
+> > +     XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH, \
+> > +                        bpf_xdp_metadata_rx_hash) \
+> > +
+> > +enum {
+> > +#define XDP_METADATA_KFUNC(name, str) name,
+> > +XDP_METADATA_KFUNC_xxx
+> > +#undef XDP_METADATA_KFUNC
+> > +MAX_XDP_METADATA_KFUNC,
+> > +};
+> > +
+> > +struct xdp_md;
+> > +int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp);
+> > +int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash);
+>
+> We don't usually export function signatures like this for kfuncs as
+> nobody in the main kernel should be linking against it. See [0].
+>
+> [0]: https://docs.kernel.org/bpf/kfuncs.html#creating-a-wrapper-kfunc
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Oh, thanks, that's very helpful. As you might have guessed, I've added
+those signatures to make the compiler happy :-(
 
-Thanks.
+> > +
+> > +#ifdef CONFIG_NET
+> > +u32 xdp_metadata_kfunc_id(int id);
+> > +bool xdp_is_metadata_kfunc_id(u32 btf_id);
+> > +#else
+> > +static inline u32 xdp_metadata_kfunc_id(int id) { return 0; }
+> > +static inline bool xdp_is_metadata_kfunc_id(u32 btf_id) { return false; }
+> > +#endif
+> > +
+> >  #endif /* __LINUX_NET_XDP_H__ */
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index d434a994ee04..c3e501e3e39c 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -2097,6 +2097,13 @@ bool bpf_prog_map_compatible(struct bpf_map *map,
+> >       if (fp->kprobe_override)
+> >               return false;
+> >
+> > +     /* When tail-calling from a non-dev-bound program to a dev-bound one,
+> > +      * XDP metadata helpers should be disabled. Until it's implemented,
+> > +      * prohibit adding dev-bound programs to tail-call maps.
+> > +      */
+> > +     if (bpf_prog_is_dev_bound(fp->aux))
+> > +             return false;
+> > +
+> >       spin_lock(&map->owner.lock);
+> >       if (!map->owner.type) {
+> >               /* There's no owner yet where we could check for
+> > diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
+> > index f714c941f8ea..3b6c9023f24d 100644
+> > --- a/kernel/bpf/offload.c
+> > +++ b/kernel/bpf/offload.c
+> > @@ -757,6 +757,29 @@ void bpf_dev_bound_netdev_unregister(struct net_device *dev)
+> >       up_write(&bpf_devs_lock);
+> >  }
+> >
+> > +void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
+> > +{
+> > +     const struct xdp_metadata_ops *ops;
+> > +     void *p = NULL;
+> > +
+> > +     down_read(&bpf_devs_lock);
+> > +     if (!prog->aux->offload || !prog->aux->offload->netdev)
+> > +             goto out;
+> > +
+> > +     ops = prog->aux->offload->netdev->xdp_metadata_ops;
+> > +     if (!ops)
+> > +             goto out;
+> > +
+> > +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP))
+> > +             p = ops->xmo_rx_timestamp;
+> > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
+> > +             p = ops->xmo_rx_hash;
+> > +out:
+> > +     up_read(&bpf_devs_lock);
+> > +
+> > +     return p;
+> > +}
+> > +
+> >  static int __init bpf_offload_init(void)
+> >  {
+> >       int err;
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 203d8cfeda70..e61fe0472b9b 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -15479,12 +15479,35 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> >                           struct bpf_insn *insn_buf, int insn_idx, int *cnt)
+> >  {
+> >       const struct bpf_kfunc_desc *desc;
+> > +     void *xdp_kfunc;
+> >
+> >       if (!insn->imm) {
+> >               verbose(env, "invalid kernel function call not eliminated in verifier pass\n");
+> >               return -EINVAL;
+> >       }
+> >
+> > +     *cnt = 0;
+> > +
+> > +     if (xdp_is_metadata_kfunc_id(insn->imm)) {
+> > +             if (!bpf_prog_is_dev_bound(env->prog->aux)) {
+> > +                     verbose(env, "metadata kfuncs require device-bound program\n");
+> > +                     return -EINVAL;
+> > +             }
+> > +
+> > +             if (bpf_prog_is_offloaded(env->prog->aux)) {
+> > +                     verbose(env, "metadata kfuncs can't be offloaded\n");
+> > +                     return -EINVAL;
+> > +             }
+> > +
+> > +             xdp_kfunc = bpf_dev_bound_resolve_kfunc(env->prog, insn->imm);
+> > +             if (xdp_kfunc) {
+> > +                     insn->imm = BPF_CALL_IMM(xdp_kfunc);
+> > +                     return 0;
+> > +             }
+>
+> Per another comment, should these xdp kfuncs use special_kfunc_list, or
+> some other variant that lives in verifier.c? I'll admit that I'm not
+> quite following why you wouldn't need to do the find_kfunc_desc() call
+> below, so apologies if I'm just totally off here.
+
+Here I'm trying to short-circuit that generic verifier handling and do
+kfunc resolving myself, so not sure. Will comment about
+special_kfunc_list below.
+
+> > +
+> > +             /* fallback to default kfunc when not supported by netdev */
+> > +     }
+> > +
+> >       /* insn->imm has the btf func_id. Replace it with
+> >        * an address (relative to __bpf_call_base).
+> >        */
+> > @@ -15495,7 +15518,6 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> >               return -EFAULT;
+> >       }
+> >
+> > -     *cnt = 0;
+> >       insn->imm = desc->imm;
+> >       if (insn->off)
+> >               return 0;
+> > @@ -16502,6 +16524,11 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+> >       if (tgt_prog) {
+> >               struct bpf_prog_aux *aux = tgt_prog->aux;
+> >
+> > +             if (bpf_prog_is_dev_bound(tgt_prog->aux)) {
+> > +                     bpf_log(log, "Replacing device-bound programs not supported\n");
+> > +                     return -EINVAL;
+> > +             }
+> > +
+> >               for (i = 0; i < aux->func_info_cnt; i++)
+> >                       if (aux->func_info[i].type_id == btf_id) {
+> >                               subprog = i;
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index 844c9d99dc0e..b0d4080249d7 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -4,6 +4,7 @@
+> >   * Copyright (c) 2017 Jesper Dangaard Brouer, Red Hat Inc.
+> >   */
+> >  #include <linux/bpf.h>
+> > +#include <linux/btf_ids.h>
+> >  #include <linux/filter.h>
+> >  #include <linux/types.h>
+> >  #include <linux/mm.h>
+> > @@ -709,3 +710,46 @@ struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+> >
+> >       return nxdpf;
+> >  }
+> > +
+> > +noinline int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+> > +{
+> > +     return -EOPNOTSUPP;
+> > +}
+> > +
+> > +noinline int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash)
+> > +{
+> > +     return -EOPNOTSUPP;
+> > +}
+>
+> I don't _think_ noinline should be necessary here given that the
+> function is global, though tbh I'm not sure if leaving it off will break
+> LTO. We currently don't use any attributes like this on other kfuncs
+> (e.g. [1]), but maybe we should?
+>
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/kernel/bpf/helpers.c#n2034
+
+Hm, I guess since I'm not really directly calling these anywhere,
+there is no chance they are going to be inlined? Will try to drop and
+see what happens..
+
+> > +
+> > +BTF_SET8_START(xdp_metadata_kfunc_ids)
+> > +#define XDP_METADATA_KFUNC(name, str) BTF_ID_FLAGS(func, str, 0)
+>
+> IMO 'str' isn't the right parameter name here given that it's the actual
+> symbol and is not a string. What about _func or _symbol instead? Also
+> IMO 'name' is a bit misleading -- I'd go with something like '_enum'. I
+> wish there were a way for the preprocessor to auto-uppercase so you
+> could just define a single field that was used both for defining the
+> enum and for defining the symbol name.
+
+How about I do the following:
+
+enum {
+#define XDP_METADATA_KFUNC(name, _) name,
+XDP_METADATA_KFUNC_xxx
+#undef XDP_METADATA_KFUNC
+MAX_XDP_METADATA_KFUNC,
+};
+
+And then this in the .c file:
+
+BTF_SET8_START(xdp_metadata_kfunc_ids)
+#define XDP_METADATA_KFUNC(_, name) BTF_ID_FLAGS(func, name, 0)
+XDP_METADATA_KFUNC_xxx
+#undef XDP_METADATA_KFUNC
+BTF_SET8_END(xdp_metadata_kfunc_ids)
+
+Should be a bit more clear what and where I use? Otherwise, using
+_func might seem a bit confusing in:
+#define XDP_METADATA_KFUNC(_enum, _func) BTF_ID_FLAGS(func, _func, 0)
+
+The "func, _func" part. Or maybe that's fine.. WDYT?
+
+> > +XDP_METADATA_KFUNC_xxx
+> > +#undef XDP_METADATA_KFUNC
+> > +BTF_SET8_END(xdp_metadata_kfunc_ids)
+> > +
+> > +static const struct btf_kfunc_id_set xdp_metadata_kfunc_set = {
+> > +     .owner = THIS_MODULE,
+> > +     .set   = &xdp_metadata_kfunc_ids,
+> > +};
+> > +
+> > +BTF_ID_LIST(xdp_metadata_kfunc_ids_unsorted)
+> > +#define XDP_METADATA_KFUNC(name, str) BTF_ID(func, str)
+> > +XDP_METADATA_KFUNC_xxx
+> > +#undef XDP_METADATA_KFUNC
+> > +
+> > +u32 xdp_metadata_kfunc_id(int id)
+> > +{
+> > +     /* xdp_metadata_kfunc_ids is sorted and can't be used */
+> > +     return xdp_metadata_kfunc_ids_unsorted[id];
+> > +}
+> > +
+> > +bool xdp_is_metadata_kfunc_id(u32 btf_id)
+> > +{
+> > +     return btf_id_set8_contains(&xdp_metadata_kfunc_ids, btf_id);
+> > +}
+>
+> The verifier already has a notion of "special kfuncs" via a
+> special_kfunc_list that exists in verifier.c. Maybe we should be using
+> that given that is only used in the verifier anyways? OTOH, it's nice
+> that all of the complexity of e.g. accounting for #ifdef CONFIG_NET is
+> contained here, so I also like your approach. It just seems like a
+> divergence from how things are being done for other kfuncs so I figured
+> it was worth discussing.
+
+Yeah, idk, I've tried not to add more to the already huge verifier.c file :-(
+If we were to put everything into verifier.c, I'd still need some
+extra special_xdp_kfunc_list for those xdp kfuncs to be able to
+distinguish them from the rest...
+So yeah, not sure, I'd prefer to keep everything in xdp.c and not
+pollute the more generic verifier.c, but I'm fine either way. LMK if
+you feel strongly about it, can move.
+
+
+> > +
+> > +static int __init xdp_metadata_init(void)
+> > +{
+> > +     return register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &xdp_metadata_kfunc_set);
+> > +}
+> > +late_initcall(xdp_metadata_init);
+> > --
+> > 2.39.0.rc1.256.g54fd8350bd-goog
+> >
