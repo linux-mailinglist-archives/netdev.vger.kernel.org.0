@@ -2,122 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A604064B354
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 11:39:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A7F164B372
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 11:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234909AbiLMKjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 05:39:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
+        id S235095AbiLMKpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 05:45:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234844AbiLMKjN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 05:39:13 -0500
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46371B9F9;
-        Tue, 13 Dec 2022 02:39:10 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id E26091C09F4; Tue, 13 Dec 2022 11:39:08 +0100 (CET)
-Date:   Tue, 13 Dec 2022 11:39:08 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org,
-        Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        srw@sladewatkins.net, rwarsow@gmx.de,
+        with ESMTP id S234989AbiLMKpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 05:45:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEC163BE
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 02:44:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670928285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pMYwjIC6UHS7AUmMk2EC3pw2uQe+h6oRlfhlealRKwM=;
+        b=Bd5Yv1V7MQ/yroSEfHX6Do2salJvpzv1HtZALSc6tyrZwtx7GvcabInIIV7f/tOqjX3asG
+        l/eKRQbUwhtU4rrF7M8kEOxBGHDjTfsAUFiqdlPXmOCq27YwJTgKbO6WNJ7a0B9jyEY360
+        MIco/XEJ5oWAFg7PVrkg9o8OhWoeUCA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-564-N6RKsmQ6NcSAr7VaeYhbDg-1; Tue, 13 Dec 2022 05:44:44 -0500
+X-MC-Unique: N6RKsmQ6NcSAr7VaeYhbDg-1
+Received: by mail-wm1-f72.google.com with SMTP id bg25-20020a05600c3c9900b003cf3ed7e27bso4636356wmb.4
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 02:44:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pMYwjIC6UHS7AUmMk2EC3pw2uQe+h6oRlfhlealRKwM=;
+        b=sPpvJ5lOdfkI0o78Zx5PMd56QKRBJmvtG9rRaLmyrylYuKh4ZrqqtkHCUdCSpdMMl2
+         59EgKcJdLrdqiTdZWGSRNd1qRfVRBY7zrN1sFuJJN2JDnGUGw2V/WkrI9OwkZJRfspPf
+         NIKnKUm+XEjmDKpDRj3YId8ibiH1Us+jzkdLNSXoJxGYOX1dW2U7yYI4AxMqXq3sp9OE
+         L8KMzuvXIPjsAupMiPkXjIvJ1Hiwf9T2IBdmuhIE2qUTcRHiL5sBRoSukM3Cn8+nqmGm
+         gT4eA+dFkH7a/dWWddT2+mt+jCBr/UY680fUM/ujWym07MgPY/KFmkcipsptREWNTigt
+         g0xA==
+X-Gm-Message-State: ANoB5pmFkmcVbhnw/e/sRg1Y2rbZxlTzT4X6jKTvHaJNJ0zC1Fmdaetb
+        fO+ldH1QK3Dpvjm4sgDZFktkvZ4Rj7HZj7WDGnOCZMl3dUleilefd8fQjN3oJieNrRkP1fR283K
+        VBKMm2gaZE3MfZuZI
+X-Received: by 2002:a05:600c:1da2:b0:3cf:5fd2:87a0 with SMTP id p34-20020a05600c1da200b003cf5fd287a0mr14395233wms.40.1670928283202;
+        Tue, 13 Dec 2022 02:44:43 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6fNK5scCDlhlIETzu6ffXOPOCbtR/s/QsA8Tjaa1BqGfXMLIjfHxR3Ilv8TxdOGnEeUVk8cA==
+X-Received: by 2002:a05:600c:1da2:b0:3cf:5fd2:87a0 with SMTP id p34-20020a05600c1da200b003cf5fd287a0mr14395218wms.40.1670928282971;
+        Tue, 13 Dec 2022 02:44:42 -0800 (PST)
+Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
+        by smtp.gmail.com with ESMTPSA id v10-20020a05600c444a00b003cff309807esm13399985wmn.23.2022.12.13.02.44.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 02:44:42 -0800 (PST)
+Date:   Tue, 13 Dec 2022 11:44:37 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     "edumazet@google.com" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Subject: Re: [PATCH 5.10 000/106] 5.10.159-rc1 review
-Message-ID: <Y5hWTI0UF5f9I0a9@duo.ucw.cz>
-References: <20221212130924.863767275@linuxfoundation.org>
- <CA+G9fYv7tm9zQwVWnPMQMjFXtNDoRpdGkxZ4ehMjY9qAFF0QLQ@mail.gmail.com>
- <86c7e7a5-6457-49c5-a9e3-b28b8b8c1134@app.fastmail.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v4 1/4] vsock: return errors other than -ENOMEM to
+ socket
+Message-ID: <20221213104437.llci2g7zbbffjfjo@sgarzare-redhat>
+References: <6be11122-7cf2-641f-abd8-6e379ee1b88f@sberdevices.ru>
+ <727f2c9e-a909-a3d3-c04f-a16529df7bb2@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="17sVYUeo7bE3z69j"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <86c7e7a5-6457-49c5-a9e3-b28b8b8c1134@app.fastmail.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <727f2c9e-a909-a3d3-c04f-a16529df7bb2@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 06, 2022 at 08:49:19PM +0000, Arseniy Krasnov wrote:
+>From: Bobby Eshleman <bobby.eshleman@bytedance.com>
+>
+>This removes behaviour, where error code returned from any transport
+>was always switched to ENOMEM. For example when user tries to send too
+>big message via SEQPACKET socket, transport layers return EMSGSIZE, but
+>this error code will be replaced to ENOMEM and returned to user.
 
---17sVYUeo7bE3z69j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Just a minor thing here, I would write
+"this error code was always replaced with ENOMEM and returned to user"
 
-On Tue 2022-12-13 10:20:30, Arnd Bergmann wrote:
-> On Tue, Dec 13, 2022, at 08:48, Naresh Kamboju wrote:
-> > On Mon, 12 Dec 2022 at 18:43, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> >
-> > Regression detected on arm64 Raspberry Pi 4 Model B the NFS mount faile=
-d.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > Following changes have been noticed in the Kconfig file between good an=
-d bad.
-> > The config files attached to this email.
-> >
-> > -CONFIG_BCMGENET=3Dy
-> > -CONFIG_BROADCOM_PHY=3Dy
-> > +# CONFIG_BROADCOM_PHY is not set
-> > -CONFIG_BCM7XXX_PHY=3Dy
-> > +# CONFIG_BCM7XXX_PHY is not set
-> > -CONFIG_BCM_NET_PHYLIB=3Dy
->=20
-> > Full test log details,
-> >  - https://lkft.validation.linaro.org/scheduler/job/5946533#L392
-> >  -=20
-> > https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v=
-5.10.158-107-gd2432186ff47/testrun/13594402/suite/log-parser-test/tests/
-> >  -=20
-> > https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v=
-5.10.158-107-gd2432186ff47/testrun/13594402/suite/log-parser-test/test/chec=
-k-kernel-panic/history/
->=20
-> Where does the kernel configuration come from? Is this
-> a plain defconfig that used to work, or do you have
-> a board specific config file?
->=20
-> This is most likely caused by the added dependency on
-> CONFIG_PTP_1588_CLOCK that would lead to the BCMGENET
-> driver not being built-in if PTP support is in a module.
+To make it clearer that it was the previous behavior.
 
-There's no PTP_1588_CLOCK_OPTIONAL in 5.10. This needs to be dropped:
+Anyway, the patch LGTM:
 
-|2a4912705 421f86 o: 5.10| net: broadcom: Add PTP_1588_CLOCK_OPTIONAL depen=
-dency for BCMGENET under ARCH_BCM2835
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Best regards,
-								Pavel
+>
+>Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> net/vmw_vsock/af_vsock.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 884eca7f6743..61ddab664c33 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1862,8 +1862,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+> 			written = transport->stream_enqueue(vsk,
+> 					msg, len - total_written);
+> 		}
+>+
+> 		if (written < 0) {
+>-			err = -ENOMEM;
+>+			err = written;
+> 			goto out_err;
+> 		}
+>
+>-- 
+>2.25.1
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---17sVYUeo7bE3z69j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCY5hWTAAKCRAw5/Bqldv6
-8rDhAJ9a7yt02CI4FJMdok20phpAyMLt9wCfZ7K+tGfohkp+A/QHR76DTu7Vf5s=
-=tCRA
------END PGP SIGNATURE-----
-
---17sVYUeo7bE3z69j--
