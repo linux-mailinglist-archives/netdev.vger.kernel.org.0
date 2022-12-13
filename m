@@ -2,44 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F023F64B672
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 14:39:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4807664B676
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 14:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235574AbiLMNjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 08:39:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
+        id S235519AbiLMNkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 08:40:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbiLMNjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 08:39:05 -0500
+        with ESMTP id S235692AbiLMNkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 08:40:15 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A272BE
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 05:39:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C882036A
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 05:40:12 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1p55Ul-0005G3-Gf; Tue, 13 Dec 2022 14:38:55 +0100
+        id 1p55Vu-0005RL-99; Tue, 13 Dec 2022 14:40:06 +0100
 Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:7718:f6d6:39bc:6089])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 751B613DE93;
-        Tue, 13 Dec 2022 13:38:53 +0000 (UTC)
-Date:   Tue, 13 Dec 2022 14:38:47 +0100
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 75E3013DE99;
+        Tue, 13 Dec 2022 13:40:02 +0000 (UTC)
+Date:   Tue, 13 Dec 2022 14:39:54 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     haibo.chen@nxp.com
-Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: Re: [PATCH] can: flexcan: avoid unbalanced pm_runtime_enable warning
-Message-ID: <20221213133847.cm2qzzymdb6t4njm@pengutronix.de>
-References: <20221213094351.3023858-1-haibo.chen@nxp.com>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: [PATCH] Documentation: devlink: add missing toc entry for
+ etas_es58x devlink doc
+Message-ID: <20221213133954.f2msxale6a37bvvo@pengutronix.de>
+References: <20221213153708.4f38a7cf@canb.auug.org.au>
+ <20221213051136.721887-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qhhbnn5cffyxdz4f"
+        protocol="application/pgp-signature"; boundary="w6xxpeurpmpzifqw"
 Content-Disposition: inline
-In-Reply-To: <20221213094351.3023858-1-haibo.chen@nxp.com>
+In-Reply-To: <20221213051136.721887-1-mailhol.vincent@wanadoo.fr>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -54,24 +58,24 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---qhhbnn5cffyxdz4f
+--w6xxpeurpmpzifqw
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 13.12.2022 17:43:51, haibo.chen@nxp.com wrote:
-> From: Haibo Chen <haibo.chen@nxp.com>
+On 13.12.2022 14:11:36, Vincent Mailhol wrote:
+> toc entry is missing for etas_es58x devlink doc and triggers this warning:
 >=20
-> When do suspend/resume, meet the following warning message:
-> [   30.028336] flexcan 425b0000.can: Unbalanced pm_runtime_enable!
+>   Documentation/networking/devlink/etas_es58x.rst: WARNING: document isn'=
+t included in any toctree
 >=20
-> Balance the pm_runtime_force_suspend() and pm_runtime_force_resume().
+> Add the missing toc entry.
 >=20
-> Fixes: 8cb53b485f18 ("can: flexcan: add auto stop mode for IMX93 to suppo=
-rt wakeup")
-> Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+> Fixes: 9f63f96aac92 ("Documentation: devlink: add devlink documentation f=
+or the etas_es58x driver")
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-Looks good. Applied to linux-can-next.
+Added to linux-can-next + added Reported-bys.
 
 Marc
 
@@ -81,19 +85,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---qhhbnn5cffyxdz4f
+--w6xxpeurpmpzifqw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOYgGUACgkQrX5LkNig
-010nxAf+NjBJ+1wRVVVJ37nm2cK+BlXmFrC/hOi/0Nr4dgjBsBgyljqUvnNyKceB
-1JpcjNCyX9eqWFcKpvC4dOSWg5n99jPeDEcJVwK2EiR647LxrJ5DlEElq+vKuaZ6
-N7+TabuaRwTxPFsPsgqNuyiZi6vBNm6MJobH0Wf9iEihiWqRxAIEqeL/yXjHovuu
-rN7lawEvNG8HDfpzNbHuNhdwgojsYWiQ65mmeDBr6s8pUqgq1GX4xLJq+ETuBhup
-uWOItTINoV2WLEvONYOzeZsnBJ7MVIHlU/zlEI4GJIRQoU5eM6hZPthechyonEQ1
-y4I2FQD+/IGzjUA+SgQnNkx8SoFFDg==
-=azsO
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOYgKcACgkQrX5LkNig
+012cpAf5AWekrtzeWWKnbboxA4/JV7pG8JDakQ/HiPdwx/xc+BPMgLxiLNzI07hv
+GP4plhwz5D6ADoRXVwJukGoKoqFqjHifSV8OZHSzu9+nVHHh3dh+NX95RsGqFpq/
+Jd/ehYHOAR1XNtgmENtd/GnF8XQLa9ofmi73K+tRgDVitJWRHF9oJx8M0Ao98hAs
+vM5HIbbR9mriV0aaN7e/8fjkEq3w6QPZPvk2AQBzr4YlkakWW5EnhT9jtnWcUf+b
+vGhg9bUNRSbkA8DCCuMvtNP3CiYeK6UkduPFW5IZY8lBAcXVSq5wbnerPl1yMzYp
+eEEb+8yGadFrB/oL+6ONfKxWsqHUfA==
+=0c5t
 -----END PGP SIGNATURE-----
 
---qhhbnn5cffyxdz4f--
+--w6xxpeurpmpzifqw--
