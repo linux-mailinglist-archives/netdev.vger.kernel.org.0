@@ -2,68 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C216964BABE
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 18:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0256564BAE0
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 18:20:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236105AbiLMRPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 12:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
+        id S236243AbiLMRT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 12:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236092AbiLMRPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 12:15:41 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A6B23144
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 09:15:40 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id s7so468637plk.5
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 09:15:40 -0800 (PST)
+        with ESMTP id S236250AbiLMRTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 12:19:51 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01BD22B3E
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 09:19:48 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id ja4-20020a05600c556400b003cf6e77f89cso1535656wmb.0
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 09:19:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LfAsYSYSOG1Oudz+pzQHWze2C7Lhet185j0QZzl4+a0=;
-        b=EOfGyDLyhImoSLSSPiO+dSpXOf33S4WMqmYcXK4CgT6526SgaygDIgP/JkyMFaUw1o
-         T7Nh3DXoZ7FrU69IP3FaZue4Gl1+TsqAwAq2TLrLMIXVAYP8i8EmrqNKIAK2nRKtLwhO
-         2aEwBhFIoWYqxF+jywF3WFwJIPJX4tibzJpTGTZOhRyWVmiBjGRO68VF3Oj1qrx8E90y
-         5UmaMEu3nreaarQB+UKMztlrKUS3Gh66F+KYkp7NHTjUydl83vpsVa6V0Qw7jUYMkJB5
-         6k3e5JjjLzkRTvgg4qOKmA0O+DCrSUcjOKpwwtDjv3uFkRsLmDjdIc060ncD7BWBAOn4
-         O6Ew==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3EhMA6MMSu4b3D077MyxeOEBc3NixPe7QR4AlMv00C8=;
+        b=6zr23JVIZwJKfOEfOAIHU80gTz21PGMoILrZJWuBVj2+3ReU+NUtdHX4lYRSlw1iwW
+         nNXXjro6uxrP9zFiG//8W0znYdENXyWwpxDu6IhYzrvXx1vzyrcdPd8d6+PmR7DaypUJ
+         YYGL287lOUoAR3Haq+2KREXNxFA/d1WQrc02txsK6LSDdFfXnQryWp9jeIW9vb+dBrCi
+         LmfVJ7X5LuUmebgKkeT/2xIurygLi1VDF1c99nt7pRzyIVgUmEYweV96Nl+5froTqzPV
+         sk5YEA3/M6KnNOWm8AhyadA3avXxB5P/BdzPILHThKNztUtZBW5ovpOc6kPKI9q6Guqi
+         rKbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=LfAsYSYSOG1Oudz+pzQHWze2C7Lhet185j0QZzl4+a0=;
-        b=mgh82mwma+rarh0nl8M4qMxfLBaWIvIgpX4fIpwlF4oYnkMfIUWmw6JzT1i1uUpB1E
-         M3SnPDkoWPHwIoS6uVUA1NifPzOZolbwjuRuza0dfKhkmpOLRwsJ3UxXj1SMSgDWt6n1
-         M6udsGU8r+fe+xfzWKPKhpfLbbO5vr6gQgvFSq4m/Hx3FJH7C+Wi6J/OjBL7AEMHuWyu
-         dGPeRRSTY8F8H4gZFOi59fcYvYkR4B1gJ7vLYVnGCfiOV8ZNhrlHsfwGhePBvjeIalBv
-         YfYYE84qCJ7eCU5e2V5apDkCLAwOz2t4XKEwJzzpG2WqHaVisxvbEEHGpbtdndftbid5
-         mUAw==
-X-Gm-Message-State: ANoB5pnjQuoEq08qSuHu/8anavJXJ+DcTC793rQRJ95ToHy9mUZO4GSc
-        /D11BctM8e/7yDAa+HcPoG37b9QLtn8=
-X-Google-Smtp-Source: AA0mqf4XBtKW2DXWMpECxZrosZFL26qDKqqgpTwP9sjmMc2kbByxS2e3XPaoH6zK/5+efgKC3tIWQA==
-X-Received: by 2002:a17:902:d4d1:b0:189:e7e:784c with SMTP id o17-20020a170902d4d100b001890e7e784cmr31292592plg.21.1670951739418;
-        Tue, 13 Dec 2022 09:15:39 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id o5-20020a170903210500b00188c9c11559sm177172ple.1.2022.12.13.09.15.38
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3EhMA6MMSu4b3D077MyxeOEBc3NixPe7QR4AlMv00C8=;
+        b=Wc4vZtAx34o86Hv+hGsTZ9NLpW30FxapnPRv2aWL5nb7z23U5LqbP5eFTS/iUupkMu
+         /gsqEglie9WO7+lvicXT5mVRcpXn7OYKg+91zbMwy/Yva2/ZZSVbo5r4PQhZk1wxF0d8
+         jnJay/fXdf0xiDbB8YzNn/8X9624E2sJcbGva2yySG5cRsMKMTY6CQSEmjlWyWa7Q92d
+         Mko4BczbjR72piOOSZKHUcGVmMPUr8p+o8vaTlLefvV0BWq4RjWOyZz0Vm0CgeOvWnKR
+         0NIDwZMCTUiF/Na7KUci8AKW36r2/n7l3/HRoUA+02mRnrggEQJUyTNfBksNIaJ3P6l/
+         Aqdg==
+X-Gm-Message-State: ANoB5pk7WjeM6quY/1AWc6RmXVga/Vx4QZAlBQ2vqMQHqOn3Wu8c5EA6
+        /xy1y+npdB4o0kRvGwyShnlLI0WUmGYsVoQc
+X-Google-Smtp-Source: AA0mqf6HuubEdSO6ViNbsmRGhbOFKBkYZ1FySXG5n3yoR1Uww9vgN0+1tuohDwdiPwnjF6shxTfySA==
+X-Received: by 2002:a05:600c:3acc:b0:3cf:9ac8:c537 with SMTP id d12-20020a05600c3acc00b003cf9ac8c537mr16411148wms.14.1670951987318;
+        Tue, 13 Dec 2022 09:19:47 -0800 (PST)
+Received: from blmsp ([2001:4091:a245:805c:8713:84e4:2a9e:cbe8])
+        by smtp.gmail.com with ESMTPSA id 18-20020a05600c22d200b003c6bd12ac27sm13255188wmg.37.2022.12.13.09.19.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 09:15:39 -0800 (PST)
-Message-ID: <8856b29f14de96e1b1cce3ad8b995bc2c3d962a7.camel@gmail.com>
-Subject: Re: [PATCH net-next] net: wangxun: Adjust code structure
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
-        mengyuanlou@net-swift.com
-Date:   Tue, 13 Dec 2022 09:15:38 -0800
-In-Reply-To: <20221213063543.2408987-1-jiawenwu@trustnetic.com>
-References: <20221213063543.2408987-1-jiawenwu@trustnetic.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Tue, 13 Dec 2022 09:19:46 -0800 (PST)
+Date:   Tue, 13 Dec 2022 18:19:46 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
+ level interrupt
+Message-ID: <20221213171946.ejrb2glgo77jueff@blmsp>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-5-msp@baylibre.com>
+ <20221130171715.nujptzwnut7silbm@pengutronix.de>
+ <20221201082521.3tqevaygz4nhw52u@blmsp>
+ <20221201090508.jh5iymwmhs3orb2v@pengutronix.de>
+ <20221201101220.r63fvussavailwh5@blmsp>
+ <20221201110033.r7hnvpw6fp2fquni@pengutronix.de>
+ <20221201165951.5a4srb7zjrsdr3vd@blmsp>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221201165951.5a4srb7zjrsdr3vd@blmsp>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,233 +79,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-12-13 at 14:35 +0800, Jiawen Wu wrote:
-> From: Mengyuan Lou <mengyuanlou@net-swift.com>
->=20
-> Remove useless structs 'txgbe_hw' and 'ngbe_hw' make the codes clear.
-> And move the same codes which sets MAC address between txgbe and ngbe to
-> libwx.
+Hi Marc,
 
-As a general rule you want to avoid having patches with "and" in them
-describing what it does. If you need to take care of something else you
-should split it into a separate patch as it makes it easier to review.
+On Thu, Dec 01, 2022 at 05:59:53PM +0100, Markus Schneider-Pargmann wrote:
+> On Thu, Dec 01, 2022 at 12:00:33PM +0100, Marc Kleine-Budde wrote:
+> > On 01.12.2022 11:12:20, Markus Schneider-Pargmann wrote:
+> > > > > For the upcoming receive side patch I already added a hrtimer. I may try
+> > > > > to use the same timer for both directions as it is going to do the exact
+> > > > > same thing in both cases (call the interrupt routine). Of course that
+> > > > > depends on the details of the coalescing support. Any objections on
+> > > > > that?
+> > > > 
+> > > > For the mcp251xfd I implemented the RX and TX coalescing independent of
+> > > > each other and made it configurable via ethtool's IRQ coalescing
+> > > > options.
+> > > > 
+> > > > The hardware doesn't support any timeouts and only FIFO not empty, FIFO
+> > > > half full and FIFO full IRQs and the on chip RAM for mailboxes is rather
+> > > > limited. I think the mcan core has the same limitations.
+> > > 
+> > > Yes and no, the mcan core provides watermark levels so it has more
+> > > options, but there is no hardware timer as well (at least I didn't see
+> > > anything usable).
+> > 
+> > Are there any limitations to the water mark level?
+> 
+> Anything specific? I can't really see any limitation. You can set the
+> watermark between 1 and 32. I guess we could also always use it instead
+> of the new-element interrupt, but I haven't tried that yet. That may
+> simplify the code.
 
-Specifically it might be easier to read these changes if this was split
-over 2 to 3 patches, one for the MAC address handling changes, one for
-the removal of the two structures, and maybe one more for the move of
-the defines into the _type.h files.
+Just a quick comment here after trying this, I decided against it.
+- I can't modify the watermark levels once the chip is active.
+- Using interrupt (un)masking I can change the behavior for tx and rx
+  with a single register write instead of two to the two fifo
+  configuration registers.
 
->=20
-> Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
-> Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
-> ---
->  drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 123 ++++++++++++-
->  drivers/net/ethernet/wangxun/libwx/wx_hw.h    |   5 +-
->  drivers/net/ethernet/wangxun/libwx/wx_type.h  |  12 ++
->  drivers/net/ethernet/wangxun/ngbe/ngbe.h      |  79 --------
->  drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   |  21 +--
->  drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h   |   4 +-
->  drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 127 ++++---------
->  drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  59 +++++-
->  drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  43 -----
->  drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  36 ++--
->  drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |   6 +-
->  .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 174 +++---------------
->  .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  22 ++-
->  13 files changed, 305 insertions(+), 406 deletions(-)
->  delete mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe.h
->  delete mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe.h
->=20
-> diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/eth=
-ernet/wangxun/libwx/wx_hw.c
-> index c57dc3238b3f..205620a1c13b 100644
-> --- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-> +++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-> @@ -2,6 +2,7 @@
->  /* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-> =20
->  #include <linux/etherdevice.h>
-> +#include <linux/netdevice.h>
->  #include <linux/if_ether.h>
->  #include <linux/iopoll.h>
->  #include <linux/pci.h>
-> @@ -536,8 +537,8 @@ EXPORT_SYMBOL(wx_get_mac_addr);
->   *
->   *  Puts an ethernet address into a receive address register.
->   **/
-> -int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools,
-> -	       u32 enable_addr)
-> +static int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools=
-,
-> +		      u32 enable_addr)
->  {
->  	u32 rar_entries =3D wxhw->mac.num_rar_entries;
->  	u32 rar_low, rar_high;
-> @@ -581,7 +582,6 @@ int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *add=
-r, u64 pools,
-> =20
->  	return 0;
->  }
-> -EXPORT_SYMBOL(wx_set_rar);
-> =20
->  /**
->   *  wx_clear_rar - Remove Rx address register
-> @@ -590,7 +590,7 @@ EXPORT_SYMBOL(wx_set_rar);
->   *
->   *  Clears an ethernet address from a receive address register.
->   **/
-> -int wx_clear_rar(struct wx_hw *wxhw, u32 index)
-> +static int wx_clear_rar(struct wx_hw *wxhw, u32 index)
->  {
->  	u32 rar_entries =3D wxhw->mac.num_rar_entries;
-> =20
-> @@ -618,7 +618,6 @@ int wx_clear_rar(struct wx_hw *wxhw, u32 index)
-> =20
->  	return 0;
->  }
-> -EXPORT_SYMBOL(wx_clear_rar);
-> =20
->  /**
->   *  wx_clear_vmdq - Disassociate a VMDq pool index from a rx address
-> @@ -722,6 +721,112 @@ void wx_init_rx_addrs(struct wx_hw *wxhw)
->  }
->  EXPORT_SYMBOL(wx_init_rx_addrs);
-> =20
-> +static void wx_sync_mac_table(struct wx_hw *wxhw)
-> +{
-> +	int i;
-> +
-> +	for (i =3D 0; i < wxhw->mac.num_rar_entries; i++) {
-> +		if (wxhw->mac_table[i].state & WX_MAC_STATE_MODIFIED) {
-> +			if (wxhw->mac_table[i].state & WX_MAC_STATE_IN_USE) {
-> +				wx_set_rar(wxhw, i,
-> +					   wxhw->mac_table[i].addr,
-> +					   wxhw->mac_table[i].pools,
-> +					   WX_PSR_MAC_SWC_AD_H_AV);
-> +			} else {
-> +				wx_clear_rar(wxhw, i);
-> +			}
-> +			wxhw->mac_table[i].state &=3D ~(WX_MAC_STATE_MODIFIED);
-> +		}
-> +	}
-> +}
-> +
-> +/* this function destroys the first RAR entry */
-> +void wx_mac_set_default_filter(struct wx_hw *wxhw, u8 *addr)
-> +{
-> +	memcpy(&wxhw->mac_table[0].addr, addr, ETH_ALEN);
-> +	wxhw->mac_table[0].pools =3D 1ULL;
-> +	wxhw->mac_table[0].state =3D (WX_MAC_STATE_DEFAULT | WX_MAC_STATE_IN_US=
-E);
-> +	wx_set_rar(wxhw, 0, wxhw->mac_table[0].addr,
-> +		   wxhw->mac_table[0].pools,
-> +		   WX_PSR_MAC_SWC_AD_H_AV);
-> +}
-> +EXPORT_SYMBOL(wx_mac_set_default_filter);
-> +
-> +void wx_flush_sw_mac_table(struct wx_hw *wxhw)
-> +{
-> +	u32 i;
-> +
-> +	for (i =3D 0; i < wxhw->mac.num_rar_entries; i++) {
-> +		wxhw->mac_table[i].state |=3D WX_MAC_STATE_MODIFIED;
-> +		wxhw->mac_table[i].state &=3D ~WX_MAC_STATE_IN_USE;
-> +		memset(wxhw->mac_table[i].addr, 0, ETH_ALEN);
-> +		wxhw->mac_table[i].pools =3D 0;
-> +	}
-> +	wx_sync_mac_table(wxhw);
-> +}
-> +EXPORT_SYMBOL(wx_flush_sw_mac_table);
+You will see this in the second part of the series then.
 
-Rather than flushing all of the entries it might make more sense to
-only set the STATE_MODIFIED bit for the "IN_USE" entries.
-
-> +
-> +static int wx_del_mac_filter(struct wx_hw *wxhw, u8 *addr, u16 pool)
-> +{
-> +	u32 i;
-> +
-> +	if (is_zero_ether_addr(addr))
-> +		return -EINVAL;
-> +
-> +	/* search table for addr, if found, set to 0 and sync */
-> +	for (i =3D 0; i < wxhw->mac.num_rar_entries; i++) {
-> +		if (ether_addr_equal(addr, wxhw->mac_table[i].addr)) {
-> +			if (wxhw->mac_table[i].pools & (1ULL << pool)) {
-> +				wxhw->mac_table[i].state |=3D WX_MAC_STATE_MODIFIED;
-> +				wxhw->mac_table[i].state &=3D ~WX_MAC_STATE_IN_USE;
-> +				wxhw->mac_table[i].pools &=3D ~(1ULL << pool);
-> +				wx_sync_mac_table(wxhw);
-> +			}
-> +			return 0;
-> +		}
-> +
-> +		if (wxhw->mac_table[i].pools !=3D (1 << pool))
-> +			continue;
-> +		if (!ether_addr_equal(addr, wxhw->mac_table[i].addr))
-> +			continue;
-> +
-> +		wxhw->mac_table[i].state |=3D WX_MAC_STATE_MODIFIED;
-> +		wxhw->mac_table[i].state &=3D ~WX_MAC_STATE_IN_USE;
-> +		memset(wxhw->mac_table[i].addr, 0, ETH_ALEN);
-> +		wxhw->mac_table[i].pools =3D 0;
-> +		wx_sync_mac_table(wxhw);
-> +		return 0;
-> +	}
-> +	return -ENOMEM;
-> +}
-> +
-
-This function doesn't look right. Aren't the block in the if statement
-and the block after the two ifs the same? Seems like this would be an
-unreachable code block since if the adresses were equal they would hit
-the return 0 in the first if block and never be able to hit the second
-one.
-
-> +/**
-> + * wx_set_mac - Change the Ethernet Address of the NIC
-> + * @netdev: network interface device structure
-> + * @p: pointer to an address structure
-> + *
-> + * Returns 0 on success, negative on failure
-> + **/
-> +int wx_set_mac(struct net_device *netdev, void *p)
-> +{
-> +	struct wx_hw *wxhw =3D container_of(&netdev, struct wx_hw, netdev);
-> +	struct sockaddr *addr =3D p;
-> +	int retval;
-> +
-> +	retval =3D eth_prepare_mac_addr_change(netdev, addr);
-> +	if (retval)
-> +		return retval;
-> +
-> +	wx_del_mac_filter(wxhw, wxhw->mac.addr, 0);
-> +	eth_hw_addr_set(netdev, addr->sa_data);
-> +	memcpy(wxhw->mac.addr, addr->sa_data, netdev->addr_len);
-> +
-> +	wx_mac_set_default_filter(wxhw, wxhw->mac.addr);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(wx_set_mac);
-> +
->  void wx_disable_rx(struct wx_hw *wxhw)
->  {
->  	u32 pfdtxgswc;
-> @@ -929,6 +1034,14 @@ int wx_sw_init(struct wx_hw *wxhw)
->  		return err;
->  	}
-> =20
-> +	wxhw->mac_table =3D kcalloc(wxhw->mac.num_rar_entries,
-> +				  sizeof(struct wx_mac_addr),
-> +				  GFP_KERNEL);
-> +	if (!wxhw->mac_table) {
-> +		wx_err(wxhw, "mac_table allocation failed\n");
-> +		return -ENOMEM;
-> +	}
-> +
->  	return 0;
->  }
->  EXPORT_SYMBOL(wx_sw_init);
->=20
-
+Best,
+Markus
