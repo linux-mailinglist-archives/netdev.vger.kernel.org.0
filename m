@@ -2,194 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A63E064B903
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 16:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29CD664B911
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 16:58:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236087AbiLMP4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 10:56:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
+        id S235586AbiLMP6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 10:58:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236115AbiLMP4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 10:56:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA9715FE2
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 07:55:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670946920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vN2b3MLF2n3ZPMSxXyjvxdcqBR/2NjegKSPQ6Yvcl1c=;
-        b=Tn9ipNi1UR0P9JzgXlT4z8w3GdRbfMZBJuX5VH9m6HQeMTI0XVrbTULUwSRPts2bgePJNM
-        m4e9pi7BTkQfZttiVWTMmisZ4zedlHg1nCJfmEYNEaKJiRSPziQfvIIDIDcMHHriAwsGfY
-        rJEjN0ZSilov1HvRdpccmC2aE2sENX4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-561-zYdQ8FZ-OcyaaU3CPxMK4w-1; Tue, 13 Dec 2022 10:55:19 -0500
-X-MC-Unique: zYdQ8FZ-OcyaaU3CPxMK4w-1
-Received: by mail-ed1-f70.google.com with SMTP id s13-20020a056402520d00b0046c78433b54so7530109edd.16
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 07:55:18 -0800 (PST)
+        with ESMTP id S234624AbiLMP6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 10:58:22 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D863BDE;
+        Tue, 13 Dec 2022 07:58:22 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id t2so222410ply.2;
+        Tue, 13 Dec 2022 07:58:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=L2KwEdJdz8SZz3waYhraeZmfXbWgedoNQcqshGcRjyQ=;
+        b=KnUh26J7JZRs5EIrjhCuhTh0mR4I4x0Ew2N5op3jpJnsa4Yw+nMuPEPNwrYmve9DTD
+         mVQP6RtncAKCTBt/N9udvh3n2Qzj+/bV0YsglSLWzr1jOJzGDAAu4jCbHzIxoO5L/vOo
+         bL0jAUFUW9baIcGA/BE9WAmdLJv6nCApYuhn5ngTkmwBewEjIK1QFFVlW1PHyDZ3/g2L
+         p2M3F4A5vCD7qzRU9rger8MO4NszpALiP3uT4bDvSdrEtRF4eAFwjW1oL6uS0bHFrElt
+         zIqvH2Dv7YdSjr/Sr0V/pdNih3GwgqcB6iHueHlz7D7VqIs92IBbm/lOTGO5+EFC34L7
+         1bxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :to:subject:cc:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vN2b3MLF2n3ZPMSxXyjvxdcqBR/2NjegKSPQ6Yvcl1c=;
-        b=dp3tFtwBFtxcayDmE3SejjjrPtbvc7dfKv8vPgCw4cfRE5AvZW6rb5GIVGG0ttRscM
-         22nD539k20UdNF8QSJFZEYWLaIkOA49FeQOkj1moxlpz36F/bWIN+k4QMi3JTB6K0fbU
-         1V/bjiD4Y+ieDmnXHwR5rTSpY8SRSc2HRRJT0KEH9CEa2+R5j+eL3NMkn7NATs9JiMk2
-         qbgPkRBNEFEc4FbNO34bWF8K/XYaIbf7r3d6Fk1Q31goC7ziY2lU1FOsI0ruFqdAP87j
-         uarBRCLlQ+iTbX2pn8ybMz9/As8vx96lrVBoFwtzeoSTEVgJqUX/GBVeRHRYyi0Gtcjm
-         SR1g==
-X-Gm-Message-State: ANoB5plnONXQTQWh2QN6ugHYOLD7SsWqnH46VWmB3ZxDbk9OufUc1ZP8
-        2by/sKKXNFFAsOYjxVKylv945tj7yEiJdQe0TyGNiJzNETlwu2NAgzQMKdTwqXUpMvnCraH06oR
-        r+ptClRAYnYIbVDxR
-X-Received: by 2002:a17:906:3ac1:b0:7b2:7aef:5a05 with SMTP id z1-20020a1709063ac100b007b27aef5a05mr17767886ejd.70.1670946917886;
-        Tue, 13 Dec 2022 07:55:17 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4QTFgaMGnkWUrT0vpdDp0RoPxFQ54W+5L1LBpoDF64UzHXcp7WiI/oyElkDcFBreUG86tosg==
-X-Received: by 2002:a17:906:3ac1:b0:7b2:7aef:5a05 with SMTP id z1-20020a1709063ac100b007b27aef5a05mr17767870ejd.70.1670946917628;
-        Tue, 13 Dec 2022 07:55:17 -0800 (PST)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id f13-20020a17090631cd00b0073c8d4c9f38sm4839077ejf.177.2022.12.13.07.55.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Dec 2022 07:55:16 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <7ca8ac2c-7c07-a52f-ec17-d1ba86fa45ab@redhat.com>
-Date:   Tue, 13 Dec 2022 16:55:13 +0100
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L2KwEdJdz8SZz3waYhraeZmfXbWgedoNQcqshGcRjyQ=;
+        b=CSHpSkiIjC2NgfMc+bzFAF9l4kprAAYDM/vym5Yl2C+c5NB+BrGNI/MyI+7EXsXiLx
+         OMpPxGELu7EQbCC3eROtCePq3cZvMtH2CoT5/9snEceyaVHNSFNA881YRoozSHVKUITi
+         EqLPXfpNGZRS88X9DsGRkBXS55BeUqL5sQssz6ym8ooYiP0myAz9QlS5V87S3+wqhTpK
+         KdsKvoHlTBPKvyH9+1/fSowyAQ+gclMuJp1QktnP5M+AXD1H6m6j3/XXAUOEhI9McRQV
+         r7Pa4XYjCQC6I/GRwBmP19iTFi9VMk0peBag9XUz9zQ8f+4CouAYDXMK3DS6B/DrK9p9
+         0S4A==
+X-Gm-Message-State: ANoB5pmusroe+ASTDNaaI/gDjxxgujeL8nNpvIPjynubzw0AByNVYgvD
+        3b6t5sHgqZqrdWKjIIFm5bG13TyLIEQ=
+X-Google-Smtp-Source: AA0mqf4ASAm91c18uzbgdF0yT/tzLVd89/CZlvbaX4MOqMjsoYKxBEikl31a3JskKH0GZN9iwuRcgg==
+X-Received: by 2002:a17:902:9a43:b0:187:16c2:d52c with SMTP id x3-20020a1709029a4300b0018716c2d52cmr19322313plv.50.1670947101435;
+        Tue, 13 Dec 2022 07:58:21 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.42.38])
+        by smtp.googlemail.com with ESMTPSA id ix17-20020a170902f81100b001895f7c8a71sm71952plb.97.2022.12.13.07.58.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 07:58:21 -0800 (PST)
+Message-ID: <cf6f03d04c8f2ad2627a924f7ee66645d661d746.camel@gmail.com>
+Subject: Re: [PATCH intel-next 0/5] i40e: support XDP multi-buffer
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Tirthendu Sarkar <tirthendu.sarkar@intel.com>, tirtha@gmail.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com
+Date:   Tue, 13 Dec 2022 07:58:19 -0800
+In-Reply-To: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
+References: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Cc:     brouer@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 08/15] veth: Support RX XDP metadata
-To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
-References: <20221213023605.737383-1-sdf@google.com>
- <20221213023605.737383-9-sdf@google.com>
-Content-Language: en-US
-In-Reply-To: <20221213023605.737383-9-sdf@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2022-12-13 at 16:20 +0530, Tirthendu Sarkar wrote:
+> This patchset adds multi-buffer support for XDP. The first four patches
+> are prepatory patches while the fifth one contains actual multi-buffer
+> changes.=20
+>=20
+> Tirthendu Sarkar (5):
+>   i40e: add pre-xdp page_count in rx_buffer
+>   i40e: avoid per buffer next_to_clean access from i40e_ring
+>   i40e: introduce next_to_process to i40e_ring
+>   i40e: pull out rx buffer allocation to end of i40e_clean_rx_irq()
+>   i40e: add support for XDP multi-buffer Rx
+>=20
+>  drivers/net/ethernet/intel/i40e/i40e_main.c |  18 +-
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 378 ++++++++++++++------
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.h |  13 +-
+>  3 files changed, 280 insertions(+), 129 deletions(-)
+>=20
 
-On 13/12/2022 03.35, Stanislav Fomichev wrote:
-> The goal is to enable end-to-end testing of the metadata for AF_XDP.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> Cc: xdp-hints@xdp-project.net
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->   drivers/net/veth.c | 24 ++++++++++++++++++++++++
->   1 file changed, 24 insertions(+)
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 04ffd8cb2945..d5491e7a2798 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -118,6 +118,7 @@ static struct {
->   
->   struct veth_xdp_buff {
->   	struct xdp_buff xdp;
-> +	struct sk_buff *skb;
->   };
->   
->   static int veth_get_link_ksettings(struct net_device *dev,
-> @@ -602,6 +603,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
->   
->   		xdp_convert_frame_to_buff(frame, xdp);
->   		xdp->rxq = &rq->xdp_rxq;
-> +		vxbuf.skb = NULL;
->   
->   		act = bpf_prog_run_xdp(xdp_prog, xdp);
->   
-> @@ -823,6 +825,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
->   	__skb_push(skb, skb->data - skb_mac_header(skb));
->   	if (veth_convert_skb_to_xdp_buff(rq, xdp, &skb))
->   		goto drop;
-> +	vxbuf.skb = skb;
->   
->   	orig_data = xdp->data;
->   	orig_data_end = xdp->data_end;
-> @@ -1601,6 +1604,21 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
->   	}
->   }
->   
-> +static int veth_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
-> +{
-> +	*timestamp = ktime_get_mono_fast_ns();
+This approach seems kind of convoluted to me. Basically you are trying
+to clean the ring without cleaning the ring in the cases where you
+encounter a non EOP descriptor.
 
-This should be reading the hardware timestamp in the SKB.
-
-Details: This hardware timestamp in the SKB is located in
-skb_shared_info area, which is also available for xdp_frame (currently
-used for multi-buffer purposes).  Thus, when adding xdp-hints "store"
-functionality, it would be natural to store the HW TS in the same place.
-Making the veth skb/xdp_frame code paths able to share code.
-
-> +	return 0;
-> +}
-> +
-> +static int veth_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
-> +{
-> +	struct veth_xdp_buff *_ctx = (void *)ctx;
-> +
-> +	if (_ctx->skb)
-> +		*hash = skb_get_hash(_ctx->skb);
-> +	return 0;
-> +}
-> +
->   static const struct net_device_ops veth_netdev_ops = {
->   	.ndo_init            = veth_dev_init,
->   	.ndo_open            = veth_open,
-> @@ -1622,6 +1640,11 @@ static const struct net_device_ops veth_netdev_ops = {
->   	.ndo_get_peer_dev	= veth_peer_dev,
->   };
->   
-> +static const struct xdp_metadata_ops veth_xdp_metadata_ops = {
-> +	.xmo_rx_timestamp		= veth_xdp_rx_timestamp,
-> +	.xmo_rx_hash			= veth_xdp_rx_hash,
-> +};
-> +
->   #define VETH_FEATURES (NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_HW_CSUM | \
->   		       NETIF_F_RXCSUM | NETIF_F_SCTP_CRC | NETIF_F_HIGHDMA | \
->   		       NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ENCAP_ALL | \
-> @@ -1638,6 +1661,7 @@ static void veth_setup(struct net_device *dev)
->   	dev->priv_flags |= IFF_PHONY_HEADROOM;
->   
->   	dev->netdev_ops = &veth_netdev_ops;
-> +	dev->xdp_metadata_ops = &veth_xdp_metadata_ops;
->   	dev->ethtool_ops = &veth_ethtool_ops;
->   	dev->features |= NETIF_F_LLTX;
->   	dev->features |= VETH_FEATURES;
-
+Why not just replace the skb pointer with an xdp_buff in the ring? Then
+you just build an xdp_buff w/ frags and then convert it after after
+i40e_is_non_eop? You should then still be able to use all the same page
+counting tricks and the pages would just be dropped into the shared
+info of an xdp_buff instead of an skb and function the same assuming
+you have all the logic in place to clean them up correctly.
