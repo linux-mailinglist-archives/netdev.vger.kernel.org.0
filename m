@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E3D64BF7C
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 23:43:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE6F64BFA3
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 23:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236335AbiLMWm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 17:42:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
+        id S236335AbiLMWwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 17:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235536AbiLMWm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 17:42:57 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFDF21264;
-        Tue, 13 Dec 2022 14:42:56 -0800 (PST)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p5Dyv-000IMB-Gg; Tue, 13 Dec 2022 23:42:37 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p5Dyu-000C9T-SX; Tue, 13 Dec 2022 23:42:36 +0100
-Subject: Re: [PATCH net] filter: Account for tail adjustment during pull
- operations
-To:     Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
-        john.fastabend@gmail.com, song@kernel.org, yhs@fb.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, bpf@vger.kernel.org,
+        with ESMTP id S229543AbiLMWwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 17:52:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A801C129
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 14:52:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E53DD61767
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:52:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6CBC433D2;
+        Tue, 13 Dec 2022 22:52:21 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Ast5lEL4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1670971939;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UnkeF6MoUcMHt9VnSs6bBdWQSmzmTOY5u4eR1/3XUcg=;
+        b=Ast5lEL4abjQeXMEhoSdWoLZdWTRhlIWUjKoBvKgJxVwbF0fHpH4tJnI4LhEQLSS825oZj
+        UqGX/0Z7rFdFNIdj6+J6xyaxQaWGMslY9D4dReGWh7dGCmyNAHRBqCkU7TZre36uGF6PxG
+        jBf1ibECrzjES0yd7Q/n8VlOaDp9Pw8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a537dc14 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 13 Dec 2022 22:52:18 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     kuba@kernel.org, pablo@netfilter.org, davem@davemloft.net,
         netdev@vger.kernel.org
-Cc:     Sean Tranchetti <quic_stranche@quicinc.com>
-References: <1670906381-25161-1-git-send-email-quic_subashab@quicinc.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4d598e55-0366-5a27-2dd5-d7b59758b5fc@iogearbox.net>
-Date:   Tue, 13 Dec 2022 23:42:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 0/1] wireguard patches for 6.2-rc1
+Date:   Tue, 13 Dec 2022 15:52:07 -0700
+Message-Id: <20221213225208.3343692-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-In-Reply-To: <1670906381-25161-1-git-send-email-quic_subashab@quicinc.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26749/Tue Dec 13 09:27:51 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,71 +53,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/13/22 5:39 AM, Subash Abhinov Kasiviswanathan wrote:
-> Extending the tail can have some unexpected side effects if a program is
-> reading the content beyond the head skb headlen and all the skbs in the
-> gso frag_list are linear with no head_frag -
-> 
->    kernel BUG at net/core/skbuff.c:4219!
->    pc : skb_segment+0xcf4/0xd2c
->    lr : skb_segment+0x63c/0xd2c
->    Call trace:
->     skb_segment+0xcf4/0xd2c
->     __udp_gso_segment+0xa4/0x544
->     udp4_ufo_fragment+0x184/0x1c0
->     inet_gso_segment+0x16c/0x3a4
->     skb_mac_gso_segment+0xd4/0x1b0
->     __skb_gso_segment+0xcc/0x12c
->     udp_rcv_segment+0x54/0x16c
->     udp_queue_rcv_skb+0x78/0x144
->     udp_unicast_rcv_skb+0x8c/0xa4
->     __udp4_lib_rcv+0x490/0x68c
->     udp_rcv+0x20/0x30
->     ip_protocol_deliver_rcu+0x1b0/0x33c
->     ip_local_deliver+0xd8/0x1f0
->     ip_rcv+0x98/0x1a4
->     deliver_ptype_list_skb+0x98/0x1ec
->     __netif_receive_skb_core+0x978/0xc60
-> 
-> Fix this by marking these skbs as GSO_DODGY so segmentation can handle
-> the tail updates accordingly.
-> 
-> Fixes: 5293efe62df8 ("bpf: add bpf_skb_change_tail helper")
-> Signed-off-by: Sean Tranchetti <quic_stranche@quicinc.com>
-> Signed-off-by: Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>
-> ---
->   net/core/filter.c | 14 ++++++++++++++
->   1 file changed, 14 insertions(+)
-> 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index bb0136e..d5f7f79 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -1654,6 +1654,20 @@ static DEFINE_PER_CPU(struct bpf_scratchpad, bpf_sp);
->   static inline int __bpf_try_make_writable(struct sk_buff *skb,
->   					  unsigned int write_len)
->   {
-> +	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
-> +
-> +	if (skb_is_gso(skb) && list_skb && !list_skb->head_frag &&
-> +	    skb_headlen(list_skb)) {
-> +		int headlen = skb_headlen(skb);
-> +		int err = skb_ensure_writable(skb, write_len);
-> +
-> +		/* pskb_pull_tail() has occurred */
-> +		if (!err && headlen != skb_headlen(skb))
-> +			skb_shinfo(skb)->gso_type |= SKB_GSO_DODGY;
-> +
-> +		return err;
-> +	}
+Hi Jakub & Folks,
 
-__bpf_try_make_writable() does not look like the right location to me
-given this is called also from various other places. bpf_skb_change_tail
-has skb_gso_reset in there, potentially that or pskb_pull_tail itself
-should mark it?
+This tiny pull just has a single patch to ready wireguard for gcc 13,
+casting some arguments to pr_debug to an (int) explicitly, because gcc
+13 changes the type of enums.
 
->   	return skb_ensure_writable(skb, write_len);
->   }
->   
-> 
+Since this is just a fix, I've marked it as 'net', but if you prefer to
+do it via 'net-next', that's fine too.
+
+Jason
+
+Jiri Slaby (SUSE) (1):
+  wireguard: timers: cast enum limits members to int in prints
+
+ drivers/net/wireguard/timers.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+-- 
+2.39.0
 
