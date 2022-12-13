@@ -2,80 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC7664BBD9
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 19:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E1A64BBDD
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 19:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236393AbiLMSWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 13:22:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
+        id S236493AbiLMSXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 13:23:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236527AbiLMSWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 13:22:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1ECB52
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 10:21:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670955679;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QjyiHNIdmhKwg9rHfoK9KFaos5MRsLUNqAqOWwzEA8I=;
-        b=AkbHGZAYwlRwp61laO7Q37xF+ihwJ0mzNnPmJJcyojItF9TA9JUc0n2g53vlpVObQHdacD
-        jggRjWEvDwctaZug5NYzYWi1NA1FD6zZlpiWlIqoXsOTD/vo2VPkZ/5Iyi0R7/aJQwAQES
-        mIFDSWh8WnJeTJs6+XPCuApHIf+R5cA=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-448-6Y1SHu6WNYmTJcXC_hNc1w-1; Tue, 13 Dec 2022 13:21:17 -0500
-X-MC-Unique: 6Y1SHu6WNYmTJcXC_hNc1w-1
-Received: by mail-wm1-f69.google.com with SMTP id ay19-20020a05600c1e1300b003cf758f1617so5976201wmb.5
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 10:21:17 -0800 (PST)
+        with ESMTP id S236460AbiLMSX3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 13:23:29 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68417F01B;
+        Tue, 13 Dec 2022 10:23:28 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id gh17so38641521ejb.6;
+        Tue, 13 Dec 2022 10:23:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=TwSscO4PEOQF6eSJjMD8VMf0/HEneWx4N+6zCukP0wU=;
+        b=aISaR1NtmUs7HLwylIB8pt6NezUoA9MqVwdl1HaqJxF+w6X3F0mTpCZgmb7+ljxrwt
+         k4mwmFp6zMZQoYd4d0MLWDhpRsmzhWmA7uNk49EqQ/4f95adDVJba25WIv06vO/8B37F
+         3rQEgux0qYjlZlOY8C/LpUBSTkO2e4XEo4Qors0OnlJ4ZXcCCEZ09tDy4wki9a8n3oqZ
+         KAFAm4JLpVSyfKKOLgkjkz+hJkpdUb7X4gZVASHRv/fMuCBj1pGXjEbibY7iRj2v+cH1
+         XEQWyPWpUU3PMQ2kw+m/mUXlkfTDD5AdjFHNzMt8Q8D2uGIT29xXaWjzHWZkrlREu5Vm
+         5tBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QjyiHNIdmhKwg9rHfoK9KFaos5MRsLUNqAqOWwzEA8I=;
-        b=xlGL+ezKEXoBW3Q6s3SgVAZXuhLHzO3zN6/8xmhCMhE38/ASKVvNkO2EUewdxyMc2w
-         l8nK5qr75QvNxj/3AGQ+U5shYK0aEEGuaQYeS/L+XQR9l3I52FnpPBixbE7BbojK6emc
-         /bsnSClmPyxIMMRD5OwD/wfRAL3zMiQudhSVn83jqdlOxATub8J4Vp5RBvKN0xmkqpmv
-         5QY6RKRMkQlOsm+AtwDqCX4oUyPV/2EYC64Fk8tRto1w5T4URq3TUJvTgI/HLrdx9RVt
-         Jia2mBNIOC6NUe2kFzhOyrrpKsX5hWWIqZJTXRsYF0AJnJajmuiGlMOKY9J8FsOuHnFq
-         XXqg==
-X-Gm-Message-State: ANoB5pkvUQ4fnGapbKJTLxGPRO4IaoMrk80yi0/66013DEmkobLg9HIE
-        W/EhmFsCkVZsHlQst23eALZsfqg13X/GiAIfXRlDHKtUZ1T3Xw4NyMR8ankQm13mOSIausoqVRL
-        FCRNd+li8JDmB/gzl
-X-Received: by 2002:a05:600c:4f89:b0:3cf:d0be:1231 with SMTP id n9-20020a05600c4f8900b003cfd0be1231mr20583535wmq.13.1670955676486;
-        Tue, 13 Dec 2022 10:21:16 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5ZnpHaUGXySaaFWtU/+Thtjn+t37/nCIv7KkFOCsVSMV5B2vIdj/GJOi7WMuTR1tq67ihHmA==
-X-Received: by 2002:a05:600c:4f89:b0:3cf:d0be:1231 with SMTP id n9-20020a05600c4f8900b003cfd0be1231mr20583526wmq.13.1670955676300;
-        Tue, 13 Dec 2022 10:21:16 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-97-87.dyn.eolo.it. [146.241.97.87])
-        by smtp.gmail.com with ESMTPSA id ay13-20020a05600c1e0d00b003c6bd91caa5sm14173911wmb.17.2022.12.13.10.21.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 10:21:15 -0800 (PST)
-Message-ID: <229be448e2979258a7c2c84d808360618f5095a9.camel@redhat.com>
-Subject: Re: [PATCH v3] epoll: use refcount to reduce ep_mutex contention
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Jason Baron <jbaron@akamai.com>, netdev@vger.kernel.org,
-        Carlos Maiolino <cmaiolino@redhat.com>
-Date:   Tue, 13 Dec 2022 19:21:14 +0100
-In-Reply-To: <Y5gVJz+qDfw0tEP1@sol.localdomain>
-References: <1aedd7e87097bc4352ba658ac948c585a655785a.1669657846.git.pabeni@redhat.com>
-         <Y5gVJz+qDfw0tEP1@sol.localdomain>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TwSscO4PEOQF6eSJjMD8VMf0/HEneWx4N+6zCukP0wU=;
+        b=KnxeC6JvPHPdHLdKGo8CeWB33VBlFNMPwcVJLrVAnH+3Bon/UysNeYtD6yzF9yZ6Im
+         hxWd874XEDQY8ZRrjVeNbzl+oZkeQtMkfLmSO2SxRrWx8MJdj3RffCFzAU7zhjoIDkjQ
+         o5uE1adqB/0C45ZnpJskH5ZhxfO0TEwM4bX9OGdWEZ8RZkV+x5t5Q+L+gGBpP29e92u/
+         XNyDCpcsU8D7uN+LddesqD8mCqOiP8H8j4Wd1kbYrBEaOPuf/C0FyQGOS1SN/s1vPSN8
+         JYHAsWExZ77fh++Mz1KZhuUJSOuUXw97SZXDVm3BjOW/oJ1MRgPGB38DoWOpZZGC7Zof
+         qs6Q==
+X-Gm-Message-State: ANoB5pnH4YznKazvLaHDKGfdMKAv44AgcfwwoPdsbfvu9YQaX4CZsrFK
+        2z32z7/7CheruAeyVEGF8zOdWG/ebA+8nlY/gI0=
+X-Google-Smtp-Source: AA0mqf6GxPasT+P+nG824mqg/9ow4VA7kyhlgtwQwUoxZsf7IYyHCjz2Wn/JsjLxWfg3FzF5J+K6Q0rdfOkZ7s7yol0=
+X-Received: by 2002:a17:906:694a:b0:7c0:9d50:5144 with SMTP id
+ c10-20020a170906694a00b007c09d505144mr31755625ejs.590.1670955806889; Tue, 13
+ Dec 2022 10:23:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+References: <CAA42iKxeinZ4gKfttg_K8PdRt+p-p=KjqgcbGjtxzOqn_C0F9g@mail.gmail.com>
+In-Reply-To: <CAA42iKxeinZ4gKfttg_K8PdRt+p-p=KjqgcbGjtxzOqn_C0F9g@mail.gmail.com>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Tue, 13 Dec 2022 19:23:13 +0100
+Message-ID: <CAGRyCJGCrR_FVjCmsnbYhs76bDc0rD83n-=2ros2p9W_GeVq-w@mail.gmail.com>
+Subject: Re: [PATCH] net: Fix for packets being rejected in the xHCI
+ controller's ring buffer
+To:     "Seija K." <doremylover123@gmail.com>
+Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,27 +71,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello Seija,
 
-On Mon, 2022-12-12 at 22:01 -0800, Eric Biggers wrote:
-> I am trying to understand whether this patch is correct.
-> 
-> One thing that would help would be to use more standard naming:
-> 
-> 	ep_put => ep_refcount_dec_and_test (or ep_put_and_test)
-> 	ep_dispose => ep_free
-> 	ep_free => ep_clear_and_put
+Il giorno mar 13 dic 2022 alle ore 18:44 Seija K.
+<doremylover123@gmail.com> ha scritto:
+>
+> When a packet larger than MTU arrives in Linux from the modem, it is
+> discarded with -EOVERFLOW error (Babble error).
+>
+> This is seen on USB3.0 and USB2.0 buses.
+>
+> This is because the MRU (Max Receive Size) is not a separate entity
+> from the MTU (Max Transmit Size), and the received packets can be
+> larger than those transmitted.
+>
+> Following the babble error, there was an endless supply of zero-length
+> URBs that were rejected with -EPROTO (increasing the rx input error
+> counter each time).
+>
+> This is only seen on USB3.0. These continue to come ad infinitum until
+> the modem is shut down.
+>
+> There appears to be a bug in the core USB handling code in Linux that
+> doesn't deal with network MTUs smaller than 1500 bytes well.
+>
+> By default, the dev->hard_mtu (the real MTU) is in lockstep with
+> dev->rx_urb_size (essentially an MRU), and the latter is causing
+> trouble.
+>
+> This has nothing to do with the modems; the issue can be reproduced by
+> getting a USB-Ethernet dongle, setting the MTU to 1430, and pinging
+> with size greater than 1406.
+>
+> Signed-off-by: Seija Kijin <doremylover123@gmail.com>
+>
+> Co-Authored-By: TarAldarion <gildeap@tcd.ie>
+> ---
+> drivers/net/usb/qmi_wwan.c | 7 +++++++
+> 1 file changed, 7 insertions(+)
+>
+> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> index 554d4e2a84a4..39db53a74b5a 100644
+> --- a/drivers/net/usb/qmi_wwan.c
+> +++ b/drivers/net/usb/qmi_wwan.c
+> @@ -842,6 +842,13 @@ static int qmi_wwan_bind(struct usbnet *dev,
+> struct usb_interface *intf)
+> }
+> dev->net->netdev_ops = &qmi_wwan_netdev_ops;
+> dev->net->sysfs_groups[0] = &qmi_wwan_sysfs_attr_group;
+> + /* LTE Networks don't always respect their own MTU on the receiving side;
+> + * e.g. AT&T pushes 1430 MTU but still allows 1500 byte packets from
+> + * far-end networks. Make the receive buffer large enough to accommodate
+> + * them, and add four bytes so MTU does not equal MRU on network
+> + * with 1500 MTU. Otherwise, usbnet_change_mtu() will change both.
+> + */
+> + dev->rx_urb_size = ETH_DATA_LEN + 4;
 
-Thank you for the feedback. 
+Did you test this change with QMAP?
 
-I must admit I'm not good at all at selecting good names, so I
-definitelly will apply the above. I additionally still have to cover
-the feedback from Jacob - switching the reference count to a kref - as
-I've been diverted to other tasks.
-
-I hope to be able to share a new revision of this patch next week.
+To support qmap dl aggregated blocks qmi_wwan relies on the
+usbnet_change_mtu behavior of changing the rx_urb_size.
 
 Thanks,
+Daniele
 
-Paolo
-
+> err:
+> return status;
+> }
+> --
+> 2.38.2
