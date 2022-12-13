@@ -2,103 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C1264AE4C
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE5A64AE45
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 04:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233965AbiLMDiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 22:38:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
+        id S233011AbiLMDex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 22:34:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233011AbiLMDiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:38:51 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9532165B0;
-        Mon, 12 Dec 2022 19:38:49 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VXC4qCa_1670902725;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VXC4qCa_1670902725)
-          by smtp.aliyun-inc.com;
-          Tue, 13 Dec 2022 11:38:46 +0800
-Message-ID: <1670902391.9610498-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net] virtio-net: correctly enable callback during start_xmit
-Date:   Tue, 13 Dec 2022 11:33:11 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
-        Jason Wang <jasowang@redhat.com>
-References: <20221212091029.54390-1-jasowang@redhat.com>
- <20221212042144-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20221212042144-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229557AbiLMDew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 22:34:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E54AE8B;
+        Mon, 12 Dec 2022 19:34:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB12A612CB;
+        Tue, 13 Dec 2022 03:34:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D242CC433EF;
+        Tue, 13 Dec 2022 03:34:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670902490;
+        bh=U81sidzaQaJy/rxfn5PHUydwwpgK0dI201eoQyqbyCM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mdw5ed2DjmHNGbFitiAgdH7uuiRirU07ByfHaJUafc2EhurrydQC8e+66t0L5Y+9x
+         g+6Fi4aFNL3y+hYpLMo92y0p/CJPpxl9g4pLt/0calOFSGrWH/ysNdkLmYuuGOOXo7
+         xB+cNcB7BYPJGJENlYxkW/dRecKJ2R2Tb03ZCiZ/HoiIJyIw3a/6HYkwDqHIAdzFw7
+         +8HErc9Poiyty2YGk1v71k2vZapexynaDfa1uYCqN5/E/LN5E7F6WxMmYQoGLLrOW9
+         oQjB3oq4YOlT7NcqE7CVYdrOWQUQ0GX/lXP8FnEHu7q0viASuHeeOlnYRQzNXcg0Th
+         W08Uo/ufavtQw==
+Date:   Mon, 12 Dec 2022 19:34:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: Re: [PATCH v5 net-next 00/10] dt-binding preparation for ocelot
+ switches
+Message-ID: <20221212193447.0a69325e@kernel.org>
+In-Reply-To: <Y5d67SPMc/YCr0Rq@COLIN-DESKTOP1.localdomain>
+References: <20221210033033.662553-1-colin.foster@in-advantage.com>
+        <20221212102958.0948b360@kernel.org>
+        <Y5d67SPMc/YCr0Rq@COLIN-DESKTOP1.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Dec 2022 04:25:22 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Mon, Dec 12, 2022 at 05:10:29PM +0800, Jason Wang wrote:
-> > Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
-> > virtqueue callback via the following statement:
-> >
-> >         do {
-> >            ......
-> > 	} while (use_napi && kick &&
-> >                unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
-> >
-> > This will cause a missing call to virtqueue_enable_cb_delayed() when
-> > kick is false. Fixing this by removing the checking of the kick from
-> > the condition to make sure callback is enabled correctly.
-> >
-> > Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> > The patch is needed for -stable.
->
-> stable rules don't allow for theoretical fixes. Was a problem observed?
->
-> > ---
-> >  drivers/net/virtio_net.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 86e52454b5b5..44d7daf0267b 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -1834,8 +1834,8 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
-> >
-> >  		free_old_xmit_skbs(sq, false);
-> >
-> > -	} while (use_napi && kick &&
-> > -	       unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
-> > +	} while (use_napi &&
-> > +		 unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
-> >
->
-> A bit more explanation pls.  kick simply means !netdev_xmit_more -
-> if it's false we know there will be another packet, then transmissing
-> that packet will invoke virtqueue_enable_cb_delayed. No?
+On Mon, 12 Dec 2022 11:03:09 -0800 Colin Foster wrote:
+> > A lot of carried over review tags here, so please let me know if
+> > there's anything that needs to be reviewed here, otherwise I'd like=20
+> > to merge the series for 6.2 by the end of the day. =20
+>=20
+> I just responded to patch 4, which has a small (?) outstanding issue /
+> discussion. I asked Rob and Ar=C4=B1n=C3=A7's opinions as to whether it s=
+hould
+> hold up this series. Everything else is good to go, as far as I
+> understand.
 
-It's just that there may be a next packet, but in fact there may not be.
-For example, the vq is full, and the driver stops the queue.
-
-Thanks.
-
->
->
->
->
->
-> >  	/* timestamp packet in software */
-> >  	skb_tx_timestamp(skb);
-> > --
-> > 2.25.1
->
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+No reply :( Since this is "just" DT bindings (as in shouldn't
+functionally break anything) - if Rob gives us a green light
+we can still pull it into the mid-merge window follow up.
+But I'll drop it from pw for now so it doesn't distract us.
