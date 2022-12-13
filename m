@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4C164B034
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 08:10:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ABC464B03A
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 08:12:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234274AbiLMHJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 02:09:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        id S234486AbiLMHMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 02:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233843AbiLMHJ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 02:09:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054F3129
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:09:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670915340;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=baSvTJ/dt1dfXrXEGH7AD5AcoL7LDCy+sWq48EykxiE=;
-        b=Dyzz6+mv7U3XC4GTKMEJh/8OqdWsr7z56QdshU1UTejaM+sT50HtaWouOJ6IJCts9WBRQM
-        HSGh/864xpL05SjR7Baulc5P2mQVn0OfdqmtOYVNTzj+VkWONlcBCM8wNYupON4R0mTxyb
-        5Nf1uWoIQDJWJLSIksMuRiS4NTQWmQw=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-399-51H3R-y0PkeLCZarrLNj1w-1; Tue, 13 Dec 2022 02:08:58 -0500
-X-MC-Unique: 51H3R-y0PkeLCZarrLNj1w-1
-Received: by mail-ot1-f70.google.com with SMTP id bx9-20020a056830600900b0066debed5e7dso8183447otb.10
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:08:58 -0800 (PST)
+        with ESMTP id S234530AbiLMHMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 02:12:24 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34574193D2;
+        Mon, 12 Dec 2022 23:12:22 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id h33so9820250pgm.9;
+        Mon, 12 Dec 2022 23:12:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rj1UBUKaY6rtQ9I5885ZHn2hBS1jlgAWFKKXV1FV4G8=;
+        b=FogQtRIqMaFHiQ0Yxu4UGVwdcZliCagyo2DTjTb4dWtxlZo1Qiynn93U3NalTJZ8C4
+         tnoHx2XyJ/JQRNm9WCaOT0p8frhTEJmss1UtLvz8Rxm1czdvW7o00R6rbRtOE7m9V+rg
+         K5XDB1GQfCJlJtfZIFleD540XTir5MXz8SE9K7XbWRy3id2T9ID++6HWCLUwTyZiddsA
+         Lz7g81p3DHy1qkQyKhSKkFfuYZAdq3ZXmt2KH5KQ6vPgblm8e2Ypr4LGzi4o2aJ8POoD
+         NpocwzmPt1/h3A+BZwn3teA0HPqLDph3ISpfF15B00yc7PxGAYRovY7bNniFtA/0ZtAg
+         KMVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=baSvTJ/dt1dfXrXEGH7AD5AcoL7LDCy+sWq48EykxiE=;
-        b=kAQlEvdHaOBGDo8L7b/9ajahaSJUY5kyTYfDquopLpiZKQGMs8Fo/mj0kGRXfzPDrA
-         kBeRbvXqt1CkuLPtBw+T/DSFq9RliUpicM+GCzFHDyRrr/k/h51QZ7H+y2tjyLFgxE37
-         J+brJPWBcL1tA/Lbl8Tzv9OCI4sMuDvoT9e5KfVrfvRSOuAIAzLjUmIJ3SKqRB2Xewfq
-         45pJPjCTeK58uKfKq03UzEo8zmhREvlydrOl55034SW6iWqXK282f3V9tOpKO7fbvfuQ
-         hgg22A1HRAIE03XAyhfz2lt7sg/cQFzybi0tm+XCQqa6EGKRbaA5CNjIi5ivh9QW9zz8
-         qLOQ==
-X-Gm-Message-State: ANoB5pmPsahxxiKPb2q2hlmJWX4XL45J91Qpdafi6VJwVKrBcu6W2BRn
-        L/mkkOpa2CTQ0htYnjYb5anuC7LuppTT2zFlubhn69K04sgI9ifF0pSMvTLilz9kIja2MYIXogv
-        izrDoR2P2p2YUAAhpuwdaPAR8FT6KAZJc
-X-Received: by 2002:a05:6870:170e:b0:144:a97b:1ae2 with SMTP id h14-20020a056870170e00b00144a97b1ae2mr125807oae.35.1670915338175;
-        Mon, 12 Dec 2022 23:08:58 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7bENDWmfDZYeIweNiEBrolCH9eeGe1c2BkAEMp4MeNJeA/fKB5xNDuCi9TQvoRkwJfWFGdPbZzSWZ9+fSs5eI=
-X-Received: by 2002:a05:6870:170e:b0:144:a97b:1ae2 with SMTP id
- h14-20020a056870170e00b00144a97b1ae2mr125803oae.35.1670915337843; Mon, 12 Dec
- 2022 23:08:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20221122074348.88601-1-hengqi@linux.alibaba.com>
- <20221122074348.88601-7-hengqi@linux.alibaba.com> <CACGkMEsbX8w1wuU+954zVwNT5JvCHX7a9baKRytVb641UmNsuw@mail.gmail.com>
- <8b143235-2e74-eddf-4c22-a36d679d093e@linux.alibaba.com>
-In-Reply-To: <8b143235-2e74-eddf-4c22-a36d679d093e@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 13 Dec 2022 15:08:46 +0800
-Message-ID: <CACGkMEsX=p4VM0yW0E3oaO=hBJx6y2x8fDkChh=ju13Y_tmjVA@mail.gmail.com>
-Subject: Re: [RFC PATCH 6/9] virtio_net: construct multi-buffer xdp in mergeable
-To:     Heng Qi <hengqi@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Rj1UBUKaY6rtQ9I5885ZHn2hBS1jlgAWFKKXV1FV4G8=;
+        b=UhNjzp+KCX2kJtVzQAAUmF4hL4gC9SFfAQo6OYapGHafb1Fjn79++cgNZ0lgvvEp6l
+         uxU0Nj6rBAdHOUkg+cvWlvIY05TBuwoR0CeOFkAV9n2HGA/4BKxLZIb+a1DIgqeydyQj
+         OMj2G7ghwrUh1A4kw6cM0no63mpf9y8bdlHX5nXV6E1eEJZz4pckfRzPK148wDMWT3zH
+         jWjM35UZl6AB7lWHXtU0P1YdhGNsC0PSr+6HQvPfvGzluD735SplnOXmgOAdlO5RQlQh
+         rMQwxjqnmuP2gQa5L1ypDfXbYjdS1VxZ+ZdZiW2gAlagowNrQewrahDiXGyExmfQq+V8
+         kDSw==
+X-Gm-Message-State: ANoB5pnbFPbhDtHDtR5wTncuYn6kGyWQF7XfHQJQzGkQh5FeFHaL8A3o
+        HAfc0LDdphV8sid9UneqT9AtBoOBTeitOnPh
+X-Google-Smtp-Source: AA0mqf7X0A3350WK/Vi9eoSNzAqbd/5dScS4mBUkLGcF+RcqQH3i7qG0gJj975gQ/8RIPQs5eFEH4Q==
+X-Received: by 2002:a62:e50e:0:b0:574:9e66:1bce with SMTP id n14-20020a62e50e000000b005749e661bcemr17668697pff.5.1670915540753;
+        Mon, 12 Dec 2022 23:12:20 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c7-20020aa79527000000b0057255b82bd1sm6904345pfp.217.2022.12.12.23.12.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Dec 2022 23:12:19 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Lina Wang <lina.wang@mediatek.com>,
+        Coleman Dietsch <dietschc@csp.edu>, bpf@vger.kernel.org,
+        Maciej enczykowski <maze@google.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] selftests/net: mv bpf/nat6to4.c to net folder
+Date:   Tue, 13 Dec 2022 15:12:11 +0800
+Message-Id: <20221213071211.1208297-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.38.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,218 +74,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 8, 2022 at 4:30 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
->
->
->
-> =E5=9C=A8 2022/12/6 =E4=B8=8B=E5=8D=882:33, Jason Wang =E5=86=99=E9=81=93=
-:
-> > On Tue, Nov 22, 2022 at 3:44 PM Heng Qi <hengqi@linux.alibaba.com> wrot=
-e:
-> >> Build multi-buffer xdp using virtnet_build_xdp_buff() in mergeable.
-> >>
-> >> For the prefilled buffer before xdp is set, vq reset can be
-> >> used to clear it, but most devices do not support it at present.
-> >> In order not to bother users who are using xdp normally, we do
-> >> not use vq reset for the time being.
-> > I guess to tweak the part to say we will probably use vq reset in the f=
-uture.
->
-> OK, it works.
->
-> >
-> >> At the same time, virtio
-> >> net currently uses comp pages, and bpf_xdp_frags_increase_tail()
-> >> needs to calculate the tailroom of the last frag, which will
-> >> involve the offset of the corresponding page and cause a negative
-> >> value, so we disable tail increase by not setting xdp_rxq->frag_size.
-> >>
-> >> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> >> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> >> ---
-> >>   drivers/net/virtio_net.c | 67 +++++++++++++++++++++++---------------=
---
-> >>   1 file changed, 38 insertions(+), 29 deletions(-)
-> >>
-> >> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> >> index 20784b1d8236..83e6933ae62b 100644
-> >> --- a/drivers/net/virtio_net.c
-> >> +++ b/drivers/net/virtio_net.c
-> >> @@ -994,6 +994,7 @@ static struct sk_buff *receive_mergeable(struct ne=
-t_device *dev,
-> >>                                           unsigned int *xdp_xmit,
-> >>                                           struct virtnet_rq_stats *sta=
-ts)
-> >>   {
-> >> +       unsigned int tailroom =3D SKB_DATA_ALIGN(sizeof(struct skb_sha=
-red_info));
-> >>          struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf;
-> >>          u16 num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
-> >>          struct page *page =3D virt_to_head_page(buf);
-> >> @@ -1024,53 +1025,50 @@ static struct sk_buff *receive_mergeable(struc=
-t net_device *dev,
-> >>          rcu_read_lock();
-> >>          xdp_prog =3D rcu_dereference(rq->xdp_prog);
-> >>          if (xdp_prog) {
-> >> +               unsigned int xdp_frags_truesz =3D 0;
-> >> +               struct skb_shared_info *shinfo;
-> >>                  struct xdp_frame *xdpf;
-> >>                  struct page *xdp_page;
-> >>                  struct xdp_buff xdp;
-> >>                  void *data;
-> >>                  u32 act;
-> >> +               int i;
-> >>
-> >> -               /* Transient failure which in theory could occur if
-> >> -                * in-flight packets from before XDP was enabled reach
-> >> -                * the receive path after XDP is loaded.
-> >> -                */
-> >> -               if (unlikely(hdr->hdr.gso_type))
-> >> -                       goto err_xdp;
-> > Two questions:
-> >
-> > 1) should we keep this check for the XDP program that can't deal with X=
-DP frags?
->
-> Yes, the problem is the same as the xdp program without xdp.frags when
-> GRO_HW, I will correct it.
->
-> > 2) how could we guarantee that the vnet header (gso_type/csum_start
-> > etc) is still valid after XDP (where XDP program can choose to
-> > override the header)?
->
-> We can save the vnet headr before the driver receives the packet and
-> build xdp_buff, and then use
-> the pre-saved value in the subsequent process.
+There are some issues with the bpf/nat6to4.c building.
 
-The problem is that XDP may modify the packet (header) so some fields
-are not valid any more (e.g csum_start/offset ?).
+1. It use TEST_CUSTOM_PROGS, which will add the nat6to4.o to
+   kselftest-list file and run by common run_tests.
+2. When building the test via `make -C tools/testing/selftests/
+   TARGETS="net"`, the nat6to4.o will be build in selftests/net/bpf/
+   folder. But in test udpgro_frglist.sh it refers to ../bpf/nat6to4.o.
+   The correct path should be ./bpf/nat6to4.o.
+3. If building the test via `make -C tools/testing/selftests/ TARGETS="net"
+   install`. The nat6to4.o will be installed to kselftest_install/net/
+   folder. Then the udpgro_frglist.sh should refer to ./nat6to4.o.
 
-If I was not wrong, there's no way for the XDP program to access those
-fields or does it support it right now?
+To fix the confusing test path, let's just move the nat6to4.c to net folder
+and build it as TEST_GEN_FILES.
 
->
-> >> -
-> >> -               /* Buffers with headroom use PAGE_SIZE as alloc size,
-> >> -                * see add_recvbuf_mergeable() + get_mergeable_buf_len=
-()
-> >> +               /* Now XDP core assumes frag size is PAGE_SIZE, but bu=
-ffers
-> >> +                * with headroom may add hole in truesize, which
-> >> +                * make their length exceed PAGE_SIZE. So we disabled =
-the
-> >> +                * hole mechanism for xdp. See add_recvbuf_mergeable()=
-.
-> >>                   */
-> >>                  frame_sz =3D headroom ? PAGE_SIZE : truesize;
-> >>
-> >> -               /* This happens when rx buffer size is underestimated
-> >> -                * or headroom is not enough because of the buffer
-> >> -                * was refilled before XDP is set. This should only
-> >> -                * happen for the first several packets, so we don't
-> >> -                * care much about its performance.
-> >> +               /* This happens when headroom is not enough because
-> >> +                * of the buffer was prefilled before XDP is set.
-> >> +                * This should only happen for the first several packe=
-ts.
-> >> +                * In fact, vq reset can be used here to help us clean=
- up
-> >> +                * the prefilled buffers, but many existing devices do=
- not
-> >> +                * support it, and we don't want to bother users who a=
-re
-> >> +                * using xdp normally.
-> >>                   */
-> >> -               if (unlikely(num_buf > 1 ||
-> >> -                            headroom < virtnet_get_headroom(vi))) {
-> >> -                       /* linearize data for XDP */
-> >> -                       xdp_page =3D xdp_linearize_page(rq, &num_buf,
-> >> -                                                     page, offset,
-> >> -                                                     VIRTIO_XDP_HEADR=
-OOM,
-> >> -                                                     &len);
-> >> -                       frame_sz =3D PAGE_SIZE;
-> >> +               if (unlikely(headroom < virtnet_get_headroom(vi))) {
-> >> +                       if ((VIRTIO_XDP_HEADROOM + len + tailroom) > P=
-AGE_SIZE)
-> >> +                               goto err_xdp;
-> >>
-> >> +                       xdp_page =3D alloc_page(GFP_ATOMIC);
-> >>                          if (!xdp_page)
-> >>                                  goto err_xdp;
-> >> +
-> >> +                       memcpy(page_address(xdp_page) + VIRTIO_XDP_HEA=
-DROOM,
-> >> +                              page_address(page) + offset, len);
-> >> +                       frame_sz =3D PAGE_SIZE;
-> > How can we know a single page is sufficient here? (before XDP is set,
-> > we reserve neither headroom nor tailroom).
->
-> This is only for the first buffer, refer to add_recvbuf_mergeable() and
-> get_mergeable_buf_len() A buffer is always no larger than a page.
+Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ tools/testing/selftests/net/Makefile            | 11 +++++++++--
+ tools/testing/selftests/net/bpf/Makefile        | 14 --------------
+ tools/testing/selftests/net/{bpf => }/nat6to4.c |  0
+ tools/testing/selftests/net/udpgro_frglist.sh   |  6 +++---
+ 4 files changed, 12 insertions(+), 19 deletions(-)
+ delete mode 100644 tools/testing/selftests/net/bpf/Makefile
+ rename tools/testing/selftests/net/{bpf => }/nat6to4.c (100%)
 
-Ok.
-
-Thanks
-
->
-> >
-> >>                          offset =3D VIRTIO_XDP_HEADROOM;
-> > I think we should still try to do linearization for the XDP program
-> > that doesn't support XDP frags.
->
-> Yes, you are right.
->
-> Thanks.
->
-> >
-> > Thanks
-> >
-> >>                  } else {
-> >>                          xdp_page =3D page;
-> >>                  }
-> >> -
-> >> -               /* Allow consuming headroom but reserve enough space t=
-o push
-> >> -                * the descriptor on if we get an XDP_TX return code.
-> >> -                */
-> >>                  data =3D page_address(xdp_page) + offset;
-> >> -               xdp_init_buff(&xdp, frame_sz - vi->hdr_len, &rq->xdp_r=
-xq);
-> >> -               xdp_prepare_buff(&xdp, data - VIRTIO_XDP_HEADROOM + vi=
-->hdr_len,
-> >> -                                VIRTIO_XDP_HEADROOM, len - vi->hdr_le=
-n, true);
-> >> +               err =3D virtnet_build_xdp_buff(dev, vi, rq, &xdp, data=
-, len, frame_sz,
-> >> +                                            &num_buf, &xdp_frags_true=
-sz, stats);
-> >> +               if (unlikely(err))
-> >> +                       goto err_xdp_frags;
-> >>
-> >>                  act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> >>                  stats->xdp_packets++;
-> >> @@ -1164,6 +1162,17 @@ static struct sk_buff *receive_mergeable(struct=
- net_device *dev,
-> >>                                  __free_pages(xdp_page, 0);
-> >>                          goto err_xdp;
-> >>                  }
-> >> +err_xdp_frags:
-> >> +               shinfo =3D xdp_get_shared_info_from_buff(&xdp);
-> >> +
-> >> +               if (unlikely(xdp_page !=3D page))
-> >> +                       __free_pages(xdp_page, 0);
-> >> +
-> >> +               for (i =3D 0; i < shinfo->nr_frags; i++) {
-> >> +                       xdp_page =3D skb_frag_page(&shinfo->frags[i]);
-> >> +                       put_page(xdp_page);
-> >> +               }
-> >> +               goto err_xdp;
-> >>          }
-> >>          rcu_read_unlock();
-> >>
-> >> --
-> >> 2.19.1.6.gb485710b
-> >>
->
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 69c58362c0ed..d1495107a320 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -71,14 +71,21 @@ TEST_GEN_FILES += bind_bhash
+ TEST_GEN_PROGS += sk_bind_sendto_listen
+ TEST_GEN_PROGS += sk_connect_zero_addr
+ TEST_PROGS += test_ingress_egress_chaining.sh
++TEST_GEN_FILES += nat6to4.o
+ 
+ TEST_FILES := settings
+ 
+ include ../lib.mk
+ 
+-include bpf/Makefile
+-
+ $(OUTPUT)/reuseport_bpf_numa: LDLIBS += -lnuma
+ $(OUTPUT)/tcp_mmap: LDLIBS += -lpthread
+ $(OUTPUT)/tcp_inq: LDLIBS += -lpthread
+ $(OUTPUT)/bind_bhash: LDLIBS += -lpthread
++
++CLANG ?= clang
++CCINCLUDE += -I../bpf
++CCINCLUDE += -I../../../lib
++CCINCLUDE += -I../../../../usr/include/
++
++$(OUTPUT)/nat6to4.o: nat6to4.c
++	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) -o $@
+diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
+deleted file mode 100644
+index 8ccaf8732eb2..000000000000
+--- a/tools/testing/selftests/net/bpf/Makefile
++++ /dev/null
+@@ -1,14 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-
+-CLANG ?= clang
+-CCINCLUDE += -I../../bpf
+-CCINCLUDE += -I../../../../lib
+-CCINCLUDE += -I../../../../../usr/include/
+-
+-TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
+-all: $(TEST_CUSTOM_PROGS)
+-
+-$(OUTPUT)/%.o: %.c
+-	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) -o $@
+-
+-EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)
+diff --git a/tools/testing/selftests/net/bpf/nat6to4.c b/tools/testing/selftests/net/nat6to4.c
+similarity index 100%
+rename from tools/testing/selftests/net/bpf/nat6to4.c
+rename to tools/testing/selftests/net/nat6to4.c
+diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
+index c9c4b9d65839..4f58444c90a1 100755
+--- a/tools/testing/selftests/net/udpgro_frglist.sh
++++ b/tools/testing/selftests/net/udpgro_frglist.sh
+@@ -40,8 +40,8 @@ run_one() {
+ 
+ 	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
+ 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
+-	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
+-	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
++	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file nat6to4.o section schedcls/ingress6/nat_6  direct-action
++	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file nat6to4.o section schedcls/egress4/snat4 direct-action
+         echo ${rx_args}
+ 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
+ 
+@@ -88,7 +88,7 @@ if [ ! -f ${BPF_FILE} ]; then
+ 	exit -1
+ fi
+ 
+-if [ ! -f bpf/nat6to4.o ]; then
++if [ ! -f nat6to4.o ]; then
+ 	echo "Missing nat6to4 helper. Build bpfnat6to4.o selftest first"
+ 	exit -1
+ fi
+-- 
+2.38.1
 
