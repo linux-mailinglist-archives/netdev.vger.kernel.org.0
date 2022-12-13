@@ -2,93 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6BAE64B6F5
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 15:10:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 150D664B714
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 15:14:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235930AbiLMOK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 09:10:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
+        id S235835AbiLMOOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 09:14:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235869AbiLMOJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 09:09:58 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D79972126B;
-        Tue, 13 Dec 2022 06:09:31 -0800 (PST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 3/3] netfilter: conntrack: document sctp timeouts
-Date:   Tue, 13 Dec 2022 15:09:23 +0100
-Message-Id: <20221213140923.154594-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221213140923.154594-1-pablo@netfilter.org>
-References: <20221213140923.154594-1-pablo@netfilter.org>
+        with ESMTP id S235832AbiLMOOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 09:14:12 -0500
+Received: from mail.rosalinux.ru (mail.rosalinux.ru [195.19.76.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30928EA7;
+        Tue, 13 Dec 2022 06:12:39 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.rosalinux.ru (Postfix) with ESMTP id ABDB75D46449;
+        Tue, 13 Dec 2022 17:11:17 +0300 (MSK)
+Received: from mail.rosalinux.ru ([127.0.0.1])
+        by localhost (mail.rosalinux.ru [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id C3-AkuSBZ0QK; Tue, 13 Dec 2022 17:11:17 +0300 (MSK)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.rosalinux.ru (Postfix) with ESMTP id 770C85D46455;
+        Tue, 13 Dec 2022 17:11:17 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.rosalinux.ru 770C85D46455
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosalinux.ru;
+        s=1D4BB666-A0F1-11EB-A1A2-F53579C7F503; t=1670940677;
+        bh=NBPMYEaaLH5R+99CmkIyf3c/V2azpfSSPiOU7qSM5x4=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=TwrXXglvtP3bo3T+TBAYEv/pNkgkVlLMJVa9wTT7Eb9FUWiV0PPILNx5MP1BEHQzl
+         C4JoLkZR1ZIYs4UIU8kauJAWELPcE8rl1KGQJZXKzchfy97+4n4An1DWGgC93kQdVY
+         NjdNiBffF8zrflf/KYfMBNihvi1mNkScRyC3EgerTEhNNpH5B1sSKPHlsNXz1ziCfe
+         tUbSqyIOHFJKsvVrIkF2BArhL8KRY1cZCBU0l42uN0uoy2cMShFR5ktydl3lE0ikUs
+         2z/5J+75PkQMT+ZRrYQYAeBvYbWmTRYHBLuvca/5w8kHpssTH9hd0Mha/fJsZSIgz2
+         7YEee1tzbkvJA==
+X-Virus-Scanned: amavisd-new at rosalinux.ru
+Received: from mail.rosalinux.ru ([127.0.0.1])
+        by localhost (mail.rosalinux.ru [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id yq_WSSdlXZ1e; Tue, 13 Dec 2022 17:11:17 +0300 (MSK)
+Received: from localhost.localdomain (unknown [80.75.131.190])
+        by mail.rosalinux.ru (Postfix) with ESMTPSA id 025795D46449;
+        Tue, 13 Dec 2022 17:11:16 +0300 (MSK)
+From:   Aleksandr Burakov <a.burakov@rosalinux.ru>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Christophe Ricard <christophe.ricard@gmail.com>,
+        Samuel Ortiz <sameo@linux.intel.com>
+Cc:     Aleksandr Burakov <a.burakov@rosalinux.ru>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH] nfc: st-nci: array index overflow in st_nci_se_get_bwi()
+Date:   Tue, 13 Dec 2022 09:12:28 -0500
+Message-Id: <20221213141228.101786-1-a.burakov@rosalinux.ru>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sriram Yagnaraman <sriram.yagnaraman@est.tech>
+Index of info->se_info.atr can be overflow due to unchecked increment
+in the loop "for". The patch checks the value of current array index
+and doesn't permit increment in case of the index is equal to
+ST_NCI_ESE_MAX_LENGTH - 1.
 
-Exposed through sysctl, update documentation to describe sctp states and
-their default timeouts.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Signed-off-by: Sriram Yagnaraman <sriram.yagnaraman@est.tech>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
+Signed-off-by: Aleksandr Burakov <a.burakov@rosalinux.ru>
 ---
- .../networking/nf_conntrack-sysctl.rst        | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ drivers/nfc/st-nci/se.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/nf_conntrack-sysctl.rst b/Documentation/networking/nf_conntrack-sysctl.rst
-index 1120d71f28d7..49db1d11d7c4 100644
---- a/Documentation/networking/nf_conntrack-sysctl.rst
-+++ b/Documentation/networking/nf_conntrack-sysctl.rst
-@@ -163,6 +163,39 @@ nf_conntrack_timestamp - BOOLEAN
- 
- 	Enable connection tracking flow timestamping.
- 
-+nf_conntrack_sctp_timeout_closed - INTEGER (seconds)
-+	default 10
-+
-+nf_conntrack_sctp_timeout_cookie_wait - INTEGER (seconds)
-+	default 3
-+
-+nf_conntrack_sctp_timeout_cookie_echoed - INTEGER (seconds)
-+	default 3
-+
-+nf_conntrack_sctp_timeout_established - INTEGER (seconds)
-+	default 432000 (5 days)
-+
-+nf_conntrack_sctp_timeout_shutdown_sent - INTEGER (seconds)
-+	default 0.3
-+
-+nf_conntrack_sctp_timeout_shutdown_recd - INTEGER (seconds)
-+	default 0.3
-+
-+nf_conntrack_sctp_timeout_shutdown_ack_sent - INTEGER (seconds)
-+	default 3
-+
-+nf_conntrack_sctp_timeout_heartbeat_sent - INTEGER (seconds)
-+	default 30
-+
-+	This timeout is used to setup conntrack entry on secondary paths.
-+	Default is set to hb_interval.
-+
-+nf_conntrack_sctp_timeout_heartbeat_acked - INTEGER (seconds)
-+	default 210
-+
-+	This timeout is used to setup conntrack entry on secondary paths.
-+	Default is set to (hb_interval * path_max_retrans + rto_max)
-+
- nf_conntrack_udp_timeout - INTEGER (seconds)
- 	default 30
- 
--- 
-2.30.2
+diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+index ec87dd21e054..ff8ac1784880 100644
+--- a/drivers/nfc/st-nci/se.c
++++ b/drivers/nfc/st-nci/se.c
+@@ -119,10 +119,11 @@ static u8 st_nci_se_get_bwi(struct nci_dev *ndev)
+ 	/* Bits 8 to 5 of the first TB for T=3D1 encode BWI from zero to nine *=
+/
+ 	for (i =3D 1; i < ST_NCI_ESE_MAX_LENGTH; i++) {
+ 		td =3D ST_NCI_ATR_GET_Y_FROM_TD(info->se_info.atr[i]);
+-		if (ST_NCI_ATR_TA_PRESENT(td))
++		if (ST_NCI_ATR_TA_PRESENT(td) && i < ST_NCI_ESE_MAX_LENGTH - 1)
+ 			i++;
+ 		if (ST_NCI_ATR_TB_PRESENT(td)) {
+-			i++;
++			if (i < ST_NCI_ESE_MAX_LENGTH - 1)
++				i++;
+ 			return info->se_info.atr[i] >> 4;
+ 		}
+ 	}
+--=20
+2.35.1
 
