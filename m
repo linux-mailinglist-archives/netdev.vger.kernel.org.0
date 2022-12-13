@@ -2,118 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8951364B79A
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 15:41:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 641AD64B80A
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 16:07:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235967AbiLMOlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 09:41:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
+        id S235956AbiLMPHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 10:07:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235961AbiLMOlm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 09:41:42 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0AE1E735
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 06:41:39 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id b3so5271338lfv.2
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 06:41:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yC+lJhsCp8275w0XfFlUr9uN0GpxkxjhWndpBUBZIzE=;
-        b=Zxm41vZuAkh4lhDQH/Z3xyuiGsZv3HnKvOwDI8t3qv/GapUU7HNORoNZQNfvjRbHkl
-         2Ub5fKH8vJdSknHxDkeHIdDQZSo81swCb3y0bn6o3pXfwG07quWqpazwhdgAAYzur+5z
-         N2hrLPEoTwds1FhP6TOWoG+GHbM2Cy/3InwMWyB1pEBtFH3XtqnYrvm2n8B1qr7DnmMt
-         x+4JeF3JYHioDCTfknJ6QtxkGZ9GEXbYDf3pTFC0y1y/s9rjTgeNaRvmmUY9U5wRlrYS
-         sDWPnhOm+qfpU6bV7uGoTFzCIkiXfVwh3dc0cmg3lE8tqn8YpVyWeJ/qlee5QFzyKSbg
-         iWGA==
+        with ESMTP id S236050AbiLMPHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 10:07:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620D521891
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 07:06:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670943992;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QIV38DnRgw5d8eTHW5XOjPjMdQVy/JxED3DRuC/h3DU=;
+        b=OdVpG9j91daC0g+cFkTSF+vuhAqs09a3PTYikcDdXU847+FMmBpn87q6RhqPb/dOf+fGMq
+        NYhX41CMd9yFn09vLmplk1ntNhsoVaAkuKqhcDTR/xwgVD3QLSHoBJ/FfMyXEwIFx41Qon
+        RB6gv4aCV+0Zl+IS5jx4aP986HW+TpY=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-542-nQssGqYdMZ6ejUyIA7uh2g-1; Tue, 13 Dec 2022 10:06:31 -0500
+X-MC-Unique: nQssGqYdMZ6ejUyIA7uh2g-1
+Received: by mail-lf1-f69.google.com with SMTP id i5-20020a0565123e0500b004a26e99bcd5so1281161lfv.1
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 07:06:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yC+lJhsCp8275w0XfFlUr9uN0GpxkxjhWndpBUBZIzE=;
-        b=UhQTVioF3W8ykzbtQzzJ3822tLELSn+I0Ci3eRZ24aoewyHwpneHPpQjIMUbe+IgoU
-         u+hD8LCFCCc1OrdVmTeGKc813/hrS0e+q0k+8pggkN+Au8T+ChMCdwvrS6ZneugwCd2K
-         zXsgfnGi6HvRrGC7tr3kQxs+zKjxngysnAX19ygQ1P+1PZNNDkpuxpw38GnNzYZB8GNW
-         N5gUT9BVv8+i3B6lCkFFnNWx7ujzRmFgrYeLi9QswQBsBUTeHbnPMK8grIIwXqjuGd8h
-         RmyyqwWwjlC936UwdlaEu+jPVwiWajgsBa/UbaRsAMCX3g0hRla6igyajECjjE9w8zBc
-         BA8Q==
-X-Gm-Message-State: ANoB5pmP6cgbyntvbwVRWdyCL+i1KvelpC/gnedavxGGyuJzgYClQdgI
-        WxzzdWf8nrNd4IrjriSrQRNYbw==
-X-Google-Smtp-Source: AA0mqf6FeRGFgCo5iXcxtzg5P0hBX2iG9kfwVgqyJsur7xGwTB+0EEP5CYRuiNFBiRBUmis05J3Usg==
-X-Received: by 2002:a05:6512:15a7:b0:4b6:e494:a98d with SMTP id bp39-20020a05651215a700b004b6e494a98dmr3935980lfb.44.1670942498250;
-        Tue, 13 Dec 2022 06:41:38 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id q23-20020a056512211700b004a100c21eaesm395259lfr.97.2022.12.13.06.41.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Dec 2022 06:41:37 -0800 (PST)
-Message-ID: <cd3a1383-9d6a-19ad-fd6e-c45da7e646b4@linaro.org>
-Date:   Tue, 13 Dec 2022 15:41:36 +0100
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QIV38DnRgw5d8eTHW5XOjPjMdQVy/JxED3DRuC/h3DU=;
+        b=gaVtxEGR55pulf7g3bt6mijz+uH8E27MYo0qAvKf+PFkYJNbHaTTbya8OvE1L0BuBK
+         ITP2KtUM2TsJ1tu0BCJnxOJy+NSjZPN/51etZa4hdZPGulLcKGSHWUxX4BhHHReMNVn1
+         ykz5fwAE06x/3edhtcLKA6g12PpaOipo+6kCsXgylYwmlOreLb55Lz4oW6D8zEeaPQ9N
+         cwp3pQpBSzmD35zLl0aCo07yYRIZLO/jhiTF502Q2mhEovQ3UdkBVuSpSiB+/hIe8XDg
+         vWm3uZ2CGHwFzSFXY1q59sz8vEAZiHw3EN/6icq54mFGnvRtI+wkBh966ERX0iLnFC4W
+         l2ZQ==
+X-Gm-Message-State: ANoB5pmnjJboFvoXxGBZmV284+65dwoVXUG2G4ETXKg1g/o14FnWGvWy
+        qLB4WlTw7xoJMAILRO5VPU4F+bWIVGHCfe8HfEIPNx6x5pjaInQcHq1AAx0OTuJqnQyVnSxoqn0
+        VDgKC3XyKhKpiIMhQ
+X-Received: by 2002:a05:6512:25a4:b0:4b5:87da:8b35 with SMTP id bf36-20020a05651225a400b004b587da8b35mr6373276lfb.61.1670943988393;
+        Tue, 13 Dec 2022 07:06:28 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7vgbEpA6HaWdsVzT53anYyRdWOSR1rrrHGJQiAPEgrJcsGLx4k6nbiisfQn77DohtXbaWyzg==
+X-Received: by 2002:a05:6512:25a4:b0:4b5:87da:8b35 with SMTP id bf36-20020a05651225a400b004b587da8b35mr6373254lfb.61.1670943988122;
+        Tue, 13 Dec 2022 07:06:28 -0800 (PST)
+Received: from redhat.com ([2.52.138.183])
+        by smtp.gmail.com with ESMTPSA id x13-20020a5d650d000000b002365730eae8sm14773wru.55.2022.12.13.07.06.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 07:06:27 -0800 (PST)
+Date:   Tue, 13 Dec 2022 10:06:23 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Bobby Eshleman <bobbyeshleman@gmail.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6] virtio/vsock: replace virtio_vsock_pkt with
+ sk_buff
+Message-ID: <20221213100510-mutt-send-email-mst@kernel.org>
+References: <20221213072549.1997724-1-bobby.eshleman@bytedance.com>
+ <20221213102232.n2mc3y7ietabncax@sgarzare-redhat>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH net v2] nfc: pn533: Clear nfc_target before being used
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Minsuk Kang <linuxlovemin@yonsei.ac.kr>, netdev@vger.kernel.org
-Cc:     linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
-        linville@tuxdriver.com, dokyungs@yonsei.ac.kr,
-        jisoo.jang@yonsei.ac.kr
-References: <20221213142746.108647-1-linuxlovemin@yonsei.ac.kr>
- <decda09c-34ed-ce22-13c4-2f12085e99bd@linaro.org>
-In-Reply-To: <decda09c-34ed-ce22-13c4-2f12085e99bd@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221213102232.n2mc3y7ietabncax@sgarzare-redhat>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/12/2022 15:38, Krzysztof Kozlowski wrote:
-> On 13/12/2022 15:27, Minsuk Kang wrote:
->> Fix a slab-out-of-bounds read that occurs in nla_put() called from
->> nfc_genl_send_target() when target->sensb_res_len, which is duplicated
->> from an nfc_target in pn533, is too large as the nfc_target is not
->> properly initialized and retains garbage values. Clear nfc_targets with
->> memset() before they are used.
->>
->> Found by a modified version of syzkaller.
->>
->> BUG: KASAN: slab-out-of-bounds in nla_put
->> Call Trace:
->>  memcpy
->>  nla_put
->>  nfc_genl_dump_targets
->>  genl_lock_dumpit
->>  netlink_dump
->>  __netlink_dump_start
->>  genl_family_rcv_msg_dumpit
->>  genl_rcv_msg
->>  netlink_rcv_skb
->>  genl_rcv
->>  netlink_unicast
->>  netlink_sendmsg
->>  sock_sendmsg
->>  ____sys_sendmsg
->>  ___sys_sendmsg
->>  __sys_sendmsg
->>  do_syscall_64
->>
->> Fixes: 673088fb42d0 ("NFC: pn533: Send ATR_REQ directly for active device detection")
->> Fixes: 361f3cb7f9cf ("NFC: DEP link hook implementation for pn533")
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Tue, Dec 13, 2022 at 11:22:32AM +0100, Stefano Garzarella wrote:
+> > +	if (len <= GOOD_COPY_LEN && !skb_queue_empty_lockless(&vvs->rx_queue)) {
 > 
-> How did it happen? From where did you get it?
+> Same here.
+> 
+> If there are no major changes to be made, I think the next version is the
+> final ones, though we are now in the merge window, so net-next is closed
+> [1], only RFCs can be sent [2].
+> 
+> I suggest you wait until the merge window is over (two weeks usually) to
+> send the next version.
 
-I double checked - I did not send it. This is some fake tag. Please do
-not add fake/invented/created tags with people's names.
+Nah, you never know, could be more comments. And depending on the timing
+I might be able to merge it.
 
-Best regards,
-Krzysztof
+-- 
+MST
 
