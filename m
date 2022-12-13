@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD31164B3E7
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 12:12:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33CFD64B3E8
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 12:12:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiLMLM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 06:12:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
+        id S235299AbiLMLM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 06:12:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235364AbiLMLLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 06:11:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ECD1146A
+        with ESMTP id S234839AbiLMLLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 06:11:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7585F1183D
         for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 03:10:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1670929849;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=M0e9HVP7QSvh2aSmzFOzNPfVb5oLm5eou4kVigVxLRo=;
-        b=QplCt/fJAxXcPpThZMEf8qSoDD8ZyXA9vBXrv6jfuqHwLzzsLEzxdW1qlwXvccLI8ZjrSY
-        cKeecouurxjblWdTuIYMkEGYQY1N6iQI5D3bF5kK1VMyiDaSVUZgcDkjezRdAGh8SgTt/o
-        5LyXBvZmLtCFHfHWCiDJYXLgEddiAPg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NNkQnABR8UWJa/HG+JmJRBaw4tE3KriUNOm9fQ11KHU=;
+        b=LE9Wzz0IQVs8P6eox2L0hFfJN5kriqcPFvff/wVykpcw0i6AJ9hHZuCjxnN3HlGGfKe0K+
+        WDc9EvolQcAj51LEKk7M0YDBhwX915OxfqWB56zdQLbE//z+dAr2+XqbxDtToQiw48iOx6
+        qwibXzrgy8p2uINd3vWXxLQ15sGaD/Q=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-182-qycAe3MRPZumVk5ZtPd17Q-1; Tue, 13 Dec 2022 06:10:48 -0500
-X-MC-Unique: qycAe3MRPZumVk5ZtPd17Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+ us-mta-103-j5Su1KkUNe6C041WEkvNQw-1; Tue, 13 Dec 2022 06:10:48 -0500
+X-MC-Unique: j5Su1KkUNe6C041WEkvNQw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AD1D33C0F246;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DFFEB802536;
         Tue, 13 Dec 2022 11:10:46 +0000 (UTC)
 Received: from bcodding.csb (unknown [10.22.50.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BEC2A1121315;
-        Tue, 13 Dec 2022 11:10:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A98D2400D794;
+        Tue, 13 Dec 2022 11:10:46 +0000 (UTC)
 Received: by bcodding.csb (Postfix, from userid 24008)
-        id 4C5F110C30E0; Tue, 13 Dec 2022 06:10:43 -0500 (EST)
+        id 68A0F10C30E1; Tue, 13 Dec 2022 06:10:44 -0500 (EST)
 From:   Benjamin Coddington <bcodding@redhat.com>
 To:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -78,13 +79,14 @@ Cc:     Guillaume Nault <gnault@redhat.com>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         netdev@vger.kernel.org
-Subject: [PATCH net v3 0/3] Stop corrupting socket's task_frag
-Date:   Tue, 13 Dec 2022 06:10:36 -0500
-Message-Id: <cover.1670929442.git.bcodding@redhat.com>
+Subject: [PATCH net v3 1/3] net: Introduce sk_use_task_frag in struct sock.
+Date:   Tue, 13 Dec 2022 06:10:37 -0500
+Message-Id: <1a369325ac2d4a604a074428f58fa72a6065e197.1670929442.git.bcodding@redhat.com>
+In-Reply-To: <cover.1670929442.git.bcodding@redhat.com>
+References: <cover.1670929442.git.bcodding@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -95,60 +97,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The networking code uses flags in sk_allocation to determine if it can use
-current->task_frag, however in-kernel users of sockets may stop setting
-sk_allocation when they convert to the preferred memalloc_nofs_save/restore,
-as SUNRPC has done in commit a1231fda7e94 ("SUNRPC: Set memalloc_nofs_save()
-on all rpciod/xprtiod jobs").
+From: Guillaume Nault <gnault@redhat.com>
 
-This will cause corruption in current->task_frag when recursing into the
-network layer for those subsystems during page fault or reclaim.  The
-corruption is difficult to diagnose because stack traces may not contain the
-offending subsystem at all.  The corruption is unlikely to show up in
-testing because it requires memory pressure, and so subsystems that
-convert to memalloc_nofs_save/restore are likely to continue to run into
-this issue.
+Sockets that can be used while recursing into memory reclaim, like
+those used by network block devices and file systems, mustn't use
+current->task_frag: if the current process is already using it, then
+the inner memory reclaim call would corrupt the task_frag structure.
 
-Previous reports and proposed fixes:
-https://lore.kernel.org/netdev/96a18bd00cbc6cb554603cc0d6ef1c551965b078.1663762494.git.gnault@redhat.com/
-https://lore.kernel.org/netdev/b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com/
-https://lore.kernel.org/linux-nfs/de6d99321d1dcaa2ad456b92b3680aa77c07a747.1665401788.git.gnault@redhat.com/
+To avoid this, sk_page_frag() uses ->sk_allocation to detect sockets
+that mustn't use current->task_frag, assuming that those used during
+memory reclaim had their allocation constraints reflected in
+->sk_allocation.
 
-Guilluame Nault has done all of the hard work tracking this problem down and
-finding the best fix for this issue.  I'm just taking a turn posting another
-fix.
+This unfortunately doesn't cover all cases: in an attempt to remove all
+usage of GFP_NOFS and GFP_NOIO, sunrpc stopped setting these flags in
+->sk_allocation, and used memalloc_nofs critical sections instead.
+This breaks the sk_page_frag() heuristic since the allocation
+constraints are now stored in current->flags, which sk_page_frag()
+can't read without risking triggering a cache miss and slowing down
+TCP's fast path.
 
-Changes on v2:
-	- rebased on -net
-	- set sk_use_task_frag = false for xfrm/espintcp.c
+This patch creates a new field in struct sock, named sk_use_task_frag,
+which sockets with memory reclaim constraints can set to false if they
+can't safely use current->task_frag. In such cases, sk_page_frag() now
+always returns the socket's page_frag (->sk_frag). The first user is
+sunrpc, which needs to avoid using current->task_frag but can keep
+->sk_allocation set to GFP_KERNEL otherwise.
 
-Changes on v3:
-	- fixup comments in sock.h for kernel-doc
+Eventually, it might be possible to simplify sk_page_frag() by only
+testing ->sk_use_task_frag and avoid relying on the ->sk_allocation
+heuristic entirely (assuming other sockets will set ->sk_use_task_frag
+according to their constraints in the future).
 
-Benjamin Coddington (2):
-  Treewide: Stop corrupting socket's task_frag
-  net: simplify sk_page_frag
+The new ->sk_use_task_frag field is placed in a hole in struct sock and
+belongs to a cache line shared with ->sk_shutdown. Therefore it should
+be hot and shouldn't have negative performance impacts on TCP's fast
+path (sk_shutdown is tested just before the while() loop in
+tcp_sendmsg_locked()).
 
-Guillaume Nault (1):
-  net: Introduce sk_use_task_frag in struct sock.
+Link: https://lore.kernel.org/netdev/b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com/
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Reviewed-by: Benjamin Coddington <bcodding@redhat.com>
+---
+ include/net/sock.h | 11 +++++++++--
+ net/core/sock.c    |  1 +
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
- drivers/block/drbd/drbd_receiver.c |  3 +++
- drivers/block/nbd.c                |  1 +
- drivers/nvme/host/tcp.c            |  1 +
- drivers/scsi/iscsi_tcp.c           |  1 +
- drivers/usb/usbip/usbip_common.c   |  1 +
- fs/afs/rxrpc.c                     |  1 +
- fs/cifs/connect.c                  |  1 +
- fs/dlm/lowcomms.c                  |  2 ++
- fs/ocfs2/cluster/tcp.c             |  1 +
- include/net/sock.h                 | 10 ++++++----
- net/9p/trans_fd.c                  |  1 +
- net/ceph/messenger.c               |  1 +
- net/core/sock.c                    |  1 +
- net/sunrpc/xprtsock.c              |  3 +++
- net/xfrm/espintcp.c                |  1 +
- 15 files changed, 25 insertions(+), 4 deletions(-)
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index e0517ecc6531..44380c6dc6c4 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -318,6 +318,9 @@ struct sk_filter;
+   *	@sk_stamp: time stamp of last packet received
+   *	@sk_stamp_seq: lock for accessing sk_stamp on 32 bit architectures only
+   *	@sk_tsflags: SO_TIMESTAMPING flags
++  *	@sk_use_task_frag: allow sk_page_frag() to use current->task_frag.
++  *			   Sockets that can be used under memory reclaim should
++  *			   set this to false.
+   *	@sk_bind_phc: SO_TIMESTAMPING bind PHC index of PTP virtual clock
+   *	              for timestamping
+   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+@@ -505,6 +508,7 @@ struct sock {
+ #endif
+ 	u16			sk_tsflags;
+ 	u8			sk_shutdown;
++	bool			sk_use_task_frag;
+ 	atomic_t		sk_tskey;
+ 	atomic_t		sk_zckey;
+ 
+@@ -2561,14 +2565,17 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
+  * socket operations and end up recursing into sk_page_frag()
+  * while it's already in use: explicitly avoid task page_frag
+  * usage if the caller is potentially doing any of them.
+- * This assumes that page fault handlers use the GFP_NOFS flags.
++ * This assumes that page fault handlers use the GFP_NOFS flags or
++ * explicitly disable sk_use_task_frag.
+  *
+  * Return: a per task page_frag if context allows that,
+  * otherwise a per socket one.
+  */
+ static inline struct page_frag *sk_page_frag(struct sock *sk)
+ {
+-	if ((sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC | __GFP_FS)) ==
++	if (sk->sk_use_task_frag &&
++	    (sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC |
++				  __GFP_FS)) ==
+ 	    (__GFP_DIRECT_RECLAIM | __GFP_FS))
+ 		return &current->task_frag;
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3ba0358c77c..cc113500d442 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3368,6 +3368,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+ 	sk->sk_rcvbuf		=	READ_ONCE(sysctl_rmem_default);
+ 	sk->sk_sndbuf		=	READ_ONCE(sysctl_wmem_default);
+ 	sk->sk_state		=	TCP_CLOSE;
++	sk->sk_use_task_frag	=	true;
+ 	sk_set_socket(sk, sock);
+ 
+ 	sock_set_flag(sk, SOCK_ZAPPED);
 -- 
 2.31.1
 
