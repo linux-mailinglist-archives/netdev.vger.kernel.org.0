@@ -2,195 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96AC164BE10
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 21:43:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 287F064BED0
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 22:46:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237155AbiLMUnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 15:43:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        id S236673AbiLMVqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 16:46:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237148AbiLMUmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 15:42:52 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15515F9A
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 12:42:51 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id js9so4659978pjb.2
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 12:42:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mw6o97BKfXktyyVGSYdZ6GG05jkfRnabZbvxc9SPzNo=;
-        b=NREQaBQ8vd+Ik0nteikGkPcAliQveseVFD2CJihuTvy+lzMdb1PxCCa5UUgYrzijxb
-         Bi/cnVnRiPPe7brAvH4nAxNurWz5e0RkgrxW0P14RyiR9X/b0bUeCZyhU9Yd2fpMhr2+
-         6nzEd9u2v+4SKt6nj1tCjJ4Ziw5bMCGcAsPC7O2v7o3xrxFnvZMt5MqC+FhY/5pQkbxk
-         MJcv7kVkWplKdQnsrydqDbz/6idQFKopxTT2KpiJY5XgGNVacRozi8ZwUqMDR9hhEw4M
-         EqJCC8mdgWVkCZG9bg/oBLODGvyXtGV8eLg8dY0/vlf2Ebbpr2Q3M6JOOQJpcU7e9wNT
-         aBLA==
+        with ESMTP id S236822AbiLMVqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 16:46:08 -0500
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0972126C;
+        Tue, 13 Dec 2022 13:46:01 -0800 (PST)
+Received: by mail-qt1-f178.google.com with SMTP id ay32so1007400qtb.11;
+        Tue, 13 Dec 2022 13:46:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mw6o97BKfXktyyVGSYdZ6GG05jkfRnabZbvxc9SPzNo=;
-        b=CScEZqupY19QOlTMY8dRddJtHA3ZRdBtu7hcOnEqqXUebcBjRh5jDq+SDdid+FYkot
-         NBoLgsmF86M8qI2Preaw1AJNoDUJPFR8PPo67ohe8mp8EA2U4+IfrFjPf7tEpuCZyXKi
-         faqDgB17LHlETlRFObjYcAKtFam+vspINoV0NSeV+sR1eWmY1BSe7I1UVq549HJJgJE0
-         id9EW3Y+iD2k/5BpO69x84Mqr3wv2jxnw1BqFDlzT4JcKaRMsyvmVBvX/6Dbe6n6S4oi
-         zq7ZJYnyq8i7Y1eLg3IGHl+aJSkNat4X+iY2kqv3Z+2Wh+PKEYGaguLIqxj9LM8VNlF7
-         4cow==
-X-Gm-Message-State: ANoB5pk43m0uFANbhgg+MXLblnlsuNbwrpVvsAIqBuDdg985vdC8CH/z
-        JGbiHZZiN7kupn7Q/BXhWAmKi1IRqY9m5gikVXEpVQ==
-X-Google-Smtp-Source: AA0mqf7PdrGhtnuitcAaimxm2QKamEUQRI2MG8nDZ6vjPXAtRyL2DZBW5mag1YBOrsWTFMaqr9Ow9a+Q2gBP9mLG1B8=
-X-Received: by 2002:a17:902:ab5c:b0:189:97e2:ab8b with SMTP id
- ij28-20020a170902ab5c00b0018997e2ab8bmr49293561plb.131.1670964171088; Tue, 13
- Dec 2022 12:42:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20221213023605.737383-1-sdf@google.com> <20221213023605.737383-9-sdf@google.com>
- <7ca8ac2c-7c07-a52f-ec17-d1ba86fa45ab@redhat.com>
-In-Reply-To: <7ca8ac2c-7c07-a52f-ec17-d1ba86fa45ab@redhat.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 13 Dec 2022 12:42:39 -0800
-Message-ID: <CAKH8qBvCxnJ2-5gd9j1HYxMA8CNi6cQM-5WOUBghiZjHUHya3A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 08/15] veth: Support RX XDP metadata
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     bpf@vger.kernel.org, brouer@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DJ0ZU6lcuaKMgpkql/854hN/ExGYPnZUzy8I5zM9KK0=;
+        b=4YCDCqY/6FoZN8znUcWtP5aw1+4Z3hr6dD7AMOjKJKW+4mkejbfQ4ouJNGahL4xWvf
+         WhIcSVufTkUa7DRnDjsD2mc6DVhGa6MqDh/sXFCjeUzyHn/PPa42qJABsT+/C7xTItFz
+         Y9AVTdOlq1ZtmIqk19mla+puddukN8AAND4xZFng9/sBexSaeeVvQB8dVbG7r2afLW65
+         89rjOLRu+gQ3EZQePYFAaDCMaK4EOG6IjbQH5eN255PTT489u5By1lFB/vqVKA2Fevjb
+         /rdyV/7GuB9mtUGXGl413YBOBdGSFZBDCp7jLHjF0w8jIV8uFp4lAmGuvjVbHEnb5vOk
+         qT1Q==
+X-Gm-Message-State: ANoB5pka2+tugjImLtazylSmj3r/uKjgMg2NJj1O6VmfF6fL+BVruaLu
+        c4ZRxdHgrJff87JieSbH7Rk=
+X-Google-Smtp-Source: AA0mqf40DPNDFnn6aeKad05QX/jwlD8ISg66vOBGf7Uq6MAF+NGLRnlGU1+5YcEjQbphbbIriKUXTQ==
+X-Received: by 2002:a05:622a:514d:b0:3a5:2610:748d with SMTP id ew13-20020a05622a514d00b003a52610748dmr30814723qtb.17.1670967959895;
+        Tue, 13 Dec 2022 13:45:59 -0800 (PST)
+Received: from maniforge.lan ([2620:10d:c091:480::1:8faa])
+        by smtp.gmail.com with ESMTPSA id h7-20020a05620a284700b006f9c2be0b4bsm8359281qkp.135.2022.12.13.13.45.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 13:45:59 -0800 (PST)
+Date:   Tue, 13 Dec 2022 15:45:58 -0600
+From:   David Vernet <void@manifault.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
         David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
         Anatoly Burakov <anatoly.burakov@intel.com>,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
         netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next v4 05/15] bpf: XDP metadata RX kfuncs
+Message-ID: <Y5jylgvFu7WCqiIU@maniforge.lan>
+References: <20221213023605.737383-1-sdf@google.com>
+ <20221213023605.737383-6-sdf@google.com>
+ <Y5ivuUezkNpHUtCP@maniforge.lan>
+ <CAKH8qBtU6_aeVrgfUVEyOW2JrGRWf4o=d=H3hnM+aD_UW-gcEA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKH8qBtU6_aeVrgfUVEyOW2JrGRWf4o=d=H3hnM+aD_UW-gcEA@mail.gmail.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 13, 2022 at 7:55 AM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
-> On 13/12/2022 03.35, Stanislav Fomichev wrote:
-> > The goal is to enable end-to-end testing of the metadata for AF_XDP.
-> >
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: David Ahern <dsahern@gmail.com>
-> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> > Cc: Maryam Tahhan <mtahhan@redhat.com>
-> > Cc: xdp-hints@xdp-project.net
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   drivers/net/veth.c | 24 ++++++++++++++++++++++++
-> >   1 file changed, 24 insertions(+)
-> >
-> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > index 04ffd8cb2945..d5491e7a2798 100644
-> > --- a/drivers/net/veth.c
-> > +++ b/drivers/net/veth.c
-> > @@ -118,6 +118,7 @@ static struct {
-> >
-> >   struct veth_xdp_buff {
-> >       struct xdp_buff xdp;
-> > +     struct sk_buff *skb;
-> >   };
-> >
-> >   static int veth_get_link_ksettings(struct net_device *dev,
-> > @@ -602,6 +603,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
-> >
-> >               xdp_convert_frame_to_buff(frame, xdp);
-> >               xdp->rxq = &rq->xdp_rxq;
-> > +             vxbuf.skb = NULL;
-> >
-> >               act = bpf_prog_run_xdp(xdp_prog, xdp);
-> >
-> > @@ -823,6 +825,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
-> >       __skb_push(skb, skb->data - skb_mac_header(skb));
-> >       if (veth_convert_skb_to_xdp_buff(rq, xdp, &skb))
-> >               goto drop;
-> > +     vxbuf.skb = skb;
-> >
-> >       orig_data = xdp->data;
-> >       orig_data_end = xdp->data_end;
-> > @@ -1601,6 +1604,21 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
-> >       }
-> >   }
-> >
-> > +static int veth_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
-> > +{
-> > +     *timestamp = ktime_get_mono_fast_ns();
->
-> This should be reading the hardware timestamp in the SKB.
->
-> Details: This hardware timestamp in the SKB is located in
-> skb_shared_info area, which is also available for xdp_frame (currently
-> used for multi-buffer purposes).  Thus, when adding xdp-hints "store"
-> functionality, it would be natural to store the HW TS in the same place.
-> Making the veth skb/xdp_frame code paths able to share code.
+On Tue, Dec 13, 2022 at 12:42:30PM -0800, Stanislav Fomichev wrote:
 
-Does something like the following look acceptable as well?
+[...]
 
-*timestamp = skb_hwtstamps(_ctx->skb)->hwtstamp;
-if (!*timestamp)
-        *timestamp = ktime_get_mono_fast_ns(); /* sw fallback */
-
-Because I'd like to be able to test this path in the selftests. As
-long as I get some number from veth_xdp_rx_timestamp, I can test it.
-No amount of SOF_TIMESTAMPING_{SOFTWARE,RX_SOFTWARE,RAW_HARDWARE}
-triggers non-zero hwtstamp for xsk receive path. Any suggestions?
-
-
-> > +     return 0;
-> > +}
-> > +
-> > +static int veth_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
-> > +{
-> > +     struct veth_xdp_buff *_ctx = (void *)ctx;
-> > +
-> > +     if (_ctx->skb)
-> > +             *hash = skb_get_hash(_ctx->skb);
-> > +     return 0;
-> > +}
-> > +
-> >   static const struct net_device_ops veth_netdev_ops = {
-> >       .ndo_init            = veth_dev_init,
-> >       .ndo_open            = veth_open,
-> > @@ -1622,6 +1640,11 @@ static const struct net_device_ops veth_netdev_ops = {
-> >       .ndo_get_peer_dev       = veth_peer_dev,
-> >   };
+> > We don't usually export function signatures like this for kfuncs as
+> > nobody in the main kernel should be linking against it. See [0].
 > >
-> > +static const struct xdp_metadata_ops veth_xdp_metadata_ops = {
-> > +     .xmo_rx_timestamp               = veth_xdp_rx_timestamp,
-> > +     .xmo_rx_hash                    = veth_xdp_rx_hash,
-> > +};
-> > +
-> >   #define VETH_FEATURES (NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_HW_CSUM | \
-> >                      NETIF_F_RXCSUM | NETIF_F_SCTP_CRC | NETIF_F_HIGHDMA | \
-> >                      NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ENCAP_ALL | \
-> > @@ -1638,6 +1661,7 @@ static void veth_setup(struct net_device *dev)
-> >       dev->priv_flags |= IFF_PHONY_HEADROOM;
+> > [0]: https://docs.kernel.org/bpf/kfuncs.html#creating-a-wrapper-kfunc
+> 
+> Oh, thanks, that's very helpful. As you might have guessed, I've added
+> those signatures to make the compiler happy :-(
+
+No problem, and yeah, it's a pain :-( It would be really nice if we
+could do something like this:
+
+#define __kfunc __attribute__((nowarn("Wmissing-protoypes")))
+
+But that attribute doesn't exist.
+
+> > > +     if (xdp_is_metadata_kfunc_id(insn->imm)) {
+> > > +             if (!bpf_prog_is_dev_bound(env->prog->aux)) {
+> > > +                     verbose(env, "metadata kfuncs require device-bound program\n");
+> > > +                     return -EINVAL;
+> > > +             }
+> > > +
+> > > +             if (bpf_prog_is_offloaded(env->prog->aux)) {
+> > > +                     verbose(env, "metadata kfuncs can't be offloaded\n");
+> > > +                     return -EINVAL;
+> > > +             }
+> > > +
+> > > +             xdp_kfunc = bpf_dev_bound_resolve_kfunc(env->prog, insn->imm);
+> > > +             if (xdp_kfunc) {
+> > > +                     insn->imm = BPF_CALL_IMM(xdp_kfunc);
+> > > +                     return 0;
+> > > +             }
 > >
-> >       dev->netdev_ops = &veth_netdev_ops;
-> > +     dev->xdp_metadata_ops = &veth_xdp_metadata_ops;
-> >       dev->ethtool_ops = &veth_ethtool_ops;
-> >       dev->features |= NETIF_F_LLTX;
-> >       dev->features |= VETH_FEATURES;
->
+> > Per another comment, should these xdp kfuncs use special_kfunc_list, or
+> > some other variant that lives in verifier.c? I'll admit that I'm not
+> > quite following why you wouldn't need to do the find_kfunc_desc() call
+> > below, so apologies if I'm just totally off here.
+> 
+> Here I'm trying to short-circuit that generic verifier handling and do
+> kfunc resolving myself, so not sure. Will comment about
+> special_kfunc_list below.
+
+Understood -- if it's totally separate then do what you need to do. My
+only "objection" is that it's a bit sad when we have divergent /
+special-case handling in the verifier between all these different kfunc
+/ helpers / etc, but I think it's inevitable until we do a larger
+refactoring.  It's contained to fixup_kfunc_call() at least, so IMO it's
+fine.
+
+[...]
+
+> 
+> > > +
+> > > +             /* fallback to default kfunc when not supported by netdev */
+> > > +     }
+> > > +
+> > >       /* insn->imm has the btf func_id. Replace it with
+> > >        * an address (relative to __bpf_call_base).
+> > >        */
+> > > @@ -15495,7 +15518,6 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> > >               return -EFAULT;
+> > >       }
+> > >
+> > > -     *cnt = 0;
+> > >       insn->imm = desc->imm;
+> > >       if (insn->off)
+> > >               return 0;
+> > > @@ -16502,6 +16524,11 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+> > >       if (tgt_prog) {
+> > >               struct bpf_prog_aux *aux = tgt_prog->aux;
+> > >
+> > > +             if (bpf_prog_is_dev_bound(tgt_prog->aux)) {
+> > > +                     bpf_log(log, "Replacing device-bound programs not supported\n");
+> > > +                     return -EINVAL;
+> > > +             }
+> > > +
+> > >               for (i = 0; i < aux->func_info_cnt; i++)
+> > >                       if (aux->func_info[i].type_id == btf_id) {
+> > >                               subprog = i;
+> > > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > > index 844c9d99dc0e..b0d4080249d7 100644
+> > > --- a/net/core/xdp.c
+> > > +++ b/net/core/xdp.c
+> > > @@ -4,6 +4,7 @@
+> > >   * Copyright (c) 2017 Jesper Dangaard Brouer, Red Hat Inc.
+> > >   */
+> > >  #include <linux/bpf.h>
+> > > +#include <linux/btf_ids.h>
+> > >  #include <linux/filter.h>
+> > >  #include <linux/types.h>
+> > >  #include <linux/mm.h>
+> > > @@ -709,3 +710,46 @@ struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+> > >
+> > >       return nxdpf;
+> > >  }
+> > > +
+> > > +noinline int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+> > > +{
+> > > +     return -EOPNOTSUPP;
+> > > +}
+> > > +
+> > > +noinline int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash)
+> > > +{
+> > > +     return -EOPNOTSUPP;
+> > > +}
+> >
+> > I don't _think_ noinline should be necessary here given that the
+> > function is global, though tbh I'm not sure if leaving it off will break
+> > LTO. We currently don't use any attributes like this on other kfuncs
+> > (e.g. [1]), but maybe we should?
+> >
+> > [1]: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/kernel/bpf/helpers.c#n2034
+> 
+> Hm, I guess since I'm not really directly calling these anywhere,
+> there is no chance they are going to be inlined? Will try to drop and
+> see what happens..
+
+Yeah, if it's a global symbol I think you should be OK. Again, we need
+to figure out the story for LTO though. Later on I think we should add a
+__kfunc macro which handles this invisibly for all kfunc definitions.
+
+> > > +
+> > > +BTF_SET8_START(xdp_metadata_kfunc_ids)
+> > > +#define XDP_METADATA_KFUNC(name, str) BTF_ID_FLAGS(func, str, 0)
+> >
+> > IMO 'str' isn't the right parameter name here given that it's the actual
+> > symbol and is not a string. What about _func or _symbol instead? Also
+> > IMO 'name' is a bit misleading -- I'd go with something like '_enum'. I
+> > wish there were a way for the preprocessor to auto-uppercase so you
+> > could just define a single field that was used both for defining the
+> > enum and for defining the symbol name.
+> 
+> How about I do the following:
+> 
+> enum {
+> #define XDP_METADATA_KFUNC(name, _) name,
+> XDP_METADATA_KFUNC_xxx
+> #undef XDP_METADATA_KFUNC
+> MAX_XDP_METADATA_KFUNC,
+> };
+
+Looks good!
+
+> 
+> And then this in the .c file:
+> 
+> BTF_SET8_START(xdp_metadata_kfunc_ids)
+> #define XDP_METADATA_KFUNC(_, name) BTF_ID_FLAGS(func, name, 0)
+> XDP_METADATA_KFUNC_xxx
+> #undef XDP_METADATA_KFUNC
+> BTF_SET8_END(xdp_metadata_kfunc_ids)
+
+Here as well.
+
+> 
+> Should be a bit more clear what and where I use? Otherwise, using
+> _func might seem a bit confusing in:
+> #define XDP_METADATA_KFUNC(_enum, _func) BTF_ID_FLAGS(func, _func, 0)
+> 
+> The "func, _func" part. Or maybe that's fine.. WDYT?
+
+LGTM, thanks!
+
+> > > +XDP_METADATA_KFUNC_xxx
+> > > +#undef XDP_METADATA_KFUNC
+> > > +BTF_SET8_END(xdp_metadata_kfunc_ids)
+> > > +
+> > > +static const struct btf_kfunc_id_set xdp_metadata_kfunc_set = {
+> > > +     .owner = THIS_MODULE,
+> > > +     .set   = &xdp_metadata_kfunc_ids,
+> > > +};
+> > > +
+> > > +BTF_ID_LIST(xdp_metadata_kfunc_ids_unsorted)
+> > > +#define XDP_METADATA_KFUNC(name, str) BTF_ID(func, str)
+> > > +XDP_METADATA_KFUNC_xxx
+> > > +#undef XDP_METADATA_KFUNC
+> > > +
+> > > +u32 xdp_metadata_kfunc_id(int id)
+> > > +{
+> > > +     /* xdp_metadata_kfunc_ids is sorted and can't be used */
+> > > +     return xdp_metadata_kfunc_ids_unsorted[id];
+> > > +}
+> > > +
+> > > +bool xdp_is_metadata_kfunc_id(u32 btf_id)
+> > > +{
+> > > +     return btf_id_set8_contains(&xdp_metadata_kfunc_ids, btf_id);
+> > > +}
+> >
+> > The verifier already has a notion of "special kfuncs" via a
+> > special_kfunc_list that exists in verifier.c. Maybe we should be using
+> > that given that is only used in the verifier anyways? OTOH, it's nice
+> > that all of the complexity of e.g. accounting for #ifdef CONFIG_NET is
+> > contained here, so I also like your approach. It just seems like a
+> > divergence from how things are being done for other kfuncs so I figured
+> > it was worth discussing.
+> 
+> Yeah, idk, I've tried not to add more to the already huge verifier.c file :-(
+> If we were to put everything into verifier.c, I'd still need some
+> extra special_xdp_kfunc_list for those xdp kfuncs to be able to
+> distinguish them from the rest...
+> So yeah, not sure, I'd prefer to keep everything in xdp.c and not
+> pollute the more generic verifier.c, but I'm fine either way. LMK if
+> you feel strongly about it, can move.
+
+IMO not polluting the already enormous verifier.c is definitely the
+right thing to do -- especially for kfuncs like this which are going to
+be defined throughout the kernel. So yeah, you can keep what you have.
+And maybe at some point we should pull more logic out of verifier.c and
+into the locations where the kfuncs are implemented as you're doing
+here.
