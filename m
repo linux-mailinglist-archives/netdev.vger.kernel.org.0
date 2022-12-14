@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5DA764D17B
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 21:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13DF664D180
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 21:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiLNUuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 15:50:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        id S229695AbiLNUw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 15:52:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiLNUuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 15:50:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFE31C132;
-        Wed, 14 Dec 2022 12:50:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCF9FB81975;
-        Wed, 14 Dec 2022 20:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D48BC433D2;
-        Wed, 14 Dec 2022 20:50:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671051017;
-        bh=DLBa9y167FwzHAQQvHNMlQc3hIkNZJrjzeznR28yPkQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gbGMPzTv1j2uf9ceDwUTTbW3sVOSvhElSNYPhP/PG0Tktr4Izt39lmVsCKCsiZVTC
-         iYMtNLLawQHUapvmFxTx2q1mnTIwBhXGcz62YzPJ6DQgKjY7RIQ6bNrkQh6WYp5rGO
-         21Ohcclyi5qvDd7oNNLjdb8+0kZvNlC5alsaE6N9GY3O4lZd8SjUB2RsO6avCGxnSH
-         AKNHgyUN0MtApTGEKsIWT1Yqunbq+NSFaJ5kpUNqHTHTirWFksxV+VSLqd/VIaKlsx
-         TfzAdFjRu7XuysyNbB+B4aqBQ3+Cl/+7OyHyEOI6/fgVDRVAlb1fLvaCv2cZPlSZGp
-         NK4Gsgu8fe/uw==
-Date:   Wed, 14 Dec 2022 12:50:16 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Lixue Liang <lianglixuehao@126.com>, anthony.l.nguyen@intel.com,
-        linux-kernel@vger.kernel.org, jesse.brandeburg@intel.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, lianglixue@greatwall.com.cn,
-        Alexander H Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH v7] igb: Assign random MAC address instead of fail in
- case of invalid one
-Message-ID: <20221214125016.5a23c32a@kernel.org>
-In-Reply-To: <Y5obql8TVeYEsRw8@unreal>
-References: <20221213074726.51756-1-lianglixuehao@126.com>
-        <Y5l5pUKBW9DvHJAW@unreal>
-        <20221214085106.42a88df1@kernel.org>
-        <Y5obql8TVeYEsRw8@unreal>
+        with ESMTP id S229694AbiLNUw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 15:52:26 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AE82C109;
+        Wed, 14 Dec 2022 12:52:25 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id p8so12457391lfu.11;
+        Wed, 14 Dec 2022 12:52:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zFLdAfKk9Qm17jrt7feddSvQWDFpf/HIJxK3WcQxEl8=;
+        b=KTR///vKb6FkMxCfJhmBVJsixjYCRwNf3SNNxkY8Kcyk1KH6qKMIz1yymZbQztUH7A
+         /fOUPhDfjc1In1qZYxs8oaFdbkiae/9zT+LqK0bcnb1WHfFYPtyYJGeTt3j6GDK3kv2D
+         YicD4G7d9btkexKcOYUsSgEm6FIm/pso6E8YoQ3a0OyTk5S74l6AMPeCO6hFCZgcOXpN
+         zA+lj9Tc0iPDSMzzBPsEmM3pSmzNoCEW2MpNIq23sF3tSsj5oakULwThMcR42YqZaCcy
+         aR3tmPxvjMji1QYZsENBSNjRjyLSiteyMW+cV9GwXjvaQr45VdgdsRemcBbYxI8m3uKA
+         GuyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zFLdAfKk9Qm17jrt7feddSvQWDFpf/HIJxK3WcQxEl8=;
+        b=nDeyYA5JY7gu69MfbXBi8MADHdv7Co7kFdQJT9l5KI8kNqKIoj2IIU6rUtt0gcJsan
+         h7rIJ9Uw2FPEKWMpAC0DfXU3mBSjWoswBZFbXJNkaR0gMvReM5R/7a+ALsz+6fZxSeae
+         H/cpgqxfLXrkBxTUKOFcBh9aVK+LRkgSNZ7Sa7QoUDPEa8hwYBQ4rJKCJ64qRNGJEdhU
+         QC76F3TWDoxIXlczE1akxFc9WZN7bbVniwnq6x28WxDGaOanJ0I3YBJCFDwVt/ppnfxU
+         siy8LZD9FRZbcLjcbqniIEszkZpFi5sbrg4RctXkjCWrXGT7WHKMQAuPQ+ztyLT55Ag4
+         LPrg==
+X-Gm-Message-State: ANoB5pkgjf74i/OPe2QCnNxLXuGQqr7+SQ157HoMNEtJrxYF1NI8Zu9O
+        A8HKRMfJWveyJAGvXydIriM=
+X-Google-Smtp-Source: AA0mqf6g4WD45xmyq30OdOjmCP1Uum4pVhBkE7h363BDFRriY9G1l8cO/jYy8Ir/u/cgIdwktccJlQ==
+X-Received: by 2002:a05:6512:3499:b0:4b5:4079:c824 with SMTP id v25-20020a056512349900b004b54079c824mr5844679lfr.46.1671051143634;
+        Wed, 14 Dec 2022 12:52:23 -0800 (PST)
+Received: from DESKTOP-5EKDQDN.localdomain (78-63-10-115.static.zebra.lt. [78.63.10.115])
+        by smtp.gmail.com with ESMTPSA id p17-20020ac246d1000000b0049e9122bd0esm930105lfo.114.2022.12.14.12.52.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 12:52:23 -0800 (PST)
+From:   =?UTF-8?q?Aldas=20Tara=C5=A1kevi=C4=8Dius?= <aldas60@gmail.com>
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Aldas=20Tara=C5=A1kevi=C4=8Dius?= <aldas60@gmail.com>
+Subject: [PATCH] staging: qlge: remove unnecessary spaces before function pointer args
+Date:   Wed, 14 Dec 2022 22:51:47 +0200
+Message-Id: <20221214205147.2172-1-aldas60@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Dec 2022 20:53:30 +0200 Leon Romanovsky wrote:
-> On Wed, Dec 14, 2022 at 08:51:06AM -0800, Jakub Kicinski wrote:
-> > On Wed, 14 Dec 2022 09:22:13 +0200 Leon Romanovsky wrote:  
-> > > NAK to any module driver parameter. If it is applicable to all drivers,
-> > > please find a way to configure it to more user-friendly. If it is not,
-> > > try to do the same as other drivers do.  
-> > 
-> > I think this one may be fine. Configuration which has to be set before
-> > device probing can't really be per-device.  
-> 
-> This configuration can be different between multiple devices
-> which use same igb module. Module parameters doesn't allow such
-> separation.
+Remove unnecessary spaces before the function pointer arguments as
+warned by checkpatch.
 
-Configuration of the device, sure, but this module param is more of 
-a system policy. BTW the name of the param is not great, we're allowing
-the use of random address, not an invalid address.
+Signed-off-by: Aldas Taraškevičius <aldas60@gmail.com>
+---
+ drivers/staging/qlge/qlge.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Also, as a user, I despise random module parameters which I need
-> to set after every HW update/replacement.
+diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+index fc8c5ca89..05e4f4744 100644
+--- a/drivers/staging/qlge/qlge.h
++++ b/drivers/staging/qlge/qlge.h
+@@ -2057,8 +2057,8 @@ enum {
+ };
+ 
+ struct nic_operations {
+-	int (*get_flash) (struct ql_adapter *);
+-	int (*port_initialize) (struct ql_adapter *);
++	int (*get_flash)(struct ql_adapter *);
++	int (*port_initialize)(struct ql_adapter *);
+ };
+ 
+ /*
+-- 
+2.37.2
 
-Agreed, IIUC the concern was alerting users to incorrect EEPROM values.
-I thought falling back to a random address was relatively common, but
-I haven't done the research.
