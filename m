@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A204E64C3F0
+	by mail.lfdr.de (Postfix) with ESMTP id ED43964C3F1
 	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:44:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237370AbiLNGoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 01:44:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
+        id S237386AbiLNGoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 01:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiLNGn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:43:59 -0500
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463EF27DD3
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:57 -0800 (PST)
-X-QQ-mid: bizesmtp70t1671000232ty124v04
+        with ESMTP id S237368AbiLNGoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:44:03 -0500
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E11827CFF
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:59 -0800 (PST)
+X-QQ-mid: bizesmtp70t1671000234tqcnsoke
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 14 Dec 2022 14:43:51 +0800 (CST)
+        id ; Wed, 14 Dec 2022 14:43:54 +0800 (CST)
 X-QQ-SSF: 01400000000000H0X000B00A0000000
-X-QQ-FEAT: +oIWmpEafD/jwVa2LfE5LfBKAOivAP5R0T1rJ1v4j9QdqAg5L6LJ2Z1xNCFHx
-        hp6TyLFBF3gYUvrUCP+bWoAlP7KlMFP9uCXFWTnoOOxczcY2Eyki2tffbaAlxzlN9t4FPss
-        SVjldg14bmVlBGyRhqPgqvdEB9VPxvquGyaPqjJKvHgo2nPwAU1VKkWzMOcjBgmIyRN7Jw7
-        +G6u1MkIC1ReMiRbIS6Il+MLxAYfVfQJ6ox7hCD1IJwnp7NiS68kKshvSvKsp+gIB8qbpkR
-        eG7RKP4ekfA5aeui4/CGhCNHjAPhSDFv/aNFubcsMuY2ExNrx3NLH0fwmQehQdeHC/SEchG
-        i1R2uCO9Qov5jeyCdluHg+ETd5loLCeTemhgD/Wo3W7PO+mrOn270HeOTqOsMuoAl/Gxm8o
-        spR8z0nZat8=
+X-QQ-FEAT: fs34Pe/+C2Ty/Q+th0MGoWLYoI0CPwusYSfDyIuAWS8DrvsAdyS58cSFh2Li1
+        F1CnSKz1MlIDUdN57BUUyfE+ym/JHVdlrSoxOz8aPlsfWv+oUpfB6p8va+cM1nXks8u8/7Q
+        43I2I4ifU99NhA8EgyORGKXc9WeNFGklpwKr0mzEIfrVfYL+xepoSJnyGgkr9rH/yAgKWmw
+        jFZQjBytETTOQFnASoWb4cZ5xkj8+AwkffaA1ZawSr5zttZCeBcO1QQueqmIEh2sWml//bs
+        tsu5UhiPH6LVHr2qINUCIdmgLhCwHgG9sktMZKCq96DkJmDjJpinfhd91QQeQC+IMcEGON7
+        S5ON1XGugC5xk8koeoGpeZX0+syjzvVYj/Ae2zO6UjK9jrEywj/lvvq0+TZsKivWr0Wp52E
+        s8Uzz+KIa78=
 X-QQ-GoodBg: 2
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
 Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net v2 3/5] net: txgbe: Move defines into unified file
-Date:   Wed, 14 Dec 2022 14:41:31 +0800
-Message-Id: <20221214064133.2424570-4-jiawenwu@trustnetic.com>
+Subject: [PATCH net v2 4/5] net: ngbe: Move defines into unified file
+Date:   Wed, 14 Dec 2022 14:41:32 +0800
+Message-Id: <20221214064133.2424570-5-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20221214064133.2424570-1-jiawenwu@trustnetic.com>
 References: <20221214064133.2424570-1-jiawenwu@trustnetic.com>
@@ -49,102 +49,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove txgbe.h, move defines into txgbe_type.h file.
+Remove ngbe.h, move defines into ngbe_type.h file.
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    | 23 -------------------
- drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  1 -
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  1 -
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   | 16 +++++++++++++
- 4 files changed, 16 insertions(+), 25 deletions(-)
- delete mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe.h
+ drivers/net/ethernet/wangxun/ngbe/ngbe.h      | 33 -------------------
+ drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   |  1 -
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  2 +-
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h | 26 +++++++++++++++
+ 4 files changed, 27 insertions(+), 35 deletions(-)
+ delete mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe.h
 
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe.h b/drivers/net/ethernet/wangxun/ngbe/ngbe.h
 deleted file mode 100644
-index 629c139926c5..000000000000
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe.h
+index ed832ab3e5ed..000000000000
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe.h
 +++ /dev/null
-@@ -1,23 +0,0 @@
+@@ -1,33 +0,0 @@
 -/* SPDX-License-Identifier: GPL-2.0 */
--/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
+-/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
 -
--#ifndef _TXGBE_H_
--#define _TXGBE_H_
+-#ifndef _NGBE_H_
+-#define _NGBE_H_
 -
--#define TXGBE_MAX_FDIR_INDICES          63
+-#define NGBE_MAX_FDIR_INDICES		7
 -
--#define TXGBE_MAX_RX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
--#define TXGBE_MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
+-#define NGBE_MAX_RX_QUEUES		(NGBE_MAX_FDIR_INDICES + 1)
+-#define NGBE_MAX_TX_QUEUES		(NGBE_MAX_FDIR_INDICES + 1)
 -
--#define TXGBE_SP_MAX_TX_QUEUES  128
--#define TXGBE_SP_MAX_RX_QUEUES  128
--#define TXGBE_SP_RAR_ENTRIES    128
--#define TXGBE_SP_MC_TBL_SIZE    128
+-#define NGBE_ETH_LENGTH_OF_ADDRESS	6
+-#define NGBE_MAX_MSIX_VECTORS		0x09
+-#define NGBE_RAR_ENTRIES		32
 -
--#define TXGBE_MAC_STATE_DEFAULT         0x1
--#define TXGBE_MAC_STATE_MODIFIED        0x2
--#define TXGBE_MAC_STATE_IN_USE          0x4
+-/* TX/RX descriptor defines */
+-#define NGBE_DEFAULT_TXD		512 /* default ring size */
+-#define NGBE_DEFAULT_TX_WORK		256
+-#define NGBE_MAX_TXD			8192
+-#define NGBE_MIN_TXD			128
 -
--extern char txgbe_driver_name[];
+-#define NGBE_DEFAULT_RXD		512 /* default ring size */
+-#define NGBE_DEFAULT_RX_WORK		256
+-#define NGBE_MAX_RXD			8192
+-#define NGBE_MIN_RXD			128
 -
--#endif /* _TXGBE_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-index 9b8826a29981..02656b5971fd 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-@@ -12,7 +12,6 @@
+-#define NGBE_MAC_STATE_DEFAULT		0x1
+-#define NGBE_MAC_STATE_MODIFIED		0x2
+-#define NGBE_MAC_STATE_IN_USE		0x4
+-
+-extern char ngbe_driver_name[];
+-
+-#endif /* _NGBE_H_ */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+index d54e22ce7c31..6e06a46fe9fa 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+@@ -9,7 +9,6 @@
  #include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_hw.h"
--#include "txgbe.h"
+ #include "ngbe_type.h"
+ #include "ngbe_hw.h"
+-#include "ngbe.h"
  
- /**
-  *  txgbe_init_thermal_sensor_thresh - Inits thermal sensor thresholds
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index 980523e29f01..dcdf4e364979 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -14,7 +14,6 @@
+ int ngbe_eeprom_chksum_hostif(struct ngbe_adapter *adapter)
+ {
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index 5d679c39f451..f7cb482c8053 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -14,7 +14,7 @@
  #include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_hw.h"
--#include "txgbe.h"
+ #include "ngbe_type.h"
+ #include "ngbe_hw.h"
+-#include "ngbe.h"
++
+ char ngbe_driver_name[] = "ngbe";
  
- char txgbe_driver_name[] = "txgbe";
+ /* ngbe_pci_tbl - PCI Device ID Table
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+index 5a64ce6ded8f..83e73cac2953 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+@@ -90,6 +90,30 @@
+ #define NGBE_FW_CMD_ST_PASS			0x80658383
+ #define NGBE_FW_CMD_ST_FAIL			0x70657376
  
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 0cc333a11cab..c4d22ceeddad 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -67,6 +67,20 @@
- #define TXGBE_PBANUM1_PTR                       0x06
- #define TXGBE_PBANUM_PTR_GUARD                  0xFAFA
- 
-+#define TXGBE_MAX_FDIR_INDICES          63
++#define NGBE_MAX_FDIR_INDICES			7
 +
-+#define TXGBE_MAX_RX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
-+#define TXGBE_MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
++#define NGBE_MAX_RX_QUEUES			(NGBE_MAX_FDIR_INDICES + 1)
++#define NGBE_MAX_TX_QUEUES			(NGBE_MAX_FDIR_INDICES + 1)
 +
-+#define TXGBE_SP_MAX_TX_QUEUES  128
-+#define TXGBE_SP_MAX_RX_QUEUES  128
-+#define TXGBE_SP_RAR_ENTRIES    128
-+#define TXGBE_SP_MC_TBL_SIZE    128
++#define NGBE_ETH_LENGTH_OF_ADDRESS		6
++#define NGBE_MAX_MSIX_VECTORS			0x09
++#define NGBE_RAR_ENTRIES			32
 +
-+#define TXGBE_MAC_STATE_DEFAULT		0x1
-+#define TXGBE_MAC_STATE_MODIFIED	0x2
-+#define TXGBE_MAC_STATE_IN_USE		0x4
++/* TX/RX descriptor defines */
++#define NGBE_DEFAULT_TXD			512 /* default ring size */
++#define NGBE_DEFAULT_TX_WORK			256
++#define NGBE_MAX_TXD				8192
++#define NGBE_MIN_TXD				128
 +
- struct txgbe_mac_addr {
- 	u8 addr[ETH_ALEN];
- 	u16 state; /* bitmask */
-@@ -85,4 +99,6 @@ struct txgbe_adapter {
- 	char eeprom_id[32];
++#define NGBE_DEFAULT_RXD			512 /* default ring size */
++#define NGBE_DEFAULT_RX_WORK			256
++#define NGBE_MAX_RXD				8192
++#define NGBE_MIN_RXD				128
++
++#define NGBE_MAC_STATE_DEFAULT		0x1
++#define NGBE_MAC_STATE_MODIFIED		0x2
++#define NGBE_MAC_STATE_IN_USE		0x4
++
+ enum ngbe_phy_type {
+ 	ngbe_phy_unknown = 0,
+ 	ngbe_phy_none,
+@@ -177,4 +201,6 @@ struct ngbe_adapter {
+ 	u16 bd_number;
  };
  
-+extern char txgbe_driver_name[];
++extern char ngbe_driver_name[];
 +
- #endif /* _TXGBE_TYPE_H_ */
+ #endif /* _NGBE_TYPE_H_ */
 -- 
 2.27.0
 
