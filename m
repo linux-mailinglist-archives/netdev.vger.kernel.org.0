@@ -2,141 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1595064C59D
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 10:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C82664C5A5
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 10:14:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237815AbiLNJLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 04:11:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
+        id S237586AbiLNJOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 04:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiLNJLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 04:11:33 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74061DDFF
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:11:31 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id v124-20020a1cac82000000b003cf7a4ea2caso10046548wme.5
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:11:31 -0800 (PST)
+        with ESMTP id S237348AbiLNJOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 04:14:12 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B5A1E724
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:14:09 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id n20so43001110ejh.0
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:14:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZeychOEoq7Zx2fAKmiJJqkfIh0+9mZMjXMwWbS//l/Q=;
-        b=OXFVZCylX/4bT+jsLBPms7oXz7QPabkjEgubvKA5voELoHfDi00peMTghNLCzd8eaq
-         nP2ibgokYJBj2KWiBZjEhKQ+zdmJm+v6RlifmQdsO8suBtWGnxKbf4CZsTyvWffB4Xzk
-         CP3ibLqZDT/ds1dpodM9ahZo2PdJUUORzc2JLPe003BODyIMy6Euf0GauL3sERFOo6Tk
-         ocbUZXufRgpRSvXRXJdlr5yjxhhP7goz0joVE3Ti48T/ApcY1JbsyFQe1viina/MkBUX
-         uu6xSSyMCQBH1l6fEHWCCwz0qhfylUeTZSHlVGhgvKIfvrRA8OZeVMdqZHiZgovSOzJV
-         hByA==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uWkMxa5MLgkbzdYiOGyURygCOSuCzD/0jnB9r1qxWTs=;
+        b=TcGAPjxR9F6gw8xpoGK2DjJ+OF1X1Kwmirxn+f1vVC6ZrCogbLdvYMSA45jSe5obuT
+         auY5It6QRqAisUJ0D0lKegv8tJKrxhiEU3UMMnsXw9navQBet5mrgf3zrBj4O6s/szRB
+         F0ONb8u0wLbZa7QxTpsQ6bNk8X14u0Xf8B7hS/scpjMsPG13JkyGmjXvElukHQix7+zn
+         wEo5+GIceH543hYpmLLOa7lmNoqvhEI6dNY/xg8dlxDX5tRduSUZOjSAPR3YUPu0dzP9
+         1SW2Gh1WF3jwREjOXZ2b3/OpBcsl2O+7uJVbhyAIwpX+Ap+37eEAXlu9d0tR/R3siZGl
+         hZtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZeychOEoq7Zx2fAKmiJJqkfIh0+9mZMjXMwWbS//l/Q=;
-        b=JLTj3tpB3WiVzIY2rBX/YNZdYqEvqiYM4zH/GsuOB5aKikojBLKxv7SHAE4RcUUcth
-         /TVYiSrs6rHzIpINbXtrwQvDWIbxawICz8choiA+aH6KwLQo295LrIgyhsqOKvArGfES
-         y9++kX4MaZwwSvyGKmYM+kEN9/UfsT594aeE5Ge+823H9cMRFmtdd/I8YCmTpY6BOPDf
-         VTKwSW/IVV8+3mhBO1c3+VwT4ngYmBBusjTNNP1YA4923rFjAvAHbqNIlKhRDAyG2Ll/
-         VsSgu0gApjjB5j+5h27GqPaSS9f3kOYrCW9NEkyZU+hMrFfUz1MxmnruPe7TJpQqnLI1
-         r5nQ==
-X-Gm-Message-State: ANoB5pky8PIXAutMry9/jyYnuiFvDv103YCB87VGxDF0zdPBu3D+VvhT
-        R5tM0XevoWrXOzgLwJkQCQcjcgMdIUlNaPYJ8V2hPw==
-X-Google-Smtp-Source: AA0mqf7lFwCf3f1u4ql2QYub40j2Jn+xpyaWCbFrBIxrz+GPM5OrSo5cjZ+bxnr0nuG4jOrNfiMuxCV5PCxKqjmsLpU=
-X-Received: by 2002:a05:600c:3b91:b0:3d0:3d33:a629 with SMTP id
- n17-20020a05600c3b9100b003d03d33a629mr73994wms.126.1671009090250; Wed, 14 Dec
- 2022 01:11:30 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uWkMxa5MLgkbzdYiOGyURygCOSuCzD/0jnB9r1qxWTs=;
+        b=O3qsPqbUNKZ7Pt73gK5OyJlNiCpb8JwQG8k/SxVxcyabokcJsQJvUK/Q7BvBddcLOM
+         DI248oFIp8W9aMVfTxPhjAzKGjPQjzSY+HU9jur/WOqUY616InEiS14fvXMhQrcUubh4
+         1rsXXmI+ZzHD8kwzd35ff8HabFgSAxZekNqMcY0wALdmbit0jJE6Vh8d/EOGBEoThTFK
+         Rh3qYGh395Cav5MSkfwe99JOKXLk/EYd20YoVqTdm4eR+jhakO1nQSCxIyVyRZlIdhep
+         iYN8BRGSfjodLtRhex1EbCdOb7rtJcP/37lEpWWniWoqSrXKHep1RnGAvrRTlONSrrJO
+         gJ/Q==
+X-Gm-Message-State: ANoB5pkZ63LnMfzasNhnzuxqmnxishKwhHbYQCrELvrF2EVNGtutfhKt
+        3J33qepmhUFJxP7Stkb3biu2yg==
+X-Google-Smtp-Source: AA0mqf5Hh2vYaRSCkuOt0e+bO9Bytz2NDRllVNqTlpXkMHlnUyydFlzhOsdwMBeV0ocC3UEihjU6JA==
+X-Received: by 2002:a17:906:1f53:b0:7bc:bf97:169c with SMTP id d19-20020a1709061f5300b007bcbf97169cmr19058269ejk.77.1671009248480;
+        Wed, 14 Dec 2022 01:14:08 -0800 (PST)
+Received: from blmsp ([185.238.219.9])
+        by smtp.gmail.com with ESMTPSA id k24-20020a17090632d800b007ad94fd48dfsm5529083ejk.139.2022.12.14.01.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 01:14:08 -0800 (PST)
+Date:   Wed, 14 Dec 2022 10:14:06 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/15] can: m_can: Wakeup net queue once tx was issued
+Message-ID: <20221214091406.g6vim5hvlkm34naf@blmsp>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-3-msp@baylibre.com>
+ <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de>
 MIME-Version: 1.0
-References: <20221124074725.74325-1-haozhe.chang@mediatek.com>
- <CAMZdPi9JOQpmhQepBMeG5jzncP8t5mp68O2nfSOFUUZ9e_fDsQ@mail.gmail.com> <54c37c8f8eb7f35e4bb983b9104bd232758bae7b.camel@mediatek.com>
-In-Reply-To: <54c37c8f8eb7f35e4bb983b9104bd232758bae7b.camel@mediatek.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Wed, 14 Dec 2022 10:10:54 +0100
-Message-ID: <CAMZdPi8NOfMn99yy043oYGrO1=UrnhhRvpZq-zWe4BfiU_08NA@mail.gmail.com>
-Subject: Re: [PATCH v5] wwan: core: Support slicing in port TX flow of WWAN subsystem
-To:     =?UTF-8?B?SGFvemhlIENoYW5nICjluLjmtanlk7Ip?= 
-        <Haozhe.Chang@mediatek.com>
-Cc:     "stephan@gerhold.net" <stephan@gerhold.net>,
-        "oneukum@suse.com" <oneukum@suse.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linuxwwan@intel.com" <linuxwwan@intel.com>,
-        "m.chetan.kumar@intel.com" <m.chetan.kumar@intel.com>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        =?UTF-8?B?SHVhIFlhbmcgKOadqOWNjik=?= <Hua.Yang@mediatek.com>,
-        "chiranjeevi.rapolu@linux.intel.com" 
-        <chiranjeevi.rapolu@linux.intel.com>,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        =?UTF-8?B?WGlheXUgWmhhbmcgKOW8oOWkj+Wuhyk=?= 
-        <Xiayu.Zhang@mediatek.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "chandrashekar.devegowda@intel.com" 
-        <chandrashekar.devegowda@intel.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "shangxiaojing@huawei.com" <shangxiaojing@huawei.com>,
-        =?UTF-8?B?TGFtYmVydCBXYW5nICjnjovkvJ8p?= 
-        <Lambert.Wang@mediatek.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ricardo.martinez@linux.intel.com" <ricardo.martinez@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Thu, 2022-12-01 at 10:56 +0100, Loic Poulain wrote:
-> > On Thu, 24 Nov 2022 at 08:47, <haozhe.chang@mediatek.com> wrote:
-> > >
-> > > From: haozhe chang <haozhe.chang@mediatek.com>
-> > >
-> > > wwan_port_fops_write inputs the SKB parameter to the TX callback of
-> > > the WWAN device driver. However, the WWAN device (e.g., t7xx) may
-> > > have an MTU less than the size of SKB, causing the TX buffer to be
-> > > sliced and copied once more in the WWAN device driver.
-> > >
-> > > This patch implements the slicing in the WWAN subsystem and gives
-> > > the WWAN devices driver the option to slice(by frag_len) or not. By
-> > > doing so, the additional memory copy is reduced.
-> > >
-> > > Meanwhile, this patch gives WWAN devices driver the option to
-> > > reserve
-> > > headroom in fragments for the device-specific metadata.
-> > >
-> > > Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
-> >
-> > Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
->
-> I have submitted patch V6 to add a reviewer, do you have any other
-> suggestions about the patch?
+Hi Marc,
 
-You normally don't need to resubmit a version just for adding review
-tags, as it is well tracked. You can see status of netdev changes from
-patchwork:
-https://patchwork.kernel.org/project/netdevbpf/list/?series=&submitter=207580&state=*&q=&archive=both&delegate=
+On Wed, Nov 30, 2022 at 06:21:00PM +0100, Marc Kleine-Budde wrote:
+> On 16.11.2022 21:52:55, Markus Schneider-Pargmann wrote:
+> > Currently the driver waits to wakeup the queue until the interrupt for
+> > the transmit event is received and acknowledged. If we want to use the
+> > hardware FIFO, this is too late.
+> > 
+> > Instead release the queue as soon as the transmit was transferred into
+> > the hardware FIFO. We are then ready for the next transmit to be
+> > transferred.
+> 
+> If you want to really speed up the TX path, remove the worker and use
+> the spi_async() API from the xmit callback, see mcp251xfd_start_xmit().
+> 
+> Extra bonus if you implement xmit_more() and transfer more than 1 skb
+> per SPI transfer.
 
-Regarding this change you should however resubmit for the net-next
-tree with appropriate subject since it is not a bug fix:
-https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html?highlight=netdev#how-do-i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
+Just a quick question here, I mplemented a xmit_more() call and I am
+testing it right now, but it always returns false even under high
+pressure. The device has a txqueuelen set to 1000. Do I need to turn
+some other knob for this to work?
 
-Then it should be picked by netdev maintainer(s). But note that we're
-currently in the Linux 6.2 merge window, so merging for net-next can
-be delayed until the mainline merge window is closed (and net-next
-open):
-https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html?highlight=netdev#how-often-do-changes-from-these-trees-make-it-to-the-mainline-linus-tree
-
-Regards,
-Loic
+Thanks,
+Markus
