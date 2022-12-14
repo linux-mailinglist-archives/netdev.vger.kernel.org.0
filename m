@@ -2,47 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E3D564C295
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 04:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA9AB64C2A8
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 04:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237109AbiLNDMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 22:12:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
+        id S237269AbiLNDPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 22:15:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236910AbiLNDMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 22:12:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE9FED
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 19:12:36 -0800 (PST)
+        with ESMTP id S237301AbiLNDPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 22:15:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9229927B26
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 19:15:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF95260B5A
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 03:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77F4C433EF;
-        Wed, 14 Dec 2022 03:12:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35887B8163A
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 03:15:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 402FEC433EF;
+        Wed, 14 Dec 2022 03:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670987555;
-        bh=Ge/57PmwkIaCoOixxazI6O0UUvTQxryyZ77gcuXZz7k=;
+        s=k20201202; t=1670987729;
+        bh=PxLV5VwlxVtw6OSZ3KLbpL+I2EUP7MmcuVvbdO5REos=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CLt/ww8B59ZQPkwrVXM6tN4U3TwtYjVMLCIUULveprBVSBLLAYG7QNh7TT42myUgF
-         HJZFrms023bvxZxjWFXzShJCM0qJrh7G5JoUqdUb6i2b937mUeFPCzmr4Cz/pYXDt3
-         WQCtrrW1CufoyWJbqPmj4vY9kce6l85fhjtYxqZvvubVpmP0RlB/BRQuG9DcGfkxEm
-         VEyYBVhtdDLZz7IkiaBRsQqrH5OSqozl204xHom6o1EB+MJbyEn+qD/Be3MBe1xkPI
-         2tCNXZLEFvco2JenJk/XLj/Y7DEy0QbJyhq/2cnjHwWYpKuX3Y/ZBBfLqkLPCwmtF2
-         dIkAi4dUax+5Q==
-Date:   Tue, 13 Dec 2022 19:12:33 -0800
+        b=kYLU8v4v8oQl7rgdZ3v3RZ13tietFegOmUmqs1Fba9KE/OQ/xmecI6SET3pqarcf/
+         +RKHemMxsHDzK+s/AEvow7X2zFvOtfvAjmrl8LsXin+geblRhdWQ1x+FOx0Z49Vhlf
+         QrxN0r+FAdVzfTphl7ULiAQrTHA5LZmNQ1b7k74D9NZ7hxV59PXSdxfK9NbGNFJK7e
+         bU7QbMF5uwdlf07GWwr8rbf1tNsX0SaX0nluCyh5bDDzLsH1loT7ei2GwKnWd1uyhu
+         RznF0zh48bYRD0a3xBIDMG5rO7R5NRCM7qONJ9UDEskqsI93rq4cwMmEp4GEt9vFSf
+         1V3ItX82k+KVQ==
+Date:   Tue, 13 Dec 2022 19:15:28 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Nir Levy <bhr166@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] net: atm: Fix use-after-free bug in
- atm_dev_register()
-Message-ID: <20221213191233.5d0a7c8f@kernel.org>
-In-Reply-To: <Y5bUXjhM3mvUkwNL@unreal>
-References: <20221211124943.3004-1-bhr166@gmail.com>
-        <Y5bUXjhM3mvUkwNL@unreal>
+To:     Gaosheng Cui <cuigaosheng1@huawei.com>
+Cc:     <peppe.cavallaro@st.com>, <alexandre.torgue@foss.st.com>,
+        <joabreu@synopsys.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <mcoquelin.stm32@gmail.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <boon.leong.ong@intel.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2] net: stmmac: fix possible memory leak in
+ stmmac_dvr_probe()
+Message-ID: <20221213191528.75cd2ff0@kernel.org>
+In-Reply-To: <20221212021350.3066631-1-cuigaosheng1@huawei.com>
+References: <20221212021350.3066631-1-cuigaosheng1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,18 +60,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Dec 2022 09:12:30 +0200 Leon Romanovsky wrote:
-> > v2: Call put_device in atm_register_sysfs instead of atm_dev_register.
+On Mon, 12 Dec 2022 10:13:50 +0800 Gaosheng Cui wrote:
+> The bitmap_free() should be called to free priv->af_xdp_zc_qps
+> when create_singlethread_workqueue() fails, otherwise there will
+> be a memory leak, so we add the err path error_wq_init to fix it.
 > 
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+> Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
+> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
 
-On one of the previous versions you commented that
-atm_unregister_sysfs() also needs to move to unregister() rather 
-than del():
-
-https://lore.kernel.org/all/Y48CwyATYAAcPgqT@unreal/
-
-Is that not the case?
-
-Also atm_dev_register() still frees the dev on atm_register_sysfs()
-failure, is that okay?
+The previous version has already been applied and we can't remove it.
+Could you send an incremental change to just add the errno?
