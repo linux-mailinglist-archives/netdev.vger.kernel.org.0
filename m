@@ -2,119 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CD5164C5B2
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 10:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9CDF64C5C9
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 10:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237887AbiLNJTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 04:19:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
+        id S237889AbiLNJU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 04:20:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237871AbiLNJSj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 04:18:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E895FB0
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:18:38 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p5NuJ-0000kr-4V; Wed, 14 Dec 2022 10:18:31 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:631f:86da:f36:1a4c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 7F4E513E862;
-        Wed, 14 Dec 2022 09:18:29 +0000 (UTC)
-Date:   Wed, 14 Dec 2022 10:18:20 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: Re: [PATCH 02/15] can: m_can: Wakeup net queue once tx was issued
-Message-ID: <20221214091820.geugui5ws3f7a5ng@pengutronix.de>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-3-msp@baylibre.com>
- <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de>
- <20221214091406.g6vim5hvlkm34naf@blmsp>
+        with ESMTP id S237773AbiLNJUy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 04:20:54 -0500
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFB61AF1A
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:20:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1671009652; x=1702545652;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OlJZ4X+LRCNTLRl3KrcWUtzsePiEfeGx6fbGDySX71Q=;
+  b=mgCzEUVhtcObUB1zqAhgEjhwpFMj3Ig3s+7ZmX8Exe2PCB12JMyip2P4
+   f9FSoxLQbLyn2bUSRsNDiid+b0dWc1b/Bv+Je5GJjKF+1rMutKef4TSPv
+   wRdCC3kExBtnKEEqzBKeXcK10K4tXrVcJVvC7AEcKqW05L0hHjIy9jy4O
+   M=;
+X-IronPort-AV: E=Sophos;i="5.96,244,1665446400"; 
+   d="scan'208";a="1083351086"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 09:20:45 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com (Postfix) with ESMTPS id B175881899;
+        Wed, 14 Dec 2022 09:20:44 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Wed, 14 Dec 2022 09:20:43 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.134) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Wed, 14 Dec 2022 09:20:40 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     "Denis V. Lunev" <den@openvz.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v1 net] af_unix: Add error handling in af_unix_init().
+Date:   Wed, 14 Dec 2022 18:20:08 +0900
+Message-ID: <20221214092008.47330-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cmhdhkp6pjy3b5ee"
-Content-Disposition: inline
-In-Reply-To: <20221214091406.g6vim5hvlkm34naf@blmsp>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.134]
+X-ClientProxiedBy: EX13D46UWB003.ant.amazon.com (10.43.161.117) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+sock_register() and register_pernet_subsys() in af_unix_init() could
+fail.
 
---cmhdhkp6pjy3b5ee
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+For example, after loading another PF_UNIX module (it's improbable
+though), loading unix.ko fails at sock_register() and leaks slab
+memory.  Also, register_pernet_subsys() fails when running out of
+memory.
 
-On 14.12.2022 10:14:06, Markus Schneider-Pargmann wrote:
-> Hi Marc,
->=20
-> On Wed, Nov 30, 2022 at 06:21:00PM +0100, Marc Kleine-Budde wrote:
-> > On 16.11.2022 21:52:55, Markus Schneider-Pargmann wrote:
-> > > Currently the driver waits to wakeup the queue until the interrupt for
-> > > the transmit event is received and acknowledged. If we want to use the
-> > > hardware FIFO, this is too late.
-> > >=20
-> > > Instead release the queue as soon as the transmit was transferred into
-> > > the hardware FIFO. We are then ready for the next transmit to be
-> > > transferred.
-> >=20
-> > If you want to really speed up the TX path, remove the worker and use
-> > the spi_async() API from the xmit callback, see mcp251xfd_start_xmit().
-> >=20
-> > Extra bonus if you implement xmit_more() and transfer more than 1 skb
-> > per SPI transfer.
->=20
-> Just a quick question here, I mplemented a xmit_more() call and I am
-> testing it right now, but it always returns false even under high
-> pressure. The device has a txqueuelen set to 1000. Do I need to turn
-> some other knob for this to work?
+Let's handle errors appropriately.
 
-AFAIK you need BQL support: see 0084e298acfe ("can: mcp251xfd: add BQL supp=
-ort").
+Fixes: 097e66c57845 ("[NET]: Make AF_UNIX per network namespace safe [v2]")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ net/unix/af_unix.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
 
-The etas_es58x driver implements xmit_more(), I added the Author Vincent
-on Cc.
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index ede2b2a140a4..5352f30850f1 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -3720,7 +3720,7 @@ static void __init bpf_iter_register(void)
+ 
+ static int __init af_unix_init(void)
+ {
+-	int i, rc = -1;
++	int i, rc;
+ 
+ 	BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
+ 
+@@ -3730,20 +3730,25 @@ static int __init af_unix_init(void)
+ 	}
+ 
+ 	rc = proto_register(&unix_dgram_proto, 1);
+-	if (rc != 0) {
++	if (rc) {
+ 		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
+ 		goto out;
+ 	}
+ 
+ 	rc = proto_register(&unix_stream_proto, 1);
+-	if (rc != 0) {
++	if (rc) {
+ 		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
+-		proto_unregister(&unix_dgram_proto);
+-		goto out;
++		goto err_proto_register;
+ 	}
+ 
+-	sock_register(&unix_family_ops);
+-	register_pernet_subsys(&unix_net_ops);
++	rc = sock_register(&unix_family_ops);
++	if (rc)
++		goto err_sock_register;
++
++	rc = register_pernet_subsys(&unix_net_ops);
++	if (rc)
++		goto err_register_pernet_subsys;
++
+ 	unix_bpf_build_proto();
+ 
+ #if IS_BUILTIN(CONFIG_UNIX) && defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
+@@ -3752,6 +3757,15 @@ static int __init af_unix_init(void)
+ 
+ out:
+ 	return rc;
++
++err_register_pernet_subsys:
++	sock_unregister(PF_UNIX);
++err_sock_register:
++	proto_unregister(&unix_stream_proto);
++err_proto_register:
++	proto_unregister(&unix_dgram_proto);
++
++	goto out;
+ }
+ 
+ static void __exit af_unix_exit(void)
+-- 
+2.30.2
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---cmhdhkp6pjy3b5ee
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOZlNgACgkQrX5LkNig
-013EJwf/fUw4P4ApLkDodlL0ugrtogINg9KvZjtNjbtlVqam59pHJ3CAvrTLxRNg
-KFBKLhZhjjEC8APOurmGbaIYSWolFIuGHKYozu2zytKqV2kiPiLtYGMxSpK7uNUk
-rYJoy6obID+1aNLXKzu+5aLsByBBThFpz2+qf5UW4lIWBFLZeR2QyE8XPFLe4Mu1
-iZ4s88rIfMb3rcqqMvVXVLQcC/U+RtWV3dNkVhUQYu99Jp37Vr99yEQP+LTHpP49
-nRqjSD8iAqxQWMnP4EP0z1Yh9FtHZ6h8qQ2XmKa5O9iP1+hYedIrZgAJgPnUMHpr
-a/3M0YvLKgETGgynY4wSP8R0g8eocA==
-=VMKy
------END PGP SIGNATURE-----
-
---cmhdhkp6pjy3b5ee--
