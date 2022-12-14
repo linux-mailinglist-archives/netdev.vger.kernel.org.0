@@ -2,108 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B28DE64CEC6
+	by mail.lfdr.de (Postfix) with ESMTP id 66ED264CEC5
 	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 18:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237767AbiLNRRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 12:17:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
+        id S237475AbiLNRRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 12:17:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239225AbiLNRQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 12:16:51 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE4326F5;
-        Wed, 14 Dec 2022 09:16:46 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id q17-20020a17090aa01100b002194cba32e9so7890150pjp.1;
-        Wed, 14 Dec 2022 09:16:46 -0800 (PST)
+        with ESMTP id S239193AbiLNRQr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 12:16:47 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87435F1C
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 09:16:39 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id h10so447601wrx.3
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 09:16:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=/1zG2tuJHv8bGjiNOZxxKGVCb/5dQUpWtcN2nAv7ybI=;
-        b=qVCfEroakM1a0+SJMCc0vLfW5rRuyGFzDfa67AYYRFrs9DJbQ4mQyDSCW0NfuttDWt
-         iL8A5Ex05zK7XT1aGrAWbdkhDCEkJlE+b6L9rkQOFeZbTWjdNgdRUlDatMvW0BOxv2tA
-         bGyjb4VUBUokGf01pCF3YEz8dZKNH9T9A7griEps/5l4F16uw3KTDZAjiMzHyFaH9jNt
-         bT0326ZDfUyhz3YXy2DyvmpBpaPeaFbCQKu1CZvZJh8KtsDqD1D8dBGY6lC/fpj64nJJ
-         HNbK+7ll/ZZjeQyKGoffKkvVCueJ8odsCKpwoYbQSqwob6vFLE5czjDhDhVLaK3SBHzD
-         5Hmw==
+        d=tessares.net; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cer/PS+So0alvCS30HT2Oh5V3K7NvUmDhiX3byrygKk=;
+        b=7IFMj9BPAx1VL3ASQhkU0pm5fS4vHUcccZICHcTeDM4cu8R1uARADgaA83h/A2UQps
+         Vb/5MQ6aDgzwbqmdrpgL8fyZ3btZYjOaxm7LcKh4y0t0089b5mxO2UNAeYuyJIIkAnWU
+         Mp67RbN3lnQ/Ccg/IaA1sHq0IGKJbiYu8wtPJRs9R278kWNdprILZFIZO/mZkmG35K8x
+         lXHqmixziGKJjrSIPR+TjJCWWjATa/OHqkdfni2+weBtQBSqbSWPkZYrZhhPmafJCCvt
+         1V0V2PiXvF6ye4pvJ/MHymezQrkIM6hw/MBkXY7ZU5UAaiqqLahWDXMyVoJEN2mk3IrS
+         pUag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/1zG2tuJHv8bGjiNOZxxKGVCb/5dQUpWtcN2nAv7ybI=;
-        b=w0oXkjF8AkQdJjQJz5gwP30CQRNoRy5GEM0+tvQxpDnCxUqcosBi6AfxqnlopBPf+D
-         +p9IYMD7Wa/HZ90kwRbalj08+bK54ctVS+rANWkp99XDGEdMun5/yMJY1XYmI5EMFHS5
-         aLwgjxDU/DkaTe33cEkAQb2gXhPDJTjCgh+azgq6QW51e83xo3qQSRi/HljTk9wPbvjE
-         cilN+8YJ/bsbtSyQqEG+GlrWxU9yZB73MlMaS3K92v+pnqnIrG7bZ9NOrjUyPT1TBI6L
-         DDuqfvgABmvcOS9uMp8VL/Hik2t8DqxCqLAjFZ+60UU3WHg78J1xVVG8URjyA0KzRh+L
-         XTuA==
-X-Gm-Message-State: ANoB5pnezhfGOmiTY2e3vHxkq3LA5wIZ/7rqCxO4VAASTT3ZQLbURS2J
-        IL/oe6lokG2mrO6oinalrgEHn7Xl/HtWhS0IW078FUo1
-X-Google-Smtp-Source: AA0mqf5S0+Von62w2CT1G5A0z9m2g63T5ixgtI9ZYiK2BnSStZ3EOCQkSdUSyB4FNpbAAm3hO2ljaV61ogv1RIu9aDg=
-X-Received: by 2002:a17:902:9a8b:b0:190:c917:ab61 with SMTP id
- w11-20020a1709029a8b00b00190c917ab61mr479029plp.93.1671038206116; Wed, 14 Dec
- 2022 09:16:46 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cer/PS+So0alvCS30HT2Oh5V3K7NvUmDhiX3byrygKk=;
+        b=t/99bw8DOYNixQKhxKVTdSsV600UE/hJPFnwvAVGGRSRnuL7tfNUigCO0D3jqdVhhv
+         XKCNcQVB53gz8cQzyNajOtMxHfPmiBL2P8KW4S4XMZfket6/axgcw6bvZvsweMWumS1Q
+         b4kXPKncETcmpU8WEg6WvpDrn0J1qe/NjBAD6t2dWtOizZg4wEfVTJHqVmbcyXYQ+mSZ
+         o3qx2tknKwkfuVBNCOyLMziwcNNX/QgfcVXo330jXyIlAGJ1nDwf3MO6a72N+wWpSH/S
+         LrIgYX083NxnC5jhN5r7/pOFDv98SyL7PlHJ/vn3PpN2ivAi2ev/1voTjn8wSebCpNN8
+         zw2Q==
+X-Gm-Message-State: ANoB5plhFPwQfCjuEwLkVgAYUmp5B4CGUY4c0t5HvelHEglGKsCaff+a
+        n5FVDOLX37LeRNL/hi8Z8vgBX+FB+BUGU71P
+X-Google-Smtp-Source: AA0mqf5VNtUVA4VWhGCW880Be/rf4YhL7Sr6MQUNSh7+yImfpkG4KogHNMjZ9pO+xWAaDS+rjdjzrg==
+X-Received: by 2002:a5d:678b:0:b0:242:5d76:f571 with SMTP id v11-20020a5d678b000000b002425d76f571mr16229034wru.2.1671038198023;
+        Wed, 14 Dec 2022 09:16:38 -0800 (PST)
+Received: from ?IPV6:2a02:578:8593:1200:22af:65bc:a1dd:1562? ([2a02:578:8593:1200:22af:65bc:a1dd:1562])
+        by smtp.gmail.com with ESMTPSA id l18-20020a5d4bd2000000b00236488f62d6sm3447643wrt.79.2022.12.14.09.16.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Dec 2022 09:16:37 -0800 (PST)
+Message-ID: <0e6d6a35-88bf-d577-67d0-7c3f70268c10@tessares.net>
+Date:   Wed, 14 Dec 2022 18:16:36 +0100
 MIME-Version: 1.0
-References: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
- <cf6f03d04c8f2ad2627a924f7ee66645d661d746.camel@gmail.com> <CY4PR1101MB2360D262A260CCE7ED0FD87390E09@CY4PR1101MB2360.namprd11.prod.outlook.com>
-In-Reply-To: <CY4PR1101MB2360D262A260CCE7ED0FD87390E09@CY4PR1101MB2360.namprd11.prod.outlook.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 14 Dec 2022 09:16:34 -0800
-Message-ID: <CAKgT0Uc2cmK8+BZoBO_3of86MN0AvBQc2je-Jyoocjw2DVn+7A@mail.gmail.com>
-Subject: Re: [PATCH intel-next 0/5] i40e: support XDP multi-buffer
-To:     "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>
-Cc:     "tirtha@gmail.com" <tirtha@gmail.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [ANNOUNCE] iproute2 6.1 release
+Content-Language: en-GB
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20221214082705.5d2c2e7f@hermes.local>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20221214082705.5d2c2e7f@hermes.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 14, 2022 at 7:56 AM Sarkar, Tirthendu
-<tirthendu.sarkar@intel.com> wrote:
->
-> > From: Alexander H Duyck <alexander.duyck@gmail.com>
-> > Sent: Tuesday, December 13, 2022 9:28 PM
-> >
-> > This approach seems kind of convoluted to me. Basically you are trying
-> > to clean the ring without cleaning the ring in the cases where you
-> > encounter a non EOP descriptor.
-> >
-> > Why not just replace the skb pointer with an xdp_buff in the ring? Then
-> > you just build an xdp_buff w/ frags and then convert it after after
-> > i40e_is_non_eop? You should then still be able to use all the same page
-> > counting tricks and the pages would just be dropped into the shared
-> > info of an xdp_buff instead of an skb and function the same assuming
-> > you have all the logic in place to clean them up correctly.
->
-> We have another approach similar to what you have suggested which sort
-> of is a bit cleaner but not free of a burden of getting the rx_buffer struct
-> back again for all of the packet frags post i40e_run_xdp() for recycling.
-> We will examine if that turns out to be better.
+Hi Stephen,
 
-Sounds good. Keep in mind that there are multiple use cases for the
-NIC so you don't want to optimize for the less likely to be used ones
-such as XDP_DROP/XDP_ABORT over standard use cases such as simply
-passing packets up to the network stack.
+On 14/12/2022 17:27, Stephen Hemminger wrote:
+> This is the release of iproute2 corresponding to the 6.1 kernel.
+> Nothing major; lots of usual set of small fixes.
+
+Thank you for this new release and for maintaining this project!
+
+I noticed that the version that is now displayed with 'ip -V' is a bit
+different. Before we had something like:
+
+  ip utility, iproute2-5.19.0
+
+Now we have an extra 'v' before the version:
+
+  ip utility, iproute2-v6.1.0
+
+I don't know if it is there[1] on purpose and if it is the reason why
+the link was broken. It is just a detail, it was easy to fix my script
+parsing the version on my side.
+
+[1]
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=83de2e800531dd30c2f2dd6e5196ed26c16c0407
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
