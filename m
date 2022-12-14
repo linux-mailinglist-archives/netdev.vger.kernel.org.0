@@ -2,211 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 894D164CCA3
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 15:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2846564CCCC
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 16:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238693AbiLNOsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 09:48:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        id S238291AbiLNPCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 10:02:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238363AbiLNOsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 09:48:04 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D8F25E9A
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 06:48:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671029283; x=1702565283;
-  h=from:to:cc:subject:date:message-id;
-  bh=hE+duJjVL/XZ+Hrat12cRrAn1SphY0J+zWacymV85VI=;
-  b=dQWwyvXnLSxOYDlGoDxAKB658cCqumVlHybv7rRYctV3u85yWD4s/TjA
-   Y/sNGZwVmDR2UQSKX5UlvVH0Xpipf0kJDX3IUqhN6F7pznCea8wCIQS4W
-   IPreaC5FFRmx2Cl2GVDz7u3UD4POTeK9MyTO8L3mmRyS8Hu3ZoKxkB8LK
-   sk5b9qPauN1/briWyDhO54YmB86t8qXEssVnKEKvhBP3eItvjq4gmOsRQ
-   Asy8I2wlulfWx2HGJcUYVxxNKQIZAu8GQ4CbJLMpt4SP40ubUceJbJZQY
-   2iuI0ILwLTMEAwEnqV8zqt8nYYyfPGVMrw0gvW2XE3qlvSbzCVdVbWA+m
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="298767290"
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="298767290"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 06:48:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="649053426"
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="649053426"
-Received: from zulkifl3-ilbpg0.png.intel.com ([10.88.229.82])
-  by orsmga002.jf.intel.com with ESMTP; 14 Dec 2022 06:48:00 -0800
-From:   Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-To:     intel-wired-lan@osuosl.org, vinicius.gomes@intel.com
-Cc:     tee.min.tan@linux.intel.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, muhammad.husaini.zulkifli@intel.com,
-        naamax.meir@linux.intel.com, anthony.l.nguyen@intel.com
-Subject: [PATCH net-next v1] igc: offload queue max SDU from tc-taprio
-Date:   Wed, 14 Dec 2022 22:45:14 +0800
-Message-Id: <20221214144514.15931-1-muhammad.husaini.zulkifli@intel.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S237778AbiLNPCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 10:02:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B345F120B4
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 07:02:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 649BCB818E5
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 15:02:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B50C433D2;
+        Wed, 14 Dec 2022 15:02:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671030128;
+        bh=vD+GqNFlovVM2Z212zxTX+ZolBo2v7dFpxlo2mi2IPQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=alBMptzCH1w4DUcuIoxryCKTElcCtveyohbAz2G02pgR1uorf0wzaKEUPasZ1JU1G
+         P4jIrDmnZxaJMPOXL2rdw8Op217cc0UuKRE5LdPgN9g0xSJef1gqrBcQh6U7phLIVi
+         2NBNROnjrg3GF5GSegcj2f8vcKP2IEz420iMuoQfsMUOUsDfreVW+/kh3ljOwT77QY
+         DBPRfpzcWNitfeSoWfgMgAs0xyMx2Jyd8aXK/C/PtyGUGD2RXcH9zjKMBDRbhMzhEt
+         xbyXq9PXsA1KJKz9026Sc8nxksPkdnyfHSfpa2Ctj4mshAkTx7iC5k+LzETYhgG5CG
+         IDrUtfS4myhLg==
+Date:   Wed, 14 Dec 2022 16:02:04 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, claudiu.manoil@nxp.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, lorenzo.bianconi@redhat.com
+Subject: Re: [RFT] net: ethernet: enetc: do not always access skb_shared_info
+ in the XDP path
+Message-ID: <Y5nlbERhXA7CYfHd@lore-desk>
+References: <8acb59077ff51eb58ca164e432be63194a92b0bf.1670924659.git.lorenzo@kernel.org>
+ <20221213195551.iev4u5niyzvyflyc@skbuf>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="UHYs918ZgPhW9smA"
+Content-Disposition: inline
+In-Reply-To: <20221213195551.iev4u5niyzvyflyc@skbuf>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@linux.intel.com>
 
-Add support for configuring the max SDU for each Tx queue.
-If not specified, keep the default.
+--UHYs918ZgPhW9smA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
-Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
----
- drivers/net/ethernet/intel/igc/igc.h      |  1 +
- drivers/net/ethernet/intel/igc/igc_main.c | 45 +++++++++++++++++++++++
- include/net/pkt_sched.h                   |  1 +
- net/sched/sch_taprio.c                    |  4 +-
- 4 files changed, 50 insertions(+), 1 deletion(-)
+> Hi Lorenzo,
+>=20
+> On Tue, Dec 13, 2022 at 10:46:43AM +0100, Lorenzo Bianconi wrote:
+> > Move XDP skb_shared_info structure initialization in from
+> > enetc_map_rx_buff_to_xdp() to enetc_add_rx_buff_to_xdp() and do not alw=
+ays
+> > access skb_shared_info in the xdp_buff/xdp_frame since it is located in=
+ a
+> > different cacheline with respect to hard_start and data xdp pointers.
+> > Rely on XDP_FLAGS_HAS_FRAGS flag to check if it really necessary to acc=
+ess
+> > non-linear part of the xdp_buff/xdp_frame.
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> > This patch is based on the following series not applied yet to next-nex=
+t:
+> > https://patchwork.kernel.org/project/netdevbpf/cover/cover.1670680119.g=
+it.lorenzo@kernel.org/
+> > ---
+> >  drivers/net/ethernet/freescale/enetc/enetc.c | 14 ++++++++------
+> >  1 file changed, 8 insertions(+), 6 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net=
+/ethernet/freescale/enetc/enetc.c
+> > index cd8f5f0c6b54..2ed6b163f3c8 100644
+> > --- a/drivers/net/ethernet/freescale/enetc/enetc.c
+> > +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+> > @@ -1305,6 +1305,10 @@ static int enetc_xdp_frame_to_xdp_tx_swbd(struct=
+ enetc_bdr *tx_ring,
+> >  	xdp_tx_swbd->xdp_frame =3D NULL;
+> > =20
+> >  	n++;
+> > +
+> > +	if (!xdp_frame_has_frags(xdp_frame))
+> > +		goto out;
+> > +
+>=20
+> Tested this with single-buffer devmap XDP_REDIRECT, can't test with
+> multi-buffer I think.
 
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 5da8d162cd38..ce9e88687d8c 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -99,6 +99,7 @@ struct igc_ring {
- 
- 	u32 start_time;
- 	u32 end_time;
-+	u32 max_sdu;
- 
- 	/* CBS parameters */
- 	bool cbs_enable;                /* indicates if CBS is enabled */
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index e07287e05862..7ce05c31e371 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1508,6 +1508,7 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
- 	__le32 launch_time = 0;
- 	u32 tx_flags = 0;
- 	unsigned short f;
-+	u32 max_sdu = 0;
- 	ktime_t txtime;
- 	u8 hdr_len = 0;
- 	int tso = 0;
-@@ -1527,6 +1528,16 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
- 		return NETDEV_TX_BUSY;
- 	}
- 
-+	if (tx_ring->max_sdu > 0) {
-+		if (skb_vlan_tagged(skb))
-+			max_sdu = tx_ring->max_sdu + VLAN_HLEN;
-+		else
-+			max_sdu = tx_ring->max_sdu;
-+
-+		if (skb->len > max_sdu)
-+			goto skb_drop;
-+	}
-+
- 	if (!tx_ring->launchtime_enable)
- 		goto done;
- 
-@@ -1606,6 +1617,12 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
- 	dev_kfree_skb_any(first->skb);
- 	first->skb = NULL;
- 
-+	return NETDEV_TX_OK;
-+
-+skb_drop:
-+	dev_kfree_skb_any(skb);
-+	skb = NULL;
-+
- 	return NETDEV_TX_OK;
- }
- 
-@@ -6015,6 +6032,7 @@ static int igc_tsn_clear_schedule(struct igc_adapter *adapter)
- 
- 		ring->start_time = 0;
- 		ring->end_time = NSEC_PER_SEC;
-+		ring->max_sdu = 0;
- 	}
- 
- 	return 0;
-@@ -6097,6 +6115,15 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
- 		}
- 	}
- 
-+	for (i = 0; i < adapter->num_tx_queues; i++) {
-+		struct igc_ring *ring = adapter->tx_ring[i];
-+
-+		if (qopt->max_frm_len[i] == U32_MAX)
-+			ring->max_sdu = 0;
-+		else
-+			ring->max_sdu = qopt->max_frm_len[i];
-+	}
-+
- 	return 0;
- }
- 
-@@ -6184,12 +6211,30 @@ static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
- 	return igc_tsn_offload_apply(adapter);
- }
- 
-+static int igc_tsn_query_caps(struct tc_query_caps_base *base)
-+{
-+	switch (base->type) {
-+	case TC_SETUP_QDISC_TAPRIO: {
-+		struct tc_taprio_caps *caps = base->caps;
-+
-+		caps->supports_queue_max_sdu = true;
-+
-+		return 0;
-+	}
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			void *type_data)
- {
- 	struct igc_adapter *adapter = netdev_priv(dev);
- 
- 	switch (type) {
-+	case TC_QUERY_CAPS:
-+		return igc_tsn_query_caps(type_data);
-+
- 	case TC_SETUP_QDISC_TAPRIO:
- 		return igc_tsn_enable_qbv_scheduling(adapter, type_data);
- 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index 38207873eda6..d2539b1f6529 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -178,6 +178,7 @@ struct tc_taprio_qopt_offload {
- 	u64 cycle_time;
- 	u64 cycle_time_extension;
- 	u32 max_sdu[TC_MAX_QUEUE];
-+	u32 max_frm_len[TC_MAX_QUEUE];
- 
- 	size_t num_entries;
- 	struct tc_taprio_sched_entry entries[];
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 570389f6cdd7..d39164074756 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1263,8 +1263,10 @@ static int taprio_enable_offload(struct net_device *dev,
- 	offload->enable = 1;
- 	taprio_sched_to_offload(dev, sched, offload);
- 
--	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
-+	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
- 		offload->max_sdu[tc] = q->max_sdu[tc];
-+		offload->max_frm_len[tc] = q->max_frm_len[tc];
-+	}
- 
- 	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
- 	if (err < 0) {
--- 
-2.17.1
+ack, thx for testing. I will add this patch to the prvious series.
+In oreder to test it with xdp-mb I think you can redirect into a cpumap and
+then attach a program on the cpumap to redirect back to the nic, but for the
+moment you need to comment out this line:
 
+https://github.com/torvalds/linux/blob/master/net/core/filter.c#L4291
+
+Regards,
+Lorenzo
+
+>=20
+> >  	xdp_tx_swbd =3D &xdp_tx_arr[n];
+> > =20
+> >  	shinfo =3D xdp_get_shared_info_from_frame(xdp_frame);
+> > @@ -1334,7 +1338,7 @@ static int enetc_xdp_frame_to_xdp_tx_swbd(struct =
+enetc_bdr *tx_ring,
+> >  		n++;
+> >  		xdp_tx_swbd =3D &xdp_tx_arr[n];
+> >  	}
+> > -
+> > +out:
+> >  	xdp_tx_arr[n - 1].is_eof =3D true;
+> >  	xdp_tx_arr[n - 1].xdp_frame =3D xdp_frame;
+> > =20
+> > @@ -1390,16 +1394,12 @@ static void enetc_map_rx_buff_to_xdp(struct ene=
+tc_bdr *rx_ring, int i,
+> >  {
+> >  	struct enetc_rx_swbd *rx_swbd =3D enetc_get_rx_buff(rx_ring, i, size);
+> >  	void *hard_start =3D page_address(rx_swbd->page) + rx_swbd->page_offs=
+et;
+> > -	struct skb_shared_info *shinfo;
+> > =20
+> >  	/* To be used for XDP_TX */
+> >  	rx_swbd->len =3D size;
+> > =20
+> >  	xdp_prepare_buff(xdp_buff, hard_start - rx_ring->buffer_offset,
+> >  			 rx_ring->buffer_offset, size, false);
+> > -
+> > -	shinfo =3D xdp_get_shared_info_from_buff(xdp_buff);
+> > -	shinfo->nr_frags =3D 0;
+> >  }
+> > =20
+> >  static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
+> > @@ -1407,7 +1407,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc=
+_bdr *rx_ring, int i,
+> >  {
+> >  	struct skb_shared_info *shinfo =3D xdp_get_shared_info_from_buff(xdp_=
+buff);
+> >  	struct enetc_rx_swbd *rx_swbd =3D enetc_get_rx_buff(rx_ring, i, size);
+> > -	skb_frag_t *frag =3D &shinfo->frags[shinfo->nr_frags];
+> > +	skb_frag_t *frag;
+> > =20
+> >  	/* To be used for XDP_TX */
+> >  	rx_swbd->len =3D size;
+> > @@ -1415,6 +1415,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc=
+_bdr *rx_ring, int i,
+> >  	if (!xdp_buff_has_frags(xdp_buff)) {
+> >  		xdp_buff_set_frags_flag(xdp_buff);
+> >  		shinfo->xdp_frags_size =3D size;
+> > +		shinfo->nr_frags =3D 0;
+>=20
+> Tested this and enetc_map_rx_buff_to_xdp() with single-buffer and
+> multi-buffer XDP_TX.
+>=20
+> >  	} else {
+> >  		shinfo->xdp_frags_size +=3D size;
+> >  	}
+> > @@ -1422,6 +1423,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc=
+_bdr *rx_ring, int i,
+> >  	if (page_is_pfmemalloc(rx_swbd->page))
+> >  		xdp_buff_set_frag_pfmemalloc(xdp_buff);
+> > =20
+> > +	frag =3D &shinfo->frags[shinfo->nr_frags];
+> >  	skb_frag_off_set(frag, rx_swbd->page_offset);
+> >  	skb_frag_size_set(frag, size);
+> >  	__skb_frag_set_page(frag, rx_swbd->page);
+> > --=20
+> > 2.38.1
+> >
+>=20
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>=20
+> Thanks.
+
+--UHYs918ZgPhW9smA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY5nlbAAKCRA6cBh0uS2t
+rKraAQDALP+pd1QEK2E7AL8X//Zzo55ce0Wrf96nQdp0rryb7QD/TgG/rohWxBEx
+DcuAU8yU9FpHoYIUVyue77tOkJcIrQo=
+=i0ni
+-----END PGP SIGNATURE-----
+
+--UHYs918ZgPhW9smA--
