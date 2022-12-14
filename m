@@ -2,362 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB1B64D453
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 01:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E4E464D413
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:58:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230089AbiLOAGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 19:06:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S230121AbiLNX6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 18:58:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiLOAFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 19:05:31 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19F36B991
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 15:58:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671062297; x=1702598297;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NqUcjvoPCz7Brbj36DpxXqGQWysHjoz5KI1pG/OJr3g=;
-  b=dtoziMyh6nt0yPEAypcBqC2oExCcNu8aF9mRB8jE/XjPnUugQe/hP9fx
-   /MHXEESJeQmTlHBa6dTewOIE9IZoki0mYkl8+h3qC3FME1bhuje8pYphh
-   4AVItf6/f651GFl2bAuQ+kmxymUmd30lPi7QTbYOm7alZpVlOuNVjTNmF
-   raUxjhXWx1y9ctsngYm1xRA/0cIQ6HVEpFqRJeTYDxlVXKprNbCGZHpeL
-   rEIqzDdaqqQnRl2FXxhSZSPurOhntWdzB+G75JCIS12o6J2cS/flSE7Ou
-   yMQpLcwH2OWR5mOXjr3SLbbSf/Txb/Y4vhqwHkwKiz12Frj7tlvczCWUL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="301951809"
-X-IronPort-AV: E=Sophos;i="5.96,245,1665471600"; 
-   d="scan'208";a="301951809"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 15:57:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="773503930"
-X-IronPort-AV: E=Sophos;i="5.96,245,1665471600"; 
-   d="scan'208";a="773503930"
-Received: from msu-dell.jf.intel.com ([10.166.233.5])
-  by orsmga004.jf.intel.com with ESMTP; 14 Dec 2022 15:57:25 -0800
-From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, kuba@kernel.org, sridhar.samudrala@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: [PATCH ethtool-next v1 3/3] netlink: add netlink handler for get rss (-x)
-Date:   Wed, 14 Dec 2022 15:54:18 -0800
-Message-Id: <20221214235418.1033834-4-sudheer.mogilappagari@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20221214235418.1033834-1-sudheer.mogilappagari@intel.com>
-References: <20221214235418.1033834-1-sudheer.mogilappagari@intel.com>
+        with ESMTP id S229832AbiLNX6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:58:31 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C071C37F89;
+        Wed, 14 Dec 2022 15:55:36 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id bg10so12639441wmb.1;
+        Wed, 14 Dec 2022 15:55:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=g0acZiAt08vPMW/QCN34b28bDKVCUpWRirnFpjrDBh8=;
+        b=oBa4p7v0MTw11EnJHwrSnuNi2eoVVvWAIf2Ys/jzUfa2IU/hs2sSEH0JsBwnXwnN3g
+         ueNtvegrhMsYKkGirDyKyt3k8djsY5Z0bLh4dmgqlsvpLQ14GosnZiR3AGOr6MhY6CFC
+         6flKl5/kRWaTPxpwI0PUBzHRzgohSfl7H9scj46EgGZ2/x32m6d82qHOWIHilLnauNsk
+         SUjrioCmX3J0G00g3RgLi9sErOK0iXTuxi+6xwoVezWh90bGHQo36GQCxPhqUeAxiiR7
+         PAWdP8D7jeyt63bdCz0vMGMM36AkdlWNJRFIbIeil8ECsQZo7cBhJXciPW/0Jaxatgy1
+         JFHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=g0acZiAt08vPMW/QCN34b28bDKVCUpWRirnFpjrDBh8=;
+        b=IeX2pNm1PjLTXlR/tN6/MboRuB63hriEYhbq/nG26P9YB6EEXZME4Hqx2cFkRtgvo6
+         oEcywLDOY9UJFMXAkOsYU296by4/RXOYnRdhNYYI5fhOYjMXVmCHIbnLDg3QHGZjaEtL
+         R3J2uGhHELN8sXwR1LJYSWPLLOUsepmYkoa2yOd1itb59BIAQYM8yruhvt/goUe5mrcx
+         X5z6+Nm/aRxvLnAsckXXxdzZtAWILrCTOOcirbFwRV0i6NU+XAXQne5djEvdBrNpmVrX
+         kRUUrGa2sm1lSkDt6xvLEEoj0fSEJPf9Li9tVxlHD5z22tUQQFwv5ZPtx5rxHT06hgYN
+         xioA==
+X-Gm-Message-State: ANoB5pm8cprtqQlre5q7EinLY6xjR7otFmXt0h9oSvc5swATiCHbtdr4
+        UQHPHl751dCGqUW1GZ/2uxs=
+X-Google-Smtp-Source: AA0mqf5eKk5Xt5xKisW4kLpGaP4bMina+srdRvA69aSzaFVS9eniboyL5Y9NaYXKn754SoAUD/nOpg==
+X-Received: by 2002:a05:600c:3c90:b0:3cf:6f4d:c259 with SMTP id bg16-20020a05600c3c9000b003cf6f4dc259mr21151780wmb.39.1671062106592;
+        Wed, 14 Dec 2022 15:55:06 -0800 (PST)
+Received: from localhost.localdomain (93-42-71-18.ip85.fastwebnet.it. [93.42.71.18])
+        by smtp.googlemail.com with ESMTPSA id u2-20020adff882000000b00241d21d4652sm4163549wrp.21.2022.12.14.15.55.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 15:55:05 -0800 (PST)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Tim Harvey <tharvey@gateworks.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Subject: [PATCH v7 00/11] Adds support for PHY LEDs with offload triggers
+Date:   Thu, 15 Dec 2022 00:54:27 +0100
+Message-Id: <20221214235438.30271-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for netlink based "ethtool -x <dev>" command using
-ETHTOOL_MSG_RSS_GET netlink message. It implements same functionality
-provided by traditional ETHTOOL_GRSSH subcommand. This displays RSS
-table, hash key and hash function.
+This is another attempt on adding this feature on LEDs, hoping this is
+the right time and someone finally notice this.
 
-Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
----
- Makefile.am            |   2 +-
- ethtool.c              |   1 +
- netlink/desc-ethtool.c |  11 +++
- netlink/extapi.h       |   2 +
- netlink/rss.c          | 197 +++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 212 insertions(+), 1 deletion(-)
- create mode 100644 netlink/rss.c
 
-diff --git a/Makefile.am b/Makefile.am
-index fcc912e..4765c3f 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -39,7 +39,7 @@ ethtool_SOURCES += \
- 		  netlink/eee.c netlink/tsinfo.c netlink/fec.c \
- 		  netlink/stats.c \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
--		  netlink/module-eeprom.c netlink/module.c \
-+		  netlink/module-eeprom.c netlink/module.c netlink/rss.c \
- 		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
-diff --git a/ethtool.c b/ethtool.c
-index 0971074..af57807 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5830,6 +5830,7 @@ static const struct option args[] = {
- 	{
- 		.opts	= "-x|--show-rxfh-indir|--show-rxfh",
- 		.func	= do_grxfh,
-+		.nlfunc	= nl_grss,
- 		.help	= "Show Rx flow hash indirection table and/or RSS hash key",
- 		.xhelp	= "		[ context %d ]\n"
- 	},
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index 9a6651e..8783afc 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -409,6 +409,15 @@ static const struct pretty_nla_desc __module_desc[] = {
- 	NLATTR_DESC_U8(ETHTOOL_A_MODULE_POWER_MODE),
- };
- 
-+static const struct pretty_nla_desc __rss_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_MODULE_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_MODULE_HEADER, header),
-+	NLATTR_DESC_U32(ETHTOOL_A_RSS_CONTEXT),
-+	NLATTR_DESC_U32(ETHTOOL_A_RSS_HFUNC),
-+	NLATTR_DESC_BINARY(ETHTOOL_A_RSS_INDIR),
-+	NLATTR_DESC_BINARY(ETHTOOL_A_RSS_HKEY),
-+};
-+
- const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
- 	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
-@@ -446,6 +455,7 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_PHC_VCLOCKS_GET, phc_vclocks),
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_GET, module),
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_SET, module),
-+	NLMSG_DESC(ETHTOOL_MSG_RSS_GET, rss),
- };
- 
- const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
-@@ -488,6 +498,7 @@ const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY, phc_vclocks),
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_GET_REPLY, module),
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_NTF, module),
-+	NLMSG_DESC(ETHTOOL_MSG_RSS_GET_REPLY, rss),
- };
- 
- const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 1bb580a..9b6dd1a 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -47,6 +47,7 @@ int nl_gmodule(struct cmd_context *ctx);
- int nl_smodule(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
- int nl_getmodule(struct cmd_context *ctx);
-+int nl_grss(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
- 
-@@ -114,6 +115,7 @@ nl_get_eeprom_page(struct cmd_context *ctx __maybe_unused,
- #define nl_getmodule		NULL
- #define nl_gmodule		NULL
- #define nl_smodule		NULL
-+#define nl_grss			NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/rss.c b/netlink/rss.c
-new file mode 100644
-index 0000000..256f688
---- /dev/null
-+++ b/netlink/rss.c
-@@ -0,0 +1,197 @@
-+/*
-+ * rss.c - netlink implementation of RSS context commands
-+ *
-+ * Implementation of "ethtool -x <dev>"
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+#include "strset.h"
-+#include "parser.h"
-+
-+struct cb_args {
-+	struct nl_context	*nlctx;
-+	u32			num_rings;
-+};
-+
-+int rss_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_RSS_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct cb_args *args = data;
-+	struct nl_context *nlctx =  args->nlctx;
-+	const struct stringset *hash_funcs;
-+	u32 rss_config_size, rss_hfunc;
-+	const char *rss_config, *hkey;
-+	int indir_sz = 0, hkey_sz = 0;
-+	struct ethtool_rxfh *rss;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+
-+	silent = nlctx->is_dump || nlctx->is_monitor;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_RSS_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	if (silent)
-+		putchar('\n');
-+
-+	rss_hfunc = mnl_attr_get_u32(tb[ETHTOOL_A_RSS_HFUNC]);
-+
-+	indir_sz = mnl_attr_get_payload_len(tb[ETHTOOL_A_RSS_INDIR]);
-+	rss_config = mnl_attr_get_str(tb[ETHTOOL_A_RSS_INDIR]);
-+
-+	hkey_sz = mnl_attr_get_payload_len(tb[ETHTOOL_A_RSS_HKEY]);
-+	hkey = mnl_attr_get_str(tb[ETHTOOL_A_RSS_HKEY]);
-+
-+	rss_config_size = indir_sz + hkey_sz;
-+
-+	rss = calloc(1, sizeof(*rss) + rss_config_size);
-+	if (!rss) {
-+		perror("Cannot allocate memory for RX flow hash config");
-+		return 1;
-+	}
-+
-+	rss->indir_size = indir_sz / sizeof(u32);
-+	rss->key_size = hkey_sz;
-+
-+	memcpy(rss->rss_config, rss_config, indir_sz);
-+	memcpy(rss->rss_config + rss->indir_size, hkey, hkey_sz);
-+
-+	print_rss_info(nlctx->ctx, args->num_rings, rss);
-+
-+	/* Fetch RSS hash functions and their status and print */
-+	printf("RSS hash function:\n");
-+	if (!rss_hfunc) {
-+		printf("    Operation not supported\n");
-+		return 0;
-+	}
-+
-+	if (!nlctx->is_monitor) {
-+		ret = netlink_init_ethnl2_socket(nlctx);
-+		if (ret < 0)
-+			return MNL_CB_ERROR;
-+	}
-+	hash_funcs = global_stringset(ETH_SS_RSS_HASH_FUNCS,
-+				      nlctx->ethnl2_socket);
-+
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_RSS_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return MNL_CB_OK;
-+
-+	for (unsigned int i = 0; i < get_count(hash_funcs); i++)
-+		printf("    %s: %s\n", get_string(hash_funcs, i),
-+		       (rss_hfunc & (1 << i)) ? "on" : "off");
-+
-+	free(rss);
-+	return MNL_CB_OK;
-+}
-+
-+/* RSS_GET */
-+static const struct param_parser grss_params[] = {
-+	{
-+		.arg		= "context",
-+		.type		= ETHTOOL_A_RSS_CONTEXT,
-+		.handler	= nl_parse_direct_u32,
-+		.min_argc	= 1,
-+	},
-+	{}
-+};
-+
-+int get_channels_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_CHANNELS_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct cb_args *args = data;
-+	struct nl_context *nlctx =  args->nlctx;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+
-+	silent = nlctx->is_dump || nlctx->is_monitor;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_CHANNELS_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	args->num_rings = mnl_attr_get_u8(tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT]);
-+	return MNL_CB_OK;
-+}
-+
-+int nl_grss(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	struct nl_msg_buff *msgbuff;
-+	struct cb_args args;
-+	int ret;
-+
-+	nlctx->cmd = "-x";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
-+	nlsk = nlctx->ethnl_socket;
-+	msgbuff = &nlsk->msgbuff;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_RSS_GET, true))
-+		return -EOPNOTSUPP;
-+
-+	/* save rings information into args.num_rings */
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_CHANNELS_GET, true))
-+		return -EOPNOTSUPP;
-+
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_CHANNELS_GET,
-+				      ETHTOOL_A_CHANNELS_HEADER, 0);
-+	if (ret < 0)
-+		goto err;
-+
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		goto err;
-+
-+	args.nlctx = nlsk->nlctx;
-+	ret = nlsock_process_reply(nlsk, get_channels_cb, &args);
-+	if (ret < 0)
-+		goto err;
-+
-+	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_RSS_GET,
-+		       NLM_F_REQUEST | NLM_F_ACK);
-+	if (ret < 0)
-+		return 1;
-+	if (ethnla_fill_header(msgbuff, ETHTOOL_A_RSS_HEADER,
-+			       ctx->devname, 0))
-+		return -EMSGSIZE;
-+
-+	ret = nl_parser(nlctx, grss_params, NULL, PARSER_GROUP_NONE, NULL);
-+	if (ret < 0)
-+		goto err;
-+
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		goto err;
-+
-+	args.nlctx = nlctx;
-+	ret = nlsock_process_reply(nlsk, rss_reply_cb, &args);
-+	if (ret == 0)
-+		return 0;
-+
-+err:
-+	return nlctx->exit_code ?: 1;
-+}
-+
+Most of the times Switch/PHY have connected multiple LEDs that are
+controlled by HW based on some rules/event. Currently we lack any
+support for a generic way to control the HW part and normally we
+either never implement the feature or only add control for brightness
+or hw blink.
+
+This is based on Marek idea of providing some API to cled but use a
+different implementation that in theory should be more generilized.
+
+The current idea is:
+- LED driver implement 3 API (hw_control_status/start/stop).
+  They are used to put the LED in hardware mode and to configure the
+  various trigger.
+- We have hardware triggers that are used to expose to userspace the
+  supported hardware mode and set the hardware mode on trigger
+  activation.
+- We can also have triggers that both support hardware and software mode.
+- The LED driver will declare each supported hardware blink mode and
+  communicate with the trigger all the supported blink modes that will
+  be available by sysfs.
+- A trigger will use blink_set to configure the blink mode to active
+  in hardware mode.
+- On hardware trigger activation, only the hardware mode is enabled but
+  the blink modes are not configured. The LED driver should reset any
+  link mode active by default.
+
+Each LED driver will have to declare explicit support for the offload
+trigger (or return not supported error code) as we the trigger_data that
+the LED driver will elaborate and understand what is referring to (based
+on the current active trigger).
+
+I posted a user for this new implementation that will benefit from this
+and will add a big feature to it. Currently qca8k can have up to 3 LEDs
+connected to each PHY port and we have some device that have only one of
+them connected and the default configuration won't work for that.
+
+The netdev trigger is expanded and it does now support hardware only
+triggers.
+The idea is to use hardware mode when a device_name is not defined.
+An additional sysfs entry is added to give some info about the available
+trigger modes supported in the current configuration.
+
+
+It was reported that at least 3 other switch family would benefits by
+this as they all lack support for a generic way to setup their leds and
+netdev team NACK each try to add special code to support LEDs present
+on switch in favor of a generic solution.
+
+v7:
+- Rebase on top of net-next (for qca8k changes)
+- Fix some typo in commit description
+- Fix qca8k leds documentation warning
+- Remove RFC tag
+v6:
+- Back to RFC.
+- Drop additional trigger
+- Rework netdev trigger to support common modes used by switch and
+  hardware only triggers
+- Refresh qca8k leds logic and driver
+v5:
+- Move out of RFC. (no comments from Andrew this is the right path?)
+- Fix more spelling mistake (thx Randy)
+- Fix error reported by kernel test bot
+- Drop the additional HW_CONTROL flag. It does simplify CONFIG
+  handling and hw control should be available anyway to support
+  triggers as module.
+v4:
+- Rework implementation and drop hw_configure logic.
+  We now expand blink_set.
+- Address even more spelling mistake. (thx a lot Randy)
+- Drop blink option and use blink_set delay.
+- Rework phy-activity trigger to actually make the groups dynamic.
+v3:
+- Rework start/stop as Andrew asked.
+- Introduce more logic to permit a trigger to run in hardware mode.
+- Add additional patch with netdev hardware support.
+- Use test_bit API to check flag passed to hw_control_configure.
+- Added a new cmd to hw_control_configure to reset any active blink_mode.
+- Refactor all the patches to follow this new implementation.
+v2:
+- Fix spelling mistake (sorry)
+- Drop patch 02 "permit to declare supported offload triggers".
+  Change the logic, now the LED driver declare support for them
+  using the configure_offload with the cmd TRIGGER_SUPPORTED.
+- Rework code to follow this new implementation.
+- Update Documentation to better describe how this offload
+  implementation work.
+
+Christian Marangi (11):
+  leds: add support for hardware driven LEDs
+  leds: add function to configure hardware controlled LED
+  leds: trigger: netdev: drop NETDEV_LED_MODE_LINKUP from mode
+  leds: trigger: netdev: rename and expose NETDEV trigger enum modes
+  leds: trigger: netdev: convert device attr to macro
+  leds: trigger: netdev: add hardware control support
+  leds: trigger: netdev: use mutex instead of spinlocks
+  leds: trigger: netdev: add available mode sysfs attr
+  leds: trigger: netdev: add additional hardware only triggers
+  net: dsa: qca8k: add LEDs support
+  dt-bindings: net: dsa: qca8k: add LEDs definition example
+
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  24 ++
+ Documentation/leds/leds-class.rst             |  53 +++
+ drivers/leds/Kconfig                          |  11 +
+ drivers/leds/led-class.c                      |  27 ++
+ drivers/leds/led-triggers.c                   |  29 ++
+ drivers/leds/trigger/ledtrig-netdev.c         | 385 ++++++++++++-----
+ drivers/net/dsa/qca/Kconfig                   |   9 +
+ drivers/net/dsa/qca/Makefile                  |   1 +
+ drivers/net/dsa/qca/qca8k-8xxx.c              |   4 +
+ drivers/net/dsa/qca/qca8k-leds.c              | 406 ++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |  62 +++
+ include/linux/leds.h                          | 103 ++++-
+ 12 files changed, 1015 insertions(+), 99 deletions(-)
+ create mode 100644 drivers/net/dsa/qca/qca8k-leds.c
+
 -- 
-2.31.1
+2.37.2
 
