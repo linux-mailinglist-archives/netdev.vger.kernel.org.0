@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0711564D355
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:24:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE0A64D358
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:25:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiLNXYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 18:24:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
+        id S229997AbiLNXZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 18:25:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbiLNXYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:24:02 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F6E53EC9;
-        Wed, 14 Dec 2022 15:22:26 -0800 (PST)
+        with ESMTP id S229850AbiLNXYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:24:08 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2075.outbound.protection.outlook.com [40.107.100.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2716E511EF;
+        Wed, 14 Dec 2022 15:22:30 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CY/nJyR0Y6oZHW1V+QuZvdrAsT4xebWcsjJ9pVqS9NlE5xYlrvAbpoaQRgqUKfKV1lnoJtqw/jZxpT3WUl2zrWyJiIV3+Jp89xdiAjFvZ7F+KM8yoZmUXmkD2x98U5B7/nUiAcpW93yt3PfmqO1kNuZRximN5CFno0yvOSGlzJ7J+uV44/vFTRi22Jsorf+P56V3CjxjxMmJGe09QOJFzTSrtzIJsbLKQWSrbyqRfQNTy2qC/Iol6ASOfjyf7P0mDp0nvHmIl3j05FWY7jCVN2kYz6uW8UxTBp9wRpRzin8ZSje88h+Tl7y9P8kdb4382ErDdxASqiraa0EFWUyXlA==
+ b=L5P7+t2wkw1eqgUFFfnMRg2m1phsgcy+OD4jnHHZxBnzQT5ybwggvZbVf2qT4uVs07GGXi4ZbHJwk5nh2CunyjWfEtlRGWvAPJX6G89tfRANj3dArAes2pMvJcDFUpIS7+oTWia9476bJXZQCIRDicTt5uvZdHsDzgyvJ4VioAEQ+hwvIJDt7jTnp27JZWOezPfJsjs1wPw8DIzwyc/FkhdnQWrfRBJcjbbD/YGtZOpYXRQcYlqudgqD5cnZE4tl+VrwQdhMF6dzJesSnImQjecZ8Ji9G/w/xvOAyVhaSERmD/9xAn64RicGFupXRlhj3yhbiAc3f5I6iQRmD1/gyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TjAevSPb0jqUbcx+kcUGPDy0fflqL4/0ZvUoh8FCSbo=;
- b=KCZNqqe7aw8cBLzgSWnp0gdwe67G5Uoc6titfzn3i9WdcWESVeFLdUxUbiSiTGcp6h5WE6EcOIi/nD9FusTOaVWWcfqgpwMGfNho2ond3LzZVo+QXLx8f9gDzavVFx3cEXgaDWmoNXikYKzosoRFuoLiPNc5pNPutv47MGjte8SYnf75e4ve5K3Saa5+d7TiSG3fWX1kBfD0MiRSJ+qasnBMxwpgIiq20O1EJXWscyJnLZfCds6cQGNEdV+ntCTkMydtbnY/jfQ/IWQlMQF7EuMy3plsAVAA+J1Pv7Dvaw3ZmtY/3U8gVPjZA6yC5Fk3QUTZDLeyr/hRPy8ZmJ3m9A==
+ bh=jS8AGT7nj3C8vddPq8FhFB/w6oWPk406bxAGs8sI9CM=;
+ b=hu8aU4NPlBpnKo9Ad1wKsgye1gbnc3IMR3BSOqmysrw7v7rgGD2TLHCLUcbmvwbXeamQgydJxMP0mm6wkks+FpDJQf/WRk3EpOg2fvoqQ0QlpVLRt7rmn0RgOV/0/cTBmAy67vzE5eheg0mblyKm4VGupcpH8TDmVJeY74fhFOOFJJPlA0Gx+kcD3g2/eV41K8RtWNpXvP+7dQkpHZgni3zFM6YccrnOPj7GP5w3iRAjogMnGY5MscgGPf4lgrPhh1RgqKgamFNuRb+gFo1tDup5Zylq+mEX8G8xOvFwEfyD4xnBJUBKh2wAZAQ5e5FxN5zEqfvAMd0w3or8KMpZ4g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TjAevSPb0jqUbcx+kcUGPDy0fflqL4/0ZvUoh8FCSbo=;
- b=e2Ziyp4LwJx2QbQ/DjLz6vx/eHaXqiNxIi5vXdyHEPQ1l0ekb56icybCsfnHCyj3ol0yVAa62e7A1SjELo8HXAnyPjZXOEKTuvGqGC0nSAl+vZOhBysuEckIxIvLpcSbrvm5usMdGRgVx8T2E7UU4AzF6oVFEtRZ3NGvEREaZpg=
-Received: from BN9PR03CA0645.namprd03.prod.outlook.com (2603:10b6:408:13b::20)
- by PH8PR12MB6940.namprd12.prod.outlook.com (2603:10b6:510:1bf::8) with
+ bh=jS8AGT7nj3C8vddPq8FhFB/w6oWPk406bxAGs8sI9CM=;
+ b=SCs8ujTRAlzCBu+7Hf7HQUMInJImeas22RCRHRYxHtpqavos7kLzrthiSF3CPcci4qcC7wSLx9Oqspw5vC4klN3P9GcydkTaAuA7GuhHLqhkjmJD9Pk9f6hj+IHjlGqeQDSd4ck/UQpae6s0TlUrQvDvxGFo27tmgINHdj/vyzY=
+Received: from BN9PR03CA0652.namprd03.prod.outlook.com (2603:10b6:408:13b::27)
+ by MW4PR12MB5666.namprd12.prod.outlook.com (2603:10b6:303:188::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Wed, 14 Dec
- 2022 23:22:05 +0000
+ 2022 23:22:07 +0000
 Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13b:cafe::ae) by BN9PR03CA0645.outlook.office365.com
- (2603:10b6:408:13b::20) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:408:13b:cafe::1b) by BN9PR03CA0652.outlook.office365.com
+ (2603:10b6:408:13b::27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.11 via Frontend
- Transport; Wed, 14 Dec 2022 23:22:05 +0000
+ Transport; Wed, 14 Dec 2022 23:22:07 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,11 +48,11 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5924.12 via Frontend Transport; Wed, 14 Dec 2022 23:22:05 +0000
+ 15.20.5924.12 via Frontend Transport; Wed, 14 Dec 2022 23:22:07 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 14 Dec
- 2022 17:22:03 -0600
+ 2022 17:22:06 -0600
 From:   Brett Creeley <brett.creeley@amd.com>
 To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
         <alex.williamson@redhat.com>, <cohuck@redhat.com>,
@@ -60,9 +60,9 @@ To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
         <shameerali.kolothum.thodi@huawei.com>, <kevin.tian@intel.com>
 CC:     <shannon.nelson@amd.com>, <drivers@pensando.io>,
         Brett Creeley <brett.creeley@amd.com>
-Subject: [RFC PATCH v2 vfio 6/7] vfio/pds: Add support for firmware recovery
-Date:   Wed, 14 Dec 2022 15:21:35 -0800
-Message-ID: <20221214232136.64220-7-brett.creeley@amd.com>
+Subject: [RFC PATCH v2 vfio 7/7] vfio/pds: Add Kconfig and documentation
+Date:   Wed, 14 Dec 2022 15:21:36 -0800
+Message-ID: <20221214232136.64220-8-brett.creeley@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221214232136.64220-1-brett.creeley@amd.com>
 References: <20221214232136.64220-1-brett.creeley@amd.com>
@@ -73,23 +73,23 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT009:EE_|PH8PR12MB6940:EE_
-X-MS-Office365-Filtering-Correlation-Id: b3d34983-6470-43e0-2213-08dade2a038a
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT009:EE_|MW4PR12MB5666:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1c3c6f87-4426-464f-e517-08dade2a04d7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zFTcBmlhUR7gYAhZBKnUVBGMOG3ex/dLxOnHtEHL907qveLRYurphffP3AQDW+rcqGqDOUujX8i1dN1IM5zaPDV6P7TJ7Bjnoy6C0PjGF7tplNJT/zKtvn1zOWBOsVlj8otfkd1ST/zT7qx9E3HIVuNeLbs5Pi0NKv9ppzvK162vWIiSM3v23oOuRAyZHSjeZt0b5VXYf2A/+kqrOoMn9GhgF6L27a6liTLyYmL+DNTzfl7CiQ9RIwk6c5LaKAMzvbTcelzQppSgiCfAnACkoIYRQCFtJDfkLLFNZRZohvEM3671OG+rP1ONcASAx4UMdN3pZa5Oaj4itng7pkxEX1LZcT6rMcqhWFuDFfgpulED6Yuj8bgYWtJXPQMxxDhN7X5RYco615kETIfRQeuQQVgNtX8yw4VZmd44qKFeQaatUJf7ROU+M//uSnuhvZbOCiCoUbB8bzbWXlx4qZRB5HV1Z0/Matg5ZU5zrFSgUWFsl9MOHxhrhZbKtW4QxdOkuTpHykfx1rfN8fjE9LdViF40i+Mxo+qjiyB9QWfTVeHvq/JHz1dSL50NEgustBk+Tg5RDVSojDP++llh1Xv9GtJUEuCT99564NgTa26M/YXEjylAu+fR3+Z5IM3yIg+zJsb/I2SyiXeS5jYH6DHEWRD89y78cgxGPGFIpaAXjdzj6dEMx4FPf9Itmim2df+Ed/pENz8vLSigeM6MgXPRN6YVOtCStOyEdPgnoFmkZhU=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:CA;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(136003)(376002)(39860400002)(451199015)(36840700001)(40470700004)(46966006)(4326008)(8936002)(40480700001)(41300700001)(70586007)(316002)(86362001)(54906003)(5660300002)(110136005)(70206006)(8676002)(83380400001)(356005)(336012)(44832011)(478600001)(82740400003)(2906002)(81166007)(186003)(1076003)(16526019)(6666004)(36756003)(47076005)(26005)(426003)(2616005)(36860700001)(82310400005)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: vksV5E8rR/8TD991ugWrjF/nxNCsB4DpoHRMaCfXa1/PwDwT9Vre9bit/K5PSOGoyhf7R1iwhOtyvHcziQbn51u87M5+by2GINrVwerM9W0/Js6OhDxugyhTKAYe+1DYA7jwy8R0Rp6j/pyw4wrw9bVM0fIrkSZ4O3RGnqISHnS6Zwy+vsDy1ntVppS2139CRHwH8NCWtbMdKeTEE4M0C83w0c4c4iqXXSvnT3XzfeRd3FL3wJiI7NsL6Q1Dr5pCqcG0Ngv6fUeTCIqPcsuR+FgMDal3AwIGKSrWb/2tIeRcPB7SBD7tCfNyfccUG6S9NJ/7872Dsw4w6acUS0cbymlVxUsLJG67p2QxNS4Hm/MzFRT8Z+4Ocb/VF9dqinGy4lP0OzERW0KUw7hrdMkRoadAAChAx+vBPiUTRWIZIUreFAMtoBP2FPGW9/RQCDpHfE1oWTFoCpR3qbOsJ4voVVj1GHj9SUzus+5sBAFtKf4+GfRGjA7NYNkwHGjhkQRF+fe43iS2NcfAgTBYmdVsNPkAShIfqgODzo36RjWm7Bldc6syo9ejHSdqz3P5xKmk5lDClQ0sVx9i1iPh5pt3y7LaqYx6yE47ctOwvFCTOqlu+ixbJrkzrsjFFF/ohtOQ3M13LJl7YrafCeuEeSNdXRbetOvwx1SMRg45EZze+GadSk0eFnDoZXE2JckPTShB/gHgO9F4F46TXqS/P1CoeK7UwJe1XoGIeHXX1HYltCA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:CA;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(376002)(346002)(396003)(451199015)(40470700004)(36840700001)(46966006)(70586007)(70206006)(4326008)(1076003)(8676002)(40460700003)(16526019)(36860700001)(41300700001)(5660300002)(83380400001)(2616005)(47076005)(6666004)(54906003)(8936002)(186003)(478600001)(26005)(110136005)(316002)(82310400005)(336012)(36756003)(426003)(86362001)(82740400003)(2906002)(356005)(81166007)(40480700001)(44832011)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2022 23:22:05.5254
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2022 23:22:07.7128
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3d34983-6470-43e0-2213-08dade2a038a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c3c6f87-4426-464f-e517-08dade2a04d7
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6940
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5666
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -100,245 +100,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's possible that the device firmware crashes and is able to recover
-due to some configuration and/or other issue. If a live migration
-is in progress while the firmware crashes, the live migration will
-fail. However, the VF PCI device should still be functional post
-crash recovery and subsequent migrations should go through as
-expected.
+Add Kconfig entries and pds_vfio.rst. Also, add an entry in the
+MAINTAINERS file for this new driver.
 
-When the pds_core device notices that firmware crashes it sends an
-event to all its client drivers over auxiliary bus. When the pds_vfio
-driver receives this event while migration is in progress it will
-request a deferred reset on the next migration state transition. This
-state transition will report failure as well as any subsequent state
-transition requests from the VMM/VFIO. Based on uapi/vfio.h the only
-way out of VFIO_DEVICE_STATE_ERROR is by issuing VFIO_DEVICE_RESET.
-Once this reset is done, the migration state will be reset to
-VFIO_DEVICE_STATE_RUNNING and migration can be performed.
-
-If the event is received while no migration is in progress (i.e.
-the VM is in normal operating mode), then no actions are taken
-and the migration state remains VFIO_DEVICE_STATE_RUNNING.
+It's not clear where documentation for vendor specific VFIO
+drivers should live, so just re-use the current Pensando
+ethernet location.
 
 Signed-off-by: Brett Creeley <brett.creeley@amd.com>
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/vfio/pci/pds/aux_drv.c  | 61 +++++++++++++++++++++++++++++++++
- drivers/vfio/pci/pds/aux_drv.h  |  1 +
- drivers/vfio/pci/pds/vfio_dev.c | 34 ++++++++++++++++--
- drivers/vfio/pci/pds/vfio_dev.h |  4 +++
- 4 files changed, 98 insertions(+), 2 deletions(-)
+ .../device_drivers/ethernet/index.rst         |  1 +
+ .../ethernet/pensando/pds_vfio.rst            | 88 +++++++++++++++++++
+ MAINTAINERS                                   |  7 ++
+ drivers/vfio/pci/Kconfig                      |  2 +
+ drivers/vfio/pci/pds/Kconfig                  | 17 ++++
+ 5 files changed, 115 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst
+ create mode 100644 drivers/vfio/pci/pds/Kconfig
 
-diff --git a/drivers/vfio/pci/pds/aux_drv.c b/drivers/vfio/pci/pds/aux_drv.c
-index 59b43075e85f..0ef78466f3d1 100644
---- a/drivers/vfio/pci/pds/aux_drv.c
-+++ b/drivers/vfio/pci/pds/aux_drv.c
-@@ -21,6 +21,46 @@ struct auxiliary_device_id pds_vfio_aux_id_table[] = {
- 	{},
- };
- 
-+static void
-+pds_vfio_recovery_work(struct work_struct *work)
-+{
-+	struct pds_vfio_aux *vfio_aux =
-+		container_of(work, struct pds_vfio_aux, work);
-+	struct pds_vfio_pci_device *pds_vfio = vfio_aux->pds_vfio;
-+	bool deferred_reset_needed = false;
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
+index 5196905582c5..0242bbc3bb2a 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -44,6 +44,7 @@ Contents:
+    neterion/s2io
+    netronome/nfp
+    pensando/ionic
++   pensando/pds_vfio
+    smsc/smc9
+    stmicro/stmmac
+    ti/cpsw
+diff --git a/Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst b/Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst
+new file mode 100644
+index 000000000000..adc144a4a7b8
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst
+@@ -0,0 +1,88 @@
++.. SPDX-License-Identifier: GPL-2.0+
++.. note: can be edited and viewed with /usr/bin/formiko-vim
 +
-+	/* Documentation states that the kernel migration driver must not
-+	 * generate asynchronous device state transitions outside of
-+	 * manipulation by the user or the VFIO_DEVICE_RESET ioctl.
-+	 *
-+	 * Since recovery is an asynchronous event received from the device,
-+	 * initiate a deferred reset. Only issue the deferred reset if a
-+	 * migration is in progress, which will cause the next step of the
-+	 * migration to fail. Also, if the device is in a state that will
-+	 * be set to VFIO_DEVICE_STATE_RUNNING on the next action (i.e. VM is
-+	 * shutdown and device is in VFIO_DEVICE_STATE_STOP) as that will clear
-+	 * the VFIO_DEVICE_STATE_ERROR when the VM starts back up.
-+	 */
-+	mutex_lock(&pds_vfio->state_mutex);
-+	if ((pds_vfio->state != VFIO_DEVICE_STATE_RUNNING &&
-+	     pds_vfio->state != VFIO_DEVICE_STATE_ERROR) ||
-+	    (pds_vfio->state == VFIO_DEVICE_STATE_RUNNING &&
-+	     pds_vfio_dirty_is_enabled(pds_vfio)))
-+		deferred_reset_needed = true;
-+	mutex_unlock(&pds_vfio->state_mutex);
++==========================================================
++PCI VFIO driver for the Pensando(R) DSC adapter family
++==========================================================
 +
-+	/* On the next user initiated state transition, the device will
-+	 * transition to the VFIO_DEVICE_STATE_ERROR. At this point it's the user's
-+	 * responsibility to reset the device.
-+	 *
-+	 * If a VFIO_DEVICE_RESET is requested post recovery and before the next
-+	 * state transition, then the deferred reset state will be set to
-+	 * VFIO_DEVICE_STATE_RUNNING.
-+	 */
-+	if (deferred_reset_needed)
-+		pds_vfio_deferred_reset(pds_vfio, VFIO_DEVICE_STATE_ERROR);
-+}
++Pensando Linux VFIO PCI Device Driver
++Copyright(c) 2022 Pensando Systems, Inc
 +
- static void
- pds_vfio_aux_notify_handler(struct pds_auxiliary_dev *padev,
- 			    union pds_core_notifyq_comp *event)
-@@ -29,6 +69,23 @@ pds_vfio_aux_notify_handler(struct pds_auxiliary_dev *padev,
- 	u16 ecode = le16_to_cpu(event->ecode);
- 
- 	dev_dbg(dev, "%s: event code %d\n", __func__, ecode);
++Overview
++========
 +
-+	/* We don't need to do anything for RESET state==0 as there is no notify
-+	 * or feedback mechanism available, and it is possible that we won't
-+	 * even see a state==0 event.
-+	 *
-+	 * Any requests from VFIO while state==0 will fail, which will return
-+	 * error and may cause migration to fail.
-+	 */
-+	if (ecode == PDS_EVENT_RESET) {
-+		dev_info(dev, "%s: PDS_EVENT_RESET event received, state==%d\n",
-+			 __func__, event->reset.state);
-+		if (event->reset.state == 1) {
-+			struct pds_vfio_aux *vfio_aux = auxiliary_get_drvdata(&padev->aux_dev);
++The ``pds_vfio`` driver is both a PCI and auxiliary bus driver. The
++PCI driver supports Live Migration capable NVMe Virtual Function (VF)
++devices and the auxiliary driver is used to communicate with the
++``pds_core`` driver and hardware.
 +
-+			schedule_work(&vfio_aux->work);
-+		}
-+	}
- }
- 
- static int
-@@ -88,6 +145,8 @@ pds_vfio_aux_probe(struct auxiliary_device *aux_dev,
- 		goto err_out;
- 	}
- 
-+	INIT_WORK(&vfio_aux->work, pds_vfio_recovery_work);
++Using the device
++================
 +
- 	return 0;
- 
- err_out:
-@@ -103,6 +162,8 @@ pds_vfio_aux_remove(struct auxiliary_device *aux_dev)
- 	struct pds_vfio_aux *vfio_aux = auxiliary_get_drvdata(aux_dev);
- 	struct pds_vfio_pci_device *pds_vfio = vfio_aux->pds_vfio;
- 
-+	cancel_work_sync(&vfio_aux->work);
++The pds_vfio device is enabled via multiple configuration steps and
++depends on the ``pds_core`` driver to create and enable SR-IOV Virtual
++Function devices.
 +
- 	if (pds_vfio) {
- 		pds_vfio_unregister_client_cmd(pds_vfio);
- 		vfio_aux->pds_vfio->vfio_aux = NULL;
-diff --git a/drivers/vfio/pci/pds/aux_drv.h b/drivers/vfio/pci/pds/aux_drv.h
-index 0f05a968bb00..422a42b3ce14 100644
---- a/drivers/vfio/pci/pds/aux_drv.h
-+++ b/drivers/vfio/pci/pds/aux_drv.h
-@@ -17,6 +17,7 @@ struct pds_vfio_aux {
- 	struct pds_auxiliary_dev *padev;
- 	struct pds_auxiliary_drv padrv;
- 	struct pds_vfio_pci_device *pds_vfio;
-+	struct work_struct work;
- };
- 
- struct auxiliary_driver *
-diff --git a/drivers/vfio/pci/pds/vfio_dev.c b/drivers/vfio/pci/pds/vfio_dev.c
-index 67fe62ad98c9..a5d8d59b4744 100644
---- a/drivers/vfio/pci/pds/vfio_dev.c
-+++ b/drivers/vfio/pci/pds/vfio_dev.c
-@@ -26,10 +26,17 @@ pds_vfio_state_mutex_unlock(struct pds_vfio_pci_device *pds_vfio)
- 	if (pds_vfio->deferred_reset) {
- 		pds_vfio->deferred_reset = false;
- 		if (pds_vfio->state == VFIO_DEVICE_STATE_ERROR) {
--			pds_vfio->state = VFIO_DEVICE_STATE_RUNNING;
-+			dev_dbg(&pds_vfio->pdev->dev, "Transitioning from VFIO_DEVICE_STATE_ERROR to %s\n",
-+				pds_vfio_lm_state(pds_vfio->deferred_reset_state));
-+			pds_vfio->state = pds_vfio->deferred_reset_state;
- 			pds_vfio_put_restore_file(pds_vfio);
- 			pds_vfio_put_save_file(pds_vfio);
-+		} else if (pds_vfio->deferred_reset_state == VFIO_DEVICE_STATE_ERROR) {
-+			dev_dbg(&pds_vfio->pdev->dev, "Transitioning from %s to VFIO_DEVICE_STATE_ERROR based on deferred_reset request\n",
-+				pds_vfio_lm_state(pds_vfio->state));
-+			pds_vfio->state = VFIO_DEVICE_STATE_ERROR;
- 		}
-+		pds_vfio->deferred_reset_state = VFIO_DEVICE_STATE_RUNNING;
- 		spin_unlock(&pds_vfio->reset_lock);
- 		goto again;
- 	}
-@@ -42,6 +49,7 @@ pds_vfio_reset(struct pds_vfio_pci_device *pds_vfio)
- {
- 	spin_lock(&pds_vfio->reset_lock);
- 	pds_vfio->deferred_reset = true;
-+	pds_vfio->deferred_reset_state = VFIO_DEVICE_STATE_RUNNING;
- 	if (!mutex_trylock(&pds_vfio->state_mutex)) {
- 		spin_unlock(&pds_vfio->reset_lock);
- 		return;
-@@ -50,6 +58,18 @@ pds_vfio_reset(struct pds_vfio_pci_device *pds_vfio)
- 	pds_vfio_state_mutex_unlock(pds_vfio);
- }
- 
-+void
-+pds_vfio_deferred_reset(struct pds_vfio_pci_device *pds_vfio,
-+			enum vfio_device_mig_state reset_state)
-+{
-+	dev_info(&pds_vfio->pdev->dev, "Requesting deferred_reset to state %s\n",
-+		 pds_vfio_lm_state(reset_state));
-+	spin_lock(&pds_vfio->reset_lock);
-+	pds_vfio->deferred_reset = true;
-+	pds_vfio->deferred_reset_state = reset_state;
-+	spin_unlock(&pds_vfio->reset_lock);
-+}
++Shown below are the steps to bind the driver to a VF and also to the
++associated auxiliary device created by the ``pds_core`` driver. This
++example assumes the pds_core and pds_vfio modules are already
++loaded.
 +
- static struct file *
- pds_vfio_set_device_state(struct vfio_device *vdev,
- 			  enum vfio_device_mig_state new_state)
-@@ -63,7 +83,13 @@ pds_vfio_set_device_state(struct vfio_device *vdev,
- 		return ERR_PTR(-ENODEV);
++.. code-block:: bash
++  :name: example-setup-script
++
++  #!/bin/bash
++
++  PF_BUS="0000:60"
++  PF_BDF="0000:60:00.0"
++  VF_BDF="0000:60:00.1"
++
++  # Enable live migration VF auxiliary device(s)
++  devlink dev param set pci/$PF_BDF name enable_migration value true cmode runtime
++
++  # Prevent nvme driver from probing the NVMe VF device
++  echo 0 > /sys/class/pci_bus/$PF_BUS/device/$PF_BDF/sriov_drivers_autoprobe
++
++  # Create single VF for NVMe Live Migration via VFIO
++  echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
++
++  # Allow the VF to be bound to the pds_vfio driver
++  echo "pds_vfio" > /sys/class/pci_bus/$PF_BUS/device/$VF_BDF/driver_override
++
++  # Bind the VF to the pds_vfio driver
++  echo "$VF_BDF" > /sys/bus/pci/drivers/pds_vfio/bind
++
++After performing the steps above the pds_vfio driver's PCI probe should
++have been called, the pds_vfio driver's auxiliary probe should have
++been called, and a file in /dev/vfio/<iommu_group> should have been created.
++There will also be an entry in /sys/bus/auxiliary/device/pds_core.LM.<nn>
++for the VF's auxiliary device and the associated driver registered by the
++pds_vfio module will be at /sys/bus/auxiliary/drivers/pds_vfio.LM.
++
++
++Enabling the driver
++===================
++
++The driver is enabled via the standard kernel configuration system,
++using the make command::
++
++  make oldconfig/menuconfig/etc.
++
++The driver is located in the menu structure at:
++
++  -> Device Drivers
++    -> VFIO Non-Privileged userspace driver framework
++      -> VFIO support for PDS PCI devices
++
++Support
++=======
++
++For general Linux networking support, please use the netdev mailing
++list, which is monitored by Pensando personnel::
++
++  netdev@vger.kernel.org
++
++For more specific support needs, please use the Pensando driver support
++email::
++
++  drivers@pensando.io
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 50d7442e7f43..ba2d139ccee9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21623,6 +21623,13 @@ S:	Maintained
+ P:	Documentation/driver-api/vfio-pci-device-specific-driver-acceptance.rst
+ F:	drivers/vfio/pci/*/
  
- 	mutex_lock(&pds_vfio->state_mutex);
--	while (new_state != pds_vfio->state) {
-+	/* only way to transition out of VFIO_DEVICE_STATE_ERROR is via
-+	 * VFIO_DEVICE_RESET, so prevent the state machine from running since
-+	 * vfio_mig_get_next_state() will throw a WARN_ON() when transitioning
-+	 * from VFIO_DEVICE_STATE_ERROR to any other state
-+	 */
-+	while (pds_vfio->state != VFIO_DEVICE_STATE_ERROR &&
-+	       new_state != pds_vfio->state) {
- 		enum vfio_device_mig_state next_state;
++VFIO PDS PCI DRIVER
++M:	Brett Creeley <brett.creeley@amd.com>
++L:	kvm@vger.kernel.org
++S:	Maintained
++F:	Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst
++F:	drivers/vfio/pci/pds/
++
+ VFIO PLATFORM DRIVER
+ M:	Eric Auger <eric.auger@redhat.com>
+ L:	kvm@vger.kernel.org
+diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+index f9d0c908e738..2c3831dd60ef 100644
+--- a/drivers/vfio/pci/Kconfig
++++ b/drivers/vfio/pci/Kconfig
+@@ -59,4 +59,6 @@ source "drivers/vfio/pci/mlx5/Kconfig"
  
- 		int err = vfio_mig_get_next_state(vdev, pds_vfio->state,
-@@ -85,6 +111,9 @@ pds_vfio_set_device_state(struct vfio_device *vdev,
- 		}
- 	}
- 	pds_vfio_state_mutex_unlock(pds_vfio);
-+	/* still waiting on a deferred_reset */
-+	if (pds_vfio->state == VFIO_DEVICE_STATE_ERROR)
-+		res = ERR_PTR(-EIO);
+ source "drivers/vfio/pci/hisilicon/Kconfig"
  
- 	return res;
- }
-@@ -168,6 +197,7 @@ pds_vfio_open_device(struct vfio_device *vdev)
- 	dev_dbg(&pds_vfio->pdev->dev, "%s: %s => VFIO_DEVICE_STATE_RUNNING\n",
- 		__func__, pds_vfio_lm_state(pds_vfio->state));
- 	pds_vfio->state = VFIO_DEVICE_STATE_RUNNING;
-+	pds_vfio->deferred_reset_state = VFIO_DEVICE_STATE_RUNNING;
- 
- 	vfio_pci_core_finish_enable(&pds_vfio->vfio_coredev);
- 
-diff --git a/drivers/vfio/pci/pds/vfio_dev.h b/drivers/vfio/pci/pds/vfio_dev.h
-index 42bfea448c10..212bb687cf9b 100644
---- a/drivers/vfio/pci/pds/vfio_dev.h
-+++ b/drivers/vfio/pci/pds/vfio_dev.h
-@@ -23,6 +23,7 @@ struct pds_vfio_pci_device {
- 	enum vfio_device_mig_state state;
- 	spinlock_t reset_lock; /* protect reset_done flow */
- 	u8 deferred_reset;
-+	enum vfio_device_mig_state deferred_reset_state;
- 
- 	int vf_id;
- 	int pci_id;
-@@ -34,5 +35,8 @@ struct pds_vfio_pci_device *
- pds_vfio_pci_drvdata(struct pci_dev *pdev);
- void
- pds_vfio_reset(struct pds_vfio_pci_device *pds_vfio);
-+void
-+pds_vfio_deferred_reset(struct pds_vfio_pci_device *pds_vfio,
-+			enum vfio_device_mig_state reset_state);
- 
- #endif /* _VFIO_DEV_H_ */
++source "drivers/vfio/pci/pds/Kconfig"
++
+ endif
+diff --git a/drivers/vfio/pci/pds/Kconfig b/drivers/vfio/pci/pds/Kconfig
+new file mode 100644
+index 000000000000..d9bc9734c3cf
+--- /dev/null
++++ b/drivers/vfio/pci/pds/Kconfig
+@@ -0,0 +1,17 @@
++# SPDX-License-Identifier: GPL-2.0
++config PDS_VFIO_PCI
++	tristate "VFIO support for PDS PCI devices"
++	depends on PDS_CORE
++	depends on VFIO_PCI_CORE
++	help
++	  This provides generic PCI support for PDS devices using the VFIO
++	  framework.
++
++	  More specific information on this driver can be
++	  found in
++	  <file:Documentation/networking/device_drivers/ethernet/pensando/pds_vfio.rst>.
++
++	  To compile this driver as a module, choose M here. The module
++	  will be called pds_vfio.
++
++	  If you don't know what to do here, say N.
 -- 
 2.17.1
 
