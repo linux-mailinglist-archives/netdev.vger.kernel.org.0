@@ -2,89 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 569D564C73C
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 11:35:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B70FD64C740
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 11:36:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237947AbiLNKfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 05:35:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        id S237963AbiLNKfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 05:35:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237963AbiLNKfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 05:35:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DB820BF2
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 02:34:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671014069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7Fg00XXF2yM6wh3TO2WZ8TwfHdQYz2juPaqJ6letSgY=;
-        b=GYwC9OrlMiBcKWGYiW/nRGyqfZhBSyc+g87krEGrtFTDfIbK54v067VP1n1GLJgENvczM0
-        wCnY2NgX/CGHpS0DX+gCtbs/eqJl1fBbnG2EHVmaMOO/G8n65CF0MdNG8e5nj3rU4MWTDN
-        jy9xRyQqPk2SPb6L30YJoJQjT64pZ8w=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-437-93MoOaVBObSNORUAlNvPYw-1; Wed, 14 Dec 2022 05:34:28 -0500
-X-MC-Unique: 93MoOaVBObSNORUAlNvPYw-1
-Received: by mail-ej1-f69.google.com with SMTP id sg39-20020a170907a42700b007c19b10a747so1872255ejc.11
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 02:34:28 -0800 (PST)
+        with ESMTP id S237964AbiLNKfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 05:35:47 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE2420F7F
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 02:35:45 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id b2so43418523eja.7
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 02:35:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2RvFiiCnhAAKi7d+1qBnwz6NP+D+/ZIyHDhOt+BilbQ=;
+        b=2V4nT4w2BZ/X/Hf4t9dDrH6FezCbRaJT9eK8gARAwOK5jTLArjG27ZFq2pWOBuSLpl
+         bCY3WZSuMi6v1+06iAFKfMMs/kttgxTMRcA4PCJaKOVbqdTS5gm+ME6W+Z3l7dxOSOIS
+         5e89STE0Lk+Yj5LDgU/Rde2I+SLS3aJrlkufHUKUG3+RDf+fq6+Q3x42STGClCSCoWR+
+         FQmQfqwqFF6ScBSiX+oAl+IgjoyJ6nXWnUKwlok6TIcqbM7/Jc4Eeih5E95NSaOXfFyy
+         gzam1E6rhlLU2daKpN29DA6aGJoZ9U6nc7hrDqDb2JLOFoKVwOsFjgto9ypjC52kIIfj
+         /wpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7Fg00XXF2yM6wh3TO2WZ8TwfHdQYz2juPaqJ6letSgY=;
-        b=B6ZzQpbZtwbz54KquUDNz2mos5xl0qAGAuCEF1WHzdDd7MngkKkNF7gHtxPD2Gqu9T
-         y8gVCf1TEXF7U1aZYSynIyV/0fyPkDaB76jQ2YxUBW9hbTW9SD/EKBThYQPc2KPK7zOd
-         WoazOrF+5Hnd0kdyxoV8ybk986epc3Gw3iANrqf16J8c2ifaAP47zqB+NI/KnlYfc6ke
-         34lEOONQxCWpdrG5NMKQMsyCZBtWgzn5gcz0BE9HmTg90chZebZxcfb/+IB0vL4kYijP
-         ofn+NKTpkWoGwgQhzd2QFhMz4mdb/afL6UxROwIceYSDBiWTaosZyLOtJLkUoKkBppfS
-         gnmg==
-X-Gm-Message-State: ANoB5plzAfHiu+Vr5/WLXw1TNZs5LHmQBHO2gvCULlWBNAhheCwLjwjI
-        a/GUGLJ9L6sn/CmFQ/qH6amedVH/2Vu1HdlHNZ+2XuY33VxkBxlWQoJpolYPH4xY3U9SBV2LxYN
-        JPErN5ZSrMBra3OuC
-X-Received: by 2002:a17:907:8a22:b0:7af:16b5:9af8 with SMTP id sc34-20020a1709078a2200b007af16b59af8mr27839835ejc.33.1671014066323;
-        Wed, 14 Dec 2022 02:34:26 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5CVYouzmF4fVkxVmkciAuxXMAnbXeAYX6tQ5aBH2lvugDNhvxTXrHafnkjusNLMP7PybGnyQ==
-X-Received: by 2002:a17:907:8a22:b0:7af:16b5:9af8 with SMTP id sc34-20020a1709078a2200b007af16b59af8mr27839782ejc.33.1671014065395;
-        Wed, 14 Dec 2022 02:34:25 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id r10-20020a17090609ca00b00780b1979adesm5622969eje.218.2022.12.14.02.34.23
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2RvFiiCnhAAKi7d+1qBnwz6NP+D+/ZIyHDhOt+BilbQ=;
+        b=ReQ3ph830RpISd1RqmVEiT4Glovkz8V2i3qJ3Pc0MaItYtPEaYY5jfzP1cOr5stms0
+         WgIsLwaRQtmAIKPlIKWcV00n+JERppW2HX1Pzn6cxS9QQ9MJHaTGy6/ojaZGC6nCerV4
+         ZeHwC3vjOTE8cU9SBhd3wc/q1gD1wWRHaXLY6Ca6S9e0twKELj+ScnqnokTu/Z54jRnU
+         1Lq0SEg65Vc/Oss8AcmnnHHe8mP7TnuoL2ICLbffQ2VkUcmz6izGlzo9qIb7nqN8n0cR
+         l4fDjrXaeI8I0Qjy+NwIQR0kf5pvjAyqvaNeY/OQO1z0S+yu3pTOT720Cc/uZLSNB9EN
+         5gRA==
+X-Gm-Message-State: ANoB5pnqqrtReLeMs9zgofrZgPN9huT/B7N3Hkuwu08T5stf6jeWmlEE
+        kF+eLQAhhEk6chkbyG3OwwtSHA==
+X-Google-Smtp-Source: AA0mqf4bgN78wWncfZNxqYVwCIc6gPyOa9DX5wTQAfud2G1FHgDFnihpW/1nZMNLd9Wb+KeVgmkZ2g==
+X-Received: by 2002:a17:906:698f:b0:7ad:d250:b903 with SMTP id i15-20020a170906698f00b007add250b903mr19732691ejr.56.1671014143640;
+        Wed, 14 Dec 2022 02:35:43 -0800 (PST)
+Received: from blmsp ([185.238.219.46])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906318100b0077b2b0563f4sm5740827ejy.173.2022.12.14.02.35.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Dec 2022 02:34:24 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7D96782F53A; Wed, 14 Dec 2022 11:34:23 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>,
-        David Vernet <void@manifault.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v4 01/15] bpf: Document XDP RX
- metadata
-In-Reply-To: <CAKH8qBvjwMXvTg3ij=6wk2yu+=oWcRizmKf_YtW_yp5+W2F_=g@mail.gmail.com>
-References: <20221213023605.737383-1-sdf@google.com>
- <20221213023605.737383-2-sdf@google.com> <Y5iqTKnhtX2yaSAq@maniforge.lan>
- <CAKH8qBvjwMXvTg3ij=6wk2yu+=oWcRizmKf_YtW_yp5+W2F_=g@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 14 Dec 2022 11:34:23 +0100
-Message-ID: <87fsdigtow.fsf@toke.dk>
+        Wed, 14 Dec 2022 02:35:43 -0800 (PST)
+Date:   Wed, 14 Dec 2022 11:35:42 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/15] can: m_can: Wakeup net queue once tx was issued
+Message-ID: <20221214103542.c5g32qtbuvn5mv4u@blmsp>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-3-msp@baylibre.com>
+ <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de>
+ <20221214091406.g6vim5hvlkm34naf@blmsp>
+ <20221214091820.geugui5ws3f7a5ng@pengutronix.de>
+ <20221214092201.xpb3rnwp5rtvrpkr@pengutronix.de>
+ <CAMZ6RqLAZNj9dm_frbKExHK8AYDj9D0rX_9=c8_wk9kFrO-srw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqLAZNj9dm_frbKExHK8AYDj9D0rX_9=c8_wk9kFrO-srw@mail.gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,82 +78,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev <sdf@google.com> writes:
+Hi Vincent,
 
-> On Tue, Dec 13, 2022 at 8:37 AM David Vernet <void@manifault.com> wrote:
->>
->> On Mon, Dec 12, 2022 at 06:35:51PM -0800, Stanislav Fomichev wrote:
->> > Document all current use-cases and assumptions.
->> >
->> > Cc: John Fastabend <john.fastabend@gmail.com>
->> > Cc: David Ahern <dsahern@gmail.com>
->> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
->> > Cc: Jakub Kicinski <kuba@kernel.org>
->> > Cc: Willem de Bruijn <willemb@google.com>
->> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
->> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
->> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
->> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
->> > Cc: Maryam Tahhan <mtahhan@redhat.com>
->> > Cc: xdp-hints@xdp-project.net
->> > Cc: netdev@vger.kernel.org
->> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> > ---
->> >  Documentation/bpf/xdp-rx-metadata.rst | 90 +++++++++++++++++++++++++++
->> >  1 file changed, 90 insertions(+)
->> >  create mode 100644 Documentation/bpf/xdp-rx-metadata.rst
->> >
->> > diff --git a/Documentation/bpf/xdp-rx-metadata.rst b/Documentation/bpf/xdp-rx-metadata.rst
->> > new file mode 100644
->> > index 000000000000..498eae718275
->> > --- /dev/null
->> > +++ b/Documentation/bpf/xdp-rx-metadata.rst
->>
->> I think you need to add this to Documentation/bpf/index.rst. Or even
->> better, maybe it's time to add an xdp/ subdirectory and put all docs
->> there? Don't want to block your patchset from bikeshedding on this
->> point, so for now it's fine to just put it in
->> Documentation/bpf/index.rst until we figure that out.
->
-> Maybe let's put it under Documentation/networking/xdp-rx-metadata.rst
-> and reference form Documentation/networking/index.rst? Since it's more
-> relevant to networking than the core bpf?
->
->> > @@ -0,0 +1,90 @@
->> > +===============
->> > +XDP RX Metadata
->> > +===============
->> > +
->> > +XDP programs support creating and passing custom metadata via
->> > +``bpf_xdp_adjust_meta``. This metadata can be consumed by the following
->> > +entities:
->>
->> Can you add a couple of sentences to this intro section that explains
->> what metadata is at a high level?
->
-> I'm gonna copy-paste here what I'm adding, feel free to reply back if
-> still unclear. (so we don't have to wait another week to discuss the
-> changes)
->
-> XDP programs support creating and passing custom metadata via
-> ``bpf_xdp_adjust_meta``. The metadata can contain some extra information
-> about the packet: timestamps, hash, vlan and tunneling information, etc.
-> This metadata can be consumed by the following entities:
+On Wed, Dec 14, 2022 at 07:15:25PM +0900, Vincent MAILHOL wrote:
+> On Wed. 14 Dec. 2022 at 18:28, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> > On 14.12.2022 10:18:20, Marc Kleine-Budde wrote:
+> > > On 14.12.2022 10:14:06, Markus Schneider-Pargmann wrote:
+> > > > Hi Marc,
+> > > >
+> > > > On Wed, Nov 30, 2022 at 06:21:00PM +0100, Marc Kleine-Budde wrote:
+> > > > > On 16.11.2022 21:52:55, Markus Schneider-Pargmann wrote:
+> > > > > > Currently the driver waits to wakeup the queue until the interrupt for
+> > > > > > the transmit event is received and acknowledged. If we want to use the
+> > > > > > hardware FIFO, this is too late.
+> > > > > >
+> > > > > > Instead release the queue as soon as the transmit was transferred into
+> > > > > > the hardware FIFO. We are then ready for the next transmit to be
+> > > > > > transferred.
+> > > > >
+> > > > > If you want to really speed up the TX path, remove the worker and use
+> > > > > the spi_async() API from the xmit callback, see mcp251xfd_start_xmit().
+> > > > >
+> > > > > Extra bonus if you implement xmit_more() and transfer more than 1 skb
+> > > > > per SPI transfer.
+> > > >
+> > > > Just a quick question here, I mplemented a xmit_more() call and I am
+> > > > testing it right now, but it always returns false even under high
+> > > > pressure. The device has a txqueuelen set to 1000. Do I need to turn
+> > > > some other knob for this to work?
+> 
+> I was the first to use BQL in a CAN driver. It also took me time to
+> first figure out the existence of xmit_more() and even more to
+> understand how to make it so that it would return true.
+> 
+> > > AFAIK you need BQL support: see 0084e298acfe ("can: mcp251xfd: add BQL support").
+> > >
+> > > The etas_es58x driver implements xmit_more(), I added the Author Vincent
+> > > on Cc.
+> >
+> > Have a look at netdev_queue_set_dql_min_limit() in the etas driver.
+> 
+> The functions you need are the netdev_send_queue() and the
+> netdev_complete_queue():
+> 
+>   https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L3424
+> 
+> For CAN, you probably want to have a look to can_skb_get_frame_len().
+> 
+>   https://elixir.bootlin.com/linux/latest/source/include/linux/can/length.h#L166
+> 
+> The netdev_queue_set_dql_min_limit() gives hints by setting a minimum
+> value for BQL. It is optional (and as of today I am the only user of
+> it).
 
-This is not really accurate, though? The metadata area itself can
-contain whatever the XDP program wants it to, and I think you're
-conflating the "old" usage for arbitrary storage with the driver-kfunc
-metadata support.
+Thank you for this summary, great that you already invested the time to
+make it work with a CAN driver. I will give it a try in the m_can
+driver.
 
-I think we should clear separate the two: the metadata area is just a
-place to store data (and is not consumed by the stack, except that
-TC-BPF programs can access it), and the driver kfuncs are just a general
-way to get data out of the drivers (and has nothing to do with the
-metadata area, you can just get the data into stack variables).
-
-While it would be good to have a documentation of the general metadata
-area stuff somewhere, I don't think it necessarily have to be part of
-this series, so maybe just stick to documenting the kfuncs?
-
--Toke
-
+Best,
+Markus
