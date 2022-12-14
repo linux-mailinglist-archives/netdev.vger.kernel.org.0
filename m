@@ -2,120 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DC864D35B
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:26:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D17A064D35E
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiLNX0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 18:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
+        id S229952AbiLNX23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 18:28:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiLNXZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:25:56 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457E4532CD;
-        Wed, 14 Dec 2022 15:23:56 -0800 (PST)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p5b6D-000FQx-Kx; Thu, 15 Dec 2022 00:23:41 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p5b6D-0002pw-1z; Thu, 15 Dec 2022 00:23:41 +0100
-Subject: Re: [PATCH net] filter: Account for tail adjustment during pull
- operations
-To:     "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>,
-        ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
-        john.fastabend@gmail.com, song@kernel.org, yhs@fb.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Sean Tranchetti <quic_stranche@quicinc.com>
-References: <1670906381-25161-1-git-send-email-quic_subashab@quicinc.com>
- <4d598e55-0366-5a27-2dd5-d7b59758b5fc@iogearbox.net>
- <38c438ca-2a3f-18d0-03eb-1fa846e2075e@quicinc.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7bacb02c-659c-7921-a15d-8c758bb49156@iogearbox.net>
-Date:   Thu, 15 Dec 2022 00:23:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229591AbiLNX2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:28:03 -0500
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7A026489;
+        Wed, 14 Dec 2022 15:26:04 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 4940C32008FD;
+        Wed, 14 Dec 2022 18:26:03 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 14 Dec 2022 18:26:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm1; t=1671060362; x=1671146762; bh=Hx6izBhKYVxfsBLJXIUvyCWin
+        dpnU08ydcv0A5E/rK4=; b=LY/gdMdRWY+VitUjRVV3wvbkd4jcJNL+0Hm2Epb/8
+        yXii8jk/BjBVK5nKtheWQ4CXzqY9U5s5+7eTwTvio9QJK1rgi4n8sCssaSUX2vGs
+        QmewnqOTPuVe3Y6agQWq8+8ANt+UPJrKdLhHB7fFvQw8pVHkegHKQ9WxmkzGWXmY
+        zUHr1MRvdqCowKB3lVJ4NPMktlhSn4/O8W5QYZHQU6hAqOqtcVp1WYvmeAwTyd9C
+        Z2Yw8Z6Af9dTNxbU6n+sfkC26pxJNmxuW4UeYSQeVG/kSrZscqdf9+q+SsGdghNo
+        USskdkgWZvaZKJAcoZ2sgo5CckJcpK+4ikeuiEukaNT1Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1671060362; x=1671146762; bh=Hx6izBhKYVxfsBLJXIUvyCWindpnU08ydcv
+        0A5E/rK4=; b=QPORRggztELcFvcwh27lP+RqGRF3qT1m6cB7FYw41W44XBsjrNn
+        XRU5f4CGkE1/PdcCmC7sq1xMMJGkIfwDSG7WY2jnqpbjR32gRbFlCR9lSRG/J0CS
+        K90jsYPedXUMKLx2qmT+ITAZ9TZjvnslRx2W3TaTR5i7IGsFzDL0v+ouQ3nVLtMh
+        PlVJaBzsyHgqd6r5/9QxPVUhBKHjjjPtQMtyHO8iJzy4E4mOQW05k35qFKU0pFZf
+        beClz4GM2rg9CW+FctH5lZ/rdBlt/UPK2wUthOgkKAeB9s1IJe6QBc0XY3XAr97H
+        dzaha+xFnwae7+PxmGCa0V/mWDkqIi9plJQ==
+X-ME-Sender: <xms:iVuaY_yIOMY9GgXtetc0cpiuPozne7MCoUbXAkkKWbVzrjpus5m1Hw>
+    <xme:iVuaY3TXakkbM7YTNsnP7WAfHc75_EnfjW0AjAV22r2ZK6rIP9yeZRK_7sYfdIF4d
+    ntRu0b6xtxIAUUS0Q>
+X-ME-Received: <xmr:iVuaY5VMYG4XQOPLgVXNf64luww7dYi6kv-8FkoepWHJbFcZUYJoNLUU-y88c9Xx1PG0coxA2x_rQTnHI3_jqdS_sBSiXVuSLXVU98VZCGI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeggddtjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhephffvve
+    fufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihu
+    segugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeetgefhhfeigfejtddvteefff
+    fgteekteduiedtkeevleduvdejueeggfdtfeegfeenucffohhmrghinhepihgvthhfrdho
+    rhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepug
+    iguhesugiguhhuuhdrgiihii
+X-ME-Proxy: <xmx:iluaY5jlDZjZwbFghVoyeySHPLpTNrkVce5uIc0MGb7zQ5q52lm9bw>
+    <xmx:iluaYxAWle5CX1iaBtXl5Ii6_avazPMsS-_8FkzV4Ra8plMpw4mreQ>
+    <xmx:iluaYyJh8z6mZjqGQMo4QpcPh66IVpiC3kS-vAHMlghUyj8rCe-tzQ>
+    <xmx:iluaY1ucR91cCb3YJR80mw5SGnfbYoYbQc6PvgBajR2hm0W4ICg3hA>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 14 Dec 2022 18:26:01 -0500 (EST)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        martin.lau@linux.dev, daniel@iogearbox.net, ast@kernel.org,
+        andrii@kernel.org
+Cc:     ppenkov@aviatrix.com, dbird@aviatrix.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next 0/6] Support defragmenting IPv4 packets in BPF
+Date:   Wed, 14 Dec 2022 16:25:27 -0700
+Message-Id: <cover.1671049840.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-In-Reply-To: <38c438ca-2a3f-18d0-03eb-1fa846e2075e@quicinc.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26750/Wed Dec 14 09:15:48 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        FROM_SUSPICIOUS_NTLD_FP,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
+        T_PDS_OTHER_BAD_TLD autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/22 7:32 AM, Subash Abhinov Kasiviswanathan (KS) wrote:
-> On 12/13/2022 3:42 PM, Daniel Borkmann wrote:
->> On 12/13/22 5:39 AM, Subash Abhinov Kasiviswanathan wrote:
->>> Extending the tail can have some unexpected side effects if a program is
->>> reading the content beyond the head skb headlen and all the skbs in the
->>> gso frag_list are linear with no head_frag -
->>>
->>> diff --git a/net/core/filter.c b/net/core/filter.c
->>> index bb0136e..d5f7f79 100644
->>> --- a/net/core/filter.c
->>> +++ b/net/core/filter.c
->>> @@ -1654,6 +1654,20 @@ static DEFINE_PER_CPU(struct bpf_scratchpad, bpf_sp);
->>>   static inline int __bpf_try_make_writable(struct sk_buff *skb,
->>>                         unsigned int write_len)
->>>   {
->>> +    struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
->>> +
->>> +    if (skb_is_gso(skb) && list_skb && !list_skb->head_frag &&
->>> +        skb_headlen(list_skb)) {
->>> +        int headlen = skb_headlen(skb);
->>> +        int err = skb_ensure_writable(skb, write_len);
->>> +
->>> +        /* pskb_pull_tail() has occurred */
->>> +        if (!err && headlen != skb_headlen(skb))
->>> +            skb_shinfo(skb)->gso_type |= SKB_GSO_DODGY;
->>> +
->>> +        return err;
->>> +    }
->>
->> __bpf_try_make_writable() does not look like the right location to me
->> given this is called also from various other places. bpf_skb_change_tail
->> has skb_gso_reset in there, potentially that or pskb_pull_tail itself
->> should mark it?
-> 
-> Actually the program we used had BPF_FUNC_skb_pull_data and we put this check in __bpf_try_make_writable so that it would help out BPF_FUNC_skb_pull_data & other users of __bpf_try_make_writable. Having the check in __pskb_pull_tail seems preferable though. Could you tell if the following is acceptable as this works for us -
+=== Context ===
 
-Ah okay, that is good to know. The Fixes tag might have been misleading in that
-case. From what you describe it sounds like a generic __pskb_pull_tail() issue
-then? If so I'd go with the below for -net tree as a generic fix, yes.
+In the context of a middlebox, fragmented packets are tricky to handle.
+The full 5-tuple of a packet is often only available in the first
+fragment which makes enforcing consistent policy difficult. There are
+really only two stateless options, neither of which are very nice:
 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index dfc14a7..0f60abb 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -2263,6 +2263,9 @@ void *__pskb_pull_tail(struct sk_buff *skb, int delta)
->                                  insp = list;
->                          } else {
->                                  /* Eaten partially. */
-> +                               if (skb_is_gso(skb) && !list->head_frag &&
-> +                                   skb_headlen(list))
-> +                                       skb_shinfo(skb)->gso_type |= SKB_GSO_DODGY;
-> 
->                                  if (skb_shared(list)) {
->                                          /* Sucks! We need to fork list. :-( */
-> 
->>
->>>       return skb_ensure_writable(skb, write_len);
->>>   }
->>>
->>
+1. Enforce policy on first fragment and accept all subsequent fragments.
+   This works but may let in certain attacks or allow data exfiltration.
+
+2. Enforce policy on first fragment and drop all subsequent fragments.
+   This does not really work b/c some protocols may rely on
+   fragmentation. For example, DNS may rely on oversized UDP packets for
+   large responses.
+
+So stateful tracking is the only sane option. RFC 8900 [0] calls this
+out as well in section 6.3:
+
+    Middleboxes [...] should process IP fragments in a manner that is
+    consistent with [RFC0791] and [RFC8200]. In many cases, middleboxes
+    must maintain state in order to achieve this goal.
+
+=== BPF related bits ===
+
+However, when policy is enforced through BPF, the prog is run before the
+kernel reassembles fragmented packets. This leaves BPF developers in a
+awkward place: implement reassembly (possibly poorly) or use a stateless
+method as described above.
+
+Fortunately, the kernel has robust support for fragmented ipv4 packets.
+This patchset wraps the existing defragmentation facilities in a kfunc so
+that BPF progs running on middleboxes can reassemble fragmented packets
+before applying policy.
+
+=== Patchset details ===
+
+This patchset is (hopefully) relatively straightforward from BPF perspective.
+One thing I'd like to call out is the skb_copy()ing of the prog skb. I
+did this to maintain the invariant that the ctx remains valid after prog
+has run. This is relevant b/c ip_defrag() and ip_check_defrag() may
+consume the skb if the skb is a fragment.
+
+Originally I did play around with teaching the verifier about kfuncs
+that may consume the ctx and disallowing ctx accesses in ret != 0
+branches. It worked ok, but it seemed too complex to modify the
+surrounding assumptions about ctx validity.
+
+[0]: https://datatracker.ietf.org/doc/html/rfc8900
+
+Daniel Xu (6):
+  ip: frags: Return actual error codes from ip_check_defrag()
+  bpf: verifier: Support KF_CHANGES_PKT flag
+  bpf, net, frags: Add bpf_ip_check_defrag() kfunc
+  bpf: selftests: Support not connecting client socket
+  bpf: selftests: Support custom type and proto for client sockets
+  bpf: selftests: Add bpf_ip_check_defrag() selftest
+
+ Documentation/bpf/kfuncs.rst                  |   7 +
+ drivers/net/macvlan.c                         |   2 +-
+ include/linux/btf.h                           |   1 +
+ include/net/ip.h                              |  11 +
+ kernel/bpf/verifier.c                         |   8 +
+ net/ipv4/Makefile                             |   1 +
+ net/ipv4/ip_fragment.c                        |  13 +-
+ net/ipv4/ip_fragment_bpf.c                    |  98 ++++++
+ net/packet/af_packet.c                        |   2 +-
+ .../selftests/bpf/generate_udp_fragments.py   |  52 +++
+ tools/testing/selftests/bpf/network_helpers.c |  26 +-
+ tools/testing/selftests/bpf/network_helpers.h |   3 +
+ .../bpf/prog_tests/ip_check_defrag.c          | 296 ++++++++++++++++++
+ .../selftests/bpf/progs/bpf_tracing_net.h     |   1 +
+ .../selftests/bpf/progs/ip_check_defrag.c     |  83 +++++
+ 15 files changed, 589 insertions(+), 15 deletions(-)
+ create mode 100644 net/ipv4/ip_fragment_bpf.c
+ create mode 100755 tools/testing/selftests/bpf/generate_udp_fragments.py
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ip_check_defrag.c
+ create mode 100644 tools/testing/selftests/bpf/progs/ip_check_defrag.c
+
+-- 
+2.39.0
 
