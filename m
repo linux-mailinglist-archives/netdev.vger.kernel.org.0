@@ -2,134 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD3964CDE2
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 17:21:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B4664CDF7
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 17:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238799AbiLNQVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 11:21:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
+        id S238875AbiLNQ1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 11:27:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238711AbiLNQVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 11:21:35 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92282C9;
-        Wed, 14 Dec 2022 08:21:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671034893; x=1702570893;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sugwmwrUIAbwUVd9kUUcbnqMzWklglljdUgzpTG789o=;
-  b=HGnDWEVEEFs82G5oXn1K7JNd1hyZhblpDhYzT/48TneA7w9Hi1QUek5s
-   YS1RcYq9PW4xVQ2RYbAIoxgh04wfoffBtejEO4tX35Umv0JE8C0xWldEJ
-   rGfIBd/AOoT6ASYeZRe5CNLe9qgz7F9DT0kK6/VIuHIOjAusqHnKc0W8e
-   YK61SXjAen1i72ek46pYydcKTNrDiGtXQHhnvwU+J/b6ESj1WDrclo5wY
-   gtZCyC3iBLeI0Fmr6sgsHOK4+5d732V+YgABIVdgL/1EjNtHR2PmCwwNW
-   nqC32EZ8EllECpFl+mXn5bReoihuL89Ukv3eY6wdOclvdHaa5Qk4kCqiH
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="404716272"
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="404716272"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 08:21:32 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="642559944"
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="642559944"
-Received: from joe-255.igk.intel.com (HELO localhost) ([172.22.229.67])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 08:21:20 -0800
-Date:   Wed, 14 Dec 2022 17:21:17 +0100
-From:   Stanislaw Gruszka <stanislaw.gruszka@linux.intel.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        dri-devel@lists.freedesktop.org, Song Liu <song@kernel.org>,
-        linux-mtd@lists.infradead.org, Stanislav Fomichev <sdf@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Richard Weinberger <richard@nod.at>, x86@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, ilay.bahat1@gmail.com,
-        Ingo Molnar <mingo@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Yonghong Song <yhs@fb.com>, Paolo Abeni <pabeni@redhat.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Petr Mladek <pmladek@suse.com>,
-        david.keisarschm@mail.huji.ac.il,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        intel-gfx@lists.freedesktop.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Borislav Petkov <bp@alien8.de>, Hannes Reinecke <hare@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        bpf@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        Hao Luo <haoluo@google.com>, linux-scsi@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pekka Enberg <penberg@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        aksecurity@gmail.com, Jiri Olsa <jolsa@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/5] Renaming weak prng invocations -
- prandom_bytes_state, prandom_u32_state
-Message-ID: <20221214162117.GC1062210@linux.intel.com>
-References: <cover.1670778651.git.david.keisarschm@mail.huji.ac.il>
- <b3caaa5ac5fca4b729bf1ecd0d01968c09e6d083.1670778652.git.david.keisarschm@mail.huji.ac.il>
- <Y5c8KLzJFz/XZMiM@zx2c4.com>
- <20221214123358.GA1062210@linux.intel.com>
- <CANn89iJtK4m1cWvCwp=L_rEOEBa+B1kLZJAw0D9_cYPQcAj+Mw@mail.gmail.com>
+        with ESMTP id S238985AbiLNQ1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 11:27:09 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7EF266E
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:27:08 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id f3so2333260pgc.2
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:27:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Abhxxtrazx8t79POlX/XuT1uef+M32bWHgZLumYxB9w=;
+        b=XTmle19Atof4rYAU2OKjTMELJOLpx7S7BMTFtf45fvKP1W1Tem3D5KG21YwDilUX9C
+         geucGAUbDX/RX/a9kRB/fRD87ihyYBKkwUZguRJnbI7iiSKElrqj9hqI5htX1duwC2BR
+         Oof3wTRePEy8S/eZzcr5UGIgLd6n5BXdrOWTEnIxYsB/3loFNIDbbpwoploDqXg1Tjvl
+         uiRRO897IIt7m7l/a9rUOd6i+H/w2kV9RLci/vEWxe6N+etRcNwiTifovAyXckv6dtJI
+         +O84bngOVHDOZZyl6oDi8Z9hRUqoW4dAUm+WEAOEhgg17DieDmjvYH+jMeZxCuwT8d0E
+         aqeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Abhxxtrazx8t79POlX/XuT1uef+M32bWHgZLumYxB9w=;
+        b=hHgrTp2uAOnVsxxeYDRgc3nFhpmVnNhwZdb024Iv5nlMZ8hE2VXujODjh4tYZf1mbb
+         MXkpLJutfDNRUUgUYvqYhd6hZMD7mjY/T24DdW8abZiAWgpz6ZTUVFytLP+dLbp6PhXc
+         g4eJ3RzSfwxQxu/Kpp9cFmIJEg96iwpOQQrMjkrpc1+mYcRZoLw7aQ5q7bf4tdXED36K
+         Zs7XuBAMwV0LiZ3sMLLFWtelGyvUThQ3F+rFZylcWCb2eqyBcdbNbb7+FVQLdLefMtsB
+         3zluBPQEaRqT05hVD62IKsfTsC7xI1aZkE6NhK5P7KWT6wuHPCRG817HHD4FtOfVwqF1
+         bN1A==
+X-Gm-Message-State: ANoB5pnhXxIIwvouwqQlUGP3zgg3V13gRqd1OE3tSRfnhX2hCkd+tf8C
+        vLIE98hY7ld5emH8la0aGQvv/GnZEBem3D1S9g4=
+X-Google-Smtp-Source: AA0mqf4+v2YEr+z6WBu8+QDMqUwcOiN70b9owIhqIRP+CVDypoCK7LB01Pogaql83GM8kBBxFYicWw==
+X-Received: by 2002:a05:6a00:7ca:b0:577:3944:aa78 with SMTP id n10-20020a056a0007ca00b005773944aa78mr22597795pfu.0.1671035227793;
+        Wed, 14 Dec 2022 08:27:07 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id v6-20020aa799c6000000b00574ee8d8779sm92323pfi.65.2022.12.14.08.27.07
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 08:27:07 -0800 (PST)
+Date:   Wed, 14 Dec 2022 08:27:05 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: [ANNOUNCE] iproute2 6.1 release
+Message-ID: <20221214082705.5d2c2e7f@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJtK4m1cWvCwp=L_rEOEBa+B1kLZJAw0D9_cYPQcAj+Mw@mail.gmail.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 14, 2022 at 04:15:49PM +0100, Eric Dumazet wrote:
-> On Wed, Dec 14, 2022 at 1:34 PM Stanislaw Gruszka
-> <stanislaw.gruszka@linux.intel.com> wrote:
-> >
-> > On Mon, Dec 12, 2022 at 03:35:20PM +0100, Jason A. Donenfeld wrote:
-> > > Please CC me on future revisions.
-> > >
-> > > As of 6.2, the prandom namespace is *only* for predictable randomness.
-> > > There's no need to rename anything. So nack on this patch 1/5.
-> >
-> > It is not obvious (for casual developers like me) that p in prandom
-> > stands for predictable. Some renaming would be useful IMHO.
-> 
-> Renaming makes backports more complicated, because stable teams will
-> have to 'undo' name changes.
-> Stable teams are already overwhelmed by the amount of backports, and
-> silly merge conflicts.
+This is the release of iproute2 corresponding to the 6.1 kernel.
+Nothing major; lots of usual set of small fixes.
 
-Since when backporting problems is valid argument for stop making
-changes? That's new for me.
+Download:
+    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.1.tar.gz
 
-> linux kernel is not for casual readers.
+Repository for current release
+    https://github.com/shemminger/iproute2.git
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
 
-Sure.
+And future release (net-next):
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
 
-Regards
-Stanislaw
+Contributions:
+
+Andrea Claudi (4):
+      man: ss.8: fix a typo
+      testsuite: fix build failure
+      genl: remove unused vars in Makefile
+      json: do not escape single quotes
+
+Benjamin Poirier (1):
+      ip-monitor: Do not error out when RTNLGRP_STATS is not available
+
+Daniel Xu (1):
+      ip-link: man: Document existence of netns argument in add command
+
+David Ahern (4):
+      Update kernel headers
+      Update kernel headers
+      Update kernel headers
+      Update kernel headers
+
+Emeel Hakim (2):
+      macsec: add Extended Packet Number support
+      macsec: add user manual description for extended packet number feature
+
+Eyal Birger (2):
+      ip: xfrm: support "external" (`collect_md`) mode in xfrm interfaces
+      ip: xfrm: support adding xfrm metadata as lwtunnel info in routes
+
+Hangbin Liu (5):
+      ip: add NLM_F_ECHO support
+      libnetlink: add offset for nl_dump_ext_ack_done
+      tc/tc_monitor: print netlink extack message
+      rtnetlink: add new function rtnl_echo_talk()
+      ip: fix return value for rtnl_talk failures
+
+Ido Schimmel (1):
+      iplink_bridge: Add no_linklocal_learn option support
+
+Jacob Keller (4):
+      devlink: use dl_no_arg instead of checking dl_argc == 0
+      devlink: remove dl_argv_parse_put
+      mnlg: remove unnused mnlg_socket structure
+      utils: extract CTRL_ATTR_MAXATTR and save it
+
+Jiri Pirko (6):
+      devlink: expose nested devlink for a line card object
+      devlink: load port-ifname map on demand
+      devlink: fix parallel flash notifications processing
+      devlink: move use_iec into struct dl
+      devlink: fix typo in variable name in ifname_map_cb()
+      devlink: load ifname map on demand from ifname_map_rev_lookup() as well
+
+Junxin Chen (1):
+      dcb: unblock mnl_socket_recvfrom if not message received
+
+Lahav Schlesinger (1):
+      libnetlink: Fix memory leak in __rtnl_talk_iov()
+
+Lai Peter Jun Ann (2):
+      tc_util: Fix no error return when large parent id used
+      tc_util: Change datatype for maj to avoid overflow issue
+
+Matthieu Baerts (4):
+      ss: man: add missing entries for MPTCP
+      ss: man: add missing entries for TIPC
+      ss: usage: add missing parameters
+      ss: re-add TIPC query support
+
+Michal Wilczynski (1):
+      devlink: Fix setting parent for 'rate add'
+
+Nicolas Dichtel (1):
+      link: display 'allmulti' counter
+
+Paolo Lungaroni (1):
+      seg6: add support for flavors in SRv6 End* behaviors
+
+Roi Dayan (1):
+      tc: ct: Fix invalid pointer dereference
+
+Stephen Hemminger (14):
+      uapi: update from 6.1 pre rc1
+      u32: fix json formatting of flowid
+      tc_stab: remove dead code
+      uapi: update for in.h and ip.h
+      remove #if 0 code
+      tc: add json support to size table
+      tc: put size table options in json object
+      tc/basic: fix json output filter
+      iplink: support JSON in MPLS output
+      tc: print errors on stderr
+      ip: print mpls errors on stderr
+      tc: make prefix const
+      man: add missing tc class show
+      6.1.0
+
+Vincent Mailhol (1):
+      iplink_can: add missing `]' of the bitrate, dbitrate and termination arrays
+
+Vladimir Oltean (1):
+      ip link: add sub-command to view and change DSA conduit interface
+
