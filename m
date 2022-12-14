@@ -2,102 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66ED264CEC5
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 18:17:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 570F964CED0
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 18:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237475AbiLNRRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 12:17:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
+        id S237749AbiLNRUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 12:20:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239193AbiLNRQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 12:16:47 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87435F1C
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 09:16:39 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id h10so447601wrx.3
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 09:16:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cer/PS+So0alvCS30HT2Oh5V3K7NvUmDhiX3byrygKk=;
-        b=7IFMj9BPAx1VL3ASQhkU0pm5fS4vHUcccZICHcTeDM4cu8R1uARADgaA83h/A2UQps
-         Vb/5MQ6aDgzwbqmdrpgL8fyZ3btZYjOaxm7LcKh4y0t0089b5mxO2UNAeYuyJIIkAnWU
-         Mp67RbN3lnQ/Ccg/IaA1sHq0IGKJbiYu8wtPJRs9R278kWNdprILZFIZO/mZkmG35K8x
-         lXHqmixziGKJjrSIPR+TjJCWWjATa/OHqkdfni2+weBtQBSqbSWPkZYrZhhPmafJCCvt
-         1V0V2PiXvF6ye4pvJ/MHymezQrkIM6hw/MBkXY7ZU5UAaiqqLahWDXMyVoJEN2mk3IrS
-         pUag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cer/PS+So0alvCS30HT2Oh5V3K7NvUmDhiX3byrygKk=;
-        b=t/99bw8DOYNixQKhxKVTdSsV600UE/hJPFnwvAVGGRSRnuL7tfNUigCO0D3jqdVhhv
-         XKCNcQVB53gz8cQzyNajOtMxHfPmiBL2P8KW4S4XMZfket6/axgcw6bvZvsweMWumS1Q
-         b4kXPKncETcmpU8WEg6WvpDrn0J1qe/NjBAD6t2dWtOizZg4wEfVTJHqVmbcyXYQ+mSZ
-         o3qx2tknKwkfuVBNCOyLMziwcNNX/QgfcVXo330jXyIlAGJ1nDwf3MO6a72N+wWpSH/S
-         LrIgYX083NxnC5jhN5r7/pOFDv98SyL7PlHJ/vn3PpN2ivAi2ev/1voTjn8wSebCpNN8
-         zw2Q==
-X-Gm-Message-State: ANoB5plhFPwQfCjuEwLkVgAYUmp5B4CGUY4c0t5HvelHEglGKsCaff+a
-        n5FVDOLX37LeRNL/hi8Z8vgBX+FB+BUGU71P
-X-Google-Smtp-Source: AA0mqf5VNtUVA4VWhGCW880Be/rf4YhL7Sr6MQUNSh7+yImfpkG4KogHNMjZ9pO+xWAaDS+rjdjzrg==
-X-Received: by 2002:a5d:678b:0:b0:242:5d76:f571 with SMTP id v11-20020a5d678b000000b002425d76f571mr16229034wru.2.1671038198023;
-        Wed, 14 Dec 2022 09:16:38 -0800 (PST)
-Received: from ?IPV6:2a02:578:8593:1200:22af:65bc:a1dd:1562? ([2a02:578:8593:1200:22af:65bc:a1dd:1562])
-        by smtp.gmail.com with ESMTPSA id l18-20020a5d4bd2000000b00236488f62d6sm3447643wrt.79.2022.12.14.09.16.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Dec 2022 09:16:37 -0800 (PST)
-Message-ID: <0e6d6a35-88bf-d577-67d0-7c3f70268c10@tessares.net>
-Date:   Wed, 14 Dec 2022 18:16:36 +0100
+        with ESMTP id S237720AbiLNRUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 12:20:46 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CD85FEA
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 09:20:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671038444; x=1702574444;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=aoQDKxcbgkz88mq+Z+NChHYJbtwIPvbJRPyZBzcaLlU=;
+  b=btkfe57FgOgUfAwxJZU2bGx0tdfGV9KSFMPtyM01tN7duv12HAnRyuER
+   To7XP0QP1hmAKtLDE948XqgXiMPRfJzROc5YJ03cZJQIZ7ouYxAhWo081
+   9JsoSdgRCTCNbPy9dy/b9WgjsFCestK41vmA/Hch31ZAbd6SfqVd5TDJ+
+   DcUAzHF0E+kKOxYC2bMUJrXVRZ4+3tyaTl6bQtLuSwPSCJ44G+hgPja5e
+   4MrUQjcNznZfovwsde6Z9FC9b5JP9lQM8jryGy6yg31vqr3U6IomWuMLx
+   0CjG8kAWIJZDITW4XCPmvSV7iuN1QcM/sPR3HaPUIjdGMuDCTCHYLpJ0f
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="382764806"
+X-IronPort-AV: E=Sophos;i="5.96,245,1665471600"; 
+   d="scan'208";a="382764806"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 09:17:29 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10561"; a="712583562"
+X-IronPort-AV: E=Sophos;i="5.96,245,1665471600"; 
+   d="scan'208";a="712583562"
+Received: from seetaram-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.66.98])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2022 09:17:24 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
+        intel-wired-lan@osuosl.org
+Cc:     tee.min.tan@linux.intel.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, muhammad.husaini.zulkifli@intel.com,
+        naamax.meir@linux.intel.com, anthony.l.nguyen@intel.com
+Subject: Re: [PATCH net-next v1] igc: offload queue max SDU from tc-taprio
+In-Reply-To: <20221214144514.15931-1-muhammad.husaini.zulkifli@intel.com>
+References: <20221214144514.15931-1-muhammad.husaini.zulkifli@intel.com>
+Date:   Wed, 14 Dec 2022 14:17:20 -0300
+Message-ID: <87tu1xc3bz.fsf@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [ANNOUNCE] iproute2 6.1 release
-Content-Language: en-GB
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <20221214082705.5d2c2e7f@hermes.local>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20221214082705.5d2c2e7f@hermes.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+Hi,
 
-On 14/12/2022 17:27, Stephen Hemminger wrote:
-> This is the release of iproute2 corresponding to the 6.1 kernel.
-> Nothing major; lots of usual set of small fixes.
+Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com> writes:
 
-Thank you for this new release and for maintaining this project!
+> From: Tan Tee Min <tee.min.tan@linux.intel.com>
+>
+> Add support for configuring the max SDU for each Tx queue.
+> If not specified, keep the default.
+>
+> Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+> Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+> ---
+>  drivers/net/ethernet/intel/igc/igc.h      |  1 +
+>  drivers/net/ethernet/intel/igc/igc_main.c | 45 +++++++++++++++++++++++
+>  include/net/pkt_sched.h                   |  1 +
+>  net/sched/sch_taprio.c                    |  4 +-
+>  4 files changed, 50 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+> index 5da8d162cd38..ce9e88687d8c 100644
+> --- a/drivers/net/ethernet/intel/igc/igc.h
+> +++ b/drivers/net/ethernet/intel/igc/igc.h
+> @@ -99,6 +99,7 @@ struct igc_ring {
+>  
+>  	u32 start_time;
+>  	u32 end_time;
+> +	u32 max_sdu;
+>  
+>  	/* CBS parameters */
+>  	bool cbs_enable;                /* indicates if CBS is enabled */
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index e07287e05862..7ce05c31e371 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -1508,6 +1508,7 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+>  	__le32 launch_time = 0;
+>  	u32 tx_flags = 0;
+>  	unsigned short f;
+> +	u32 max_sdu = 0;
+>  	ktime_t txtime;
+>  	u8 hdr_len = 0;
+>  	int tso = 0;
+> @@ -1527,6 +1528,16 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+>  		return NETDEV_TX_BUSY;
+>  	}
+>  
+> +	if (tx_ring->max_sdu > 0) {
+> +		if (skb_vlan_tagged(skb))
+> +			max_sdu = tx_ring->max_sdu + VLAN_HLEN;
+> +		else
+> +			max_sdu = tx_ring->max_sdu;
 
-I noticed that the version that is now displayed with 'ip -V' is a bit
-different. Before we had something like:
+perhaps this?
+    max_sdu = tx_ring->max_sdu + (skb_vlan_tagged(skb) ? VLAN_HLEN : 0);
 
-  ip utility, iproute2-5.19.0
+Totally optional.
 
-Now we have an extra 'v' before the version:
+> +
+> +		if (skb->len > max_sdu)
+> +			goto skb_drop;
+> +	}
+> +
 
-  ip utility, iproute2-v6.1.0
+I don't think the overhead would be measurable for the pkt/s rates that
+a 2.5G link can handle. But a test and a note in the commit message
+confirming that would be nice.
 
-I don't know if it is there[1] on purpose and if it is the reason why
-the link was broken. It is just a detail, it was easy to fix my script
-parsing the version on my side.
+>  	if (!tx_ring->launchtime_enable)
+>  		goto done;
+>  
+> @@ -1606,6 +1617,12 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+>  	dev_kfree_skb_any(first->skb);
+>  	first->skb = NULL;
+>  
+> +	return NETDEV_TX_OK;
+> +
+> +skb_drop:
+> +	dev_kfree_skb_any(skb);
+> +	skb = NULL;
+> +
+>  	return NETDEV_TX_OK;
+>  }
+>  
+> @@ -6015,6 +6032,7 @@ static int igc_tsn_clear_schedule(struct igc_adapter *adapter)
+>  
+>  		ring->start_time = 0;
+>  		ring->end_time = NSEC_PER_SEC;
+> +		ring->max_sdu = 0;
+>  	}
+>  
+>  	return 0;
+> @@ -6097,6 +6115,15 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
+>  		}
+>  	}
+>  
+> +	for (i = 0; i < adapter->num_tx_queues; i++) {
+> +		struct igc_ring *ring = adapter->tx_ring[i];
+> +
+> +		if (qopt->max_frm_len[i] == U32_MAX)
+> +			ring->max_sdu = 0;
+> +		else
+> +			ring->max_sdu = qopt->max_frm_len[i];
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> @@ -6184,12 +6211,30 @@ static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
+>  	return igc_tsn_offload_apply(adapter);
+>  }
+>  
+> +static int igc_tsn_query_caps(struct tc_query_caps_base *base)
+> +{
+> +	switch (base->type) {
+> +	case TC_SETUP_QDISC_TAPRIO: {
+> +		struct tc_taprio_caps *caps = base->caps;
+> +
+> +		caps->supports_queue_max_sdu = true;
+> +
+> +		return 0;
+> +	}
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+> +
+>  static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
+>  			void *type_data)
+>  {
+>  	struct igc_adapter *adapter = netdev_priv(dev);
+>  
+>  	switch (type) {
+> +	case TC_QUERY_CAPS:
+> +		return igc_tsn_query_caps(type_data);
+> +
+>  	case TC_SETUP_QDISC_TAPRIO:
+>  		return igc_tsn_enable_qbv_scheduling(adapter, type_data);
+>  
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index 38207873eda6..d2539b1f6529 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -178,6 +178,7 @@ struct tc_taprio_qopt_offload {
+>  	u64 cycle_time;
+>  	u64 cycle_time_extension;
+>  	u32 max_sdu[TC_MAX_QUEUE];
+> +	u32 max_frm_len[TC_MAX_QUEUE];
+>
 
-[1]
-https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=83de2e800531dd30c2f2dd6e5196ed26c16c0407
+'max_frm_len' is an internal taprio optimization, to simplify the code
+where the underlying HW doesn't support offload.
 
-Cheers,
-Matt
+For offloading, only 'max_sdu' should be used. Unless you have a strong
+reason. If you have that reason, it should be a separate commit.
+
+>  	size_t num_entries;
+>  	struct tc_taprio_sched_entry entries[];
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 570389f6cdd7..d39164074756 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -1263,8 +1263,10 @@ static int taprio_enable_offload(struct net_device *dev,
+>  	offload->enable = 1;
+>  	taprio_sched_to_offload(dev, sched, offload);
+>  
+> -	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
+> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
+>  		offload->max_sdu[tc] = q->max_sdu[tc];
+> +		offload->max_frm_len[tc] = q->max_frm_len[tc];
+> +	}
+>  
+>  	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+>  	if (err < 0) {
+> -- 
+> 2.17.1
+>
+
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Vinicius
