@@ -2,90 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7AAB64C1A4
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 02:06:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 346FE64C25B
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 03:46:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237622AbiLNBGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 20:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S236656AbiLNCqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 21:46:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237613AbiLNBGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 20:06:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F7DFCF2
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 17:05:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670979930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0sMdSWCtKAxrZ2YmHm1FZQ1iSznBAvnVfrNyWuDplzI=;
-        b=H3rOhQN26rZjEOfiui0JKuQz9di0D7THrBZZ6olcMLS/3f4dAxOA40Xmz8KbsHOK9Cj6Cj
-        dnhpyML5EtOmOm7TRVtvncDOBAM6+fq+IiFMLAr9ek4P52we0ooN2DGY/SEmPjz66YEv9s
-        DqiaKO00iiJ1J8JimqCIlKW+kx+3uR8=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-353-XGZ8c_1TMkiTmDhoOSd0pA-1; Tue, 13 Dec 2022 20:05:29 -0500
-X-MC-Unique: XGZ8c_1TMkiTmDhoOSd0pA-1
-Received: by mail-ed1-f72.google.com with SMTP id w15-20020a05640234cf00b0046d32d7b153so8239847edc.0
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 17:05:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0sMdSWCtKAxrZ2YmHm1FZQ1iSznBAvnVfrNyWuDplzI=;
-        b=sjy6Mxq5UW8mSzm/Ed1S6e9IUd8qt7mTpcjysW/QykZV0WD/b1/tml9Og45wJJeXgS
-         41fLvG2X9jRTkvM6HsXKwD69F92qTDf63DvKHPMAF4i7S8Qyr0i0l2so+lm4Dx2xkZG8
-         fUatCJQtkjpg0/40HIyBmkHZwu0kml/vYTlVlS3Y4e+0DjjYXwuGSDrIoZxtso8Fa2Ek
-         vxxNhJJSec+cWyxoPOFjYhVHPnQs05kPIoiOju/Xqhz8JyNeyquzXO/vvVuMB9syXqoH
-         r/NnsOfP0MoGimQugtP1mWZ08c1kD2vCgieqZLI+urt3MOE6XfmOWtLYjyoXrcjaNPGJ
-         iPcA==
-X-Gm-Message-State: ANoB5pksqXkMcdLqxSQlAwSAknn/VSeC3F7Wk85FFgvi8JSnlQj93KQT
-        Pv5QoLsnYpD61ZQCBS+uzaBGFmrnbnyUOWTSL+w89bK8TGFEdo8hNFxE6I4/Yaegeixeonv9fYH
-        pzw9lfm41Ek7qjUJS
-X-Received: by 2002:a17:907:3947:b0:7c1:6794:1623 with SMTP id sp7-20020a170907394700b007c167941623mr11443570ejc.58.1670979926744;
-        Tue, 13 Dec 2022 17:05:26 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf58xTOmQSKWGuIw39pbP9BlAE8IZAKd+B/SgRFhjAVmOsvNgS8xzvrMTOzWrJgCqa8zkBY5eg==
-X-Received: by 2002:a17:907:3947:b0:7c1:6794:1623 with SMTP id sp7-20020a170907394700b007c167941623mr11443543ejc.58.1670979925866;
-        Tue, 13 Dec 2022 17:05:25 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u17-20020a170906409100b007c0b6e1c7fdsm5096608ejj.104.2022.12.13.17.05.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 17:05:24 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 339A482F424; Wed, 14 Dec 2022 02:05:21 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf v4 2/2] selftests/bpf: Add a test for using a cpumap from an freplace-to-XDP program
-Date:   Wed, 14 Dec 2022 02:05:16 +0100
-Message-Id: <20221214010517.668943-2-toke@redhat.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221214010517.668943-1-toke@redhat.com>
-References: <20221214010517.668943-1-toke@redhat.com>
+        with ESMTP id S236591AbiLNCqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 21:46:37 -0500
+X-Greylist: delayed 3607 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 13 Dec 2022 18:46:35 PST
+Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA57C617F
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 18:46:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=5ip81
+        +wNz5xtBTBVts1Fb1RLCzaC6pg2EyPJm4Juic8=; b=WEOsSfCUJD0aqoNqa9gyi
+        zDrK9ScOUzX3F9KIH7ev+bBMnNOouQ9wRY6ki/oEBZYLLRFa/ljjipw9ZAuzNkOv
+        7VgYDPCGBxDRTsgj57247iUifpDQcz/GzSqySG0HpY6PS4Ml+5AhGJwhuVh7b58v
+        inMlebLPIF68I1w7v8+0G0=
+Received: from localhost.localdomain (unknown [117.136.79.146])
+        by smtp2 (Coremail) with SMTP id DMmowADHz7MtI5lj3iuJEw--.5203S2;
+        Wed, 14 Dec 2022 09:13:20 +0800 (CST)
+From:   Lixue Liang <lianglixuehao@126.com>
+To:     anthony.l.nguyen@intel.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     jesse.brandeburg@intel.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        richardcochran@gmail.com, ast@kernel.org,
+        lianglixue@greatwall.com.cn, intel-wired-lan@lists.osuosl.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v7] igb: Assign random MAC address instead of fail in case of invalid one
+Date:   Wed, 14 Dec 2022 01:12:14 +0000
+Message-Id: <20221214011214.51836-1-lianglixuehao@126.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-CM-TRANSID: DMmowADHz7MtI5lj3iuJEw--.5203S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZw1ruFWxAr17Ar43tF4xJFb_yoW5uF4Upa
+        y0gF43Wryktr47Zw4kWw4xZF95W3WDJ3yfGa9xZw1F9FnIv34DArW8K343Jry0qrZYkayx
+        Jr17ZFZ7ua1qva7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UR89NUUUUU=
+X-Originating-IP: [117.136.79.146]
+X-CM-SenderInfo: xold0w5ol03vxkdrqiyswou0bp/xtbBGgnXFl-HaSMZAgAAsb
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,133 +55,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a simple test for inserting an XDP program into a cpumap that is
-"owned" by an XDP program that was loaded as PROG_TYPE_EXT (as libxdp
-does). Prior to the kernel fix this would fail because the map type
-ownership would be set to PROG_TYPE_EXT instead of being resolved to
-PROG_TYPE_XDP.
+From: Lixue Liang <lianglixue@greatwall.com.cn>
 
-v4:
-- Use skeletons for selftest
-v3:
-- Update comment to better explain the cause
-- Add Yonghong's ACK
+Add the module parameter "allow_invalid_mac_address" to control the
+behavior. When set to true, a random MAC address is assigned, and the
+driver can be loaded, allowing the user to correct the invalid MAC address.
 
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Lixue Liang <lianglixue@greatwall.com.cn>
 ---
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 54 +++++++++++++++++++
- .../selftests/bpf/progs/freplace_progmap.c    | 24 +++++++++
- 2 files changed, 78 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/freplace_progmap.c
+Changelog:
+* v7:
+  - To group each parameter together
+Suggested-by Tony Nguyen <anthony.l.nguyen@intel.com>
+* v6:
+  - Modify commit messages and naming of module parameters
+  - [PATCH v6] link:
+    https://lore.kernel.org/netdev/20220610023922.74892-1-lianglixuehao@126.com/
+Suggested-by Paul <pmenzel@molgen.mpg.de>
+* v5:
+  - Through the setting of module parameters, it is allowed to complete
+    the loading of the igb network card driver with an invalid MAC address.
+  - [PATCH v5] link:
+    https://lore.kernel.org/netdev/20220609083904.91778-1-lianglixuehao@126.com/
+Suggested-by <alexander.duyck@gmail.com>
+* v4:
+  - Change the igb_mian in the title to igb
+  - Fix dev_err message: replace "already assigned random MAC address"
+    with "Invalid MAC address. Assigned random MAC address"
+  - [PATCH v4] link:
+    https://lore.kernel.org/netdev/20220601150428.33945-1-lianglixuehao@126.com/
+Suggested-by Tony <anthony.l.nguyen@intel.com>
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index d1e32e792536..efa1fc65840d 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -4,6 +4,8 @@
- #include <network_helpers.h>
- #include <bpf/btf.h>
- #include "bind4_prog.skel.h"
-+#include "freplace_progmap.skel.h"
-+#include "xdp_dummy.skel.h"
+* v3:
+  - Add space after comma in commit message
+  - Correct spelling of MAC address
+  - [PATCH v3] link:
+    https://lore.kernel.org/netdev/20220530105834.97175-1-lianglixuehao@126.com/
+Suggested-by Paul <pmenzel@molgen.mpg.de>
+
+* v2:
+  - Change memcpy to ether_addr_copy
+  - Change dev_info to dev_err
+  - Fix the description of the commit message
+  - Change eth_random_addr to eth_hw_addr_random
+  - [PATCH v2] link:
+    https://lore.kernel.org/netdev/20220512093918.86084-1-lianglixue@greatwall.com.cn/
+Reported-by: kernel test robot <lkp@intel.com>
+
+ drivers/net/ethernet/intel/igb/igb_main.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index f8e32833226c..8ff0c698383c 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -241,6 +241,10 @@ static int debug = -1;
+ module_param(debug, int, 0);
+ MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
  
- typedef int (*test_cb)(struct bpf_object *obj);
++static bool allow_invalid_mac_address;
++module_param(allow_invalid_mac_address, bool, 0);
++MODULE_PARM_DESC(allow_invalid_mac_address, "Allow NIC driver to be loaded with invalid MAC address");
++
+ struct igb_reg_info {
+ 	u32 ofs;
+ 	char *name;
+@@ -3358,9 +3362,16 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	eth_hw_addr_set(netdev, hw->mac.addr);
  
-@@ -500,6 +502,56 @@ static void test_fentry_to_cgroup_bpf(void)
- 	bind4_prog__destroy(skel);
- }
+ 	if (!is_valid_ether_addr(netdev->dev_addr)) {
+-		dev_err(&pdev->dev, "Invalid MAC Address\n");
+-		err = -EIO;
+-		goto err_eeprom;
++		if (!allow_invalid_mac_address) {
++			dev_err(&pdev->dev, "Invalid MAC address\n");
++			err = -EIO;
++			goto err_eeprom;
++		} else {
++			eth_hw_addr_random(netdev);
++			ether_addr_copy(hw->mac.addr, netdev->dev_addr);
++			dev_err(&pdev->dev,
++				"Invalid MAC address. Assigned random MAC address\n");
++		}
+ 	}
  
-+static void test_func_replace_progmap(void)
-+{
-+	struct bpf_cpumap_val value = { .qsize = 1 };
-+	struct freplace_progmap *skel = NULL;
-+	struct xdp_dummy *tgt_skel = NULL;
-+	int err, tgt_fd;
-+	__u32 key = 0;
-+
-+	skel = freplace_progmap__open();
-+	if (!ASSERT_OK_PTR(skel, "prog_open"))
-+		return;
-+
-+	tgt_skel = xdp_dummy__open_and_load();
-+	if (!ASSERT_OK_PTR(tgt_skel, "tgt_prog_load"))
-+		goto out;
-+
-+	tgt_fd = bpf_program__fd(tgt_skel->progs.xdp_dummy_prog);
-+
-+	/* Change the 'redirect' program type to be a PROG_TYPE_EXT
-+	 * with an XDP target
-+	 */
-+	bpf_program__set_type(skel->progs.xdp_cpumap_prog, BPF_PROG_TYPE_EXT);
-+	bpf_program__set_expected_attach_type(skel->progs.xdp_cpumap_prog, 0);
-+	err = bpf_program__set_attach_target(skel->progs.xdp_cpumap_prog,
-+					     tgt_fd, "xdp_dummy_prog");
-+	if (!ASSERT_OK(err, "set_attach_target"))
-+		goto out;
-+
-+	err = freplace_progmap__load(skel);
-+	if (!ASSERT_OK(err, "obj_load"))
-+		goto out;
-+
-+	/* Prior to fixing the kernel, loading the PROG_TYPE_EXT 'redirect'
-+	 * program above will cause the map owner type of 'cpumap' to be set to
-+	 * PROG_TYPE_EXT. This in turn will cause the bpf_map_update_elem()
-+	 * below to fail, because the program we are inserting into the map is
-+	 * of PROG_TYPE_XDP. After fixing the kernel, the initial ownership will
-+	 * be correctly resolved to the *target* of the PROG_TYPE_EXT program
-+	 * (i.e., PROG_TYPE_XDP) and the map update will succeed.
-+	 */
-+	value.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_drop_prog);
-+	err = bpf_map_update_elem(bpf_map__fd(skel->maps.cpu_map),
-+				  &key, &value, 0);
-+	ASSERT_OK(err, "map_update");
-+
-+out:
-+	xdp_dummy__destroy(tgt_skel);
-+	freplace_progmap__destroy(skel);
-+}
-+
- /* NOTE: affect other tests, must run in serial mode */
- void serial_test_fexit_bpf2bpf(void)
- {
-@@ -525,4 +577,6 @@ void serial_test_fexit_bpf2bpf(void)
- 		test_func_replace_global_func();
- 	if (test__start_subtest("fentry_to_cgroup_bpf"))
- 		test_fentry_to_cgroup_bpf();
-+	if (test__start_subtest("func_replace_progmap"))
-+		test_func_replace_progmap();
- }
-diff --git a/tools/testing/selftests/bpf/progs/freplace_progmap.c b/tools/testing/selftests/bpf/progs/freplace_progmap.c
-new file mode 100644
-index 000000000000..68174c3d7b37
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/freplace_progmap.c
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_CPUMAP);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(struct bpf_cpumap_val));
-+	__uint(max_entries, 1);
-+} cpu_map SEC(".maps");
-+
-+SEC("xdp/cpumap")
-+int xdp_drop_prog(struct xdp_md *ctx)
-+{
-+	return XDP_DROP;
-+}
-+
-+SEC("xdp")
-+int xdp_cpumap_prog(struct xdp_md *ctx)
-+{
-+	return bpf_redirect_map(&cpu_map, 0, XDP_PASS);
-+}
-+
-+char _license[] SEC("license") = "GPL";
+ 	igb_set_default_mac_filter(adapter);
 -- 
-2.38.1
+2.27.0
 
