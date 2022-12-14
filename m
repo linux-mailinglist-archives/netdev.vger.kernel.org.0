@@ -2,46 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB4764C3F8
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:45:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 094AE64C3F2
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237405AbiLNGpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 01:45:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
+        id S237354AbiLNGo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 01:44:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237419AbiLNGpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:45:24 -0500
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CB7286CA
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:45:11 -0800 (PST)
-X-QQ-mid: bizesmtp70t1671000237t6lfb6vm
-Received: from wxdbg.localdomain.com ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 14 Dec 2022 14:43:56 +0800 (CST)
-X-QQ-SSF: 01400000000000H0X000B00A0000000
-X-QQ-FEAT: +oIWmpEafD9saI4D9OFnjElal540QRfsrmpgcBd4mZ2JrsRavYthVEvnNUUSD
-        z84Gmxt75/NYAh+MF6JC8OrpsuMyiGOrCB9LgEiwoHDNRd4vFYpGrLjpeLGtIp9aJ4j07XK
-        uuAXKBkdAvHiEbeQPhR8vU4XVSJ3G+7T455sPNVFxYic0KhfxaYdMSAX+DTZyNKckC/JTyH
-        swrzCNau5okxmk+cNpvExvkfFW4tbwen6vFNj/BXB163W9KQXq4IUDerUBImmRgp4Ap80au
-        R4sVVhyXrvSpbjBckGu9xn9C0jSexQ3GrxjKHCaVffDZZQIL6ePse65QQ1CWxvAIJxfTF2E
-        Ep/U/c2lVZpNCUH0Ju7AYnxOWmR7I2d/cmV8n0eYayQm9Ei5gJ2N8G5cdug6U3RaOgdzUYz
-        lq1ZZyhO0G8=
-X-QQ-GoodBg: 2
-From:   Jiawen Wu <jiawenwu@trustnetic.com>
-To:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
-Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net v2 5/5] net: wangxun: Move MAC address handling to libwx
-Date:   Wed, 14 Dec 2022 14:41:33 +0800
-Message-Id: <20221214064133.2424570-6-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20221214064133.2424570-1-jiawenwu@trustnetic.com>
-References: <20221214064133.2424570-1-jiawenwu@trustnetic.com>
+        with ESMTP id S237368AbiLNGo0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:44:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F129313FA1
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671000219;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=06F13PV1Q+XbE2r7Hpn9vfYTLhRt3eqVckyiLWxuKf0=;
+        b=ioebwZSsLFa4qI7FbjiLIHJg2+k+wVnFBqMdTCxv/kL7SbP7Awodu9DMjVYQDNoIEBl1AK
+        1sYUvkHvfcSQdF3bI7W6sXghO+GZFdwFKcTDebIztd7NsZdmW3cvzr0+/at5lNVWCEbUKz
+        8iSEF+vpDdXkyFu65JesIxc1c9Y1wSU=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-519-1e8XMEzkOJ2kF6mniRqvEQ-1; Wed, 14 Dec 2022 01:43:38 -0500
+X-MC-Unique: 1e8XMEzkOJ2kF6mniRqvEQ-1
+Received: by mail-oo1-f70.google.com with SMTP id f11-20020a4a920b000000b004a09a9f7095so6085392ooh.10
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=06F13PV1Q+XbE2r7Hpn9vfYTLhRt3eqVckyiLWxuKf0=;
+        b=CkSaQ+C2syMqq4T1097un55Q1tRV0VLjBbpu00yStK8a6h1ZjYJD+eVLO3H2VYZUj5
+         Fsgg4zw3bsgQZpk7ZA//FZoN+uhRD44R3u9n2/TEFx5EG/EdbFT/BDfimWLjMtlhFu2+
+         0kVRwJ6gu16JeqFI6LFotfj+K/IsJly3oTvBwwijU9JHReCAMTAlYfpUXjZaJCD3OaIi
+         qPn0/l1oU7ZKaI8lSA2hQu0WwgSAADD0dasp9KMTGp1BOv6qPlHoDzKV+5hOdSfEDLtn
+         jliw9p0OKA4KGYDgDH1FISwjCRrSS5anaVzquTrd5xWz2DV6gFmYN9qnZKtvFDtywaqw
+         K9zA==
+X-Gm-Message-State: AFqh2kr6IsbwS8Pyi0eBR+iybRLnpKegnPtqbHd7aivtu5MHBh0ePo3/
+        pioeqbi0j5Sj6o+kuOU2faEpsznKX3yfDSME5t5jndmCZU0soGFWReYXu5qsMkpVmQh2vE+Cy63
+        ot+ptAzDblCaqSBOqYasNep0kOHfnmXBw
+X-Received: by 2002:a05:6870:41c7:b0:144:a97b:1ae2 with SMTP id z7-20020a05687041c700b00144a97b1ae2mr107555oac.35.1671000217792;
+        Tue, 13 Dec 2022 22:43:37 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXv2vx3PItL1UAKiWzao7A90W2aYUgSozsuN2pc57Lnlp6tdYbaZUhK97+VFCCqDi1K8qx+ZEzOvTne9/uG8Dp8=
+X-Received: by 2002:a05:6870:41c7:b0:144:a97b:1ae2 with SMTP id
+ z7-20020a05687041c700b00144a97b1ae2mr107552oac.35.1671000217405; Tue, 13 Dec
+ 2022 22:43:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-3-gautam.dawar@amd.com>
+In-Reply-To: <20221207145428.31544-3-gautam.dawar@amd.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 14 Dec 2022 14:43:26 +0800
+Message-ID: <CACGkMEuEJ9+wkFSiwUFGUi4RuQyJe2mc4fCNTwMw=S4SsSboiQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 02/11] sfc: implement MCDI interface for vDPA operations
+To:     Gautam Dawar <gautam.dawar@amd.com>
+Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
+        eperezma@redhat.com, tanuj.kamde@amd.com, Koushik.Dutta@amd.com,
+        harpreet.anand@amd.com, Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,672 +78,482 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For setting MAC address, both txgbe and ngbe drivers have the same handling
-flow with different parameters. Move the same codes to libwx.
+On Wed, Dec 7, 2022 at 10:56 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
+>
+> Implement functions to perform vDPA operations like creating and
+> removing virtqueues, getting doorbell register offset etc. using
+> the MCDI interface with FW.
+>
+> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+> ---
+>  drivers/net/ethernet/sfc/Kconfig      |   8 +
+>  drivers/net/ethernet/sfc/Makefile     |   1 +
+>  drivers/net/ethernet/sfc/ef100_vdpa.h |  32 +++
+>  drivers/net/ethernet/sfc/mcdi.h       |   4 +
+>  drivers/net/ethernet/sfc/mcdi_vdpa.c  | 268 ++++++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/mcdi_vdpa.h  |  84 ++++++++
+>  6 files changed, 397 insertions(+)
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
+>  create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
+>  create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
+>
+> diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
+> index 0950e6b0508f..1fa626c87d36 100644
+> --- a/drivers/net/ethernet/sfc/Kconfig
+> +++ b/drivers/net/ethernet/sfc/Kconfig
+> @@ -63,6 +63,14 @@ config SFC_MCDI_LOGGING
+>           Driver-Interface) commands and responses, allowing debugging of
+>           driver/firmware interaction.  The tracing is actually enabled by
+>           a sysfs file 'mcdi_logging' under the PCI device.
+> +config SFC_VDPA
+> +       bool "Solarflare EF100-family VDPA support"
+> +       depends on SFC && VDPA && SFC_SRIOV
+> +       default y
+> +       help
+> +         This enables support for the virtio data path acceleration (vDPA).
+> +         vDPA device's datapath complies with the virtio specification,
+> +         but control path is vendor specific.
+>
+>  source "drivers/net/ethernet/sfc/falcon/Kconfig"
+>  source "drivers/net/ethernet/sfc/siena/Kconfig"
+> diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
+> index 712a48d00069..059a0944e89a 100644
+> --- a/drivers/net/ethernet/sfc/Makefile
+> +++ b/drivers/net/ethernet/sfc/Makefile
+> @@ -11,6 +11,7 @@ sfc-$(CONFIG_SFC_MTD) += mtd.o
+>  sfc-$(CONFIG_SFC_SRIOV)        += sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \
+>                             mae.o tc.o tc_bindings.o tc_counters.o
+>
+> +sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o
+>  obj-$(CONFIG_SFC)      += sfc.o
+>
+>  obj-$(CONFIG_SFC_FALCON) += falcon/
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> new file mode 100644
+> index 000000000000..f6564448d0c7
+> --- /dev/null
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> @@ -0,0 +1,32 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Driver for Xilinx network controllers and boards
+> + * Copyright (C) 2020-2022, Xilinx, Inc.
+> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published
+> + * by the Free Software Foundation, incorporated herein by reference.
+> + */
+> +
+> +#ifndef __EF100_VDPA_H__
+> +#define __EF100_VDPA_H__
+> +
+> +#include <linux/vdpa.h>
+> +#include <uapi/linux/virtio_net.h>
+> +#include "net_driver.h"
+> +#include "ef100_nic.h"
+> +
+> +#if defined(CONFIG_SFC_VDPA)
+> +
+> +enum ef100_vdpa_device_type {
+> +       EF100_VDPA_DEVICE_TYPE_NET,
+> +};
+> +
+> +enum ef100_vdpa_vq_type {
+> +       EF100_VDPA_VQ_TYPE_NET_RXQ,
+> +       EF100_VDPA_VQ_TYPE_NET_TXQ,
+> +       EF100_VDPA_VQ_NTYPES
+> +};
+> +
+> +#endif /* CONFIG_SFC_VDPA */
+> +#endif /* __EF100_VDPA_H__ */
+> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
+> index 7e35fec9da35..db4ca4975ada 100644
+> --- a/drivers/net/ethernet/sfc/mcdi.h
+> +++ b/drivers/net/ethernet/sfc/mcdi.h
+> @@ -214,6 +214,10 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
+>  #define _MCDI_STRUCT_DWORD(_buf, _field)                               \
+>         ((_buf) + (_MCDI_CHECK_ALIGN(_field ## _OFST, 4) >> 2))
+>
+> +#define MCDI_SET_BYTE(_buf, _field, _value) do {                       \
+> +       BUILD_BUG_ON(MC_CMD_ ## _field ## _LEN != 1);                   \
+> +       *(u8 *)MCDI_PTR(_buf, _field) = _value;                         \
+> +       } while (0)
+>  #define MCDI_STRUCT_SET_BYTE(_buf, _field, _value) do {                        \
+>         BUILD_BUG_ON(_field ## _LEN != 1);                              \
+>         *(u8 *)MCDI_STRUCT_PTR(_buf, _field) = _value;                  \
+> diff --git a/drivers/net/ethernet/sfc/mcdi_vdpa.c b/drivers/net/ethernet/sfc/mcdi_vdpa.c
+> new file mode 100644
+> index 000000000000..35f822170049
+> --- /dev/null
+> +++ b/drivers/net/ethernet/sfc/mcdi_vdpa.c
+> @@ -0,0 +1,268 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Driver for Xilinx network controllers and boards
+> + * Copyright (C) 2020-2022, Xilinx, Inc.
+> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published
+> + * by the Free Software Foundation, incorporated herein by reference.
+> + */
+> +
+> +#include <linux/vdpa.h>
+> +#include "ef100_vdpa.h"
+> +#include "efx.h"
+> +#include "nic.h"
+> +#include "mcdi_vdpa.h"
+> +#include "mcdi_pcol.h"
+> +
+> +/* The value of target_vf in virtio MC commands like
+> + * virtqueue create, delete and get doorbell offset should
+> + * contain the VF index when the calling function is a PF
+> + * and VF_NULL (0xFFFF) otherwise. As the vDPA driver invokes
+> + * MC commands in context of the VF, it uses VF_NULL.
+> + */
+> +#define MC_CMD_VIRTIO_TARGET_VF_NULL 0xFFFF
+> +
+> +struct efx_vring_ctx *efx_vdpa_vring_init(struct efx_nic *efx,  u32 vi,
+> +                                         enum ef100_vdpa_vq_type vring_type)
+> +{
+> +       struct efx_vring_ctx *vring_ctx;
+> +       u32 queue_cmd;
+> +
+> +       vring_ctx = kzalloc(sizeof(*vring_ctx), GFP_KERNEL);
+> +       if (!vring_ctx)
+> +               return ERR_PTR(-ENOMEM);
+> +
+> +       switch (vring_type) {
+> +       case EF100_VDPA_VQ_TYPE_NET_RXQ:
+> +               queue_cmd = MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ;
+> +               break;
+> +       case EF100_VDPA_VQ_TYPE_NET_TXQ:
+> +               queue_cmd = MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ;
+> +               break;
+> +       default:
+> +               pci_err(efx->pci_dev,
+> +                       "%s: Invalid Queue type %u\n", __func__, vring_type);
+> +               kfree(vring_ctx);
+> +               return ERR_PTR(-ENOMEM);
+> +       }
+> +
+> +       vring_ctx->efx = efx;
+> +       vring_ctx->vf_index = MC_CMD_VIRTIO_TARGET_VF_NULL;
+> +       vring_ctx->vi_index = vi;
+> +       vring_ctx->mcdi_vring_type = queue_cmd;
+> +       return vring_ctx;
+> +}
+> +
+> +void efx_vdpa_vring_fini(struct efx_vring_ctx *vring_ctx)
+> +{
+> +       kfree(vring_ctx);
+> +}
+> +
+> +int efx_vdpa_get_features(struct efx_nic *efx,
+> +                         enum ef100_vdpa_device_type type,
+> +                         u64 *features)
+> +{
+> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN);
+> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_GET_FEATURES_IN_LEN);
+> +       u32 high_val, low_val;
+> +       ssize_t outlen;
+> +       u32 dev_type;
+> +       int rc;
+> +
+> +       if (!efx) {
+> +               pci_err(efx->pci_dev, "%s: Invalid NIC pointer\n", __func__);
+> +               return -EINVAL;
+> +       }
+> +       switch (type) {
+> +       case EF100_VDPA_DEVICE_TYPE_NET:
+> +               dev_type = MC_CMD_VIRTIO_GET_FEATURES_IN_NET;
+> +               break;
+> +       default:
+> +               pci_err(efx->pci_dev,
+> +                       "%s: Device type %d not supported\n", __func__, type);
+> +               return -EINVAL;
+> +       }
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_GET_FEATURES_IN_DEVICE_ID, dev_type);
+> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_GET_FEATURES, inbuf, sizeof(inbuf),
+> +                         outbuf, sizeof(outbuf), &outlen);
+> +       if (rc)
+> +               return rc;
+> +       if (outlen < MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN)
+> +               return -EIO;
+> +       low_val = MCDI_DWORD(outbuf, VIRTIO_GET_FEATURES_OUT_FEATURES_LO);
+> +       high_val = MCDI_DWORD(outbuf, VIRTIO_GET_FEATURES_OUT_FEATURES_HI);
+> +       *features = ((u64)high_val << 32) | low_val;
+> +       return 0;
+> +}
+> +
+> +int efx_vdpa_verify_features(struct efx_nic *efx,
+> +                            enum ef100_vdpa_device_type type, u64 features)
+> +{
+> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_TEST_FEATURES_IN_LEN);
+> +       u32 dev_type;
+> +       int rc;
+> +
+> +       BUILD_BUG_ON(MC_CMD_VIRTIO_TEST_FEATURES_OUT_LEN != 0);
+> +       switch (type) {
+> +       case EF100_VDPA_DEVICE_TYPE_NET:
+> +               dev_type = MC_CMD_VIRTIO_GET_FEATURES_IN_NET;
+> +               break;
+> +       default:
+> +               pci_err(efx->pci_dev,
+> +                       "%s: Device type %d not supported\n", __func__, type);
+> +               return -EINVAL;
+> +       }
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_DEVICE_ID, dev_type);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_FEATURES_LO, features);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_FEATURES_HI,
+> +                      features >> 32);
+> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_TEST_FEATURES, inbuf,
+> +                         sizeof(inbuf), NULL, 0, NULL);
+> +       return rc;
+> +}
+> +
+> +int efx_vdpa_vring_create(struct efx_vring_ctx *vring_ctx,
+> +                         struct efx_vring_cfg *vring_cfg,
+> +                         struct efx_vring_dyn_cfg *vring_dyn_cfg)
+> +{
+> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_INIT_QUEUE_REQ_LEN);
+> +       struct efx_nic *efx = vring_ctx->efx;
+> +       int rc;
+> +
+> +       BUILD_BUG_ON(MC_CMD_VIRTIO_INIT_QUEUE_RESP_LEN != 0);
+> +
+> +       MCDI_SET_BYTE(inbuf, VIRTIO_INIT_QUEUE_REQ_QUEUE_TYPE,
+> +                     vring_ctx->mcdi_vring_type);
+> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_TARGET_VF,
+> +                     vring_ctx->vf_index);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INSTANCE,
+> +                      vring_ctx->vi_index);
+> +
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_SIZE, vring_cfg->size);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_LO,
+> +                      vring_cfg->desc);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_HI,
+> +                      vring_cfg->desc >> 32);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_LO,
+> +                      vring_cfg->avail);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_HI,
+> +                      vring_cfg->avail >> 32);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_LO,
+> +                      vring_cfg->used);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_HI,
+> +                      vring_cfg->used >> 32);
+> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_MSIX_VECTOR,
+> +                     vring_cfg->msix_vector);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_FEATURES_LO,
+> +                      vring_cfg->features);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_FEATURES_HI,
+> +                      vring_cfg->features >> 32);
+> +
+> +       if (vring_dyn_cfg) {
+> +               MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INITIAL_PIDX,
+> +                              vring_dyn_cfg->avail_idx);
+> +               MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INITIAL_CIDX,
+> +                              vring_dyn_cfg->used_idx);
+> +       }
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_MPORT_SELECTOR,
+> +                      MAE_MPORT_SELECTOR_ASSIGNED);
+> +
+> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_INIT_QUEUE, inbuf, sizeof(inbuf),
+> +                         NULL, 0, NULL);
 
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
----
- drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 116 +++++++++++++-
- drivers/net/ethernet/wangxun/libwx/wx_hw.h    |   5 +-
- drivers/net/ethernet/wangxun/libwx/wx_type.h  |  12 ++
- drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  61 ++------
- drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  11 --
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 145 ++----------------
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  12 +-
- 7 files changed, 150 insertions(+), 212 deletions(-)
+It looks to me the mcdi_buffer belongs to the VF (allocated by the
+calling of ef100_probe_vf()), I wonder how it is isolated from the DMA
+that is initiated by userspace(guest)?
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-index c57dc3238b3f..e04a394ddbe2 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-@@ -2,6 +2,7 @@
- /* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
- 
- #include <linux/etherdevice.h>
-+#include <linux/netdevice.h>
- #include <linux/if_ether.h>
- #include <linux/iopoll.h>
- #include <linux/pci.h>
-@@ -536,8 +537,8 @@ EXPORT_SYMBOL(wx_get_mac_addr);
-  *
-  *  Puts an ethernet address into a receive address register.
-  **/
--int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools,
--	       u32 enable_addr)
-+static int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools,
-+		      u32 enable_addr)
- {
- 	u32 rar_entries = wxhw->mac.num_rar_entries;
- 	u32 rar_low, rar_high;
-@@ -581,7 +582,6 @@ int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools,
- 
- 	return 0;
- }
--EXPORT_SYMBOL(wx_set_rar);
- 
- /**
-  *  wx_clear_rar - Remove Rx address register
-@@ -590,7 +590,7 @@ EXPORT_SYMBOL(wx_set_rar);
-  *
-  *  Clears an ethernet address from a receive address register.
-  **/
--int wx_clear_rar(struct wx_hw *wxhw, u32 index)
-+static int wx_clear_rar(struct wx_hw *wxhw, u32 index)
- {
- 	u32 rar_entries = wxhw->mac.num_rar_entries;
- 
-@@ -618,7 +618,6 @@ int wx_clear_rar(struct wx_hw *wxhw, u32 index)
- 
- 	return 0;
- }
--EXPORT_SYMBOL(wx_clear_rar);
- 
- /**
-  *  wx_clear_vmdq - Disassociate a VMDq pool index from a rx address
-@@ -722,6 +721,105 @@ void wx_init_rx_addrs(struct wx_hw *wxhw)
- }
- EXPORT_SYMBOL(wx_init_rx_addrs);
- 
-+static void wx_sync_mac_table(struct wx_hw *wxhw)
-+{
-+	int i;
-+
-+	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-+		if (wxhw->mac_table[i].state & WX_MAC_STATE_MODIFIED) {
-+			if (wxhw->mac_table[i].state & WX_MAC_STATE_IN_USE) {
-+				wx_set_rar(wxhw, i,
-+					   wxhw->mac_table[i].addr,
-+					   wxhw->mac_table[i].pools,
-+					   WX_PSR_MAC_SWC_AD_H_AV);
-+			} else {
-+				wx_clear_rar(wxhw, i);
-+			}
-+			wxhw->mac_table[i].state &= ~(WX_MAC_STATE_MODIFIED);
-+		}
-+	}
-+}
-+
-+/* this function destroys the first RAR entry */
-+void wx_mac_set_default_filter(struct wx_hw *wxhw, u8 *addr)
-+{
-+	memcpy(&wxhw->mac_table[0].addr, addr, ETH_ALEN);
-+	wxhw->mac_table[0].pools = 1ULL;
-+	wxhw->mac_table[0].state = (WX_MAC_STATE_DEFAULT | WX_MAC_STATE_IN_USE);
-+	wx_set_rar(wxhw, 0, wxhw->mac_table[0].addr,
-+		   wxhw->mac_table[0].pools,
-+		   WX_PSR_MAC_SWC_AD_H_AV);
-+}
-+EXPORT_SYMBOL(wx_mac_set_default_filter);
-+
-+void wx_flush_sw_mac_table(struct wx_hw *wxhw)
-+{
-+	u32 i;
-+
-+	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-+		if (!(wxhw->mac_table[i].state & WX_MAC_STATE_IN_USE))
-+			continue;
-+
-+		wxhw->mac_table[i].state |= WX_MAC_STATE_MODIFIED;
-+		wxhw->mac_table[i].state &= ~WX_MAC_STATE_IN_USE;
-+		memset(wxhw->mac_table[i].addr, 0, ETH_ALEN);
-+		wxhw->mac_table[i].pools = 0;
-+	}
-+	wx_sync_mac_table(wxhw);
-+}
-+EXPORT_SYMBOL(wx_flush_sw_mac_table);
-+
-+static int wx_del_mac_filter(struct wx_hw *wxhw, u8 *addr, u16 pool)
-+{
-+	u32 i;
-+
-+	if (is_zero_ether_addr(addr))
-+		return -EINVAL;
-+
-+	/* search table for addr, if found, set to 0 and sync */
-+	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-+		if (!ether_addr_equal(addr, wxhw->mac_table[i].addr))
-+			continue;
-+
-+		wxhw->mac_table[i].state |= WX_MAC_STATE_MODIFIED;
-+		wxhw->mac_table[i].pools &= ~(1ULL << pool);
-+		if (!wxhw->mac_table[i].pools) {
-+			wxhw->mac_table[i].state &= ~WX_MAC_STATE_IN_USE;
-+			memset(wxhw->mac_table[i].addr, 0, ETH_ALEN);
-+		}
-+		wx_sync_mac_table(wxhw);
-+		return 0;
-+	}
-+	return -ENOMEM;
-+}
-+
-+/**
-+ * wx_set_mac - Change the Ethernet Address of the NIC
-+ * @netdev: network interface device structure
-+ * @p: pointer to an address structure
-+ *
-+ * Returns 0 on success, negative on failure
-+ **/
-+int wx_set_mac(struct net_device *netdev, void *p)
-+{
-+	struct wx_hw *wxhw = container_of(&netdev, struct wx_hw, netdev);
-+	struct sockaddr *addr = p;
-+	int retval;
-+
-+	retval = eth_prepare_mac_addr_change(netdev, addr);
-+	if (retval)
-+		return retval;
-+
-+	wx_del_mac_filter(wxhw, wxhw->mac.addr, 0);
-+	eth_hw_addr_set(netdev, addr->sa_data);
-+	memcpy(wxhw->mac.addr, addr->sa_data, netdev->addr_len);
-+
-+	wx_mac_set_default_filter(wxhw, wxhw->mac.addr);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(wx_set_mac);
-+
- void wx_disable_rx(struct wx_hw *wxhw)
- {
- 	u32 pfdtxgswc;
-@@ -929,6 +1027,14 @@ int wx_sw_init(struct wx_hw *wxhw)
- 		return err;
- 	}
- 
-+	wxhw->mac_table = kcalloc(wxhw->mac.num_rar_entries,
-+				  sizeof(struct wx_mac_addr),
-+				  GFP_KERNEL);
-+	if (!wxhw->mac_table) {
-+		wx_err(wxhw, "mac_table allocation failed\n");
-+		return -ENOMEM;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL(wx_sw_init);
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.h b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-index a0652f5e9939..5ac4ff78fd72 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-@@ -15,9 +15,10 @@ int wx_read_ee_hostif_buffer(struct wx_hw *wxhw,
- int wx_reset_hostif(struct wx_hw *wxhw);
- void wx_init_eeprom_params(struct wx_hw *wxhw);
- void wx_get_mac_addr(struct wx_hw *wxhw, u8 *mac_addr);
--int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools, u32 enable_addr);
--int wx_clear_rar(struct wx_hw *wxhw, u32 index);
- void wx_init_rx_addrs(struct wx_hw *wxhw);
-+void wx_mac_set_default_filter(struct wx_hw *wxhw, u8 *addr);
-+void wx_flush_sw_mac_table(struct wx_hw *wxhw);
-+int wx_set_mac(struct net_device *netdev, void *p);
- void wx_disable_rx(struct wx_hw *wxhw);
- int wx_disable_pcie_master(struct wx_hw *wxhw);
- int wx_stop_adapter(struct wx_hw *wxhw);
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index 1cbeef8230bf..af7fd112aee4 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -185,6 +185,10 @@
- 
- #define WX_SW_REGION_PTR             0x1C
- 
-+#define WX_MAC_STATE_DEFAULT         0x1
-+#define WX_MAC_STATE_MODIFIED        0x2
-+#define WX_MAC_STATE_IN_USE          0x4
-+
- /* Host Interface Command Structures */
- struct wx_hic_hdr {
- 	u8 cmd;
-@@ -284,6 +288,12 @@ struct wx_addr_filter_info {
- 	bool user_set_promisc;
- };
- 
-+struct wx_mac_addr {
-+	u8 addr[ETH_ALEN];
-+	u16 state; /* bitmask */
-+	u64 pools;
-+};
-+
- enum wx_reset_type {
- 	WX_LAN_RESET = 0,
- 	WX_SW_RESET,
-@@ -293,10 +303,12 @@ enum wx_reset_type {
- struct wx_hw {
- 	u8 __iomem *hw_addr;
- 	struct pci_dev *pdev;
-+	struct net_device *netdev;
- 	struct wx_bus_info bus;
- 	struct wx_mac_info mac;
- 	struct wx_eeprom_info eeprom;
- 	struct wx_addr_filter_info addr_ctrl;
-+	struct wx_mac_addr *mac_table;
- 	u16 device_id;
- 	u16 vendor_id;
- 	u16 subsystem_device_id;
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-index f7cb482c8053..2af076489b5e 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-@@ -39,17 +39,6 @@ static const struct pci_device_id ngbe_pci_tbl[] = {
- 	{ .device = 0 }
- };
- 
--static void ngbe_mac_set_default_filter(struct ngbe_adapter *adapter, u8 *addr)
--{
--	memcpy(&adapter->mac_table[0].addr, addr, ETH_ALEN);
--	adapter->mac_table[0].pools = 1ULL;
--	adapter->mac_table[0].state = (NGBE_MAC_STATE_DEFAULT |
--				       NGBE_MAC_STATE_IN_USE);
--	wx_set_rar(&adapter->wxhw, 0, adapter->mac_table[0].addr,
--		   adapter->mac_table[0].pools,
--		   WX_PSR_MAC_SWC_AD_H_AV);
--}
--
- /**
-  *  ngbe_init_type_code - Initialize the shared code
-  *  @adapter: pointer to hardware structure
-@@ -152,6 +141,10 @@ static int ngbe_sw_init(struct ngbe_adapter *adapter)
- 	wxhw->hw_addr = adapter->io_addr;
- 	wxhw->pdev = pdev;
- 
-+	wxhw->mac.num_rar_entries = NGBE_RAR_ENTRIES;
-+	wxhw->mac.max_rx_queues = NGBE_MAX_RX_QUEUES;
-+	wxhw->mac.max_tx_queues = NGBE_MAX_TX_QUEUES;
-+
- 	/* PCI config space info */
- 	err = wx_sw_init(wxhw);
- 	if (err < 0) {
-@@ -163,25 +156,13 @@ static int ngbe_sw_init(struct ngbe_adapter *adapter)
- 	/* mac type, phy type , oem type */
- 	ngbe_init_type_code(adapter);
- 
--	wxhw->mac.max_rx_queues = NGBE_MAX_RX_QUEUES;
--	wxhw->mac.max_tx_queues = NGBE_MAX_TX_QUEUES;
--	wxhw->mac.num_rar_entries = NGBE_RAR_ENTRIES;
- 	/* Set common capability flags and settings */
- 	adapter->max_q_vectors = NGBE_MAX_MSIX_VECTORS;
--
- 	err = wx_get_pcie_msix_counts(wxhw, &msix_count, NGBE_MAX_MSIX_VECTORS);
- 	if (err)
- 		dev_err(&pdev->dev, "Do not support MSI-X\n");
- 	wxhw->mac.max_msix_vectors = msix_count;
- 
--	adapter->mac_table = kcalloc(wxhw->mac.num_rar_entries,
--				     sizeof(struct ngbe_mac_addr),
--				     GFP_KERNEL);
--	if (!adapter->mac_table) {
--		dev_err(&pdev->dev, "mac_table allocation failed: %d\n", err);
--		return -ENOMEM;
--	}
--
- 	if (ngbe_init_rss_key(adapter))
- 		return -ENOMEM;
- 
-@@ -252,30 +233,6 @@ static netdev_tx_t ngbe_xmit_frame(struct sk_buff *skb,
- 	return NETDEV_TX_OK;
- }
- 
--/**
-- * ngbe_set_mac - Change the Ethernet Address of the NIC
-- * @netdev: network interface device structure
-- * @p: pointer to an address structure
-- *
-- * Returns 0 on success, negative on failure
-- **/
--static int ngbe_set_mac(struct net_device *netdev, void *p)
--{
--	struct ngbe_adapter *adapter = netdev_priv(netdev);
--	struct wx_hw *wxhw = &adapter->wxhw;
--	struct sockaddr *addr = p;
--
--	if (!is_valid_ether_addr(addr->sa_data))
--		return -EADDRNOTAVAIL;
--
--	eth_hw_addr_set(netdev, addr->sa_data);
--	memcpy(wxhw->mac.addr, addr->sa_data, netdev->addr_len);
--
--	ngbe_mac_set_default_filter(adapter, wxhw->mac.addr);
--
--	return 0;
--}
--
- static void ngbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
- {
- 	struct ngbe_adapter *adapter = pci_get_drvdata(pdev);
-@@ -312,7 +269,7 @@ static const struct net_device_ops ngbe_netdev_ops = {
- 	.ndo_stop               = ngbe_close,
- 	.ndo_start_xmit         = ngbe_xmit_frame,
- 	.ndo_validate_addr      = eth_validate_addr,
--	.ndo_set_mac_address    = ngbe_set_mac,
-+	.ndo_set_mac_address    = wx_set_mac,
- };
- 
- /**
-@@ -377,6 +334,7 @@ static int ngbe_probe(struct pci_dev *pdev,
- 	adapter->netdev = netdev;
- 	adapter->pdev = pdev;
- 	wxhw = &adapter->wxhw;
-+	wxhw->netdev = netdev;
- 	adapter->msg_enable = BIT(3) - 1;
- 
- 	adapter->io_addr = devm_ioremap(&pdev->dev,
-@@ -463,7 +421,7 @@ static int ngbe_probe(struct pci_dev *pdev,
- 	}
- 
- 	eth_hw_addr_set(netdev, wxhw->mac.perm_addr);
--	ngbe_mac_set_default_filter(adapter, wxhw->mac.perm_addr);
-+	wx_mac_set_default_filter(wxhw, wxhw->mac.perm_addr);
- 
- 	err = register_netdev(netdev);
- 	if (err)
-@@ -481,7 +439,7 @@ static int ngbe_probe(struct pci_dev *pdev,
- err_register:
- 	wx_control_hw(wxhw, false);
- err_free_mac_table:
--	kfree(adapter->mac_table);
-+	kfree(wxhw->mac_table);
- err_pci_release_regions:
- 	pci_disable_pcie_error_reporting(pdev);
- 	pci_release_selected_regions(pdev,
-@@ -503,6 +461,7 @@ static int ngbe_probe(struct pci_dev *pdev,
- static void ngbe_remove(struct pci_dev *pdev)
- {
- 	struct ngbe_adapter *adapter = pci_get_drvdata(pdev);
-+	struct wx_hw *wxhw = &adapter->wxhw;
- 	struct net_device *netdev;
- 
- 	netdev = adapter->netdev;
-@@ -510,7 +469,7 @@ static void ngbe_remove(struct pci_dev *pdev)
- 	pci_release_selected_regions(pdev,
- 				     pci_select_bars(pdev, IORESOURCE_MEM));
- 
--	kfree(adapter->mac_table);
-+	kfree(wxhw->mac_table);
- 	pci_disable_pcie_error_reporting(pdev);
- 
- 	pci_disable_device(pdev);
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-index 83e73cac2953..4b6c5006c0c6 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-@@ -110,10 +110,6 @@
- #define NGBE_MAX_RXD				8192
- #define NGBE_MIN_RXD				128
- 
--#define NGBE_MAC_STATE_DEFAULT		0x1
--#define NGBE_MAC_STATE_MODIFIED		0x2
--#define NGBE_MAC_STATE_IN_USE		0x4
--
- enum ngbe_phy_type {
- 	ngbe_phy_unknown = 0,
- 	ngbe_phy_none,
-@@ -151,12 +147,6 @@ struct ngbe_phy_info {
- 
- };
- 
--struct ngbe_mac_addr {
--	u8 addr[ETH_ALEN];
--	u16 state; /* bitmask */
--	u64 pools;
--};
--
- /* board specific private data structure */
- struct ngbe_adapter {
- 	u8 __iomem *io_addr;    /* Mainly for iounmap use */
-@@ -172,7 +162,6 @@ struct ngbe_adapter {
- 	bool ncsi_enabled;
- 	bool gpio_ctrl;
- 
--	struct ngbe_mac_addr *mac_table;
- 	u16 msg_enable;
- 
- 	/* Tx fast path data */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index dcdf4e364979..e559c34b42cd 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -72,90 +72,6 @@ static int txgbe_enumerate_functions(struct txgbe_adapter *adapter)
- 	return physfns;
- }
- 
--static void txgbe_sync_mac_table(struct txgbe_adapter *adapter)
--{
--	struct wx_hw *wxhw = &adapter->wxhw;
--	int i;
--
--	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
--		if (adapter->mac_table[i].state & TXGBE_MAC_STATE_MODIFIED) {
--			if (adapter->mac_table[i].state & TXGBE_MAC_STATE_IN_USE) {
--				wx_set_rar(wxhw, i,
--					   adapter->mac_table[i].addr,
--					   adapter->mac_table[i].pools,
--					   WX_PSR_MAC_SWC_AD_H_AV);
--			} else {
--				wx_clear_rar(wxhw, i);
--			}
--			adapter->mac_table[i].state &= ~(TXGBE_MAC_STATE_MODIFIED);
--		}
--	}
--}
--
--/* this function destroys the first RAR entry */
--static void txgbe_mac_set_default_filter(struct txgbe_adapter *adapter,
--					 u8 *addr)
--{
--	struct wx_hw *wxhw = &adapter->wxhw;
--
--	memcpy(&adapter->mac_table[0].addr, addr, ETH_ALEN);
--	adapter->mac_table[0].pools = 1ULL;
--	adapter->mac_table[0].state = (TXGBE_MAC_STATE_DEFAULT |
--				       TXGBE_MAC_STATE_IN_USE);
--	wx_set_rar(wxhw, 0, adapter->mac_table[0].addr,
--		   adapter->mac_table[0].pools,
--		   WX_PSR_MAC_SWC_AD_H_AV);
--}
--
--static void txgbe_flush_sw_mac_table(struct txgbe_adapter *adapter)
--{
--	struct wx_hw *wxhw = &adapter->wxhw;
--	u32 i;
--
--	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
--		adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
--		adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
--		memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
--		adapter->mac_table[i].pools = 0;
--	}
--	txgbe_sync_mac_table(adapter);
--}
--
--static int txgbe_del_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 pool)
--{
--	struct wx_hw *wxhw = &adapter->wxhw;
--	u32 i;
--
--	if (is_zero_ether_addr(addr))
--		return -EINVAL;
--
--	/* search table for addr, if found, set to 0 and sync */
--	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
--		if (ether_addr_equal(addr, adapter->mac_table[i].addr)) {
--			if (adapter->mac_table[i].pools & (1ULL << pool)) {
--				adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
--				adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
--				adapter->mac_table[i].pools &= ~(1ULL << pool);
--				txgbe_sync_mac_table(adapter);
--			}
--			return 0;
--		}
--
--		if (adapter->mac_table[i].pools != (1 << pool))
--			continue;
--		if (!ether_addr_equal(addr, adapter->mac_table[i].addr))
--			continue;
--
--		adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
--		adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
--		memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
--		adapter->mac_table[i].pools = 0;
--		txgbe_sync_mac_table(adapter);
--		return 0;
--	}
--	return -ENOMEM;
--}
--
- static void txgbe_up_complete(struct txgbe_adapter *adapter)
- {
- 	struct wx_hw *wxhw = &adapter->wxhw;
-@@ -175,9 +91,9 @@ static void txgbe_reset(struct txgbe_adapter *adapter)
- 		dev_err(&adapter->pdev->dev, "Hardware Error: %d\n", err);
- 
- 	/* do not flush user set addresses */
--	memcpy(old_addr, &adapter->mac_table[0].addr, netdev->addr_len);
--	txgbe_flush_sw_mac_table(adapter);
--	txgbe_mac_set_default_filter(adapter, old_addr);
-+	memcpy(old_addr, &wxhw->mac_table[0].addr, netdev->addr_len);
-+	wx_flush_sw_mac_table(wxhw);
-+	wx_mac_set_default_filter(wxhw, old_addr);
- }
- 
- static void txgbe_disable_device(struct txgbe_adapter *adapter)
-@@ -228,6 +144,11 @@ static int txgbe_sw_init(struct txgbe_adapter *adapter)
- 	wxhw->hw_addr = adapter->io_addr;
- 	wxhw->pdev = pdev;
- 
-+	wxhw->mac.num_rar_entries = TXGBE_SP_RAR_ENTRIES;
-+	wxhw->mac.max_tx_queues = TXGBE_SP_MAX_TX_QUEUES;
-+	wxhw->mac.max_rx_queues = TXGBE_SP_MAX_RX_QUEUES;
-+	wxhw->mac.mcft_size = TXGBE_SP_MC_TBL_SIZE;
-+
- 	/* PCI config space info */
- 	err = wx_sw_init(wxhw);
- 	if (err < 0) {
-@@ -246,20 +167,6 @@ static int txgbe_sw_init(struct txgbe_adapter *adapter)
- 		break;
- 	}
- 
--	wxhw->mac.num_rar_entries = TXGBE_SP_RAR_ENTRIES;
--	wxhw->mac.max_tx_queues = TXGBE_SP_MAX_TX_QUEUES;
--	wxhw->mac.max_rx_queues = TXGBE_SP_MAX_RX_QUEUES;
--	wxhw->mac.mcft_size = TXGBE_SP_MC_TBL_SIZE;
--
--	adapter->mac_table = kcalloc(wxhw->mac.num_rar_entries,
--				     sizeof(struct txgbe_mac_addr),
--				     GFP_KERNEL);
--	if (!adapter->mac_table) {
--		netif_err(adapter, probe, adapter->netdev,
--			  "mac_table allocation failed\n");
--		return -ENOMEM;
--	}
--
- 	return 0;
- }
- 
-@@ -350,39 +257,12 @@ static netdev_tx_t txgbe_xmit_frame(struct sk_buff *skb,
- 	return NETDEV_TX_OK;
- }
- 
--/**
-- * txgbe_set_mac - Change the Ethernet Address of the NIC
-- * @netdev: network interface device structure
-- * @p: pointer to an address structure
-- *
-- * Returns 0 on success, negative on failure
-- **/
--static int txgbe_set_mac(struct net_device *netdev, void *p)
--{
--	struct txgbe_adapter *adapter = netdev_priv(netdev);
--	struct wx_hw *wxhw = &adapter->wxhw;
--	struct sockaddr *addr = p;
--	int retval;
--
--	retval = eth_prepare_mac_addr_change(netdev, addr);
--	if (retval)
--		return retval;
--
--	txgbe_del_mac_filter(adapter, wxhw->mac.addr, 0);
--	eth_hw_addr_set(netdev, addr->sa_data);
--	memcpy(wxhw->mac.addr, addr->sa_data, netdev->addr_len);
--
--	txgbe_mac_set_default_filter(adapter, wxhw->mac.addr);
--
--	return 0;
--}
--
- static const struct net_device_ops txgbe_netdev_ops = {
- 	.ndo_open               = txgbe_open,
- 	.ndo_stop               = txgbe_close,
- 	.ndo_start_xmit         = txgbe_xmit_frame,
- 	.ndo_validate_addr      = eth_validate_addr,
--	.ndo_set_mac_address    = txgbe_set_mac,
-+	.ndo_set_mac_address    = wx_set_mac,
- };
- 
- /**
-@@ -448,6 +328,7 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	adapter->netdev = netdev;
- 	adapter->pdev = pdev;
- 	wxhw = &adapter->wxhw;
-+	wxhw->netdev = netdev;
- 	adapter->msg_enable = (1 << DEFAULT_DEBUG_LEVEL_SHIFT) - 1;
- 
- 	adapter->io_addr = devm_ioremap(&pdev->dev,
-@@ -497,7 +378,7 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	}
- 
- 	eth_hw_addr_set(netdev, wxhw->mac.perm_addr);
--	txgbe_mac_set_default_filter(adapter, wxhw->mac.perm_addr);
-+	wx_mac_set_default_filter(wxhw, wxhw->mac.perm_addr);
- 
- 	/* Save off EEPROM version number and Option Rom version which
- 	 * together make a unique identify for the eeprom
-@@ -569,7 +450,7 @@ static int txgbe_probe(struct pci_dev *pdev,
- err_release_hw:
- 	wx_control_hw(wxhw, false);
- err_free_mac_table:
--	kfree(adapter->mac_table);
-+	kfree(wxhw->mac_table);
- err_pci_release_regions:
- 	pci_disable_pcie_error_reporting(pdev);
- 	pci_release_selected_regions(pdev,
-@@ -599,7 +480,7 @@ static void txgbe_remove(struct pci_dev *pdev)
- 	pci_release_selected_regions(pdev,
- 				     pci_select_bars(pdev, IORESOURCE_MEM));
- 
--	kfree(adapter->mac_table);
-+	kfree(adapter->wxhw.mac_table);
- 
- 	pci_disable_pcie_error_reporting(pdev);
- 
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index c4d22ceeddad..ec8238ef234d 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -77,16 +77,6 @@
- #define TXGBE_SP_RAR_ENTRIES    128
- #define TXGBE_SP_MC_TBL_SIZE    128
- 
--#define TXGBE_MAC_STATE_DEFAULT		0x1
--#define TXGBE_MAC_STATE_MODIFIED	0x2
--#define TXGBE_MAC_STATE_IN_USE		0x4
--
--struct txgbe_mac_addr {
--	u8 addr[ETH_ALEN];
--	u16 state; /* bitmask */
--	u64 pools;
--};
--
- /* board specific private data structure */
- struct txgbe_adapter {
- 	u8 __iomem *io_addr;
-@@ -95,7 +85,7 @@ struct txgbe_adapter {
- 	struct pci_dev *pdev;
- 	struct wx_hw wxhw;
- 	u16 msg_enable;
--	struct txgbe_mac_addr *mac_table;
-+
- 	char eeprom_id[32];
- };
- 
--- 
-2.27.0
+Thanks
+
+
+> +       return rc;
+> +}
+> +
+> +int efx_vdpa_vring_destroy(struct efx_vring_ctx *vring_ctx,
+> +                          struct efx_vring_dyn_cfg *vring_dyn_cfg)
+> +{
+> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN);
+> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_FINI_QUEUE_REQ_LEN);
+> +       struct efx_nic *efx = vring_ctx->efx;
+> +       ssize_t outlen;
+> +       int rc;
+> +
+> +       MCDI_SET_BYTE(inbuf, VIRTIO_FINI_QUEUE_REQ_QUEUE_TYPE,
+> +                     vring_ctx->mcdi_vring_type);
+> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_TARGET_VF,
+> +                     vring_ctx->vf_index);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INSTANCE,
+> +                      vring_ctx->vi_index);
+> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_FINI_QUEUE, inbuf, sizeof(inbuf),
+> +                         outbuf, sizeof(outbuf), &outlen);
+> +
+> +       if (rc)
+> +               return rc;
+> +
+> +       if (outlen < MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN)
+> +               return -EIO;
+> +
+> +       if (vring_dyn_cfg) {
+> +               vring_dyn_cfg->avail_idx = MCDI_DWORD(outbuf,
+> +                                                     VIRTIO_FINI_QUEUE_RESP_FINAL_PIDX);
+> +               vring_dyn_cfg->used_idx = MCDI_DWORD(outbuf,
+> +                                                    VIRTIO_FINI_QUEUE_RESP_FINAL_CIDX);
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +int efx_vdpa_get_doorbell_offset(struct efx_vring_ctx *vring_ctx,
+> +                                u32 *offset)
+> +{
+> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN);
+> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_LEN);
+> +       struct efx_nic *efx = vring_ctx->efx;
+> +       ssize_t outlen;
+> +       int rc;
+> +
+> +       if (vring_ctx->mcdi_vring_type != MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ &&
+> +           vring_ctx->mcdi_vring_type != MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ) {
+> +               pci_err(efx->pci_dev,
+> +                       "%s: Invalid Queue type %u\n",
+> +                       __func__, vring_ctx->mcdi_vring_type);
+> +               return -EINVAL;
+> +       }
+> +
+> +       MCDI_SET_BYTE(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_DEVICE_ID,
+> +                     MC_CMD_VIRTIO_GET_FEATURES_IN_NET);
+> +       MCDI_SET_WORD(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_TARGET_VF,
+> +                     vring_ctx->vf_index);
+> +       MCDI_SET_DWORD(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_INSTANCE,
+> +                      vring_ctx->vi_index);
+> +
+> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_GET_DOORBELL_OFFSET, inbuf,
+> +                         sizeof(inbuf), outbuf, sizeof(outbuf), &outlen);
+> +       if (rc)
+> +               return rc;
+> +
+> +       if (outlen < MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN)
+> +               return -EIO;
+> +       if (vring_ctx->mcdi_vring_type == MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ)
+> +               *offset = MCDI_DWORD(outbuf,
+> +                                    VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_RX_DBL_OFFSET);
+> +       else
+> +               *offset = MCDI_DWORD(outbuf,
+> +                                    VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_TX_DBL_OFFSET);
+> +
+> +       return 0;
+> +}
+> +
+> +int efx_vdpa_get_mtu(struct efx_nic *efx, u16 *mtu)
+> +{
+> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_SET_MAC_V2_OUT_LEN);
+> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_SET_MAC_EXT_IN_LEN);
+> +       ssize_t outlen;
+> +       int rc;
+> +
+> +       MCDI_SET_DWORD(inbuf, SET_MAC_EXT_IN_CONTROL, 0);
+> +       rc =  efx_mcdi_rpc(efx, MC_CMD_SET_MAC, inbuf, sizeof(inbuf),
+> +                          outbuf, sizeof(outbuf), &outlen);
+> +       if (rc)
+> +               return rc;
+> +       if (outlen < MC_CMD_SET_MAC_V2_OUT_LEN)
+> +               return -EIO;
+> +
+> +       *mtu = MCDI_DWORD(outbuf, SET_MAC_V2_OUT_MTU);
+> +       return 0;
+> +}
+> diff --git a/drivers/net/ethernet/sfc/mcdi_vdpa.h b/drivers/net/ethernet/sfc/mcdi_vdpa.h
+> new file mode 100644
+> index 000000000000..2a0f7c647c44
+> --- /dev/null
+> +++ b/drivers/net/ethernet/sfc/mcdi_vdpa.h
+> @@ -0,0 +1,84 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Driver for Xilinx network controllers and boards
+> + * Copyright (C) 2020-2022, Xilinx, Inc.
+> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published
+> + * by the Free Software Foundation, incorporated herein by reference.
+> + */
+> +
+> +#ifndef EFX_MCDI_VDPA_H
+> +#define EFX_MCDI_VDPA_H
+> +
+> +#if defined(CONFIG_SFC_VDPA)
+> +#include "mcdi.h"
+> +
+> +/**
+> + * struct efx_vring_ctx: The vring context
+> + *
+> + * @efx: pointer of the VF's efx_nic object
+> + * @vf_index: VF index of the vDPA VF
+> + * @vi_index: vi index to be used for queue creation
+> + * @mcdi_vring_type: corresponding MCDI vring type
+> + */
+> +struct efx_vring_ctx {
+> +       struct efx_nic *efx;
+> +       u32 vf_index;
+> +       u32 vi_index;
+> +       u32 mcdi_vring_type;
+> +};
+> +
+> +/**
+> + * struct efx_vring_cfg: Configuration for vring creation
+> + *
+> + * @desc: Descriptor area address of the vring
+> + * @avail: Available area address of the vring
+> + * @used: Device area address of the vring
+> + * @size: Queue size, in entries. Must be a power of two
+> + * @msix_vector: msix vector address for the queue
+> + * @features: negotiated feature bits
+> + */
+> +struct efx_vring_cfg {
+> +       u64 desc;
+> +       u64 avail;
+> +       u64 used;
+> +       u32 size;
+> +       u16 msix_vector;
+> +       u64 features;
+> +};
+> +
+> +/**
+> + * struct efx_vring_dyn_cfg - dynamic vring configuration
+> + *
+> + * @avail_idx: last available index of the vring
+> + * @used_idx: last used index of the vring
+> + */
+> +struct efx_vring_dyn_cfg {
+> +       u32 avail_idx;
+> +       u32 used_idx;
+> +};
+> +
+> +int efx_vdpa_get_features(struct efx_nic *efx, enum ef100_vdpa_device_type type,
+> +                         u64 *featuresp);
+> +
+> +int efx_vdpa_verify_features(struct efx_nic *efx,
+> +                            enum ef100_vdpa_device_type type, u64 features);
+> +
+> +struct efx_vring_ctx *efx_vdpa_vring_init(struct efx_nic *efx, u32 vi,
+> +                                         enum ef100_vdpa_vq_type vring_type);
+> +
+> +void efx_vdpa_vring_fini(struct efx_vring_ctx *vring_ctx);
+> +
+> +int efx_vdpa_vring_create(struct efx_vring_ctx *vring_ctx,
+> +                         struct efx_vring_cfg *vring_cfg,
+> +                         struct efx_vring_dyn_cfg *vring_dyn_cfg);
+> +
+> +int efx_vdpa_vring_destroy(struct efx_vring_ctx *vring_ctx,
+> +                          struct efx_vring_dyn_cfg *vring_dyn_cfg);
+> +
+> +int efx_vdpa_get_doorbell_offset(struct efx_vring_ctx *vring_ctx,
+> +                                u32 *offsetp);
+> +int efx_vdpa_get_mtu(struct efx_nic *efx, u16 *mtu);
+> +#endif
+> +#endif
+> --
+> 2.30.1
+>
 
