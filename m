@@ -2,132 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2C464CF6E
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 19:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 908D864CF7B
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 19:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238688AbiLNS3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 13:29:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
+        id S238528AbiLNSgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 13:36:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238805AbiLNS3C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 13:29:02 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5486FCD8
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 10:29:01 -0800 (PST)
-Received: from cwcc.thunk.org (pool-173-48-120-46.bstnma.fios.verizon.net [173.48.120.46])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 2BEISlEt001171
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 14 Dec 2022 13:28:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1671042531; bh=yBGs7uN391IpXsrDxRmFEUWTGiaryut5x17IYCOizWk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=iTvQW2ZcZl/RaloFVFvof3Xa5t0qJOPMbf9tEe1ZxUY/ml5As1AyeT37tSuPOcGw+
-         17vCGhEEjx9LOnZs3GLmkDSXWr8W/CTALV2Vj0BYRVQmlX/+14VYvEZc9cLvJWdXVL
-         9oIQx2LCrwfMWPFmSCPXfT4Hv2/oosDrkhOpQHhPv+0hz9gFTJV7qyI/FWZGTrENN7
-         84ztbhtlutCuVHyOA0sewiP3fT74UfRtl1dIyLBRPrb4K2WVewrJxycNUFMnma8otO
-         XQPs5XLQapq5t8UKt6SRlcg5Vr1Ov6Ww0fAJCCZS9NV3kc3QPwS8c73yxGFZtDnfx+
-         ysY4rmQix2LxQ==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 615B615C40A2; Wed, 14 Dec 2022 13:28:47 -0500 (EST)
-Date:   Wed, 14 Dec 2022 13:28:47 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Stanislaw Gruszka <stanislaw.gruszka@linux.intel.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        dri-devel@lists.freedesktop.org, Song Liu <song@kernel.org>,
-        linux-mtd@lists.infradead.org, Stanislav Fomichev <sdf@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Richard Weinberger <richard@nod.at>, x86@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, ilay.bahat1@gmail.com,
-        Ingo Molnar <mingo@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Yonghong Song <yhs@fb.com>, Paolo Abeni <pabeni@redhat.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Petr Mladek <pmladek@suse.com>,
-        david.keisarschm@mail.huji.ac.il,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        intel-gfx@lists.freedesktop.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Borislav Petkov <bp@alien8.de>, Hannes Reinecke <hare@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        bpf@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        Hao Luo <haoluo@google.com>, linux-scsi@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pekka Enberg <penberg@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        aksecurity@gmail.com, Jiri Olsa <jolsa@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/5] Renaming weak prng invocations -
- prandom_bytes_state, prandom_u32_state
-Message-ID: <Y5oV3zVhc2C2sUaF@mit.edu>
-References: <cover.1670778651.git.david.keisarschm@mail.huji.ac.il>
- <b3caaa5ac5fca4b729bf1ecd0d01968c09e6d083.1670778652.git.david.keisarschm@mail.huji.ac.il>
- <Y5c8KLzJFz/XZMiM@zx2c4.com>
- <20221214123358.GA1062210@linux.intel.com>
- <CANn89iJtK4m1cWvCwp=L_rEOEBa+B1kLZJAw0D9_cYPQcAj+Mw@mail.gmail.com>
- <20221214162117.GC1062210@linux.intel.com>
+        with ESMTP id S230252AbiLNSgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 13:36:05 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E82DF26;
+        Wed, 14 Dec 2022 10:36:01 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id 79so2554911pgf.11;
+        Wed, 14 Dec 2022 10:36:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=soAwEUNUP/nDdMk1tXKi47w1Woy9jZA1B7hD1tT2IFU=;
+        b=ENEQrMhCmMvxlj4Xz8fMhvwLCYmwV5cAqV9BEeCR2AHyCNFY3MpY6JebttMmRzOL2E
+         XMr3O3g9/TWYhnpgBnlxqcKUNvzjut06q3Sx2rO20FKQRbVj6gmm/+QOrbx2u7D5B4xl
+         q8Z/qVaiMiRmmqu+5smAhDMIWkgG4FG53OanL/Xtyeod0aebYN+bSAgbdXI0tIV8pfYa
+         piNl97QZo89pZj5udMAqW7BMl2Sh4OaF85nH0IY0zD29XMYsHTyKSorUwxWXK3IPTDYc
+         RNdr2XqWIQf08J6DHDIqcCrzg/z/BaLBAlS43zn81a5KYCgS/epwXcmfvvjoFy3/CYQ2
+         mLoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=soAwEUNUP/nDdMk1tXKi47w1Woy9jZA1B7hD1tT2IFU=;
+        b=xiW6OMLVITNzENJSLZttuSW2jzMtAQONcSEJw3YtunZt6YZ4NltkMf0+trxUx2QpcN
+         izReYgCFhDKiccKRaBLpNH/OMsiGRb4PhvpGdApzWHsKd0LhHOtGeDrJR1Zq7uHa1nfC
+         jzka3fZVBsHIWuW6rsMPmjI74Lh3xhRPbo+s+mMfVeXDGjYK8BSTKHvuDDEXP3cJIxI7
+         p3QTUDqQKN3gafl8pq/EW4yLlFGSbAsXXvqO1pHDIpO7gVss5bp87yCepRVSk7Gum2yG
+         b53xP57xet3yNmDvOqkl0HnEt8aMtT4JnM27PZEd+K/nEMYpWglB79mPHDnWdtKto/Ap
+         +m2g==
+X-Gm-Message-State: ANoB5pmi+J8giXkhXT3NnnT2jV4Otse6SFdX+J4mmb7CpWmWk6eWEWIZ
+        /O6JTWCx5rAT1XtssWgxPFg=
+X-Google-Smtp-Source: AA0mqf5xtQRfuRR9aoG/416uv6Fce0kcE4nzbDdXDrfpSfLgS2fIljRdPRBkm04C6TRhEzMayDm/sg==
+X-Received: by 2002:a62:5fc1:0:b0:566:900d:4667 with SMTP id t184-20020a625fc1000000b00566900d4667mr26303537pfb.1.1671042961158;
+        Wed, 14 Dec 2022 10:36:01 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.42.38])
+        by smtp.googlemail.com with ESMTPSA id y184-20020a6264c1000000b00575acb243besm215068pfb.1.2022.12.14.10.36.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 10:36:00 -0800 (PST)
+Message-ID: <5841f9021baf856c26fb27ac1d75fc1e29d3e044.camel@gmail.com>
+Subject: Re: [PATCH] nfc: st-nci: array index overflow in st_nci_se_get_bwi()
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Aleksandr Burakov <a.burakov@rosalinux.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Christophe Ricard <christophe.ricard@gmail.com>,
+        Samuel Ortiz <sameo@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org
+Date:   Wed, 14 Dec 2022 10:35:59 -0800
+In-Reply-To: <20221213141228.101786-1-a.burakov@rosalinux.ru>
+References: <20221213141228.101786-1-a.burakov@rosalinux.ru>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221214162117.GC1062210@linux.intel.com>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 14, 2022 at 05:21:17PM +0100, Stanislaw Gruszka wrote:
-> On Wed, Dec 14, 2022 at 04:15:49PM +0100, Eric Dumazet wrote:
-> > On Wed, Dec 14, 2022 at 1:34 PM Stanislaw Gruszka
-> > <stanislaw.gruszka@linux.intel.com> wrote:
-> > >
-> > > On Mon, Dec 12, 2022 at 03:35:20PM +0100, Jason A. Donenfeld wrote:
-> > > > Please CC me on future revisions.
-> > > >
-> > > > As of 6.2, the prandom namespace is *only* for predictable randomness.
-> > > > There's no need to rename anything. So nack on this patch 1/5.
-> > >
-> > > It is not obvious (for casual developers like me) that p in prandom
-> > > stands for predictable. Some renaming would be useful IMHO.
+On Tue, 2022-12-13 at 09:12 -0500, Aleksandr Burakov wrote:
+> Index of info->se_info.atr can be overflow due to unchecked increment
+> in the loop "for". The patch checks the value of current array index
+> and doesn't permit increment in case of the index is equal to
+> ST_NCI_ESE_MAX_LENGTH - 1.
+>=20
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+>=20
+> Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
+> Signed-off-by: Aleksandr Burakov <a.burakov@rosalinux.ru>
+> ---
+>  drivers/nfc/st-nci/se.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+> index ec87dd21e054..ff8ac1784880 100644
+> --- a/drivers/nfc/st-nci/se.c
+> +++ b/drivers/nfc/st-nci/se.c
+> @@ -119,10 +119,11 @@ static u8 st_nci_se_get_bwi(struct nci_dev *ndev)
+>  	/* Bits 8 to 5 of the first TB for T=3D1 encode BWI from zero to nine *=
+/
+>  	for (i =3D 1; i < ST_NCI_ESE_MAX_LENGTH; i++) {
+>  		td =3D ST_NCI_ATR_GET_Y_FROM_TD(info->se_info.atr[i]);
+> -		if (ST_NCI_ATR_TA_PRESENT(td))
+> +		if (ST_NCI_ATR_TA_PRESENT(td) && i < ST_NCI_ESE_MAX_LENGTH - 1)
+>  			i++;
+>  		if (ST_NCI_ATR_TB_PRESENT(td)) {
+> -			i++;
+> +			if (i < ST_NCI_ESE_MAX_LENGTH - 1)
+> +				i++;
+>  			return info->se_info.atr[i] >> 4;
+>  		}
+>  	}
 
-I disagree.  pseudo-random has *always* menat "predictable".  And the
-'p' in prandom was originally "pseudo-random".  In userspace,
-random(3) is also pseudo-random, and is ***utterly*** predictable.  So
-the original use of prandom() was a bit more of an explicit nod to the
-fact that prandom is something which is inherently predictable.
+Rather than adding 2 checks you could do this all with one check.
+Basically you would just need to replace:
+  if (ST_NCI_ATR_TB_PRESENT(td)) {
+	i++;
 
-So I don't think it's needed to rename it, whether it's to
-"predictable_rng_prandom_u32", or "no_you_idiot_dont_you_dare_use_it_for_cryptographi_purposes_prandom_u32".
+with:
+  if (ST_NCI_ATR_TB_PRESENT(td) && ++i < ST_NCI_ESE_MAX_LENGTH)
 
-I think we need to assume a certain base level of competence,
-especially for someone who is messing with security psensitive kernel
-code.  If a developer doesn't know that a prng is predictable, that's
-probably the *least* of the sort of mistakes that they might make.
-
-					- Ted
+Basically it is fine to increment "i" as long as it isn't being used as
+an index so just restricting the last access so that we don't
+dereference using it as an index should be enough.
