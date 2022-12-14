@@ -2,79 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4550A64C093
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 00:26:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98AFB64C105
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 01:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236854AbiLMX0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 18:26:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
+        id S237034AbiLNAGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 19:06:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236710AbiLMX0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 18:26:23 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929AC3AB;
-        Tue, 13 Dec 2022 15:26:21 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id vv4so40609700ejc.2;
-        Tue, 13 Dec 2022 15:26:21 -0800 (PST)
+        with ESMTP id S236930AbiLNAGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 19:06:04 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFED6435
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 16:06:02 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id t2so1636529ply.2
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 16:06:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z/g+Ig7lfz+xoI4q2LvUM5NumrpWvSu3qmF3Z1DnS5E=;
-        b=EQZ8ONzSp8gZGowO7GfAJ6lNU0a0532F29wnlJYsI1BDVYkhcX9KAGMe9pJ84t+Lkm
-         v0AHiF+Hj5+/MbYZUda+UiCDWOcSlfb93xycvpXORL6BgRtiDLt3vKVFiYEfmxTWrJ9z
-         tKJnkiazyUZ1bSzhnOMmYZa3SmP7Jf0y5CpGVbCXbXbZIFbUc8GYspOeTFsLhtxTH+g+
-         J536vchBcaBzNnDu/ZwdPAWHaNaoeuVIolLZyPAh1iMhYXu5k3dsXvb3yxSNz9s8BeX3
-         yZsHkVIMwdIr0XMY/03Xq0UQY00pnj3cQ4anROZvmwxA1ULpBlRDAmwBH8lbnvuK5Mnv
-         HZeQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7tN+vkSjs6Conojnx4M6Jd7owYFuYTZyTTfSRMsDERw=;
+        b=d8Wvj4DSAr0GpxTqJV9JHkETA9DtBqNZJUcdOSKJTqLkuc9MG/WI+epOgcaWAT5nL+
+         VG8oMvOJVj3jX+RCP6OttJ09mxTFNJrtybI3mP25Y2Nw6vB0rLVRhXY/gtkPLx/CTm6S
+         EzS9hFLPntu1Gz10QJpQCqZitmNth1wHVtPMK0OaGrF59IYatI+9kWuz9c9X2Rw1BCu6
+         LPV3x/4bFXQYFceOXY7BA37dAgqROTN5+gwY6DsEaCUToXcOtnzk9QXSgEUU5Tdc7xxn
+         rrxSFvJEbAJ6H46i85+rUq9X9JLAdxjrVOAkkhNypXcAi6yH7hoWz2QLNlRk9K0ch2Px
+         LsjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Z/g+Ig7lfz+xoI4q2LvUM5NumrpWvSu3qmF3Z1DnS5E=;
-        b=z1riGXORumENaViEutbt0+L/7g5kHornjwsNL2o4VzIj2kiVYs1Ya8q8fIjr3dBIJe
-         I02B0g1mywjkylsCEsLlBDCKA7JPiJASAr4Qp8e6e5Sv7NNDdIwphpcFp0DwiFgc+ftW
-         YXTyDcp4x5HkzsyUfPhzaWth6dOe/Efh1VTU5/WMuTYn+rMGKftoBqvoYsepOJrYtKrd
-         DfTaG+jfhlYTmPrZep/xX80dTS/+HV7FmEQW/sBCuDJZqIIIZONv9bbEqbfjLHwX6EqW
-         F7qpczFhFUMw+0i57elzXu22mAH1zG/AcQN7rykbQg+wj6V7O6+lTzVvBSb8fo02FxXl
-         6OnQ==
-X-Gm-Message-State: ANoB5pmEzMgZYu7hU61xMZibWRKQ5FCUFdB2ODk09kuYUkkg+kl0XFaC
-        pRsAQLy3e303yfQgCDRlX7+39I8ZM1oK5bLlKeOsWB5y
-X-Google-Smtp-Source: AA0mqf5i4rg3nNCYUVrmzTMtCyws1Lql1cRUSTORAdVeofEnVRNUpUk0V3G/SnW1D0q+kSgGmdLCifWmLjEv1vu0GHc=
-X-Received: by 2002:a17:906:180e:b0:7a2:6d38:1085 with SMTP id
- v14-20020a170906180e00b007a26d381085mr64610910eje.114.1670973979885; Tue, 13
- Dec 2022 15:26:19 -0800 (PST)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7tN+vkSjs6Conojnx4M6Jd7owYFuYTZyTTfSRMsDERw=;
+        b=iKssr7pXz9LTT3jZSLd60jdKugrlcPB+J480bpmRYxxURlgPYTvYLytguQFvZRKH0Z
+         CaWUI2Cq0hajn8dLYNipFLvkSWwQb25BicW7w+/ZJ+G3Lm1QpKfj1cIAApd8UeYdULgq
+         I8saCezul4A4VyDLNlES5sbF3H1KbUMfVDBVjxazzKz9K+XIag8OAnKo+t2pd5RaLxol
+         Q4k7F5NFhKczQVwmlKLg3K4qma77ie7a1rrpyPEydZ0lAgyNrUy6dkpPJyC8+xBQyuRp
+         wyq49LFVpp7vP7sy25ieEr+ZcttR3v/jZ09UIt108ogPe/1nA44qLzhJ/Ny1mDfgGrrE
+         o/sw==
+X-Gm-Message-State: ANoB5pnsFc5wRvaNFMXepN90aYTqJUGV66TRseofaWAFI9MkU0k9MKG3
+        Scg7sQg3apxc4gPBVL5n0Qy8m/OX6A4=
+X-Google-Smtp-Source: AA0mqf5aZbeZNpfmv3j082yGSMJ6gI1HypSonM07vXVs+j9oOfAreawuA9ZG632LHxgwNSNRAY/O1w==
+X-Received: by 2002:a05:6a20:ce4d:b0:9d:efd3:66ca with SMTP id id13-20020a056a20ce4d00b0009defd366camr25551133pzb.17.1670976360744;
+        Tue, 13 Dec 2022 16:06:00 -0800 (PST)
+Received: from tucXMD6R.vmware.com.com ([76.146.104.40])
+        by smtp.gmail.com with ESMTPSA id r19-20020a63d913000000b00478e7f87f3bsm7193178pgg.67.2022.12.13.16.05.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 13 Dec 2022 16:06:00 -0800 (PST)
+From:   William Tu <u9012063@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     tuc@vmware.com, gyang@vmware.com, doshir@vmware.com
+Subject: [RFC PATCH v5] vmxnet3: Add XDP support.
+Date:   Tue, 13 Dec 2022 16:05:55 -0800
+Message-Id: <20221214000555.22785-1-u9012063@gmail.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-References: <20221213232441.652313-1-toke@redhat.com> <20221213232441.652313-2-toke@redhat.com>
-In-Reply-To: <20221213232441.652313-2-toke@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 13 Dec 2022 15:26:07 -0800
-Message-ID: <CAEf4BzaHeT5+JQaJdF70THve7e7UxYoL58iVWKCGG6XmQCbxYA@mail.gmail.com>
-Subject: Re: [PATCH bpf v3 2/2] selftests/bpf: Add a test for using a cpumap
- from an freplace-to-XDP program
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,213 +67,940 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 13, 2022 at 3:24 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> This adds a simple test for inserting an XDP program into a cpumap that i=
-s
-> "owned" by an XDP program that was loaded as PROG_TYPE_EXT (as libxdp
-> does). Prior to the kernel fix this would fail because the map type
-> ownership would be set to PROG_TYPE_EXT instead of being resolved to
-> PROG_TYPE_XDP.
->
-> v3:
-> - Update comment to better explain the cause
-> - Add Yonghong's ACK
->
-> Acked-by: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIRECT.
 
-what a race, I just replied a few minutes ago on your v2. Let's use
-modern BPF skeleton approach instead of adding legacy stuff to
-testing_helpers
+Background:
+The vmxnet3 rx consists of three rings: ring0, ring1, and dataring.
+For r0 and r1, buffers at r0 are allocated using alloc_skb APIs and dma
+mapped to the ring's descriptor. If LRO is enabled and packet size larger
+than 3K, VMXNET3_MAX_SKB_BUF_SIZE, then r1 is used to mapped the rest of
+the buffer larger than VMXNET3_MAX_SKB_BUF_SIZE. Each buffer in r1 is
+allocated using alloc_page. So for LRO packets, the payload will be in one
+buffer from r0 and multiple from r1, for non-LRO packets, only one
+descriptor in r0 is used for packet size less than 3k.
 
->  .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 57 +++++++++++++++++++
->  .../selftests/bpf/progs/freplace_progmap.c    | 24 ++++++++
->  tools/testing/selftests/bpf/testing_helpers.c | 24 +++++++-
->  tools/testing/selftests/bpf/testing_helpers.h |  2 +
->  4 files changed, 105 insertions(+), 2 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/freplace_progmap.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/too=
-ls/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-> index d1e32e792536..fa8e129d1a71 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-> @@ -500,6 +500,61 @@ static void test_fentry_to_cgroup_bpf(void)
->         bind4_prog__destroy(skel);
->  }
->
-> +static void test_func_replace_progmap(void)
-> +{
-> +       struct bpf_cpumap_val value =3D { .qsize =3D 1 };
-> +       struct bpf_object *obj, *tgt_obj =3D NULL;
-> +       struct bpf_program *drop, *redirect;
-> +       struct bpf_map *cpumap;
-> +       int err, tgt_fd;
-> +       __u32 key =3D 0;
-> +
-> +       err =3D bpf_prog_test_open("freplace_progmap.bpf.o", BPF_PROG_TYP=
-E_UNSPEC, &obj);
-> +       if (!ASSERT_OK(err, "prog_open"))
-> +               return;
-> +
-> +       err =3D bpf_prog_test_load("xdp_dummy.bpf.o", BPF_PROG_TYPE_UNSPE=
-C, &tgt_obj, &tgt_fd);
-> +       if (!ASSERT_OK(err, "tgt_prog_load"))
-> +               goto out;
-> +
-> +       drop =3D bpf_object__find_program_by_name(obj, "xdp_drop_prog");
-> +       redirect =3D bpf_object__find_program_by_name(obj, "xdp_cpumap_pr=
-og");
-> +       cpumap =3D bpf_object__find_map_by_name(obj, "cpu_map");
-> +
-> +       if (!ASSERT_OK_PTR(drop, "drop") || !ASSERT_OK_PTR(redirect, "red=
-irect") ||
-> +           !ASSERT_OK_PTR(cpumap, "cpumap"))
-> +               goto out;
-> +
-> +       /* Change the 'redirect' program type to be a PROG_TYPE_EXT
-> +        * with an XDP target
-> +        */
-> +       bpf_program__set_type(redirect, BPF_PROG_TYPE_EXT);
-> +       bpf_program__set_expected_attach_type(redirect, 0);
-> +       err =3D bpf_program__set_attach_target(redirect, tgt_fd, "xdp_dum=
-my_prog");
-> +       if (!ASSERT_OK(err, "set_attach_target"))
-> +               goto out;
-> +
-> +       err =3D bpf_object__load(obj);
-> +       if (!ASSERT_OK(err, "obj_load"))
-> +               goto out;
-> +
-> +       /* Prior to fixing the kernel, loading the PROG_TYPE_EXT 'redirec=
-t'
-> +        * program above will cause the map owner type of 'cpumap' to be =
-set to
-> +        * PROG_TYPE_EXT. This in turn will cause the bpf_map_update_elem=
-()
-> +        * below to fail, because the program we are inserting into the m=
-ap is
-> +        * of PROG_TYPE_XDP. After fixing the kernel, the initial ownersh=
-ip will
-> +        * be correctly resolved to the *target* of the PROG_TYPE_EXT pro=
-gram
-> +        * (i.e., PROG_TYPE_XDP) and the map update will succeed.
-> +        */
-> +       value.bpf_prog.fd =3D bpf_program__fd(drop);
-> +       err =3D bpf_map_update_elem(bpf_map__fd(cpumap), &key, &value, 0)=
-;
-> +       ASSERT_OK(err, "map_update");
-> +
-> +out:
-> +       bpf_object__close(tgt_obj);
-> +       bpf_object__close(obj);
-> +}
-> +
->  /* NOTE: affect other tests, must run in serial mode */
->  void serial_test_fexit_bpf2bpf(void)
->  {
-> @@ -525,4 +580,6 @@ void serial_test_fexit_bpf2bpf(void)
->                 test_func_replace_global_func();
->         if (test__start_subtest("fentry_to_cgroup_bpf"))
->                 test_fentry_to_cgroup_bpf();
-> +       if (test__start_subtest("func_replace_progmap"))
-> +               test_func_replace_progmap();
->  }
-> diff --git a/tools/testing/selftests/bpf/progs/freplace_progmap.c b/tools=
-/testing/selftests/bpf/progs/freplace_progmap.c
-> new file mode 100644
-> index 000000000000..68174c3d7b37
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/freplace_progmap.c
-> @@ -0,0 +1,24 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +struct {
-> +       __uint(type, BPF_MAP_TYPE_CPUMAP);
-> +       __uint(key_size, sizeof(__u32));
-> +       __uint(value_size, sizeof(struct bpf_cpumap_val));
-> +       __uint(max_entries, 1);
-> +} cpu_map SEC(".maps");
-> +
-> +SEC("xdp/cpumap")
-> +int xdp_drop_prog(struct xdp_md *ctx)
-> +{
-> +       return XDP_DROP;
-> +}
-> +
-> +SEC("xdp")
-> +int xdp_cpumap_prog(struct xdp_md *ctx)
-> +{
-> +       return bpf_redirect_map(&cpu_map, 0, XDP_PASS);
-> +}
-> +
-> +char _license[] SEC("license") =3D "GPL";
-> diff --git a/tools/testing/selftests/bpf/testing_helpers.c b/tools/testin=
-g/selftests/bpf/testing_helpers.c
-> index 9695318e8132..2050244e6f24 100644
-> --- a/tools/testing/selftests/bpf/testing_helpers.c
-> +++ b/tools/testing/selftests/bpf/testing_helpers.c
-> @@ -174,8 +174,8 @@ __u32 link_info_prog_id(const struct bpf_link *link, =
-struct bpf_link_info *info)
->
->  int extra_prog_load_log_flags =3D 0;
->
-> -int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
-> -                      struct bpf_object **pobj, int *prog_fd)
-> +int bpf_prog_test_open(const char *file, enum bpf_prog_type type,
-> +                      struct bpf_object **pobj)
->  {
->         LIBBPF_OPTS(bpf_object_open_opts, opts,
->                 .kernel_log_level =3D extra_prog_load_log_flags,
-> @@ -201,6 +201,26 @@ int bpf_prog_test_load(const char *file, enum bpf_pr=
-og_type type,
->         flags =3D bpf_program__flags(prog) | BPF_F_TEST_RND_HI32;
->         bpf_program__set_flags(prog, flags);
->
-> +       *pobj =3D obj;
-> +       return 0;
-> +err_out:
-> +       bpf_object__close(obj);
-> +       return err;
-> +}
-> +
-> +int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
-> +                      struct bpf_object **pobj, int *prog_fd)
-> +{
-> +       struct bpf_program *prog;
-> +       struct bpf_object *obj;
-> +       int err;
-> +
-> +       err =3D bpf_prog_test_open(file, type, &obj);
-> +       if (err)
-> +               return err;
-> +
-> +       prog =3D bpf_object__next_program(obj, NULL);
-> +
->         err =3D bpf_object__load(obj);
->         if (err)
->                 goto err_out;
-> diff --git a/tools/testing/selftests/bpf/testing_helpers.h b/tools/testin=
-g/selftests/bpf/testing_helpers.h
-> index 6ec00bf79cb5..977eb520d119 100644
-> --- a/tools/testing/selftests/bpf/testing_helpers.h
-> +++ b/tools/testing/selftests/bpf/testing_helpers.h
-> @@ -6,6 +6,8 @@
->
->  int parse_num_list(const char *s, bool **set, int *set_len);
->  __u32 link_info_prog_id(const struct bpf_link *link, struct bpf_link_inf=
-o *info);
-> +int bpf_prog_test_open(const char *file, enum bpf_prog_type type,
-> +                      struct bpf_object **pobj);
->  int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
->                        struct bpf_object **pobj, int *prog_fd);
->  int bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn=
- *insns,
-> --
-> 2.38.1
->
+When receiving a packet, the first descriptor will have the sop (start of
+packet) bit set, and the last descriptor will have the eop (end of packet)
+bit set. Non-LRO packets will have only one descriptor with both sop and
+eop set.
+
+Other than r0 and r1, vmxnet3 dataring is specifically designed for
+handling packets with small size, usually 128 bytes, defined in
+VMXNET3_DEF_RXDATA_DESC_SIZE, by simply copying the packet from the backend
+driver in ESXi to the ring's memory region at front-end vmxnet3 driver, in
+order to avoid memory mapping/unmapping overhead. In summary, packet size:
+    A. < 128B: use dataring
+    B. 128B - 3K: use ring0
+    C. > 3K: use ring0 and ring1
+As a result, the patch adds XDP support for packets using dataring
+and r0 (case A and B), not the large packet size when LRO is enabled.
+
+XDP Implementation:
+When user loads and XDP prog, vmxnet3 driver checks configurations, such
+as mtu, lro, and re-allocate the rx buffer size for reserving the extra
+headroom, XDP_PACKET_HEADROOM, for XDP frame. The XDP prog will then be
+associated with every rx queue of the device. Note that when using dataring
+for small packet size, vmxnet3 (front-end driver) doesn't control the
+buffer allocation, as a result the XDP frame's headroom is zero.
+
+The receive side of XDP is implemented for case A and B, by invoking the
+bpf program at vmxnet3_rq_rx_complete and handle its returned action.
+The new vmxnet3_run_xdp function handles the difference of using dataring
+or ring0, and decides the next journey of the packet afterward.
+
+For TX, vmxnet3 has split header design. Outgoing packets are parsed
+first and protocol headers (L2/L3/L4) are copied to the backend. The
+rest of the payload are dma mapped. Since XDP_TX does not parse the
+packet protocol, the entire XDP frame is using dma mapped for the
+transmission.
+
+Performance:
+Tested using two VMs inside one ESXi machine, using single core on each
+vmxnet3 device, sender using DPDK testpmd tx-mode attached to vmxnet3
+device, sending 64B or 512B packet.
+
+VM1 txgen:
+$ dpdk-testpmd -l 0-3 -n 1 -- -i --nb-cores=3 \
+--forward-mode=txonly --eth-peer=0,<mac addr of vm2>
+option: add "--txonly-multi-flow"
+option: use --txpkts=512 or 64 byte
+
+VM2 running XDP:
+$ ./samples/bpf/xdp_rxq_info -d ens160 -a <options> --skb-mode
+$ ./samples/bpf/xdp_rxq_info -d ens160 -a <options>
+options: XDP_DROP, XDP_PASS, XDP_TX
+
+To test REDIRECT to cpu 0, use
+$ ./samples/bpf/xdp_redirect_cpu -d ens160 -c 0 -e drop
+
+Single core performance comparison with skb-mode.
+64B:      skb-mode -> native-mode (with this patch)
+XDP_DROP: 960Kpps -> 2.4Mpps
+XDP_PASS: 240Kpps -> 499Kpps
+XDP_TX:   683Kpps -> 2.3Mpps
+REDIRECT: 389Kpps -> 449Kpps
+Same performance compared to v2.
+
+512B:      skb-mode -> native-mode (with this patch)
+                      v2      v3
+XDP_DROP: 640Kpps -> 914Kpps -> 1.3Mpps
+XDP_PASS: 220Kpps -> 240Kpps -> 280Kpps
+XDP_TX:   483Kpps -> 886Kpps -> 1.3Mpps
+REDIRECT: 365Kpps -> 1.2Mpps(?) -> 261Kpps
+
+Good performance improvement over v2, due to skip
+skb allocation.
+
+Limitations:
+a. LRO will be disabled when users load XDP program
+b. MTU will be checked and limit to
+   VMXNET3_MAX_SKB_BUF_SIZE(3K) - XDP_PACKET_HEADROOM(256) -
+   SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
+
+Signed-off-by: William Tu <u9012063@gmail.com>
+---
+v4 -> v5:
+- move XDP code to separate file: vmxnet3_xdp.{c, h},
+  suggested by Guolin
+- expose vmxnet3_rq_create_all and vmxnet3_adjust_rx_ring_size
+- more test using samples/bpf/{xdp1, xdp2, xdp_adjust_tail}
+- add debug print
+- rebase on commit 65e6af6cebe
+
+v3 -> v4:
+- code refactoring and improved commit message
+- make dataring and non-dataring case clear
+- in XDP_PASS, handle xdp.data and xdp.data_end change after
+  bpf program executed
+- now still working on internal testing
+- v4 applied on net-next commit 65e6af6cebef
+
+v2 -> v3:
+- code refactoring: move the XDP processing to the front
+  of the vmxnet3_rq_rx_complete, and minimize the places
+  of changes to existing code.
+- Performance improvement over BUF_SKB (512B) due to skipping
+  skb allocation when DROP and TX.
+
+v1 -> v2:
+- Avoid skb allocation for small packet size (when dataring is used)
+- Use rcu_read_lock unlock instead of READ_ONCE
+- Peroformance improvement over v1
+- Merge xdp drop, tx, pass, and redirect into 1 patch
+
+I tested the patch using below script:
+while [ true ]; do
+timeout 20 ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_DROP --skb-mode
+timeout 20 ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_DROP
+timeout 20 ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_PASS --skb-mode
+timeout 20 ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_PASS
+timeout 20 ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_TX --skb-mode
+timeout 20 ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_TX
+timeout 20 ./samples/bpf/xdp_redirect_cpu -d ens160 -c 0 -e drop
+timeout 20 ./samples/bpf/xdp_redirect_cpu -d ens160 -c 0 -e pass
+done
+---
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/vmxnet3_drv.c     |  48 ++-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  14 +
+ drivers/net/vmxnet3/vmxnet3_int.h     |  20 ++
+ drivers/net/vmxnet3/vmxnet3_xdp.c     | 454 ++++++++++++++++++++++++++
+ drivers/net/vmxnet3/vmxnet3_xdp.h     |  39 +++
+ 6 files changed, 569 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/vmxnet3/vmxnet3_xdp.c
+ create mode 100644 drivers/net/vmxnet3/vmxnet3_xdp.h
+
+diff --git a/drivers/net/vmxnet3/Makefile b/drivers/net/vmxnet3/Makefile
+index a666a88ac1ff..f82870c10205 100644
+--- a/drivers/net/vmxnet3/Makefile
++++ b/drivers/net/vmxnet3/Makefile
+@@ -32,4 +32,4 @@
+ 
+ obj-$(CONFIG_VMXNET3) += vmxnet3.o
+ 
+-vmxnet3-objs := vmxnet3_drv.o vmxnet3_ethtool.o
++vmxnet3-objs := vmxnet3_drv.o vmxnet3_ethtool.o vmxnet3_xdp.o
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index d3e7b27eb933..b55fec2ac2bf 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -28,6 +28,7 @@
+ #include <net/ip6_checksum.h>
+ 
+ #include "vmxnet3_int.h"
++#include "vmxnet3_xdp.h"
+ 
+ char vmxnet3_driver_name[] = "vmxnet3";
+ #define VMXNET3_DRIVER_DESC "VMware vmxnet3 virtual NIC driver"
+@@ -351,7 +352,6 @@ vmxnet3_unmap_pkt(u32 eop_idx, struct vmxnet3_tx_queue *tq,
+ 	BUG_ON(VMXNET3_TXDESC_GET_EOP(&(tq->tx_ring.base[eop_idx].txd)) != 1);
+ 
+ 	skb = tq->buf_info[eop_idx].skb;
+-	BUG_ON(skb == NULL);
+ 	tq->buf_info[eop_idx].skb = NULL;
+ 
+ 	VMXNET3_INC_RING_IDX_ONLY(eop_idx, tq->tx_ring.size);
+@@ -592,6 +592,9 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
+ 				rbi->skb = __netdev_alloc_skb_ip_align(adapter->netdev,
+ 								       rbi->len,
+ 								       GFP_KERNEL);
++				if (adapter->xdp_enabled)
++					skb_reserve(rbi->skb, XDP_PACKET_HEADROOM);
++
+ 				if (unlikely(rbi->skb == NULL)) {
+ 					rq->stats.rx_buf_alloc_failure++;
+ 					break;
+@@ -1404,6 +1407,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 	struct Vmxnet3_RxDesc rxCmdDesc;
+ 	struct Vmxnet3_RxCompDesc rxComp;
+ #endif
++	bool need_flush = 0;
++
+ 	vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
+ 			  &rxComp);
+ 	while (rcd->gen == rq->comp_ring.gen) {
+@@ -1444,6 +1449,19 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			goto rcd_done;
+ 		}
+ 
++		if (unlikely(rcd->sop && rcd->eop && adapter->xdp_enabled)) {
++			int act = vmxnet3_process_xdp(adapter, rq, rcd, rbi,
++						      rxd, &need_flush);
++			ctx->skb = NULL;
++			switch (act) {
++			case VMXNET3_XDP_TAKEN:
++				goto rcd_done;
++			case VMXNET3_XDP_CONTINUE:
++			default:
++				break;
++			}
++		}
++
+ 		if (rcd->sop) { /* first buf of the pkt */
+ 			bool rxDataRingUsed;
+ 			u16 len;
+@@ -1483,6 +1501,10 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 				goto rcd_done;
+ 			}
+ 
++			if (adapter->xdp_enabled && !rxDataRingUsed)
++				skb_reserve(new_skb,
++					    XDP_PACKET_HEADROOM);
++
+ 			if (rxDataRingUsed) {
+ 				size_t sz;
+ 
+@@ -1730,6 +1752,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 		vmxnet3_getRxComp(rcd,
+ 				  &rq->comp_ring.base[rq->comp_ring.next2proc].rcd, &rxComp);
+ 	}
++	if (need_flush)
++		xdp_do_flush_map();
+ 
+ 	return num_pkts;
+ }
+@@ -1776,6 +1800,7 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
+ 
+ 	rq->comp_ring.gen = VMXNET3_INIT_GEN;
+ 	rq->comp_ring.next2proc = 0;
++	rq->xdp_bpf_prog = NULL;
+ }
+ 
+ 
+@@ -1788,7 +1813,6 @@ vmxnet3_rq_cleanup_all(struct vmxnet3_adapter *adapter)
+ 		vmxnet3_rq_cleanup(&adapter->rx_queue[i], adapter);
+ }
+ 
+-
+ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
+ 			       struct vmxnet3_adapter *adapter)
+ {
+@@ -1832,6 +1856,8 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
+ 	kfree(rq->buf_info[0]);
+ 	rq->buf_info[0] = NULL;
+ 	rq->buf_info[1] = NULL;
++
++	vmxnet3_unregister_xdp_rxq(rq);
+ }
+ 
+ static void
+@@ -1893,6 +1919,10 @@ vmxnet3_rq_init(struct vmxnet3_rx_queue *rq,
+ 	}
+ 	vmxnet3_rq_alloc_rx_buf(rq, 1, rq->rx_ring[1].size - 1, adapter);
+ 
++	/* always register, even if no XDP prog used */
++	if (vmxnet3_register_xdp_rxq(rq, adapter))
++		return -EINVAL;
++
+ 	/* reset the comp ring */
+ 	rq->comp_ring.next2proc = 0;
+ 	memset(rq->comp_ring.base, 0, rq->comp_ring.size *
+@@ -1989,7 +2019,7 @@ vmxnet3_rq_create(struct vmxnet3_rx_queue *rq, struct vmxnet3_adapter *adapter)
+ }
+ 
+ 
+-static int
++int
+ vmxnet3_rq_create_all(struct vmxnet3_adapter *adapter)
+ {
+ 	int i, err = 0;
+@@ -2585,7 +2615,8 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 	if (adapter->netdev->features & NETIF_F_RXCSUM)
+ 		devRead->misc.uptFeatures |= UPT1_F_RXCSUM;
+ 
+-	if (adapter->netdev->features & NETIF_F_LRO) {
++	if (adapter->netdev->features & NETIF_F_LRO &&
++	    !adapter->xdp_enabled) {
+ 		devRead->misc.uptFeatures |= UPT1_F_LRO;
+ 		devRead->misc.maxNumRxSG = cpu_to_le16(1 + MAX_SKB_FRAGS);
+ 	}
+@@ -3026,7 +3057,7 @@ vmxnet3_free_pci_resources(struct vmxnet3_adapter *adapter)
+ }
+ 
+ 
+-static void
++void
+ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
+ {
+ 	size_t sz, i, ring0_size, ring1_size, comp_size;
+@@ -3035,7 +3066,8 @@ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
+ 		if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
+ 					    VMXNET3_MAX_ETH_HDR_SIZE) {
+ 			adapter->skb_buf_size = adapter->netdev->mtu +
+-						VMXNET3_MAX_ETH_HDR_SIZE;
++						VMXNET3_MAX_ETH_HDR_SIZE +
++						vmxnet3_xdp_headroom(adapter);
+ 			if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
+ 				adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
+ 
+@@ -3563,7 +3595,6 @@ vmxnet3_reset_work(struct work_struct *data)
+ 	clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
+ }
+ 
+-
+ static int
+ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		     const struct pci_device_id *id)
+@@ -3585,6 +3616,8 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 		.ndo_poll_controller = vmxnet3_netpoll,
+ #endif
++		.ndo_bpf = vmxnet3_xdp,
++		.ndo_xdp_xmit = vmxnet3_xdp_xmit,
+ 	};
+ 	int err;
+ 	u32 ver;
+@@ -3900,6 +3933,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		goto err_register;
+ 	}
+ 
++	adapter->xdp_enabled = false;
+ 	vmxnet3_check_link(adapter, false);
+ 	return 0;
+ 
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 18cf7c723201..6f542236b26e 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -76,6 +76,10 @@ vmxnet3_tq_driver_stats[] = {
+ 					 copy_skb_header) },
+ 	{ "  giant hdr",	offsetof(struct vmxnet3_tq_driver_stats,
+ 					 oversized_hdr) },
++	{ "  xdp xmit",		offsetof(struct vmxnet3_tq_driver_stats,
++					 xdp_xmit) },
++	{ "  xdp xmit err",	offsetof(struct vmxnet3_tq_driver_stats,
++					 xdp_xmit_err) },
+ };
+ 
+ /* per rq stats maintained by the device */
+@@ -106,6 +110,16 @@ vmxnet3_rq_driver_stats[] = {
+ 					 drop_fcs) },
+ 	{ "  rx buf alloc fail", offsetof(struct vmxnet3_rq_driver_stats,
+ 					  rx_buf_alloc_failure) },
++	{ "     xdp packets", offsetof(struct vmxnet3_rq_driver_stats,
++				       xdp_packets) },
++	{ "     xdp tx", offsetof(struct vmxnet3_rq_driver_stats,
++				  xdp_tx) },
++	{ "     xdp redirects", offsetof(struct vmxnet3_rq_driver_stats,
++					 xdp_redirects) },
++	{ "     xdp drops", offsetof(struct vmxnet3_rq_driver_stats,
++				     xdp_drops) },
++	{ "     xdp aborted", offsetof(struct vmxnet3_rq_driver_stats,
++				       xdp_aborted) },
+ };
+ 
+ /* global stats maintained by the driver */
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 3367db23aa13..5cf4033930d8 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -56,6 +56,8 @@
+ #include <linux/if_arp.h>
+ #include <linux/inetdevice.h>
+ #include <linux/log2.h>
++#include <linux/bpf.h>
++#include <linux/skbuff.h>
+ 
+ #include "vmxnet3_defs.h"
+ 
+@@ -217,6 +219,9 @@ struct vmxnet3_tq_driver_stats {
+ 	u64 linearized;         /* # of pkts linearized */
+ 	u64 copy_skb_header;    /* # of times we have to copy skb header */
+ 	u64 oversized_hdr;
++
++	u64 xdp_xmit;
++	u64 xdp_xmit_err;
+ };
+ 
+ struct vmxnet3_tx_ctx {
+@@ -285,6 +290,12 @@ struct vmxnet3_rq_driver_stats {
+ 	u64 drop_err;
+ 	u64 drop_fcs;
+ 	u64 rx_buf_alloc_failure;
++
++	u64 xdp_packets;	/* Total packets processed by XDP. */
++	u64 xdp_tx;
++	u64 xdp_redirects;
++	u64 xdp_drops;
++	u64 xdp_aborted;
+ };
+ 
+ struct vmxnet3_rx_data_ring {
+@@ -307,6 +318,8 @@ struct vmxnet3_rx_queue {
+ 	struct vmxnet3_rx_buf_info     *buf_info[2];
+ 	struct Vmxnet3_RxQueueCtrl            *shared;
+ 	struct vmxnet3_rq_driver_stats  stats;
++	struct bpf_prog __rcu *xdp_bpf_prog;
++	struct xdp_rxq_info xdp_rxq;
+ } __attribute__((__aligned__(SMP_CACHE_BYTES)));
+ 
+ #define VMXNET3_DEVICE_MAX_TX_QUEUES 32
+@@ -415,6 +428,7 @@ struct vmxnet3_adapter {
+ 	u16    tx_prod_offset;
+ 	u16    rx_prod_offset;
+ 	u16    rx_prod2_offset;
++	bool   xdp_enabled;
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
+@@ -490,6 +504,12 @@ vmxnet3_tq_destroy_all(struct vmxnet3_adapter *adapter);
+ void
+ vmxnet3_rq_destroy_all(struct vmxnet3_adapter *adapter);
+ 
++int
++vmxnet3_rq_create_all(struct vmxnet3_adapter *adapter);
++
++void
++vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter);
++
+ netdev_features_t
+ vmxnet3_fix_features(struct net_device *netdev, netdev_features_t features);
+ 
+diff --git a/drivers/net/vmxnet3/vmxnet3_xdp.c b/drivers/net/vmxnet3/vmxnet3_xdp.c
+new file mode 100644
+index 000000000000..2405b086cb18
+--- /dev/null
++++ b/drivers/net/vmxnet3/vmxnet3_xdp.c
+@@ -0,0 +1,454 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Linux driver for VMware's vmxnet3 ethernet NIC.
++ * Copyright (C) 2008-2023, VMware, Inc. All Rights Reserved.
++ * Maintained by: pv-drivers@vmware.com
++ *
++ */
++
++#include "vmxnet3_int.h"
++#include "vmxnet3_xdp.h"
++
++static void
++vmxnet3_xdp_exchange_program(struct vmxnet3_adapter *adapter,
++			     struct bpf_prog *prog)
++{
++	struct vmxnet3_rx_queue *rq;
++	int i;
++
++	for (i = 0; i < adapter->num_rx_queues; i++) {
++		rq = &adapter->rx_queue[i];
++		rcu_assign_pointer(rq->xdp_bpf_prog, prog);
++	}
++	if (prog)
++		adapter->xdp_enabled = true;
++	else
++		adapter->xdp_enabled = false;
++}
++
++static int
++vmxnet3_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf,
++		struct netlink_ext_ack *extack)
++{
++	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
++	struct bpf_prog *new_bpf_prog = bpf->prog;
++	struct bpf_prog *old_bpf_prog;
++	bool need_update;
++	bool running;
++	int err = 0;
++
++	if (new_bpf_prog && netdev->mtu > VMXNET3_XDP_MAX_MTU) {
++		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
++		return -EOPNOTSUPP;
++	}
++
++	old_bpf_prog = READ_ONCE(adapter->rx_queue[0].xdp_bpf_prog);
++	if (!new_bpf_prog && !old_bpf_prog) {
++		adapter->xdp_enabled = false;
++		return 0;
++	}
++	running = netif_running(netdev);
++	need_update = !!old_bpf_prog != !!new_bpf_prog;
++
++	if (running && need_update)
++		vmxnet3_quiesce_dev(adapter);
++
++	vmxnet3_xdp_exchange_program(adapter, new_bpf_prog);
++	if (old_bpf_prog)
++		bpf_prog_put(old_bpf_prog);
++
++	if (running && need_update) {
++		vmxnet3_reset_dev(adapter);
++		vmxnet3_rq_destroy_all(adapter);
++		vmxnet3_adjust_rx_ring_size(adapter);
++		err = vmxnet3_rq_create_all(adapter);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(extack,
++				"failed to re-create rx queues for XDP.");
++			err = -EOPNOTSUPP;
++			goto out;
++		}
++		err = vmxnet3_activate_dev(adapter);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(extack,
++				"failed to activate device for XDP.");
++			err = -EOPNOTSUPP;
++			goto out;
++		}
++		clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
++	}
++out:
++	return err;
++}
++
++/* This is the main xdp call used by kernel to set/unset eBPF program. */
++int
++vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
++{
++	switch (bpf->command) {
++	case XDP_SETUP_PROG:
++		netdev_dbg(netdev, "XDP: set program to ");
++		return vmxnet3_xdp_set(netdev, bpf, bpf->extack);
++	default:
++		return -EINVAL;
++	}
++	return 0;
++}
++
++int
++vmxnet3_xdp_headroom(struct vmxnet3_adapter *adapter)
++{
++	if (adapter->xdp_enabled)
++		return VMXNET3_XDP_ROOM;
++	else
++		return 0;
++}
++
++void
++vmxnet3_unregister_xdp_rxq(struct vmxnet3_rx_queue *rq)
++{
++	xdp_rxq_info_unreg_mem_model(&rq->xdp_rxq);
++	xdp_rxq_info_unreg(&rq->xdp_rxq);
++}
++
++int
++vmxnet3_register_xdp_rxq(struct vmxnet3_rx_queue *rq,
++			 struct vmxnet3_adapter *adapter)
++{
++	int err;
++
++	err = xdp_rxq_info_reg(&rq->xdp_rxq, adapter->netdev, rq->qid, 0);
++	if (err < 0)
++		return err;
++
++	err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq, MEM_TYPE_PAGE_SHARED,
++					 NULL);
++	if (err < 0) {
++		xdp_rxq_info_unreg(&rq->xdp_rxq);
++		return err;
++	}
++	return 0;
++}
++
++static int
++vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
++		       struct xdp_frame *xdpf,
++		       struct sk_buff *skb,
++		       struct vmxnet3_tx_queue *tq)
++{
++	struct vmxnet3_tx_buf_info *tbi = NULL;
++	union Vmxnet3_GenericDesc *gdesc;
++	struct vmxnet3_tx_ctx ctx;
++	int tx_num_deferred;
++	u32 buf_size;
++	int ret = 0;
++	u32 dw2;
++
++	if (vmxnet3_cmd_ring_desc_avail(&tq->tx_ring) == 0) {
++		tq->stats.tx_ring_full++;
++		ret = -ENOMEM;
++		goto exit;
++	}
++
++	dw2 = (tq->tx_ring.gen ^ 0x1) << VMXNET3_TXD_GEN_SHIFT;
++	dw2 |= xdpf->len;
++	ctx.sop_txd = tq->tx_ring.base + tq->tx_ring.next2fill;
++	gdesc = ctx.sop_txd;
++
++	buf_size = xdpf->len;
++	tbi = tq->buf_info + tq->tx_ring.next2fill;
++	tbi->map_type = VMXNET3_MAP_SINGLE;
++	tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
++				       xdpf->data, buf_size,
++				       DMA_TO_DEVICE);
++	if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr)) {
++		ret = -EFAULT;
++		goto exit;
++	}
++	tbi->len = buf_size;
++
++	gdesc = tq->tx_ring.base + tq->tx_ring.next2fill;
++	WARN_ON_ONCE(gdesc->txd.gen == tq->tx_ring.gen);
++
++	gdesc->txd.addr = cpu_to_le64(tbi->dma_addr);
++	gdesc->dword[2] = cpu_to_le32(dw2);
++
++	/* Setup the EOP desc */
++	gdesc->dword[3] = cpu_to_le32(VMXNET3_TXD_CQ | VMXNET3_TXD_EOP);
++
++	gdesc->txd.om = 0;
++	gdesc->txd.msscof = 0;
++	gdesc->txd.hlen = 0;
++	gdesc->txd.ti = 0;
++
++	tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
++	tq->shared->txNumDeferred += 1;
++	tx_num_deferred++;
++
++	vmxnet3_cmd_ring_adv_next2fill(&tq->tx_ring);
++
++	/* set the last buf_info for the pkt */
++	tbi->skb = skb;
++	tbi->sop_idx = ctx.sop_txd - tq->tx_ring.base;
++
++	dma_wmb();
++	gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
++						  VMXNET3_TXD_GEN);
++	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
++		tq->shared->txNumDeferred = 0;
++		VMXNET3_WRITE_BAR0_REG(adapter,
++				       VMXNET3_REG_TXPROD + tq->qid * 8,
++				       tq->tx_ring.next2fill);
++	}
++exit:
++	return ret;
++}
++
++static int
++vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
++		      struct xdp_frame *xdpf,
++		      struct sk_buff *skb)
++{
++	struct vmxnet3_tx_queue *tq;
++	struct netdev_queue *nq;
++	int err = 0, cpu;
++	int tq_number;
++
++	tq_number = adapter->num_tx_queues;
++	cpu = smp_processor_id();
++	tq = &adapter->tx_queue[cpu % tq_number];
++	if (tq->stopped)
++		return -ENETDOWN;
++
++	nq = netdev_get_tx_queue(adapter->netdev, tq->qid);
++
++	__netif_tx_lock(nq, cpu);
++	err = vmxnet3_xdp_xmit_frame(adapter, xdpf, skb, tq);
++	if (err)
++		goto exit;
++
++exit:
++	__netif_tx_unlock(nq);
++	return err;
++}
++
++int
++vmxnet3_xdp_xmit(struct net_device *dev,
++		 int n, struct xdp_frame **frames, u32 flags)
++{
++	struct vmxnet3_adapter *adapter;
++	struct vmxnet3_tx_queue *tq;
++	struct netdev_queue *nq;
++	int i, err, cpu;
++	int nxmit = 0;
++	int tq_number;
++
++	adapter = netdev_priv(dev);
++
++	if (unlikely(test_bit(VMXNET3_STATE_BIT_QUIESCED, &adapter->state)))
++		return -ENETDOWN;
++	if (unlikely(test_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state)))
++		return -EINVAL;
++
++	tq_number = adapter->num_tx_queues;
++	cpu = smp_processor_id();
++	tq = &adapter->tx_queue[cpu % tq_number];
++	if (tq->stopped)
++		return -ENETDOWN;
++
++	nq = netdev_get_tx_queue(adapter->netdev, tq->qid);
++
++	__netif_tx_lock(nq, cpu);
++	for (i = 0; i < n; i++) {
++		err = vmxnet3_xdp_xmit_frame(adapter, frames[i], NULL, tq);
++		if (err) {
++			tq->stats.xdp_xmit_err++;
++			break;
++		}
++		nxmit++;
++	}
++
++	tq->stats.xdp_xmit += nxmit;
++	__netif_tx_unlock(nq);
++
++	return nxmit;
++}
++
++static int
++__vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, void *data, int data_len,
++		  int headroom, int frame_sz, bool *need_xdp_flush,
++		  struct sk_buff *skb)
++{
++	struct xdp_frame *xdpf;
++	void *buf_hard_start;
++	struct xdp_buff xdp;
++	struct page *page;
++	void *orig_data;
++	int err, delta;
++	int delta_len;
++	u32 act;
++
++	buf_hard_start = data;
++	xdp_init_buff(&xdp, frame_sz, &rq->xdp_rxq);
++	xdp_prepare_buff(&xdp, buf_hard_start, headroom, data_len, true);
++	orig_data = xdp.data;
++
++	act = bpf_prog_run_xdp(rq->xdp_bpf_prog, &xdp);
++	rq->stats.xdp_packets++;
++
++	switch (act) {
++	case XDP_DROP:
++		rq->stats.xdp_drops++;
++		break;
++	case XDP_PASS:
++		/* bpf prog might change len and data position.
++		 * dataring does not use skb so not support this.
++		 */
++		delta = xdp.data - orig_data;
++		delta_len = (xdp.data_end - xdp.data) - data_len;
++		if (skb) {
++			skb_reserve(skb, delta);
++			skb_put(skb, delta_len);
++		}
++		break;
++	case XDP_TX:
++		xdpf = xdp_convert_buff_to_frame(&xdp);
++		if (!xdpf ||
++		    vmxnet3_xdp_xmit_back(rq->adapter, xdpf, NULL)) {
++			rq->stats.xdp_drops++;
++		} else {
++			rq->stats.xdp_tx++;
++		}
++		break;
++	case XDP_ABORTED:
++		trace_xdp_exception(rq->adapter->netdev, rq->xdp_bpf_prog,
++				    act);
++		rq->stats.xdp_aborted++;
++		break;
++	case XDP_REDIRECT:
++		page = alloc_page(GFP_ATOMIC);
++		if (!page) {
++			rq->stats.rx_buf_alloc_failure++;
++			return XDP_DROP;
++		}
++		xdp_init_buff(&xdp, PAGE_SIZE, &rq->xdp_rxq);
++		xdp_prepare_buff(&xdp, page_address(page),
++				 XDP_PACKET_HEADROOM,
++				 data_len, true);
++		memcpy(xdp.data, data, data_len);
++		err = xdp_do_redirect(rq->adapter->netdev, &xdp,
++				      rq->xdp_bpf_prog);
++		if (!err) {
++			rq->stats.xdp_redirects++;
++		} else {
++			__free_page(page);
++			rq->stats.xdp_drops++;
++		}
++		*need_xdp_flush = true;
++		break;
++	default:
++		bpf_warn_invalid_xdp_action(rq->adapter->netdev,
++					    rq->xdp_bpf_prog, act);
++		break;
++	}
++	return act;
++}
++
++static int
++vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, struct vmxnet3_rx_buf_info *rbi,
++		struct Vmxnet3_RxCompDesc *rcd, bool *need_flush,
++		bool rxDataRingUsed)
++{
++	struct vmxnet3_adapter *adapter;
++	struct ethhdr *ehdr;
++	int act = XDP_PASS;
++	void *data;
++	int sz;
++
++	adapter = rq->adapter;
++	if (rxDataRingUsed) {
++		sz = rcd->rxdIdx * rq->data_ring.desc_size;
++		data = &rq->data_ring.base[sz];
++		ehdr = data;
++		netdev_dbg(adapter->netdev,
++			   "XDP: rxDataRing packet size %d, eth proto 0x%x\n",
++			   rcd->len, ntohs(ehdr->h_proto));
++		act = __vmxnet3_run_xdp(rq, data, rcd->len, 0,
++					rq->data_ring.desc_size, need_flush,
++					NULL);
++	} else {
++		dma_unmap_single(&adapter->pdev->dev,
++				 rbi->dma_addr,
++				 rbi->len,
++				 DMA_FROM_DEVICE);
++		ehdr = (struct ethhdr *)rbi->skb->data;
++		netdev_dbg(adapter->netdev,
++			   "XDP: packet size %d, eth proto 0x%x\n",
++			   rcd->len, ntohs(ehdr->h_proto));
++		act = __vmxnet3_run_xdp(rq,
++					rbi->skb->data - XDP_PACKET_HEADROOM,
++					rcd->len, XDP_PACKET_HEADROOM,
++					rbi->len, need_flush, rbi->skb);
++	}
++	return act;
++}
++
++int
++vmxnet3_process_xdp(struct vmxnet3_adapter *adapter,
++		    struct vmxnet3_rx_queue *rq,
++		    struct Vmxnet3_RxCompDesc *rcd,
++		    struct vmxnet3_rx_buf_info *rbi,
++		    struct Vmxnet3_RxDesc *rxd,
++		    bool *need_flush)
++{
++	struct bpf_prog *xdp_prog;
++	dma_addr_t new_dma_addr;
++	struct sk_buff *new_skb;
++	bool rxDataRingUsed;
++	int ret, act;
++
++	ret = VMXNET3_XDP_CONTINUE;
++	if (unlikely(rcd->len == 0))
++		return VMXNET3_XDP_TAKEN;
++
++	rxDataRingUsed = VMXNET3_RX_DATA_RING(adapter, rcd->rqID);
++	rcu_read_lock();
++	xdp_prog = rcu_dereference(rq->xdp_bpf_prog);
++	if (!xdp_prog) {
++		rcu_read_unlock();
++		return VMXNET3_XDP_CONTINUE;
++	}
++	act = vmxnet3_run_xdp(rq, rbi, rcd, need_flush, rxDataRingUsed);
++	rcu_read_unlock();
++
++	switch (act) {
++	case XDP_PASS:
++		ret = VMXNET3_XDP_CONTINUE;
++		break;
++	case XDP_DROP:
++	case XDP_TX:
++	case XDP_REDIRECT:
++	case XDP_ABORTED:
++	default:
++		/* Reuse and remap the existing buffer. */
++		ret = VMXNET3_XDP_TAKEN;
++		if (rxDataRingUsed)
++			return ret;
++
++		new_skb = rbi->skb;
++		new_dma_addr =
++			dma_map_single(&adapter->pdev->dev,
++				       new_skb->data, rbi->len,
++				       DMA_FROM_DEVICE);
++		if (dma_mapping_error(&adapter->pdev->dev,
++				      new_dma_addr)) {
++			dev_kfree_skb(new_skb);
++			rq->stats.drop_total++;
++			return ret;
++		}
++		rbi->dma_addr = new_dma_addr;
++		rxd->addr = cpu_to_le64(rbi->dma_addr);
++		rxd->len = rbi->len;
++	}
++	return ret;
++}
+diff --git a/drivers/net/vmxnet3/vmxnet3_xdp.h b/drivers/net/vmxnet3/vmxnet3_xdp.h
+new file mode 100644
+index 000000000000..6a3c662a4464
+--- /dev/null
++++ b/drivers/net/vmxnet3/vmxnet3_xdp.h
+@@ -0,0 +1,39 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later
++ *
++ * Linux driver for VMware's vmxnet3 ethernet NIC.
++ * Copyright (C) 2008-2023, VMware, Inc. All Rights Reserved.
++ * Maintained by: pv-drivers@vmware.com
++ *
++ */
++
++#ifndef _VMXNET3_XDP_H
++#define _VMXNET3_XDP_H
++
++#include <linux/filter.h>
++#include <linux/bpf_trace.h>
++#include <linux/netlink.h>
++#include <net/xdp.h>
++
++#include "vmxnet3_int.h"
++
++#define VMXNET3_XDP_ROOM (SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) + \
++				XDP_PACKET_HEADROOM)
++#define VMXNET3_XDP_MAX_MTU (VMXNET3_MAX_SKB_BUF_SIZE - VMXNET3_XDP_ROOM)
++
++#define VMXNET3_XDP_CONTINUE 0	/* Pass to the stack, ex: XDP_PASS. */
++#define VMXNET3_XDP_TAKEN 1	/* Skip the stack, ex: XDP_DROP/TX/REDIRECT */
++
++int vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf);
++void vmxnet3_unregister_xdp_rxq(struct vmxnet3_rx_queue *rq);
++int vmxnet3_register_xdp_rxq(struct vmxnet3_rx_queue *rq,
++			     struct vmxnet3_adapter *adapter);
++int vmxnet3_xdp_headroom(struct vmxnet3_adapter *adapter);
++int vmxnet3_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
++		     u32 flags);
++int vmxnet3_process_xdp(struct vmxnet3_adapter *adapter,
++			struct vmxnet3_rx_queue *rq,
++			struct Vmxnet3_RxCompDesc *rcd,
++			struct vmxnet3_rx_buf_info *rbi,
++			struct Vmxnet3_RxDesc *rxd,
++			bool *need_flush);
++#endif
+-- 
+2.25.1
+
