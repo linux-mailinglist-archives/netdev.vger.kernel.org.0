@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 094AE64C3F2
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF41A64C3F5
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:44:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237354AbiLNGo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 01:44:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
+        id S237412AbiLNGoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 01:44:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237368AbiLNGo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:44:26 -0500
+        with ESMTP id S237402AbiLNGos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:44:48 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F129313FA1
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6238C27DEB
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:44:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671000219;
+        s=mimecast20190719; t=1671000243;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=06F13PV1Q+XbE2r7Hpn9vfYTLhRt3eqVckyiLWxuKf0=;
-        b=ioebwZSsLFa4qI7FbjiLIHJg2+k+wVnFBqMdTCxv/kL7SbP7Awodu9DMjVYQDNoIEBl1AK
-        1sYUvkHvfcSQdF3bI7W6sXghO+GZFdwFKcTDebIztd7NsZdmW3cvzr0+/at5lNVWCEbUKz
-        8iSEF+vpDdXkyFu65JesIxc1c9Y1wSU=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=MrVzbbrD+y+R7tWRL3i/JdzVjl4h3aR2QnTpc+gVZ3I=;
+        b=FDLZGGVxwViyHOhi+xkpxLcCQxy1AB+pt5OVJV0XNUjivGvyBBuUq+9qtLM2FyEto6QUe4
+        MXcr2ezZU4jVt/xTH3GUkru5PkVljtIC4U3oXdgw15KyAyGt1is6bJCydBBnvAwdP4wv4l
+        ZIfgp5vwfyEJBizzdBCWKVgzPgP44qk=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-519-1e8XMEzkOJ2kF6mniRqvEQ-1; Wed, 14 Dec 2022 01:43:38 -0500
-X-MC-Unique: 1e8XMEzkOJ2kF6mniRqvEQ-1
-Received: by mail-oo1-f70.google.com with SMTP id f11-20020a4a920b000000b004a09a9f7095so6085392ooh.10
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:38 -0800 (PST)
+ us-mta-455-i0SOWahGPXKtGKMxmLIkpA-1; Wed, 14 Dec 2022 01:43:54 -0500
+X-MC-Unique: i0SOWahGPXKtGKMxmLIkpA-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-1445373be54so4910143fac.7
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:43:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=06F13PV1Q+XbE2r7Hpn9vfYTLhRt3eqVckyiLWxuKf0=;
-        b=CkSaQ+C2syMqq4T1097un55Q1tRV0VLjBbpu00yStK8a6h1ZjYJD+eVLO3H2VYZUj5
-         Fsgg4zw3bsgQZpk7ZA//FZoN+uhRD44R3u9n2/TEFx5EG/EdbFT/BDfimWLjMtlhFu2+
-         0kVRwJ6gu16JeqFI6LFotfj+K/IsJly3oTvBwwijU9JHReCAMTAlYfpUXjZaJCD3OaIi
-         qPn0/l1oU7ZKaI8lSA2hQu0WwgSAADD0dasp9KMTGp1BOv6qPlHoDzKV+5hOdSfEDLtn
-         jliw9p0OKA4KGYDgDH1FISwjCRrSS5anaVzquTrd5xWz2DV6gFmYN9qnZKtvFDtywaqw
-         K9zA==
-X-Gm-Message-State: AFqh2kr6IsbwS8Pyi0eBR+iybRLnpKegnPtqbHd7aivtu5MHBh0ePo3/
-        pioeqbi0j5Sj6o+kuOU2faEpsznKX3yfDSME5t5jndmCZU0soGFWReYXu5qsMkpVmQh2vE+Cy63
-        ot+ptAzDblCaqSBOqYasNep0kOHfnmXBw
-X-Received: by 2002:a05:6870:41c7:b0:144:a97b:1ae2 with SMTP id z7-20020a05687041c700b00144a97b1ae2mr107555oac.35.1671000217792;
-        Tue, 13 Dec 2022 22:43:37 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXv2vx3PItL1UAKiWzao7A90W2aYUgSozsuN2pc57Lnlp6tdYbaZUhK97+VFCCqDi1K8qx+ZEzOvTne9/uG8Dp8=
-X-Received: by 2002:a05:6870:41c7:b0:144:a97b:1ae2 with SMTP id
- z7-20020a05687041c700b00144a97b1ae2mr107552oac.35.1671000217405; Tue, 13 Dec
- 2022 22:43:37 -0800 (PST)
+        bh=MrVzbbrD+y+R7tWRL3i/JdzVjl4h3aR2QnTpc+gVZ3I=;
+        b=gdoUWF9fPIidY91nQGIMtNWXgJeACx4gvyD65O2gDA+wtjUdUjfiEzXIxPL0dWS2HO
+         cjwvWqzR2o5LTY2md+eMITTvgV+hX0TbnSmDh/R7oNBdfWKmtEurmDHy/X8CvJHvziMd
+         lyd4I2KZjcykm0W7353/UXKvPNV/9L0gUOGLm9hAZvt/Xc4oAPkQIl9gy298fX0vRkWi
+         X+HPA4ky3Ua/87wBfJgzsxxulk66G6v5OU4QR+g8iB/6AZ2ixgjISsTobfkZtinoLay5
+         qcgR18K9yF0p/zYdVWh9rki4CQ0oQEbu5RBTnKMkrGt5918/zwrf8J/zB2TbmXgM8TXs
+         WFEg==
+X-Gm-Message-State: ANoB5pllIuHfglwS9gTeqTV19DPRdTJntktk3yJm+8XTd8/pYZsslzsX
+        RKAkwnI3ANTVhvdkDQb4SROQpTXbcCsKhRUPgLeRoRIJL9/Auapo/e0U1RbBf42QI5npz+Jqo9R
+        r+9aeBGM7qvU1eru+L+QF24oxkognOgW5
+X-Received: by 2002:a05:6808:9b0:b0:35c:303d:fe37 with SMTP id e16-20020a05680809b000b0035c303dfe37mr59948oig.35.1671000231928;
+        Tue, 13 Dec 2022 22:43:51 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4PvhhwENOlE0akn0E/YXVqpymfvL0XvHUySgUGWkidG7q/Xyt0zs4frZ2EMZ+3gLtkdXp4+M05TKuelzaJkAk=
+X-Received: by 2002:a05:6808:9b0:b0:35c:303d:fe37 with SMTP id
+ e16-20020a05680809b000b0035c303dfe37mr59940oig.35.1671000231588; Tue, 13 Dec
+ 2022 22:43:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-3-gautam.dawar@amd.com>
-In-Reply-To: <20221207145428.31544-3-gautam.dawar@amd.com>
+References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-5-gautam.dawar@amd.com>
+In-Reply-To: <20221207145428.31544-5-gautam.dawar@amd.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 14 Dec 2022 14:43:26 +0800
-Message-ID: <CACGkMEuEJ9+wkFSiwUFGUi4RuQyJe2mc4fCNTwMw=S4SsSboiQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 02/11] sfc: implement MCDI interface for vDPA operations
+Date:   Wed, 14 Dec 2022 14:43:40 +0800
+Message-ID: <CACGkMEsgxi1MsS-F_uhCoEoJg50-1nxKEi0qz0-oSQRwQDRyKA@mail.gmail.com>
+Subject: Re: [PATCH net-next 04/11] sfc: implement vDPA management device operations
 To:     Gautam Dawar <gautam.dawar@amd.com>
 Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
         eperezma@redhat.com, tanuj.kamde@amd.com, Koushik.Dutta@amd.com,
@@ -70,7 +70,7 @@ Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,117 +80,514 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Dec 7, 2022 at 10:56 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
 >
-> Implement functions to perform vDPA operations like creating and
-> removing virtqueues, getting doorbell register offset etc. using
-> the MCDI interface with FW.
+> To allow vDPA device creation and deletion, add a vDPA management
+> device per function. Currently, the vDPA devices can be created
+> only on a VF. Also, for now only network class of vDPA devices
+> are supported.
 >
 > Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 > ---
->  drivers/net/ethernet/sfc/Kconfig      |   8 +
->  drivers/net/ethernet/sfc/Makefile     |   1 +
->  drivers/net/ethernet/sfc/ef100_vdpa.h |  32 +++
->  drivers/net/ethernet/sfc/mcdi.h       |   4 +
->  drivers/net/ethernet/sfc/mcdi_vdpa.c  | 268 ++++++++++++++++++++++++++
->  drivers/net/ethernet/sfc/mcdi_vdpa.h  |  84 ++++++++
->  6 files changed, 397 insertions(+)
->  create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
->  create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
->  create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
+>  drivers/net/ethernet/sfc/Makefile         |   2 +-
+>  drivers/net/ethernet/sfc/ef10.c           |   2 +-
+>  drivers/net/ethernet/sfc/ef100_nic.c      |  24 ++-
+>  drivers/net/ethernet/sfc/ef100_nic.h      |  11 +
+>  drivers/net/ethernet/sfc/ef100_vdpa.c     | 232 ++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/ef100_vdpa.h     |  84 ++++++++
+>  drivers/net/ethernet/sfc/ef100_vdpa_ops.c |  28 +++
+>  drivers/net/ethernet/sfc/mcdi_functions.c |   9 +-
+>  drivers/net/ethernet/sfc/mcdi_functions.h |   3 +-
+>  drivers/net/ethernet/sfc/net_driver.h     |   6 +
+>  10 files changed, 394 insertions(+), 7 deletions(-)
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa_ops.c
 >
-> diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
-> index 0950e6b0508f..1fa626c87d36 100644
-> --- a/drivers/net/ethernet/sfc/Kconfig
-> +++ b/drivers/net/ethernet/sfc/Kconfig
-> @@ -63,6 +63,14 @@ config SFC_MCDI_LOGGING
->           Driver-Interface) commands and responses, allowing debugging of
->           driver/firmware interaction.  The tracing is actually enabled by
->           a sysfs file 'mcdi_logging' under the PCI device.
-> +config SFC_VDPA
-> +       bool "Solarflare EF100-family VDPA support"
-> +       depends on SFC && VDPA && SFC_SRIOV
-> +       default y
-> +       help
-> +         This enables support for the virtio data path acceleration (vDPA).
-> +         vDPA device's datapath complies with the virtio specification,
-> +         but control path is vendor specific.
->
->  source "drivers/net/ethernet/sfc/falcon/Kconfig"
->  source "drivers/net/ethernet/sfc/siena/Kconfig"
 > diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
-> index 712a48d00069..059a0944e89a 100644
+> index 84c9f0590368..a10eac91ab23 100644
 > --- a/drivers/net/ethernet/sfc/Makefile
 > +++ b/drivers/net/ethernet/sfc/Makefile
-> @@ -11,6 +11,7 @@ sfc-$(CONFIG_SFC_MTD) += mtd.o
+> @@ -11,7 +11,7 @@ sfc-$(CONFIG_SFC_MTD) += mtd.o
 >  sfc-$(CONFIG_SFC_SRIOV)        += sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \
 >                             mae.o tc.o tc_bindings.o tc_counters.o
 >
-> +sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o
+> -sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o ef100_vdpa.o
+> +sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o ef100_vdpa.o ef100_vdpa_ops.o
 >  obj-$(CONFIG_SFC)      += sfc.o
 >
 >  obj-$(CONFIG_SFC_FALCON) += falcon/
-> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> new file mode 100644
-> index 000000000000..f6564448d0c7
-> --- /dev/null
-> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> @@ -0,0 +1,32 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Driver for Xilinx network controllers and boards
-> + * Copyright (C) 2020-2022, Xilinx, Inc.
-> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published
-> + * by the Free Software Foundation, incorporated herein by reference.
-> + */
+> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+> index 7022fb2005a2..366ecd3c80b1 100644
+> --- a/drivers/net/ethernet/sfc/ef10.c
+> +++ b/drivers/net/ethernet/sfc/ef10.c
+> @@ -589,7 +589,7 @@ static int efx_ef10_probe(struct efx_nic *efx)
+>         if (rc)
+>                 goto fail4;
+>
+> -       rc = efx_get_pf_index(efx, &nic_data->pf_index);
+> +       rc = efx_get_fn_info(efx, &nic_data->pf_index, NULL);
+>         if (rc)
+>                 goto fail5;
+>
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+> index 41175eb00326..41811c519275 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.c
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
+> @@ -1160,7 +1160,7 @@ static int ef100_probe_main(struct efx_nic *efx)
+>         if (rc)
+>                 goto fail;
+>
+> -       rc = efx_get_pf_index(efx, &nic_data->pf_index);
+> +       rc = efx_get_fn_info(efx, &nic_data->pf_index, &nic_data->vf_index);
+>         if (rc)
+>                 goto fail;
+>
+> @@ -1247,13 +1247,33 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
+>
+>  int ef100_probe_vf(struct efx_nic *efx)
+>  {
+> -       return ef100_probe_main(efx);
+> +#if defined(CONFIG_SFC_VDPA)
+> +       int err;
+> +#endif
+> +       int rc;
 > +
-> +#ifndef __EF100_VDPA_H__
-> +#define __EF100_VDPA_H__
-> +
-> +#include <linux/vdpa.h>
-> +#include <uapi/linux/virtio_net.h>
-> +#include "net_driver.h"
-> +#include "ef100_nic.h"
+> +       rc = ef100_probe_main(efx);
+> +       if (rc)
+> +               return rc;
 > +
 > +#if defined(CONFIG_SFC_VDPA)
-> +
-> +enum ef100_vdpa_device_type {
-> +       EF100_VDPA_DEVICE_TYPE_NET,
-> +};
-> +
-> +enum ef100_vdpa_vq_type {
-> +       EF100_VDPA_VQ_TYPE_NET_RXQ,
-> +       EF100_VDPA_VQ_TYPE_NET_TXQ,
-> +       EF100_VDPA_VQ_NTYPES
-> +};
-> +
-> +#endif /* CONFIG_SFC_VDPA */
-> +#endif /* __EF100_VDPA_H__ */
-> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-> index 7e35fec9da35..db4ca4975ada 100644
-> --- a/drivers/net/ethernet/sfc/mcdi.h
-> +++ b/drivers/net/ethernet/sfc/mcdi.h
-> @@ -214,6 +214,10 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
->  #define _MCDI_STRUCT_DWORD(_buf, _field)                               \
->         ((_buf) + (_MCDI_CHECK_ALIGN(_field ## _OFST, 4) >> 2))
+> +       err = ef100_vdpa_register_mgmtdev(efx);
+> +       if (err)
+> +               pci_warn(efx->pci_dev,
+> +                        "vdpa_register_mgmtdev failed, err: %d\n", err);
+> +#endif
+> +       return 0;
+>  }
 >
-> +#define MCDI_SET_BYTE(_buf, _field, _value) do {                       \
-> +       BUILD_BUG_ON(MC_CMD_ ## _field ## _LEN != 1);                   \
-> +       *(u8 *)MCDI_PTR(_buf, _field) = _value;                         \
-> +       } while (0)
->  #define MCDI_STRUCT_SET_BYTE(_buf, _field, _value) do {                        \
->         BUILD_BUG_ON(_field ## _LEN != 1);                              \
->         *(u8 *)MCDI_STRUCT_PTR(_buf, _field) = _value;                  \
-> diff --git a/drivers/net/ethernet/sfc/mcdi_vdpa.c b/drivers/net/ethernet/sfc/mcdi_vdpa.c
+>  void ef100_remove(struct efx_nic *efx)
+>  {
+>         struct ef100_nic_data *nic_data = efx->nic_data;
+>
+> +#if defined(CONFIG_SFC_VDPA)
+> +       if (efx_vdpa_supported(efx))
+> +               ef100_vdpa_unregister_mgmtdev(efx);
+> +#endif
+> +
+>         efx_mcdi_detach(efx);
+>         efx_mcdi_fini(efx);
+>         if (nic_data) {
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+> index 5ed693fbe79f..730c8bb932b0 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.h
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.h
+> @@ -68,6 +68,13 @@ enum ef100_bar_config {
+>         EF100_BAR_CONFIG_VDPA,
+>  };
+>
+> +#ifdef CONFIG_SFC_VDPA
+> +enum ef100_vdpa_class {
+> +       EF100_VDPA_CLASS_NONE,
+> +       EF100_VDPA_CLASS_NET,
+> +};
+> +#endif
+> +
+>  struct ef100_nic_data {
+>         struct efx_nic *efx;
+>         struct efx_buffer mcdi_buf;
+> @@ -75,7 +82,11 @@ struct ef100_nic_data {
+>         u32 datapath_caps2;
+>         u32 datapath_caps3;
+>         unsigned int pf_index;
+> +       unsigned int vf_index;
+>         u16 warm_boot_count;
+> +#ifdef CONFIG_SFC_VDPA
+> +       enum ef100_vdpa_class vdpa_class;
+> +#endif
+>         u8 port_id[ETH_ALEN];
+>         DECLARE_BITMAP(evq_phases, EFX_MAX_CHANNELS);
+>         enum ef100_bar_config bar_config;
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
+> index 5e215cee585a..ff4bb61e598e 100644
+> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
+> @@ -11,11 +11,17 @@
+>  #include <linux/err.h>
+>  #include <linux/vdpa.h>
+>  #include <linux/virtio_net.h>
+> +#include <uapi/linux/vdpa.h>
+>  #include "ef100_vdpa.h"
+>  #include "mcdi_vdpa.h"
+>  #include "mcdi_filters.h"
+>  #include "ef100_netdev.h"
+>
+> +static struct virtio_device_id ef100_vdpa_id_table[] = {
+> +       { .device = VIRTIO_ID_NET, .vendor = PCI_VENDOR_ID_REDHAT_QUMRANET },
+> +       { 0 },
+> +};
+> +
+>  int ef100_vdpa_init(struct efx_probe_data *probe_data)
+>  {
+>         struct efx_nic *efx = &probe_data->efx;
+> @@ -42,17 +48,243 @@ int ef100_vdpa_init(struct efx_probe_data *probe_data)
+>         return rc;
+>  }
+>
+> +static void ef100_vdpa_delete(struct efx_nic *efx)
+> +{
+> +       if (efx->vdpa_nic) {
+> +               /* replace with _vdpa_unregister_device later */
+> +               put_device(&efx->vdpa_nic->vdpa_dev.dev);
+> +               efx->vdpa_nic = NULL;
+> +       }
+> +}
+> +
+>  void ef100_vdpa_fini(struct efx_probe_data *probe_data)
+>  {
+>         struct efx_nic *efx = &probe_data->efx;
+> +       struct ef100_nic_data *nic_data;
+>
+>         if (efx->state != STATE_VDPA && efx->state != STATE_DISABLED) {
+>                 pci_err(efx->pci_dev, "Invalid efx state %u", efx->state);
+>                 return;
+>         }
+>
+> +       /* Handle vdpa device deletion, if not done explicitly */
+> +       ef100_vdpa_delete(efx);
+> +       nic_data = efx->nic_data;
+> +       nic_data->vdpa_class = EF100_VDPA_CLASS_NONE;
+>         efx->state = STATE_PROBED;
+>         down_write(&efx->filter_sem);
+>         efx_mcdi_filter_table_remove(efx);
+>         up_write(&efx->filter_sem);
+>  }
+> +
+> +static int get_net_config(struct ef100_vdpa_nic *vdpa_nic)
+> +{
+> +       struct efx_nic *efx = vdpa_nic->efx;
+> +       u16 mtu;
+> +       int rc;
+> +
+> +       vdpa_nic->net_config.max_virtqueue_pairs =
+> +               cpu_to_efx_vdpa16(vdpa_nic, vdpa_nic->max_queue_pairs);
+> +
+> +       rc = efx_vdpa_get_mtu(efx, &mtu);
+> +       if (rc) {
+> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+> +                       "%s: Get MTU for vf:%u failed:%d\n", __func__,
+> +                       vdpa_nic->vf_index, rc);
+> +               return rc;
+> +       }
+> +       vdpa_nic->net_config.mtu = cpu_to_efx_vdpa16(vdpa_nic, mtu);
+> +       vdpa_nic->net_config.status = cpu_to_efx_vdpa16(vdpa_nic,
+> +                                                       VIRTIO_NET_S_LINK_UP);
+> +       return 0;
+> +}
+> +
+> +static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+> +                                               const char *dev_name,
+> +                                               enum ef100_vdpa_class dev_type,
+> +                                               const u8 *mac)
+> +{
+> +       struct ef100_nic_data *nic_data = efx->nic_data;
+> +       struct ef100_vdpa_nic *vdpa_nic;
+> +       struct device *dev;
+> +       int rc;
+> +
+> +       nic_data->vdpa_class = dev_type;
+> +       vdpa_nic = vdpa_alloc_device(struct ef100_vdpa_nic,
+> +                                    vdpa_dev, &efx->pci_dev->dev,
+> +                                    &ef100_vdpa_config_ops,
+> +                                    1, 1,
+> +                                    dev_name, false);
+> +       if (!vdpa_nic) {
+> +               pci_err(efx->pci_dev,
+> +                       "vDPA device allocation failed for vf: %u\n",
+> +                       nic_data->vf_index);
+> +               nic_data->vdpa_class = EF100_VDPA_CLASS_NONE;
+> +               return ERR_PTR(-ENOMEM);
+> +       }
+> +
+> +       mutex_init(&vdpa_nic->lock);
+> +       dev = &vdpa_nic->vdpa_dev.dev;
+> +       efx->vdpa_nic = vdpa_nic;
+> +       vdpa_nic->vdpa_dev.dma_dev = &efx->pci_dev->dev;
+> +       vdpa_nic->vdpa_dev.mdev = efx->mgmt_dev;
+> +       vdpa_nic->efx = efx;
+> +       vdpa_nic->pf_index = nic_data->pf_index;
+> +       vdpa_nic->vf_index = nic_data->vf_index;
+> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
+> +       vdpa_nic->mac_address = (u8 *)&vdpa_nic->net_config.mac;
+> +       ether_addr_copy(vdpa_nic->mac_address, mac);
+> +       vdpa_nic->mac_configured = true;
+> +
+> +       rc = get_net_config(vdpa_nic);
+> +       if (rc)
+> +               goto err_put_device;
+> +
+> +       /* _vdpa_register_device when its ready */
+> +
+> +       return vdpa_nic;
+> +
+> +err_put_device:
+> +       /* put_device invokes ef100_vdpa_free */
+> +       put_device(&vdpa_nic->vdpa_dev.dev);
+> +       return ERR_PTR(rc);
+> +}
+> +
+> +static void ef100_vdpa_net_dev_del(struct vdpa_mgmt_dev *mgmt_dev,
+> +                                  struct vdpa_device *vdev)
+> +{
+> +       struct ef100_nic_data *nic_data;
+> +       struct efx_nic *efx;
+> +       int rc;
+> +
+> +       efx = pci_get_drvdata(to_pci_dev(mgmt_dev->device));
+> +       nic_data = efx->nic_data;
+> +
+> +       rc = efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_EF100);
+> +       if (rc)
+> +               pci_err(efx->pci_dev,
+> +                       "set_bar_config EF100 failed, err: %d\n", rc);
+> +       else
+> +               pci_dbg(efx->pci_dev,
+> +                       "vdpa net device deleted, vf: %u\n",
+> +                       nic_data->vf_index);
+> +}
+> +
+> +static int ef100_vdpa_net_dev_add(struct vdpa_mgmt_dev *mgmt_dev,
+> +                                 const char *name,
+> +                                 const struct vdpa_dev_set_config *config)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic;
+> +       struct ef100_nic_data *nic_data;
+> +       struct efx_nic *efx;
+> +       int rc, err;
+> +
+> +       efx = pci_get_drvdata(to_pci_dev(mgmt_dev->device));
+> +       if (efx->vdpa_nic) {
+> +               pci_warn(efx->pci_dev,
+> +                        "vDPA device already exists on this VF\n");
+> +               return -EEXIST;
+> +       }
+> +
+> +       if (config->mask & BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MACADDR)) {
+> +               if (!is_valid_ether_addr(config->net.mac)) {
+> +                       pci_err(efx->pci_dev, "Invalid MAC address %pM\n",
+> +                               config->net.mac);
+> +                       return -EINVAL;
+> +               }
+> +       } else {
+> +               pci_err(efx->pci_dev, "MAC address parameter missing\n");
+
+Does this mean ef100 vf doesn't have a given mac address?
+
+
+
+> +               return -EIO;
+> +       }
+> +
+> +       nic_data = efx->nic_data;
+> +
+> +       rc = efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_VDPA);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev,
+> +                       "set_bar_config vDPA failed, err: %d\n", rc);
+> +               goto err_set_bar_config;
+> +       }
+> +
+> +       vdpa_nic = ef100_vdpa_create(efx, name, EF100_VDPA_CLASS_NET,
+> +                                    (const u8 *)config->net.mac);
+> +       if (IS_ERR(vdpa_nic)) {
+> +               pci_err(efx->pci_dev,
+> +                       "vDPA device creation failed, vf: %u, err: %ld\n",
+> +                       nic_data->vf_index, PTR_ERR(vdpa_nic));
+> +               rc = PTR_ERR(vdpa_nic);
+> +               goto err_set_bar_config;
+> +       } else {
+> +               pci_dbg(efx->pci_dev,
+> +                       "vdpa net device created, vf: %u\n",
+> +                       nic_data->vf_index);
+> +               pci_warn(efx->pci_dev,
+> +                        "Use QEMU versions 6.1.0 and later with vhost-vdpa\n");
+> +       }
+> +
+> +       return 0;
+> +
+> +err_set_bar_config:
+> +       err = efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_EF100);
+> +       if (err)
+> +               pci_err(efx->pci_dev,
+> +                       "set_bar_config EF100 failed, err: %d\n", err);
+> +
+> +       return rc;
+> +}
+> +
+> +static const struct vdpa_mgmtdev_ops ef100_vdpa_net_mgmtdev_ops = {
+> +       .dev_add = ef100_vdpa_net_dev_add,
+> +       .dev_del = ef100_vdpa_net_dev_del
+> +};
+> +
+> +int ef100_vdpa_register_mgmtdev(struct efx_nic *efx)
+> +{
+> +       struct vdpa_mgmt_dev *mgmt_dev;
+> +       u64 features;
+> +       int rc;
+> +
+> +       mgmt_dev = kzalloc(sizeof(*mgmt_dev), GFP_KERNEL);
+> +       if (!mgmt_dev)
+> +               return -ENOMEM;
+> +
+> +       rc = efx_vdpa_get_features(efx, EF100_VDPA_DEVICE_TYPE_NET, &features);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev, "%s: MCDI get features error:%d\n",
+> +                       __func__, rc);
+> +               goto err_get_features;
+> +       }
+> +
+> +       efx->mgmt_dev = mgmt_dev;
+> +       mgmt_dev->device = &efx->pci_dev->dev;
+> +       mgmt_dev->id_table = ef100_vdpa_id_table;
+> +       mgmt_dev->ops = &ef100_vdpa_net_mgmtdev_ops;
+> +       mgmt_dev->supported_features = features;
+> +       mgmt_dev->max_supported_vqs = EF100_VDPA_MAX_QUEUES_PAIRS * 2;
+> +       mgmt_dev->config_attr_mask = BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MACADDR);
+> +
+> +       rc = vdpa_mgmtdev_register(mgmt_dev);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev,
+> +                       "vdpa_mgmtdev_register failed, err: %d\n", rc);
+> +               goto err_mgmtdev_register;
+> +       }
+> +
+> +       return 0;
+> +
+> +err_mgmtdev_register:
+> +err_get_features:
+> +       kfree(mgmt_dev);
+> +       efx->mgmt_dev = NULL;
+> +
+> +       return rc;
+> +}
+> +
+> +void ef100_vdpa_unregister_mgmtdev(struct efx_nic *efx)
+> +{
+> +       if (efx->mgmt_dev) {
+> +               vdpa_mgmtdev_unregister(efx->mgmt_dev);
+> +               kfree(efx->mgmt_dev);
+> +               efx->mgmt_dev = NULL;
+> +       }
+> +}
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> index 6b51a05becd8..83f6d819f6a5 100644
+> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> @@ -18,6 +18,24 @@
+>
+>  #if defined(CONFIG_SFC_VDPA)
+>
+> +/* Max queue pairs currently supported */
+> +#define EF100_VDPA_MAX_QUEUES_PAIRS 1
+> +
+> +/**
+> + * enum ef100_vdpa_nic_state - possible states for a vDPA NIC
+> + *
+> + * @EF100_VDPA_STATE_INITIALIZED: State after vDPA NIC created
+> + * @EF100_VDPA_STATE_NEGOTIATED: State after feature negotiation
+> + * @EF100_VDPA_STATE_STARTED: State after driver ok
+> + * @EF100_VDPA_STATE_NSTATES: Number of VDPA states
+> + */
+> +enum ef100_vdpa_nic_state {
+> +       EF100_VDPA_STATE_INITIALIZED,
+> +       EF100_VDPA_STATE_NEGOTIATED,
+> +       EF100_VDPA_STATE_STARTED,
+> +       EF100_VDPA_STATE_NSTATES
+> +};
+> +
+>  enum ef100_vdpa_device_type {
+>         EF100_VDPA_DEVICE_TYPE_NET,
+>  };
+> @@ -28,7 +46,73 @@ enum ef100_vdpa_vq_type {
+>         EF100_VDPA_VQ_NTYPES
+>  };
+>
+> +/**
+> + *  struct ef100_vdpa_nic - vDPA NIC data structure
+> + *
+> + * @vdpa_dev: vdpa_device object which registers on the vDPA bus.
+> + * @vdpa_state: NIC state machine governed by ef100_vdpa_nic_state
+> + * @efx: pointer to the VF's efx_nic object
+> + * @lock: Managing access to vdpa config operations
+> + * @pf_index: PF index of the vDPA VF
+> + * @vf_index: VF index of the vDPA VF
+> + * @status: device status as per VIRTIO spec
+> + * @features: negotiated feature bits
+> + * @max_queue_pairs: maximum number of queue pairs supported
+> + * @net_config: virtio_net_config data
+> + * @mac_address: mac address of interface associated with this vdpa device
+> + * @mac_configured: true after MAC address is configured
+> + */
+> +struct ef100_vdpa_nic {
+> +       struct vdpa_device vdpa_dev;
+> +       enum ef100_vdpa_nic_state vdpa_state;
+> +       struct efx_nic *efx;
+> +       /* for synchronizing access to vdpa config operations */
+> +       struct mutex lock;
+> +       u32 pf_index;
+> +       u32 vf_index;
+> +       u8 status;
+> +       u64 features;
+> +       u32 max_queue_pairs;
+> +       struct virtio_net_config net_config;
+> +       u8 *mac_address;
+> +       bool mac_configured;
+> +};
+> +
+>  int ef100_vdpa_init(struct efx_probe_data *probe_data);
+>  void ef100_vdpa_fini(struct efx_probe_data *probe_data);
+> +int ef100_vdpa_register_mgmtdev(struct efx_nic *efx);
+> +void ef100_vdpa_unregister_mgmtdev(struct efx_nic *efx);
+> +
+> +static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
+> +{
+> +       return virtio_legacy_is_little_endian() ||
+> +               (vdpa_nic->features & (1ULL << VIRTIO_F_VERSION_1));
+> +}
+> +
+> +static inline u16 efx_vdpa16_to_cpu(struct ef100_vdpa_nic *vdpa_nic,
+> +                                   __virtio16 val)
+> +{
+> +       return __virtio16_to_cpu(efx_vdpa_is_little_endian(vdpa_nic), val);
+> +}
+> +
+> +static inline __virtio16 cpu_to_efx_vdpa16(struct ef100_vdpa_nic *vdpa_nic,
+> +                                          u16 val)
+> +{
+> +       return __cpu_to_virtio16(efx_vdpa_is_little_endian(vdpa_nic), val);
+> +}
+> +
+> +static inline u32 efx_vdpa32_to_cpu(struct ef100_vdpa_nic *vdpa_nic,
+> +                                   __virtio32 val)
+> +{
+> +       return __virtio32_to_cpu(efx_vdpa_is_little_endian(vdpa_nic), val);
+> +}
+> +
+> +static inline __virtio32 cpu_to_efx_vdpa32(struct ef100_vdpa_nic *vdpa_nic,
+> +                                          u32 val)
+> +{
+> +       return __cpu_to_virtio32(efx_vdpa_is_little_endian(vdpa_nic), val);
+> +}
+> +
+> +extern const struct vdpa_config_ops ef100_vdpa_config_ops;
+>  #endif /* CONFIG_SFC_VDPA */
+>  #endif /* __EF100_VDPA_H__ */
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
 > new file mode 100644
-> index 000000000000..35f822170049
+> index 000000000000..31952931c198
 > --- /dev/null
-> +++ b/drivers/net/ethernet/sfc/mcdi_vdpa.c
-> @@ -0,0 +1,268 @@
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+> @@ -0,0 +1,28 @@
 > +// SPDX-License-Identifier: GPL-2.0
 > +/* Driver for Xilinx network controllers and boards
-> + * Copyright (C) 2020-2022, Xilinx, Inc.
-> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
+> + * Copyright(C) 2020-2022 Xilinx, Inc.
+> + * Copyright(C) 2022 Advanced Micro Devices, Inc.
 > + *
 > + * This program is free software; you can redistribute it and/or modify it
 > + * under the terms of the GNU General Public License version 2 as published
@@ -199,360 +596,78 @@ On Wed, Dec 7, 2022 at 10:56 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
 > +
 > +#include <linux/vdpa.h>
 > +#include "ef100_vdpa.h"
-> +#include "efx.h"
-> +#include "nic.h"
-> +#include "mcdi_vdpa.h"
-> +#include "mcdi_pcol.h"
 > +
-> +/* The value of target_vf in virtio MC commands like
-> + * virtqueue create, delete and get doorbell offset should
-> + * contain the VF index when the calling function is a PF
-> + * and VF_NULL (0xFFFF) otherwise. As the vDPA driver invokes
-> + * MC commands in context of the VF, it uses VF_NULL.
-> + */
-> +#define MC_CMD_VIRTIO_TARGET_VF_NULL 0xFFFF
-> +
-> +struct efx_vring_ctx *efx_vdpa_vring_init(struct efx_nic *efx,  u32 vi,
-> +                                         enum ef100_vdpa_vq_type vring_type)
+> +static struct ef100_vdpa_nic *get_vdpa_nic(struct vdpa_device *vdev)
 > +{
-> +       struct efx_vring_ctx *vring_ctx;
-> +       u32 queue_cmd;
-> +
-> +       vring_ctx = kzalloc(sizeof(*vring_ctx), GFP_KERNEL);
-> +       if (!vring_ctx)
-> +               return ERR_PTR(-ENOMEM);
-> +
-> +       switch (vring_type) {
-> +       case EF100_VDPA_VQ_TYPE_NET_RXQ:
-> +               queue_cmd = MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ;
-> +               break;
-> +       case EF100_VDPA_VQ_TYPE_NET_TXQ:
-> +               queue_cmd = MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ;
-> +               break;
-> +       default:
-> +               pci_err(efx->pci_dev,
-> +                       "%s: Invalid Queue type %u\n", __func__, vring_type);
-> +               kfree(vring_ctx);
-> +               return ERR_PTR(-ENOMEM);
-> +       }
-> +
-> +       vring_ctx->efx = efx;
-> +       vring_ctx->vf_index = MC_CMD_VIRTIO_TARGET_VF_NULL;
-> +       vring_ctx->vi_index = vi;
-> +       vring_ctx->mcdi_vring_type = queue_cmd;
-> +       return vring_ctx;
+> +       return container_of(vdev, struct ef100_vdpa_nic, vdpa_dev);
 > +}
 > +
-> +void efx_vdpa_vring_fini(struct efx_vring_ctx *vring_ctx)
+> +static void ef100_vdpa_free(struct vdpa_device *vdev)
 > +{
-> +       kfree(vring_ctx);
+> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+> +
+> +       mutex_destroy(&vdpa_nic->lock);
 > +}
 > +
-> +int efx_vdpa_get_features(struct efx_nic *efx,
-> +                         enum ef100_vdpa_device_type type,
-> +                         u64 *features)
-> +{
-> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN);
-> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_GET_FEATURES_IN_LEN);
-> +       u32 high_val, low_val;
-> +       ssize_t outlen;
-> +       u32 dev_type;
-> +       int rc;
-> +
-> +       if (!efx) {
-> +               pci_err(efx->pci_dev, "%s: Invalid NIC pointer\n", __func__);
-> +               return -EINVAL;
-> +       }
-> +       switch (type) {
-> +       case EF100_VDPA_DEVICE_TYPE_NET:
-> +               dev_type = MC_CMD_VIRTIO_GET_FEATURES_IN_NET;
-> +               break;
-> +       default:
-> +               pci_err(efx->pci_dev,
-> +                       "%s: Device type %d not supported\n", __func__, type);
-> +               return -EINVAL;
-> +       }
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_GET_FEATURES_IN_DEVICE_ID, dev_type);
-> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_GET_FEATURES, inbuf, sizeof(inbuf),
-> +                         outbuf, sizeof(outbuf), &outlen);
-> +       if (rc)
-> +               return rc;
-> +       if (outlen < MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN)
-> +               return -EIO;
-> +       low_val = MCDI_DWORD(outbuf, VIRTIO_GET_FEATURES_OUT_FEATURES_LO);
-> +       high_val = MCDI_DWORD(outbuf, VIRTIO_GET_FEATURES_OUT_FEATURES_HI);
-> +       *features = ((u64)high_val << 32) | low_val;
-> +       return 0;
-> +}
-> +
-> +int efx_vdpa_verify_features(struct efx_nic *efx,
-> +                            enum ef100_vdpa_device_type type, u64 features)
-> +{
-> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_TEST_FEATURES_IN_LEN);
-> +       u32 dev_type;
-> +       int rc;
-> +
-> +       BUILD_BUG_ON(MC_CMD_VIRTIO_TEST_FEATURES_OUT_LEN != 0);
-> +       switch (type) {
-> +       case EF100_VDPA_DEVICE_TYPE_NET:
-> +               dev_type = MC_CMD_VIRTIO_GET_FEATURES_IN_NET;
-> +               break;
-> +       default:
-> +               pci_err(efx->pci_dev,
-> +                       "%s: Device type %d not supported\n", __func__, type);
-> +               return -EINVAL;
-> +       }
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_DEVICE_ID, dev_type);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_FEATURES_LO, features);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_FEATURES_HI,
-> +                      features >> 32);
-> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_TEST_FEATURES, inbuf,
-> +                         sizeof(inbuf), NULL, 0, NULL);
-> +       return rc;
-> +}
-> +
-> +int efx_vdpa_vring_create(struct efx_vring_ctx *vring_ctx,
-> +                         struct efx_vring_cfg *vring_cfg,
-> +                         struct efx_vring_dyn_cfg *vring_dyn_cfg)
-> +{
-> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_INIT_QUEUE_REQ_LEN);
-> +       struct efx_nic *efx = vring_ctx->efx;
-> +       int rc;
-> +
-> +       BUILD_BUG_ON(MC_CMD_VIRTIO_INIT_QUEUE_RESP_LEN != 0);
-> +
-> +       MCDI_SET_BYTE(inbuf, VIRTIO_INIT_QUEUE_REQ_QUEUE_TYPE,
-> +                     vring_ctx->mcdi_vring_type);
-> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_TARGET_VF,
-> +                     vring_ctx->vf_index);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INSTANCE,
-> +                      vring_ctx->vi_index);
-> +
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_SIZE, vring_cfg->size);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_LO,
-> +                      vring_cfg->desc);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_HI,
-> +                      vring_cfg->desc >> 32);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_LO,
-> +                      vring_cfg->avail);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_HI,
-> +                      vring_cfg->avail >> 32);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_LO,
-> +                      vring_cfg->used);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_HI,
-> +                      vring_cfg->used >> 32);
-> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_MSIX_VECTOR,
-> +                     vring_cfg->msix_vector);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_FEATURES_LO,
-> +                      vring_cfg->features);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_FEATURES_HI,
-> +                      vring_cfg->features >> 32);
-> +
-> +       if (vring_dyn_cfg) {
-> +               MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INITIAL_PIDX,
-> +                              vring_dyn_cfg->avail_idx);
-> +               MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INITIAL_CIDX,
-> +                              vring_dyn_cfg->used_idx);
-> +       }
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_MPORT_SELECTOR,
-> +                      MAE_MPORT_SELECTOR_ASSIGNED);
-> +
-> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_INIT_QUEUE, inbuf, sizeof(inbuf),
-> +                         NULL, 0, NULL);
-
-It looks to me the mcdi_buffer belongs to the VF (allocated by the
-calling of ef100_probe_vf()), I wonder how it is isolated from the DMA
-that is initiated by userspace(guest)?
-
-Thanks
-
-
-> +       return rc;
-> +}
-> +
-> +int efx_vdpa_vring_destroy(struct efx_vring_ctx *vring_ctx,
-> +                          struct efx_vring_dyn_cfg *vring_dyn_cfg)
-> +{
-> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN);
-> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_FINI_QUEUE_REQ_LEN);
-> +       struct efx_nic *efx = vring_ctx->efx;
-> +       ssize_t outlen;
-> +       int rc;
-> +
-> +       MCDI_SET_BYTE(inbuf, VIRTIO_FINI_QUEUE_REQ_QUEUE_TYPE,
-> +                     vring_ctx->mcdi_vring_type);
-> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_TARGET_VF,
-> +                     vring_ctx->vf_index);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INSTANCE,
-> +                      vring_ctx->vi_index);
-> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_FINI_QUEUE, inbuf, sizeof(inbuf),
-> +                         outbuf, sizeof(outbuf), &outlen);
-> +
-> +       if (rc)
-> +               return rc;
-> +
-> +       if (outlen < MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN)
-> +               return -EIO;
-> +
-> +       if (vring_dyn_cfg) {
-> +               vring_dyn_cfg->avail_idx = MCDI_DWORD(outbuf,
-> +                                                     VIRTIO_FINI_QUEUE_RESP_FINAL_PIDX);
-> +               vring_dyn_cfg->used_idx = MCDI_DWORD(outbuf,
-> +                                                    VIRTIO_FINI_QUEUE_RESP_FINAL_CIDX);
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +int efx_vdpa_get_doorbell_offset(struct efx_vring_ctx *vring_ctx,
-> +                                u32 *offset)
-> +{
-> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN);
-> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_LEN);
-> +       struct efx_nic *efx = vring_ctx->efx;
-> +       ssize_t outlen;
-> +       int rc;
-> +
-> +       if (vring_ctx->mcdi_vring_type != MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ &&
-> +           vring_ctx->mcdi_vring_type != MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ) {
-> +               pci_err(efx->pci_dev,
-> +                       "%s: Invalid Queue type %u\n",
-> +                       __func__, vring_ctx->mcdi_vring_type);
-> +               return -EINVAL;
-> +       }
-> +
-> +       MCDI_SET_BYTE(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_DEVICE_ID,
-> +                     MC_CMD_VIRTIO_GET_FEATURES_IN_NET);
-> +       MCDI_SET_WORD(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_TARGET_VF,
-> +                     vring_ctx->vf_index);
-> +       MCDI_SET_DWORD(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_INSTANCE,
-> +                      vring_ctx->vi_index);
-> +
-> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_GET_DOORBELL_OFFSET, inbuf,
-> +                         sizeof(inbuf), outbuf, sizeof(outbuf), &outlen);
-> +       if (rc)
-> +               return rc;
-> +
-> +       if (outlen < MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN)
-> +               return -EIO;
-> +       if (vring_ctx->mcdi_vring_type == MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ)
-> +               *offset = MCDI_DWORD(outbuf,
-> +                                    VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_RX_DBL_OFFSET);
-> +       else
-> +               *offset = MCDI_DWORD(outbuf,
-> +                                    VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_TX_DBL_OFFSET);
-> +
-> +       return 0;
-> +}
-> +
-> +int efx_vdpa_get_mtu(struct efx_nic *efx, u16 *mtu)
-> +{
-> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_SET_MAC_V2_OUT_LEN);
-> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_SET_MAC_EXT_IN_LEN);
-> +       ssize_t outlen;
-> +       int rc;
-> +
-> +       MCDI_SET_DWORD(inbuf, SET_MAC_EXT_IN_CONTROL, 0);
-> +       rc =  efx_mcdi_rpc(efx, MC_CMD_SET_MAC, inbuf, sizeof(inbuf),
-> +                          outbuf, sizeof(outbuf), &outlen);
-> +       if (rc)
-> +               return rc;
-> +       if (outlen < MC_CMD_SET_MAC_V2_OUT_LEN)
-> +               return -EIO;
-> +
-> +       *mtu = MCDI_DWORD(outbuf, SET_MAC_V2_OUT_MTU);
-> +       return 0;
-> +}
-> diff --git a/drivers/net/ethernet/sfc/mcdi_vdpa.h b/drivers/net/ethernet/sfc/mcdi_vdpa.h
-> new file mode 100644
-> index 000000000000..2a0f7c647c44
-> --- /dev/null
-> +++ b/drivers/net/ethernet/sfc/mcdi_vdpa.h
-> @@ -0,0 +1,84 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Driver for Xilinx network controllers and boards
-> + * Copyright (C) 2020-2022, Xilinx, Inc.
-> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published
-> + * by the Free Software Foundation, incorporated herein by reference.
-> + */
-> +
-> +#ifndef EFX_MCDI_VDPA_H
-> +#define EFX_MCDI_VDPA_H
-> +
-> +#if defined(CONFIG_SFC_VDPA)
-> +#include "mcdi.h"
-> +
-> +/**
-> + * struct efx_vring_ctx: The vring context
-> + *
-> + * @efx: pointer of the VF's efx_nic object
-> + * @vf_index: VF index of the vDPA VF
-> + * @vi_index: vi index to be used for queue creation
-> + * @mcdi_vring_type: corresponding MCDI vring type
-> + */
-> +struct efx_vring_ctx {
-> +       struct efx_nic *efx;
-> +       u32 vf_index;
-> +       u32 vi_index;
-> +       u32 mcdi_vring_type;
+> +const struct vdpa_config_ops ef100_vdpa_config_ops = {
+> +       .free                = ef100_vdpa_free,
 > +};
+> diff --git a/drivers/net/ethernet/sfc/mcdi_functions.c b/drivers/net/ethernet/sfc/mcdi_functions.c
+> index d3e6d8239f5c..4415f19cf68f 100644
+> --- a/drivers/net/ethernet/sfc/mcdi_functions.c
+> +++ b/drivers/net/ethernet/sfc/mcdi_functions.c
+> @@ -413,7 +413,8 @@ int efx_mcdi_window_mode_to_stride(struct efx_nic *efx, u8 vi_window_mode)
+>         return 0;
+>  }
+>
+> -int efx_get_pf_index(struct efx_nic *efx, unsigned int *pf_index)
+> +int efx_get_fn_info(struct efx_nic *efx, unsigned int *pf_index,
+> +                   unsigned int *vf_index)
+>  {
+>         MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_FUNCTION_INFO_OUT_LEN);
+>         size_t outlen;
+> @@ -426,6 +427,10 @@ int efx_get_pf_index(struct efx_nic *efx, unsigned int *pf_index)
+>         if (outlen < sizeof(outbuf))
+>                 return -EIO;
+>
+> -       *pf_index = MCDI_DWORD(outbuf, GET_FUNCTION_INFO_OUT_PF);
+> +       if (pf_index)
+> +               *pf_index = MCDI_DWORD(outbuf, GET_FUNCTION_INFO_OUT_PF);
 > +
-> +/**
-> + * struct efx_vring_cfg: Configuration for vring creation
-> + *
-> + * @desc: Descriptor area address of the vring
-> + * @avail: Available area address of the vring
-> + * @used: Device area address of the vring
-> + * @size: Queue size, in entries. Must be a power of two
-> + * @msix_vector: msix vector address for the queue
-> + * @features: negotiated feature bits
-> + */
-> +struct efx_vring_cfg {
-> +       u64 desc;
-> +       u64 avail;
-> +       u64 used;
-> +       u32 size;
-> +       u16 msix_vector;
-> +       u64 features;
-> +};
-> +
-> +/**
-> + * struct efx_vring_dyn_cfg - dynamic vring configuration
-> + *
-> + * @avail_idx: last available index of the vring
-> + * @used_idx: last used index of the vring
-> + */
-> +struct efx_vring_dyn_cfg {
-> +       u32 avail_idx;
-> +       u32 used_idx;
-> +};
-> +
-> +int efx_vdpa_get_features(struct efx_nic *efx, enum ef100_vdpa_device_type type,
-> +                         u64 *featuresp);
-> +
-> +int efx_vdpa_verify_features(struct efx_nic *efx,
-> +                            enum ef100_vdpa_device_type type, u64 features);
-> +
-> +struct efx_vring_ctx *efx_vdpa_vring_init(struct efx_nic *efx, u32 vi,
-> +                                         enum ef100_vdpa_vq_type vring_type);
-> +
-> +void efx_vdpa_vring_fini(struct efx_vring_ctx *vring_ctx);
-> +
-> +int efx_vdpa_vring_create(struct efx_vring_ctx *vring_ctx,
-> +                         struct efx_vring_cfg *vring_cfg,
-> +                         struct efx_vring_dyn_cfg *vring_dyn_cfg);
-> +
-> +int efx_vdpa_vring_destroy(struct efx_vring_ctx *vring_ctx,
-> +                          struct efx_vring_dyn_cfg *vring_dyn_cfg);
-> +
-> +int efx_vdpa_get_doorbell_offset(struct efx_vring_ctx *vring_ctx,
-> +                                u32 *offsetp);
-> +int efx_vdpa_get_mtu(struct efx_nic *efx, u16 *mtu);
+> +       if (efx->type->is_vf && vf_index)
+> +               *vf_index = MCDI_DWORD(outbuf, GET_FUNCTION_INFO_OUT_VF);
+>         return 0;
+>  }
+> diff --git a/drivers/net/ethernet/sfc/mcdi_functions.h b/drivers/net/ethernet/sfc/mcdi_functions.h
+> index b0e2f53a0d9b..76dc0a13463e 100644
+> --- a/drivers/net/ethernet/sfc/mcdi_functions.h
+> +++ b/drivers/net/ethernet/sfc/mcdi_functions.h
+> @@ -28,6 +28,7 @@ void efx_mcdi_rx_remove(struct efx_rx_queue *rx_queue);
+>  void efx_mcdi_rx_fini(struct efx_rx_queue *rx_queue);
+>  int efx_fini_dmaq(struct efx_nic *efx);
+>  int efx_mcdi_window_mode_to_stride(struct efx_nic *efx, u8 vi_window_mode);
+> -int efx_get_pf_index(struct efx_nic *efx, unsigned int *pf_index);
+> +int efx_get_fn_info(struct efx_nic *efx, unsigned int *pf_index,
+> +                   unsigned int *vf_index);
+>
+>  #endif
+> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+> index ffda80a95221..79356d614109 100644
+> --- a/drivers/net/ethernet/sfc/net_driver.h
+> +++ b/drivers/net/ethernet/sfc/net_driver.h
+> @@ -1182,6 +1182,12 @@ struct efx_nic {
+>
+>         unsigned int mem_bar;
+>         u32 reg_base;
+> +#ifdef CONFIG_SFC_VDPA
+> +       /** @mgmt_dev: vDPA Management device */
+> +       struct vdpa_mgmt_dev *mgmt_dev;
+> +       /** @vdpa_nic: vDPA device structure (EF100) */
+> +       struct ef100_vdpa_nic *vdpa_nic;
 > +#endif
-> +#endif
+>
+>         /* The following fields may be written more often */
+>
 > --
 > 2.30.1
 >
