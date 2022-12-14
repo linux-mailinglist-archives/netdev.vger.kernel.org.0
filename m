@@ -2,69 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F352564C775
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 11:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA1C64C779
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 11:55:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237658AbiLNKyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 05:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
+        id S237521AbiLNKz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 05:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237557AbiLNKx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 05:53:58 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88690E64;
-        Wed, 14 Dec 2022 02:53:56 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id e13so21941196edj.7;
-        Wed, 14 Dec 2022 02:53:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=vKrnMOKYut5GEKB9cEABe1KQmlkVrveumwUrMQRECmI=;
-        b=B8plWnkgTm6Zj9IjyxHyiUuM4Jjn/iGzhbr4ey66BsI6jneCWaVbyDSM2EjEVnGnXq
-         qBI35BHPP0TM9D15EMEjlLM5IWjyJFIh2gp1QJdFCi+UtEwlNJVHtswgUKfxic3+sw6K
-         KVDJzS3NMFSMpBkrAWrr3RbL2F6U1QsrML9JH7g/+ZtUv2YJYI1Di5FjNd7X399ouRWH
-         V+sbLTpp+39P3P/K8uBDIWVvPP9V1UtOWuUlLoM72f1Sm+PIDyrvT1ZThQB2tS9FzLei
-         Oj4PZ+8YwO5G9071cJHsU76NR2GPYe6SKBxZOJSzYXxixByShN27m6fN7wwMG3ggyWBN
-         0K0w==
+        with ESMTP id S237557AbiLNKz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 05:55:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25F762EB
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 02:54:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671015276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lATICyjc4Te5qDzlf7xVSBXOIwfGudOTKNOg//tLkfs=;
+        b=TltD0qG16ZF3UJyFnevuw4nly3LGELpk414CSqlSFGTJRE3Z2NG7qBR2L7JE22L5bRHmYo
+        xLLw+5djyBKStH3Bx69/ehpvwh6BwbNxwC/wC8gExiHD2up8qCff5R9OrZv2SViGi2gdO2
+        3Si72kEBD7z+Oqj1IHwG7StlFHqzw+A=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-553-ututadbUN7-5xKpRp0eFAA-1; Wed, 14 Dec 2022 05:54:35 -0500
+X-MC-Unique: ututadbUN7-5xKpRp0eFAA-1
+Received: by mail-ed1-f72.google.com with SMTP id e14-20020a056402190e00b0047005d4c3e9so4982214edz.2
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 02:54:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vKrnMOKYut5GEKB9cEABe1KQmlkVrveumwUrMQRECmI=;
-        b=CxZ7YMbb2VosE6WpYTosPrPXiGlpda5VAu1p+KhHWU3VZ9BMc6m4HwaJTRkW3Bfa1w
-         opYFM4Las0xdCx5TUY9rhCyvetFxt1FG1R7INQfq9tAOJaihA7QWBsK4ZflHiSjZDKOF
-         vn6Jb+YFqjb/q0ANPFKA1pKlMt1bdKWuZtu7IvpgoMzbmxtW20mPmSYyB0RavN5Jh84t
-         +VNQ69hTxU5h0Eljjjt7gKL0kuEoLBC0LQrDJ22xJnYNQpOAOCqxPmvxG01XaiZtmlQr
-         +eV6O2drHkVxaXM1ajARcybpiS8fKixEFvbpoI+VAtyec/kuONnxk06rZOb6efTkCGP/
-         lo4A==
-X-Gm-Message-State: ANoB5pn2UtR589esmfhJOxJ/sTG/RMi5c2bip2A/pDeRnOoOtLUm6yCv
-        qTL6yNRd/uD6C6v4xE9CdXTpTBnP+Z4PVPJVRR4=
-X-Google-Smtp-Source: AA0mqf5PYLm09GUqP6qGVHeJvfK67mkxo9HHPL8tdYgUSSG1Lk6kjxfuhJu+sDiVsElG4i/32u0kb33QnJ7RDrEfcdI=
-X-Received: by 2002:a50:fe87:0:b0:46d:5a5c:e3bf with SMTP id
- d7-20020a50fe87000000b0046d5a5ce3bfmr8184686edt.142.1671015234912; Wed, 14
- Dec 2022 02:53:54 -0800 (PST)
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lATICyjc4Te5qDzlf7xVSBXOIwfGudOTKNOg//tLkfs=;
+        b=kdRcTkMuEbnwSNw3dJK1BW8iJjEYyVCJX1/ZdG/luX5AyyN5bSf1j0px3IOvpkqfVW
+         9sU1n379Wa4PkBeZvlUt3RMDBBJ6eMaNaM5aBDKNVJ4eI+H+9X8zAcHq6LNjJ0S+SnKt
+         3YFqxV93Y7wg8n9MpwbKseyixegAdVYCLSFoPT8iKMUXRpOGDx8Oaj4Atz8mnyVFMVob
+         V3S1wTpdTeCvQhxQYn84j+hjtm1M98yMHTMWJg4t2HSqK60fLLl8olWNZ3jDDbqj8va+
+         OgAcha4uSTp2X3YVHPuFHj++M7Wa0diqIQ7iAKpNUx8AqlrRlZP5mEkytNaBogwp8qMR
+         J0Og==
+X-Gm-Message-State: ANoB5pnkJoSIl/EmGCGwbXZ2gIAzCjihEWgXHyEDXuJPngQ4+PI74y0B
+        H/pnx2kb8YwAG2vD7uSRQswYt+biZwg6xuFTIfB31Zoe/2PF5QJ9z5lhDZFE2gM1sZ5xYGFB8Vr
+        baLaF+Hp+lotMK0jn
+X-Received: by 2002:a17:906:714e:b0:7c1:23f2:c052 with SMTP id z14-20020a170906714e00b007c123f2c052mr18515804ejj.45.1671015274516;
+        Wed, 14 Dec 2022 02:54:34 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5aktP68eWjNGtYhMxkwuKx1/hjsdVsA515iq6ye8JxvoV9dLdzUmgRMuzJKw7+BuWsbeOGhw==
+X-Received: by 2002:a17:906:714e:b0:7c1:23f2:c052 with SMTP id z14-20020a170906714e00b007c123f2c052mr18515778ejj.45.1671015274127;
+        Wed, 14 Dec 2022 02:54:34 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u18-20020a1709061db200b007c16fdc93ddsm3795670ejh.81.2022.12.14.02.54.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 02:54:33 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id BE15482F543; Wed, 14 Dec 2022 11:54:32 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [xdp-hints] [PATCH bpf-next v4 05/15] bpf: XDP metadata RX kfuncs
+In-Reply-To: <20221213023605.737383-6-sdf@google.com>
+References: <20221213023605.737383-1-sdf@google.com>
+ <20221213023605.737383-6-sdf@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 14 Dec 2022 11:54:32 +0100
+Message-ID: <877cyugsrb.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20221206090826.2957-1-magnus.karlsson@gmail.com>
- <20221206090826.2957-14-magnus.karlsson@gmail.com> <Y5dSjs6AJYr6KqQK@boxer>
-In-Reply-To: <Y5dSjs6AJYr6KqQK@boxer>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 14 Dec 2022 11:53:43 +0100
-Message-ID: <CAJ8uoz25MkczfwKKR3_TZb56f6ZqMPEy6ZFSr0JZFNui7AtXvw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 13/15] selftests/xsk: merge dual and single
- thread dispatchers
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        yhs@fb.com, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        jonathan.lemon@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,202 +89,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 12, 2022 at 5:12 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Tue, Dec 06, 2022 at 10:08:24AM +0100, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Make the thread dispatching code common by unifying the dual and
-> > single thread dispatcher code. This so we do not have to add code in
-> > two places in upcoming commits.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/xskxceiver.c | 120 ++++++++++-------------
-> >  1 file changed, 54 insertions(+), 66 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-> > index 522dc1d69c17..0457874c0995 100644
-> > --- a/tools/testing/selftests/bpf/xskxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xskxceiver.c
-> > @@ -1364,85 +1364,61 @@ static void handler(int signum)
-> >       pthread_exit(NULL);
-> >  }
-> >
-> > -static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
-> > -                                               enum test_type type)
-> > +static int __testapp_validate_traffic(struct test_spec *test, struct ifobject *ifobj_rx,
-> > +                                   struct ifobject *ifobj_tx)
-> >  {
-> > -     bool old_shared_umem = ifobj->shared_umem;
-> > -     pthread_t t0;
-> > -
-> > -     if (pthread_barrier_init(&barr, NULL, 2))
-> > -             exit_with_error(errno);
-> > -
-> > -     test->current_step++;
-> > -     if (type == TEST_TYPE_POLL_RXQ_TMOUT)
-> > -             pkt_stream_reset(ifobj->pkt_stream);
-> > -     pkts_in_flight = 0;
-> > -
-> > -     test->ifobj_rx->shared_umem = false;
-> > -     test->ifobj_tx->shared_umem = false;
-> > -
-> > -     signal(SIGUSR1, handler);
-> > -     /* Spawn thread */
-> > -     pthread_create(&t0, NULL, ifobj->func_ptr, test);
-> > -
-> > -     if (type != TEST_TYPE_POLL_TXQ_TMOUT)
-> > -             pthread_barrier_wait(&barr);
-> > -
-> > -     if (pthread_barrier_destroy(&barr))
-> > -             exit_with_error(errno);
-> > -
-> > -     pthread_kill(t0, SIGUSR1);
-> > -     pthread_join(t0, NULL);
-> > -
-> > -     if (test->total_steps == test->current_step || test->fail) {
-> > -             xsk_socket__delete(ifobj->xsk->xsk);
-> > -             xsk_clear_xskmap(ifobj->xskmap);
-> > -             testapp_clean_xsk_umem(ifobj);
-> > -     }
-> > -
-> > -     test->ifobj_rx->shared_umem = old_shared_umem;
-> > -     test->ifobj_tx->shared_umem = old_shared_umem;
-> > -
-> > -     return !!test->fail;
-> > -}
-> > -
-> > -static int testapp_validate_traffic(struct test_spec *test)
-> > -{
-> > -     struct ifobject *ifobj_tx = test->ifobj_tx;
-> > -     struct ifobject *ifobj_rx = test->ifobj_rx;
-> >       pthread_t t0, t1;
-> >
-> > -     if (pthread_barrier_init(&barr, NULL, 2))
-> > -             exit_with_error(errno);
-> > +     if (ifobj_tx)
-> > +             if (pthread_barrier_init(&barr, NULL, 2))
-> > +                     exit_with_error(errno);
-> >
-> >       test->current_step++;
-> >       pkt_stream_reset(ifobj_rx->pkt_stream);
-> >       pkts_in_flight = 0;
-> >
-> > +     signal(SIGUSR1, handler);
-> >       /*Spawn RX thread */
-> >       pthread_create(&t0, NULL, ifobj_rx->func_ptr, test);
-> >
-> > -     pthread_barrier_wait(&barr);
-> > -     if (pthread_barrier_destroy(&barr))
-> > -             exit_with_error(errno);
-> > +     if (ifobj_tx) {
-> > +             pthread_barrier_wait(&barr);
-> > +             if (pthread_barrier_destroy(&barr))
-> > +                     exit_with_error(errno);
-> >
-> > -     /*Spawn TX thread */
-> > -     pthread_create(&t1, NULL, ifobj_tx->func_ptr, test);
-> > +             /*Spawn TX thread */
-> > +             pthread_create(&t1, NULL, ifobj_tx->func_ptr, test);
-> >
-> > -     pthread_join(t1, NULL);
-> > -     pthread_join(t0, NULL);
-> > +             pthread_join(t1, NULL);
-> > +     }
-> > +
-> > +     if (!ifobj_tx)
-> > +             pthread_kill(t0, SIGUSR1);
-> > +     else
-> > +             pthread_join(t0, NULL);
-> >
-> >       if (test->total_steps == test->current_step || test->fail) {
-> > -             xsk_socket__delete(ifobj_tx->xsk->xsk);
-> > +             if (ifobj_tx)
-> > +                     xsk_socket__delete(ifobj_tx->xsk->xsk);
-> >               xsk_socket__delete(ifobj_rx->xsk->xsk);
-> >               testapp_clean_xsk_umem(ifobj_rx);
-> > -             if (!ifobj_tx->shared_umem)
-> > +             if (ifobj_tx && !ifobj_tx->shared_umem)
-> >                       testapp_clean_xsk_umem(ifobj_tx);
-> >       }
-> >
-> >       return !!test->fail;
-> >  }
-> >
-> > +static int testapp_validate_traffic(struct test_spec *test)
-> > +{
-> > +     return __testapp_validate_traffic(test, test->ifobj_rx, test->ifobj_tx);
-> > +}
-> > +
-> > +static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj)
-> > +{
-> > +     return __testapp_validate_traffic(test, ifobj, NULL);
->
-> One minor comment here is that for single thread we either spawn Rx or Tx
-> thread, whereas reading the code one could tell that single threaded test
-> works only on Rx.
->
-> Maybe rename to ifobj1 ifobj2 from ifobj_rx ifobj_rx? everything within is
-> generic, like, we have func_ptr, not tx_func_ptr, so this won't look odd
-> with ifobj1 as a name.
+Stanislav Fomichev <sdf@google.com> writes:
 
-Makes sense. Will do this.
+[..]
 
-> > +}
-> > +
-> >  static void testapp_teardown(struct test_spec *test)
-> >  {
-> >       int i;
-> > @@ -1684,6 +1660,26 @@ static void testapp_xdp_drop(struct test_spec *test)
-> >       ifobj->xskmap = ifobj->def_prog->maps.xsk;
-> >  }
-> >
-> > +static void testapp_poll_txq_tmout(struct test_spec *test)
-> > +{
-> > +     test_spec_set_name(test, "POLL_TXQ_FULL");
-> > +
-> > +     test->ifobj_tx->use_poll = true;
-> > +     /* create invalid frame by set umem frame_size and pkt length equal to 2048 */
-> > +     test->ifobj_tx->umem->frame_size = 2048;
-> > +     pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
-> > +     testapp_validate_traffic_single_thread(test, test->ifobj_tx);
-> > +
-> > +     pkt_stream_restore_default(test);
-> > +}
-> > +
-> > +static void testapp_poll_rxq_tmout(struct test_spec *test)
-> > +{
-> > +     test_spec_set_name(test, "POLL_RXQ_EMPTY");
-> > +     test->ifobj_rx->use_poll = true;
-> > +     testapp_validate_traffic_single_thread(test, test->ifobj_rx);
-> > +}
-> > +
-> >  static int xsk_load_xdp_programs(struct ifobject *ifobj)
-> >  {
-> >       ifobj->def_prog = xsk_def_prog__open_and_load();
-> > @@ -1799,18 +1795,10 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
-> >               testapp_validate_traffic(test);
-> >               break;
-> >       case TEST_TYPE_POLL_TXQ_TMOUT:
-> > -             test_spec_set_name(test, "POLL_TXQ_FULL");
-> > -             test->ifobj_tx->use_poll = true;
-> > -             /* create invalid frame by set umem frame_size and pkt length equal to 2048 */
-> > -             test->ifobj_tx->umem->frame_size = 2048;
-> > -             pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
-> > -             testapp_validate_traffic_single_thread(test, test->ifobj_tx, type);
-> > -             pkt_stream_restore_default(test);
-> > +             testapp_poll_txq_tmout(test);
-> >               break;
-> >       case TEST_TYPE_POLL_RXQ_TMOUT:
-> > -             test_spec_set_name(test, "POLL_RXQ_EMPTY");
-> > -             test->ifobj_rx->use_poll = true;
-> > -             testapp_validate_traffic_single_thread(test, test->ifobj_rx, type);
-> > +             testapp_poll_rxq_tmout(test);
-> >               break;
-> >       case TEST_TYPE_ALIGNED_INV_DESC:
-> >               test_spec_set_name(test, "ALIGNED_INV_DESC");
-> > --
-> > 2.34.1
-> >
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index d434a994ee04..c3e501e3e39c 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2097,6 +2097,13 @@ bool bpf_prog_map_compatible(struct bpf_map *map,
+>  	if (fp->kprobe_override)
+>  		return false;
+>  
+> +	/* When tail-calling from a non-dev-bound program to a dev-bound one,
+> +	 * XDP metadata helpers should be disabled. Until it's implemented,
+> +	 * prohibit adding dev-bound programs to tail-call maps.
+> +	 */
+> +	if (bpf_prog_is_dev_bound(fp->aux))
+> +		return false;
+> +
+
+nit: the comment is slightly inaccurate as the program running in a
+devmap/cpumap has nothing to do with tail calls. maybe replace it with:
+
+"XDP programs inserted into maps are not guaranteed to run on a
+particular netdev (and can run outside driver context entirely in the
+case of devmap and cpumap). Until device checks are implemented,
+prohibit adding dev-bound programs to program maps."
+
+Also, there needs to be a check in bpf_prog_test_run_xdp() to reject
+dev-bound programs there as well...
+
+-Toke
+
