@@ -2,130 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DD7764C5D6
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 10:27:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0600964C645
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 10:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237907AbiLNJ0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 04:26:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
+        id S237752AbiLNJta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 04:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237180AbiLNJZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 04:25:51 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808271D648;
-        Wed, 14 Dec 2022 01:25:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1671009951; x=1702545951;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=xyc4x/K6bFavC9UZAWslWQocjusdPMbCBREoUlViGU0=;
-  b=TultIts98M9DVLhkshwK7NriAEp7Y/9yC00DAshP77xsSTzkIWDxgv4i
-   RxVWmt80TKv5fao+C350TC8OR4YWwheLBOEUN/4uMU4v3SOadWtCMQEql
-   uccaN3nCVixIviUaOw5qSH13GwEc27ypb30H2xEhQPHYvSsufnM2ihdy5
-   dOFmHulIkFL5l6Jk6teW/Df8pL8V/biQlw70tRcictnwDyM3MiyminwU2
-   TTYAKZSruraG89jrKQ7oa+qQ9b39+A3LzS+ITTKCLXu7UFRKlFA9zNkVH
-   pg5MLWB54iipNyACFKg3JtRGV/puONVOROh+o9a9SSdWXeFNAQVBMVdkJ
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,244,1665471600"; 
-   d="scan'208";a="188100271"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Dec 2022 02:25:50 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 14 Dec 2022 02:25:47 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Wed, 14 Dec 2022 02:25:43 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>
-CC:     <UNGLinuxDriver@microchip.com>
-Subject: [RESEND PATCH v5 net-next 2/2] net: phy: micrel: Fix warn: passing zero to PTR_ERR
-Date:   Wed, 14 Dec 2022 14:55:24 +0530
-Message-ID: <20221214092524.21399-3-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221214092524.21399-1-Divya.Koppera@microchip.com>
-References: <20221214092524.21399-1-Divya.Koppera@microchip.com>
+        with ESMTP id S237893AbiLNJtV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 04:49:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21AD5FDE
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:48:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671011313;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z1076h34jNt+RFN/D62BHwwdDcIkby0OIjVTzlI1GGg=;
+        b=fg/8Frsti3T3fR3wY5K/fbOg4D3re6bLmgdBnf87fFXrlyqNckN9JP3JDt+2JUKO4tvQW3
+        q+qH20TSRA3YLz1l9UHSHTmm/rpQlY03tzENVW+N8XlTsOg7E7g0yOpUZSwbHBgsJ3Zya6
+        d6dAmD+9mghnAPbKkv5bQM29XGQUr+o=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-404-KM65UNdvP4C3pgZjyFyAnQ-1; Wed, 14 Dec 2022 04:48:31 -0500
+X-MC-Unique: KM65UNdvP4C3pgZjyFyAnQ-1
+Received: by mail-ej1-f72.google.com with SMTP id jg25-20020a170907971900b007c0e98ad898so11059053ejc.15
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 01:48:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=z1076h34jNt+RFN/D62BHwwdDcIkby0OIjVTzlI1GGg=;
+        b=XtHDVgj6fsPk7jv4DxEB+q9hNU30Cm1iLQSsELDiDF/5OkHXZioU5hCRWfqAgNHa11
+         nUK0CYacR5QRVSN0mZBFPzSdeiZnzslB8AoaRcXI1ivBG5/vESCLOT4+xVPp5mMc9iES
+         uwQtHn/YPXblgK3186inxpMdjyQPoH1vi1uTQMBhgPffpB6VLBb8HYAKpTS3VgaGt7Ab
+         5+W0Jo8nVbKeus/IfCfuEqthKnwldlFycys74LmQ+G4KDU0c9fuz25Sfm6Li2dlfknCb
+         p26ZqnY4zCs0uqW13boI4LNjoxgBzhyPdZvuUy06/n0VItZGOM0+zcuk1QsujtQLzZyg
+         A7wg==
+X-Gm-Message-State: ANoB5pkm2OusN2rVF3OaCvhDE8XoMtEOaaQsOlACdmy1E0TiSDRaTc4u
+        9PVBksZb7/voQKs1eW0fjPfruKKvo+EIrNGU8gLtT1YEWxj4CwrtdbQLQLNStAuFGvOqg9ITjJj
+        G0oObSSvycHUoR1zL
+X-Received: by 2002:a17:906:1711:b0:7c1:3fbd:d569 with SMTP id c17-20020a170906171100b007c13fbdd569mr17509274eje.8.1671011310276;
+        Wed, 14 Dec 2022 01:48:30 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7eKBGc/LzVbcut6QdNbcvonPSSkkrSL8Da92pMNV0Uv65im4YaYAK47MXAVXUOIsUAnKJNEQ==
+X-Received: by 2002:a17:906:1711:b0:7c1:3fbd:d569 with SMTP id c17-20020a170906171100b007c13fbdd569mr17509248eje.8.1671011310075;
+        Wed, 14 Dec 2022 01:48:30 -0800 (PST)
+Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id p9-20020a17090653c900b007ae693cd265sm5580900ejo.150.2022.12.14.01.48.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Dec 2022 01:48:29 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <4bac619d-8767-1364-1924-78c05b1ecf88@redhat.com>
+Date:   Wed, 14 Dec 2022 10:48:27 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 08/15] veth: Support RX XDP metadata
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <20221213023605.737383-1-sdf@google.com>
+ <20221213023605.737383-9-sdf@google.com>
+ <7ca8ac2c-7c07-a52f-ec17-d1ba86fa45ab@redhat.com>
+ <CAKH8qBvCxnJ2-5gd9j1HYxMA8CNi6cQM-5WOUBghiZjHUHya3A@mail.gmail.com>
+In-Reply-To: <CAKH8qBvCxnJ2-5gd9j1HYxMA8CNi6cQM-5WOUBghiZjHUHya3A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle the NULL pointer case
 
-Fixes New smatch warnings:
-drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
 
-vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
----
-v4 -> v5:
-- Removed run time check and added compile time check for PHC
+On 13/12/2022 21.42, Stanislav Fomichev wrote:
+> On Tue, Dec 13, 2022 at 7:55 AM Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
+>>
+>>
+>> On 13/12/2022 03.35, Stanislav Fomichev wrote:
+>>> The goal is to enable end-to-end testing of the metadata for AF_XDP.
+>>>
+>>> Cc: John Fastabend <john.fastabend@gmail.com>
+>>> Cc: David Ahern <dsahern@gmail.com>
+>>> Cc: Martin KaFai Lau <martin.lau@linux.dev>
+>>> Cc: Jakub Kicinski <kuba@kernel.org>
+>>> Cc: Willem de Bruijn <willemb@google.com>
+>>> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+>>> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+>>> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+>>> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+>>> Cc: Maryam Tahhan <mtahhan@redhat.com>
+>>> Cc: xdp-hints@xdp-project.net
+>>> Cc: netdev@vger.kernel.org
+>>> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+>>> ---
+>>>    drivers/net/veth.c | 24 ++++++++++++++++++++++++
+>>>    1 file changed, 24 insertions(+)
+>>>
+>>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+>>> index 04ffd8cb2945..d5491e7a2798 100644
+>>> --- a/drivers/net/veth.c
+>>> +++ b/drivers/net/veth.c
+>>> @@ -118,6 +118,7 @@ static struct {
+>>>
+>>>    struct veth_xdp_buff {
+>>>        struct xdp_buff xdp;
+>>> +     struct sk_buff *skb;
+>>>    };
+>>>
+>>>    static int veth_get_link_ksettings(struct net_device *dev,
+>>> @@ -602,6 +603,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
+>>>
+>>>                xdp_convert_frame_to_buff(frame, xdp);
+>>>                xdp->rxq = &rq->xdp_rxq;
+>>> +             vxbuf.skb = NULL;
+>>>
+>>>                act = bpf_prog_run_xdp(xdp_prog, xdp);
+>>>
+>>> @@ -823,6 +825,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+>>>        __skb_push(skb, skb->data - skb_mac_header(skb));
+>>>        if (veth_convert_skb_to_xdp_buff(rq, xdp, &skb))
+>>>                goto drop;
+>>> +     vxbuf.skb = skb;
+>>>
+>>>        orig_data = xdp->data;
+>>>        orig_data_end = xdp->data_end;
+>>> @@ -1601,6 +1604,21 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+>>>        }
+>>>    }
+>>>
+>>> +static int veth_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+>>> +{
+>>> +     *timestamp = ktime_get_mono_fast_ns();
+>>
+>> This should be reading the hardware timestamp in the SKB.
+>>
+>> Details: This hardware timestamp in the SKB is located in
+>> skb_shared_info area, which is also available for xdp_frame (currently
+>> used for multi-buffer purposes).  Thus, when adding xdp-hints "store"
+>> functionality, it would be natural to store the HW TS in the same place.
+>> Making the veth skb/xdp_frame code paths able to share code.
+> 
+> Does something like the following look acceptable as well?
+> 
+> *timestamp = skb_hwtstamps(_ctx->skb)->hwtstamp;
+> if (!*timestamp)
+>          *timestamp = ktime_get_mono_fast_ns(); /* sw fallback */
+> 
 
-v3 -> v4:
-- Split the patch for different warnings
-- Renamed variable from shared_priv to shared.
+How can the BPF programmer tell the difference between getting hardware 
+or software timestamp?
 
-v2 -> v3:
-- Changed subject line from net to net-next
-- Removed config check for ptp and clock configuration
-  instead added null check for ptp_clock
-- Fixed one more warning related to initialisaton.
+This will get really confusing when someone implements a tcpdump feature
+(like/extend xdpdump) and some packets (e.g. PTP packets) have HW
+timestamps and some don't.  The time sequence in the pcap will be strange.
 
-v1 -> v2:
-- Handled NULL pointer case
-- Changed subject line with net-next to net
----
- drivers/net/phy/micrel.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+> Because I'd like to be able to test this path in the selftests. As
+> long as I get some number from veth_xdp_rx_timestamp, I can test it.
+> No amount of SOF_TIMESTAMPING_{SOFTWARE,RX_SOFTWARE,RAW_HARDWARE}
+> triggers non-zero hwtstamp for xsk receive path. Any suggestions?
+> 
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 1bcdb828db56..650ef53fcf20 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -3017,10 +3017,6 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
- {
- 	struct lan8814_shared_priv *shared = phydev->shared->priv;
+You could implement the "store" operation I mentioned before.
+For testing you can store an arbitrary value in the timestamp and check
+it later by reading it back.
 
--	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
--	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
--		return 0;
--
- 	/* Initialise shared lock for clock*/
- 	mutex_init(&shared->shared_lock);
+I can see you have changed the API to send down a pointer. Thus, a
+simple flag could implement the writing the provided timestamp.
 
-@@ -3040,12 +3036,16 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+Regarding flags for reading the timestamp.  Should we be able to specify
+what clock type we are asking for?
+Have you notice that tcpdump can ask for different types of
+timestamps[1]. e.g. for hardware timestamps it is either
+'adapter_unsynced' or 'adaptor'. (See semantic in [1])
 
- 	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
- 					       &phydev->mdio.dev);
--	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
-+	if (IS_ERR(shared->ptp_clock)) {
- 		phydev_err(phydev, "ptp_clock_register failed %lu\n",
- 			   PTR_ERR(shared->ptp_clock));
- 		return -EINVAL;
- 	}
+  # tcpdump -ni eth1 -j adapter_unsynced --time-stamp-precision=nano
 
-+	/* Check if PHC support is missing at the configuration level */
-+	if (!shared->ptp_clock)
-+		return 0;
-+
- 	phydev_dbg(phydev, "successfully registered ptp clock\n");
+[1] https://www.tcpdump.org/manpages/pcap-tstamp.7.txt
 
- 	shared->phydev = phydev;
---
-2.17.1
+
+Hint list which your NIC 'adaptor' supports via this cmdline:
+
+  # tcpdump -i mlx5p2 --list-time-stamp-types
+
+--Jesper
 
