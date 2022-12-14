@@ -2,136 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE6964C204
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 02:52:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A78464C209
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 02:54:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236551AbiLNBwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 20:52:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
+        id S237008AbiLNByI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 20:54:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236980AbiLNBwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 20:52:40 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC771A9
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 17:52:36 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id d7so1819240pll.9
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 17:52:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rZGdSlQmdy5GLZOw5t3ZBPVFlE2astpyO7HmGabzmH0=;
-        b=3h5KqfcPh+XytqujRm0hiWK/zzu2kEWgUBw/m/bmsZd4ayOoL9xLfj3pVlCXmaRTm5
-         UHNHmqhDzaud9cKtKHGoP2RpYT/4sigoWXxvF3+Tzl8DT/0yGSaZA2e6/wvNVI2KY9z+
-         WQ56uWdVF2kV6dtMB2gcmY4RoCrMpvCZRlJ9Ps0k1OpWWWJWwKyPAo2idXJYGrW8CD9W
-         EB0UbtwG0pPv4Fcj1bCS6qAj9GrApZzEpuzUCEw1hGMLV/CwMjmOONYIyvJ6G4VADBM3
-         1O/+6CpvkurmhxHZ7QTqUeKkV7nrbPOD1ZauaYm7kRhkzHHNFLe5K1A5BvZxDZZUBpET
-         um0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rZGdSlQmdy5GLZOw5t3ZBPVFlE2astpyO7HmGabzmH0=;
-        b=f8a2sxm2pG2hD0P3qoQXuJi+s23BzehzGEdXFN1VP0osqjKh24N7mEUvL8yE33ekZv
-         LdtUkWeMYsSIZDeyRY4yUUKYMM6l3Cten7E02Mg6V9kHV4ulbZ29xW+z3WO/zVR5nblc
-         yO78gnFcVkoWxyk3k+qR5SrTu/rJr5vxnPd26gkyfOJ0F5rWuoVmZHQRNdMdiN5kVAXR
-         gbuo5FNGrqwAgHTAGxl+m++6SLHy/zYx0kBvQwx8ZZvKS+IrhKg9HgdMGEY1/Fh2xoNV
-         GgN2R8+PDTtIi3T+jGO83wTOOuoCOAonR9K9ZxTOvJHuNyEUpFXFz+yhxXaP9c9w6HuK
-         dsMw==
-X-Gm-Message-State: ANoB5pkjg2rOjpLEeKHjJ4CskXxMr6aPeAjmSCpVC9hip88fPleQ6/Af
-        ewbRtXQOTQ/Aimb0H1f5TsG+GVe7Rk9SHEcbH7E=
-X-Google-Smtp-Source: AA0mqf50oAG2KjtSc5ZCB3XSNin1LkDkId20keZP3NioHFy3kRkBxp73fGOnGfipyrTZNUllO7ddkw==
-X-Received: by 2002:a05:6a21:999d:b0:a3:d250:2964 with SMTP id ve29-20020a056a21999d00b000a3d2502964mr34687823pzb.40.1670982755659;
-        Tue, 13 Dec 2022 17:52:35 -0800 (PST)
-Received: from localhost.localdomain ([165.132.118.52])
-        by smtp.gmail.com with ESMTPSA id e10-20020a17090301ca00b00189af02aba4sm569017plh.3.2022.12.13.17.52.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Dec 2022 17:52:35 -0800 (PST)
-From:   Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-To:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
-Cc:     linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
-        linville@tuxdriver.com, dokyungs@yonsei.ac.kr,
-        jisoo.jang@yonsei.ac.kr, Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Subject: [PATCH net v3] nfc: pn533: Clear nfc_target before being used
-Date:   Wed, 14 Dec 2022 10:51:39 +0900
-Message-Id: <20221214015139.119673-1-linuxlovemin@yonsei.ac.kr>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229532AbiLNByH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 20:54:07 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7282F1929B;
+        Tue, 13 Dec 2022 17:54:05 -0800 (PST)
+Message-ID: <74e48fc9-8f5d-4183-9f39-c4587c74a74e@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1670982843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GNg4/FrMFF9sXTLeG093TYFyexXEX026wSRyByZmxZg=;
+        b=LnsGOz/aHRiS0h47bpq4i8GzveVplZ2215QzabqvW9i7hEucZQK4C0LdzxA9PBTrGjl2Jv
+        bTZYQZO1UgC/xu9W485A2mtau4vTxm3OMYFv2lNdnKRAjYMRDIssJUF8F4KSe5Gz+cjS1+
+        7Hy/40pP7FYC03nDfxoiG7qvtWz8vII=
+Date:   Tue, 13 Dec 2022 17:53:58 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next v4 05/15] bpf: XDP metadata RX kfuncs
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20221213023605.737383-1-sdf@google.com>
+ <20221213023605.737383-6-sdf@google.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221213023605.737383-6-sdf@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a slab-out-of-bounds read that occurs in nla_put() called from
-nfc_genl_send_target() when target->sensb_res_len, which is duplicated
-from an nfc_target in pn533, is too large as the nfc_target is not
-properly initialized and retains garbage values. Clear nfc_targets with
-memset() before they are used.
+On 12/12/22 6:35 PM, Stanislav Fomichev wrote:
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index ca22e8b8bd82..de6279725f41 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -2477,6 +2477,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+>   				       struct net_device *netdev);
+>   bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+>   
+> +void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id);
+> +
 
-Found by a modified version of syzkaller.
+This probably requires an inline version for !CONFIG_NET.
 
-BUG: KASAN: slab-out-of-bounds in nla_put
-Call Trace:
- memcpy
- nla_put
- nfc_genl_dump_targets
- genl_lock_dumpit
- netlink_dump
- __netlink_dump_start
- genl_family_rcv_msg_dumpit
- genl_rcv_msg
- netlink_rcv_skb
- genl_rcv
- netlink_unicast
- netlink_sendmsg
- sock_sendmsg
- ____sys_sendmsg
- ___sys_sendmsg
- __sys_sendmsg
- do_syscall_64
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index d434a994ee04..c3e501e3e39c 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2097,6 +2097,13 @@ bool bpf_prog_map_compatible(struct bpf_map *map,
+>   	if (fp->kprobe_override)
+>   		return false;
+>   
+> +	/* When tail-calling from a non-dev-bound program to a dev-bound one,
+> +	 * XDP metadata helpers should be disabled. Until it's implemented,
+> +	 * prohibit adding dev-bound programs to tail-call maps.
+> +	 */
+> +	if (bpf_prog_is_dev_bound(fp->aux))
+> +		return false;
+> +
+>   	spin_lock(&map->owner.lock);
+>   	if (!map->owner.type) {
+>   		/* There's no owner yet where we could check for
+> diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
+> index f714c941f8ea..3b6c9023f24d 100644
+> --- a/kernel/bpf/offload.c
+> +++ b/kernel/bpf/offload.c
+> @@ -757,6 +757,29 @@ void bpf_dev_bound_netdev_unregister(struct net_device *dev)
+>   	up_write(&bpf_devs_lock);
+>   }
+>   
+> +void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
+> +{
+> +	const struct xdp_metadata_ops *ops;
+> +	void *p = NULL;
+> +
+> +	down_read(&bpf_devs_lock);
+> +	if (!prog->aux->offload || !prog->aux->offload->netdev)
 
-Fixes: 673088fb42d0 ("NFC: pn533: Send ATR_REQ directly for active device detection")
-Fixes: 361f3cb7f9cf ("NFC: DEP link hook implementation for pn533")
-Signed-off-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
----
-v2->v3:
-  Remove an inappropriate tag
+This happens when netdev is unregistered in the middle of bpf_prog_load and the 
+bpf_offload_dev_match() will eventually fail during dev_xdp_attach()? A comment 
+will be useful.
 
-v1->v2:
-  Clear another nfc_target in pn533_in_dep_link_up_complete()
-  Fix the commit message
+> +		goto out;
+> +
+> +	ops = prog->aux->offload->netdev->xdp_metadata_ops;
+> +	if (!ops)
+> +		goto out;
+> +
+> +	if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP))
+> +		p = ops->xmo_rx_timestamp;
+> +	else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
+> +		p = ops->xmo_rx_hash;
+> +out:
+> +	up_read(&bpf_devs_lock);
+> +
+> +	return p;
+> +}
+> +
+>   static int __init bpf_offload_init(void)
+>   {
+>   	int err;
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 203d8cfeda70..e61fe0472b9b 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -15479,12 +15479,35 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>   			    struct bpf_insn *insn_buf, int insn_idx, int *cnt)
+>   {
+>   	const struct bpf_kfunc_desc *desc;
+> +	void *xdp_kfunc;
+>   
+>   	if (!insn->imm) {
+>   		verbose(env, "invalid kernel function call not eliminated in verifier pass\n");
+>   		return -EINVAL;
+>   	}
+>   
+> +	*cnt = 0;
+> +
+> +	if (xdp_is_metadata_kfunc_id(insn->imm)) {
+> +		if (!bpf_prog_is_dev_bound(env->prog->aux)) {
 
- drivers/nfc/pn533/pn533.c | 4 ++++
- 1 file changed, 4 insertions(+)
+The "xdp_is_metadata_kfunc_id() && (!bpf_prog_is_dev_bound() || 
+bpf_prog_is_offloaded())" test should have been done much earlier in 
+add_kfunc_call(). Then the later stage of the verifier does not have to keep 
+worrying about it like here.
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index d9f6367b9993..f0cac1900552 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -1295,6 +1295,8 @@ static int pn533_poll_dep_complete(struct pn533 *dev, void *arg,
- 	if (IS_ERR(resp))
- 		return PTR_ERR(resp);
- 
-+	memset(&nfc_target, 0, sizeof(struct nfc_target));
-+
- 	rsp = (struct pn533_cmd_jump_dep_response *)resp->data;
- 
- 	rc = rsp->status & PN533_CMD_RET_MASK;
-@@ -1926,6 +1928,8 @@ static int pn533_in_dep_link_up_complete(struct pn533 *dev, void *arg,
- 
- 		dev_dbg(dev->dev, "Creating new target\n");
- 
-+		memset(&nfc_target, 0, sizeof(struct nfc_target));
-+
- 		nfc_target.supported_protocols = NFC_PROTO_NFC_DEP_MASK;
- 		nfc_target.nfcid1_len = 10;
- 		memcpy(nfc_target.nfcid1, rsp->nfcid3t, nfc_target.nfcid1_len);
--- 
-2.25.1
+nit. may be rename xdp_is_metadata_kfunc_id() to bpf_dev_bound_kfunc_id() and 
+hide the "!bpf_prog_is_dev_bound() || bpf_prog_is_offloaded()" test into 
+bpf_dev_bound_kfunc_check(&env->log, env->prog).
+
+The change in fixup_kfunc_call could then become:
+
+	if (bpf_dev_bound_kfunc_id(insn->imm)) {
+		xdp_kfunc = bpf_dev_bound_resolve_kfunc(env->prog, insn->imm);
+		/* ... */
+	}
+
+> +			verbose(env, "metadata kfuncs require device-bound program\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (bpf_prog_is_offloaded(env->prog->aux)) {
+> +			verbose(env, "metadata kfuncs can't be offloaded\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		xdp_kfunc = bpf_dev_bound_resolve_kfunc(env->prog, insn->imm);
+> +		if (xdp_kfunc) {
+> +			insn->imm = BPF_CALL_IMM(xdp_kfunc);
+> +			return 0;
+> +		}
+> +
+> +		/* fallback to default kfunc when not supported by netdev */
+> +	}
+> +
+
 
