@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1FE64D296
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 23:51:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBA864D2AB
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 23:59:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229537AbiLNWvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 17:51:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
+        id S229625AbiLNW72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 17:59:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiLNWvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 17:51:31 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A471205E6
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 14:51:30 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id d3so4943523plr.10
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 14:51:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=tLBnyMGHR0zwFzGn+F+AOOpE3l8HpRK9u0f8I+O5fZk=;
-        b=ZRKGvQhpbp7BezVOAoCEPXsnFCZ8RAA6ggQkumLi9+UGaA9rCKyyBfEmaHi1Kq+RFq
-         /duTtc66gcEtzdr2ggQIN9kddYHks04i4GVXQMOW0mXFET2wSw0gAn0ugA0Mo/3zFRE+
-         7QE7ic1LVyhIdkpf2AFiSQtjlIYJFQjQx7zbBeiWSVaFxKelTL72HAUwP4dXUQ5hYjsJ
-         bnwbwUHyCL8TCjsIixkkZRWtHhyKj2IcZz+Eu+TSrrBK6PW6iDz72OP5Czw/T32v8NRi
-         tO1Y747eDXeGO0XojQlj89Qc7ELVFmzx4uorqWzK8wiwXVPWC1GP+ow2TtFRVZ4bolFu
-         vePA==
+        with ESMTP id S229446AbiLNW72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 17:59:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D1845EF7
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 14:58:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671058716;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eYcGFWt3GTixmJISWu+c0RW0sUTrQZWf7rnoOaoeuWA=;
+        b=GOu6CLnVFzuvXoloIPj42pVKaTbFOUpd3kZRlKx0hl07zxKnh0Gf8Zyur28JZGHVn5RXdK
+        UpJFXHf7R6h3Vy+EXnt3iOJfwj9ex59y+oNe/0xnPOfa6KQBGI9Ngh/brJvCJ//1zweFqm
+        UlKifMIogrdFDwamJt/40Uqi3w31aRE=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-400-Cxbp2ulgPJeFC_IPYnSV2w-1; Wed, 14 Dec 2022 17:58:35 -0500
+X-MC-Unique: Cxbp2ulgPJeFC_IPYnSV2w-1
+Received: by mail-ej1-f72.google.com with SMTP id qb2-20020a1709077e8200b007bf01e43797so12414720ejc.13
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 14:58:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tLBnyMGHR0zwFzGn+F+AOOpE3l8HpRK9u0f8I+O5fZk=;
-        b=3e54pJq8K+DD+dc+EQtsnC7rDqSE3d53cuZ/x1QPWVcUJGP1l/d0ppxndHKE3SnuAH
-         pF9NYZ8ZXGvo8yZJ2HuBcD9cDnOUBOHIFu2OiImSsRwf0PImU0MiUAFVnLpEXa2EWhxQ
-         gsc9GAopEk3cbO+Xedp/Qyy5fqaVoWlJVblwIgxvWPtNUqvQ7IN7EC1kLRafRLduLtBA
-         Jftqn4pu/wCnKDwkYXKlqdbncyG8u1WIWGuhmTxrgHsBfxsgQfATmkx6bz/iettKfruI
-         zVy54/Yu6G3OhqacBEIkKCTY1OlnBdLjqJ/oTBHow/kMa2qb5vg3Lq5b9B6wy1Nd9hvC
-         GZZw==
-X-Gm-Message-State: ANoB5pm5Yl+zagpHlUnn1QWV9zh/z6FUw02JRW8g2SIZ+Ai2v0Rt35B4
-        T0UHoQVdnELYRXrwfxg9fmo=
-X-Google-Smtp-Source: AA0mqf4LG2ye0fhSanBMDxmMFpzxtHVU/4p1Po5EP1rNVUbaKyEBeep09j8z3s/AaEy+YvUobkPLOg==
-X-Received: by 2002:a17:902:c1c5:b0:185:441f:709c with SMTP id c5-20020a170902c1c500b00185441f709cmr25424941plc.33.1671058289640;
-        Wed, 14 Dec 2022 14:51:29 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id o1-20020a170902bcc100b0017c37a5a2fdsm2325709pls.216.2022.12.14.14.51.28
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eYcGFWt3GTixmJISWu+c0RW0sUTrQZWf7rnoOaoeuWA=;
+        b=d9Ux7CAV2fQeXbo2lQq+Cj8X4uLG5VeBtbHEHEn01A7Ukr+o70gMT7CzlQJP6Jdgnj
+         2tsumm8wT8qA1I5OVxhRpYTx1bdhf8zICZZ+nw4wOENYx/me5Bh1tGOBMVnrXhB/N/x+
+         NnXEX4j17R5iDTHbNzkRybze0Ilv3GA7RQf42XVKM2EwBdKhDEeewpYVs/smUxz43Jrj
+         rDW1tNOwLGZIY0VSgWCBmU0JGIihyqWdz17egbdt0QY79+3BeAipPC/XvKyfYh2n5eKT
+         zlOhVtqVQ0whfYRpK0dJ0d1xu0yEQZKsumkdV8KAtHs1acFV2JGvYk7Qn4klhPPm3UZh
+         r3lQ==
+X-Gm-Message-State: ANoB5pnQFQTiYwb9yWN3i4stB09u3awNXF1qQgfBuUtMBE7YnJnOfr16
+        7MSP/QTkFyBbS55K9kb8IRd0jcatRz/r1e+bVHuhfQMBoQ2FZrvpuB50z5EUEJNu1Z7o1dxFvuZ
+        w3vMkiqKcGDEoYjQx
+X-Received: by 2002:a05:6402:3906:b0:461:79d8:f51a with SMTP id fe6-20020a056402390600b0046179d8f51amr22163093edb.10.1671058714287;
+        Wed, 14 Dec 2022 14:58:34 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6DKefQPfAunhO+v4YDQDUQECQfVxb3JkfSyBBtGyFOomg/M8byLO5XRRsrJH8r1TxkhmA9BA==
+X-Received: by 2002:a05:6402:3906:b0:461:79d8:f51a with SMTP id fe6-20020a056402390600b0046179d8f51amr22163077edb.10.1671058713980;
+        Wed, 14 Dec 2022 14:58:33 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id s19-20020a056402037300b0046c91fa5a4asm6903489edw.70.2022.12.14.14.58.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Dec 2022 14:51:29 -0800 (PST)
-Message-ID: <c213b4c3e8774e59389948b3b9b3ff132043dfcf.camel@gmail.com>
-Subject: Re: [RFC PATCH v5] vmxnet3: Add XDP support.
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     William Tu <u9012063@gmail.com>
-Cc:     netdev@vger.kernel.org, tuc@vmware.com, gyang@vmware.com,
-        doshir@vmware.com
-Date:   Wed, 14 Dec 2022 14:51:27 -0800
-In-Reply-To: <CALDO+SaoW5XoroBMoYLWsqCvYYVkKiTFFPMTLUEt7Qu5rQ+z3Q@mail.gmail.com>
-References: <20221214000555.22785-1-u9012063@gmail.com>
-         <935e24d6f6b51b5aaee4cf086ad08474e75410b8.camel@gmail.com>
-         <CALDO+SaoW5XoroBMoYLWsqCvYYVkKiTFFPMTLUEt7Qu5rQ+z3Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Wed, 14 Dec 2022 14:58:33 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B3F3F82F64D; Wed, 14 Dec 2022 23:58:32 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf v4 2/2] selftests/bpf: Add a test for using a cpumap
+ from an freplace-to-XDP program
+In-Reply-To: <CAEf4BzYMNgfmnKzAo==Rs8E-S6cTsVv4mj_17yfKmQ5S_KzXuQ@mail.gmail.com>
+References: <20221214010517.668943-1-toke@redhat.com>
+ <20221214010517.668943-2-toke@redhat.com>
+ <CAEf4BzYMNgfmnKzAo==Rs8E-S6cTsVv4mj_17yfKmQ5S_KzXuQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 14 Dec 2022 23:58:32 +0100
+Message-ID: <87359hfv8n.fsf@toke.dk>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,119 +96,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-12-14 at 13:55 -0800, William Tu wrote:
-> Thanks for taking a look at this patch!
->=20
-> <...>
-> >=20
-> > > +int
-> > > +vmxnet3_process_xdp(struct vmxnet3_adapter *adapter,
-> > > +                 struct vmxnet3_rx_queue *rq,
-> > > +                 struct Vmxnet3_RxCompDesc *rcd,
-> > > +                 struct vmxnet3_rx_buf_info *rbi,
-> > > +                 struct Vmxnet3_RxDesc *rxd,
-> > > +                 bool *need_flush)
-> > > +{
-> > > +     struct bpf_prog *xdp_prog;
-> > > +     dma_addr_t new_dma_addr;
-> > > +     struct sk_buff *new_skb;
-> > > +     bool rxDataRingUsed;
-> > > +     int ret, act;
-> > > +
-> > > +     ret =3D VMXNET3_XDP_CONTINUE;
-> > > +     if (unlikely(rcd->len =3D=3D 0))
-> > > +             return VMXNET3_XDP_TAKEN;
-> > > +
-> > > +     rxDataRingUsed =3D VMXNET3_RX_DATA_RING(adapter, rcd->rqID);
-> > > +     rcu_read_lock();
-> > > +     xdp_prog =3D rcu_dereference(rq->xdp_bpf_prog);
-> > > +     if (!xdp_prog) {
-> > > +             rcu_read_unlock();
-> > > +             return VMXNET3_XDP_CONTINUE;
-> > > +     }
-> > > +     act =3D vmxnet3_run_xdp(rq, rbi, rcd, need_flush, rxDataRingUse=
-d);
-> > > +     rcu_read_unlock();
-> > > +
-> > > +     switch (act) {
-> > > +     case XDP_PASS:
-> > > +             ret =3D VMXNET3_XDP_CONTINUE;
-> > > +             break;
-> > > +     case XDP_DROP:
-> > > +     case XDP_TX:
-> > > +     case XDP_REDIRECT:
-> > > +     case XDP_ABORTED:
-> > > +     default:
-> > > +             /* Reuse and remap the existing buffer. */
-> > > +             ret =3D VMXNET3_XDP_TAKEN;
-> > > +             if (rxDataRingUsed)
-> > > +                     return ret;
-> > > +
-> > > +             new_skb =3D rbi->skb;
-> > > +             new_dma_addr =3D
-> > > +                     dma_map_single(&adapter->pdev->dev,
-> > > +                                    new_skb->data, rbi->len,
-> > > +                                    DMA_FROM_DEVICE);
-> > > +             if (dma_mapping_error(&adapter->pdev->dev,
-> > > +                                   new_dma_addr)) {
-> > > +                     dev_kfree_skb(new_skb);
-> > > +                     rq->stats.drop_total++;
-> > > +                     return ret;
-> > > +             }
-> > > +             rbi->dma_addr =3D new_dma_addr;
-> > > +             rxd->addr =3D cpu_to_le64(rbi->dma_addr);
-> > > +             rxd->len =3D rbi->len;
-> > > +     }
-> > > +     return ret;
-> > > +}
-> >=20
-> > FOr XDP_DROP and XDP_ABORTED this makes sense. You might want to add a
-> > trace point in the case of aborted just so you can catch such cases for
-> > debug.
-> Good point, I will add the trace point.
->=20
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-You will probably want to add that trace point in __vmxnet3_run_xdp.
+> On Tue, Dec 13, 2022 at 5:05 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> This adds a simple test for inserting an XDP program into a cpumap that =
+is
+>> "owned" by an XDP program that was loaded as PROG_TYPE_EXT (as libxdp
+>> does). Prior to the kernel fix this would fail because the map type
+>> ownership would be set to PROG_TYPE_EXT instead of being resolved to
+>> PROG_TYPE_XDP.
+>>
+>> v4:
+>> - Use skeletons for selftest
+>> v3:
+>> - Update comment to better explain the cause
+>> - Add Yonghong's ACK
+>>
+>> Acked-by: Yonghong Song <yhs@fb.com>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>>  .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 54 +++++++++++++++++++
+>>  .../selftests/bpf/progs/freplace_progmap.c    | 24 +++++++++
+>>  2 files changed, 78 insertions(+)
+>>  create mode 100644 tools/testing/selftests/bpf/progs/freplace_progmap.c
+>>
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/to=
+ols/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+>> index d1e32e792536..efa1fc65840d 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
+>> @@ -4,6 +4,8 @@
+>>  #include <network_helpers.h>
+>>  #include <bpf/btf.h>
+>>  #include "bind4_prog.skel.h"
+>> +#include "freplace_progmap.skel.h"
+>> +#include "xdp_dummy.skel.h"
+>>
+>>  typedef int (*test_cb)(struct bpf_object *obj);
+>>
+>> @@ -500,6 +502,56 @@ static void test_fentry_to_cgroup_bpf(void)
+>>         bind4_prog__destroy(skel);
+>>  }
+>>
+>> +static void test_func_replace_progmap(void)
+>> +{
+>> +       struct bpf_cpumap_val value =3D { .qsize =3D 1 };
+>> +       struct freplace_progmap *skel =3D NULL;
+>> +       struct xdp_dummy *tgt_skel =3D NULL;
+>> +       int err, tgt_fd;
+>> +       __u32 key =3D 0;
+>> +
+>> +       skel =3D freplace_progmap__open();
+>> +       if (!ASSERT_OK_PTR(skel, "prog_open"))
+>> +               return;
+>> +
+>> +       tgt_skel =3D xdp_dummy__open_and_load();
+>> +       if (!ASSERT_OK_PTR(tgt_skel, "tgt_prog_load"))
+>> +               goto out;
+>> +
+>> +       tgt_fd =3D bpf_program__fd(tgt_skel->progs.xdp_dummy_prog);
+>> +
+>> +       /* Change the 'redirect' program type to be a PROG_TYPE_EXT
+>> +        * with an XDP target
+>> +        */
+>> +       bpf_program__set_type(skel->progs.xdp_cpumap_prog, BPF_PROG_TYPE=
+_EXT);
+>> +       bpf_program__set_expected_attach_type(skel->progs.xdp_cpumap_pro=
+g, 0);
+>
+> you shouldn't need this manual override if you mark xdp_cpumap_prog as
+> SEC("freplace"), or am I missing something?
 
-> > However for XDP_TX and XDP_REDIRECT shouldn't both of those be calling
-> > out to seperate functions to either place the frame on a Tx ring or to
-> > hand it off to xdp_do_redirect so that the frame gets routed where it
-> > needs to go? Also don't you run a risk with overwriting frames that
-> > might be waiting on transmit?
->=20
-> Yes, I have XDP_TX and XDP_REDIRECT handled in another function,
-> the vmxnet3_run_xdp() and __vmxnet3_run_xdp().
+No, you're right; I guess I was just too focused on recreating the flow
+we use in libxdp. Will fix!
 
-Okay, for the redirect case it looks like you address it by doing a
-memcpy to a freshly allocated page so that saves us that trouble in
-that case.
+>> +       err =3D bpf_program__set_attach_target(skel->progs.xdp_cpumap_pr=
+og,
+>> +                                            tgt_fd, "xdp_dummy_prog");
+>> +       if (!ASSERT_OK(err, "set_attach_target"))
+>> +               goto out;
+>> +
+>> +       err =3D freplace_progmap__load(skel);
+>> +       if (!ASSERT_OK(err, "obj_load"))
+>> +               goto out;
+>> +
+>> +       /* Prior to fixing the kernel, loading the PROG_TYPE_EXT 'redire=
+ct'
+>> +        * program above will cause the map owner type of 'cpumap' to be=
+ set to
+>> +        * PROG_TYPE_EXT. This in turn will cause the bpf_map_update_ele=
+m()
+>> +        * below to fail, because the program we are inserting into the =
+map is
+>> +        * of PROG_TYPE_XDP. After fixing the kernel, the initial owners=
+hip will
+>> +        * be correctly resolved to the *target* of the PROG_TYPE_EXT pr=
+ogram
+>> +        * (i.e., PROG_TYPE_XDP) and the map update will succeed.
+>> +        */
+>> +       value.bpf_prog.fd =3D bpf_program__fd(skel->progs.xdp_drop_prog);
+>> +       err =3D bpf_map_update_elem(bpf_map__fd(skel->maps.cpu_map),
+>> +                                 &key, &value, 0);
+>> +       ASSERT_OK(err, "map_update");
+>> +
+>> +out:
+>> +       xdp_dummy__destroy(tgt_skel);
+>> +       freplace_progmap__destroy(skel);
+>> +}
+>> +
+>>  /* NOTE: affect other tests, must run in serial mode */
+>>  void serial_test_fexit_bpf2bpf(void)
+>>  {
+>> @@ -525,4 +577,6 @@ void serial_test_fexit_bpf2bpf(void)
+>>                 test_func_replace_global_func();
+>>         if (test__start_subtest("fentry_to_cgroup_bpf"))
+>>                 test_fentry_to_cgroup_bpf();
+>> +       if (test__start_subtest("func_replace_progmap"))
+>> +               test_func_replace_progmap();
+>>  }
+>> diff --git a/tools/testing/selftests/bpf/progs/freplace_progmap.c b/tool=
+s/testing/selftests/bpf/progs/freplace_progmap.c
+>> new file mode 100644
+>> index 000000000000..68174c3d7b37
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/bpf/progs/freplace_progmap.c
+>> @@ -0,0 +1,24 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +#include <linux/bpf.h>
+>> +#include <bpf/bpf_helpers.h>
+>> +
+>> +struct {
+>> +       __uint(type, BPF_MAP_TYPE_CPUMAP);
+>> +       __uint(key_size, sizeof(__u32));
+>> +       __uint(value_size, sizeof(struct bpf_cpumap_val));
+>
+> ok, another minor nit which you ignored, libbpf should be smart enough to=
+ accept
+>
+> __type(key, __u32);
+> __type(value, struct bpf_cpumap_val);
+>
+> And if it's not it would be good to know that it's not (and trivially
+> fix it).
 
-> How do I avoid overwriting frames that might be waiting on transmit?
-> I checked my vmxnet3_xdp_xmit_back and vmxnet3_xdp_xmit_frame,
-> I think since I called the vmxnet3_xdp_xmit_frame at the rx context,
-> it should be ok?
+Ah, actually saw that comment on the previous version, and then
+completely forgot about it when I was fixing things up. Sorry about
+that; will change!
 
-I don't think you can guarantee that. Normally for TX you would want to
-detach and replace the page unless you have some sort of other
-recycling/reuse taking care of it for you. Normally that is handled via
-page pool.
-
-On the Intel parts I had gotten around that via our split buffer model
-so we just switched to the other half of the page while the Tx sat on
-the first half, and by the time we would have to check again we would
-either detach the page for flip back if it had already been freed by
-the Tx path.
-
-> +static int
-> +vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
-> +		      struct xdp_frame *xdpf,
-> +		      struct sk_buff *skb)
->=20
-
-Also after re-reviewing this I was wondering why you have the skb
-argument for this function? The only caller is passing NULL and I
-wouldn't expect you to be passing an skb since you are working with XDP
-buffers anyway. Seems like you could also drop the argument from
-vmxnet3_xdp_xmit_frame() since you are only passing it NULL as well.
-
+-Toke
 
