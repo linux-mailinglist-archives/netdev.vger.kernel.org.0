@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D2664C405
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:47:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D272F64C406
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 07:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237497AbiLNGrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 01:47:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        id S237464AbiLNGra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 01:47:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237442AbiLNGrE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:47:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6D42872B
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:46:11 -0800 (PST)
+        with ESMTP id S237415AbiLNGrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 01:47:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3E727DD9
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:46:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671000371;
+        s=mimecast20190719; t=1671000382;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=4/uGgWeyPpUkK7Ij8q3Mfl77hPjQRLagdr15VkXWvMU=;
-        b=eTFCMDCMtEBsPRpENfxWAXrCo8uOXxJ0E6JQH0nH/zNEzIQu7RwafqYmEPHLoJx0uUB9x+
-        gaSMYX07lWGBYBg9Ar5YeVxjlkj8jANCC7/Duyl77rkFtw1PtASD7rzpBVM/9nKTb+u7rJ
-        3+HQBj4UMosOI2DFy3s+al7r4lQV5B4=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=MWnsyB5sxeFYntkt0vIRWfG8T8fsCpIgSxnBoT/BNFI=;
+        b=hgEB4BhmvcXU/T1nRrQFGPcLBVnatx7Q5zSsOM0uBfgLEW1MmcA+DW2KJxLL/Fo3XZLcxQ
+        hoIWprjx0u9fdkjX2ILokI7wCKL6KXqHkCBDmCDvKyn/H1OdT96pxxVfYQTVMvZLeIwgLc
+        rP+W2cMj/eZwkGO+klLp5bFM0CsGvR8=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-599-DX2mgKD-NMu12pXmIQkYSg-1; Wed, 14 Dec 2022 01:46:07 -0500
-X-MC-Unique: DX2mgKD-NMu12pXmIQkYSg-1
-Received: by mail-oo1-f69.google.com with SMTP id u22-20020a4a6c56000000b004a38aa46a1fso6206064oof.22
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:46:07 -0800 (PST)
+ us-mta-364-TwmrJfX5PTGb3HO4yOwkcQ-1; Wed, 14 Dec 2022 01:46:21 -0500
+X-MC-Unique: TwmrJfX5PTGb3HO4yOwkcQ-1
+Received: by mail-oo1-f72.google.com with SMTP id c8-20020a4a87c8000000b0049f149a83fdso6169293ooi.19
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 22:46:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4/uGgWeyPpUkK7Ij8q3Mfl77hPjQRLagdr15VkXWvMU=;
-        b=uebLdZ6txMjGDgPF1DC+LEAJ/Ubl4gEN1r7stfANpaR2f498Q3wFiLOpJFaXprPHbU
-         tOJhbKWRvvkJHZ6yCwzmIXVtKf9kHATa1zbpeS/4W3YydlyZmmWKwLQQIvtS6DfwuORq
-         FwWplICqugadtqMpHedG49NZvwhxMAt9v9+hk/jTMCnMn7BSkW0Ef2wGjiT9Idtu5xWc
-         /+ePiFY2+COtIPZ25byxfGsc8Ebz0Lf1Z8Y0YBk8qsXLc/yQbyoNyDtQRls0M0+fOOQG
-         KU1TjEYsleOYzMtGuEe1brUKHPR092B5ijnw61XJODaESNirsa5YtN17OG7yPo9BYnYN
-         CP5w==
-X-Gm-Message-State: AFqh2kq63J7Jv8VTJhbvr2XOSc9wVq+y0KeFHCgAA6orTe32XT1kgJVi
-        ducd+1Cjuq8sX5ZGoe0H0gy9zD5vibOw67z+UuGBa8dBWeysTccF8LEzZ7UPP1Lg3aLycCunAVd
-        xy7jmA1Nz/FCZKUvQuL4B09rhbOM9BkuD
-X-Received: by 2002:a05:6870:41c7:b0:144:a97b:1ae2 with SMTP id z7-20020a05687041c700b00144a97b1ae2mr107913oac.35.1671000366430;
-        Tue, 13 Dec 2022 22:46:06 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtcRZ22jl8YXWE+Ou5mo3nHgzRE0JO54AgFrrqC8Ly52HjwSUKGCden9upEeqPXBdroLUSLQS6K+mq6Or1SYYA=
-X-Received: by 2002:a05:6870:41c7:b0:144:a97b:1ae2 with SMTP id
- z7-20020a05687041c700b00144a97b1ae2mr107900oac.35.1671000366177; Tue, 13 Dec
- 2022 22:46:06 -0800 (PST)
+        bh=MWnsyB5sxeFYntkt0vIRWfG8T8fsCpIgSxnBoT/BNFI=;
+        b=3GqwdEz773Q93//v8y+vEuYE9LGAy2sGy476tGcr4CIX1YGWD58T2+PRgb9tGGwvdF
+         yzZOq7mphZUyVvPwBSlyF1z6y2PyB5O4ebTCgVEj3ny4F++5UpPoo4CKaGlzheDZ9axj
+         6sw7ibMCaPEepMFQc+HrzkcWt48Qi2IN+tnhTFUEnUADj//DWA0bgBcmA94XQTWYO1C4
+         65pyxqlNrTo5djCqoKtP5ex6gm7gcpQYfJOZKE9SEKBQpxWLhoyv+1fhFtcXLVBXuiSK
+         fsho1QFuGwdWyEiOR70KXall7ul8w5J2TZbszxarizsIQW//MtMDHL/5ghdb71r9No18
+         DT/g==
+X-Gm-Message-State: AFqh2kpja9uaSXLGft/a/MIIC/jcxM+RdMPhWzAkCsmWo8Bq9VSQP04R
+        AHUkC3O2sVKJIk2ytW9LJbHCjfzcXxtJMfToU9JXo3eFEfcTI8ULfuPW9MVZi49vYePcoQ7tAD4
+        5poARaBRi4Cw3NDI2jMY9TbY7PCzF2pfn
+X-Received: by 2002:a05:6870:bb1a:b0:144:b22a:38d3 with SMTP id nw26-20020a056870bb1a00b00144b22a38d3mr128549oab.280.1671000380520;
+        Tue, 13 Dec 2022 22:46:20 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsYblB9x5xwo/WTOwFjqPemdP2/m1+jY+4gWjkzKBPhp0Uz+IEw4heA0f7Fi09kLSTOOOq4JUizn1sm5Q6htc0=
+X-Received: by 2002:a05:6870:bb1a:b0:144:b22a:38d3 with SMTP id
+ nw26-20020a056870bb1a00b00144b22a38d3mr128540oab.280.1671000380257; Tue, 13
+ Dec 2022 22:46:20 -0800 (PST)
 MIME-Version: 1.0
-References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-9-gautam.dawar@amd.com>
-In-Reply-To: <20221207145428.31544-9-gautam.dawar@amd.com>
+References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-11-gautam.dawar@amd.com>
+In-Reply-To: <20221207145428.31544-11-gautam.dawar@amd.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 14 Dec 2022 14:45:55 +0800
-Message-ID: <CACGkMEtGCbUBZRFh7EUJyymuWZ9uxiAOeJHA6h-dGa9Y3pDZGw@mail.gmail.com>
-Subject: Re: [PATCH net-next 08/11] sfc: implement device status related vdpa
- config operations
+Date:   Wed, 14 Dec 2022 14:46:09 +0800
+Message-ID: <CACGkMEuMfcuUOCv_S62Y6Ju-HS7yqikEEYxy_h7+vkLrtnTg6A@mail.gmail.com>
+Subject: Re: [PATCH net-next 10/11] sfc: implement vdpa config_ops for dma operations
 To:     Gautam Dawar <gautam.dawar@amd.com>
 Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
         eperezma@redhat.com, tanuj.kamde@amd.com, Koushik.Dutta@amd.com,
@@ -71,7 +70,7 @@ Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,187 +80,238 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Dec 7, 2022 at 10:57 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
 >
-> vDPA config opertions to handle get/set device status and device
-> reset have been implemented.
+> Although sfc uses the platform IOMMU but it still
+> implements the DMA config operations to deal with
+> possible IOVA overlap with the MCDI DMA buffer and
+> relocates the latter if such overlap is detected.
 >
 > Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 > ---
->  drivers/net/ethernet/sfc/ef100_vdpa.c     |   7 +-
->  drivers/net/ethernet/sfc/ef100_vdpa.h     |   1 +
->  drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 133 ++++++++++++++++++++++
->  3 files changed, 140 insertions(+), 1 deletion(-)
+>  drivers/net/ethernet/sfc/ef100_vdpa.c     | 140 ++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/ef100_vdpa.h     |   3 +
+>  drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 111 +++++++++++++++++
+>  drivers/net/ethernet/sfc/net_driver.h     |  12 ++
+>  4 files changed, 266 insertions(+)
 >
 > diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
-> index 04d64bfe3c93..80bca281a748 100644
+> index b9368eb1acd5..16681d164fd1 100644
 > --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
 > +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
-> @@ -225,9 +225,14 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
+> @@ -309,6 +309,140 @@ static int vdpa_update_domain(struct ef100_vdpa_nic *vdpa_nic)
+>                                           vdpa_nic->geo_aper_end + 1, 0);
+>  }
 >
->  static void ef100_vdpa_delete(struct efx_nic *efx)
->  {
-> +       struct vdpa_device *vdpa_dev;
+> +static int ef100_vdpa_alloc_buffer(struct efx_nic *efx, struct efx_buffer *buf)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic = efx->vdpa_nic;
+> +       struct device *dev = &vdpa_nic->vdpa_dev.dev;
+> +       int rc;
 > +
->         if (efx->vdpa_nic) {
-> +               vdpa_dev = &efx->vdpa_nic->vdpa_dev;
-> +               ef100_vdpa_reset(vdpa_dev);
-
-Any reason we need to reset during delete?
-
+> +       buf->addr = kzalloc(buf->len, GFP_KERNEL);
+> +       if (!buf->addr)
+> +               return -ENOMEM;
 > +
->                 /* replace with _vdpa_unregister_device later */
-> -               put_device(&efx->vdpa_nic->vdpa_dev.dev);
-> +               put_device(&vdpa_dev->dev);
->                 efx->vdpa_nic = NULL;
+> +       rc = iommu_map(vdpa_nic->domain, buf->dma_addr,
+> +                      virt_to_phys(buf->addr), buf->len,
+> +                      IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
+> +       if (rc)
+> +               dev_err(dev, "iommu_map failed, rc: %d\n", rc);
+> +
+> +       return rc;
+> +}
+> +
+> +static void ef100_vdpa_free_buffer(struct ef100_vdpa_nic *vdpa_nic,
+> +                                  struct efx_buffer *buf)
+> +{
+> +       struct device *dev = &vdpa_nic->vdpa_dev.dev;
+> +       int rc;
+> +
+> +       rc = iommu_unmap(vdpa_nic->domain, buf->dma_addr, buf->len);
+> +       if (rc < 0)
+> +               dev_err(dev, "iommu_unmap failed, rc: %d\n", rc);
+> +
+> +       kfree(buf->addr);
+> +}
+> +
+> +int ef100_setup_ef100_mcdi_buffer(struct ef100_vdpa_nic *vdpa_nic)
+> +{
+> +       struct efx_nic *efx = vdpa_nic->efx;
+> +       struct ef100_nic_data *nic_data;
+> +       struct efx_mcdi_iface *mcdi;
+> +       struct efx_buffer mcdi_buf;
+> +       enum efx_mcdi_mode mode;
+> +       struct device *dev;
+> +       int rc;
+> +
+> +       /* Switch to poll mode MCDI mode */
+> +       nic_data = efx->nic_data;
+> +       dev = &vdpa_nic->vdpa_dev.dev;
+> +       mcdi = efx_mcdi(efx);
+> +       mode = mcdi->mode;
+> +       efx_mcdi_mode_poll(efx);
+> +       efx_mcdi_flush_async(efx);
+> +
+> +       /* First, allocate the MCDI buffer for EF100 mode */
+> +       rc = efx_nic_alloc_buffer(efx, &mcdi_buf,
+> +                                 MCDI_BUF_LEN, GFP_KERNEL);
+> +       if (rc) {
+> +               dev_err(dev, "nic alloc buf failed, rc: %d\n", rc);
+> +               goto restore_mode;
+> +       }
+> +
+> +       /* unmap and free the vDPA MCDI buffer now */
+> +       ef100_vdpa_free_buffer(vdpa_nic, &nic_data->mcdi_buf);
+> +       memcpy(&nic_data->mcdi_buf, &mcdi_buf, sizeof(struct efx_buffer));
+> +       efx->mcdi_buf_mode = EFX_BUF_MODE_EF100;
+> +
+> +restore_mode:
+> +       if (mode == MCDI_MODE_EVENTS)
+> +               efx_mcdi_mode_event(efx);
+> +
+> +       return rc;
+> +}
+> +
+> +int ef100_setup_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova)
+> +{
+> +       struct ef100_nic_data *nic_data = efx->nic_data;
+> +       struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
+> +       enum efx_mcdi_mode mode = mcdi->mode;
+> +       struct efx_buffer mcdi_buf;
+> +       int rc;
+> +
+> +       efx_mcdi_mode_poll(efx);
+> +       efx_mcdi_flush_async(efx);
+> +
+> +       /* First, prepare the MCDI buffer for vDPA mode */
+> +       mcdi_buf.dma_addr = mcdi_iova;
+> +       /* iommu_map requires page aligned memory */
+> +       mcdi_buf.len = PAGE_ALIGN(MCDI_BUF_LEN);
+> +       rc = ef100_vdpa_alloc_buffer(efx, &mcdi_buf);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev, "alloc vdpa buf failed, rc: %d\n", rc);
+> +               goto restore_mode;
+> +       }
+> +
+> +       /* All set-up, free the EF100 MCDI buffer now */
+> +       efx_nic_free_buffer(efx, &nic_data->mcdi_buf);
+> +       memcpy(&nic_data->mcdi_buf, &mcdi_buf, sizeof(struct efx_buffer));
+> +       efx->mcdi_buf_mode = EFX_BUF_MODE_VDPA;
+> +
+> +restore_mode:
+> +       if (mode == MCDI_MODE_EVENTS)
+> +               efx_mcdi_mode_event(efx);
+> +       return rc;
+> +}
+> +
+> +int ef100_remap_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova)
+> +{
+> +       struct ef100_nic_data *nic_data = efx->nic_data;
+> +       struct ef100_vdpa_nic *vdpa_nic = efx->vdpa_nic;
+> +       struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
+> +       struct efx_buffer *mcdi_buf;
+> +       int rc;
+> +
+> +       mcdi_buf = &nic_data->mcdi_buf;
+> +       spin_lock_bh(&mcdi->iface_lock);
+> +
+> +       rc = iommu_unmap(vdpa_nic->domain, mcdi_buf->dma_addr, mcdi_buf->len);
+> +       if (rc < 0) {
+> +               pci_err(efx->pci_dev, "iommu_unmap failed, rc: %d\n", rc);
+> +               goto out;
+> +       }
+> +
+> +       rc = iommu_map(vdpa_nic->domain, mcdi_iova,
+> +                      virt_to_phys(mcdi_buf->addr),
+> +                      mcdi_buf->len,
+> +                      IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev, "iommu_map failed, rc: %d\n", rc);
+> +               goto out;
+> +       }
+> +
+> +       mcdi_buf->dma_addr = mcdi_iova;
+> +out:
+> +       spin_unlock_bh(&mcdi->iface_lock);
+> +       return rc;
+> +}
+> +
+>  static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+>                                                 const char *dev_name,
+>                                                 enum ef100_vdpa_class dev_type,
+> @@ -391,6 +525,12 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+>                 goto err_put_device;
 >         }
->         efx_mcdi_free_vis(efx);
+>
+> +       rc = ef100_setup_vdpa_mcdi_buffer(efx, EF100_VDPA_IOVA_BASE_ADDR);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev, "realloc mcdi failed, err: %d\n", rc);
+> +               goto err_put_device;
+> +       }
+> +
+>         rc = get_net_config(vdpa_nic);
+>         if (rc)
+>                 goto err_put_device;
 > diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> index a33edd6dda12..1b0bbba88154 100644
+> index c3c77029973d..f15d8739dcde 100644
 > --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
 > +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> @@ -186,6 +186,7 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
->                           enum ef100_vdpa_mac_filter_type type);
+> @@ -202,6 +202,9 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
 >  int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvqs);
 >  void ef100_vdpa_irq_vectors_free(void *data);
-> +int ef100_vdpa_reset(struct vdpa_device *vdev);
+>  int ef100_vdpa_reset(struct vdpa_device *vdev);
+> +int ef100_setup_ef100_mcdi_buffer(struct ef100_vdpa_nic *vdpa_nic);
+> +int ef100_setup_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova);
+> +int ef100_remap_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova);
 >
 >  static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
 >  {
 > diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> index 132ddb4a647b..718b67f6da90 100644
+> index 8c198d949fdb..7c632f179bcf 100644
 > --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
 > +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> @@ -251,6 +251,62 @@ static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
->         return false;
+> @@ -12,6 +12,7 @@
+>  #include "ef100_vdpa.h"
+>  #include "ef100_iova.h"
+>  #include "io.h"
+> +#include "ef100_iova.h"
+>  #include "mcdi_vdpa.h"
+>
+>  /* Get the queue's function-local index of the associated VI
+> @@ -739,14 +740,121 @@ static void ef100_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
+>         }
 >  }
 >
-> +static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
+> +static bool is_iova_overlap(u64 iova1, u64 size1, u64 iova2, u64 size2)
 > +{
-> +       int i;
-> +
-> +       WARN_ON(!mutex_is_locked(&vdpa_nic->lock));
-> +
-> +       if (!vdpa_nic->status)
-> +               return;
-> +
-> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
-> +       vdpa_nic->status = 0;
-> +       vdpa_nic->features = 0;
-> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
-> +               reset_vring(vdpa_nic, i);
+> +       return max(iova1, iova2) < min(iova1 + size1, iova2 + size2);
 > +}
 > +
-> +/* May be called under the rtnl lock */
-> +int ef100_vdpa_reset(struct vdpa_device *vdev)
+> +static int ef100_vdpa_dma_map(struct vdpa_device *vdev,
+> +                             unsigned int asid,
+> +                             u64 iova, u64 size,
+> +                             u64 pa, u32 perm, void *opaque)
 > +{
-> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> +
-> +       /* vdpa device can be deleted anytime but the bar_config
-> +        * could still be vdpa and hence efx->state would be STATE_VDPA.
-> +        * Accordingly, ensure vdpa device exists before reset handling
-> +        */
-> +       if (!vdpa_nic)
-> +               return -ENODEV;
-> +
-> +       mutex_lock(&vdpa_nic->lock);
-> +       ef100_reset_vdpa_device(vdpa_nic);
-> +       mutex_unlock(&vdpa_nic->lock);
-> +       return 0;
-> +}
-> +
-> +static int start_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
-> +{
-> +       int rc = 0;
-> +       int i, j;
-> +
-> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
-> +               if (can_create_vring(vdpa_nic, i)) {
-> +                       rc = create_vring(vdpa_nic, i);
-
-So I think we can safely remove the create_vring() in set_vq_ready()
-since it's undefined behaviour if set_vq_ready() is called after
-DRIVER_OK.
-
-> +                       if (rc)
-> +                               goto clear_vring;
-> +               }
-> +       }
-> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_STARTED;
-> +       return rc;
-> +
-> +clear_vring:
-> +       for (j = 0; j < i; j++)
-> +               if (vdpa_nic->vring[j].vring_created)
-> +                       delete_vring(vdpa_nic, j);
-> +       return rc;
-> +}
-> +
->  static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
->                                      u16 idx, u64 desc_area, u64 driver_area,
->                                      u64 device_area)
-> @@ -568,6 +624,80 @@ static u32 ef100_vdpa_get_vendor_id(struct vdpa_device *vdev)
->         return EF100_VDPA_VENDOR_ID;
->  }
->
-> +static u8 ef100_vdpa_get_status(struct vdpa_device *vdev)
-> +{
-> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> +       u8 status;
-> +
-> +       mutex_lock(&vdpa_nic->lock);
-> +       status = vdpa_nic->status;
-> +       mutex_unlock(&vdpa_nic->lock);
-> +       return status;
-> +}
-> +
-> +static void ef100_vdpa_set_status(struct vdpa_device *vdev, u8 status)
-> +{
-> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> +       u8 new_status;
+> +       struct ef100_vdpa_nic *vdpa_nic;
+> +       struct ef100_nic_data *nic_data;
+> +       unsigned int mcdi_buf_len;
+> +       dma_addr_t mcdi_buf_addr;
+> +       u64 mcdi_iova = 0;
 > +       int rc;
 > +
-> +       mutex_lock(&vdpa_nic->lock);
-> +       if (!status) {
-> +               dev_info(&vdev->dev,
-> +                        "%s: Status received is 0. Device reset being done\n",
-> +                        __func__);
-> +               ef100_reset_vdpa_device(vdpa_nic);
-> +               goto unlock_return;
-> +       }
-> +       new_status = status & ~vdpa_nic->status;
-> +       if (new_status == 0) {
-> +               dev_info(&vdev->dev,
-> +                        "%s: New status same as current status\n", __func__);
-> +               goto unlock_return;
-> +       }
-> +       if (new_status & VIRTIO_CONFIG_S_FAILED) {
-> +               ef100_reset_vdpa_device(vdpa_nic);
-> +               goto unlock_return;
-> +       }
+> +       vdpa_nic = get_vdpa_nic(vdev);
+> +       nic_data = vdpa_nic->efx->nic_data;
+> +       mcdi_buf_addr = nic_data->mcdi_buf.dma_addr;
+> +       mcdi_buf_len = nic_data->mcdi_buf.len;
 > +
-> +       if (new_status & VIRTIO_CONFIG_S_ACKNOWLEDGE &&
-> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
+> +       /* Validate the iova range against geo aperture */
+> +       if (iova < vdpa_nic->geo_aper_start ||
+> +           ((iova + size - 1) > vdpa_nic->geo_aper_end)) {
+> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+> +                       "%s: iova range (%llx, %llx) not within geo aperture\n",
+> +                       __func__, iova, (iova + size));
+> +               return -EINVAL;
 
-As replied before, I think there's no need to check
-EF100_VDPA_STATE_INITIALIZED, otherwise it could be a bug somewhere.
-
-> +               vdpa_nic->status |= VIRTIO_CONFIG_S_ACKNOWLEDGE;
-> +               new_status &= ~VIRTIO_CONFIG_S_ACKNOWLEDGE;
-> +       }
-> +       if (new_status & VIRTIO_CONFIG_S_DRIVER &&
-> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> +               vdpa_nic->status |= VIRTIO_CONFIG_S_DRIVER;
-> +               new_status &= ~VIRTIO_CONFIG_S_DRIVER;
-> +       }
-> +       if (new_status & VIRTIO_CONFIG_S_FEATURES_OK &&
-> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> +               vdpa_nic->status |= VIRTIO_CONFIG_S_FEATURES_OK;
-> +               vdpa_nic->vdpa_state = EF100_VDPA_STATE_NEGOTIATED;
-
-I think we can simply map EF100_VDPA_STATE_NEGOTIATED to
-VIRTIO_CONFIG_S_FEATURES_OK.
-
-E.g the code doesn't fail the feature negotiation by clearing the
-VIRTIO_CONFIG_S_FEATURES_OK when ef100_vdpa_set_driver_feature fails?
+It might be helpful to advertise this geo via get_iova_range().
 
 Thanks
 
