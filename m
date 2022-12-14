@@ -2,62 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B4664CDF7
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 17:27:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4E3764CE07
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 17:31:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238875AbiLNQ1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 11:27:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47464 "EHLO
+        id S238990AbiLNQbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 11:31:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238985AbiLNQ1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 11:27:09 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7EF266E
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:27:08 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id f3so2333260pgc.2
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:27:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:subject:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Abhxxtrazx8t79POlX/XuT1uef+M32bWHgZLumYxB9w=;
-        b=XTmle19Atof4rYAU2OKjTMELJOLpx7S7BMTFtf45fvKP1W1Tem3D5KG21YwDilUX9C
-         geucGAUbDX/RX/a9kRB/fRD87ihyYBKkwUZguRJnbI7iiSKElrqj9hqI5htX1duwC2BR
-         Oof3wTRePEy8S/eZzcr5UGIgLd6n5BXdrOWTEnIxYsB/3loFNIDbbpwoploDqXg1Tjvl
-         uiRRO897IIt7m7l/a9rUOd6i+H/w2kV9RLci/vEWxe6N+etRcNwiTifovAyXckv6dtJI
-         +O84bngOVHDOZZyl6oDi8Z9hRUqoW4dAUm+WEAOEhgg17DieDmjvYH+jMeZxCuwT8d0E
-         aqeA==
+        with ESMTP id S238774AbiLNQbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 11:31:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CA46277
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:30:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671035431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MvzKkMsF15Ii2v8T6zm7fsybd7ToFL1MzDuE6XhV9TM=;
+        b=V+qT101Cch3PYQ3AfepLCnAGvWi20veldxUwzMFigTJNLsR4iE9OJaWByy8PFZxd4lNjdt
+        lFUDZ5cSR5hip/uNoxNkRXPe9s4BS9Ix/Eio6h/AdXSOHJ7Bl2mfrjOH0nRphALRw7CGHy
+        +lkuMm1FGdlVCYW+5PjtOnWr0noh/yw=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-600-pquE-wBJP7OH8gEjZmqanA-1; Wed, 14 Dec 2022 11:30:29 -0500
+X-MC-Unique: pquE-wBJP7OH8gEjZmqanA-1
+Received: by mail-wm1-f71.google.com with SMTP id i9-20020a1c3b09000000b003d21fa95c38so4648607wma.3
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:30:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:subject:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Abhxxtrazx8t79POlX/XuT1uef+M32bWHgZLumYxB9w=;
-        b=hHgrTp2uAOnVsxxeYDRgc3nFhpmVnNhwZdb024Iv5nlMZ8hE2VXujODjh4tYZf1mbb
-         MXkpLJutfDNRUUgUYvqYhd6hZMD7mjY/T24DdW8abZiAWgpz6ZTUVFytLP+dLbp6PhXc
-         g4eJ3RzSfwxQxu/Kpp9cFmIJEg96iwpOQQrMjkrpc1+mYcRZoLw7aQ5q7bf4tdXED36K
-         Zs7XuBAMwV0LiZ3sMLLFWtelGyvUThQ3F+rFZylcWCb2eqyBcdbNbb7+FVQLdLefMtsB
-         3zluBPQEaRqT05hVD62IKsfTsC7xI1aZkE6NhK5P7KWT6wuHPCRG817HHD4FtOfVwqF1
-         bN1A==
-X-Gm-Message-State: ANoB5pnhXxIIwvouwqQlUGP3zgg3V13gRqd1OE3tSRfnhX2hCkd+tf8C
-        vLIE98hY7ld5emH8la0aGQvv/GnZEBem3D1S9g4=
-X-Google-Smtp-Source: AA0mqf4+v2YEr+z6WBu8+QDMqUwcOiN70b9owIhqIRP+CVDypoCK7LB01Pogaql83GM8kBBxFYicWw==
-X-Received: by 2002:a05:6a00:7ca:b0:577:3944:aa78 with SMTP id n10-20020a056a0007ca00b005773944aa78mr22597795pfu.0.1671035227793;
-        Wed, 14 Dec 2022 08:27:07 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id v6-20020aa799c6000000b00574ee8d8779sm92323pfi.65.2022.12.14.08.27.07
-        for <netdev@vger.kernel.org>
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MvzKkMsF15Ii2v8T6zm7fsybd7ToFL1MzDuE6XhV9TM=;
+        b=kCI+nONmeL9Ak3bPmEcSozk1AXLi1sX1XtM7ykw2ZrsX59ggJhV/9cTzTbNms1Npeh
+         OcBKHCKY3vJGlAMdKAWzUvjS1WRj51BbJRJCEphDowoxu3rRByLSRma7Xx1ceKvg8yUs
+         o2INHjIv7816px4PfTa4F5egE8UhBTcbUbAdU6oUFGNiAbdAkQ2ZM4ZjJ13xy5R97T8o
+         ybeyywEEHp+9nwngSO5Wf7i3OgYFUQ1y76Ey+J6Fag36SR62MKIE6I2g2G+XuSCY5CZU
+         ak5fUzs+MdHFg727/gXjpZ+SKzaZooVYhLyTXXgxo/hjfs8wfT2ib7BN4yVIXRPsWNdV
+         6ANw==
+X-Gm-Message-State: ANoB5pkGHZIac4OOZALsoHgvmuQ9LN2ermgB8lY1CPHKr9aNd2BIuUqg
+        z5cRe0MOMks0f6j4AlV1CjiHtTSENh6+0Zfx1flfPyfspFdYrLoLmmQKsj3Wlvk3wOxBU+f6gJG
+        wgbrO/TVMIr2HhHHK
+X-Received: by 2002:a5d:470a:0:b0:242:d4f:96c with SMTP id y10-20020a5d470a000000b002420d4f096cmr15025773wrq.0.1671035428443;
+        Wed, 14 Dec 2022 08:30:28 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4GfaS136t9dUD0TzONcVTtwml5/pPsXD/CEUDFgE57pufF23Sy+4PdxYOWCLOsS1OfTnwS5w==
+X-Received: by 2002:a5d:470a:0:b0:242:d4f:96c with SMTP id y10-20020a5d470a000000b002420d4f096cmr15025759wrq.0.1671035428229;
+        Wed, 14 Dec 2022 08:30:28 -0800 (PST)
+Received: from step1.redhat.com (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
+        by smtp.gmail.com with ESMTPSA id e17-20020adffd11000000b002422816aa25sm3791759wrr.108.2022.12.14.08.30.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Dec 2022 08:27:07 -0800 (PST)
-Date:   Wed, 14 Dec 2022 08:27:05 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: [ANNOUNCE] iproute2 6.1 release
-Message-ID: <20221214082705.5d2c2e7f@hermes.local>
+        Wed, 14 Dec 2022 08:30:27 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, eperezma@redhat.com,
+        stefanha@redhat.com, netdev@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [RFC PATCH 0/6] vdpa_sim: add support for user VA
+Date:   Wed, 14 Dec 2022 17:30:19 +0100
+Message-Id: <20221214163025.103075-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.38.1
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,118 +79,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the release of iproute2 corresponding to the 6.1 kernel.
-Nothing major; lots of usual set of small fixes.
+This series adds support for the use of user virtual addresses in the
+vDPA simulator devices.
 
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.1.tar.gz
+The main reason for this change is to lift the pinning of all guest memory.
+Especially with virtio devices implemented in software.
 
-Repository for current release
-    https://github.com/shemminger/iproute2.git
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+The next step would be to generalize the code in vdpa-sim to allow the
+implementation of in-kernel software devices. Similar to vhost, but using vDPA
+so we can reuse the same software stack (e.g. in QEMU) for both HW and SW
+devices.
 
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+For example, we have never merged vhost-blk, and lately there has been interest.
+So it would be nice to do it directly with vDPA to reuse the same code in the
+VMM for both HW and SW vDPA block devices.
 
-Contributions:
+The main problem (addressed by this series) was due to the pinning of all
+guest memory, which thus prevented the overcommit of guest memory.
 
-Andrea Claudi (4):
-      man: ss.8: fix a typo
-      testsuite: fix build failure
-      genl: remove unused vars in Makefile
-      json: do not escape single quotes
+There are still some TODOs to be fixed, but I would like to have your feedback
+on this RFC.
 
-Benjamin Poirier (1):
-      ip-monitor: Do not error out when RTNLGRP_STATS is not available
+Thanks,
+Stefano
 
-Daniel Xu (1):
-      ip-link: man: Document existence of netns argument in add command
+Note: this series is based on Linux v6.1 + couple of fixes (that I needed to
+run libblkio tests) already posted but not yet merged.
 
-David Ahern (4):
-      Update kernel headers
-      Update kernel headers
-      Update kernel headers
-      Update kernel headers
+Tree available here: https://gitlab.com/sgarzarella/linux/-/tree/vdpa-sim-use-va
 
-Emeel Hakim (2):
-      macsec: add Extended Packet Number support
-      macsec: add user manual description for extended packet number feature
+Stefano Garzarella (6):
+  vdpa: add bind_mm callback
+  vhost-vdpa: use bind_mm device callback
+  vringh: support VA with iotlb
+  vdpa_sim: make devices agnostic for work management
+  vdpa_sim: use kthread worker
+  vdpa_sim: add support for user VA
 
-Eyal Birger (2):
-      ip: xfrm: support "external" (`collect_md`) mode in xfrm interfaces
-      ip: xfrm: support adding xfrm metadata as lwtunnel info in routes
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |   7 +-
+ include/linux/vdpa.h                 |   8 +
+ include/linux/vringh.h               |   5 +-
+ drivers/vdpa/mlx5/core/resources.c   |   3 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c    |   2 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     | 132 +++++++++++++-
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |   6 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |   6 +-
+ drivers/vhost/vdpa.c                 |  22 +++
+ drivers/vhost/vringh.c               | 250 +++++++++++++++++++++------
+ 10 files changed, 370 insertions(+), 71 deletions(-)
 
-Hangbin Liu (5):
-      ip: add NLM_F_ECHO support
-      libnetlink: add offset for nl_dump_ext_ack_done
-      tc/tc_monitor: print netlink extack message
-      rtnetlink: add new function rtnl_echo_talk()
-      ip: fix return value for rtnl_talk failures
-
-Ido Schimmel (1):
-      iplink_bridge: Add no_linklocal_learn option support
-
-Jacob Keller (4):
-      devlink: use dl_no_arg instead of checking dl_argc == 0
-      devlink: remove dl_argv_parse_put
-      mnlg: remove unnused mnlg_socket structure
-      utils: extract CTRL_ATTR_MAXATTR and save it
-
-Jiri Pirko (6):
-      devlink: expose nested devlink for a line card object
-      devlink: load port-ifname map on demand
-      devlink: fix parallel flash notifications processing
-      devlink: move use_iec into struct dl
-      devlink: fix typo in variable name in ifname_map_cb()
-      devlink: load ifname map on demand from ifname_map_rev_lookup() as well
-
-Junxin Chen (1):
-      dcb: unblock mnl_socket_recvfrom if not message received
-
-Lahav Schlesinger (1):
-      libnetlink: Fix memory leak in __rtnl_talk_iov()
-
-Lai Peter Jun Ann (2):
-      tc_util: Fix no error return when large parent id used
-      tc_util: Change datatype for maj to avoid overflow issue
-
-Matthieu Baerts (4):
-      ss: man: add missing entries for MPTCP
-      ss: man: add missing entries for TIPC
-      ss: usage: add missing parameters
-      ss: re-add TIPC query support
-
-Michal Wilczynski (1):
-      devlink: Fix setting parent for 'rate add'
-
-Nicolas Dichtel (1):
-      link: display 'allmulti' counter
-
-Paolo Lungaroni (1):
-      seg6: add support for flavors in SRv6 End* behaviors
-
-Roi Dayan (1):
-      tc: ct: Fix invalid pointer dereference
-
-Stephen Hemminger (14):
-      uapi: update from 6.1 pre rc1
-      u32: fix json formatting of flowid
-      tc_stab: remove dead code
-      uapi: update for in.h and ip.h
-      remove #if 0 code
-      tc: add json support to size table
-      tc: put size table options in json object
-      tc/basic: fix json output filter
-      iplink: support JSON in MPLS output
-      tc: print errors on stderr
-      ip: print mpls errors on stderr
-      tc: make prefix const
-      man: add missing tc class show
-      6.1.0
-
-Vincent Mailhol (1):
-      iplink_can: add missing `]' of the bitrate, dbitrate and termination arrays
-
-Vladimir Oltean (1):
-      ip link: add sub-command to view and change DSA conduit interface
+-- 
+2.38.1
 
