@@ -2,98 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13DF664D180
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 21:52:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72ECB64D189
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 21:56:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiLNUw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 15:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
+        id S229636AbiLNU4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 15:56:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiLNUw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 15:52:26 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AE82C109;
-        Wed, 14 Dec 2022 12:52:25 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id p8so12457391lfu.11;
-        Wed, 14 Dec 2022 12:52:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=zFLdAfKk9Qm17jrt7feddSvQWDFpf/HIJxK3WcQxEl8=;
-        b=KTR///vKb6FkMxCfJhmBVJsixjYCRwNf3SNNxkY8Kcyk1KH6qKMIz1yymZbQztUH7A
-         /fOUPhDfjc1In1qZYxs8oaFdbkiae/9zT+LqK0bcnb1WHfFYPtyYJGeTt3j6GDK3kv2D
-         YicD4G7d9btkexKcOYUsSgEm6FIm/pso6E8YoQ3a0OyTk5S74l6AMPeCO6hFCZgcOXpN
-         zA+lj9Tc0iPDSMzzBPsEmM3pSmzNoCEW2MpNIq23sF3tSsj5oakULwThMcR42YqZaCcy
-         aR3tmPxvjMji1QYZsENBSNjRjyLSiteyMW+cV9GwXjvaQr45VdgdsRemcBbYxI8m3uKA
-         GuyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zFLdAfKk9Qm17jrt7feddSvQWDFpf/HIJxK3WcQxEl8=;
-        b=nDeyYA5JY7gu69MfbXBi8MADHdv7Co7kFdQJT9l5KI8kNqKIoj2IIU6rUtt0gcJsan
-         h7rIJ9Uw2FPEKWMpAC0DfXU3mBSjWoswBZFbXJNkaR0gMvReM5R/7a+ALsz+6fZxSeae
-         H/cpgqxfLXrkBxTUKOFcBh9aVK+LRkgSNZ7Sa7QoUDPEa8hwYBQ4rJKCJ64qRNGJEdhU
-         QC76F3TWDoxIXlczE1akxFc9WZN7bbVniwnq6x28WxDGaOanJ0I3YBJCFDwVt/ppnfxU
-         siy8LZD9FRZbcLjcbqniIEszkZpFi5sbrg4RctXkjCWrXGT7WHKMQAuPQ+ztyLT55Ag4
-         LPrg==
-X-Gm-Message-State: ANoB5pkgjf74i/OPe2QCnNxLXuGQqr7+SQ157HoMNEtJrxYF1NI8Zu9O
-        A8HKRMfJWveyJAGvXydIriM=
-X-Google-Smtp-Source: AA0mqf6g4WD45xmyq30OdOjmCP1Uum4pVhBkE7h363BDFRriY9G1l8cO/jYy8Ir/u/cgIdwktccJlQ==
-X-Received: by 2002:a05:6512:3499:b0:4b5:4079:c824 with SMTP id v25-20020a056512349900b004b54079c824mr5844679lfr.46.1671051143634;
-        Wed, 14 Dec 2022 12:52:23 -0800 (PST)
-Received: from DESKTOP-5EKDQDN.localdomain (78-63-10-115.static.zebra.lt. [78.63.10.115])
-        by smtp.gmail.com with ESMTPSA id p17-20020ac246d1000000b0049e9122bd0esm930105lfo.114.2022.12.14.12.52.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Dec 2022 12:52:23 -0800 (PST)
-From:   =?UTF-8?q?Aldas=20Tara=C5=A1kevi=C4=8Dius?= <aldas60@gmail.com>
-To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Aldas=20Tara=C5=A1kevi=C4=8Dius?= <aldas60@gmail.com>
-Subject: [PATCH] staging: qlge: remove unnecessary spaces before function pointer args
-Date:   Wed, 14 Dec 2022 22:51:47 +0200
-Message-Id: <20221214205147.2172-1-aldas60@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229454AbiLNU4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 15:56:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDA31CB33
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 12:55:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F1D4B81975
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 20:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73872C433EF;
+        Wed, 14 Dec 2022 20:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671051354;
+        bh=jpv2VODk7ge8tP4uQHFkoy0T+a+fD/9PIiasprhlLeE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JxHKlqLiGkp503+3fGdGzxYajaeOh+t5XrOvNojuWvCCIOtG8I9P21l72+hnWaCGK
+         BBn6rN8WmcbaI4bH/hMTPJkCa5G2EYgMSPLQ5cTczOyGKu4CNQttKiXO43LXmZIXBg
+         P3szUXTlJi3ZqabFD+LQYBjrh8p5XvBHItyV/XJsQ4nI6VwuNVpyaBymV+X8x8N3t6
+         DeSr8DMKzV1GDOJU5V871+AjyvtRUindVeWxVcTHzOTnUoXJBVwXNjL1gf0lhKJtzq
+         aOLoVCH6bTFfCk0E6hnMW1bCDq22iWhS6tqSlR7AlG47vphhUE8Ga0U2oiSNEX0PPZ
+         RyIUPQxmhqi0Q==
+Date:   Wed, 14 Dec 2022 12:55:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 net] af_unix: Add error handling in af_unix_init().
+Message-ID: <20221214125553.4e2a5cc5@kernel.org>
+In-Reply-To: <20221214092008.47330-1-kuniyu@amazon.com>
+References: <20221214092008.47330-1-kuniyu@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unnecessary spaces before the function pointer arguments as
-warned by checkpatch.
+On Wed, 14 Dec 2022 18:20:08 +0900 Kuniyuki Iwashima wrote:
+>  static int __init af_unix_init(void)
+>  {
+> -	int i, rc = -1;
+> +	int i, rc;
 
-Signed-off-by: Aldas Taraškevičius <aldas60@gmail.com>
----
- drivers/staging/qlge/qlge.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This is just a cleanup, right? Let's skip it, it will conflict.
 
-diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-index fc8c5ca89..05e4f4744 100644
---- a/drivers/staging/qlge/qlge.h
-+++ b/drivers/staging/qlge/qlge.h
-@@ -2057,8 +2057,8 @@ enum {
- };
- 
- struct nic_operations {
--	int (*get_flash) (struct ql_adapter *);
--	int (*port_initialize) (struct ql_adapter *);
-+	int (*get_flash)(struct ql_adapter *);
-+	int (*port_initialize)(struct ql_adapter *);
- };
- 
- /*
--- 
-2.37.2
+>  	BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
+>  
+> @@ -3730,20 +3730,25 @@ static int __init af_unix_init(void)
+>  	}
+>  
+>  	rc = proto_register(&unix_dgram_proto, 1);
+> -	if (rc != 0) {
+> +	if (rc) {
+>  		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
+
+Should this message be updated?
+
+>  		goto out;
+>  	}
+>  
+>  	rc = proto_register(&unix_stream_proto, 1);
+> -	if (rc != 0) {
+> +	if (rc) {
+>  		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
+
+And this?
+
+> -		proto_unregister(&unix_dgram_proto);
+> -		goto out;
+> +		goto err_proto_register;
+>  	}
 
