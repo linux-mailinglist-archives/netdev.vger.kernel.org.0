@@ -2,275 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B788764D364
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:28:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 921C164D3A3
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 00:46:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiLNX2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 18:28:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
+        id S229614AbiLNXq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 18:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiLNX2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:28:06 -0500
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B412249B6B;
-        Wed, 14 Dec 2022 15:26:14 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id D8F5A32008C0;
-        Wed, 14 Dec 2022 18:26:12 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 14 Dec 2022 18:26:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1671060372; x=1671146772; bh=KB
-        GCcVFV9pdga3P7P36DjTI4Zsnw96kBATcVDh8ugd0=; b=KeHjTp6oF8Buv9l5WR
-        Q50uzwI+/AEohr4Z19sGhlRkJyONAzTBQ+a4nDMkms78SDfSk/4yDw2CvQAUUXvx
-        gbOuWuwxYwXD7Ueof3vbPUfowBPoMTXrt6iNM3sPe9dFpZ0lg35Cc7LS7vkTtqDe
-        eOZhe1D2q3GCPGDeKLctuiiJB+xtnj5zIqd6PJpBM2g624DiNGQj1Q4mdvz++8OD
-        YpGp+p+Dyuajt0ZmgWrGGfXRu4hEg7aGneshXiAvbG1MqOmQhVIlNbOKKEDc3Q0T
-        2OEZ04WZ3n8amJDxqQvPlAE40nr46mRIqU2XWvs2RKVCYmikbuw+RfSoLLxzErUA
-        Dm+Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1671060372; x=1671146772; bh=KBGCcVFV9pdga
-        3P7P36DjTI4Zsnw96kBATcVDh8ugd0=; b=ZbY8sZhJ/ZesGsBcEXE9DgB1vzmZI
-        cpA59ckz9VBBGhlAmxEIqdoK7VV04RSWc+ZY7UvlifczSiarh7wEyh5K21UqGrDq
-        fzBIb9FJqlkdHkIz7RQ6PjArWg/clyIAn/UIevHj5y2H0VOFh0AKfKUf8ibNRTva
-        OtkISjca6mBBV9xvkMuq8oxQo+qBgeIsLcnBz4qvf1SsFHPLhyZ6AhPbT5hF88bO
-        nWWZvLSZjmuabsggwAauGpHSuC4heLXPBkhJip0em3OyEZyaIMI4mej5qk0DAbru
-        f7ZAeTBmNmwWUp+L26t4+p8Szh91tt0azKYJRVzDT7kaFdXfEVKAvzU5w==
-X-ME-Sender: <xms:lFuaY1iy23eDuMvThIlVt2MApXC6h9YSBKyFXXcHI_-o8GqaWLU5QA>
-    <xme:lFuaY6Ab3GuOULx_XawC1amAUJvUGvFaGFQ9fypfxUQYyGeIHnJ_q3ieAzUik9HPp
-    X-XlsqTyeiKmSPSLA>
-X-ME-Received: <xmr:lFuaY1HbadwSUsUAhF-BWvkLYHI4g0mBW8Ulvp1RA97z7Unt-CIVNqhN0AnVvwIyYQAhymSZCs80sKUZh3gLBqMUHf2yoatwnfiP_s3EKOk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeggddtiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
-    hrlhcuvffnffculdejtddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
-    tdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqeenuc
-    ggtffrrghtthgvrhhnpefgfefggeejhfduieekvdeuteffleeifeeuvdfhheejleejjeek
-    gfffgefhtddtteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:lFuaY6STrKUlkBU7WvkjneOx4JkJeHg8DRuaBT_FCdOMqozEp6jXIw>
-    <xmx:lFuaYyz5kyZlkU7ri_VVsWR20xdmhxLfhkdXB54rscc9kmwy08hk9Q>
-    <xmx:lFuaYw48Vbxy-vs3pmUCm4ftSNNhte1omatUiwXnXyuQ1yDNUf-FnQ>
-    <xmx:lFuaY2flXe2e8w6f2P8ABZVxDJBrfrsHTAnh-LQufYgOc5TlnZw9PA>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 14 Dec 2022 18:26:11 -0500 (EST)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229595AbiLNXqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 18:46:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616E7B67
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 15:46:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671061568;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=78LWSsIPJ1XVGL0zlNrTSoo4bL68pZNIsDEq2wZNj8A=;
+        b=bRNqntr7d54F+Kajl0rClsCSM2ufcITtEuQFQUhDSI0+aXt2D7ct+G8Mo/eWDWxZ/JSbjN
+        x0JXhdaIHG9c2M/RkRTJL66+1WO8M2/yZvv5M13aSVj0T0qpzoKvGaBErKCBr8j753J6HB
+        nvxzJXJScSGtnbl7+t010qnK/H4ypos=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-601-Dn1_IGxlMmm-_GLmi4sHDg-1; Wed, 14 Dec 2022 18:46:07 -0500
+X-MC-Unique: Dn1_IGxlMmm-_GLmi4sHDg-1
+Received: by mail-ed1-f72.google.com with SMTP id y2-20020a056402440200b0047369d5e65cso319208eda.11
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 15:46:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=78LWSsIPJ1XVGL0zlNrTSoo4bL68pZNIsDEq2wZNj8A=;
+        b=KhhL4yywmA4JsDqJUTXZ7tAZjAKa/uuhEUAnUB+XVyS5Zp0wD71/TelhPu5OC/z23b
+         o1HYnZtfebvlQo8/McR0tgrM2ncae9v8TQ1hzkIrHap8k9MY169Jk2JUdT0SqmqtRmWi
+         DBJfftq0hxfbq09+XY8J4+wxQOViOkqABfDluDi98UkqIhplBhGbSVyg9jZMl3Y46r9N
+         4SjkbWYQjx6V/axJQ5PS6gjhZRrQrMO1h7a7Bskcr5HPgh9orwWMWJ5VTSMDqfcMqJPR
+         13ArLqGQ37mEEBuLkV1Va1e6aFPBT5DBDW6KuDqKBxm+4n7cQtXXtHBdOI+ZySs48iuu
+         c2sw==
+X-Gm-Message-State: ANoB5pnuhojPbW7clHnUZYGqaDe5mnRzXDZqUmFoL4QNpbl+3z7Suhw9
+        7HXzO/RgKM+4H8OgAswPHzDU5ftuhAUkT8QG24cGrbgKL1WSvvJxUm0xbRb4zj+33BbmS0hHOQI
+        1ciahYnOX0Enwtomd
+X-Received: by 2002:a17:906:2284:b0:7c0:4030:ae20 with SMTP id p4-20020a170906228400b007c04030ae20mr23372479eja.24.1671061565174;
+        Wed, 14 Dec 2022 15:46:05 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6Kj2IAiZK6tBE55SMpMMy5/RbSQAJVRnIh9peLku4AtIQs4/zPgn0O75+ZteBEVeLMyv2/KQ==
+X-Received: by 2002:a17:906:2284:b0:7c0:4030:ae20 with SMTP id p4-20020a170906228400b007c04030ae20mr23372449eja.24.1671061564314;
+        Wed, 14 Dec 2022 15:46:04 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id x22-20020a170906711600b007be3aa82543sm6461002ejj.35.2022.12.14.15.46.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 15:46:03 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 1B59982F66F; Thu, 15 Dec 2022 00:46:02 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     ppenkov@aviatrix.com, dbird@aviatrix.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf-next 3/6] bpf, net, frags: Add bpf_ip_check_defrag() kfunc
-Date:   Wed, 14 Dec 2022 16:25:30 -0700
-Message-Id: <1f48a340a898c4d22d65e0e445dbf15f72081b9a.1671049840.git.dxu@dxuuu.xyz>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <cover.1671049840.git.dxu@dxuuu.xyz>
-References: <cover.1671049840.git.dxu@dxuuu.xyz>
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [xdp-hints] [PATCH bpf-next v4 01/15] bpf: Document XDP RX
+ metadata
+In-Reply-To: <20221213023605.737383-2-sdf@google.com>
+References: <20221213023605.737383-1-sdf@google.com>
+ <20221213023605.737383-2-sdf@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 15 Dec 2022 00:46:02 +0100
+Message-ID: <87tu1xeeh1.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,T_PDS_OTHER_BAD_TLD
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This kfunc is used to defragment IPv4 packets. The idea is that if you
-see a fragmented packet, you call this kfunc. If the kfunc returns 0,
-then the skb has been updated to contain the entire reassembled packet.
+Stanislav Fomichev <sdf@google.com> writes:
 
-If the kfunc returns an error (most likely -EINPROGRESS), then it means
-the skb is part of a yet-incomplete original packet. A reasonable
-response to -EINPROGRESS is to drop the packet, as the ip defrag
-infrastructure is already hanging onto the frag for future reassembly.
+> Document all current use-cases and assumptions.
 
-Care has been taken to ensure the prog skb remains valid no matter what
-the underlying ip_check_defrag() call does. This is in contrast to
-ip_defrag(), which may consume the skb if the skb is part of a
-yet-incomplete original packet.
+Below is a set of slightly more constructive suggestions for how to edit
+this so it's not confusing the metadata area description with the kfunc
+list:
 
-So far this kfunc is only callable from TC clsact progs.
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> Cc: Maryam Tahhan <mtahhan@redhat.com>
+> Cc: xdp-hints@xdp-project.net
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  Documentation/bpf/xdp-rx-metadata.rst | 90 +++++++++++++++++++++++++++
+>  1 file changed, 90 insertions(+)
+>  create mode 100644 Documentation/bpf/xdp-rx-metadata.rst
+>
+> diff --git a/Documentation/bpf/xdp-rx-metadata.rst b/Documentation/bpf/xdp-rx-metadata.rst
+> new file mode 100644
+> index 000000000000..498eae718275
+> --- /dev/null
+> +++ b/Documentation/bpf/xdp-rx-metadata.rst
+> @@ -0,0 +1,90 @@
+> +===============
+> +XDP RX Metadata
+> +===============
+> +
+> +XDP programs support creating and passing custom metadata via
+> +``bpf_xdp_adjust_meta``. This metadata can be consumed by the following
+> +entities:
+> +
+> +1. ``AF_XDP`` consumer.
+> +2. Kernel core stack via ``XDP_PASS``.
+> +3. Another device via ``bpf_redirect_map``.
+> +4. Other BPF programs via ``bpf_tail_call``.
 
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
----
- include/net/ip.h           | 11 +++++
- net/ipv4/Makefile          |  1 +
- net/ipv4/ip_fragment.c     |  2 +
- net/ipv4/ip_fragment_bpf.c | 98 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 112 insertions(+)
- create mode 100644 net/ipv4/ip_fragment_bpf.c
+I'd replace the above with a short introduction, like:
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 144bdfbb25af..14f1e69a6523 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -679,6 +679,7 @@ enum ip_defrag_users {
- 	IP_DEFRAG_VS_FWD,
- 	IP_DEFRAG_AF_PACKET,
- 	IP_DEFRAG_MACVLAN,
-+	IP_DEFRAG_BPF,
- };
- 
- /* Return true if the value of 'user' is between 'lower_bond'
-@@ -692,6 +693,16 @@ static inline bool ip_defrag_user_in_between(u32 user,
- }
- 
- int ip_defrag(struct net *net, struct sk_buff *skb, u32 user);
-+
-+#ifdef CONFIG_DEBUG_INFO_BTF
-+int register_ip_frag_bpf(void);
-+#else
-+static inline int register_ip_frag_bpf(void)
-+{
-+	return 0;
-+}
-+#endif
-+
- #ifdef CONFIG_INET
- struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user);
- #else
-diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index af7d2cf490fb..749da1599933 100644
---- a/net/ipv4/Makefile
-+++ b/net/ipv4/Makefile
-@@ -64,6 +64,7 @@ obj-$(CONFIG_TCP_CONG_ILLINOIS) += tcp_illinois.o
- obj-$(CONFIG_NET_SOCK_MSG) += tcp_bpf.o
- obj-$(CONFIG_BPF_SYSCALL) += udp_bpf.o
- obj-$(CONFIG_NETLABEL) += cipso_ipv4.o
-+obj-$(CONFIG_DEBUG_INFO_BTF) += ip_fragment_bpf.o
- 
- obj-$(CONFIG_XFRM) += xfrm4_policy.o xfrm4_state.o xfrm4_input.o \
- 		      xfrm4_output.o xfrm4_protocol.o
-diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
-index 7406c6b6376d..467aa8ace9fb 100644
---- a/net/ipv4/ip_fragment.c
-+++ b/net/ipv4/ip_fragment.c
-@@ -757,5 +757,7 @@ void __init ipfrag_init(void)
- 	if (inet_frags_init(&ip4_frags))
- 		panic("IP: failed to allocate ip4_frags cache\n");
- 	ip4_frags_ctl_register();
-+	if (register_ip_frag_bpf())
-+		panic("IP: bpf: failed to register ip_frag_bpf\n");
- 	register_pernet_subsys(&ip4_frags_ops);
- }
-diff --git a/net/ipv4/ip_fragment_bpf.c b/net/ipv4/ip_fragment_bpf.c
-new file mode 100644
-index 000000000000..a9e5908ed216
---- /dev/null
-+++ b/net/ipv4/ip_fragment_bpf.c
-@@ -0,0 +1,98 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Unstable ipv4 fragmentation helpers for TC-BPF hook
-+ *
-+ * These are called from SCHED_CLS BPF programs. Note that it is allowed to
-+ * break compatibility for these functions since the interface they are exposed
-+ * through to BPF programs is explicitly unstable.
-+ */
-+
-+#include <linux/bpf.h>
-+#include <linux/btf_ids.h>
-+#include <linux/ip.h>
-+#include <linux/filter.h>
-+#include <linux/netdevice.h>
-+#include <net/ip.h>
-+#include <net/sock.h>
-+
-+__diag_push();
-+__diag_ignore_all("-Wmissing-prototypes",
-+		  "Global functions as their definitions will be in ip_fragment BTF");
-+
-+/* bpf_ip_check_defrag - Defragment an ipv4 packet
-+ *
-+ * This helper takes an skb as input. If this skb successfully reassembles
-+ * the original packet, the skb is updated to contain the original, reassembled
-+ * packet.
-+ *
-+ * Otherwise (on error or incomplete reassembly), the input skb remains
-+ * unmodified.
-+ *
-+ * Parameters:
-+ * @ctx		- Pointer to program context (skb)
-+ * @netns	- Child network namespace id. If value is a negative signed
-+ *		  32-bit integer, the netns of the device in the skb is used.
-+ *
-+ * Return:
-+ * 0 on successfully reassembly or non-fragmented packet. Negative value on
-+ * error or incomplete reassembly.
-+ */
-+int bpf_ip_check_defrag(struct __sk_buff *ctx, u64 netns)
-+{
-+	struct sk_buff *skb = (struct sk_buff *)ctx;
-+	struct sk_buff *skb_cpy, *skb_out;
-+	struct net *caller_net;
-+	struct net *net;
-+	int mac_len;
-+	void *mac;
-+
-+	if (unlikely(!((s32)netns < 0 || netns <= S32_MAX)))
-+		return -EINVAL;
-+
-+	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
-+	if ((s32)netns < 0) {
-+		net = caller_net;
-+	} else {
-+		net = get_net_ns_by_id(caller_net, netns);
-+		if (unlikely(!net))
-+			return -EINVAL;
-+	}
-+
-+	mac_len = skb->mac_len;
-+	skb_cpy = skb_copy(skb, GFP_ATOMIC);
-+	if (!skb_cpy)
-+		return -ENOMEM;
-+
-+	skb_out = ip_check_defrag(net, skb_cpy, IP_DEFRAG_BPF);
-+	if (IS_ERR(skb_out))
-+		return PTR_ERR(skb_out);
-+
-+	skb_morph(skb, skb_out);
-+	kfree_skb(skb_out);
-+
-+	/* ip_check_defrag() does not maintain mac header, so push empty header
-+	 * in so prog sees the correct layout. The empty mac header will be
-+	 * later pulled from cls_bpf.
-+	 */
-+	mac = skb_push(skb, mac_len);
-+	memset(mac, 0, mac_len);
-+	bpf_compute_data_pointers(skb);
-+
-+	return 0;
-+}
-+
-+__diag_pop()
-+
-+BTF_SET8_START(ip_frag_kfunc_set)
-+BTF_ID_FLAGS(func, bpf_ip_check_defrag, KF_CHANGES_PKT)
-+BTF_SET8_END(ip_frag_kfunc_set)
-+
-+static const struct btf_kfunc_id_set ip_frag_bpf_kfunc_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &ip_frag_kfunc_set,
-+};
-+
-+int register_ip_frag_bpf(void)
-+{
-+	return register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS,
-+					 &ip_frag_bpf_kfunc_set);
-+}
--- 
-2.39.0
+"This document describes how an XDP program can access hardware metadata
+related to a packet using a set of helper functions, and how it can pass
+that metadata on to other consumers."
+
+> +General Design
+> +==============
+> +
+> +XDP has access to a set of kfuncs to manipulate the metadata. Every
+> +device driver implements these kfuncs. The set of kfuncs is
+> +declared in ``include/net/xdp.h`` via ``XDP_METADATA_KFUNC_xxx``.
+> +
+> +Currently, the following kfuncs are supported. In the future, as more
+> +metadata is supported, this set will grow:
+> +
+> +- ``bpf_xdp_metadata_rx_timestamp_supported`` returns true/false to
+> +  indicate whether the device supports RX timestamps
+> +- ``bpf_xdp_metadata_rx_timestamp`` returns packet RX timestamp
+> +- ``bpf_xdp_metadata_rx_hash_supported`` returns true/false to
+> +  indicate whether the device supports RX hash
+> +- ``bpf_xdp_metadata_rx_hash`` returns packet RX hash
+
+Keep the above (with David's comments), then add a bit of extra text,
+here:
+
+"The XDP program can use these kfuncs to read the metadata into stack
+variables for its own consumption. Or, to pass the metadata on to other
+consumers, an XDP program can store it into the metadata area carried
+ahead of the packet.
+
+> +Within the XDP frame, the metadata layout is as follows::
+> +
+> +  +----------+-----------------+------+
+> +  | headroom | custom metadata | data |
+> +  +----------+-----------------+------+
+> +             ^                 ^
+> +             |                 |
+> +   xdp_buff->data_meta   xdp_buff->data
+
+Add:
+
+"The XDP program can store individual metadata items into this data_meta
+area in whichever format it chooses. Later consumers of the metadata
+will have to agree on the format by some out of band contract (like for
+the AF_XDP use case, see below)."
+
+> +AF_XDP
+> +======
+> +
+> +``AF_XDP`` use-case implies that there is a contract between the BPF program
+> +that redirects XDP frames into the ``XSK`` and the final consumer.
+> +Thus the BPF program manually allocates a fixed number of
+> +bytes out of metadata via ``bpf_xdp_adjust_meta`` and calls a subset
+> +of kfuncs to populate it. User-space ``XSK`` consumer, looks
+> +at ``xsk_umem__get_data() - METADATA_SIZE`` to locate its metadata.
+> +
+> +Here is the ``AF_XDP`` consumer layout (note missing ``data_meta`` pointer)::
+> +
+> +  +----------+-----------------+------+
+> +  | headroom | custom metadata | data |
+> +  +----------+-----------------+------+
+> +                               ^
+> +                               |
+> +                        rx_desc->address
+> +
+> +XDP_PASS
+> +========
+> +
+> +This is the path where the packets processed by the XDP program are passed
+> +into the kernel. The kernel creates ``skb`` out of the ``xdp_buff`` contents.
+> +Currently, every driver has a custom kernel code to parse the descriptors and
+> +populate ``skb`` metadata when doing this ``xdp_buff->skb`` conversion.
+
+Add: ", and the XDP metadata is not used by the kernel when building
+skbs. However, TC-BPF programs can access the XDP metadata area using
+the data_meta pointer."
+
+> +In the future, we'd like to support a case where XDP program can override
+> +some of that metadata.
+
+s/some of that metadata/some of the metadata used for building skbs/.
+
+> +The plan of record is to make this path similar to ``bpf_redirect_map``
+> +so the program can control which metadata is passed to the skb layer.
+
+I'm not sure we are quite agreed on this part, just drop for now (it's
+sorta covered by the above)?
+
+> +bpf_redirect_map
+> +================
+> +
+> +``bpf_redirect_map`` can redirect the frame to a different device.
+> +In this case we don't know ahead of time whether that final consumer
+> +will further redirect to an ``XSK`` or pass it to the kernel via ``XDP_PASS``.
+> +Additionally, the final consumer doesn't have access to the original
+> +hardware descriptor and can't access any of the original metadata.
+
+Replace this paragraph with: "``bpf_redirect_map`` can redirect the
+frame to a different device. Some devices (like virtual ethernet links)
+support running a second XDP program after the redirect. However, the
+final consumer doesn't have access to the original hardware descriptor
+and can't access any of the original metadata. The same applies to XDP
+programs installed into devmaps and cpumaps."
+
+> +For this use-case, only custom metadata is currently supported. If
+> +the frame is eventually passed to the kernel, the skb created from such
+> +a frame won't have any skb metadata. The ``XSK`` consumer will only
+> +have access to the custom metadata.
+
+Reword as:
+
+"This means that for redirected packets only custom metadata is
+currently supported, which has to be prepared by the initial XDP program
+before redirect. If +the frame is eventually passed to the kernel, the
+skb created from such a frame won't have any hardware metadata populated
+in its skb. And if such a packet is later redirected into an ``XSK``,
+that will also only have access to the custom metadata."
+
+> +bpf_tail_call
+> +=============
+> +
+> +No special handling here. Tail-called program operates on the same context
+> +as the original one.
+
+Replace this with a statement that it is in fact *not* supported in tail
+maps :)
+
+-Toke
 
