@@ -2,75 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C278F64CD9E
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 17:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 564A364CDB8
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 17:10:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238619AbiLNQDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 11:03:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
+        id S238769AbiLNQKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 11:10:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238731AbiLNQCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 11:02:38 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3C923167
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:01:53 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id gh17so45641065ejb.6
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:01:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mwuIivs2bXND3SDhAV+zSYDmApbibgZQPxXCRZ6VkeU=;
-        b=oJ0BTx8/fzc/1SJo4ZpoTeJmjzZKHFk+5WZC+5jf2UzgKYGPAJo56tOsxPYbj8ivHh
-         gxbfpk5xDGQxSBcmogzTRsuGc1BAdEH6hN3ReMmZB9E4RUvM4/QBeYmMfE98qxLVlqmC
-         8yIHDDRduUZbrFqts4OKX4/THvLp5PgxLHEaa1QHAFU+3Lmx9HaWOCckE5SOqeVIcXM3
-         wCbSXiEXhEPK49FNl3Jy6L+FlIf1y6xp2X1oD2aKfQb/F+LnvMh1OoJgrCiNV4U5FIXW
-         kqifKkSbP3q01Xe9wc60oD9roYoAj/mPh5b7PJj8XeV9F/S2aYAvOafsth5YGke8qhSd
-         BRgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mwuIivs2bXND3SDhAV+zSYDmApbibgZQPxXCRZ6VkeU=;
-        b=ACVSeiUGO+3G+wIyvtKoi1evuMvfc3GPp9tkX7tOvwIdw6dLky70Gf6QsQ2JWxMQun
-         FT/xcd0bR5l8j6NJYSXsmzQQrbXuj/MdwEIOialzkDneiLZ3ZA8+ALp40bKho/mSNLN6
-         K6XX1DKV6LVtkjwxDzoIFManBvTByEN/PqUCawZ7k2tfj+BOwjRNKfA3dWQ8j7Vtn5vL
-         OAQ13gg3S/LAnnXTnbRvMTlMxLBHyWndgSBmTc7q+uDINMmnhBVXnt7Zl0ZMM2pDsFLw
-         IXQnACy8f8QSgqnRj5WzP0Q+5iNLZJD/zoloYfG0ORNE1lAEBRVtphnJ0SGseAM7sA9i
-         xa9g==
-X-Gm-Message-State: ANoB5plXFAC7TxZaNMyF+XdeGXs7KCEFiGuxqjn8tr+v9r8gSD8M5FN/
-        8s8IXe2BVMETZx409sxFLm9qEm8oX8Qweg4O9R8=
-X-Google-Smtp-Source: AA0mqf7cBkamVBK8eQK2lgdVYhLyugjTlAnsaHM7oC2o1BBluzJDeClHoXnsSLHDsUwlp/T5QoEak3h8XuqWGr4Lark=
-X-Received: by 2002:a17:906:4a03:b0:7c1:13b6:fc50 with SMTP id
- w3-20020a1709064a0300b007c113b6fc50mr9325199eju.70.1671033711591; Wed, 14 Dec
- 2022 08:01:51 -0800 (PST)
+        with ESMTP id S238137AbiLNQKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 11:10:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EC563DB
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 08:10:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BDBF61B2F
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 16:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F09BFC433D2;
+        Wed, 14 Dec 2022 16:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671034217;
+        bh=vuF+G6t0ntLsFP5ImghdSG74YVnxSA50e/YZMOREfX4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cn0uTw0fFGXpKYB3KK+/1iM+tyvJzrGHwZlo1RrX0kUbDzwTocrRa5DX6c1WMKbem
+         8M6B+5/dAPYmMJp1PIpHuIT1f/4l6PAJuUGhRSQpQzd13gStcTC5w1cXDR9zuoEjFR
+         mfu/W1FhqmJr4RzQyls+GLkL/0dCa3V/DkecltZ9ZJlCKxjvVGJzlAnY7xJB3d9jm+
+         kRbzpOXKG+R7U8bnYpopnTgeQWiooum+AU+LX46llMEC9ajhXsFQM544Z9BO0dxJ70
+         L+Tsvvpqsg0FPxyPjpmB2EDA/doDOBfkPUUFS6WaR52dEcqNINkVQlEtO+Ik39TVZP
+         wacR6MtAJXfng==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CECDAE29F4D;
+        Wed, 14 Dec 2022 16:10:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a17:906:bc46:b0:7c1:30c3:9613 with HTTP; Wed, 14 Dec 2022
- 08:01:50 -0800 (PST)
-Reply-To: chuinh021@gmail.com
-From:   chuinh <correasilva505@gmail.com>
-Date:   Wed, 14 Dec 2022 17:01:50 +0100
-Message-ID: <CAOwfSSoJ9Bji_gbo74JEOrjdtUNoQ3C1i11kRE1c3xsNoyomxQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next v1 0/4] Add new IPsec offload type
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167103421684.12353.4505073967964991619.git-patchwork-notify@kernel.org>
+Date:   Wed, 14 Dec 2022 16:10:16 +0000
+References: <cover.1670830561.git.leonro@nvidia.com>
+In-Reply-To: <cover.1670830561.git.leonro@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     steffen.klassert@secunet.com, dsahern@gmail.com, leonro@nvidia.com,
+        stephen@networkplumber.org, netdev@vger.kernel.org,
+        raeds@nvidia.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This series was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
+
+On Mon, 12 Dec 2022 09:54:02 +0200 you wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Extend ip tool to support new IPsec offload mode.
+> Followup of the recently accepted series to netdev.
+> https://lore.kernel.org/r/20221209093310.4018731-1-steffen.klassert@secunet.com
+> --------------------------------------------------------------------------------
+> 
+> [...]
+
+Here is the summary with links:
+  - [iproute2-next,v1,1/4] Update XFRM kernel header
+    (no matching commit)
+  - [iproute2-next,v1,2/4] xfrm: prepare state offload logic to set mode
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=bdd19b1edec4
+  - [iproute2-next,v1,3/4] xfrm: add packet offload mode to xfrm state
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=a6e740ff406c
+  - [iproute2-next,v1,4/4] xfrm: add an interface to offload policy
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=3422c62d581d
+
+You are awesome, thank you!
 -- 
-Dear Friend,
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I have an important message which i want to discuss with you.
 
-Your Faithfully
-
-Mrs Can Yeu
