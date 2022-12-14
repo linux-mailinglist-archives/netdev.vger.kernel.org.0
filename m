@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE3F64C2C8
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 04:30:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F51664C2DD
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 04:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237128AbiLNDaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Dec 2022 22:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
+        id S235762AbiLNDmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Dec 2022 22:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiLNDaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 22:30:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2569422298
-        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 19:30:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB648B81689
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 03:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 953F2C433EF;
-        Wed, 14 Dec 2022 03:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670988617;
-        bh=xNz3cH+TbXNASTBfwLyF4qr7Ahh57c0nZsYDw9Zkg0I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nuXhFtH7mJvi6/l0zVdqxwh4qvh2dJkQoSqo96DRzywVS5qEkTg1/w45gFGhBOrk3
-         o5pv1zaKsTqB+GGGe9GoWVf6LHEFCjNHOTc97Mcf6nEH7xWS7rEomOy7iHALmWoYap
-         dtvzCX+9zXjiMZUD1ZsDSHOE7lMoBCP7C/F6q6qCWMZ4NKfWi5bfPZYRib9fKkpohu
-         Jd4I3XM5DtY0tWy+gzARSGsbpTi+c3oPD7UXVtdCI203M8CqFWlO8xP0Phs3jthzrA
-         PLVuuj34GXCpRfjqUDw+i+81PTVttqBl3WttSVvqY8BtPfa3YYiRgGD7B8PyucXyar
-         VTtQ7RR9+0ZdQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 76ED6E4D02A;
-        Wed, 14 Dec 2022 03:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229610AbiLNDmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Dec 2022 22:42:10 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6D824BE3
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 19:42:09 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NX1P45SDRzJqXR;
+        Wed, 14 Dec 2022 11:41:12 +0800 (CST)
+Received: from cgs.huawei.com (10.244.148.83) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 14 Dec 2022 11:42:06 +0800
+From:   Gaosheng Cui <cuigaosheng1@huawei.com>
+To:     <peppe.cavallaro@st.com>, <alexandre.torgue@foss.st.com>,
+        <joabreu@synopsys.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <mcoquelin.stm32@gmail.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <boon.leong.ong@intel.com>,
+        <cuigaosheng1@huawei.com>
+CC:     <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH] net: stmmac: fix errno when create_singlethread_workqueue() fails
+Date:   Wed, 14 Dec 2022 11:42:05 +0800
+Message-ID: <20221214034205.3449908-1-cuigaosheng1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] Bonding: fix high prio not effect issue
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167098861748.20181.2346186639120427683.git-patchwork-notify@kernel.org>
-Date:   Wed, 14 Dec 2022 03:30:17 +0000
-References: <20221212035647.1053865-1-liuhangbin@gmail.com>
-In-Reply-To: <20221212035647.1053865-1-liuhangbin@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, jtoppins@redhat.com, pabeni@redhat.com,
-        edumazet@google.com, liali@redhat.com, saeed@kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.244.148.83]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,33 +51,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+We should set the return value to -ENOMEM explicitly when
+create_singlethread_workqueue() fails in stmmac_dvr_probe(),
+otherwise we'll lose the error value.
 
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Fixes: a137f3f27f92 ("net: stmmac: fix possible memory leak in stmmac_dvr_probe()")
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Mon, 12 Dec 2022 11:56:44 +0800 you wrote:
-> When a high prio link up, if there has current link, it will not do
-> failover as we missed the check in link up event. Fix it in this patchset
-> and add a prio option test case.
-> 
-> v2:
-> 1. use rcu_access_pointer() instead of rtnl_dereference().
-> 2: make do_failover after looping all slaves
-> 
-> [...]
-
-Here is the summary with links:
-  - [PATCHv2,net,1/3] bonding: add missed __rcu annotation for curr_active_slave
-    https://git.kernel.org/netdev/net/c/3d0b738fc5ad
-  - [PATCHv2,net,2/3] bonding: do failover when high prio link up
-    https://git.kernel.org/netdev/net/c/e95cc44763a4
-  - [PATCHv2,net,3/3] selftests: bonding: add bonding prio option test
-    (no matching commit)
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index ec64b65dee34..c6951c976f5d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7099,6 +7099,7 @@ int stmmac_dvr_probe(struct device *device,
+ 	priv->wq = create_singlethread_workqueue("stmmac_wq");
+ 	if (!priv->wq) {
+ 		dev_err(priv->device, "failed to create workqueue\n");
++		ret = -ENOMEM;
+ 		goto error_wq_init;
+ 	}
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
