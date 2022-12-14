@@ -2,48 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9BA264D1C5
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 22:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2969D64D1E3
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 22:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbiLNV1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 16:27:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        id S229662AbiLNVkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 16:40:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiLNV0Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 16:26:24 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B97B442E3;
-        Wed, 14 Dec 2022 13:25:52 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3ECA5FEC;
-        Wed, 14 Dec 2022 13:26:33 -0800 (PST)
-Received: from [10.57.88.237] (unknown [10.57.88.237])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F106F3F71E;
-        Wed, 14 Dec 2022 13:25:50 -0800 (PST)
-Message-ID: <a3a034b5-9493-e345-bcb4-8c5eef7f9a65@arm.com>
-Date:   Wed, 14 Dec 2022 21:25:45 +0000
+        with ESMTP id S229463AbiLNVkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 16:40:11 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777623D92F;
+        Wed, 14 Dec 2022 13:40:07 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id j4so12735278lfk.0;
+        Wed, 14 Dec 2022 13:40:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3jT8BbEnTMk4PvBeviyKw2FcYCYOfLeszTEBNvSB5Oo=;
+        b=YaSXoKz3u/5HGMhU88zPl4NQgxVNjpIjM+WeKSNkZ/UrWgPauK3YyuOlu0RckPaFVe
+         mFZccA/HUjQHaQd6JnPV5CvjrDK5PHvJck3kd1EQZkVTBaxrfoaAYOmbVB8W88NQqZkk
+         j/Sir9JwwherHi9gjNtcUTvlnpEer1Td/C/pIbklsXE8SKjd7G1FYmL67uFCPwojI/Gu
+         QLCP7lUDLrVBFXqxkGa6NpYnVAVI9KmnZAnkhBYK1zzVId3SXtp7E6n3knCzvtsFjNu1
+         ZmhUL3LvZJlg4k4G6mpDjWB+pAMda0TaOBkdN1Yg24cp0j1Vm8nKSP1KsHWweye4fjUf
+         8k0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3jT8BbEnTMk4PvBeviyKw2FcYCYOfLeszTEBNvSB5Oo=;
+        b=wToiWjsyeUoATfQCZJNHqhUkkGhIvtxPLNUhSsHhk1SBhtZ16GKnx98jU61HjIUMIe
+         USz4/QlkG3gFuveY9hmZC+rLK6IfRLa2/402VcCpD5Ytsstd8BxlF9q+JngbUjJTKki4
+         1wn/pvhcQdgeu8gERBdZDKAW9itkvfvCgvGXcy9oHInkQsd9cNMrJsLOu8Qx2JbjZzOJ
+         tVESgEh7szU6TJ22snECOYrHAhNHXagiqJz95HTgt3TdkKA/89QyJxKoZsdQifH4kIPH
+         KgRUkyNY+Gj33G0oduGFj1pS/Q+oCZrhAX2YiI/4APJaywMY96fToHr7ip9HBG5zzgOJ
+         IaxQ==
+X-Gm-Message-State: ANoB5plODRqXvpwI21MGemgSj/8jZ6ulNr0d9ER7F+B7bxiqc/y0Si9z
+        X4+oSnBEsilc9DmblY/qOMPRU9jF7PiRJjbLcPbs/lWySm5z
+X-Google-Smtp-Source: AA0mqf7JLxK2GaGobI65rgXEaQiHalaqMzK4Q3PyQi5VUYps2e/bZg/o9fLO2ag1Xx+ibtfmjao3pxbpbUWeQseafFQ=
+X-Received: by 2002:a05:6512:324d:b0:4a2:4d28:73b9 with SMTP id
+ c13-20020a056512324d00b004a24d2873b9mr36407500lfr.690.1671054005708; Wed, 14
+ Dec 2022 13:40:05 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH] iommu/arm-smmu: don't unregister on shutdown
-Content-Language: en-GB
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org
-References: <20221208165350.3895136-1-vladimir.oltean@nxp.com>
- <d3517811-232c-592d-f973-2870bb5ec3ac@arm.com>
- <20221214173418.iwovyxlbogkspjxy@skbuf>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221214173418.iwovyxlbogkspjxy@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <CAA42iKxeinZ4gKfttg_K8PdRt+p-p=KjqgcbGjtxzOqn_C0F9g@mail.gmail.com>
+ <CAGRyCJGCrR_FVjCmsnbYhs76bDc0rD83n-=2ros2p9W_GeVq-w@mail.gmail.com>
+ <CAA42iKzssPn2DAheYW3dczgj__pAJm1utR7NP1hushLPmrFSTA@mail.gmail.com> <CAGRyCJGQpdLUzsaqdmbw4E9Sp=im-b6TQFEp1RpG1Wj3x_KVug@mail.gmail.com>
+In-Reply-To: <CAGRyCJGQpdLUzsaqdmbw4E9Sp=im-b6TQFEp1RpG1Wj3x_KVug@mail.gmail.com>
+From:   "Seija K." <doremylover123@gmail.com>
+Date:   Wed, 14 Dec 2022 16:39:54 -0500
+Message-ID: <CAA42iKzrf_CT9Mc3PTxU7WPnpKxNNjZejzh_n8espFxD=yYa1w@mail.gmail.com>
+Subject: Re: [PATCH] net: Fix for packets being rejected in the xHCI
+ controller's ring buffer
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,54 +73,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-12-14 17:34, Vladimir Oltean wrote:
-> On Fri, Dec 09, 2022 at 11:24:32AM +0000, Robin Murphy wrote:
->>> Fixes: b06c076ea962 ("Revert "iommu/arm-smmu: Make arm-smmu explicitly non-modular"")
->>
->> I think that's semantically correct, but I'm pretty sure at that point it
->> would have been benign in practice - the observable splat will be a much
->> more recent fallout from me changing the iommu_device_unregister() behaviour
->> in 57365a04c921 ("iommu: Move bus setup to IOMMU device registration"). The
->> assumption therein is that unregister would only happen on probe failure,
->> before the IOMMU instance is in use, or on module unload, which would not be
->> allowed while active devices still hold module references. I overlooked that
->> the SMMU drivers were doing what they do, sorry about that.
-> 
-> Ok, I'll change the Fixes: tag, I didn't notice that iommu_device_unregister()
-> changed in behavior only later, I just looked at current trees and tried
-> to infer what went wrong.
-> 
->> The change itself looks sensible. The point of this shutdown hook is simply
->> not to leave active translations in place that might confuse future software
->> after reboot/kexec; any housekeeping in the current kernel state is a waste
->> of time anyway. Fancy doing the same for SMMUv3 as well?
-> 
-> I can try, but I won't have hardware to test.
-> 
-> Basically the only thing truly relevant for shutdown from arm_smmu_device_remove()
-> is arm_smmu_device_disable(), would you agree to a patch which changes
-> things as below?
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 6d5df91c5c46..d4d8bfee9feb 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3854,7 +3854,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->   
->   static void arm_smmu_device_shutdown(struct platform_device *pdev)
->   {
-> -	arm_smmu_device_remove(pdev);
-> +	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
-> +
-> +	arm_smmu_device_disable(smmu);
->   }
->   
->   static const struct of_device_id arm_smmu_of_match[] = {
+Ok, thanks.
 
-
-Looks fine to me! I'll let Will decide if he'd still prefer to do the 
-full remove-calls-shutdown reversal here as well for complete 
-consistency, but I reckon the minimal diff is no bad thing :)
-
-Cheers,
-Robin.
+On Wed, Dec 14, 2022 at 10:25 AM Daniele Palmas <dnlplm@gmail.com> wrote:
+>
+> Hello Seija,
+>
+> Il giorno mar 13 dic 2022 alle ore 20:55 Seija K.
+> <doremylover123@gmail.com> ha scritto:
+> > On Tue, Dec 13, 2022 at 1:23 PM Daniele Palmas <dnlplm@gmail.com> wrote:
+> > >
+> > > Did you test this change with QMAP?
+> > >
+> > > To support qmap dl aggregated blocks qmi_wwan relies on the
+> > > usbnet_change_mtu behavior of changing the rx_urb_size.
+> > >
+> > > Thanks,
+> > > Daniele
+> >
+> > Yes, I did.
+> >
+>
+> I've applied your change and verified that the rx_urb_size can't be
+> changed anymore by modifying the mtu of the wwan netdevice and stays
+> fixed to 1504.
+>
+> Just a heads-up, that this change is not working fine with qmap setup
+> procedure, since the URB size can't be changed anymore to the value of
+> the maximum dl aggregated block set through wda_set_data_format.
+>
+> I know that linking MTU with the rx_urb_size is odd, but this is how
+> it's done currently.
+>
+> Regards,
+> Daniele
+>
+> > On Tue, Dec 13, 2022 at 1:23 PM Daniele Palmas <dnlplm@gmail.com> wrote:
+> > >
+> > > Hello Seija,
+> > >
+> > > Il giorno mar 13 dic 2022 alle ore 18:44 Seija K.
+> > > <doremylover123@gmail.com> ha scritto:
+> > > >
+> > > > When a packet larger than MTU arrives in Linux from the modem, it is
+> > > > discarded with -EOVERFLOW error (Babble error).
+> > > >
+> > > > This is seen on USB3.0 and USB2.0 buses.
+> > > >
+> > > > This is because the MRU (Max Receive Size) is not a separate entity
+> > > > from the MTU (Max Transmit Size), and the received packets can be
+> > > > larger than those transmitted.
+> > > >
+> > > > Following the babble error, there was an endless supply of zero-length
+> > > > URBs that were rejected with -EPROTO (increasing the rx input error
+> > > > counter each time).
+> > > >
+> > > > This is only seen on USB3.0. These continue to come ad infinitum until
+> > > > the modem is shut down.
+> > > >
+> > > > There appears to be a bug in the core USB handling code in Linux that
+> > > > doesn't deal with network MTUs smaller than 1500 bytes well.
+> > > >
+> > > > By default, the dev->hard_mtu (the real MTU) is in lockstep with
+> > > > dev->rx_urb_size (essentially an MRU), and the latter is causing
+> > > > trouble.
+> > > >
+> > > > This has nothing to do with the modems; the issue can be reproduced by
+> > > > getting a USB-Ethernet dongle, setting the MTU to 1430, and pinging
+> > > > with size greater than 1406.
+> > > >
+> > > > Signed-off-by: Seija Kijin <doremylover123@gmail.com>
+> > > >
+> > > > Co-Authored-By: TarAldarion <gildeap@tcd.ie>
+> > > > ---
+> > > > drivers/net/usb/qmi_wwan.c | 7 +++++++
+> > > > 1 file changed, 7 insertions(+)
+> > > >
+> > > > diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> > > > index 554d4e2a84a4..39db53a74b5a 100644
+> > > > --- a/drivers/net/usb/qmi_wwan.c
+> > > > +++ b/drivers/net/usb/qmi_wwan.c
+> > > > @@ -842,6 +842,13 @@ static int qmi_wwan_bind(struct usbnet *dev,
+> > > > struct usb_interface *intf)
+> > > > }
+> > > > dev->net->netdev_ops = &qmi_wwan_netdev_ops;
+> > > > dev->net->sysfs_groups[0] = &qmi_wwan_sysfs_attr_group;
+> > > > + /* LTE Networks don't always respect their own MTU on the receiving side;
+> > > > + * e.g. AT&T pushes 1430 MTU but still allows 1500 byte packets from
+> > > > + * far-end networks. Make the receive buffer large enough to accommodate
+> > > > + * them, and add four bytes so MTU does not equal MRU on network
+> > > > + * with 1500 MTU. Otherwise, usbnet_change_mtu() will change both.
+> > > > + */
+> > > > + dev->rx_urb_size = ETH_DATA_LEN + 4;
+> > >
+> > > Did you test this change with QMAP?
+> > >
+> > > To support qmap dl aggregated blocks qmi_wwan relies on the
+> > > usbnet_change_mtu behavior of changing the rx_urb_size.
+> > >
+> > > Thanks,
+> > > Daniele
+> > >
+> > > > err:
+> > > > return status;
+> > > > }
+> > > > --
+> > > > 2.38.2
