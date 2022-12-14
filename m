@@ -2,64 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4102964CEB7
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 18:14:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28DE64CEC6
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 18:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239226AbiLNROi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 12:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
+        id S237767AbiLNRRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 12:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237354AbiLNROH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 12:14:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038E8264BD
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 09:13:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9428B61B53
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 17:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE2E2C433EF;
-        Wed, 14 Dec 2022 17:13:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671038023;
-        bh=qg/73Ojuom3Ee1LL7utBPVK4FsKE/+1X2srb0p26zvI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=QvoYtI28I9gfUhijJElB3EmMNug6MVg6bA/5FIb+3QfwhQaZgdsvZuMyPmfDGAWAZ
-         LvxhExhcQp7GRDxMTWAsT0XuBeZIJFgc/HLg4YEu2AahP4umQwnL41tzfW6X00CD/+
-         T4UtXnXMdtjsRFkW/g5Y84fhumMlCP4LDw67yuvGxXcRDYO4rGNLIix5zRakLg8zrj
-         5OmdFrsEzYZyVXzLP3dNYauqkvGGzAisfy/dmMnS4MhFpRdkVNVJEExG0J+Z1UJSxk
-         m20wAteCasdF4uwcvezUmcfSkGfhnYrpW6G9cfDKX5ztTFZdxuFo7N9IZbmRBiRU/8
-         hXdwYtzed8zAA==
-Date:   Wed, 14 Dec 2022 09:13:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>, Paolo Abeni <pabeni@redhat.com>
-Subject: [ANN]  net-next remains closed until January
-Message-ID: <20221214091341.6a6a381b@kernel.org>
+        with ESMTP id S239225AbiLNRQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 12:16:51 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE4326F5;
+        Wed, 14 Dec 2022 09:16:46 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id q17-20020a17090aa01100b002194cba32e9so7890150pjp.1;
+        Wed, 14 Dec 2022 09:16:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=/1zG2tuJHv8bGjiNOZxxKGVCb/5dQUpWtcN2nAv7ybI=;
+        b=qVCfEroakM1a0+SJMCc0vLfW5rRuyGFzDfa67AYYRFrs9DJbQ4mQyDSCW0NfuttDWt
+         iL8A5Ex05zK7XT1aGrAWbdkhDCEkJlE+b6L9rkQOFeZbTWjdNgdRUlDatMvW0BOxv2tA
+         bGyjb4VUBUokGf01pCF3YEz8dZKNH9T9A7griEps/5l4F16uw3KTDZAjiMzHyFaH9jNt
+         bT0326ZDfUyhz3YXy2DyvmpBpaPeaFbCQKu1CZvZJh8KtsDqD1D8dBGY6lC/fpj64nJJ
+         HNbK+7ll/ZZjeQyKGoffKkvVCueJ8odsCKpwoYbQSqwob6vFLE5czjDhDhVLaK3SBHzD
+         5Hmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/1zG2tuJHv8bGjiNOZxxKGVCb/5dQUpWtcN2nAv7ybI=;
+        b=w0oXkjF8AkQdJjQJz5gwP30CQRNoRy5GEM0+tvQxpDnCxUqcosBi6AfxqnlopBPf+D
+         +p9IYMD7Wa/HZ90kwRbalj08+bK54ctVS+rANWkp99XDGEdMun5/yMJY1XYmI5EMFHS5
+         aLwgjxDU/DkaTe33cEkAQb2gXhPDJTjCgh+azgq6QW51e83xo3qQSRi/HljTk9wPbvjE
+         cilN+8YJ/bsbtSyQqEG+GlrWxU9yZB73MlMaS3K92v+pnqnIrG7bZ9NOrjUyPT1TBI6L
+         DDuqfvgABmvcOS9uMp8VL/Hik2t8DqxCqLAjFZ+60UU3WHg78J1xVVG8URjyA0KzRh+L
+         XTuA==
+X-Gm-Message-State: ANoB5pnezhfGOmiTY2e3vHxkq3LA5wIZ/7rqCxO4VAASTT3ZQLbURS2J
+        IL/oe6lokG2mrO6oinalrgEHn7Xl/HtWhS0IW078FUo1
+X-Google-Smtp-Source: AA0mqf5S0+Von62w2CT1G5A0z9m2g63T5ixgtI9ZYiK2BnSStZ3EOCQkSdUSyB4FNpbAAm3hO2ljaV61ogv1RIu9aDg=
+X-Received: by 2002:a17:902:9a8b:b0:190:c917:ab61 with SMTP id
+ w11-20020a1709029a8b00b00190c917ab61mr479029plp.93.1671038206116; Wed, 14 Dec
+ 2022 09:16:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221213105023.196409-1-tirthendu.sarkar@intel.com>
+ <cf6f03d04c8f2ad2627a924f7ee66645d661d746.camel@gmail.com> <CY4PR1101MB2360D262A260CCE7ED0FD87390E09@CY4PR1101MB2360.namprd11.prod.outlook.com>
+In-Reply-To: <CY4PR1101MB2360D262A260CCE7ED0FD87390E09@CY4PR1101MB2360.namprd11.prod.outlook.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 14 Dec 2022 09:16:34 -0800
+Message-ID: <CAKgT0Uc2cmK8+BZoBO_3of86MN0AvBQc2je-Jyoocjw2DVn+7A@mail.gmail.com>
+Subject: Re: [PATCH intel-next 0/5] i40e: support XDP multi-buffer
+To:     "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>
+Cc:     "tirtha@gmail.com" <tirtha@gmail.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+On Wed, Dec 14, 2022 at 7:56 AM Sarkar, Tirthendu
+<tirthendu.sarkar@intel.com> wrote:
+>
+> > From: Alexander H Duyck <alexander.duyck@gmail.com>
+> > Sent: Tuesday, December 13, 2022 9:28 PM
+> >
+> > This approach seems kind of convoluted to me. Basically you are trying
+> > to clean the ring without cleaning the ring in the cases where you
+> > encounter a non EOP descriptor.
+> >
+> > Why not just replace the skb pointer with an xdp_buff in the ring? Then
+> > you just build an xdp_buff w/ frags and then convert it after after
+> > i40e_is_non_eop? You should then still be able to use all the same page
+> > counting tricks and the pages would just be dropped into the shared
+> > info of an xdp_buff instead of an skb and function the same assuming
+> > you have all the logic in place to clean them up correctly.
+>
+> We have another approach similar to what you have suggested which sort
+> of is a bit cleaner but not free of a burden of getting the rx_buffer struct
+> back again for all of the packet frags post i40e_run_xdp() for recycling.
+> We will examine if that turns out to be better.
 
-The merge window is coinciding with the end-of-year festivities 
-for many. Some of the experts and reviewers we depend on day-to-day 
-to get patches reviewed may be away all the way until New Year.
-
-It seems to us that keeping net-next closed until January 1st/2nd
-may be a good idea, so that people can take time off and relax.
-
-Thoughts, concerns?
-
-Here's a poll to express your opinion without typing:
-
-https://poll-maker.com/poll4630178x899a594D-145
+Sounds good. Keep in mind that there are multiple use cases for the
+NIC so you don't want to optimize for the less likely to be used ones
+such as XDP_DROP/XDP_ABORT over standard use cases such as simply
+passing packets up to the network stack.
