@@ -2,177 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C12C64C46F
-	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 08:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EB364C480
+	for <lists+netdev@lfdr.de>; Wed, 14 Dec 2022 08:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237580AbiLNHiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 02:38:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
+        id S237538AbiLNHvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 02:51:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237434AbiLNHh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 02:37:58 -0500
-Received: from out29-177.mail.aliyun.com (out29-177.mail.aliyun.com [115.124.29.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0210D17A8D;
-        Tue, 13 Dec 2022 23:37:54 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436373|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.234877-0.0158081-0.749315;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047204;MF=frank.sae@motor-comm.com;NM=0;PH=DS;RN=13;RT=13;SR=0;TI=SMTPD_---.QVPyKay_1671003463;
-Received: from sun-VirtualBox..(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QVPyKay_1671003463)
-          by smtp.aliyun-inc.com;
-          Wed, 14 Dec 2022 15:37:52 +0800
-From:   Frank <Frank.Sae@motor-comm.com>
-To:     andrew@lunn.ch
-Cc:     Frank.Sae@motor-comm.com, davem@davemloft.net, edumazet@google.com,
-        fei.zhang@motor-comm.com, hkallweit1@gmail.com,
-        hua.sun@motor-comm.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com, pgwipeout@gmail.com
-Subject: Re: [PATCH net-next v2] net: phy: Add driver for Motorcomm yt8531 gigabit ethernet phy
-Date:   Wed, 14 Dec 2022 15:37:43 +0800
-Message-Id: <20221214073743.4314-1-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S237342AbiLNHvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 02:51:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39DA1AF00
+        for <netdev@vger.kernel.org>; Tue, 13 Dec 2022 23:51:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 763DE617F4
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 07:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18223C433EF;
+        Wed, 14 Dec 2022 07:51:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671004273;
+        bh=73X2UfaQ6K5nlHyk8iDz1B9vETU61BYsdzqVT9sIzLk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C851pKNhc0y9b7ObZjHgootcQ4wmfWb3MKTdHruZFVPue1wq6Bt/vj47A/+C30Dcw
+         G40cMWH4tu4aY0f/i7F4kqK5/6y2GTgvO0HX35k3Dtsx77NdZ6JPkunyZ27MQi2vfX
+         GgFYW2X3/4U9cwYGdGQONbHSFYDzYCgErrldA7HmNwIQiH8sr1E5NaEnSoi4xIicTv
+         X73KvcQaKIwT8eS51iDws1NF92lhZZAESelqgAjhYA/hHXUrHIx4jmUXIse8aRE6+j
+         Idikhwe+MiCAx4RMLpapxvfG62gFG5/oSpmX6Ix8E2S+Ac7mZwmc8TdTtf//9jQh1U
+         r/5tr6haw7cTg==
+Date:   Wed, 14 Dec 2022 09:51:09 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Nir Levy <bhr166@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2] net: atm: Fix use-after-free bug in
+ atm_dev_register()
+Message-ID: <Y5mAbfpeHEuQp0BE@unreal>
+References: <20221211124943.3004-1-bhr166@gmail.com>
+ <Y5bUXjhM3mvUkwNL@unreal>
+ <20221213191233.5d0a7c8f@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221213191233.5d0a7c8f@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> --------------------------------------------------------------------------------
-> on Dec. 2, 2022, 1:27 p.m. UTC , Andrew Lunn wrote:
-> 
-> >  /**
-> >   * ytphy_read_ext() - read a PHY's extended register
-> >   * @phydev: a pointer to a &struct phy_device
-> > @@ -258,6 +271,8 @@ static int ytphy_read_ext(struct phy_device *phydev, u16 regnum)
-> >  {
-> >  	int ret;
-> >  
-> > +	ASSERT_MDIO(phydev);
-> > +
-> >  	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -297,6 +312,8 @@ static int ytphy_write_ext(struct phy_device *phydev, u16 regnum, u16 val)
-> >  {
-> >  	int ret;
-> >  
-> > +	ASSERT_MDIO(phydev);
-> > +
-> >  	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -342,6 +359,8 @@ static int ytphy_modify_ext(struct phy_device *phydev, u16 regnum, u16 mask,
-> >  {
-> >  	int ret;
-> >  
-> > +	ASSERT_MDIO(phydev);
-> > +
-> >  	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -479,6 +498,76 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
-> >  	return phy_restore_page(phydev, old_page, ret);
-> >  }
-> 
-> Please make the above one patch, which adds the macro and its
-> users. There are a couple more below as well.
-> 
-> Did it find any problems in the current code? Any fixes mixed
-> in here?
-> 
-> Then add yt8531 is another patch.
-> 
-
- Thanks! 
- It not find any problems in the current code. 
- I will move that in another patch. 
- 
-> > +/**
-> > + * yt8531_set_wol() - turn wake-on-lan on or off
-> > + * @phydev: a pointer to a &struct phy_device
-> > + * @wol: a pointer to a &struct ethtool_wolinfo
-> > + *
-> > + * returns 0 or negative errno code
-> > + */
-> > +static int yt8531_set_wol(struct phy_device *phydev,
-> > +			  struct ethtool_wolinfo *wol)
-> > +{
-> > +	struct net_device *p_attached_dev;
-> > +	const u16 mac_addr_reg[] = {
-> > +		YTPHY_WOL_MACADDR2_REG,
-> > +		YTPHY_WOL_MACADDR1_REG,
-> > +		YTPHY_WOL_MACADDR0_REG,
-> > +	};
-> > +	const u8 *mac_addr;
-> > +	u16 mask;
-> > +	u16 val;
-> > +	int ret;
-> > +	u8 i;
-> > +
-> > +	if (wol->wolopts & WAKE_MAGIC) {
-> > +		p_attached_dev = phydev->attached_dev;
-> > +		if (!p_attached_dev)
-> > +			return -ENODEV;
-> > +
-> > +		mac_addr = (const u8 *)p_attached_dev->dev_addr;
-> 
-> Why the cast?
-
- I'm sorry. What does "Why the cast?" mean?
- 
-> 
-> > +		if (!is_valid_ether_addr(mac_addr))
-> > +			return -EINVAL;
-> 
->   Andrew
-> 
-
-> --------------------------------------------------------------------------------
-> on Dec. 3, 2022, 8:47 p.m. UTC , Andrew Lunn wrote:
-> 
-> On Fri, Dec 02, 2022 at 01:34:16PM +0000, Russell King (Oracle) wrote:
-> > On Fri, Dec 02, 2022 at 02:27:43PM +0100, Andrew Lunn wrote:
-> > > > +static bool mdio_is_locked(struct phy_device *phydev)
-> > > > +{
-> > > > +	return mutex_is_locked(&phydev->mdio.bus->mdio_lock);
-> > > > +}
-> > > > +
-> > > > +#define ASSERT_MDIO(phydev) \
-> > > > +	WARN_ONCE(!mdio_is_locked(phydev), \
-> > > > +		  "MDIO: assertion failed at %s (%d)\n", __FILE__,  __LINE__)
-> > > > +
-> > > 
-> > > Hi Frank
-> > > 
-> > > You are not the only one who gets locking wrong. This could be used in
-> > > other drivers. Please add it to include/linux/phy.h,
+On Tue, Dec 13, 2022 at 07:12:33PM -0800, Jakub Kicinski wrote:
+> On Mon, 12 Dec 2022 09:12:30 +0200 Leon Romanovsky wrote:
+> > > v2: Call put_device in atm_register_sysfs instead of atm_dev_register.
 > > 
-> > That placement doesn't make much sense.
-> > 
-> > As I already said, we have lockdep checks in drivers/net/phy/mdio_bus.c,
-> > and if we want to increase their effectiveness, then that's the place
-> > that it should be done.
+> > Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 > 
-> I was following the ASSERT_RTNL model, but that is used in quite deep
-> and complex call stacks, and it is useful to scatter the macro in lots
-> of places. PHY drivers are however very shallow, so yes, putting them
-> in mdio_bus.c makes a lot of sense.
+> On one of the previous versions you commented that
+> atm_unregister_sysfs() also needs to move to unregister() rather 
+> than del():
 > 
-> > I don't see any point in using __FILE__ and __LINE__ in the above
-> > macro either. Firstly, WARN_ONCE() already includes the file and line,
-> > and secondly, the backtrace is more useful than the file and line where
-> > the assertion occurs especially if it's placed in mdio_bus.c
+> https://lore.kernel.org/all/Y48CwyATYAAcPgqT@unreal/
 > 
-> And PHY driver functions are simpler, there is a lot less inlining
-> going on, so the function name is probably all you need to know to
-> find where you messed up the locking. So i agree, they can be removed.
-> 
->      Andrew
+> Is that not the case?
 
- Hi Andrew and Russell, Thanks!
- I will change that in next patch. 
+Yes, it should, but it is much larger change than this fix and someone
+needs to do it as a separate patch.
 
+You can't simply replace device_del() in atm_unregister_sysfs() because
+how atm_dev_put() is implemented. The latter blindly calls to put_device(&dev->class_dev)
+and you can't remove it without close look on all atm_dev_put() callers.
+
+> 
+> Also atm_dev_register() still frees the dev on atm_register_sysfs()
+> failure, is that okay?
+
+Yes, the kernel panic points that class_dev (not dev) had use-after-free.
+
+Thanks
