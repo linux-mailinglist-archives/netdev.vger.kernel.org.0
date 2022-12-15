@@ -2,87 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E6CE64DCFD
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6305664DD11
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:46:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiLOOkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 09:40:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
+        id S229785AbiLOOp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 09:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiLOOkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:40:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D53D2E6BB;
-        Thu, 15 Dec 2022 06:40:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229591AbiLOOpz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:45:55 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB56DB7;
+        Thu, 15 Dec 2022 06:45:54 -0800 (PST)
+Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCEE060A0B;
-        Thu, 15 Dec 2022 14:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 272EDC433F0;
-        Thu, 15 Dec 2022 14:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671115216;
-        bh=1y4XJbZR7xGuVEK0oM2ozMxNE2Gyyox9Hv4icG+6KUI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eQXH6aDbGLq4N0KdFWRksfHgH967CfowbHwwSFcUId8JYgZYp2iiqnXOd54L1Bivr
-         PG50MDXbuVYC2SjwxAezMuxUlO1YcJuhP3KmQaaV0mghkUkiXt6OjClcziD6fL64z0
-         qgmxtHNoWPCvjZu2yz1xsxz4T62IgZ9chGcjXq0cb0HT79Y0CdeGT/OVIifB9iFUEp
-         3nGmEpkzzQdFpqO9918E9PQWWmsjTdLavH+ZVCS6H+ll0vgXQyV3Ud3Cpij29iFyMu
-         qcj09mqeqIn3/PeDAEljP8FkMUfrFUrsXdwcCxy2BU6Whff69F16tUkAbII5pm9yQj
-         htRISVMEeaHQQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CBD5C197B4;
-        Thu, 15 Dec 2022 14:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id CCDA684EC2;
+        Thu, 15 Dec 2022 15:45:51 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1671115552;
+        bh=D6p/BoRStqcnYa2Wb2pX3TOnQiiewV652kz213LodFw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=t1PLd21w/M31Q7JwTcARq2C0azSKCcIypJ7fO89oRB/KxMygNa3zorGmSoZFWmowT
+         ja5T1UuDwLVjf5kgSWxIpJghyBvA67nLS0IOxIv9QHN3dlOCHUPh0GbTKrVQ3PnzrX
+         8rk75nbegTRW3MyCktlzF50ALdQKujkdE5CltPdxuL8CCxR3T2Pvpp0HSS1QEWQNsl
+         xEnvzjBNvWXE8ozR37dzy8cCN5K/ehL7c5q2TWKulLscUKfgai2WiMYdR0CyTLlDLw
+         EfSHe8lO0aINZwHMQtdYD7SwerczYmqEBm0A5Zn+Cg2Ce52vAf3tEQbnOZrybo3fUS
+         n99ayP1PFsDgw==
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lukasz Majewski <lukma@denx.de>
+Subject: [PATCH v2 1/3] dsa: marvell: Provide per device information about max frame size
+Date:   Thu, 15 Dec 2022 15:45:34 +0100
+Message-Id: <20221215144536.3810578-1-lukma@denx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] ravb: Fix "failed to switch device to config mode"
- message during unbind
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167111521604.32410.3850134562584373463.git-patchwork-notify@kernel.org>
-Date:   Thu, 15 Dec 2022 14:40:16 +0000
-References: <20221214105118.2495313-1-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20221214105118.2495313-1-biju.das.jz@bp.renesas.com>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, p.zabel@pengutronix.de, s.shtylyov@omp.ru,
-        geert+renesas@glider.be, liuhangbin@gmail.com,
-        mitsuhiro.kimura.kc@renesas.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, fabrizio.castro.jz@renesas.com,
-        stable@vger.kernel.org, leonro@nvidia.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Different Marvell DSA switches support different size of max frame
+bytes to be sent.
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+For example mv88e6185 supports max 1632 bytes, which is now in-driver
+standard value. On the other hand - mv88e6250 supports 2048 bytes.
 
-On Wed, 14 Dec 2022 10:51:18 +0000 you wrote:
-> This patch fixes the error "ravb 11c20000.ethernet eth0: failed to switch
-> device to config mode" during unbind.
-> 
-> We are doing register access after pm_runtime_put_sync().
-> 
-> We usually do cleanup in reverse order of init. Currently in
-> remove(), the "pm_runtime_put_sync" is not in reverse order.
-> 
-> [...]
+As this value is internal and may be different for each switch IC,
+new entry in struct mv88e6xxx_info has been added to store it.
 
-Here is the summary with links:
-  - [net,v2] ravb: Fix "failed to switch device to config mode" message during unbind
-    https://git.kernel.org/netdev/net/c/c72a7e42592b
+Signed-off-by: Lukasz Majewski <lukma@denx.de>
+---
+Changes for v2:
+- Define max_frame_size with default value of 1632 bytes,
+- Set proper value for the mv88e6250 switch SoC (linkstreet) family
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 13 ++++++++++++-
+ drivers/net/dsa/mv88e6xxx/chip.h |  1 +
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 2ca3cbba5764..7ae4c389ce50 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3093,7 +3093,9 @@ static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
+ 	if (chip->info->ops->port_set_jumbo_size)
+ 		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+ 	else if (chip->info->ops->set_max_frame_size)
+-		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
++		return (chip->info->max_frame_size  - VLAN_ETH_HLEN
++			- EDSA_HLEN - ETH_FCS_LEN);
++
+ 	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+ }
+ 
+@@ -4461,6 +4463,7 @@ static const struct mv88e6xxx_ops mv88e6250_ops = {
+ 	.avb_ops = &mv88e6352_avb_ops,
+ 	.ptp_ops = &mv88e6250_ptp_ops,
+ 	.phylink_validate = mv88e6065_phylink_validate,
++	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
+ };
+ 
+ static const struct mv88e6xxx_ops mv88e6290_ops = {
+@@ -5060,6 +5063,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.atu_move_port_mask = 0xf,
+ 		.multi_chip = true,
+ 		.ops = &mv88e6095_ops,
++		.max_frame_size = 1632,
+ 	},
+ 
+ 	[MV88E6097] = {
+@@ -5083,6 +5087,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.multi_chip = true,
+ 		.edsa_support = MV88E6XXX_EDSA_SUPPORTED,
+ 		.ops = &mv88e6097_ops,
++		.max_frame_size = 1632,
+ 	},
+ 
+ 	[MV88E6123] = {
+@@ -5106,6 +5111,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.multi_chip = true,
+ 		.edsa_support = MV88E6XXX_EDSA_SUPPORTED,
+ 		.ops = &mv88e6123_ops,
++		.max_frame_size = 1632,
+ 	},
+ 
+ 	[MV88E6131] = {
+@@ -5174,6 +5180,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.edsa_support = MV88E6XXX_EDSA_SUPPORTED,
+ 		.ptp_support = true,
+ 		.ops = &mv88e6161_ops,
++		.max_frame_size = 1632,
+ 	},
+ 
+ 	[MV88E6165] = {
+@@ -5197,6 +5204,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.multi_chip = true,
+ 		.ptp_support = true,
+ 		.ops = &mv88e6165_ops,
++		.max_frame_size = 1632,
+ 	},
+ 
+ 	[MV88E6171] = {
+@@ -5312,6 +5320,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.multi_chip = true,
+ 		.edsa_support = MV88E6XXX_EDSA_SUPPORTED,
+ 		.ops = &mv88e6185_ops,
++		.max_frame_size = 1632,
+ 	},
+ 
+ 	[MV88E6190] = {
+@@ -5440,6 +5449,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.num_internal_phys = 2,
+ 		.invalid_port_mask = BIT(2) | BIT(3) | BIT(4),
+ 		.max_vid = 4095,
++		.max_frame_size = 2048,
+ 		.port_base_addr = 0x08,
+ 		.phy_base_addr = 0x00,
+ 		.global1_addr = 0x0f,
+@@ -5486,6 +5496,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.num_ports = 7,
+ 		.num_internal_phys = 5,
+ 		.max_vid = 4095,
++		.max_frame_size = 2048,
+ 		.port_base_addr = 0x08,
+ 		.phy_base_addr = 0x00,
+ 		.global1_addr = 0x0f,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 80dc7b549e81..9712b10fc4ed 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -130,6 +130,7 @@ struct mv88e6xxx_info {
+ 	unsigned int num_internal_phys;
+ 	unsigned int num_gpio;
+ 	unsigned int max_vid;
++	unsigned int max_frame_size;
+ 	unsigned int port_base_addr;
+ 	unsigned int phy_base_addr;
+ 	unsigned int global1_addr;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.3
 
