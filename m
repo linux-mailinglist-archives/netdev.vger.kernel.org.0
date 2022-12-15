@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7056664E3C7
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 23:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4508B64E402
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 23:51:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiLOWcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 17:32:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        id S230034AbiLOWvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 17:51:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiLOWcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 17:32:13 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF88657B58;
-        Thu, 15 Dec 2022 14:32:11 -0800 (PST)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p5wld-000Kma-NB; Thu, 15 Dec 2022 23:31:53 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p5wld-000BfT-AM; Thu, 15 Dec 2022 23:31:53 +0100
-Subject: Re: [PATCH bpf-next 3/6] bpf, net, frags: Add bpf_ip_check_defrag()
- kfunc
-To:     Daniel Xu <dxu@dxuuu.xyz>, "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     ppenkov@aviatrix.com, dbird@aviatrix.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <cover.1671049840.git.dxu@dxuuu.xyz>
- <1f48a340a898c4d22d65e0e445dbf15f72081b9a.1671049840.git.dxu@dxuuu.xyz>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <451b291a-7798-cfe2-84da-815937b54f70@iogearbox.net>
-Date:   Thu, 15 Dec 2022 23:31:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S230037AbiLOWvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 17:51:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AB43D93D
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 14:51:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671144666;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=YjHSeOcAQkQ7ENMLsxcSRW3ncebyKJH9WpbmehEsMYs=;
+        b=WIXwjF/qXS01ljQ5gOP3f1Bb2AqkfC28LkdVRLhhLKoPl2EWXnp1TrhwkTSjwvR4BwljdI
+        ibZcV1LGSHx7vECc897wPDqDHyHFzICY0l16FbNmuzbaUl76JuszezDMo85zwxQYU1ehCQ
+        0WoxjzGJqgmDkcZ6surNWvk5yUvQqVA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-166-2LGHJ-BePpmIO208BiOIyA-1; Thu, 15 Dec 2022 17:51:05 -0500
+X-MC-Unique: 2LGHJ-BePpmIO208BiOIyA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DFB593C0F696;
+        Thu, 15 Dec 2022 22:51:04 +0000 (UTC)
+Received: from toolbox.redhat.com (ovpn-192-38.brq.redhat.com [10.40.192.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A47652166B26;
+        Thu, 15 Dec 2022 22:51:03 +0000 (UTC)
+From:   Michal Schmidt <mschmidt@redhat.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Patryk Piotrowski <patryk.piotrowski@intel.com>
+Subject: [PATCH net v2 0/2] iavf: fix temporary deadlock and failure to set MAC address
+Date:   Thu, 15 Dec 2022 23:50:47 +0100
+Message-Id: <20221215225049.508812-1-mschmidt@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1f48a340a898c4d22d65e0e445dbf15f72081b9a.1671049840.git.dxu@dxuuu.xyz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26751/Thu Dec 15 09:20:56 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,100 +57,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+This fixes an issue where setting the MAC address on iavf runs into a
+timeout and fails with EAGAIN.
 
-Thanks for working on this!
+Changes in v2:
+ - Removed unused 'ret' variable in patch 1.
+ - Added patch 2 to fix another cause of the same timeout.
 
-On 12/15/22 12:25 AM, Daniel Xu wrote:
-[...]
-> +#include <linux/bpf.h>
-> +#include <linux/btf_ids.h>
-> +#include <linux/ip.h>
-> +#include <linux/filter.h>
-> +#include <linux/netdevice.h>
-> +#include <net/ip.h>
-> +#include <net/sock.h>
-> +
-> +__diag_push();
-> +__diag_ignore_all("-Wmissing-prototypes",
-> +		  "Global functions as their definitions will be in ip_fragment BTF");
-> +
-> +/* bpf_ip_check_defrag - Defragment an ipv4 packet
-> + *
-> + * This helper takes an skb as input. If this skb successfully reassembles
-> + * the original packet, the skb is updated to contain the original, reassembled
-> + * packet.
-> + *
-> + * Otherwise (on error or incomplete reassembly), the input skb remains
-> + * unmodified.
-> + *
-> + * Parameters:
-> + * @ctx		- Pointer to program context (skb)
-> + * @netns	- Child network namespace id. If value is a negative signed
-> + *		  32-bit integer, the netns of the device in the skb is used.
-> + *
-> + * Return:
-> + * 0 on successfully reassembly or non-fragmented packet. Negative value on
-> + * error or incomplete reassembly.
-> + */
-> +int bpf_ip_check_defrag(struct __sk_buff *ctx, u64 netns)
+Michal Schmidt (2):
+  iavf: fix temporary deadlock and failure to set MAC address
+  iavf: avoid taking rtnl_lock in adminq_task
 
-small nit: for sk lookup helper we've used u32 netns_id, would be nice to have
-this consistent here as well.
+ drivers/net/ethernet/intel/iavf/iavf.h        |   4 +-
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    |  10 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 135 ++++++++++--------
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |   8 +-
+ 4 files changed, 86 insertions(+), 71 deletions(-)
 
-> +{
-> +	struct sk_buff *skb = (struct sk_buff *)ctx;
-> +	struct sk_buff *skb_cpy, *skb_out;
-> +	struct net *caller_net;
-> +	struct net *net;
-> +	int mac_len;
-> +	void *mac;
-> +
-> +	if (unlikely(!((s32)netns < 0 || netns <= S32_MAX)))
-> +		return -EINVAL;
-> +
-> +	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
-> +	if ((s32)netns < 0) {
-> +		net = caller_net;
-> +	} else {
-> +		net = get_net_ns_by_id(caller_net, netns);
-> +		if (unlikely(!net))
-> +			return -EINVAL;
-> +	}
-> +
-> +	mac_len = skb->mac_len;
-> +	skb_cpy = skb_copy(skb, GFP_ATOMIC);
-> +	if (!skb_cpy)
-> +		return -ENOMEM;
+-- 
+2.37.2
 
-Given slow path, this idea is expensive but okay. Maybe in future it could be lifted
-which might be a bigger lift to teach verifier that input ctx cannot be accessed
-anymore.. but then frags are very much discouraged either way and bpf_ip_check_defrag()
-might only apply in corner case situations (like DNS, etc).
-
-> +	skb_out = ip_check_defrag(net, skb_cpy, IP_DEFRAG_BPF);
-> +	if (IS_ERR(skb_out))
-> +		return PTR_ERR(skb_out);
-
-Looks like ip_check_defrag() can gracefully handle IPv6 packet. It will just return back
-skb_cpy pointer in that case. However, this brings me to my main complaint.. I don't
-think we should merge anything IPv4-related without also having IPv6 equivalent support,
-otherwise we're building up tech debt, so pls also add support for the latter.
-
-> +	skb_morph(skb, skb_out);
-> +	kfree_skb(skb_out);
-> +
-> +	/* ip_check_defrag() does not maintain mac header, so push empty header
-> +	 * in so prog sees the correct layout. The empty mac header will be
-> +	 * later pulled from cls_bpf.
-> +	 */
-> +	mac = skb_push(skb, mac_len);
-> +	memset(mac, 0, mac_len);
-> +	bpf_compute_data_pointers(skb);
-> +
-> +	return 0;
-> +}
-> +
-
-Thanks,
-Daniel
