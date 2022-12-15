@@ -2,172 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2F6064DD18
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:47:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6E864DD33
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 16:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbiLOOre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 09:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
+        id S229783AbiLOPAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 10:00:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiLOOrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:47:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0284F2F679
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 06:46:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671115606;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=T80T2RTbkC5KRh7Jw76cY3uGGh+y1qPRcu4aLturcGU=;
-        b=Im5xHjOrDqgBuC67uwQUxd+aLGiNsw7iV5WAtNXhJeIwxKpfVKxoe/IRvd7Ia6Ji7vnSSf
-        UC7lDrQrDk8XIiOvst+ll3VNCt6Qtw2U8Yvpak2wVB6hHvx/eZ/145JO1M3nrPYdhRO0tk
-        kyUAi0tDo9Be6NXVczp3dvUi1Ph7C00=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-407-Wl_bl4jrOveTmaKBQbqVDg-1; Thu, 15 Dec 2022 09:46:42 -0500
-X-MC-Unique: Wl_bl4jrOveTmaKBQbqVDg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229484AbiLOPAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 10:00:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE262FBEF
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 07:00:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 302EF1C09B67;
-        Thu, 15 Dec 2022 14:46:42 +0000 (UTC)
-Received: from ebuild.redhat.com (unknown [10.39.195.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A67D40C2064;
-        Thu, 15 Dec 2022 14:46:40 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     pshelar@ovn.org, davem@davemloft.net, dev@openvswitch.org,
-        i.maximets@ovn.org, aconole@redhat.com, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, stable@vger.kernel.org
-Subject: [PATCH net v3] openvswitch: Fix flow lookup to use unmasked key
-Date:   Thu, 15 Dec 2022 15:46:33 +0100
-Message-Id: <167111551443.359845.7122827280135116424.stgit@ebuild>
-User-Agent: StGit/1.1
-MIME-Version: 1.0
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1781BB81BB2
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 15:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80911C433F0;
+        Thu, 15 Dec 2022 15:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671116416;
+        bh=uxVbmtJDGRIssQrK0ceAU1d9J/foU7eYysfCGlRTRH0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JT0W7Bx6ck6DLLqW7q1Ah8RngUpkWT6dEu25ZDt8XnjBbggYP+49VrI+1xdjtu/97
+         fesizQGXmPugLuF6g2arJWXvNWuNI2B6AW1uZh59FL+FpjT9zPnF6Ngoca118JCXBE
+         mkHfng8PnOPtvQaKjSSvq6qX7v68JkMFs5XDTbiPtubm6Zpm6rvmHYMjyH9MA/SuzC
+         AJhkrufB7hegfFI3AeFcylnHYMs0ivbpgYIOq258cs+zsPJr0Rk0efwiwutlMbKbHG
+         KXLJXGWTlye2DzN3hU8BKUevcs144PyEwXpLFPNDDte9+gNOk3uCOXl37w6iDEISk2
+         mEovvrce9XRRg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 62C7CE4D029;
+        Thu, 15 Dec 2022 15:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: avoid reg_lock deadlock in
+ mv88e6xxx_setup_port()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167111641640.8543.4604993324306345394.git-patchwork-notify@kernel.org>
+Date:   Thu, 15 Dec 2022 15:00:16 +0000
+References: <20221214110120.3368472-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20221214110120.3368472-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mw@semihalf.com, bigunclemax@gmail.com,
+        fido_max@inbox.ru, linux@armlinux.org.uk, kabel@kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit mentioned below causes the ovs_flow_tbl_lookup() function
-to be called with the masked key. However, it's supposed to be called
-with the unmasked key. This due to the fact that the datapath supports
-installing wider flows, and OVS relies on this behavior. For example
-if ipv4(src=1.1.1.1/192.0.0.0, dst=1.1.1.2/192.0.0.0) exists, a wider
-flow (smaller mask) of ipv4(src=192.1.1.1/128.0.0.0,dst=192.1.1.2/
-128.0.0.0) is allowed to be added.
+Hello:
 
-However, if we try to add a wildcard rule, the installation fails:
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-$ ovs-appctl dpctl/add-flow system@myDP "in_port(1),eth_type(0x0800), \
-  ipv4(src=1.1.1.1/192.0.0.0,dst=1.1.1.2/192.0.0.0,frag=no)" 2
-$ ovs-appctl dpctl/add-flow system@myDP "in_port(1),eth_type(0x0800), \
-  ipv4(src=192.1.1.1/0.0.0.0,dst=49.1.1.2/0.0.0.0,frag=no)" 2
-ovs-vswitchd: updating flow table (File exists)
+On Wed, 14 Dec 2022 13:01:20 +0200 you wrote:
+> In the blamed commit, it was not noticed that one implementation of
+> chip->info->ops->phylink_get_caps(), called by mv88e6xxx_get_caps(),
+> may access hardware registers, and in doing so, it takes the
+> mv88e6xxx_reg_lock(). Namely, this is mv88e6352_phylink_get_caps().
+> 
+> This is a problem because mv88e6xxx_get_caps(), apart from being
+> a top-level function (method invoked by dsa_switch_ops), is now also
+> directly called from mv88e6xxx_setup_port(), which runs under the
+> mv88e6xxx_reg_lock() taken by mv88e6xxx_setup(). Therefore, when running
+> on mv88e6352, the reg_lock would be acquired a second time and the
+> system would deadlock on driver probe.
+> 
+> [...]
 
-The reason is that the key used to determine if the flow is already
-present in the system uses the original key ANDed with the mask.
-This results in the IP address not being part of the (miniflow) key,
-i.e., being substituted with an all-zero value. When doing the actual
-lookup, this results in the key wrongfully matching the first flow,
-and therefore the flow does not get installed.
+Here is the summary with links:
+  - [net] net: dsa: mv88e6xxx: avoid reg_lock deadlock in mv88e6xxx_setup_port()
+    https://git.kernel.org/netdev/net/c/a7d82367daa6
 
-This change reverses the commit below, but rather than having the key
-on the stack, it's allocated.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Fixes: 190aa3e77880 ("openvswitch: Fix Frame-size larger than 1024 bytes warning.")
-
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
----
-Version history:
-  v3: Updated commit message to explain the problem in more details.
-  v2: Fixed ENOMEN error :( Forgot to do a stg refresh.
-
-net/openvswitch/datapath.c |   25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
-
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 861dfb8daf4a..55b697c4d576 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -948,6 +948,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	struct sw_flow_mask mask;
- 	struct sk_buff *reply;
- 	struct datapath *dp;
-+	struct sw_flow_key *key;
- 	struct sw_flow_actions *acts;
- 	struct sw_flow_match match;
- 	u32 ufid_flags = ovs_nla_get_ufid_flags(a[OVS_FLOW_ATTR_UFID_FLAGS]);
-@@ -975,24 +976,26 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	/* Extract key. */
--	ovs_match_init(&match, &new_flow->key, false, &mask);
-+	key = kzalloc(sizeof(*key), GFP_KERNEL);
-+	if (!key) {
-+		error = -ENOMEM;
-+		goto err_kfree_key;
-+	}
-+
-+	ovs_match_init(&match, key, false, &mask);
- 	error = ovs_nla_get_match(net, &match, a[OVS_FLOW_ATTR_KEY],
- 				  a[OVS_FLOW_ATTR_MASK], log);
- 	if (error)
- 		goto err_kfree_flow;
- 
-+	ovs_flow_mask_key(&new_flow->key, key, true, &mask);
-+
- 	/* Extract flow identifier. */
- 	error = ovs_nla_get_identifier(&new_flow->id, a[OVS_FLOW_ATTR_UFID],
--				       &new_flow->key, log);
-+				       key, log);
- 	if (error)
- 		goto err_kfree_flow;
- 
--	/* unmasked key is needed to match when ufid is not used. */
--	if (ovs_identifier_is_key(&new_flow->id))
--		match.key = new_flow->id.unmasked_key;
--
--	ovs_flow_mask_key(&new_flow->key, &new_flow->key, true, &mask);
--
- 	/* Validate actions. */
- 	error = ovs_nla_copy_actions(net, a[OVS_FLOW_ATTR_ACTIONS],
- 				     &new_flow->key, &acts, log);
-@@ -1019,7 +1022,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	if (ovs_identifier_is_ufid(&new_flow->id))
- 		flow = ovs_flow_tbl_lookup_ufid(&dp->table, &new_flow->id);
- 	if (!flow)
--		flow = ovs_flow_tbl_lookup(&dp->table, &new_flow->key);
-+		flow = ovs_flow_tbl_lookup(&dp->table, key);
- 	if (likely(!flow)) {
- 		rcu_assign_pointer(new_flow->sf_acts, acts);
- 
-@@ -1089,6 +1092,8 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 
- 	if (reply)
- 		ovs_notify(&dp_flow_genl_family, reply, info);
-+
-+	kfree(key);
- 	return 0;
- 
- err_unlock_ovs:
-@@ -1098,6 +1103,8 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	ovs_nla_free_flow_actions(acts);
- err_kfree_flow:
- 	ovs_flow_free(new_flow, false);
-+err_kfree_key:
-+	kfree(key);
- error:
- 	return error;
- }
 
