@@ -2,123 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2395164DCF4
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:37:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E6CE64DCFD
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiLOOh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 09:37:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
+        id S229785AbiLOOkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 09:40:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiLOOh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:37:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A974D13CE9
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 06:37:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671115028;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/D687QegGww0pxnZ9+mN8tLEmEvWg+oO0pfwDRAqVMg=;
-        b=KyLnIkoKpeULRKYyBD2dgafHgMnjLhjlIvYy1Z6+IrhRb+P4dNeJuYKmtI1jBrhicX7JZi
-        WdHGEDu2ZzviJhnyHJv17gGDdJjIysYacFkPVy/f83EB+1QcLLdMRWCGTo66rOGSvIxrWo
-        gvVi1+ZweJTMn5MJ7oABhz+7YMFgV3I=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-SUS0fRfqMsGwHjZsIz3q8w-1; Thu, 15 Dec 2022 09:37:01 -0500
-X-MC-Unique: SUS0fRfqMsGwHjZsIz3q8w-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229658AbiLOOkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:40:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D53D2E6BB;
+        Thu, 15 Dec 2022 06:40:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 13B06101A55E;
-        Thu, 15 Dec 2022 14:37:00 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C82C114171BE;
-        Thu, 15 Dec 2022 14:36:54 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20221215135905.GA19378@pc-4.home>
-References: <20221215135905.GA19378@pc-4.home> <92b887a9b90dcbf5083d1f47699c2f785820d708.1670929442.git.bcodding@redhat.com> <cover.1670929442.git.bcodding@redhat.com> <122424.1671106362@warthog.procyon.org.uk>
-To:     Guillaume Nault <gnault@redhat.com>
-cc:     dhowells@redhat.com, Benjamin Coddington <bcodding@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Christoph =?utf-8?Q?B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Steve French <sfrench@samba.org>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v3 2/3] Treewide: Stop corrupting socket's task_frag
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCEE060A0B;
+        Thu, 15 Dec 2022 14:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 272EDC433F0;
+        Thu, 15 Dec 2022 14:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671115216;
+        bh=1y4XJbZR7xGuVEK0oM2ozMxNE2Gyyox9Hv4icG+6KUI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eQXH6aDbGLq4N0KdFWRksfHgH967CfowbHwwSFcUId8JYgZYp2iiqnXOd54L1Bivr
+         PG50MDXbuVYC2SjwxAezMuxUlO1YcJuhP3KmQaaV0mghkUkiXt6OjClcziD6fL64z0
+         qgmxtHNoWPCvjZu2yz1xsxz4T62IgZ9chGcjXq0cb0HT79Y0CdeGT/OVIifB9iFUEp
+         3nGmEpkzzQdFpqO9918E9PQWWmsjTdLavH+ZVCS6H+ll0vgXQyV3Ud3Cpij29iFyMu
+         qcj09mqeqIn3/PeDAEljP8FkMUfrFUrsXdwcCxy2BU6Whff69F16tUkAbII5pm9yQj
+         htRISVMEeaHQQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CBD5C197B4;
+        Thu, 15 Dec 2022 14:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-Date:   Thu, 15 Dec 2022 14:36:52 +0000
-Message-ID: <139538.1671115012@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] ravb: Fix "failed to switch device to config mode"
+ message during unbind
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167111521604.32410.3850134562584373463.git-patchwork-notify@kernel.org>
+Date:   Thu, 15 Dec 2022 14:40:16 +0000
+References: <20221214105118.2495313-1-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20221214105118.2495313-1-biju.das.jz@bp.renesas.com>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, p.zabel@pengutronix.de, s.shtylyov@omp.ru,
+        geert+renesas@glider.be, liuhangbin@gmail.com,
+        mitsuhiro.kimura.kc@renesas.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, fabrizio.castro.jz@renesas.com,
+        stable@vger.kernel.org, leonro@nvidia.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-Guillaume Nault <gnault@redhat.com> wrote:
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-> Maybe setting sk_use_task_frag in fs/afs/rxrpc.c was overzealous but
-> I'm not familiar enough with the AF_RXRPC family to tell. If AF_RXRPC
-> sockets can't call sk_page_frag() and have no reason to do so in the
-> future, then it should be safe to drop this chunk.
+On Wed, 14 Dec 2022 10:51:18 +0000 you wrote:
+> This patch fixes the error "ravb 11c20000.ethernet eth0: failed to switch
+> device to config mode" during unbind.
+> 
+> We are doing register access after pm_runtime_put_sync().
+> 
+> We usually do cleanup in reverse order of init. Currently in
+> remove(), the "pm_runtime_put_sync" is not in reverse order.
+> 
+> [...]
 
-As of this merge window, AF_RXRPC doesn't actually allocate sk_buffs apart
-from when it calls skb_unshare().  It does steal the incoming sk_buffs from
-the UDP socket it uses as a transport, but they're allocated in the IP/IP6
-stack somewhere.
+Here is the summary with links:
+  - [net,v2] ravb: Fix "failed to switch device to config mode" message during unbind
+    https://git.kernel.org/netdev/net/c/c72a7e42592b
 
-The UDP transport socket, on the other hand, will allocate sk_buffs for
-transmission, but rxrpc sends an entire UDP packet at a time, each with a
-single sendmsg call.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Further, this mostly now moved such that the UDP sendmsg calls are performed
-inside an I/O thread.  The application thread does not interact directly with
-the UDP transport socket.
-
-David
 
