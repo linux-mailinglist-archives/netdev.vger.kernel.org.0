@@ -2,59 +2,359 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3913B64D5BF
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 04:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D717A64D5C0
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 04:56:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbiLODzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 22:55:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        id S229638AbiLOD44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 22:56:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiLODzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 22:55:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D50113E15
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 19:55:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54BA1B81A13
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 03:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3CE8C433EF;
-        Thu, 15 Dec 2022 03:55:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671076546;
-        bh=hUrXNhuhRQ1ubTrU8XdbVW9KpPSDe4JMvPJhtryIu+U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mkkaY4QEuc2UwEhlv7Qv5Ecdb51V6l5d5YzmBKB5n1iwwXlKUgs28luFePzMEJttd
-         7t7GSerR+2sji7TJ9l4Kvs5pI3fRWpmG6ZVmn2FESlGbLDdebZiYm1hudwtyqLVKtA
-         IycgkCruHrfWgFE4cXfy1G+OYUV1eZS2fo+49GNekQSBc7I5JJXdKqoh1u7X7SuPdt
-         wkfT033qmNLHZ5L7hBfweNsD+EVgcrZ+ZLvzuPZ/lADPePbi9yOfqb3+xKm4GO5dRa
-         Yop/uJbgHzbhdqj/vjbJWepC/Swa3/wyerGZJqZ5MUBAfxlC4gzUfOiKVuRMxRWeIc
-         ZMX59j/A1sAxg==
-Date:   Wed, 14 Dec 2022 19:55:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
-        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
-Subject: Re: [PATCH ethtool-next v1 0/3] add netlink support for rss get
-Message-ID: <20221214195544.65896858@kernel.org>
-In-Reply-To: <20221214235418.1033834-1-sudheer.mogilappagari@intel.com>
-References: <20221214235418.1033834-1-sudheer.mogilappagari@intel.com>
+        with ESMTP id S229636AbiLOD4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 22:56:55 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A38A1E708
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 19:56:53 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id d123so4542005iof.6
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 19:56:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sSif9Rd/EtaoX9pgNW131Ta8gyk2E7CSXCfXYBAmUdk=;
+        b=ZP75wZngm/qXwU8Qn0HgzjqC9bfdkW1xMH+uJ0zjeIkumcZ7zsqJFEyLhppo9AdgwQ
+         209/jBeLlVBMDwXv70HM+8+TXWJfqci0DiFdkaUwwNvWAh1eR1VoBoEfJXqAJ4fGpruF
+         Sq2Fxixc+pNs5beG+IsHC9UdbewDzlxn/Zxs+g+jJArVPuBtn3DB8cZrVTmn3/iVRb/Y
+         eYFmauwvuiuGnvJd8Iy3rBP4fBrTdeguC6X9mTN8WB4qeG/Ct6hlePStxCsSQKruJM2l
+         KEOU37yZoQmkM5dOhSbFnE1HnCltW9h8JYbT+JbE7eQJLHZXXUE+wh01LZhgQtv8Qtuz
+         lHdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sSif9Rd/EtaoX9pgNW131Ta8gyk2E7CSXCfXYBAmUdk=;
+        b=mihq9E/V8QtOcFkL1XEjTDWPyzD0E+Yf4vP8TQ/iTQ1QZSgwlb3hkcSHtsvLM6Kw4D
+         fnd7vTgpcnlFZsOJ+XeGzMuOWov40ECd5NtxMlKkOYyQfmexR8qvBLvplCP0JRxogZ68
+         IX4gI+JQuZDhUKS2ODskMzQ9yeHVncfoeDVcpE3BcJPUutHXJYJa6M8bKYw+ImWKt791
+         ouZXe55Ozoa/J8aAg0U+u8nMPMAaqNw3eresZqsXIeu1s19dhgjSZPH0LPe8PPfKVa7i
+         bnRjI15AGh3A3krJyQffz4EbkbTji+D4m5gMTs6jp1aY4LDvHh1HUnQ2vioviUqb+cF+
+         nOhQ==
+X-Gm-Message-State: ANoB5plrDJkO5AdFWt1uYibsPLRehRRCQNje9r++8URDE+L/Ml0P0PHF
+        ZkuGZ0/XRUlLlmRawdLK+ZM9c/LMV9GuZNcS
+X-Google-Smtp-Source: AA0mqf44Gw2jiDdZjdprAZrX3noaSedtQSO4slUttoVqjfBlP6zdpSoHkXvUf1qlZUUxjZUk4okq+Q==
+X-Received: by 2002:a5d:9905:0:b0:6de:383e:4143 with SMTP id x5-20020a5d9905000000b006de383e4143mr13349004iol.4.1671076612779;
+        Wed, 14 Dec 2022 19:56:52 -0800 (PST)
+Received: from fedora.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
+        by smtp.gmail.com with ESMTPSA id b20-20020a056602001400b006e4e8ad6b2bsm101734ioa.36.2022.12.14.19.56.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Dec 2022 19:56:52 -0800 (PST)
+From:   Maxim Georgiev <glipus@gmail.com>
+To:     mkubecek@suse.cz
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH ethtool-next v2 v2] JSON output support for Netlink implementation of --show-coalesce option
+Date:   Wed, 14 Dec 2022 20:56:51 -0700
+Message-Id: <20221215035651.65759-1-glipus@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Dec 2022 15:54:15 -0800 Sudheer Mogilappagari wrote:
-> These patches add netlink based handler to fetch RSS information
-> using "ethtool -x <eth> [context %d]" command.
+Add --json support for Netlink implementation of --show-coalesce option
+No changes for non-JSON output for this featire.
 
-Can we please support JSON output from the start?
-I can't stress enough how useful json output is in practice.
+Example output without --json:
+[ethtool-git]$ sudo ./ethtool --show-coalesce enp9s0u2u1u2
+Coalesce parameters for enp9s0u2u1u2:
+Adaptive RX: n/a  TX: n/a
+stats-block-usecs:	n/a
+sample-interval:	n/a
+pkt-rate-low:		n/a
+pkt-rate-high:		n/a
+
+rx-usecs:	15000
+rx-frames:	n/a
+rx-usecs-irq:	n/a
+rx-frames-irq:	n/a
+
+tx-usecs:	0
+tx-frames:	n/a
+tx-usecs-irq:	n/a
+tx-frames-irq:	n/a
+
+rx-usecs-low:	n/a
+rx-frame-low:	n/a
+tx-usecs-low:	n/a
+tx-frame-low:	n/a
+
+rx-usecs-high:	n/a
+rx-frame-high:	n/a
+tx-usecs-high:	n/a
+tx-frame-high:	n/a
+
+CQE mode RX: n/a  TX: n/a
+
+Same output with --json:
+[ethtool-git]$ sudo ./ethtool --json --show-coalesce enp9s0u2u1u2
+[ {
+        "ifname": "enp9s0u2u1u2",
+        "rx-usecs": 15000,
+        "tx-usecs": 0
+    } ]
+
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maxim Georgiev <glipus@gmail.com>
+---
+Changes in v2:
+ - Moved the patch to ethtool-next branch
+ - Eliminated ':' in JSON key names
+ - Replaced the last 'putchar('\n')' call left in coalesce_reply_cb() with show_cr()
+
+ ethtool.c          |  1 +
+ netlink/channels.c | 18 +++++-----
+ netlink/coalesce.c | 88 ++++++++++++++++++++++++++++++----------------
+ netlink/netlink.h  | 24 ++++++++++---
+ netlink/rings.c    | 21 +++++------
+ 5 files changed, 98 insertions(+), 54 deletions(-)
+
+diff --git a/ethtool.c b/ethtool.c
+index 3207e49..3b8412c 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5694,6 +5694,7 @@ static const struct option args[] = {
+ 	},
+ 	{
+ 		.opts	= "-c|--show-coalesce",
++		.json	= true,
+ 		.func	= do_gcoalesce,
+ 		.nlfunc	= nl_gcoalesce,
+ 		.help	= "Show coalesce options"
+diff --git a/netlink/channels.c b/netlink/channels.c
+index 894c74b..5cae227 100644
+--- a/netlink/channels.c
++++ b/netlink/channels.c
+@@ -37,15 +37,17 @@ int channels_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 		putchar('\n');
+ 	printf("Channel parameters for %s:\n", nlctx->devname);
+ 	printf("Pre-set maximums:\n");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_RX_MAX], "RX:\t\t");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_TX_MAX], "TX:\t\t");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_OTHER_MAX], "Other:\t\t");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_COMBINED_MAX], "Combined:\t");
++	show_u32("rx-max", "RX:\t\t", tb[ETHTOOL_A_CHANNELS_RX_MAX]);
++	show_u32("tx-max", "TX:\t\t", tb[ETHTOOL_A_CHANNELS_TX_MAX]);
++	show_u32("other-max", "Other:\t\t", tb[ETHTOOL_A_CHANNELS_OTHER_MAX]);
++	show_u32("combined-max", "Combined:\t",
++		 tb[ETHTOOL_A_CHANNELS_COMBINED_MAX]);
+ 	printf("Current hardware settings:\n");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_RX_COUNT], "RX:\t\t");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_TX_COUNT], "TX:\t\t");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_OTHER_COUNT], "Other:\t\t");
+-	show_u32(tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT], "Combined:\t");
++	show_u32("rx", "RX:\t\t", tb[ETHTOOL_A_CHANNELS_RX_COUNT]);
++	show_u32("tx", "TX:\t\t", tb[ETHTOOL_A_CHANNELS_TX_COUNT]);
++	show_u32("other", "Other:\t\t", tb[ETHTOOL_A_CHANNELS_OTHER_COUNT]);
++	show_u32("combined", "Combined:\t",
++		 tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT]);
+ 
+ 	return MNL_CB_OK;
+ }
+diff --git a/netlink/coalesce.c b/netlink/coalesce.c
+index 15037c2..3cc35ba 100644
+--- a/netlink/coalesce.c
++++ b/netlink/coalesce.c
+@@ -33,43 +33,64 @@ int coalesce_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	if (!dev_ok(nlctx))
+ 		return err_ret;
+ 
++	open_json_object(NULL);
++
+ 	if (silent)
+-		putchar('\n');
+-	printf("Coalesce parameters for %s:\n", nlctx->devname);
++		show_cr();
++	print_string(PRINT_ANY, "ifname", "Coalesce parameters for %s:\n",
++		     nlctx->devname);
+ 	show_bool("rx", "Adaptive RX: %s  ",
+ 		  tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX]);
+ 	show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX]);
+-	show_u32(tb[ETHTOOL_A_COALESCE_STATS_BLOCK_USECS],
+-		 "stats-block-usecs: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL],
+-		 "sample-interval: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_PKT_RATE_LOW], "pkt-rate-low: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_PKT_RATE_HIGH], "pkt-rate-high: ");
+-	putchar('\n');
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS], "rx-usecs: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES], "rx-frames: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS_IRQ], "rx-usecs-irq: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_IRQ], "rx-frames-irq: ");
+-	putchar('\n');
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS], "tx-usecs: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES], "tx-frames: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_IRQ], "tx-usecs-irq: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_IRQ], "tx-frames-irq: ");
+-	putchar('\n');
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS_LOW], "rx-usecs-low: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_LOW], "rx-frame-low: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_LOW], "tx-usecs-low: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_LOW], "tx-frame-low: ");
+-	putchar('\n');
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS_HIGH], "rx-usecs-high: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_HIGH], "rx-frame-high: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_HIGH], "tx-usecs-high: ");
+-	show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH], "tx-frame-high: ");
+-	putchar('\n');
++	show_u32("stats-block-usecs", "stats-block-usecs:\t",
++		 tb[ETHTOOL_A_COALESCE_STATS_BLOCK_USECS]);
++	show_u32("sample-interval", "sample-interval:\t",
++		 tb[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL]);
++	show_u32("pkt-rate-low", "pkt-rate-low:\t\t",
++		 tb[ETHTOOL_A_COALESCE_PKT_RATE_LOW]);
++	show_u32("pkt-rate-high", "pkt-rate-high:\t\t",
++		 tb[ETHTOOL_A_COALESCE_PKT_RATE_HIGH]);
++	show_cr();
++	show_u32("rx-usecs", "rx-usecs:\t", tb[ETHTOOL_A_COALESCE_RX_USECS]);
++	show_u32("rx-frames", "rx-frames:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES]);
++	show_u32("rx-usecs-irq", "rx-usecs-irq:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_USECS_IRQ]);
++	show_u32("rx-frames-irq", "rx-frames-irq:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_IRQ]);
++	show_cr();
++	show_u32("tx-usecs", "tx-usecs:\t", tb[ETHTOOL_A_COALESCE_TX_USECS]);
++	show_u32("tx-frames", "tx-frames:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES]);
++	show_u32("tx-usecs-irq", "tx-usecs-irq:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_USECS_IRQ]);
++	show_u32("tx-frames-irq", "tx-frames-irq:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_IRQ]);
++	show_cr();
++	show_u32("rx-usecs-low", "rx-usecs-low:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_USECS_LOW]);
++	show_u32("rx-frame-low", "rx-frame-low:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_LOW]);
++	show_u32("tx-usecs-low", "tx-usecs-low:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_USECS_LOW]);
++	show_u32("tx-frame-low", "tx-frame-low:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_LOW]);
++	show_cr();
++	show_u32("rx-usecs-high", "rx-usecs-high:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_USECS_HIGH]);
++	show_u32("rx-frame-high", "rx-frame-high:\t",
++		 tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_HIGH]);
++	show_u32("tx-usecs-high", "tx-usecs-high:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_USECS_HIGH]);
++	show_u32("tx-frame-high", "tx-frame-high:\t",
++		 tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH]);
++	show_cr();
+ 	show_bool("rx", "CQE mode RX: %s  ",
+ 		  tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]);
+ 	show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]);
+-	putchar('\n');
++	show_cr();
++
++	close_json_object();
+ 
+ 	return MNL_CB_OK;
+ }
+@@ -92,7 +113,12 @@ int nl_gcoalesce(struct cmd_context *ctx)
+ 				      ETHTOOL_A_COALESCE_HEADER, 0);
+ 	if (ret < 0)
+ 		return ret;
+-	return nlsock_send_get_request(nlsk, coalesce_reply_cb);
++
++	new_json_obj(ctx->json);
++	ret = nlsock_send_get_request(nlsk, coalesce_reply_cb);
++	delete_json_obj();
++	return ret;
++
+ }
+ 
+ /* COALESCE_SET */
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index f43c1bf..3240fca 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -100,12 +100,20 @@ int dump_link_modes(struct nl_context *nlctx, const struct nlattr *bitset,
+ 		    const char *between, const char *after,
+ 		    const char *if_none);
+ 
+-static inline void show_u32(const struct nlattr *attr, const char *label)
++static inline void show_u32(const char *key,
++			    const char *fmt,
++			    const struct nlattr *attr)
+ {
+-	if (attr)
+-		printf("%s%u\n", label, mnl_attr_get_u32(attr));
+-	else
+-		printf("%sn/a\n", label);
++	if (is_json_context()) {
++		if (attr)
++			print_uint(PRINT_JSON, key, NULL,
++				   mnl_attr_get_u32(attr));
++	} else {
++		if (attr)
++			printf("%s%u\n", fmt, mnl_attr_get_u32(attr));
++		else
++			printf("%sn/a\n", fmt);
++	}
+ }
+ 
+ static inline const char *u8_to_bool(const uint8_t *val)
+@@ -132,6 +140,12 @@ static inline void show_bool(const char *key, const char *fmt,
+ 	show_bool_val(key, fmt, attr ? mnl_attr_get_payload(attr) : NULL);
+ }
+ 
++static inline void show_cr(void)
++{
++	if (!is_json_context())
++		putchar('\n');
++}
++
+ /* misc */
+ 
+ static inline void copy_devname(char *dst, const char *src)
+diff --git a/netlink/rings.c b/netlink/rings.c
+index 6284035..5996d5a 100644
+--- a/netlink/rings.c
++++ b/netlink/rings.c
+@@ -38,17 +38,18 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 		putchar('\n');
+ 	printf("Ring parameters for %s:\n", nlctx->devname);
+ 	printf("Pre-set maximums:\n");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX_MAX], "RX:\t\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX_MINI_MAX], "RX Mini:\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX_JUMBO_MAX], "RX Jumbo:\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_TX_MAX], "TX:\t\t");
++	show_u32("rx-max", "RX:\t\t", tb[ETHTOOL_A_RINGS_RX_MAX]);
++	show_u32("rx-mini-max", "RX Mini:\t", tb[ETHTOOL_A_RINGS_RX_MINI_MAX]);
++	show_u32("rx-jumbo-max", "RX Jumbo:\t",
++		 tb[ETHTOOL_A_RINGS_RX_JUMBO_MAX]);
++	show_u32("tx-max", "TX:\t\t", tb[ETHTOOL_A_RINGS_TX_MAX]);
+ 	printf("Current hardware settings:\n");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX], "RX:\t\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX_MINI], "RX Mini:\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX_JUMBO], "RX Jumbo:\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_TX], "TX:\t\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_RX_BUF_LEN], "RX Buf Len:\t\t");
+-	show_u32(tb[ETHTOOL_A_RINGS_CQE_SIZE], "CQE Size:\t\t");
++	show_u32("rx", "RX:\t\t", tb[ETHTOOL_A_RINGS_RX]);
++	show_u32("rx-mini", "RX Mini:\t", tb[ETHTOOL_A_RINGS_RX_MINI]);
++	show_u32("rx-jumbo", "RX Jumbo:\t", tb[ETHTOOL_A_RINGS_RX_JUMBO]);
++	show_u32("tx", "TX:\t\t", tb[ETHTOOL_A_RINGS_TX]);
++	show_u32("rx-buf-len", "RX Buf Len:\t", tb[ETHTOOL_A_RINGS_RX_BUF_LEN]);
++	show_u32("cqe-size", "CQE Size:\t", tb[ETHTOOL_A_RINGS_CQE_SIZE]);
+ 	show_bool("tx-push", "TX Push:\t%s\n", tb[ETHTOOL_A_RINGS_TX_PUSH]);
+ 
+ 	tcp_hds = tb[ETHTOOL_A_RINGS_TCP_DATA_SPLIT] ?
+-- 
+2.38.1
+
