@@ -2,52 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E4364DEC9
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD1064DEE0
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:44:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbiLOQj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 11:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        id S230253AbiLOQn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 11:43:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiLOQj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:39:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D764D20F50;
-        Thu, 15 Dec 2022 08:39:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91A67B81C0F;
-        Thu, 15 Dec 2022 16:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD6EC433EF;
-        Thu, 15 Dec 2022 16:39:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671122363;
-        bh=2OPO4m4zGufDKQ8laFBnT5+ykmpwqmAwuJDyZQqQLAs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cB66ibYY5YG+vvmy4HAotIH2AcVlI5B87zecW1Ia36abgl+C2N+RQx7qZEkLjp5Q9
-         /uvyeOsuCc5grEphZqY1uC6uBCxqFAszRqpB7cwZvq2wNO/jrrJofbqxeWk5e1Ciil
-         kAZzIsNrupTaJJVRMZvw32WMlLZ5SJJfi6nX/99PuOKBTqo76kaQGudWeSRbO0FK9o
-         n6f9+YlPJXYiJjdr1SvE1OiXvZ4cJoosoNQQPPUKeqv1Ggy0IuN3RQ3cZhKafw8MUq
-         FLBvRCbBQGpnKJDclKd97FUN9lMAKWQbJR45QrzVTq6oPdpdFTVKkFo+fmkyfvJ2TX
-         IvL7UqYa4H4Qw==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Roger Quadros <rogerq@kernel.org>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: ti: am65-cpsw: fix CONFIG_PM #ifdef
-Date:   Thu, 15 Dec 2022 17:39:05 +0100
-Message-Id: <20221215163918.611609-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S230240AbiLOQn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:43:57 -0500
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1435331EF4;
+        Thu, 15 Dec 2022 08:43:54 -0800 (PST)
+Received: from [192.168.1.103] (178.176.74.151) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Thu, 15 Dec
+ 2022 19:43:43 +0300
+Subject: Re: [PATCH net v2] ravb: Fix "failed to switch device to config mode"
+ message during unbind
+To:     <patchwork-bot+netdevbpf@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <p.zabel@pengutronix.de>,
+        <geert+renesas@glider.be>, <liuhangbin@gmail.com>,
+        <mitsuhiro.kimura.kc@renesas.com>, <netdev@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>,
+        <fabrizio.castro.jz@renesas.com>, <stable@vger.kernel.org>,
+        <leonro@nvidia.com>
+References: <20221214105118.2495313-1-biju.das.jz@bp.renesas.com>
+ <167111521604.32410.3850134562584373463.git-patchwork-notify@kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <b9afb491-73a9-5ffb-bef7-4f29dda6efe0@omp.ru>
+Date:   Thu, 15 Dec 2022 19:43:44 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+In-Reply-To: <167111521604.32410.3850134562584373463.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.74.151]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 12/15/2022 16:24:15
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 174213 [Dec 15 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.59.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_arrow_text}
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.151 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: git.kernel.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.151
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 12/15/2022 16:27:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 12/15/2022 10:28:00 AM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,46 +87,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On 12/15/22 5:40 PM, patchwork-bot+netdevbpf@kernel.org wrote:
 
-The #ifdef check is incorrect and leads to a warning:
+> Hello:
+> 
+> This patch was applied to netdev/net.git (master)
+> by Paolo Abeni <pabeni@redhat.com>:
+> 
+> On Wed, 14 Dec 2022 10:51:18 +0000 you wrote:
+>> This patch fixes the error "ravb 11c20000.ethernet eth0: failed to switch
+>> device to config mode" during unbind.
+>>
+>> We are doing register access after pm_runtime_put_sync().
+>>
+>> We usually do cleanup in reverse order of init. Currently in
+>> remove(), the "pm_runtime_put_sync" is not in reverse order.
+>>
+>> [...]
+> 
+> Here is the summary with links:
+>   - [net,v2] ravb: Fix "failed to switch device to config mode" message during unbind
+>     https://git.kernel.org/netdev/net/c/c72a7e42592b
+> 
+> You are awesome, thank you!
 
-drivers/net/ethernet/ti/am65-cpsw-nuss.c:1679:13: error: 'am65_cpsw_nuss_remove_rx_chns' defined but not used [-Werror=unused-function]
- 1679 | static void am65_cpsw_nuss_remove_rx_chns(void *data)
+   Oops, was going to review the patch tonight, now that I'm back from the hospitals.
 
-It's better to remove the #ifdef here and use the modern
-SYSTEM_SLEEP_PM_OPS() macro instead.
-
-Fixes: 24bc19b05f1f ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 9decb0c7961b..ecbde83b5243 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -2878,7 +2878,6 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int am65_cpsw_nuss_suspend(struct device *dev)
- {
- 	struct am65_cpsw_common *common = dev_get_drvdata(dev);
-@@ -2964,10 +2963,9 @@ static int am65_cpsw_nuss_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM_SLEEP */
- 
- static const struct dev_pm_ops am65_cpsw_nuss_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(am65_cpsw_nuss_suspend, am65_cpsw_nuss_resume)
-+	SYSTEM_SLEEP_PM_OPS(am65_cpsw_nuss_suspend, am65_cpsw_nuss_resume)
- };
- 
- static struct platform_driver am65_cpsw_nuss_driver = {
--- 
-2.35.1
-
+MBR, Sergey
