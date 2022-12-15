@@ -2,126 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF7D664D880
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 10:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4834564D8A2
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 10:32:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbiLOJZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 04:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S230009AbiLOJcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 04:32:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiLOJZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 04:25:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B86662EB;
-        Thu, 15 Dec 2022 01:25:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDBDAB81B1F;
-        Thu, 15 Dec 2022 09:25:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A98BC433EF;
-        Thu, 15 Dec 2022 09:25:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671096330;
-        bh=Ghx7bQQmB4dNko5TEqFTpcrI/7XoAzb8oef6uZQtmfI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FUp637i7/fbnFMM8pD7qQLn51ZBBtgxlLxRbeB+owEkPVDdiwl47ZmRQSsvqBjoh0
-         6aFpa85Uof3gsNKbNntSPR2jtYoE54fc+d2oXKQyyyYMzjBsobT+6nUXXVXTGt4VlT
-         utbfcpUNBLpoMHkAqyIzYrsWUT/Tu2nj/lL6KmKmmQ37RX9CF5UwDWZA5dHrAZlp33
-         xGvHX+EY+Sz63DxZxuyhvrrG+XvGMd5a/w3mhhfbxeD9JElxM47/zv/RzW7Q9lU153
-         E28OXLLPDWgRBqZ95l46kdJklCNSpOlq4t3nR5UPKnvR2jtZyH+ThnwEugnLd1QzhJ
-         Os3wZcDvNhaFQ==
-Date:   Thu, 15 Dec 2022 09:25:23 +0000
-From:   Lee Jones <lee@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Jialiang Wang <wangjialiang0806@163.com>, stable@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, niejianglei2021@163.com,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
+        with ESMTP id S230062AbiLOJbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 04:31:44 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E335FE7
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 01:31:43 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id n20so50886912ejh.0
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 01:31:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q0YAKGDMlZN4p7SGu1vmDkPv/Bp6BjxoeHp4dwkcNfc=;
+        b=2f3RUKhIBSh486JTHI1LtttZ415mWNa9U2TLd2xJ81N+di7BPRGccKUXO+B3tWnv6e
+         MxQp+ywMvY0KT2MHPteX66Cdkxc4vDCFl8wwsT2H/KnrJtqboZ4v4xVW1WIcOwscQJtk
+         EXzS14okcECBa5A0LwliClUG49W/vadFAt5c5kXewKUNjocHSDwjLDc1/F56FHMDmNf6
+         OhFVmx9F5p6v/4cL58/0nfgyDfLhxNeazfLAv/ACjn8x/rwopoNPKgfp6LdUVQsy0oyn
+         zbQ7+wvE/BNvLJdFrWw1SsyUq9c9qS5NRtSaD2PcPuLLfl9gJZfzc0B0tZ6aXUCUA3eR
+         tLIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q0YAKGDMlZN4p7SGu1vmDkPv/Bp6BjxoeHp4dwkcNfc=;
+        b=z0nEPnadM4qMf6hkS5TzlmZx9FNH2A/Szk0qIq/FxXQUuoEyvd7m/y/uxXNPPcwXUV
+         hkP8yhtXL5UOikThrF0AzM3PEU35Y5jbIyPryS4NkBAx8zr4SYLizqKNv120/cl6ecTV
+         fBWAKjYWWC+L3RmiAW4j3WaSm4K13swnnnbfNUrI6BZY5OTKvI49nHvDR66KIdjYqv08
+         JT47JTYuyz39Yw9yhYtXwjKZwb51Obke1Uzqiaex7g1bk/DRlKSqmQB6ANTO36hsAX1P
+         RMYJVP5oqkOBfbJftcGHzKSH6zwQYCI8aTjlCzjHSjhxuo4WcECuEVrs5pdhXBMQympR
+         J/5A==
+X-Gm-Message-State: AFqh2koJ7NEXr4S/UXVvavzQIfn2iK15RRbLM8RlE+BxgqAKAotHIMoI
+        AU79wdbm+IXMbJkT6/RdK7Oc+QouAt81WdA+
+X-Google-Smtp-Source: AA0mqf5MMcU0t1oncbTYHhV2o2kO+I4zfDKxm6R/liP0XWxOGWAI0R3zjT2Yg8Zg/LZRDrkiN4wcbg==
+X-Received: by 2002:a17:906:26c6:b0:7c5:fd:4352 with SMTP id u6-20020a17090626c600b007c500fd4352mr5582566ejc.49.1671096701556;
+        Thu, 15 Dec 2022 01:31:41 -0800 (PST)
+Received: from blmsp ([185.238.219.6])
+        by smtp.gmail.com with ESMTPSA id v2-20020a170906292200b007c09d37eac7sm6796931ejd.216.2022.12.15.01.31.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Dec 2022 01:31:41 -0800 (PST)
+Date:   Thu, 15 Dec 2022 10:31:40 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] nfp: fix use-after-free in area_cache_get()
-Message-ID: <Y5roA4gOpvKBQySv@google.com>
-References: <20220810073057.4032-1-wangjialiang0806@163.com>
- <Y5CFNqYNMkryiDcP@google.com>
- <Y5HwAWNtH5IfH9OA@corigine.com>
+Subject: Re: [PATCH 02/15] can: m_can: Wakeup net queue once tx was issued
+Message-ID: <20221215093140.fwpezasd6whhk7p7@blmsp>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-3-msp@baylibre.com>
+ <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de>
+ <20221214091406.g6vim5hvlkm34naf@blmsp>
+ <20221214091820.geugui5ws3f7a5ng@pengutronix.de>
+ <20221214092201.xpb3rnwp5rtvrpkr@pengutronix.de>
+ <CAMZ6RqLAZNj9dm_frbKExHK8AYDj9D0rX_9=c8_wk9kFrO-srw@mail.gmail.com>
+ <20221214103542.c5g32qtbuvn5mv4u@blmsp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y5HwAWNtH5IfH9OA@corigine.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221214103542.c5g32qtbuvn5mv4u@blmsp>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Stable,
+Hi,
 
-[NB: Re-poking Stable with the correct contact address this time! :)]
+On Wed, Dec 14, 2022 at 11:35:43AM +0100, Markus Schneider-Pargmann wrote:
+> Hi Vincent,
+> 
+> On Wed, Dec 14, 2022 at 07:15:25PM +0900, Vincent MAILHOL wrote:
+> > On Wed. 14 Dec. 2022 at 18:28, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> > > On 14.12.2022 10:18:20, Marc Kleine-Budde wrote:
+> > > > On 14.12.2022 10:14:06, Markus Schneider-Pargmann wrote:
+> > > > > Hi Marc,
+> > > > >
+> > > > > On Wed, Nov 30, 2022 at 06:21:00PM +0100, Marc Kleine-Budde wrote:
+> > > > > > On 16.11.2022 21:52:55, Markus Schneider-Pargmann wrote:
+> > > > > > > Currently the driver waits to wakeup the queue until the interrupt for
+> > > > > > > the transmit event is received and acknowledged. If we want to use the
+> > > > > > > hardware FIFO, this is too late.
+> > > > > > >
+> > > > > > > Instead release the queue as soon as the transmit was transferred into
+> > > > > > > the hardware FIFO. We are then ready for the next transmit to be
+> > > > > > > transferred.
+> > > > > >
+> > > > > > If you want to really speed up the TX path, remove the worker and use
+> > > > > > the spi_async() API from the xmit callback, see mcp251xfd_start_xmit().
+> > > > > >
+> > > > > > Extra bonus if you implement xmit_more() and transfer more than 1 skb
+> > > > > > per SPI transfer.
+> > > > >
+> > > > > Just a quick question here, I mplemented a xmit_more() call and I am
+> > > > > testing it right now, but it always returns false even under high
+> > > > > pressure. The device has a txqueuelen set to 1000. Do I need to turn
+> > > > > some other knob for this to work?
+> > 
+> > I was the first to use BQL in a CAN driver. It also took me time to
+> > first figure out the existence of xmit_more() and even more to
+> > understand how to make it so that it would return true.
+> > 
+> > > > AFAIK you need BQL support: see 0084e298acfe ("can: mcp251xfd: add BQL support").
+> > > >
+> > > > The etas_es58x driver implements xmit_more(), I added the Author Vincent
+> > > > on Cc.
+> > >
+> > > Have a look at netdev_queue_set_dql_min_limit() in the etas driver.
+> > 
+> > The functions you need are the netdev_send_queue() and the
+> > netdev_complete_queue():
+> > 
+> >   https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L3424
+> > 
+> > For CAN, you probably want to have a look to can_skb_get_frame_len().
+> > 
+> >   https://elixir.bootlin.com/linux/latest/source/include/linux/can/length.h#L166
+> > 
+> > The netdev_queue_set_dql_min_limit() gives hints by setting a minimum
+> > value for BQL. It is optional (and as of today I am the only user of
+> > it).
+> 
+> Thank you for this summary, great that you already invested the time to
+> make it work with a CAN driver. I will give it a try in the m_can
+> driver.
 
-> > > area_cache_get() is used to distribute cache->area and set cache->id,
-> > >  and if cache->id is not 0 and cache->area->kref refcount is 0, it will
-> > >  release the cache->area by nfp_cpp_area_release(). area_cache_get()
-> > >  set cache->id before cpp->op->area_init() and nfp_cpp_area_acquire().
-> > >
-> > > But if area_init() or nfp_cpp_area_acquire() fails, the cache->id is
-> > >  is already set but the refcount is not increased as expected. At this
-> > >  time, calling the nfp_cpp_area_release() will cause use-after-free.
-> > >
-> > > To avoid the use-after-free, set cache->id after area_init() and
-> > >  nfp_cpp_area_acquire() complete successfully.
-> > >
-> > > Note: This vulnerability is triggerable by providing emulated device
-> > >  equipped with specified configuration.
-> > >
-> > >  BUG: KASAN: use-after-free in nfp6000_area_init (/home/user/Kernel/v5.19
-> > > /x86_64/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
-> > >   Write of size 4 at addr ffff888005b7f4a0 by task swapper/0/1
-> > >
-> > >  Call Trace:
-> > >   <TASK>
-> > >  nfp6000_area_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net
-> > > /ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
-> > >  area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
-> > > /net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:884)
-> > >
-> > >  Allocated by task 1:
-> > >  nfp_cpp_area_alloc_with_name (/home/user/Kernel/v5.19/x86_64/src/drivers
-> > > /net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:303)
-> > >  nfp_cpp_area_cache_add (/home/user/Kernel/v5.19/x86_64/src/drivers/net
-> > > /ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:802)
-> > >  nfp6000_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
-> > > /netronome/nfp/nfpcore/nfp6000_pcie.c:1230)
-> > >  nfp_cpp_from_operations (/home/user/Kernel/v5.19/x86_64/src/drivers/net
-> > > /ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:1215)
-> > >  nfp_pci_probe (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
-> > > /netronome/nfp/nfp_main.c:744)
-> > >
-> > >  Freed by task 1:
-> > >  kfree (/home/user/Kernel/v5.19/x86_64/src/mm/slub.c:4562)
-> > >  area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
-> > > /net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:873)
-> > >  nfp_cpp_read (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
-> > > /netronome/nfp/nfpcore/nfp_cppcore.c:924 /home/user/Kernel/v5.19/x86_64
-> > > /src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:973)
-> > >  nfp_cpp_readl (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
-> > > /netronome/nfp/nfpcore/nfp_cpplib.c:48)
-> > >
-> > > Signed-off-by: Jialiang Wang <wangjialiang0806@163.com>
-> > 
-> > Any reason why this doesn't have a Fixes: tag applied and/or didn't
-> > get sent to Stable?
-> > 
-> > Looks as if this needs to go back as far as v4.19.
-> > 
-> > Fixes: 4cb584e0ee7df ("nfp: add CPP access core")
-> > 
-> > commit 02e1a114fdb71e59ee6770294166c30d437bf86a upstream.
+Thanks again, it looks like it is working after adding netdev_sent_queue
+and netdev_complete_queue.
 
-Would you be able to take this with the information provided please?
-
--- 
-Lee Jones [李琼斯]
+Best,
+Markus
