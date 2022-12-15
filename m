@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5940764DCEF
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2395164DCF4
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 15:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiLOOhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 09:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
+        id S229959AbiLOOh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 09:37:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbiLOOhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:37:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D282E683
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 06:36:35 -0800 (PST)
+        with ESMTP id S229954AbiLOOh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 09:37:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A974D13CE9
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 06:37:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671114994;
+        s=mimecast20190719; t=1671115028;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=LrlmfDhbKiauy9xEo45UHyZTDkdDc8udBCCj9dDmlf8=;
-        b=WLis2T9cBi/CxRB1u+mGkXfgrMXWwjfETCUXfEoYacU0q4sATtpzesqtPkdX4aSCWZt2x3
-        7GdrUYbIC2lPL/UGX1ggaSNIweR1S05gM9g84q7/682CR8ZltA6AFlgOjWLY2vGob05cSp
-        hurd4x7mYqDfAFBCVLTA+zjE7+ihtC4=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-369-UJorhu-GM2GzXHiROG2J2g-1; Thu, 15 Dec 2022 09:36:32 -0500
-X-MC-Unique: UJorhu-GM2GzXHiROG2J2g-1
-Received: by mail-ed1-f71.google.com with SMTP id y20-20020a056402271400b0046c9a6ec30fso11933017edd.14
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 06:36:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LrlmfDhbKiauy9xEo45UHyZTDkdDc8udBCCj9dDmlf8=;
-        b=52DAEhJG8v8YTE3wgfc6UTQs2oyjwaxwk1sRJBQUKHimzFOiCeMofGlJRsXfHglOON
-         6FvzZawCuPhedPvCzIGLTUPqQm8htDFkXuN87MM2ab+CdT5FmybSdLMS6n78gOfcbyW0
-         nsG/PoJVmpTH/yk7pgONzMHVxsCX5tsWrTKcpX3EEfrbqUA0marH0Wzx7XyRBbtSSxZ5
-         y43xE8BERGe3pNlkkho4ItcQnbe6PP6Us2qLLLX0q5Ps6YuDwkAK+VaMMw7AjTPUescL
-         QgFfJxt4sH9tWJCxkTAa9gWuQU6PabpHxA0qFINh7JEsvzZ6SDaMWIcluT9W1XBy5yqC
-         yRdQ==
-X-Gm-Message-State: ANoB5pmCFek4BQ49vM2pNNzsaJLnF/bY/itTc1JDKyP9iQsquzhJbmce
-        yFff0JtwSOQJtpwZgtGhXPxTCx2QD6NJkGbGQENLTUFfla1eLiFTet6/jGuAEpTr8UVkX1BDyAp
-        iucNLCB5ZOYhy8RbP
-X-Received: by 2002:a50:ff0a:0:b0:46b:1231:3858 with SMTP id a10-20020a50ff0a000000b0046b12313858mr22746974edu.40.1671114991591;
-        Thu, 15 Dec 2022 06:36:31 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf515ZI92vewamRB9Zd7kFMmOy3EYq/IZv9mDMOjzghe3RU2Q/hX4jqzpSIQhCbafRNVCccS8g==
-X-Received: by 2002:a50:ff0a:0:b0:46b:1231:3858 with SMTP id a10-20020a50ff0a000000b0046b12313858mr22746956edu.40.1671114991315;
-        Thu, 15 Dec 2022 06:36:31 -0800 (PST)
-Received: from [10.39.192.185] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id i7-20020aa7c707000000b0047466e46662sm279577edq.39.2022.12.15.06.36.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Dec 2022 06:36:30 -0800 (PST)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        dev@openvswitch.org, aconole@redhat.com, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net v2] openvswitch: Fix flow lookup to use unmasked key
-Date:   Thu, 15 Dec 2022 15:36:30 +0100
-X-Mailer: MailMate (1.14r5933)
-Message-ID: <3142B112-D79A-48D2-970A-6B2DF45ACD30@redhat.com>
-In-Reply-To: <920bc474-d5d8-2d8d-d9eb-fd237cba723d@ovn.org>
-References: <167103556314.309509.17490804498492906420.stgit@ebuild>
- <920bc474-d5d8-2d8d-d9eb-fd237cba723d@ovn.org>
+        bh=/D687QegGww0pxnZ9+mN8tLEmEvWg+oO0pfwDRAqVMg=;
+        b=KyLnIkoKpeULRKYyBD2dgafHgMnjLhjlIvYy1Z6+IrhRb+P4dNeJuYKmtI1jBrhicX7JZi
+        WdHGEDu2ZzviJhnyHJv17gGDdJjIysYacFkPVy/f83EB+1QcLLdMRWCGTo66rOGSvIxrWo
+        gvVi1+ZweJTMn5MJ7oABhz+7YMFgV3I=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-482-SUS0fRfqMsGwHjZsIz3q8w-1; Thu, 15 Dec 2022 09:37:01 -0500
+X-MC-Unique: SUS0fRfqMsGwHjZsIz3q8w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 13B06101A55E;
+        Thu, 15 Dec 2022 14:37:00 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C82C114171BE;
+        Thu, 15 Dec 2022 14:36:54 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20221215135905.GA19378@pc-4.home>
+References: <20221215135905.GA19378@pc-4.home> <92b887a9b90dcbf5083d1f47699c2f785820d708.1670929442.git.bcodding@redhat.com> <cover.1670929442.git.bcodding@redhat.com> <122424.1671106362@warthog.procyon.org.uk>
+To:     Guillaume Nault <gnault@redhat.com>
+cc:     dhowells@redhat.com, Benjamin Coddington <bcodding@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Christoph =?utf-8?Q?B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Steve French <sfrench@samba.org>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v3 2/3] Treewide: Stop corrupting socket's task_frag
 MIME-Version: 1.0
 Content-Type: text/plain
+Date:   Thu, 15 Dec 2022 14:36:52 +0000
+Message-ID: <139538.1671115012@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -78,43 +100,25 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Guillaume Nault <gnault@redhat.com> wrote:
 
-On 15 Dec 2022, at 12:45, Ilya Maximets wrote:
+> Maybe setting sk_use_task_frag in fs/afs/rxrpc.c was overzealous but
+> I'm not familiar enough with the AF_RXRPC family to tell. If AF_RXRPC
+> sockets can't call sk_page_frag() and have no reason to do so in the
+> future, then it should be safe to drop this chunk.
 
-> On 12/14/22 17:33, Eelco Chaudron wrote:
->> The commit mentioned below causes the ovs_flow_tbl_lookup() function
->> to be called with the masked key. However, it's supposed to be called
->> with the unmasked key.
->
-> Hi, Eelco.  Thanks for the fix!
->
-> Could you, please, add more information to the commit message on
-> why this is a problem, with some examples?  This will be useful
-> for someone in the future trying to understand why we actually
-> have to use an unmasked key here.
+As of this merge window, AF_RXRPC doesn't actually allocate sk_buffs apart
+from when it calls skb_unshare().  It does steal the incoming sk_buffs from
+the UDP socket it uses as a transport, but they're allocated in the IP/IP6
+stack somewhere.
 
-ACK will add the same description as in the OVS dpif-netdev commit.
+The UDP transport socket, on the other hand, will allocate sk_buffs for
+transmission, but rxrpc sends an entire UDP packet at a time, each with a
+single sendmsg call.
 
-> Also, I suppose, 'Cc: stable@vger.kernel.org' tag is needed in the
-> commit message since it's a fix for a bug that is actually impacts
-> users and needs to be backported.
+Further, this mostly now moved such that the UDP sendmsg calls are performed
+inside an I/O thread.  The application thread does not interact directly with
+the UDP transport socket.
 
-Will do in the v3.
-
-> Best regards, Ilya Maximets.
->
->>
->> This change reverses the commit below, but rather than having the key
->> on the stack, it's allocated.
->>
->> Fixes: 190aa3e77880 ("openvswitch: Fix Frame-size larger than 1024 bytes warning.")
->>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>
->> ---
->> Version history:
->>  - v2: Fixed ENOME(N/M) error. Forgot to do a stg refresh.
->>
->>  net/openvswitch/datapath.c |   25 ++++++++++++++++---------
->>  1 file changed, 16 insertions(+), 9 deletions(-)
+David
 
