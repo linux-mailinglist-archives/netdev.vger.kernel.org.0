@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEAE964D58E
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 04:28:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03FDA64D5AC
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 04:48:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbiLOD21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 22:28:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42736 "EHLO
+        id S229596AbiLODsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 22:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiLOD2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 22:28:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0AA54B988
-        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 19:27:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671074855;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PymI4q7qNfGWX3YIwL6NoS6LPNMzpnl2I9EurJsvLII=;
-        b=OkxoJDg19C+J0xqjjUAD4LFSlCwHy718gVr2UeXgFpEwrU+0Y1hEJGLTSSVCSklxXuLQq2
-        oSqGCQ5i4WYnDMlAgaSXEOA5aoZYjCVkXctAgYKKHc+cIQXixEacRBeCvPuDA3jbptlMTl
-        6nQquf2ACxjNFV/Ex87jg4TbKmTm8no=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-kma6sXGIOKKmlWPHWJxdxw-1; Wed, 14 Dec 2022 22:27:32 -0500
-X-MC-Unique: kma6sXGIOKKmlWPHWJxdxw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 47D081C02D47;
-        Thu, 15 Dec 2022 03:27:32 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-12-112.pek2.redhat.com [10.72.12.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 18DC1C15BA0;
-        Thu, 15 Dec 2022 03:27:21 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com
-Subject: [PATCH net V2] virtio-net: correctly enable callback during start_xmit
-Date:   Thu, 15 Dec 2022 11:27:19 +0800
-Message-Id: <20221215032719.72294-1-jasowang@redhat.com>
+        with ESMTP id S229484AbiLODsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 22:48:12 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFD34385E;
+        Wed, 14 Dec 2022 19:48:11 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1p5fE5-0003wP-G6; Thu, 15 Dec 2022 04:48:05 +0100
+Date:   Thu, 15 Dec 2022 03:47:59 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH net v3] net: dsa: mt7530: remove redundant assignment
+Message-ID: <Y5qY7x6la5TxZxzX@makrotopia.org>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
-virtqueue callback via the following statement:
+Russell King correctly pointed out that the MAC_2500FD capability is
+already added for port 5 (if not in RGMII mode) and port 6 (which only
+supports SGMII) by mt7531_mac_port_get_caps. Remove the reduntant
+setting of this capability flag which was added by a previous commit.
 
-        do {
-           ......
-	} while (use_napi && kick &&
-               unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
-
-When NAPI is used and kick is false, the callback won't be enabled
-here. And when the virtqueue is about to be full, the tx will be
-disabled, but we still don't enable tx interrupt which will cause a TX
-hang. This could be observed when using pktgen with burst enabled.
-
-Fixing this by trying to enable tx interrupt after we disable TX when
-we're not using napi or kick is false.
-
-Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
+Fixes: e19de30d2080 ("net: dsa: mt7530: add support for in-band link status")
+Reported-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
-The patch is needed for -stable.
-Changes since V1:
-- enable tx interrupt after we disable tx
----
- drivers/net/virtio_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes since v2: correct commit title 'reduntant' -> 'redundant'
+Changes since v1: Use 12 chars for fixes tag, fix Russell's contact
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 86e52454b5b5..dcf3a536d78a 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1873,7 +1873,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	 */
- 	if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
- 		netif_stop_subqueue(dev, qnum);
--		if (!use_napi &&
-+		if ((!use_napi || !kick) &&
- 		    unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
- 			/* More just got used, free them then recheck. */
- 			free_old_xmit_skbs(sq, false);
+ drivers/net/dsa/mt7530.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index e74c6b406172..908fa89444c9 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2919,9 +2919,6 @@ static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+ 				   MAC_10 | MAC_100 | MAC_1000FD;
+ 
+-	if ((priv->id == ID_MT7531) && mt753x_is_mac_port(port))
+-		config->mac_capabilities |= MAC_2500FD;
+-
+ 	/* This driver does not make use of the speed, duplex, pause or the
+ 	 * advertisement in its mac_config, so it is safe to mark this driver
+ 	 * as non-legacy.
+
+base-commit: 7e68dd7d07a28faa2e6574dd6b9dbd90cdeaae91
 -- 
-2.25.1
+2.39.0
 
