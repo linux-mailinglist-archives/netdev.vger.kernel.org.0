@@ -2,122 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB0764E215
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 21:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2BC64E21C
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 21:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiLOUAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 15:00:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        id S230413AbiLOUHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 15:07:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230331AbiLOUAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 15:00:06 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03217537F8
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 12:00:06 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id 3-20020a17090a098300b00219041dcbe9so218095pjo.3
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 12:00:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=99Dl3b+Xd16PXSIqrGCyckGZ5mO9meE4tOd/yuF/D/c=;
-        b=DU5Rdhj/S2JmHBM7zShQYM6Qp1VszV1vogPDQKhK6too95M4vHOCB85LmaCaIpWTLC
-         sbSEAvQpwTS1zKlTHfuDQWNYy3lMGD1gSPTapxyjatKcH3VsXiqizYQxYM51lUUCyFxI
-         UF/ldgA+S0Yq3pCjDU1h9znD7RhODukiFP9JoV70EMnQz0dabcSQm99PWLmQpORtdc84
-         7MsOM/VY+Ua6OociSvzqi/BiVCayqIS/nh1xIxzDRqw8SyJUGdQLuGd8MnWTxvvmkM+D
-         q6tKO/WxRUdLf9OIufaoUBjdnUjQHhz6+xL/0fhl4dMsn5+kXmY57HmUnSB2MsD8HJd/
-         j7Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=99Dl3b+Xd16PXSIqrGCyckGZ5mO9meE4tOd/yuF/D/c=;
-        b=4COBXn2p+/Ja/fIc9bHMB1CSA5gzHSrirPGEaiczVrTIiKfNCIQ14RRSYCNLCwy2hC
-         Ob4SFBsocBAa7ZQ/pK0M824EksawUu4U+F2A/miQ+ozZ0gnFKmUI3vfgK1pLDF64wSD6
-         qsyWtZLffbOtf0S9/xNuVX/nl3LC3NngkTTYf3PyEt+LMjadgm043EohUahf+wbFFTu8
-         +AsvEsc5mxc4MoSf2VfKSRBMT1jENrWodYIHmVQ0axlLAgOJSt2WpygFVwMUHVU94dvQ
-         cI5T46Ai+qdByvSwsrRsm2zp+WtnIJQRZu6Dt1CuZiSypEAl2QwT87UoBAhDm0lnd3OJ
-         I3+A==
-X-Gm-Message-State: ANoB5pmkDsTJg+aOK2wPeFThH6jg+9o6CT/JmFL4gXFdyj62zhVDE9OX
-        sc+sOZm3MFds69mnDAv8kWTRv9QwovMqpgHvBfQ=
-X-Google-Smtp-Source: AA0mqf7cb5sTE9aY2Qm7WNF3d3uE3SIgzk4kbzBBmJRDsiiPaYROYRRUZr1eY4nHKhPYDxFEQfOPzg0UezRvFHJhUUA=
-X-Received: by 2002:a17:902:e313:b0:189:aee3:a185 with SMTP id
- q19-20020a170902e31300b00189aee3a185mr38125313plc.21.1671134405351; Thu, 15
- Dec 2022 12:00:05 -0800 (PST)
+        with ESMTP id S230422AbiLOUHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 15:07:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6960E1F2CB
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 12:07:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F136B81C4E
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 20:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95EE1C433EF;
+        Thu, 15 Dec 2022 20:07:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671134868;
+        bh=XlhAYQ0O9+iNzKxJd5YMyGz+4WCwvkhktFzxaYW9zmI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T15IJtEiUBfmkDZ6BjesWlyhfhVlFDlvA10EZS5bh4xbCnwYmykPHwcDB4MmdvSDU
+         i6YdDcMKwYFRfqS6vu94CyWOrJ13ui1pcJLC9Qu1jeQUFjfYGHRB8pqrygV8WmLChH
+         cHGdLs6X7RsO2avU+ThAZ0hdVWSPfYJ/Hu4sDKd0PgOe0OHF13AvwFEMBg73a0sWGe
+         Mq/LmMBXhsB8aR53x5+lhrI8jK3yjdMfmwx28KL1zFfNyy7ChAAo4IOU/lyEMHXzob
+         UZfz+mKlzcP/CopswgGjUunx/ukO1mLV5cH8M5pNp8Um6CIAULBxHWUwkFUlKKVhKy
+         KyvuQS3rbwHBQ==
+Date:   Thu, 15 Dec 2022 12:07:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Georgiev <glipus@gmail.com>
+Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool-next v3 v3] JSON output support for Netlink
+ implementation of --show-coalesce option
+Message-ID: <20221215120747.0f15aa06@kernel.org>
+In-Reply-To: <20221215051347.70022-1-glipus@gmail.com>
+References: <20221214202213.36ab31c0@kernel.org>
+        <20221215051347.70022-1-glipus@gmail.com>
 MIME-Version: 1.0
-References: <20221214000555.22785-1-u9012063@gmail.com> <935e24d6f6b51b5aaee4cf086ad08474e75410b8.camel@gmail.com>
- <CALDO+SaoW5XoroBMoYLWsqCvYYVkKiTFFPMTLUEt7Qu5rQ+z3Q@mail.gmail.com>
- <c213b4c3e8774e59389948b3b9b3ff132043dfcf.camel@gmail.com> <CALDO+Sax4=0tkq1xeH5W3FGaqXtweHj=eKFAUf15J2k7K1_4hA@mail.gmail.com>
-In-Reply-To: <CALDO+Sax4=0tkq1xeH5W3FGaqXtweHj=eKFAUf15J2k7K1_4hA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 15 Dec 2022 11:59:53 -0800
-Message-ID: <CAKgT0UdhjAV2qed04SNepa0EvXJKO9QmXLDorQHF9AJ3YqMLHQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v5] vmxnet3: Add XDP support.
-To:     William Tu <u9012063@gmail.com>
-Cc:     netdev@vger.kernel.org, tuc@vmware.com, gyang@vmware.com,
-        doshir@vmware.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 15, 2022 at 10:25 AM William Tu <u9012063@gmail.com> wrote:
->
-> On Wed, Dec 14, 2022 at 2:51 PM Alexander H Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Wed, 2022-12-14 at 13:55 -0800, William Tu wrote:
-> > > Thanks for taking a look at this patch!
-> > >
-> > > <...>
+On Wed, 14 Dec 2022 22:13:47 -0700 Maxim Georgiev wrote:
+> Add --json support for Netlink implementation of --show-coalesce option
+> No changes for non-JSON output for this feature.
 
-> > > How do I avoid overwriting frames that might be waiting on transmit?
-> > > I checked my vmxnet3_xdp_xmit_back and vmxnet3_xdp_xmit_frame,
-> > > I think since I called the vmxnet3_xdp_xmit_frame at the rx context,
-> > > it should be ok?
-> >
-> > I don't think you can guarantee that. Normally for TX you would want to
-> > detach and replace the page unless you have some sort of other
-> > recycling/reuse taking care of it for you. Normally that is handled via
-> > page pool.
-> >
-> > On the Intel parts I had gotten around that via our split buffer model
-> > so we just switched to the other half of the page while the Tx sat on
-> > the first half, and by the time we would have to check again we would
-> > either detach the page for flip back if it had already been freed by
-> > the Tx path.
-> I see your point. So for XDP_TX, I can also do s.t like I did in XDP_REDIRECT,
-> memcpy to a freshly allocated page so the frame won't get overwritten.
-> Probably the performance will suffer.
-> Do you suggest allocating new page or risk buffer overwritten?
-
-This is one of the reasons for the page pool being used in other
-drivers. You may want to look at going that route if you want to avoid
-the memcpy. I don't think you can leave the page mapped without
-risking it will be overwritten.
-
-> >
-> > > +static int
-> > > +vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
-> > > +                   struct xdp_frame *xdpf,
-> > > +                   struct sk_buff *skb)
-> > >
-> >
-> > Also after re-reviewing this I was wondering why you have the skb
-> > argument for this function? The only caller is passing NULL and I
-> > wouldn't expect you to be passing an skb since you are working with XDP
-> > buffers anyway. Seems like you could also drop the argument from
-> > vmxnet3_xdp_xmit_frame() since you are only passing it NULL as well.
->
-> You're right! I don't need to pass skb here. I probably forgot to remove it
-> when refactoring code. Will remove the two places.
-> Thanks!
-
-Sounds good. I will keep an eye out for v6.
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
