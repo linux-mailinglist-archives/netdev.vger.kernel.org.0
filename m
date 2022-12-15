@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BBA64DE0F
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 16:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9170E64DE21
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 16:59:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbiLOPuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 10:50:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
+        id S229848AbiLOP7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 10:59:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiLOPuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 10:50:05 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D272DAB1;
-        Thu, 15 Dec 2022 07:50:04 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id fy4so10949051pjb.0;
-        Thu, 15 Dec 2022 07:50:04 -0800 (PST)
+        with ESMTP id S229724AbiLOP7B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 10:59:01 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEAC26A9F;
+        Thu, 15 Dec 2022 07:59:00 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id t18so6967658pfq.13;
+        Thu, 15 Dec 2022 07:59:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=k8G/8RXiEhOzMc/81TIBBs+LW8Zpaz/v5O7f5fWpB04=;
-        b=XM0kUwkqZi5hGnkSkjz2Cpud2SoXkmiX8yNV2ZZY0SzzaLFqDihi8ID/XChVRbxNqU
-         2MeFUHFzOroqNGzWZKtWMVXwXagYJ9Fj8TB2Jur/qWlLB/Ifz808O5Pje9sURKIrJN1O
-         1MKrw4uKPf+DeT3faCfN6wR9hWXRAq0fY4rdLetO1RAk5+Op1jq+acItfMbJxzxfVjFN
-         //si2stfabeXgokfVbNRKMa58wN00SIHqEH08AyMtU6HRZ97DRRzPM67GFpHw9VKUjDI
-         LT2mRmr0XcSNBfg4ZyjA3OUzYGoK6/1pyrWON0Hdt3/UxJNxSk6z2bck74KpfnqdKxlt
-         CcsQ==
+        bh=k2Ee5Gpf8XLw3DI5K6asWDBHnppcEcpHivWWfeAntMc=;
+        b=Ce59VFY4Ap98ol3M5tGauWUvIzpJql2x7ll++zwfZT8dsi0YD99IIw5QY87jM8g31r
+         oDfTRfZ8quaPbdcZzN946MeR1semTPerW++YQkZtdQiR/RExuxoUxfLtnhwSkfC3fIre
+         Rg2VP4zFWaQJVYwcqCB+zrFTAQ7letbk10S1i7wVjRDlwvoLyJGTrcgHe4860DfPreAb
+         GsiCFlXla/pDGyNK3+EZvpuH4BSVlOL71SD1i0IAWXUN2js0jL++9aACDzZsReJd8Riq
+         m91+K1T48HpVkIu8ms7DAqIjB3Gl7u6ubw35ri2KJabACW8QtkYimnexY/VBHYMGhBiR
+         slbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=k8G/8RXiEhOzMc/81TIBBs+LW8Zpaz/v5O7f5fWpB04=;
-        b=PCghuCjbbbZx3hE9UhwZMJbhIoca86zVqo8fzeGc/4EsaE3s+zs3ldgIHacYxvZtah
-         ClP1a63d166mJvo/B2bKf522BMzAd9VZotQuUWA9XQHE9KVDH+ywq1s8tE3RiHqxkaXH
-         ip91DwvlTjw4f8nidAneUz2HoEpOuuG9lO0CP7wb6499dlZu9HyiU5spFXqywGs7G2T0
-         i2RTYiBiFuojqjiZLzImhTZk+U6wBgoXjuepixxGy+/qhmeIT7fRPd0/JJqp/JfQCWV2
-         5EAYYmD1cP9XLguqsTM5BpHwo9J8LApJRkkeRFiVeznBkhHMLOU6jxYXPfu4ZOebb2SP
-         TmwQ==
-X-Gm-Message-State: ANoB5pk0Tj6ZAH03mgNkWiN+wExm3f1tZQF6dERf6/oewo0+fwXePKVg
-        vVLdh6DCOvktIp0oz/o441M=
-X-Google-Smtp-Source: AA0mqf65vw2X2wrKCt69D9VuyzNWu7U2N1te/d7g2e/bDiApq9HFSP9xcL4dE0SQSLGQvtPEju2TJw==
-X-Received: by 2002:a17:902:ea91:b0:189:6f76:9b61 with SMTP id x17-20020a170902ea9100b001896f769b61mr28207711plb.39.1671119402897;
-        Thu, 15 Dec 2022 07:50:02 -0800 (PST)
+        bh=k2Ee5Gpf8XLw3DI5K6asWDBHnppcEcpHivWWfeAntMc=;
+        b=uJsSKdkDuQVZotyIeOpA266rw0FhUji10tk+a7SIvEjwhT/V5HTYvN96j66zaEh2qe
+         lxPUJWVs6wwLSGaIcW10uxB7v7T0c493ZUbEd0FhAxADn/quvtEhgLLOer+J1mxHq48f
+         nb8FS3FcPqzPEEteiTpEA3hY6uG8h0DegF31fLlb+E5kmDw/te2AU7T1qgJMNbr7tZz9
+         w4svEWxEWyNTfOW2j6bMNZsYgnBmsBeUwMq10r1zVJtq0Ert3fuCe81vm/tzSjfJInPa
+         D25sSfRn0y/o6UoHil1Dk44RuqH5VdICk5IxtHh8iNWDgczny/HpD4ClnTEOa9N/ulzS
+         MnGA==
+X-Gm-Message-State: ANoB5pnLLuOC1FZ9Ex7nQtk/gO0qJTeAoscy0jOGoBhMvg4yz+hz6lth
+        Sy/cJnp0fk1WJQW+3D7MjUQ=
+X-Google-Smtp-Source: AA0mqf7V4e2ElBrFRCbWfuqUdca0qmNNptb6HsYF8mQCH/vNi1WBt8xseZdvrnb8BH3DLnTMrhOVvQ==
+X-Received: by 2002:a62:1687:0:b0:574:e5aa:a8dd with SMTP id 129-20020a621687000000b00574e5aaa8ddmr27960179pfw.17.1671119939417;
+        Thu, 15 Dec 2022 07:58:59 -0800 (PST)
 Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id n15-20020a170902d2cf00b00176b84eb29asm3931682plc.301.2022.12.15.07.50.00
+        by smtp.googlemail.com with ESMTPSA id p3-20020aa79e83000000b00576ce9ed31csm1923351pfq.56.2022.12.15.07.58.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 07:50:02 -0800 (PST)
-Message-ID: <3bc9c4dab64860fde7405fd589375f0ae087afe9.camel@gmail.com>
-Subject: Re: [PATCH v7] igb: Assign random MAC address instead of fail in
- case of invalid one
+        Thu, 15 Dec 2022 07:58:58 -0800 (PST)
+Message-ID: <c2040e16d69d251f1a0690f0805388817aba8ab7.camel@gmail.com>
+Subject: Re: [RESEND PATCH v5 net-next 2/2] net: phy: micrel: Fix warn:
+ passing zero to PTR_ERR
 From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     =?UTF-8?Q?=E6=A2=81=E7=A4=BC=E5=AD=A6?= <lianglixuehao@126.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>
-Date:   Thu, 15 Dec 2022 07:49:59 -0800
-In-Reply-To: <2D8AD99A-E29B-40CC-AFEC-3D9D4AC80C14@126.com>
-References: <20221213074726.51756-1-lianglixuehao@126.com>
-         <Y5l5pUKBW9DvHJAW@unreal> <20221214085106.42a88df1@kernel.org>
-         <Y5obql8TVeYEsRw8@unreal> <20221214125016.5a23c32a@kernel.org>
-         <4576ee79-1040-1998-6d91-7ef836ae123b@gmail.com>
-         <CAKgT0UdZUmFD8qYdF6k47ZmRgB0jS-graOYgB5Se+y+4fKqW8w@mail.gmail.com>
-         <2D8AD99A-E29B-40CC-AFEC-3D9D4AC80C14@126.com>
+To:     Divya Koppera <Divya.Koppera@microchip.com>, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        richardcochran@gmail.com
+Cc:     UNGLinuxDriver@microchip.com
+Date:   Thu, 15 Dec 2022 07:58:57 -0800
+In-Reply-To: <20221214092524.21399-3-Divya.Koppera@microchip.com>
+References: <20221214092524.21399-1-Divya.Koppera@microchip.com>
+         <20221214092524.21399-3-Divya.Koppera@microchip.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
@@ -86,52 +77,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-12-15 at 11:24 +0800, =E6=A2=81=E7=A4=BC=E5=AD=A6 wrote:
-> The module parameter method does bring some inconvenience to the user,=
-=20
-> especially the parameter needs to be specified when the module is loaded.=
-=20
-> But as alexander said, if the net device is not successfully registered,=
-=20
-> the user has no chance to modify the invalid MAC address in the current E=
-EPROM.=20
-> At present, the read/write of EEPROM is bundled with the net driver.=20
-> I am not sure if there is any other way to complete the modification of E=
-EPROM=20
-> independently of the network driver;
+On Wed, 2022-12-14 at 14:55 +0530, Divya Koppera wrote:
+> Handle the NULL pointer case
 >=20
-> Is it necessary to bind the registration of net device to the judgment of=
- invalid MAC?
-> I personally think that MAC configuration is not the capability or functi=
-on of the device,=20
-> this should not affect the registration of the device;
-> Can the invalid MAC be judged in the up stage of the network device?=20
-> In this way, the net driver can continue to be loaded successfully,=20
-> and the MAC can be changed using ethtool, and it will not increase the di=
-fficulty of debugging for users.
+> Fixes New smatch warnings:
+> drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero=
+ to 'PTR_ERR'
 >=20
-> Thanks
+> vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+> ---
+> v4 -> v5:
+> - Removed run time check and added compile time check for PHC
+>=20
+> v3 -> v4:
+> - Split the patch for different warnings
+> - Renamed variable from shared_priv to shared.
+>=20
+> v2 -> v3:
+> - Changed subject line from net to net-next
+> - Removed config check for ptp and clock configuration
+>   instead added null check for ptp_clock
+> - Fixed one more warning related to initialisaton.
+>=20
+> v1 -> v2:
+> - Handled NULL pointer case
+> - Changed subject line with net-next to net
+> ---
+>  drivers/net/phy/micrel.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 1bcdb828db56..650ef53fcf20 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -3017,10 +3017,6 @@ static int lan8814_ptp_probe_once(struct phy_devic=
+e *phydev)
+>  {
+>  	struct lan8814_shared_priv *shared =3D phydev->shared->priv;
+>=20
+> -	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
+> -	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
+> -		return 0;
+> -
+>  	/* Initialise shared lock for clock*/
+>  	mutex_init(&shared->shared_lock);
+>=20
+> @@ -3040,12 +3036,16 @@ static int lan8814_ptp_probe_once(struct phy_devi=
+ce *phydev)
+>=20
+>  	shared->ptp_clock =3D ptp_clock_register(&shared->ptp_clock_info,
+>  					       &phydev->mdio.dev);
+> -	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
+> +	if (IS_ERR(shared->ptp_clock)) {
+>  		phydev_err(phydev, "ptp_clock_register failed %lu\n",
+>  			   PTR_ERR(shared->ptp_clock));
+>  		return -EINVAL;
+>  	}
+>=20
+> +	/* Check if PHC support is missing at the configuration level */
+> +	if (!shared->ptp_clock)
+> +		return 0;
+> +
+>  	phydev_dbg(phydev, "successfully registered ptp clock\n");
+>=20
+>  	shared->phydev =3D phydev;
+>=20
 
-The problem is that the decision all depends on use case. For a small
-embedded device or desktop system it probably doesn't care as it will
-always just default to DHCP most likely anyway so it doesn't really
-care about maintaining a static MAC configuration.
+Looks good to me. You may need to resubmit once net-next opens.
 
-However the igb device covers a range of products including workstation
-and some server. The issue is that changing the MAC address on server
-setups can trigger significant issues depending on the setup as things
-like static IP reservations can be lost due to either a static DHCP
-reservation or sysconfig potentially being lost. I know on older redhat
-systems random MACs would lead to a buildup up sysconfig files as it
-would generate a new one every time the MAC changed. It is one of the
-reasons why Intel stopped using random MAC on VFs if I recall
-correctly.
-
-Lastly one thing that occurs to me is that there is support for
-providing a MAC address via eth_platform_get_mac_address() as some of
-the smaller embedded parts have an option to run without an EEPROM. I
-wonder if there isn't a way to work around this by providing a
-devicetree overlay on problematic systems.
-
-
-
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
