@@ -2,132 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60BA564DEF3
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:48:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD9564DF15
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:56:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230301AbiLOQsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 11:48:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
+        id S230343AbiLOQ4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 11:56:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiLOQsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:48:14 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79252A953;
-        Thu, 15 Dec 2022 08:48:12 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id w23so7427916ply.12;
-        Thu, 15 Dec 2022 08:48:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=tqbyrz2HDPwuRFgnegWH1TadErj2Xf8yg6MvsofKkIQ=;
-        b=Y3rjBqnkXKdqQUKDqyNOLcxf54Disfcei/kcMFNwQoS8WKUKjWGdtZNNuuWWn1Fcn2
-         hkAb2X1ziEmw/EYoHIAS7cJDZDBd0hUdie3BIvphqs12+AsG+TOzFiVuPaknc4AS2RuD
-         Lwy54FGuSjbSmx3DUb1Rh6Z5njDQzw/sjNIWqDlfKUL2v0oMlRyF5AgaFf9V/dyl3vHq
-         TG5gJ8mI3tUqW4xWzf5ZCW4JG2E5z5+mI8+Rc+sv7NAGIJboDWdxGRxhEvu9ya7zCkfr
-         rZ+IVHVDsuTc1XK951BJPBGuLquCYCUdPKBoNo2HGzQHYpYXRA0YFmufqpsh7VBnpKki
-         q8IQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tqbyrz2HDPwuRFgnegWH1TadErj2Xf8yg6MvsofKkIQ=;
-        b=rRLzxJ+kKyBiN0zVDA2iPKHW/qoZIipxkux/sUkFt7/ZPfcRloSam3mRjHi+9zPT0r
-         fdRb8iYeC9Sa10orirHG0VK3Uo+8yj+mSPmoivw/7u/fACpjQSEqslehjhwCxBwK3vDe
-         L4WlrxYjT6ZCVXUjPTh4W75LfNtXCMExmqup8fDyJmQYP/IY/1EsoSPJo86sITGHPXpT
-         BBEKFvR9RWNZprQJX09+jVLU+fUfFBoH+OExuFRpInNClT6kEbyNNintqHJJavT//d1k
-         LS4RuQFFfIFrECwOwQNg/7JCgQ8fc5S4+u9lvAe2g9qYeCyruCichSP8bqSxeWzhPl0J
-         EpwQ==
-X-Gm-Message-State: ANoB5pnn/VToeruV41oJawSWCX3vlwfJxzUcCVEu9NdbeJDI2zxzGC6y
-        hrKtDgb0thssdvi7ffi62Yk=
-X-Google-Smtp-Source: AA0mqf7LldEBXXl/VKtVxa+Pst9zFuUCi1CSp+rkAc/esE10GQboY2il34gu9ZrUIWzfCneWWyXGUg==
-X-Received: by 2002:a17:902:ecc2:b0:18b:271e:5804 with SMTP id a2-20020a170902ecc200b0018b271e5804mr50367520plh.59.1671122892250;
-        Thu, 15 Dec 2022 08:48:12 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id h8-20020a170902680800b00172f6726d8esm4036366plk.277.2022.12.15.08.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 08:48:11 -0800 (PST)
-Message-ID: <4d16ffd327d193f8c1f7c40f968fda90a267348e.camel@gmail.com>
-Subject: Re: [PATCH v2 1/3] dsa: marvell: Provide per device information
- about max frame size
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S230336AbiLOQ4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:56:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CE6E088;
+        Thu, 15 Dec 2022 08:56:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D5C1B81C03;
+        Thu, 15 Dec 2022 16:56:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69E0BC433EF;
+        Thu, 15 Dec 2022 16:55:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671123359;
+        bh=tVhkH/FcY9gESy+V3xeK947kCGObkEYr+sAE3pHakis=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LXoIjw5ra7kHRbvYTXP6NigITE4JtnJBxLDqJvA4kbg7jKh7PCVIvaWKZXXlEpAA+
+         Ha1v4BRa9Gnf6/ruDAN2j/Y/EXBz65z2x77sh3ozb/BZoeP263lObyomW2MW75Rqcr
+         vd0uZ6dtjPt3xtmRkG5sSdNQ3v+0FWP8UtQ9YCYnXzb+5QzogKJOfxyaLbZ1thQayo
+         lWfWdEIsOCy8HMjoI+z68/JlRbUVoxxgC2y8rFRfUZ7ofb3ujdTtH90M0KxjoJ8rXb
+         wqQ1Qj5F2Uni/kMo6MwlxGch9dneycHhG96i0Qglyy8DH+ufc+U6+CH3Vqcsz2/qUh
+         2Yumvup4npcjw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 15 Dec 2022 08:48:10 -0800
-In-Reply-To: <20221215144536.3810578-1-lukma@denx.de>
-References: <20221215144536.3810578-1-lukma@denx.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+Subject: [PATCH] ath9k: use proper statements in conditionals
+Date:   Thu, 15 Dec 2022 17:55:42 +0100
+Message-Id: <20221215165553.1950307-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-12-15 at 15:45 +0100, Lukasz Majewski wrote:
-> Different Marvell DSA switches support different size of max frame
-> bytes to be sent.
->=20
-> For example mv88e6185 supports max 1632 bytes, which is now in-driver
-> standard value. On the other hand - mv88e6250 supports 2048 bytes.
->=20
-> As this value is internal and may be different for each switch IC,
-> new entry in struct mv88e6xxx_info has been added to store it.
->=20
-> Signed-off-by: Lukasz Majewski <lukma@denx.de>
-> ---
-> Changes for v2:
-> - Define max_frame_size with default value of 1632 bytes,
-> - Set proper value for the mv88e6250 switch SoC (linkstreet) family
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 13 ++++++++++++-
->  drivers/net/dsa/mv88e6xxx/chip.h |  1 +
->  2 files changed, 13 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx=
-/chip.c
-> index 2ca3cbba5764..7ae4c389ce50 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -3093,7 +3093,9 @@ static int mv88e6xxx_get_max_mtu(struct dsa_switch =
-*ds, int port)
->  	if (chip->info->ops->port_set_jumbo_size)
->  		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
->  	else if (chip->info->ops->set_max_frame_size)
-> -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> +		return (chip->info->max_frame_size  - VLAN_ETH_HLEN
-> +			- EDSA_HLEN - ETH_FCS_LEN);
-> +
->  	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
->  }
->=20
->=20
+From: Arnd Bergmann <arnd@arndb.de>
 
-Is there any specific reason for triggering this based on the existance
-of the function call? Why not just replace:
-	else if (chip->info->ops->set_max_frame_size)
-with:
-	else if (chip->info->max_frame_size)
+A previous cleanup patch accidentally broke some conditional
+expressions by replacing the safe "do {} while (0)" constructs
+with empty macros. gcc points this out when extra warnings
+are enabled:
 
-Otherwise my concern is one gets defined without the other leading to a
-future issue as 0 - extra headers will likely wrap and while the return
-value may be a signed int, it is usually stored in an unsigned int so
-it would effectively uncap the MTU.
+drivers/net/wireless/ath/ath9k/hif_usb.c: In function 'ath9k_skb_queue_complete':
+drivers/net/wireless/ath/ath9k/hif_usb.c:251:57: error: suggest braces around empty body in an 'else' statement [-Werror=empty-body]
+  251 |                         TX_STAT_INC(hif_dev, skb_failed);
 
-Actually you could take this one step further since all values should
-be 1522 or greater you could just drop the else/if and replace the last
-line with "max_t(int, chip->info->max_frame_size, 1522) - (headers)".
+Make both sets of macros proper expressions again.
+
+Fixes: d7fc76039b74 ("ath9k: htc: clean up statistics macros")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/wireless/ath/ath9k/htc.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 30f0765fb9fd..237f4ec2cffd 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -327,9 +327,9 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
+ 
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-#define __STAT_SAFE(hif_dev, expr)	((hif_dev)->htc_handle->drv_priv ? (expr) : 0)
+-#define CAB_STAT_INC(priv)		((priv)->debug.tx_stats.cab_queued++)
+-#define TX_QSTAT_INC(priv, q)		((priv)->debug.tx_stats.queue_stats[q]++)
++#define __STAT_SAFE(hif_dev, expr)	do { ((hif_dev)->htc_handle->drv_priv ? (expr) : 0); } while (0)
++#define CAB_STAT_INC(priv)		do { ((priv)->debug.tx_stats.cab_queued++); } while (0)
++#define TX_QSTAT_INC(priv, q)		do { ((priv)->debug.tx_stats.queue_stats[q]++); } while (0)
+ 
+ #define TX_STAT_INC(hif_dev, c) \
+ 		__STAT_SAFE((hif_dev), (hif_dev)->htc_handle->drv_priv->debug.tx_stats.c++)
+@@ -378,10 +378,10 @@ void ath9k_htc_get_et_stats(struct ieee80211_hw *hw,
+ 			    struct ethtool_stats *stats, u64 *data);
+ #else
+ 
+-#define TX_STAT_INC(hif_dev, c)
+-#define TX_STAT_ADD(hif_dev, c, a)
+-#define RX_STAT_INC(hif_dev, c)
+-#define RX_STAT_ADD(hif_dev, c, a)
++#define TX_STAT_INC(hif_dev, c)		do { } while (0)
++#define TX_STAT_ADD(hif_dev, c, a)	do { } while (0)
++#define RX_STAT_INC(hif_dev, c)		do { } while (0)
++#define RX_STAT_ADD(hif_dev, c, a)	do { } while (0)
+ 
+ #define CAB_STAT_INC(priv)
+ #define TX_QSTAT_INC(priv, c)
+-- 
+2.35.1
+
