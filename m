@@ -2,65 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F0964DE81
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57E7964DE8F
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:26:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbiLOQWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 11:22:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
+        id S229879AbiLOQ0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 11:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbiLOQWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:22:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EFB25EB5
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 08:21:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671121268;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wsHoWm/EeF8Ya2EVXL07pEXDul793kzk/rx/5eyVuMM=;
-        b=BwoKqBIx6fSr5xNam++I695VzM6Gv/ThNpGIq+r3l92k/Ch6YInuaeKLi2DbRPbqhCrRfj
-        INxMdH8Vn1u3yJjijXHd9VkLgeXx79CgXr+9gDWlYjg0irIa+VdOCmvUgcICeefGExaD65
-        gv2GuNWU+77cNovEb9WTSs0Pnn8YWoQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-dtLkmLztNyG5jfgkVbmkfA-1; Thu, 15 Dec 2022 11:20:59 -0500
-X-MC-Unique: dtLkmLztNyG5jfgkVbmkfA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AAE8D8030D0;
-        Thu, 15 Dec 2022 16:20:58 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D6A9B14171BE;
-        Thu, 15 Dec 2022 16:20:57 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 9/9] rxrpc: Fix the return value of
- rxrpc_new_incoming_call()
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Dan Carpenter <error27@gmail.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Thu, 15 Dec 2022 16:20:55 +0000
-Message-ID: <167112125530.152641.9141534187681800613.stgit@warthog.procyon.org.uk>
-In-Reply-To: <167112117887.152641.6194213035340041732.stgit@warthog.procyon.org.uk>
-References: <167112117887.152641.6194213035340041732.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
+        with ESMTP id S229691AbiLOQ0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:26:17 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B36C32BA8;
+        Thu, 15 Dec 2022 08:24:17 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id q17-20020a17090aa01100b002194cba32e9so3259754pjp.1;
+        Thu, 15 Dec 2022 08:24:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tGefUBr2W7spPXd7S1x7+HWVOufLLWK4DpNQYScL5OA=;
+        b=Ybv58xGsPBeXaxrgXi6jw3ExfitRffCWCJwF6G/RAQvCJ1vuZr2locJEdbIaFhkpU2
+         ReC6ksP6uEI7p7Wry56dFus/OWN0GGDoAuQYfAd/FisSQ75ICvU+gW12AG+k10JyexuK
+         tsph9cHf6BZ86ifuzGvN7x9VYnY4niWqNZkCFJrxJbRmHlhS/uIODJXXH7s41zIYhlCK
+         gctkPXYqM2L7a7Gk1d1VD6HgkgxNmVdMSZXjxc8J+MvHDYZVxzu6fTGAaFKnftsffltU
+         bIgzNaQo1xMPWZGX8oyKL9D5Dk069kbXFufjguSfXPvj6bBq4iyMYVvoYoXfdrbMQLKR
+         iffA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tGefUBr2W7spPXd7S1x7+HWVOufLLWK4DpNQYScL5OA=;
+        b=UKxTOXYMP2N/17D+pHDcX6yZYKhuJCujQtqMrxoC4WYIKkdBwApKTNc01x5wQMgwPW
+         SCdJMdQ0DdPNQJos7N5R8HEPhnt0dHHfu1Yh7IBNLsvPndQd748SYcOlaR/OnA956Kfn
+         0/qnjB/WtfdmGQYonn2ea4gFAK0zAe798L8FMowX6cn4SYmXoATdFQxXM3VmrKvRdz0J
+         nmkxCv4a6MfKWQelC9ymvnIFkXz5HdCz/HA3Pt2FN10hDfyerYRRNhZR0I6xtcOsV833
+         i3vfhA0zhdcVnYGM9AkYDk7qdokwQ65s4zhYz3U6nbIjWCy+8x9lUSPY7kTphF8zZfIw
+         DaJA==
+X-Gm-Message-State: ANoB5pkLk9XJB5E8DJS1MkUTcok71mnMP7snlERu6iH6Ke2VsFkoiBgh
+        yGL39twJLGQ83FwE3ndWtb0=
+X-Google-Smtp-Source: AA0mqf4nhSRttIqIJW9eXbFyJJfJt/mem/BjV2lPyHjtO+C2rdJOiCmEAoVhGyQtTRAdXuVIUG4bBA==
+X-Received: by 2002:a17:903:2448:b0:189:f277:3830 with SMTP id l8-20020a170903244800b00189f2773830mr43351194pls.68.1671121456998;
+        Thu, 15 Dec 2022 08:24:16 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.42.38])
+        by smtp.googlemail.com with ESMTPSA id b4-20020a170902d50400b00182a9c27acfsm4002897plg.227.2022.12.15.08.24.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Dec 2022 08:24:16 -0800 (PST)
+Message-ID: <7211782676442c6679d8a016813fd62d44cbebad.camel@gmail.com>
+Subject: Re: [PATCH net-next v2 1/1] net: neigh: persist proxy config across
+ link flaps
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     David Decotigny <decot+git@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>,
+        David Ahern <dsahern@kernel.org>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        David Decotigny <ddecotig@google.com>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
+Date:   Thu, 15 Dec 2022 08:24:15 -0800
+In-Reply-To: <20221214232059.760233-1-decot+git@google.com>
+References: <20221214232059.760233-1-decot+git@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,123 +85,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dan Carpenter sayeth[1]:
+On Wed, 2022-12-14 at 15:20 -0800, David Decotigny wrote:
+> From: David Decotigny <ddecotig@google.com>
+>=20
+> Without this patch, the 'ip neigh add proxy' config is lost when the
+> cable or peer disappear, ie. when the link goes down while staying
+> admin up. When the link comes back, the config is never recovered.
+>=20
+> This patch makes sure that such an nd proxy config survives a switch
+> or cable issue.
+>=20
+> Signed-off-by: David Decotigny <ddecotig@google.com>
+>=20
+>=20
+> ---
+> v1: initial revision
+> v2: same as v1, except rebased on top of latest net-next, and includes "n=
+et-next" in the description
+>=20
+>  net/core/neighbour.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index f00a79fc301b..f4b65bbbdc32 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -426,7 +426,10 @@ static int __neigh_ifdown(struct neigh_table *tbl, s=
+truct net_device *dev,
+>  {
+>  	write_lock_bh(&tbl->lock);
+>  	neigh_flush_dev(tbl, dev, skip_perm);
+> -	pneigh_ifdown_and_unlock(tbl, dev);
+> +	if (skip_perm)
+> +		write_unlock_bh(&tbl->lock);
+> +	else
+> +		pneigh_ifdown_and_unlock(tbl, dev);
+>  	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL,
+>  			   tbl->family);
+>  	if (skb_queue_empty_lockless(&tbl->proxy_queue))
 
-  The patch 5e6ef4f1017c: "rxrpc: Make the I/O thread take over the
-  call and local processor work" from Jan 23, 2020, leads to the
-  following Smatch static checker warning:
+This seems like an agressive approach since it applies to all entries
+in the table, not just the permenant ones like occurs in
+neigh_flush_dev.
 
-	net/rxrpc/io_thread.c:283 rxrpc_input_packet()
-	warn: bool is not less than zero.
-
-Fix this (for now) by changing rxrpc_new_incoming_call() to return an int
-with 0 or error code rather than bool.  Note that the actual return value
-of rxrpc_input_packet() is currently ignored.  I have a separate patch to
-clean that up.
-
-Fixes: 5e6ef4f1017c ("rxrpc: Make the I/O thread take over the call and local processor work")
-Reported-by: Dan Carpenter <error27@gmail.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2022-December/006123.html [1]
----
-
- net/rxrpc/ar-internal.h |    6 +++---
- net/rxrpc/call_accept.c |   18 +++++++++---------
- net/rxrpc/io_thread.c   |    4 ++--
- 3 files changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 5b732a4af009..18092526d3c8 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -812,9 +812,9 @@ extern struct workqueue_struct *rxrpc_workqueue;
-  */
- int rxrpc_service_prealloc(struct rxrpc_sock *, gfp_t);
- void rxrpc_discard_prealloc(struct rxrpc_sock *);
--bool rxrpc_new_incoming_call(struct rxrpc_local *, struct rxrpc_peer *,
--			     struct rxrpc_connection *, struct sockaddr_rxrpc *,
--			     struct sk_buff *);
-+int rxrpc_new_incoming_call(struct rxrpc_local *, struct rxrpc_peer *,
-+			    struct rxrpc_connection *, struct sockaddr_rxrpc *,
-+			    struct sk_buff *);
- void rxrpc_accept_incoming_calls(struct rxrpc_local *);
- int rxrpc_user_charge_accept(struct rxrpc_sock *, unsigned long);
- 
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index d1850863507f..c02401656fa9 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -326,11 +326,11 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
-  * If we want to report an error, we mark the skb with the packet type and
-  * abort code and return false.
-  */
--bool rxrpc_new_incoming_call(struct rxrpc_local *local,
--			     struct rxrpc_peer *peer,
--			     struct rxrpc_connection *conn,
--			     struct sockaddr_rxrpc *peer_srx,
--			     struct sk_buff *skb)
-+int rxrpc_new_incoming_call(struct rxrpc_local *local,
-+			    struct rxrpc_peer *peer,
-+			    struct rxrpc_connection *conn,
-+			    struct sockaddr_rxrpc *peer_srx,
-+			    struct sk_buff *skb)
- {
- 	const struct rxrpc_security *sec = NULL;
- 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
-@@ -342,7 +342,7 @@ bool rxrpc_new_incoming_call(struct rxrpc_local *local,
- 	/* Don't set up a call for anything other than the first DATA packet. */
- 	if (sp->hdr.seq != 1 ||
- 	    sp->hdr.type != RXRPC_PACKET_TYPE_DATA)
--		return true; /* Just discard */
-+		return 0; /* Just discard */
- 
- 	rcu_read_lock();
- 
-@@ -413,7 +413,7 @@ bool rxrpc_new_incoming_call(struct rxrpc_local *local,
- 	_leave(" = %p{%d}", call, call->debug_id);
- 	rxrpc_input_call_event(call, skb);
- 	rxrpc_put_call(call, rxrpc_call_put_input);
--	return true;
-+	return 0;
- 
- unsupported_service:
- 	trace_rxrpc_abort(0, "INV", sp->hdr.cid, sp->hdr.callNumber, sp->hdr.seq,
-@@ -425,10 +425,10 @@ bool rxrpc_new_incoming_call(struct rxrpc_local *local,
- reject:
- 	rcu_read_unlock();
- 	_leave(" = f [%u]", skb->mark);
--	return false;
-+	return -EPROTO;
- discard:
- 	rcu_read_unlock();
--	return true;
-+	return 0;
- }
- 
- /*
-diff --git a/net/rxrpc/io_thread.c b/net/rxrpc/io_thread.c
-index e6b9f0ceae17..1ad067d66fb6 100644
---- a/net/rxrpc/io_thread.c
-+++ b/net/rxrpc/io_thread.c
-@@ -292,7 +292,7 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
- 	skb->mark = RXRPC_SKB_MARK_REJECT_ABORT;
- reject_packet:
- 	rxrpc_reject_packet(local, skb);
--	return ret;
-+	return 0;
- }
- 
- /*
-@@ -384,7 +384,7 @@ static int rxrpc_input_packet_on_conn(struct rxrpc_connection *conn,
- 		if (rxrpc_to_client(sp))
- 			goto bad_message;
- 		if (rxrpc_new_incoming_call(conn->local, conn->peer, conn,
--					    peer_srx, skb))
-+					    peer_srx, skb) == 0)
- 			return 0;
- 		goto reject_packet;
- 	}
+I don't have much experience in this area of the code but it seems like
+you would specifically be wanting to keep only the permanant entries.
+Would it make sense ot look at rearranging pneigh_ifdown_and_unlock so
+that the code functioned more like neigh_flush_dev where it only
+skipped the permanant entries when skip_perm was set?
 
 
