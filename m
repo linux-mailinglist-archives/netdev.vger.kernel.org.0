@@ -2,59 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 657A564D5F8
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 05:49:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6096064D5FF
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 06:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiLOEs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 23:48:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
+        id S229488AbiLOFAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 00:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiLOEs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 23:48:57 -0500
+        with ESMTP id S229453AbiLOFAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 00:00:20 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C11137F8F;
-        Wed, 14 Dec 2022 20:48:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C9441981
+        for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 21:00:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 486B4B81A26;
-        Thu, 15 Dec 2022 04:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362ACC433EF;
-        Thu, 15 Dec 2022 04:48:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FF13B81698
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 05:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 24AADC433F0;
+        Thu, 15 Dec 2022 05:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671079732;
-        bh=n5a5d/H8ulIQkozqDLE2F1ns4k/z46ZF4QvyLXMqdDQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XK1xQmL18+qWIY+/FcJKpt+gq2m/riva7HjLNyOcyNyeXv8J3PmrpIfbQql6W968p
-         TbEv8eTFDkBQRkXGlqEF6A4CStSWrNVeaXsI1bqaq7K88SMEMB2+QF8ZFe0JZLMPr1
-         aJqOKv1+akB+vk2+NA35Ww2bVX7Uf3aQLb3zFk1mxsl2mYtGF495YK01glOYsA9afM
-         fwMT4u7B3n83W8ym/zT5rvUWGdFC7o/g64TtNZG/8jfe5XstNUJncsdcBkcM7oKXXr
-         6LXvE7WXh7cexR3JHmpArKWcYNxCs2Pu9oeOZdb+yVDnHWpWsByBG+sSv1Ujyy9aba
-         8L6K7++v6ji8Q==
-Date:   Wed, 14 Dec 2022 20:48:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Decotigny <decot+git@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        David Ahern <dsahern@kernel.org>,
-        "Denis V. Lunev" <den@openvz.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        David Decotigny <ddecotig@google.com>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
-Subject: Re: [PATCH v1 1/1] net: neigh: persist proxy config across link
- flaps
-Message-ID: <20221214204851.2102ba31@kernel.org>
-In-Reply-To: <20221213073801.361500-1-decot+git@google.com>
-References: <20221213073801.361500-1-decot+git@google.com>
+        s=k20201202; t=1671080417;
+        bh=eAsbDMlek78n7MVGLDiStPltLVTAk8Y+6xnj7tY9mhM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Y+YCnAanUsQQWXo3901pnH3DKr0JuwVCAh1bUwUCRislbkold/0DWkD/zFY+X9IGz
+         qy1h1M7UOOoOsMnxiDVfgDnWSep0AP56cjlhqP/26t9wef2KtPuTraW2/e71YLAFk5
+         D8vMECp27G4EkPhXjeU3k47yv1kx7YW2Ad4vdv3tS+PTjixF1vaEBDVy2yOWoKMjhx
+         SKwmD4TtXoEheGsZaqNNx0CqZTmsePfWAfaKu3iOSOoOKSena78oj0S7v/iCffN9Mm
+         63avV9j+xjl/rtCDOgd54IoEyEHcZ1by7G/f3zRsxfut6ptBp6cLtNHzZOw3bvPDoC
+         Bj3It4KZJe9bg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 09A85E4D00F;
+        Thu, 15 Dec 2022 05:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v3] nfc: pn533: Clear nfc_target before being used
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167108041703.25534.13058218525708275805.git-patchwork-notify@kernel.org>
+Date:   Thu, 15 Dec 2022 05:00:17 +0000
+References: <20221214015139.119673-1-linuxlovemin@yonsei.ac.kr>
+In-Reply-To: <20221214015139.119673-1-linuxlovemin@yonsei.ac.kr>
+To:     Minsuk Kang <linuxlovemin@yonsei.ac.kr>
+Cc:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
+        linma@zju.edu.cn, davem@davemloft.net, sameo@linux.intel.com,
+        linville@tuxdriver.com, dokyungs@yonsei.ac.kr,
+        jisoo.jang@yonsei.ac.kr
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -64,17 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Dec 2022 23:38:01 -0800 David Decotigny wrote:
-> From: David Decotigny <ddecotig@google.com>
-> 
-> Without this patch, the 'ip neigh add proxy' config is lost when the
-> cable or peer disappear, ie. when the link goes down while staying
-> admin up. When the link comes back, the config is never recovered.
-> 
-> This patch makes sure that such an nd proxy config survives a switch
-> or cable issue.
+Hello:
 
-Hm, how does this square with the spirit of 859bd2ef1fc11 ?
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Would be great to hear from David, IDK if he's around or off until 
-next year.
+On Wed, 14 Dec 2022 10:51:39 +0900 you wrote:
+> Fix a slab-out-of-bounds read that occurs in nla_put() called from
+> nfc_genl_send_target() when target->sensb_res_len, which is duplicated
+> from an nfc_target in pn533, is too large as the nfc_target is not
+> properly initialized and retains garbage values. Clear nfc_targets with
+> memset() before they are used.
+> 
+> Found by a modified version of syzkaller.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v3] nfc: pn533: Clear nfc_target before being used
+    https://git.kernel.org/netdev/net/c/9f28157778ed
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
