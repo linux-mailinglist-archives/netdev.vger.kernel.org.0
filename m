@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7274B64E1F4
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 20:47:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D248264E1F6
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 20:48:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiLOTrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 14:47:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        id S229786AbiLOTse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 14:48:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbiLOTrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 14:47:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494F7532C4
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 11:47:08 -0800 (PST)
+        with ESMTP id S229544AbiLOTsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 14:48:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC63532C6
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 11:48:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA7DC61E5D
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 19:47:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D665BC433D2;
-        Thu, 15 Dec 2022 19:47:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF16E61F0F
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 19:48:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 045DDC433D2;
+        Thu, 15 Dec 2022 19:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671133627;
-        bh=cH2J1JzoKtErZpR2iCyzV7xZZW0pMey/ksYppj1glVA=;
+        s=k20201202; t=1671133710;
+        bh=HSHUPbNvYgwPR2IIeq/Avd8BoxADtwTgnHKti/V2agc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pBlo2Diw/Xb0Twg1nbcHa1OSZUPwHLRp1lio7ljMuVWY8xdJ5hPpEq14jhAI+Ul7h
-         p/QMGKF6RNbvPaKagNZVdHHj6iR6tIH/D5vD7N/CuEUXunMLTxNUEHces/tS7YpBWz
-         OrP4bQaMhlh7tWO/FhkmgZ+3s0yWnK9cyvg86ss4l/TaJhTePT8Ws5RsvyoUeQmrjG
-         HmElhNRXpIaZpvzvEyh2+LsKmotd9DPg9QbglEh+o4PGMtiMjDVzMdWLJllEsHbtej
-         iesEfr15YbXdpmXeo2NqOXDxBUmbaU0unzqt+GhcTpkDNWlmNtJEDh/KHIu2b9SJHu
-         No3yedYf4gL3A==
-Date:   Thu, 15 Dec 2022 11:47:06 -0800
+        b=XF2/NjpV0EK13EgVtV1REhUh1lVgHlOmMS2YzMuHmGQmUfGwAHaAkvZxxx0xgsCRh
+         Acbk+RbNIQ7pdNhXh7xxyrqJowhgHNp/TEVlvvo/zvX+s29KighmCxzNdD+PbAGQD0
+         9kQ31wT4+5nPkV7CAysG/bG2hnpO8cy6zhXFGsBNNA/vZnftKwIA/ZsERUNw0sM5x2
+         TcFm4G9J5CldbBD3mWJsgq4zawAj7ltAc+xuncGMd6+jLN/sxdOb4juicbKYBunrOO
+         5eApJxvK8Aprx77v27WkpP6aP0ylGRJlcU3fZILFwpMIsUE4jQULIAIgs2yrbPqhXn
+         rHU3JlrmWX7yw==
+Date:   Thu, 15 Dec 2022 11:48:29 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, leon@kernel.org
-Subject: Re: [RFC net-next 14/15] devlink: add by-instance dump infra
-Message-ID: <20221215114706.42be5299@kernel.org>
-In-Reply-To: <Y5rkpxKm/TdGlJHf@nanopsycho>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <leon@kernel.org>
+Subject: Re: [RFC net-next 01/15] devlink: move code to a dedicated
+ directory
+Message-ID: <20221215114829.5bc59d7a@kernel.org>
+In-Reply-To: <c7c98e4a-5f41-2095-c500-c141ea56a21a@intel.com>
 References: <20221215020155.1619839-1-kuba@kernel.org>
-        <20221215020155.1619839-15-kuba@kernel.org>
-        <Y5rkpxKm/TdGlJHf@nanopsycho>
+        <20221215020155.1619839-2-kuba@kernel.org>
+        <Y5ruLxvHdlhhY+kU@nanopsycho>
+        <20221215110925.6a9d0f4a@kernel.org>
+        <c7c98e4a-5f41-2095-c500-c141ea56a21a@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,38 +58,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Dec 2022 10:11:03 +0100 Jiri Pirko wrote:
-> Instead of having this extra list of ops struct, woudn't it make sence
-> to rather implement this dumpit_one infra directly as a part of generic
-> netlink code?
-
-I was wondering about that, but none of the ideas were sufficiently
-neat to implement :( There's a lot of improvements that can be done
-in the core, starting with making more of the info structures shared
-between do and dump in genl :( 
-
-> Something like:
+On Thu, 15 Dec 2022 11:29:02 -0800 Jacob Keller wrote:
+> >> What's "basic" about it? It sounds a bit misleading.  
+> > 
+> > Agreed, but try to suggest a better name ;)  the_rest_of_it.c ? :)
 > 
->  	{
->  		.cmd = DEVLINK_CMD_RATE_GET,
->  		.doit = devlink_nl_cmd_rate_get_doit,
-> 		.dumpit_one = devlink_nl_cmd_rate_get_dumpit_one,
-> 		.dumpit_one_walk = devlink_nl_dumpit_one_walk,
->  		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
->  		/* can be retrieved by unprivileged users */
->  	},
+> I tried to think of something, but you already use core elsewhere in the
+> series. If our long term goal really is to split everything out then
+> maybe "leftover.c"? Or just "devlink/devlink.c"
 
-Growing the struct ops (especially the one called _small_) may be 
-a hard sale for a single user. For split ops, it's a different story,
-because we can possibly have a flag that changes the interpretation
-of the union. Maybe.
-
-I'd love to have a way of breaking down the ops so that we can factor
-out the filling of the message (the code that is shared between doit
-and dump). Just for the walk I don't think it's worth it.
-
-I went in the same direction as ethtool because if over time we arrive
-at a similar structure we can use that as a corner stone.
-
-All in all, I think this patch is a reasonable step forward. 
-But definitely agree that the genl infra is still painfully basic.
+leftover.c is fine by me. Jiri?
