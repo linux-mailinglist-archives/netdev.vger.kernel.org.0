@@ -2,117 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BAAB64D94C
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 11:13:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 433DB64D979
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 11:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbiLOKNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 05:13:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        id S230269AbiLOKW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 05:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiLOKNM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 05:13:12 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2062.outbound.protection.outlook.com [40.107.21.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F272315B;
-        Thu, 15 Dec 2022 02:13:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lDYdf6pHBC7XFS4KyMifhSR/E08rEavyomq4r+D/OqfW0l2RFUOozo2NUbffy/GySbD1SNPvLtmrJSpJffP4u/F7Lpy9OE8T7tYZjpIE12ozJ+HRUfv007qhZmqLVOIDXnADBGwgrKFzffsH3GUNe3IutTSVHtEXVfuotc2V/ENnk5GLnoUQ7xC7Z46pYpyo4PiCzMU+PSMuu3eflqTBjbkiSbKK3mA9tB77RHpCEpZsritQHXDbr+NIzAT3uiG9G2tJxicgQbb1YX+VbJMHthQ48tenYS6o7XtzbggLle5DwdHI67HRIYdy70HpQDEfjTp3vFXasslqTZ8YzeEDbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WenFXQl/3OnND6LKgFGkCS489sNIo2H0WP3cO5C7hw8=;
- b=RpnAVhWFEvoYwjZLmR+WEL+HYdEsBIvx43YS7f5D3LPOuP0Ws2QInV7S9OzwCkpWk3if+sJaucW5j946xWp+5prHYPYvyIqLrdSh4OZcFyboXG+4PSRt7OyNUh4O8AoK4925FXvjsGvt/XKIoED7cif38C28KgbZnYlrXLCyRx2Uf8GDtfnAovhZOMBoHhFkMUvN5tZgfSt3I/tBvqXsivgJBmmz3/dgE0HThOctSR4gTVWIPoIBDcGIPhcb1xgrQqJM63Jr43zzPZqtkPlT7cVLbc2+jAQsKmWXtSCQRXky+vSP6g7eR8bNxRpcHfhlzub2mclGRCFx4xy94I/c+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WenFXQl/3OnND6LKgFGkCS489sNIo2H0WP3cO5C7hw8=;
- b=j3rCsxQq/ZFKUc5d1/lTBvoE+qZlagu6PyQXcrv/G2aPPwNYJsnGbPKcTyMtf7fTeJ9Y8LvphG0zq8fFOODU2JrZkDpjqFxxOxJ3TI33dcdBYUGau04GyiBV4F6bfE5X4Mi9aEruJsAbUe4VYDwWvip6DqZQ7AAByVg5VpPVyF8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
- by AS8PR04MB8658.eurprd04.prod.outlook.com (2603:10a6:20b:429::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.12; Thu, 15 Dec
- 2022 10:13:07 +0000
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::2101:60dc:1fd1:425c]) by AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::2101:60dc:1fd1:425c%7]) with mapi id 15.20.5880.019; Thu, 15 Dec 2022
- 10:13:07 +0000
-Date:   Thu, 15 Dec 2022 12:13:03 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu: don't unregister on shutdown
-Message-ID: <20221215101303.6rezz5mqjwupdaqe@skbuf>
-References: <20221208165350.3895136-1-vladimir.oltean@nxp.com>
- <d3517811-232c-592d-f973-2870bb5ec3ac@arm.com>
- <20221214173418.iwovyxlbogkspjxy@skbuf>
- <a3a034b5-9493-e345-bcb4-8c5eef7f9a65@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a3a034b5-9493-e345-bcb4-8c5eef7f9a65@arm.com>
-X-ClientProxiedBy: FR2P281CA0043.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:92::16) To AM0PR04MB5121.eurprd04.prod.outlook.com
- (2603:10a6:208:c1::16)
+        with ESMTP id S230001AbiLOKW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 05:22:29 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47972983F;
+        Thu, 15 Dec 2022 02:22:18 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id gh17so51176916ejb.6;
+        Thu, 15 Dec 2022 02:22:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=w9BVbdALGkaQPw7JS7SOcY3nrDXVLw0SiJG7nqBW9rk=;
+        b=OsPs86PWBkFHni5P1snQjQfVx3HzcylXp5vX10jNVgUX4NbuhdMY2rWnxqnGl+HBmr
+         VZ1UfAdPeSVdoajo5y7CeBV4eobIX9UJmvd+29KjfhLM1aSiGKw4kDNDBEuw1DVTcu3M
+         890Z2bljbr4aDfkSRC2PnCsYBO6fUvgbYGsLC5Y4ByZP8IOPinrZVR04DYc4incR+qsn
+         5zir+ftNNQ/J9ZH4HR62tULCZBaa3FmwhN2wzvkjZTIiQDfgakzTpu1yL+RAnUdcJ9li
+         7UJHcZy4aXmh6QbHsAwccio2TaNFP4haRpUglFEQb4aotDJlhzsW+oeTIPHZ36xQU9mP
+         V5zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=w9BVbdALGkaQPw7JS7SOcY3nrDXVLw0SiJG7nqBW9rk=;
+        b=d6SdLueYAahxP2K8RUY3Ukg2MFSFAC3xAGi/LNTYTBPtfp1soNIRB37BBUG4JmJIJP
+         XhIX8msO+n7KTjsToI/E4AqxikoGAjyMptPdghzFf5MM4NPNHRRJdwdIjASM7qCDUCzb
+         QmHN8B0svJkW/NxWb/tKRO1OP5lcUM7WxkUa9o1vdI5Ev57jXFbZo3tKZ3dDSaJNWpOd
+         eZebYz7iqDpmZcXeqqzyv2+IRLzrXdNcgTzOFAmb0yYet5ibv6gLHsad9tTaoIalITkv
+         1ya802NMTXdOCPM3PfKtmLVSbaWVNsf+E4AALsYebbj5NslSd5olIke6bHMJUdf46aPE
+         8eNQ==
+X-Gm-Message-State: ANoB5pnv7OI0lkixG9jOABBuNPjN6hitqHHZ4Gd1suN3pBbZ0Cwm98ZE
+        bOG1gYYGD98Rv3uv1tVn2MFH/qKMOkHWxTgY4dg=
+X-Google-Smtp-Source: AA0mqf7ODm7bGl+OqlKEejG6e3iD8MGH3Pvhm1taAS7yskQ11J7WGnkZ/JzZqJTVzkSAIDn2EAaSFrL6xyI3Rjjq/fQ=
+X-Received: by 2002:a17:906:a58:b0:7ad:b45c:dbca with SMTP id
+ x24-20020a1709060a5800b007adb45cdbcamr73135286ejf.388.1671099737195; Thu, 15
+ Dec 2022 02:22:17 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5121:EE_|AS8PR04MB8658:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9e01acc2-6959-4484-ca06-08dade84f5d3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: afqt31a6HAfgrdmKqooZi00crskk8NDDV6TkcukVu/h876WTFBxatDj9LDxADomlTRwK/q24pi3FdpDfws03wo1OhK5pQS7ppZrdlIBJaWvP2qhWM8Tzno3th164jvTOX7Boca4tVNcpk30dHdH/o5rFqqSXPWAidyYmWj+9eKGo0H9P62D/K5/DAlfQkVMZ3zzev7IyBZggVjESyq9m1n7OS1ZajQsZHL8Lnv4FBW0+gv6eJ4QWpwNnjqncCiUnr/22QAnmQP7sgV0GB+Yriq257XxpxfKiPJnvEvPyRxqNAXqyw1tmf9Mj/+rxvsVrfj7GHaa3xae76kFjzCdX6guGHSUKRLnuxOzUhM7fDyu6lruCn7u/WJQ4vjalIEQZK8Dajuud8ek39qezunKSHMIl/EoFW/9tjs4s9lKBSzPJU+f16KSRdTyZ/qyrZtbxJVv5GGM0uvmkX1hnNUUgtriOzsM8Dokbl/fZoXztnQrMOeQNljIcwQJad2YxpsfqdrmCbd6JeQefD8wuGrxj1R3ztI2TIX4uNS78MBtdxKGvuGV60UrveF3vZ/3O9Sr4Gn/PdCc8Pn9dPOBsCHtToXM4RN2X2l3Lsw+OEn49nzEdeZGt9VpsEM2XAsXmMJdVMzRNjSgxsOLuJcn6+L9SZg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(39860400002)(396003)(366004)(376002)(346002)(136003)(451199015)(6666004)(6486002)(478600001)(6506007)(2906002)(33716001)(9686003)(6512007)(186003)(26005)(86362001)(6916009)(38100700002)(83380400001)(44832011)(316002)(66476007)(66556008)(1076003)(54906003)(66946007)(8676002)(4326008)(8936002)(41300700001)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mkblOT7+rzBf5BkuXf1Mr1uvF9rukZu70+4IYNYt3HLWRUszbumu5FoGZ4ww?=
- =?us-ascii?Q?ovhbdr/dCRqeFPRHaNBmkuT7YsVxnWUAJvRS2j1aSqvPWSaKLK7KK4kN8oLq?=
- =?us-ascii?Q?WJXrXrsePQYp6z4qHCTm9KX0Lco+SPoGXzUKl/7V0LPTlHjV92csQZEchzKr?=
- =?us-ascii?Q?1aH9K6gJ62TwNKUXSF2mHnNfEtQSGGdz8gXxHd1HUvgoCpLRP6H6b9jvvcvc?=
- =?us-ascii?Q?rhgsE8t7H74q2PYsNJdW0hhn1ZlB34gDhtTO3PJSOKRlW4atsqzPAKjx8kHd?=
- =?us-ascii?Q?Grs1ZcvIQ4+sRUfEwCKXZeMfmWy9F0r02clSRaguu3ZlO3ao/X9QZ2Ml1zH+?=
- =?us-ascii?Q?+jNQFubkTzemO6/Kmd5CmUJUspSLaP8KnayiHzYbc1Ma/Y53m9othfGNdJ9i?=
- =?us-ascii?Q?7t8qmO6kLISdMG99lT/s6L275FjOqIHV5wJSvCYekqrMyzbyZCzgIlO3d8QE?=
- =?us-ascii?Q?c/TOi83Fml+PMjlCyu5dSnY1uOzgsE+QcfnqZxzTU2ayyTTQiC92XlUvwZXH?=
- =?us-ascii?Q?LP5ILXGQ9p8wt1CXJYGlVMogDYVzK84NXzZWQLMzNpPLUgDlpG6IC/Jm5nja?=
- =?us-ascii?Q?EXNvy9iA9mbASRG9Byn7+COa53xorGVmFWa0nlWsscN0EXS/C0gluKZAeGW1?=
- =?us-ascii?Q?Sb4w8soFI6YY9aJWxEFTaKpaWIYcvQbo73jyvJ/WUy5AMJJlk7Cx9qCsv6RZ?=
- =?us-ascii?Q?Q5cvjF25NZT9xFVL6eXAqLoivBAjFOH1CMPArUmHvnQS35m9lYVrQG4bETNd?=
- =?us-ascii?Q?SiMt2IE36HWISlA+RknzW4kQ7yNRrvzGyOBYl3qzFU6kfY2gzCBha/CkABbv?=
- =?us-ascii?Q?F5cmPvdoCWATQc1F8LOhY+HkJQ/nsA0Dp24tSHQqiR7ihbNIDpj1CDPFBo4b?=
- =?us-ascii?Q?NYgH/KEpfUb8qdobXtPl1S6nbuUnbTjfZNYB+m1FZ/4WcgcYGL1sO1nEPGOZ?=
- =?us-ascii?Q?Bp2SOGZSSBYoUnasbaydPA6TK+fK3LW0/6QvOiioEs9BCgEK9ogqbCqAZn++?=
- =?us-ascii?Q?fnihRKpEnm7uDDRTQv94SKHpJLExsj74eoR2Jk5JfweHbNOAEXskUdmUX6PZ?=
- =?us-ascii?Q?6QKl2JpyobgLqdsgdA8GUOK7NFwmWsTvWtzo2IPkIyCulR0mDjYfqUOfODxv?=
- =?us-ascii?Q?BDtMaty6jQOUWZQZYMLcCFJpuubZ9LUhBp0VpNu/gcm+xPDlw3ERA6rDAubc?=
- =?us-ascii?Q?v9+llMiqsgZ8sYxWzdcpp40ITEz3o4eymFYrRa1YTuIi/zDlb+GwuB8X5hQ+?=
- =?us-ascii?Q?COMR+CZjZTx5jgzPebcq9ZYN7n4wC7segocTUrUZF0Ni13B51BPPoA2Horts?=
- =?us-ascii?Q?Szqont+HgHjBMWYkuWo/BMj/FlXsDMhw6tnCyMcShtDgW1BAjK9J7IN07ROf?=
- =?us-ascii?Q?XNxR8paueUQG/djfRotbYYZvbRes3LBNarsLBjbCM3vcfvpSDJ8TLbUaNik8?=
- =?us-ascii?Q?lUWfjQFWV88tBvQL/Vc1oKGj3PqfEnK5PnUmH67ltjdmNkpNBGHmunja9OLY?=
- =?us-ascii?Q?+lvpBeEXaW0kSthfH/hR7TfhgDnX1bVNsNBTlckvA7kiwBeSbG30vaZmPxc/?=
- =?us-ascii?Q?7G3bGJuOg1bpsJRJFpnMsM0GQnqr6zeInl+SvE3BnLm4Gac3scK1hDFjeUrD?=
- =?us-ascii?Q?vw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e01acc2-6959-4484-ca06-08dade84f5d3
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2022 10:13:07.4099
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NE2zK3pDiNrXAHpFqzbMfWfvO6ybRkpiEDpXq6x7TEWEn8gjrTtKa+XZ+Sq4HHBDPzlEo4K0TO0XnG49QhfwTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8658
+References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
+In-Reply-To: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 15 Dec 2022 11:22:05 +0100
+Message-ID: <CAJ8uoz2Q6rtSyVk-7jmRAhy_Zx7fN=OOepUX0kwUThDBf-eXfw@mail.gmail.com>
+Subject: Re: Possible race with xsk_flush
+To:     Shawn Bohrer <sbohrer@cloudflare.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
+        magnus.karlsson@intel.com, kernel-team@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -120,59 +66,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 14, 2022 at 09:25:45PM +0000, Robin Murphy wrote:
-> > > The change itself looks sensible. The point of this shutdown hook is simply
-> > > not to leave active translations in place that might confuse future software
-> > > after reboot/kexec; any housekeeping in the current kernel state is a waste
-> > > of time anyway. Fancy doing the same for SMMUv3 as well?
-> > 
-> > I can try, but I won't have hardware to test.
-> > 
-> > Basically the only thing truly relevant for shutdown from arm_smmu_device_remove()
-> > is arm_smmu_device_disable(), would you agree to a patch which changes
-> > things as below?
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index 6d5df91c5c46..d4d8bfee9feb 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -3854,7 +3854,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
-> >   static void arm_smmu_device_shutdown(struct platform_device *pdev)
-> >   {
-> > -	arm_smmu_device_remove(pdev);
-> > +	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
-> > +
-> > +	arm_smmu_device_disable(smmu);
-> >   }
-> >   static const struct of_device_id arm_smmu_of_match[] = {
-> 
-> 
-> Looks fine to me! I'll let Will decide if he'd still prefer to do the full
-> remove-calls-shutdown reversal here as well for complete consistency, but I
-> reckon the minimal diff is no bad thing :)
+On Wed, Dec 14, 2022 at 11:33 PM Shawn Bohrer <sbohrer@cloudflare.com> wrote:
+>
+> Hello,
+>
+> I've been trying to track down a problem we've been seeing with
+> occasional corrupt packets using AF_XDP.  As you probably expect this
+> occurs because we end up with the same descriptor in ring multiple
+> times.  However, after lots of debugging and analyzing I think this is
+> actually caused by a kernel bug, though I still don't fully understand
+> what is happening.  This is currently being seen on kernel 5.15.77 and
+> I haven't done any testing to see if we see the same issue on newer
+> versions.
+>
+> Inside my application I've written code to track and log as
+> descriptors are placed into the fill and tx queues, and when they are
+> pulled out of the rx and completion queues.  The transitions are
+> logged to /sys/kernel/debug/tracing/trace_marker.  Additionally I keep
+> my own VecDeque which mirrors the order descriptors are placed in the
+> fill queue and I verify that they come out of the rx queue in the same
+> order.  I do realize there are some cases where they might not come
+> out in the same order but I do not appear to be hitting that.
+>
+> I then add several kprobes to track the kernel side with ftrace. Most
+> importantly are these probes:
+>
+> This adds a probe on the call to xskq_prod_reserve_desc() this
+> actually creates two probes so you see two prints everytime it is hit:
+> perf probe -a '__xsk_rcv_zc:7 addr len xs xs->pool->fq'
+>
+> This adds a probe on xsk_flush():
+> perf probe -a 'xsk_flush:0 xs'
+>
+> My AF_XDP application is bound to two multi-queue veth interfaces
+> (called 'ingress' and 'egress' in my prints) in a networking
+> namespace.  I'm then generating traffic with iperf and hping3 through
+> these interfaces.  When I see an out-of-order descriptor in my
+> application I dump the state of my internal VecDeque to the
+> trace_marker.  Here is an example of what I'm seeing which looks like
+> a kernel bug:
+>
+>  // On CPU 0 we've removed descriptor 0xff0900 from the fill queue,
+>  // copied a packet, but have not put it in the rx queue yet
+>  flowtrackd-9chS-142014  [000] d.Z1. 609766.698512: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0x9b/0x250) addr=0xff0900 len=0x42 xs=0xffff90fd32693c00 fq=0xffff90fd03d66380
+>  flowtrackd-9chS-142014  [000] d.Z1. 609766.698513: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0xa7/0x250) addr=0xff0900 len=0x42 xs=0xffff90fd32693c00 fq=0xffff90fd03d66380
+>  // On CPU 2 we've removed descriptor 0x1000900 from the fill queue,
+>  // copied a packet, but have not put it in the rx queue yet
+>           iperf2-1217    [002] d.Z1. 609766.698523: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0x9b/0x250) addr=0x1000900 len=0x42 xs=0xffff90fd32693c00 fq=0xffff90fd03d66380
+>           iperf2-1217    [002] d.Z1. 609766.698524: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0xa7/0x250) addr=0x1000900 len=0x42 xs=0xffff90fd32693c00 fq=0xffff90fd03d66380
+>  // On CPU 0 xsk_flush is called on the socket
+>  flowtrackd-9chS-142014  [000] d.Z1. 609766.698528: xsk_flush: (__xsk_map_flush+0x4e/0x180) xs=0xffff90fd32693c00
+>  // My application receives 0xff0900 on the ingress interface queue 1
+>  flowtrackd-9chS-142014  [000] ..... 609766.698540: tracing_mark_write: ingress q:1 0xff0900 FILL -> RX
+>  // On CPU 2 xsk_flush is called on the socket
+>           iperf2-1217    [002] d.Z1. 609766.698545: xsk_flush: (__xsk_map_flush+0x4e/0x180) xs=0xffff90fd32693c00
+>  // My application receives 0xf61900 this is unexpected.  We expected
+>  // to receive 0x1000900 which is what you saw in the previous
+>  // __xsk_rcv_zc print.  0xf61900 is in the fill queue but it is far
+>  // away from our current position in the ring and I've trimmed the
+>  // print slightly to show that.
+>  flowtrackd-9chS-142014  [000] ..... 609766.698617: tracing_mark_write: ingress q:1 0xf61900 FILL -> RX: expected 0x1000900 remaining: [fe4100, f9c100, f8a100, ..., f61900
+>
+> From reading the code I believe that the call to
+> xskq_prod_reserve_desc() inside __xsk_rcv_zc is the only place
+> descriptors are placed into the RX queue.  To me this means I should
+> see a print from my probe for the mystery 0xf61900 but we do not see
+> this print.  Instead we see the expected 0x1000900.  One theory I have
+> is that there could be a race where CPU 2 increments the cached_prod
+> pointer but has not yet updated the addr and len, CPU 0 calls
+> xsk_flush(), and now my application reads the old descriptor entry
+> from that location in the RX ring.  This would explain everything, but
+> the problem with this theory is that __xsk_rcv_zc() and xsk_flush()
+> are getting called from within napi_poll() and this appears to hold
+> the netpoll_poll_lock() for the whole time which I think should
+> prevent the race I just described.
 
-The reason why I did it this way is that if remove() still called
-shutdown(), it would have looked like this here:
+Thanks Shawn for your detailed bug report. The rings between user
+space and kernel space are single-producer/single-consumer, so in your
+case when both CPU0 and CPU2 are working on the fill ring and the Rx
+ring at the same time, this will indeed produce races. The intended
+design principle to protect against this is that only one NAPI context
+can access any given ring at any point in time and that the NAPI logic
+should prevent two instances of the same NAPI instance from running at
+the same time. So if that is not true for some reason, we would get a
+race like this. Another option is that one of the CPUs should really
+process another fill ring instead of the same.
 
-static void arm_smmu_device_shutdown(struct platform_device *pdev)
-{
-	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+Do you see the second socket being worked on when this happens?
 
-	arm_smmu_device_disable(smmu);
-}
+Could you please share how you set up the two AF_XDP sockets?
 
-static int arm_smmu_device_remove(struct platform_device *pdev)
-{
-	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+Are you using XDP_DRV mode in your tests?
 
-	iommu_device_unregister(&smmu->iommu);
-	iommu_device_sysfs_remove(&smmu->iommu);
-	arm_smmu_device_shutdown(pdev);
-	iopf_queue_free(smmu->evtq.iopf);
+> A couple more notes:
+> * The ftrace print order and timestamps seem to indicate that the CPU
+>   2 napi_poll is running before the CPU 0 xsk_flush().  I don't know
+>   if these timestamps can be trusted but it does imply that maybe this
+>   can race as I described.  I've triggered this twice with xsk_flush
+>   probes and both show the order above.
+> * In the 3 times I've triggered this it has occurred right when the
+>   softirq processing switches CPUs
 
-	return 0;
-}
+This is interesting. Could you check, in some way, if you only have
+one core working on the fill ring before the softirq switching and
+then after that you have two? And if you have two, is that period
+transient?
 
-Not really that beneficial. I also didn't want to reorder any
-operations, they seem to be done in reverse order of what is being done
-in arm_smmu_device_probe().
+> * I've also triggered this before I added the xsk_flush() probe and
+>   in that case saw the kernel side additionally fill in the next
+>   expected descriptor, which in the example above would be 0xfe4100.
+>   This seems to indicate that my tracking is all still sane.
+> * This is fairly reproducible, but I've got 10 test boxes running and
+>   I only get maybe bug a day.
+>
+> Any thoughts on if the bug I described is actually possible,
+> alternative theories, or other things to test/try would be welcome.
+
+I thought this would be impossible, but apparently not :-). We are
+apparently doing something wrong in the AF_XDP code or have the wrong
+assumptions in some situation, but I just do not know what at this
+point in time. Maybe it is veth that breaks some of our assumptions,
+who knows. But let us dig into it. I need your help here, because I
+think it will be hard for me to reproduce the issue.
+
+Thanks: Magnus
+
+> Thanks,
+> Shawn Bohrer
