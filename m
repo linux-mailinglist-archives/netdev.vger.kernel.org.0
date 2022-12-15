@@ -2,67 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F279764D84F
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 10:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31D664D85C
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 10:15:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiLOJLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 04:11:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
+        id S229841AbiLOJPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 04:15:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiLOJLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 04:11:12 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0751F9C0
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 01:11:08 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id h16so2310762wrz.12
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 01:11:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KZAEoxLib+frj+uv7j6MpVcnCrk2tSCoND8juKVSPXg=;
-        b=v0EocZ+oKmb2EkjJ4UY4Me/kUvifHNm5KLiohtUjdRR4A5uoLdlYGU7N6bQ4nJp4eY
-         pVwlBK9MIgQaocZbmQgu/Hmx/Q+HAaIUl7z/I5X1LQAZZN408mKpwLHz+MD0X3SyPRQC
-         SSNgEShL2kJujNl3LXQ5pViqW4YIEH7UkPaAkCP+UcbY+FuwBEa+jeOedRFIjufdcsWi
-         e9INCDh109PC5dPHpem+nzTNwI5bSF5DknupG+ja6RX22kdVSTfOlcs/kfn+0P+NB9VI
-         7fU2Q6A6+OT+euCHQ99JIMbS+B9HEW34K+7hdlUHGGJUv34e/ouiKb6oAsWLtWgeYLDB
-         Bozw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KZAEoxLib+frj+uv7j6MpVcnCrk2tSCoND8juKVSPXg=;
-        b=ZrXbL0JcQacOtXtjGdaNxqWnYuJewKDxklX7GzXkuQ4kQtKjcSCAsillkcfa+4hcb4
-         FxzrlWXcM5brlwrKOevJG7kMQPOuLgtWZ7LpcT7HAkzWql/nJ20Keya5oy3U1X5fG3ul
-         I0YIpvho6EncfEVRmTG61PMR1ocS+FsP4i6LcRXvmeHVC/imvwHMgJbFkfp+pociGa/D
-         1ahm7fGDyizBEAjVg2XcDYTQI8GldF+IoGKE2MKVr4Vm5Jm2lCLEbxij5sZiHMTAedJ5
-         cKfdD+Tj2nVQGd5j92gKY26eBkzGv2YFNJkSgVjZVUdB6Cfsdq8JfrD6BPtrSaTQ2xxK
-         wxaA==
-X-Gm-Message-State: ANoB5pkH18d84rVsPMEuDthRB4NCU8/W4K7j8PnZdGXFtnaTUBHuK6sB
-        rdsXeY/wR1Vuda0J4EJwgM61ew==
-X-Google-Smtp-Source: AA0mqf7T9S7ypVi6vvFU2tq406kNAyKiWrJgdlkabgA0NR7oQEbDS7VEcesjZRtAsYWIw625fVp/nQ==
-X-Received: by 2002:adf:e991:0:b0:24a:acbe:4105 with SMTP id h17-20020adfe991000000b0024aacbe4105mr15405758wrm.53.1671095467384;
-        Thu, 15 Dec 2022 01:11:07 -0800 (PST)
-Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id w2-20020a5d4042000000b002421db5f279sm5484856wrp.78.2022.12.15.01.11.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 01:11:04 -0800 (PST)
-Date:   Thu, 15 Dec 2022 10:11:03 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, leon@kernel.org
-Subject: Re: [RFC net-next 14/15] devlink: add by-instance dump infra
-Message-ID: <Y5rkpxKm/TdGlJHf@nanopsycho>
-References: <20221215020155.1619839-1-kuba@kernel.org>
- <20221215020155.1619839-15-kuba@kernel.org>
+        with ESMTP id S229720AbiLOJPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 04:15:21 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2088.outbound.protection.outlook.com [40.107.21.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0F72E9FC;
+        Thu, 15 Dec 2022 01:15:19 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=anY/Q26ioToxMc3y4zcA7IMw1fl0OXueZ5Ds9Y7Z49vaOb70I7WT/DswmCf++OcfBEp76EZDGTxyvY+ci+bIG8fC/wk7mW33je+C6E4xXr1BquLRG2kZy74H2BV2oBGmxWspUh6Cx4MtfyM5v/lwL2QgBV3XQsD3Hk7FFzD7YC4opOvQTAON5l/WpMq9o++uqLa0Af7eXYbabSpfCEsWGFGjctO14mULGNmVLDuMw8qeP62wLWgJN+F0k8+GP1lab4FAuVWSpaaxSKsm5WQ68jE3XZ3kpH9WLmE5qYFSE5Pk1hl8aLNQqdS7UqoXTGQ3DjZ5or2A+EQZuwSQRew5iQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZmB2nvF0k6CaxhQDiw3HXGt0GtUvm+uVW5lzBSdCmFs=;
+ b=LmkJSpl1RSOlfLmV+hkptJS3hJCDwYyghGOYG6et9D3ksXhofI/s/T+AoOeYlFkSPa0bYVZmw04mc1LZyFjo/6jkPn90DTKjBvrDLIkUA9Dp3thq1Qfl4GWk6tnC5o+MRXXnlEdq7fdwRJWMMkJRHlLKod8hJtyTVJELBfpM9Y7HPrHjn1nw0paNv2M733uuT71D0iKuFOgtyDupaOaQpFnzHoAE17gGa3V+YIsL1an6oHxFOF0fEEkoSsCdMox61sAT9G5vFHzeh9be1nFoRsNw2BiZIOWlKGcaO6QbknravbejeNeN4+vy9iH39Z1tkM3UUJ+KwOZe2WKcliBxBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZmB2nvF0k6CaxhQDiw3HXGt0GtUvm+uVW5lzBSdCmFs=;
+ b=AN6ZiAbORPXOga6Z7Cd78ZlskElumjAeihMCFy497usBfS7MkMJoHGayaLymnUwquyrfo7jq2gNZIENRTK86WnAOLzP4oFEe9Lkay0SeYI9mQ3nmu6jD75kVbbs3R/U62JSuQCGAhmJ9gNWtxmxNJVpmaDGn276OH3WY2G9iSgM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by AS8PR04MB8609.eurprd04.prod.outlook.com (2603:10a6:20b:424::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Thu, 15 Dec
+ 2022 09:15:15 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::e9c1:3e78:4fc8:9b24]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::e9c1:3e78:4fc8:9b24%9]) with mapi id 15.20.5880.019; Thu, 15 Dec 2022
+ 09:15:14 +0000
+From:   wei.fang@nxp.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, xiaoning.wang@nxp.com, shenwei.wang@nxp.com,
+        linux-imx@nxp.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: fec: Coverity issue: Dereference null return value
+Date:   Thu, 15 Dec 2022 17:11:49 +0800
+Message-Id: <20221215091149.936369-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0251.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::35) To DB9PR04MB8106.eurprd04.prod.outlook.com
+ (2603:10a6:10:24b::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221215020155.1619839-15-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8106:EE_|AS8PR04MB8609:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4b127f74-0206-43ab-427a-08dade7cdebc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jXiHO52Gay1byMTArtW5tqj/c2beESmGlfaWom3TIYRM4Gj5/jYRMPpq46KuO5qvWjl9LD+WYsyucicw444/kx5U6ThRiPOnvGp5S2PzOXwVdEZ4FTS1skVj+zyvClNXj/SQP+24uz3ywHtvKVZvvi7yzUxvEo8Auuy2AcSgxRuTDKOqQRSWnWKZU+u+tMYsEsLjgSAJU4qVbrA1cr3x+un3J93Z5V6Q6S7B3W7e8oHBJC5qo65b7NNZzYHcfvvH8VL38xMQsXevkE/uBEaJfgbvoQ4PPI3W9fWpliu/rZFu2PX+BciFAnYQ3mMTXQNcXJt7rkjzQHdgd9S68nHxYJpkckOYZ6dJoJM419EB8KUaR0JfySdcsYlt4enGw2jPB9ftzaPEkH+f9FsvXr79AfGPZG7yHn8pi4klKUAkWrWW2UhZeGVYvl96dZfNzWNQocXznGlQfRaGjJz8Avi4f1uV4tiOEc5/yMhg1Ymm6pHpZTgRb3jBX3ro9JryckbAz/DkEvX0fwR5Yy19rQEcCEt5mPfeX5TDmQdtoIa+uQlfixGiMyHHbtIXhGshFmcMUKwb/bmhlYNYb/qsJvr9hwTkqTANoYJ62IQMAfQ6O2ZLAogkZ0p9zzbK/OmkqzVitawqtLtdWTQWy24bz3Mci0hlWZeCqnbqzQUc/tHARww5Bde/9wUfah9vGdtCJN/BvGt0/MsA8I2hCRNZEXJjJA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(346002)(396003)(136003)(376002)(451199015)(38350700002)(26005)(66946007)(66556008)(8936002)(36756003)(6666004)(52116002)(6506007)(6512007)(9686003)(86362001)(316002)(38100700002)(83380400001)(41300700001)(4326008)(8676002)(5660300002)(478600001)(6486002)(66476007)(186003)(2616005)(2906002)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7Rzcg5ziGOYQMDnR0ZoGY53YVfA42qdnC8vas0qGjMCZnWx3eyY1kU7AxwS+?=
+ =?us-ascii?Q?AkmY/GPeH9nHEz6uDELBgBB+C+33cyyNm3IRRyUVilGG4ELmMLhZYw3ngMQZ?=
+ =?us-ascii?Q?XOIOqfAqnPQTd1Py9VoAVp1ZFI00opRAj7O132QTUvy1CFTgotZvheHJ4No1?=
+ =?us-ascii?Q?hOxRbXwM8gcofN9CkR6O2it0vZzFOhmj5cwrE9pPoczppkJ3ziMs+iCr7ypn?=
+ =?us-ascii?Q?GxquEx3YCoEjPAXP9G6Lc2pQgKYbY5am4sUd8/RAs9mJNGIAqcuyWexRDV3J?=
+ =?us-ascii?Q?EmAemX64hJDULQIT192AfUmeCuz7t3CvxYdNf7MtzgurTkUq7x8iZcYvV44x?=
+ =?us-ascii?Q?k/N/HFSgNFfjCjVZa3d6y8dzvr+rNV1TcIfKpo464kN0p8+TExJOHTtHTTD+?=
+ =?us-ascii?Q?wiwT2xqaPTvLKKOJZ1qys+CxeZGOFWyrbVlM0JdtIbHA+nYpAV1W3PjMT0s7?=
+ =?us-ascii?Q?A8ccD11zi5JO3/iE1vSsxOrCRbUdZ2vBbxZ4QXjYTRq9207NKKf/v4edQml7?=
+ =?us-ascii?Q?iNBxwkuFV53QQhbpRj9uz2I8Zc7o1GUojiMOGBtmp0tSJkFtK+Kzlk8W6H+0?=
+ =?us-ascii?Q?Lrkoa3gF9xVc++Y7mJo6p7y4ug6QsjT3VH/PHEYzWNa+4sQFNyvxsywuJ5VT?=
+ =?us-ascii?Q?tXU552t+xZEOz26rK/UFhWtIoMzfxiWEr5HH7cKHfXZW/rV42bWdOKOEs2O4?=
+ =?us-ascii?Q?9PT6aBLRku4S2RF/gSNkCDgYhCPlwo9SOrtgJUa9+5V1CF1EEZjzoQr19ZDE?=
+ =?us-ascii?Q?gJElKeSl5K6mh30dp6UNtTd7PC9OZE0w3jsrElmegsCklxepIaIFPjQEw/jW?=
+ =?us-ascii?Q?dYo97NNdlAKfEaTpltOm9cVVx4bt83/Fs7RdFGVp3WMss7bJJxMmdd87HFQN?=
+ =?us-ascii?Q?HwOTX76HGKHwWJo8THK9NWGKrMYkubqWOurTQmhf7gBObbbKxIg8+zRVLMhg?=
+ =?us-ascii?Q?aC4/vvoX7/6SJs1uuoYt3icEheTXUjyQcuJcbxUQWu3Eel4anZByJnrJRX25?=
+ =?us-ascii?Q?XirNuAvgAauzwwS79utbVrj4jd+HgXRnepOK6cZmKg44KJhu8c8+8yUIfS8q?=
+ =?us-ascii?Q?1MhLoipognKwLjnyR04j4g3G9AUVEQBUwcPK/toRVXRyRwsUbkVwing0tFQt?=
+ =?us-ascii?Q?L3id0Yc3XZizg5QYLanrtToNSfK5/5Fhdkmhizb5azrwuLIpByxvBMaWHzwG?=
+ =?us-ascii?Q?tVAWBISxlNDaJVY0FdlDMkjXNR8l2HsodqLWqbWjldDjCr83gqsepsE/CJ1n?=
+ =?us-ascii?Q?cShLMj8S43VYsKdUuTeliZabpnFDugd6oVYvoEfythG9fMm3AFNkp+vYJ6KY?=
+ =?us-ascii?Q?vmn4jjAhDAIA37KDg7FulHGVFyJXEUMUaWcKnbOBBj91jNcb9Ne5mtQIamxC?=
+ =?us-ascii?Q?i5/HlIk4h72uEw/B0rNIOgMrs3z5CmM4tXg5tMWP1+bjULnnmU155oCKrVNE?=
+ =?us-ascii?Q?YngLtAYGd9Qhxu8zDqtmgEDz/N4sAY3J2TGybZm4knIIGXPLC+nxqMemOqfO?=
+ =?us-ascii?Q?F/VvYIhoFkdcS1dmd13h+ejfX89ENO97S++v3aRfurQimTIbBPdIWJk6RxbR?=
+ =?us-ascii?Q?Cqbl/lNKcFzOfe5Rfbfhy9H93TLkyEgqKWGuk8Sy?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b127f74-0206-43ab-427a-08dade7cdebc
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2022 09:15:14.2420
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gwcl3mgOmC6O8+88Yi+UKxW4j/ikpbEA/0/aGEKX5KWh6S/efN+FNmTv5t1BpJ4uQ46usB4ESRpeawYnQiwIRg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8609
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,247 +111,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 15, 2022 at 03:01:54AM CET, kuba@kernel.org wrote:
->Most dumpit implementations walk the devlink instances.
->This requires careful lock taking and reference dropping.
->Factor the loop out and provide just a callback to handle
->a single instance dump.
->
->Convert one user as an example, other users converted
->in the next change.
->
->Slightly inspired by ethtool netlink code.
->
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->---
-> net/devlink/basic.c         | 55 ++++++++++++++++---------------------
-> net/devlink/devl_internal.h | 10 +++++++
-> net/devlink/netlink.c       | 33 ++++++++++++++++++++++
-> 3 files changed, 67 insertions(+), 31 deletions(-)
->
->diff --git a/net/devlink/basic.c b/net/devlink/basic.c
->index c6ad8133fc23..f18d8dcf9751 100644
->--- a/net/devlink/basic.c
->+++ b/net/devlink/basic.c
->@@ -1219,47 +1219,40 @@ static void devlink_rate_notify(struct devlink_rate *devlink_rate,
-> 				0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
-> }
-> 
->-static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
->-					  struct netlink_callback *cb)
->+static int
->+devlink_nl_cmd_rate_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
->+				 struct netlink_callback *cb)
-> {
-> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
->-	struct devlink *devlink;
->+	struct devlink_rate *devlink_rate;
->+	int idx = 0;
-> 	int err = 0;
-> 
->-	devlink_dump_for_each_instance_get(msg, dump, devlink) {
->-		struct devlink_rate *devlink_rate;
->-		int idx = 0;
->-
->-		devl_lock(devlink);
->-		list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
->-			enum devlink_command cmd = DEVLINK_CMD_RATE_NEW;
->-			u32 id = NETLINK_CB(cb->skb).portid;
->+	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
->+		enum devlink_command cmd = DEVLINK_CMD_RATE_NEW;
->+		u32 id = NETLINK_CB(cb->skb).portid;
-> 
->-			if (idx < dump->idx) {
->-				idx++;
->-				continue;
->-			}
->-			err = devlink_nl_rate_fill(msg, devlink_rate, cmd, id,
->-						   cb->nlh->nlmsg_seq,
->-						   NLM_F_MULTI, NULL);
->-			if (err) {
->-				devl_unlock(devlink);
->-				devlink_put(devlink);
->-				dump->idx = idx;
->-				goto out;
->-			}
->+		if (idx < dump->idx) {
-> 			idx++;
->+			continue;
-> 		}
->-		devl_unlock(devlink);
->-		devlink_put(devlink);
->+		err = devlink_nl_rate_fill(msg, devlink_rate, cmd, id,
->+					   cb->nlh->nlmsg_seq,
->+					   NLM_F_MULTI, NULL);
->+		if (err) {
->+			dump->idx = idx;
->+			break;
->+		}
->+		idx++;
-> 	}
->-out:
->-	if (err != -EMSGSIZE)
->-		return err;
-> 
->-	return msg->len;
->+	return err;
-> }
-> 
->+const struct devlink_gen_cmd devl_gen_rate_get = {
->+	.dump_one		= devlink_nl_cmd_rate_get_dumpinst,
->+};
->+
-> static int devlink_nl_cmd_rate_get_doit(struct sk_buff *skb,
-> 					struct genl_info *info)
-> {
->@@ -9130,7 +9123,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
-> 	{
-> 		.cmd = DEVLINK_CMD_RATE_GET,
-> 		.doit = devlink_nl_cmd_rate_get_doit,
->-		.dumpit = devlink_nl_cmd_rate_get_dumpit,
->+		.dumpit = devlink_instance_iter_dump,
-> 		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
-> 		/* can be retrieved by unprivileged users */
-> 	},
->diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
->index 5adac38454fd..e49b82dd77cd 100644
->--- a/net/devlink/devl_internal.h
->+++ b/net/devlink/devl_internal.h
->@@ -122,6 +122,11 @@ struct devlink_nl_dump_state {
-> 	};
-> };
-> 
->+struct devlink_gen_cmd {
->+	int (*dump_one)(struct sk_buff *msg, struct devlink *devlink,
->+			struct netlink_callback *cb);
->+};
->+
-> /* Iterate over devlink pointers which were possible to get reference to.
->  * devlink_put() needs to be called for each iterated devlink pointer
->  * in loop body in order to release the reference.
->@@ -138,6 +143,9 @@ struct devlink *devlink_get_from_attrs(struct net *net, struct nlattr **attrs);
-> void devlink_notify_unregister(struct devlink *devlink);
-> void devlink_notify_register(struct devlink *devlink);
-> 
->+int devlink_instance_iter_dump(struct sk_buff *msg,
->+			       struct netlink_callback *cb);
->+
-> static inline struct devlink_nl_dump_state *
-> devl_dump_state(struct netlink_callback *cb)
-> {
->@@ -173,6 +181,8 @@ devlink_linecard_get_from_info(struct devlink *devlink, struct genl_info *info);
-> void devlink_linecard_put(struct devlink_linecard *linecard);
-> 
-> /* Rates */
->+extern const struct devlink_gen_cmd devl_gen_rate_get;
->+
-> struct devlink_rate *
-> devlink_rate_get_from_info(struct devlink *devlink, struct genl_info *info);
-> struct devlink_rate *
->diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
->index ce1a7d674d14..fcf10c288480 100644
->--- a/net/devlink/netlink.c
->+++ b/net/devlink/netlink.c
->@@ -5,6 +5,7 @@
->  */
-> 
-> #include <net/genetlink.h>
->+#include <net/sock.h>
-> 
-> #include "devl_internal.h"
-> 
->@@ -177,6 +178,38 @@ static void devlink_nl_post_doit(const struct genl_split_ops *ops,
-> 	devlink_put(devlink);
-> }
-> 
->+static const struct devlink_gen_cmd *devl_gen_cmds[] = {
->+	[DEVLINK_CMD_RATE_GET]		= &devl_gen_rate_get,
->+};
+From: Wei Fang <wei.fang@nxp.com>
 
-Instead of having this extra list of ops struct, woudn't it make sence
-to rather implement this dumpit_one infra directly as a part of generic
-netlink code? Something like:
+The build_skb might return a null pointer but there is no check on the
+return value in the fec_enet_rx_queue(). So a null pointer dereference
+might occur. To avoid this, we check the return value of build_skb. If
+the return value is a null pointer, the driver will recycle the page and
+update the statistic of ndev. Then jump to rx_processing_done to clear
+the status flags of the BD so that the hardware can recycle the BD.
 
- 	{
- 		.cmd = DEVLINK_CMD_RATE_GET,
- 		.doit = devlink_nl_cmd_rate_get_doit,
-		.dumpit_one = devlink_nl_cmd_rate_get_dumpit_one,
-		.dumpit_one_walk = devlink_nl_dumpit_one_walk,
- 		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
- 		/* can be retrieved by unprivileged users */
- 	},
+Signed-off-by: Wei Fang <wei.fang@nxp.com>
+Reviewed-by: Shenwei Wang <Shenwei.wang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Where devlink_nl_dumpit_one_walk would be basically your
-devlink_instance_iter_dump(), it would get an extra arg dumpit_one
-function pointer from generic netlink code to call per item:
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 5528b0af82ae..c78aaa780983 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1674,6 +1674,16 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 		 * bridging applications.
+ 		 */
+ 		skb = build_skb(page_address(page), PAGE_SIZE);
++		if (unlikely(!skb)) {
++			page_pool_recycle_direct(rxq->page_pool, page);
++			ndev->stats.rx_packets--;
++			ndev->stats.rx_bytes -= pkt_len;
++			ndev->stats.rx_dropped++;
++
++			netdev_err(ndev, "build_skb failed!\n");
++			goto rx_processing_done;
++		}
++
+ 		skb_reserve(skb, data_start);
+ 		skb_put(skb, pkt_len - sub_len);
+ 		skb_mark_for_recycle(skb);
+-- 
+2.25.1
 
-int devlink_nl_dumpit_one_walk(struct sk_buff *msg, struct netlink_callback *cb,
-			       int (*dumpit_one)(struct sk_buff *msg,
-						 struct netlink_callback *cb,
-						 void *priv));
-{
-	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
-	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
-	struct devlink *devlink;
-	int err = 0;
-
-	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-		devl_lock(devlink);
-		err = dumpit_one(msg, cb, devlink);
-		devl_unlock(devlink);
-		devlink_put(devlink);
-
-		if (err)
-			break;
-
-		/* restart sub-object walk for the next instance */
-		dump->idx = 0;
-	}
-
-	if (err != -EMSGSIZE)
-		return err;
-	return msg->len;
-}
-
-
-
-Or we can avoid .dumpit_one_walk() and just have classic .dumpit() which
-would get the dumpit_one() pointer cb->dumpit_one (obtainable by
-a helper doing a proper check-warn_on on null).
-
-
->+
->+int devlink_instance_iter_dump(struct sk_buff *msg, struct netlink_callback *cb)
->+{
->+	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
->+	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
->+	const struct devlink_gen_cmd *cmd;
->+	struct devlink *devlink;
->+	int err = 0;
->+
->+	cmd = devl_gen_cmds[info->op.cmd];
->+
->+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
->+		devl_lock(devlink);
->+		err = cmd->dump_one(msg, devlink, cb);
->+		devl_unlock(devlink);
->+		devlink_put(devlink);
->+
->+		if (err)
->+			break;
->+
->+		/* restart sub-object walk for the next instance */
->+		dump->idx = 0;
->+	}
->+
->+	if (err != -EMSGSIZE)
->+		return err;
->+	return msg->len;
->+}
->+
-> struct genl_family devlink_nl_family __ro_after_init = {
-> 	.name		= DEVLINK_GENL_NAME,
-> 	.version	= DEVLINK_GENL_VERSION,
->-- 
->2.38.1
->
