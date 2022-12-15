@@ -2,57 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFD764E404
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 23:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA49A64E465
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 00:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbiLOWwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 17:52:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40968 "EHLO
+        id S229923AbiLOXBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 18:01:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbiLOWwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 17:52:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE00A4387E
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 14:51:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671144687;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dsHJetG27yiI6FUr4kvtQJoD3YgYVHON/vF/PBZ7EyM=;
-        b=NTYJ+Q7xcKd9fNDI2KlGRASnNvDFseJkTYSbVLMeFjBZRjKA3my552p6HFqCx4Ivh46xTa
-        KMPzJmZIwBrYwZTOp/U+uLZmk6kMbRGg8TVBeLftkp7PlAS3vDWpJFWCrVndwAwWvfwrSi
-        E4ukvgNYLDZAV6z0KFh5LWqnoo/Zl0Q=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-460-n_RPPt5kN-mHhzjDCvnNDA-1; Thu, 15 Dec 2022 17:51:17 -0500
-X-MC-Unique: n_RPPt5kN-mHhzjDCvnNDA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S230051AbiLOXAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 18:00:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288CF1F60A;
+        Thu, 15 Dec 2022 15:00:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D37C03806116;
-        Thu, 15 Dec 2022 22:51:16 +0000 (UTC)
-Received: from toolbox.redhat.com (ovpn-192-38.brq.redhat.com [10.40.192.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C88F62166B29;
-        Thu, 15 Dec 2022 22:51:15 +0000 (UTC)
-From:   Michal Schmidt <mschmidt@redhat.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Patryk Piotrowski <patryk.piotrowski@intel.com>
-Subject: [PATCH net 2/2] iavf: avoid taking rtnl_lock in adminq_task
-Date:   Thu, 15 Dec 2022 23:50:49 +0100
-Message-Id: <20221215225049.508812-3-mschmidt@redhat.com>
-In-Reply-To: <20221215225049.508812-1-mschmidt@redhat.com>
-References: <20221215225049.508812-1-mschmidt@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B357261F7F;
+        Thu, 15 Dec 2022 23:00:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C83AC433F2;
+        Thu, 15 Dec 2022 23:00:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671145249;
+        bh=Djdm7yrApwJBy69Ip/DuJwgUSqX8oSrRhkL3U4rd2ro=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=adYZYLy89dOD94Qz3+rHILw/9uFzdizCtlHF2PQgUgorAlEjoqPHXKTqMLCw+i5b4
+         VA5dBKwrdSw7sLDW4RWprT21j8uz5ekpC55gi/uPfXsK9ifSDDfy+APwr/qIbBqZFx
+         D68arIofycDHddIo9Z1n099WKExUnVgvcff1N2WNraHtGUubSJJlWET09Pg1cwLvZ/
+         OQanTt2UrTOlvQ/5PQm8Qq5s6veb7gS3ZMJZSh+6LZoUKsH4OFq2kRpENB8fOcSlZX
+         are8hDOhrnf+sKKI/fD/IFeNsDrkIsq/rVGNQYvAASihI6jqMOyR3lN4zTdO6fCeBa
+         NbbXsNF3o4npQ==
+Message-ID: <c584ef7e-6897-01f3-5b80-12b53f7b4bf4@kernel.org>
+Date:   Thu, 15 Dec 2022 16:00:47 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.5.1
+Subject: Re: [PATCH net-next v2 1/1] net: neigh: persist proxy config across
+ link flaps
+Content-Language: en-US
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Decotigny <decot@google.com>
+Cc:     David Decotigny <decot+git@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
+References: <20221214232059.760233-1-decot+git@google.com>
+ <7211782676442c6679d8a016813fd62d44cbebad.camel@gmail.com>
+ <CAG88wWZNaKqDXWrXanfSpM_h6LP7s3F5PppyWqwWRyA7g=+p_g@mail.gmail.com>
+ <CAKgT0Uea8JztZfKsR_FUAjt5iXEyRhjySwysZSoeeobWv3Cizw@mail.gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <CAKgT0Uea8JztZfKsR_FUAjt5iXEyRhjySwysZSoeeobWv3Cizw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,154 +72,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-adminq_task processes virtchnl completions. iavf_set_mac() needs
-virtchnl communication to progress while it holds rtnl_lock.
-So adminq_task must not take rtnl_lock.
+On 12/15/22 1:08 PM, Alexander Duyck wrote:
+> On Thu, Dec 15, 2022 at 9:29 AM David Decotigny <decot@google.com> wrote:
+>>
+>>
+>> (comments inline below)
+>>
+>>
+>> On Thu, Dec 15, 2022 at 8:24 AM Alexander H Duyck <alexander.duyck@gmail.com> wrote:
+>>>
+>>> On Wed, 2022-12-14 at 15:20 -0800, David Decotigny wrote:
+>>>> From: David Decotigny <ddecotig@google.com>
+>>>>
+>>>> Without this patch, the 'ip neigh add proxy' config is lost when the
+>>>> cable or peer disappear, ie. when the link goes down while staying
+>>>> admin up. When the link comes back, the config is never recovered.
+>>>>
+>>>> This patch makes sure that such an nd proxy config survives a switch
+>>>> or cable issue.
+>>>>
+>>>> Signed-off-by: David Decotigny <ddecotig@google.com>
+>>>>
+>>>>
+>>>> ---
+>>>> v1: initial revision
+>>>> v2: same as v1, except rebased on top of latest net-next, and includes "net-next" in the description
+>>>>
+>>>>  net/core/neighbour.c | 5 ++++-
+>>>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+>>>> index f00a79fc301b..f4b65bbbdc32 100644
+>>>> --- a/net/core/neighbour.c
+>>>> +++ b/net/core/neighbour.c
+>>>> @@ -426,7 +426,10 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
+>>>>  {
+>>>>       write_lock_bh(&tbl->lock);
+>>>>       neigh_flush_dev(tbl, dev, skip_perm);
+>>>> -     pneigh_ifdown_and_unlock(tbl, dev);
+>>>> +     if (skip_perm)
+>>>> +             write_unlock_bh(&tbl->lock);
+>>>> +     else
+>>>> +             pneigh_ifdown_and_unlock(tbl, dev);
+>>>>       pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL,
+>>>>                          tbl->family);
+>>>>       if (skb_queue_empty_lockless(&tbl->proxy_queue))
+>>>
+>>> This seems like an agressive approach since it applies to all entries
+>>> in the table, not just the permenant ones like occurs in
+>>> neigh_flush_dev.
+>>>
+>>> I don't have much experience in this area of the code but it seems like
+>>> you would specifically be wanting to keep only the permanant entries.
+>>> Would it make sense ot look at rearranging pneigh_ifdown_and_unlock so
+>>> that the code functioned more like neigh_flush_dev where it only
+>>> skipped the permanant entries when skip_perm was set?
+>>>
+>>
+>> The reason I am proposing this patch like it is is because these "proxy" entries appear to be a configuration attribute (similar to ip routes, coming from the sysadmin config), and not cached data (like ip neigh "normal" entries essentially coming from the outside). So I view them as fundamentally different kinds of objects [1], which they actually are in the code. And they are also updated from a vastly different context (sysadmin vs traffic). IMHO, it would seem natural that these proxy attributes (considered config attributes) would survive link flaps, whereas normal ip neigh cached entries without NUD_PERMANENT should not. And neither should survive admin down, the same way ip route does not survive admin down. This is what this patch proposes.
+>>
+>> Honoring NUD_PERMANENT (I assume that's what you are alluding to) would also work, and (with current iproute2 implementation [2]) would lead to the same result. But please consider the above. If really honoring NUD_PERMANENT is the required approach here, I am happy to revisit this patch. Please let me know.
+> 
+> Yeah, I was referring to basically just limiting your changes to honor
+> NUD_PERMANANT. Looking at pneigh_ifdown_and_unlock and comparing it to
+> neigh_flush_dev it seems like it would make sense to just add the
+> skip_perm argument there and then add the same logic at the start of
+> the loop to eliminate the items you aren't going to flush/free. That
+> way we aren't keeping around any more entries than those specifically
+> that are supposed to be permanent.
 
-Do the handling of netdev features updates in a new work, features_task.
-The new work cannot run on the same ordered workqueue as adminq_task.
-The system-wide system_unbound_wq will do.
-
-iavf_set_queue_vlan_tag_loc(), which iterates through queues, must run
-under crit_lock to prevent a concurrent iavf_free_queues() possibly
-called from watchdog_task or reset_task.
-
-IAVF_FLAG_SETUP_NETDEV_FEATURES becomes unnecessary. features_task can
-be queued directly from iavf_virtchnl_completion().
-
-Fixes: 35a2443d0910 ("iavf: Add waiting for response from PF in set mac")
-Signed-off-by: Michal Schmidt <mschmidt@redhat.com>
----
- drivers/net/ethernet/intel/iavf/iavf.h        |  2 +-
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 49 ++++++++++++-------
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  6 ++-
- 3 files changed, 37 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 2a9f1eeeb701..7dfd6dac74e4 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -252,6 +252,7 @@ struct iavf_adapter {
- 	struct workqueue_struct *wq;
- 	struct work_struct reset_task;
- 	struct work_struct adminq_task;
-+	struct work_struct features_task;
- 	struct delayed_work client_task;
- 	wait_queue_head_t down_waitqueue;
- 	wait_queue_head_t vc_waitqueue;
-@@ -297,7 +298,6 @@ struct iavf_adapter {
- #define IAVF_FLAG_LEGACY_RX			BIT(15)
- #define IAVF_FLAG_REINIT_ITR_NEEDED		BIT(16)
- #define IAVF_FLAG_QUEUES_DISABLED		BIT(17)
--#define IAVF_FLAG_SETUP_NETDEV_FEATURES		BIT(18)
- #define IAVF_FLAG_REINIT_MSIX_NEEDED		BIT(20)
- /* duplicates for common code */
- #define IAVF_FLAG_DCB_ENABLED			0
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index e7380f1b4acc..e53f5262c047 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3187,6 +3187,35 @@ static void iavf_reset_task(struct work_struct *work)
- 	rtnl_unlock();
- }
- 
-+/**
-+ * iavf_features_task - update netdev features after caps negotiation
-+ * @work: pointer to work_struct
-+ *
-+ * After negotiating VLAN caps with the PF, we need to update our netdev
-+ * features, but this requires rtnl_lock. We cannot take it directly in
-+ * adminq_task - we might deadlock with iavf_set_mac, which waits on
-+ * virtchnl communication while holding rtnl_lock.
-+ * So the features are updated here, using a different workqueue.
-+ **/
-+static void iavf_features_task(struct work_struct *work)
-+{
-+	struct iavf_adapter *adapter = container_of(work,
-+						    struct iavf_adapter,
-+						    features_task);
-+	struct net_device *netdev = adapter->netdev;
-+
-+	rtnl_lock();
-+	netdev_update_features(netdev);
-+	rtnl_unlock();
-+	/* Request VLAN offload settings */
-+	if (VLAN_V2_ALLOWED(adapter))
-+		iavf_set_vlan_offload_features(adapter, 0, netdev->features);
-+
-+	mutex_lock(&adapter->crit_lock);
-+	iavf_set_queue_vlan_tag_loc(adapter);
-+	mutex_unlock(&adapter->crit_lock);
-+}
-+
- /**
-  * iavf_adminq_task - worker thread to clean the admin queue
-  * @work: pointer to work_struct containing our data
-@@ -3233,24 +3262,6 @@ static void iavf_adminq_task(struct work_struct *work)
- 	} while (pending);
- 	mutex_unlock(&adapter->crit_lock);
- 
--	if ((adapter->flags & IAVF_FLAG_SETUP_NETDEV_FEATURES)) {
--		if (adapter->netdev_registered ||
--		    !test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section)) {
--			struct net_device *netdev = adapter->netdev;
--
--			rtnl_lock();
--			netdev_update_features(netdev);
--			rtnl_unlock();
--			/* Request VLAN offload settings */
--			if (VLAN_V2_ALLOWED(adapter))
--				iavf_set_vlan_offload_features
--					(adapter, 0, netdev->features);
--
--			iavf_set_queue_vlan_tag_loc(adapter);
--		}
--
--		adapter->flags &= ~IAVF_FLAG_SETUP_NETDEV_FEATURES;
--	}
- 	if ((adapter->flags &
- 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
- 	    adapter->state == __IAVF_RESETTING)
-@@ -4948,6 +4959,7 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	INIT_WORK(&adapter->reset_task, iavf_reset_task);
- 	INIT_WORK(&adapter->adminq_task, iavf_adminq_task);
-+	INIT_WORK(&adapter->features_task, iavf_features_task);
- 	INIT_DELAYED_WORK(&adapter->watchdog_task, iavf_watchdog_task);
- 	INIT_DELAYED_WORK(&adapter->client_task, iavf_client_task);
- 	queue_delayed_work(adapter->wq, &adapter->watchdog_task,
-@@ -5115,6 +5127,7 @@ static void iavf_remove(struct pci_dev *pdev)
- 	cancel_delayed_work_sync(&adapter->watchdog_task);
- 	cancel_work_sync(&adapter->adminq_task);
- 	cancel_delayed_work_sync(&adapter->client_task);
-+	cancel_work_sync(&adapter->features_task);
- 
- 	adapter->aq_required = 0;
- 	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 0752fd67c96e..a644ab3804de 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -2225,7 +2225,6 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 				     sizeof(adapter->vlan_v2_caps)));
- 
- 		iavf_process_config(adapter);
--		adapter->flags |= IAVF_FLAG_SETUP_NETDEV_FEATURES;
- 		was_mac_changed = !ether_addr_equal(netdev->dev_addr,
- 						    adapter->hw.mac.addr);
- 
-@@ -2266,6 +2265,11 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 
- 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER |
- 			aq_required;
-+
-+		if (adapter->netdev_registered ||
-+		    !test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
-+			queue_work(system_unbound_wq,
-+				   &adapter->features_task);
- 		}
- 		break;
- 	case VIRTCHNL_OP_ENABLE_QUEUES:
--- 
-2.37.2
-
+exactly.
