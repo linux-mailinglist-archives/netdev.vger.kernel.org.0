@@ -2,147 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E25164E1FE
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 20:50:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB0764E215
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 21:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbiLOTuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 14:50:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
+        id S230392AbiLOUAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 15:00:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbiLOTua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 14:50:30 -0500
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EE5537E6
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 11:50:29 -0800 (PST)
-Received: by mail-ot1-x335.google.com with SMTP id x44-20020a05683040ac00b006707c74330eso109872ott.10
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 11:50:29 -0800 (PST)
+        with ESMTP id S230331AbiLOUAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 15:00:06 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03217537F8
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 12:00:06 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id 3-20020a17090a098300b00219041dcbe9so218095pjo.3
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 12:00:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ywXtZbQmJwRoi6FzZZADFFQbHutCfbqyb/F+E/XRqLg=;
-        b=StTfLAKSD8eAoRYx1niZPeceGQsyXy3U+YmbAjVeEDsJdBxVAv9G+2w4/ITPZ0rYFa
-         ZNE0yigT4kBDtXFbdIGuSQKOwoTcJkpnCP8cRjtKmO3Tsj4/hHlt4RIWrec1YhFubp4I
-         N8cjluk43hTlyQ4vsTIv57tbOGmePvFsgkrA4=
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=99Dl3b+Xd16PXSIqrGCyckGZ5mO9meE4tOd/yuF/D/c=;
+        b=DU5Rdhj/S2JmHBM7zShQYM6Qp1VszV1vogPDQKhK6too95M4vHOCB85LmaCaIpWTLC
+         sbSEAvQpwTS1zKlTHfuDQWNYy3lMGD1gSPTapxyjatKcH3VsXiqizYQxYM51lUUCyFxI
+         UF/ldgA+S0Yq3pCjDU1h9znD7RhODukiFP9JoV70EMnQz0dabcSQm99PWLmQpORtdc84
+         7MsOM/VY+Ua6OociSvzqi/BiVCayqIS/nh1xIxzDRqw8SyJUGdQLuGd8MnWTxvvmkM+D
+         q6tKO/WxRUdLf9OIufaoUBjdnUjQHhz6+xL/0fhl4dMsn5+kXmY57HmUnSB2MsD8HJd/
+         j7Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ywXtZbQmJwRoi6FzZZADFFQbHutCfbqyb/F+E/XRqLg=;
-        b=nXWfroTupna/XFqSTsQ2f3h+sGq88Nams03B+bm37xpWWsoWxArH7FoBdiaVV5020m
-         eaKOHW3mX7PSzg6wukeQ8oY46aFDnJyCeN5+s6GH9e5BItDrR80L6ECnLrkydJHMBs3+
-         wWbJfqqKhJv1ueBzLyrljhKwE9t1mh/5OerxWmsa6xFYREhDThR/EwdyBgZNn9D02Uyw
-         BuDM/1NDMs+CStBTWaDqPd/4Qdw8Tw3TAAmDSQzfyu35mTgcbanoQo1JpFyckJZDSWVW
-         Z980zYYnMVqPx2X5/4iuZD0dnFokEZuB7FddaiKQ7OmTE9h5d1ULgrqy2+Ibghn58OFe
-         QO/Q==
-X-Gm-Message-State: ANoB5pmQHVVcf/Oe3jJao8jJ7FzfcduANuSJvfRGmMy4lMc0aAvoCQQG
-        NEjrroIf68GJjMXbGGjxfEbXsA==
-X-Google-Smtp-Source: AA0mqf50JR9i5FNpy19Cl1AFkKU/es20UOBCsDkUDVNpP/OiuBZlE66IQJQuKcEXBMMWUMxRaxFl3Q==
-X-Received: by 2002:a9d:7ada:0:b0:672:3f94:26a5 with SMTP id m26-20020a9d7ada000000b006723f9426a5mr3900140otn.1.1671133828795;
-        Thu, 15 Dec 2022 11:50:28 -0800 (PST)
-Received: from C02F109XMD6R.local (2603-8080-1300-8fe5-7840-a7ae-5752-5929.res6.spectrum.com. [2603:8080:1300:8fe5:7840:a7ae:5752:5929])
-        by smtp.gmail.com with ESMTPSA id a28-20020a056808099c00b0035ba52d0efasm1385841oic.52.2022.12.15.11.50.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 11:50:28 -0800 (PST)
-Date:   Thu, 15 Dec 2022 13:50:15 -0600
-From:   Alex Forster <aforster@cloudflare.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Shawn Bohrer <sbohrer@cloudflare.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, bjorn@kernel.org, magnus.karlsson@intel.com,
-        kernel-team@cloudflare.com
-Subject: Re: Possible race with xsk_flush
-Message-ID: <Y5t5MZH1UwfLqhNC@C02F109XMD6R.local>
-References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
- <CAJ8uoz2Q6rtSyVk-7jmRAhy_Zx7fN=OOepUX0kwUThDBf-eXfw@mail.gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=99Dl3b+Xd16PXSIqrGCyckGZ5mO9meE4tOd/yuF/D/c=;
+        b=4COBXn2p+/Ja/fIc9bHMB1CSA5gzHSrirPGEaiczVrTIiKfNCIQ14RRSYCNLCwy2hC
+         Ob4SFBsocBAa7ZQ/pK0M824EksawUu4U+F2A/miQ+ozZ0gnFKmUI3vfgK1pLDF64wSD6
+         qsyWtZLffbOtf0S9/xNuVX/nl3LC3NngkTTYf3PyEt+LMjadgm043EohUahf+wbFFTu8
+         +AsvEsc5mxc4MoSf2VfKSRBMT1jENrWodYIHmVQ0axlLAgOJSt2WpygFVwMUHVU94dvQ
+         cI5T46Ai+qdByvSwsrRsm2zp+WtnIJQRZu6Dt1CuZiSypEAl2QwT87UoBAhDm0lnd3OJ
+         I3+A==
+X-Gm-Message-State: ANoB5pmkDsTJg+aOK2wPeFThH6jg+9o6CT/JmFL4gXFdyj62zhVDE9OX
+        sc+sOZm3MFds69mnDAv8kWTRv9QwovMqpgHvBfQ=
+X-Google-Smtp-Source: AA0mqf7cb5sTE9aY2Qm7WNF3d3uE3SIgzk4kbzBBmJRDsiiPaYROYRRUZr1eY4nHKhPYDxFEQfOPzg0UezRvFHJhUUA=
+X-Received: by 2002:a17:902:e313:b0:189:aee3:a185 with SMTP id
+ q19-20020a170902e31300b00189aee3a185mr38125313plc.21.1671134405351; Thu, 15
+ Dec 2022 12:00:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJ8uoz2Q6rtSyVk-7jmRAhy_Zx7fN=OOepUX0kwUThDBf-eXfw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221214000555.22785-1-u9012063@gmail.com> <935e24d6f6b51b5aaee4cf086ad08474e75410b8.camel@gmail.com>
+ <CALDO+SaoW5XoroBMoYLWsqCvYYVkKiTFFPMTLUEt7Qu5rQ+z3Q@mail.gmail.com>
+ <c213b4c3e8774e59389948b3b9b3ff132043dfcf.camel@gmail.com> <CALDO+Sax4=0tkq1xeH5W3FGaqXtweHj=eKFAUf15J2k7K1_4hA@mail.gmail.com>
+In-Reply-To: <CALDO+Sax4=0tkq1xeH5W3FGaqXtweHj=eKFAUf15J2k7K1_4hA@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 15 Dec 2022 11:59:53 -0800
+Message-ID: <CAKgT0UdhjAV2qed04SNepa0EvXJKO9QmXLDorQHF9AJ3YqMLHQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v5] vmxnet3: Add XDP support.
+To:     William Tu <u9012063@gmail.com>
+Cc:     netdev@vger.kernel.org, tuc@vmware.com, gyang@vmware.com,
+        doshir@vmware.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Magnus,
+On Thu, Dec 15, 2022 at 10:25 AM William Tu <u9012063@gmail.com> wrote:
+>
+> On Wed, Dec 14, 2022 at 2:51 PM Alexander H Duyck
+> <alexander.duyck@gmail.com> wrote:
+> >
+> > On Wed, 2022-12-14 at 13:55 -0800, William Tu wrote:
+> > > Thanks for taking a look at this patch!
+> > >
+> > > <...>
 
-> Could you please share how you set up the two AF_XDP sockets?
+> > > How do I avoid overwriting frames that might be waiting on transmit?
+> > > I checked my vmxnet3_xdp_xmit_back and vmxnet3_xdp_xmit_frame,
+> > > I think since I called the vmxnet3_xdp_xmit_frame at the rx context,
+> > > it should be ok?
+> >
+> > I don't think you can guarantee that. Normally for TX you would want to
+> > detach and replace the page unless you have some sort of other
+> > recycling/reuse taking care of it for you. Normally that is handled via
+> > page pool.
+> >
+> > On the Intel parts I had gotten around that via our split buffer model
+> > so we just switched to the other half of the page while the Tx sat on
+> > the first half, and by the time we would have to check again we would
+> > either detach the page for flip back if it had already been freed by
+> > the Tx path.
+> I see your point. So for XDP_TX, I can also do s.t like I did in XDP_REDIRECT,
+> memcpy to a freshly allocated page so the frame won't get overwritten.
+> Probably the performance will suffer.
+> Do you suggest allocating new page or risk buffer overwritten?
 
-Our architecture is pretty unique:
+This is one of the reasons for the page pool being used in other
+drivers. You may want to look at going that route if you want to avoid
+the memcpy. I don't think you can leave the page mapped without
+risking it will be overwritten.
 
-   outside of │ inside of
-    namespace │ namespace
-              │
-    ┌───────┐ │ ┌───────┐
-    │ outer │ │ │ inner │
-    │  veth │ │ │ veth  │
-    └──┬─▲──┘ │ └──┬─▲──┘
-       │ │    │    │ │
-    ┌──▼─┴────┴────▼─┴──┐
-    │    shared umem    │
-    └───────────────────┘
+> >
+> > > +static int
+> > > +vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
+> > > +                   struct xdp_frame *xdpf,
+> > > +                   struct sk_buff *skb)
+> > >
+> >
+> > Also after re-reviewing this I was wondering why you have the skb
+> > argument for this function? The only caller is passing NULL and I
+> > wouldn't expect you to be passing an skb since you are working with XDP
+> > buffers anyway. Seems like you could also drop the argument from
+> > vmxnet3_xdp_xmit_frame() since you are only passing it NULL as well.
+>
+> You're right! I don't need to pass skb here. I probably forgot to remove it
+> when refactoring code. Will remove the two places.
+> Thanks!
 
-The goal is to position ourselves in the middle of a veth pair so that
-we can perform bidirectional traffic inspection and manipulation. To do
-this, we attach AF_XDP to both veth interfaces and share a umem between
-them. This allows us to forward packets between the veth interfaces
-without copying in userspace.
-
-These interfaces are both multi-queue, with AF_XDP sockets attached to
-each queue. The queues are each managed on their own (unpinned) threads
-and have their own rx/tx/fill/completion rings. We also enable
-threaded NAPI on both of these interfaces, which may or may not be an
-important detail to note, since the problem appears much harder (though
-not impossible) to reproduce with threaded NAPI enabled.
-
-Here’s a script that configures a namespace and veth pair that closely
-resembles production, except for enabling threaded NAPI:
-
-```
-#!/bin/bash
-
-set -e -u -x -o pipefail
-
-QUEUES=${QUEUES:=$(($(grep -c ^processor /proc/cpuinfo)))}
-
-OUTER_CUSTOMER_VETH=${OUTER_CUSTOMER_VETH:=outer-veth}
-INNER_CUSTOMER_VETH=${INNER_CUSTOMER_VETH:=inner-veth}
-CUSTOMER_NAMESPACE=${CUSTOMER_NAMESPACE:=customer-namespace}
-
-ip netns add $CUSTOMER_NAMESPACE
-ip netns exec $CUSTOMER_NAMESPACE bash <<EOF
-  set -e -u -x -o pipefail
-  ip addr add 127.0.0.1/8 dev lo
-  ip link set dev lo up
-EOF
-
-ip link add \
-  name $OUTER_CUSTOMER_VETH \
-  numrxqueues $QUEUES numtxqueues $QUEUES type veth \
-  peer name $INNER_CUSTOMER_VETH netns $CUSTOMER_NAMESPACE \
-  numrxqueues $QUEUES numtxqueues $QUEUES
-
-ethtool -K $OUTER_CUSTOMER_VETH \
-  gro off gso off tso off tx off rxvlan off txvlan off
-ip link set dev $OUTER_CUSTOMER_VETH up
-ip addr add 169.254.10.1/30 dev $OUTER_CUSTOMER_VETH
-
-ip netns exec $CUSTOMER_NAMESPACE bash <<EOF
-  set -e -u -x -o pipefail
-  ethtool -K $INNER_CUSTOMER_VETH \
-    gro off gso off tso off tx off rxvlan off txvlan off
-  ip link set dev $INNER_CUSTOMER_VETH up
-  ip addr add 169.254.10.2/30 dev $INNER_CUSTOMER_VETH
-EOF
-```
-
-> Are you using XDP_DRV mode in your tests?
-
-Yes.
-
+Sounds good. I will keep an eye out for v6.
