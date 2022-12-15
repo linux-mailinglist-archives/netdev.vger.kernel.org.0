@@ -2,143 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA49A64E465
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 00:01:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD6E064E47A
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 00:08:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiLOXBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 18:01:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
+        id S229625AbiLOXIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 18:08:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbiLOXAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 18:00:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288CF1F60A;
-        Thu, 15 Dec 2022 15:00:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B357261F7F;
-        Thu, 15 Dec 2022 23:00:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C83AC433F2;
-        Thu, 15 Dec 2022 23:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671145249;
-        bh=Djdm7yrApwJBy69Ip/DuJwgUSqX8oSrRhkL3U4rd2ro=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=adYZYLy89dOD94Qz3+rHILw/9uFzdizCtlHF2PQgUgorAlEjoqPHXKTqMLCw+i5b4
-         VA5dBKwrdSw7sLDW4RWprT21j8uz5ekpC55gi/uPfXsK9ifSDDfy+APwr/qIbBqZFx
-         D68arIofycDHddIo9Z1n099WKExUnVgvcff1N2WNraHtGUubSJJlWET09Pg1cwLvZ/
-         OQanTt2UrTOlvQ/5PQm8Qq5s6veb7gS3ZMJZSh+6LZoUKsH4OFq2kRpENB8fOcSlZX
-         are8hDOhrnf+sKKI/fD/IFeNsDrkIsq/rVGNQYvAASihI6jqMOyR3lN4zTdO6fCeBa
-         NbbXsNF3o4npQ==
-Message-ID: <c584ef7e-6897-01f3-5b80-12b53f7b4bf4@kernel.org>
-Date:   Thu, 15 Dec 2022 16:00:47 -0700
+        with ESMTP id S229544AbiLOXIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 18:08:48 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E97D2253B
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 15:08:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671145727; x=1702681727;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EzQjB7zSLbvMCySCdrNliuCve1WIytA4wKOqtgfSfrg=;
+  b=BuRxVtTAjHDQELn4swMZLIVtgsO0ZTu3ujr7bHmgugazy4AVxc4/Lt5m
+   meblWuHzVmUCgd7JK8VM5OrqUdWCeFQcYdrfGJLVmaXI3rPMPLk1m99Oz
+   WB0o8+Ywf9hqnpjJ8epiuR6ZHC5xcnl8Sw/8MQ6wvxlbsr9FnyWFQfw6g
+   OTvh965Zs3rIIG01xaKvQkEVS8N3uesJ6r4xd1AjmzYL/ubk9PlGNKrjM
+   oI936aYbrWDBpzOcHV0aD8osgmiUANyYzreMUdczZH3B9bGVryK6gx5Xt
+   MGfp/+iDVIhjpqvU0YoJfYuMjE5E8/8mpzc6VcANSrexyRjSITJLxcA9s
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="316469420"
+X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
+   d="scan'208";a="316469420"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2022 15:08:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="718172554"
+X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
+   d="scan'208";a="718172554"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Dec 2022 15:08:06 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        muhammad.husaini.zulkifli@intel.com, sasha.neftin@intel.com
+Subject: [PATCH net 0/6][pull request] Intel Wired LAN Driver Updates 2022-12-15 (igc)
+Date:   Thu, 15 Dec 2022 15:07:52 -0800
+Message-Id: <20221215230758.3595578-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [PATCH net-next v2 1/1] net: neigh: persist proxy config across
- link flaps
-Content-Language: en-US
-To:     Alexander Duyck <alexander.duyck@gmail.com>,
-        David Decotigny <decot@google.com>
-Cc:     David Decotigny <decot+git@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        "Denis V. Lunev" <den@openvz.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
-References: <20221214232059.760233-1-decot+git@google.com>
- <7211782676442c6679d8a016813fd62d44cbebad.camel@gmail.com>
- <CAG88wWZNaKqDXWrXanfSpM_h6LP7s3F5PppyWqwWRyA7g=+p_g@mail.gmail.com>
- <CAKgT0Uea8JztZfKsR_FUAjt5iXEyRhjySwysZSoeeobWv3Cizw@mail.gmail.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <CAKgT0Uea8JztZfKsR_FUAjt5iXEyRhjySwysZSoeeobWv3Cizw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/22 1:08 PM, Alexander Duyck wrote:
-> On Thu, Dec 15, 2022 at 9:29 AM David Decotigny <decot@google.com> wrote:
->>
->>
->> (comments inline below)
->>
->>
->> On Thu, Dec 15, 2022 at 8:24 AM Alexander H Duyck <alexander.duyck@gmail.com> wrote:
->>>
->>> On Wed, 2022-12-14 at 15:20 -0800, David Decotigny wrote:
->>>> From: David Decotigny <ddecotig@google.com>
->>>>
->>>> Without this patch, the 'ip neigh add proxy' config is lost when the
->>>> cable or peer disappear, ie. when the link goes down while staying
->>>> admin up. When the link comes back, the config is never recovered.
->>>>
->>>> This patch makes sure that such an nd proxy config survives a switch
->>>> or cable issue.
->>>>
->>>> Signed-off-by: David Decotigny <ddecotig@google.com>
->>>>
->>>>
->>>> ---
->>>> v1: initial revision
->>>> v2: same as v1, except rebased on top of latest net-next, and includes "net-next" in the description
->>>>
->>>>  net/core/neighbour.c | 5 ++++-
->>>>  1 file changed, 4 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->>>> index f00a79fc301b..f4b65bbbdc32 100644
->>>> --- a/net/core/neighbour.c
->>>> +++ b/net/core/neighbour.c
->>>> @@ -426,7 +426,10 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
->>>>  {
->>>>       write_lock_bh(&tbl->lock);
->>>>       neigh_flush_dev(tbl, dev, skip_perm);
->>>> -     pneigh_ifdown_and_unlock(tbl, dev);
->>>> +     if (skip_perm)
->>>> +             write_unlock_bh(&tbl->lock);
->>>> +     else
->>>> +             pneigh_ifdown_and_unlock(tbl, dev);
->>>>       pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL,
->>>>                          tbl->family);
->>>>       if (skb_queue_empty_lockless(&tbl->proxy_queue))
->>>
->>> This seems like an agressive approach since it applies to all entries
->>> in the table, not just the permenant ones like occurs in
->>> neigh_flush_dev.
->>>
->>> I don't have much experience in this area of the code but it seems like
->>> you would specifically be wanting to keep only the permanant entries.
->>> Would it make sense ot look at rearranging pneigh_ifdown_and_unlock so
->>> that the code functioned more like neigh_flush_dev where it only
->>> skipped the permanant entries when skip_perm was set?
->>>
->>
->> The reason I am proposing this patch like it is is because these "proxy" entries appear to be a configuration attribute (similar to ip routes, coming from the sysadmin config), and not cached data (like ip neigh "normal" entries essentially coming from the outside). So I view them as fundamentally different kinds of objects [1], which they actually are in the code. And they are also updated from a vastly different context (sysadmin vs traffic). IMHO, it would seem natural that these proxy attributes (considered config attributes) would survive link flaps, whereas normal ip neigh cached entries without NUD_PERMANENT should not. And neither should survive admin down, the same way ip route does not survive admin down. This is what this patch proposes.
->>
->> Honoring NUD_PERMANENT (I assume that's what you are alluding to) would also work, and (with current iproute2 implementation [2]) would lead to the same result. But please consider the above. If really honoring NUD_PERMANENT is the required approach here, I am happy to revisit this patch. Please let me know.
-> 
-> Yeah, I was referring to basically just limiting your changes to honor
-> NUD_PERMANANT. Looking at pneigh_ifdown_and_unlock and comparing it to
-> neigh_flush_dev it seems like it would make sense to just add the
-> skip_perm argument there and then add the same logic at the start of
-> the loop to eliminate the items you aren't going to flush/free. That
-> way we aren't keeping around any more entries than those specifically
-> that are supposed to be permanent.
+Muhammad Husaini Zulkifli says:
 
-exactly.
+This patch series fixes bugs for the Time-Sensitive Networking(TSN)
+Qbv Scheduling features.
+
+An overview of each patch series is given below:
+
+Patch 1: Using a first flag bit to schedule a packet to the next cycle if
+packet cannot fit in current Qbv cycle.
+Patch 2: Enable strict cycle for Qbv scheduling.
+Patch 3: Prevent user to set basetime less than zero during tc config.
+Patch 4: Allow the basetime enrollment with zero value.
+Patch 5: Calculate the new end time value to exclude the time interval that
+exceed the cycle time as user can specify the cycle time in tc config.
+Patch 6: Resolve the HW bugs where the gate is not fully closed.
+---
+This contains the net patches from this original pull request:
+https://lore.kernel.org/netdev/20221205212414.3197525-1-anthony.l.nguyen@intel.com/
+
+The following are changes since commit a7d82367daa6baa5e8399e6327e7f2f463534505:
+  net: dsa: mv88e6xxx: avoid reg_lock deadlock in mv88e6xxx_setup_port()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
+
+Muhammad Husaini Zulkifli (1):
+  igc: Add checking for basetime less than zero
+
+Tan Tee Min (3):
+  igc: allow BaseTime 0 enrollment for Qbv
+  igc: recalculate Qbv end_time by considering cycle time
+  igc: Set Qbv start_time and end_time to end_time if not being
+    configured in GCL
+
+Vinicius Costa Gomes (2):
+  igc: Enhance Qbv scheduling by using first flag bit
+  igc: Use strict cycles for Qbv scheduling
+
+ drivers/net/ethernet/intel/igc/igc.h         |   3 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |   2 +
+ drivers/net/ethernet/intel/igc/igc_main.c    | 210 ++++++++++++++++---
+ drivers/net/ethernet/intel/igc/igc_tsn.c     |  13 +-
+ 4 files changed, 188 insertions(+), 40 deletions(-)
+
+-- 
+2.35.1
+
