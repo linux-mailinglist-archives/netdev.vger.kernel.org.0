@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B3364D523
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 03:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A81164D526
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 03:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbiLOCBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Dec 2022 21:01:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
+        id S229658AbiLOCBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Dec 2022 21:01:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiLOCBM (ORCPT
+        with ESMTP id S229722AbiLOCBM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 14 Dec 2022 21:01:12 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2AD2ED55
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBBF2ED5E
         for <netdev@vger.kernel.org>; Wed, 14 Dec 2022 18:01:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B38DB81ABA
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94A7BB81AD6
         for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 02:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E469C433F0;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAA8BC43396;
         Thu, 15 Dec 2022 02:01:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671069668;
-        bh=8h/9PS91fuqk9zlgw3gWJW81/bugpI9+OtnI9xk8F9A=;
+        s=k20201202; t=1671069669;
+        bh=H/7J6sFY4CUZF9uGTq//ihOKZh+CnyTrtf6kDADZHUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UiMIk4E/VwBPBgcWbeOGAlgS1rClDQF4wZRzqUPcaXOyZbYVv7s0/tvNeKqDN55KM
-         U7B18/Gs9O6RbQATqcpxcQkr1ud6oxA8MATS7i2+xIZHRYMYz5oiKa8UTi4SOhMCky
-         X4sQN8K0ysLUnyGKln41biUOV2+bgQef/lE+dLPFcMZFIuVY4U0onhYvr81ywhboA1
-         rL3edmp6MRYtBwT9OperCEW7IpqeLpPtJlbhRrAOyGLOGpfZm31mYVSzElK2/X+l/J
-         uo3EKzqXi+qDG75khmncznDID6dEh0M6l3ENf1CNzGK8pHQyFe7qu5o1tdvwj9qKbT
-         OFvtLtpOboEXg==
+        b=TsWIyhpRo068bDwK47zTCZ0a/+uiW4M0AJm1uPgOlKieMMfQPHFuubrZr+yYUT/6l
+         npCQ2/QwOezxIgzV2U7JvZHeZXee1uJ1EZouh0P6P8a0pP9l49o2e7hV5DNe/9c6d3
+         fdSOI3FIhX4H0jBVrbomm8N29rr+SGcfNfy4tOJOlXxNF+i0Uyfi6uStSPenXtolJ7
+         1FO/gvZFWuaHuDKhjhkt2kcJpLvLsn4njdF/RX+dqiVIuwoMbFAqEi3T0y0n+IPfca
+         0sSwRLoi3yRTuSq1UyObcFWJTZd506iydJIHHjjlGS0O/65Xg8xFmRxXRlb1HxySIA
+         pYc9OLdQS/yoQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jiri@resnulli.us, jacob.e.keller@intel.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 2/3] selftests: devlink: fix the fd redirect in dummy_reporter_test
-Date:   Wed, 14 Dec 2022 18:01:01 -0800
-Message-Id: <20221215020102.1619685-3-kuba@kernel.org>
+Subject: [PATCH net 3/3] selftests: devlink: add a warning for interfaces coming up
+Date:   Wed, 14 Dec 2022 18:01:02 -0800
+Message-Id: <20221215020102.1619685-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221215020102.1619685-1-kuba@kernel.org>
 References: <20221215020102.1619685-1-kuba@kernel.org>
@@ -53,37 +53,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-$number + > bash means redirect FD $number, e.g. commonly
-used 2> redirects stderr (fd 2). The test uses 8192> to
-write the number 8192 to a file, this results in:
+NetworkManager (and other daemons) may bring the interface up
+and cause failures in quiescence checks. Print a helpful warning,
+and take the interface down again.
 
-  ./devlink.sh: line 499: 8192: Bad file descriptor
+I seem to forget about this every time I run these tests on a new VM.
 
-Oddly the test also papers over this issue by checking
-for failure (expecting an error rather than success)
-so it passes, anyway.
-
-Fixes: ff18176ad806 ("selftests: Add a test of large binary to devlink health test")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/testing/selftests/drivers/net/netdevsim/devlink.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../selftests/drivers/net/netdevsim/devlink_trap.sh | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index 9de1d123f4f5..a08c02abde12 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -496,8 +496,8 @@ dummy_reporter_test()
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
+index 109900c817be..b64d98ca0df7 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
+@@ -47,6 +47,17 @@ if [ -d "${NETDEVSIM_PATH}/devices/netdevsim${DEV_ADDR}" ]; then
+ 	exit 1
+ fi
  
- 	check_reporter_info dummy healthy 3 3 10 true
++check_netdev_down()
++{
++	state=$(cat /sys/class/net/${NETDEV}/flags)
++
++	if [ $((state & 1)) -ne 0 ]; then
++		echo "WARNING: unexpected interface UP, disable NetworkManager?"
++
++		ip link set dev $NETDEV down
++	fi
++}
++
+ init_test()
+ {
+ 	RET=0
+@@ -151,6 +162,7 @@ trap_stats_test()
  
--	echo 8192> $DEBUGFS_DIR/health/binary_len
--	check_fail $? "Failed set dummy reporter binary len to 8192"
-+	echo 8192 > $DEBUGFS_DIR/health/binary_len
-+	check_err $? "Failed set dummy reporter binary len to 8192"
+ 	RET=0
  
- 	local dump=$(devlink health dump show $DL_HANDLE reporter dummy -j)
- 	check_err $? "Failed show dump of dummy reporter"
++	check_netdev_down
+ 	for trap_name in $(devlink_traps_get); do
+ 		devlink_trap_stats_idle_test $trap_name
+ 		check_err $? "Stats of trap $trap_name not idle when netdev down"
+@@ -254,6 +266,7 @@ trap_group_stats_test()
+ 
+ 	RET=0
+ 
++	check_netdev_down
+ 	for group_name in $(devlink_trap_groups_get); do
+ 		devlink_trap_group_stats_idle_test $group_name
+ 		check_err $? "Stats of trap group $group_name not idle when netdev down"
 -- 
 2.38.1
 
