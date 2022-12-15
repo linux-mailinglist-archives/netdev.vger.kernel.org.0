@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7DB64E48B
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 00:12:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C9A64E490
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 00:15:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbiLOXL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 18:11:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
+        id S230032AbiLOXO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 18:14:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbiLOXLq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 18:11:46 -0500
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3433E0BE;
-        Thu, 15 Dec 2022 15:11:45 -0800 (PST)
-Received: by mail-ot1-x335.google.com with SMTP id i26-20020a9d68da000000b00672301a1664so416466oto.6;
-        Thu, 15 Dec 2022 15:11:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8DKcMUsVohq1zP2BP4+TD9a9jOkzZ1udLWR6UFI0elg=;
-        b=jQNpm7q53MiBge8cfZpMiioLYSIs1TjfR4UT1bxm8/le/hkbq8Nc06hQAmkpY5kqKt
-         mzdIkkdb8VUMtbXnsBuG0eLFoVVBeYxblUh/yRavCSwmUapTuDLOxHCOcWDa5dYlM5E+
-         SDt3f4IZUjjlc6bVhJDr/Zj9skuAjrLc8O0kYvEc71rIS7hGLW0nHZPjfsXeFA+inZeC
-         jZ6ACE1t+lmjJwpsilyb+VxuXzpLfjOEh09Qf9pQyFoQSnt5Yx5JbTD4DV+paRdujoli
-         Htd3bq6I4msBDBpipaLv6yfqwol+AnXDjOINi1JoLvXcNGhw2OgapQHdAvw/IsoQa152
-         w9BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8DKcMUsVohq1zP2BP4+TD9a9jOkzZ1udLWR6UFI0elg=;
-        b=c/oZm8HDZGj4/aEeCIuJWrsTNdipr5xY4TjIYnT/ygKEczC+i6bmsyv2Vl90Qhd/Rt
-         ZG2hdasfhqdiA23VrQnBn2jIjzWtsf94PO4tWzQy+0sjWkp/7WOmVCL5FfuCnDVwAFqi
-         RSdUF7YiPXrlVLYeSkn/94aX7hLdSr8DA8nUwesRpSWrk0BEbFktDEK6nfkUyO6VQezn
-         VE1cJpLV/+FNh7TQtvJ/fFyTXOL8nDMBqGYAdgvp+8JitQmR5Q2fSZhd3kVFvFmYFc9b
-         WsiSXbyApjpRBY+PUOVAcHuxB+7ivNlEA29KG2zeBpdnQyVikNCHwSRTSf7DDJZ7soha
-         vRNA==
-X-Gm-Message-State: ANoB5pnVdibtlahzY0vEOBDYoR/npJOw2GfjOVv7GvK/7rt7JznSqvCV
-        RIZ3O1sDOrLthhmrO4YIwEM=
-X-Google-Smtp-Source: AA0mqf6r03rxLOA1XWPcc9XnbgjLq3kYNxoATlIVXvJIiQuffQiFz7QhxjraD8tejb7wLZK0hufRnQ==
-X-Received: by 2002:a9d:6006:0:b0:670:6246:8106 with SMTP id h6-20020a9d6006000000b0067062468106mr14896488otj.4.1671145904650;
-        Thu, 15 Dec 2022 15:11:44 -0800 (PST)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id a21-20020a056830101500b00670763270fcsm114511otp.71.2022.12.15.15.11.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 15:11:44 -0800 (PST)
-Date:   Thu, 15 Dec 2022 15:11:42 -0800
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Subject: [GIT PULL] bitmap changes for v6.2-rc1
-Message-ID: <Y5uprmSmSfYechX2@yury-laptop>
+        with ESMTP id S229925AbiLOXO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 18:14:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B331B1FB;
+        Thu, 15 Dec 2022 15:14:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E59A7B81CD8;
+        Thu, 15 Dec 2022 23:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB2C2C433EF;
+        Thu, 15 Dec 2022 23:14:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671146093;
+        bh=L6X16Hkdn6d8sRl1I6/wZT7PyWeA0fYlvkqLhj9xCrw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=GAXyhV8euUakOSi91gD2xRGsWRy7EJakd887r4kIZQ1kDqMy+TAEKvxCYG818YK0W
+         rwnbk9gDi4gm4hKh6hq6I3E5E2VnxmcSpQFeAR/mtdFKQ/uF3S1cMRBhikduxpxG+c
+         zwGI18C7P29jpHo6GdzniOZM4uSVL+waqs16qM0TWBgBNpqEXtm0L+w5ZW4lXUIvsg
+         nRa7IfqoQKPhyExIaQZ3VBqAqveYSMUSs0apPMFvT7P43g98LFypMQutF2cLMrOn+v
+         SbyjGLVQ2Heowp5+WcBCgDWKMjBZ3VYdoiYS71pWsZwQdzWmg7chc9fuo+VGLN7gvl
+         1YlF1Zqr7gStw==
+Message-ID: <2a3c3680-7018-6ca9-e8f0-43201e0d3272@kernel.org>
+Date:   Thu, 15 Dec 2022 16:14:51 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.5.1
+Subject: Re: [PATCH v1 1/1] net: neigh: persist proxy config across link flaps
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Decotigny <ddecotig@google.com>
+Cc:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS1?=
+         =?UTF-8?B?4KS+4KSwKQ==?= <maheshb@google.com>,
+        David Decotigny <decot+git@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Thomas Zeitlhofer <thomas.zeitlhofer+lkml@ze-it.at>
+References: <20221213073801.361500-1-decot+git@google.com>
+ <20221214204851.2102ba31@kernel.org>
+ <CAF2d9jh_O0-uceNq=AP5rqPm9xcn=9y8bVxMD-2EiJ3bD_mZsQ@mail.gmail.com>
+ <CAG88wWbZ3eXCFJBZ8mrfvddKiVihF-GfEOYAOmT_7VX_AeOoqQ@mail.gmail.com>
+ <20221215110544.7e832e41@kernel.org>
+ <CAG88wWYA72sij4iaWowLpawzM7tJdYdHCKQnE0bjndGO74vROw@mail.gmail.com>
+ <20221215131659.7410a1da@kernel.org>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20221215131659.7410a1da@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,73 +75,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 76dcd734eca23168cb008912c0f69ff408905235:
+On 12/15/22 2:16 PM, Jakub Kicinski wrote:
+> On Thu, 15 Dec 2022 12:36:32 -0800 David Decotigny wrote:
+>>> Makes sense. This is not urgent, tho, right?  
+>>
+>> Not that kind of urgent.
+>>
+>> FTR, in the v2 you suggested to use NUD_PERMANENT,
+> 
+> I think that was Alex. I don't have a strong preference. I could see
+> arguments being made in both directions (basically whether it's more
+> important to leave objects which are clearly not cache vs we care 
+> more about consistent behavior based on the permanent flag itself).
+> 
+> Let's limit the reposts until experts are in town ;)
+> 
+>>  I can try to see how this would look like. Note that this will make
+>> the patch larger and more intrusive, and with potentially a behavior
+>> change for whoever uses the netlink API directly instead of the
+>> iproute2 implementation for ip neigh X proxy things.
 
-  Linux 6.1-rc8 (2022-12-04 14:48:12 -0800)
-
-are available in the Git repository at:
-
-  git@github.com:/norov/linux.git tags/bitmap-6.2-rc1
-
-for you to fetch changes up to 2386459394d2a46964829a00c48a08a23ead94ed:
-
-  lib/cpumask: update comment for cpumask_local_spread() (2022-12-15 14:44:43 -0800)
-
-----------------------------------------------------------------
-Hi Linus,
-
-Please pull bitmap patches for v6.2. They spent in -next for more than
-a week without any issues. The branch consists of:
-
-- optimize small_const path for find_next_bit() and friends (me);
-
-  Introduces small_const_nbits_off() and uses it in find_next_bit()-like
-  functions to allow static optimization when all bits to search are
-  withing a word boundary, even if not a 1st word.
-
-- cpumask: improve on cpumask_local_spread() locality (me):
-
-  The series makes cpumask_local_spread() picking Nth CPU based on NUMA
-  hop distances, which is better than picking CPUs from a given node and
-  if there's no N cpus - from a random node (how it works now).
-
-- sched, net: NUMA-aware CPU spreading interface (Valentin Schneider,
-  Tariq Toukan):
-
-  Iterators for NUMA-aware CPUs traversing. Better alternative for
-  cpumask_local_spread(), when it's needed to enumerate all CPUs.
-
-Thanks,
-Yury
-
-----------------------------------------------------------------
-Tariq Toukan (1):
-      net/mlx5e: Improve remote NUMA preferences used for the IRQ affinity hints
-
-Valentin Schneider (2):
-      sched/topology: Introduce sched_numa_hop_mask()
-      sched/topology: Introduce for_each_numa_hop_mask()
-
-Yury Norov (9):
-      bitmap: switch from inline to __always_inline
-      bitmap: improve small_const case for find_next() functions
-      bitmap: add tests for find_next_bit()
-      lib/find: introduce find_nth_and_andnot_bit
-      cpumask: introduce cpumask_nth_and_andnot
-      sched: add sched_numa_find_nth_cpu()
-      cpumask: improve on cpumask_local_spread() locality
-      lib/cpumask: reorganize cpumask_local_spread() logic
-      lib/cpumask: update comment for cpumask_local_spread()
-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c |  18 ++-
- include/asm-generic/bitsperlong.h            |  12 ++
- include/linux/bitmap.h                       |  46 ++++----
- include/linux/cpumask.h                      | 164 +++++++++++++++------------
- include/linux/find.h                         | 118 +++++++++++--------
- include/linux/nodemask.h                     |  86 +++++++-------
- include/linux/topology.h                     |  33 ++++++
- kernel/sched/topology.c                      |  90 +++++++++++++++
- lib/cpumask.c                                |  52 +++++----
- lib/find_bit.c                               |   9 ++
- lib/test_bitmap.c                            |  23 +++-
- 11 files changed, 438 insertions(+), 213 deletions(-)
+My thinking is inline with Alex's comment on v2.
