@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9170E64DE21
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 16:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E379964DE25
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 16:59:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229848AbiLOP7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 10:59:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S229708AbiLOP7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 10:59:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiLOP7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 10:59:01 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEAC26A9F;
-        Thu, 15 Dec 2022 07:59:00 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id t18so6967658pfq.13;
-        Thu, 15 Dec 2022 07:59:00 -0800 (PST)
+        with ESMTP id S229611AbiLOP7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 10:59:47 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E792DAAB
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 07:59:46 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id o1-20020a17090a678100b00219cf69e5f0so3177722pjj.2
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 07:59:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=k2Ee5Gpf8XLw3DI5K6asWDBHnppcEcpHivWWfeAntMc=;
-        b=Ce59VFY4Ap98ol3M5tGauWUvIzpJql2x7ll++zwfZT8dsi0YD99IIw5QY87jM8g31r
-         oDfTRfZ8quaPbdcZzN946MeR1semTPerW++YQkZtdQiR/RExuxoUxfLtnhwSkfC3fIre
-         Rg2VP4zFWaQJVYwcqCB+zrFTAQ7letbk10S1i7wVjRDlwvoLyJGTrcgHe4860DfPreAb
-         GsiCFlXla/pDGyNK3+EZvpuH4BSVlOL71SD1i0IAWXUN2js0jL++9aACDzZsReJd8Riq
-         m91+K1T48HpVkIu8ms7DAqIjB3Gl7u6ubw35ri2KJabACW8QtkYimnexY/VBHYMGhBiR
-         slbA==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MBf1caY+vJltruM+ArRHdJ4WGldRjbLZwQ6n7WIGZYI=;
+        b=ZBSgQGuBaZCxsYHFr9DJ27k+WtPb5Cyl808v5ESGAKN4PerC9kqb7zxnwwaFzKi8Ls
+         YMGj8nx+/gYqc3DYgWdVuytutFBrbsHvZMLXK2Kkpu9tEuxS525s2gc2bGKmK4sdHCep
+         8vJeD1hvoIatlFLvLQOiuFfUxHzSySD4MbhdMe9PFrNYZqeT0/kQ7bzPpoLgRKMkRMbF
+         BIL4SjDOc2ndVTP60WlVZ/hKOUglEa6qGyyhRpcISqkWFoXp8uAign0zAymk8mupu8UN
+         04BWZJM1C6WW12D6yq3I/7VZUta1z91bPgUngf0luR6aCVCJTKTymIjRLzmHmcH593Pw
+         bbLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=k2Ee5Gpf8XLw3DI5K6asWDBHnppcEcpHivWWfeAntMc=;
-        b=uJsSKdkDuQVZotyIeOpA266rw0FhUji10tk+a7SIvEjwhT/V5HTYvN96j66zaEh2qe
-         lxPUJWVs6wwLSGaIcW10uxB7v7T0c493ZUbEd0FhAxADn/quvtEhgLLOer+J1mxHq48f
-         nb8FS3FcPqzPEEteiTpEA3hY6uG8h0DegF31fLlb+E5kmDw/te2AU7T1qgJMNbr7tZz9
-         w4svEWxEWyNTfOW2j6bMNZsYgnBmsBeUwMq10r1zVJtq0Ert3fuCe81vm/tzSjfJInPa
-         D25sSfRn0y/o6UoHil1Dk44RuqH5VdICk5IxtHh8iNWDgczny/HpD4ClnTEOa9N/ulzS
-         MnGA==
-X-Gm-Message-State: ANoB5pnLLuOC1FZ9Ex7nQtk/gO0qJTeAoscy0jOGoBhMvg4yz+hz6lth
-        Sy/cJnp0fk1WJQW+3D7MjUQ=
-X-Google-Smtp-Source: AA0mqf7V4e2ElBrFRCbWfuqUdca0qmNNptb6HsYF8mQCH/vNi1WBt8xseZdvrnb8BH3DLnTMrhOVvQ==
-X-Received: by 2002:a62:1687:0:b0:574:e5aa:a8dd with SMTP id 129-20020a621687000000b00574e5aaa8ddmr27960179pfw.17.1671119939417;
-        Thu, 15 Dec 2022 07:58:59 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.42.38])
-        by smtp.googlemail.com with ESMTPSA id p3-20020aa79e83000000b00576ce9ed31csm1923351pfq.56.2022.12.15.07.58.58
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MBf1caY+vJltruM+ArRHdJ4WGldRjbLZwQ6n7WIGZYI=;
+        b=E1H3sk9n8YVyNTur4Xj6pmvhEnHJNjPY7Ypt8ZMbK7+dZo+J4HUrlxH2MTSzKk0xmj
+         QtXT2B8HxkPdCQcIUZKLwrTLQnlHSumA3JnQVDCfF/KzQcfqjo4ym9AgSIJxd+bPgBmi
+         j29g4ZsxZZ0wYQ9NVQI2V8wHb/BwUQKJsprNL7iNoDrsZWPl90fm73Jw+vE2Qlh0voKW
+         fp6s+rcbiO1V6uADGNSU07lbXRVtSXBVPuuz79w8ru/r6aHlMFvrvutLAP2MNYyOcuGZ
+         +xJxKCImeuAc0c7CHLZdg0t8UAfdyB3VkK3d5/lVO336ubN53/MGWNRNMRXcrpCee8aM
+         J4NA==
+X-Gm-Message-State: AFqh2kqGTqsO56OI0o2b0aXX8vQ91dfA5E7/kqCfxJbThfIA/yPGlEUM
+        lsHT8fg9odcgq2yyXUcqZfP58g==
+X-Google-Smtp-Source: AMrXdXtxaXNgeAf/9RnWDhH4yqIAJkR4EbGpasSCAzdQb+liKpOyEMLswnBPmNqHLIe1QGY5SZREzA==
+X-Received: by 2002:a17:903:25d1:b0:190:f82f:c937 with SMTP id jc17-20020a17090325d100b00190f82fc937mr1793217plb.42.1671119985797;
+        Thu, 15 Dec 2022 07:59:45 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id t9-20020a1709027fc900b001888cadf8f6sm4010050plb.49.2022.12.15.07.59.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 07:58:58 -0800 (PST)
-Message-ID: <c2040e16d69d251f1a0690f0805388817aba8ab7.camel@gmail.com>
-Subject: Re: [RESEND PATCH v5 net-next 2/2] net: phy: micrel: Fix warn:
- passing zero to PTR_ERR
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Divya Koppera <Divya.Koppera@microchip.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        richardcochran@gmail.com
-Cc:     UNGLinuxDriver@microchip.com
-Date:   Thu, 15 Dec 2022 07:58:57 -0800
-In-Reply-To: <20221214092524.21399-3-Divya.Koppera@microchip.com>
-References: <20221214092524.21399-1-Divya.Koppera@microchip.com>
-         <20221214092524.21399-3-Divya.Koppera@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Thu, 15 Dec 2022 07:59:45 -0800 (PST)
+Date:   Thu, 15 Dec 2022 07:59:43 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Missing patch in iproute2 6.1 release
+Message-ID: <20221215075943.3f51def8@hermes.local>
+In-Reply-To: <MW4PR11MB5776DC6756FF5CB106F3ED26FDE19@MW4PR11MB5776.namprd11.prod.outlook.com>
+References: <MW4PR11MB5776DC6756FF5CB106F3ED26FDE19@MW4PR11MB5776.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,76 +69,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-12-14 at 14:55 +0530, Divya Koppera wrote:
-> Handle the NULL pointer case
->=20
-> Fixes New smatch warnings:
-> drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero=
- to 'PTR_ERR'
->=20
-> vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
-> ---
-> v4 -> v5:
-> - Removed run time check and added compile time check for PHC
->=20
-> v3 -> v4:
-> - Split the patch for different warnings
-> - Renamed variable from shared_priv to shared.
->=20
-> v2 -> v3:
-> - Changed subject line from net to net-next
-> - Removed config check for ptp and clock configuration
->   instead added null check for ptp_clock
-> - Fixed one more warning related to initialisaton.
->=20
-> v1 -> v2:
-> - Handled NULL pointer case
-> - Changed subject line with net-next to net
-> ---
->  drivers/net/phy/micrel.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index 1bcdb828db56..650ef53fcf20 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -3017,10 +3017,6 @@ static int lan8814_ptp_probe_once(struct phy_devic=
-e *phydev)
->  {
->  	struct lan8814_shared_priv *shared =3D phydev->shared->priv;
->=20
-> -	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
-> -	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
-> -		return 0;
-> -
->  	/* Initialise shared lock for clock*/
->  	mutex_init(&shared->shared_lock);
->=20
-> @@ -3040,12 +3036,16 @@ static int lan8814_ptp_probe_once(struct phy_devi=
-ce *phydev)
->=20
->  	shared->ptp_clock =3D ptp_clock_register(&shared->ptp_clock_info,
->  					       &phydev->mdio.dev);
-> -	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
-> +	if (IS_ERR(shared->ptp_clock)) {
->  		phydev_err(phydev, "ptp_clock_register failed %lu\n",
->  			   PTR_ERR(shared->ptp_clock));
->  		return -EINVAL;
->  	}
->=20
-> +	/* Check if PHC support is missing at the configuration level */
-> +	if (!shared->ptp_clock)
-> +		return 0;
-> +
->  	phydev_dbg(phydev, "successfully registered ptp clock\n");
->=20
->  	shared->phydev =3D phydev;
->=20
+On Thu, 15 Dec 2022 10:28:16 +0000
+"Drewek, Wojciech" <wojciech.drewek@intel.com> wrote:
 
-Looks good to me. You may need to resubmit once net-next opens.
+> Hi Stephen,
+> 
+> I've seen iproute2 6.1 being released recently[1] and I'm wondering why my patch[2] was included.
+> Is there anything wrong with the patch?
+> 
+> Regards,
+> Wojtek
+> 
+> [1] https://lore.kernel.org/netdev/20221214082705.5d2c2e7f@hermes.local/
+> [2] https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=9313ba541f793dd1600ea4bb7c4f739accac3e84
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Iproute2 next tree holds the patches for the next release.
+That patch went into the next tree after 6.1 was started.
+It will get picked up when next is merged to main.
