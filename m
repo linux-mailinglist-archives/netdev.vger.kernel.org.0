@@ -2,115 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD1064DEE0
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60BA564DEF3
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 17:48:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbiLOQn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 11:43:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
+        id S230301AbiLOQsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 11:48:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbiLOQn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:43:57 -0500
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1435331EF4;
-        Thu, 15 Dec 2022 08:43:54 -0800 (PST)
-Received: from [192.168.1.103] (178.176.74.151) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Thu, 15 Dec
- 2022 19:43:43 +0300
-Subject: Re: [PATCH net v2] ravb: Fix "failed to switch device to config mode"
- message during unbind
-To:     <patchwork-bot+netdevbpf@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <p.zabel@pengutronix.de>,
-        <geert+renesas@glider.be>, <liuhangbin@gmail.com>,
-        <mitsuhiro.kimura.kc@renesas.com>, <netdev@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>,
-        <fabrizio.castro.jz@renesas.com>, <stable@vger.kernel.org>,
-        <leonro@nvidia.com>
-References: <20221214105118.2495313-1-biju.das.jz@bp.renesas.com>
- <167111521604.32410.3850134562584373463.git-patchwork-notify@kernel.org>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <b9afb491-73a9-5ffb-bef7-4f29dda6efe0@omp.ru>
-Date:   Thu, 15 Dec 2022 19:43:44 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S230213AbiLOQsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 11:48:14 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79252A953;
+        Thu, 15 Dec 2022 08:48:12 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id w23so7427916ply.12;
+        Thu, 15 Dec 2022 08:48:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tqbyrz2HDPwuRFgnegWH1TadErj2Xf8yg6MvsofKkIQ=;
+        b=Y3rjBqnkXKdqQUKDqyNOLcxf54Disfcei/kcMFNwQoS8WKUKjWGdtZNNuuWWn1Fcn2
+         hkAb2X1ziEmw/EYoHIAS7cJDZDBd0hUdie3BIvphqs12+AsG+TOzFiVuPaknc4AS2RuD
+         Lwy54FGuSjbSmx3DUb1Rh6Z5njDQzw/sjNIWqDlfKUL2v0oMlRyF5AgaFf9V/dyl3vHq
+         TG5gJ8mI3tUqW4xWzf5ZCW4JG2E5z5+mI8+Rc+sv7NAGIJboDWdxGRxhEvu9ya7zCkfr
+         rZ+IVHVDsuTc1XK951BJPBGuLquCYCUdPKBoNo2HGzQHYpYXRA0YFmufqpsh7VBnpKki
+         q8IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tqbyrz2HDPwuRFgnegWH1TadErj2Xf8yg6MvsofKkIQ=;
+        b=rRLzxJ+kKyBiN0zVDA2iPKHW/qoZIipxkux/sUkFt7/ZPfcRloSam3mRjHi+9zPT0r
+         fdRb8iYeC9Sa10orirHG0VK3Uo+8yj+mSPmoivw/7u/fACpjQSEqslehjhwCxBwK3vDe
+         L4WlrxYjT6ZCVXUjPTh4W75LfNtXCMExmqup8fDyJmQYP/IY/1EsoSPJo86sITGHPXpT
+         BBEKFvR9RWNZprQJX09+jVLU+fUfFBoH+OExuFRpInNClT6kEbyNNintqHJJavT//d1k
+         LS4RuQFFfIFrECwOwQNg/7JCgQ8fc5S4+u9lvAe2g9qYeCyruCichSP8bqSxeWzhPl0J
+         EpwQ==
+X-Gm-Message-State: ANoB5pnn/VToeruV41oJawSWCX3vlwfJxzUcCVEu9NdbeJDI2zxzGC6y
+        hrKtDgb0thssdvi7ffi62Yk=
+X-Google-Smtp-Source: AA0mqf7LldEBXXl/VKtVxa+Pst9zFuUCi1CSp+rkAc/esE10GQboY2il34gu9ZrUIWzfCneWWyXGUg==
+X-Received: by 2002:a17:902:ecc2:b0:18b:271e:5804 with SMTP id a2-20020a170902ecc200b0018b271e5804mr50367520plh.59.1671122892250;
+        Thu, 15 Dec 2022 08:48:12 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.42.38])
+        by smtp.googlemail.com with ESMTPSA id h8-20020a170902680800b00172f6726d8esm4036366plk.277.2022.12.15.08.48.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Dec 2022 08:48:11 -0800 (PST)
+Message-ID: <4d16ffd327d193f8c1f7c40f968fda90a267348e.camel@gmail.com>
+Subject: Re: [PATCH v2 1/3] dsa: marvell: Provide per device information
+ about max frame size
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Lukasz Majewski <lukma@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 15 Dec 2022 08:48:10 -0800
+In-Reply-To: <20221215144536.3810578-1-lukma@denx.de>
+References: <20221215144536.3810578-1-lukma@denx.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-In-Reply-To: <167111521604.32410.3850134562584373463.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [178.176.74.151]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 12/15/2022 16:24:15
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 174213 [Dec 15 2022]
-X-KSE-AntiSpam-Info: Version: 5.9.59.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_arrow_text}
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.151 in (user)
- b.barracudacentral.org}
-X-KSE-AntiSpam-Info: git.kernel.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.151
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 12/15/2022 16:27:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 12/15/2022 10:28:00 AM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/22 5:40 PM, patchwork-bot+netdevbpf@kernel.org wrote:
+On Thu, 2022-12-15 at 15:45 +0100, Lukasz Majewski wrote:
+> Different Marvell DSA switches support different size of max frame
+> bytes to be sent.
+>=20
+> For example mv88e6185 supports max 1632 bytes, which is now in-driver
+> standard value. On the other hand - mv88e6250 supports 2048 bytes.
+>=20
+> As this value is internal and may be different for each switch IC,
+> new entry in struct mv88e6xxx_info has been added to store it.
+>=20
+> Signed-off-by: Lukasz Majewski <lukma@denx.de>
+> ---
+> Changes for v2:
+> - Define max_frame_size with default value of 1632 bytes,
+> - Set proper value for the mv88e6250 switch SoC (linkstreet) family
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c | 13 ++++++++++++-
+>  drivers/net/dsa/mv88e6xxx/chip.h |  1 +
+>  2 files changed, 13 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx=
+/chip.c
+> index 2ca3cbba5764..7ae4c389ce50 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -3093,7 +3093,9 @@ static int mv88e6xxx_get_max_mtu(struct dsa_switch =
+*ds, int port)
+>  	if (chip->info->ops->port_set_jumbo_size)
+>  		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+>  	else if (chip->info->ops->set_max_frame_size)
+> -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+> +		return (chip->info->max_frame_size  - VLAN_ETH_HLEN
+> +			- EDSA_HLEN - ETH_FCS_LEN);
+> +
+>  	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+>  }
+>=20
+>=20
 
-> Hello:
-> 
-> This patch was applied to netdev/net.git (master)
-> by Paolo Abeni <pabeni@redhat.com>:
-> 
-> On Wed, 14 Dec 2022 10:51:18 +0000 you wrote:
->> This patch fixes the error "ravb 11c20000.ethernet eth0: failed to switch
->> device to config mode" during unbind.
->>
->> We are doing register access after pm_runtime_put_sync().
->>
->> We usually do cleanup in reverse order of init. Currently in
->> remove(), the "pm_runtime_put_sync" is not in reverse order.
->>
->> [...]
-> 
-> Here is the summary with links:
->   - [net,v2] ravb: Fix "failed to switch device to config mode" message during unbind
->     https://git.kernel.org/netdev/net/c/c72a7e42592b
-> 
-> You are awesome, thank you!
+Is there any specific reason for triggering this based on the existance
+of the function call? Why not just replace:
+	else if (chip->info->ops->set_max_frame_size)
+with:
+	else if (chip->info->max_frame_size)
 
-   Oops, was going to review the patch tonight, now that I'm back from the hospitals.
+Otherwise my concern is one gets defined without the other leading to a
+future issue as 0 - extra headers will likely wrap and while the return
+value may be a signed int, it is usually stored in an unsigned int so
+it would effectively uncap the MTU.
 
-MBR, Sergey
+Actually you could take this one step further since all values should
+be 1522 or greater you could just drop the else/if and replace the last
+line with "max_t(int, chip->info->max_frame_size, 1522) - (headers)".
