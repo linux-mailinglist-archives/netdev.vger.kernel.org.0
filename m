@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 459BA64D7C6
-	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 09:31:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CC9F64D7CF
+	for <lists+netdev@lfdr.de>; Thu, 15 Dec 2022 09:33:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiLOIbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 03:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
+        id S229480AbiLOIdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 03:33:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiLOIbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 03:31:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6973D20F5A
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 00:30:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671093052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rQftxKjFR81WRUC766VxI4Sfi85jP5put0rR4SH+wzs=;
-        b=bvQUj6Qz8ErnJwgJOMKH+kuvMlpwRiGlb3cXN+WMeN2HSXLl+8fHJceGt7s6wdclEiFlTB
-        XCtoVVgsHTAzXox3S/X3/7dMsob/yToTej+HBQF4Ga+zHsktj29zfqJucDqBCvZbsxCKHi
-        AQQQBuHMsiqxINj+w8wszvqirwszpoM=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-367-VUAgc9nfNNeX2L_8n4Vtcw-1; Thu, 15 Dec 2022 03:30:51 -0500
-X-MC-Unique: VUAgc9nfNNeX2L_8n4Vtcw-1
-Received: by mail-ej1-f70.google.com with SMTP id nc4-20020a1709071c0400b0078a5ceb571bso13028940ejc.4
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 00:30:51 -0800 (PST)
+        with ESMTP id S229580AbiLOIdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 03:33:04 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D61421E3A
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 00:33:03 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3b5d9050e48so32058677b3.2
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 00:33:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=zw/RhO20UZoC9G6TTtJdTuGGtmTIwLpJWlVSECXA/JQ=;
+        b=gcsIYuVB82zmxWO/jv48MxPYs/gdG0Rzgpy4wX731BSR6Ttm6idl29NDWcRjsNF2Fw
+         KM3t76IuqbWGol7of0hQGE0hHket69xGNdMfpqVWd8Ec4c4wIcV7CylfuKzhKOHKg6yh
+         pK4VsYzt/CuGw0wlVvfQWeImLnu1VtMQGODFp3UUiLMGJ1WdH8+umfjBSGtNUSYss9rV
+         vYX4NRdzDPMvtbcC3HpAotwqT86gCotG5RM1KTgPGSmadSZoriXzdSpdmODGSEm4YDD/
+         892saize8LGzjzv2uXxazAbI7+oio/WylRwWh/5jhPzLnzLYa/CSjiTyWhSCd2R2NglO
+         MDRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rQftxKjFR81WRUC766VxI4Sfi85jP5put0rR4SH+wzs=;
-        b=hJqPDfR5c5z7GvgAMfOGI5D1PPZbfLL+RraIAG5R8MlFjrW6a4q2HYKXE4pvtHdEtK
-         52oGf+RAk43PznB4y9p7VDUAQvgd5MOx2KODsXsX89TxiL1RY/BmRC3MoCNP2pnKEuX9
-         Va07jw1OPXr+8i025Dkor3CVF25mfn5VeGznL1z0R7gppekxQFtaTYLldcwT2qlKt5Tn
-         hyK21Onds1O+Z4w7+ejApi8B8Zlysjcadc0g4koHKBt2yyyoM6OoPtE89xzOrGidMpe9
-         VXSJXD7J/23l88bQ0NYkoBCi3tV5kvQsWJnfFWIO8/j9HlQKTgploNbcjgYfSzH0cJ4X
-         QEsg==
-X-Gm-Message-State: ANoB5plQaq6pIY0Nxcui/+iZXYPW/Nw12m56mPKWMxuU+nMHw0H4/BX2
-        boWQmKppTDWdongcLDeKj1NJFUmn4o0v2kV9+2AmPxYh1WQ/8Zgoje3F1b5cKrTjJ7/5J4+NawB
-        d7qrTC/OU9LRX+TwI
-X-Received: by 2002:a05:6402:4d6:b0:45c:835c:1ecf with SMTP id n22-20020a05640204d600b0045c835c1ecfmr24078806edw.29.1671093050377;
-        Thu, 15 Dec 2022 00:30:50 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4r/8QccpcVLtJ/LolCjiYE4eVoyO3dtVao5bKTz3iNWmsN4PhSYamWPcoMXBuegu/a2Nq8AQ==
-X-Received: by 2002:a05:6402:4d6:b0:45c:835c:1ecf with SMTP id n22-20020a05640204d600b0045c835c1ecfmr24078753edw.29.1671093049553;
-        Thu, 15 Dec 2022 00:30:49 -0800 (PST)
-Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
-        by smtp.gmail.com with ESMTPSA id a18-20020aa7cf12000000b0046cd3ba1336sm7267337edy.78.2022.12.15.00.30.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Dec 2022 00:30:49 -0800 (PST)
-Date:   Thu, 15 Dec 2022 09:30:45 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7] virtio/vsock: replace virtio_vsock_pkt with
- sk_buff
-Message-ID: <20221215083045.2lfplx6fhuwpau2s@sgarzare-redhat>
-References: <20221213192843.421032-1-bobby.eshleman@bytedance.com>
- <4b66f91f23a3eb91c3232bc68f45bdb799217c40.camel@redhat.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zw/RhO20UZoC9G6TTtJdTuGGtmTIwLpJWlVSECXA/JQ=;
+        b=rRLooc6o9YZtTnhqcuuVOkQsNXCxgdhUpKZwlpPs8sRy/LAtGSAV+yYPRm05Y87dqf
+         7vlTiZB4NaCJfGkrSW0EYB8kyUWrqaX8RX8KR08bLrNxjSshemAqOwYdAVE233kTW57I
+         2OOtGr5PLcYYGEExWHByDY/kDKZb04GD7bxj0ievlb6YVC7GufyOhZ9D19hhg5TEBxkV
+         ajT5HzTtDu9gKJC2xIUbf34iOMzIGlfbs3fLvZ+3Mk2rcnRQfdFHTrDslX49daCdlXd6
+         TcTyV/mFX5U3rU9DmyNKX9pK9tV3oOdL4KIAem/i/i7HdRTgHHg7fuEeg20nPZB4Dp8E
+         R7NQ==
+X-Gm-Message-State: ANoB5pmvjv0pioshgatPi1nXGobFUAEQ9jrhPl68p9mXOYrFQORChDyL
+        icnxXOBUupE5VAlRgZ7kFKDjqgtunPeI02PGxIR24w==
+X-Google-Smtp-Source: AA0mqf6cRDw1YzTC3hDYy0SnSaLdyQgBIFRKlD+OEaTHlI7sxKEzblretR0JoOMFb3J2KB25ISksl50/IuhdDqdsXRM=
+X-Received: by 2002:a81:9188:0:b0:379:3bb4:596f with SMTP id
+ i130-20020a819188000000b003793bb4596fmr26819268ywg.238.1671093181145; Thu, 15
+ Dec 2022 00:33:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <4b66f91f23a3eb91c3232bc68f45bdb799217c40.camel@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+References: <CA+G9fYvcmmOh93nOti72+woKvE+XvLg7apCYDUfu6oKtjPkHKw@mail.gmail.com>
+In-Reply-To: <CA+G9fYvcmmOh93nOti72+woKvE+XvLg7apCYDUfu6oKtjPkHKw@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Thu, 15 Dec 2022 09:32:24 +0100
+Message-ID: <CANpmjNOwsvfnJXzaFOUCYFRT_TM-z1YWqHv-nx3DY_V2f3xBhg@mail.gmail.com>
+Subject: Re: BUG: KCSAN: data-race in do_page_fault / spectre_v4_enable_task_mitigation
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        rcu <rcu@vger.kernel.org>, kunit-dev@googlegroups.com,
+        lkft-triage@lists.linaro.org,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,53 +73,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 14, 2022 at 11:58:47AM +0100, Paolo Abeni wrote:
->On Tue, 2022-12-13 at 19:28 +0000, Bobby Eshleman wrote:
->> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->> index 5703775af129..2a5994b029b2 100644
->> --- a/drivers/vhost/vsock.c
->> +++ b/drivers/vhost/vsock.c
->> @@ -51,8 +51,7 @@ struct vhost_vsock {
->>  	struct hlist_node hash;
->>
->>  	struct vhost_work send_pkt_work;
->> -	spinlock_t send_pkt_list_lock;
->> -	struct list_head send_pkt_list;	/* host->guest pending packets */
->> +	struct sk_buff_head send_pkt_queue; /* host->guest pending packets */
->>
->>  	atomic_t queued_replies;
->>
->> @@ -108,40 +107,33 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->>  	vhost_disable_notify(&vsock->dev, vq);
->>
->>  	do {
->> -		struct virtio_vsock_pkt *pkt;
->> +		struct virtio_vsock_hdr *hdr;
->> +		size_t iov_len, payload_len;
->>  		struct iov_iter iov_iter;
->> +		u32 flags_to_restore = 0;
->> +		struct sk_buff *skb;
->>  		unsigned out, in;
->>  		size_t nbytes;
->> -		size_t iov_len, payload_len;
->>  		int head;
->> -		u32 flags_to_restore = 0;
->>
->> -		spin_lock_bh(&vsock->send_pkt_list_lock);
->> -		if (list_empty(&vsock->send_pkt_list)) {
->> -			spin_unlock_bh(&vsock->send_pkt_list_lock);
->> +		spin_lock(&vsock->send_pkt_queue.lock);
->> +		skb = __skb_dequeue(&vsock->send_pkt_queue);
->> +		spin_unlock(&vsock->send_pkt_queue.lock);
+On Thu, 15 Dec 2022 at 08:32, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
 >
->Here you use a plain spin_lock(), but every other lock has the _bh()
->variant. A few lines above this functions acquires a mutex, so this is
->process context (and not BH context): I guess you should use _bh()
->here, too.
+> [Please ignore if it is already reported, and not an expert of KCSAN]
+>
+> On Linux next-20221215 tag arm64 allmodconfig boot failed due to following
+> data-race reported by KCSAN.
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> [    0.000000][    T0] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
+> [    0.000000][    T0] Linux version 6.1.0-next-20221214
+> (tuxmake@tuxmake) (aarch64-linux-gnu-gcc (Debian 12.2.0-9) 12.2.0, GNU
+> ld (GNU Binutils for Debian) 2.39) #2 SMP PREEMPT_DYNAMIC @1671022464
+> [    0.000000][    T0] random: crng init done
+> [    0.000000][    T0] Machine model: linux,dummy-virt
+> ...
+> [ 1067.461794][  T132] BUG: KCSAN: data-race in do_page_fault /
+> spectre_v4_enable_task_mitigation
+> [ 1067.467529][  T132]
+> [ 1067.469146][  T132] write to 0xffff80000f00bfb8 of 8 bytes by task
+> 93 on cpu 0:
+> [ 1067.473790][  T132]  spectre_v4_enable_task_mitigation+0x2f8/0x340
+> [ 1067.477964][  T132]  __switch_to+0xc4/0x200
 
-Maybe we can use directly the new virtio_vsock_skb_dequeue().
-IIRC we added it exactly to use the same kind of lock everywhere.
+Please provide line numbers with all reports - you can use the script
+scripts/decode_stacktrace.sh (requires the vmlinux you found this
+with) to do so.
+
+It would be good to do this immediately, because having anyone else do
+so is nearly impossible - and without line numbers this report will
+very likely be ignored.
 
 Thanks,
-Stefano
+-- Marco
 
+> [ 1067.480877][  T132]  __schedule+0x5ec/0x6c0
+> [ 1067.483764][  T132]  schedule+0x6c/0x100
+> [ 1067.486526][  T132]  worker_thread+0x7d8/0x8c0
+> [ 1067.489581][  T132]  kthread+0x1b8/0x200
+> [ 1067.492483][  T132]  ret_from_fork+0x10/0x20
+> [ 1067.495450][  T132]
+> [ 1067.497034][  T132] read to 0xffff80000f00bfb8 of 8 bytes by task
+> 132 on cpu 0:
+> [ 1067.501684][  T132]  do_page_fault+0x568/0xa40
+> [ 1067.504938][  T132]  do_mem_abort+0x7c/0x180
+> [ 1067.508051][  T132]  el0_da+0x64/0x100
+> [ 1067.510712][  T132]  el0t_64_sync_handler+0x90/0x180
+> [ 1067.514191][  T132]  el0t_64_sync+0x1a4/0x1a8
+> [ 1067.517200][  T132]
+> [ 1067.518758][  T132] 1 lock held by (udevadm)/132:
+> [ 1067.521883][  T132]  #0: ffff00000b802c28
+> (&mm->mmap_lock){++++}-{3:3}, at: do_page_fault+0x480/0xa40
+> [ 1067.528399][  T132] irq event stamp: 1461
+> [ 1067.531041][  T132] hardirqs last  enabled at (1460):
+> [<ffff80000af83e40>] preempt_schedule_irq+0x40/0x100
+> [ 1067.537176][  T132] hardirqs last disabled at (1461):
+> [<ffff80000af82c84>] __schedule+0x84/0x6c0
+> [ 1067.542788][  T132] softirqs last  enabled at (1423):
+> [<ffff800008020688>] fpsimd_restore_current_state+0x148/0x1c0
+> [ 1067.549480][  T132] softirqs last disabled at (1421):
+> [<ffff8000080205fc>] fpsimd_restore_current_state+0xbc/0x1c0
+> [ 1067.556127][  T132]
+> [ 1067.557687][  T132] value changed: 0x0000000060000000 -> 0x0000000060001000
+> [ 1067.562039][  T132]
+> [ 1067.563631][  T132] Reported by Kernel Concurrency Sanitizer on:
+> [ 1067.567480][  T132] CPU: 0 PID: 132 Comm: (udevadm) Tainted: G
+>           T  6.1.0-next-20221214 #2
+> 4185b46758ba972fed408118afddb8c426bff43a
+> [ 1067.575669][  T132] Hardware name: linux,dummy-virt (DT)
+>
+>
+> metadata:
+>   repo: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/?h=next-20221214
+>   config: allmodconfig
+>   arch: arm64
+>   Build details:
+> https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20221214/
+>
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
