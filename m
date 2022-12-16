@@ -2,74 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C00564E971
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 11:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E383564E976
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 11:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiLPK2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 05:28:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56884 "EHLO
+        id S229973AbiLPKaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 05:30:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbiLPK2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 05:28:35 -0500
-Received: from email.studentenwerk.mhn.de (mailin.studentenwerk.mhn.de [141.84.225.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5D32A949;
-        Fri, 16 Dec 2022 02:28:33 -0800 (PST)
-Received: from mailhub.studentenwerk.mhn.de (mailhub.studentenwerk.mhn.de [127.0.0.1])
-        by email.studentenwerk.mhn.de (Postfix) with ESMTPS id 4NYQL75rsLzRhTk;
-        Fri, 16 Dec 2022 11:28:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwm.de; s=stwm-20170627;
-        t=1671186511;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E+gRcYlkBgTay2aKzTpNSiy4Bv0vPYNnKAOHTra8+TA=;
-        b=KeCzDtlUlzb9pVuW9+EWbOhJxPZLsfG1MAjx5r91bCPgq7EecIJpgyB2pCOZ8fomYF8N9S
-        LtJonhpeAVm/y4oGw6QPyedR+kPd0RzxKllhXm3HsuyuoL6QiXvMpNB2xNV1uRPLucQ4NS
-        xA/J9NpE5Tb5LNIs7O1GxAt1GjR85kLV2N7YxYyVVGhq0Wenpb2NE6S/24/gH9wzoMyX+p
-        a91tGuel322VpHzTVWott7vqhZcjuSojGKf/PEPefE5cjiyWM9QXM8iVB5C5Jddi5jmY63
-        J5PRLEBq/W+yEYaH9Bd/lMZauWtVlDQFm3IIMUJ5jM68h5BWtGO/v2uPX7sVCg==
+        with ESMTP id S229932AbiLPKaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 05:30:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8FC33C19
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 02:30:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CDA462057
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 10:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B5E0EC433D2;
+        Fri, 16 Dec 2022 10:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671186616;
+        bh=shtm4Nl55P1bHzY8HxDcP/QRRQWtmMKCMlYAOlLv0z8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AwhYvpetHm3M+0QYNWQrbCqg+VdqaR6i2VRp0LVhorikLRsMuouE74u6WU/iwjWdS
+         WyaaDK443K0oZMsQi9qTZ56lPtZXkDthgPZJKQyQIWSUpsJYHY/0FaJ7a8GDtOdpnY
+         WsrfFGHY9LDqVT/KlfGzumED5PX3eyO4wVqyLFsAATo+riMCVp4BSigEAs7tH590Fa
+         yzuKzSG4aCfAVzrIh1DZ1eXKDXVahH+krKTa0l/3hm8aTB0IRc++48z18gBLPVhzt7
+         nND0vuZ1IJRkwhJwRK+LUv7NnUAuGlYUJ8m5q3NCL5w9WF9neGmPIg6Pyyai+WDIGZ
+         TQldQrMHCt4MA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A092EE4D00F;
+        Fri, 16 Dec 2022 10:30:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Date:   Fri, 16 Dec 2022 11:28:54 +0100
-From:   Wolfgang Walter <linux@stwm.de>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: kernel v6.1: NULL pointer dereference in ieee80211_deliver_skb
-In-Reply-To: <5ef22539-7a99-0c12-a5b0-a5ea643fe635@nbd.name>
-References: <1585238f2dee5e2daafe28ba0606b6a4@stwm.de>
- <5ef22539-7a99-0c12-a5b0-a5ea643fe635@nbd.name>
-Message-ID: <2eb2bdca943c9acfdbadd6ae44a517dc@stwm.de>
-X-Sender: linux@stwm.de
-Organization: =?UTF-8?Q?Studentenwerk_M=C3=BCnchen?=
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net 0/3] devlink: region snapshot locking fix and selftest
+ adjustments
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167118661665.18535.1251213129465649322.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Dec 2022 10:30:16 +0000
+References: <20221215020102.1619685-1-kuba@kernel.org>
+In-Reply-To: <20221215020102.1619685-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jiri@resnulli.us, jacob.e.keller@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-12-15 20:27, schrieb Felix Fietkau:
-> On 15.12.22 18:31, Wolfgang Walter wrote:
->> Hello,
->> 
->> with kernel v6.1 I always get the following oops when running on a 
->> small
->> router:
-> Please try this fix that I just posted:
-> https://patchwork.kernel.org/project/linux-wireless/patch/20221215190503.79904-1-nbd@nbd.name/
+Hello:
+
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 14 Dec 2022 18:00:59 -0800 you wrote:
+> Minor fix for region snapshot locking and adjustments to selftests.
 > 
-> - Felix
+> Jakub Kicinski (3):
+>   devlink: hold region lock when flushing snapshots
+>   selftests: devlink: fix the fd redirect in dummy_reporter_test
+>   selftests: devlink: add a warning for interfaces coming up
+> 
+> [...]
 
-Thanks al lot, that fixed the problem.
+Here is the summary with links:
+  - [net,1/3] devlink: hold region lock when flushing snapshots
+    https://git.kernel.org/netdev/net/c/b4cafb3d2c74
+  - [net,2/3] selftests: devlink: fix the fd redirect in dummy_reporter_test
+    https://git.kernel.org/netdev/net/c/2fc60e2ff972
+  - [net,3/3] selftests: devlink: add a warning for interfaces coming up
+    https://git.kernel.org/netdev/net/c/d1c4a3469e73
 
-Regards
+You are awesome, thank you!
 -- 
-Wolfgang Walter
-Studentenwerk München
-Anstalt des öffentlichen Rechts
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
