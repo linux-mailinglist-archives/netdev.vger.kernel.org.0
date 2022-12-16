@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCABA64EB95
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA8164EB97
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:50:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiLPMsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 07:48:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        id S229952AbiLPMu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 07:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiLPMsb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:48:31 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2089.outbound.protection.outlook.com [40.107.223.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A67C3E0BE;
-        Fri, 16 Dec 2022 04:48:28 -0800 (PST)
+        with ESMTP id S229506AbiLPMuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:50:55 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9775C43;
+        Fri, 16 Dec 2022 04:50:53 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ThZcgNLUe9IguFcQdXViyWMcDePkuW2/e+rN6oHuznZdnPJJiIBIenJnugqof2et/wE5LLQyd0gRr8TLYYpaMmCtBOCPMob34yX6Bv4x2FYSFuw7IpTXYu6NHMvyjQx+MX/6ZuGVjOVomLGI7fQhOzQgBjdOgw3I/pmXrKnB4SUyRw0URCQCT+DjebcclGqEIQ+j8B3AhaRlJu2WFgMaIti1JOeihmWRPEeqDcttMPdSO2pIs/a3Sc+YGM7WKBAf0AEXIlWG4UehQY2ea7LMXhxupt4vYk65SeEgtW8r8AOOUaiB+iPWSlbRGM+HEVmOx3ZlK8CciWsqncO3twbv6g==
+ b=lJUh8eICHhLWBypSOjqNDC11zL35XL6+LTJUvTExAw1p2nN55ZG8b2uNVBkITKgqeraMrV8v3aChBFo3XHb61ma+swSbf7DoRGgsnsNhSdargxdpuCk6vHuEZXeTJfSs6wQMDMxcCf5RdbLEFGjMmRdPPtoCIrIfAtWbn/cPacyDsKB+sLYz34nEub/Q481b4c6DEybG0e3zg7HX0OJkeEUgxqMbhMaqh3qd+n423NBlxbp2CGpy//7BHnydyhyI0yrcfj16YdEffPpliF9BPIVuaRAAZE6i+OlNTxvw6Lgl6KCTbGUcVSwURlCPuepj3Ud+kBcP3WamGOgxmNCl5Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EXgkjyd/fQL4zj8FV1g6f31jYnemOsSEMU5fuvpodW0=;
- b=Uxiu5epE6RITjuGWjBlE2tnw4tumFufNfL4eltOIypC0/ckC2kbqdX6U5dVsjAHqR+LXh0RiHDmSXo3osc0+jFd1uzFOORXfe3V3xAitJe1xTFPCPeZxEL1Wa+P1N0m+7QGo3yFnepVF0JSsgXs55K4tEx9CsHbigl+41jXuI7icYsPfrbaEUK0egEbHgggzVNTM+1kcDXIZtbU1bGJC9BaIyQ8AIdm56G9nBKf6StpsW/Hb2WaiGlX6Jk2vs5hafwHCVlDhdW9XXBuUzKCVYG9nO4dtXEHMYZHvuHnQzXVt8hm9ulrip8sa4Bij/i3ZSHrSjgrQfbK5p+ZzG9p3HQ==
+ bh=cx4n5jxFekeaqWwEZBNVVP4EV0D8hFjCvfk80748nZ8=;
+ b=c5efu2cRPT/smBZH+k6sd0hhEiEDGmP+3CXyH4CMVIhBIgSPbzRghIpeZwjXaU1pqavse960r4LZeYu+k5f1r1kld/sQoOy9ipD37AOWmGA8qtb70A320cQe2unQ5WahqciRdlkFif7uslI3JJVpeaJRC+ahvRrMfwNbOqXne8iAouC2otnVkEhV4qoS2rRkkrYH2YG0F2zt7uS31Gp8aGHPHIp39iCByB5x7Ys4L4liIIK2t8MKwVJuGiIrvpxJCej15yt1Mg/r1UV+z1qNbR448eV3UyJ1pBF+0Xt3gye7oOo/jMx9KxLSeH7/rVPoMEW/NdhlfLO2WxddGJDwbQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EXgkjyd/fQL4zj8FV1g6f31jYnemOsSEMU5fuvpodW0=;
- b=SDlW58GxmrgWz2GnwvmcZ5bPib60xSJvbXm/Pfz5fe1EjKLBYV/Jp1eqxP2F0sJEHU2lmbwi6nGOMA9sHG9IxtC/wJ1oumJF87IIZNJ7rydCNjRlRqwjqBr3laFou3MaU9HAF3V9cvQd5w2raKHghRiJbEFtd/X3QMLBURB4nDY=
+ bh=cx4n5jxFekeaqWwEZBNVVP4EV0D8hFjCvfk80748nZ8=;
+ b=FH4eNgq+vrSezeqHxqw9SPncOTneAgW9adfqdLANdE5CyEmIXvt6GGvcU/cs4bVCgx4y0xTget+z+ZkV71iNJzCfTHN62FyrXb6PCsI9omQX/77zkMHBJhn3cUWvFJNDAvlSIAHDfK1X4T6h9KTJuxwlK12ZtxKUOxi5UxvLoPI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from BL1PR12MB5825.namprd12.prod.outlook.com (2603:10b6:208:394::20)
- by IA0PR12MB7601.namprd12.prod.outlook.com (2603:10b6:208:43b::21) with
+ by DM6PR12MB4355.namprd12.prod.outlook.com (2603:10b6:5:2a3::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.15; Fri, 16 Dec
- 2022 12:48:24 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.11; Fri, 16 Dec
+ 2022 12:50:48 +0000
 Received: from BL1PR12MB5825.namprd12.prod.outlook.com
  ([fe80::2e66:40bf:438e:74b]) by BL1PR12MB5825.namprd12.prod.outlook.com
  ([fe80::2e66:40bf:438e:74b%9]) with mapi id 15.20.5924.015; Fri, 16 Dec 2022
- 12:48:24 +0000
-Message-ID: <6f3eb21d-4f2d-eff3-37d4-9731eacd4af3@amd.com>
-Date:   Fri, 16 Dec 2022 18:18:07 +0530
+ 12:50:48 +0000
+Message-ID: <bad68533-dc5e-7728-2e42-287fa91426d8@amd.com>
+Date:   Fri, 16 Dec 2022 18:20:36 +0530
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 09/11] sfc: implement iova rbtree to store dma
- mappings
+Subject: Re: [PATCH net-next 02/11] sfc: implement MCDI interface for vDPA
+ operations
 Content-Language: en-US
 To:     Jason Wang <jasowang@redhat.com>,
         Gautam Dawar <gautam.dawar@amd.com>
@@ -57,73 +57,73 @@ Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
 References: <20221207145428.31544-1-gautam.dawar@amd.com>
- <20221207145428.31544-10-gautam.dawar@amd.com>
- <CACGkMEt+euNwg+DEYFMNhJGXm1v2UqiPx622F-=DARFB4CWavQ@mail.gmail.com>
+ <20221207145428.31544-3-gautam.dawar@amd.com>
+ <CACGkMEuEJ9+wkFSiwUFGUi4RuQyJe2mc4fCNTwMw=S4SsSboiQ@mail.gmail.com>
 From:   Gautam Dawar <gdawar@amd.com>
-In-Reply-To: <CACGkMEt+euNwg+DEYFMNhJGXm1v2UqiPx622F-=DARFB4CWavQ@mail.gmail.com>
+In-Reply-To: <CACGkMEuEJ9+wkFSiwUFGUi4RuQyJe2mc4fCNTwMw=S4SsSboiQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0040.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:98::9) To BL1PR12MB5825.namprd12.prod.outlook.com
+X-ClientProxiedBy: PN2PR01CA0174.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:26::29) To BL1PR12MB5825.namprd12.prod.outlook.com
  (2603:10b6:208:394::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5825:EE_|IA0PR12MB7601:EE_
-X-MS-Office365-Filtering-Correlation-Id: 121132cf-18d0-498e-5963-08dadf63d20f
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5825:EE_|DM6PR12MB4355:EE_
+X-MS-Office365-Filtering-Correlation-Id: 935c1ee8-e69d-4e62-31e9-08dadf6427ac
 X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtFwd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bNbOMomdBf9LNStdMxRRhRnkwaqKQKX19bCLrSATzRXC578k+GNTv5mYbbUrpHuhIT5PYtDFMEDtWjMAM+xSUU+0pzhBEbXDU/DFmO5wPHkP/F/Ehy1lhxJECx9wdKuUg+vhAyg+49xrlpkqQt6UL8CodFa+L4lD1uLMV9qnwBTjTQ+viCYCS+Atwaxp93IPsCX7rsXPPtr7JppzYv2CHi66+AjcvgNIiK//KXCfsuWQOFrvOai+YVv2xCjk1j3AGNwh1MXNg616hjxtuu+5MdJytKB2oJKyu7B7bTzn06DQiyvC8oE70jonwUasNYbsChufNNY6mK5gp+bW/e0iXq1XFDUieOPs07U2/JErthF0Upfpvz9TDcCFwKp7dq3wkCd8c8YaXYhl37hbeXmUTvcyv8wNtOlLXspQVuL4lXT2CTB+O3rnAnZkTFnXhWch2qy1obPxstv+wCKo5OaY4iwmEC3EAV2KTZYyEDZ6wiJfSoX5SVykfnRNghmR1QU9bt5zjhsh2z0ZLUClszRaUI/X7gyEJe61m+nI5x9QQI+ZlEFriW4k3fDxfndo2PWYVriFZ4/J9yh7+O/lFdGk/iSOLmThuR5N+xHQTbfEB1yU6erUCoGus0SnxZP1CDsiyuPxxBoOJN6lOebEmo5KgOyd/e6h1eiNvcJarrEI5RmH9YQuyxID0i5tWxMkOo4kYZDSHokiQ53G5AMSg88aevXWuVza8IsLkmRBNTuziJM0EoQaTLvPhXiReuRjwWQZ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5825.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(39860400002)(376002)(396003)(366004)(136003)(451199015)(83380400001)(6512007)(2616005)(36756003)(6486002)(478600001)(186003)(26005)(53546011)(6506007)(6666004)(31696002)(38100700002)(31686004)(30864003)(5660300002)(7416002)(2906002)(316002)(6636002)(8936002)(110136005)(54906003)(41300700001)(8676002)(66476007)(66556008)(66946007)(4326008)(2004002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: BdfqUrFaEIKilb5U2hkRNfdgzwSDiXz5MfwtaUH+GdSpggCBsfxDsp08YHdw2IsTqKPQ3gY0TbGxF4/T9OL8wqqoprgikdMobeZCN0bBMHGkldQjNfKcV84NU7i5cpkdXtb9RJ2qsv0nskId46pyMBIE6QvYZjSPI+xv+cv1NuBiUIWK05RqFMTdRJV2E4YKUbdTYYtoaGD8AuaMn4tO7ActIWNr/woN9BuTiRR7iRHJx7T/1Gj6MNqRGDBGQTZ0ozEIhIkGnGzhbqH6NQAjEFXry0WmrEnAakYxgXgkV9oTkJ9Vkp7wLxTs8/Qsm4rbgfgO8X5+HqTvQGkhSv3D8R1MEUAq6eFXGkDrRvFmWraS/Te/Ow5Aw6fB2Ci5cMeLJtB/MsXvAJUhHbk8mSMcK3lbnUd1uGW8Lzb/JDe9/iVPjaeyd56lqswy8cqR9dreqxI4ZM6Q8uhACUV71Qu5yj7RW0zqbEBfkYZIZGWmScBJAd/Lz/6IZgf3qhYlSoHFWYHO12aRXJ1x61is49AXn4iCUtpSx0a5PTgX3fDpkNnu8KX75FeMf3rcl0fXrApgwEuzmeRXGW9XopOevNjV8ryVPvjBWWNLLf7mDBwlVBAI8P2D07QriuCkR4jp/QWAep+RKXWOEVq7bDryI4z/LqqDGdgnkAlStcX76tZxWmC3mESGuUHdZ8Ohs90l+xa7ub9GXmCQarDzOTgQb0Vy1KUNiF3kDjqhmybNMRNXZsacKFo5xl9TCUtqfK8bTJ3z
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5825.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(346002)(136003)(39860400002)(376002)(451199015)(31686004)(36756003)(54906003)(7416002)(8936002)(30864003)(5660300002)(6506007)(38100700002)(31696002)(41300700001)(110136005)(83380400001)(6636002)(478600001)(66946007)(6486002)(26005)(6666004)(6512007)(4326008)(8676002)(66476007)(66556008)(53546011)(186003)(316002)(2616005)(2906002)(2004002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NXZYLzg0ZGgyUWExYks1b20vTnNpVkFpT1NqQlJnekNpWFE5b2N6QkxpM1Vq?=
- =?utf-8?B?R3dIcERicmg4VExaT3dmQXhpUFZidXp4NGU3K25tVTBaRHV3b0VZc2pKMmlv?=
- =?utf-8?B?U1g5SEN1M3F2ZFBOTTl0UC9Bb2lsL0RpZkk3S2FmZnRRdDIyMkJLYU1VaDUw?=
- =?utf-8?B?eisvdno4cXNkZVVpQXBvOEpNTmZWY2lSdVUxSmZnZXEzM1VQOUVCVFltK1lR?=
- =?utf-8?B?ZEx0Wk1ENGtuK2VCMzRYOE04cU1yN2NDOEllVlZkWE0yRkNYNUlNQzdKaXk4?=
- =?utf-8?B?TDErOVBQSUZUS21TNy9ibnMrbWhuVzJ4dEFoK05zeHZOcGpHN2o2S3dWQ1hS?=
- =?utf-8?B?VGxVaFBSTElwRU5TNVFNeXdGRmhHZGpHUWZ1WFZZOW90elFDUmJWeDJCc1l0?=
- =?utf-8?B?YVViMmszQ2JXN3FaQXRpelQ5RjNLM2RWK1FPTkV3Z2pNOVM0TkJPTENiR0do?=
- =?utf-8?B?cWx0VzB6dUN2SERsVzAzYnlxcXVaR01WT2swN3RTTzBHQjRPZFVLQktsLzYy?=
- =?utf-8?B?aWJ1ZTYzU1dWSDJJMTB6L0diOWo0c3dEaWJtelZJa2I1VTM1c2dRcXFmRlR2?=
- =?utf-8?B?b09lb3dYZWRtb3dqYVlnSmpLOWI4ZWwyeHJrT0RFaGZNQnpnaU5xU29hRmtI?=
- =?utf-8?B?dTA5cnZZYWFWZ096TFVQYnY5c0hvK0FUYTJQUkVkSHVXQVZQcXQyb1pvTFN5?=
- =?utf-8?B?SElOVWNLeWtYSG9QMzRJVy91S0xVUkpzd2hUVjZFa0xxYjNDWmRnaXBYZDR1?=
- =?utf-8?B?aGN5YjJEazh6NmM4M05QM0RHNEU3T01TZUoxbWJBZzBjRDdaNjhJclVTcHBH?=
- =?utf-8?B?THpVeWhNU20vMkZwTHJTNE1kZDgwY2w5c1YwMlltZEIzRGZIQ0hUdEp2ZmtS?=
- =?utf-8?B?SWY0emRLZEI3b1k2MTFadk03aklYMzJmeHZlbWFlWk5PMzIwSThOcEpVUkln?=
- =?utf-8?B?cm8xa3VHRHpVKzhYcUpPNlZCQmhrazQwZWptWHBCdXE3WUFwZDFuZFpHTWl2?=
- =?utf-8?B?YkVCZE1reU5zTE5RaktzRGJmN1lRWmdhdjZ5a0lweDZxdVhxYVdmK0lRUWdt?=
- =?utf-8?B?cU5raHEyem9xQnd6QUNhcm9vN2RzUFlNSnRpNkFZV0IxeG83ZDZzQVF0bmxG?=
- =?utf-8?B?Q1k0YnVWc3A1UnJqaEErLzRwajh3aE9oV29EdDBIVWFLcmY1eE4ycDdlcWRk?=
- =?utf-8?B?QVoxZXR3SDNQNWJBUEZKZUROL1VsOU05MkVvVFAzZ21xN3FKQXdhSkcrbGgz?=
- =?utf-8?B?emszR3d0OW5ZWS8yU01RM3NBZjBRM2Vmb013RTVWZDhjamlQSWFnM2w1c0VM?=
- =?utf-8?B?dXFaY3BneEdLVjJDSEE5NXNjRzc1ZGt1VmRjMXJNMTkzOGN1ek56NEFOWkhv?=
- =?utf-8?B?ZGlUMW1UdnN5b0NXR1RJTVpMQlZoVGRJbDZyOFpJTmVjckdyYi9SU21aZU94?=
- =?utf-8?B?a0d5Qk5JckEvTG4vWDRwL3lVd28vZW0va29UZzZad1BWeU1xeVk1RkRKVHpO?=
- =?utf-8?B?Z3NkT25GNkRveWNpK3pmUVFsMGNLSkRHdUppazJpVXJCL3JYYWNBcTlwZUJr?=
- =?utf-8?B?eGZVaDB0ZndUYzRZbFRCY0JKRklSa0lmY3BzVm5VRy8wUTMwZHhYeE5YamEy?=
- =?utf-8?B?NWQyOUxiYkUwU2JSYm9iYk5kSVY5bVlJNHlNQXJMdHBNWU5NM2piTnc3aktG?=
- =?utf-8?B?Skd6RTZHdmR6TDEzN3BBZjZnK0drSm45WS9EaDdxN0ZHanJ0STBTUUxTZkU3?=
- =?utf-8?B?YTRTNlVGSCt5R0F0SFdYYlZ6aGVnTWZQV29yRnlCTG4wbG1QTjliY1ovSlA3?=
- =?utf-8?B?USt5Ri9KNmZRRUliRkgxZ2l4TnVkcVBvaEQ5bUFtd0V6ZnZyT2tnS3Y5bms2?=
- =?utf-8?B?bkVDNHQ5ankrM294WmtzRlZnVGhoaDh1amtUSS9STmRzbFljTEpRc1Q4alBD?=
- =?utf-8?B?NjJyVVJaYVp6eENmUXJKK2ZBQ3JKUmZWRXZlMituUm9GdmpXaDNNWng3MVhQ?=
- =?utf-8?B?cmlRM2c3cTh0SkF0RE9ablZQTjdjZW1TNEhCN1JPM255d1g1VnBjN2JCSnhC?=
- =?utf-8?B?YWdqQmRoWVErZ3hYQjRCSlY4a2IzQ1Y1R1dRSmwzaFI1NU5yQmZuWkJvUDd6?=
- =?utf-8?Q?OGG8Wx/SnyBoltUBZn0GsMDtZ?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dnIwY1NLbU13cUIxNmowdm42T1VocXNCS21SdWE5VmtWRGkxc1poR0FvdDJx?=
+ =?utf-8?B?R3JLL08yTm1ueVFWc0IxcFdabHJQVVg5VC83VElOaGJpVXZwVThaTlVDZTBs?=
+ =?utf-8?B?K2NOWEI3R0MvQUhqeWdQWm5nS0xPODVLYU9veFFaR28vdGtoa1NHakpUWjVL?=
+ =?utf-8?B?VnBERjVacy9SNk15WkoxOUxDWHB4WEFMOTJVdy9lZHZ4djB2cnR6TU9OdTBn?=
+ =?utf-8?B?MUcrUkhJYkgxaVBSQ1BHTWdGZGdQZnAzbWZXQnZZSkp2S0pvSU5peVJtdHli?=
+ =?utf-8?B?bk5XaStWSFpUSEx5MUF6a3BDd1AxT3gzMldDbnZPV24yZlMzQ0xXaElaY1ZE?=
+ =?utf-8?B?OVJ5SEpEclJHcGxmKzNCY3lPSG1xZG1nMDNOSFllNkpQb25nVGdiVDF6ZVZL?=
+ =?utf-8?B?citBOE5kbWdOMlM4bjVrcHRuSWlGTjdScEZ3L3ZvaEVDQzlHQmptTGN6RHZh?=
+ =?utf-8?B?RXJQWEJVZEprdFc2ZjNlY3pTZ1J2UlVMT3duWC90STBrN2Y5ZExtVGNRUUtF?=
+ =?utf-8?B?OENzVzM3MVFyTmRndE5JbEZNRlRTOFlKRFQwdkZ6SU9XdjFOS0hQYUpCdDlL?=
+ =?utf-8?B?bzh6N0tOY1V0T29ndmNCOFpKR1dJSXdRRU9jWDBoT3Bwc2N0WGQvUjFWZUtB?=
+ =?utf-8?B?K3VlVStnbXJpRlNwTmNzSHZBUm00VUxTekhtVG5zT0xmZ3JwWHFIOVRVUFE0?=
+ =?utf-8?B?Y2JBWnNVMG5jVXJVd3dQR2dNcFRoWmFkVnp1VTZGb0tKVmM3S09nK09NczFK?=
+ =?utf-8?B?YmtEaWN1aFBqNDJwUC9lbW1Ob2IwVzlJd3cxZWp3cFBLZS9OMGQ5RFRvbkRD?=
+ =?utf-8?B?dDJjWWtqQjd5THdpTDR6Rm5oT0pIN2xHNTBROU1qclRrZWtDN0ZuSWQzV3p4?=
+ =?utf-8?B?eGZkUGd0cDZ3T0VUYmJEWFRCN2JvZ3NnYUFWTWFzMG93cmtkVFM3K0RHMDBi?=
+ =?utf-8?B?RWJaMWlKSlRVWjZJeER1Z0YvZVIrbmJzNTlqZzhKUGtVbElPckdEOXRENnM1?=
+ =?utf-8?B?SkxtbFlQbTJ4ZUtlK1FaeFRzTUliZ0szUitmcmdlNzVNb1BocnJtM3N0Tk1a?=
+ =?utf-8?B?YUFodkJ4c0FMZDJmR3VtUHM4WmZHa01zWTVEbGFQQkp0YnAzNFBMZEZKZFRL?=
+ =?utf-8?B?TWVGSlpLRTZkcUloeG02emhlNmIxYVJHalFId3EyU2xvZHlNY2JqRm1NM3pj?=
+ =?utf-8?B?Nk5sQWNlaDRyNlJQVmUwWTN2K2FCU2pzUGZzTTBMOHE2L2s5VXRacnVOUytI?=
+ =?utf-8?B?TjJBZlcrMS9FNG5VR3RyYnFVbkF1OVM0REJiaXk0dm5uZUxwNUluS2x5Szd6?=
+ =?utf-8?B?OFErQlNPcUI2VitIUC8rajBkaFBoTVVFMWdhNURGTlBNVkZMb1IwQzRPU3FK?=
+ =?utf-8?B?UUxwbzZUcEFaT016TmdpeUJPK0pGaGtpOWxpbDMwY1gzM2FwY1FUd1U5K3M3?=
+ =?utf-8?B?OFovMVJqRW5wbDNINmhPZjZ6dEhrdWFaM3MvOURFQmtjYmxzL0tsd3Z6Mnll?=
+ =?utf-8?B?SHoycXkzM0JFNzBGWGJpR2ZuYlBCTXhiSGIvaEtOUnZMWmJMMTlFc0VoRDAx?=
+ =?utf-8?B?b3BveUlnSlZ1WXA3SWl1MlZzUjN2bThsQ3VoT1EwRDZoMnc5MHJhaFFrZC9x?=
+ =?utf-8?B?SVBia1VmekhCZ3Jra0dXSVlWODlSK2M0MHBMUEhheG11V0hNU2JQTTVUVDdi?=
+ =?utf-8?B?OEFiV3d6Q0JYcjhYbEFNNGIyc0t4ZlQydUExVUNQT3pDUnBCV2pOVkxjVkRG?=
+ =?utf-8?B?Rk1yUXVlMGFQd21VMHpvQTRpRHJwdjRpSXJtQlpSRy8wWmgvQUp5bk9SdW1q?=
+ =?utf-8?B?RksxK0VHendwMlc5N0hKYjNWWWNzb1huN2prYUxwNTZUY0pua0V5d2U0UUV6?=
+ =?utf-8?B?YlRJVzRDTk9vSWdSWFFIOUFZY3BDS3NKblQyc3NyWFNwVjNWajAxNVJ2dXhW?=
+ =?utf-8?B?MmxueHQ0emRncHJzQWVPS1IxemNxbWkrZEsrWkJyWU1yc0xGTnFmbnEzVDlR?=
+ =?utf-8?B?VXZRMHZtY2JBRlQrOHhtMzlWWUExdWFlOHFwUFRhTTB3UWFoOUh1SzhGbVlU?=
+ =?utf-8?B?cy9Vb2U5QjM0R21yaVZzL0twQVNFSThkbnNGS1lCZjJaWW9mQjJGSWFXTVdM?=
+ =?utf-8?Q?/K+PE25L0eBQrmTAV3T5q9wdE?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 121132cf-18d0-498e-5963-08dadf63d20f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 935c1ee8-e69d-4e62-31e9-08dadf6427ac
 X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5825.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2022 12:48:24.6261
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2022 12:50:48.2604
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JkOIuRD/j47NTo3NsfE1qLzsutBBv4GavooWX0XjPn1hq79vMfRQKVEYaABweEMW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7601
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2gTKIUfHlmmstWBr6nwjqiv4KvG2C8QFToM7B7FPtUF0T0b17BxDe1ve8d7jPIV6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4355
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -135,512 +135,484 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 12/14/22 12:16, Jason Wang wrote:
+On 12/14/22 12:13, Jason Wang wrote:
 > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
 >
 >
-> On Wed, Dec 7, 2022 at 10:57 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
->> sfc uses a MCDI DMA buffer that is allocated on the host
->> for communicating with the Firmware. The MCDI buffer IOVA
->> could overlap with the IOVA used by the guest for the
->> virtqueue buffers. To detect such overlap, the DMA mappings
->> from the guest will be stored in a IOVA rbtree and every
->> such mapping will be compared against the MCDI buffer IOVA
->> range. If an overlap is detected, the MCDI buffer will be
->> relocated to a different IOVA.
-> I think it can't prevent guests from guessing the MCDI buffer address
-> and trying to DMA to/from that buffer.
-
-Yes, if the guest can guess the MCDI buffer address, it could use it to 
-DMA to/from this buffer.
-
-However, the guest can modify the buffer contents but can't instruct the 
-MC to execute the request. To cause any MCDI failure, the request buffer 
-needs to be updated when host driver is about to execute the request or 
-response buffer needs to be updated after command execution but before 
-host driver reads it. This would be a very small time window and hard to 
-guess for the guest.
-
-> It might work with some co-operation of the NIC who can validate the
-> DMA initialized by the virtqueue and forbid the DMA to the MDCI
-> buffer.
-I think this problem can be solved using PASID which will be supported 
-by our next hardware version.
->
-> Thanks
-
+> On Wed, Dec 7, 2022 at 10:56 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
+>> Implement functions to perform vDPA operations like creating and
+>> removing virtqueues, getting doorbell register offset etc. using
+>> the MCDI interface with FW.
+>>
 >> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 >> ---
->>   drivers/net/ethernet/sfc/Makefile         |   3 +-
->>   drivers/net/ethernet/sfc/ef100_iova.c     | 205 ++++++++++++++++++++++
->>   drivers/net/ethernet/sfc/ef100_iova.h     |  40 +++++
->>   drivers/net/ethernet/sfc/ef100_nic.c      |   1 -
->>   drivers/net/ethernet/sfc/ef100_vdpa.c     |  38 ++++
->>   drivers/net/ethernet/sfc/ef100_vdpa.h     |  15 ++
->>   drivers/net/ethernet/sfc/ef100_vdpa_ops.c |   5 +
->>   drivers/net/ethernet/sfc/mcdi.h           |   3 +
->>   8 files changed, 308 insertions(+), 2 deletions(-)
->>   create mode 100644 drivers/net/ethernet/sfc/ef100_iova.c
->>   create mode 100644 drivers/net/ethernet/sfc/ef100_iova.h
+>>   drivers/net/ethernet/sfc/Kconfig      |   8 +
+>>   drivers/net/ethernet/sfc/Makefile     |   1 +
+>>   drivers/net/ethernet/sfc/ef100_vdpa.h |  32 +++
+>>   drivers/net/ethernet/sfc/mcdi.h       |   4 +
+>>   drivers/net/ethernet/sfc/mcdi_vdpa.c  | 268 ++++++++++++++++++++++++++
+>>   drivers/net/ethernet/sfc/mcdi_vdpa.h  |  84 ++++++++
+>>   6 files changed, 397 insertions(+)
+>>   create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
+>>   create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
+>>   create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
 >>
+>> diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
+>> index 0950e6b0508f..1fa626c87d36 100644
+>> --- a/drivers/net/ethernet/sfc/Kconfig
+>> +++ b/drivers/net/ethernet/sfc/Kconfig
+>> @@ -63,6 +63,14 @@ config SFC_MCDI_LOGGING
+>>            Driver-Interface) commands and responses, allowing debugging of
+>>            driver/firmware interaction.  The tracing is actually enabled by
+>>            a sysfs file 'mcdi_logging' under the PCI device.
+>> +config SFC_VDPA
+>> +       bool "Solarflare EF100-family VDPA support"
+>> +       depends on SFC && VDPA && SFC_SRIOV
+>> +       default y
+>> +       help
+>> +         This enables support for the virtio data path acceleration (vDPA).
+>> +         vDPA device's datapath complies with the virtio specification,
+>> +         but control path is vendor specific.
+>>
+>>   source "drivers/net/ethernet/sfc/falcon/Kconfig"
+>>   source "drivers/net/ethernet/sfc/siena/Kconfig"
 >> diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
->> index a10eac91ab23..85852ff50b7c 100644
+>> index 712a48d00069..059a0944e89a 100644
 >> --- a/drivers/net/ethernet/sfc/Makefile
 >> +++ b/drivers/net/ethernet/sfc/Makefile
->> @@ -11,7 +11,8 @@ sfc-$(CONFIG_SFC_MTD) += mtd.o
+>> @@ -11,6 +11,7 @@ sfc-$(CONFIG_SFC_MTD) += mtd.o
 >>   sfc-$(CONFIG_SFC_SRIOV)        += sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \
 >>                              mae.o tc.o tc_bindings.o tc_counters.o
 >>
->> -sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o ef100_vdpa.o ef100_vdpa_ops.o
->> +sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o ef100_vdpa.o ef100_vdpa_ops.o \
->> +                          ef100_iova.o
+>> +sfc-$(CONFIG_SFC_VDPA) += mcdi_vdpa.o
 >>   obj-$(CONFIG_SFC)      += sfc.o
 >>
 >>   obj-$(CONFIG_SFC_FALCON) += falcon/
->> diff --git a/drivers/net/ethernet/sfc/ef100_iova.c b/drivers/net/ethernet/sfc/ef100_iova.c
+>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
 >> new file mode 100644
->> index 000000000000..863314c5b9b5
+>> index 000000000000..f6564448d0c7
 >> --- /dev/null
->> +++ b/drivers/net/ethernet/sfc/ef100_iova.c
->> @@ -0,0 +1,205 @@
->> +// SPDX-License-Identifier: GPL-2.0
+>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+>> @@ -0,0 +1,32 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
 >> +/* Driver for Xilinx network controllers and boards
->> + * Copyright(C) 2020-2022 Xilinx, Inc.
->> + * Copyright(C) 2022 Advanced Micro Devices, Inc.
+>> + * Copyright (C) 2020-2022, Xilinx, Inc.
+>> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
 >> + *
 >> + * This program is free software; you can redistribute it and/or modify it
 >> + * under the terms of the GNU General Public License version 2 as published
 >> + * by the Free Software Foundation, incorporated herein by reference.
 >> + */
 >> +
->> +#include "ef100_iova.h"
+>> +#ifndef __EF100_VDPA_H__
+>> +#define __EF100_VDPA_H__
 >> +
->> +static void update_free_list_node(struct ef100_vdpa_iova_node *target_node,
->> +                                 struct ef100_vdpa_iova_node *next_node,
->> +                                 struct ef100_vdpa_nic *vdpa_nic)
+>> +#include <linux/vdpa.h>
+>> +#include <uapi/linux/virtio_net.h>
+>> +#include "net_driver.h"
+>> +#include "ef100_nic.h"
+>> +
+>> +#if defined(CONFIG_SFC_VDPA)
+>> +
+>> +enum ef100_vdpa_device_type {
+>> +       EF100_VDPA_DEVICE_TYPE_NET,
+>> +};
+>> +
+>> +enum ef100_vdpa_vq_type {
+>> +       EF100_VDPA_VQ_TYPE_NET_RXQ,
+>> +       EF100_VDPA_VQ_TYPE_NET_TXQ,
+>> +       EF100_VDPA_VQ_NTYPES
+>> +};
+>> +
+>> +#endif /* CONFIG_SFC_VDPA */
+>> +#endif /* __EF100_VDPA_H__ */
+>> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
+>> index 7e35fec9da35..db4ca4975ada 100644
+>> --- a/drivers/net/ethernet/sfc/mcdi.h
+>> +++ b/drivers/net/ethernet/sfc/mcdi.h
+>> @@ -214,6 +214,10 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
+>>   #define _MCDI_STRUCT_DWORD(_buf, _field)                               \
+>>          ((_buf) + (_MCDI_CHECK_ALIGN(_field ## _OFST, 4) >> 2))
+>>
+>> +#define MCDI_SET_BYTE(_buf, _field, _value) do {                       \
+>> +       BUILD_BUG_ON(MC_CMD_ ## _field ## _LEN != 1);                   \
+>> +       *(u8 *)MCDI_PTR(_buf, _field) = _value;                         \
+>> +       } while (0)
+>>   #define MCDI_STRUCT_SET_BYTE(_buf, _field, _value) do {                        \
+>>          BUILD_BUG_ON(_field ## _LEN != 1);                              \
+>>          *(u8 *)MCDI_STRUCT_PTR(_buf, _field) = _value;                  \
+>> diff --git a/drivers/net/ethernet/sfc/mcdi_vdpa.c b/drivers/net/ethernet/sfc/mcdi_vdpa.c
+>> new file mode 100644
+>> index 000000000000..35f822170049
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/sfc/mcdi_vdpa.c
+>> @@ -0,0 +1,268 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Driver for Xilinx network controllers and boards
+>> + * Copyright (C) 2020-2022, Xilinx, Inc.
+>> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify it
+>> + * under the terms of the GNU General Public License version 2 as published
+>> + * by the Free Software Foundation, incorporated herein by reference.
+>> + */
+>> +
+>> +#include <linux/vdpa.h>
+>> +#include "ef100_vdpa.h"
+>> +#include "efx.h"
+>> +#include "nic.h"
+>> +#include "mcdi_vdpa.h"
+>> +#include "mcdi_pcol.h"
+>> +
+>> +/* The value of target_vf in virtio MC commands like
+>> + * virtqueue create, delete and get doorbell offset should
+>> + * contain the VF index when the calling function is a PF
+>> + * and VF_NULL (0xFFFF) otherwise. As the vDPA driver invokes
+>> + * MC commands in context of the VF, it uses VF_NULL.
+>> + */
+>> +#define MC_CMD_VIRTIO_TARGET_VF_NULL 0xFFFF
+>> +
+>> +struct efx_vring_ctx *efx_vdpa_vring_init(struct efx_nic *efx,  u32 vi,
+>> +                                         enum ef100_vdpa_vq_type vring_type)
 >> +{
->> +       unsigned long target_node_end;
->> +       unsigned long free_area;
->> +       bool in_list;
+>> +       struct efx_vring_ctx *vring_ctx;
+>> +       u32 queue_cmd;
 >> +
->> +       target_node_end = target_node->iova + target_node->size;
->> +       free_area = next_node->iova - target_node_end;
->> +       in_list = !(list_empty(&target_node->free_node));
+>> +       vring_ctx = kzalloc(sizeof(*vring_ctx), GFP_KERNEL);
+>> +       if (!vring_ctx)
+>> +               return ERR_PTR(-ENOMEM);
 >> +
->> +       if (!in_list && free_area >= MCDI_BUF_LEN) {
->> +               list_add(&target_node->free_node,
->> +                        &vdpa_nic->free_list);
->> +       } else if (in_list && free_area < MCDI_BUF_LEN) {
->> +               list_del_init(&target_node->free_node);
+>> +       switch (vring_type) {
+>> +       case EF100_VDPA_VQ_TYPE_NET_RXQ:
+>> +               queue_cmd = MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ;
+>> +               break;
+>> +       case EF100_VDPA_VQ_TYPE_NET_TXQ:
+>> +               queue_cmd = MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ;
+>> +               break;
+>> +       default:
+>> +               pci_err(efx->pci_dev,
+>> +                       "%s: Invalid Queue type %u\n", __func__, vring_type);
+>> +               kfree(vring_ctx);
+>> +               return ERR_PTR(-ENOMEM);
 >> +       }
+>> +
+>> +       vring_ctx->efx = efx;
+>> +       vring_ctx->vf_index = MC_CMD_VIRTIO_TARGET_VF_NULL;
+>> +       vring_ctx->vi_index = vi;
+>> +       vring_ctx->mcdi_vring_type = queue_cmd;
+>> +       return vring_ctx;
 >> +}
 >> +
->> +static void update_free_list(struct ef100_vdpa_iova_node *iova_node,
->> +                            struct ef100_vdpa_nic *vdpa_nic,
->> +                            bool add_node)
+>> +void efx_vdpa_vring_fini(struct efx_vring_ctx *vring_ctx)
 >> +{
->> +       struct ef100_vdpa_iova_node *prev_in = NULL;
->> +       struct ef100_vdpa_iova_node *next_in = NULL;
->> +       struct rb_node *prev_node;
->> +       struct rb_node *next_node;
->> +
->> +       prev_node = rb_prev(&iova_node->node);
->> +       next_node = rb_next(&iova_node->node);
->> +
->> +       if (prev_node)
->> +               prev_in = rb_entry(prev_node,
->> +                                  struct ef100_vdpa_iova_node, node);
->> +       if (next_node)
->> +               next_in = rb_entry(next_node,
->> +                                  struct ef100_vdpa_iova_node, node);
->> +
->> +       if (add_node) {
->> +               if (prev_in)
->> +                       update_free_list_node(prev_in, iova_node, vdpa_nic);
->> +
->> +               if (next_in)
->> +                       update_free_list_node(iova_node, next_in, vdpa_nic);
->> +       } else {
->> +               if (next_in && prev_in)
->> +                       update_free_list_node(prev_in, next_in, vdpa_nic);
->> +               if (!list_empty(&iova_node->free_node))
->> +                       list_del_init(&iova_node->free_node);
->> +       }
+>> +       kfree(vring_ctx);
 >> +}
 >> +
->> +int efx_ef100_insert_iova_node(struct ef100_vdpa_nic *vdpa_nic,
->> +                              u64 iova, u64 size)
+>> +int efx_vdpa_get_features(struct efx_nic *efx,
+>> +                         enum ef100_vdpa_device_type type,
+>> +                         u64 *features)
 >> +{
->> +       struct ef100_vdpa_iova_node *iova_node;
->> +       struct ef100_vdpa_iova_node *new_node;
->> +       struct rb_node *parent;
->> +       struct rb_node **link;
->> +       struct rb_root *root;
->> +       int rc = 0;
+>> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN);
+>> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_GET_FEATURES_IN_LEN);
+>> +       u32 high_val, low_val;
+>> +       ssize_t outlen;
+>> +       u32 dev_type;
+>> +       int rc;
 >> +
->> +       mutex_lock(&vdpa_nic->iova_lock);
->> +
->> +       root = &vdpa_nic->iova_root;
->> +       link = &root->rb_node;
->> +       parent = *link;
->> +       /* Go to the bottom of the tree */
->> +       while (*link) {
->> +               parent = *link;
->> +               iova_node = rb_entry(parent, struct ef100_vdpa_iova_node, node);
->> +
->> +               /* handle duplicate node */
->> +               if (iova_node->iova == iova) {
->> +                       rc = -EEXIST;
->> +                       goto out_unlock;
->> +               }
->> +
->> +               if (iova_node->iova > iova)
->> +                       link = &(*link)->rb_left;
->> +               else
->> +                       link = &(*link)->rb_right;
+>> +       if (!efx) {
+>> +               pci_err(efx->pci_dev, "%s: Invalid NIC pointer\n", __func__);
+>> +               return -EINVAL;
 >> +       }
->> +
->> +       new_node = kzalloc(sizeof(*new_node), GFP_KERNEL);
->> +       if (!new_node) {
->> +               rc = -ENOMEM;
->> +               goto out_unlock;
+>> +       switch (type) {
+>> +       case EF100_VDPA_DEVICE_TYPE_NET:
+>> +               dev_type = MC_CMD_VIRTIO_GET_FEATURES_IN_NET;
+>> +               break;
+>> +       default:
+>> +               pci_err(efx->pci_dev,
+>> +                       "%s: Device type %d not supported\n", __func__, type);
+>> +               return -EINVAL;
 >> +       }
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_GET_FEATURES_IN_DEVICE_ID, dev_type);
+>> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_GET_FEATURES, inbuf, sizeof(inbuf),
+>> +                         outbuf, sizeof(outbuf), &outlen);
+>> +       if (rc)
+>> +               return rc;
+>> +       if (outlen < MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN)
+>> +               return -EIO;
+>> +       low_val = MCDI_DWORD(outbuf, VIRTIO_GET_FEATURES_OUT_FEATURES_LO);
+>> +       high_val = MCDI_DWORD(outbuf, VIRTIO_GET_FEATURES_OUT_FEATURES_HI);
+>> +       *features = ((u64)high_val << 32) | low_val;
+>> +       return 0;
+>> +}
 >> +
->> +       new_node->iova = iova;
->> +       new_node->size = size;
->> +       INIT_LIST_HEAD(&new_node->free_node);
+>> +int efx_vdpa_verify_features(struct efx_nic *efx,
+>> +                            enum ef100_vdpa_device_type type, u64 features)
+>> +{
+>> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_TEST_FEATURES_IN_LEN);
+>> +       u32 dev_type;
+>> +       int rc;
 >> +
->> +       /* Put the new node here */
->> +       rb_link_node(&new_node->node, parent, link);
->> +       rb_insert_color(&new_node->node, root);
->> +
->> +       update_free_list(new_node, vdpa_nic, true);
->> +
->> +out_unlock:
->> +       mutex_unlock(&vdpa_nic->iova_lock);
+>> +       BUILD_BUG_ON(MC_CMD_VIRTIO_TEST_FEATURES_OUT_LEN != 0);
+>> +       switch (type) {
+>> +       case EF100_VDPA_DEVICE_TYPE_NET:
+>> +               dev_type = MC_CMD_VIRTIO_GET_FEATURES_IN_NET;
+>> +               break;
+>> +       default:
+>> +               pci_err(efx->pci_dev,
+>> +                       "%s: Device type %d not supported\n", __func__, type);
+>> +               return -EINVAL;
+>> +       }
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_DEVICE_ID, dev_type);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_FEATURES_LO, features);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_TEST_FEATURES_IN_FEATURES_HI,
+>> +                      features >> 32);
+>> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_TEST_FEATURES, inbuf,
+>> +                         sizeof(inbuf), NULL, 0, NULL);
 >> +       return rc;
 >> +}
 >> +
->> +static struct ef100_vdpa_iova_node*
->> +ef100_rbt_search_node(struct ef100_vdpa_nic *vdpa_nic,
->> +                     unsigned long iova)
+>> +int efx_vdpa_vring_create(struct efx_vring_ctx *vring_ctx,
+>> +                         struct efx_vring_cfg *vring_cfg,
+>> +                         struct efx_vring_dyn_cfg *vring_dyn_cfg)
 >> +{
->> +       struct ef100_vdpa_iova_node *iova_node;
->> +       struct rb_node *rb_node;
->> +       struct rb_root *root;
+>> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_INIT_QUEUE_REQ_LEN);
+>> +       struct efx_nic *efx = vring_ctx->efx;
+>> +       int rc;
 >> +
->> +       root = &vdpa_nic->iova_root;
->> +       if (!root)
->> +               return NULL;
+>> +       BUILD_BUG_ON(MC_CMD_VIRTIO_INIT_QUEUE_RESP_LEN != 0);
 >> +
->> +       rb_node = root->rb_node;
+>> +       MCDI_SET_BYTE(inbuf, VIRTIO_INIT_QUEUE_REQ_QUEUE_TYPE,
+>> +                     vring_ctx->mcdi_vring_type);
+>> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_TARGET_VF,
+>> +                     vring_ctx->vf_index);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INSTANCE,
+>> +                      vring_ctx->vi_index);
 >> +
->> +       while (rb_node) {
->> +               iova_node = rb_entry(rb_node, struct ef100_vdpa_iova_node,
->> +                                    node);
->> +               if (iova_node->iova > iova)
->> +                       rb_node = rb_node->rb_left;
->> +               else if (iova_node->iova < iova)
->> +                       rb_node = rb_node->rb_right;
->> +               else
->> +                       return iova_node;
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_SIZE, vring_cfg->size);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_LO,
+>> +                      vring_cfg->desc);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_HI,
+>> +                      vring_cfg->desc >> 32);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_LO,
+>> +                      vring_cfg->avail);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_HI,
+>> +                      vring_cfg->avail >> 32);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_LO,
+>> +                      vring_cfg->used);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_HI,
+>> +                      vring_cfg->used >> 32);
+>> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_MSIX_VECTOR,
+>> +                     vring_cfg->msix_vector);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_FEATURES_LO,
+>> +                      vring_cfg->features);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_FEATURES_HI,
+>> +                      vring_cfg->features >> 32);
+>> +
+>> +       if (vring_dyn_cfg) {
+>> +               MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INITIAL_PIDX,
+>> +                              vring_dyn_cfg->avail_idx);
+>> +               MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INITIAL_CIDX,
+>> +                              vring_dyn_cfg->used_idx);
+>> +       }
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_MPORT_SELECTOR,
+>> +                      MAE_MPORT_SELECTOR_ASSIGNED);
+>> +
+>> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_INIT_QUEUE, inbuf, sizeof(inbuf),
+>> +                         NULL, 0, NULL);
+> It looks to me the mcdi_buffer belongs to the VF (allocated by the
+> calling of ef100_probe_vf()), I wonder how it is isolated from the DMA
+> that is initiated by userspace(guest)?
+>
+> Thanks
+Yes, I just responded to this concern on a similar comment in patch 9/11.
+>
+>
+>> +       return rc;
+>> +}
+>> +
+>> +int efx_vdpa_vring_destroy(struct efx_vring_ctx *vring_ctx,
+>> +                          struct efx_vring_dyn_cfg *vring_dyn_cfg)
+>> +{
+>> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN);
+>> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_FINI_QUEUE_REQ_LEN);
+>> +       struct efx_nic *efx = vring_ctx->efx;
+>> +       ssize_t outlen;
+>> +       int rc;
+>> +
+>> +       MCDI_SET_BYTE(inbuf, VIRTIO_FINI_QUEUE_REQ_QUEUE_TYPE,
+>> +                     vring_ctx->mcdi_vring_type);
+>> +       MCDI_SET_WORD(inbuf, VIRTIO_INIT_QUEUE_REQ_TARGET_VF,
+>> +                     vring_ctx->vf_index);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_INIT_QUEUE_REQ_INSTANCE,
+>> +                      vring_ctx->vi_index);
+>> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_FINI_QUEUE, inbuf, sizeof(inbuf),
+>> +                         outbuf, sizeof(outbuf), &outlen);
+>> +
+>> +       if (rc)
+>> +               return rc;
+>> +
+>> +       if (outlen < MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN)
+>> +               return -EIO;
+>> +
+>> +       if (vring_dyn_cfg) {
+>> +               vring_dyn_cfg->avail_idx = MCDI_DWORD(outbuf,
+>> +                                                     VIRTIO_FINI_QUEUE_RESP_FINAL_PIDX);
+>> +               vring_dyn_cfg->used_idx = MCDI_DWORD(outbuf,
+>> +                                                    VIRTIO_FINI_QUEUE_RESP_FINAL_CIDX);
 >> +       }
 >> +
->> +       return NULL;
->> +}
->> +
->> +void efx_ef100_remove_iova_node(struct ef100_vdpa_nic *vdpa_nic,
->> +                               unsigned long iova)
->> +{
->> +       struct ef100_vdpa_iova_node *iova_node;
->> +
->> +       mutex_lock(&vdpa_nic->iova_lock);
->> +       iova_node = ef100_rbt_search_node(vdpa_nic, iova);
->> +       if (!iova_node)
->> +               goto out_unlock;
->> +
->> +       update_free_list(iova_node, vdpa_nic, false);
->> +
->> +       rb_erase(&iova_node->node, &vdpa_nic->iova_root);
->> +       kfree(iova_node);
->> +
->> +out_unlock:
->> +       mutex_unlock(&vdpa_nic->iova_lock);
->> +}
->> +
->> +void efx_ef100_delete_iova(struct ef100_vdpa_nic *vdpa_nic)
->> +{
->> +       struct ef100_vdpa_iova_node *iova_node;
->> +       struct rb_root *iova_root;
->> +       struct rb_node *node;
->> +
->> +       mutex_lock(&vdpa_nic->iova_lock);
->> +
->> +       iova_root = &vdpa_nic->iova_root;
->> +       while (!RB_EMPTY_ROOT(iova_root)) {
->> +               node = rb_first(iova_root);
->> +               iova_node = rb_entry(node, struct ef100_vdpa_iova_node, node);
->> +               if (!list_empty(&iova_node->free_node))
->> +                       list_del_init(&iova_node->free_node);
->> +               if (vdpa_nic->domain)
->> +                       iommu_unmap(vdpa_nic->domain, iova_node->iova,
->> +                                   iova_node->size);
->> +               rb_erase(node, iova_root);
->> +               kfree(iova_node);
->> +       }
->> +
->> +       mutex_unlock(&vdpa_nic->iova_lock);
->> +}
->> +
->> +int efx_ef100_find_new_iova(struct ef100_vdpa_nic *vdpa_nic,
->> +                           unsigned int buf_len,
->> +                           u64 *new_iova)
->> +{
->> +       struct ef100_vdpa_iova_node *iova_node;
->> +
->> +       /* pick the first node from freelist */
->> +       iova_node = list_first_entry_or_null(&vdpa_nic->free_list,
->> +                                            struct ef100_vdpa_iova_node,
->> +                                            free_node);
->> +       if (!iova_node)
->> +               return -ENOENT;
->> +
->> +       *new_iova = iova_node->iova + iova_node->size;
 >> +       return 0;
 >> +}
->> diff --git a/drivers/net/ethernet/sfc/ef100_iova.h b/drivers/net/ethernet/sfc/ef100_iova.h
+>> +
+>> +int efx_vdpa_get_doorbell_offset(struct efx_vring_ctx *vring_ctx,
+>> +                                u32 *offset)
+>> +{
+>> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN);
+>> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_LEN);
+>> +       struct efx_nic *efx = vring_ctx->efx;
+>> +       ssize_t outlen;
+>> +       int rc;
+>> +
+>> +       if (vring_ctx->mcdi_vring_type != MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ &&
+>> +           vring_ctx->mcdi_vring_type != MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ) {
+>> +               pci_err(efx->pci_dev,
+>> +                       "%s: Invalid Queue type %u\n",
+>> +                       __func__, vring_ctx->mcdi_vring_type);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       MCDI_SET_BYTE(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_DEVICE_ID,
+>> +                     MC_CMD_VIRTIO_GET_FEATURES_IN_NET);
+>> +       MCDI_SET_WORD(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_TARGET_VF,
+>> +                     vring_ctx->vf_index);
+>> +       MCDI_SET_DWORD(inbuf, VIRTIO_GET_DOORBELL_OFFSET_REQ_INSTANCE,
+>> +                      vring_ctx->vi_index);
+>> +
+>> +       rc = efx_mcdi_rpc(efx, MC_CMD_VIRTIO_GET_DOORBELL_OFFSET, inbuf,
+>> +                         sizeof(inbuf), outbuf, sizeof(outbuf), &outlen);
+>> +       if (rc)
+>> +               return rc;
+>> +
+>> +       if (outlen < MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN)
+>> +               return -EIO;
+>> +       if (vring_ctx->mcdi_vring_type == MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ)
+>> +               *offset = MCDI_DWORD(outbuf,
+>> +                                    VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_RX_DBL_OFFSET);
+>> +       else
+>> +               *offset = MCDI_DWORD(outbuf,
+>> +                                    VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_TX_DBL_OFFSET);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +int efx_vdpa_get_mtu(struct efx_nic *efx, u16 *mtu)
+>> +{
+>> +       MCDI_DECLARE_BUF(outbuf, MC_CMD_SET_MAC_V2_OUT_LEN);
+>> +       MCDI_DECLARE_BUF(inbuf, MC_CMD_SET_MAC_EXT_IN_LEN);
+>> +       ssize_t outlen;
+>> +       int rc;
+>> +
+>> +       MCDI_SET_DWORD(inbuf, SET_MAC_EXT_IN_CONTROL, 0);
+>> +       rc =  efx_mcdi_rpc(efx, MC_CMD_SET_MAC, inbuf, sizeof(inbuf),
+>> +                          outbuf, sizeof(outbuf), &outlen);
+>> +       if (rc)
+>> +               return rc;
+>> +       if (outlen < MC_CMD_SET_MAC_V2_OUT_LEN)
+>> +               return -EIO;
+>> +
+>> +       *mtu = MCDI_DWORD(outbuf, SET_MAC_V2_OUT_MTU);
+>> +       return 0;
+>> +}
+>> diff --git a/drivers/net/ethernet/sfc/mcdi_vdpa.h b/drivers/net/ethernet/sfc/mcdi_vdpa.h
 >> new file mode 100644
->> index 000000000000..68e39c4152c7
+>> index 000000000000..2a0f7c647c44
 >> --- /dev/null
->> +++ b/drivers/net/ethernet/sfc/ef100_iova.h
->> @@ -0,0 +1,40 @@
+>> +++ b/drivers/net/ethernet/sfc/mcdi_vdpa.h
+>> @@ -0,0 +1,84 @@
 >> +/* SPDX-License-Identifier: GPL-2.0 */
 >> +/* Driver for Xilinx network controllers and boards
->> + * Copyright(C) 2020-2022 Xilinx, Inc.
->> + * Copyright(C) 2022 Advanced Micro Devices, Inc.
+>> + * Copyright (C) 2020-2022, Xilinx, Inc.
+>> + * Copyright (C) 2022, Advanced Micro Devices, Inc.
 >> + *
 >> + * This program is free software; you can redistribute it and/or modify it
 >> + * under the terms of the GNU General Public License version 2 as published
 >> + * by the Free Software Foundation, incorporated herein by reference.
 >> + */
->> +#ifndef EFX_EF100_IOVA_H
->> +#define EFX_EF100_IOVA_H
 >> +
->> +#include "ef100_nic.h"
->> +#include "ef100_vdpa.h"
+>> +#ifndef EFX_MCDI_VDPA_H
+>> +#define EFX_MCDI_VDPA_H
 >> +
 >> +#if defined(CONFIG_SFC_VDPA)
+>> +#include "mcdi.h"
+>> +
 >> +/**
->> + * struct ef100_vdpa_iova_node - guest buffer iova entry
+>> + * struct efx_vring_ctx: The vring context
 >> + *
->> + * @node: red black tree node
->> + * @iova: mapping's IO virtual address
->> + * @size: length of mapped region in bytes
->> + * @free_node: free list node
+>> + * @efx: pointer of the VF's efx_nic object
+>> + * @vf_index: VF index of the vDPA VF
+>> + * @vi_index: vi index to be used for queue creation
+>> + * @mcdi_vring_type: corresponding MCDI vring type
 >> + */
->> +struct ef100_vdpa_iova_node {
->> +       struct rb_node node;
->> +       unsigned long iova;
->> +       size_t size;
->> +       struct list_head free_node;
+>> +struct efx_vring_ctx {
+>> +       struct efx_nic *efx;
+>> +       u32 vf_index;
+>> +       u32 vi_index;
+>> +       u32 mcdi_vring_type;
 >> +};
 >> +
->> +int efx_ef100_insert_iova_node(struct ef100_vdpa_nic *vdpa_nic,
->> +                              u64 iova, u64 size);
->> +void efx_ef100_remove_iova_node(struct ef100_vdpa_nic *vdpa_nic,
->> +                               unsigned long iova);
->> +void efx_ef100_delete_iova(struct ef100_vdpa_nic *vdpa_nic);
->> +int efx_ef100_find_new_iova(struct ef100_vdpa_nic *vdpa_nic,
->> +                           unsigned int buf_len, u64 *new_iova);
->> +#endif  /* CONFIG_SFC_VDPA */
->> +#endif /* EFX_EF100_IOVA_H */
->> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
->> index 41811c519275..72820d2fe19d 100644
->> --- a/drivers/net/ethernet/sfc/ef100_nic.c
->> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
->> @@ -33,7 +33,6 @@
->>
->>   #define EF100_MAX_VIS 4096
->>   #define EF100_NUM_MCDI_BUFFERS 1
->> -#define MCDI_BUF_LEN (8 + MCDI_CTL_SDU_LEN_MAX)
->>
->>   #define EF100_RESET_PORT ((ETH_RESET_MAC | ETH_RESET_PHY) << ETH_RESET_SHARED_SHIFT)
->>
->> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
->> index 80bca281a748..b9368eb1acd5 100644
->> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
->> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
->> @@ -14,6 +14,7 @@
->>   #include <uapi/linux/vdpa.h>
->>   #include "ef100_vdpa.h"
->>   #include "mcdi_vdpa.h"
->> +#include "ef100_iova.h"
->>   #include "mcdi_filters.h"
->>   #include "mcdi_functions.h"
->>   #include "ef100_netdev.h"
->> @@ -280,6 +281,34 @@ static int get_net_config(struct ef100_vdpa_nic *vdpa_nic)
->>          return 0;
->>   }
->>
->> +static int vdpa_update_domain(struct ef100_vdpa_nic *vdpa_nic)
->> +{
->> +       struct vdpa_device *vdpa = &vdpa_nic->vdpa_dev;
->> +       struct iommu_domain_geometry *geo;
->> +       struct device *dma_dev;
+>> +/**
+>> + * struct efx_vring_cfg: Configuration for vring creation
+>> + *
+>> + * @desc: Descriptor area address of the vring
+>> + * @avail: Available area address of the vring
+>> + * @used: Device area address of the vring
+>> + * @size: Queue size, in entries. Must be a power of two
+>> + * @msix_vector: msix vector address for the queue
+>> + * @features: negotiated feature bits
+>> + */
+>> +struct efx_vring_cfg {
+>> +       u64 desc;
+>> +       u64 avail;
+>> +       u64 used;
+>> +       u32 size;
+>> +       u16 msix_vector;
+>> +       u64 features;
+>> +};
 >> +
->> +       dma_dev = vdpa_get_dma_dev(vdpa);
->> +       if (!device_iommu_capable(dma_dev, IOMMU_CAP_CACHE_COHERENCY))
->> +               return -EOPNOTSUPP;
+>> +/**
+>> + * struct efx_vring_dyn_cfg - dynamic vring configuration
+>> + *
+>> + * @avail_idx: last available index of the vring
+>> + * @used_idx: last used index of the vring
+>> + */
+>> +struct efx_vring_dyn_cfg {
+>> +       u32 avail_idx;
+>> +       u32 used_idx;
+>> +};
 >> +
->> +       vdpa_nic->domain = iommu_get_domain_for_dev(dma_dev);
->> +       if (!vdpa_nic->domain)
->> +               return -ENODEV;
+>> +int efx_vdpa_get_features(struct efx_nic *efx, enum ef100_vdpa_device_type type,
+>> +                         u64 *featuresp);
 >> +
->> +       geo = &vdpa_nic->domain->geometry;
->> +       /* save the geo aperture range for validation in dma_map */
->> +       vdpa_nic->geo_aper_start = geo->aperture_start;
+>> +int efx_vdpa_verify_features(struct efx_nic *efx,
+>> +                            enum ef100_vdpa_device_type type, u64 features);
 >> +
->> +       /* Handle the boundary case */
->> +       if (geo->aperture_end == ~0ULL)
->> +               geo->aperture_end -= 1;
->> +       vdpa_nic->geo_aper_end = geo->aperture_end;
+>> +struct efx_vring_ctx *efx_vdpa_vring_init(struct efx_nic *efx, u32 vi,
+>> +                                         enum ef100_vdpa_vq_type vring_type);
 >> +
->> +       /* insert a sentinel node */
->> +       return efx_ef100_insert_iova_node(vdpa_nic,
->> +                                         vdpa_nic->geo_aper_end + 1, 0);
->> +}
+>> +void efx_vdpa_vring_fini(struct efx_vring_ctx *vring_ctx);
 >> +
->>   static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
->>                                                  const char *dev_name,
->>                                                  enum ef100_vdpa_class dev_type,
->> @@ -316,6 +345,7 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
->>          }
->>
->>          mutex_init(&vdpa_nic->lock);
->> +       mutex_init(&vdpa_nic->iova_lock);
->>          dev = &vdpa_nic->vdpa_dev.dev;
->>          efx->vdpa_nic = vdpa_nic;
->>          vdpa_nic->vdpa_dev.dma_dev = &efx->pci_dev->dev;
->> @@ -325,9 +355,11 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
->>          vdpa_nic->pf_index = nic_data->pf_index;
->>          vdpa_nic->vf_index = nic_data->vf_index;
->>          vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
->> +       vdpa_nic->iova_root = RB_ROOT;
->>          vdpa_nic->mac_address = (u8 *)&vdpa_nic->net_config.mac;
->>          ether_addr_copy(vdpa_nic->mac_address, mac);
->>          vdpa_nic->mac_configured = true;
->> +       INIT_LIST_HEAD(&vdpa_nic->free_list);
->>
->>          for (i = 0; i < EF100_VDPA_MAC_FILTER_NTYPES; i++)
->>                  vdpa_nic->filters[i].filter_id = EFX_INVALID_FILTER_ID;
->> @@ -353,6 +385,12 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
->>                  goto err_put_device;
->>          }
->>
->> +       rc = vdpa_update_domain(vdpa_nic);
->> +       if (rc) {
->> +               pci_err(efx->pci_dev, "update_domain failed, err: %d\n", rc);
->> +               goto err_put_device;
->> +       }
+>> +int efx_vdpa_vring_create(struct efx_vring_ctx *vring_ctx,
+>> +                         struct efx_vring_cfg *vring_cfg,
+>> +                         struct efx_vring_dyn_cfg *vring_dyn_cfg);
 >> +
->>          rc = get_net_config(vdpa_nic);
->>          if (rc)
->>                  goto err_put_device;
->> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
->> index 1b0bbba88154..c3c77029973d 100644
->> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
->> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
->> @@ -12,7 +12,9 @@
->>   #define __EF100_VDPA_H__
->>
->>   #include <linux/vdpa.h>
->> +#include <linux/iommu.h>
->>   #include <uapi/linux/virtio_net.h>
->> +#include <linux/rbtree.h>
->>   #include "net_driver.h"
->>   #include "ef100_nic.h"
->>
->> @@ -155,6 +157,12 @@ struct ef100_vdpa_filter {
->>    * @mac_configured: true after MAC address is configured
->>    * @filters: details of all filters created on this vdpa device
->>    * @cfg_cb: callback for config change
->> + * @domain: IOMMU domain
->> + * @iova_root: iova rbtree root
->> + * @iova_lock: lock to synchronize updates to rbtree and freelist
->> + * @free_list: list to store free iova areas of size >= MCDI buffer length
->> + * @geo_aper_start: start of valid IOVA range
->> + * @geo_aper_end: end of valid IOVA range
->>    */
->>   struct ef100_vdpa_nic {
->>          struct vdpa_device vdpa_dev;
->> @@ -174,6 +182,13 @@ struct ef100_vdpa_nic {
->>          bool mac_configured;
->>          struct ef100_vdpa_filter filters[EF100_VDPA_MAC_FILTER_NTYPES];
->>          struct vdpa_callback cfg_cb;
->> +       struct iommu_domain *domain;
->> +       struct rb_root iova_root;
->> +       /* mutex to synchronize rbtree operations */
->> +       struct mutex iova_lock;
->> +       struct list_head free_list;
->> +       u64 geo_aper_start;
->> +       u64 geo_aper_end;
->>   };
->>
->>   int ef100_vdpa_init(struct efx_probe_data *probe_data);
->> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
->> index 718b67f6da90..8c198d949fdb 100644
->> --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
->> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
->> @@ -10,6 +10,7 @@
->>
->>   #include <linux/vdpa.h>
->>   #include "ef100_vdpa.h"
->> +#include "ef100_iova.h"
->>   #include "io.h"
->>   #include "mcdi_vdpa.h"
->>
->> @@ -260,6 +261,7 @@ static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
->>          if (!vdpa_nic->status)
->>                  return;
->>
->> +       efx_ef100_delete_iova(vdpa_nic);
->>          vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
->>          vdpa_nic->status = 0;
->>          vdpa_nic->features = 0;
->> @@ -743,9 +745,12 @@ static void ef100_vdpa_free(struct vdpa_device *vdev)
->>          int i;
->>
->>          if (vdpa_nic) {
->> +               /* clean-up the mappings and iova tree */
->> +               efx_ef100_delete_iova(vdpa_nic);
->>                  for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
->>                          reset_vring(vdpa_nic, i);
->>                  ef100_vdpa_irq_vectors_free(vdpa_nic->efx->pci_dev);
->> +               mutex_destroy(&vdpa_nic->iova_lock);
->>                  mutex_destroy(&vdpa_nic->lock);
->>                  vdpa_nic->efx->vdpa_nic = NULL;
->>          }
->> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
->> index db4ca4975ada..7d977a58a0df 100644
->> --- a/drivers/net/ethernet/sfc/mcdi.h
->> +++ b/drivers/net/ethernet/sfc/mcdi.h
->> @@ -7,6 +7,7 @@
->>   #ifndef EFX_MCDI_H
->>   #define EFX_MCDI_H
->>
->> +#include "mcdi_pcol.h"
->>   /**
->>    * enum efx_mcdi_state - MCDI request handling state
->>    * @MCDI_STATE_QUIESCENT: No pending MCDI requests. If the caller holds the
->> @@ -40,6 +41,8 @@ enum efx_mcdi_mode {
->>          MCDI_MODE_FAIL,
->>   };
->>
->> +#define MCDI_BUF_LEN (8 + MCDI_CTL_SDU_LEN_MAX)
+>> +int efx_vdpa_vring_destroy(struct efx_vring_ctx *vring_ctx,
+>> +                          struct efx_vring_dyn_cfg *vring_dyn_cfg);
 >> +
->>   /**
->>    * struct efx_mcdi_iface - MCDI protocol context
->>    * @efx: The associated NIC.
+>> +int efx_vdpa_get_doorbell_offset(struct efx_vring_ctx *vring_ctx,
+>> +                                u32 *offsetp);
+>> +int efx_vdpa_get_mtu(struct efx_nic *efx, u16 *mtu);
+>> +#endif
+>> +#endif
 >> --
 >> 2.30.1
 >>
