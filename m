@@ -2,241 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7531B64EA0F
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:15:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B91B64EA17
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:17:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbiLPLPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 06:15:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
+        id S230459AbiLPLQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 06:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbiLPLPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:15:36 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FDA3723C
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:15:34 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id h10so1763768ljk.11
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:15:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XNmN8YSKMj8sewHmvzrRIH5jM9zSiZZ/kn+ymwWEngE=;
-        b=EVpOLThGVmDOAFHwste+9mKNye5vUKeVIh74RNp6XeKz8XddVc9K2rx8ZGTx/WY8pe
-         YfH29ku09sCGD8k37Cys5pS2COm6I7OU6/4ITJxHwSmdbkJDTUI8U5fbudaeCdh7Kl5p
-         vdyr+VK+A9dFD1bvxjM1fEM3CavybkuqMf661K9AYpxQ1jHRdYJQFh3al0taLwCz52xU
-         giW5qCP6GnolIVNwlDskg70vMgkAh9sfQW9yVDQxSLWwbpKzQd68I9vn1Fy2AQs1npi/
-         ssvazCNj4uevDXF6qweG8bFgD7auqEWvXOo1TTriQSwQO4mLlaPat0JRh68uYLNOIcRL
-         n/Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XNmN8YSKMj8sewHmvzrRIH5jM9zSiZZ/kn+ymwWEngE=;
-        b=qjwSm5yveIz9+TkobT9LQ6XZl+mRxeHVQE5YEIVUIFQoTLwl+2iSsvzjkbnFzDMYuy
-         2Z4MO7FNVG4v3zRYrEvYqYL1tz8tPvc/VdoBA2VWrcVaTnZ5kt4jMZ6Q9w+XcvljReak
-         vjvUoZfuzN2umBWDPNgEeI8WzXG5osPptCzPlzDL760HGwowK1GOro8+RKvBmo2l1JbE
-         qwkepF94O5b5geXUsFrVwIbrszB/n1/zKmcOr+5aZzLxIvLuJ716bbuZiBmoO/JkvL5j
-         sy7Su4z+vU2+Y1g6Q/hfidyLpkN+PUcl9hL1G9MsFfSzyhjkQ5g+723jiyxRqI/2P+tJ
-         KBxg==
-X-Gm-Message-State: ANoB5plkmkXsVQuy25iEs2hutdR/zqxvZGozXe69jiwySD/QQCT/1ZXk
-        COtwAxjROEB6NrVcft7rHzHzQw==
-X-Google-Smtp-Source: AA0mqf5ZxNILozi/59eThvqaQDUVp7Rne/3dA+LV9B3+gi9zpnKCGbBvH4+liRRo6GkSgJCU7hemVA==
-X-Received: by 2002:a2e:2a83:0:b0:279:c58a:817c with SMTP id q125-20020a2e2a83000000b00279c58a817cmr7758749ljq.39.1671189333181;
-        Fri, 16 Dec 2022 03:15:33 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id i5-20020a2ea365000000b002771057e0e5sm127207ljn.76.2022.12.16.03.15.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Dec 2022 03:15:32 -0800 (PST)
-Message-ID: <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
-Date:   Fri, 16 Dec 2022 12:15:31 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH v2 5/9] dt-bindings: net: motorcomm: add support for
- Motorcomm YT8531
-Content-Language: en-US
-To:     Yanhong Wang <yanhong.wang@starfivetech.com>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+        with ESMTP id S230463AbiLPLQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:16:41 -0500
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC9B566F2;
+        Fri, 16 Dec 2022 03:16:41 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.west.internal (Postfix) with ESMTP id 0790732005B5;
+        Fri, 16 Dec 2022 06:16:39 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Fri, 16 Dec 2022 06:16:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1671189399; x=
+        1671275799; bh=urmZCaqP5uUKG9f3w/5JTsr/NxjJLfj/bS5O5zJbL3k=; b=B
+        P9QPaWyUZsW0J7NWwNNXiRe/NP294gh+txwjjTkkU7clAeWF6FQVMwjQPV++4p1G
+        7zFWR2NZpqnvdtedG0DPxcX0WJ5f1gT450S+q96g0V7/x8i1qpxhKnnQFLO3QAfS
+        sKp/ijlHu1aKWKhWG3rt6l42y1GQxjdALSSObWQH1iPo+1dEBoF/J+lr7N8Sst32
+        fNnN98J8FL767UA7dMHFGUxba6wuqILe4HlKqwngxvEWCfCWVoA70R13rKvAytDa
+        pvY//qtyEeKZvD7dtLw5bG/u6lJl0g/uUEn3PC2rmoremmWGeEnCoTKj+5YVTHuX
+        NTpScNCJLj0Veh/qWENzg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1671189399; x=
+        1671275799; bh=urmZCaqP5uUKG9f3w/5JTsr/NxjJLfj/bS5O5zJbL3k=; b=h
+        JIGQ2wRfu8pouckzEfxNWbPfRSPaO6SywY5VipBipFb0SYlKTf2BU8rQETn7goSG
+        ZuxIpeT9eDYAza2ft8WopgRVO8PQsRJYejVHzw1l/7WrzETdahgwh1dqKoj8gRhk
+        zjKxAnrdOQH1s8vgq1Pcxjf4LkpU1pxVakRPnprG+IurIzY8pMXgmCGII3trEqqF
+        wtuZRnlvP7SXRhNZr4ShfO+zGsYmWpdBQipfyMVfY+BJvoquqpC8ms4Bz6gxQvE6
+        NP/fQPmjyv2ZKdpMCJS1XRSfC0CSylaOVKRkDIK9Ojy1bZad6S25sf36DPHbsl8B
+        kBY6Jv0MDpVr6tNR8VcBQ==
+X-ME-Sender: <xms:llOcYyL18Ft-JhsVdpqThXN3ciCGyoPjree7-ZSiqUKwI-iVCFQiuw>
+    <xme:llOcY6IHI2ErJgRxFa7y5Ta25FW5I7Agjy_16qzgYiZpHjehyclz5LeS3mNiOHVah
+    rSIE1oZntNowtGQ1h0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejgddvgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepgeefjeehvdelvdffieejieejiedvvdfhleeivdelveehjeelteegudektdfg
+    jeevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:llOcYyskflETP8t1zefHbbyYYHF2Uce1IHgY2irqUlMRMKLH1P3tNA>
+    <xmx:llOcY3Z0u-2oIYML-ikr6AGGk4c9eEZPJQ5z0MSS-3YpDQY39XnCkA>
+    <xmx:llOcY5ZefpA51A6Ke9qK5v6ptX6wpZkzmJzdnzJaNB8W0oLhM2rkWA>
+    <xmx:l1OcY7meDvbcNTtSMtNfYLNJraVZY_-_AxQX_DzFIrNdCymRfxvT_Q>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id D009AB60086; Fri, 16 Dec 2022 06:16:38 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
+Mime-Version: 1.0
+Message-Id: <486f9bc9-408f-4c29-b675-cbd61673f58c@app.fastmail.com>
+In-Reply-To: <87k02sd1uz.fsf@toke.dk>
+References: <20221215165553.1950307-1-arnd@kernel.org>
+ <87k02sd1uz.fsf@toke.dk>
+Date:   Fri, 16 Dec 2022 12:16:17 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        "Arnd Bergmann" <arnd@kernel.org>, "Kalle Valo" <kvalo@kernel.org>,
+        "Pavel Skripkin" <paskripkin@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
- <20221216070632.11444-6-yanhong.wang@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221216070632.11444-6-yanhong.wang@starfivetech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath9k: use proper statements in conditionals
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/12/2022 08:06, Yanhong Wang wrote:
-> Add support for Motorcomm Technology YT8531 10/100/1000 Ethernet PHY.
-> The document describe details of clock delay train configuration.
-> 
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+On Thu, Dec 15, 2022, at 18:16, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> index 30f0765fb9fd..237f4ec2cffd 100644
+>> --- a/drivers/net/wireless/ath/ath9k/htc.h
+>> +++ b/drivers/net/wireless/ath/ath9k/htc.h
+>> @@ -327,9 +327,9 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB=
+(struct sk_buff *skb)
+>>  }
+>> =20
+>>  #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+>> -#define __STAT_SAFE(hif_dev, expr)	((hif_dev)->htc_handle->drv_priv =
+? (expr) : 0)
+>> -#define CAB_STAT_INC(priv)		((priv)->debug.tx_stats.cab_queued++)
+>> -#define TX_QSTAT_INC(priv, q)		((priv)->debug.tx_stats.queue_stats[q=
+]++)
+>> +#define __STAT_SAFE(hif_dev, expr)	do { ((hif_dev)->htc_handle->drv_=
+priv ? (expr) : 0); } while (0)
+>> +#define CAB_STAT_INC(priv)		do { ((priv)->debug.tx_stats.cab_queued+=
++); } while (0)
+>> +#define TX_QSTAT_INC(priv, q)		do { ((priv)->debug.tx_stats.queue_st=
+ats[q]++); } while (0)
+>
+> Hmm, is it really necessary to wrap these in do/while constructs? AFAI=
+CT
+> they're all simple statements already?
 
-Missing vendor prefix documentation. I don't think you tested this at
-all with checkpatch and dt_binding_check.
+It's generally safer to do the same thing on both side of the #ifdef.
 
-> ---
->  .../bindings/net/motorcomm,yt8531.yaml        | 111 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 112 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml
-> new file mode 100644
-> index 000000000000..c5b8a09a78bb
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml
-> @@ -0,0 +1,111 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/motorcomm,yt8531.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Motorcomm YT8531 Gigabit Ethernet PHY
-> +
-> +maintainers:
-> +  - Yanhong Wang <yanhong.wang@starfivetech.com>
-> +
+The "do { } while (0)" is an empty statement that is needed to fix
+the bug on the #else side. The expressions you have on the #ifdef
+side can be used as values, and wrapping them in do{}while(0)
+turns them into statements (without a value) as well, so fewer
+things can go wrong when you only test one side.
 
-Why there is no reference to ethernet-phy.yaml?
+I suppose the best solution would be to just use inline functions
+for all of them and get rid of the macros.
 
-> +select:
-> +  properties:
-> +    $nodename:
-> +      pattern: "^ethernet-phy(@[a-f0-9]+)?$"
-
-I don't think that's correct approach. You know affect all phys.
-
-> +
-> +  required:
-> +    - $nodename
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^ethernet-phy(@[a-f0-9]+)?$"
-
-Just reference ethernet-phy.yaml.
-
-> +
-> +  reg:
-> +    minimum: 0
-> +    maximum: 31
-> +    description:
-> +      The ID number for the PHY.
-
-Drop duplicated properties.
-
-> +
-> +  rxc_dly_en:
-
-No underscores in node names. Missing vendor prefix. Both apply to all
-your other custom properties, unless they are not custom but generic.
-
-Missing ref.
-
-> +    description: |
-> +      RGMII Receive PHY Clock Delay defined with fixed 2ns.This is used for
-
-After every full stop goes space.
-
-> +      PHY that have configurable RX internal delays. If this property set
-> +      to 1, then automatically add 2ns delay pad for Receive PHY clock.
-
-Nope, this is wrong. You wrote now boolean property as enum.
-
-> +    enum: [0, 1]
-> +    default: 0
-> +
-> +  rx_delay_sel:
-> +    description: |
-> +      This is supplement to rxc_dly_en property,and it can
-> +      be specified in 150ps(pico seconds) steps. The effective
-> +      delay is: 150ps * N.
-
-Nope. Use proper units and drop all this register stuff.
-
-> +    minimum: 0
-> +    maximum: 15
-> +    default: 0
-> +
-> +  tx_delay_sel_fe:
-> +    description: |
-> +      RGMII Transmit PHY Clock Delay defined in pico seconds.This is used for
-> +      PHY's that have configurable TX internal delays when speed is 100Mbps
-> +      or 10Mbps. It can be specified in 150ps steps, the effective delay
-> +      is: 150ps * N.
-
-The binding is in very poor shape. Please look carefully in
-example-schema. All my previous comments apply everywhere.
-
-> +    minimum: 0
-> +    maximum: 15
-> +    default: 15
-> +
-> +  tx_delay_sel:
-> +    description: |
-> +      RGMII Transmit PHY Clock Delay defined in pico seconds.This is used for
-> +      PHY's that have configurable TX internal delays when speed is 1000Mbps.
-> +      It can be specified in 150ps steps, the effective delay is: 150ps * N.
-> +    minimum: 0
-> +    maximum: 15
-> +    default: 1
-> +
-> +  tx_inverted_10:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 10Mbps.
-> +      0: original   1: inverted
-> +    enum: [0, 1]
-> +    default: 0
-> +
-> +  tx_inverted_100:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 100Mbps.
-> +      0: original   1: inverted
-> +    enum: [0, 1]
-> +    default: 0
-> +
-> +  tx_inverted_1000:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 1000Mbps.
-> +      0: original   1: inverted
-> +    enum: [0, 1]
-> +    default: 0
-> +
-> +required:
-> +  - reg
-> +
-> +additionalProperties: true
-
-This must be false. After referencing ethernet-phy this should be
-unevaluatedProperties: false.
-
-
-Best regards,
-Krzysztof
-
+     Arnd
