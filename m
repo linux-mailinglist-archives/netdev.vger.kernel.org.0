@@ -2,81 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B728164F0A1
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 18:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8184B64F0F4
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 19:29:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231905AbiLPRtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 12:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
+        id S231668AbiLPS3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 13:29:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231903AbiLPRss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 12:48:48 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC73975096;
-        Fri, 16 Dec 2022 09:48:36 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id ay14-20020a05600c1e0e00b003cf6ab34b61so4649477wmb.2;
-        Fri, 16 Dec 2022 09:48:36 -0800 (PST)
+        with ESMTP id S230089AbiLPS3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 13:29:15 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94F010B5D;
+        Fri, 16 Dec 2022 10:29:13 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id g10so3102843plo.11;
+        Fri, 16 Dec 2022 10:29:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=8zWJfmGJB8jfPH50vyYfP5Ey+tTmkUfqlzx6LleQ+S8=;
-        b=lrx9iZ4hdiaz7S+3dS9g7iVkeHOEIGR3an1TsGz7KMYt7BgQOcZIcaglJn5D299NsU
-         WXyML7zPnKGqQKkkEMdGTcUpu89azoy/Z070dyTFy733n8fw+SMSRCZMul6gQfah/xwb
-         g9TD5pL8bp10oEuoLeYtzXcuXi8GxTguRJg653hVjHwSnh8x9TfkVMnFsi17QulIOGaR
-         1Aa4k6W4jeBn3l+iZJVFjRmz0HPo20I6R4SJDMk9Y74l2SmKqhs0ALq3OsEZfUqAMa4q
-         2GGW1OzsKM0d0dI3+DfnZ2dFkjggfWMmRxWFYBpWIM3qMNpPxheNmimwmmkTLSEm/l19
-         D8Lw==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NPqYI1ST8fV6Zyc8gkR0LNMJ6yqnV18F+EFyxcm3Q1c=;
+        b=cpW1RWj2+uzTxI/F2Icl57mG+mp7llzdEgeQ5xSniGiuEssr9YtYiJ85WQmLHZu+R6
+         EfQ5kXufKjrjOqWd4bcM9yru+dDyWt4TkMRxhLDOx86cnMedXV/s+H0+KK+oh6NYDYZl
+         ZVUZbitACZB0e4Ok3hx5iV5Kq1pJ4yMGNbmK+/iXWHFnumHazCqziAjKEcig0rriElAi
+         yWpYDnIaAAx0mad68zF41l6iB99miC8FQV+5bWzu339gCFlYSTLUcdPF5ErtHultdUWZ
+         ddHRwUylDrGuXEJvwrBmzfiQhFlkaXPmABiHEb0RlgzQgzqY3SHbF7dYozQBhB1MVn+e
+         ZjfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8zWJfmGJB8jfPH50vyYfP5Ey+tTmkUfqlzx6LleQ+S8=;
-        b=k/mMkcDrTvUNq3+ZkWzGQbh3vQAfALnvXgIlvpFAVfCh8JkUPV7lBM5lJT2+agsPSK
-         usCYHblBOyL5TRuEsFkWLoihcDfD8VLph++BJmSjLyDsXn0ZxR6eihVhH0pL6oqg9QvE
-         ISAaPTaEvcrv9DER4x4xWxDrMCo4SQtCXTL+wS0dOE4WoL/US7iq3B/i5ke8JEn9j1lK
-         +t4lk6LHFPmB+hRfj5j36vHQqYXpHLy9AanT8/5g68dYCcyXAx8LuIgXX7sR2HLWDfq8
-         KH2bvykCyrBWZGzNeTSDMEUIussWg+yihe2Wgczthrp51i2pT44OwpwPn+8A9eqHkO3+
-         Faag==
-X-Gm-Message-State: ANoB5pl0wAIc/lve0Dfvwe/X6EnqshKUF4Q4LgnDY5e88qDsNdx7Ot9v
-        1LHAAaD64IwKUW/yrmSKvRA=
-X-Google-Smtp-Source: AA0mqf7k2Crj5d7n+weeeEhbDEz6FWokKcOlQ+o/Mi0kDYBhYsFqKRgSQoEPJAMEVtDF/DdZaH/d8g==
-X-Received: by 2002:a05:600c:1c87:b0:3cf:ae53:9193 with SMTP id k7-20020a05600c1c8700b003cfae539193mr27635762wms.39.1671212915241;
-        Fri, 16 Dec 2022 09:48:35 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-18.ip85.fastwebnet.it. [93.42.71.18])
-        by smtp.gmail.com with ESMTPSA id t187-20020a1c46c4000000b003d21759db42sm10676460wma.5.2022.12.16.09.48.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 09:48:34 -0800 (PST)
-Message-ID: <639caf72.1c0a0220.cda85.0678@mx.google.com>
-X-Google-Original-Message-ID: <Y5yvc8VBzH/IMswW@Ansuel-xps.>
-Date:   Fri, 16 Dec 2022 18:48:35 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: Re: [PATCH v7 10/11] net: dsa: qca8k: add LEDs support
-References: <20221214235438.30271-1-ansuelsmth@gmail.com>
- <20221214235438.30271-11-ansuelsmth@gmail.com>
- <Y5teRQ5mv1aTix4w@shell.armlinux.org.uk>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NPqYI1ST8fV6Zyc8gkR0LNMJ6yqnV18F+EFyxcm3Q1c=;
+        b=7Pu2BuXiIRhZu8NOffO9+WRa4cVd2+5cJWyXYaPHy5Ex6eBqKz1jCZgdJKOr1NRNdx
+         zhJJ4iY9ecwvNal6z0l7sy4BhwdxEBKdo+8oKIDyl3pmMHAGp6FK7xl0EnpsIUKKBPeh
+         IaqeuoOWi7I5IN9jyBaSfxZCsNkgOq1LLr0uLOmkW+7wiW6EqXj4dG0uwR9uP77m76Xn
+         LqLr5Vqu3bdqSMbJ/pxi0gJTG0nM05rg1+lUJQi3sBSTKh1r8HpN2yF3cf/oMojAOuoh
+         1NZC7VZIt1DMCqKt2HK8t54aeE9QGLV8Q1HM42YJBroZjPPksg3rTSTUGsvjNuzRBRqU
+         xL+g==
+X-Gm-Message-State: AFqh2kqXX/duxccytoxtSzzVAdV7b+g5GjV68VgmrZBIA1tnvJ7fxSho
+        CV2zbWaMr+liaGJTVyjfiPiAmjbzr1pEWO9o7ezI/OaYdcw=
+X-Google-Smtp-Source: AMrXdXvaLnn0h6GwZkkJ09vxzXcvJQyXnLGsuE4mMmiJ7kphOFjpwgL0vZEysqcHkRpGxRoq9XwOzPet3UpTiMXk1eI=
+X-Received: by 2002:a17:902:9a8c:b0:190:fc28:8cb6 with SMTP id
+ w12-20020a1709029a8c00b00190fc288cb6mr295776plp.144.1671215353099; Fri, 16
+ Dec 2022 10:29:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y5teRQ5mv1aTix4w@shell.armlinux.org.uk>
+References: <20221213004754.2633429-1-peter@pjd.dev> <ac48b381b11c875cf36a471002658edafe04d9b9.camel@gmail.com>
+ <7A3DBE8E-C13D-430D-B851-207779148A77@pjd.dev>
+In-Reply-To: <7A3DBE8E-C13D-430D-B851-207779148A77@pjd.dev>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 16 Dec 2022 10:29:00 -0800
+Message-ID: <CAKgT0Uf-9XwvJJTZOD0EHby6Lr0R-tMYGiR_2og3k=d_eTBPAw@mail.gmail.com>
+Subject: Re: [PATCH] net/ncsi: Always use unicast source MAC address
+To:     Peter Delevoryas <peter@pjd.dev>
+Cc:     sam@mendozajonas.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -87,247 +70,295 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 15, 2022 at 05:49:57PM +0000, Russell King (Oracle) wrote:
-> Hi,
-> 
-> On Thu, Dec 15, 2022 at 12:54:37AM +0100, Christian Marangi wrote:
-> > +static int
-> > +qca8k_cled_hw_control_configure(struct led_classdev *ldev, unsigned long rules,
-> > +				enum blink_mode_cmd cmd)
-> > +{
-> > +	struct qca8k_led *led = container_of(ldev, struct qca8k_led, cdev);
-> > +	struct led_trigger *trigger = ldev->trigger;
-> > +	struct qca8k_led_pattern_en reg_info;
-> > +	struct qca8k_priv *priv = led->priv;
-> > +	u32 offload_trigger = 0, mask, val;
-> > +	int ret;
-> > +
-> > +	/* Check trigger compatibility */
-> > +	if (strcmp(trigger->name, "netdev"))
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	if (!strcmp(trigger->name, "netdev"))
-> > +		ret = qca8k_parse_netdev(rules, &offload_trigger, &mask);
-> 
-> I'm not sure how well the compiler will spot that, but as far as
-> readability goes, that second if() statement appears to be redundant.
+On Thu, Dec 15, 2022 at 5:08 PM Peter Delevoryas <peter@pjd.dev> wrote:
 >
+>
+>
+> > On Dec 13, 2022, at 8:41 AM, Alexander H Duyck <alexander.duyck@gmail.c=
+om> wrote:
+> >
+> > On Mon, 2022-12-12 at 16:47 -0800, Peter Delevoryas wrote:
+> >> I use QEMU for development, and I noticed that NC-SI packets get dropp=
+ed by
+> >> the Linux software bridge[1] because we use a broadcast source MAC add=
+ress
+> >> for the first few NC-SI packets.
+> >
+> > Normally NC-SI packets should never be seen by a bridge.
+>
+> True, and it=E2=80=99s good to keep this in context. I=E2=80=99m trying t=
+o make this change
+> to support simulation environments, but any change in NC-SI could easily
+> result in the out-of-band network connection to BMC=E2=80=99s in real dat=
+a centers
+> failing to come up, which can be really bad and usually impossible to
+> recover remotely.
+>
+> > Isn't NC-SI
+> > really supposed to just be between the BMC and the NIC firmware?
+>
+> Yep
+>
+> > Depending on your setup it might make more sense to use something like
+> > macvtap or a socket connection to just bypass the need for the bridge
+> > entirely.
+>
+> For unicast, yes, but I want to test multiple NIC=E2=80=99s sharing an RM=
+II
+> link and verifying the broadcast behavior, and the failover behavior
+> when an RX or TX channel goes down.
+>
+> The multicast UDP socket backend _does_ work, but I was getting some
+> recirculation problems or some kind of buffering thing. I managed
+> to get tap0 + tap1 + br0 working faster.
 
-Leftover when the driver supported 2 trigger. The idea was to provide a
-"template" to show the flow of the function.
+Right, but I think part of the issue is that things are being extended
+in a way that may actually hurt the maintainability of it.
+Specifically it seems like the general idea is that the NCSI interface
+should be using either broadcast or the assigned unicast address as
+its source MAC address.
 
-> > +
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	qca8k_get_control_led_reg(led->port_num, led->led_num, &reg_info);
-> > +
-> > +	switch (cmd) {
-> > +	case BLINK_MODE_SUPPORTED:
-> > +		/* We reach this point, we are sure the trigger is supported */
-> > +		return 1;
-> > +	case BLINK_MODE_ZERO:
-> > +		/* We set 4hz by default */
-> > +		u32 default_reg = QCA8K_LED_BLINK_4HZ;
-> > +
-> > +		ret = regmap_update_bits(priv->regmap, reg_info.reg,
-> > +					 QCA8K_LED_RULE_MASK << reg_info.shift,
-> > +					 default_reg << reg_info.shift);
-> > +		break;
-> > +	case BLINK_MODE_ENABLE:
-> > +		ret = regmap_update_bits(priv->regmap, reg_info.reg,
-> > +					 mask << reg_info.shift,
-> > +					 offload_trigger << reg_info.shift);
-> > +		break;
-> > +	case BLINK_MODE_DISABLE:
-> > +		ret = regmap_update_bits(priv->regmap, reg_info.reg,
-> > +					 mask << reg_info.shift,
-> > +					 0);
-> > +		break;
-> 
-> I think it needs to be made more clear in the documentation that if
-> this is called with ENABLE, then _only_ those modes in flags... (or
-> is it now called "rules"?) are to be enabled and all other modes
-> should be disabled. Conversely, DISABLE is used to disable all
-> modes. However, if that's the case, then ZERO was misdescribed, and
-> should probably be called DEFAULT. At least that's the impression
-> that I get from the above code.
-> 
+My main concern with just using the raw MAC address from the device is
+that it may be something that would be more problematic than just
+being broadcast. My suggestion at a minimum would be to verify it is
+valid before we just use it or to do something like in the code I
+referenced where if the device doesn't have a valid MAC address we
+just overwrite it with broadcast.
 
-ZERO disable all the rules. Driver can keep some rule enabled (this is
-the case for qca8k blink mode at 4hz by default)
+> >
+> >> The spec requires that the destination MAC address is FF:FF:FF:FF:FF:F=
+F,
+> >> but it doesn't require anything about the source MAC address as far as=
+ I
+> >> know. From testing on a few different NC-SI NIC's (Broadcom 57502, Nvi=
+dia
+> >> CX4, CX6) I don't think it matters to the network card. I mean, Meta h=
+as
+> >> been using this in mass production with millions of BMC's [2].
+> >>
+> >> In general, I think it's probably just a good idea to use a unicast MA=
+C.
+> >
+> > I'm not sure I agree there. What is the initial value of the address?
+>
+> Ok so, to be honest, I thought that the BMC=E2=80=99s FTGMAC100 periphera=
+ls
+> came with addresses provisioned from the factory, and that we were just
+> discarding that value and using an address provisioned through the NIC,
+> because I hadn=E2=80=99t really dug into the FTGMAC100 datasheet fully. I=
+ see now
+> that the MAC address register I thought was a read-only manufacturing
+> value is actually 8 different MAC address r/w registers for filtering.
+> *facepalm*
+>
+> It suddenly makes a lot more sense why all these OEM Get MAC Address
+> commands exist: the BMC chip doesn=E2=80=99t come with any MAC addresses =
+from
+> manufacturing. It=E2=80=99s a necessity, not some convenience artifact/et=
+c.
+>
+> So, tracing some example systems to see what shows up:
+>
+> One example:
+> INIT: Entering runlevel: 5
+> Configuring network interfaces... [   25.893118] 8021q: adding VLAN 0 to =
+HW filter on device eth0
+> [   25.904809] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   25.917307] ftgmac100 1e660000.ethernet eth0: NCSI: Handler for packet=
+ type 0x82 returned -19
+> [   25.958096] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   25.978124] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   25.990559] ftgmac100 1e660000.ethernet eth0: NCSI: 'bad' packet ignor=
+ed for type 0xd0
+> [   26.018180] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.030631] ftgmac100 1e660000.ethernet eth0: NCSI: 'bad' packet ignor=
+ed for type 0xd0
+> [   26.046594] ftgmac100 1e660000.ethernet eth0: NCSI: transmit cmd 0x50 =
+ncsi_oem_sma_mlx success during probe
+> [   26.168109] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.198101] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.238237] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.272011] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.308155] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.320504] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> done.
+> [   26.408094] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.438100] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.450537] ftgmac100 1e660000.ethernet eth0: NCSI: bcm_gmac16 MAC RE:=
+DA:CT:ED:HE:HE
+> Starting random number generator[   26.472388] NCSI: source=3Dff:ff:ff:ff=
+:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+>  daemon[   26.518241] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff=
+:ff:ff
+> [   26.559504] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> .
+> [   26.608229] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> Setup dhclient for IPv6... done.
+> [   26.681879] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.730523] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.808191] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+> [   26.855689] NCSI: source=3Dff:ff:ff:ff:ff:ff dest=3Dff:ff:ff:ff:ff:ff
+>
+> Oddly, due to that code you mentioned, all NC-SI packets are using
+> a broadcast source MAC address, even after the Get MAC Address sequence
+> gets the MAC provisioned for the BMC from the Broadcom NIC.
+>
+> root@bmc-oob:~# ifconfig
+> eth0      Link encap:Ethernet  HWaddr RE:DA:CT:ED:HE:HE
+>           inet addr:XXXXXXX  Bcast:XXXXXXXX  Mask:XXXXXXXX
+>           inet6 addr: XXXXXXXX Scope:Global
+>           inet6 addr: XXXXXXXX Scope:Link
+>           inet6 addr: XXXXXXXX Scope:Global
+>           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+>           RX packets:2965 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:637 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:1000
+>           RX bytes:872759 (852.3 KiB)  TX bytes:59936 (58.5 KiB)
+>           Interrupt:19
+>
+> But, that=E2=80=99s a system using the 5.0 kernel with lots of old hacks
+> on top. A system using a 5.15 kernel with this change included:
+>
+> INIT: Entering runlevel: 5
+> Configuring network interfaces... [    6.596537] 8021q: adding VLAN 0 to =
+HW filter on device eth0
+> [    6.609264] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.622913] ftgmac100 1e690000.ftgmac eth0: NCSI: Handler for packet t=
+ype 0x82 returned -19
+> [    6.641447] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.662543] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.680454] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.694114] ftgmac100 1e690000.ftgmac eth0: NCSI: transmit cmd 0x50 nc=
+si_oem_sma_mlx success during probe
+> [    6.715722] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> done.
+> [    6.741372] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.741451] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.768714] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> Starting random [    6.782599] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff=
+:ff:ff:ff:ff:ff
+> number generator[    6.799321] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff=
+:ff:ff:ff:ff:ff
+>  daemon[    6.815680] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff=
+:ff:ff
+> [    6.831388] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> .
+> [    6.846921] ftgmac100 1e690000.ftgmac eth0: NCSI: Network controller s=
+upports NC-SI 1.1, querying MAC address through OEM(0x8119) command
+> Setup dhclient for IPv6... done.
+> [    6.908921] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> reloading rsyslo[    6.933085] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff=
+:ff:ff:ff:ff:ff
+>
+> So, this BMC already had the provisioned MAC address somehow,
+> even before the Nvidia Get MAC Address command towards the bottom.
 
-ENABLE/DISABLE only act on the provided thing in rules. In the current
-imlementation parse rules, generate a mask and update the values
-accordingly. Other rules are not touched. This is based on the fact that
-the first and the last thing done is calling ZERO to reset all the rules
-to a known state.
+It is probably a hold over from the last boot. I suspect you would
+need a clean power-cycle to reset it back to non-modified values.
 
-I will try to improve the Documentation on this aspect.
-Hope you know understand better the calling flow.
+> Adding tracing to ftgmac100:
+>
+> [    2.018672] ftgmac100_initial_mac
+> [    2.026090] Read MAC address from FTGMAC100 register: RE:DA:CT:ED:AD:D=
+R
+> [    2.040771] ftgmac100 1e690000.ftgmac: Read MAC address RE:DA:CT:ED:AD=
+:DR from chip
+> [    2.057774] ftgmac100 1e690000.ftgmac: Using NCSI interface
+> [    2.070957] ftgmac100 1e690000.ftgmac eth0: irq 33, mapped at (ptrval)
+>
+> Now, after rewriting the FTGMAC100 register to fa:ce:b0:0c:20:22 and rebo=
+oting:
+>
+> root@dhcp6-2620-10d-c0b9-4b08-0-0-0-e4e:~# devmem 0x1e690008 32 0x0000fac=
+e
+> root@dhcp6-2620-10d-c0b9-4b08-0-0-0-e4e:~# devmem 0x1e690008
+> 0x0000FACE
+> root@dhcp6-2620-10d-c0b9-4b08-0-0-0-e4e:~# devmem 0x1e69000c 32 0xb00c202=
+2
+> root@dhcp6-2620-10d-c0b9-4b08-0-0-0-e4e:~# devmem 0x1e69000c
+> 0xB00C2022
+>
+> [    2.001304] ftgmac100_initial_mac
+> [    2.008727] Read MAC address from FTGMAC100 register: fa:ce:b0:0c:20:2=
+2
+> [    2.023373] ftgmac100 1e690000.ftgmac: Read MAC address fa:ce:b0:0c:20=
+:22 from chip
+> [    2.040367] ftgmac100 1e690000.ftgmac: Using NCSI interface
+>
+> [    6.581239] ftgmac100_reset_mac
+> [    6.589193] ftgmac100_reset_mac
+> [    6.596727] 8021q: adding VLAN 0 to HW filter on device eth0
+> [    6.609462] NCSI: source=3Dfa:ce:b0:0c:20:22 dest=3Dff:ff:ff:ff:ff:ff
+> [    6.623117] ftgmac100 1e690000.ftgmac eth0: NCSI: Handler for packet t=
+ype 0x82 returned -19
+> [    6.641647] NCSI: source=3Dfa:ce:b0:0c:20:22 dest=3Dff:ff:ff:ff:ff:ff
+> [    6.662398] NCSI: source=3Dfa:ce:b0:0c:20:22 dest=3Dff:ff:ff:ff:ff:ff
+> [    6.680380] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.694000] ftgmac100 1e690000.ftgmac eth0: NCSI: transmit cmd 0x50 nc=
+si_oem_sma_mlx success during probe
+> [    6.715700] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+> [    6.729528] NCSI: source=3DRE:DA:CT:ED:AD:DR dest=3Dff:ff:ff:ff:ff:ff
+>
+> So, it looks like whatever is initialized in ftgmac100_initial_mac become=
+s
+> the address we use for the NCSI queries initially.
+>
+> The Aspeed datasheet says the FTGMAC100 MAC address registers are initial=
+ized to zero,
+> and in that case the ftgmac100 driver initializes it to something random
+> with eth_hw_addr_random().
+>
+> So, I mean correct me if I=E2=80=99m wrong, but I think it all seems fine=
+?
+>
+> On a hard power cycle (instead of just resetting the ARM cores, which doe=
+sn=E2=80=99t seem to
+> have reset the peripherals), maybe it would actually be zero, and get ini=
+tialized
+> to the random value. I=E2=80=99ll test that, need to do some more debug i=
+mage building to do it
+> remotely.
 
-> > +	case BLINK_MODE_READ:
-> > +		ret = regmap_read(priv->regmap, reg_info.reg, &val);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		val >>= reg_info.shift;
-> > +		val &= offload_trigger;
-> > +
-> > +		/* Special handling for LED_BLINK_2HZ */
-> > +		if (!val && offload_trigger == QCA8K_LED_BLINK_2HZ)
-> > +			val = 1;
-> 
-> Hmm, so if a number of different modes is in flags or rules, then
-> as long as one matches, this returns 1? So it's an "any of these
-> modes is enabled" test.
-> 
+So we know now that it is using a random MAC address on reboot.
 
-Ok this should be changed and you are right. READ should return true or
-false if the rule (or rules) are enabled. This work for a single rule
-but doesn't if multiple rules are provided.
+> > My main
+> > concern would be that the dev_addr is not initialized for those first
+> > few messages so you may be leaking information.
+> >
+> >> This might have the effect of causing the NIC to learn 2 MAC addresses=
+ from
+> >> an NC-SI link if the BMC uses OEM Get MAC Address commands to change i=
+ts
+> >> initial MAC address, but it shouldn't really matter. Who knows if NIC'=
+s
+> >> even have MAC learning enabled from the out-of-band BMC link, lol.
+> >>
+> >> [1]: https://tinyurl.com/4933mhaj
+> >> [2]: https://tinyurl.com/mr3tyadb
+> >
+> > The thing is the OpenBMC approach initializes the value themselves to
+> > broadcast[3]. As a result the two code bases are essentially doing the
+> > same thing since mac_addr is defaulted to the broadcast address when
+> > the ncsi interface is registered.
+>
+> That=E2=80=99s a very good point, thanks for pointing that out, I hadn=E2=
+=80=99t
+> even noticed that!
+>
+> Anyways, let me know what you think of the traces I added above.
+> Sorry for the delay, I=E2=80=99ve just been busy with some other stuff,
+> but I do really actually care about upstreaming this (and several
+> other NC-SI changes I=E2=80=99ll submit after this one, which are unrelat=
+ed
+> but more useful).
+>
+> Thanks,
+> Peter
 
-Will fix that since this is wrong.
-
-> > +
-> > +		return val;
-> > +	default:
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static void
-> > +qca8k_led_brightness_set(struct qca8k_led *led,
-> > +			 enum led_brightness b)
-> > +{
-> > +	struct qca8k_led_pattern_en reg_info;
-> > +	struct qca8k_priv *priv = led->priv;
-> > +	u32 val = QCA8K_LED_ALWAYS_OFF;
-> > +
-> > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
-> > +
-> > +	if (b)
-> > +		val = QCA8K_LED_ALWAYS_ON;
-> > +
-> > +	regmap_update_bits(priv->regmap, reg_info.reg,
-> > +			   GENMASK(1, 0) << reg_info.shift,
-> > +			   val << reg_info.shift);
-> > +}
-> > +
-> > +static void
-> > +qca8k_cled_brightness_set(struct led_classdev *ldev,
-> > +			  enum led_brightness b)
-> > +{
-> > +	struct qca8k_led *led = container_of(ldev, struct qca8k_led, cdev);
-> > +
-> > +	return qca8k_led_brightness_set(led, b);
-> > +}
-> > +
-> > +static enum led_brightness
-> > +qca8k_led_brightness_get(struct qca8k_led *led)
-> > +{
-> > +	struct qca8k_led_pattern_en reg_info;
-> > +	struct qca8k_priv *priv = led->priv;
-> > +	u32 val;
-> > +	int ret;
-> > +
-> > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
-> > +
-> > +	ret = regmap_read(priv->regmap, reg_info.reg, &val);
-> > +	if (ret)
-> > +		return 0;
-> > +
-> > +	val >>= reg_info.shift;
-> > +	val &= GENMASK(1, 0);
-> > +
-> > +	return val > 0 ? 1 : 0;
-> > +}
-> > +
-> > +static enum led_brightness
-> > +qca8k_cled_brightness_get(struct led_classdev *ldev)
-> > +{
-> > +	struct qca8k_led *led = container_of(ldev, struct qca8k_led, cdev);
-> > +
-> > +	return qca8k_led_brightness_get(led);
-> > +}
-> > +
-> > +static int
-> > +qca8k_cled_blink_set(struct led_classdev *ldev,
-> > +		     unsigned long *delay_on,
-> > +		     unsigned long *delay_off)
-> > +{
-> > +	struct qca8k_led *led = container_of(ldev, struct qca8k_led, cdev);
-> > +	struct qca8k_led_pattern_en reg_info;
-> > +	struct qca8k_priv *priv = led->priv;
-> > +
-> > +	if (*delay_on == 0 && *delay_off == 0) {
-> > +		*delay_on = 125;
-> > +		*delay_off = 125;
-> > +	}
-> > +
-> > +	if (*delay_on != 125 || *delay_off != 125) {
-> > +		/* The hardware only supports blinking at 4Hz. Fall back
-> > +		 * to software implementation in other cases.
-> > +		 */
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
-> > +
-> > +	regmap_update_bits(priv->regmap, reg_info.reg,
-> > +			   GENMASK(1, 0) << reg_info.shift,
-> > +			   QCA8K_LED_ALWAYS_BLINK_4HZ << reg_info.shift);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int
-> > +qca8k_cled_trigger_offload(struct led_classdev *ldev, bool enable)
-> > +{
-> > +	struct qca8k_led *led = container_of(ldev, struct qca8k_led, cdev);
-> > +
-> > +	struct qca8k_led_pattern_en reg_info;
-> > +	struct qca8k_priv *priv = led->priv;
-> > +	u32 val = QCA8K_LED_ALWAYS_OFF;
-> > +
-> > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
-> > +
-> > +	if (enable)
-> > +		val = QCA8K_LED_RULE_CONTROLLED;
-> > +
-> > +	return regmap_update_bits(priv->regmap, reg_info.reg,
-> > +				  GENMASK(1, 0) << reg_info.shift,
-> > +				  val << reg_info.shift);
-> 
-> 88e151x doesn't have the ability to change in this way - we have
-> a register with a 4-bit field which selects the LED mode from one
-> of many, or forces the LED on/off/hi-z/blink.
-> 
-> Not specifically for this patch, but talking generally about this
-> approach, the other issue I forsee with this is that yes, 88e151x has
-> three LEDs, but the LED modes are also used to implement control
-> signals (e.g., on a SFP, LOS can be implemented by programming mode
-> 0 on LED2 (which makes it indicate link or not.) If we expose all the
-> LEDs we run the risk of the LED subsystem trampling over that
-> configuration and essentially messing up such modules. So the Marvell
-> PHY driver would need to know when it is appropriate to expose these
-> things to the LED subsystem.
-> 
-> I guess doing it dependent on firmware description as you do in
-> this driver would work - if there's no firmware description, they're
-> not exposed.
-> 
-
-The idea is to provide a way to tell the driver what should be done and
-tell the trigger that something is not doable and to revert to sw mode.
-
-keeping the thing as simple and direct as possible and leave the rest to
-the driver by doing minimal validation on the trigger side.
-
-Do you have suggestion on how this can be improved even more and be more
-flexible? 
-
--- 
-	Ansuel
+So the NC-SI spec says any value can be used for the source MAC and
+that broadcast "may" be used. I would say there are some debugging
+advantages to using broadcast that will be obvious in a packet trace.
+I wonder if we couldn't look at doing something like requiring
+broadcast or LAA if the gma_flag isn't set. With that we could at
+least advertise that we don't expect this packet to be going out in a
+real network as we cannot guarantee the MAC is unique.
