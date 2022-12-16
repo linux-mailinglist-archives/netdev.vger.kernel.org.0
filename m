@@ -2,137 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B968564EB90
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:46:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3306C64EB93
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiLPMqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 07:46:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38848 "EHLO
+        id S229780AbiLPMrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 07:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiLPMq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:46:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818AA38AA
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 04:45:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671194741;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CvwOufv5pEhIhgMEysvlJf2UTI5YhOfiynf6OZftv3I=;
-        b=h3h1mqXxWQm6KhDfVB+XxwoKFUTOZfFLVZoKzDErTtBfrjvECKOJqemdpMUR1NCBwL9Lzq
-        J7CmmJBIa0bk4bB12xpYuNMJZNza0fvfSz18FgsWL4Jd+T0Aew+Oh9z+MpQgLxhRkn6pDB
-        z518zsfh4qccFFgxpvw8zS96S6praPA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-qPHV_NjlMjW_IukuuCYGHQ-1; Fri, 16 Dec 2022 07:45:37 -0500
-X-MC-Unique: qPHV_NjlMjW_IukuuCYGHQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229475AbiLPMri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:47:38 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E75CF5
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 04:47:37 -0800 (PST)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 41DEC38041D0;
-        Fri, 16 Dec 2022 12:45:36 +0000 (UTC)
-Received: from bcodding.csb (unknown [10.22.50.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1183C40C2064;
-        Fri, 16 Dec 2022 12:45:36 +0000 (UTC)
-Received: by bcodding.csb (Postfix, from userid 24008)
-        id B390710C30E1; Fri, 16 Dec 2022 07:45:35 -0500 (EST)
-From:   Benjamin Coddington <bcodding@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id C997F8524E;
+        Fri, 16 Dec 2022 13:47:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1671194855;
+        bh=fEIEJmdqmkeSkg+RQHUIRuf+WGzlxZ/wuMipOCxnQ54=;
+        h=From:To:Cc:Subject:Date:From;
+        b=v4PmfzUxOPbcOS9d7HuzcZnayDMZHlVVjFVW8qrwTYmtpfloVeUpj8hbj5XV+1Rwp
+         vnf0cGEgPf8MREfltX+hAb5i/vfsxsqveBHgymnwdAYdeiHTsfANEVGkkaUtP16eUk
+         oh2xkz9fydZ987cBXeZrMQg08QoxfoVXnZJVI0YNvJixxGzWmH8b5hzFPJ9ExuIYyc
+         Q6AsI5fATuY3deY6ti5CXX2ovczIssI2NYGumLFHTHmXpkCDGXdcuOAfjlAKwsNrXd
+         J+yBjoPqgDGTPB7qiW2FJDoh9mBY5QsEtv0TS1rB1vNSltWmbsnYRsVKGk371PJEKI
+         6ajes8/a2wP4w==
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Guillaume Nault <gnault@redhat.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Steve French <sfrench@samba.org>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: [PATCH net v4 3/3] net: simplify sk_page_frag
-Date:   Fri, 16 Dec 2022 07:45:28 -0500
-Message-Id: <38d42a20af803cb51178510a64a558bfe9d10ddd.1671194454.git.bcodding@redhat.com>
-In-Reply-To: <cover.1671194454.git.bcodding@redhat.com>
-References: <cover.1671194454.git.bcodding@redhat.com>
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Geoff Levand <geoff@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH] net: ks8851: Drop IRQ threading
+Date:   Fri, 16 Dec 2022 13:47:31 +0100
+Message-Id: <20221216124731.122459-1-marex@denx.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that in-kernel socket users that may recurse during reclaim have benn
-converted to sk_use_task_frag = false, we can have sk_page_frag() simply
-check that value.
+Request non-threaded IRQ in the KSZ8851 driver, this fixes the following warning:
+"
+NOHZ tick-stop error: Non-RCU local softirq work is pending, handler #08!!!
+"
 
-Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
-Reviewed-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
 ---
- include/net/sock.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Geoff Levand <geoff@infradead.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Petr Machata <petrm@nvidia.com>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: netdev@vger.kernel.org
+---
+ drivers/net/ethernet/micrel/ks8851_common.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index fefe1f4abf19..dcd72e6285b2 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2564,19 +2564,14 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
-  * Both direct reclaim and page faults can nest inside other
-  * socket operations and end up recursing into sk_page_frag()
-  * while it's already in use: explicitly avoid task page_frag
-- * usage if the caller is potentially doing any of them.
-- * This assumes that page fault handlers use the GFP_NOFS flags or
-- * explicitly disable sk_use_task_frag.
-+ * when users disable sk_use_task_frag.
-  *
-  * Return: a per task page_frag if context allows that,
-  * otherwise a per socket one.
-  */
- static inline struct page_frag *sk_page_frag(struct sock *sk)
- {
--	if (sk->sk_use_task_frag &&
--	    (sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC |
--				  __GFP_FS)) ==
--	    (__GFP_DIRECT_RECLAIM | __GFP_FS))
-+	if (sk->sk_use_task_frag)
- 		return &current->task_frag;
+diff --git a/drivers/net/ethernet/micrel/ks8851_common.c b/drivers/net/ethernet/micrel/ks8851_common.c
+index cfbc900d4aeb9..1eba4ba0b95cf 100644
+--- a/drivers/net/ethernet/micrel/ks8851_common.c
++++ b/drivers/net/ethernet/micrel/ks8851_common.c
+@@ -443,9 +443,7 @@ static int ks8851_net_open(struct net_device *dev)
+ 	unsigned long flags;
+ 	int ret;
  
- 	return &sk->sk_frag;
+-	ret = request_threaded_irq(dev->irq, NULL, ks8851_irq,
+-				   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+-				   dev->name, ks);
++	ret = request_irq(dev->irq, ks8851_irq, IRQF_TRIGGER_LOW, dev->name, ks);
+ 	if (ret < 0) {
+ 		netdev_err(dev, "failed to get irq\n");
+ 		return ret;
 -- 
-2.31.1
+2.35.1
 
