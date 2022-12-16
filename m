@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6000664E892
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 10:23:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2392D64E8AB
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 10:34:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbiLPJXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 04:23:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
+        id S229885AbiLPJeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 04:34:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbiLPJXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 04:23:13 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE0B3F07A
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 01:23:11 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id k22-20020a05600c1c9600b003d1ee3a6289so1282085wms.2
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 01:23:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mayeu5y4kGJCmQuCfTdoYBg7yE+SQ6tN0YHnSLzrDYk=;
-        b=Jd2TnZsAT9wm8qjQgWRHDgQizzhzKX4kcf/DeFwfXUfzzHV3omGzNUOgGhOg426wIB
-         vnEwSncpRRpYrCk4WFvRwaznDmTWfZ5fnGXfMLXY+lLZUj5nsqPTU3FVq++LGb/Ga2hf
-         kzKdSnznaO4IadiKZk5bygG9CdMBODw1Kl2tzLtOavR8VaRZJ+Kicvm/62j+1llLBGQ5
-         AzMNdmY6HjU03Y4gV2M2d23tRDBe+ZUqTNjqumou8egV8FOSDXNtlOdfpH7/gzhuLeIw
-         0pSve21ta444eqS+2Qo1pR4vCjXFIqjkJkB6obmVYuJc1a8bV8KbsaLVDV/SlT5qe2E7
-         U4RA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mayeu5y4kGJCmQuCfTdoYBg7yE+SQ6tN0YHnSLzrDYk=;
-        b=MI/PDQNZIqY8tet4mRJlNx4+203+vrWABK8D65olT7c/d6HFQXOqKMdYaEe7bXIXHO
-         +R+k+uvxQb26oxINT6EW38bYhU0j+1faoU1zV8XwuNbKuQL6O3l2I0u4n8oVQ+iWy/AV
-         5ukKpOs0RxR2hUbqGWbtQQWmwtJHkgssn8ql3pFmYGK9ayndX3lqkF/8JLl/2RE30ByT
-         FILMfQrQ4PLGSnEkpCHZHmB3xS1YKQOqQUie9a0jBbipSqNkicejt/2JuMEdHHjhSa59
-         wwKcEkakwMp+fT2HRFEPUSrFFDZdphMyk9xXy2e1GfUq4vGfdhuc1yZhEHX6KfGgTZf+
-         mSzA==
-X-Gm-Message-State: ANoB5pl0VMo0W6zg4BC+VGoxXe+mNVwqViUTj+2Iw3VVM5a1Ccts1jDx
-        8q9HksShXOAJKDRQFd4YJjxP8w==
-X-Google-Smtp-Source: AA0mqf6yZQdF/Zp2zXo7jhBFB1yyEMv+gdWMSQswAhve9bHUTHj2QXiewGKPa5WL2RTFbwg7Ja/yKQ==
-X-Received: by 2002:a05:600c:2049:b0:3d2:3831:e5c4 with SMTP id p9-20020a05600c204900b003d23831e5c4mr8778016wmg.40.1671182590174;
-        Fri, 16 Dec 2022 01:23:10 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id y20-20020a7bcd94000000b003c6b70a4d69sm1892378wmj.42.2022.12.16.01.23.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 01:23:09 -0800 (PST)
-Date:   Fri, 16 Dec 2022 10:23:08 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, leon@kernel.org
-Subject: Re: [RFC net-next 14/15] devlink: add by-instance dump infra
-Message-ID: <Y5w4/HH71W3O5EOC@nanopsycho>
-References: <20221215020155.1619839-1-kuba@kernel.org>
- <20221215020155.1619839-15-kuba@kernel.org>
- <Y5rkpxKm/TdGlJHf@nanopsycho>
- <20221215114706.42be5299@kernel.org>
+        with ESMTP id S230144AbiLPJeK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 04:34:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6D61FFAA;
+        Fri, 16 Dec 2022 01:34:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8953B81D40;
+        Fri, 16 Dec 2022 09:34:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B22C433EF;
+        Fri, 16 Dec 2022 09:34:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671183246;
+        bh=+99HYBSarN+ns6L+rlqjITdaIBrRoBh318L0BdlqU1k=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=XR0sjBDBF1cJ6R+766Xf8nag2VCVN6ulZ+BLer3MxW83Dv7a9c4BdYYVO9M9OLWjQ
+         YBbpj80Re1oa5aFfumL/ibv1PzEwDe2oQJol3Mof8qRkgwZYheXF7KRc/P8/UpZ+sJ
+         vxWZODvsvN/aCF9vqgJ9+aJ7lJnquQcjLChPctJUxmD4Ka5FniQo94c568nuchReBr
+         bcfITfS7BEYWklgrRCvQ0/rVpJTOWWwopeq4CyT/ld9CvxU8jSRXY9xZYkMaF07mu1
+         pmhgmYdAC6oMYnUBZurC2Lr7cljcHBIHINbUZVVn/whMF7JZVZUGB3Rxj1hpOmluEK
+         R1MUeiAsWpZUA==
+From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Lina Wang <lina.wang@mediatek.com>,
+        Coleman Dietsch <dietschc@csp.edu>, bpf@vger.kernel.org,
+        Maciej enczykowski <maze@google.com>,
+        =?utf-8?B?Qmo=?= =?utf-8?B?w7ZybiBUw7ZwZWw=?= 
+        <bjorn@rivosinc.com>, Hangbin Liu <liuhangbin@gmail.com>
+Subject: Re: [PATCHv2 net-next] selftests/net: mv bpf/nat6to4.c to net folder
+In-Reply-To: <20221216084109.1565213-1-liuhangbin@gmail.com>
+References: <20221216084109.1565213-1-liuhangbin@gmail.com>
+Date:   Fri, 16 Dec 2022 10:34:04 +0100
+Message-ID: <871qozn14j.fsf@all.your.base.are.belong.to.us>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221215114706.42be5299@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 15, 2022 at 08:47:06PM CET, kuba@kernel.org wrote:
->On Thu, 15 Dec 2022 10:11:03 +0100 Jiri Pirko wrote:
->> Instead of having this extra list of ops struct, woudn't it make sence
->> to rather implement this dumpit_one infra directly as a part of generic
->> netlink code?
+Hangbin Liu <liuhangbin@gmail.com> writes:
+
+> There are some issues with the bpf/nat6to4.c building.
 >
->I was wondering about that, but none of the ideas were sufficiently
->neat to implement :( There's a lot of improvements that can be done
->in the core, starting with making more of the info structures shared
->between do and dump in genl :( 
+> 1. It use TEST_CUSTOM_PROGS, which will add the nat6to4.o to
+>    kselftest-list file and run by common run_tests.
+> 2. When building the test via `make -C tools/testing/selftests/
+>    TARGETS=3D"net"`, the nat6to4.o will be build in selftests/net/bpf/
+>    folder. But in test udpgro_frglist.sh it refers to ../bpf/nat6to4.o.
+>    The correct path should be ./bpf/nat6to4.o.
+> 3. If building the test via `make -C tools/testing/selftests/ TARGETS=3D"=
+net"
+>    install`. The nat6to4.o will be installed to kselftest_install/net/
+>    folder. Then the udpgro_frglist.sh should refer to ./nat6to4.o.
 >
->> Something like:
->> 
->>  	{
->>  		.cmd = DEVLINK_CMD_RATE_GET,
->>  		.doit = devlink_nl_cmd_rate_get_doit,
->> 		.dumpit_one = devlink_nl_cmd_rate_get_dumpit_one,
->> 		.dumpit_one_walk = devlink_nl_dumpit_one_walk,
->>  		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
->>  		/* can be retrieved by unprivileged users */
->>  	},
+> To fix the confusing test path, let's just move the nat6to4.c to net fold=
+er
+> and build it as TEST_GEN_FILES.
 >
->Growing the struct ops (especially the one called _small_) may be 
->a hard sale for a single user. For split ops, it's a different story,
->because we can possibly have a flag that changes the interpretation
->of the union. Maybe.
+> v2: Update the Makefile rules rely on commit 837a3d66d698 ("selftests:
+> net: Add cross-compilation support for BPF programs").
 >
->I'd love to have a way of breaking down the ops so that we can factor
->out the filling of the message (the code that is shared between doit
->and dump). Just for the walk I don't think it's worth it.
+> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-test=
+s")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Okay, that is something I thought about as well. Let me take a stab at
-it.
+FWIW, tested cross-compilation on riscv (and minor nit below):
 
+Tested-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
 
->
->I went in the same direction as ethtool because if over time we arrive
->at a similar structure we can use that as a corner stone.
->
->All in all, I think this patch is a reasonable step forward. 
+> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
+ts/net/Makefile
+> index 3007e98a6d64..ed9a315187c1 100644
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -75,14 +75,60 @@ TEST_GEN_PROGS +=3D so_incoming_cpu
+>  TEST_PROGS +=3D sctp_vrf.sh
+>  TEST_GEN_FILES +=3D sctp_hello
+>  TEST_GEN_FILES +=3D csum
+> +TEST_GEN_FILES +=3D nat6to4.o
+>=20=20
+>  TEST_FILES :=3D settings
+>=20=20
+>  include ../lib.mk
+>=20=20
+> -include bpf/Makefile
+> -
+>  $(OUTPUT)/reuseport_bpf_numa: LDLIBS +=3D -lnuma
+>  $(OUTPUT)/tcp_mmap: LDLIBS +=3D -lpthread
+>  $(OUTPUT)/tcp_inq: LDLIBS +=3D -lpthread
+>  $(OUTPUT)/bind_bhash: LDLIBS +=3D -lpthread
+> +
+> +# Rules to generate bpf obj nat6to4.o
+> +CLANG ?=3D clang
+> +SCRATCH_DIR :=3D $(OUTPUT)/tools
+> +BUILD_DIR :=3D $(SCRATCH_DIR)/build
+> +BPFDIR :=3D $(abspath ../../../lib/bpf)
+> +APIDIR :=3D $(abspath ../../../include/uapi)
+> +
+> +CCINCLUDE +=3D -I../bpf
+> +CCINCLUDE +=3D -I../../../../usr/include/
+> +CCINCLUDE +=3D -I$(SCRATCH_DIR)/include
+> +
+> +BPFOBJ :=3D $(BUILD_DIR)/libbpf/libbpf.a
+> +
+> +MAKE_DIRS :=3D $(BUILD_DIR)/libbpf $(OUTPUT)/bpf
+                                    ^^^^^^^^^^^^^
+                                    Can be removed after the BPF-prog
+                                    moved out from /bpf
 
-Yeah, could be always changed...
-
-
->But definitely agree that the genl infra is still painfully basic.
-
+Bj=C3=B6rn
