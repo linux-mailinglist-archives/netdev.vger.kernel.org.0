@@ -2,137 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 937DF64E6C2
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 05:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B28D64E6C4
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 05:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiLPElI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 15 Dec 2022 23:41:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
+        id S229885AbiLPEli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 23:41:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiLPElG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 23:41:06 -0500
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3BE6366;
-        Thu, 15 Dec 2022 20:41:01 -0800 (PST)
-Received: by mail-pl1-f179.google.com with SMTP id d3so1150529plr.10;
-        Thu, 15 Dec 2022 20:41:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=idu/8FxD+PQK9l8zHYNdC3ZtLj9zNJ2MUZIelYcW0aE=;
-        b=DZZliLVsGkGfZ3eCapgMsgoH0YIUDl7AWu2TL7FybLjVYzfrBhBR5mL2feKGwbejjl
-         SwGV6Zr5bMtb+gFHnw1YMshJClAe73t2d4nj6fLgoVrXzbm+1uGTg53Mo2YsCEB1h6gD
-         1mlnZ8b3GGZELr97PCp5v0Q2iCHDLNYx9+xv3ItefXlcTqKusjnUnGyBy/sj0XVTfoAV
-         Oz9fvOk/sAGx30+388ifbKnDORsE1OVlLDb0+9u4DL60dTTB0XjV/DBfoU5xqJ6Ja1X2
-         QguNOFJaWaXaEndiN2Hqj3z2lIAYYcfuv8oI8IzEXpop17/euLx75J6gw3QynIPos9Gw
-         p7pQ==
-X-Gm-Message-State: AFqh2krBFg83wv2Mfqn4voonQYdyYDZ3VXJFGLnjA1VsM6S90cHgc7xr
-        Abiw/aOqG6RvTLB1LpXY0GeQYeaVkE8J6JysUck=
-X-Google-Smtp-Source: AMrXdXskktqxQqziYQg+ykW6hbRxVC+hH0xzdGaj1NKDK4YmlrmRd2Pfy0qK1CIcDYtsvUgnPs/g0eOpfbbowOjNEA0=
-X-Received: by 2002:a17:90a:c7d3:b0:21c:bc8b:b080 with SMTP id
- gf19-20020a17090ac7d300b0021cbc8bb080mr421817pjb.19.1671165661121; Thu, 15
- Dec 2022 20:41:01 -0800 (PST)
+        with ESMTP id S229793AbiLPElg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 23:41:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A032124B
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 20:41:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0246C61FD1
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 04:41:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04285C433D2;
+        Fri, 16 Dec 2022 04:41:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671165693;
+        bh=yH6jFCvdnFeMsoGPfPhE08LzJej7HFYdsByCEglYsB8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EjM+X3e5fPX1AO7dEVHB1y2BQdcZvbnl00FVBbexNQKng+IfcToZ85cWUsZLS1Lm3
+         au5MkIGtmazphMLHMBOrx8sA+A5nTsRVziPNOI5VAaZN98yzgX+iGsJTB7rv3fCgQd
+         9Hcdfg6MThsgDAsxuzUnGZf737cI6K528Y5MhIx3mOKLMDnc2xnlih3025zzzXToJ1
+         kbcxCxw/raxj0aiIePPErwAaov07unKBDl3HcMFIezQnjEuGI0pel5JMIIDW7gns3F
+         jqogXmWNrpHIxFi5C4Uy15CRrG51gW4wlOEwOksNkLfE8z1Fq9OX5gyWi/1gZ02Q00
+         Y9lDTWb1v3ebg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        jacob.e.keller@intel.com, Jakub Kicinski <kuba@kernel.org>,
+        jiri@nvidia.com, moshe@mellanox.com
+Subject: [PATCH net] devlink: protect devlink dump by the instance lock
+Date:   Thu, 15 Dec 2022 20:41:22 -0800
+Message-Id: <20221216044122.1863550-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-References: <20221116205308.2996556-1-msp@baylibre.com> <20221116205308.2996556-3-msp@baylibre.com>
- <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de> <20221214091406.g6vim5hvlkm34naf@blmsp>
- <20221214091820.geugui5ws3f7a5ng@pengutronix.de> <20221214092201.xpb3rnwp5rtvrpkr@pengutronix.de>
- <CAMZ6RqLAZNj9dm_frbKExHK8AYDj9D0rX_9=c8_wk9kFrO-srw@mail.gmail.com>
- <20221214103542.c5g32qtbuvn5mv4u@blmsp> <20221215093140.fwpezasd6whhk7p7@blmsp>
-In-Reply-To: <20221215093140.fwpezasd6whhk7p7@blmsp>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 16 Dec 2022 13:40:50 +0900
-Message-ID: <CAMZ6RqLTbD1KHqtg5E8tTGy1BFjJYjzVcK3-1L_WXo+Vw8cO4g@mail.gmail.com>
-Subject: Re: [PATCH 02/15] can: m_can: Wakeup net queue once tx was issued
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 15 Dec. 2022 at 18:44, Markus Schneider-Pargmann
-<msp@baylibre.com> wrote:
-> Hi,
->
-> On Wed, Dec 14, 2022 at 11:35:43AM +0100, Markus Schneider-Pargmann wrote:
-> > Hi Vincent,
-> >
-> > On Wed, Dec 14, 2022 at 07:15:25PM +0900, Vincent MAILHOL wrote:
-> > > On Wed. 14 Dec. 2022 at 18:28, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > > > On 14.12.2022 10:18:20, Marc Kleine-Budde wrote:
-> > > > > On 14.12.2022 10:14:06, Markus Schneider-Pargmann wrote:
-> > > > > > Hi Marc,
-> > > > > >
-> > > > > > On Wed, Nov 30, 2022 at 06:21:00PM +0100, Marc Kleine-Budde wrote:
-> > > > > > > On 16.11.2022 21:52:55, Markus Schneider-Pargmann wrote:
-> > > > > > > > Currently the driver waits to wakeup the queue until the interrupt for
-> > > > > > > > the transmit event is received and acknowledged. If we want to use the
-> > > > > > > > hardware FIFO, this is too late.
-> > > > > > > >
-> > > > > > > > Instead release the queue as soon as the transmit was transferred into
-> > > > > > > > the hardware FIFO. We are then ready for the next transmit to be
-> > > > > > > > transferred.
-> > > > > > >
-> > > > > > > If you want to really speed up the TX path, remove the worker and use
-> > > > > > > the spi_async() API from the xmit callback, see mcp251xfd_start_xmit().
-> > > > > > >
-> > > > > > > Extra bonus if you implement xmit_more() and transfer more than 1 skb
-> > > > > > > per SPI transfer.
-> > > > > >
-> > > > > > Just a quick question here, I mplemented a xmit_more() call and I am
-> > > > > > testing it right now, but it always returns false even under high
-> > > > > > pressure. The device has a txqueuelen set to 1000. Do I need to turn
-> > > > > > some other knob for this to work?
-> > >
-> > > I was the first to use BQL in a CAN driver. It also took me time to
-> > > first figure out the existence of xmit_more() and even more to
-> > > understand how to make it so that it would return true.
-> > >
-> > > > > AFAIK you need BQL support: see 0084e298acfe ("can: mcp251xfd: add BQL support").
-> > > > >
-> > > > > The etas_es58x driver implements xmit_more(), I added the Author Vincent
-> > > > > on Cc.
-> > > >
-> > > > Have a look at netdev_queue_set_dql_min_limit() in the etas driver.
-> > >
-> > > The functions you need are the netdev_send_queue() and the
-> > > netdev_complete_queue():
-> > >
-> > >   https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L3424
-> > >
-> > > For CAN, you probably want to have a look to can_skb_get_frame_len().
-> > >
-> > >   https://elixir.bootlin.com/linux/latest/source/include/linux/can/length.h#L166
-> > >
-> > > The netdev_queue_set_dql_min_limit() gives hints by setting a minimum
-> > > value for BQL. It is optional (and as of today I am the only user of
-> > > it).
-> >
-> > Thank you for this summary, great that you already invested the time to
-> > make it work with a CAN driver. I will give it a try in the m_can
-> > driver.
->
-> Thanks again, it looks like it is working after adding netdev_sent_queue
-> and netdev_complete_queue.
+Take the instance lock around devlink_nl_fill() when dumping,
+doit takes it already.
 
-Happy to hear that :)
+We are only dumping basic info so in the worst case we were risking
+data races around the reload statistics. Also note that the reloads
+themselves had not been under the instance lock until recently, so
+the selection of the Fixes tag is inherently questionable.
 
-A quick advice just in case: make sure to test the different error
-branches (failed TX, can_restart() after bus off…).
+Fixes: a254c264267e ("devlink: Add reload stats")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: jiri@nvidia.com
+CC: moshe@mellanox.com
+---
+ net/core/devlink.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index d2df30829083..032d6d0a5ce6 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -1648,10 +1648,13 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
+ 			continue;
+ 		}
+ 
++		devl_lock(devlink);
+ 		err = devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
+ 				      NETLINK_CB(cb->skb).portid,
+ 				      cb->nlh->nlmsg_seq, NLM_F_MULTI);
++		devl_unlock(devlink);
+ 		devlink_put(devlink);
++
+ 		if (err)
+ 			goto out;
+ 		idx++;
+-- 
+2.38.1
 
-Yours sincerely,
-Vincent Mailhol
