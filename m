@@ -2,108 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1F4664EB32
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:06:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBA1464EB8F
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:46:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbiLPMG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 07:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
+        id S230127AbiLPMqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 07:46:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiLPMGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:06:55 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CC42AE1D
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 04:06:52 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id m18so5672953eji.5
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 04:06:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YWZVSvottKMXFDxmqgre9mHPJCeheRtjM/n2uG4P79Y=;
-        b=yqTaLIIYTUsAgK0LLmzI9Z6la5/XEVkxSAWW9qHBS7gBkq0LQ22l8xEmip9apmVRa6
-         HfbuMZ1PeOXcfnhR5sHhF4u0ip/+eIV+72PQH807tuiBkC8LU0eBxMNK0A0JFwU/Qcom
-         wVAItcBPnLHZTe8L43EbV8nSxrSV5icXQpWEC1/GD+DPfgGIqghEmbAG5AlvWLM5OE/u
-         HzLMFXjkhrxY5kLVerupcDJuolzVRspHhR52zFkICoYI9QAm122wry+vRLU/1oTjIyTI
-         62gzXvK9Z+7LoSWLMaL8C/jap5+XJmFAtFvBVQR+f6srECMESE1LRX2zvCRlc2yTxTjE
-         KbEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YWZVSvottKMXFDxmqgre9mHPJCeheRtjM/n2uG4P79Y=;
-        b=1RYcRsZgLf//S+Fl1PpKwF9GcK11zWGQo4qitwRmZA5WUym4L5c8/S0+LlJFkFyZGJ
-         phQJRmdR3BOqQ5Yf2dz+SILofviUChVETET7EaVMHh4n3eY9s+i60/wXr8uI5Ut6poHf
-         YyA9rZ4yoPwfZnOPBAXXgA27M52RRnoWe339ttL2vztu5VtPRJ0XhgTVMIAM/wKFD9Ot
-         TE5M24A2h5+155JMCFaXbofMxbLAOIkzpWjHCo6IGkXJBEBFxt/qZuQe6O98m83vsSWV
-         Y5JkoE/mNPjjaKdfGxd5AVMpZaVLLmA7Jo3eWZg0cN948d4Wv8hFc6vl7tjUxsW9HYnD
-         yrvQ==
-X-Gm-Message-State: ANoB5pnx4ALb8eY/g8F12qaLo+FGxholCFWBNMMghNbMd16EiouXNu1H
-        d0lwB/DLrsNOyNT5HsNUm9Lsmj9FA9rgdKJC2DM=
-X-Google-Smtp-Source: AA0mqf6FkqQuJHdtWW797WH9YKcqTyc1hAEasSPbdpe4+CssSWXKxX0tKIYpS3ByqTycoqrJEhlxAA==
-X-Received: by 2002:a17:907:a782:b0:7c1:6e82:35fc with SMTP id vx2-20020a170907a78200b007c16e8235fcmr31379831ejc.40.1671192411346;
-        Fri, 16 Dec 2022 04:06:51 -0800 (PST)
-Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id v12-20020a1709064e8c00b007c0f90a9cc5sm782085eju.105.2022.12.16.04.06.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Dec 2022 04:06:51 -0800 (PST)
-Message-ID: <b936f4a1-8fa6-0736-fc28-e8799a6da107@blackwall.org>
-Date:   Fri, 16 Dec 2022 14:06:50 +0200
+        with ESMTP id S229453AbiLPMq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:46:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1F9C69
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 04:45:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671194739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pvrktNEqQvJsCizHjXfWIgCjdApI3LehSj4OLNFuvVs=;
+        b=LCnxB7oR52SmDRG8ET0nsidQ/0dTly+y8R4Z1p0TbtiFarKXT3/RyZfwDuYg1z7fjDDwvl
+        eLtrneMYSijUPS6FTfUGo4ezEQnPiqp+nU61RUiARMaluKvi5VD3zAoJtCwMdG1Zm6q3o2
+        jb7EpUQ1V9MK0T5wSifQE6oghoJqK5g=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-Yh04Ers9PRSafhzkBBeXEg-1; Fri, 16 Dec 2022 07:45:36 -0500
+X-MC-Unique: Yh04Ers9PRSafhzkBBeXEg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 906322804147;
+        Fri, 16 Dec 2022 12:45:34 +0000 (UTC)
+Received: from bcodding.csb (unknown [10.22.50.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F6BB492C14;
+        Fri, 16 Dec 2022 12:45:33 +0000 (UTC)
+Received: by bcodding.csb (Postfix, from userid 24008)
+        id 001C110C30E1; Fri, 16 Dec 2022 07:45:32 -0500 (EST)
+From:   Benjamin Coddington <bcodding@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Steve French <sfrench@samba.org>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org
+Subject: [PATCH net v4 0/3] Stop corrupting socket's task_frag
+Date:   Fri, 16 Dec 2022 07:45:25 -0500
+Message-Id: <cover.1671194454.git.bcodding@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH iproute2-next 6/6] bridge: mdb: Add replace support
-Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, mlxsw@nvidia.com
-References: <20221215175230.1907938-1-idosch@nvidia.com>
- <20221215175230.1907938-7-idosch@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221215175230.1907938-7-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/12/2022 19:52, Ido Schimmel wrote:
-> Allow user space to replace MDB port group entries by specifying the
-> 'NLM_F_REPLACE' flag in the netlink message header.
-> 
-> Examples:
-> 
->  # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.2 filter_mode include
->  # bridge -d -s mdb show
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.2 permanent filter_mode include proto static     0.00
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto static     0.00
->  dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode include source_list 192.0.2.2/0.00,192.0.2.1/0.00 proto static     0.00
-> 
->  # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.3 filter_mode exclude proto zebra
->  # bridge -d -s mdb show
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 permanent filter_mode include proto zebra  blocked    0.00
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto zebra  blocked    0.00
->  dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode exclude source_list 192.0.2.3/0.00,192.0.2.1/0.00 proto zebra     0.00
-> 
->  # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 temp source_list 192.0.2.4,192.0.2.3 filter_mode include proto bgp
->  # bridge -d -s mdb show
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.4 temp filter_mode include proto bgp     0.00
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 temp filter_mode include proto bgp     0.00
->  dev br0 port dummy10 grp 239.1.1.1 temp filter_mode include source_list 192.0.2.4/259.44,192.0.2.3/259.44 proto bgp     0.00
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  bridge/mdb.c      |  4 +++-
->  man/man8/bridge.8 | 13 ++++++++++---
->  2 files changed, 13 insertions(+), 4 deletions(-)
-> 
+The networking code uses flags in sk_allocation to determine if it can use
+current->task_frag, however in-kernel users of sockets may stop setting
+sk_allocation when they convert to the preferred memalloc_nofs_save/restore,
+as SUNRPC has done in commit a1231fda7e94 ("SUNRPC: Set memalloc_nofs_save()
+on all rpciod/xprtiod jobs").
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+This will cause corruption in current->task_frag when recursing into the
+network layer for those subsystems during page fault or reclaim.  The
+corruption is difficult to diagnose because stack traces may not contain the
+offending subsystem at all.  The corruption is unlikely to show up in
+testing because it requires memory pressure, and so subsystems that
+convert to memalloc_nofs_save/restore are likely to continue to run into
+this issue.
 
+Previous reports and proposed fixes:
+https://lore.kernel.org/netdev/96a18bd00cbc6cb554603cc0d6ef1c551965b078.1663762494.git.gnault@redhat.com/
+https://lore.kernel.org/netdev/b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com/
+https://lore.kernel.org/linux-nfs/de6d99321d1dcaa2ad456b92b3680aa77c07a747.1665401788.git.gnault@redhat.com/
+
+Guilluame Nault has done all of the hard work tracking this problem down and
+finding the best fix for this issue.  I'm just taking a turn posting another
+fix.
+
+Changes on v2:
+	- rebased on -net
+	- set sk_use_task_frag = false for xfrm/espintcp.c
+
+Changes on v3:
+	- fixup comments in sock.h for kernel-doc
+
+Changes on v4:
+	- rebased on -net
+	- sk_use_task_frag moved to hole after sk_txtime_unused
+	- droppd afs/rxrpc.c hunk, not needed
+
+Benjamin Coddington (2):
+  Treewide: Stop corrupting socket's task_frag
+  net: simplify sk_page_frag
+
+Guillaume Nault (1):
+  net: Introduce sk_use_task_frag in struct sock.
+
+ drivers/block/drbd/drbd_receiver.c |  3 +++
+ drivers/block/nbd.c                |  1 +
+ drivers/nvme/host/tcp.c            |  1 +
+ drivers/scsi/iscsi_tcp.c           |  1 +
+ drivers/usb/usbip/usbip_common.c   |  1 +
+ fs/cifs/connect.c                  |  1 +
+ fs/dlm/lowcomms.c                  |  2 ++
+ fs/ocfs2/cluster/tcp.c             |  1 +
+ include/net/sock.h                 | 10 ++++++----
+ net/9p/trans_fd.c                  |  1 +
+ net/ceph/messenger.c               |  1 +
+ net/core/sock.c                    |  1 +
+ net/sunrpc/xprtsock.c              |  3 +++
+ net/xfrm/espintcp.c                |  1 +
+ 14 files changed, 24 insertions(+), 4 deletions(-)
+
+-- 
+2.31.1
 
