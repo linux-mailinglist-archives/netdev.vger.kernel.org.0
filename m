@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A9264EED3
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 17:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D1264EED7
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 17:18:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231992AbiLPQSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 11:18:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51602 "EHLO
+        id S232186AbiLPQSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 11:18:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232047AbiLPQR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 11:17:56 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07E526F;
-        Fri, 16 Dec 2022 08:17:55 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id a17so1837608wrt.11;
-        Fri, 16 Dec 2022 08:17:55 -0800 (PST)
+        with ESMTP id S232145AbiLPQR5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 11:17:57 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA52BC02;
+        Fri, 16 Dec 2022 08:17:57 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id v7so2273668wmn.0;
+        Fri, 16 Dec 2022 08:17:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=af46cSNJUKc3RBIgzI62ckIW3TcyyLgIBROBWBavM6Q=;
-        b=Mxasf2uzaZWv1fU10Eb5LPYsLs12MnXeOgOBKdheQ6Py7cesOELe2yQgchoKF2SWaC
-         IhO1Bhdwv1Wt9DkHeWFi29YbmndG4+FSumJBWJ9wECFoMUTvAOdWQQx6FskDixqLiq06
-         n5dBuFDT7sG1oL9PG5xbH9l4e7Gft3v8yzkzjM6NyLQpwVMoti1VcoFMTxW2CWgwEcth
-         ctRL3k6UGuM+EFOZP0vdflirgdTtbhNT+Y7RqDvjW1LjKhCrN1Z817Mp140YMviU8M5D
-         +89bsopQ2i418B+PIWy7HvAFyflHhFnb8NDI3DHRfJBO550vEMak3ak1peooKY4Ca6XY
-         +r+A==
+        bh=K32EyFMV6FUh1aAwdxHu1pne9VDoC7iSSDyRiO1hCEI=;
+        b=NCdHnRpUbtKwoVmvh4fXZfCpg9PMvdqa4PlkaI3MhlXL/6X99OgI143iir4lw9RmhR
+         I5KexamjUSYDgMPyinyf7k22onnd591fjOSm+E2B6V0U4ZgtkziBG4AUmGvXs6KQ1ZPX
+         ym4Y89iMRCOAagC4VXhpK7K12+Ln5ww0p/XLnhUATYPdBicpn855U88kdcJFJCbd28bB
+         1g/x5GwoLY3UngAo1o2Q0Yci43j72j4B07Wm3oJ7v9Tly/C5AbOvWN6mPMrd4CUU85Hs
+         FF0MaM0ivqQZxAn6HorvEPm5KWOs+DvSJNfExi0/kEyhi9GKU96GKfthWh9UUoKIdmk6
+         AOGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=af46cSNJUKc3RBIgzI62ckIW3TcyyLgIBROBWBavM6Q=;
-        b=SkZp2UxbznOj+nZmtBKj1IfIAw0cYZkGWCREbzzBOHMb9Hj3JmPyMc4XfImoa3spck
-         DYmb4GMBf4JV1MTl2r8qyJBUQipKsL3+/MbdSPc/pXaUOL1/FR/RpUGEqjB4DJeeUhZz
-         O1URNwh/Vix+NYTnCff4WLKP6EgaVDVFX2riGS2OZSQFKOVSzGnpBIfBm7WhUD2HigU8
-         ZTPwNFlX6z5Ug07VWJu4KIhfUtiu9JFgFVaFyfyh223HI5U3rBntfyKMNVxcCIN9LZoV
-         tTtMl3MufLD8vP8moEJL15juwdZcbpZf+cGSCT0GhrT7RM8u+mjhDYBEbxpxbUwzi/xT
-         ftcA==
-X-Gm-Message-State: ANoB5pkuq6ThiR7NoGsqa66+dkpe5bpR6lVMBmHKKOtohdzwFZ0PRul/
-        14vbykXu8o/ORbmEm+nocak=
-X-Google-Smtp-Source: AA0mqf5Q6QAMMxYEvdQukjtnc8gYdBB8a113llRhzO8ReEJHJdsZ22y3U0Mo/SjGzaPFwEtv+r6Eaw==
-X-Received: by 2002:a05:6000:10cf:b0:242:5ba8:d025 with SMTP id b15-20020a05600010cf00b002425ba8d025mr21862329wrx.39.1671207474276;
-        Fri, 16 Dec 2022 08:17:54 -0800 (PST)
+        bh=K32EyFMV6FUh1aAwdxHu1pne9VDoC7iSSDyRiO1hCEI=;
+        b=SCcc/y1E9NLpB4yNcACboxAwjpdSbDJfmWuetZz+KdqY98JwsoR8PvP/UPBea+EHnm
+         ZdcyMBlL+s2LFlc80MGXCyUVzcxcTtn7CArLZiwi1e57txD63CHAUF9FJU/XtckYFQyj
+         ReQTfSSV+JUAX7pbG9uyRNAmlyiGuE9dwV/tflVQOjmNN4n3zOFT7v3YFy6jttEDut3g
+         GqPB4dpty7ic/xBzVaqf07ObMKVzb2Vz2qsL+NBXLudLf1lGU5udfZT6lYwVJE4np3ia
+         k2n2FY3yb/bQxYvl1YakJMchSR2OpUfKcSozs8gRRyc0MSjSXauiSQP4+qRP63yfCCPt
+         Gn9g==
+X-Gm-Message-State: ANoB5plodnLw4mqFkPWR71YIBC4VXTSnVEs+T/seXVC/8n/AZghHtYLf
+        wToHfNvxCxpvAW+OxJ33NBA=
+X-Google-Smtp-Source: AA0mqf7wYGqWC7bfiRafmQGtA3gojbHSNlvgDLnCFR1CKkxWwRTwl1oPnMIbUVWut0na8wLloShIsg==
+X-Received: by 2002:a05:600c:1d9f:b0:3cf:a80d:69ab with SMTP id p31-20020a05600c1d9f00b003cfa80d69abmr25843506wms.31.1671207475415;
+        Fri, 16 Dec 2022 08:17:55 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-18.ip85.fastwebnet.it. [93.42.71.18])
-        by smtp.googlemail.com with ESMTPSA id bj19-20020a0560001e1300b002238ea5750csm3079720wrb.72.2022.12.16.08.17.53
+        by smtp.googlemail.com with ESMTPSA id bj19-20020a0560001e1300b002238ea5750csm3079720wrb.72.2022.12.16.08.17.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 08:17:53 -0800 (PST)
+        Fri, 16 Dec 2022 08:17:55 -0800 (PST)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Ronald Wahl <ronald.wahl@raritan.com>
-Subject: [net PATCH 4/5] net: dsa: qca8k: introduce single mii read/write lo/hi
-Date:   Fri, 16 Dec 2022 17:17:20 +0100
-Message-Id: <20221216161721.23863-4-ansuelsmth@gmail.com>
+Subject: [net PATCH 5/5] net: dsa: qca8k: improve mdio master read/write by using single lo/hi
+Date:   Fri, 16 Dec 2022 17:17:21 +0100
+Message-Id: <20221216161721.23863-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221216161721.23863-1-ansuelsmth@gmail.com>
 References: <20221216161721.23863-1-ansuelsmth@gmail.com>
@@ -79,152 +79,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It may be useful to read/write just the lo or hi half of a reg.
+Improve mdio master read/write by using singe mii read/write lo/hi.
 
-This is especially useful for phy poll with the use of mdio master.
-The mdio master reg is composed by the first 16 bit related to setup and
-the other half with the returned data or data to write.
+In a read and write we need to poll the mdio master regs in a busy loop
+to check for a specific bit present in the upper half of the reg. We can
+ignore the other half since it won't contain useful data. This will save
+an additional useless read for each read and write operation.
 
-Refactor the mii function to permit single mii read/write of lo or hi
-half of the reg.
+In a read operation the returned data is present in the mdio master reg
+lower half. We can ignore the other half since it won't contain useful
+data. This will save an additional useless read for each read operation.
+
+In a read operation it's needed to just set the hi half of the mdio
+master reg as the lo half will be replaced by the result. This will save
+an additional useless write for each read operation.
 
 Tested-by: Ronald Wahl <ronald.wahl@raritan.com>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c | 106 ++++++++++++++++++++++++-------
- 1 file changed, 84 insertions(+), 22 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index fbcd5c2b13ae..92c4bfef7c97 100644
+index 92c4bfef7c97..2f224b166bbb 100644
 --- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -37,42 +37,104 @@ qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
- }
+@@ -740,9 +740,9 @@ qca8k_mdio_busy_wait(struct mii_bus *bus, u32 reg, u32 mask)
  
- static int
--qca8k_mii_read32(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
-+qca8k_mii_write_lo(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
- {
- 	int ret;
-+	u16 lo;
+ 	qca8k_split_addr(reg, &r1, &r2, &page);
  
--	ret = bus->read(bus, phy_id, regnum);
--	if (ret >= 0) {
--		*val = ret;
--		ret = bus->read(bus, phy_id, regnum + 1);
--		*val |= ret << 16;
--	}
-+	lo = val & 0xffff;
-+	ret = bus->write(bus, phy_id, regnum, lo);
-+	if (ret < 0)
-+		dev_err_ratelimited(&bus->dev,
-+				    "failed to write qca8k 32bit lo register\n");
+-	ret = read_poll_timeout(qca8k_mii_read32, ret1, !(val & mask), 0,
++	ret = read_poll_timeout(qca8k_mii_read_hi, ret1, !(val & mask), 0,
+ 				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
+-				bus, 0x10 | r2, r1, &val);
++				bus, 0x10 | r2, r1 + 1, &val);
  
--	if (ret < 0) {
-+	return ret;
-+}
-+
-+static int
-+qca8k_mii_write_hi(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
-+{
-+	int ret;
-+	u16 hi;
-+
-+	hi = (u16)(val >> 16);
-+	ret = bus->write(bus, phy_id, regnum, hi);
-+	if (ret < 0)
- 		dev_err_ratelimited(&bus->dev,
--				    "failed to read qca8k 32bit register\n");
--		*val = 0;
--		return ret;
--	}
-+				    "failed to write qca8k 32bit hi register\n");
-+
-+	return ret;
-+}
-+
-+static int
-+qca8k_mii_read_lo(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
-+{
-+	int ret;
-+
-+	ret = bus->read(bus, phy_id, regnum);
-+	if (ret < 0)
-+		goto err;
+ 	/* Check if qca8k_read has failed for a different reason
+ 	 * before returnting -ETIMEDOUT
+@@ -784,7 +784,7 @@ qca8k_mdio_write(struct qca8k_priv *priv, int phy, int regnum, u16 data)
  
-+	*val = ret & 0xffff;
- 	return 0;
-+
-+err:
-+	dev_err_ratelimited(&bus->dev,
-+			    "failed to read qca8k 32bit lo register\n");
-+	*val = 0;
-+
-+	return ret;
- }
+ exit:
+ 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
+-	qca8k_mii_write32(bus, 0x10 | r2, r1, 0);
++	qca8k_mii_write_hi(bus, 0x10 | r2, r1 + 1, 0);
  
--static void
--qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
-+static int
-+qca8k_mii_read_hi(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
- {
--	u16 lo, hi;
- 	int ret;
+ 	mutex_unlock(&bus->mdio_lock);
  
--	lo = val & 0xffff;
--	hi = (u16)(val >> 16);
-+	ret = bus->read(bus, phy_id, regnum);
-+	if (ret < 0)
-+		goto err;
+@@ -814,18 +814,18 @@ qca8k_mdio_read(struct qca8k_priv *priv, int phy, int regnum)
+ 	if (ret)
+ 		goto exit;
  
--	ret = bus->write(bus, phy_id, regnum, lo);
--	if (ret >= 0)
--		ret = bus->write(bus, phy_id, regnum + 1, hi);
-+	*val = ret << 16;
-+	return 0;
-+
-+err:
-+	dev_err_ratelimited(&bus->dev,
-+			    "failed to read qca8k 32bit hi register\n");
-+	*val = 0;
-+
-+	return ret;
-+}
-+
-+static int
-+qca8k_mii_read32(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
-+{
-+	u32 hi, lo;
-+	int ret;
-+
-+	*val = 0;
-+
-+	ret = qca8k_mii_read_lo(bus, phy_id, regnum, &lo);
- 	if (ret < 0)
--		dev_err_ratelimited(&bus->dev,
--				    "failed to write qca8k 32bit register\n");
-+		goto err;
-+
-+	ret = qca8k_mii_read_hi(bus, phy_id, regnum + 1, &hi);
-+	if (ret < 0)
-+		goto err;
-+
-+	*val = lo | hi;
-+
-+err:
-+	return ret;
-+}
-+
-+static void
-+qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
-+{
-+	if (qca8k_mii_write_lo(bus, phy_id, regnum, val) < 0)
-+		return;
-+
-+	qca8k_mii_write_hi(bus, phy_id, regnum + 1, val);
- }
+-	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
++	qca8k_mii_write_hi(bus, 0x10 | r2, r1 + 1, val);
  
- static int
+ 	ret = qca8k_mdio_busy_wait(bus, QCA8K_MDIO_MASTER_CTRL,
+ 				   QCA8K_MDIO_MASTER_BUSY);
+ 	if (ret)
+ 		goto exit;
+ 
+-	ret = qca8k_mii_read32(bus, 0x10 | r2, r1, &val);
++	ret = qca8k_mii_read_lo(bus, 0x10 | r2, r1, &val);
+ 
+ exit:
+ 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
+-	qca8k_mii_write32(bus, 0x10 | r2, r1, 0);
++	qca8k_mii_write_hi(bus, 0x10 | r2, r1 + 1, 0);
+ 
+ 	mutex_unlock(&bus->mdio_lock);
+ 
 -- 
 2.37.2
 
