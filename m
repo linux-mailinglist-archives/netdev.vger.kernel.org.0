@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AACF64E9F4
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48BDE64E9F7
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiLPLFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 06:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S230217AbiLPLG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 06:06:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiLPLFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:05:49 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7688DF25
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:05:47 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id y25so2925013lfa.9
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:05:47 -0800 (PST)
+        with ESMTP id S230470AbiLPLGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:06:17 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9F530571
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:06:13 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id q6so2915887lfm.10
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:06:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=4XRGRHsiFCJ4ktT8TNwZgSlFysJO9ZB/tk8ZQbwb5zo=;
-        b=VDIfWnJqJWOX/1OfsOQsHqNcGSxl/2H4LZLbiw5gWSix3Xqpq1mGZhd60FXn562FhN
-         xZNO1k6mtkSw2tvlaGZFhgk/T48P+gr3mqhusbGfGtprxsEanoH6hMTSCZSEpH6EF2eU
-         7Vr60xNbelZZlwuaLDbq6NLBH0EvIUHBhX2EnwqHOU+YqEYkxH/Pfx7qFW8Abv2kGqEh
-         6iO1qplDtmoZBOc0fp6bxEzKR2xTe/LqypQZgpVfI4vcsHvpg9DI79AEihIGtPBWOi3g
-         OL/DKWL6e9Es/wq8Fb0NKKf92p58PVFNMbEAn51Dva11PgtnBMUTmzcR2XVzpNO39ZmV
-         CKFQ==
+        bh=nWwD7yi6dLlMGSUE/zB+/IBPn3bSJ7pcQB2OAC/RxMI=;
+        b=t1mum5FsO1hC6xNYTKNoqOJKipNV7LXcIuH0929xhlqEtUM+n3Km3L8gNCZgCRB9eb
+         CKrXaj5Vn6yykjAZSfjpMDwJ1oXy8SUf3GlXRhN/9Q3n6WtRl5pSAVcHLEkE2S1VQVpW
+         lZi9rur9SvwotSewu+XAwwCZDzJc5zjyuGquIY95K3kx7FIGBHS2Q125GmQ/2AE+iZsP
+         EvYqWVkvzc28aRdHk/T6Od4uhygUHkhV5Vtis1nVDzomH/rJcTTBtyVUG/VeHsTzc6sR
+         VmZrf/x6jCXpTfn4GqYctUDqntucjM9vy5wxgujEc0Chff9eAjPpv4ign2sTr8t9pB2w
+         qH9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4XRGRHsiFCJ4ktT8TNwZgSlFysJO9ZB/tk8ZQbwb5zo=;
-        b=0mn3JMBVzjSL3KNp6SA75e4xDgoXYC4OpqeaZpV9lo6Z3oT7frEFCmL4UJwFmfAvCq
-         EinCfulYBKAQnkW3F+VeY9iFsNK+el3PcMa2AtIivylvoFBzIbRkQuDzrUo03hUTe7+x
-         UlsA1am1cg6y5pIPXvaXWBQLUwPK2ATwcYU6D02elu3NXKnLR6krkWx4zZEIMXzWJLQo
-         BPokXvLvTm3cendaFgQhGRUMpDZ3VmRf3zM+WuscgOJIIIDxeK6IJq5sMp6tHyvQaGTH
-         MC05UsVrrPzN6HYJ99OUGZJ/YNjhWM2RYts6FoWftvt8tlXaHzoI39p96GfFrHqdkkHB
-         WgVw==
-X-Gm-Message-State: ANoB5pk1mWcAjLyEfxFmgM9riikQS+8N13oCug9ymgw+JLuA4aGp+mIY
-        o/iX3rtNCHhnCj3elXqT1dQkCw==
-X-Google-Smtp-Source: AA0mqf7RjdnDqkGDqcEvhbC2VLnr090341tf7ipweUOZhmZnoOna730rCzSEZXX7WXsJhDwR9sq2ww==
-X-Received: by 2002:a05:6512:16a1:b0:4ad:5fbb:a594 with SMTP id bu33-20020a05651216a100b004ad5fbba594mr12469152lfb.58.1671188746251;
-        Fri, 16 Dec 2022 03:05:46 -0800 (PST)
+        bh=nWwD7yi6dLlMGSUE/zB+/IBPn3bSJ7pcQB2OAC/RxMI=;
+        b=p6VxAD5LdSc6FupEoEppzSYLF8PzuvA4r6uBY6dIpDrluba+ZU89sgho/WLdYde933
+         Un7Mznbf3pmms4sQ/cqrNxzv7wiaC19bP18dtGgujf7CQEbO1gSI235D9ZSeTPL4/9kt
+         AOkaV67lQg0F2fVC3V7sQ42bVEVmx5ra5+YYrJoS9paG0ruE/36pWMdPWG1D8iWa7X3v
+         o2GThbB6kExK0qpXN/KrQNaaeaVRbBsnSVTCdZl4J9A9WoewwHcShLWgRhdv1aQLZVtM
+         Dz69Yp8NByv7sg6uyf4/r2YKhreOWhIjzir+A4fgEMzxslsZ+FNJNKvqSqU/1RXrSCvg
+         HxGg==
+X-Gm-Message-State: ANoB5pk5q9dG4ujZC81raJZNrJv4c9zp+RO5dGUDbe+lqm7Y3afvPR8Q
+        6VfQUxgjSayah+rWj3Ah+p3xaw==
+X-Google-Smtp-Source: AA0mqf4wZV02mHd6JVlBfvVxPzAtzLRWGiIk5hcgUumZmOSbhTAExJo0O+ngKichPTF35vO6AkHA1Q==
+X-Received: by 2002:a19:5f5a:0:b0:4b5:9b5b:ae92 with SMTP id a26-20020a195f5a000000b004b59b5bae92mr8827282lfj.10.1671188771594;
+        Fri, 16 Dec 2022 03:06:11 -0800 (PST)
 Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id h18-20020a19ca52000000b004b55075f813sm189891lfj.227.2022.12.16.03.05.44
+        by smtp.gmail.com with ESMTPSA id m8-20020ac24288000000b004a2c3fd32edsm190452lfh.144.2022.12.16.03.06.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Dec 2022 03:05:45 -0800 (PST)
-Message-ID: <2da394a6-411a-ca2b-90d3-7e97f3637d9f@linaro.org>
-Date:   Fri, 16 Dec 2022 12:05:44 +0100
+        Fri, 16 Dec 2022 03:06:11 -0800 (PST)
+Message-ID: <a8e09f78-704f-13f0-15ad-6c6dca6997f3@linaro.org>
+Date:   Fri, 16 Dec 2022 12:06:10 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.1
@@ -89,97 +89,9 @@ X-Mailing-List: netdev@vger.kernel.org
 On 16/12/2022 08:06, Yanhong Wang wrote:
 > Add documentation to describe StarFive dwmac driver(GMAC).
 > 
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> ---
->  .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
->  .../bindings/net/starfive,jh71x0-dwmac.yaml   | 103 ++++++++++++++++++
->  MAINTAINERS                                   |   5 +
->  3 files changed, 109 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/starfive,jh71x0-dwmac.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> index 7870228b4cd3..cdb045d1c618 100644
-> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> @@ -91,6 +91,7 @@ properties:
->          - snps,dwmac-5.20
->          - snps,dwxgmac
->          - snps,dwxgmac-2.10
-> +        - starfive,jh7110-dwmac
->  
->    reg:
->      minItems: 1
-> diff --git a/Documentation/devicetree/bindings/net/starfive,jh71x0-dwmac.yaml b/Documentation/devicetree/bindings/net/starfive,jh71x0-dwmac.yaml
-> new file mode 100644
-> index 000000000000..5cb1272fe959
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/starfive,jh71x0-dwmac.yaml
-> @@ -0,0 +1,103 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 StarFive Technology Co., Ltd.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/starfive,jh71x0-dwmac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: StarFive JH71x0 DWMAC glue layer
-> +
-> +maintainers:
-> +  - Yanhong Wang <yanhong.wang@starfivetech.com>
-> +
-> +select:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - starfive,jh7110-dwmac
-> +  required:
-> +    - compatible
-> +
-> +allOf:
-> +  - $ref: snps,dwmac.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - starfive,jh7110-dwmac
 
-Is it going to grow with new models? If yes, when? If not, filename does
-not match compatible.
+Subject: drop second, redundant "bindings for".
 
-> +      - const: snps,dwmac-5.20
-> +
-> +  clocks:
-> +    items:
-> +      - description: GMAC main clock
-> +      - description: GMAC AHB clock
-> +      - description: PTP clock
-> +      - description: TX clock
-> +      - description: GTXC clock
-> +      - description: GTX clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: stmmaceth
-> +      - const: pclk
-> +      - const: ptp_ref
-> +      - const: tx
-> +      - const: gtxc
-> +      - const: gtx
-
-missing resets and reset-names.
-
-> +
-> +required:
-> +  - compatible
-> +  - clocks
-> +  - clock-names
-> +  - resets
-> +  - reset-names
-> +
-> +unevaluatedProperties: false
-> +
 Best regards,
 Krzysztof
 
