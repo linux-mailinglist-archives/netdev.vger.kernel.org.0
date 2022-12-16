@@ -2,126 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EAF064EA4A
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:24:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 010DF64EAFE
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbiLPLYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 06:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
+        id S229905AbiLPL4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 06:56:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiLPLYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:24:39 -0500
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E560C116F;
-        Fri, 16 Dec 2022 03:24:38 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id A162832005D8;
-        Fri, 16 Dec 2022 06:24:37 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Fri, 16 Dec 2022 06:24:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1671189877; x=1671276277; bh=64TMHd9mCM
-        xlohGzvyOHHYDGzPMMW5ePInqTBtIjYdk=; b=VsF9DdcyJT9XCBQ/qNusAupwue
-        44Rl2EOQGWItRfsBUCTBoaHn4g8Ra1HFz88POOmJTsD7A/9wjDwYq4Y4aU+ptnCc
-        XXmUUQC9sAXHCbiVE7/NX+YlxjSxnR3CMf1yWd/3iHQHCDUA+97d822o4WHYRScF
-        HxIRNc8JN4rbRymDbV7uJeEauYXXMm79JNB692DPPC46jWi2iCyg0EgmfG8Pxno/
-        CYj7SH0CLMmOegEKnaECCtgc2NS4sy15JGqF5gtbM/RGMUBKsURT5nY7xpLvZ7Oq
-        joxe8Rvdb5gyVdQkNJnNEoe0J2ptnN9Vy34eGuvgrPMzdobfAvKK19oYn0Rw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1671189877; x=1671276277; bh=64TMHd9mCMxlohGzvyOHHYDGzPMM
-        W5ePInqTBtIjYdk=; b=K70/qCvoSdbAWKVRz2ukFfBC92/UqdnvlOLb3gMasrh+
-        METHyE9dna6KBwcNfF55fEHALvWHR9sejwulAGXfm1r+wwKRs20DstEf8wXVEhPa
-        IB5e6FBOiSue95W2sCNBCUJna5g2kp+ON+Q1N1NlFPgEyCWw6Y3HUPZpehKzB5ft
-        aJhmNJmFvKoLJkY2rmRdljp7SxNFkfIBWWPVwCAXNlzBwHmtkcLPocRmjA5gZ+rM
-        olF1Uu7vm2dSZOoUSqTO2uTMKywN4K9KWJHohNpV6eajO0NcSOtiDwqi2eAe5dY1
-        W3eSfP5myBzrQ2zL2KASNEUNzPH14UvlsGvVjgnEHQ==
-X-ME-Sender: <xms:c1WcY6KEwMVEF3zUUQCf-FaVuuiwzXRKhl7jfMG161usujl_oEWD3Q>
-    <xme:c1WcYyIhcDOiDpQuqPWK6r-9upBqd-OCKvLAII0yYwt-gZC6QJZVRxsFzRxi4pCwY
-    0BdvZK-xQHk545nfrA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejgddvjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
-    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
-    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
-    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
-    hnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:c1WcY6v_OqPTHlL7pP07WFByXlkUbKI8i1eoVBwm_Fk70om8xdaoyA>
-    <xmx:c1WcY_bpWcKVOdxpqeUwaZbWabwKgR5-NEJG9cqJ2mUUUfyCIHWSRg>
-    <xmx:c1WcYxZmh8cVSFyqfpOZGzUcFQhwFzXRhXR9eCMeFkoe2Hm5O23HWg>
-    <xmx:dVWcYzl0NW3tLmuqJabNnWj2vwmN8w5d3V68oPAd-iXzPNOZ0KupRA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 8B6D8B60086; Fri, 16 Dec 2022 06:24:35 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
-Mime-Version: 1.0
-Message-Id: <e17c7340-8973-417a-a334-01e96e5bbe73@app.fastmail.com>
-In-Reply-To: <Y5xEITNJkry8uy/h@salvia>
-References: <20221215170324.2579685-1-arnd@kernel.org>
- <e1fea67-7425-f13d-e5bd-3d80d9a8afb8@ssi.bg> <Y5xEITNJkry8uy/h@salvia>
-Date:   Fri, 16 Dec 2022 12:24:15 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        "Julian Anastasov" <ja@ssi.bg>
-Cc:     "Arnd Bergmann" <arnd@kernel.org>,
-        "Simon Horman" <horms@verge.net.au>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Jiri Wiesner" <jwiesner@suse.de>, Netdev <netdev@vger.kernel.org>,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ipvs: use div_s64 for signed division
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229469AbiLPL4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:56:22 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31C433F;
+        Fri, 16 Dec 2022 03:56:21 -0800 (PST)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 1ADD684CBD;
+        Fri, 16 Dec 2022 12:56:20 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1671191780;
+        bh=W2uwhnM1KnHLWHQOAr+kuaasVA13yupWdZfCcozE3jg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=P6Al+RuGcliK0ANlkmWfTIP7XF9QSHrti6BUfQknagNdCVrdkf63JJGRWBD9YjdFU
+         roP5qqh1zX61St7RVBWXo/XW1KzlZRUe53w3zJQ6hxcQU0uu0kOK4MZcmqUR9SyLGa
+         VMhFzmf1XSIsGx+vatpkkX23GPtRXtX+OFIqX+8Q1Hn7idf8kX7T+v7WwvXOIKE//0
+         8vPB0GK6+AJRqj2OydXqGjx64y6Efk6qaoXKpr2djx5roBiFbQwdWN0BtBjmWPefLZ
+         Gv2mOgj0ttuJc8Xx0804JyuYV64jqg1OHAksaTNwASo3XuDmDZaf7xR9LTiJfFHb97
+         Sg+TnGwSpHzlQ==
+Date:   Fri, 16 Dec 2022 12:56:12 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <20221216125612.3183fe07@wsk>
+In-Reply-To: <20221215202017.4432ef25@kernel.org>
+References: <20221215144536.3810578-1-lukma@denx.de>
+        <20221215202017.4432ef25@kernel.org>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/c3k.U7=FBMLow==QLU7n83=";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 16, 2022, at 11:10, Pablo Neira Ayuso wrote:
-> Hi Julian,
->
-> On Thu, Dec 15, 2022 at 09:01:59PM +0200, Julian Anastasov wrote:
->> 
->> 	Hello,
->> 
->> On Thu, 15 Dec 2022, Arnd Bergmann wrote:
->> 
->> > From: Arnd Bergmann <arnd@arndb.de>
->> > 
->> > do_div() is only well-behaved for positive numbers, and now warns
->> > when the first argument is a an s64:
->> > 
->> > net/netfilter/ipvs/ip_vs_est.c: In function 'ip_vs_est_calc_limits':
->> > include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
->> >   222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
->> >       |                                   ^~
->> > net/netfilter/ipvs/ip_vs_est.c:694:17: note: in expansion of macro 'do_div'
->> >   694 |                 do_div(val, loops);
->> 
->> 	net-next already contains fix for this warning
->> and changes val to u64.
->
-> Arnd's patch applies fine on top of net-next, maybe he is addressing
-> something else?
+--Sig_/c3k.U7=FBMLow==QLU7n83=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-No, it's the same bug. I had prepared my patch before the other fix
-went in, and only one of the two is needed.
+Hi Jakub,
 
-FWIW, I find my version slightly more readable, but Jakub's fix
-is probably more efficient, because the unsigned 64-bit division
-is better optimized on 32-bit, while div_s64() goes through an
-extern function.
+> On Thu, 15 Dec 2022 15:45:34 +0100 Lukasz Majewski wrote:
+> > Different Marvell DSA switches support different size of max frame
+> > bytes to be sent.
+> >=20
+> > For example mv88e6185 supports max 1632 bytes, which is now
+> > in-driver standard value. On the other hand - mv88e6250 supports
+> > 2048 bytes.
+> >=20
+> > As this value is internal and may be different for each switch IC,
+> > new entry in struct mv88e6xxx_info has been added to store it. =20
+>=20
+> # Form letter - net-next is closed
+>=20
 
-     Arnd
+I see....
+
+> We have already submitted the networking pull request to Linus
+> for v6.2 and therefore net-next is closed for new drivers, features,
+> code refactoring and optimizations. We are currently accepting
+> bug fixes only.
+
+Ok.
+
+>=20
+> Please repost when net-next reopens after Jan 2nd.
+>=20
+> RFC patches sent for review only are obviously welcome at any time.
+
+I hope that the discussion regarding those patches will be done by this
+time.
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/c3k.U7=FBMLow==QLU7n83=
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmOcXNwACgkQAR8vZIA0
+zr0n1Af+MK+dO8fYjl5t/EZTNMXBCaqMjorxgNDdU61LEUhVXhSzyrizCIOIR7RB
+zTAAMtJNvQBiN9xmCulYVwN9iBowwpEaVVUQrzgTJSBYxuLdc5RKa6cNpaWS2vgx
+H8ciOO7KYJOeYtVw9FYRXQsvQLo4nE06rvQiyKXcW3p8oq1wiqB6kZ2OZ+EbiMPT
+7mpIXZ0O4q50wYqv5i0m96xUyRpWtPncs6f/YeviMfkjkOssI3pTWXxobz2itbxK
+OB5Gauf/MnHB5zRKOH7wMjeW7y8LCkageAEcPIRF40/CKvevVRd35G5vqOnXWaHp
+2TXQmT4Skl9BagTMc4C7Y2CD3lViHA==
+=+0+v
+-----END PGP SIGNATURE-----
+
+--Sig_/c3k.U7=FBMLow==QLU7n83=--
