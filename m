@@ -2,228 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1E3564F281
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 21:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B41264F2EC
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 22:06:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231945AbiLPUlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 15:41:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40904 "EHLO
+        id S231816AbiLPVGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 16:06:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbiLPUlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 15:41:05 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B7C64DD;
-        Fri, 16 Dec 2022 12:41:03 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id m18so8859022eji.5;
-        Fri, 16 Dec 2022 12:41:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FGvyMITTi9oXyIUnasPEhVJqtyXv6Y6ZzePRftZhGnA=;
-        b=W0V7by09TM3s4cRnh35968yxctyIfGjE/cCRibvsu2bm/46MP7rin+KSTflQzQKadY
-         rEhxD62uDF4OtoSmtHWSXxjSW39LnBLIdPIfn0oNAaY4Xn6Z5mjtg+KLIUjlSjVLA1YN
-         WnFw7nqrHwYPDpSC6Zr5MtmonMEJTt2kRP5Mc2q2nzvdc1/B4irhSlQV8v9ZVF7z7aLR
-         8P7jkFJtcZXLGHDXOOaozD9KgNFS+VQhio/Iqpfvu8kcmN6VEPYkvk+JD5o2COope2MW
-         Ywur2jORt6myml1Zpqqg6i6Md2JSWB/OAD3gmXSvlW7XbMoQVSD1oRkJvCU5ZeUKKSTp
-         Ex8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FGvyMITTi9oXyIUnasPEhVJqtyXv6Y6ZzePRftZhGnA=;
-        b=iSYoEh0vu6KX//PAW9anyldixdQSurvJQeKyss29A+IXK9JjcDIwZ0KPVMvT9hOMMb
-         RMCjbDiGdNZhxHwBMWTsSNXXgKA6thT6zKqfEgB2CiYG2Ta4WGLKEh5dLAnPD4GyxpzN
-         YxNVKzCMpWc53V3qeOg2kxMXTQD3+ObTm/rY5x6zgDOPPJj2MnDs6AFpJe1M6nRa8sF7
-         rR4/jHUsPN95/h8M/iPAWi9EULNM1KCaWoPnp1NE/9M/5SU3S9FefWAsuQaGuZkYlUUi
-         FuKeDiFyqu6HkJ/JWcs5Wz92Ju4cUxW225VEYdhy0RC5XTSBj+XumYL3qvIT5f/HJe/X
-         aZMg==
-X-Gm-Message-State: ANoB5pko3ZUTCgDfCGZnA4ZioT64WWxjsX8/Ydex0WROWaf+EdwqGt73
-        5jVJwkM8VceGx2Myzw9JktE=
-X-Google-Smtp-Source: AA0mqf5+bwekE2Ck/RwL71cqJjClxSLICfq5IEg1sgbFYw1RK6V3aTOQKEC9pglUSfZAcAdPZeVJcg==
-X-Received: by 2002:a17:907:cbc8:b0:7c1:6e08:4c20 with SMTP id vk8-20020a170907cbc800b007c16e084c20mr23312414ejc.7.1671223261471;
-        Fri, 16 Dec 2022 12:41:01 -0800 (PST)
-Received: from [192.168.1.101] ([141.136.89.211])
-        by smtp.gmail.com with ESMTPSA id dm4-20020a05640222c400b004589da5e5cesm1258695edb.41.2022.12.16.12.40.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Dec 2022 12:41:01 -0800 (PST)
-Message-ID: <7d44c9ed-cf9d-64e1-df85-726a97859e06@gmail.com>
-Date:   Sat, 17 Dec 2022 00:40:56 +0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next v1 01/13] net: wwan: tmi: Add PCIe core
+        with ESMTP id S230171AbiLPVGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 16:06:21 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680A112AE0
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 13:06:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671224780; x=1702760780;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=iqHiOSVv5+vPLh78vRA2eVvJ/sJq1hhSuATp4l4PfMI=;
+  b=CtUGKZxgeY22zgLyKfnADktNZg20c6ah0pVWt1isVXoYLFm4HVqZANOo
+   wg/VvyIr6599zf/CgsO483qaq3gsUNPx6JrFSgsukFKSXIK7GQG3+fAjI
+   WkqfUo0SD8WJYwebMaMeO2GRUmybrzKGtokpGrp+oFixzF7kpeLd4AVb9
+   Ibw8pcVmQIPhdFX/Jrp8H24ZOu5WnRVCqddOM2v5FX1aseI7N2oVbQsC+
+   M34rHuaA5OKQ3u6uvpLjJrUXY7FZKzhSRjWgMy5/gMymc2v9ETw//ea9X
+   UpwEfxU6VwIh9hezQxHNR9w3/qFjkJMyXRczPcUB5DorBhDT8QTSLdyTJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10563"; a="320228891"
+X-IronPort-AV: E=Sophos;i="5.96,251,1665471600"; 
+   d="scan'208";a="320228891"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2022 13:06:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10563"; a="718500767"
+X-IronPort-AV: E=Sophos;i="5.96,251,1665471600"; 
+   d="scan'208";a="718500767"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga004.fm.intel.com with ESMTP; 16 Dec 2022 13:06:18 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 16 Dec 2022 13:06:18 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 16 Dec 2022 13:06:17 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 16 Dec 2022 13:06:17 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Fri, 16 Dec 2022 13:06:17 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xjaey9zQFiJZsYhmLxOh/tnvIHhV6CHbtJQh90PflT0Vntr1dKnS+Jwczhbnfi1UbI+n25sL1oyQYiueGjzIujUFyvwXNRtbUc3O1MTY0uAl3DeCdyC4Tu3bsQh5b5efbxDMnfxhNL+JA/VUHzPocBeA9ZR/8JdJO8Z/O/xjnLULEmHNGCmYTJKuFmZzkEQVCYRKDJhAKlTjokIHm6xMDRHzt9lHwXfZ1rpSg70dJVSXiRWEhzK3QcwQXYYFW6mnWb8suARke8YPYocB6ZfDfPJBg22lZAKVuz0xPOT7JupJC3xZtbna1bB5V5QZHGhBY/F8U7Ob7n6nzYIRbjmMLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iqHiOSVv5+vPLh78vRA2eVvJ/sJq1hhSuATp4l4PfMI=;
+ b=Sz1Tx+g1RtOEvjCXrFs4Wpq7xvLcCyKRnjKQq0XJRj1rLCeWjU2Xx8tmVUjTf0O3qu9ROIsRPEPVi4OEyhYnSnfnycryXOKaeJIpnRBqppp3jIF7DvtI/U84uWR7bshUuNts3pfcTAzjCV/isCcbIMl5QNbd/h/RzwYI6NfxV6Ddl/QTxNt0OaRpO+imqwJZJP7AtrP/F+tfeSm1wOoBjgdqlY9tWoCZAzFoUJrtn/+1/MsB1s4r9HIBwWrYxPSpymjmCu567P9ZV8QnMk+MJ5EDc1dOlJag6drFaCGBVi5NhaAPyGRpWLUKrtVAHPxYbLbtFLqcN3UlIvPVaHoH+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from IA1PR11MB6266.namprd11.prod.outlook.com (2603:10b6:208:3e6::12)
+ by BN9PR11MB5529.namprd11.prod.outlook.com (2603:10b6:408:102::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Fri, 16 Dec
+ 2022 21:06:15 +0000
+Received: from IA1PR11MB6266.namprd11.prod.outlook.com
+ ([fe80::5d37:e213:a4e0:c41c]) by IA1PR11MB6266.namprd11.prod.outlook.com
+ ([fe80::5d37:e213:a4e0:c41c%7]) with mapi id 15.20.5924.012; Fri, 16 Dec 2022
+ 21:06:15 +0000
+From:   "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: RE: [PATCH ethtool-next v1 0/3] add netlink support for rss get
+Thread-Topic: [PATCH ethtool-next v1 0/3] add netlink support for rss get
+Thread-Index: AQHZEBkczq3a7/0Q0kWYGptyx+GyjK5uUgQAgAKxycA=
+Date:   Fri, 16 Dec 2022 21:06:15 +0000
+Message-ID: <IA1PR11MB626636E87327F2BF9C8EDF36E4E69@IA1PR11MB6266.namprd11.prod.outlook.com>
+References: <20221214235418.1033834-1-sudheer.mogilappagari@intel.com>
+ <20221214195544.65896858@kernel.org>
+In-Reply-To: <20221214195544.65896858@kernel.org>
+Accept-Language: en-US
 Content-Language: en-US
-To:     =?UTF-8?B?WWFuY2hhbyBZYW5nICjmnajlvabotoUp?= 
-        <Yanchao.Yang@mediatek.com>
-Cc:     =?UTF-8?B?Q2hyaXMgRmVuZyAo5Yav5L+d5p6XKQ==?= 
-        <Chris.Feng@mediatek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        =?UTF-8?B?TWluZ2xpYW5nIFh1ICjlvpDmmI7kuq4p?= 
-        <mingliang.xu@mediatek.com>,
-        =?UTF-8?B?TWluIERvbmcgKOiRo+aVjyk=?= <min.dong@mediatek.com>,
-        "m.chetan.kumar@intel.com" <m.chetan.kumar@intel.com>,
-        "linuxwwan@mediatek.com" <linuxwwan@mediatek.com>,
-        =?UTF-8?B?TGlhbmcgTHUgKOWQleS6rik=?= <liang.lu@mediatek.com>,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        =?UTF-8?B?SGFvemhlIENoYW5nICjluLjmtanlk7Ip?= 
-        <Haozhe.Chang@mediatek.com>,
-        =?UTF-8?B?SHVhIFlhbmcgKOadqOWNjik=?= <Hua.Yang@mediatek.com>,
-        "linuxwwan@intel.com" <linuxwwan@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "loic.poulain@linaro.org" <loic.poulain@linaro.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        =?UTF-8?B?VGluZyBXYW5nICjnjovmjLop?= <ting.wang@mediatek.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        =?UTF-8?B?QWlkZW4gV2FuZyAo546L5ZKP6bqSKQ==?= 
-        <Aiden.Wang@mediatek.com>,
-        =?UTF-8?B?RmVsaXggQ2hlbiAo6ZmI6Z2eKQ==?= <Felix.Chen@mediatek.com>,
-        =?UTF-8?B?TGFtYmVydCBXYW5nICjnjovkvJ8p?= 
-        <Lambert.Wang@mediatek.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        =?UTF-8?B?TWluZ2NodWFuZyBRaWFvICjkuZTmmI7pl68p?= 
-        <Mingchuang.Qiao@mediatek.com>,
-        =?UTF-8?B?R3VvaGFvIFpoYW5nICjlvKDlm73osaop?= 
-        <Guohao.Zhang@mediatek.com>,
-        =?UTF-8?B?WGlheXUgWmhhbmcgKOW8oOWkj+Wuhyk=?= 
-        <Xiayu.Zhang@mediatek.com>
-References: <20221122111152.160377-1-yanchao.yang@mediatek.com>
- <20221122111152.160377-2-yanchao.yang@mediatek.com>
- <64aada78-8029-1b05-b802-a005549503c9@gmail.com>
- <8878ed64fadfda9b3d3c8cd8b4564dd9019349b6.camel@mediatek.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-In-Reply-To: <8878ed64fadfda9b3d3c8cd8b4564dd9019349b6.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR11MB6266:EE_|BN9PR11MB5529:EE_
+x-ms-office365-filtering-correlation-id: 86649496-a631-4703-9dc5-08dadfa95e83
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: j5Fyc8dD1DHJNAvnvEDMZemBtL49P6brTO2C+WWNFqBV20Jo4z0nykOWFBf+PPwA1HcA4eRV0bOkuT/5TO4DSOvJUFhjFvtKIsTU4wfQKSPSSTFuVsBKKlrifGBPW9mh+m1gftztvYf9TcTIzc7kEkRyHeAgeHT80LWkJ7Njv+reXP1i22vPWmivuvziQOG3TyywLImlwvUTGVlbGOf38PbZqCi+K2ZT13G+GuJgxWwu+IauVo6rzNVI5l70oWvqp0dkSoyFjq3IOO0T7F5jf+DXTfSp7YnoIwZ1LekpkJu1B4gipIQtwYfdamjkmhmiDvl0ZwGyGB3bswqIlxuYee9pcOOSpIFMv/SYeAHrxV3OyUn89tRgru2wjeaaYUsQpKjAq8V+YJZDDoOhNMB+XLCm1QTJSiDaLMFoF4inQhzzZ05G/ZoZZ30gYSA2YBrMRO75LXqkMbHrOPn2e8shhkE0yqeBR5WlPXqJMlJJdSqNg3K2GBmQVVxwMQFaumjAGTA0NBGCxnmH40ClGKMVy4SIS7G/+Uri7a9j9o+MldWnkGINHdnAeovpkTNJPjmiREIqW7V8G6lI5YYBdOV9MCUKtO0GWvLxzqC7tkF5GI2ygi0JrKqoC1WlTkdqGiq6IEsE3+K1UFWmqewre2YFlM3ml6MmBWzN+L0giVAfkC5HntogFsykyOb0bEmH1/3F70WLYYVhVETYkvDPjgd3zw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6266.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(376002)(136003)(366004)(396003)(39860400002)(451199015)(82960400001)(66556008)(66446008)(66476007)(8936002)(66946007)(52536014)(76116006)(2906002)(8676002)(4326008)(64756008)(38070700005)(5660300002)(4744005)(38100700002)(83380400001)(122000001)(33656002)(86362001)(478600001)(316002)(6916009)(54906003)(71200400001)(55016003)(41300700001)(7696005)(107886003)(6506007)(9686003)(26005)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?bfYX+YdxYK0o+VJe/BLSVD4gCmWWbqBCXhA4Mpp75TwncvpReniLl3YWPyzx?=
+ =?us-ascii?Q?8Qj8+zTbhG6rU7a9byjQzAh9JibILqF63AMOP0iwv6qszu1yx4jyzE5cJpbP?=
+ =?us-ascii?Q?3GOF9QLe+3QhOSSR6eiA8lJs4cwIHfkWyV+zRm19+n4pRplcB0mYFI4EZuNf?=
+ =?us-ascii?Q?8LvZMY5D0T52N9I1tfvL9seJS98fWeyEy6svMapT64VHYjkC1UB6nUaYIRyG?=
+ =?us-ascii?Q?hOszTWwVhNhl+tFhZzlrStyRqugkz4I/BIALiORjQezElFBRiPlPC3jEhcqg?=
+ =?us-ascii?Q?UaOl2aQsw1J/K4DG1upeIzGQvT3ugk8DJr8TgucscvRKPToIJdFMtajtFFxz?=
+ =?us-ascii?Q?6ZO9F8Ooyjfiw7K/XOqXiOZSAgQDMFF/3Qv0zIADIvD79Uc63vYLk8CZqZQ8?=
+ =?us-ascii?Q?3/YxVckV5mFyEjFnqueuweAFWWsL9cfXAzwmY985kUGiLlm0MPjsHLv9ZHRI?=
+ =?us-ascii?Q?hMM9aZKEwmzXgS/Ypd60wcCy30HgMzyRvhKI7xgDwfOv48Jj4LzBNK2MAh93?=
+ =?us-ascii?Q?J2ZOZZq+gWplDUpTDd3MvRbzyp88TPoBZwK2/NraeQzQINasSJELxvjOVq6D?=
+ =?us-ascii?Q?V0/YPAlNl1q12gsMbaE2N0rWaBghvb8L1l3gnJZxCgvy06Ihz4TkFUAv576J?=
+ =?us-ascii?Q?l7qe9pu4b21rNu67G/GcSc0/+92gAnWYg0YC0HFMPaQNQba3UxDSUVhqsPGY?=
+ =?us-ascii?Q?bsFiXN53zlCBa3Q6YMsxoC8hcyPlT2DEXTL/jKvbtEk2z3+cnZs7qWU7R8lk?=
+ =?us-ascii?Q?RVc4zopz0XEUW4oLcN5yHVmcs7p+TZDHGHF9zEh16aBiQeTQLgAg+d3T3sEo?=
+ =?us-ascii?Q?HtIMWxfNodnSCTAVVFbCKqIpwivSZyj0IJLUKLEhA7v9qRa5HwymNKUpsygx?=
+ =?us-ascii?Q?2uzA/i50AsQtze4+dc9Ky6HFqH3pkfpqHdCfUuKdLWpWu7yge9ztxUFjyiJN?=
+ =?us-ascii?Q?0wQJsD5/oas8LSKlbBYIS51jKwtSfdspbs4gXorKv67VgvSY8O9IKRAdt7Pq?=
+ =?us-ascii?Q?lqC+WfVtFBBY/QQO2joUHAcL8AIxdHGzxuvRiqzhjXz8ujGd1Z3D8vO0Yooc?=
+ =?us-ascii?Q?MzCQWXFBvSCrzxguYn24R6ieHLikDwaDE3tiMZra1QLgST67b+RXpx2xWOfY?=
+ =?us-ascii?Q?obboMHP2BcOU9UgARHYcEV0cN0K/D70VsacyHXAZp7A3UX50OcqhE+brZsYv?=
+ =?us-ascii?Q?rm/VSoP205xO0xMc9AZIJchvFnft3wuTNorzG7qDs9Uy1QJdjY+c5Pp8ylzU?=
+ =?us-ascii?Q?mb2qPdOQ7vlrPhQloqb+SHqv8TEFed26ZKEpujGm/VFd0KE1/XdVcDfweQzg?=
+ =?us-ascii?Q?tG+ksNLpsA+5+bIQdB0/xzeCQoow3aAVU5aIIb4qtryMiUhhMF5hTJg7SZao?=
+ =?us-ascii?Q?elui9nyi5G636zw/+A8wkGOz5dpieEHbC/F9FXRFbOuExLZKy2u5+NnEextj?=
+ =?us-ascii?Q?p0KjK6TMjVbop9OG+kxYXtgcp2FUmdfTNIDtGsL8PKJ0dR6KfCMH2utqLdXY?=
+ =?us-ascii?Q?fvNIRBLbAOqY1EAsYuIYXaG/PCMxWO6JltHBiJJ8QBuoVi2pRTy8HzbPWAGK?=
+ =?us-ascii?Q?gKhL4tQUy5PNzFrBlcbbyAROutlEytCDSAVYdSecI7hmMQMeGDop09Ke1TgZ?=
+ =?us-ascii?Q?BQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6266.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86649496-a631-4703-9dc5-08dadfa95e83
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2022 21:06:15.3872
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Lo3jLDQ8tMx5dKX2R93LiW7MROuPYBhVFBCBYefs+lIkAJqqzOAOQzak626Rb0lalFhU68NXPt+8HU+Qkd5CQrIZW5vSu1X7tbEVeJ9o7Zc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5529
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Yanchao,
 
-On 07.12.2022 06:33, Yanchao Yang (杨彦超) wrote:
-> On Sun, 2022-12-04 at 22:52 +0400, Sergey Ryazanov wrote:
->> On 22.11.2022 15:11, Yanchao Yang wrote:
->>> Registers the TMI device driver with the kernel. Set up all the
->>> fundamental
->>> configurations for the device: PCIe layer, Modem Host Cross Core
->>> Interface
->>> (MHCCIF), Reset Generation Unit (RGU), modem common control
->>> operations and
->>> build infrastructure.
->>>
->>> * PCIe layer code implements driver probe and removal, MSI-X
->>> interrupt
->>> initialization and de-initialization, and the way of resetting the
->>> device.
->>> * MHCCIF provides interrupt channels to communicate events such as
->>> handshake,
->>> PM and port enumeration.
->>> * RGU provides interrupt channels to generate notifications from
->>> the device
->>> so that the TMI driver could get the device reset.
->>> * Modem common control operations provide the basic read/write
->>> functions of
->>> the device's hardware registers, mask/unmask/get/clear functions of
->>> the
->>> device's interrupt registers and inquiry functions of the device's
->>> status.
->>>
->>> Signed-off-by: Ting Wang <ting.wang@mediatek.com>
->>> Signed-off-by: MediaTek Corporation <linuxwwan@mediatek.com>
->>> ---
->>>    drivers/net/wwan/Kconfig                 |   11 +
->>>    drivers/net/wwan/Makefile                |    1 +
->>>    drivers/net/wwan/mediatek/Makefile       |   12 +
->>>    drivers/net/wwan/mediatek/mtk_common.h   |   30 +
->>>    drivers/net/wwan/mediatek/mtk_dev.c      |   50 +
->>>    drivers/net/wwan/mediatek/mtk_dev.h      |  503 ++++++++++
->>>    drivers/net/wwan/mediatek/pcie/mtk_pci.c | 1164
->>> ++++++++++++++++++++++
->>>    drivers/net/wwan/mediatek/pcie/mtk_pci.h |  150 +++
->>>    drivers/net/wwan/mediatek/pcie/mtk_reg.h |   69 ++
->>>    9 files changed, 1990 insertions(+)
->>>    create mode 100644 drivers/net/wwan/mediatek/Makefile
->>>    create mode 100644 drivers/net/wwan/mediatek/mtk_common.h
->>>    create mode 100644 drivers/net/wwan/mediatek/mtk_dev.c
->>>    create mode 100644 drivers/net/wwan/mediatek/mtk_dev.h
->>>    create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.c
->>>    create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.h
->>>    create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_reg.h
->>>
->>> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
->>> index 3486ffe94ac4..a93a0c511d50 100644
->>> --- a/drivers/net/wwan/Kconfig
->>> +++ b/drivers/net/wwan/Kconfig
->>> @@ -119,6 +119,17 @@ config MTK_T7XX
->>>    
->>>    	  If unsure, say N.
->>>    
->>> +config MTK_TMI
->>> +	tristate "TMI Driver for Mediatek T-series Device"
->>> +	depends on PCI
->>> +	help
->>> +	  This driver enables Mediatek T-series WWAN Device
->>> communication.
->>> +
->>> +	  If you have one of those Mediatek T-series WWAN Modules and
->>> wish to
->>> +	  use it in Linux say Y/M here.
->>
->> From this and the series descriptions, it is unclear which modem
->> chips this driver is intended for and how does it correlate with the
->> T7xx driver? Is the TMI driver a drop-in replacement for the t7xx driver,
->> or does the TMI driver support any T-series chips except t7xx?
-> > The driver is intended for t8xx or later T-series modem chips in the
-> future. Currently, t7xx is not support.
 
-Can you add this information to the option description to make it easier 
-for users to choose?
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Subject: Re: [PATCH ethtool-next v1 0/3] add netlink support for rss
+> get
+>=20
+> On Wed, 14 Dec 2022 15:54:15 -0800 Sudheer Mogilappagari wrote:
+> > These patches add netlink based handler to fetch RSS information
+> using
+> > "ethtool -x <eth> [context %d]" command.
+>=20
+> Can we please support JSON output from the start?
+> I can't stress enough how useful json output is in practice.
 
-BTW, just curious, do you have any plans to add T7xx support to the TMI 
-driver, or maybe merge them or factor out the common code into a common 
-library? I am asking because I noticed some common code and modem 
-components, but that is not addressed in the cover letter. Or is this 
-feeling misleading and these two series are very different?
-
->>> +
->>> +	  If unsure, say N.
->>> +
->>>    endif # WWAN
->>>    
->>>    endmenu
->>> diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
->>> index 3960c0ae2445..198d8074851f 100644
->>> --- a/drivers/net/wwan/Makefile
->>> +++ b/drivers/net/wwan/Makefile
->>> @@ -14,3 +14,4 @@ obj-$(CONFIG_QCOM_BAM_DMUX) += qcom_bam_dmux.o
->>>    obj-$(CONFIG_RPMSG_WWAN_CTRL) += rpmsg_wwan_ctrl.o
->>>    obj-$(CONFIG_IOSM) += iosm/
->>>    obj-$(CONFIG_MTK_T7XX) += t7xx/
->>> +obj-$(CONFIG_MTK_TMI) += mediatek/
->>
->> The driver is called mtk_tmi, but its code is placed to the
->> directory
->> with too generic name 'mediatek'. Do you plan too keep all possible
->> future drivers in this directory? >
-> Yes, we plan to put all mediatek's wwan driver into the same directory.
-> Currently, there is only T-series modem driver. So we don't create
-> 'tmi' folder under 'mediatek' directory explicitly.
-
-Thank you for the clarification.
-
---
-Sergey
+Sure. Will send out v2 with JSON support.
