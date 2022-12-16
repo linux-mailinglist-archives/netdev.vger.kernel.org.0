@@ -2,149 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2551264E9BF
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 11:49:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E1D864E9F0
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:03:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbiLPKtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 05:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S230282AbiLPLDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 06:03:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiLPKtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 05:49:06 -0500
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579472621;
-        Fri, 16 Dec 2022 02:49:05 -0800 (PST)
-Received: by mail-ej1-f54.google.com with SMTP id vv4so5264122ejc.2;
-        Fri, 16 Dec 2022 02:49:05 -0800 (PST)
+        with ESMTP id S230425AbiLPLDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:03:12 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B511D554C4
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:03:11 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id bp15so2887293lfb.13
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:03:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=d7nxly20Q+LIVX2HmOxQ1kGTZsAtQ7HVnD/+lRVkLcY=;
+        b=vnZVddSwK8YrdASi377ehaE4VrYO3wUPvQFEPjVKRpnAIfCK+XqC0pvzUair0sN2qE
+         iY/b1b+0ou2Q/iBUxcy7H1n9fq/SnuTe6xbbpWKmFoTbi6znOa8tgMqfJuLg9x/DpfNV
+         5lECBlZOsk1XK6QiefewW9dkhuKDPprIbWvls7h47dV/PkrawfzuAVDCvEggpmAZRcFV
+         JfdGdQjnhfR8Od6QqxrGUaoC4ZuzPV555VLxxRF1yCMaajaw42XRxXBoXq5yvU1b6UT2
+         YUf7EO5N0xHcuqM5+PV19XaHVLOrpwFZDwD5r206/lzKvEzB5VbS+rDKPrIrTwQEzvFi
+         7FkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qkya9wd5Yr+9rmD7rFH/gX7qdmvbGNpb9infzuUbUvk=;
-        b=XZdM43MyeOFjsuBdNXrdOVetiXG2MlWo1QL60de7Xj5zOEIeaB4QqKI67monDZnWZw
-         XWKB0SiptoLbeO30vg0xQiCRuMxbDMUxxIOjo4fOGU0HmyU105l3Ui9M0rS+Q8LwzC8e
-         CvmS0dxb/rwiuKiqVV1eqRvsd3RtM+U77Ad6Zi3OwP0XdyVu0z3BNdi0UBMvVSyVib/s
-         rxnDOqVgHCZWvKSApQhw57xuEUoYidRYxi7wL8WjIgZg7lhfgbYMhQPXKb4IJjTas5kG
-         xz83eDo7eF7/Sird6TQwQzO5IrY19sfqUFWtk0ioqY/jGQLXZIbjsjmodczQoEOBUPtX
-         g+bg==
-X-Gm-Message-State: ANoB5pndx45izBvqeCMFrxyl3/wZqlgafvEz/uPSf1uUJo5ifYHWKRuy
-        szqDL83T1YXwnyepobKpzYw=
-X-Google-Smtp-Source: AA0mqf7TB5Fp8bws+jch7V7DDsz4ZuDB96TdPE9JghokH5/XbzB402jA/Ecyj8wZJr6/MOyC13FAGQ==
-X-Received: by 2002:a17:906:2345:b0:7ad:9455:d57d with SMTP id m5-20020a170906234500b007ad9455d57dmr26648346eja.74.1671187743739;
-        Fri, 16 Dec 2022 02:49:03 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id d22-20020a056402401600b004585eba4baesm710522eda.80.2022.12.16.02.49.02
+        bh=d7nxly20Q+LIVX2HmOxQ1kGTZsAtQ7HVnD/+lRVkLcY=;
+        b=osMWiQpvezeScs3WPXhqCuErkaG/HxFdYsInXgPoD2UeharY62brymaa1RzEhWMr7q
+         hKP/O6A/lpy9GfhbOHpZluClHHtARHSTfT9A5+ajkmn3PqlN0Uz2DlNqpV2s2R3NrBrS
+         9omRHxzY1GU7k4OjXJuZ/RZNVpg/ZubGKEdp4sHFZ+qVdhVKFgFnjCWzkqN/ozDy48KZ
+         mDqEKK2ukR1JgTcU0rcNbPIuCF6nymN2bY2uH4R5i8xGgXlpEwroxxkJl5fIUL9vWKPq
+         MLviIbFYxbx3aAxPTNzYEjejo9zD4/+2opIBvymym9QXQhAvL04rmo0K7qTzbVWc9fxT
+         VlrA==
+X-Gm-Message-State: AFqh2kokaf+aYRUiMFk7VcPomR1iAsJ+xcelrDRsAyL8qaUqOt3qo64t
+        quW3cIxKY87lE2NM1MBdpRvccA==
+X-Google-Smtp-Source: AMrXdXtzOYGUjuX1gxXuTmAU3msYzGH4XwL6Xg8wCGYSpE/H9JfkksbAt5csrE1WhWp9OYhyGEMCaw==
+X-Received: by 2002:ac2:5a1c:0:b0:4c0:2c1e:1d5b with SMTP id q28-20020ac25a1c000000b004c02c1e1d5bmr439383lfn.63.1671188589735;
+        Fri, 16 Dec 2022 03:03:09 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id g6-20020a056512118600b00494a603953dsm191605lfr.89.2022.12.16.03.03.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Dec 2022 02:49:03 -0800 (PST)
-Message-ID: <6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org>
-Date:   Fri, 16 Dec 2022 11:49:01 +0100
+        Fri, 16 Dec 2022 03:03:09 -0800 (PST)
+Message-ID: <040b56b1-c65c-34c3-e4a1-5cae4428d1d2@linaro.org>
+Date:   Fri, 16 Dec 2022 12:03:08 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.1
-Subject: Re: [PULL] Networking for next-6.1
+Subject: Re: [PATCH v2 2/9] dt-bindings: net: snps,dwmac: Update the maxitems
+ number of resets and reset-names
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com,
-        joannelkoong@gmail.com
-References: <20221004052000.2645894-1-kuba@kernel.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20221004052000.2645894-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Yanhong Wang <yanhong.wang@starfivetech.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
+ <20221216070632.11444-3-yanhong.wang@starfivetech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221216070632.11444-3-yanhong.wang@starfivetech.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 16/12/2022 08:06, Yanhong Wang wrote:
+> Some boards(such as StarFive VisionFive v2) require more than one value
+> which defined by resets property, so the original definition can not
+> meet the requirements. In order to adapt to different requirements,
+> adjust the maxitems number from 1 to 3..
+> 
+> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+> ---
+>  .../devicetree/bindings/net/snps,dwmac.yaml       | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index e26c3e76ebb7..7870228b4cd3 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -133,12 +133,19 @@ properties:
+>          - ptp_ref
+>  
+>    resets:
+> -    maxItems: 1
+> -    description:
+> -      MAC Reset signal.
+> +    minItems: 1
+> +    maxItems: 3
+> +    additionalItems: true
+> +    items:
+> +      - description: MAC Reset signal
+>  
+>    reset-names:
+> -    const: stmmaceth
+> +    minItems: 1
+> +    maxItems: 3
+> +    additionalItems: true
+> +    contains:
+> +      enum:
+> +        - stmmaceth
 
-On 04. 10. 22, 7:20, Jakub Kicinski wrote:
-> Joanne Koong (7):
+No, this is highly unspecific and you know affect all the schemas using
+snps,dwmac.yaml. Both lists must be specific - for your device and for
+others.
 
->        net: Add a bhash2 table hashed by port and address
-
-This makes regression tests of python-ephemeral-port-reserve to fail.
-
-I'm not sure if the issue is in the commit or in the test.
-
-This C reproducer used to fail with 6.0, now it succeeds:
-#include <err.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#include <sys/socket.h>
-
-#include <arpa/inet.h>
-#include <netinet/ip.h>
-
-int main()
-{
-         int x;
-         int s1 = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP);
-         if (s1 < 0)
-                 err(1, "sock1");
-         x = 1;
-         if (setsockopt(s1, SOL_SOCKET, SO_REUSEADDR, &x, sizeof(x)))
-                 err(1, "setsockopt1");
-
-         struct sockaddr_in in = {
-                 .sin_family = AF_INET,
-                 .sin_port = INADDR_ANY,
-                 .sin_addr = { htonl(INADDR_LOOPBACK) },
-         };
-         if (bind(s1, (const struct sockaddr *)&in, sizeof(in)) < 0)
-                 err(1, "bind1");
-
-         if (listen(s1, 1) < 0)
-                 err(1, "listen1");
-
-         socklen_t inl = sizeof(in);
-         if (getsockname(s1, (struct sockaddr *)&in, &inl) < 0)
-                 err(1, "getsockname1");
-
-         int s2 = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP);
-         if (s1 < 0)
-                 err(1, "sock2");
-
-         if (connect(s2, (struct sockaddr *)&in, inl) < 0)
-                 err(1, "conn2");
-
-         struct sockaddr_in acc;
-         inl = sizeof(acc);
-         int fdX = accept(s1, (struct sockaddr *)&acc, &inl);
-         if (fdX < 0)
-                 err(1, "accept");
-
-         close(fdX);
-         close(s2);
-         close(s1);
-
-         int s3 = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP);
-         if (s3 < 0)
-                 err(1, "sock3");
-
-         if (bind(s3, (struct sockaddr *)&in, sizeof(in)) < 0)
-                 err(1, "bind3");
-
-         close(s3);
-
-         return 0;
-}
-
-
-
-thanks,
--- 
-js
-suse labs
+Best regards,
+Krzysztof
 
