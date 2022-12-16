@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6027164E88B
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 10:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6000664E892
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 10:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbiLPJSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 04:18:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55830 "EHLO
+        id S229807AbiLPJXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 04:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiLPJSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 04:18:07 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6663F04C
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 01:18:06 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id o15so1394865wmr.4
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 01:18:06 -0800 (PST)
+        with ESMTP id S229789AbiLPJXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 04:23:13 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE0B3F07A
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 01:23:11 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id k22-20020a05600c1c9600b003d1ee3a6289so1282085wms.2
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 01:23:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LofBPkCpnVs+y4TLuttIFSIFQ7Ww5t0ibtXB8wwWo2A=;
-        b=vD47iYvaaUmjs428onIIDmPlvkZdSG0zm2uc5VLVCjJ31Vb/kNmw7QEgkabuAyoPpD
-         JvEJD5cjVNgof1kKhJ05H0SVF3M2CadkbL9Xeo643CoJ7SFGXCAepCGE1R87q420o4xf
-         B2OqOBBKKEdDoUKTuRzvkXcQUZr/dkAtH+mj6SPkhPr0BL+pLVa40tM/komq+fusokzL
-         qFrGcxADtQ2OGPfBsVwRJq6qJci0I8VFViW72Ojsw+RetXb6/txrnbNoLr+G990pZjDi
-         8faz0o21OF2Mwx+imoM5fbC59TTVdojzlpz7UvmK36SzJOzxspGLVltRnbMyiPEe2+zO
-         gImA==
+        bh=mayeu5y4kGJCmQuCfTdoYBg7yE+SQ6tN0YHnSLzrDYk=;
+        b=Jd2TnZsAT9wm8qjQgWRHDgQizzhzKX4kcf/DeFwfXUfzzHV3omGzNUOgGhOg426wIB
+         vnEwSncpRRpYrCk4WFvRwaznDmTWfZ5fnGXfMLXY+lLZUj5nsqPTU3FVq++LGb/Ga2hf
+         kzKdSnznaO4IadiKZk5bygG9CdMBODw1Kl2tzLtOavR8VaRZJ+Kicvm/62j+1llLBGQ5
+         AzMNdmY6HjU03Y4gV2M2d23tRDBe+ZUqTNjqumou8egV8FOSDXNtlOdfpH7/gzhuLeIw
+         0pSve21ta444eqS+2Qo1pR4vCjXFIqjkJkB6obmVYuJc1a8bV8KbsaLVDV/SlT5qe2E7
+         U4RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LofBPkCpnVs+y4TLuttIFSIFQ7Ww5t0ibtXB8wwWo2A=;
-        b=NbElRAvR9pJ1j6lNuMjnIYOKCNXOtVRSUhfplWnp5Kfq3TKmVQSVVPcixJ+cbQxQoD
-         3B7slQ0H1jfNzFdajzw61Ehx5igonEoP9zjnGrrtzpsFalJyV49CRAavXp3BeHVNm7uc
-         nCB43EESNwH4qH8hlnF06FEqgtMdVwV4xxzyEDmrz/sudlqis7B0AC85Vw1AfTaXXbsB
-         pm1Jpd1iipUaxF6eDReJ2Yrxker5Xm9mMaWCphgSAWgYyy7wpL9T7RzytobFtOM4KUJx
-         TpVrsUIDDuuFcS2/DrWgF53lKoY/vmwg+p/UIVQbdCEPhdtOTQomMJ4q55B1/73SFC2+
-         4YKw==
-X-Gm-Message-State: ANoB5pm8QhP2pZARzesZRJigId8VyrC/liN4M4sT8x35bgF+WosDqgLr
-        hbl9bvWkKYATjKLw/etTilV9mg==
-X-Google-Smtp-Source: AA0mqf6mr8N2g5bYDkzciMCBHrLVuMD302G7Po/dD1SByKEXsRmGBUGUw8E+hpr8/ZdwS8Br69vNKQ==
-X-Received: by 2002:a05:600c:3c8d:b0:3d0:6d39:c62e with SMTP id bg13-20020a05600c3c8d00b003d06d39c62emr25657546wmb.12.1671182285128;
-        Fri, 16 Dec 2022 01:18:05 -0800 (PST)
+        bh=mayeu5y4kGJCmQuCfTdoYBg7yE+SQ6tN0YHnSLzrDYk=;
+        b=MI/PDQNZIqY8tet4mRJlNx4+203+vrWABK8D65olT7c/d6HFQXOqKMdYaEe7bXIXHO
+         +R+k+uvxQb26oxINT6EW38bYhU0j+1faoU1zV8XwuNbKuQL6O3l2I0u4n8oVQ+iWy/AV
+         5ukKpOs0RxR2hUbqGWbtQQWmwtJHkgssn8ql3pFmYGK9ayndX3lqkF/8JLl/2RE30ByT
+         FILMfQrQ4PLGSnEkpCHZHmB3xS1YKQOqQUie9a0jBbipSqNkicejt/2JuMEdHHjhSa59
+         wwKcEkakwMp+fT2HRFEPUSrFFDZdphMyk9xXy2e1GfUq4vGfdhuc1yZhEHX6KfGgTZf+
+         mSzA==
+X-Gm-Message-State: ANoB5pl0VMo0W6zg4BC+VGoxXe+mNVwqViUTj+2Iw3VVM5a1Ccts1jDx
+        8q9HksShXOAJKDRQFd4YJjxP8w==
+X-Google-Smtp-Source: AA0mqf6yZQdF/Zp2zXo7jhBFB1yyEMv+gdWMSQswAhve9bHUTHj2QXiewGKPa5WL2RTFbwg7Ja/yKQ==
+X-Received: by 2002:a05:600c:2049:b0:3d2:3831:e5c4 with SMTP id p9-20020a05600c204900b003d23831e5c4mr8778016wmg.40.1671182590174;
+        Fri, 16 Dec 2022 01:23:10 -0800 (PST)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id h15-20020a05600c350f00b003c71358a42dsm12880790wmq.18.2022.12.16.01.18.04
+        by smtp.gmail.com with ESMTPSA id y20-20020a7bcd94000000b003c6b70a4d69sm1892378wmj.42.2022.12.16.01.23.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 01:18:04 -0800 (PST)
-Date:   Fri, 16 Dec 2022 10:18:03 +0100
+        Fri, 16 Dec 2022 01:23:09 -0800 (PST)
+Date:   Fri, 16 Dec 2022 10:23:08 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, jiri@nvidia.com,
-        moshe@mellanox.com
-Subject: Re: [PATCH net] devlink: protect devlink dump by the instance lock
-Message-ID: <Y5w3y1BU8cLAMTny@nanopsycho>
-References: <20221216044122.1863550-1-kuba@kernel.org>
- <20221215204447.149b00e6@kernel.org>
+        pabeni@redhat.com, jacob.e.keller@intel.com, leon@kernel.org
+Subject: Re: [RFC net-next 14/15] devlink: add by-instance dump infra
+Message-ID: <Y5w4/HH71W3O5EOC@nanopsycho>
+References: <20221215020155.1619839-1-kuba@kernel.org>
+ <20221215020155.1619839-15-kuba@kernel.org>
+ <Y5rkpxKm/TdGlJHf@nanopsycho>
+ <20221215114706.42be5299@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221215204447.149b00e6@kernel.org>
+In-Reply-To: <20221215114706.42be5299@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -71,28 +72,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Dec 16, 2022 at 05:44:47AM CET, kuba@kernel.org wrote:
->On Thu, 15 Dec 2022 20:41:22 -0800 Jakub Kicinski wrote:
->> Take the instance lock around devlink_nl_fill() when dumping,
->> doit takes it already.
+Thu, Dec 15, 2022 at 08:47:06PM CET, kuba@kernel.org wrote:
+>On Thu, 15 Dec 2022 10:11:03 +0100 Jiri Pirko wrote:
+>> Instead of having this extra list of ops struct, woudn't it make sence
+>> to rather implement this dumpit_one infra directly as a part of generic
+>> netlink code?
+>
+>I was wondering about that, but none of the ideas were sufficiently
+>neat to implement :( There's a lot of improvements that can be done
+>in the core, starting with making more of the info structures shared
+>between do and dump in genl :( 
+>
+>> Something like:
 >> 
->> We are only dumping basic info so in the worst case we were risking
->> data races around the reload statistics. Also note that the reloads
->> themselves had not been under the instance lock until recently, so
->> the selection of the Fixes tag is inherently questionable.
->> 
->> Fixes: a254c264267e ("devlink: Add reload stats")
+>>  	{
+>>  		.cmd = DEVLINK_CMD_RATE_GET,
+>>  		.doit = devlink_nl_cmd_rate_get_doit,
+>> 		.dumpit_one = devlink_nl_cmd_rate_get_dumpit_one,
+>> 		.dumpit_one_walk = devlink_nl_dumpit_one_walk,
+>>  		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
+>>  		/* can be retrieved by unprivileged users */
+>>  	},
 >
->On second thought, the drivers can't call reload, so until we got rid
->of the big bad mutex there could have been no race. I'll swap the tag
->for:
+>Growing the struct ops (especially the one called _small_) may be 
+>a hard sale for a single user. For split ops, it's a different story,
+>because we can possibly have a flag that changes the interpretation
+>of the union. Maybe.
 >
->Fixes: d3efc2a6a6d8 ("net: devlink: remove devlink_mutex")
+>I'd love to have a way of breaking down the ops so that we can factor
+>out the filling of the message (the code that is shared between doit
+>and dump). Just for the walk I don't think it's worth it.
+
+Okay, that is something I thought about as well. Let me take a stab at
+it.
+
+
 >
->when/if applying.
+>I went in the same direction as ethtool because if over time we arrive
+>at a similar structure we can use that as a corner stone.
+>
+>All in all, I think this patch is a reasonable step forward. 
 
-You are right.
+Yeah, could be always changed...
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
-Thanks!
+>But definitely agree that the genl infra is still painfully basic.
+
