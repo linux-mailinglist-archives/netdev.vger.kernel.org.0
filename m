@@ -2,89 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A170864EA2D
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:21:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EAF064EA4A
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 12:24:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiLPLVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 06:21:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
+        id S231142AbiLPLYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 06:24:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbiLPLUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:20:55 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2966B34
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:20:51 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id co23so2171348wrb.4
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:20:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=c8zJd904+IXjpPodDBXcpzzovSChRn9dgEg89jVdTTc=;
-        b=rwC753FZsDUgTG4iIcy926S69sXY8sUHPwYod7qj6vcU/Aab3GdkOxs2e0mkNILo40
-         EuzGZWQSs+t9TFGViBP0HMSn2f5NA0pEON7drTGWJabe53fS/hClSpNaQd2IHD68Ljri
-         XQ/yG4C+pacM8BubKRno+Iln+lJnd55/H7dKp2pflYml8XZ6pfUDA3JQyAy6+Pml3p/7
-         uEfIi7EiShHzKM5HwFWYeDR7ipOt1A3fcUuDkVoUp6vj6GKvo3I+3nNSrapQ++X7Sj4l
-         A750lg4s57z9KiCUEsre4OyU1xmWg45pt/SAMR5e2IEFGSrA6pE2EsZrcueaM+CZeXSP
-         7Q6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c8zJd904+IXjpPodDBXcpzzovSChRn9dgEg89jVdTTc=;
-        b=A9Hu53kyOTNd2KV6qp7yHpyxNoCRVJYBA4A/zT4YTLG8Gk5qFArcVgAqK/opsfaYpl
-         qQQBtW80eGGFZcgZX0zBhWNtvC8GtnugC5ay8e+BB8GDuu5kWn6Giq8ipPtBRW5Rm/9x
-         URs5GHnRDOGPwSiAkBe0FxGHHcPnb3TRjJ3P3xGlVtDPTs36lZs0EilGJNv/YI2l3sDQ
-         dPAnDcJUMG7ZE6wOjy1mrBQF2jiZINdJvoKfPAXRe7tGuPMlsxXW2Eif8+pkDx5Rzd+D
-         xvoSR3GhdTRWVT3KDMEB+xBOe53sDDmxcaPap8aWbbhPYWXG1qlKgt5NrD9Vn4gxnGhi
-         Q32w==
-X-Gm-Message-State: ANoB5plccWDz6IjEm1DraMkWhSxu6AZdo9rAanUKQn+Xn1P8Q8eKji7x
-        4EIzDAGfsiMwiIJHxm2XWtWX2g==
-X-Google-Smtp-Source: AA0mqf5FTRHlnyovbIiVic0ZLreeNyr+YqX6ewUwMmrnndfqEH8iic7W9jiQeCVaZIQ65MZg/fR77Q==
-X-Received: by 2002:a05:6000:1d9c:b0:242:7eb8:37bf with SMTP id bk28-20020a0560001d9c00b002427eb837bfmr21996245wrb.32.1671189649772;
-        Fri, 16 Dec 2022 03:20:49 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id 1-20020a05600c228100b003d23928b654sm9042343wmf.11.2022.12.16.03.20.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 03:20:48 -0800 (PST)
-Date:   Fri, 16 Dec 2022 12:20:48 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] iavfs/iavf_main: actually log ->src mask when talking
- about it
-Message-ID: <Y5xUkA1WlFX4UhzR@nanopsycho>
-References: <20221216091326.1457454-1-d-tatianin@yandex-team.ru>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221216091326.1457454-1-d-tatianin@yandex-team.ru>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S230515AbiLPLYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:24:39 -0500
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E560C116F;
+        Fri, 16 Dec 2022 03:24:38 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.west.internal (Postfix) with ESMTP id A162832005D8;
+        Fri, 16 Dec 2022 06:24:37 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Fri, 16 Dec 2022 06:24:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1671189877; x=1671276277; bh=64TMHd9mCM
+        xlohGzvyOHHYDGzPMMW5ePInqTBtIjYdk=; b=VsF9DdcyJT9XCBQ/qNusAupwue
+        44Rl2EOQGWItRfsBUCTBoaHn4g8Ra1HFz88POOmJTsD7A/9wjDwYq4Y4aU+ptnCc
+        XXmUUQC9sAXHCbiVE7/NX+YlxjSxnR3CMf1yWd/3iHQHCDUA+97d822o4WHYRScF
+        HxIRNc8JN4rbRymDbV7uJeEauYXXMm79JNB692DPPC46jWi2iCyg0EgmfG8Pxno/
+        CYj7SH0CLMmOegEKnaECCtgc2NS4sy15JGqF5gtbM/RGMUBKsURT5nY7xpLvZ7Oq
+        joxe8Rvdb5gyVdQkNJnNEoe0J2ptnN9Vy34eGuvgrPMzdobfAvKK19oYn0Rw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1671189877; x=1671276277; bh=64TMHd9mCMxlohGzvyOHHYDGzPMM
+        W5ePInqTBtIjYdk=; b=K70/qCvoSdbAWKVRz2ukFfBC92/UqdnvlOLb3gMasrh+
+        METHyE9dna6KBwcNfF55fEHALvWHR9sejwulAGXfm1r+wwKRs20DstEf8wXVEhPa
+        IB5e6FBOiSue95W2sCNBCUJna5g2kp+ON+Q1N1NlFPgEyCWw6Y3HUPZpehKzB5ft
+        aJhmNJmFvKoLJkY2rmRdljp7SxNFkfIBWWPVwCAXNlzBwHmtkcLPocRmjA5gZ+rM
+        olF1Uu7vm2dSZOoUSqTO2uTMKywN4K9KWJHohNpV6eajO0NcSOtiDwqi2eAe5dY1
+        W3eSfP5myBzrQ2zL2KASNEUNzPH14UvlsGvVjgnEHQ==
+X-ME-Sender: <xms:c1WcY6KEwMVEF3zUUQCf-FaVuuiwzXRKhl7jfMG161usujl_oEWD3Q>
+    <xme:c1WcYyIhcDOiDpQuqPWK6r-9upBqd-OCKvLAII0yYwt-gZC6QJZVRxsFzRxi4pCwY
+    0BdvZK-xQHk545nfrA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejgddvjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
+    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
+    hnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:c1WcY6v_OqPTHlL7pP07WFByXlkUbKI8i1eoVBwm_Fk70om8xdaoyA>
+    <xmx:c1WcY_bpWcKVOdxpqeUwaZbWabwKgR5-NEJG9cqJ2mUUUfyCIHWSRg>
+    <xmx:c1WcYxZmh8cVSFyqfpOZGzUcFQhwFzXRhXR9eCMeFkoe2Hm5O23HWg>
+    <xmx:dVWcYzl0NW3tLmuqJabNnWj2vwmN8w5d3V68oPAd-iXzPNOZ0KupRA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 8B6D8B60086; Fri, 16 Dec 2022 06:24:35 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
+Mime-Version: 1.0
+Message-Id: <e17c7340-8973-417a-a334-01e96e5bbe73@app.fastmail.com>
+In-Reply-To: <Y5xEITNJkry8uy/h@salvia>
+References: <20221215170324.2579685-1-arnd@kernel.org>
+ <e1fea67-7425-f13d-e5bd-3d80d9a8afb8@ssi.bg> <Y5xEITNJkry8uy/h@salvia>
+Date:   Fri, 16 Dec 2022 12:24:15 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        "Julian Anastasov" <ja@ssi.bg>
+Cc:     "Arnd Bergmann" <arnd@kernel.org>,
+        "Simon Horman" <horms@verge.net.au>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Jiri Wiesner" <jwiesner@suse.de>, Netdev <netdev@vger.kernel.org>,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ipvs: use div_s64 for signed division
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Dec 16, 2022 at 10:13:26AM CET, d-tatianin@yandex-team.ru wrote:
->This fixes a copy-paste issue where dev_err would log the dst mask even
->though it is clearly talking about src.
+On Fri, Dec 16, 2022, at 11:10, Pablo Neira Ayuso wrote:
+> Hi Julian,
 >
->Found by Linux Verification Center (linuxtesting.org) with the SVACE
->static analysis tool.
+> On Thu, Dec 15, 2022 at 09:01:59PM +0200, Julian Anastasov wrote:
+>> 
+>> 	Hello,
+>> 
+>> On Thu, 15 Dec 2022, Arnd Bergmann wrote:
+>> 
+>> > From: Arnd Bergmann <arnd@arndb.de>
+>> > 
+>> > do_div() is only well-behaved for positive numbers, and now warns
+>> > when the first argument is a an s64:
+>> > 
+>> > net/netfilter/ipvs/ip_vs_est.c: In function 'ip_vs_est_calc_limits':
+>> > include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
+>> >   222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
+>> >       |                                   ^~
+>> > net/netfilter/ipvs/ip_vs_est.c:694:17: note: in expansion of macro 'do_div'
+>> >   694 |                 do_div(val, loops);
+>> 
+>> 	net-next already contains fix for this warning
+>> and changes val to u64.
 >
->Fixes: 0075fa0fadd0a ("i40evf: Add support to apply cloud filters")
->Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+> Arnd's patch applies fine on top of net-next, maybe he is addressing
+> something else?
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+No, it's the same bug. I had prepared my patch before the other fix
+went in, and only one of the two is needed.
+
+FWIW, I find my version slightly more readable, but Jakub's fix
+is probably more efficient, because the unsigned 64-bit division
+is better optimized on 32-bit, while div_s64() goes through an
+extern function.
+
+     Arnd
