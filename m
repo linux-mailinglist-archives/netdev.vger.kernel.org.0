@@ -2,90 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF4A64EB16
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:00:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F00864EB1A
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 13:01:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiLPMA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 07:00:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        id S230230AbiLPMA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 07:00:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbiLPL76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 06:59:58 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BA240467
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:59:56 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id i9so3318841edj.4
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 03:59:56 -0800 (PST)
+        with ESMTP id S231214AbiLPMAn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 07:00:43 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6899B511FB;
+        Fri, 16 Dec 2022 04:00:33 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id x2so2044886plb.13;
+        Fri, 16 Dec 2022 04:00:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NH7fiIsgPSbpTpDsFPEq9xLsyqZQIClLTnSfs6kV5ig=;
-        b=hoKQF4FF/j9HDuyCMt36xSWIdfxiHaHlp1XyuJxnGU3qcg7MpjVNW/x+yXtYpr9NmJ
-         0Jyumcqq3f1xJykltRO2HRWeCQcYG3htl1d/ONlN6PYwpzr4qWw7upDrW8cu+ozGx9Qf
-         MsgbhoSmRPd2Kbapqv8oaiL+rehS7Xlv3Ty9GDOF9Gp2gN6+FgRua0TlGDpoHPSpYhgc
-         qGlH00CyX/Brgd3F5rxZruN9QORtS8C1G5SY4Dx4ugusBipHlCPyoA/qpHxn1u3rye5s
-         iQ/DWJUADuitTIDrYQmg3hBV/rIVECyIJrw7jeGBwojDW51JzBeqabZqpK4aEFL0UJ09
-         s7Kg==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0Snl7BgVsFmc/5J29TspmwaDCZhYw6tUPa9r4mziXw4=;
+        b=RhgC+LBhmLt2RSAqSktOu7ZFqHz4N0Vp3uhEf3qW2nQ4iW7wCrIJ81wp0KaUa05mBv
+         SPuc91Dxe4jCcFpFVY6S1fOad5pq+5X5arL2IiKuy1UPf6Rg9PAv6mxH1ZRJSLDwE7H5
+         LoPZ28GzTlGJ64wOzwGiUTQHpoOMVEQBsFCdPe0qOU/AkQIWIMCDL5/QJ2vdjI5E+FkC
+         Pyk77L9Iaw00MUm4pS3SqTbJ/G/BMV84YPQGayaw5G+//dBNzZWaHvUCtzOabl02qENZ
+         0Iatj29KinYcfTjbIw9dvsqEP1AsBoDLrfht3cZsDAXOK2qJkIHhLcGDGhIT87bJW7lo
+         7r8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NH7fiIsgPSbpTpDsFPEq9xLsyqZQIClLTnSfs6kV5ig=;
-        b=wPC5e2W60v11TEWtH6Wu7tKUkXRvC3m9xVV82Q5PM9z+vFEAbbQWqpeZAJ7KsMF2It
-         d2Jdb5QcCY0Sn59uwBPMrq+R9IAUXQCdtsy7j+OS5PkGtkvn2fBEBPW6AUWMPPWXbW+2
-         spIdDb0MBiv2Sm/WVhHfXZXLS8WHiERkfF4op5Fdz29hBMCsH0lsHeRvjQ5xtwHa5eDE
-         GjINAwAH09i3PRdHJ3qqyDDxJzWnUnvDobeEyi30tZqF76Qj+/OWtK7NXADkHPbkDnLk
-         uzEahcRhdpED1qTwtzKoz4xdcuICCirMoOyfMJoLbLtvLY4Kif+c4rchLha37zJ0HvqX
-         hKkg==
-X-Gm-Message-State: ANoB5pncAg6/NlboFszSFxGn3AssiQ3tFyv/y8sJLGBo+MmgYiTyCB0J
-        X6G4ZWrkRN71/5drsdrPZLlV1A==
-X-Google-Smtp-Source: AA0mqf6bxGwNVtW1Iu+gT6Z9G6gB1Yf59JBHIEbVhcIHQbr1+nRAyFkJIsCSXHfV4E7xjxfx11ptwg==
-X-Received: by 2002:a50:ec8d:0:b0:46c:a3c1:2057 with SMTP id e13-20020a50ec8d000000b0046ca3c12057mr26670772edr.29.1671191995271;
-        Fri, 16 Dec 2022 03:59:55 -0800 (PST)
-Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id et8-20020a170907294800b007ae10525550sm766785ejc.47.2022.12.16.03.59.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Dec 2022 03:59:54 -0800 (PST)
-Message-ID: <52104d9a-461a-fddc-3494-5d2244673820@blackwall.org>
-Date:   Fri, 16 Dec 2022 13:59:54 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0Snl7BgVsFmc/5J29TspmwaDCZhYw6tUPa9r4mziXw4=;
+        b=ElpZbhma3+FOchTnmByYF5UM4urdv4qrppahR2noOn+yd86gJ+8UTanHNvX2vC4u4o
+         ewkBE6SYJMLqdFBo5XfoxtlwEZAO77Ekb8FOjI+AEZYCeB/sOPB4gPNI7Sb0YNa4ZpgI
+         CFHBNfxDQhX+GiL/AXoILhKn9lYrIuJSro9xPKX/1oa7E3OVSNtGgk/zvauuLIucgF1i
+         PN/ITbi1Qg9XFjgp1uhd+/MnwBQYbeMN/kUyB3F2ZCW15qRLWIdm3n+/ZCBlatgI5SEr
+         jsCY8pLMvA5hrlVXcErxNvumGf439D/vWnXp1F9FcMvjkljSN6fMuFv3cRYJNsXvbnOp
+         TVbQ==
+X-Gm-Message-State: AFqh2kr6KaI6yRuXmFDotVsPsdoFFcujR5V6C6vPI2xUwVVwB5GuMRor
+        gSJDWG4BWhLdoJjCPYCoGrBy0LXp7oDDQBToEEU=
+X-Google-Smtp-Source: AMrXdXsmay9yD3lb98nl7gf6xnfVfSOdLoQEcPmD5FPjUhryisMF2XJmX4NHqZfifvVsVlGXk09xn0GyjmecbdeUNw8=
+X-Received: by 2002:a17:90a:46c9:b0:219:c691:9933 with SMTP id
+ x9-20020a17090a46c900b00219c6919933mr600907pjg.195.1671192032852; Fri, 16 Dec
+ 2022 04:00:32 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH iproute2-next 2/6] bridge: mdb: Split source parsing to a
- separate function
-Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, mlxsw@nvidia.com
-References: <20221215175230.1907938-1-idosch@nvidia.com>
- <20221215175230.1907938-3-idosch@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221215175230.1907938-3-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <CAOMZO5AFsvwbC4Pr49WPFmZt7OnKjuJnYSf3cApGqtoZ_fFPPA@mail.gmail.com>
+ <CAOMZO5AWRDLu5t0O=AG7CxNLv20HTmMTRh=so=s7+nTH0_qYgQ@mail.gmail.com>
+ <PA4PR04MB96407AC656705A79BF72D2E089E39@PA4PR04MB9640.eurprd04.prod.outlook.com>
+ <CAOMZO5AMy_H-zw1phB6MtNdpbCwtXg74BwHrs5YttykN=-wvnQ@mail.gmail.com> <PA4PR04MB9640B1C33E8D5704885A9A3B89E39@PA4PR04MB9640.eurprd04.prod.outlook.com>
+In-Reply-To: <PA4PR04MB9640B1C33E8D5704885A9A3B89E39@PA4PR04MB9640.eurprd04.prod.outlook.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 16 Dec 2022 09:00:15 -0300
+Message-ID: <CAOMZO5AhUrYSesz9PC3o7T9Uum-X_QjmO=zjPAWkt25tbzJFSA@mail.gmail.com>
+Subject: Re: imx7: USB modem reset causes modem to not re-connect
+To:     Jun Li <jun.li@nxp.com>
+Cc:     "bjorn@mork.no" <bjorn@mork.no>,
+        Peter Chen <peter.chen@kernel.org>,
+        Marek Vasut <marex@denx.de>, netdev <netdev@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Schrempf Frieder <frieder.schrempf@kontron.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/12/2022 19:52, Ido Schimmel wrote:
-> Currently, the only attribute inside the 'MDBA_SET_ENTRY_ATTRS' nest is
-> 'MDBE_ATTR_SOURCE', but subsequent patches are going to add more
-> attributes to the nest.
-> 
-> Prepare for the addition of these attributes by splitting the parsing of
-> individual attributes inside the nest to separate functions.
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  bridge/mdb.c | 34 ++++++++++++++++++++++++----------
->  1 file changed, 24 insertions(+), 10 deletions(-)
-> 
+Hi Li Jun,
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+On Tue, Dec 13, 2022 at 8:17 AM Jun Li <jun.li@nxp.com> wrote:
+
+> What's the OC polarity config in your SW, active low, or active high?
+> Basically if the OC condition is active, the host mode cannot work
+> well.
+
+Yes, if I keep the OC pinctrl definition and pass
+'over-current-active-low;' the problem
+does not happen.
+
+Thanks a lot,
+
+Fabio Estevam
