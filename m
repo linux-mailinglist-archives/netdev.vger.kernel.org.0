@@ -2,141 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 867E064ED3B
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 15:58:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9809264ED76
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 16:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbiLPO6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 09:58:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33222 "EHLO
+        id S231244AbiLPPHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 10:07:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbiLPO6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 09:58:13 -0500
-X-Greylist: delayed 495 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 16 Dec 2022 06:58:10 PST
-Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3E75E088
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 06:58:10 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 080309C06BB;
-        Fri, 16 Dec 2022 09:49:53 -0500 (EST)
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id Bt7EKfj-ww65; Fri, 16 Dec 2022 09:49:52 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 66F469C085C;
-        Fri, 16 Dec 2022 09:49:52 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 66F469C085C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
-        t=1671202192; bh=OIf2oVc4shHaR4T3FvAtzOKGfSx4IePKhRdfrtWEdHo=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=J1nl5YiD/ysBRngYjyrnJBupE0GagbFrDgOnY07/gCh7Tlb8Gt/v8O2k2Rjc5EtIE
-         mrYCFiHNgi4i4fZSdq2QBbadQ0CHY8x/uc++un8pr2aWb317Rl8QpOplpv3RO6sf4J
-         Wy5W3qAT2HPkHzAE7Wyxh77f8uXJPFZEPpCE7CSCTfJI4jU6lll7vFQFbGPW9EbPv0
-         o81+PCPAl1RBONUjFpx4XP5dMaVKJr2J5KRZC8W0XqtL8qp6EEOXXAZ2Fe3rZBuB4N
-         aISlNwdly6+yUAJGOXhA/f8NBQRKDeXbWeS1u797dTbvjyOiPandTpENYziUk0ZKcu
-         2aczyKcDD3C5w==
-X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id GKDH-SG6qK8f; Fri, 16 Dec 2022 09:49:52 -0500 (EST)
-Received: from sfl-deribaucourt.rennes.sfl (lmontsouris-657-1-69-118.w80-15.abo.wanadoo.fr [80.15.101.118])
-        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 8F6729C06BB;
-        Fri, 16 Dec 2022 09:49:51 -0500 (EST)
-From:   Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-To:     netdev@vger.kernel.org
-Cc:     woojung.huh@microchip.com, davem@davemloft.net,
-        UNGLinuxDriver@microchip.com,
-        Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Subject: [PATCH] net: lan78xx: isolate LAN88XX specific operations
-Date:   Fri, 16 Dec 2022 15:49:11 +0100
-Message-Id: <20221216144910.1416322-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com>
-References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231230AbiLPPGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 10:06:51 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFEF64D0
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 07:06:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671203209; x=1702739209;
+  h=from:to:cc:subject:date:message-id;
+  bh=OeXMTLxw0wWGtT6lAWeksKRNAiSkK/9syol4Gnzq8G8=;
+  b=Vi/NYMMPXvzLOhsNohTxCkn7dFceU3dTY1B+8CzTB3OSWvcTHzT1JMSD
+   8Grr+fpkl3irStRmr52ostDbeg3dOxiF/PaeT/WpHCPKio+0S/AFPcfAF
+   yO1D2BJ/767fAAqxP/LhQE9XF1OGGuO5U9iOlZq/1manFsxzL+XrvO78R
+   u5p+J1ukFHJSu8oM4TRDDp9qWZWtXPTmFoh2J/6UbX4TKKagRP56rmo9R
+   /CcEgNBjyU7QRr7dWa7bNysRmUqoCgVwMjDRsnvtemUTSLmC4HxZoZKia
+   yo3QfdCt8qBdrWPZHelI2+i/EvD+5Qj26E3c1x9FRZQ3rleROfarjFZoz
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10563"; a="405241079"
+X-IronPort-AV: E=Sophos;i="5.96,249,1665471600"; 
+   d="scan'208";a="405241079"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2022 07:06:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10563"; a="599979417"
+X-IronPort-AV: E=Sophos;i="5.96,249,1665471600"; 
+   d="scan'208";a="599979417"
+Received: from zulkifl3-ilbpg0.png.intel.com ([10.88.229.82])
+  by orsmga003.jf.intel.com with ESMTP; 16 Dec 2022 07:06:45 -0800
+From:   Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+To:     intel-wired-lan@osuosl.org, vinicius.gomes@intel.com
+Cc:     tee.min.tan@linux.intel.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, muhammad.husaini.zulkifli@intel.com,
+        naamax.meir@linux.intel.com, anthony.l.nguyen@intel.com
+Subject: [PATCH net-next v2] igc: offload queue max SDU from tc-taprio
+Date:   Fri, 16 Dec 2022 23:03:57 +0800
+Message-Id: <20221216150357.12721-1-muhammad.husaini.zulkifli@intel.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some operations during the cable switch workaround modify the register
-LAN88XX_INT_MASK of the PHY. However, this register is specific to the
-LAN8835 PHY. For instance, if a DP8322I PHY is connected to the LAN7801,
-that register (0x19), corresponds to the LED and MAC address
-configuration, resulting in unapropriate behavior.
+From: Tan Tee Min <tee.min.tan@linux.intel.com>
 
-Fixes: 14437e3fa284 ("lan78xx: workaround of forced 100 Full/Half duplex =
-mode error")
-Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
-airelinux.com>
+Add support for configuring the max SDU for each Tx queue.
+If not specified, keep the default.
+
+All link speeds have been tested with this implementation.
+No performance issue observed.
+
+How to test:
+
+1) Configure the tc with max-sdu
+
+tc qdisc replace dev $IFACE parent root handle 100 taprio \
+    num_tc 4 \
+    map 0 1 2 3 3 3 3 3 3 3 3 3 3 3 3 3 \
+    queues 1@0 1@1 1@2 1@3 \
+    base-time $BASE \
+    sched-entry S 0xF 1000000 \
+    max-sdu 1500 1498 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \
+    flags 0x2 \
+    txtime-delay 0
+
+2) Use network statistic to watch the tx queue packet to see if
+packet able to go out or drop.
+
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+
 ---
- drivers/net/usb/lan78xx.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+V1 -> V2: Rework based on Vinicius's comment.
+---
+---
+ drivers/net/ethernet/intel/igc/igc.h      |  1 +
+ drivers/net/ethernet/intel/igc/igc_main.c | 44 +++++++++++++++++++++++
+ 2 files changed, 45 insertions(+)
 
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index f18ab8e220db..ea0a56e6cd40 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -2116,6 +2116,7 @@ static void lan78xx_link_status_change(struct net_d=
-evice *net)
- {
- 	struct phy_device *phydev =3D net->phydev;
- 	int temp;
-+	bool lan88_fixup;
-=20
- 	/* At forced 100 F/H mode, chip may fail to set mode correctly
- 	 * when cable is switched between long(~50+m) and short one.
-@@ -2123,10 +2124,15 @@ static void lan78xx_link_status_change(struct net=
-_device *net)
- 	 * at forced 100 F/H mode.
- 	 */
- 	if (!phydev->autoneg && (phydev->speed =3D=3D 100)) {
--		/* disable phy interrupt */
--		temp =3D phy_read(phydev, LAN88XX_INT_MASK);
--		temp &=3D ~LAN88XX_INT_MASK_MDINTPIN_EN_;
--		phy_write(phydev, LAN88XX_INT_MASK, temp);
-+		lan88_fixup =3D (PHY_LAN8835 & 0xfffffff0) =3D=3D
-+			(phydev->phy_id & 0xfffffff0);
-+
-+		if(lan88_fixup) {
-+			/* disable phy interrupt */
-+			temp =3D phy_read(phydev, LAN88XX_INT_MASK);
-+			temp &=3D ~LAN88XX_INT_MASK_MDINTPIN_EN_;
-+			phy_write(phydev, LAN88XX_INT_MASK, temp);
-+		}
-=20
- 		temp =3D phy_read(phydev, MII_BMCR);
- 		temp &=3D ~(BMCR_SPEED100 | BMCR_SPEED1000);
-@@ -2134,13 +2140,15 @@ static void lan78xx_link_status_change(struct net=
-_device *net)
- 		temp |=3D BMCR_SPEED100;
- 		phy_write(phydev, MII_BMCR, temp); /* set to 100 later */
-=20
--		/* clear pending interrupt generated while workaround */
--		temp =3D phy_read(phydev, LAN88XX_INT_STS);
-+		if(lan88_fixup) {
-+			/* clear pending interrupt generated while workaround */
-+			temp =3D phy_read(phydev, LAN88XX_INT_STS);
-=20
--		/* enable phy interrupt back */
--		temp =3D phy_read(phydev, LAN88XX_INT_MASK);
--		temp |=3D LAN88XX_INT_MASK_MDINTPIN_EN_;
--		phy_write(phydev, LAN88XX_INT_MASK, temp);
-+			/* enable phy interrupt back */
-+			temp =3D phy_read(phydev, LAN88XX_INT_MASK);
-+			temp |=3D LAN88XX_INT_MASK_MDINTPIN_EN_;
-+			phy_write(phydev, LAN88XX_INT_MASK, temp);
-+		}
+diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+index 5da8d162cd38..ce9e88687d8c 100644
+--- a/drivers/net/ethernet/intel/igc/igc.h
++++ b/drivers/net/ethernet/intel/igc/igc.h
+@@ -99,6 +99,7 @@ struct igc_ring {
+ 
+ 	u32 start_time;
+ 	u32 end_time;
++	u32 max_sdu;
+ 
+ 	/* CBS parameters */
+ 	bool cbs_enable;                /* indicates if CBS is enabled */
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index fdb7f0b26ed0..741c938313cf 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -1508,6 +1508,7 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+ 	__le32 launch_time = 0;
+ 	u32 tx_flags = 0;
+ 	unsigned short f;
++	u32 max_sdu = 0;
+ 	ktime_t txtime;
+ 	u8 hdr_len = 0;
+ 	int tso = 0;
+@@ -1527,6 +1528,14 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+ 		return NETDEV_TX_BUSY;
  	}
+ 
++	if (tx_ring->max_sdu > 0) {
++		max_sdu = tx_ring->max_sdu +
++			  (skb_vlan_tagged(skb) ? VLAN_HLEN : 0);
++
++		if (skb->len > max_sdu)
++			goto skb_drop;
++	}
++
+ 	if (!tx_ring->launchtime_enable)
+ 		goto done;
+ 
+@@ -1606,6 +1615,12 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
+ 	dev_kfree_skb_any(first->skb);
+ 	first->skb = NULL;
+ 
++	return NETDEV_TX_OK;
++
++skb_drop:
++	dev_kfree_skb_any(skb);
++	skb = NULL;
++
+ 	return NETDEV_TX_OK;
  }
-=20
---=20
-2.25.1
+ 
+@@ -6018,6 +6033,7 @@ static int igc_tsn_clear_schedule(struct igc_adapter *adapter)
+ 
+ 		ring->start_time = 0;
+ 		ring->end_time = NSEC_PER_SEC;
++		ring->max_sdu = 0;
+ 	}
+ 
+ 	return 0;
+@@ -6101,6 +6117,16 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
+ 		}
+ 	}
+ 
++	for (i = 0; i < adapter->num_tx_queues; i++) {
++		struct igc_ring *ring = adapter->tx_ring[i];
++		struct net_device *dev = adapter->netdev;
++
++		if (qopt->max_sdu[i])
++			ring->max_sdu = qopt->max_sdu[i] + dev->hard_header_len;
++		else
++			ring->max_sdu = 0;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -6188,12 +6214,30 @@ static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
+ 	return igc_tsn_offload_apply(adapter);
+ }
+ 
++static int igc_tsn_query_caps(struct tc_query_caps_base *base)
++{
++	switch (base->type) {
++	case TC_SETUP_QDISC_TAPRIO: {
++		struct tc_taprio_caps *caps = base->caps;
++
++		caps->supports_queue_max_sdu = true;
++
++		return 0;
++	}
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 			void *type_data)
+ {
+ 	struct igc_adapter *adapter = netdev_priv(dev);
+ 
+ 	switch (type) {
++	case TC_QUERY_CAPS:
++		return igc_tsn_query_caps(type_data);
++
+ 	case TC_SETUP_QDISC_TAPRIO:
+ 		return igc_tsn_enable_qbv_scheduling(adapter, type_data);
+ 
+-- 
+2.17.1
 
