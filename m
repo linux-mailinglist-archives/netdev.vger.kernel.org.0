@@ -2,267 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B1564E83B
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 09:41:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 261A864E870
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 10:03:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiLPIlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 03:41:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
+        id S230062AbiLPJD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 04:03:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbiLPIlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 03:41:21 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A142D8;
-        Fri, 16 Dec 2022 00:41:19 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id z8-20020a17090abd8800b00219ed30ce47so5350784pjr.3;
-        Fri, 16 Dec 2022 00:41:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2uYbHB0sSZ3tOjfiE8uB+ws0Uk0wZ5B+rhVD9Zm2u6Y=;
-        b=CvRT8bKmoqn2U384N7HuAFXdUUMm+20BS2q/67mAMoKy1k7rIkASzs7iyy3pl0iNS4
-         fnkz4lj4zC85g3E1NdDo/a8ix0hOGqbsgjfy/bb5GDsbJNqi6GVxBbz9LaK6x7GrmY0B
-         VKXZHeNp1uL02L8uvEPyeEwjKgrKgAcFP0A34A43bQZQII57ZNrXhE/G+A4hWNICU6EZ
-         WJMrfov0+fejf5P/z790/21g2XFW0szzypZLaOmAZ1bHR9b+3mL7UvZi28v7oVXIMrsq
-         Vq9Y5Et3Wo7Tjosd/LMhl0r9yR0utQnGLsV3xPhKa+nyXNYMVlW0+HcoX+uUkhQptWed
-         yqKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2uYbHB0sSZ3tOjfiE8uB+ws0Uk0wZ5B+rhVD9Zm2u6Y=;
-        b=nML88qEKsoZT3v+oL1s+AA9q7PhlBdsPvchFjlP/k0wfKe5hiu+uQRW6H6DQXCfzeo
-         7DqEp3MV2ly7zubqCpSOgjOFJhYPPEKtZjXRk4vfhdDMG0nvnKxVju9ihEPntcV1C0nn
-         RLNCfh8K8oO+Kpu5BVTelH/xAkLFcGe7saFib6rSr93G6i9fHHJNLnvqm9onLuSReOHl
-         I9ciHiWCM8ScmsxSXXZDiHztOcpxiPG4HlXvXOnE8k7mCEU/MSdTMRUTDpDMA+IO3lWn
-         5ruRnNat3yvlfN2xpicTWkOr3gPBHfqbFEMRqFuHCbi21rsV5VnfxuVA3pn+6omDT3C9
-         6bWg==
-X-Gm-Message-State: ANoB5pmW7vEYhPMXQHCOq5go9nO6ICbJX1BiOEcflD1ITlNMt/VPN/Lr
-        MyaRCTIr/Aodo0ZbyyhT4Rq5vQpcaski0Q==
-X-Google-Smtp-Source: AA0mqf5CIIMj93MQ93WNk2fMv2+EDKMZNHUqmnMrnAR/3vyQoaWizqpi/rvs9LT0iroZEMzn0OMvzw==
-X-Received: by 2002:a05:6a21:9989:b0:9d:efbe:e608 with SMTP id ve9-20020a056a21998900b0009defbee608mr43735716pzb.36.1671180078780;
-        Fri, 16 Dec 2022 00:41:18 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y7-20020a17090322c700b00188a7bce192sm1006626plg.264.2022.12.16.00.41.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 00:41:17 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Lina Wang <lina.wang@mediatek.com>,
-        Coleman Dietsch <dietschc@csp.edu>, bpf@vger.kernel.org,
-        Maciej enczykowski <maze@google.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@rivosinc.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net-next] selftests/net: mv bpf/nat6to4.c to net folder
-Date:   Fri, 16 Dec 2022 16:41:09 +0800
-Message-Id: <20221216084109.1565213-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S230036AbiLPJDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 04:03:24 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114651EC5C;
+        Fri, 16 Dec 2022 01:03:22 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 6065B1382;
+        Fri, 16 Dec 2022 10:03:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1671181399;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7vJFigaF3hOVrlkh94Vhue4PWpwlwOfUG4VGh2Ry3so=;
+        b=UxjrW7XS5s/5LVlnO1RX6ypK4y7kRWP+my750kFEmq9nfyoQMTUE9EPTNgIxHayJT/h6EJ
+        B51y9RwgGn0wC2zyXY7NIz5rwMRWutVZWr4C4T/Twq7EkP+cmFCsJGPKYM0fr1/hwZlNny
+        mk+8WAVUP2MBwxBtVPErTW6PoxSyxubKZmVPkKfjkGzQjhvigkkCXXD622q2bAQB4xfgpI
+        iTNZ6yV60ezv4TEVNUvTpOoNaE9Bg5+dj1R1ud3eztXNIF0XrloFSpZRRiEay+7VcgZwY6
+        ss+8jlNARSccp9hqkstryrnnI09UXNY41OPTrQJdyip2YI/POnDJ+mmZ6Y3s0Q==
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Fri, 16 Dec 2022 10:03:19 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh@kernel.org>, Xu Liang <lxu@maxlinear.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v1 3/4] dt-bindings: net: phy: add MaxLinear
+ GPY2xx bindings
+In-Reply-To: <6c82b403962aaf1450eb5014c9908328@walle.cc>
+References: <20221202151204.3318592-1-michael@walle.cc>
+ <20221202151204.3318592-4-michael@walle.cc>
+ <20221205212924.GA2638223-robh@kernel.org>
+ <99d4f476d4e0ce5945fa7e1823d9824a@walle.cc>
+ <9c0506a6f654f72ea62fed864c1b2a26@walle.cc>
+ <2597b9e5-7c61-e91c-741c-3fe18247e27c@linaro.org>
+ <6c82b403962aaf1450eb5014c9908328@walle.cc>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <796a528b23aded95c1a647317c277b1f@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are some issues with the bpf/nat6to4.c building.
+Am 2022-12-06 10:44, schrieb Michael Walle:
+> Am 2022-12-06 09:38, schrieb Krzysztof Kozlowski:
+> 
+>>>>> Just omit the interrupt property if you don't want interrupts and
+>>>>> add it if you do.
+>>>> 
+>>>> How does that work together with "the device tree describes
+>>>> the hardware and not the configuration". The interrupt line
+>>>> is there, its just broken sometimes and thus it's disabled
+>>>> by default for these PHY revisions/firmwares. With this
+>>>> flag the user can say, "hey on this hardware it is not
+>>>> relevant because we don't have shared interrupts or because
+>>>> I know what I'm doing".
+>> 
+>> Yeah, that's a good question. In your case broken interrupts could be
+>> understood the same as "not connected", so property not present. When
+>> things are broken, you do not describe them fully in DTS for the
+>> completeness of hardware description, right?
+> 
+> I'd agree here, but in this case it's different. First, it isn't
+> obvious in the first place that things are broken and boards in
+> the field wouldn't/couldn't get that update. I'd really expect
+> an erratum from MaxLinear here. And secondly, (which I
+> just noticed right now, sorry), is that the interrupt line
+> is also used for wake-on-lan, which can also be used even for
+> the "broken" PHYs.
+> 
+> To work around this, the basic idea was to just disable the
+> normal interrupts and fall back to polling mode, as the PHY
+> driver just use it for link detection and don't offer any
+> advanced features like PTP (for now). But still get the system
+> integrator a knob to opt-in to the old behavior on new device
+> trees.
+> 
+>>> Specifically you can't do the following: Have the same device
+>>> tree and still being able to use it with a future PHY firmware
+>>> update/revision. Because according to your suggestion, this
+>>> won't have the interrupt property set. With this flag you can
+>>> have the following cases:
+>>>   (1) the interrupt information is there and can be used in the
+>>>       future by non-broken PHY revisions,
+>>>   (2) broken PHYs will ignore the interrupt line
+>>>   (3) except the system designer opts-in with this flag (because
+>>>       maybe this is the only PHY on the interrupt line etc).
+>> 
+>> I am not sure if I understand the case. You want to have a DTS with
+>> interrupts and "maxlinear,use-broken-interrupts", where the latter 
+>> will
+>> be ignored by some future firmware?
+> 
+> Yes, that's correct.
+> 
+>> Isn't then the property not really correct? Broken for one firmware
+>> on the same device, working for other firmware on the same device?
+> 
+> Arguable, but you can interpret "use broken-interrupts" as no-op
+> if there are no broken interrupts.
+> 
+>> I would assume that in such cases you (or bootloader or overlay)
+>> should patch the DTS...
+> 
+> I think this would turn the opt-in into an opt-out and we'd rely
+> on the bootloader to workaround the erratum. Which isn't what we
+> want here.
 
-1. It use TEST_CUSTOM_PROGS, which will add the nat6to4.o to
-   kselftest-list file and run by common run_tests.
-2. When building the test via `make -C tools/testing/selftests/
-   TARGETS="net"`, the nat6to4.o will be build in selftests/net/bpf/
-   folder. But in test udpgro_frglist.sh it refers to ../bpf/nat6to4.o.
-   The correct path should be ./bpf/nat6to4.o.
-3. If building the test via `make -C tools/testing/selftests/ TARGETS="net"
-   install`. The nat6to4.o will be installed to kselftest_install/net/
-   folder. Then the udpgro_frglist.sh should refer to ./nat6to4.o.
+Just a recap what happened on IRC:
+  (1) Krzysztof signalled that such a property might be ok but the
+      commit message should be explain it better. For reference
+      here is what I explained there:
 
-To fix the confusing test path, let's just move the nat6to4.c to net folder
-and build it as TEST_GEN_FILES.
+       maybe that property has a wrong name, but ultimately, it's just
+       a hint that the systems designer wants to use the interrupts
+       even if they don't work as expected, because they work on that
+       particular hardware.
+       the interrupt line is there but it's broken, there are device
+       trees out there with that property, so all we can do is to not
+       use the interrupts for that PHY. but as a systems designer who
+       is aware of the consequences and knowing that they don't apply
+       to my board, how could i then tell the driver to use it anyway.
 
-v2: Update the Makefile rules rely on commit 837a3d66d698 ("selftests:
-net: Add cross-compilation support for BPF programs").
+  (2) Krzysztof pointed out that there is still the issue raised by
+      Rob, that the schemas haven't any compatible and cannot be
+      validated. I think that applies to all the network PHY bindings
+      in the tree right now. I don't know how to fix them.
 
-Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
+  (3) The main problem with the broken interrupt handling of the PHY
+      is that it will disturb other devices on that interrupt line.
+      IOW if the interrupt line is shared the PHY should fall back
+      to polling mode. I haven't found anything in the interrupt
+      subsys to query if a line is shared and I guess it's also
+      conceptually impossible to do such a thing, because there
+      might be any driver probed at a later time which also uses
+      that line.
+      Rob had the idea to walk the device tree and determine if
+      a particular interrupt is used by other devices, too. If
+      feasable, this sounds like a good enough heuristic for our
+      problem. Although there might be some edge cases, like
+      DT overlays loaded at linux runtime (?!).
 
-I don't know if there is a way to just install a single TEST_GEN_FILES
-to a separate folder. If there is, then we don't need to move the files.
+So this is what I'd do now: I'd skip a new device tree property
+for now and determine if the interrupt line is shared (by solely
+looking at the DT) and then disable the interrupt in the PHY
+driver. This begs the question what we do if there is no DT,
+interrupts disabled or enabled?
 
----
- tools/testing/selftests/net/Makefile          | 50 +++++++++++++++++-
- tools/testing/selftests/net/bpf/Makefile      | 51 -------------------
- .../testing/selftests/net/{bpf => }/nat6to4.c |  0
- tools/testing/selftests/net/udpgro_frglist.sh |  8 +--
- 4 files changed, 52 insertions(+), 57 deletions(-)
- delete mode 100644 tools/testing/selftests/net/bpf/Makefile
- rename tools/testing/selftests/net/{bpf => }/nat6to4.c (100%)
+Andrew, what do you think?
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3007e98a6d64..ed9a315187c1 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -75,14 +75,60 @@ TEST_GEN_PROGS += so_incoming_cpu
- TEST_PROGS += sctp_vrf.sh
- TEST_GEN_FILES += sctp_hello
- TEST_GEN_FILES += csum
-+TEST_GEN_FILES += nat6to4.o
- 
- TEST_FILES := settings
- 
- include ../lib.mk
- 
--include bpf/Makefile
--
- $(OUTPUT)/reuseport_bpf_numa: LDLIBS += -lnuma
- $(OUTPUT)/tcp_mmap: LDLIBS += -lpthread
- $(OUTPUT)/tcp_inq: LDLIBS += -lpthread
- $(OUTPUT)/bind_bhash: LDLIBS += -lpthread
-+
-+# Rules to generate bpf obj nat6to4.o
-+CLANG ?= clang
-+SCRATCH_DIR := $(OUTPUT)/tools
-+BUILD_DIR := $(SCRATCH_DIR)/build
-+BPFDIR := $(abspath ../../../lib/bpf)
-+APIDIR := $(abspath ../../../include/uapi)
-+
-+CCINCLUDE += -I../bpf
-+CCINCLUDE += -I../../../../usr/include/
-+CCINCLUDE += -I$(SCRATCH_DIR)/include
-+
-+BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
-+
-+MAKE_DIRS := $(BUILD_DIR)/libbpf $(OUTPUT)/bpf
-+$(MAKE_DIRS):
-+	mkdir -p $@
-+
-+# Get Clang's default includes on this system, as opposed to those seen by
-+# '-target bpf'. This fixes "missing" files on some architectures/distros,
-+# such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
-+#
-+# Use '-idirafter': Don't interfere with include mechanics except where the
-+# build would have failed anyways.
-+define get_sys_includes
-+$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
-+	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
-+$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("-D__riscv_xlen=%d -D__BITS_PER_LONG=%d", $$3, $$3)}')
-+endef
-+
-+ifneq ($(CROSS_COMPILE),)
-+CLANG_TARGET_ARCH = --target=$(notdir $(CROSS_COMPILE:%-=%))
-+endif
-+
-+CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
-+
-+$(OUTPUT)/nat6to4.o: nat6to4.c $(BPFOBJ) | $(MAKE_DIRS)
-+	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
-+
-+$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
-+	   $(APIDIR)/linux/bpf.h					       \
-+	   | $(BUILD_DIR)/libbpf
-+	$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/     \
-+		    EXTRA_CFLAGS='-g -O0'				       \
-+		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
-+
-+EXTRA_CLEAN := $(SCRATCH_DIR)
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-deleted file mode 100644
-index 4abaf16d2077..000000000000
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ /dev/null
-@@ -1,51 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--
--CLANG ?= clang
--SCRATCH_DIR := $(OUTPUT)/tools
--BUILD_DIR := $(SCRATCH_DIR)/build
--BPFDIR := $(abspath ../../../lib/bpf)
--APIDIR := $(abspath ../../../include/uapi)
--
--CCINCLUDE += -I../../bpf
--CCINCLUDE += -I../../../../../usr/include/
--CCINCLUDE += -I$(SCRATCH_DIR)/include
--
--BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
--
--MAKE_DIRS := $(BUILD_DIR)/libbpf $(OUTPUT)/bpf
--$(MAKE_DIRS):
--	mkdir -p $@
--
--TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
--all: $(TEST_CUSTOM_PROGS)
--
--# Get Clang's default includes on this system, as opposed to those seen by
--# '-target bpf'. This fixes "missing" files on some architectures/distros,
--# such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
--#
--# Use '-idirafter': Don't interfere with include mechanics except where the
--# build would have failed anyways.
--define get_sys_includes
--$(shell $(1) $(2) -v -E - </dev/null 2>&1 \
--	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }') \
--$(shell $(1) $(2) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("-D__riscv_xlen=%d -D__BITS_PER_LONG=%d", $$3, $$3)}')
--endef
--
--ifneq ($(CROSS_COMPILE),)
--CLANG_TARGET_ARCH = --target=$(notdir $(CROSS_COMPILE:%-=%))
--endif
--
--CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
--
--$(TEST_CUSTOM_PROGS): $(OUTPUT)/%.o: %.c $(BPFOBJ) | $(MAKE_DIRS)
--	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
--
--$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
--	   $(APIDIR)/linux/bpf.h					       \
--	   | $(BUILD_DIR)/libbpf
--	$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/     \
--		    EXTRA_CFLAGS='-g -O0'				       \
--		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
--
--EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)
--
-diff --git a/tools/testing/selftests/net/bpf/nat6to4.c b/tools/testing/selftests/net/nat6to4.c
-similarity index 100%
-rename from tools/testing/selftests/net/bpf/nat6to4.c
-rename to tools/testing/selftests/net/nat6to4.c
-diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
-index c9c4b9d65839..0a6359bed0b9 100755
---- a/tools/testing/selftests/net/udpgro_frglist.sh
-+++ b/tools/testing/selftests/net/udpgro_frglist.sh
-@@ -40,8 +40,8 @@ run_one() {
- 
- 	ip -n "${PEER_NS}" link set veth1 xdp object ${BPF_FILE} section xdp
- 	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
--	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
--	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
-+	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file nat6to4.o section schedcls/ingress6/nat_6  direct-action
-+	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file nat6to4.o section schedcls/egress4/snat4 direct-action
-         echo ${rx_args}
- 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
- 
-@@ -88,8 +88,8 @@ if [ ! -f ${BPF_FILE} ]; then
- 	exit -1
- fi
- 
--if [ ! -f bpf/nat6to4.o ]; then
--	echo "Missing nat6to4 helper. Build bpfnat6to4.o selftest first"
-+if [ ! -f nat6to4.o ]; then
-+	echo "Missing nat6to4 helper. Build bpf nat6to4.o selftest first"
- 	exit -1
- fi
- 
--- 
-2.38.1
-
+-michael
