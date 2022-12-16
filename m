@@ -2,163 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C17264E5D2
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 03:06:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6BF64E672
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 04:44:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiLPCGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Dec 2022 21:06:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55238 "EHLO
+        id S230062AbiLPDoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Dec 2022 22:44:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiLPCGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 21:06:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306641F2CB
-        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 18:06:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F90C61EB8
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 02:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8F2C433D2
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 02:06:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671156369;
-        bh=AELH0oR7rpjY3ZaGD/Lokvyg5l87v5d5GLjWhXE1NK8=;
-        h=Date:From:To:Subject:From;
-        b=A/tbPjNt6RjDycqiEUtLFd2B1XvhOrC+8tSWsZY67Ug7Xhy4UoKDaQ1ehiIukXQQH
-         Wkk4CfYnCxaxH8TBcqZsEYTprxFgzqyaoSzsbv9K9WFAwl7pvoZQSOf7E4TQ0tr6+x
-         U2791sppCb6eHgJwkne3TlpGoqcfwVR+HO2NsTJI2lxyt/gjeBpoMrCVhFnx9CvKmf
-         PR76sBoKxZFHCqSv5EXkTWeWqgjL1eP2tfJMHmMaVptM3IP5dF9mTvvZ+7McIGmPhK
-         Q43jt2CGY2Bt4utGTefKlxqybbF8MdH43pIgBGJjwnr404ifMkOwk3oJA2EInKp7Fr
-         M7Zta2sQWWlyA==
-Date:   Thu, 15 Dec 2022 18:06:08 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [ANN] netdev development stats for 6.2
-Message-ID: <20221215180608.04441356@kernel.org>
+        with ESMTP id S229742AbiLPDoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Dec 2022 22:44:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8CE40460
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 19:43:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671162206;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zfz+hZsu0mSAfvWAnAaAGFxMGv6r+4O1MrzGOXMUmB0=;
+        b=OEqFVTTnAYx9v6WgczBPiVcJsQpe5DEtGwou3HiS0EGiqNhZbW4l/vdp0dEgK0/WF1+BqJ
+        jRdA1OEDYDFzMMFv7XJ+4ieoZM1dFh1g1i1n/RXmJH50JbrU+hS9D4qrFxbb/yCbp0vZgf
+        Yn3HCWL/coOD5Sydh/jvLKQ+fvIMEVM=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-621-3xzR14P-P0yW2BwUsNJqpA-1; Thu, 15 Dec 2022 22:43:25 -0500
+X-MC-Unique: 3xzR14P-P0yW2BwUsNJqpA-1
+Received: by mail-ot1-f71.google.com with SMTP id f39-20020a9d03aa000000b006705c6992daso661658otf.14
+        for <netdev@vger.kernel.org>; Thu, 15 Dec 2022 19:43:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zfz+hZsu0mSAfvWAnAaAGFxMGv6r+4O1MrzGOXMUmB0=;
+        b=o0PIACtbs7R2gPQBjENGgE/n540UyLqh9HNJTfhNcBECCRNFxV7ZS6ZZS75Blpl+Je
+         MdgKSqI7hKpbcIFoJLaJGcRVFBOKza7Lt1gzWJfH6iCYvL0P3IcELhNr/HRZb0COCIHT
+         F4tmMGF0G63vu7OLcxcuZjsK1krCrBKkTisXH0x887M1qSJXBVaBm991UQBa5i5h0PEI
+         afdSPdsXNNgRHeXnizi/GLtkcWzSz5hB8BbjC56bHnFB7woQDDYrNE8/IG4OBBWm6syq
+         RR4WBHBIoVnkOZCuAQw6kP4hK3Tn8orFfjob2lxlCxd/dL+Xx8yY6obrsrCRZuGgwYFj
+         y/1Q==
+X-Gm-Message-State: ANoB5pncpjgNFq+YXH0RU39cj4T7xAp2yNETwhlibE2k9jv2/FRiBqUt
+        xg3AygeQZB9LgaajCqM5/sAl/khCuQNYK1jHzhu2R2ZtnEqp3xcvwu+yRaVyMH8/wLKxY1Ey1IM
+        X01b1qfAa1aMyyVHXVX3Y5cHmdtvW6qQB
+X-Received: by 2002:a05:6870:9e8f:b0:144:a97b:1ae2 with SMTP id pu15-20020a0568709e8f00b00144a97b1ae2mr319386oab.35.1671162204860;
+        Thu, 15 Dec 2022 19:43:24 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7OmOp/XpirrXRViBtMxKqtenidH9XAN95sX4U25/bIv5XYq0XBM55D6y7jxPwBaziM5LOxB28ONerqMfvW4eI=
+X-Received: by 2002:a05:6870:9e8f:b0:144:a97b:1ae2 with SMTP id
+ pu15-20020a0568709e8f00b00144a97b1ae2mr319384oab.35.1671162204619; Thu, 15
+ Dec 2022 19:43:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221215032719.72294-1-jasowang@redhat.com> <20221215034740-mutt-send-email-mst@kernel.org>
+ <CACGkMEsLeCRDqyuyGzWw+kjYrTVDjUjOw6+xHESPT2D1p03=sQ@mail.gmail.com> <20221215042918-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221215042918-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 16 Dec 2022 11:43:13 +0800
+Message-ID: <CACGkMEsbvTQrEp5dmQRHp58Mu=E7f433Xrvsbs4nZMA5R3B6mQ@mail.gmail.com>
+Subject: Re: [PATCH net V2] virtio-net: correctly enable callback during start_xmit
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+On Thu, Dec 15, 2022 at 5:35 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Thu, Dec 15, 2022 at 05:15:43PM +0800, Jason Wang wrote:
+> > On Thu, Dec 15, 2022 at 5:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Thu, Dec 15, 2022 at 11:27:19AM +0800, Jason Wang wrote:
+> > > > Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
+> > > > virtqueue callback via the following statement:
+> > > >
+> > > >         do {
+> > > >            ......
+> > > >       } while (use_napi && kick &&
+> > > >                unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > > >
+> > > > When NAPI is used and kick is false, the callback won't be enabled
+> > > > here. And when the virtqueue is about to be full, the tx will be
+> > > > disabled, but we still don't enable tx interrupt which will cause a TX
+> > > > hang. This could be observed when using pktgen with burst enabled.
+> > > >
+> > > > Fixing this by trying to enable tx interrupt after we disable TX when
+> > > > we're not using napi or kick is false.
+> > > >
+> > > > Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
+> > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > ---
+> > > > The patch is needed for -stable.
+> > > > Changes since V1:
+> > > > - enable tx interrupt after we disable tx
+> > > > ---
+> > > >  drivers/net/virtio_net.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index 86e52454b5b5..dcf3a536d78a 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -1873,7 +1873,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> > > >        */
+> > > >       if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
+> > > >               netif_stop_subqueue(dev, qnum);
+> > > > -             if (!use_napi &&
+> > > > +             if ((!use_napi || !kick) &&
+> > > >                   unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
+> > > >                       /* More just got used, free them then recheck. */
+> > > >                       free_old_xmit_skbs(sq, false);
+> > >
+> > > This will work but the following lines are:
+> > >
+> > >                        if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
+> > >                                 netif_start_subqueue(dev, qnum);
+> > >                                 virtqueue_disable_cb(sq->vq);
+> > >                         }
+> > >
+> > >
+> > > and I thought we are supposed to keep callbacks enabled with napi?
+> >
+> > This seems to be the opposite logic of commit a7766ef18b33 that
+> > disables callbacks for NAPI.
+> >
+> > It said:
+> >
+> >     There are currently two cases where we poll TX vq not in response to a
+> >     callback: start xmit and rx napi.  We currently do this with callbacks
+> >     enabled which can cause extra interrupts from the card.  Used not to be
+> >     a big issue as we run with interrupts disabled but that is no longer the
+> >     case, and in some cases the rate of spurious interrupts is so high
+> >     linux detects this and actually kills the interrupt.
+> >
+> > My undersatnding is that it tries to disable callbacks on TX.
+>
+> I think we want to disable callbacks while polling, yes. here we are not
+> polling, and I think we want a callback because otherwise nothing will
+> orphan skbs and a socket can be blocked, not transmitting anything - a
+> deadlock.
 
-Here are the stats for the last release cycle (based on 18k emails
-netdev has seen since Oct 3rd).
+I'm not sure how I got here, did you mean a partial revert of
+a7766ef18b33 (the part that disables TX callbacks on start_xmit)?
 
-The methodology has not changed since the last time I shared those:
-https://lore.kernel.org/all/20221004212721.069dd189@kernel.org/
-I have now put the script up on GitHub for everyone to see / improve 
-/ hack on: https://github.com/kuba-moo/ml-stat
+Btw, I plan to remove non NAPI mode completely, since it was disabled
+by default for years and we don't see any complaint, then we may have
+modern features like BQL and better TCP performance. In that sense we
+may simply keep tx callback open as most of modern NIC did.
 
-When comparing the stats note that we had roughly 4k more messages,
-partially due to the length of the analyzed period.
+>
+> > > One of the ideas of napi is to free on napi callback, not here
+> > > immediately.
+> > >
+> > > I think it is easier to just do a separate branch here. Along the
+> > > lines of:
+> > >
+> > >                 if (use_napi) {
+> > >                         if (unlikely(!virtqueue_enable_cb_delayed(sq->vq)))
+> > >                                 virtqueue_napi_schedule(napi, vq);
+> >
+> > This seems to be a new logic and it causes some delay in processing TX
+> > (unnecessary NAPI).
+>
+> That's good, we overloaded the queue so we are already going
+> too fast, deferring tx so queue has chance to drain
+> will allow better batching in the qdisc.
 
-Like previously, please discount my "reviews" slightly as I send 
-a lot of "process" emails..
+I meant, compare to
 
+1) schedule NAPI and poll TX
 
-Top 10 reviewers (thr):			Top 10 reviewers (msg):
-   1. [354] Jakub Kicinski		   1. [582] Jakub Kicinski
-   2. [171] Andrew Lunn			   2. [325] Andrew Lunn
-   3. [140] Leon Romanovsky		   3. [263] Leon Romanovsky
-   4. [ 88] Eric Dumazet		   4. [196] Vladimir Oltean
-   5. [ 88] Paolo Abeni			   5. [154] Eric Dumazet
-   6. [ 76] Vladimir Oltean		   6. [149] Jiri Pirko
-   7. [ 60] Jiri Pirko			   7. [121] Krzysztof Kozlowski
-   8. [ 57] Krzysztof Kozlowski		   8. [118] Russell King
-   9. [ 53] Russell King		   9. [116] Paolo Abeni
-  10. [ 47] Saeed Mahameed		  10. [ 86] Florian Fainelli
+The current code did
 
-The review count went up quite a bit for everyone but Krzysztof and
-myself. Andrew remains firmly our top reviewer. We can see a
-significant increase in participation from nVidia.
+2) poll TX immediately
 
+2) seems faster?
 
-Top 15 authors (thr):			Top 10 authors (msg):
-   1. [ 65] Zhengchao Shao		   1. [234] Saeed Mahameed
-   2. [ 58] Jakub Kicinski		   2. [182] David Howells
-   3. [ 57] Yang Yingliang		   3. [146] Tony Nguyen
-   4. [ 44] Kees Cook			   4. [140] Jakub Kicinski 
-   5. [ 32] Eric Dumazet		   5. [125] Marc Kleine-Budde
-   6. [ 32] Vladimir Oltean		   6. [119] Ido Schimmel
-   7. [ 26] Yuan Can			   7. [113] Leon Romanovsky
-   8. [ 26] Kumar, M Chetan		   8. [111] Steen Hegelund
-   9. [ 26] Dan Carpenter		   9. [ 96] Vladimir Oltean
-  10. [ 26] Xin Long			  10. [ 94] Yang Yingliang
+Thanks
 
-Where we count "authorship" by a fresh posting of a patch to the list.
-So Saeed gets credit for all revisions of all patches that came thru
-his tree, for example.
+>
+> > >                 } else {
+> > >                         ... old code ...
+> > >                 }
+> > >
+> > > also reduces chances of regressions on !napi (which is not well tested)
+> > > and keeps callbacks off while we free skbs.
+> >
+> > I think my patch doesn't change the logic of !napi? (It checks !napi || kick).
+> >
+> > Thanks
+>
+> I agree it doesn't seem to as written.
+>
+> > >
+> > > No?
+> > >
+> > >
+> > > > --
+> > > > 2.25.1
+> > >
+>
 
-
-As for "scores" which are supposed to point out who doesn't help 
-with reviewing (10 * reviews - 3 * authorship):
-
- Top 10 scores (positive):		Top 10 scores (negative):
-   1. [4458] Jakub Kicinski		   1. [240] Zhengchao Shao
-   2. [2355] Andrew Lunn		   2. [206] Yang Yingliang 
-   3. [1808] Leon Romanovsky		   3. [ 96] Yuan Can
-   4. [1069] Paolo Abeni		   4. [ 87] Zhang Changzhong
-   5. [1058] Eric Dumazet		   5. [ 87] Wang Yufen
-   6. [1006] Vladimir Oltean		   6. [ 84] Lorenzo Bianconi
-   7. [ 809] Jiri Pirko			   7. [ 82] Michal Wilczynski
-   8. [ 765] Krzysztof Kozlowski	   8. [ 82] Colin Ian King 
-   9. [ 700] Russell King		   9. [ 80] Shenwei Wang
-  10. [ 561] Rob Herring		  10. [ 73] YueHaibing
-
-The positive section looks very much like the top reviewer section.
-
-Kuniyuki has become an active reviewer of the socket layer (thanks!!)
-therefore taking Amazon off the negative scores. Now the top three
-negative scores belong to people sending semi-automated "bug fixes".
-
-
-As for the corporate stats:
-
-Top 10 reviewers (thr):			Top 10 reviewers (msg):
-   1. [398] Meta			   1. [746] Meta
-   2. [260] nVidia			   2. [594] nVidia
-   3. [212] Intel			   3. [427] Intel
-   4. [174] RedHat			   4. [387] RedHat
-   5. [171] Andrew Lunn			   5. [325] Andrew Lunn
-   6. [141] Google			   6. [279] Google
-   7. [ 83] NXP				   7. [210] NXP
-
-Top 15 authors (thr):			Top 10 authors (msg):
-   1. [366] Huawei			   1. [705] nVidia
-   2. [184] Intel			   2. [554] Huawei
-   3. [136] RedHat			   3. [554] Intel
-   4. [123] Google			   4. [485] RedHat
-   5. [113] nVidia			   5. [410] Microchip
-   6. [ 90] Microchip			   6. [256] Pengutronix
-   7. [ 68] Meta			   7. [254] Google
-
-Top 15 scores (positive):		Top 15 scores (negative):
-   1. [5179] Meta			   1. [1131] Huawei
-   2. [3095] nVidia			   2. [ 217] Microchip
-   3. [2355] Andrew Lunn 		   3. [  96] ZTE
-   4. [2143] Intel			   4. [  82] Alibaba
-   5. [1862] RedHat			   5. [  82] Colin Ian King
-   6. [1470] Google			   ... one-time contributors follow
-   7. [ 985] NXP
-   8. [ 835] Linaro
-   9. [ 755] Oracle
-  10. [ 694] Isovalent
-  11. [ 561] Rob Herring
-  12. [ 560] Florian Fainelli
-
-
-Significant increase in activity from nVidia, both in terms of
-authorship (1.5x) and reviews (3x).
-
-Huawei leads the pack in terms of patch bombardment with no real
-participation. Interestingly Microchip remains in the #2 spot of 
-the negative score list.
