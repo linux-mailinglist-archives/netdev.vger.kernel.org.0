@@ -2,128 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1239764F347
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 22:39:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7B264F3B0
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 23:05:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiLPVj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 16:39:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
+        id S229510AbiLPWFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 17:05:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiLPVjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 16:39:53 -0500
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3145715F2E;
-        Fri, 16 Dec 2022 13:39:52 -0800 (PST)
-Received: by mail-vk1-xa35.google.com with SMTP id b81so1765066vkf.1;
-        Fri, 16 Dec 2022 13:39:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2YwHluyp3ck6gPBrjl88W1jVft6fBZI+9SdreHduMN0=;
-        b=GtGWVbz0c2WgE+RG3BiXxLNwl9nZXPjfa5FYmWxDRsdWg+qdUGF4gup7cMciZSOm65
-         aQ0Fo9m4WEc/aWx8COWkmnw+hrNrUqBSLUf4IWlXXFCygc0qbQBD3rskaE5tIM7PrDwn
-         dIYB47y7W1XWuQFb/NxXqh+ykWVDDwFzdORYwvZtW5ISa2Eco/BDqZJbSjZzrtYFn/DK
-         IQXYo1I+M5WWzTW0ss475sY8S88Z5zs0befRTApEk5YweiHoXAk3PzVPfYV8D+Jxbf9t
-         +rb09waY6JHBp2tVRcZTQG6C9sHTMKmH6KG7RormYh77I65UJP++1NBWjhkpSSRD/67g
-         O6OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2YwHluyp3ck6gPBrjl88W1jVft6fBZI+9SdreHduMN0=;
-        b=yXzBIBkwdPRc+Q9knnMwoeCAEWEVs+Zo1IWpoTqqsSZbwSkzukX5Q0wu2dcFrs/TMl
-         SKHrx8xtG64tiNDpsjP4X5jQiGQSm9LJ3GEj33CrJRdOp63RJr/LJvUAV4N0DlQTqtoh
-         NesUq0u53Jm8g/1+D2TvcjaPXcYCQyLTkk8hyHRJCKor1qwlj+bowJLOahBq19smyd6W
-         zi8HdU3Zdf96Zt0aImLwb7hgPuJ7FLri7E2/g01ZoBGpMZkuG0IqUSEWuwQ/uNfnniuq
-         cww/je5C9M3xjLGm8OVBEzYh7noVeJ2vBoSgUJluhpm95iz7p5uitABVaQV2WBHNn41h
-         8tTg==
-X-Gm-Message-State: ANoB5pmcAbT8rJ0Ei4rQgEuYNmkd18pl+hNKFP1rTUbHepYvcEuiGoC8
-        knRHzfO/4/D8egc8nf+RcW3nLIW8H+dfUKcKjRLHUGIs28WooQ==
-X-Google-Smtp-Source: AA0mqf48eDYlvrjk/0EJkS9A6SI+FR+Sf30IMBeLcCft/jWeVbWdmcXlU6ZLBtCoPY497SmK9xYxo2/sPrrmcAsjyV4=
-X-Received: by 2002:a1f:9b03:0:b0:3c1:780:3bfe with SMTP id
- d3-20020a1f9b03000000b003c107803bfemr2597787vke.26.1671226791221; Fri, 16 Dec
- 2022 13:39:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20221216211124.154459-1-tegongkang@gmail.com> <941d8fa9-9c7b-8e06-e87a-b1c9ed80a639@ieee.org>
-In-Reply-To: <941d8fa9-9c7b-8e06-e87a-b1c9ed80a639@ieee.org>
-From:   Kang Minchul <tegongkang@gmail.com>
-Date:   Sat, 17 Dec 2022 06:39:42 +0900
-Message-ID: <CA+uqrQCChwyE--PDxvrGMnfk9W1Nf0C4kS9fW0Ozmx-mQpyH8w@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: ipa: Remove redundant comparison with zero
-To:     Alex Elder <elder@ieee.org>
-Cc:     Alex Elder <elder@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        with ESMTP id S229480AbiLPWFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 17:05:39 -0500
+X-Greylist: delayed 610 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 16 Dec 2022 14:05:36 PST
+Received: from box.opentheblackbox.net (box.opentheblackbox.net [172.105.151.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77E71A8
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 14:05:36 -0800 (PST)
+Received: from authenticated-user (box.opentheblackbox.net [172.105.151.37])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.opentheblackbox.net (Postfix) with ESMTPSA id B92D03EA73;
+        Fri, 16 Dec 2022 16:55:21 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pgazz.com; s=mail;
+        t=1671227722; bh=HMHD3iTTm1dNKsVI/i2CxxkFBsiauFMT2knt2LtgRPg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bGk7hkHtVc7lgB/+Yh0zkwI4boqOgZPmDv6yqvp+se7GnWXcup3o0rZYaD3d//wX0
+         kBhUaBDk+51RXqSEGk30HFG6bS0/EH5B5bpJXzyxuOAKPkb4C++CRmbGBL5LFKA3A8
+         p3PU/ix5jxdCi2SXcGwiLP+rr0KK4/xq9NaU6yg8V7TH2Gaj0J05EEA7BqDDGwDJ8S
+         e0VkvQ+CmCL0wDcqopqro7JBpUZndGQRwY2yPQX/NH18CwZ6C98xUHykeXupsdaRYo
+         YnP3jQLH+OgyIIBuIF8IbimWGfddlB9V7H8YvNTJbcfXkuk7KseNkfNI0VccEJ16kz
+         E0KlRRAolIgSQ==
+From:   Paul Gazzillo <paul@pgazz.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zheng Bin <zhengbin13@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Suman Ghosh <sumang@marvell.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc:     Paul Gazzillo <paul@pgazz.com>
+Subject: [PATCH] octeontx2_pf: Select NET_DEVLINK when enabling OCTEONTX2_PF
+Date:   Fri, 16 Dec 2022 16:54:48 -0500
+Message-Id: <20221216215509.821591-1-paul@pgazz.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022=EB=85=84 12=EC=9B=94 17=EC=9D=BC (=ED=86=A0) =EC=98=A4=EC=A0=84 6:34, =
-Alex Elder <elder@ieee.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
->
-> On 12/16/22 3:11 PM, Kang Minchul wrote:
-> > platform_get_irq_byname() returns non-zero IRQ number on success,
-> > and negative error number on failure.
-> >
-> > So comparing return value with zero is unnecessary.
-> >
-> > Signed-off-by: Kang Minchul <tegongkang@gmail.com>
-> > ---
-> >   drivers/net/ipa/gsi.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-> > index bea2da1c4c51..e05e94bd9ba0 100644
-> > --- a/drivers/net/ipa/gsi.c
-> > +++ b/drivers/net/ipa/gsi.c
-> > @@ -1302,7 +1302,7 @@ static int gsi_irq_init(struct gsi *gsi, struct p=
-latform_device *pdev)
-> >       int ret;
-> >
-> >       ret =3D platform_get_irq_byname(pdev, "gsi");
-> > -     if (ret <=3D 0)
-> > +     if (ret < 0)
-> >               return ret ? : -EINVAL;
->
-> In doing this, you assume platform_get_irq_byname() never
-> returns 0.  I accept that assumption now.  But in that case,
-> ret will *always* be non-zero if the branch is taken, so the
-> next line should simply be:
->
->                 return ret;
->
-> There are two other places in the IPA driver that follow exactly
-> the same pattern of getting the IRQ number and handling the
-> possibility that the value returned is (erroneously) 0.  If
-> you're making this change in one place, please do so in all
-> of them.
->
-> Frankly though, I think this change adds little value, and I
-> would be content to just leave everything as-is...
->
->                                         -Alex
->
-> >
-> >       gsi->irq =3D ret;
->
+When using COMPILE_TEST, the driver controlled by OCTEONTX2_PF does
+not select NET_DEVLINK while the related OCTEONTX2_AF driver does.
+This means that when OCTEONTX2_PF is enabled from a default
+configuration, linker errors will occur due to undefined references to
+code controlled by NET_DEVLINK.
 
-Hmm, yes.
-I think you're right.
-I don't think this code is worth much either.
-Please ignore this patch and leave everything as-is.
+1. make.cross ARCH=x86_64 defconfig
+2. make.cross ARCH=x86_64 menuconfig
+3. Enable COMPILE_TEST
+   General setup  --->
+     Compile also drivers which will not load
+4. Enable OCTEONTX2_PF
+   Device Drivers  --->
+     Network device support  --->
+       Ethernet driver support  --->
+         Marvell OcteonTX2 NIC Physical Function driver
+5. Exit and save configuration.  NET_DEVLINK will still be disabled.
+6. make.cross ARCH=x86_64 several linker errors, for example,
+   ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.o:
+     in function `otx2_register_dl':
+   otx2_devlink.c:(.text+0x142): undefined reference to `devlink_alloc_ns'
 
-Thanks for your feedback though :)
+This fix adds "select NET_DEVLINK" link to OCTEONTX2_PF's Kconfig
+specification to match OCTEONTX2_AF.
 
-Kang Minchul
+Signed-off-by: Paul Gazzillo <paul@pgazz.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+index 3f982ccf2c85..639893d87055 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
++++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+@@ -31,6 +31,7 @@ config NDC_DIS_DYNAMIC_CACHING
+ config OCTEONTX2_PF
+ 	tristate "Marvell OcteonTX2 NIC Physical Function driver"
+ 	select OCTEONTX2_MBOX
++	select NET_DEVLINK
+ 	depends on (64BIT && COMPILE_TEST) || ARM64
+ 	depends on PCI
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+-- 
+2.25.1
+
