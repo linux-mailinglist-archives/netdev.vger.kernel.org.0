@@ -2,65 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB8F64EF0F
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 17:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64B2764EF11
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 17:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbiLPQ3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 11:29:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S230030AbiLPQ3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 11:29:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiLPQ3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 11:29:21 -0500
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826C229351
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 08:29:20 -0800 (PST)
-Received: by mail-qk1-x749.google.com with SMTP id ay43-20020a05620a17ab00b006fa30ed61fdso2150166qkb.5
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 08:29:20 -0800 (PST)
+        with ESMTP id S229611AbiLPQ3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 11:29:31 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614CB25C8
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 08:29:30 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id s7so2825352plk.5
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 08:29:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=QZCQPWd/7SSVO5XHgM4re5UEGB/nXf/LhBKVgCNLpkw=;
-        b=jlYn2wYxGkhXkc88gBML54YftujTKpxZLPUu5vw4AK05jU3GkMBaVZJI+N4bcbkWmG
-         6jfF6hue3o0iTPuZvCXm4KygxgVbgscGhhMzBXdDUDb6RwYSSfWMCh3KQffgJtJut3B5
-         y5EgRrTnTGxntigxBZQ7NHzuuxDh8Yc+UfpB3M6KTYWx9SVPbNyFkzFrEHUd1w+pYdgp
-         uFSMdVx65BazChcgFnJHn5Xo26RhnxeaKTD7KcfHag/hxOReZ4w5i43QKf0UO0rAy0n/
-         VK+I7qWir41pIql8tsj9iUERNX7ZEaQ5CC2EgAEApoHa3veW0KLcRCtz4QccQipvSt2H
-         H/zw==
+        bh=kP/FoMB1Yj/qY7ZBSatxXAMle19ZjD4rvZ91q9C/PSM=;
+        b=W/OL8VTWs3dVmAhVDxbmhuv9Rd7+/pdKHXI44Jpe/hfHlPvPzddof3IsVDLys9PoNw
+         j0Uj8/uHeYac+sO4Lx4ScVVG2ZZ8mDyqCW1G7Jh1sV53Fm7nJNJDwbz5vYMnsSZTHR8Q
+         uLg7j3bVCcp0ar4gCYBb4uf+sEB8vSY4le4wC43Pua74B68gtQeaMv7dInSVgVP381vx
+         BG3rpIHlsA3RBzQnl2riakl6p0mdqy6S2GYUaYP1Z8YZIbDd6tvTfHguQIFSzXkI2OOy
+         Telvj864fhJLJDKzDqAMAkNofeeSO2RGrzDhRU7Yg/js+GOD/CO5nKghMNnlgQZYLxHq
+         qCDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=QZCQPWd/7SSVO5XHgM4re5UEGB/nXf/LhBKVgCNLpkw=;
-        b=8QGqsK3LRMrPhYiEtqitjJ1AJxCypKtsW7KdCMJCKICjXrA4eY+I7QebKd3cbi98NG
-         JXCUWZWb8DKjXHcsBlq6mHLgIr088wWCKDlOEUB1f0B08ryWlpTZJapzDT+KX4NRE5Bz
-         3uJs8CCosipyPQBic27bewOioLrz2XhKxooN02VWdn2HMZ/lbrsITqbdLsdA0YTHWUFP
-         i3n+fbjJ2ryIq57iR7x4OnPXHrCun87rpXSZVOpktAOQTazCBYgZXqoXhWhhOrKk64fm
-         taIWS26hIEqT4IbBN27KV6pcXQtbq8dev4ODFy+gVGcvOl3QuwYlMNiKBE3y3DI42K5l
-         qj2Q==
-X-Gm-Message-State: ANoB5pn5PmStdctTuo/CPu9MF6LJ1TGICCXsFJQaiOiKuEpqiYPPFvda
-        VzlmUVzquONN+BlfeVgsibjokjIq9OlZ/w==
-X-Google-Smtp-Source: AA0mqf7q6pGHodEjiBe8irTOhUTX/PpZiG+EMhNKgfoYcUVOpcK4mPIhKFaCAMe1uwJPPxjhkTZjG5FuDpOqog==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6214:1843:b0:4c7:2b1f:841a with SMTP
- id d3-20020a056214184300b004c72b1f841amr29700452qvy.68.1671208159738; Fri, 16
- Dec 2022 08:29:19 -0800 (PST)
-Date:   Fri, 16 Dec 2022 16:29:17 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
-Message-ID: <20221216162917.119406-1-edumazet@google.com>
-Subject: [PATCH net] net: stream: purge sk_error_queue in sk_stream_kill_queues()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        Changheon Lee <darklight2357@icloud.com>
+        bh=kP/FoMB1Yj/qY7ZBSatxXAMle19ZjD4rvZ91q9C/PSM=;
+        b=kzfR6Eypa7BUM/bKaw1hgN0vdoMpw3tv2W5hZLVb30sOsf/96Yr0nXCyXB4ZeRAMpO
+         UPAIx/yCOjXtdUbmEQHkhj38DlldK7jv9M/NfFb9bfhgsaCjoOcecJp6PoaZQ9CmqLMX
+         MOpkD4sjOkj24YjGdyFgtqzdAYvUCA8rlQb1DtdzmYNGUVF0HVZN7txytyJ0JK47l5FE
+         4u9nCk8qG7qmPvP3P6SRtJxPj5lFMVncSzsRpO7TgBIO7Mnr9et3aoI9IUczmw+BwasL
+         i5uGzFpxOv6/8XcNnOxAJqE+Xx6E89Vh49WwxTL/B12lXD9uVce7cP7Wx8wub9T9lAu7
+         rMbw==
+X-Gm-Message-State: ANoB5pktGA2GC2GyJWqyVVLoHKBWeHv1gHC26iiqmuEIjYnhAj2L99y3
+        rwyF/QqbFmMum6uG4tvgQRM=
+X-Google-Smtp-Source: AA0mqf7/EWAwq/mPcEBrQBEIPEl7QKavJQnPIidVqOy2mCfvTOaaHp565ziXNcoVzGI6iysNBs6FCw==
+X-Received: by 2002:a05:6a20:1be2:b0:a7:ce31:f342 with SMTP id cv34-20020a056a201be200b000a7ce31f342mr27044309pzb.52.1671208169840;
+        Fri, 16 Dec 2022 08:29:29 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.117.20])
+        by smtp.googlemail.com with ESMTPSA id s24-20020a63f058000000b00473c36ea150sm1659196pgj.92.2022.12.16.08.29.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Dec 2022 08:29:29 -0800 (PST)
+Message-ID: <c4109e30b644df218b7e601071a64197bf17b1f4.camel@gmail.com>
+Subject: Re: [PATCH net v2 0/2] iavf: fix temporary deadlock and failure to
+ set MAC address
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Michal Schmidt <mschmidt@redhat.com>,
+        intel-wired-lan@lists.osuosl.org
+Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Patryk Piotrowski <patryk.piotrowski@intel.com>
+Date:   Fri, 16 Dec 2022 08:29:28 -0800
+In-Reply-To: <20221215225049.508812-1-mschmidt@redhat.com>
+References: <20221215225049.508812-1-mschmidt@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,61 +75,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changheon Lee reported TCP socket leaks, with a nice repro.
+On Thu, 2022-12-15 at 23:50 +0100, Michal Schmidt wrote:
+> This fixes an issue where setting the MAC address on iavf runs into a
+> timeout and fails with EAGAIN.
+>=20
+> Changes in v2:
+>  - Removed unused 'ret' variable in patch 1.
+>  - Added patch 2 to fix another cause of the same timeout.
+>=20
+> Michal Schmidt (2):
+>   iavf: fix temporary deadlock and failure to set MAC address
+>   iavf: avoid taking rtnl_lock in adminq_task
+>=20
+>  drivers/net/ethernet/intel/iavf/iavf.h        |   4 +-
+>  .../net/ethernet/intel/iavf/iavf_ethtool.c    |  10 +-
+>  drivers/net/ethernet/intel/iavf/iavf_main.c   | 135 ++++++++++--------
+>  .../net/ethernet/intel/iavf/iavf_virtchnl.c   |   8 +-
+>  4 files changed, 86 insertions(+), 71 deletions(-)
+>=20
 
-It seems we leak TCP sockets with the following sequence:
+The series looks good to me.
 
-1) SOF_TIMESTAMPING_TX_ACK is enabled on the socket.
-
-   Each ACK will cook an skb put in error queue, from __skb_tstamp_tx().
-   __skb_tstamp_tx() is using skb_clone(), unless
-   SOF_TIMESTAMPING_OPT_TSONLY was also requested.
-
-2) If the application is also using MSG_ZEROCOPY, then we put in the
-   error queue cloned skbs that had a struct ubuf_info attached to them.
-
-   Whenever an struct ubuf_info is allocated, sock_zerocopy_alloc()
-   does a sock_hold().
-
-   As long as the cloned skbs are still in sk_error_queue,
-   socket refcount is kept elevated.
-
-3) Application closes the socket, while error queue is not empty.
-
-Since tcp_close() no longer purges the socket error queue,
-we might end up with a TCP socket with at least one skb in
-error queue keeping the socket alive forever.
-
-This bug can be (ab)used to consume all kernel memory
-and freeze the host.
-
-We need to purge the error queue, with proper synchronization
-against concurrent writers.
-
-Fixes: 24bcbe1cc69f ("net: stream: don't purge sk_error_queue in sk_stream_kill_queues()")
-Reported-by: Changheon Lee <darklight2357@icloud.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/core/stream.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/core/stream.c b/net/core/stream.c
-index 5b1fe2b82eac753bc8e18c02db04c5906b3a2d97..cd06750dd3297cd0e0f073057a4d85d4078f87c3 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -196,6 +196,12 @@ void sk_stream_kill_queues(struct sock *sk)
- 	/* First the read buffer. */
- 	__skb_queue_purge(&sk->sk_receive_queue);
- 
-+	/* Next, the error queue.
-+	 * We need to use queue lock, because other threads might
-+	 * add packets to the queue without socket lock being held.
-+	 */
-+	skb_queue_purge(&sk->sk_error_queue);
-+
- 	/* Next, the write queue. */
- 	WARN_ON_ONCE(!skb_queue_empty(&sk->sk_write_queue));
- 
--- 
-2.39.0.314.g84b9a713c41-goog
-
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
