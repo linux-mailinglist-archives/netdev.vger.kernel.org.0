@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 204A564E8D5
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 10:49:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34DE664E8FC
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 11:00:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiLPJs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 04:48:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        id S230272AbiLPKAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 05:00:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiLPJs4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 04:48:56 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2B945EE1;
-        Fri, 16 Dec 2022 01:48:50 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id o1-20020a17090a678100b00219cf69e5f0so5525928pjj.2;
-        Fri, 16 Dec 2022 01:48:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pWK2GC8WOqDUc4ujFDuW5xeRVN4Nn4R6EQKNL2+edWE=;
-        b=iREzM/4nbb68b2JckamDLPmAtCye7/XLgw/CMHB39DzTd0LTDH87ULaCvD0BGVi0Qt
-         WaPXGi0Ty65bYMMD6tlvXFaOKkQsL8s5VrFyiguCsON1lARNhoIYE52rIiM/iYAo5fgd
-         olB0RHU5fKgIN/zzdH4t4Yuh/S7UEonNu/8FAtXHY7X3dCB869j/WhkktLArznH47peM
-         SCpdJz9R0ynXGiL9rM5ql1TLAjn6A1sGPau91onq7qnzX74UzQy7f7nNumK8AJUPxptH
-         HzKbklcTbNQYca7NbaTIHbDMO5y+8YnU9ruJySn/B3/xapD6XnZ1XG+ZmsykFkGC3BcJ
-         IfiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pWK2GC8WOqDUc4ujFDuW5xeRVN4Nn4R6EQKNL2+edWE=;
-        b=YZD0SA7TzITL9kKn09ygkqsm6aEgrUC2+tvwV4BiChco9yT6JfRZm5r7UTtxmCj9Mm
-         QlBJDxNI9IXB2fwZ21K5nThOwOPZw6DY9INnVSR6AT0LhbfAfwR6vyhVqOgbM8GTxFUp
-         a8/43uYfTmt9zzs+WGrZnGxgfvnGQx0M5iFheDS0yzUDO11X26gHf1h9JhrE83519IIn
-         /soeLXFb+wp2Azd8NISEI7tMHnUAukdew+ya6qZUMUOiN7MXk79JK11IDFG0NUdwjrNt
-         wB6w+b0bgvHzSucKjMdnNWlGe0R8BzcX1Oo1eNAr+B/pbC8/MAMQpk1sDxWJ0SNcqsN1
-         rbIA==
-X-Gm-Message-State: AFqh2kpI/JJzOkVphURkH2IfJ/r+2DMeh4mzv1d0WdjS7O/EkFVXJegj
-        yMfkrFTI/kIZJFmEbuI+7vOlbW1M0i/STwIL
-X-Google-Smtp-Source: AMrXdXugmLPxcnAFk6TwxkqVZAsVfz/EkBbk4ioy3eR8ezJf0LC8xlJZt718Wmz6dsnXsyNmTvzTPA==
-X-Received: by 2002:a17:902:e5cb:b0:190:e63a:ea91 with SMTP id u11-20020a170902e5cb00b00190e63aea91mr15808109plf.0.1671184129976;
-        Fri, 16 Dec 2022 01:48:49 -0800 (PST)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id s11-20020a170902ea0b00b00178143a728esm1141246plg.275.2022.12.16.01.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 01:48:49 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH v2] net: Fix documentation for unregister_netdevice_notifier_net
-Date:   Fri, 16 Dec 2022 13:48:35 +0400
-Message-Id: <20221216094838.683379-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230269AbiLPKAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 05:00:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC62A4A041
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 02:00:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7885FB81D3C
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 10:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 282AAC433F0;
+        Fri, 16 Dec 2022 10:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671184816;
+        bh=HGfihhTO6IgGwleikTMcs/NfpbHhHwe2p7Dy2YIM5O8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CKBEjGfu697BUISliBH2utEHQdpIKp2MnTW3gM7Ut0jVAhqlSs4dCfGVDKdV6zdWT
+         UTd5sCaEBwqRJ8lSDLDwA2ug7CBmDdhKESxvTKAvVbotzwhTPgrWp3GtGsbYnAIx6Z
+         6ZO6DLNZpBKBnoNThVxZEjLSH02WlX6/txJzmh463Jo0SxoaNOwaX0ehOQ5mqMZ9Sx
+         yFbajsJzZp3sAaP3wdHII/WWPbjBCUYRGS0/QqwHjvwTn+VXA+c7btgS7gKPlC43ly
+         IfQtdHE70Mg5+/lzzie+3Eq9hmKiLWTpVwRsBTBQcjO/OzMwjDnxryDwGntSSl6/PA
+         sEPmgwnDkIlyA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0FC90E21EFC;
+        Fri, 16 Dec 2022 10:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH ethtool] misc: header includes cleanup
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167118481606.3286.1711560402008951575.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Dec 2022 10:00:16 +0000
+References: <20221208131348.7B7166045E@lion.mk-sys.cz>
+In-Reply-To: <20221208131348.7B7166045E@lion.mk-sys.cz>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-unregister_netdevice_notifier_net() is used for unregister a notifier
-registered by register_netdevice_notifier_net(). Also s/into/from/.
+Hello:
 
-Fixes: a30c7b429f2d ("net: introduce per-netns netdevice notifiers")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-changes in v2:
-- s/into/from/ as pointed out by Petr Machata.
----
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch was applied to ethtool/ethtool.git (master)
+by Michal Kubecek <mkubecek@suse.cz>:
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b76fb37b381e..cf78f35bc0b9 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1840,7 +1840,7 @@ EXPORT_SYMBOL(register_netdevice_notifier_net);
-  * @nb: notifier
-  *
-  * Unregister a notifier previously registered by
-- * register_netdevice_notifier(). The notifier is unlinked into the
-+ * register_netdevice_notifier_net(). The notifier is unlinked from the
-  * kernel structures and may then be reused. A negative errno code
-  * is returned on a failure.
-  *
+On Thu,  8 Dec 2022 14:13:48 +0100 (CET) you wrote:
+> An attempt to build with -std=c99 or -std=c11 revealed few problems with
+> system header includes.
+> 
+> - strcasecmp() and strncasecmp() need <strings.h>
+> - ioctl() needs <linux/ioctl.h>
+> - struct ifreq needs <linux/if.h> (unless _USE_MISC is defined)
+> - fileno() needs _POSIX_C_SOURCE
+> - strdup() needs _POSIX_C_SOURCE >= _200809L
+> - inet_aton() would require _DEFAULT_SOURCE
+> 
+> [...]
+
+Here is the summary with links:
+  - [ethtool] misc: header includes cleanup
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=1fa60003a8b8
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
