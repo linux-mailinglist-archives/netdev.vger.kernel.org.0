@@ -2,72 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A87264EEC1
-	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 17:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D09764EEC3
+	for <lists+netdev@lfdr.de>; Fri, 16 Dec 2022 17:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232001AbiLPQOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 11:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        id S231996AbiLPQPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 11:15:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiLPQO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 11:14:28 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF578FEF;
-        Fri, 16 Dec 2022 08:14:26 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id 4so2792331plj.3;
-        Fri, 16 Dec 2022 08:14:26 -0800 (PST)
+        with ESMTP id S231757AbiLPQOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 11:14:50 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE75F29
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 08:14:49 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id g20so1474544iob.2
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 08:14:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=nRLE0KwusSvAiIcLR1vSOUa6NaXkWQIhEtVspgyp8bM=;
-        b=ArFOblj7GBSNP1bX2BEOHs3j5CV+HIMEX6xuqSPMbb5kMug16IN2fmgbXY9AsrpD3A
-         qGMR2zm4kt/Np8Ls/76e4VoRDPHy89b/gT9Y/OlyC4BhYPDMRLm0LXKtaERaR+gadXn1
-         Dg8hZyO0FUXBEp7X+j2tyTBlgXuVnMhqfjN2c9V1/Cx7ur0lMi9QrU8HPODuDaRmtrgn
-         YGX9lbVy4VUtvbzmBYNi/d2FnrZ5YB9ryV270huDwwhJNPCrTuSjdyPuE3og8t12d8/5
-         qzWFXaEjFfnE2Fxca/XjqfQHBqsXsYfNM+4D9NwWuHZkHoyVc5ErVzI9bZilnXTB6iFn
-         xpng==
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ATM7tkGgEplwEvG6qxehFV5CmukFi0UcegxWCu5skok=;
+        b=EDQ18fSXOzwB/7IN2ELyuL38iYmRYx31YxdJAzowHQ5pBGcQMHOmuLnQ6LJviSKLqE
+         hdcnhnLKPAMfjBWk6Mw3emgY7xlfQCHLnK//wvzW8pFKsrdLG62Fs8Ge4V6EjvCP8zgD
+         A4+oU4/HpF7JZxTQWWh9MYH1U9KO93zt+S/WZNlxttkMxYoeIk/oQoGrqlR4l0CBcpjk
+         Fu+3yDBthwyIcxlBNtly3qE5fIz9dNWqSlYBYnBqd/9jlswTI8802KKuvXSIMPdkfJHW
+         SHDCdAB9s3BKnsC1oqWD9LQf8DNq1hY6COYUHJJ4xzCOu+w+SUI2Ue9JNiMC4XiqNv0S
+         pTOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nRLE0KwusSvAiIcLR1vSOUa6NaXkWQIhEtVspgyp8bM=;
-        b=sXvMO2jJms02RgO5GjUcjbwL6kpG1TMOXS7sFXn1UoyhRmIKIpvEHFHK6+nIG+5cM5
-         bPqr/61kkR0y+sJOEd4Iol1ZJDWtNVCGl0+WAg3FTkRC1U/ykvjzTvyXJ0+YQlkNGNyM
-         xC1Aj+fwDm9oSNa6aevv/vgUbAdxZOqpKd5qQK4jQKbXFV47KXBfFDTHwMQ0g5pW3lw8
-         CH/si3Bc7jn5vDXXFjUsd+a7MgKb2Km/v3cDMukABArxSiNaL4aYSdJj5fFTFVkQrMjx
-         Dd09ZwlH/UNKw/NCJgX60yowkB1G3k5/9Ab1C796KDjRvIJ4KxOzbAo0OBsH93hugliz
-         BdVg==
-X-Gm-Message-State: ANoB5pkwRETTYrrC7ABekQN0x2w990JlpRdXLsDLqbkRdgle9rbgHqDC
-        F8dTuoDxhtOMeS7ej42NMzc=
-X-Google-Smtp-Source: AA0mqf4P2LoVShFvOZHi2uHuICHfln15BegIiCEq3wUWrIAqfaIv0mPsq8OEIhrB1seVN4Aar5yp6g==
-X-Received: by 2002:a05:6a20:9f96:b0:a3:9f32:a9d1 with SMTP id mm22-20020a056a209f9600b000a39f32a9d1mr42376731pzb.31.1671207266337;
-        Fri, 16 Dec 2022 08:14:26 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.117.20])
-        by smtp.googlemail.com with ESMTPSA id f10-20020a631f0a000000b004790f514f15sm1648371pgf.22.2022.12.16.08.14.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Dec 2022 08:14:25 -0800 (PST)
-Message-ID: <b72b0f7692e5693f214d6acea33b878bfb3a372c.camel@gmail.com>
-Subject: Re: [PATCH] net: ethernet: ti: am65-cpsw: fix CONFIG_PM #ifdef
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Roger Quadros <rogerq@kernel.org>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 16 Dec 2022 08:14:24 -0800
-In-Reply-To: <20221215163918.611609-1-arnd@kernel.org>
-References: <20221215163918.611609-1-arnd@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ATM7tkGgEplwEvG6qxehFV5CmukFi0UcegxWCu5skok=;
+        b=K6RZOQ47Pi7I81lkPe556xjyPT1lik+LH+MIy3BtdirjcbtEYXU4WUb88FncIgu8Mz
+         W4cKfN2jfUk+b05jihKh3uVyT1FWBuE0EN14mU5SCEbb9di9S8Ar6Ya5vTZ/WPvbGgq0
+         Im7v7pOR7xGViR95cVg/N/0NExok4EcL+TAuMv1GtJUQLK70G3g79uG35lVHiTpomkk2
+         avRwt543caaqRkuO3g57dKSsYe9Z35cR5V5yLSet8Cze/yb1gvh9ZbycCy4iOXaTkLEq
+         FVf53CMLoIE7Qs45a4M7xfFftc3xlLRyLWERLPpFcYW3o1O8m+ZuSPetOZw8zQx+zbyX
+         E5tA==
+X-Gm-Message-State: ANoB5pm9XvChsx5hTB9QyFBL7qngLg4mivgP3mmd/8SQFruceaLYgG17
+        qE5lc8vrZZHreOm/UBR43Hw0v29wNJo=
+X-Google-Smtp-Source: AA0mqf6ttyfQ7V+hmW9EsDiD3BJhLeWNO2rY1JgSkV0iho1SH4f/bHFjlBcb9jFpvXl8EHLIR6D7ZQ==
+X-Received: by 2002:a05:6602:179a:b0:6e2:e6f9:ab29 with SMTP id y26-20020a056602179a00b006e2e6f9ab29mr23592166iox.17.1671207289190;
+        Fri, 16 Dec 2022 08:14:49 -0800 (PST)
+Received: from ?IPV6:2601:282:800:7ed0:10c5:1a0e:b024:2c54? ([2601:282:800:7ed0:10c5:1a0e:b024:2c54])
+        by smtp.googlemail.com with ESMTPSA id e21-20020a02a795000000b0038a760ab9b3sm861549jaj.89.2022.12.16.08.14.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Dec 2022 08:14:48 -0800 (PST)
+Message-ID: <ffeb2330-9c1b-2ec6-e5a0-bfdd614b3fb1@gmail.com>
+Date:   Fri, 16 Dec 2022 09:14:47 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.5.1
+Content-Language: en-US
+To:     Michal Wilczynski <michal.wilczynski@intel.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Subject: iproute2 merge conflicts
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,53 +72,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-12-15 at 17:39 +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->=20
-> The #ifdef check is incorrect and leads to a warning:
->=20
-> drivers/net/ethernet/ti/am65-cpsw-nuss.c:1679:13: error: 'am65_cpsw_nuss_=
-remove_rx_chns' defined but not used [-Werror=3Dunused-function]
->  1679 | static void am65_cpsw_nuss_remove_rx_chns(void *data)
->=20
-> It's better to remove the #ifdef here and use the modern
-> SYSTEM_SLEEP_PM_OPS() macro instead.
->=20
-> Fixes: 24bc19b05f1f ("net: ethernet: ti: am65-cpsw: Add suspend/resume su=
-pport")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ether=
-net/ti/am65-cpsw-nuss.c
-> index 9decb0c7961b..ecbde83b5243 100644
-> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> @@ -2878,7 +2878,6 @@ static int am65_cpsw_nuss_remove(struct platform_de=
-vice *pdev)
->  	return 0;
->  }
-> =20
-> -#ifdef CONFIG_PM_SLEEP
->  static int am65_cpsw_nuss_suspend(struct device *dev)
->  {
->  	struct am65_cpsw_common *common =3D dev_get_drvdata(dev);
-> @@ -2964,10 +2963,9 @@ static int am65_cpsw_nuss_resume(struct device *de=
-v)
-> =20
->  	return 0;
->  }
-> -#endif /* CONFIG_PM_SLEEP */
-> =20
->  static const struct dev_pm_ops am65_cpsw_nuss_dev_pm_ops =3D {
-> -	SET_SYSTEM_SLEEP_PM_OPS(am65_cpsw_nuss_suspend, am65_cpsw_nuss_resume)
-> +	SYSTEM_SLEEP_PM_OPS(am65_cpsw_nuss_suspend, am65_cpsw_nuss_resume)
->  };
-> =20
->  static struct platform_driver am65_cpsw_nuss_driver =3D {
+Hi Michal:
 
-Looks good to me.
+I merged main into next and hit a conflict with your recent patch set.
+Can you take a look at devlink/devlink.c, cmd_port_fn_rate_add and
+verify the conflict is correctly resolved?
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Thanks,
+David
