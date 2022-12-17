@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4152564F6BF
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 02:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2359864F6BC
+	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 02:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbiLQBUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 20:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S230063AbiLQBUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 20:20:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiLQBUN (ORCPT
+        with ESMTP id S229979AbiLQBUN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 20:20:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97706809D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3353680A9
         for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 17:20:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36BD562311
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90AA662318
         for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 01:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A58CC433F0;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB25AC4339B;
         Sat, 17 Dec 2022 01:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1671240010;
-        bh=lJIs0dquZNePyjwkSSSeWW5cdzIk9eiz3510mgr9Rf0=;
+        bh=DTx4pFHQYkKjiXbiAQl7jm0nZ1D+gNMlOFHb/O87+3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cmk2WGuU6ui5flRweG1WNiCi+rwRCuckKdJ79zun/FyBnFWvT/k8WEV+4pSc6TcsJ
-         rTR11X1ORO9UehGWgDHgsX6Jb/6td29Ri797JGwjQUr6wR9sUC2OL0QmPz1UrLmhHU
-         7bPacK8OJCuHPjne6eX0EcAkrSrODNceuXbbbqIOVQkzvyUGvMd8WV3o/f1EKiZSJk
-         VDPQhwMfagSOGMwKwu34fuYhhcXOitEDMFhNBQFlakhgymqEmgv1gI0hkmiIeKEN7y
-         ukJCBlR2K5fpSgiYls2Ix8HZWYRDR6fU09a3fMK8ypoP8NokRLJn0KMG7UWq9jIBEV
-         u6y1wEV9XJAvQ==
+        b=g0nauPtpF0REjUdoiipCJUNyb+32JY4Xlg6ll3hlS9kEmlJQ8VPjVs7fW4JZ6evhm
+         c4IwsL8HOoUeP2k0Ljfdl+9DnibfKCoA9a8ahHG9GswYCR8jBj4UTknUR2R5K8qBVr
+         dG/CheCt1yttlLrNPLqCGr6hz3v78LqOKz84/hglmPQ6f4xjw0HZ80HH13AGI6Lhqv
+         JQPj3Ykg9RnQIWZuecHmRy2ewsfYxuW9SGSJyqPqZC6e/f1L4voc+MWufRJ3umI82S
+         s6uB86BcbLhQzGG967II7mKMxiu+4p1/lpPsuzoTbnlnd08br9jyUkPO9Bq3vbmXyx
+         //HzRCxCyaoGA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     jiri@resnulli.us, jacob.e.keller@intel.com, leon@kernel.org
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC net-next 04/10] devlink: always check if the devlink instance is registered
-Date:   Fri, 16 Dec 2022 17:19:47 -0800
-Message-Id: <20221217011953.152487-5-kuba@kernel.org>
+Subject: [RFC net-next 05/10] devlink: remove the registration guarantee of references
+Date:   Fri, 16 Dec 2022 17:19:48 -0800
+Message-Id: <20221217011953.152487-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221217011953.152487-1-kuba@kernel.org>
 References: <20221217011953.152487-1-kuba@kernel.org>
@@ -51,207 +51,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Always check under the instance lock whether the devlink instance
-is still / already registered.
+The objective of exposing the devlink instance locks to
+drivers was to let them use these locks to prevent user space
+from accessing the device before it's fully initialized.
+This is difficult because devlink_unregister() waits for all
+references to be released, meaning that devlink_unregister()
+can't itself be called under the instance lock.
 
-This is a no-op for the most part, as the unregistration path currently
-waits for all references. On the init path, however, we may temporarily
-open up a race with netdev code, if netdevs are registered before the
-devlink instance. This is temporary, the next change fixes it, and this
-commit has been split out for the ease of review.
+To avoid this issue devlink_register() was moved after subobject
+registration a while ago. Unfortunately the netdev paths get
+a hold of the devlink instances _before_ they are registered.
+Ideally netdev should wait for devlink init to finish (synchronizing
+on the instance lock). This can't work because we don't know if the
+instance will _ever_ be registered (in case of failures it may not).
+The other option of returning an error until devlink_register()
+is called is unappealing (user space would get a notification
+netdev exist but would have to wait arbitrary amount of time
+before accessing some of its attributes).
 
-Note that in case of iterating over sub-objects which have their
-own lock (regions and line cards) we assume an implicit dependency
-between those objects existing and devlink unregistration.
+Weaken the guarantees of the devlink references.
+
+Holding a reference will now only guarantee that the memory
+of the object is around. Another way of looking at it is that
+the reference now protects the object not its "registered" status.
+Use devlink instance lock to synchronize unregistration.
+
+This implies that releasing of the "main" reference of the devlink
+instance moves from devlink_unregister() to devlink_free().
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/devlink.h |  1 +
- net/devlink/basic.c   | 35 +++++++++++++++++++++++++++++------
- net/devlink/core.c    | 25 +++++++++++++++++++++----
- net/devlink/netlink.c | 10 ++++++++--
- 4 files changed, 59 insertions(+), 12 deletions(-)
+ include/net/devlink.h       |  2 ++
+ net/devlink/core.c          | 64 ++++++++++++++++---------------------
+ net/devlink/devl_internal.h |  2 --
+ 3 files changed, 30 insertions(+), 38 deletions(-)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 6a2e4f21779f..36e013d3aa52 100644
+index 36e013d3aa52..cc910612b3f4 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1626,6 +1626,7 @@ struct device *devlink_to_dev(const struct devlink *devlink);
- void devl_lock(struct devlink *devlink);
- int devl_trylock(struct devlink *devlink);
- void devl_unlock(struct devlink *devlink);
-+bool devl_is_alive(struct devlink *devlink);
- void devl_assert_locked(struct devlink *devlink);
- bool devl_lock_is_held(struct devlink *devlink);
- 
-diff --git a/net/devlink/basic.c b/net/devlink/basic.c
-index 5f33d74eef83..6b18e70a39fd 100644
---- a/net/devlink/basic.c
-+++ b/net/devlink/basic.c
-@@ -2130,6 +2130,9 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
- 		int idx = 0;
- 
- 		mutex_lock(&devlink->linecards_lock);
-+		if (!devl_is_alive(devlink))
-+			goto next_devlink;
-+
- 		list_for_each_entry(linecard, &devlink->linecard_list, list) {
- 			if (idx < dump->idx) {
- 				idx++;
-@@ -2151,6 +2154,7 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
- 			}
- 			idx++;
- 		}
-+next_devlink:
- 		mutex_unlock(&devlink->linecards_lock);
- 		devlink_put(devlink);
- 	}
-@@ -7809,6 +7813,12 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 		int idx = 0;
- 
- 		mutex_lock(&devlink->reporters_lock);
-+		if (!devl_is_alive(devlink)) {
-+			mutex_unlock(&devlink->reporters_lock);
-+			devlink_put(devlink);
-+			continue;
-+		}
-+
- 		list_for_each_entry(reporter, &devlink->reporter_list,
- 				    list) {
- 			if (idx < dump->idx) {
-@@ -7830,6 +7840,9 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 		mutex_unlock(&devlink->reporters_lock);
- 
- 		devl_lock(devlink);
-+		if (!devl_is_alive(devlink))
-+			goto next_devlink;
-+
- 		xa_for_each(&devlink->ports, port_index, port) {
- 			mutex_lock(&port->reporters_lock);
- 			list_for_each_entry(reporter, &port->reporter_list, list) {
-@@ -7853,6 +7866,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 			}
- 			mutex_unlock(&port->reporters_lock);
- 		}
-+next_devlink:
- 		devl_unlock(devlink);
- 		devlink_put(devlink);
- 	}
-@@ -12218,7 +12232,8 @@ void devlink_compat_running_version(struct devlink *devlink,
- 		return;
- 
- 	devl_lock(devlink);
--	__devlink_compat_running_version(devlink, buf, len);
-+	if (devl_is_alive(devlink))
-+		__devlink_compat_running_version(devlink, buf, len);
- 	devl_unlock(devlink);
+@@ -1648,6 +1648,8 @@ static inline struct devlink *devlink_alloc(const struct devlink_ops *ops,
+ 	return devlink_alloc_ns(ops, priv_size, &init_net, dev);
  }
- 
-@@ -12227,20 +12242,28 @@ int devlink_compat_flash_update(struct devlink *devlink, const char *file_name)
- 	struct devlink_flash_update_params params = {};
- 	int ret;
- 
--	if (!devlink->ops->flash_update)
--		return -EOPNOTSUPP;
-+	devl_lock(devlink);
-+	if (!devl_is_alive(devlink)) {
-+		ret = -ENODEV;
-+		goto out_unlock;
-+	}
-+
-+	if (!devlink->ops->flash_update) {
-+		ret = -EOPNOTSUPP;
-+		goto out_unlock;
-+	}
- 
- 	ret = request_firmware(&params.fw, file_name, devlink->dev);
- 	if (ret)
--		return ret;
-+		goto out_unlock;
- 
--	devl_lock(devlink);
- 	devlink_flash_update_begin_notify(devlink);
- 	ret = devlink->ops->flash_update(devlink, &params, NULL);
- 	devlink_flash_update_end_notify(devlink);
--	devl_unlock(devlink);
- 
- 	release_firmware(params.fw);
-+out_unlock:
-+	devl_unlock(devlink);
- 
- 	return ret;
- }
+ void devlink_set_features(struct devlink *devlink, u64 features);
++int devl_register(struct devlink *devlink);
++void devl_unregister(struct devlink *devlink);
+ void devlink_register(struct devlink *devlink);
+ void devlink_unregister(struct devlink *devlink);
+ void devlink_free(struct devlink *devlink);
 diff --git a/net/devlink/core.c b/net/devlink/core.c
-index d3b8336946fd..2abad8247597 100644
+index 2abad8247597..413b92534ad6 100644
 --- a/net/devlink/core.c
 +++ b/net/devlink/core.c
-@@ -67,6 +67,21 @@ void devl_unlock(struct devlink *devlink)
+@@ -89,21 +89,10 @@ struct devlink *__must_check devlink_try_get(struct devlink *devlink)
+ 	return NULL;
  }
- EXPORT_SYMBOL_GPL(devl_unlock);
  
-+bool devl_is_alive(struct devlink *devlink)
-+{
-+	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
-+}
-+EXPORT_SYMBOL_GPL(devl_is_alive);
-+
-+/**
-+ * devlink_try_get() - try to obtain a reference on a devlink instance
-+ * @devlink: instance to reference
-+ *
-+ * Obtain a reference on a devlink instance. A reference on a devlink instance
-+ * only implies that it's safe to take the instance lock. It does not imply
-+ * that the instance is registered, use devl_is_alive() after taking
-+ * the instance lock to check registration status.
-+ */
- struct devlink *__must_check devlink_try_get(struct devlink *devlink)
+-static void __devlink_put_rcu(struct rcu_head *head)
+-{
+-	struct devlink *devlink = container_of(head, struct devlink, rcu);
+-
+-	complete(&devlink->comp);
+-}
+-
+ void devlink_put(struct devlink *devlink)
  {
- 	if (refcount_inc_not_zero(&devlink->refcount))
-@@ -300,10 +315,12 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 	devlinks_xa_for_each_registered_get(net, index, devlink) {
- 		WARN_ON(!(devlink->features & DEVLINK_F_RELOAD));
- 		devl_lock(devlink);
--		err = devlink_reload(devlink, &init_net,
--				     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
--				     DEVLINK_RELOAD_LIMIT_UNSPEC,
--				     &actions_performed, NULL);
-+		err = 0;
-+		if (devl_is_alive(devlink))
-+			err = devlink_reload(devlink, &init_net,
-+					     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
-+					     DEVLINK_RELOAD_LIMIT_UNSPEC,
-+					     &actions_performed, NULL);
- 		devl_unlock(devlink);
- 		devlink_put(devlink);
+ 	if (refcount_dec_and_test(&devlink->refcount))
+-		/* Make sure unregister operation that may await the completion
+-		 * is unblocked only after all users are after the end of
+-		 * RCU grace period.
+-		 */
+-		call_rcu(&devlink->rcu, __devlink_put_rcu);
++		kfree_rcu(devlink, rcu);
+ }
  
-diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
-index b38df704be1c..773efaabb6ad 100644
---- a/net/devlink/netlink.c
-+++ b/net/devlink/netlink.c
-@@ -98,7 +98,8 @@ devlink_get_from_attrs_lock(struct net *net, struct nlattr **attrs)
+ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp)
+@@ -116,13 +105,6 @@ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp)
+ 	if (!devlink)
+ 		goto unlock;
  
- 	devlinks_xa_for_each_registered_get(net, index, devlink) {
- 		devl_lock(devlink);
--		if (strcmp(devlink->dev->bus->name, busname) == 0 &&
-+		if (devl_is_alive(devlink) &&
-+		    strcmp(devlink->dev->bus->name, busname) == 0 &&
- 		    strcmp(dev_name(devlink->dev), devname) == 0)
- 			return devlink;
- 		devl_unlock(devlink);
-@@ -210,7 +211,12 @@ int devlink_instance_iter_dump(struct sk_buff *msg, struct netlink_callback *cb)
+-	/* In case devlink_unregister() was already called and "unregistering"
+-	 * mark was set, do not allow to get a devlink reference here.
+-	 * This prevents live-lock of devlink_unregister() wait for completion.
+-	 */
+-	if (xa_get_mark(&devlinks, *indexp, DEVLINK_UNREGISTERING))
+-		goto next;
+-
+ 	if (!devlink_try_get(devlink))
+ 		goto next;
+ 	if (!net_eq(devlink_net(devlink), net)) {
+@@ -158,37 +140,48 @@ void devlink_set_features(struct devlink *devlink, u64 features)
+ EXPORT_SYMBOL_GPL(devlink_set_features);
  
- 	devlink_dump_for_each_instance_get(msg, dump, devlink) {
- 		devl_lock(devlink);
--		err = cmd->dump_one(msg, devlink, cb);
+ /**
+- *	devlink_register - Register devlink instance
+- *
+- *	@devlink: devlink
++ * devl_register - Register devlink instance
++ * @devlink: devlink
+  */
+-void devlink_register(struct devlink *devlink)
++int devl_register(struct devlink *devlink)
+ {
+ 	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+-	/* Make sure that we are in .probe() routine */
++	devl_assert_locked(devlink);
+ 
+ 	xa_set_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
+ 	devlink_notify_register(devlink);
 +
-+		if (devl_is_alive(devlink))
-+			err = cmd->dump_one(msg, devlink, cb);
-+		else
-+			err = 0;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devl_register);
 +
- 		devl_unlock(devlink);
- 		devlink_put(devlink);
++void devlink_register(struct devlink *devlink)
++{
++	devl_lock(devlink);
++	devl_register(devlink);
++	devl_unlock(devlink);
+ }
+ EXPORT_SYMBOL_GPL(devlink_register);
  
+ /**
+- *	devlink_unregister - Unregister devlink instance
+- *
+- *	@devlink: devlink
++ * devl_unregister - Unregister devlink instance
++ * @devlink: devlink
+  */
+-void devlink_unregister(struct devlink *devlink)
++void devl_unregister(struct devlink *devlink)
+ {
+ 	ASSERT_DEVLINK_REGISTERED(devlink);
+-	/* Make sure that we are in .remove() routine */
+-
+-	xa_set_mark(&devlinks, devlink->index, DEVLINK_UNREGISTERING);
+-	devlink_put(devlink);
+-	wait_for_completion(&devlink->comp);
++	devl_assert_locked(devlink);
+ 
+ 	devlink_notify_unregister(devlink);
+ 	xa_clear_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
+-	xa_clear_mark(&devlinks, devlink->index, DEVLINK_UNREGISTERING);
++}
++EXPORT_SYMBOL_GPL(devl_unregister);
++
++void devlink_unregister(struct devlink *devlink)
++{
++	devl_lock(devlink);
++	devl_unregister(devlink);
++	devl_unlock(devlink);
+ }
+ EXPORT_SYMBOL_GPL(devlink_unregister);
+ 
+@@ -252,7 +245,6 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	mutex_init(&devlink->reporters_lock);
+ 	mutex_init(&devlink->linecards_lock);
+ 	refcount_set(&devlink->refcount, 1);
+-	init_completion(&devlink->comp);
+ 
+ 	return devlink;
+ 
+@@ -298,7 +290,7 @@ void devlink_free(struct devlink *devlink)
+ 
+ 	xa_erase(&devlinks, devlink->index);
+ 
+-	kfree(devlink);
++	devlink_put(devlink);
+ }
+ EXPORT_SYMBOL_GPL(devlink_free);
+ 
+diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+index c3977c69552a..7e77eebde3b9 100644
+--- a/net/devlink/devl_internal.h
++++ b/net/devlink/devl_internal.h
+@@ -12,7 +12,6 @@
+ #include <net/net_namespace.h>
+ 
+ #define DEVLINK_REGISTERED XA_MARK_1
+-#define DEVLINK_UNREGISTERING XA_MARK_2
+ 
+ #define DEVLINK_RELOAD_STATS_ARRAY_SIZE \
+ 	(__DEVLINK_RELOAD_LIMIT_MAX * __DEVLINK_RELOAD_ACTION_MAX)
+@@ -52,7 +51,6 @@ struct devlink {
+ 	struct lock_class_key lock_key;
+ 	u8 reload_failed:1;
+ 	refcount_t refcount;
+-	struct completion comp;
+ 	struct rcu_head rcu;
+ 	struct notifier_block netdevice_nb;
+ 	char priv[] __aligned(NETDEV_ALIGN);
 -- 
 2.38.1
 
