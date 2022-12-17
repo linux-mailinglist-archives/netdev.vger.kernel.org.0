@@ -2,103 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05F5E64F7D3
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 06:30:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7438864F802
+	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 07:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbiLQFaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Dec 2022 00:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S230209AbiLQGo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Dec 2022 01:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbiLQFaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 00:30:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC252B243
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 21:30:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDE9260B3B
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 05:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 448D5C433F0;
-        Sat, 17 Dec 2022 05:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671255017;
-        bh=DsEHTDwRxdu7tPubQns6ZbHQAfRsuG0WEAhR7OHRAWs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kfPSjm1n6gtKwhH+enGtTaKmMX3m+pSPrVZCF14g09sM/Eerh136iRhFt9QNV7N2x
-         dwa8WZXnJDt+q41t8EA2cOL+CxUUE/QKaTrZCVVgrrEQPq61QFOPwub6w+fJxd2Lu/
-         4MCjrg8v2nlXdpRKsOnziP95Bg5unSejPIyVFKnJgJlxA2/bUNhV+JXGd3rUClN9lB
-         xTNlIAHF4RxVDck00izOxg/ZhfN222KN5BvCEummHYesU3HrcS5P1cWECnBzAJgyWy
-         1OyZfvtmuZyzDVwN0VXIRYxU9z6URdSTgBsjLE9Tcm+tHqYXFH5cIS9Bwh7NeFKGj9
-         9lGtnTQsSdEAQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 213CAE4D00F;
-        Sat, 17 Dec 2022 05:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229469AbiLQGoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 01:44:39 -0500
+Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990905F88
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 22:44:37 -0800 (PST)
+Received: from pecola.lan (unknown [159.196.93.152])
+        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id B1A3B20034;
+        Sat, 17 Dec 2022 14:44:29 +0800 (AWST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=codeconstruct.com.au; s=2022a; t=1671259471;
+        bh=dCmqYW6G9cXSdrt/GzjLyEOcLdcRGHjfVPYVNRaR2GI=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=CQaoHTTlEJuU7hCS/1Q/8H4JsSIM7+AH+NRYTPSf+o3TBo7yxb9eRuCcX7LWP0hCG
+         d2SQVhAtnkGwS/452TS6ZvFIkuI3RhTeKDimN9xoGtdpm2ZWcvy/eMLa0T5yQ5uMs4
+         Q/S6tdeA8aHz8ApWVbi2UlW2wHPlvfWNrqsn+IyliMspv7yqYXCRr4HIXgWmiACXjq
+         BcvlD8uViBZBd1DeMvPSRb8whCR3oW1quaZI50Sg9xTpkh3W9qWoAzyIIRp18fVW4i
+         rHU0wclcPrRP5xGMquvW5uYCDewZqjO9wVFyEL6ApTojYUYg2T6ZRisHq7GWIQr6g0
+         vQqj6ik2dHwuA==
+Message-ID: <6d07e45e6237f24ec32a723e747dd070fb53bea7.camel@codeconstruct.com.au>
+Subject: Re: [PATCH net] mctp: serial: Fix starting value for frame check
+ sequence
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     Matt Johnston <matt@codeconstruct.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Harsh Tyagi <harshtya@google.com>
+Date:   Sat, 17 Dec 2022 14:44:29 +0800
+In-Reply-To: <2eecaca2d1066d51d136a8d95b5cd2fd19e5e111.camel@gmail.com>
+References: <20221216034409.27174-1-jk@codeconstruct.com.au>
+         <2eecaca2d1066d51d136a8d95b5cd2fd19e5e111.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.1-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] skbuff: Account for tail adjustment during pull
- operations
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167125501713.1986.8547046931497858959.git-patchwork-notify@kernel.org>
-Date:   Sat, 17 Dec 2022 05:30:17 +0000
-References: <1671084718-24796-1-git-send-email-quic_subashab@quicinc.com>
-In-Reply-To: <1671084718-24796-1-git-send-email-quic_subashab@quicinc.com>
-To:     Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, shmulik@metanetworks.com, willemb@google.com,
-        alexanderduyck@fb.com, netdev@vger.kernel.org,
-        daniel@iogearbox.net, quic_stranche@quicinc.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Hi Alexander.
 
-On Wed, 14 Dec 2022 23:11:58 -0700 you wrote:
-> Extending the tail can have some unexpected side effects if a program uses
-> a helper like BPF_FUNC_skb_pull_data to read partial content beyond the
-> head skb headlen when all the skbs in the gso frag_list are linear with no
-> head_frag -
-> 
->   kernel BUG at net/core/skbuff.c:4219!
->   pc : skb_segment+0xcf4/0xd2c
->   lr : skb_segment+0x63c/0xd2c
->   Call trace:
->    skb_segment+0xcf4/0xd2c
->    __udp_gso_segment+0xa4/0x544
->    udp4_ufo_fragment+0x184/0x1c0
->    inet_gso_segment+0x16c/0x3a4
->    skb_mac_gso_segment+0xd4/0x1b0
->    __skb_gso_segment+0xcc/0x12c
->    udp_rcv_segment+0x54/0x16c
->    udp_queue_rcv_skb+0x78/0x144
->    udp_unicast_rcv_skb+0x8c/0xa4
->    __udp4_lib_rcv+0x490/0x68c
->    udp_rcv+0x20/0x30
->    ip_protocol_deliver_rcu+0x1b0/0x33c
->    ip_local_deliver+0xd8/0x1f0
->    ip_rcv+0x98/0x1a4
->    deliver_ptype_list_skb+0x98/0x1ec
->    __netif_receive_skb_core+0x978/0xc60
-> 
-> [...]
+> Since the starting value isn't unique would it possibly be worthwhile
+> to look at adding a define to include/linux/crc-ccitt.h to be used to
+> handle the cases where the initial value is 0xffff? I notice there
+> seems to only be two starting values 0 and 0xffff for all callers so
+> it might make sense to centralize it in one place.
 
-Here is the summary with links:
-  - [net,v2] skbuff: Account for tail adjustment during pull operations
-    https://git.kernel.org/netdev/net/c/2d7afdcbc9d3
+Yep, that would make sense if they're commonly used values, but I'm not
+sure that would be suitable to include that in this fix, as it would
+just add disruption to any backport work.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Cheers,
 
 
+Jeremy
