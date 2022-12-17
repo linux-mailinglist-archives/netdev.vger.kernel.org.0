@@ -2,86 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0B064F8AE
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 11:33:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA8C64F8BF
+	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 11:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiLQKdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Dec 2022 05:33:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33650 "EHLO
+        id S229979AbiLQKrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Dec 2022 05:47:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiLQKdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 05:33:08 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CC3FC3;
-        Sat, 17 Dec 2022 02:33:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=T0IUR+h3EWhNWDM44FisaNbp0DfbZTkTXBT9yHJhAaM=; b=I8pkHiPQwndW7XVe/FBXsLJxzf
-        BXgJ/WSGTJqgKqM6yLQi3n8UkV1CYgF4OPSGPOxmyYiFA4IokkUwpgESW7lGh7tP+m70ju8jVv5yK
-        8y1VxTIM0eGnjbnHYRsHBXgxVgyWrAtyoCWPMtV3K+bN4I7Uw0EZ8nkaWg5E/ioNPoF6ZqOOoAtsR
-        nzjvwk91C8ARt3PP5roTj1poWTmcPgXKp9korRhffPWwCRQIiThf0cpU8oAgLYRdthaOmiUlVKzjv
-        thGg/Jhn1JWClXET2qOEubNYOaUWGlKwytY4+mll/iPalyt/u7qWVGXENYdXZzXnqEONK/65RLdjE
-        qw9eCLrA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35756)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p6UV2-0004F3-68; Sat, 17 Dec 2022 10:33:00 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p6UUy-0001lu-SJ; Sat, 17 Dec 2022 10:32:56 +0000
-Date:   Sat, 17 Dec 2022 10:32:56 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S230112AbiLQKrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 05:47:42 -0500
+X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 17 Dec 2022 02:47:40 PST
+Received: from mail-108-mta205.mxroute.com (mail-108-mta205.mxroute.com [136.175.108.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A90A10076
+        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 02:47:39 -0800 (PST)
+Received: from mail-111-mta2.mxroute.com ([136.175.111.2] filter006.mxroute.com)
+ (Authenticated sender: mN4UYu2MZsgR)
+ by mail-108-mta205.mxroute.com (ZoneMTA) with ESMTPSA id 1851fadb42f0001d7e.007
+ for <netdev@vger.kernel.org>
+ (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256);
+ Sat, 17 Dec 2022 10:42:35 +0000
+X-Zone-Loop: 0e4a4605631c313401ee2f11d540b85a73145c7942c2
+X-Originating-IP: [136.175.111.2]
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=c8h4.io;
+        s=x; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:
+        From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+        List-Owner:List-Archive; bh=PvmwkN+BYUCQUQdJYFAdNwIAg6Wx6lg7uwVGd3w86p8=; b=c
+        e2KTpl4ljuZzZwscxfRQsObKC9ppNfMaMr/Swx1cFAdzgIp8NBX4x61gBTdDXJvUGb42PeiMlKYmg
+        eTFajhQD2A4HQNKEP/IevCe3iimpPtgebn7XhUfFiG3Vr3DqQyAliDuIqhIxhrlKUyGyPJdDdXvjX
+        hWNOdXv7wQUg6LXNpB9bhIhw1s2cOkSr+bKD7YHG1Ljrd3G+jq5ftMq7QiEI2fGPHXm+8A6Ljx0k5
+        QDB6VYtK99IMVnQJ8CC2KApfajYdTY2kdTCVNIogPkbMtoVi7DSASwLuv+wNwu8L4bq4yWoNYh60q
+        p7epfEz3rk3lkcZnsH5J+GVsg6vrKtQqQ==;
+From:   Christoph Heiss <christoph@c8h4.io>
+To:     Chris Snook <chris.snook@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH v7 net-next 2/5] drivers/net/phy: add the link modes for
- the 10BASE-T1S Ethernet PHY
-Message-ID: <Y52a2PzgS3TRPEQB@shell.armlinux.org.uk>
-References: <cover.1671234284.git.piergiorgio.beruto@gmail.com>
- <fb30ee5dae667a5dfb398171263be7edca6b6b87.1671234284.git.piergiorgio.beruto@gmail.com>
- <20221216204808.4299a21e@kernel.org>
- <Y52V/l2BG1WlHdft@gvm01>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: alx: Switch to DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr()
+Date:   Sat, 17 Dec 2022 11:40:24 +0100
+Message-Id: <20221217104024.1954875-1-christoph@c8h4.io>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y52V/l2BG1WlHdft@gvm01>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Id: christoph@c8h4.io
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 17, 2022 at 11:12:14AM +0100, Piergiorgio Beruto wrote:
-> On Fri, Dec 16, 2022 at 08:48:08PM -0800, Jakub Kicinski wrote:
-> > On Sat, 17 Dec 2022 01:48:33 +0100 Piergiorgio Beruto wrote:
-> > > +const int phy_basic_t1s_p2mp_features_array[2] = {
-> > > +	ETHTOOL_LINK_MODE_TP_BIT,
-> > > +	ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
-> > > +};
-> > > +EXPORT_SYMBOL_GPL(phy_basic_t1s_p2mp_features_array);
-> > 
-> > Should this be exported? It's not listed in the header.
-> In my understanding PHY drivers can be compiled as modules, therefore
-> this should be exported? I see other features arrays being exported as
-> well. But If I'm overlooking something I'll be happy to change this.
+Using these macros allows to remove an #ifdef-guard on CONFIG_PM_SLEEP.
+No functional changes.
 
-If something wants to make use of it, it needs a prototype in a header
-file. An EXPORT_SYMBOL* only makes it visible to modules at run-time,
-it doesn't make it build-time visible.
+Signed-off-by: Christoph Heiss <christoph@c8h4.io>
+---
+ drivers/net/ethernet/atheros/alx/main.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index d30d11872719..306393f8eeca 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -1905,7 +1905,6 @@ static void alx_remove(struct pci_dev *pdev)
+ 	free_netdev(alx->dev);
+ }
+
+-#ifdef CONFIG_PM_SLEEP
+ static int alx_suspend(struct device *dev)
+ {
+ 	struct alx_priv *alx = dev_get_drvdata(dev);
+@@ -1951,12 +1950,7 @@ static int alx_resume(struct device *dev)
+ 	return err;
+ }
+
+-static SIMPLE_DEV_PM_OPS(alx_pm_ops, alx_suspend, alx_resume);
+-#define ALX_PM_OPS      (&alx_pm_ops)
+-#else
+-#define ALX_PM_OPS      NULL
+-#endif
+-
++static DEFINE_SIMPLE_DEV_PM_OPS(alx_pm_ops, alx_suspend, alx_resume);
+
+ static pci_ers_result_t alx_pci_error_detected(struct pci_dev *pdev,
+ 					       pci_channel_state_t state)
+@@ -2055,7 +2049,7 @@ static struct pci_driver alx_driver = {
+ 	.probe       = alx_probe,
+ 	.remove      = alx_remove,
+ 	.err_handler = &alx_err_handlers,
+-	.driver.pm   = ALX_PM_OPS,
++	.driver.pm   = pm_sleep_ptr(&alx_pm_ops),
+ };
+
+ module_pci_driver(alx_driver);
+--
+2.39.0
+
