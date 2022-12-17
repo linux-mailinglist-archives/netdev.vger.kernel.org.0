@@ -2,116 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF4664FC36
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 21:24:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 611EC64FC51
+	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 21:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiLQUXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Dec 2022 15:23:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
+        id S229675AbiLQU5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Dec 2022 15:57:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiLQUXm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 15:23:42 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2ABE0DB
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 12:23:38 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id x10-20020a056e021bca00b00302b6c0a683so4025767ilv.23
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 12:23:38 -0800 (PST)
+        with ESMTP id S229469AbiLQU5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 15:57:16 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E00F595;
+        Sat, 17 Dec 2022 12:57:14 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id s7so5534883plk.5;
+        Sat, 17 Dec 2022 12:57:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UsNOLxzzDUM86Dcn9dtIU2NoBPxLljweQcBTZ9NLmX0=;
+        b=NRoAcBbcipvkcWU+CrzfHGM0nUY5XYUY5Vu4Wc12W2t89xJ9XulTFG7jyWkGSa71Gt
+         mllSuPp5KWY/+A857nHJMdJeQXAW8AGki/Je3W3G4KkljZYN+9VE0KQX4Pl+uEdHUTv9
+         GjnGN1Rqrt9VYttVsNd3AXiETiNZeaWFg7HfMq6wzM0jqvZmnonziwYfqzqLvawSdKiT
+         xfXXgunFytHbHT/bg9p36z6NAu9qdIGSEr8eMQEE5VPKc90IcNb0Oupr6p8yQugw8HTD
+         z+bv/VLY6fbGVR2uFE6FBerxybA/rlEn/DqMnHu7exuToWrAs+zqMhKe7CXjimrJk2z8
+         iM1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zhak8b5pECv3WdAuTBYFEI8u4BH4xzgqJb+pR1es1dw=;
-        b=EiAH+AFYSKuH7vUYvyM9HpNWhqwcZd0dnvw63KpStNTstEoZarhzkZBNDV1Aw4WbO4
-         9qyMc0nRBcPOR960AQxGcxvjp3RSd5mrQtsDB93eDvjBzvgUU1B54jw+aBiqFW672dOM
-         BMujDMVqe1WFpFFjN4PsDF0piRYCyRQwo3mXhRyd98EbRZUIt7uZihhmrv2JNQxPSSQv
-         Qg/40oiGKYHaKPufjwd27NNfWHBc1HgX7wiELcSZLzblZH4AufY6BZqSgUUWwn7dTMtk
-         ikPeVsd4ag+kEpDyFwZyp1CBqHau/u8qK8CYkvvX2U1A02sj3jD4NMKVJ0c18zaUD5fm
-         73eg==
-X-Gm-Message-State: ANoB5pmoVsPdCAiwSAlRcmFa+Y6TRQsiXAy5fjgWuzxNujVctqi5TQ4D
-        nepfYFUCqM8kCjDsb3riiMootjBqY3USjrpPyOHOx/+7YI/k
-X-Google-Smtp-Source: AA0mqf4SE3WhaLo0Wqu5rl3EqqzkTQBtaB/iRqHJV5j60PglmweOvVXaL+HWPFGUhuyO9VrWZ1Wx5GLdjlbY/HrWbkGBm2XCzhdO
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UsNOLxzzDUM86Dcn9dtIU2NoBPxLljweQcBTZ9NLmX0=;
+        b=rX6pI0qsBoX1vUxScGJGzKWyvPNTVpRJWn1FqqKI+DdAdUNT44mBHOgIODVXTbh35x
+         KBcS5IKeYA+IZhksGxaNwG1tSTBUCMNhHhJ1GRG4BatEQ+paLjRUgVRbZGTTfI2lpshJ
+         /08WTGiR40GVXsOb/us2vu2+Ecdymhapee0m90DO0BLGHo6SBUqC3uuBYGOo9yxOlDOS
+         JMoMeYrdXpH7mrj02XR+c3LCW73pnwQQU8lWwXlMxFOtdJf4iBnF5nFO36QIxCF/44V+
+         1dYOpVW3YgElLmOynzlPZnMQQlPqcLsG2DNvKf2kCAGePRHyuBzaustAbhoIxcyG0D7s
+         YiPg==
+X-Gm-Message-State: ANoB5plMvoBu7NprAy4mGmUWKgTzaKSgVPypNY4L2IWo1xAQxaiL1yrZ
+        HTjKFGmtI+JscAer/xKqRQ5RF0UnpVV7qIKEXCs=
+X-Google-Smtp-Source: AA0mqf549V4Hy9hQmdroy9lbhZgtpKHGpFAj3mvSEPHGZPUx03/UlmcXbTq/idXKLOQxISPWDsgcM14OQmV3Tp4ENOg=
+X-Received: by 2002:a17:902:9a8b:b0:190:c917:ab61 with SMTP id
+ w11-20020a1709029a8b00b00190c917ab61mr1172194plp.93.1671310633744; Sat, 17
+ Dec 2022 12:57:13 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:bf08:0:b0:302:43b8:d42f with SMTP id
- z8-20020a92bf08000000b0030243b8d42fmr39574908ilh.64.1671308617477; Sat, 17
- Dec 2022 12:23:37 -0800 (PST)
-Date:   Sat, 17 Dec 2022 12:23:37 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000074764e05f00bdc01@google.com>
-Subject: [syzbot] WARNING in drv_link_info_changed
-From:   syzbot <syzbot+224ad65c927c83902f06@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+References: <20221213004754.2633429-1-peter@pjd.dev> <ac48b381b11c875cf36a471002658edafe04d9b9.camel@gmail.com>
+ <7A3DBE8E-C13D-430D-B851-207779148A77@pjd.dev> <CAKgT0Uf-9XwvJJTZOD0EHby6Lr0R-tMYGiR_2og3k=d_eTBPAw@mail.gmail.com>
+ <09CDE7FD-2C7D-4A0B-B085-E877472FA997@pjd.dev>
+In-Reply-To: <09CDE7FD-2C7D-4A0B-B085-E877472FA997@pjd.dev>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Sat, 17 Dec 2022 12:57:02 -0800
+Message-ID: <CAKgT0UfOnJGf+n_PTizCyq77H+ZvWMU4i=D=GW3o13RNqWf-Gg@mail.gmail.com>
+Subject: Re: [PATCH] net/ncsi: Always use unicast source MAC address
+To:     Peter Delevoryas <peter@pjd.dev>
+Cc:     sam@mendozajonas.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Dec 16, 2022 at 8:20 PM Peter Delevoryas <peter@pjd.dev> wrote:
+>
+>
+>
+> > On Dec 16, 2022, at 10:29 AM, Alexander Duyck <alexander.duyck@gmail.co=
+m> wrote:
+> >
+> > On Thu, Dec 15, 2022 at 5:08 PM Peter Delevoryas <peter@pjd.dev> wrote:
+> >>
+> >>
+> >>
+> >>> On Dec 13, 2022, at 8:41 AM, Alexander H Duyck <alexander.duyck@gmail=
+.com> wrote:
+> >>>
+> >>> On Mon, 2022-12-12 at 16:47 -0800, Peter Delevoryas wrote:
 
-syzbot found the following issue on:
+<...>
 
-HEAD commit:    e2ca6ba6ba01 Merge tag 'mm-stable-2022-12-13' of git://git..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16d4f027880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a6133b41a9a0f500
-dashboard link: https://syzkaller.appspot.com/bug?extid=224ad65c927c83902f06
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> >
+> >>> My main
+> >>> concern would be that the dev_addr is not initialized for those first
+> >>> few messages so you may be leaking information.
+> >>>
+> >>>> This might have the effect of causing the NIC to learn 2 MAC address=
+es from
+> >>>> an NC-SI link if the BMC uses OEM Get MAC Address commands to change=
+ its
+> >>>> initial MAC address, but it shouldn't really matter. Who knows if NI=
+C's
+> >>>> even have MAC learning enabled from the out-of-band BMC link, lol.
+> >>>>
+> >>>> [1]: https://tinyurl.com/4933mhaj
+> >>>> [2]: https://tinyurl.com/mr3tyadb
+> >>>
+> >>> The thing is the OpenBMC approach initializes the value themselves to
+> >>> broadcast[3]. As a result the two code bases are essentially doing th=
+e
+> >>> same thing since mac_addr is defaulted to the broadcast address when
+> >>> the ncsi interface is registered.
+> >>
+> >> That=E2=80=99s a very good point, thanks for pointing that out, I hadn=
+=E2=80=99t
+> >> even noticed that!
+> >>
+> >> Anyways, let me know what you think of the traces I added above.
+> >> Sorry for the delay, I=E2=80=99ve just been busy with some other stuff=
+,
+> >> but I do really actually care about upstreaming this (and several
+> >> other NC-SI changes I=E2=80=99ll submit after this one, which are unre=
+lated
+> >> but more useful).
+> >>
+> >> Thanks,
+> >> Peter
+> >
+> > So the NC-SI spec says any value can be used for the source MAC and
+> > that broadcast "may" be used. I would say there are some debugging
+> > advantages to using broadcast that will be obvious in a packet trace.
+>
+> Ehhhhh yeah I guess, but the ethertype is what I filter for. But sure,
+> a broadcast source MAC is pretty unique too.
+>
+> > I wonder if we couldn't look at doing something like requiring
+> > broadcast or LAA if the gma_flag isn't set.
+>
+> What is LAA? I=E2=80=99m out of the loop
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Locally administered MAC address[4]. Basically it is a MAC address
+that is generated locally such as your random MAC address. Assuming
+the other end of the NC-SI link is using a MAC address with a vendor
+OUI there should be no risk of collisions on a point-to-point link.
+Essentially if you wanted to you could probably just generate a random
+MAC address for the NCSI protocol and then use that in place of the
+broadcast address.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/be256841c209/disk-e2ca6ba6.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/76c90a4cdade/vmlinux-e2ca6ba6.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/a44766da5515/bzImage-e2ca6ba6.xz
+> But also: aren=E2=80=99t we already using broadcast if the gma_flag isn=
+=E2=80=99t set?
+>
+> -       if (nca->ndp->gma_flag =3D=3D 1)
+> -               memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, ETH_AL=
+EN);
+> -       else
+> -               eth_broadcast_addr(eh->h_source);
+> +       memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, ETH_ALEN);
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+224ad65c927c83902f06@syzkaller.appspotmail.com
+That I am not sure about. You were using this kernel without your
+patch right? With your patch it would make sense to see that behavior,
+but without I am not sure why you would see that address for any NC-SI
+commands before the gma_flag is set.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 5553 at net/mac80211/driver-ops.c:416 drv_link_info_changed+0xd2/0x780 net/mac80211/driver-ops.c:416
-Modules linked in:
-CPU: 1 PID: 5553 Comm: kworker/u4:23 Not tainted 6.1.0-syzkaller-09941-ge2ca6ba6ba01 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-Workqueue: phy12 ieee80211_roc_work
-RIP: 0010:drv_link_info_changed+0xd2/0x780 net/mac80211/driver-ops.c:416
-Code: 83 f8 01 0f 84 f6 00 00 00 e8 ea a6 4f f8 83 eb 07 31 ff 83 e3 fb 89 de e8 8b a3 4f f8 85 db 0f 84 da 00 00 00 e8 ce a6 4f f8 <0f> 0b e9 c5 02 00 00 e8 c2 a6 4f f8 4d 8d bc 24 50 1a 00 00 48 b8
-RSP: 0018:ffffc90004befb90 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 00000000fffffffb RCX: 0000000000000000
-RDX: ffff888027601d40 RSI: ffffffff893103a2 RDI: 0000000000000005
-RBP: ffff88807e7e8de0 R08: 0000000000000005 R09: 0000000000000000
-R10: 00000000fffffffb R11: 0000000000000000 R12: ffff88803f4c0c80
-R13: 0000000000000200 R14: 0000000000000000 R15: ffff88803f4c26d0
-FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f696ff85058 CR3: 000000002991d000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- ieee80211_link_info_change_notify+0x17a/0x270 net/mac80211/main.c:290
- ieee80211_offchannel_stop_vifs+0x308/0x4e0 net/mac80211/offchannel.c:121
- _ieee80211_start_next_roc+0x6f7/0x9a0 net/mac80211/offchannel.c:365
- __ieee80211_roc_work+0x190/0x3d0 net/mac80211/offchannel.c:432
- ieee80211_roc_work+0x2f/0x40 net/mac80211/offchannel.c:460
- process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
- worker_thread+0x669/0x1090 kernel/workqueue.c:2436
- kthread+0x2e8/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
+>
+> > With that we could at
+> > least advertise that we don't expect this packet to be going out in a
+> > real network as we cannot guarantee the MAC is unique.
+>
+> Yeah, but it probably wouldn=E2=80=99t help my simulation scenario.
+>
+> I guess it sounds like this patch is not a good idea, which to be fair,
+> is totally reasonable.
+>
+> I can just add some iptables rules to tunnel these packets with a differe=
+nt
+> source MAC, or fix the multicast socket issue I was having. It=E2=80=99s =
+really
+> not a big deal, and like you=E2=80=99re saying, we probably don=E2=80=99t=
+ want to make
+> it harder to maintain _forever_.
 
+Like I said before I would be good with either a Broadcast address OR
+a LAA address. The one thing we need to watch out for though is any
+sort of leak. One possible concern would be if for example you had 4
+ports using 4 different MAC addresses but one BMC. You don't want to
+accidently leak the MAC address from one port onto the other one. With
+a LAA address if it were to leak and screw up ARP tables somewhere it
+wouldn't be a big deal since it isn't expected to be switched in the
+first place.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> I would just suggest praying for the next guy that tries to test NC-SI
+> stuff with QEMU and finds out NC-SI traffic gets dropped by bridges.
+> I had to resort to reading the source code and printing stuff with
+> BPF to identify this. Maybe it=E2=80=99s more obvious to other people thi=
+s wouldn=E2=80=99t
+> work though.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Well it seems like NC-SI isn't meant to be bridged based on the fact
+that it is using a broadcast MAC address as a source. If nothing else
+I suppose you could try to work with the standards committee on that
+to see what can be done to make the protocol more portable.. :-)
+
+[4]: https://macaddress.io/faq/what-are-a-universal-address-and-a-local-adm=
+inistered-address
