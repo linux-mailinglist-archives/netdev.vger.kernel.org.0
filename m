@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E5364F6C4
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 02:20:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D686F64F6C2
+	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 02:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbiLQBUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Dec 2022 20:20:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
+        id S229658AbiLQBU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Dec 2022 20:20:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiLQBUP (ORCPT
+        with ESMTP id S230025AbiLQBUP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 16 Dec 2022 20:20:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48B3680A5
-        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 17:20:14 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32332680B0
+        for <netdev@vger.kernel.org>; Fri, 16 Dec 2022 17:20:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 836CAB81E04
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 01:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17360C433D2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C117662300
+        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 01:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C86EC43392;
         Sat, 17 Dec 2022 01:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1671240012;
-        bh=hrOtzLohlRAKteFb+lHDAYXnw805sk+Q2zvcZMF6xTA=;
+        bh=43nzMgfcijWDtcSwA9riazP+5X4AeA0zGjVXyM9fSDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m5tVx4G7saANZpEdnihGFSfTNPNAg5lmhwXy3XG8BFRqfO0tAabllQv9VeLLbqsOF
-         hoE61n8+lACchJcAwWFRb9bsvSawmbpS3Q9GX6UtCXJHkmqLdZnUpwLbqPazl79vnn
-         njRB3nwgEqKzwAqyicpKbro22+HOJUb7fXH2oqj5YUbSPTtZTvesqA0MQiqDVmuAyS
-         RB7YU9/+RazaqguLwMt6Hcc+oknUOHlM3XMWK0ly5c71Dv7c3x1TAc6fCxfuKJreo6
-         8cgNhwhNZncRxMxVjFsgU6M8Kq8RD/OUPLx8otsJZjlecYPoBy10VGjX61e0JIjI+h
-         t4G/nUQ4YBKGQ==
+        b=hnssZoq7pNi/yHFBR3VWkU7y2/MkZe+Acy8IfvetaqjJu0UaaDG6wytk2PQfUhbtI
+         y1SxCeNhsTCBghBSf7taOhvM1eZZXsGfoQ+gFOhGKoJvkjUYpOdksk6d6YMg3EzYR6
+         smijWmoslqrIZ3VmKrcrDNNzwDawuNnE9Xv2mYXOaLRpMW5FO1wLMMXr5mhRBzPu+j
+         Pv9r42RZkk3fRXA3FrEAAU40Rqo/g3qfK2NPSH+ox0TC294/5/km89gR24lkjfJUBX
+         wmSYT+H1TXlw8VR61leUEF0lFtbIakljksLWYyhJ2cKLNJ7H+aqukwFUFiQU7gtb+W
+         o8uYobsPpPCCQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     jiri@resnulli.us, jacob.e.keller@intel.com, leon@kernel.org
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC net-next 09/10] devlink: allow registering parameters after the instance
-Date:   Fri, 16 Dec 2022 17:19:52 -0800
-Message-Id: <20221217011953.152487-10-kuba@kernel.org>
+Subject: [RFC net-next 10/10] netdevsim: register devlink instance before sub-objects
+Date:   Fri, 16 Dec 2022 17:19:53 -0800
+Message-Id: <20221217011953.152487-11-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221217011953.152487-1-kuba@kernel.org>
 References: <20221217011953.152487-1-kuba@kernel.org>
@@ -51,100 +51,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's most natural to register the instance first and then its
-subobjects. Now that we can use the instance lock to protect
-the atomicity of all init - it should also be safe.
+Move the devlink instance registration up so that all the sub-object
+manipulation happens on a valid instance.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/devlink/basic.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/net/netdevsim/dev.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/devlink/basic.c b/net/devlink/basic.c
-index 6b18e70a39fd..10b90a49aba0 100644
---- a/net/devlink/basic.c
-+++ b/net/devlink/basic.c
-@@ -5263,7 +5263,13 @@ static void devlink_param_notify(struct devlink *devlink,
- 	WARN_ON(cmd != DEVLINK_CMD_PARAM_NEW && cmd != DEVLINK_CMD_PARAM_DEL &&
- 		cmd != DEVLINK_CMD_PORT_PARAM_NEW &&
- 		cmd != DEVLINK_CMD_PORT_PARAM_DEL);
--	ASSERT_DEVLINK_REGISTERED(devlink);
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index c9952a34c39a..738784fda117 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -1556,23 +1556,23 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 		goto err_devlink_unlock;
+ 	}
+ 
+-	err = nsim_dev_resources_register(devlink);
++	err = devl_register(devlink);
+ 	if (err)
+ 		goto err_vfc_free;
+ 
++	err = nsim_dev_resources_register(devlink);
++	if (err)
++		goto err_dl_unregister;
 +
-+	/* devlink_notify_register() / devlink_notify_unregister()
-+	 * will replay the notifications if the params are added/removed
-+	 * outside of the lifetime of the instance.
-+	 */
-+	if (!devl_is_alive(devlink))
-+		return;
+ 	err = devlink_params_register(devlink, nsim_devlink_params,
+ 				      ARRAY_SIZE(nsim_devlink_params));
+ 	if (err)
+ 		goto err_resource_unregister;
+ 	nsim_devlink_set_params_init_values(nsim_dev, devlink);
  
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
-@@ -10915,8 +10921,6 @@ int devlink_params_register(struct devlink *devlink,
- 	const struct devlink_param *param = params;
- 	int i, err;
- 
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+-	err = devl_register(devlink);
+-	if (err)
+-		goto err_params_unregister;
 -
- 	for (i = 0; i < params_count; i++, param++) {
- 		err = devlink_param_register(devlink, param);
- 		if (err)
-@@ -10947,8 +10951,6 @@ void devlink_params_unregister(struct devlink *devlink,
- 	const struct devlink_param *param = params;
- 	int i;
+ 	err = nsim_dev_dummy_region_init(nsim_dev, devlink);
+ 	if (err)
+-		goto err_dl_unregister;
++		goto err_params_unregister;
  
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
--
- 	for (i = 0; i < params_count; i++, param++)
- 		devlink_param_unregister(devlink, param);
- }
-@@ -10968,8 +10970,6 @@ int devlink_param_register(struct devlink *devlink,
- {
- 	struct devlink_param_item *param_item;
+ 	err = nsim_dev_traps_init(devlink);
+ 	if (err)
+@@ -1629,13 +1629,13 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	nsim_dev_traps_exit(devlink);
+ err_dummy_region_exit:
+ 	nsim_dev_dummy_region_exit(nsim_dev);
+-err_dl_unregister:
+-	devl_unregister(devlink);
+ err_params_unregister:
+ 	devlink_params_unregister(devlink, nsim_devlink_params,
+ 				  ARRAY_SIZE(nsim_devlink_params));
+ err_resource_unregister:
+ 	devl_resources_unregister(devlink);
++err_dl_unregister:
++	devl_unregister(devlink);
+ err_vfc_free:
+ 	kfree(nsim_dev->vfconfigs);
+ err_devlink_unlock:
+@@ -1678,10 +1678,10 @@ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
  
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
--
- 	WARN_ON(devlink_param_verify(param));
- 	WARN_ON(devlink_param_find_by_name(&devlink->param_list, param->name));
- 
-@@ -10985,6 +10985,7 @@ int devlink_param_register(struct devlink *devlink,
- 	param_item->param = param;
- 
- 	list_add_tail(&param_item->list, &devlink->param_list);
-+	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(devlink_param_register);
-@@ -10999,11 +11000,10 @@ void devlink_param_unregister(struct devlink *devlink,
- {
- 	struct devlink_param_item *param_item;
- 
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
--
- 	param_item =
- 		devlink_param_find_by_name(&devlink->param_list, param->name);
- 	WARN_ON(!param_item);
-+	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_DEL);
- 	list_del(&param_item->list);
- 	kfree(param_item);
- }
-@@ -11063,8 +11063,6 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
- {
- 	struct devlink_param_item *param_item;
- 
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
--
- 	param_item = devlink_param_find_by_id(&devlink->param_list, param_id);
- 	if (!param_item)
- 		return -EINVAL;
-@@ -11078,6 +11076,8 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
- 	else
- 		param_item->driverinit_value = init_val;
- 	param_item->driverinit_value_valid = true;
-+
-+	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
+ 	nsim_bpf_dev_exit(nsim_dev);
+ 	nsim_dev_debugfs_exit(nsim_dev);
+-	devl_unregister(devlink);
+ 	devlink_params_unregister(devlink, nsim_devlink_params,
+ 				  ARRAY_SIZE(nsim_devlink_params));
+ 	devl_resources_unregister(devlink);
++	devl_unregister(devlink);
+ 	kfree(nsim_dev->vfconfigs);
+ 	kfree(nsim_dev->fa_cookie);
+ 	devl_unlock(devlink);
 -- 
 2.38.1
 
