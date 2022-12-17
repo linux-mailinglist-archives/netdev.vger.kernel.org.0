@@ -2,287 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5501364FAEB
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 17:02:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9481A64FAFB
+	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 17:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiLQQBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Dec 2022 11:01:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
+        id S229971AbiLQQTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Dec 2022 11:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiLQQBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 11:01:13 -0500
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96E715FC2
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 07:42:43 -0800 (PST)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-43ea87d0797so45202767b3.5
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 07:42:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=X4OmTeCEyLnq28o07+5IlO/ofoH0BOCIhR4T0E2A8lk=;
-        b=WVvnbbH5JfZq1EnPYlDL+GLxfAIYzoSnJ+FPh06wSpdO90W9SVE2VsMihSi71tIWn4
-         qF+FZOQxcxoOI/3wb0t5BiXWOj8L9vf7YsLKztw7Oqcp5DjatBZYIy1jV51v+hYniSgB
-         SUEZwXMXZqfSGaRetDhbWq/TQySBlNPiFKMTqK4HvS4dF259J6O7xI0TOm1ZhRx8z5Yw
-         YxVxS6fo71d6WZzGaWwtHMx7lc/U1zqsdGeu1vprTLpd0AaHnjsOJkHf6O3Ole6cc+kl
-         XrgW7W5XBCfeOxf1//TWr5x7gFjiRd71frDkN2PRl6orfyA+YFyaAMGA4G0w1CqWF4ak
-         tffw==
+        with ESMTP id S229923AbiLQQTS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 11:19:18 -0500
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FB3FAF6;
+        Sat, 17 Dec 2022 08:19:16 -0800 (PST)
+Received: by mail-pl1-f172.google.com with SMTP id d15so5153601pls.6;
+        Sat, 17 Dec 2022 08:19:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=X4OmTeCEyLnq28o07+5IlO/ofoH0BOCIhR4T0E2A8lk=;
-        b=aoTKWrT27EiNnSQVDVQsXgKzsiF+Acecn+xsbEiq6yIkmOEgSJtF1nnFshPmGDLltu
-         BDCZXJsPTYfBL8d61xNk+W3cV2W0aZyL2CljGTl4EmMHJ9tiFhU8ghlHH7v6Pt2mUL48
-         H9xQ/p0sfxHrkU0wYcy8jFO1t0YCC1qZj6jlpW1zAKK6Lm1At5HQ8a/A7r+c/5pHmzaA
-         bjJEmYz1mtgQ+e3TTWjawhb3j2a8oNm3iZ6301q5R46diJ/MYwGVy7VrcyunmnEW2tzA
-         UaNN+7p0GuYzCKvBo/EPvWSsAQ9NIvl0+RQJpGz/qa7+s+byD/ljqbYbwLifSFtBcDOs
-         mo2A==
-X-Gm-Message-State: AFqh2korZWCYdz9zyUSohj6eFXL05iH76jU+S3l5PmbYwhFqRpc66OLb
-        CQSECQ6M+4hinzFMos9oh4jrxoSe7++5tvjdsbRksC72
-X-Google-Smtp-Source: AMrXdXvm82lezZ51nuiz6DIw/54FaW+JYCpq8BwKzuD5wLSlJy8UMTnJQ80UHo/tNLz16s7hmQIFLQ4rpuitRSP44hk=
-X-Received: by 2002:a81:57ca:0:b0:3d2:b057:9925 with SMTP id
- l193-20020a8157ca000000b003d2b0579925mr1813172ywb.455.1671291762966; Sat, 17
- Dec 2022 07:42:42 -0800 (PST)
+        bh=YSNNqpsp+6ju7vLQLBaXrvpbttZ9LPvs/Uw4aW9SDeo=;
+        b=yKnJ1awjgn7KUqULVHjdOMU61aIfBRb4WGdZjTCdxp8ck8rSBZIF81dAfhjoTW7A3K
+         xqXyVGXC0IN67kU6PMbPUrk8bnDj6Rb0qhjgrjh/thPCDsnoUYEslDM/kzJlWo88+E5O
+         zZD2VkDT8B5Rz+BDM0p8xNqfB5Yxy6twIAhBxkhzx5Q9OeSE/1Eh6FzY/YdFISwQW3Eb
+         tSOefy5DuDFhn+T51XaeKaEVO993aanRWeDj/MxVlvzva+cJOfvunPZzGzF5lEjRVV3P
+         PBbgynTgf0y0RA29Zl6CHQ54yVJjqZFItxK+sz1Xspl4Rguq1sP9yTBaBd2HFp2LyRBZ
+         2P5w==
+X-Gm-Message-State: ANoB5pnJeE7kVWxBIaNd3QiRXX1k1ioYNDUoJtbYBPrb9kWVXK3v/Z6R
+        nLS6iLtUga5X5wAs5vSP4nQ=
+X-Google-Smtp-Source: AA0mqf6YsrJm/7RjWbwCC3qNvpn+nHnKEMHx5bQ2ETaghl7OzUYaqU1qcV9uyxtABLtljZj/UM5Jog==
+X-Received: by 2002:a05:6a20:662f:b0:a4:cb41:298f with SMTP id n47-20020a056a20662f00b000a4cb41298fmr32354466pzh.6.1671293956208;
+        Sat, 17 Dec 2022 08:19:16 -0800 (PST)
+Received: from localhost.localdomain ([14.4.134.166])
+        by smtp.gmail.com with ESMTPSA id w9-20020a62c709000000b005745635c5b5sm3310513pfg.183.2022.12.17.08.19.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Dec 2022 08:19:15 -0800 (PST)
+From:   Leesoo Ahn <lsahn@ooseel.net>
+To:     lsahn@ooseel.net
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] usbnet: jump to rx_cleanup case instead of calling skb_queue_tail
+Date:   Sun, 18 Dec 2022 01:18:51 +0900
+Message-Id: <20221217161851.829497-1-lsahn@ooseel.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20221216144118.10868-1-u9012063@gmail.com> <c4c62a4563d6669ca3c5d5efee0e54bc8742f27d.camel@gmail.com>
- <CALDO+SaKd74n_PDB+kN0KQWt_Zh9NjzPAm-kWfie4Vd+jOeCZw@mail.gmail.com> <CAKgT0UehKpZMhcCgDPg00BoajxaZ23L9OzZ9GAgQd74xW6zkqw@mail.gmail.com>
-In-Reply-To: <CAKgT0UehKpZMhcCgDPg00BoajxaZ23L9OzZ9GAgQd74xW6zkqw@mail.gmail.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Sat, 17 Dec 2022 07:42:06 -0800
-Message-ID: <CALDO+SYz2LYk8_tvwoY75OVT-7B3_HgjF8PTnUN9hdDL+pucwQ@mail.gmail.com>
-Subject: Re: [PATCH v6] vmxnet3: Add XDP support.
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     netdev@vger.kernel.org, tuc@vmware.com, gyang@vmware.com,
-        doshir@vmware.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 16, 2022 at 4:37 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Fri, Dec 16, 2022 at 2:53 PM William Tu <u9012063@gmail.com> wrote:
-> >
-Hi Alexander,
-Thanks for taking a look at this patch!
+The current source pushes skb into dev->done queue by calling
+skb_queue_tail() and then, call skb_dequeue() to pop for rx_cleanup state
+to free urb and skb next in usbnet_bh().
+It wastes CPU resource with extra instructions. Instead, use return values
+jumping to rx_cleanup case directly to free them. Therefore calling
+skb_queue_tail() and skb_dequeue() is not necessary.
 
-> > > > Single core performance comparison with skb-mode.
-> > > > 64B:      skb-mode -> native-mode (with this patch)
-> > > > XDP_DROP: 932Kpps -> 2.0Mpps
-> > > > XDP_PASS: 284Kpps -> 314Kpps
-> > > > XDP_TX:   591Kpps -> 1.8Mpps
-> > > > REDIRECT: 453Kpps -> 501Kpps
-> > > >
-> > > > 512B:      skb-mode -> native-mode (with this patch)
-> > > > XDP_DROP: 890Kpps -> 1.3Mpps
-> > > > XDP_PASS: 284Kpps -> 314Kpps
-> > > > XDP_TX:   555Kpps -> 1.2Mpps
-> > > > REDIRECT: 670Kpps -> 430Kpps
-> > > >
-> > >
-> > > I hadn't noticed it before. Based on this it looks like native mode is
-> > > performing worse then skb-mode for redirect w/ 512B packets? Have you
-> > > looked into why that might be?
-> >
-> > yes, I noticed it but don't know why, maybe it's due to extra copy and page
-> > allocation like you said below. I will dig deeper.
+The follows are just showing difference between calling skb_queue_tail()
+and using return values jumping to rx_cleanup state directly in usbnet_bh()
+in Arm64 instructions with perf tool.
 
-I've fixed the issue like you mentioned, and now the redirect shows
-better performance.
-I will update in next version.
+----------- calling skb_queue_tail() -----------
+       │     if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
+  7.58 │248:   ldr     x0, [x20, #16]
+  2.46 │24c:   ldr     w0, [x0, #8]
+  1.64 │250: ↑ tbnz    w0, #14, 16c
+       │     dev->net->stats.rx_errors++;
+  0.57 │254:   ldr     x1, [x20, #184]
+  1.64 │258:   ldr     x0, [x1, #336]
+  2.65 │25c:   add     x0, x0, #0x1
+       │260:   str     x0, [x1, #336]
+       │     skb_queue_tail(&dev->done, skb);
+  0.38 │264:   mov     x1, x19
+       │268:   mov     x0, x21
+  2.27 │26c: → bl      skb_queue_tail
+  0.57 │270: ↑ b       44    // branch to call skb_dequeue()
 
-> >
-> > >
-> > > My main concern would be that you are optimizing for recyling in the Tx
-> > > and Redirect paths, when you might be better off just releasing the
-> > > buffers and batch allocating new pages in your Rx path.
-> >
-> > right, are you talking about using the page pool allocator, ex: slide 8 below
-> > https://legacy.netdevconf.info/0x14/pub/slides/10/add-xdp-on-driver.pdf
-> > I tried it before but then I found I have to replace lots of existing vmxnet3
-> > code, basically replacing all the rx/tx buffer allocation code with new
-> > page pool api, even without XDP.  I'd love to give it a try, do you think it's
-> > worth doing it?
->
-> It might be. It is hard for me to say without knowing more about the
-> driver itself. However if i were doing a driver from scratch that
-> supported XDP I would probably go that route. Having to refactor an
-> existing driver is admittedly going to be more work.
->
-I see, thanks.
->
-> >
-> > >
-> > > > +     __netif_tx_unlock(nq);
-> > > > +     return err;
-> > > > +}
-> > > > +
-> > > > +int
-> > > > +vmxnet3_xdp_xmit(struct net_device *dev,
-> > > > +              int n, struct xdp_frame **frames, u32 flags)
-> > > > +{
-> > > > +     struct vmxnet3_adapter *adapter;
-> > > > +     struct vmxnet3_tx_queue *tq;
-> > > > +     struct netdev_queue *nq;
-> > > > +     int i, err, cpu;
-> > > > +     int nxmit = 0;
-> > > > +     int tq_number;
-> > > > +
-> > > > +     adapter = netdev_priv(dev);
-> > > > +
-> > > > +     if (unlikely(test_bit(VMXNET3_STATE_BIT_QUIESCED, &adapter->state)))
-> > > > +             return -ENETDOWN;
-> > > > +     if (unlikely(test_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state)))
-> > > > +             return -EINVAL;
-> > > > +
-> > > > +     tq_number = adapter->num_tx_queues;
-> > > > +     cpu = smp_processor_id();
-> > > > +     tq = &adapter->tx_queue[cpu % tq_number];
-> > > > +     if (tq->stopped)
-> > > > +             return -ENETDOWN;
-> > > > +
-> > > > +     nq = netdev_get_tx_queue(adapter->netdev, tq->qid);
-> > > > +
-> > > > +     __netif_tx_lock(nq, cpu);
-> > > > +     for (i = 0; i < n; i++) {
-> > > > +             err = vmxnet3_xdp_xmit_frame(adapter, frames[i], tq);
-> > > > +             if (err) {
-> > > > +                     tq->stats.xdp_xmit_err++;
-> > > > +                     break;
-> > > > +             }
-> > > > +             nxmit++;
-> > > > +     }
-> > > > +
-> > > > +     tq->stats.xdp_xmit += nxmit;
-> > > > +     __netif_tx_unlock(nq);
-> > > > +
-> > >
-> > > Are you doing anything to free the frames after you transmit them? If I
-> > > am not mistaken you are just copying them over into skbs aren't you, so
-> > > what is freeing the frames after that?
-> >
-> > The frames will be free at vmxnet3_tq_cleanup() at dev_kfree_skb_any(tbi->skb);
-> > Because at the vmxnet3_xdp_xmit_frame the allocated skb is saved at tbi->skb,
-> > so it can be freed at tq cleanup.
->
-> The frames I am referring to are the xdp_frame, not the skb.
-> Specifically your function is copying the data out. So in the redirect
-> case I think you might be leaking pages. That is one of the reasons
-> why I was thinking it might be better to just push the data all the
-> way through.
+----------- jumping to rx_cleanup state -----------
+       │     if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
+  1.69 │25c:   ldr     x0, [x21, #16]
+  4.78 │260:   ldr     w0, [x0, #8]
+  3.28 │264: ↑ tbnz    w0, #14, e4    // jump to 'rx_cleanup' state
+       │     dev->net->stats.rx_errors++;
+  0.09 │268:   ldr     x1, [x21, #184]
+  2.72 │26c:   ldr     x0, [x1, #336]
+  3.37 │270:   add     x0, x0, #0x1
+  0.09 │274:   str     x0, [x1, #336]
+  0.66 │278: ↑ b       e4    // branch to 'rx_cleanup' state
 
-Got it, you're right, it's leaking memory there.
+Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
+---
+ drivers/net/usb/usbnet.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
->
-> In the other email you sent me the call xdp_return_frame was used to
-> free the frame. That is what would be expected in this function after
-> you cleaned the data out and placed it in an skbuff in
-> vmxnet3_xdp_xmit_frame.
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 64a9a80b2309..924392a37297 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -555,7 +555,7 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
+ 
+ /*-------------------------------------------------------------------------*/
+ 
+-static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
++static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
+ {
+ 	if (dev->driver_info->rx_fixup &&
+ 	    !dev->driver_info->rx_fixup (dev, skb)) {
+@@ -576,11 +576,11 @@ static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
+ 		netif_dbg(dev, rx_err, dev->net, "rx length %d\n", skb->len);
+ 	} else {
+ 		usbnet_skb_return(dev, skb);
+-		return;
++		return 0;
+ 	}
+ 
+ done:
+-	skb_queue_tail(&dev->done, skb);
++	return -1;
+ }
+ 
+ /*-------------------------------------------------------------------------*/
+@@ -1528,13 +1528,14 @@ static void usbnet_bh (struct timer_list *t)
+ 		entry = (struct skb_data *) skb->cb;
+ 		switch (entry->state) {
+ 		case rx_done:
+-			entry->state = rx_cleanup;
+-			rx_process (dev, skb);
++			if (rx_process(dev, skb))
++				goto cleanup;
+ 			continue;
+ 		case tx_done:
+ 			kfree(entry->urb->sg);
+ 			fallthrough;
+ 		case rx_cleanup:
++cleanup:
+ 			usb_free_urb (entry->urb);
+ 			dev_kfree_skb (skb);
+ 			continue;
+-- 
+2.34.1
 
-OK! will do it.
-
->
-> > >
-> > > > +     return nxmit;
-> > > > +}
-> > > > +
-> > > > +static int
-> > > > +__vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, void *data, int data_len,
-> > > > +               int headroom, int frame_sz, bool *need_xdp_flush,
-> > > > +               struct sk_buff *skb)
-> > > > +{
-> > > > +     struct xdp_frame *xdpf;
-> > > > +     void *buf_hard_start;
-> > > > +     struct xdp_buff xdp;
-> > > > +     struct page *page;
-> > > > +     void *orig_data;
-> > > > +     int err, delta;
-> > > > +     int delta_len;
-> > > > +     u32 act;
-> > > > +
-> > > > +     buf_hard_start = data;
-> > > > +     xdp_init_buff(&xdp, frame_sz, &rq->xdp_rxq);
-> > > > +     xdp_prepare_buff(&xdp, buf_hard_start, headroom, data_len, true);
-> > > > +     orig_data = xdp.data;
-> > > > +
-> > > > +     act = bpf_prog_run_xdp(rq->xdp_bpf_prog, &xdp);
-> > > > +     rq->stats.xdp_packets++;
-> > > > +
-> > > > +     switch (act) {
-> > > > +     case XDP_DROP:
-> > > > +             rq->stats.xdp_drops++;
-> > > > +             break;
-> > > > +     case XDP_PASS:
-> > > > +             /* bpf prog might change len and data position.
-> > > > +              * dataring does not use skb so not support this.
-> > > > +              */
-> > > > +             delta = xdp.data - orig_data;
-> > > > +             delta_len = (xdp.data_end - xdp.data) - data_len;
-> > > > +             if (skb) {
-> > > > +                     skb_reserve(skb, delta);
-> > > > +                     skb_put(skb, delta_len);
-> > > > +             }
-> > > > +             break;
-> > > > +     case XDP_TX:
-> > > > +             xdpf = xdp_convert_buff_to_frame(&xdp);
-> > > > +             if (!xdpf ||
-> > > > +                 vmxnet3_xdp_xmit_back(rq->adapter, xdpf)) {
-> > > > +                     rq->stats.xdp_drops++;
-> > > > +             } else {
-> > > > +                     rq->stats.xdp_tx++;
-> > > > +             }
-> > > > +             break;
-> > > > +     case XDP_ABORTED:
-> > > > +             trace_xdp_exception(rq->adapter->netdev, rq->xdp_bpf_prog,
-> > > > +                                 act);
-> > > > +             rq->stats.xdp_aborted++;
-> > > > +             break;
-> > > > +     case XDP_REDIRECT:
-> > > > +             page = alloc_page(GFP_ATOMIC);
-> > > > +             if (!page) {
-> > > > +                     rq->stats.rx_buf_alloc_failure++;
-> > > > +                     return XDP_DROP;
-> > > > +             }
-> > >
-> > > So I think I see the problem I had questions about here. If I am not
-> > > mistaken you are copying the buffer to this page, and then copying this
-> > > page to an skb right? I think you might be better off just writing off
-> > > the Tx/Redirect pages and letting them go through their respective
-> > > paths and just allocating new pages instead assuming these pages were
-> > > consumed.
-> >
-> > I'm not sure I understand, can you elaborate?
-> >
-> > For XDP_TX, I'm doing 1 extra copy, copying to the newly allocated skb
-> > in vmxnet3_xdp_xmit_back.
-> > For XDP_REDIREC, I allocate a page and copy to the page and call
-> > xdp_do_redirect, there is no copying to skb again. If I don't allocate a
-> > new page, it always crashes at
-> > [62020.425932] BUG: Bad page state in process cpumap/0/map:29  pfn:107548
-> > [62020.440905] kernel BUG at include/linux/mm.h:757!
-> >  VM_BUG_ON_PAGE(page_ref_count(page) == 0, page);
->
-> What I was referring to was one copy here, and then another copy in
-> your vmxnet3_xdp_xmit_frame() function with the page you allocated
-> here possibly being leaked.
->
-> Though based on the other trace you provided it would look like you
-> are redirecting to something else as your code currently doesn't
-> reference xdp_return_frame which is what I was referring to earlier in
-> terms of missing the logic to free the frame in your transmit path.
-yes, I tried a couple ways and now it's working.
-basically I have to call get_page to increment the refcnt then call
-xdp_return_frame. I will update performance number and send
-next version.
-
-Thanks
-William
