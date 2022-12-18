@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28ACD6502E3
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0086502E7
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232948AbiLRQy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:54:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
+        id S232870AbiLRQzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:55:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232818AbiLRQx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:53:57 -0500
+        with ESMTP id S232779AbiLRQx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:53:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E451B9F9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B73511809;
         Sun, 18 Dec 2022 08:19:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E30D4B80B43;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 047BBB80BA8;
+        Sun, 18 Dec 2022 16:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BCA7C433EF;
         Sun, 18 Dec 2022 16:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B3B4C433F0;
-        Sun, 18 Dec 2022 16:19:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671380342;
-        bh=ZXi9rymi8AVChfE0Rwg89PMxWiEY4vFmxOMlbrCpYas=;
+        s=k20201202; t=1671380344;
+        bh=j33FzNOjty8cwb7uB4R6TuLexzKBjCt16wxLrBMyoo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dY/pPzuOy8UzlzdS0eN7fxcIN/UEADSXgW6qeZhc0Xi4qt7/HpYdq5bC90NY3Qpgk
-         Io/swH9ibSNbPyCPWuDY3arXghLvbgBkBGpxVUaOkDzC/ZUvmRBOvMVHZUDS9Tupsf
-         9YUh7K45TbGl7+u3HBbxbAM7VkdSqBUX/ySFKqc4mh8o4QOePg3h6rqLGAfnM60KH4
-         QmXPnPZjRZIvXcXccLyfp41s1WOxg+MuLstvfnEbiETgNb2dFMLqx7fK9Dpg1iNi55
-         k/KR5i1bnwaUA3EN/64kwctbye/Xyin7Orelm7210aatJ9R7tifSRb0/UGY7KEff36
-         2DItgh2XeOShA==
+        b=WaLwhNTqSUeiORZeEN4mF6AIHlHRvNHx2WVnjShFVEeBUf/DpeOYC7NCUXoGbDzlb
+         YMisU01bsUbQ6qVpFTtIrx9c+OHnM9b1IyRlgFF47LnKqa/fAKIN0NynfhaHrGbQyG
+         amcD53k8dE3PSMopkjU1GKQzS+MhlPY67YhXKPlOlxHWe9ottegcfKD6ya+nl/fjo5
+         zPlePqYe7qNiBALYXttUw+uc6Bt5vnlajJwyEExOwgfCpEZPw44dppPZLovP5Z9ji9
+         KU7LNjg312f4bp3khoYFRJSYRzUnY83F04eppLjMyUJVLUs8WLvci3Nspz1rfWncQx
+         cEYdzRqHha5Jw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Nathan Chancellor <nathan@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, ndesaulniers@google.com,
-        mathew.j.martineau@linux.intel.com, mkl@pengutronix.de,
-        elder@linaro.org, colin.i.king@gmail.com, netdev@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 08/30] net: ethernet: ti: Fix return type of netcp_ndo_start_xmit()
-Date:   Sun, 18 Dec 2022 11:18:13 -0500
-Message-Id: <20221218161836.933697-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, t.sailer@alumni.ethz.ch,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        ndesaulniers@google.com, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.4 09/30] hamradio: baycom_epp: Fix return type of baycom_send_packet()
+Date:   Sun, 18 Dec 2022 11:18:14 -0500
+Message-Id: <20221218161836.933697-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218161836.933697-1-sashal@kernel.org>
 References: <20221218161836.933697-1-sashal@kernel.org>
@@ -62,7 +61,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 63fe6ff674a96cfcfc0fa8df1051a27aa31c70b4 ]
+[ Upstream commit c5733e5b15d91ab679646ec3149e192996a27d5d ]
 
 With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
 indirect call targets are validated against the expected function
@@ -72,39 +71,38 @@ which manifests as either a kernel panic or thread getting killed. A
 proposed warning in clang aims to catch these at compile time, which
 reveals:
 
-  drivers/net/ethernet/ti/netcp_core.c:1944:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = netcp_ndo_start_xmit,
-                                    ^~~~~~~~~~~~~~~~~~~~
+  drivers/net/hamradio/baycom_epp.c:1119:25: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
+          .ndo_start_xmit      = baycom_send_packet,
+                                ^~~~~~~~~~~~~~~~~~
   1 error generated.
 
 ->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of
-netcp_ndo_start_xmit() to match the prototype's to resolve the warning
-and CFI failure.
+'netdev_tx_t', not 'int'. Adjust the return type of baycom_send_packet()
+to match the prototype's to resolve the warning and CFI failure.
 
 Link: https://github.com/ClangBuiltLinux/linux/issues/1750
 Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Reviewed-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20221102160933.1601260-1-nathan@kernel.org
+Link: https://lore.kernel.org/r/20221102160610.1186145-1-nathan@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/netcp_core.c | 2 +-
+ drivers/net/hamradio/baycom_epp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
-index 4154c48d1ddf..5dbb4ed1b132 100644
---- a/drivers/net/ethernet/ti/netcp_core.c
-+++ b/drivers/net/ethernet/ti/netcp_core.c
-@@ -1262,7 +1262,7 @@ static int netcp_tx_submit_skb(struct netcp_intf *netcp,
- }
+diff --git a/drivers/net/hamradio/baycom_epp.c b/drivers/net/hamradio/baycom_epp.c
+index 4476491b58f9..c5495ca5e8e6 100644
+--- a/drivers/net/hamradio/baycom_epp.c
++++ b/drivers/net/hamradio/baycom_epp.c
+@@ -758,7 +758,7 @@ static void epp_bh(struct work_struct *work)
+  * ===================== network driver interface =========================
+  */
  
- /* Submit the packet */
--static int netcp_ndo_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+static netdev_tx_t netcp_ndo_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+-static int baycom_send_packet(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t baycom_send_packet(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct netcp_intf *netcp = netdev_priv(ndev);
- 	struct netcp_stats *tx_stats = &netcp->stats;
+ 	struct baycom_state *bc = netdev_priv(dev);
+ 
 -- 
 2.35.1
 
