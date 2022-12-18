@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37F7A65004E
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:13:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19F9D650098
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:17:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbiLRQM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46166 "EHLO
+        id S231508AbiLRQRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:17:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231752AbiLRQML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:12:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18C9E008;
-        Sun, 18 Dec 2022 08:05:28 -0800 (PST)
+        with ESMTP id S231749AbiLRQQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:16:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728DBBE2E;
+        Sun, 18 Dec 2022 08:07:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98D1B60DD4;
-        Sun, 18 Dec 2022 16:05:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94328C433D2;
-        Sun, 18 Dec 2022 16:05:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30F52B80BA6;
+        Sun, 18 Dec 2022 16:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABED0C43443;
+        Sun, 18 Dec 2022 16:07:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671379527;
-        bh=PQTkkO2TEez+Hevl8IFWz7Fj4RaHB0oBJSP09rZ7HLc=;
+        s=k20201202; t=1671379622;
+        bh=LmK9N7gcHgEMnuX6DPcPrj7//jkR+jXfDOYYregk3zE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jl9T4cejDSINBMoQaW0KUkM7eQS60erjo58sac9cQFs94DG9UuIcYWvrT6BMoxJ+L
-         7sfiEooDYn0KIhygHOrnM1t4v20QCbOgLkQdaxxhVh+Rl7Y6MPEt/7vnRg9gqhYwHY
-         WeqLg/7S62yvQ64+L9yu1q7xBlqFVrg1oV4xrwONpvJIuogWOT4hWRnl62DQt6KKBT
-         2QZ5d1BB+A2yFVZRdm6NLFTCxNOGjIFq4B1NoaU/Fj/vteNbBsz8IkVguEmzbWggFp
-         Ztfeg8uwSJCvSoeu2pQKDS+E5gsF/Jh2pXspy1XKpYSWsD3SN20zwiqvGiqWG3nbEr
-         K4gfsDaJk+Trw==
+        b=jUkgpqvBIKUHBYey73pmnqCC/Nia/f4i0CCTsDfz9KGQ2F5fNdHYCS6PM+dPwrkby
+         Sk1ao1wFrUhagPs63s54uU9qDXQD/b/tEwBoKs780gRnR31zCZ+ZvI7WjvKi2mBqtV
+         WGHVJBr7CyrYcZShELZOBQjB/RYbaau9rDkEUs0wx2Ml6uEkxgKM0cAC24eSPPXB+8
+         W2r8wXXRUgj5EvuZaknlqBWFHgZDbtpAz+zOlbVzG6F42nORD6VY0lClllx3GTebPm
+         p5yq5usV7/fKHvlYwvzw5Piy7HS9Ov9rrzgVVAwOJ6aDV+xHhCWSgEppQfBJ90SkYu
+         q5rmblww7cbTg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, ast@kernel.org,
-        f.fainelli@gmail.com, trix@redhat.com, marco@mebeim.net,
-        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 57/85] ethtool: avoiding integer overflow in ethtool_phys_id()
-Date:   Sun, 18 Dec 2022 11:01:14 -0500
-Message-Id: <20221218160142.925394-57-sashal@kernel.org>
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.1 70/85] net: dpaa2: publish MAC stringset to ethtool -S even if MAC is missing
+Date:   Sun, 18 Dec 2022 11:01:27 -0500
+Message-Id: <20221218160142.925394-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218160142.925394-1-sashal@kernel.org>
 References: <20221218160142.925394-1-sashal@kernel.org>
@@ -59,41 +58,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 64a8f8f7127da228d59a39e2c5e75f86590f90b4 ]
+[ Upstream commit 29811d6e19d795efcf26644b66c4152abbac35a6 ]
 
-The value of an arithmetic expression "n * id.data" is subject
-to possible overflow due to a failure to cast operands to a larger data
-type before performing arithmetic. Used macro for multiplication instead
-operator for avoiding overflow.
+DPNIs and DPSW objects can connect and disconnect at runtime from DPMAC
+objects on the same fsl-mc bus. The DPMAC object also holds "ethtool -S"
+unstructured counters. Those counters are only shown for the entity
+owning the netdev (DPNI, DPSW) if it's connected to a DPMAC.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+The ethtool stringset code path is split into multiple callbacks, but
+currently, connecting and disconnecting the DPMAC takes the rtnl_lock().
+This blocks the entire ethtool code path from running, see
+ethnl_default_doit() -> rtnl_lock() -> ops->prepare_data() ->
+strset_prepare_data().
 
-Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+This is going to be a problem if we are going to no longer require
+rtnl_lock() when connecting/disconnecting the DPMAC, because the DPMAC
+could appear between ops->get_sset_count() and ops->get_strings().
+If it appears out of the blue, we will provide a stringset into an array
+that was dimensioned thinking the DPMAC wouldn't be there => array
+accessed out of bounds.
+
+There isn't really a good way to work around that, and I don't want to
+put too much pressure on the ethtool framework by playing locking games.
+Just make the DPMAC counters be always available. They'll be zeroes if
+the DPNI or DPSW isn't connected to a DPMAC.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20221122122901.22294-1-korotkov.maxim.s@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ethtool/ioctl.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c | 12 +++---------
+ .../ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c  | 11 ++---------
+ 2 files changed, 5 insertions(+), 18 deletions(-)
 
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 57e7238a4136..81fe2422fe58 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -2008,7 +2008,8 @@ static int ethtool_phys_id(struct net_device *dev, void __user *useraddr)
- 	} else {
- 		/* Driver expects to be called at twice the frequency in rc */
- 		int n = rc * 2, interval = HZ / n;
--		u64 count = n * id.data, i = 0;
-+		u64 count = mul_u32_u32(n, id.data);
-+		u64 i = 0;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index eea7d7a07c00..8381cbdb9461 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+@@ -186,7 +186,6 @@ static int dpaa2_eth_set_pauseparam(struct net_device *net_dev,
+ static void dpaa2_eth_get_strings(struct net_device *netdev, u32 stringset,
+ 				  u8 *data)
+ {
+-	struct dpaa2_eth_priv *priv = netdev_priv(netdev);
+ 	u8 *p = data;
+ 	int i;
  
- 		do {
- 			rtnl_lock();
+@@ -200,22 +199,17 @@ static void dpaa2_eth_get_strings(struct net_device *netdev, u32 stringset,
+ 			strscpy(p, dpaa2_ethtool_extras[i], ETH_GSTRING_LEN);
+ 			p += ETH_GSTRING_LEN;
+ 		}
+-		if (dpaa2_eth_has_mac(priv))
+-			dpaa2_mac_get_strings(p);
++		dpaa2_mac_get_strings(p);
+ 		break;
+ 	}
+ }
+ 
+ static int dpaa2_eth_get_sset_count(struct net_device *net_dev, int sset)
+ {
+-	int num_ss_stats = DPAA2_ETH_NUM_STATS + DPAA2_ETH_NUM_EXTRA_STATS;
+-	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
+-
+ 	switch (sset) {
+ 	case ETH_SS_STATS: /* ethtool_get_stats(), ethtool_get_drvinfo() */
+-		if (dpaa2_eth_has_mac(priv))
+-			num_ss_stats += dpaa2_mac_get_sset_count();
+-		return num_ss_stats;
++		return DPAA2_ETH_NUM_STATS + DPAA2_ETH_NUM_EXTRA_STATS +
++		       dpaa2_mac_get_sset_count();
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
+index 720c9230cab5..40ee57ef55be 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
+@@ -145,14 +145,9 @@ dpaa2_switch_set_link_ksettings(struct net_device *netdev,
+ static int
+ dpaa2_switch_ethtool_get_sset_count(struct net_device *netdev, int sset)
+ {
+-	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
+-	int num_ss_stats = DPAA2_SWITCH_NUM_COUNTERS;
+-
+ 	switch (sset) {
+ 	case ETH_SS_STATS:
+-		if (port_priv->mac)
+-			num_ss_stats += dpaa2_mac_get_sset_count();
+-		return num_ss_stats;
++		return DPAA2_SWITCH_NUM_COUNTERS + dpaa2_mac_get_sset_count();
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -161,7 +156,6 @@ dpaa2_switch_ethtool_get_sset_count(struct net_device *netdev, int sset)
+ static void dpaa2_switch_ethtool_get_strings(struct net_device *netdev,
+ 					     u32 stringset, u8 *data)
+ {
+-	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
+ 	u8 *p = data;
+ 	int i;
+ 
+@@ -172,8 +166,7 @@ static void dpaa2_switch_ethtool_get_strings(struct net_device *netdev,
+ 			       ETH_GSTRING_LEN);
+ 			p += ETH_GSTRING_LEN;
+ 		}
+-		if (port_priv->mac)
+-			dpaa2_mac_get_strings(p);
++		dpaa2_mac_get_strings(p);
+ 		break;
+ 	}
+ }
 -- 
 2.35.1
 
