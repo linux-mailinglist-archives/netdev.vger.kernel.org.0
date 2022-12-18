@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 766456503FF
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 18:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A64650403
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 18:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233605AbiLRRL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 12:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S233588AbiLRRNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 12:13:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbiLRRJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 12:09:53 -0500
+        with ESMTP id S233615AbiLRRJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 12:09:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0B31EADE;
-        Sun, 18 Dec 2022 08:23:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919D013DD3;
+        Sun, 18 Dec 2022 08:23:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C4A760C40;
-        Sun, 18 Dec 2022 16:23:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F11A3C43392;
-        Sun, 18 Dec 2022 16:23:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 308BA60D39;
+        Sun, 18 Dec 2022 16:23:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906AAC433EF;
+        Sun, 18 Dec 2022 16:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671380613;
-        bh=j+XvRaeHGALL552/+G9Y1kGH0I+QWcqTXZJUhSX4eWc=;
+        s=k20201202; t=1671380621;
+        bh=2B8LmotlwfLUJChpK8O5dbguUuebFGLl9EBxyS5rtus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GcJJ+hcvFPwfSJLwB95l0qLo2Ucd55esszkmIizwKa10VleulegRFIOLSzAZfx4iw
-         t9t/kidAMemq7UCeLVaIc0A7fclMRbJwpJBpeHx0RUfCBn7lhNr3B4rT5Yg43z6k7K
-         kMobxQmqm45JFdPrUNGKxs5dMkdg736UUFE0Vo/D750Mpo7LCBeqqz1vSg2+HlUgjd
-         rsOapiKWV+lVUG0YgQE3k2gBwUWfdmMYNWb2ZFo20RdBK1zV3UJhZf+M070p3goNdv
-         K1O3RahjNL9Z9vaJXoHBEtzm3ljq4S2NSg95vNdbp848oXZUOU71EKK0PLVJ+WCVP3
-         x3dIl3SVyoTuw==
+        b=uUqG0QNhMtR/zaeQfA1Lpl7O1UwY3YWyWSMq0pEdTvG9HtrpAOQ9b2kFcWhkeab93
+         bRf7yz4F4tfr4i7/ezTbjai6p8yDAZa9CDv/e+qkGRFR99VrgRirBEMghAqpmeg1HN
+         UcZLme8M2yvSM19ryiUOsjIQes6YNUxOl5L596KNr3yQ2bZ/HZIN0MEp9Wrdv1HfvV
+         qfB/u0ufgO/VsNzZrJM8ZOpxYqz0SlB4CTd+EPIdioRYYFVwKojzALD0pHOpHlycP8
+         8WdPotxTON5CiWVC+ljQ0ftSQ/Y8WEokZ8VrsbzAg40ZXUvBzTKEaXFq8sRJrsW+7o
+         C+tE5qbWl4T8w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Kees Cook <keescook@chromium.org>,
+Cc:     Schspa Shi <schspa@gmail.com>,
+        syzbot+6fd64001c20aa99e34a4@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, wenjia@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        ndesaulniers@google.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 4.9 10/20] s390/lcs: Fix return type of lcs_start_xmit()
-Date:   Sun, 18 Dec 2022 11:22:55 -0500
-Message-Id: <20221218162305.935724-10-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, yury.norov@gmail.com,
+        djwong@kernel.org, hca@linux.ibm.com,
+        christoph.boehmwalder@linbit.com, jack@suse.cz, Jason@zx2c4.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 13/20] mrp: introduce active flags to prevent UAF when applicant uninit
+Date:   Sun, 18 Dec 2022 11:22:58 -0500
+Message-Id: <20221218162305.935724-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218162305.935724-1-sashal@kernel.org>
 References: <20221218162305.935724-1-sashal@kernel.org>
@@ -60,66 +60,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit bb16db8393658e0978c3f0d30ae069e878264fa3 ]
+[ Upstream commit ab0377803dafc58f1e22296708c1c28e309414d6 ]
 
-With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
-indirect call targets are validated against the expected function
-pointer prototype to make sure the call target is valid to help mitigate
-ROP attacks. If they are not identical, there is a failure at run time,
-which manifests as either a kernel panic or thread getting killed. A
-proposed warning in clang aims to catch these at compile time, which
-reveals:
+The caller of del_timer_sync must prevent restarting of the timer, If
+we have no this synchronization, there is a small probability that the
+cancellation will not be successful.
 
-  drivers/s390/net/lcs.c:2090:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = lcs_start_xmit,
-                                    ^~~~~~~~~~~~~~
-  drivers/s390/net/lcs.c:2097:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = lcs_start_xmit,
-                                    ^~~~~~~~~~~~~~
+And syzbot report the fellowing crash:
+==================================================================
+BUG: KASAN: use-after-free in hlist_add_head include/linux/list.h:929 [inline]
+BUG: KASAN: use-after-free in enqueue_timer+0x18/0xa4 kernel/time/timer.c:605
+Write at addr f9ff000024df6058 by task syz-fuzzer/2256
+Pointer tag: [f9], memory tag: [fe]
 
-->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of lcs_start_xmit() to
-match the prototype's to resolve the warning and potential CFI failure,
-should s390 select ARCH_SUPPORTS_CFI_CLANG in the future.
+CPU: 1 PID: 2256 Comm: syz-fuzzer Not tainted 6.1.0-rc5-syzkaller-00008-
+ge01d50cbd6ee #0
+Hardware name: linux,dummy-virt (DT)
+Call trace:
+ dump_backtrace.part.0+0xe0/0xf0 arch/arm64/kernel/stacktrace.c:156
+ dump_backtrace arch/arm64/kernel/stacktrace.c:162 [inline]
+ show_stack+0x18/0x40 arch/arm64/kernel/stacktrace.c:163
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x68/0x84 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:284 [inline]
+ print_report+0x1a8/0x4a0 mm/kasan/report.c:395
+ kasan_report+0x94/0xb4 mm/kasan/report.c:495
+ __do_kernel_fault+0x164/0x1e0 arch/arm64/mm/fault.c:320
+ do_bad_area arch/arm64/mm/fault.c:473 [inline]
+ do_tag_check_fault+0x78/0x8c arch/arm64/mm/fault.c:749
+ do_mem_abort+0x44/0x94 arch/arm64/mm/fault.c:825
+ el1_abort+0x40/0x60 arch/arm64/kernel/entry-common.c:367
+ el1h_64_sync_handler+0xd8/0xe4 arch/arm64/kernel/entry-common.c:427
+ el1h_64_sync+0x64/0x68 arch/arm64/kernel/entry.S:576
+ hlist_add_head include/linux/list.h:929 [inline]
+ enqueue_timer+0x18/0xa4 kernel/time/timer.c:605
+ mod_timer+0x14/0x20 kernel/time/timer.c:1161
+ mrp_periodic_timer_arm net/802/mrp.c:614 [inline]
+ mrp_periodic_timer+0xa0/0xc0 net/802/mrp.c:627
+ call_timer_fn.constprop.0+0x24/0x80 kernel/time/timer.c:1474
+ expire_timers+0x98/0xc4 kernel/time/timer.c:1519
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/1750
-Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+To fix it, we can introduce a new active flags to make sure the timer will
+not restart.
+
+Reported-by: syzbot+6fd64001c20aa99e34a4@syzkaller.appspotmail.com
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/lcs.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ include/net/mrp.h |  1 +
+ net/802/mrp.c     | 18 +++++++++++++-----
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index 4d3caad7e981..3bd2241c13e8 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1544,9 +1544,8 @@ lcs_txbuffer_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
- /**
-  * Packet transmit function called by network stack
-  */
--static int
--__lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
--		 struct net_device *dev)
-+static netdev_tx_t __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
-+				    struct net_device *dev)
- {
- 	struct lcs_header *header;
- 	int rc = NETDEV_TX_OK;
-@@ -1607,8 +1606,7 @@ __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
- 	return rc;
+diff --git a/include/net/mrp.h b/include/net/mrp.h
+index 31912c3be772..9338d6305159 100644
+--- a/include/net/mrp.h
++++ b/include/net/mrp.h
+@@ -119,6 +119,7 @@ struct mrp_applicant {
+ 	struct sk_buff		*pdu;
+ 	struct rb_root		mad;
+ 	struct rcu_head		rcu;
++	bool			active;
+ };
+ 
+ struct mrp_port {
+diff --git a/net/802/mrp.c b/net/802/mrp.c
+index 4ee3af3d400b..ac6b6374a1fc 100644
+--- a/net/802/mrp.c
++++ b/net/802/mrp.c
+@@ -610,7 +610,10 @@ static void mrp_join_timer(unsigned long data)
+ 	spin_unlock(&app->lock);
+ 
+ 	mrp_queue_xmit(app);
+-	mrp_join_timer_arm(app);
++	spin_lock(&app->lock);
++	if (likely(app->active))
++		mrp_join_timer_arm(app);
++	spin_unlock(&app->lock);
  }
  
--static int
--lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct lcs_card *card;
- 	int rc;
+ static void mrp_periodic_timer_arm(struct mrp_applicant *app)
+@@ -624,11 +627,12 @@ static void mrp_periodic_timer(unsigned long data)
+ 	struct mrp_applicant *app = (struct mrp_applicant *)data;
+ 
+ 	spin_lock(&app->lock);
+-	mrp_mad_event(app, MRP_EVENT_PERIODIC);
+-	mrp_pdu_queue(app);
++	if (likely(app->active)) {
++		mrp_mad_event(app, MRP_EVENT_PERIODIC);
++		mrp_pdu_queue(app);
++		mrp_periodic_timer_arm(app);
++	}
+ 	spin_unlock(&app->lock);
+-
+-	mrp_periodic_timer_arm(app);
+ }
+ 
+ static int mrp_pdu_parse_end_mark(struct sk_buff *skb, int *offset)
+@@ -876,6 +880,7 @@ int mrp_init_applicant(struct net_device *dev, struct mrp_application *appl)
+ 	app->dev = dev;
+ 	app->app = appl;
+ 	app->mad = RB_ROOT;
++	app->active = true;
+ 	spin_lock_init(&app->lock);
+ 	skb_queue_head_init(&app->queue);
+ 	rcu_assign_pointer(dev->mrp_port->applicants[appl->type], app);
+@@ -905,6 +910,9 @@ void mrp_uninit_applicant(struct net_device *dev, struct mrp_application *appl)
+ 
+ 	RCU_INIT_POINTER(port->applicants[appl->type], NULL);
+ 
++	spin_lock_bh(&app->lock);
++	app->active = false;
++	spin_unlock_bh(&app->lock);
+ 	/* Delete timer and generate a final TX event to flush out
+ 	 * all pending messages before the applicant is gone.
+ 	 */
 -- 
 2.35.1
 
