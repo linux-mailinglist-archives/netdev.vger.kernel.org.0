@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A64650403
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 18:13:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53CC5650405
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 18:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233588AbiLRRNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 12:13:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
+        id S233060AbiLRRNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 12:13:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233615AbiLRRJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 12:09:55 -0500
+        with ESMTP id S233625AbiLRRKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 12:10:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919D013DD3;
-        Sun, 18 Dec 2022 08:23:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886D51EAF6;
+        Sun, 18 Dec 2022 08:23:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 308BA60D39;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AAD060C40;
+        Sun, 18 Dec 2022 16:23:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 206F4C43392;
         Sun, 18 Dec 2022 16:23:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906AAC433EF;
-        Sun, 18 Dec 2022 16:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671380621;
-        bh=2B8LmotlwfLUJChpK8O5dbguUuebFGLl9EBxyS5rtus=;
+        s=k20201202; t=1671380623;
+        bh=U+cQHrDmIK+r9qwVg+CRg/eCGO+GgpLzZ8wc3TPMRA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uUqG0QNhMtR/zaeQfA1Lpl7O1UwY3YWyWSMq0pEdTvG9HtrpAOQ9b2kFcWhkeab93
-         bRf7yz4F4tfr4i7/ezTbjai6p8yDAZa9CDv/e+qkGRFR99VrgRirBEMghAqpmeg1HN
-         UcZLme8M2yvSM19ryiUOsjIQes6YNUxOl5L596KNr3yQ2bZ/HZIN0MEp9Wrdv1HfvV
-         qfB/u0ufgO/VsNzZrJM8ZOpxYqz0SlB4CTd+EPIdioRYYFVwKojzALD0pHOpHlycP8
-         8WdPotxTON5CiWVC+ljQ0ftSQ/Y8WEokZ8VrsbzAg40ZXUvBzTKEaXFq8sRJrsW+7o
-         C+tE5qbWl4T8w==
+        b=oRvKOQ+3jcOnu3tc0kPfowfUdqnOt2ERnuOECf84ZP4zewFGK04M+RYD7CR8p3gVJ
+         5AdamElk84Yb+2ccHkEv0De+k4tTbs4We6MqaVYYfWO+jSEEf6XOSns0xXAWYDn+jU
+         yzvnvwADsj2z70UGSXeVQcaZQVv1232foSp7mkFyRQ3ByPlUEupkxpTvBKkJqA0Ieg
+         tLqgG6C2RRxYEpjN28S7FLyXqDlXr7gXNfopPjSdGTGbRufVchboCeec+4droonNsG
+         7aaPkOcaP55GMmCebGbhLNZvLZD2PpHJED7IlsLsaGE74JIAU8bz/TE8Nc8V8O3ykU
+         xjbIruA4gcXBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Schspa Shi <schspa@gmail.com>,
-        syzbot+6fd64001c20aa99e34a4@syzkaller.appspotmail.com,
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
+        syzbot+41cab52ab62ee99ed24a@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, yury.norov@gmail.com,
-        djwong@kernel.org, hca@linux.ibm.com,
-        christoph.boehmwalder@linbit.com, jack@suse.cz, Jason@zx2c4.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 13/20] mrp: introduce active flags to prevent UAF when applicant uninit
-Date:   Sun, 18 Dec 2022 11:22:58 -0500
-Message-Id: <20221218162305.935724-13-sashal@kernel.org>
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 14/20] ppp: associate skb with a device at tx
+Date:   Sun, 18 Dec 2022 11:22:59 -0500
+Message-Id: <20221218162305.935724-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218162305.935724-1-sashal@kernel.org>
 References: <20221218162305.935724-1-sashal@kernel.org>
@@ -60,124 +59,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Stanislav Fomichev <sdf@google.com>
 
-[ Upstream commit ab0377803dafc58f1e22296708c1c28e309414d6 ]
+[ Upstream commit 9f225444467b98579cf28d94f4ad053460dfdb84 ]
 
-The caller of del_timer_sync must prevent restarting of the timer, If
-we have no this synchronization, there is a small probability that the
-cancellation will not be successful.
+Syzkaller triggered flow dissector warning with the following:
 
-And syzbot report the fellowing crash:
-==================================================================
-BUG: KASAN: use-after-free in hlist_add_head include/linux/list.h:929 [inline]
-BUG: KASAN: use-after-free in enqueue_timer+0x18/0xa4 kernel/time/timer.c:605
-Write at addr f9ff000024df6058 by task syz-fuzzer/2256
-Pointer tag: [f9], memory tag: [fe]
+r0 = openat$ppp(0xffffffffffffff9c, &(0x7f0000000000), 0xc0802, 0x0)
+ioctl$PPPIOCNEWUNIT(r0, 0xc004743e, &(0x7f00000000c0))
+ioctl$PPPIOCSACTIVE(r0, 0x40107446, &(0x7f0000000240)={0x2, &(0x7f0000000180)=[{0x20, 0x0, 0x0, 0xfffff034}, {0x6}]})
+pwritev(r0, &(0x7f0000000040)=[{&(0x7f0000000140)='\x00!', 0x2}], 0x1, 0x0, 0x0)
 
-CPU: 1 PID: 2256 Comm: syz-fuzzer Not tainted 6.1.0-rc5-syzkaller-00008-
-ge01d50cbd6ee #0
-Hardware name: linux,dummy-virt (DT)
-Call trace:
- dump_backtrace.part.0+0xe0/0xf0 arch/arm64/kernel/stacktrace.c:156
- dump_backtrace arch/arm64/kernel/stacktrace.c:162 [inline]
- show_stack+0x18/0x40 arch/arm64/kernel/stacktrace.c:163
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x68/0x84 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:284 [inline]
- print_report+0x1a8/0x4a0 mm/kasan/report.c:395
- kasan_report+0x94/0xb4 mm/kasan/report.c:495
- __do_kernel_fault+0x164/0x1e0 arch/arm64/mm/fault.c:320
- do_bad_area arch/arm64/mm/fault.c:473 [inline]
- do_tag_check_fault+0x78/0x8c arch/arm64/mm/fault.c:749
- do_mem_abort+0x44/0x94 arch/arm64/mm/fault.c:825
- el1_abort+0x40/0x60 arch/arm64/kernel/entry-common.c:367
- el1h_64_sync_handler+0xd8/0xe4 arch/arm64/kernel/entry-common.c:427
- el1h_64_sync+0x64/0x68 arch/arm64/kernel/entry.S:576
- hlist_add_head include/linux/list.h:929 [inline]
- enqueue_timer+0x18/0xa4 kernel/time/timer.c:605
- mod_timer+0x14/0x20 kernel/time/timer.c:1161
- mrp_periodic_timer_arm net/802/mrp.c:614 [inline]
- mrp_periodic_timer+0xa0/0xc0 net/802/mrp.c:627
- call_timer_fn.constprop.0+0x24/0x80 kernel/time/timer.c:1474
- expire_timers+0x98/0xc4 kernel/time/timer.c:1519
+[    9.485814] WARNING: CPU: 3 PID: 329 at net/core/flow_dissector.c:1016 __skb_flow_dissect+0x1ee0/0x1fa0
+[    9.485929]  skb_get_poff+0x53/0xa0
+[    9.485937]  bpf_skb_get_pay_offset+0xe/0x20
+[    9.485944]  ? ppp_send_frame+0xc2/0x5b0
+[    9.485949]  ? _raw_spin_unlock_irqrestore+0x40/0x60
+[    9.485958]  ? __ppp_xmit_process+0x7a/0xe0
+[    9.485968]  ? ppp_xmit_process+0x5b/0xb0
+[    9.485974]  ? ppp_write+0x12a/0x190
+[    9.485981]  ? do_iter_write+0x18e/0x2d0
+[    9.485987]  ? __import_iovec+0x30/0x130
+[    9.485997]  ? do_pwritev+0x1b6/0x240
+[    9.486016]  ? trace_hardirqs_on+0x47/0x50
+[    9.486023]  ? __x64_sys_pwritev+0x24/0x30
+[    9.486026]  ? do_syscall_64+0x3d/0x80
+[    9.486031]  ? entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-To fix it, we can introduce a new active flags to make sure the timer will
-not restart.
+Flow dissector tries to find skb net namespace either via device
+or via socket. Neigher is set in ppp_send_frame, so let's manually
+use ppp->dev.
 
-Reported-by: syzbot+6fd64001c20aa99e34a4@syzkaller.appspotmail.com
-
-Signed-off-by: Schspa Shi <schspa@gmail.com>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linux-ppp@vger.kernel.org
+Reported-by: syzbot+41cab52ab62ee99ed24a@syzkaller.appspotmail.com
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/mrp.h |  1 +
- net/802/mrp.c     | 18 +++++++++++++-----
- 2 files changed, 14 insertions(+), 5 deletions(-)
+ drivers/net/ppp/ppp_generic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/mrp.h b/include/net/mrp.h
-index 31912c3be772..9338d6305159 100644
---- a/include/net/mrp.h
-+++ b/include/net/mrp.h
-@@ -119,6 +119,7 @@ struct mrp_applicant {
- 	struct sk_buff		*pdu;
- 	struct rb_root		mad;
- 	struct rcu_head		rcu;
-+	bool			active;
- };
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index 6287d2ad77c6..f6cf25cba16e 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -1541,6 +1541,8 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
+ 	int len;
+ 	unsigned char *cp;
  
- struct mrp_port {
-diff --git a/net/802/mrp.c b/net/802/mrp.c
-index 4ee3af3d400b..ac6b6374a1fc 100644
---- a/net/802/mrp.c
-+++ b/net/802/mrp.c
-@@ -610,7 +610,10 @@ static void mrp_join_timer(unsigned long data)
- 	spin_unlock(&app->lock);
- 
- 	mrp_queue_xmit(app);
--	mrp_join_timer_arm(app);
-+	spin_lock(&app->lock);
-+	if (likely(app->active))
-+		mrp_join_timer_arm(app);
-+	spin_unlock(&app->lock);
- }
- 
- static void mrp_periodic_timer_arm(struct mrp_applicant *app)
-@@ -624,11 +627,12 @@ static void mrp_periodic_timer(unsigned long data)
- 	struct mrp_applicant *app = (struct mrp_applicant *)data;
- 
- 	spin_lock(&app->lock);
--	mrp_mad_event(app, MRP_EVENT_PERIODIC);
--	mrp_pdu_queue(app);
-+	if (likely(app->active)) {
-+		mrp_mad_event(app, MRP_EVENT_PERIODIC);
-+		mrp_pdu_queue(app);
-+		mrp_periodic_timer_arm(app);
-+	}
- 	spin_unlock(&app->lock);
--
--	mrp_periodic_timer_arm(app);
- }
- 
- static int mrp_pdu_parse_end_mark(struct sk_buff *skb, int *offset)
-@@ -876,6 +880,7 @@ int mrp_init_applicant(struct net_device *dev, struct mrp_application *appl)
- 	app->dev = dev;
- 	app->app = appl;
- 	app->mad = RB_ROOT;
-+	app->active = true;
- 	spin_lock_init(&app->lock);
- 	skb_queue_head_init(&app->queue);
- 	rcu_assign_pointer(dev->mrp_port->applicants[appl->type], app);
-@@ -905,6 +910,9 @@ void mrp_uninit_applicant(struct net_device *dev, struct mrp_application *appl)
- 
- 	RCU_INIT_POINTER(port->applicants[appl->type], NULL);
- 
-+	spin_lock_bh(&app->lock);
-+	app->active = false;
-+	spin_unlock_bh(&app->lock);
- 	/* Delete timer and generate a final TX event to flush out
- 	 * all pending messages before the applicant is gone.
- 	 */
++	skb->dev = ppp->dev;
++
+ 	if (proto < 0x8000) {
+ #ifdef CONFIG_PPP_FILTER
+ 		/* check if we should pass this packet */
 -- 
 2.35.1
 
