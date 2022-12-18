@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7676501D6
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:36:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B041E6501DB
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:37:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232411AbiLRQgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32914 "EHLO
+        id S231890AbiLRQhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232409AbiLRQft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:35:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5060017411;
-        Sun, 18 Dec 2022 08:13:03 -0800 (PST)
+        with ESMTP id S232261AbiLRQgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:36:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F93E037;
+        Sun, 18 Dec 2022 08:13:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BF4B60DCB;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0202AB80B43;
+        Sun, 18 Dec 2022 16:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFF1C433D2;
         Sun, 18 Dec 2022 16:13:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3810EC433D2;
-        Sun, 18 Dec 2022 16:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671379982;
-        bh=SotF4aDMANimxyZQti9bBm1nQaD2ayDAjcufo9FcBY8=;
+        s=k20201202; t=1671379984;
+        bh=DamKgXosryxREHkAfv+j4U/MRQoJtVs+Akr1R/l0BzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PitBU8MtRP455j00wP7yxzE+jLqj5fyPVnk0vomV8uSl/KFIn6T+cxz96gvhTNu06
-         CKg6kKoK0by221GiIo2Vd6m8mr63Uow9tEGXuyk5ZblCn6KOa2yotp7Dz8yqH/drai
-         3GhmSEKlwJMz9arMZQNUWbtrwvOIjzaFO/yD2QjIUsZqAiohrSb3rEx3gvuHivZiEE
-         SQyK1CrOuZAqW6U3VpEOVQj4YEyJFHepYTWGf/EGCuKHn2lbpwr8bPX0RCen2H3P3E
-         8rDD9cWnrNDJaqL0+6ugRdaqXT20bFMWlSK4ucHVujp7fkd9wqe4hn4Yxz1laf3z9K
-         WjI1byr9BuyWg==
+        b=tofn/TBYAQhOAznBm6LHVorR8z35d9SfN0hzOE84HX5aYq7qyqdlNxmUJcYmgeTRh
+         sqY1jaQCvF4yoUoLvxFVkoMa1PY27lLXJ+63YMbQub0Wi8ae6iZIMxWw3fYGH2sQuQ
+         EmsjeINbAPh43K6mBCkjp1wgJCTH6mG52RgTubUpgtkUTtHek4zzjzzs4isU7+bUDG
+         RG8QPHn0sDn07I8CDwgyO4eZ0EWqlxj+oUubkfu3r6xoCnOQUIS89Zv3p3k7ryiNfT
+         faM3MqdmjU5PcsiXClM+JAfMg9JPW/xI3YObz8ZddCdnUSdHIohWE9JOUE+v/lkUG6
+         uIc1RkM0Ho04Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+Cc:     Shigeru Yoshida <syoshida@redhat.com>,
+        syzbot+95001b1fd6dfcc716c29@syzkaller.appspotmail.com,
         Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 04/46] wifi: ath9k: verify the expected usb_endpoints are present
-Date:   Sun, 18 Dec 2022 11:12:02 -0500
-Message-Id: <20221218161244.930785-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 05/46] wifi: ar5523: Fix use-after-free on ar5523_cmd() timed out
+Date:   Sun, 18 Dec 2022 11:12:03 -0500
+Message-Id: <20221218161244.930785-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218161244.930785-1-sashal@kernel.org>
 References: <20221218161244.930785-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -62,75 +59,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Shigeru Yoshida <syoshida@redhat.com>
 
-[ Upstream commit 16ef02bad239f11f322df8425d302be62f0443ce ]
+[ Upstream commit b6702a942a069c2a975478d719e98d83cdae1797 ]
 
-The bug arises when a USB device claims to be an ATH9K but doesn't
-have the expected endpoints. (In this case there was an interrupt
-endpoint where the driver expected a bulk endpoint.) The kernel
-needs to be able to handle such devices without getting an internal error.
+syzkaller reported use-after-free with the stack trace like below [1]:
 
-usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-WARNING: CPU: 3 PID: 500 at drivers/usb/core/urb.c:493 usb_submit_urb+0xce2/0x1430 drivers/usb/core/urb.c:493
-Modules linked in:
-CPU: 3 PID: 500 Comm: kworker/3:2 Not tainted 5.10.135-syzkaller #0
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-Workqueue: events request_firmware_work_func
-RIP: 0010:usb_submit_urb+0xce2/0x1430 drivers/usb/core/urb.c:493
-Call Trace:
- ath9k_hif_usb_alloc_rx_urbs drivers/net/wireless/ath/ath9k/hif_usb.c:908 [inline]
- ath9k_hif_usb_alloc_urbs+0x75e/0x1010 drivers/net/wireless/ath/ath9k/hif_usb.c:1019
- ath9k_hif_usb_dev_init drivers/net/wireless/ath/ath9k/hif_usb.c:1109 [inline]
- ath9k_hif_usb_firmware_cb+0x142/0x530 drivers/net/wireless/ath/ath9k/hif_usb.c:1242
- request_firmware_work_func+0x12e/0x240 drivers/base/firmware_loader/main.c:1097
- process_one_work+0x9af/0x1600 kernel/workqueue.c:2279
- worker_thread+0x61d/0x12f0 kernel/workqueue.c:2425
- kthread+0x3b4/0x4a0 kernel/kthread.c:313
- ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:299
+[   38.960489][    C3] ==================================================================
+[   38.963216][    C3] BUG: KASAN: use-after-free in ar5523_cmd_tx_cb+0x220/0x240
+[   38.964950][    C3] Read of size 8 at addr ffff888048e03450 by task swapper/3/0
+[   38.966363][    C3]
+[   38.967053][    C3] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 6.0.0-09039-ga6afa4199d3d-dirty #18
+[   38.968464][    C3] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.fc36 04/01/2014
+[   38.969959][    C3] Call Trace:
+[   38.970841][    C3]  <IRQ>
+[   38.971663][    C3]  dump_stack_lvl+0xfc/0x174
+[   38.972620][    C3]  print_report.cold+0x2c3/0x752
+[   38.973626][    C3]  ? ar5523_cmd_tx_cb+0x220/0x240
+[   38.974644][    C3]  kasan_report+0xb1/0x1d0
+[   38.975720][    C3]  ? ar5523_cmd_tx_cb+0x220/0x240
+[   38.976831][    C3]  ar5523_cmd_tx_cb+0x220/0x240
+[   38.978412][    C3]  __usb_hcd_giveback_urb+0x353/0x5b0
+[   38.979755][    C3]  usb_hcd_giveback_urb+0x385/0x430
+[   38.981266][    C3]  dummy_timer+0x140c/0x34e0
+[   38.982925][    C3]  ? notifier_call_chain+0xb5/0x1e0
+[   38.984761][    C3]  ? rcu_read_lock_sched_held+0xb/0x60
+[   38.986242][    C3]  ? lock_release+0x51c/0x790
+[   38.987323][    C3]  ? _raw_read_unlock_irqrestore+0x37/0x70
+[   38.988483][    C3]  ? __wake_up_common_lock+0xde/0x130
+[   38.989621][    C3]  ? reacquire_held_locks+0x4a0/0x4a0
+[   38.990777][    C3]  ? lock_acquire+0x472/0x550
+[   38.991919][    C3]  ? rcu_read_lock_sched_held+0xb/0x60
+[   38.993138][    C3]  ? lock_acquire+0x472/0x550
+[   38.994890][    C3]  ? dummy_urb_enqueue+0x860/0x860
+[   38.996266][    C3]  ? do_raw_spin_unlock+0x16f/0x230
+[   38.997670][    C3]  ? dummy_urb_enqueue+0x860/0x860
+[   38.999116][    C3]  call_timer_fn+0x1a0/0x6a0
+[   39.000668][    C3]  ? add_timer_on+0x4a0/0x4a0
+[   39.002137][    C3]  ? reacquire_held_locks+0x4a0/0x4a0
+[   39.003809][    C3]  ? __next_timer_interrupt+0x226/0x2a0
+[   39.005509][    C3]  __run_timers.part.0+0x69a/0xac0
+[   39.007025][    C3]  ? dummy_urb_enqueue+0x860/0x860
+[   39.008716][    C3]  ? call_timer_fn+0x6a0/0x6a0
+[   39.010254][    C3]  ? cpuacct_percpu_seq_show+0x10/0x10
+[   39.011795][    C3]  ? kvm_sched_clock_read+0x14/0x40
+[   39.013277][    C3]  ? sched_clock_cpu+0x69/0x2b0
+[   39.014724][    C3]  run_timer_softirq+0xb6/0x1d0
+[   39.016196][    C3]  __do_softirq+0x1d2/0x9be
+[   39.017616][    C3]  __irq_exit_rcu+0xeb/0x190
+[   39.019004][    C3]  irq_exit_rcu+0x5/0x20
+[   39.020361][    C3]  sysvec_apic_timer_interrupt+0x8f/0xb0
+[   39.021965][    C3]  </IRQ>
+[   39.023237][    C3]  <TASK>
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+In ar5523_probe(), ar5523_host_available() calls ar5523_cmd() as below
+(there are other functions which finally call ar5523_cmd()):
 
-Suggested-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+ar5523_probe()
+-> ar5523_host_available()
+   -> ar5523_cmd_read()
+      -> ar5523_cmd()
+
+If ar5523_cmd() timed out, then ar5523_host_available() failed and
+ar5523_probe() freed the device structure.  So, ar5523_cmd_tx_cb()
+might touch the freed structure.
+
+This patch fixes this issue by canceling in-flight tx cmd if submitted
+urb timed out.
+
+Link: https://syzkaller.appspot.com/bug?id=9e12b2d54300842b71bdd18b54971385ff0d0d3a [1]
+Reported-by: syzbot+95001b1fd6dfcc716c29@syzkaller.appspotmail.com
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
 Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20221008211532.74583-1-pchelkin@ispras.ru
+Link: https://lore.kernel.org/r/20221009183223.420015-1-syoshida@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/wireless/ath/ar5523/ar5523.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index f06eec99de68..31d4c0454afa 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -1330,10 +1330,24 @@ static int send_eject_command(struct usb_interface *interface)
- static int ath9k_hif_usb_probe(struct usb_interface *interface,
- 			       const struct usb_device_id *id)
- {
-+	struct usb_endpoint_descriptor *bulk_in, *bulk_out, *int_in, *int_out;
- 	struct usb_device *udev = interface_to_usbdev(interface);
-+	struct usb_host_interface *alt;
- 	struct hif_device_usb *hif_dev;
- 	int ret = 0;
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index 1baec4b412c8..efe38b2c1df7 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -241,6 +241,11 @@ static void ar5523_cmd_tx_cb(struct urb *urb)
+ 	}
+ }
  
-+	/* Verify the expected endpoints are present */
-+	alt = interface->cur_altsetting;
-+	if (usb_find_common_endpoints(alt, &bulk_in, &bulk_out, &int_in, &int_out) < 0 ||
-+	    usb_endpoint_num(bulk_in) != USB_WLAN_RX_PIPE ||
-+	    usb_endpoint_num(bulk_out) != USB_WLAN_TX_PIPE ||
-+	    usb_endpoint_num(int_in) != USB_REG_IN_PIPE ||
-+	    usb_endpoint_num(int_out) != USB_REG_OUT_PIPE) {
-+		dev_err(&udev->dev,
-+			"ath9k_htc: Device endpoint numbers are not the expected ones\n");
-+		return -ENODEV;
-+	}
++static void ar5523_cancel_tx_cmd(struct ar5523 *ar)
++{
++	usb_kill_urb(ar->tx_cmd.urb_tx);
++}
 +
- 	if (id->driver_info == STORAGE_DEVICE)
- 		return send_eject_command(interface);
+ static int ar5523_cmd(struct ar5523 *ar, u32 code, const void *idata,
+ 		      int ilen, void *odata, int olen, int flags)
+ {
+@@ -280,6 +285,7 @@ static int ar5523_cmd(struct ar5523 *ar, u32 code, const void *idata,
+ 	}
  
+ 	if (!wait_for_completion_timeout(&cmd->done, 2 * HZ)) {
++		ar5523_cancel_tx_cmd(ar);
+ 		cmd->odata = NULL;
+ 		ar5523_err(ar, "timeout waiting for command %02x reply\n",
+ 			   code);
 -- 
 2.35.1
 
