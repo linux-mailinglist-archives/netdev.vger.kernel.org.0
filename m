@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D0F64FC95
-	for <lists+netdev@lfdr.de>; Sat, 17 Dec 2022 23:17:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BFD464FD29
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 01:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbiLQWRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Dec 2022 17:17:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        id S229912AbiLRAIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Dec 2022 19:08:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiLQWR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 17:17:29 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08347A45A
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 14:17:29 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id jr11so5569223qtb.7
-        for <netdev@vger.kernel.org>; Sat, 17 Dec 2022 14:17:28 -0800 (PST)
+        with ESMTP id S229480AbiLRAH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Dec 2022 19:07:59 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0553AE53;
+        Sat, 17 Dec 2022 16:07:58 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso9679607pjt.0;
+        Sat, 17 Dec 2022 16:07:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=cnS3Pw6Dj87Il46h7I54ZB8bxMh9UKhiYH1/x8LD1yg=;
-        b=Y4jo6t33DdKZiNQLmwHA3swNInesRUz8iCLUmV/PHLPgDoI9NFIt5HfYKUc/xIcoC2
-         ppXbFbY5o+0ez5nvBOhXtKMrG7KUlymvonCniF0xsfNqs7VPcBTIkBRC+5R0tPHWRI/9
-         9ibg4jPAJUCqrOxLYv4y2gxE+x20akKzvrtPanJO9YYRO4gz9mh0DWnkwoB6+hF6uPVT
-         okX6hsEn5Xdax8IemlQUXWParf87AphSP/qrvsliCQL8CaKIr67gBpqrbV6zO6II3l7E
-         CkfYfCSCbJ0bp0iRvQhL25aKmQuwKk2rBxkEI5KsdQMalQthfsHxMR2dvYZV92vynxk7
-         WjHw==
+        bh=8F6Uzn3qPKjW7Pu2TCTFXqCvGwILHe72RxqksnsVPog=;
+        b=foC9eFpeLiQU0CZM+xYWE4qgkadktQxQC2tDTw0fVu4oO0Zkr6hNg3schdixANV9Ld
+         jFL5Cyh5+BIX5gMceD6BlIaaWS0KnXNNmxISv7IbhpA6auKsvFJ9FT8hUj2w1IdXF3V8
+         NcH/n88sq4RtiA34ilsfBxG6fhNFWHuNjVc5tnbQKK1qTmEeR3tjpH2sXsjCLjiKuwyd
+         mZKIsRx+Y+pdBEiXXgHfzpT9FSynIVksxj4l7jzTP8V4NnuRXHZS2/IB3sUgFJD1qJ68
+         W+4rJQrxIY+ryEnRFc/VAMZovPdPg5txAvGGTYVvUkS8/C3g4Oaz12knI6HSyXIIbwlu
+         wQGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=cnS3Pw6Dj87Il46h7I54ZB8bxMh9UKhiYH1/x8LD1yg=;
-        b=TVXqiKe5+580dzM3T7iGwDkK2nl03/Jjr+QgkERFcWtd45VYCRZQcukGU2RieWr9fF
-         r59d3MJFngI3lnF6PGs64HLAy6pj+DxOpg+EaxVNZpHrT/569CJSTCsvIFSlO9SDW/1D
-         wCe0Z1HYUqLg64hHFq4EQklpp5R3d0sDJlzYFlWT1enS2ySIOEcjGtFiRgYCSOIUj5Fy
-         aXwvE1mudwOLxin8P4b/19JxWMJojOOkY+yBKBZN34Y8s67IemCxByjOrmUyZ3H0UJbY
-         rBSJTJsOBkpqSGFG1aoHxxh7EUsTkEJjxTfWNshvhGPQtVYe7Ziqy4FFDEFqMBb4YQHC
-         Jtyw==
-X-Gm-Message-State: ANoB5pnWBQLwFUCfUH8RrIjSf3grXEhVPMopbhFbQ73sQdeIA3FtNLXY
-        L+sx0CGfCV6vRkC0IZ3C2MXTdv1ZhFc=
-X-Google-Smtp-Source: AA0mqf5DZ9ILYxqyHD70N8KLhDQHO9xTpr2zSNtr7aWJZrVG2p88M37qM55dcRX0JtnEzgRaq3JjqA==
-X-Received: by 2002:ac8:1246:0:b0:3a7:648d:23ce with SMTP id g6-20020ac81246000000b003a7648d23cemr48860181qtj.25.1671315447861;
-        Sat, 17 Dec 2022 14:17:27 -0800 (PST)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:90a:28dc:26a7:4000])
-        by smtp.gmail.com with ESMTPSA id c12-20020ac81e8c000000b0039a08c0a594sm3603018qtm.82.2022.12.17.14.17.25
+        bh=8F6Uzn3qPKjW7Pu2TCTFXqCvGwILHe72RxqksnsVPog=;
+        b=ywUtyniCHZRohp6/g1e2LjIXE+xk4VFVTtnalVi/B2y7+IvF9a+u/T+zfo3QsxPQsQ
+         pwL7KCLu+RWIcfvUHJ78Z3ssrY9HkUstQlbcrzw6n7d1qG8JSweMxdZZ77I7i9oSv7EO
+         Y1eCldrCbJBOEHYsA/4xHl1+IBqkRx6nOY7qzch+iH+RkrtQPGFzasT/LVZ8nG7TijB7
+         LTdCC7CCgYDXFBAsID3z2W2A3HxcEPqjvWPZvoBRcJ0nkDCml5zjuO8BVGWzrU0W6LxR
+         uRAqxdvHCPciyuObvBJeff7rgHieuFGvzh4Z1K1zOpJHjQuQRtLNYd6KgcnuhbyUlmQj
+         PBfw==
+X-Gm-Message-State: AFqh2kpwhhxHwC9nlAugaYmNz+XPnYWULaFABgs4wcJGEBMdBCPz9PvS
+        WSBGvunHWiC1tk6qIGI3kQ==
+X-Google-Smtp-Source: AMrXdXuwS9fBXDVNhvZYhzLqlKL1DAN09f55FDStkvg4NxqIVUSHP3/BmYi3UpaQ7aOuWztzB+reQg==
+X-Received: by 2002:a05:6a20:5488:b0:af:b771:1d01 with SMTP id i8-20020a056a20548800b000afb7711d01mr15073627pzk.49.1671322077967;
+        Sat, 17 Dec 2022 16:07:57 -0800 (PST)
+Received: from WDIR.. ([182.209.58.25])
+        by smtp.gmail.com with ESMTPSA id r7-20020a63b107000000b00478bd458bdfsm3554330pgf.88.2022.12.17.16.07.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Dec 2022 14:17:26 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        syzbot+4caeae4c7103813598ae@syzkaller.appspotmail.com,
-        Jun Nie <jun.nie@linaro.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [Patch net] net_sched: reject TCF_EM_SIMPLE case for complex ematch module
-Date:   Sat, 17 Dec 2022 14:17:07 -0800
-Message-Id: <20221217221707.46010-1-xiyou.wangcong@gmail.com>
+        Sat, 17 Dec 2022 16:07:57 -0800 (PST)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Yonghong Song <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [bpf-next v2 0/3] samples/bpf: fix LLVM compilation warning with samples
+Date:   Sun, 18 Dec 2022 09:07:50 +0900
+Message-Id: <20221218000753.4519-1-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,45 +70,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+Currently, compiling samples/bpf with LLVM emits several warning. They
+are only small details, but they do not appear when compiled with GCC.
+Detailed compilation command and warning logs can be found from bpf CI.
 
-When TCF_EM_SIMPLE was introduced, it is supposed to be convenient
-for ematch implementation:
+Daniel T. Lee (3):
+  samples/bpf: remove unused function with test_lru_dist
+  samples/bpf: replace meaningless counter with tracex4
+  samples/bpf: fix uninitialized warning with
+    test_current_task_under_cgroup
 
-https://lore.kernel.org/all/20050105110048.GO26856@postel.suug.ch/
+ samples/bpf/test_current_task_under_cgroup_user.c | 6 ++++--
+ samples/bpf/test_lru_dist.c                       | 5 -----
+ samples/bpf/tracex4_user.c                        | 4 ++--
+ 3 files changed, 6 insertions(+), 9 deletions(-)
 
-"You don't have to, providing a 32bit data chunk without TCF_EM_SIMPLE
-set will simply result in allocating & copy. It's an optimization,
-nothing more."
-
-So if an ematch module provides ops->datalen that means it wants a
-complex data structure (saved in its em->data) instead of a simple u32
-value. We should simply reject such a combination, otherwise this u32
-could be misinterpreted as a pointer.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-and-tested-by: syzbot+4caeae4c7103813598ae@syzkaller.appspotmail.com
-Reported-by: Jun Nie <jun.nie@linaro.org>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/sched/ematch.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/sched/ematch.c b/net/sched/ematch.c
-index 4ce681361851..5c1235e6076a 100644
---- a/net/sched/ematch.c
-+++ b/net/sched/ematch.c
-@@ -255,6 +255,8 @@ static int tcf_em_validate(struct tcf_proto *tp,
- 			 * the value carried.
- 			 */
- 			if (em_hdr->flags & TCF_EM_SIMPLE) {
-+				if (em->ops->datalen > 0)
-+					goto errout;
- 				if (data_len < sizeof(u32))
- 					goto errout;
- 				em->data = *(u32 *) data;
 -- 
 2.34.1
+
+Changes in V2: 
+- Change the cover letter subject
 
