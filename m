@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C56EB6500A8
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:17:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 077556500B6
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:18:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbiLRQRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:17:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
+        id S231769AbiLRQSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:18:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231809AbiLRQRB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:17:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51971117C;
-        Sun, 18 Dec 2022 08:07:33 -0800 (PST)
+        with ESMTP id S231844AbiLRQRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:17:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080731114B;
+        Sun, 18 Dec 2022 08:07:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DD59B80BD1;
-        Sun, 18 Dec 2022 16:07:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EADFC433D2;
-        Sun, 18 Dec 2022 16:07:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B64D60DE3;
+        Sun, 18 Dec 2022 16:07:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20F50C43392;
+        Sun, 18 Dec 2022 16:07:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671379625;
-        bh=FlM+n9VFNfrw3Gdn05AUOd5H5amrmG05tgYCykYIpA8=;
+        s=k20201202; t=1671379652;
+        bh=B6WGf5Mz8SgeST3xpYSXXRbwW/Ae6pRLshq8wjtPeVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=boG8HsUAORd6pu+KmeJ3uPqa5i2zKNaHYpOBdWyyQSf/7qnbGZWD64XjifNbEPJ3G
-         h0EOuUa2YIYRqbcTcyFffrnF9tVsSu95sHwEuNyrthRQILI7PoCqtwRXNqmN/6IlxC
-         wRrB+wu79O1IApPEyzuV3lsY889UZbza0yFWfndUQO5/pJk4MyMvjifcxWfEYfD2aq
-         6X2P0zudFD6b43Uus9cw5XhheyfExFwSsBouNnulay28favcofurpSTZ0JWYRCdLaz
-         FAKUnycHbdzdq6VFt/jIXZt0Vuoed0EMjZnHQMk/ihnxAkqEWBOCytf8XcKTyc4HOO
-         m3Kyej+xoSHlw==
+        b=nhhmFe7qXdEkto1DevrmIZzhvsT1Ai/QpdMT+7P2e169zaRPQuttvulOVsTAPqeiT
+         BTKh7Fzojgn30brKc7TwVcL/HJWuWTI7M0TsRsZMRJQ2zNiPY6DRuUMxjfsnWFI83M
+         c20C0NpIfu3AA99Fx3eZqFMDk4QEjLGMpc9gY6xHuQFIKW1FMldHqWvOMLl/cUiQy2
+         4aPMfZeggJZkzvnfC2Yw6ZWipTsfudrWOdPW3solCHuXyyyLYPjhYYeEpCXxgUqZm8
+         e92E+Vif1rupmYj+AAoxo6auPItXAshsTmeBEAc8DioNH4xrnaJH9rOeDgw4rWyAnT
+         zIcvJ/YqvQjUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Dokyung Song <dokyungs@yonsei.ac.kr>,
-        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
-        Sasha Levin <sashal@kernel.org>, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.1 71/85] wifi: mt76: do not run mt76u_status_worker if the device is not running
-Date:   Sun, 18 Dec 2022 11:01:28 -0500
-Message-Id: <20221218160142.925394-71-sashal@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.1 82/85] ice: synchronize the misc IRQ when tearing down Tx tracker
+Date:   Sun, 18 Dec 2022 11:01:39 -0500
+Message-Id: <20221218160142.925394-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218160142.925394-1-sashal@kernel.org>
 References: <20221218160142.925394-1-sashal@kernel.org>
@@ -61,104 +59,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-[ Upstream commit bd5dac7ced5a7c9faa4dc468ac9560c3256df845 ]
+[ Upstream commit f0ae124019faaa03f8b4c3fbe52ae35ab3a8dbda ]
 
-Fix the following NULL pointer dereference avoiding to run
-mt76u_status_worker thread if the device is not running yet.
+Since commit 1229b33973c7 ("ice: Add low latency Tx timestamp read") the
+ice driver has used a threaded IRQ for handling Tx timestamps. This change
+did not add a call to synchronize_irq during ice_ptp_release_tx_tracker.
+Thus it is possible that an interrupt could occur just as the tracker is
+being removed. This could lead to a use-after-free of the Tx tracker
+structure data.
 
-KASAN: null-ptr-deref in range
-[0x0000000000000000-0x0000000000000007]
-CPU: 0 PID: 98 Comm: kworker/u2:2 Not tainted 5.14.0+ #78 Hardware
-name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-Workqueue: mt76 mt76u_tx_status_data
-RIP: 0010:mt76x02_mac_fill_tx_status.isra.0+0x82c/0x9e0
-Code: c5 48 b8 00 00 00 00 00 fc ff df 80 3c 02 00 0f 85 94 01 00 00
-48 b8 00 00 00 00 00 fc ff df 4d 8b 34 24 4c 89 f2 48 c1 ea 03 <0f>
-b6
-04 02 84 c0 74 08 3c 03 0f 8e 89 01 00 00 41 8b 16 41 0f b7
-RSP: 0018:ffffc900005af988 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffffc900005afae8 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff832fc661 RDI: ffffc900005afc2a
-RBP: ffffc900005afae0 R08: 0000000000000001 R09: fffff520000b5f3c
-R10: 0000000000000003 R11: fffff520000b5f3b R12: ffff88810b6132d8
-R13: 000000000000ffff R14: 0000000000000000 R15: ffffc900005afc28
-FS:  0000000000000000(0000) GS:ffff88811aa00000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fa0eda6a000 CR3: 0000000118f17000 CR4: 0000000000750ef0
-PKRU: 55555554
-Call Trace:
- mt76x02_send_tx_status+0x1d2/0xeb0
- mt76x02_tx_status_data+0x8e/0xd0
- mt76u_tx_status_data+0xe1/0x240
- process_one_work+0x92b/0x1460
- worker_thread+0x95/0xe00
- kthread+0x3a1/0x480
- ret_from_fork+0x1f/0x30
-Modules linked in:
---[ end trace 8df5d20fc5040f65 ]--
-RIP: 0010:mt76x02_mac_fill_tx_status.isra.0+0x82c/0x9e0
-Code: c5 48 b8 00 00 00 00 00 fc ff df 80 3c 02 00 0f 85 94 01 00 00
-48 b8 00 00 00 00 00 fc ff df 4d 8b 34 24 4c 89 f2 48 c1 ea 03 <0f>
-b6
-04 02 84 c0 74 08 3c 03 0f 8e 89 01 00 00 41 8b 16 41 0f b7
-RSP: 0018:ffffc900005af988 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffffc900005afae8 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff832fc661 RDI: ffffc900005afc2a
-RBP: ffffc900005afae0 R08: 0000000000000001 R09: fffff520000b5f3c
-R10: 0000000000000003 R11: fffff520000b5f3b R12: ffff88810b6132d8
-R13: 000000000000ffff R14: 0000000000000000 R15: ffffc900005afc28
-FS:  0000000000000000(0000) GS:ffff88811aa00000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fa0eda6a000 CR3: 0000000118f17000 CR4: 0000000000750ef0
-PKRU: 55555554
+Fix this by calling sychronize_irq in ice_ptp_release_tx_tracker after
+we've cleared the init flag. In addition, make sure that we re-check the
+init flag at the end of ice_ptp_tx_tstamp before we exit ensuring that we
+will stop polling for new timestamps once the tracker de-initialization has
+begun.
 
-Moreover move stat_work schedule out of the for loop.
+Refactor the ts_handled variable into "more_timestamps" so that we can
+simply directly assign this boolean instead of relying on an initialized
+value of true. This makes the new combined check easier to read.
 
-Reported-by: Dokyung Song <dokyungs@yonsei.ac.kr>
-Co-developed-by: Deren Wu <deren.wu@mediatek.com>
-Signed-off-by: Deren Wu <deren.wu@mediatek.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+With this change, the ice_ptp_release_tx_tracker function will now wait for
+the threaded interrupt to complete if it was executing while the init flag
+was cleared.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/usb.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/usb.c b/drivers/net/wireless/mediatek/mt76/usb.c
-index 4c4033bb1bb3..0597df2729a6 100644
---- a/drivers/net/wireless/mediatek/mt76/usb.c
-+++ b/drivers/net/wireless/mediatek/mt76/usb.c
-@@ -766,6 +766,9 @@ static void mt76u_status_worker(struct mt76_worker *w)
- 	struct mt76_queue *q;
- 	int i;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 0f668468d141..53fec5bbe6e0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -639,7 +639,7 @@ static u64 ice_ptp_extend_40b_ts(struct ice_pf *pf, u64 in_tstamp)
+ static bool ice_ptp_tx_tstamp(struct ice_ptp_tx *tx)
+ {
+ 	struct ice_ptp_port *ptp_port;
+-	bool ts_handled = true;
++	bool more_timestamps;
+ 	struct ice_pf *pf;
+ 	u8 idx;
  
-+	if (!test_bit(MT76_STATE_RUNNING, &dev->phy.state))
-+		return;
-+
- 	for (i = 0; i < IEEE80211_NUM_ACS; i++) {
- 		q = dev->phy.q_tx[i];
- 		if (!q)
-@@ -785,11 +788,11 @@ static void mt76u_status_worker(struct mt76_worker *w)
- 			wake_up(&dev->tx_wait);
+@@ -701,11 +701,10 @@ static bool ice_ptp_tx_tstamp(struct ice_ptp_tx *tx)
+ 	 * poll for remaining timestamps.
+ 	 */
+ 	spin_lock(&tx->lock);
+-	if (!bitmap_empty(tx->in_use, tx->len))
+-		ts_handled = false;
++	more_timestamps = tx->init && !bitmap_empty(tx->in_use, tx->len);
+ 	spin_unlock(&tx->lock);
  
- 		mt76_worker_schedule(&dev->tx_worker);
--
--		if (dev->drv->tx_status_data &&
--		    !test_and_set_bit(MT76_READING_STATS, &dev->phy.state))
--			queue_work(dev->wq, &dev->usb.stat_work);
- 	}
-+
-+	if (dev->drv->tx_status_data &&
-+	    !test_and_set_bit(MT76_READING_STATS, &dev->phy.state))
-+		queue_work(dev->wq, &dev->usb.stat_work);
+-	return ts_handled;
++	return !more_timestamps;
  }
  
- static void mt76u_tx_status_data(struct work_struct *work)
+ /**
+@@ -776,6 +775,9 @@ ice_ptp_release_tx_tracker(struct ice_pf *pf, struct ice_ptp_tx *tx)
+ {
+ 	tx->init = 0;
+ 
++	/* wait for potentially outstanding interrupt to complete */
++	synchronize_irq(pf->msix_entries[pf->oicr_idx].vector);
++
+ 	ice_ptp_flush_tx_tracker(pf, tx);
+ 
+ 	kfree(tx->tstamps);
 -- 
 2.35.1
 
