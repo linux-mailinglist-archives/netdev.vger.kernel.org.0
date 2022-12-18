@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6108B6501B7
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:35:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E0D6501BA
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:35:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbiLRQfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:35:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
+        id S232375AbiLRQfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:35:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232250AbiLRQdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:33:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A2FD93;
-        Sun, 18 Dec 2022 08:12:41 -0800 (PST)
+        with ESMTP id S231363AbiLRQdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:33:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4552BB853;
+        Sun, 18 Dec 2022 08:12:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECFE0B80BA4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5B5F60C99;
+        Sun, 18 Dec 2022 16:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84D3C433F0;
         Sun, 18 Dec 2022 16:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB94C433F1;
-        Sun, 18 Dec 2022 16:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671379959;
-        bh=MsKCMRgsRiM3cHpDyWcl/k/gwLX4zmA6DMHBQa4n8gM=;
+        s=k20201202; t=1671379962;
+        bh=V1iZjnY+Fu3/ryfiijjX5kukUbPZuFNdU84KcYkm+K4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cJK6e7B+RKAxHpw/HF+BDvhzHeJFBQeo4a/CK3SpMPclHqQRC2O+sjfvM6lYMMi0R
-         VYb+/UsJlNHNpSs8XIl4kmPAKSVgAvRTyHWpwE+rSVT52W3WU78a9Ubn957gKdroOc
-         MIJEqzI0TH1xy1qYTe/xMGLGEhlqk2HW8G0tAaLPwrTahEJEuLCdi2gKCn/8KLjF7B
-         6tN/NaH88rP0wSsRzCD+sL799biMuBaWrKogIX3NR5mXPuZk9Kud0EJ7302I2ETvdR
-         JU0JYZosF1tmUybnyxhKkdHCjCag7gS45JkmmiWhfcTxaf8cLXVA0fsOvBLcgA2yrM
-         uR+lWPFTmjFiQ==
+        b=XFQZbEqNxfuPSDX72A5MknYA/LzfZ0EAEjAH+rDIAicGdSo4mzd5tXaKIUB24bH9Y
+         9bwgVc0g/eiB0lcBmOFkXEpDX2XD+Dr8x467VvB63aSitu/nl6WXvtp/Hw55xBcVEz
+         NAH3gToh+4YKMgHXv9iCJCWiCzCXwE5oB4pesIP+PdUJDvo22JrSE4tALH1AcpBLB0
+         j+HfQH+sH979DiO+ATzFHhRxfENplJRFnlejoSvNIHtb0enWRxfpbtGhojUJSyEehq
+         5wx00pGZH+EW7lm3s3cHQSaY6fZ9vZRBZPSG3XM0mUWkQU8kXuwSzwuDd77qlAOlmn
+         +FV2dtlmVu24g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sven Peter <sven@svenpeter.dev>,
@@ -39,9 +39,9 @@ Cc:     Sven Peter <sven@svenpeter.dev>,
         johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 72/73] Bluetooth: Add quirk to disable extended scanning
-Date:   Sun, 18 Dec 2022 11:07:40 -0500
-Message-Id: <20221218160741.927862-72-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 73/73] Bluetooth: Add quirk to disable MWS Transport Configuration
+Date:   Sun, 18 Dec 2022 11:07:41 -0500
+Message-Id: <20221218160741.927862-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218160741.927862-1-sashal@kernel.org>
 References: <20221218160741.927862-1-sashal@kernel.org>
@@ -60,79 +60,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Peter <sven@svenpeter.dev>
 
-[ Upstream commit 392fca352c7a95e2828d49e7500e26d0c87ca265 ]
+[ Upstream commit ffcb0a445ec2d5753751437706aa0a7ea8351099 ]
 
-Broadcom 4377 controllers found in Apple x86 Macs with the T2 chip
-claim to support extended scanning when querying supported states,
+Broadcom 4378/4387 controllers found in Apple Silicon Macs claim to
+support getting MWS Transport Layer Configuration,
 
-< HCI Command: LE Read Supported St.. (0x08|0x001c) plen 0
-> HCI Event: Command Complete (0x0e) plen 12
-      LE Read Supported States (0x08|0x001c) ncmd 1
+< HCI Command: Read Local Supported... (0x04|0x0002) plen 0
+> HCI Event: Command Complete (0x0e) plen 68
+      Read Local Supported Commands (0x04|0x0002) ncmd 1
         Status: Success (0x00)
-        States: 0x000003ffffffffff
 [...]
-          LE Set Extended Scan Parameters (Octet 37 - Bit 5)
-          LE Set Extended Scan Enable (Octet 37 - Bit 6)
+          Get MWS Transport Layer Configuration (Octet 30 - Bit 3)]
 [...]
 
-, but then fail to actually implement the extended scanning:
+, but then don't actually allow the required command:
 
-< HCI Command: LE Set Extended Sca.. (0x08|0x0041) plen 8
-        Own address type: Random (0x01)
-        Filter policy: Accept all advertisement (0x00)
-        PHYs: 0x01
-        Entry 0: LE 1M
-          Type: Active (0x01)
-          Interval: 11.250 msec (0x0012)
-          Window: 11.250 msec (0x0012)
-> HCI Event: Command Complete (0x0e) plen 4
-      LE Set Extended Scan Parameters (0x08|0x0041) ncmd 1
-        Status: Unknown HCI Command (0x01)
+> HCI Event: Command Complete (0x0e) plen 15
+      Get MWS Transport Layer Configuration (0x05|0x000c) ncmd 1
+        Status: Command Disallowed (0x0c)
+        Number of transports: 0
+        Baud rate list: 0 entries
+        00 00 00 00 00 00 00 00 00 00
 
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
  include/net/bluetooth/hci.h      | 10 ++++++++++
- include/net/bluetooth/hci_core.h |  4 +++-
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ include/net/bluetooth/hci_core.h |  3 +++
+ net/bluetooth/hci_sync.c         |  2 +-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 4518c63e9d17..78c55b69919d 100644
+index 78c55b69919d..dd455ce06770 100644
 --- a/include/net/bluetooth/hci.h
 +++ b/include/net/bluetooth/hci.h
-@@ -274,6 +274,16 @@ enum {
+@@ -284,6 +284,16 @@ enum {
  	 * during the hdev->setup vendor callback.
  	 */
- 	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
+ 	HCI_QUIRK_BROKEN_EXT_SCAN,
 +
 +	/*
-+	 * When this quirk is set, the HCI_OP_LE_SET_EXT_SCAN_ENABLE command is
++	 * When this quirk is set, the HCI_OP_GET_MWS_TRANSPORT_CONFIG command is
 +	 * disabled. This is required for some Broadcom controllers which
-+	 * erroneously claim to support extended scanning.
++	 * erroneously claim to support MWS Transport Layer Configuration.
 +	 *
 +	 * This quirk can be set before hci_register_dev is called or
 +	 * during the hdev->setup vendor callback.
 +	 */
-+	HCI_QUIRK_BROKEN_EXT_SCAN,
++	HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
  };
  
  /* HCI device flags */
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index e7862903187d..29d1254f9856 100644
+index 29d1254f9856..6afb4771ce35 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -1681,7 +1681,9 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
+@@ -1711,6 +1711,9 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
+ 	((dev)->le_features[3] & HCI_LE_CIS_PERIPHERAL)
+ #define bis_capable(dev) ((dev)->le_features[3] & HCI_LE_ISO_BROADCASTER)
  
- /* Use ext scanning if set ext scan param and ext scan enable is supported */
- #define use_ext_scan(dev) (((dev)->commands[37] & 0x20) && \
--			   ((dev)->commands[37] & 0x40))
-+			   ((dev)->commands[37] & 0x40) && \
-+			   !test_bit(HCI_QUIRK_BROKEN_EXT_SCAN, &(dev)->quirks))
++#define mws_transport_config_capable(dev) (((dev)->commands[30] & 0x08) && \
++	(!test_bit(HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG, &(dev)->quirks)))
 +
- /* Use ext create connection if command is supported */
- #define use_ext_conn(dev) ((dev)->commands[37] & 0x80)
+ /* ----- HCI protocols ----- */
+ #define HCI_PROTO_DEFER             0x01
  
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index a5e89e1b5452..117537f3e7ad 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -3940,7 +3940,7 @@ static int hci_read_local_pairing_opts_sync(struct hci_dev *hdev)
+ /* Get MWS transport configuration if the HCI command is supported */
+ static int hci_get_mws_transport_config_sync(struct hci_dev *hdev)
+ {
+-	if (!(hdev->commands[30] & 0x08))
++	if (!mws_transport_config_capable(hdev))
+ 		return 0;
+ 
+ 	return __hci_cmd_sync_status(hdev, HCI_OP_GET_MWS_TRANSPORT_CONFIG,
 -- 
 2.35.1
 
