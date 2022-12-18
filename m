@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9706465050E
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 23:16:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D6F3650511
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 23:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbiLRWQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 17:16:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
+        id S230355AbiLRWQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 17:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiLRWP7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 17:15:59 -0500
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2103.outbound.protection.outlook.com [40.107.241.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02EE38B2;
-        Sun, 18 Dec 2022 14:15:57 -0800 (PST)
+        with ESMTP id S229507AbiLRWQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 17:16:36 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2094.outbound.protection.outlook.com [40.107.14.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C55838BF;
+        Sun, 18 Dec 2022 14:16:34 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YqUNypdlwZ9N/s4CAIptMlqBh7TGkXBb4akbg0xdma5ONWk0EKG7KY73S2iybAwC/1U/dJv069uUYP+pnI5aDZpBqyTrUNUCcIinp9sctXrxy8zA3th5L/2QLqb7g+QZVyJhCuTpPLSh1c4E9UKIy5gyWJ0GV9gOsekqUOp4CaPnlEqFbWHxA0Wc1pPte4Lad7h1T1SBVJZTJ/jGeDoJ1omaea5F+j62DvBxnUmKyC9S83CIKkRK0IRHzMciUEiDUmDPe91wpS6hZ8o+lKt86SBlbmlr17Fuhhz0f57OC+ebjkdQ+NWV1j8itEwa9HCUtF/WaDYB+a0N6/Xxpa7bkA==
+ b=FqnE+esu7p5iME13hmLiOVl0hvsjW2FkLFEkr9uo95amdBPei8uy66sS+Z9AevhmI/vw4x57sU+a1st0aB9Boxa3bmRpMGfNJlg8bSDI6rKl6p7jKfgDXuvEWapHi8xXDyeQzIPCIyiNsSMYtDREoiUjB++2zqDuANO8pjftXH9rOjW3x/k5MjZJIhLCXpfasjMe8K/Qo9PT1SwE6/LddBN2Tk/QXkv/r54dHPGqdqi2uWM5rx4M2NY1V6Pxqly+1fxUSD+NkxILyjVddDpcHVA/x9zHiIenBWh0mg8xubrgyrzL2U5dmJJD/uVKq7+3HN+gCbTrq/yNw3nmBGHmoA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vfpEXMTtmZoS3D3KGNVaCl6nzvrWtbvDnoPGUo7z1ms=;
- b=mvrMWXsmNq2apVE/AnsSLGR7gbMgD53W3mnjzFTg65TKiWGnIdFeubZNPmDx9sGLqo6EvfwA0kqwTfbAEPLlMoX0pZTMaFyCXmj42iQo41xqIlAnDyRQf5PCzrrMgYNZX2zCtUqunIryL3GWqQdsLsyeVP/CkuXHCHs3SzAUW/8p0GE0oJ1uyflpAmOys2crg0Z9oEnBwLyn39yS1MG7fy6G+l9NBVbF9KCvlqxqfoICCvOwGBAc4tpg4Jaj9KbXC9a8FTJ9lIIWB10Ww8dQ94G/GQ9EmlWNIupd2WlXR8bZacGA54E5uu5Yk4APUy6NPPktn7cv6A8SeGmgtF3+RA==
+ bh=6H6eRylGD4+g1nABWxHsjxGtIpYm3tNamWCeiYEght4=;
+ b=PShtGpdQluvuhQYzwv1+4HUv5nOmBdFa8RCJffAC/SX/A73woQY+H0baV4pL3/uXl4A/g9k/Cosl0mzTCxDxLQFR573FKsyfKG+weAwr99mlJWTqzkdZ/oOpB88Hyv2gFWHbYDH86YaHoK6yS7rtfa7z05dXaX+CpPN7Wf9jOxfSiAsluAfOLp15W2a32rxKmfuM8VIcUcgUgCLC1i6uDANA+1hWudunF5YltC415GOSEyjEsHH2cnmhca9kHlN9cPQVh+tvoWFKd7r92qLwtqDsfeK0hlZS7YV+U6DMRJkDPu5bZ6Dr8WbeYubxm6m131ff6krbxWs/0AkXD2NwEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vfpEXMTtmZoS3D3KGNVaCl6nzvrWtbvDnoPGUo7z1ms=;
- b=IkulgLI19TrJfkOH6DTGqXil8ZzHpedNx9vKJTyPHdcE+7bQrFHyMsny/klmBqmaBUOQvzx4a7SoKRfizaGEM6ZRmqGsIMpQocbmnaAd3PRmZl2XAUucm8HljIuoWsnN2zY+Waawgec3E5CgoGN9TBVjmLvHgcf5QjgRX2GsAbQ=
+ bh=6H6eRylGD4+g1nABWxHsjxGtIpYm3tNamWCeiYEght4=;
+ b=YhV5ugdSCFCXguA79qk7gTSVBR92QtAAQd97sQ9frOViPG8xLGMblOqTidyOjTP25SVNTBkfFi09Wx++b2pHrKS5b0sqbSQwk85ua4weS1znwKvSSEbS74/Lm5j2u4LSVCj5T+emZavS75ersTGGR7KM8ijceBE7L9h1GqEOqUs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=plvision.eu;
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
  by GV1P190MB1874.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:61::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Sun, 18 Dec
- 2022 22:15:55 +0000
+ 2022 22:16:32 +0000
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::16a:8656:2013:736f]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::16a:8656:2013:736f%4]) with mapi id 15.20.5924.016; Sun, 18 Dec 2022
- 22:15:54 +0000
-Date:   Mon, 19 Dec 2022 00:15:40 +0200
+ 22:16:32 +0000
+Date:   Mon, 19 Dec 2022 00:16:18 +0200
 From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
 To:     netdev@vger.kernel.org
 Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
@@ -53,62 +53,62 @@ Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 0/2] net: marvell: prestera: add ipv6 routes
- offloading
-Message-ID: <Y5+RDIIGWGeKGUAo@yorlov.ow.s>
+Subject: [PATCH net-next v1 2/2] net: marvell: prestera: Handle ipv6
+ lpm/neigh events
+Message-ID: <Y5+RMvhZCyG0bFgh@yorlov.ow.s>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-ClientProxiedBy: FR3P281CA0104.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a1::20) To PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0116.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::20) To PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:102:283::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAXP190MB1789:EE_|GV1P190MB1874:EE_
-X-MS-Office365-Filtering-Correlation-Id: 64d05fad-4b4b-400a-2082-08dae1456e57
+X-MS-Office365-Filtering-Correlation-Id: 6fc54888-9254-4459-afc1-08dae145848a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hicOBbjkEK1cJnMLUQ3x4Z+xRCua2Ygw8wkgrAA7vVs+Zi4/pja+ic9MbyDf1PlIWxyPcTMzcMyx4x6q2EsIB9Pj6wvPJ8bRqji2DtpEo9/j0qsl8FphDZk0LQxjfYSt8xTiQUHkAXsmrwr4nRV4MSJPArkQeRx9Lmkq4RAtHO+fVgLorzT8BkNIqQ6yxEAb9fM1krWik/sDMRtn6mm5lHRzGwC33zr3DIPVwhT2fsZfwthkfZrpEp5Y3pjqfze+j4ybEOYfMEzltiMb4qCxwIId/nJAksxWCe72u0m1ejN8mfOPlO/PWLeZc/ikR5EAhKdLsRVDFQZhENMt0NP+oSNc120qRdIxkE0t/EQyf294TW7K0tHcYe5pF0TkzZtQeT6Cv54b6k1GCLbgVoCGzXRvdVFgGWCLJgn11Y0gitoTaV3xGsWSlJ37Zap8GA/XqGvPRKS0/xw9L7TJh3ffKnZ7iydQ/kaa5Ve0ghtYPl9uLngCV27OJiy/YGu3ZNRqSyySw4M4FeWjevEtyNp/R53VvC9/11joQ/5DOCV+7dE0Gc2EbkpGq4FbpFKeFzYSm+kikqWEuOltdaZ8BeWHKFajfzmq7rd9/t75LmNFrIo6/oMwWQJ/HwAr6I2TS5VjgOZDFwGyirp/2OKcweSzqZ7Jkpn/z0qhDj3lH3MB/CzkN09PrAG013udJbJIdAGO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(346002)(136003)(396003)(39830400003)(451199015)(6666004)(478600001)(6506007)(6486002)(38100700002)(6512007)(186003)(9686003)(26005)(41300700001)(44832011)(4744005)(54906003)(6916009)(316002)(2906002)(66476007)(8676002)(66946007)(66556008)(4326008)(8936002)(83380400001)(5660300002)(86362001)(66574015)(67856001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: /tq46A/Tz7LAH5TgsRHDE8QDONV10lf0o+3nWSLNfPm4/GlElXnSZar3NtHaGB3qQEibX30d/CgtoGGuFjFjMLA9KnxXCVK+puRcEqX4aP4yy1qdf3dRhJmYVUeeovJUV/6Yz68gft1wZlNiTkddoDr1TeKf3DsmQdT2wjonBbaSjMcsEhGW0aPO9dkcGLHRiBRQR4Gp4v6TD7HO+4/UMh/Tj40UQhxIYiyqaa9tc/geU67+ENX7APqHleOsjqyx9YO35frt1+rLSCtl2GvujXEyg3GEZIcQXI9UHITIzrPZ6R0jAg4KChCBXNazmkWS5LQI3xIY5Y5FAQ8D3q6LjIZQiXBTM/pwPOJ6Df6S+KMoWdibAb3fOf5f87cLKfXpOhLZmBnucl4llVKYi2P3AYwjuetjKG3K6j6v2RzEAtKS9WAbhnTKrHZSEeVryxNHl1YOaz8utojQe+0I2ebHmOfJaVKWpo1PCsZ87cHT3RhVQgxEVAuvoHdqJbol5p831PIyQDjfcalMlEwVU//OlD0wfRc9VrjUf2eU+Zn6Ex/TjjMtKpyRQhuA3uIEY6EK1Vl0USrxM2YC57Y48mbIIvxAK/meW5n+Acsj7/RWOP5jeNtyhAIeebLQ3Uo2tiADDijMuY+LrUzM9hC0sTccFzmO1r6W9FFcS8WJjygd1VAxvWgbTBefv2/40t+Jq3+n
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(346002)(136003)(396003)(39830400003)(451199015)(6666004)(478600001)(6506007)(6486002)(38100700002)(6512007)(186003)(9686003)(26005)(41300700001)(44832011)(54906003)(6916009)(316002)(2906002)(66476007)(8676002)(66946007)(66556008)(4326008)(8936002)(83380400001)(5660300002)(86362001)(66574015)(67856001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/TQUbvUvq5YO4XuqsVSqBjGi8PI4rBRH/z6PvDsVgfgQluMAjbX/JlWKFgKf?=
- =?us-ascii?Q?425krzR3oF8jvM5hOe5C/JrpRb+WrIVB89ljj9e+SjSvX/pKoRK0a91NeWAB?=
- =?us-ascii?Q?dSQ5ZEqS0WAdAbLc6eHQx/EFkctTwkBFy5x6mPqSEAy7F+fxjklCaELY8QyF?=
- =?us-ascii?Q?A16xV6VFgyC2SGErSTuzm5cw0yWMhZSHyr5OEe1mmqvev4gekFFpdgE+7Gun?=
- =?us-ascii?Q?v2HdWnhOrvUuV/Slon6S23lfWoEj9L356BzqT8au9BpAvK/gdQlJjfwtkToV?=
- =?us-ascii?Q?sGYxSNpff2Ix8qoHmt6tSqw8zKg47wIbUs6Xxmk+yjusK4AgvvO1Jp/JF8fu?=
- =?us-ascii?Q?y6O2HSrKie7yI9vVo+kIw9PHLDfZsve2F2zkr7Wbc0AKEZDN2hcSjXIjFZJM?=
- =?us-ascii?Q?x5ZAg/tS1aUGHGP9ZG7+SXZ6FAkW5cKcmWFbSWsESeexx/WT0cTeUM/xgrSK?=
- =?us-ascii?Q?fJdklX5KIsESJBnER39jRbB55BgO+RzIIOhfgu2ptdU9RCrniOPxuxLYvuwT?=
- =?us-ascii?Q?sqwq1MfDBnATHZOCV4lMVbcroqlc5IwFk2S+sKd8B+J81i8fSua2KyZdRs7J?=
- =?us-ascii?Q?NNE/SxjINuiHcl8aXKKb1aNfMIpyJxNdFM2NIwD3YdhHnEMLzqoRqY5rHumY?=
- =?us-ascii?Q?TDC9REDwKzGwBARHob5GnA7hjxi4nCfWm+z+LZ9nc0lWljTGDgQgjQQXa7yy?=
- =?us-ascii?Q?k5tAi+aW1Bx4uGCmIztZZFOkj9Zvb19Uk71pgFkvVrcv3vup6sPkC/iiPJAM?=
- =?us-ascii?Q?KPSaEX7ikQGoRPygp5z5FN9IkrzduATCKrlGa3Xh7+B+zNwRaEtJVZF0Pz58?=
- =?us-ascii?Q?mkUw3SxbUWhr8JX14yzHDPh8oAy76VyQ3RLUISzQ2G+5y5lGV3qglg34qy4/?=
- =?us-ascii?Q?DO/+0zGUHXeL2BpfILbDB65v0QtXqLLr7TFaabSSh2qqBJgcgqoAe7n6NKgD?=
- =?us-ascii?Q?sXaBJ24pnW/8JqNJbcch3Du4zIZbWQunvfmaGXTSWair5Qmbz1G34IVOmoT1?=
- =?us-ascii?Q?/lWYPJLNRyiZ1kvLX6He1EUIMyXf4SPzleBtnnRLHWHclHqSnEaN1THFGbx9?=
- =?us-ascii?Q?XP1skqYrfsrw5zxxWBk1Z6Q0sY15FH25Nc5m2ooNyHwTGPvLK8LjDIZ1iN1Z?=
- =?us-ascii?Q?KNBT/69dvlGEJDdHkPjd/DwK88RACMggenOYMIBhU08yAVld4C1/hJcaGJ7Z?=
- =?us-ascii?Q?/qvPyYigPrJCODoVQEue5N0VxE1sYghh+IRZyorqmyEUVfPw3I36KbBrcG1g?=
- =?us-ascii?Q?UmNf01cy4B0rPM22GI6i+cZQqxRu156hHmbf0NcPc/TOjCh6TXi196ngFVWU?=
- =?us-ascii?Q?zghbRZCme/A5UCoTQK85koeweeCg6o1QK5Iliur3eSFMhTAd43fLZepXOcmd?=
- =?us-ascii?Q?fvqhU1vf5Iqfpst4mTxaxkoCLH5PQm24XUD2mUalWgaQdT5P2woe19WKUhsT?=
- =?us-ascii?Q?ByQkhL6iHAM3z7WFMm0oCEFl27mx5HF5tkW6yPzF/pAtTNuXD0idObTsnQg8?=
- =?us-ascii?Q?2ovbJtrV7oYV1qz6h4q1ZLA6tbcCQdMbNCqa2pxVgVGsnR/06VFUGWfbazZN?=
- =?us-ascii?Q?vD77Gzw0o9tgjFqvvPvuIP7uxv5/LVtWclSHzv2irP6ymHKtdW6dTkNj74gu?=
- =?us-ascii?Q?IQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OgUomVEJ7FTpmlNANhcHmNntOo2IXKlxeg8jyvv33zmeu4HGnfYYPbz79iMR?=
+ =?us-ascii?Q?a4x0J+N7sduROnNy+bymSzLGHmZ8626LarCH1SVhgYqCCvfCDBv9V6eHmcLn?=
+ =?us-ascii?Q?U2ITV/mkTxaqeKJx5GjeZtqRKYnRozpfaM62O6c/WTjr1zp77eJCflNYplD1?=
+ =?us-ascii?Q?RDxZL8UGlOOtZiS3VCDIdfY630TCVcnbyAEIjObCYkpmiHHnzWIiZS2ccvfy?=
+ =?us-ascii?Q?mpu9PVEt2ChX9hCfIcOF0Ahi7MrMn4XJxYK+plAnTMjshcb1XAjPNHduteMy?=
+ =?us-ascii?Q?Wy7JdwHtHfH0+BbVRMmc4oInVIDDgRyICToKYgEJotvtjnIOb4Gkxm0EWiJU?=
+ =?us-ascii?Q?KDkSz3Hn0aQnbsM+xnAeJUc1KOgGS6EwkdhndjC1tHdtLP8kUFGSbQqfXC/u?=
+ =?us-ascii?Q?QJ8Iwz1EkibOrIBr375xp+bZ/9K47elru5DnWy3dlsUX0GMxP95ceaqW/J3L?=
+ =?us-ascii?Q?hJlgIZOY0JTLkIxH+D3KM8P6fEVJLDtX6dQHD7mraS6VzxHVGn7xT8+Y+jnv?=
+ =?us-ascii?Q?PJ14WjsVmmgvO8EUDizP8vHPTeDVZBNKQNVTgLMoaYUuJ8dQqa5P+v0ymgfh?=
+ =?us-ascii?Q?Pat5nB5FFotKA41869LnyjQ1TUatuD0tXrzHMx135rZGK7ulxnO94YJSW2hB?=
+ =?us-ascii?Q?/FZ6pcyOt+4J/LxD8+Gpgvf0iiOK4tncW/jWmKgffK8gplBPFfoBe4+olG4v?=
+ =?us-ascii?Q?1H34UJm8QUrjRgduaeBbtPFIUqBoyD0uPUw7xduNpb0INl5Febxo26O/DbGK?=
+ =?us-ascii?Q?+mzWjP7oC87lvM5badOX0brzzcKAVt6JwtXr9gjL+LxXKEQlrfN0KzIfLKPX?=
+ =?us-ascii?Q?LVVu5zNFHRGM2h7eKssdwEdb8hS8IVhZx4V3TvzSEf6p/jS4WM65OzC7sfZC?=
+ =?us-ascii?Q?3MxH4rJJqTr7pSN3B8JJ7T6HpmVlTuqy5tUDDE7P1FYCfOTt0OZJIRP9nHND?=
+ =?us-ascii?Q?NrxWyURym2AyoxyY3FjgCyERQV1eduS8w882YsqOpM572PFvaUK78GJOBTau?=
+ =?us-ascii?Q?uAkPuyexpnriCwWk3PUskIpqmVsUhT5WanhO7o/34QYcuQLKJ407iumHDB+y?=
+ =?us-ascii?Q?bbcBP1+r1ZpdCLY/pyJH+ZuzC9HqrKxO4JFv7toOdc6tk7n+nCyIrZIpbKC7?=
+ =?us-ascii?Q?spJ7rvOYYVJVshvX5cv0hwf9K+dC6R9WnuSpePeJBpDrcASIc/10mU6aVgdi?=
+ =?us-ascii?Q?QsrjqsaVJc1iNjStTWyN0cYUEnCEF6IRq3t/vVbFDxtYtadVvptp8Tvujn4H?=
+ =?us-ascii?Q?VYV8Fux/P1bOdCriUxozwdLQRCFbzY9v/alcMgdCaca+KYRfqufIczCrCg1z?=
+ =?us-ascii?Q?/6qsxDSlrdGQiwULHsYfqMK0S9wfHtSK1ZNtnGrlmk0XaZ7sYvtVlkdoOjiC?=
+ =?us-ascii?Q?uEAPrSuNMsdbTdXmYCapnOtP4BpnP6uBbmCX6qBv3iGC7rCcCwp1OYxXN88y?=
+ =?us-ascii?Q?51j+PGk738kwgKRJ/YC/sNfbTf+jiuMhy49XdKrFezIYq0mDkAJ2mRPWYpPC?=
+ =?us-ascii?Q?YrPdqRqICCp0JBoUa3c05wgjXw8JAlFJdBnwnnk5oP6fgMk6RFRBL35IG9TX?=
+ =?us-ascii?Q?Ov6k8D2mh9dXeOxM9uut0NLCeOSFdaO0YW0VX26Utjvg6jqzAUW+W4HJeIQt?=
+ =?us-ascii?Q?TQ=3D=3D?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64d05fad-4b4b-400a-2082-08dae1456e57
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6fc54888-9254-4459-afc1-08dae145848a
 X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2022 22:15:54.7950
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2022 22:16:32.0114
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: q92Bi91DF9LAhjDy7GWYazw6qgU8NDYNwe7DT92xfB34qjfL9vvQWeMUkdzmdMTOtybeUd0U+nAgSZoArfiFV65PpomOgsVnnnTg66xHRkk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7/KOOYaDsrajcehpesMEJAPqrp8b/H9M70BZWZSyN0+bKNcMz6s+wTpZMKlmgF/dZlhRpLTPCTetyWvluwBJD+K71Tn7nhVtF9kEgacH3y8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1P190MB1874
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -120,31 +120,274 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for IPv6 nexthop/blackhole/connected routes for Marvell Prestera driver.
-Handle AF_INET6 neigbours, fib entries.
+Handle AF_INET6 for events:
+ - NETEVENT_NEIGH_UPDATE
+ - FIB_EVENT_ENTRY_REPLACE
+ - FIB_EVENT_ENTRY_DEL
 
-Add features:
- - IPv6:
-   - Support "offload", "offload_failed", "trap" flags
-   - Support blackhole, nexthop, local/connected/unreachable/etc (trap)
-     e.g.: "ip addr add 2001:1::1/64 dev sw1p2"
-     e.g.: "ip route add 2002:2::/64 via 2001:2::2"
-     e.g.: "ip route add blachole 2003:2::/64 dev lo"
+Also try to make wrappers for ipv4/6 specific functions.
+This allow us to pass fib_notifier_info for most cases.
+E.g  prestera_util_fen_info_copy, prestera_util_fen_info_release.
+Main idea is to increase number of agnostic about ip version functions.
 
 Limitations:
- - ipv6 ECMP is not supported
- - Only "local" and "main" tables supported
- - Only generic interfaces supported for router (no bridges or vlans)
+- Only "local" and "main" tables supported
+- Only generic interfaces supported for router (no bridges or vlans)
 
-Yevhen Orlov (2):
-  net: marvell: prestera: Add router ipv6 ABI
-  net: marvell: prestera: Handle ipv6 lpm/neigh events
-
- .../ethernet/marvell/prestera/prestera_hw.c   |  34 +++++
- .../ethernet/marvell/prestera/prestera_hw.h   |   4 +
+Co-developed-by: Taras Chornyi <taras.chornyi@plvision.eu>
+Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
+Co-developed-by: Elad Nachman <enachman@marvell.com>
+Signed-off-by: Elad Nachman <enachman@marvell.com>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+---
  .../marvell/prestera/prestera_router.c        | 138 +++++++++++++-----
- .../marvell/prestera/prestera_router_hw.c     |  33 ++++-
- 4 files changed, 166 insertions(+), 43 deletions(-)
+ 1 file changed, 101 insertions(+), 37 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+index a9a1028cb17b..5ee0a9511878 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+@@ -12,6 +12,7 @@
+ #include <linux/if_vlan.h>
+ #include <linux/if_macvlan.h>
+ #include <net/netevent.h>
++#include <net/ip6_route.h>
+ 
+ #include "prestera.h"
+ #include "prestera_router_hw.h"
+@@ -60,6 +61,7 @@ struct prestera_kern_fib_cache {
+ 	union {
+ 		struct fib_notifier_info info; /* point to any of 4/6 */
+ 		struct fib_entry_notifier_info fen4_info;
++		struct fib6_entry_notifier_info fen6_info;
+ 	};
+ 	bool reachable;
+ };
+@@ -89,18 +91,67 @@ static u32 prestera_fix_tb_id(u32 tb_id)
+ 	return tb_id;
+ }
+ 
++static void
++prestera_util_fen_info_copy(struct fib_notifier_info *sinfo,
++			    struct fib_notifier_info *tinfo)
++{
++	struct fib6_entry_notifier_info *sinfo6 =
++		container_of(sinfo, struct fib6_entry_notifier_info, info);
++	struct fib_entry_notifier_info *sinfo4 =
++		container_of(sinfo, struct fib_entry_notifier_info, info);
++	struct fib6_entry_notifier_info *tinfo6 =
++		container_of(tinfo, struct fib6_entry_notifier_info, info);
++	struct fib_entry_notifier_info *tinfo4 =
++		container_of(tinfo, struct fib_entry_notifier_info, info);
++
++	if (sinfo->family == AF_INET) {
++		fib_info_hold(sinfo4->fi);
++		*tinfo4 = *sinfo4;
++	} else if (sinfo->family == AF_INET6) {
++		fib6_info_hold(sinfo6->rt);
++		*tinfo6 = *sinfo6;
++	} else {
++		WARN(1, "Invalid address family %s %d", __func__, sinfo->family);
++	}
++}
++
++static void prestera_util_fen_info_release(struct fib_notifier_info *info)
++{
++	struct fib6_entry_notifier_info *info6 =
++		container_of(info, struct fib6_entry_notifier_info, info);
++	struct fib_entry_notifier_info *info4 =
++		container_of(info, struct fib_entry_notifier_info, info);
++
++	if (info->family == AF_INET)
++		fib_info_put(info4->fi);
++	else if (info->family == AF_INET6)
++		fib6_info_release(info6->rt);
++	else
++		WARN(1, "Invalid address family %s %d",
++		     __func__, info->family);
++}
++
+ static void
+ prestera_util_fen_info2fib_cache_key(struct fib_notifier_info *info,
+ 				     struct prestera_kern_fib_cache_key *key)
+ {
++	struct fib6_entry_notifier_info *fen6_info =
++		container_of(info, struct fib6_entry_notifier_info, info);
+ 	struct fib_entry_notifier_info *fen_info =
+ 		container_of(info, struct fib_entry_notifier_info, info);
+ 
+ 	memset(key, 0, sizeof(*key));
+-	key->addr.v = PRESTERA_IPV4;
+-	key->addr.u.ipv4 = cpu_to_be32(fen_info->dst);
+-	key->prefix_len = fen_info->dst_len;
+-	key->kern_tb_id = fen_info->tb_id;
++	if (info->family == AF_INET) {
++		key->addr.v = PRESTERA_IPV4;
++		key->addr.u.ipv4 = cpu_to_be32(fen_info->dst);
++		key->prefix_len = fen_info->dst_len;
++		key->kern_tb_id = fen_info->tb_id;
++	} else if (info->family == AF_INET6) {
++		key->addr.v = PRESTERA_IPV6;
++		key->addr.u.ipv6 = fen6_info->rt->fib6_dst.addr;
++		key->prefix_len = fen6_info->rt->fib6_dst.plen;
++		key->kern_tb_id = fen6_info->rt->fib6_table->tb6_id;
++	}
+ }
+ 
+ static int prestera_util_nhc2nc_key(struct prestera_switch *sw,
+@@ -155,6 +206,9 @@ prestera_util_neigh2nc_key(struct prestera_switch *sw, struct neighbour *n,
+ 	if (n->tbl->family == AF_INET) {
+ 		key->addr.v = PRESTERA_IPV4;
+ 		key->addr.u.ipv4 = *(__be32 *)n->primary_key;
++	} else if (n->tbl->family == AF_INET6) {
++		key->addr.v = PRESTERA_IPV6;
++		key->addr.u.ipv6 = *(struct in6_addr *)n->primary_key;
+ 	} else {
+ 		return -ENOENT;
+ 	}
+@@ -683,8 +737,15 @@ __prestera_k_arb_n_offload_set(struct prestera_switch *sw,
+ {
+ 	struct neighbour *n;
+ 
+-	n = neigh_lookup(&arp_tbl, &nc->key.addr.u.ipv4,
+-			 nc->key.dev);
++	if (nc->key.addr.v == PRESTERA_IPV4)
++		n = neigh_lookup(&arp_tbl, &nc->key.addr.u.ipv4,
++				 nc->key.dev);
++	else if (nc->key.addr.v == PRESTERA_IPV6)
++		n = neigh_lookup(&nd_tbl, &nc->key.addr.u.ipv6,
++				 nc->key.dev);
++	else
++		n = NULL;
++
+ 	if (!n)
+ 		return;
+ 
+@@ -715,7 +776,8 @@ __prestera_k_arb_fib_lpm_offload_set(struct prestera_switch *sw,
+ 		fib_alias_hw_flags_set(&init_net, &fri);
+ 		return;
+ 	case PRESTERA_IPV6:
+-		/* TODO */
++		fib6_info_hw_flags_set(&init_net, fc->fen6_info.rt,
++				       offload, trap, fail);
+ 		return;
+ 	}
+ }
+@@ -1384,44 +1446,43 @@ static int __prestera_inetaddr_valid_cb(struct notifier_block *nb,
+ struct prestera_fib_event_work {
+ 	struct work_struct work;
+ 	struct prestera_switch *sw;
+-	struct fib_entry_notifier_info fen_info;
++	union {
++		struct fib_notifier_info info; /* point to any of 4/6 */
++		struct fib6_entry_notifier_info fen6_info;
++		struct fib_entry_notifier_info fen4_info;
++	};
+ 	unsigned long event;
+ };
+ 
+ static void __prestera_router_fib_event_work(struct work_struct *work)
+ {
+ 	struct prestera_fib_event_work *fib_work =
+-			container_of(work, struct prestera_fib_event_work, work);
+-	struct prestera_switch *sw = fib_work->sw;
++		container_of(work, struct prestera_fib_event_work,
++			     work);
+ 	int err;
+ 
+ 	rtnl_lock();
+ 
+ 	switch (fib_work->event) {
+ 	case FIB_EVENT_ENTRY_REPLACE:
+-		err = prestera_k_arb_fib_evt(sw, true,
+-					     &fib_work->fen_info.info);
++		err = prestera_k_arb_fib_evt(fib_work->sw, true,
++					     &fib_work->info);
+ 		if (err)
+-			goto err_out;
++			dev_err(fib_work->sw->dev->dev,
++				"Error when processing lpm entry");
+ 
+ 		break;
+ 	case FIB_EVENT_ENTRY_DEL:
+-		err = prestera_k_arb_fib_evt(sw, false,
+-					     &fib_work->fen_info.info);
++		err = prestera_k_arb_fib_evt(fib_work->sw, false,
++					     &fib_work->info);
+ 		if (err)
+-			goto err_out;
++			dev_err(fib_work->sw->dev->dev,
++				"Cant delete lpm entry");
+ 
+ 		break;
+ 	}
+ 
+-	goto out;
+-
+-err_out:
+-	dev_err(sw->dev->dev, "Error when processing %pI4h/%d",
+-		&fib_work->fen_info.dst,
+-		fib_work->fen_info.dst_len);
+-out:
+-	fib_info_put(fib_work->fen_info.fi);
++	prestera_util_fen_info_release(&fib_work->info);
+ 	rtnl_unlock();
+ 	kfree(fib_work);
+ }
+@@ -1430,30 +1491,33 @@ static void __prestera_router_fib_event_work(struct work_struct *work)
+ static int __prestera_router_fib_event(struct notifier_block *nb,
+ 				       unsigned long event, void *ptr)
+ {
++	struct fib6_entry_notifier_info *info6 =
++		container_of(ptr, struct fib6_entry_notifier_info, info);
++	struct fib_entry_notifier_info *info4 =
++		container_of(ptr, struct fib_entry_notifier_info, info);
++	struct prestera_router *router =
++		container_of(nb, struct prestera_router, fib_nb);
+ 	struct prestera_fib_event_work *fib_work;
+-	struct fib_entry_notifier_info *fen_info;
+ 	struct fib_notifier_info *info = ptr;
+-	struct prestera_router *router;
+-
+-	if (info->family != AF_INET)
+-		return NOTIFY_DONE;
+-
+-	router = container_of(nb, struct prestera_router, fib_nb);
+ 
+ 	switch (event) {
+ 	case FIB_EVENT_ENTRY_REPLACE:
+ 	case FIB_EVENT_ENTRY_DEL:
+-		fen_info = container_of(info, struct fib_entry_notifier_info,
+-					info);
+-		if (!fen_info->fi)
++		if (info->family == AF_INET6) {
++			if (!info6->rt)
++				return NOTIFY_DONE;
++		} else if (info->family == AF_INET) {
++			if (!info4->fi)
++				return NOTIFY_DONE;
++		} else {
+ 			return NOTIFY_DONE;
++		}
+ 
+ 		fib_work = kzalloc(sizeof(*fib_work), GFP_ATOMIC);
+ 		if (WARN_ON(!fib_work))
+ 			return NOTIFY_BAD;
+ 
+-		fib_info_hold(fen_info->fi);
+-		fib_work->fen_info = *fen_info;
++		prestera_util_fen_info_copy(info, &fib_work->info);
+ 		fib_work->event = event;
+ 		fib_work->sw = router->sw;
+ 		INIT_WORK(&fib_work->work, __prestera_router_fib_event_work);
+@@ -1500,7 +1564,7 @@ static int prestera_router_netevent_event(struct notifier_block *nb,
+ 
+ 	switch (event) {
+ 	case NETEVENT_NEIGH_UPDATE:
+-		if (n->tbl->family != AF_INET)
++		if (n->tbl->family != AF_INET && n->tbl->family != AF_INET6)
+ 			return NOTIFY_DONE;
+ 
+ 		net_work = kzalloc(sizeof(*net_work), GFP_ATOMIC);
 -- 
 2.17.1
