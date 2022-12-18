@@ -2,117 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53CC5650405
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 18:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30041650450
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 19:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbiLRRNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 12:13:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
+        id S231203AbiLRSaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 13:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233625AbiLRRKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 12:10:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886D51EAF6;
-        Sun, 18 Dec 2022 08:23:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AAD060C40;
-        Sun, 18 Dec 2022 16:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 206F4C43392;
-        Sun, 18 Dec 2022 16:23:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671380623;
-        bh=U+cQHrDmIK+r9qwVg+CRg/eCGO+GgpLzZ8wc3TPMRA0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRvKOQ+3jcOnu3tc0kPfowfUdqnOt2ERnuOECf84ZP4zewFGK04M+RYD7CR8p3gVJ
-         5AdamElk84Yb+2ccHkEv0De+k4tTbs4We6MqaVYYfWO+jSEEf6XOSns0xXAWYDn+jU
-         yzvnvwADsj2z70UGSXeVQcaZQVv1232foSp7mkFyRQ3ByPlUEupkxpTvBKkJqA0Ieg
-         tLqgG6C2RRxYEpjN28S7FLyXqDlXr7gXNfopPjSdGTGbRufVchboCeec+4droonNsG
-         7aaPkOcaP55GMmCebGbhLNZvLZD2PpHJED7IlsLsaGE74JIAU8bz/TE8Nc8V8O3ykU
-         xjbIruA4gcXBw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
-        syzbot+41cab52ab62ee99ed24a@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 14/20] ppp: associate skb with a device at tx
-Date:   Sun, 18 Dec 2022 11:22:59 -0500
-Message-Id: <20221218162305.935724-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221218162305.935724-1-sashal@kernel.org>
-References: <20221218162305.935724-1-sashal@kernel.org>
+        with ESMTP id S231174AbiLRS3d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 13:29:33 -0500
+Received: from smtp.smtpout.orange.fr (smtp-26.smtpout.orange.fr [80.12.242.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C898E22B
+        for <netdev@vger.kernel.org>; Sun, 18 Dec 2022 10:08:51 -0800 (PST)
+Received: from pop-os.home ([86.243.100.34])
+        by smtp.orange.fr with ESMTPA
+        id 6y5fpvYLi8ao36y5fpZW7m; Sun, 18 Dec 2022 19:08:49 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 18 Dec 2022 19:08:49 +0100
+X-ME-IP: 86.243.100.34
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Chris Lee <christopher.lee@cspi.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andrew Gallatin <gallatin@myri.com>,
+        Brice Goglin <brice@myri.com>, Jeff Garzik <jgarzik@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org
+Subject: [PATCH] myri10ge: Fix an error handling path in myri10ge_probe()
+Date:   Sun, 18 Dec 2022 19:08:40 +0100
+Message-Id: <f03711f1d0919017c081e273e16afd9009874fd4.1671386898.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stanislav Fomichev <sdf@google.com>
+Some memory allocated in myri10ge_probe_slices() is not released in the
+error handling path of myri10ge_probe().
 
-[ Upstream commit 9f225444467b98579cf28d94f4ad053460dfdb84 ]
+Add the corresponding kfree(), as already done in the remove function.
 
-Syzkaller triggered flow dissector warning with the following:
-
-r0 = openat$ppp(0xffffffffffffff9c, &(0x7f0000000000), 0xc0802, 0x0)
-ioctl$PPPIOCNEWUNIT(r0, 0xc004743e, &(0x7f00000000c0))
-ioctl$PPPIOCSACTIVE(r0, 0x40107446, &(0x7f0000000240)={0x2, &(0x7f0000000180)=[{0x20, 0x0, 0x0, 0xfffff034}, {0x6}]})
-pwritev(r0, &(0x7f0000000040)=[{&(0x7f0000000140)='\x00!', 0x2}], 0x1, 0x0, 0x0)
-
-[    9.485814] WARNING: CPU: 3 PID: 329 at net/core/flow_dissector.c:1016 __skb_flow_dissect+0x1ee0/0x1fa0
-[    9.485929]  skb_get_poff+0x53/0xa0
-[    9.485937]  bpf_skb_get_pay_offset+0xe/0x20
-[    9.485944]  ? ppp_send_frame+0xc2/0x5b0
-[    9.485949]  ? _raw_spin_unlock_irqrestore+0x40/0x60
-[    9.485958]  ? __ppp_xmit_process+0x7a/0xe0
-[    9.485968]  ? ppp_xmit_process+0x5b/0xb0
-[    9.485974]  ? ppp_write+0x12a/0x190
-[    9.485981]  ? do_iter_write+0x18e/0x2d0
-[    9.485987]  ? __import_iovec+0x30/0x130
-[    9.485997]  ? do_pwritev+0x1b6/0x240
-[    9.486016]  ? trace_hardirqs_on+0x47/0x50
-[    9.486023]  ? __x64_sys_pwritev+0x24/0x30
-[    9.486026]  ? do_syscall_64+0x3d/0x80
-[    9.486031]  ? entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Flow dissector tries to find skb net namespace either via device
-or via socket. Neigher is set in ppp_send_frame, so let's manually
-use ppp->dev.
-
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: linux-ppp@vger.kernel.org
-Reported-by: syzbot+41cab52ab62ee99ed24a@syzkaller.appspotmail.com
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0dcffac1a329 ("myri10ge: add multislices support")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ppp/ppp_generic.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index 6287d2ad77c6..f6cf25cba16e 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -1541,6 +1541,8 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
- 	int len;
- 	unsigned char *cp;
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 8073d7a90a26..c5687d94ea88 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -3912,6 +3912,7 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	myri10ge_free_slices(mgp);
  
-+	skb->dev = ppp->dev;
-+
- 	if (proto < 0x8000) {
- #ifdef CONFIG_PPP_FILTER
- 		/* check if we should pass this packet */
+ abort_with_firmware:
++	kfree(mgp->msix_vectors);
+ 	myri10ge_dummy_rdma(mgp, 0);
+ 
+ abort_with_ioremap:
 -- 
-2.35.1
+2.34.1
 
