@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 715F56502A1
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:49:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA8F6502A7
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232302AbiLRQta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:49:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52044 "EHLO
+        id S232732AbiLRQuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:50:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiLRQr1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:47:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5F511A35;
-        Sun, 18 Dec 2022 08:17:43 -0800 (PST)
+        with ESMTP id S232775AbiLRQsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:48:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DA11A054;
+        Sun, 18 Dec 2022 08:17:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25ACEB80BA7;
-        Sun, 18 Dec 2022 16:17:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB58C433A8;
-        Sun, 18 Dec 2022 16:17:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF724B80B43;
+        Sun, 18 Dec 2022 16:17:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547D3C433D2;
+        Sun, 18 Dec 2022 16:17:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671380260;
-        bh=TXTvjtfPLfcHfjhTIu0kSJEnGFEchVY+QHMRRyjNRbg=;
+        s=k20201202; t=1671380265;
+        bh=GEMHxz9UeYpqBtx6PdRfOQw98dL7l1iH3y89uzKmimI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBnIJ2m6GM+EVltBnkG3jLmqw12L+M+fXKFokO7ahdFUOS2EHn4JKC/LTDF9/vYrG
-         7OKgx7ItRtefYgJ7m/XK7fJ4yL/1HIo+E74fVPxTxdGfDe9OeXd2Kwzu6WBsFwtbH2
-         1164WOD/dNwSX9RC+6YF8IpddwWnmTjSpWKKrLSEBhcZFfB1HGlDFBLjcvWjb6iHX9
-         Qq1JXK3TpNsSvbY6owtQF9QAukAoR+ChZn+5dLbEl1thhA45XA+lo6wvR1IA0pkOo4
-         yYci5xOy+/aO0BvtZ9JOIbGQ5zNg+o4bCjzz4AsW9L5YlqSXe4aInYv+9oeTRu5Yvj
-         Hhj+9Dyk2gyzQ==
+        b=s5A73uqxQ1Lu2U5ZQwKH88koHBTKdkpAuLali0tTZQJUkMubLWNyFHMzD2vFnbYHI
+         M+3tgOqzGFdBN/9WZeOJEHvndYVEdK1I84e15gHH+X8ztA1lmFH+x5kBLY3Lg79vfx
+         ErOYrtP9jb1iGBQBCLMaXSA2U3JgdSQuNj/hp2ls4ltlyNTu+9KwQg7l/KWG/SdjpV
+         eIwUb+0CHhtoZ25vr5hWf9Dl0QFjfe8i/f3RaeopFxuW9a4oMMIOIulkWrmMcYkhW6
+         VL2eIbpYTZHHX7sJztQn8FYHxsk7qrvyKpuIvTyXkzphX+lsEtmOddHQttR5aBNLaX
+         4xJRQ50D2mdGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Schspa Shi <schspa@gmail.com>,
+        syzbot+6fd64001c20aa99e34a4@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, imagedong@tencent.com, bigeasy@linutronix.de,
-        kuniyu@amazon.com, petrm@nvidia.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 25/39] net: add atomic_long_t to net_device_stats fields
-Date:   Sun, 18 Dec 2022 11:15:45 -0500
-Message-Id: <20221218161559.932604-25-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        jack@suse.cz, kpsingh@kernel.org, Jason@zx2c4.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 26/39] mrp: introduce active flags to prevent UAF when applicant uninit
+Date:   Sun, 18 Dec 2022 11:15:46 -0500
+Message-Id: <20221218161559.932604-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218161559.932604-1-sashal@kernel.org>
 References: <20221218161559.932604-1-sashal@kernel.org>
@@ -57,163 +59,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 6c1c5097781f563b70a81683ea6fdac21637573b ]
+[ Upstream commit ab0377803dafc58f1e22296708c1c28e309414d6 ]
 
-Long standing KCSAN issues are caused by data-race around
-some dev->stats changes.
+The caller of del_timer_sync must prevent restarting of the timer, If
+we have no this synchronization, there is a small probability that the
+cancellation will not be successful.
 
-Most performance critical paths already use per-cpu
-variables, or per-queue ones.
+And syzbot report the fellowing crash:
+==================================================================
+BUG: KASAN: use-after-free in hlist_add_head include/linux/list.h:929 [inline]
+BUG: KASAN: use-after-free in enqueue_timer+0x18/0xa4 kernel/time/timer.c:605
+Write at addr f9ff000024df6058 by task syz-fuzzer/2256
+Pointer tag: [f9], memory tag: [fe]
 
-It is reasonable (and more correct) to use atomic operations
-for the slow paths.
+CPU: 1 PID: 2256 Comm: syz-fuzzer Not tainted 6.1.0-rc5-syzkaller-00008-
+ge01d50cbd6ee #0
+Hardware name: linux,dummy-virt (DT)
+Call trace:
+ dump_backtrace.part.0+0xe0/0xf0 arch/arm64/kernel/stacktrace.c:156
+ dump_backtrace arch/arm64/kernel/stacktrace.c:162 [inline]
+ show_stack+0x18/0x40 arch/arm64/kernel/stacktrace.c:163
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x68/0x84 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:284 [inline]
+ print_report+0x1a8/0x4a0 mm/kasan/report.c:395
+ kasan_report+0x94/0xb4 mm/kasan/report.c:495
+ __do_kernel_fault+0x164/0x1e0 arch/arm64/mm/fault.c:320
+ do_bad_area arch/arm64/mm/fault.c:473 [inline]
+ do_tag_check_fault+0x78/0x8c arch/arm64/mm/fault.c:749
+ do_mem_abort+0x44/0x94 arch/arm64/mm/fault.c:825
+ el1_abort+0x40/0x60 arch/arm64/kernel/entry-common.c:367
+ el1h_64_sync_handler+0xd8/0xe4 arch/arm64/kernel/entry-common.c:427
+ el1h_64_sync+0x64/0x68 arch/arm64/kernel/entry.S:576
+ hlist_add_head include/linux/list.h:929 [inline]
+ enqueue_timer+0x18/0xa4 kernel/time/timer.c:605
+ mod_timer+0x14/0x20 kernel/time/timer.c:1161
+ mrp_periodic_timer_arm net/802/mrp.c:614 [inline]
+ mrp_periodic_timer+0xa0/0xc0 net/802/mrp.c:627
+ call_timer_fn.constprop.0+0x24/0x80 kernel/time/timer.c:1474
+ expire_timers+0x98/0xc4 kernel/time/timer.c:1519
 
-This patch adds an union for each field of net_device_stats,
-so that we can convert paths that are not yet protected
-by a spinlock or a mutex.
+To fix it, we can introduce a new active flags to make sure the timer will
+not restart.
 
-netdev_stats_to_stats64() no longer has an #if BITS_PER_LONG==64
+Reported-by: syzbot+6fd64001c20aa99e34a4@syzkaller.appspotmail.com
 
-Note that the memcpy() we were using on 64bit arches
-had no provision to avoid load-tearing,
-while atomic_long_read() is providing the needed protection
-at no cost.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h | 58 +++++++++++++++++++++++----------------
- include/net/dst.h         |  5 ++--
- net/core/dev.c            | 14 ++--------
- 3 files changed, 40 insertions(+), 37 deletions(-)
+ include/net/mrp.h |  1 +
+ net/802/mrp.c     | 18 +++++++++++++-----
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ef75567efd27..b478a16ef284 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -166,31 +166,38 @@ static inline bool dev_xmit_complete(int rc)
-  *	(unsigned long) so they can be read and written atomically.
-  */
- 
-+#define NET_DEV_STAT(FIELD)			\
-+	union {					\
-+		unsigned long FIELD;		\
-+		atomic_long_t __##FIELD;	\
-+	}
-+
- struct net_device_stats {
--	unsigned long	rx_packets;
--	unsigned long	tx_packets;
--	unsigned long	rx_bytes;
--	unsigned long	tx_bytes;
--	unsigned long	rx_errors;
--	unsigned long	tx_errors;
--	unsigned long	rx_dropped;
--	unsigned long	tx_dropped;
--	unsigned long	multicast;
--	unsigned long	collisions;
--	unsigned long	rx_length_errors;
--	unsigned long	rx_over_errors;
--	unsigned long	rx_crc_errors;
--	unsigned long	rx_frame_errors;
--	unsigned long	rx_fifo_errors;
--	unsigned long	rx_missed_errors;
--	unsigned long	tx_aborted_errors;
--	unsigned long	tx_carrier_errors;
--	unsigned long	tx_fifo_errors;
--	unsigned long	tx_heartbeat_errors;
--	unsigned long	tx_window_errors;
--	unsigned long	rx_compressed;
--	unsigned long	tx_compressed;
-+	NET_DEV_STAT(rx_packets);
-+	NET_DEV_STAT(tx_packets);
-+	NET_DEV_STAT(rx_bytes);
-+	NET_DEV_STAT(tx_bytes);
-+	NET_DEV_STAT(rx_errors);
-+	NET_DEV_STAT(tx_errors);
-+	NET_DEV_STAT(rx_dropped);
-+	NET_DEV_STAT(tx_dropped);
-+	NET_DEV_STAT(multicast);
-+	NET_DEV_STAT(collisions);
-+	NET_DEV_STAT(rx_length_errors);
-+	NET_DEV_STAT(rx_over_errors);
-+	NET_DEV_STAT(rx_crc_errors);
-+	NET_DEV_STAT(rx_frame_errors);
-+	NET_DEV_STAT(rx_fifo_errors);
-+	NET_DEV_STAT(rx_missed_errors);
-+	NET_DEV_STAT(tx_aborted_errors);
-+	NET_DEV_STAT(tx_carrier_errors);
-+	NET_DEV_STAT(tx_fifo_errors);
-+	NET_DEV_STAT(tx_heartbeat_errors);
-+	NET_DEV_STAT(tx_window_errors);
-+	NET_DEV_STAT(rx_compressed);
-+	NET_DEV_STAT(tx_compressed);
+diff --git a/include/net/mrp.h b/include/net/mrp.h
+index 1c308c034e1a..a8102661fd61 100644
+--- a/include/net/mrp.h
++++ b/include/net/mrp.h
+@@ -120,6 +120,7 @@ struct mrp_applicant {
+ 	struct sk_buff		*pdu;
+ 	struct rb_root		mad;
+ 	struct rcu_head		rcu;
++	bool			active;
  };
-+#undef NET_DEV_STAT
  
+ struct mrp_port {
+diff --git a/net/802/mrp.c b/net/802/mrp.c
+index 35e04cc5390c..c10a432a5b43 100644
+--- a/net/802/mrp.c
++++ b/net/802/mrp.c
+@@ -606,7 +606,10 @@ static void mrp_join_timer(struct timer_list *t)
+ 	spin_unlock(&app->lock);
  
- #include <linux/cache.h>
-@@ -5256,4 +5263,9 @@ do {								\
- 
- extern struct net_device *blackhole_netdev;
- 
-+/* Note: Avoid these macros in fast path, prefer per-cpu or per-queue counters. */
-+#define DEV_STATS_INC(DEV, FIELD) atomic_long_inc(&(DEV)->stats.__##FIELD)
-+#define DEV_STATS_ADD(DEV, FIELD, VAL) 	\
-+		atomic_long_add((VAL), &(DEV)->stats.__##FIELD)
-+
- #endif	/* _LINUX_NETDEVICE_H */
-diff --git a/include/net/dst.h b/include/net/dst.h
-index acd15c544cf3..ae2cf57d796b 100644
---- a/include/net/dst.h
-+++ b/include/net/dst.h
-@@ -356,9 +356,8 @@ static inline void __skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
- static inline void skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
- 				 struct net *net)
- {
--	/* TODO : stats should be SMP safe */
--	dev->stats.rx_packets++;
--	dev->stats.rx_bytes += skb->len;
-+	DEV_STATS_INC(dev, rx_packets);
-+	DEV_STATS_ADD(dev, rx_bytes, skb->len);
- 	__skb_tunnel_rx(skb, dev, net);
+ 	mrp_queue_xmit(app);
+-	mrp_join_timer_arm(app);
++	spin_lock(&app->lock);
++	if (likely(app->active))
++		mrp_join_timer_arm(app);
++	spin_unlock(&app->lock);
  }
  
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 34b5aab42b91..5afe56e8e763 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10320,24 +10320,16 @@ void netdev_run_todo(void)
- void netdev_stats_to_stats64(struct rtnl_link_stats64 *stats64,
- 			     const struct net_device_stats *netdev_stats)
- {
--#if BITS_PER_LONG == 64
--	BUILD_BUG_ON(sizeof(*stats64) < sizeof(*netdev_stats));
--	memcpy(stats64, netdev_stats, sizeof(*netdev_stats));
--	/* zero out counters that only exist in rtnl_link_stats64 */
--	memset((char *)stats64 + sizeof(*netdev_stats), 0,
--	       sizeof(*stats64) - sizeof(*netdev_stats));
--#else
--	size_t i, n = sizeof(*netdev_stats) / sizeof(unsigned long);
--	const unsigned long *src = (const unsigned long *)netdev_stats;
-+	size_t i, n = sizeof(*netdev_stats) / sizeof(atomic_long_t);
-+	const atomic_long_t *src = (atomic_long_t *)netdev_stats;
- 	u64 *dst = (u64 *)stats64;
+ static void mrp_periodic_timer_arm(struct mrp_applicant *app)
+@@ -620,11 +623,12 @@ static void mrp_periodic_timer(struct timer_list *t)
+ 	struct mrp_applicant *app = from_timer(app, t, periodic_timer);
  
- 	BUILD_BUG_ON(n > sizeof(*stats64) / sizeof(u64));
- 	for (i = 0; i < n; i++)
--		dst[i] = src[i];
-+		dst[i] = atomic_long_read(&src[i]);
- 	/* zero out counters that only exist in rtnl_link_stats64 */
- 	memset((char *)stats64 + n * sizeof(u64), 0,
- 	       sizeof(*stats64) - n * sizeof(u64));
--#endif
+ 	spin_lock(&app->lock);
+-	mrp_mad_event(app, MRP_EVENT_PERIODIC);
+-	mrp_pdu_queue(app);
++	if (likely(app->active)) {
++		mrp_mad_event(app, MRP_EVENT_PERIODIC);
++		mrp_pdu_queue(app);
++		mrp_periodic_timer_arm(app);
++	}
+ 	spin_unlock(&app->lock);
+-
+-	mrp_periodic_timer_arm(app);
  }
- EXPORT_SYMBOL(netdev_stats_to_stats64);
  
+ static int mrp_pdu_parse_end_mark(struct sk_buff *skb, int *offset)
+@@ -872,6 +876,7 @@ int mrp_init_applicant(struct net_device *dev, struct mrp_application *appl)
+ 	app->dev = dev;
+ 	app->app = appl;
+ 	app->mad = RB_ROOT;
++	app->active = true;
+ 	spin_lock_init(&app->lock);
+ 	skb_queue_head_init(&app->queue);
+ 	rcu_assign_pointer(dev->mrp_port->applicants[appl->type], app);
+@@ -900,6 +905,9 @@ void mrp_uninit_applicant(struct net_device *dev, struct mrp_application *appl)
+ 
+ 	RCU_INIT_POINTER(port->applicants[appl->type], NULL);
+ 
++	spin_lock_bh(&app->lock);
++	app->active = false;
++	spin_unlock_bh(&app->lock);
+ 	/* Delete timer and generate a final TX event to flush out
+ 	 * all pending messages before the applicant is gone.
+ 	 */
 -- 
 2.35.1
 
