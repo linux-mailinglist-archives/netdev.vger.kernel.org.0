@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCBA6502FD
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:56:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6425E6502FA
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233019AbiLRQ4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
+        id S233010AbiLRQ4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:56:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232967AbiLRQy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:54:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A961C117;
-        Sun, 18 Dec 2022 08:19:19 -0800 (PST)
+        with ESMTP id S232958AbiLRQy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:54:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A654ED2F8;
+        Sun, 18 Dec 2022 08:19:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2271B80BAA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 608F660C40;
+        Sun, 18 Dec 2022 16:19:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55461C433F0;
         Sun, 18 Dec 2022 16:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F4F6C433D2;
-        Sun, 18 Dec 2022 16:19:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671380356;
-        bh=9oiWed+y+dylobj+KkpI5BF0iQt4WrsPE7rg2K5NE2Y=;
+        s=k20201202; t=1671380358;
+        bh=oiOX472mnnmwJmFbj2f3WMF3509uMFauEYkBPuIU34Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V9jEp3W+eZ6IzcEb6l4wU3zVflsFhSvY8ziBcFWUMn1/z7o3G/gbtw5wMbpbwprle
-         Mjkyoqtp1mchbmDhq61yeWgbqrvqBbJ2UfYxwiqNrTFiYwFuPTQ02l3Of6Fwra5Dcd
-         HnEPUJe3bRi7LTca+2Y/dcwhby66vhu7yG7EL5dwzmMYumsj/8+4m8AI3NfcfddppI
-         lMoy49wf4ofw7BEf8r5Zcc6lznbzo9qhjrSf+Q1qeTt0p3RED/EcU9S4K3NLttXzYi
-         65DKRtZDKy9/PtN+WB1BVJbBEnFImxye7xKD1+M+cOtc+M6RokxhOyf8QPXG4FUurl
-         gCblcptmDKU1g==
+        b=CZvILPMrMQL4SixN5C02OLM6caSuhfpOxE3IBjCtKgn8HZHVfNzdmNgJcH4mV/IJK
+         /quA8UeK6jycOnoNgNCMZtfK+1tvtBWEPhud7KZSbPDzNNpNefnd796byi+Gba11s8
+         bbVjWr3iEsuaUW0DNH1PLWaU/6l5Rr8XuYwSgsOaWv++5HFadRRvdIkzkaMOHkhnrF
+         oKt9h1ivbaeQCXR5+D4rGeFhcbct27GdsTcBYTiiGVij/+iy7xTLUaIs0FphowKu9d
+         RCVxOU/ovz1JiHCq3PsyRUgWEDAphqH1CcQ2Rn8Y4p4YOstTgj4pl3r2qx5x3JvKBs
+         EN2b+ztZ+Q83w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Nathan Chancellor <nathan@kernel.org>,
@@ -41,9 +41,9 @@ Cc:     Nathan Chancellor <nathan@kernel.org>,
         hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
         ndesaulniers@google.com, linux-s390@vger.kernel.org,
         netdev@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 12/30] s390/ctcm: Fix return type of ctc{mp,}m_tx()
-Date:   Sun, 18 Dec 2022 11:18:17 -0500
-Message-Id: <20221218161836.933697-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 13/30] s390/netiucv: Fix return type of netiucv_tx()
+Date:   Sun, 18 Dec 2022 11:18:18 -0500
+Message-Id: <20221218161836.933697-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218161836.933697-1-sashal@kernel.org>
 References: <20221218161836.933697-1-sashal@kernel.org>
@@ -62,7 +62,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit aa5bf80c3c067b82b4362cd6e8e2194623bcaca6 ]
+[ Upstream commit 88d86d18d7cf7e9137c95f9d212bb9fff8a1b4be ]
 
 With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
 indirect call targets are validated against the expected function
@@ -72,15 +72,12 @@ which manifests as either a kernel panic or thread getting killed. A
 proposed warning in clang aims to catch these at compile time, which
 reveals:
 
-  drivers/s390/net/ctcm_main.c:1064:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = ctcm_tx,
-                                    ^~~~~~~
-  drivers/s390/net/ctcm_main.c:1072:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = ctcmpc_tx,
-                                    ^~~~~~~~~
+  drivers/s390/net/netiucv.c:1854:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
+          .ndo_start_xmit         = netiucv_tx,
+                                    ^~~~~~~~~~
 
 ->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of ctc{mp,}m_tx() to
+'netdev_tx_t', not 'int'. Adjust the return type of netiucv_tx() to
 match the prototype's to resolve the warning and potential CFI failure,
 should s390 select ARCH_SUPPORTS_CFI_CLANG in the future.
 
@@ -94,40 +91,30 @@ Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/ctcm_main.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/s390/net/netiucv.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/s390/net/ctcm_main.c b/drivers/s390/net/ctcm_main.c
-index 437a6d822105..87d05b13fbd5 100644
---- a/drivers/s390/net/ctcm_main.c
-+++ b/drivers/s390/net/ctcm_main.c
-@@ -865,16 +865,9 @@ static int ctcmpc_transmit_skb(struct channel *ch, struct sk_buff *skb)
+diff --git a/drivers/s390/net/netiucv.c b/drivers/s390/net/netiucv.c
+index 5ce2424ca729..e2984b54447b 100644
+--- a/drivers/s390/net/netiucv.c
++++ b/drivers/s390/net/netiucv.c
+@@ -1344,15 +1344,8 @@ static int netiucv_pm_restore_thaw(struct device *dev)
  /**
   * Start transmission of a packet.
   * Called from generic network device layer.
 - *
-- *  skb		Pointer to buffer containing the packet.
-- *  dev		Pointer to interface struct.
+- * @param skb Pointer to buffer containing the packet.
+- * @param dev Pointer to interface struct.
 - *
-- * returns 0 if packet consumed, !0 if packet rejected.
+- * @return 0 if packet consumed, !0 if packet rejected.
 - *         Note: If we return !0, then the packet is free'd by
 - *               the generic network layer.
   */
- /* first merge version - leaving both functions separated */
--static int ctcm_tx(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t ctcm_tx(struct sk_buff *skb, struct net_device *dev)
+-static int netiucv_tx(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t netiucv_tx(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct ctcm_priv *priv = dev->ml_priv;
- 
-@@ -917,7 +910,7 @@ static int ctcm_tx(struct sk_buff *skb, struct net_device *dev)
- }
- 
- /* unmerged MPC variant of ctcm_tx */
--static int ctcmpc_tx(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t ctcmpc_tx(struct sk_buff *skb, struct net_device *dev)
- {
- 	int len = 0;
- 	struct ctcm_priv *priv = dev->ml_priv;
+ 	struct netiucv_priv *privptr = netdev_priv(dev);
+ 	int rc;
 -- 
 2.35.1
 
