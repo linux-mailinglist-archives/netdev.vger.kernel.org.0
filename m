@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00806650136
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0E565015B
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:28:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232064AbiLRQZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S232045AbiLRQ24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:28:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231933AbiLRQYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:24:32 -0500
+        with ESMTP id S232039AbiLRQ2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:28:21 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4446DEC1;
-        Sun, 18 Dec 2022 08:09:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865CF13E20;
+        Sun, 18 Dec 2022 08:10:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29F4760C58;
-        Sun, 18 Dec 2022 16:09:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E396C433D2;
-        Sun, 18 Dec 2022 16:09:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A1360C58;
+        Sun, 18 Dec 2022 16:10:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADA9C433F0;
+        Sun, 18 Dec 2022 16:10:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671379773;
-        bh=bylQ92nndUsQDEdsR7BlnEBaPmFt2kKNmE0KssvA6Mg=;
+        s=k20201202; t=1671379824;
+        bh=V8YllKjvCJNIj7V5WSrIPDxidINa0i7icQUaZYLwdqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TX6qtBg19uForBAZ0Zcm1Ox9qUNLrZtRirIZbsKdCMq8ANTX5/Ses6ut1b+HDninP
-         umyGoI/ux8COYFHOfLcjhE7puWasPFteF3/zMFAAGfyX2wMWchaembrAPadlgV/EoI
-         1aQ0RsbH6yIu+4D7gJ74LZOc+rn2qqd03tLRWKBaiBYJzO7UevLvBOEs5EglseWys9
-         vwxb8rq3qpWh3boUAsy3Wt0PWVnmzyG+plvEaXEYnSj8f8BhEqy0dyoc7ChiE7YlFz
-         Iw9WpwreKWweixWr1wviij7M3aA2pS77D23azQTOSaNRIKahsC6Ui5eRpEUwjIL7Yy
-         6dIZ/qM+F29cQ==
+        b=iGoEGb5qKv/jFfL7RFmJoyR3NRtwlOAA7PktdM0jydHsfquRoA3wmxSvZqXs8BGSw
+         B2Z/L79I/aBkpHupurrmgw0NE2V9ucM07Bd8yb8S4+h43NQjy9B8zmfhraDaqs3Kfz
+         EVhbAi5Ya3EsbYpeh8iKzRC5lv/ywiXQ8dyGBSB8Mf0chCX6UgitGkEx9IcRgsS/oO
+         6OUyaY06CsXPJdFyuV3AfL0Z6qNI8z3X28dDjrdWhLuZsHf+rvSj7/0EklC17hX2Zu
+         J5gKOVLQWWLuMwOkS1NRoZRZRRZ9hGq/O0HEzkBX1EJ5b2q1t/Vs+0mJFCCjAd15Ac
+         zvziJ2z3Mvl5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Kees Cook <keescook@chromium.org>,
+Cc:     Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, wenjia@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        ndesaulniers@google.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.0 30/73] s390/lcs: Fix return type of lcs_start_xmit()
-Date:   Sun, 18 Dec 2022 11:06:58 -0500
-Message-Id: <20221218160741.927862-30-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
+        kuniyu@amazon.com, petrm@nvidia.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 42/73] net: add atomic_long_t to net_device_stats fields
+Date:   Sun, 18 Dec 2022 11:07:10 -0500
+Message-Id: <20221218160741.927862-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218160741.927862-1-sashal@kernel.org>
 References: <20221218160741.927862-1-sashal@kernel.org>
@@ -60,66 +57,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit bb16db8393658e0978c3f0d30ae069e878264fa3 ]
+[ Upstream commit 6c1c5097781f563b70a81683ea6fdac21637573b ]
 
-With clang's kernel control flow integrity (kCFI, CONFIG_CFI_CLANG),
-indirect call targets are validated against the expected function
-pointer prototype to make sure the call target is valid to help mitigate
-ROP attacks. If they are not identical, there is a failure at run time,
-which manifests as either a kernel panic or thread getting killed. A
-proposed warning in clang aims to catch these at compile time, which
-reveals:
+Long standing KCSAN issues are caused by data-race around
+some dev->stats changes.
 
-  drivers/s390/net/lcs.c:2090:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = lcs_start_xmit,
-                                    ^~~~~~~~~~~~~~
-  drivers/s390/net/lcs.c:2097:21: error: incompatible function pointer types initializing 'netdev_tx_t (*)(struct sk_buff *, struct net_device *)' (aka 'enum netdev_tx (*)(struct sk_buff *, struct net_device *)') with an expression of type 'int (struct sk_buff *, struct net_device *)' [-Werror,-Wincompatible-function-pointer-types-strict]
-          .ndo_start_xmit         = lcs_start_xmit,
-                                    ^~~~~~~~~~~~~~
+Most performance critical paths already use per-cpu
+variables, or per-queue ones.
 
-->ndo_start_xmit() in 'struct net_device_ops' expects a return type of
-'netdev_tx_t', not 'int'. Adjust the return type of lcs_start_xmit() to
-match the prototype's to resolve the warning and potential CFI failure,
-should s390 select ARCH_SUPPORTS_CFI_CLANG in the future.
+It is reasonable (and more correct) to use atomic operations
+for the slow paths.
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/1750
-Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+This patch adds an union for each field of net_device_stats,
+so that we can convert paths that are not yet protected
+by a spinlock or a mutex.
+
+netdev_stats_to_stats64() no longer has an #if BITS_PER_LONG==64
+
+Note that the memcpy() we were using on 64bit arches
+had no provision to avoid load-tearing,
+while atomic_long_read() is providing the needed protection
+at no cost.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/net/lcs.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ include/linux/netdevice.h | 58 +++++++++++++++++++++++----------------
+ include/net/dst.h         |  5 ++--
+ net/core/dev.c            | 14 ++--------
+ 3 files changed, 40 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index 84c8981317b4..38f312664ce7 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1519,9 +1519,8 @@ lcs_txbuffer_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
- /*
-  * Packet transmit function called by network stack
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 05d6f3facd5a..47b8b0ab7694 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -171,31 +171,38 @@ static inline bool dev_xmit_complete(int rc)
+  *	(unsigned long) so they can be read and written atomically.
   */
--static int
--__lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
--		 struct net_device *dev)
-+static netdev_tx_t __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
-+				    struct net_device *dev)
+ 
++#define NET_DEV_STAT(FIELD)			\
++	union {					\
++		unsigned long FIELD;		\
++		atomic_long_t __##FIELD;	\
++	}
++
+ struct net_device_stats {
+-	unsigned long	rx_packets;
+-	unsigned long	tx_packets;
+-	unsigned long	rx_bytes;
+-	unsigned long	tx_bytes;
+-	unsigned long	rx_errors;
+-	unsigned long	tx_errors;
+-	unsigned long	rx_dropped;
+-	unsigned long	tx_dropped;
+-	unsigned long	multicast;
+-	unsigned long	collisions;
+-	unsigned long	rx_length_errors;
+-	unsigned long	rx_over_errors;
+-	unsigned long	rx_crc_errors;
+-	unsigned long	rx_frame_errors;
+-	unsigned long	rx_fifo_errors;
+-	unsigned long	rx_missed_errors;
+-	unsigned long	tx_aborted_errors;
+-	unsigned long	tx_carrier_errors;
+-	unsigned long	tx_fifo_errors;
+-	unsigned long	tx_heartbeat_errors;
+-	unsigned long	tx_window_errors;
+-	unsigned long	rx_compressed;
+-	unsigned long	tx_compressed;
++	NET_DEV_STAT(rx_packets);
++	NET_DEV_STAT(tx_packets);
++	NET_DEV_STAT(rx_bytes);
++	NET_DEV_STAT(tx_bytes);
++	NET_DEV_STAT(rx_errors);
++	NET_DEV_STAT(tx_errors);
++	NET_DEV_STAT(rx_dropped);
++	NET_DEV_STAT(tx_dropped);
++	NET_DEV_STAT(multicast);
++	NET_DEV_STAT(collisions);
++	NET_DEV_STAT(rx_length_errors);
++	NET_DEV_STAT(rx_over_errors);
++	NET_DEV_STAT(rx_crc_errors);
++	NET_DEV_STAT(rx_frame_errors);
++	NET_DEV_STAT(rx_fifo_errors);
++	NET_DEV_STAT(rx_missed_errors);
++	NET_DEV_STAT(tx_aborted_errors);
++	NET_DEV_STAT(tx_carrier_errors);
++	NET_DEV_STAT(tx_fifo_errors);
++	NET_DEV_STAT(tx_heartbeat_errors);
++	NET_DEV_STAT(tx_window_errors);
++	NET_DEV_STAT(rx_compressed);
++	NET_DEV_STAT(tx_compressed);
+ };
++#undef NET_DEV_STAT
+ 
+ /* per-cpu stats, allocated on demand.
+  * Try to fit them in a single cache line, for dev_get_stats() sake.
+@@ -5143,4 +5150,9 @@ extern struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
+ 
+ extern struct net_device *blackhole_netdev;
+ 
++/* Note: Avoid these macros in fast path, prefer per-cpu or per-queue counters. */
++#define DEV_STATS_INC(DEV, FIELD) atomic_long_inc(&(DEV)->stats.__##FIELD)
++#define DEV_STATS_ADD(DEV, FIELD, VAL) 	\
++		atomic_long_add((VAL), &(DEV)->stats.__##FIELD)
++
+ #endif	/* _LINUX_NETDEVICE_H */
+diff --git a/include/net/dst.h b/include/net/dst.h
+index 6aa252c3fc55..19af7a2713cc 100644
+--- a/include/net/dst.h
++++ b/include/net/dst.h
+@@ -362,9 +362,8 @@ static inline void __skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
+ static inline void skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
+ 				 struct net *net)
  {
- 	struct lcs_header *header;
- 	int rc = NETDEV_TX_OK;
-@@ -1582,8 +1581,7 @@ __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
- 	return rc;
+-	/* TODO : stats should be SMP safe */
+-	dev->stats.rx_packets++;
+-	dev->stats.rx_bytes += skb->len;
++	DEV_STATS_INC(dev, rx_packets);
++	DEV_STATS_ADD(dev, rx_bytes, skb->len);
+ 	__skb_tunnel_rx(skb, dev, net);
  }
  
--static int
--lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2c14f48d2457..4c4564a9a758 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10398,24 +10398,16 @@ void netdev_run_todo(void)
+ void netdev_stats_to_stats64(struct rtnl_link_stats64 *stats64,
+ 			     const struct net_device_stats *netdev_stats)
  {
- 	struct lcs_card *card;
- 	int rc;
+-#if BITS_PER_LONG == 64
+-	BUILD_BUG_ON(sizeof(*stats64) < sizeof(*netdev_stats));
+-	memcpy(stats64, netdev_stats, sizeof(*netdev_stats));
+-	/* zero out counters that only exist in rtnl_link_stats64 */
+-	memset((char *)stats64 + sizeof(*netdev_stats), 0,
+-	       sizeof(*stats64) - sizeof(*netdev_stats));
+-#else
+-	size_t i, n = sizeof(*netdev_stats) / sizeof(unsigned long);
+-	const unsigned long *src = (const unsigned long *)netdev_stats;
++	size_t i, n = sizeof(*netdev_stats) / sizeof(atomic_long_t);
++	const atomic_long_t *src = (atomic_long_t *)netdev_stats;
+ 	u64 *dst = (u64 *)stats64;
+ 
+ 	BUILD_BUG_ON(n > sizeof(*stats64) / sizeof(u64));
+ 	for (i = 0; i < n; i++)
+-		dst[i] = src[i];
++		dst[i] = atomic_long_read(&src[i]);
+ 	/* zero out counters that only exist in rtnl_link_stats64 */
+ 	memset((char *)stats64 + n * sizeof(u64), 0,
+ 	       sizeof(*stats64) - n * sizeof(u64));
+-#endif
+ }
+ EXPORT_SYMBOL(netdev_stats_to_stats64);
+ 
 -- 
 2.35.1
 
