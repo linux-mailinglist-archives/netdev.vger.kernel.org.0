@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D29E6504B2
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 22:10:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B86E36504E2
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 22:57:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbiLRVKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 16:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
+        id S231190AbiLRV5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 16:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiLRVKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 16:10:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EB660E1
-        for <netdev@vger.kernel.org>; Sun, 18 Dec 2022 13:10:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5147DB80BE8
-        for <netdev@vger.kernel.org>; Sun, 18 Dec 2022 21:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D7F75C433F0;
-        Sun, 18 Dec 2022 21:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671397816;
-        bh=Klxe49QHSjp2uR4JLHIsnYT/LZz1cwpTTwouI9wPAns=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SrL/KzkniI6BjuUNW95Nxcm7Es7EkwOozWBW+HLo3JsvN3ExW7NDn+SpKJCyUfDq+
-         rNKVxICt+LmGn/Gc0SUofWaViQeVSWrZhxKOCYMRnEwy8gKkTtc8UrQjk7JTH7UZpH
-         YXN1z7eMSlMOeL5hotTq0AAjCQYWI6VxXZDgIEYFl+wixheTAsNB/7mQQ0D0GPjHPg
-         jZI4zHUnG/lWoSEu6NWUDaQtJ8M6Dn4cBt2/Wfg9gO4Sz3S346HJDWDyoze0dQtaBY
-         Iz60zs9UCjUu3EIgxStH0g4dKkBFh6Lb0app03dBumY2gWQlrH8cXBkFVvNAquxg2x
-         GG/4aAUtbFrSg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF86CE4D00B;
-        Sun, 18 Dec 2022 21:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231172AbiLRV5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 16:57:30 -0500
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E24C74F
+        for <netdev@vger.kernel.org>; Sun, 18 Dec 2022 13:57:28 -0800 (PST)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id AD8782C0288;
+        Mon, 19 Dec 2022 10:57:23 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1671400643;
+        bh=wswQ/KMRzD2puKOHYOnzQLN1QFz3lsndlcSA4xBLrfM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=y/A64C0+Iq1Mz4IsvQ5ipgqfiL6/tb/klZ6Hdn+Jp9TVZ/PAf52b5jKnXt5bQGyJd
+         CuszkBTiBOK0ougQ8ujtt36KCWlpg6Qpee6gOAd2I9lHjQEaN0bI3Jb7Fc+QE/nBax
+         uQY6gNJzUwMX43nV0a2m5eAiZGWv0XG8X1AeEAd6XslLx7O7thUgvjb8vGyN31b/Bw
+         1Fb6weEsG3if3Eby4bQQ4EEDD+gQhRddNLGX/d0rrglfa9dUiNahNweDqYMkQ2rszQ
+         HbjBLqIafSP94WZ7HIASOxwoYnjMwQr4AvxG6XIxTARNVCb0bBHIBRLmcYj0bMDx6G
+         zyKNHcBFL6S9Q==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B639f8cc30000>; Mon, 19 Dec 2022 10:57:23 +1300
+Received: from thomaswi-dl.ws.atlnz.lc (thomaswi-dl.ws.atlnz.lc [10.33.25.46])
+        by pat.atlnz.lc (Postfix) with ESMTP id 77FBA13EE3F;
+        Mon, 19 Dec 2022 10:57:23 +1300 (NZDT)
+Received: by thomaswi-dl.ws.atlnz.lc (Postfix, from userid 1719)
+        id 731483E5131; Mon, 19 Dec 2022 10:57:23 +1300 (NZDT)
+From:   Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, a@unstable.cc, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>
+Subject: [PATCH 0/2] ip/ip6_gre: Fix GRE tunnels not generating IPv6 link local addresses
+Date:   Mon, 19 Dec 2022 10:57:16 +1300
+Message-Id: <20221218215718.1491444-1-Thomas.Winter@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/6][pull request] Intel Wired LAN Driver Updates
- 2022-12-15 (igc)
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167139781678.5499.8858653473176134127.git-patchwork-notify@kernel.org>
-Date:   Sun, 18 Dec 2022 21:10:16 +0000
-References: <20221215230758.3595578-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20221215230758.3595578-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        muhammad.husaini.zulkifli@intel.com, sasha.neftin@intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=X/cs11be c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=sHyYjHe8cH0A:10 a=IpZYufPWUN2N8bb5Va0A:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+For our point-to-point GRE tunnels, they have IN6_ADDR_GEN_MODE_NONE
+when they are created then we set IN6_ADDR_GEN_MODE_EUI64 when they
+come up to generate the IPv6 link local address for the interface.
+Recently we found that they were no longer generating IPv6 addresses.
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+Also, non-point-to-point tunnels were not generating any IPv6 link
+local address and instead generating an IPv6 compat address,
+breaking IPv6 communication on the tunnel.
 
-On Thu, 15 Dec 2022 15:07:52 -0800 you wrote:
-> Muhammad Husaini Zulkifli says:
-> 
-> This patch series fixes bugs for the Time-Sensitive Networking(TSN)
-> Qbv Scheduling features.
-> 
-> An overview of each patch series is given below:
-> 
-> [...]
+These failures were caused by commit e5dd729460ca and this patch set
+aims to resolve these issues.
 
-Here is the summary with links:
-  - [net,1/6] igc: Enhance Qbv scheduling by using first flag bit
-    https://git.kernel.org/netdev/net/c/db0b124f02ba
-  - [net,2/6] igc: Use strict cycles for Qbv scheduling
-    https://git.kernel.org/netdev/net/c/d8f45be01dd9
-  - [net,3/6] igc: Add checking for basetime less than zero
-    https://git.kernel.org/netdev/net/c/3b61764fb49a
-  - [net,4/6] igc: allow BaseTime 0 enrollment for Qbv
-    https://git.kernel.org/netdev/net/c/e17090eb2494
-  - [net,5/6] igc: recalculate Qbv end_time by considering cycle time
-    https://git.kernel.org/netdev/net/c/6d05251d537a
-  - [net,6/6] igc: Set Qbv start_time and end_time to end_time if not being configured in GCL
-    https://git.kernel.org/netdev/net/c/72abeedd8398
+Thomas Winter (2):
+  ip/ip6_gre: Fix changing addr gen mode not generating IPv6 link local
+    address
+  ip/ip6_gre: Fix non-point-to-point tunnel not generating IPv6 link
+    local address
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ net/ipv6/addrconf.c | 57 ++++++++++++++++++++++++---------------------
+ 1 file changed, 31 insertions(+), 26 deletions(-)
 
+--=20
+2.37.3
 
