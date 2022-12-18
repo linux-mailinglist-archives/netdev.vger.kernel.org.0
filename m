@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F06A64FFB2
-	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:05:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEFEA64FFB5
+	for <lists+netdev@lfdr.de>; Sun, 18 Dec 2022 17:05:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231148AbiLRQFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 11:05:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
+        id S231348AbiLRQFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 11:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231197AbiLRQEm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:04:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C79BB489;
+        with ESMTP id S231160AbiLRQEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 11:04:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EE4B4A6;
         Sun, 18 Dec 2022 08:03:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30EABB80BD9;
-        Sun, 18 Dec 2022 16:03:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3D47C433F0;
-        Sun, 18 Dec 2022 16:03:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AB3560DD1;
+        Sun, 18 Dec 2022 16:03:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83754C43396;
+        Sun, 18 Dec 2022 16:03:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671379384;
-        bh=ZOe+bKsqQUZL1HRBM3mff0Yg2ydfyAUrZqNFuRXj4wo=;
+        s=k20201202; t=1671379386;
+        bh=wTFOpvF46W6o1tUTIAw7yQ3AlLHJSauNTSP6pvEe3tg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ndRy8/55HHHEYUkE0qTKk56c3SeTmwUyBSVTrHMvp8Zv+xvPSCDJqHnefGrLDo5p/
-         O1XxZ12yXv7EMiXSWYSyWs4cKRN+exoA6R9JdTdoBG/uXVao839HOwKr1Tr1DvsvK2
-         520h5R0clX8eqcbhSJNPBd4FSk09dQkfH1L8epfu04BqmPvP0/okRMp7ZECzGjTpFa
-         eG3lgCUaDxUG8aysovtl55GdFP7l3GoV5x2X0hHYXjYurQTLkny4rtEL3oXA8FcgSj
-         N9G13hy2si3NT3lZg/RlXv6en6xwmf0yy663aDVsM3p6uVaErbQ+hh45eC/lgUhhor
-         yHYBDNmJVFf2w==
+        b=S8r00gAFhSOx7XbWKAw5W5y7WzOM3CeOKsxjZRzK+4RH1Dk5e54kZOGtaqUPFQVxV
+         cZNYC8bZZtZeeijqbaen4QTn7W0qbQ+nIe66GrDCjOmdNGKPHZKFye07L2BYiyhYxT
+         lB9WB7p00NmIveRWs0PgfKCzOlbzYt1GXphBicyC6XFGjE40R03W6UIhzhNHPFYOzB
+         OiAZlJ19s+ftWt+1h9Y+ePVugnBi8pGUW8VVrtT8cDupjZsH1KuMuoASheUUUQfxMi
+         cB5QWeQ8GoPe4a7pZ8rkn+ggSlwPlFF8DZwsRMXUU8G+6JmjyEAZL2F78YtKgjQk1f
+         VL+v7w434nGXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rahul Bhattacharjee <quic_rbhattac@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 20/85] wifi: ath11k: Fix qmi_msg_handler data structure initialization
-Date:   Sun, 18 Dec 2022 11:00:37 -0500
-Message-Id: <20221218160142.925394-20-sashal@kernel.org>
+Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Martin Liska <mliska@suse.cz>,
+        Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.1 21/85] qed (gcc13): use u16 for fid to be big enough
+Date:   Sun, 18 Dec 2022 11:00:38 -0500
+Message-Id: <20221218160142.925394-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221218160142.925394-1-sashal@kernel.org>
 References: <20221218160142.925394-1-sashal@kernel.org>
@@ -58,40 +59,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rahul Bhattacharjee <quic_rbhattac@quicinc.com>
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 
-[ Upstream commit ed3725e15a154ebebf44e0c34806c57525483f92 ]
+[ Upstream commit 7d84118229bf7f7290438c85caa8e49de52d50c1 ]
 
-qmi_msg_handler is required to be null terminated by QMI module.
-There might be a case where a handler for a msg id is not present in the
-handlers array which can lead to infinite loop while searching the handler
-and therefore out of bound access in qmi_invoke_handler().
-Hence update the initialization in qmi_msg_handler data structure.
+gcc 13 correctly reports overflow in qed_grc_dump_addr_range():
+In file included from drivers/net/ethernet/qlogic/qed/qed.h:23,
+                 from drivers/net/ethernet/qlogic/qed/qed_debug.c:10:
+drivers/net/ethernet/qlogic/qed/qed_debug.c: In function 'qed_grc_dump_addr_range':
+include/linux/qed/qed_if.h:1217:9: error: overflow in conversion from 'int' to 'u8' {aka 'unsigned char'} changes value from '(int)vf_id << 8 | 128' to '128' [-Werror=overflow]
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
+We do:
+  u8 fid;
+  ...
+  fid = vf_id << 8 | 128;
 
-Signed-off-by: Rahul Bhattacharjee <quic_rbhattac@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20221021090126.28626-1-quic_rbhattac@quicinc.com
+Since fid is 16bit (and the stored value above too), fid should be u16,
+not u8. Fix that.
+
+Cc: Martin Liska <mliska@suse.cz>
+Cc: Ariel Elior <aelior@marvell.com>
+Cc: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Link: https://lore.kernel.org/r/20221031114354.10398-1-jirislaby@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/qmi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/qlogic/qed/qed_debug.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 51de2208b789..8358fe08c234 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -3087,6 +3087,9 @@ static const struct qmi_msg_handler ath11k_qmi_msg_handlers[] = {
- 			sizeof(struct qmi_wlfw_fw_init_done_ind_msg_v01),
- 		.fn = ath11k_qmi_msg_fw_init_done_cb,
- 	},
-+
-+	/* end of list */
-+	{},
- };
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+index 5250d1d1e49c..86ecb080b153 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+@@ -1972,9 +1972,10 @@ static u32 qed_grc_dump_addr_range(struct qed_hwfn *p_hwfn,
+ 				   u8 split_id)
+ {
+ 	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
+-	u8 port_id = 0, pf_id = 0, vf_id = 0, fid = 0;
++	u8 port_id = 0, pf_id = 0, vf_id = 0;
+ 	bool read_using_dmae = false;
+ 	u32 thresh;
++	u16 fid;
  
- static int ath11k_qmi_ops_new_server(struct qmi_handle *qmi_hdl,
+ 	if (!dump)
+ 		return len;
 -- 
 2.35.1
 
