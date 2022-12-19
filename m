@@ -2,172 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E3D7650F3F
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 16:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ECD7650ED5
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 16:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbiLSPvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 10:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
+        id S231783AbiLSPmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 10:42:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232571AbiLSPvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 10:51:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB9914093
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 07:47:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671464827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vlKnSWSIx1ojfKs5edw/VgZ4TRdc4IynKJCcaopveyo=;
-        b=DarF9PBi5sVECdewj/B9VlD8FFDDmXeeOD0hQ8qiijMrk166NNJs4D96V+bhcIi72Jill8
-        bqAlq52xs7p/mWm9NqBX+0SKfjlldbOpmXljQ/Un4VJvhgj/vtkuqiIA4Y6TLNrQcLpVGs
-        quJXJMepfCKa2Q9ycLQ1WVjHA1JNXyw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-668-GwN3Ms-hPzeEjyhnwLvi4w-1; Mon, 19 Dec 2022 10:41:30 -0500
-X-MC-Unique: GwN3Ms-hPzeEjyhnwLvi4w-1
-Received: by mail-wm1-f72.google.com with SMTP id 125-20020a1c0283000000b003d1d8d7f266so5291144wmc.7
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 07:41:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vlKnSWSIx1ojfKs5edw/VgZ4TRdc4IynKJCcaopveyo=;
-        b=eJgnU2iwFE36RBC5I3lxld+Hj45O4akfnKXYSmvNp4QTp8ohLNOXYzCyUBxbBpFKG2
-         iKphx7LAML2YGyfnvU9vc2g80S4Rrz444P+ltfNyQsF2AtUxekcME9khEvO3XZaXMyGR
-         zLxQnLh/XoHq6PlQ0gq0wv1Blli6gWLHUvdrBE9jYmHoKWwR8PRMrfgLX1BdnGUj0jKB
-         wsrRCBYqhj+csiXMSaJcGUNEjr7dyalVaxO5W27OhEA2zH9lhCBbr/arhGgnYrneKU+B
-         242QFB4X4Xk5uxKPoFhJbscmEM6SjES/72MvpOqvqolB+Q0OtLPZJeUaKfLBEiNof7ca
-         A6jw==
-X-Gm-Message-State: ANoB5pk15TD1zWlHlXgp0n81Jldtc8cdQv6R6mxorW3ON+g6cHQHS1GX
-        F/DrhGyR4S/yv5E331vCHkaxpcNySmMxxm1dyc/uI8YSzYWqBfc6DCX4uM3q+q/x2NyXBpmZiHX
-        294uL9K546wpGgJ1e
-X-Received: by 2002:adf:f98c:0:b0:242:5582:f947 with SMTP id f12-20020adff98c000000b002425582f947mr27182923wrr.19.1671464488916;
-        Mon, 19 Dec 2022 07:41:28 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7c1CCW4GpXsPVVZneJb9YGEsZaku3fS+KXI667IWEo0kL8508tyP91BWhdT1KIQ5j10Q7ikw==
-X-Received: by 2002:adf:f98c:0:b0:242:5582:f947 with SMTP id f12-20020adff98c000000b002425582f947mr27182913wrr.19.1671464488677;
-        Mon, 19 Dec 2022 07:41:28 -0800 (PST)
-Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
-        by smtp.gmail.com with ESMTPSA id az17-20020adfe191000000b00241bd7a7165sm10281220wrb.82.2022.12.19.07.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Dec 2022 07:41:28 -0800 (PST)
-Date:   Mon, 19 Dec 2022 16:41:23 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 0/2] virtio/vsock: fix mutual rx/tx hungup
-Message-ID: <CAGxU2F4ca5pxW3RX4wzsTx3KRBtxLK_rO9KxPgUtqcaSNsqXCA@mail.gmail.com>
-References: <39b2e9fd-601b-189d-39a9-914e5574524c@sberdevices.ru>
+        with ESMTP id S232283AbiLSPmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 10:42:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E6312083;
+        Mon, 19 Dec 2022 07:42:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25BC0B80EA3;
+        Mon, 19 Dec 2022 15:42:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 428EAC433EF;
+        Mon, 19 Dec 2022 15:42:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671464539;
+        bh=tZDVjbL0ZWIptwNSQ822sM+4L3GOnBEYSN9bYCt+/R8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Z9R3pLLvaG4tAk5nWmynGQqmva0Sh2x+pbGmcO+FryktleNpiu7RpJdOXwMKMgPJm
+         lFkEaDWfXwt2bfQxETjM7lk/qslBXHzHzaQ3PHFT/C5LYmDaRtB+08e4OTSkpDUv9t
+         TWD8J9/6l903mX1YwDqbkS8GQr12+Vv1lTE+P8OYG58ErcdXlsuCLRTPOryHTqwvht
+         epICnM02/xatD/NmdOzjlCpMclyY6N/3JCSBfHFQbs0g/BqzRfMp1OIXPpqPW3RrhB
+         Yq6mNPx8ORD2zV8+6l97vCqvw5igLKVpIKzmMviSs1M6Go2qCjQG6F0aaMZhGsLG2K
+         sAVXtEDuwbY4w==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
+        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
+        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
+        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
+        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
+        grygorii.strashko@ti.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com
+Subject: [RFC bpf-next 0/8] xdp: introduce xdp-feature support
+Date:   Mon, 19 Dec 2022 16:41:29 +0100
+Message-Id: <cover.1671462950.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <39b2e9fd-601b-189d-39a9-914e5574524c@sberdevices.ru>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arseniy,
+Introduce the capability to export the XDP features supported by the NIC.
+Introduce a XDP compliance test tool (xdp_features) to check the features
+exported by the NIC match the real features supported by the driver.
+Allow XDP_REDIRECT of non-linear XDP frames into a devmap.
+Export XDP features for each XDP capable driver.
 
-On Sat, Dec 17, 2022 at 8:42 PM Arseniy Krasnov <AVKrasnov@sberdevices.ru> wrote:
->
-> Hello,
->
-> seems I found strange thing(may be a bug) where sender('tx' later) and
-> receiver('rx' later) could stuck forever. Potential fix is in the first
-> patch, second patch contains reproducer, based on vsock test suite.
-> Reproducer is simple: tx just sends data to rx by 'write() syscall, rx
-> dequeues it using 'read()' syscall and uses 'poll()' for waiting. I run
-> server in host and client in guest.
->
-> rx side params:
-> 1) SO_VM_SOCKETS_BUFFER_SIZE is 256Kb(e.g. default).
-> 2) SO_RCVLOWAT is 128Kb.
->
-> What happens in the reproducer step by step:
->
+Kumar Kartikeya Dwivedi (1):
+  libbpf: add API to get XDP/XSK supported features
 
-I put the values of the variables involved to facilitate understanding:
+Lorenzo Bianconi (3):
+  tools: uapi: align if_link.h
+  bpf: devmap: check XDP features in bpf_map_update_elem and
+    __xdp_enqueue
+  selftests/bpf: introduce XDP compliance test tool
 
-RX: buf_alloc = 256 KB; fwd_cnt = 0; last_fwd_cnt = 0;
-    free_space = buf_alloc - (fwd_cnt - last_fwd_cnt) = 256 KB
+Marek Majtyka (4):
+  net: introduce XDP features flag
+  drivers: net: turn on XDP features
+  xsk: add usage of XDP features flags
+  xsk: add check for full support of XDP in bind
 
-The credit update is sent if
-free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE [64 KB]
+ .../networking/netdev-xdp-features.rst        |  60 ++
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |   5 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   3 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   2 +
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   2 +
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |   2 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |   3 +
+ .../ethernet/fungible/funeth/funeth_main.c    |   6 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |   9 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   5 +
+ drivers/net/ethernet/intel/igb/igb_main.c     |   9 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |   2 +
+ drivers/net/ethernet/intel/igc/igc_xdp.c      |   5 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   5 +
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
+ drivers/net/ethernet/marvell/mvneta.c         |   3 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   3 +
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |   9 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   5 +
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   9 +
+ drivers/net/ethernet/microsoft/mana/mana_en.c |   2 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   3 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |   2 +
+ drivers/net/ethernet/sfc/efx.c                |   2 +
+ drivers/net/ethernet/sfc/siena/efx.c          |   2 +
+ drivers/net/ethernet/socionext/netsec.c       |   2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   1 +
+ drivers/net/ethernet/ti/cpsw.c                |   2 +
+ drivers/net/ethernet/ti/cpsw_new.c            |   2 +
+ drivers/net/hyperv/netvsc_drv.c               |   2 +
+ drivers/net/netdevsim/netdev.c                |   1 +
+ drivers/net/tun.c                             |   3 +
+ drivers/net/veth.c                            |   4 +
+ drivers/net/virtio_net.c                      |   5 +
+ drivers/net/xen-netfront.c                    |   1 +
+ include/linux/netdevice.h                     |   2 +
+ include/linux/xdp_features.h                  |  64 ++
+ include/net/xdp.h                             |  39 +
+ include/uapi/linux/if_link.h                  |   7 +
+ include/uapi/linux/if_xdp.h                   |   1 +
+ include/uapi/linux/xdp_features.h             |  34 +
+ kernel/bpf/devmap.c                           |  25 +-
+ net/core/filter.c                             |  13 +-
+ net/core/rtnetlink.c                          |  34 +
+ net/xdp/xsk.c                                 |   4 +-
+ net/xdp/xsk_buff_pool.c                       |  20 +-
+ tools/include/uapi/linux/if_link.h            |  10 +
+ tools/include/uapi/linux/if_xdp.h             |   1 +
+ tools/include/uapi/linux/xdp_features.h       |  34 +
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ tools/lib/bpf/netlink.c                       |  62 ++
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ .../selftests/bpf/progs/test_xdp_features.c   | 235 ++++++
+ .../selftests/bpf/test_xdp_features.sh        |  99 +++
+ tools/testing/selftests/bpf/xdp_features.c    | 745 ++++++++++++++++++
+ tools/testing/selftests/bpf/xsk.c             |   3 +
+ 60 files changed, 1602 insertions(+), 24 deletions(-)
+ create mode 100644 Documentation/networking/netdev-xdp-features.rst
+ create mode 100644 include/linux/xdp_features.h
+ create mode 100644 include/uapi/linux/xdp_features.h
+ create mode 100644 tools/include/uapi/linux/xdp_features.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_features.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_features.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_features.c
 
-> 1) tx tries to send 256Kb + 1 byte (in a single 'write()')
-> 2) tx sends 256Kb, data reaches rx (rx_bytes == 256Kb)
-> 3) tx waits for space in 'write()' to send last 1 byte
-> 4) rx does poll(), (rx_bytes >= rcvlowat) 256Kb >= 128Kb, POLLIN is set
-> 5) rx reads 64Kb, credit update is not sent due to *
-
-RX: buf_alloc = 256 KB; fwd_cnt = 64 KB; last_fwd_cnt = 0;
-    free_space = 192 KB
-
-> 6) rx does poll(), (rx_bytes >= rcvlowat) 192Kb >= 128Kb, POLLIN is set
-> 7) rx reads 64Kb, credit update is not sent due to *
-
-RX: buf_alloc = 256 KB; fwd_cnt = 128 KB; last_fwd_cnt = 0;
-    free_space = 128 KB
-
-> 8) rx does poll(), (rx_bytes >= rcvlowat) 128Kb >= 128Kb, POLLIN is set
-> 9) rx reads 64Kb, credit update is not sent due to *
-
-Right, (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) is still false.
-
-RX: buf_alloc = 256 KB; fwd_cnt = 196 KB; last_fwd_cnt = 0;
-    free_space = 64 KB
-
-> 10) rx does poll(), (rx_bytes < rcvlowat) 64Kb < 128Kb, rx waits in poll()
-
-I agree that the TX is stuck because we are not sending the credit 
-update, but also if RX sends the credit update at step 9, RX won't be 
-woken up at step 10, right?
-
->
-> * is optimization in 'virtio_transport_stream_do_dequeue()' which
->   sends OP_CREDIT_UPDATE only when we have not too much space -
->   less than VIRTIO_VSOCK_MAX_PKT_BUF_SIZE.
->
-> Now tx side waits for space inside write() and rx waits in poll() for
-> 'rx_bytes' to reach SO_RCVLOWAT value. Both sides will wait forever. I
-> think, possible fix is to send credit update not only when we have too
-> small space, but also when number of bytes in receive queue is smaller
-> than SO_RCVLOWAT thus not enough to wake up sleeping reader. I'm not
-> sure about correctness of this idea, but anyway - I think that problem
-> above exists. What do You think?
-
-I'm not sure, I have to think more about it, but if RX reads less than 
-SO_RCVLOWAT, I expect it's normal to get to a case of stuck.
-
-In this case we are only unstucking TX, but even if it sends that single 
-byte, RX is still stuck and not consuming it, so it was useless to wake 
-up TX if RX won't consume it anyway, right?
-
-If RX woke up (e.g. SO_RCVLOWAT = 64KB) and read the remaining 64KB, 
-then it would still send the credit update even without this patch and 
-TX will send the 1 byte.
-
-Thanks,
-Stefano
+-- 
+2.38.1
 
