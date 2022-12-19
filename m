@@ -2,138 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB11650EB6
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 16:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3D7650F3F
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 16:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231972AbiLSPhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 10:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        id S232689AbiLSPvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 10:51:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiLSPhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 10:37:23 -0500
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA91FCE2;
-        Mon, 19 Dec 2022 07:37:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1671464241; x=1703000241;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9p+mxbd5kh6SOfLyESUFNEms88GQjCAKJPms8yWVsvk=;
-  b=oMQV3JCJM7WJ12K6f01S4tuvmp5Z6DYNPivvPll4s4vCaM542QfpRKuZ
-   PgdUWXgJDtHvU4dtjh8+E0mf6Se1u8fsKqJrTc10X50/a/3SNm0eTCBgE
-   8MUWnS/aikUQmlwM8+CocSLtQSg5cwvrsvCRwQkNlHR4tFUuZ3gnxxlaA
-   s=;
-X-IronPort-AV: E=Sophos;i="5.96,255,1665446400"; 
-   d="scan'208";a="280451857"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-0ec33b60.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Dec 2022 15:37:16 +0000
-Received: from EX13D31EUA004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-0ec33b60.us-west-2.amazon.com (Postfix) with ESMTPS id 3DFD6A2BBC;
-        Mon, 19 Dec 2022 15:37:15 +0000 (UTC)
-Received: from EX19D008EUA004.ant.amazon.com (10.252.50.158) by
- EX13D31EUA004.ant.amazon.com (10.43.165.161) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Mon, 19 Dec 2022 15:37:14 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX19D008EUA004.ant.amazon.com (10.252.50.158) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Mon, 19 Dec 2022 15:37:13 +0000
-Received: from dev-dsk-ptyadav-1c-37607b33.eu-west-1.amazon.com (10.15.11.255)
- by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1497.42 via Frontend Transport; Mon, 19 Dec 2022 15:37:12 +0000
-Received: by dev-dsk-ptyadav-1c-37607b33.eu-west-1.amazon.com (Postfix, from userid 23027615)
-        id A716920D70; Mon, 19 Dec 2022 16:37:11 +0100 (CET)
-From:   Pratyush Yadav <ptyadav@amazon.de>
-To:     <stable@vger.kernel.org>
-CC:     Pratyush Yadav <ptyadav@amazon.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        with ESMTP id S232571AbiLSPvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 10:51:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB9914093
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 07:47:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671464827;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vlKnSWSIx1ojfKs5edw/VgZ4TRdc4IynKJCcaopveyo=;
+        b=DarF9PBi5sVECdewj/B9VlD8FFDDmXeeOD0hQ8qiijMrk166NNJs4D96V+bhcIi72Jill8
+        bqAlq52xs7p/mWm9NqBX+0SKfjlldbOpmXljQ/Un4VJvhgj/vtkuqiIA4Y6TLNrQcLpVGs
+        quJXJMepfCKa2Q9ycLQ1WVjHA1JNXyw=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-668-GwN3Ms-hPzeEjyhnwLvi4w-1; Mon, 19 Dec 2022 10:41:30 -0500
+X-MC-Unique: GwN3Ms-hPzeEjyhnwLvi4w-1
+Received: by mail-wm1-f72.google.com with SMTP id 125-20020a1c0283000000b003d1d8d7f266so5291144wmc.7
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 07:41:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vlKnSWSIx1ojfKs5edw/VgZ4TRdc4IynKJCcaopveyo=;
+        b=eJgnU2iwFE36RBC5I3lxld+Hj45O4akfnKXYSmvNp4QTp8ohLNOXYzCyUBxbBpFKG2
+         iKphx7LAML2YGyfnvU9vc2g80S4Rrz444P+ltfNyQsF2AtUxekcME9khEvO3XZaXMyGR
+         zLxQnLh/XoHq6PlQ0gq0wv1Blli6gWLHUvdrBE9jYmHoKWwR8PRMrfgLX1BdnGUj0jKB
+         wsrRCBYqhj+csiXMSaJcGUNEjr7dyalVaxO5W27OhEA2zH9lhCBbr/arhGgnYrneKU+B
+         242QFB4X4Xk5uxKPoFhJbscmEM6SjES/72MvpOqvqolB+Q0OtLPZJeUaKfLBEiNof7ca
+         A6jw==
+X-Gm-Message-State: ANoB5pk15TD1zWlHlXgp0n81Jldtc8cdQv6R6mxorW3ON+g6cHQHS1GX
+        F/DrhGyR4S/yv5E331vCHkaxpcNySmMxxm1dyc/uI8YSzYWqBfc6DCX4uM3q+q/x2NyXBpmZiHX
+        294uL9K546wpGgJ1e
+X-Received: by 2002:adf:f98c:0:b0:242:5582:f947 with SMTP id f12-20020adff98c000000b002425582f947mr27182923wrr.19.1671464488916;
+        Mon, 19 Dec 2022 07:41:28 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7c1CCW4GpXsPVVZneJb9YGEsZaku3fS+KXI667IWEo0kL8508tyP91BWhdT1KIQ5j10Q7ikw==
+X-Received: by 2002:adf:f98c:0:b0:242:5582:f947 with SMTP id f12-20020adff98c000000b002425582f947mr27182913wrr.19.1671464488677;
+        Mon, 19 Dec 2022 07:41:28 -0800 (PST)
+Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
+        by smtp.gmail.com with ESMTPSA id az17-20020adfe191000000b00241bd7a7165sm10281220wrb.82.2022.12.19.07.41.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Dec 2022 07:41:28 -0800 (PST)
+Date:   Mon, 19 Dec 2022 16:41:23 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Sasha Levin" <sashal@kernel.org>, Puranjay Mohan <pjy@amazon.de>,
-        Maximilian Heyne <mheyne@amazon.de>,
-        Julien Grall <julien@xen.org>,
-        <xen-devel@lists.xenproject.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 5.4] xen-netback: move removal of "hotplug-status" to the right place
-Date:   Mon, 19 Dec 2022 16:37:10 +0100
-Message-ID: <20221219153710.23782-1-ptyadav@amazon.de>
-X-Mailer: git-send-email 2.38.1
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 0/2] virtio/vsock: fix mutual rx/tx hungup
+Message-ID: <CAGxU2F4ca5pxW3RX4wzsTx3KRBtxLK_rO9KxPgUtqcaSNsqXCA@mail.gmail.com>
+References: <39b2e9fd-601b-189d-39a9-914e5574524c@sberdevices.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <39b2e9fd-601b-189d-39a9-914e5574524c@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The removal of "hotplug-status" has moved around a bit. First it was
-moved from netback_remove() to hotplug_status_changed() in upstream
-commit 1f2565780e9b ("xen-netback: remove 'hotplug-status' once it has
-served its purpose"). Then the change was reverted in upstream commit
-0f4558ae9187 ("Revert "xen-netback: remove 'hotplug-status' once it has
-served its purpose""), but it moved the removal to backend_disconnect().
-Then the upstream commit c55f34b6aec2 ("xen-netback: only remove
-'hotplug-status' when the vif is actually destroyed") moved it finally
-back to netback_remove(). The thing to note being it is removed
-unconditionally this time around.
+Hi Arseniy,
 
-The story on v5.4.y adds to this confusion. Commit 60e4e3198ce8 ("Revert
-"xen-netback: remove 'hotplug-status' once it has served its purpose"")
-is backported to v5.4.y but the original commit that it tries to revert
-was never present on 5.4. So the backport incorrectly ends up just
-adding another xenbus_rm() of "hotplug-status" in backend_disconnect().
+On Sat, Dec 17, 2022 at 8:42 PM Arseniy Krasnov <AVKrasnov@sberdevices.ru> wrote:
+>
+> Hello,
+>
+> seems I found strange thing(may be a bug) where sender('tx' later) and
+> receiver('rx' later) could stuck forever. Potential fix is in the first
+> patch, second patch contains reproducer, based on vsock test suite.
+> Reproducer is simple: tx just sends data to rx by 'write() syscall, rx
+> dequeues it using 'read()' syscall and uses 'poll()' for waiting. I run
+> server in host and client in guest.
+>
+> rx side params:
+> 1) SO_VM_SOCKETS_BUFFER_SIZE is 256Kb(e.g. default).
+> 2) SO_RCVLOWAT is 128Kb.
+>
+> What happens in the reproducer step by step:
+>
 
-Now in v5.4.y it is removed in both backend_disconnect() and
-netback_remove(). But it should only be removed in netback_remove(), as
-the upstream version does.
+I put the values of the variables involved to facilitate understanding:
 
-Removing "hotplug-status" in backend_disconnect() causes problems when
-the frontend unilaterally disconnects, as explained in
-c55f34b6aec2 ("xen-netback: only remove 'hotplug-status' when the vif is
-actually destroyed").
+RX: buf_alloc = 256 KB; fwd_cnt = 0; last_fwd_cnt = 0;
+    free_space = buf_alloc - (fwd_cnt - last_fwd_cnt) = 256 KB
 
-Remove "hotplug-status" in the same place as it is done on the upstream
-version to ensure unilateral re-connection of frontend continues to
-work.
+The credit update is sent if
+free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE [64 KB]
 
-Fixes: 60e4e3198ce8 ("Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"")
-Signed-off-by: Pratyush Yadav <ptyadav@amazon.de>
----
- drivers/net/xen-netback/xenbus.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> 1) tx tries to send 256Kb + 1 byte (in a single 'write()')
+> 2) tx sends 256Kb, data reaches rx (rx_bytes == 256Kb)
+> 3) tx waits for space in 'write()' to send last 1 byte
+> 4) rx does poll(), (rx_bytes >= rcvlowat) 256Kb >= 128Kb, POLLIN is set
+> 5) rx reads 64Kb, credit update is not sent due to *
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 44e353dd2ba1..43bd881ab3dd 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -202,10 +202,10 @@ static int netback_remove(struct xenbus_device *dev)
- 	set_backend_state(be, XenbusStateClosed);
+RX: buf_alloc = 256 KB; fwd_cnt = 64 KB; last_fwd_cnt = 0;
+    free_space = 192 KB
 
- 	unregister_hotplug_status_watch(be);
-+	xenbus_rm(XBT_NIL, dev->nodename, "hotplug-status");
- 	if (be->vif) {
- 		kobject_uevent(&dev->dev.kobj, KOBJ_OFFLINE);
- 		xen_unregister_watchers(be->vif);
--		xenbus_rm(XBT_NIL, dev->nodename, "hotplug-status");
- 		xenvif_free(be->vif);
- 		be->vif = NULL;
- 	}
-@@ -435,7 +435,6 @@ static void backend_disconnect(struct backend_info *be)
- 		unsigned int queue_index;
+> 6) rx does poll(), (rx_bytes >= rcvlowat) 192Kb >= 128Kb, POLLIN is set
+> 7) rx reads 64Kb, credit update is not sent due to *
 
- 		xen_unregister_watchers(vif);
--		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
- #ifdef CONFIG_DEBUG_FS
- 		xenvif_debugfs_delif(vif);
- #endif /* CONFIG_DEBUG_FS */
---
-2.38.1
+RX: buf_alloc = 256 KB; fwd_cnt = 128 KB; last_fwd_cnt = 0;
+    free_space = 128 KB
+
+> 8) rx does poll(), (rx_bytes >= rcvlowat) 128Kb >= 128Kb, POLLIN is set
+> 9) rx reads 64Kb, credit update is not sent due to *
+
+Right, (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) is still false.
+
+RX: buf_alloc = 256 KB; fwd_cnt = 196 KB; last_fwd_cnt = 0;
+    free_space = 64 KB
+
+> 10) rx does poll(), (rx_bytes < rcvlowat) 64Kb < 128Kb, rx waits in poll()
+
+I agree that the TX is stuck because we are not sending the credit 
+update, but also if RX sends the credit update at step 9, RX won't be 
+woken up at step 10, right?
+
+>
+> * is optimization in 'virtio_transport_stream_do_dequeue()' which
+>   sends OP_CREDIT_UPDATE only when we have not too much space -
+>   less than VIRTIO_VSOCK_MAX_PKT_BUF_SIZE.
+>
+> Now tx side waits for space inside write() and rx waits in poll() for
+> 'rx_bytes' to reach SO_RCVLOWAT value. Both sides will wait forever. I
+> think, possible fix is to send credit update not only when we have too
+> small space, but also when number of bytes in receive queue is smaller
+> than SO_RCVLOWAT thus not enough to wake up sleeping reader. I'm not
+> sure about correctness of this idea, but anyway - I think that problem
+> above exists. What do You think?
+
+I'm not sure, I have to think more about it, but if RX reads less than 
+SO_RCVLOWAT, I expect it's normal to get to a case of stuck.
+
+In this case we are only unstucking TX, but even if it sends that single 
+byte, RX is still stuck and not consuming it, so it was useless to wake 
+up TX if RX won't consume it anyway, right?
+
+If RX woke up (e.g. SO_RCVLOWAT = 64KB) and read the remaining 64KB, 
+then it would still send the credit update even without this patch and 
+TX will send the 1 byte.
+
+Thanks,
+Stefano
 
