@@ -2,110 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB6306505DF
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 01:21:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBACF650604
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 02:06:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231232AbiLSAVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 19:21:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34404 "EHLO
+        id S230461AbiLSBGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 20:06:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbiLSAU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 19:20:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B00B4AA
-        for <netdev@vger.kernel.org>; Sun, 18 Dec 2022 16:20:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671409212;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bO0al5IyNGuGxF/jB0VxxHL7mf3PAKHAnthDgtMoOzk=;
-        b=SM1qToN6hjk9ZgJiEpjkkVulLELSE74W9e3X2ejpk1dRziwnGjmpheINbfhDIm+VKu1aht
-        haZ9p5i2E76Qp4o1MOgF/0I8WRTukmGcBysTdef7MSl0uBw639Rgscp5sG12geGKCJLthS
-        TGvHFbU7v0fk5nnnLiEkNjvLEf46bZ8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-97-baBNUf38M4C_DVxz3rfWUQ-1; Sun, 18 Dec 2022 19:20:08 -0500
-X-MC-Unique: baBNUf38M4C_DVxz3rfWUQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7A5783C0D861;
-        Mon, 19 Dec 2022 00:20:07 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8025E1400E44;
-        Mon, 19 Dec 2022 00:20:06 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20221218120951.1212-1-hdanton@sina.com>
-References: <20221218120951.1212-1-hdanton@sina.com> <20221216001958.1149-1-hdanton@sina.com> <167112117887.152641.6194213035340041732.stgit@warthog.procyon.org.uk>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 7/9] rxrpc: Fix I/O thread stop
+        with ESMTP id S230421AbiLSBGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 20:06:30 -0500
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AC62609
+        for <netdev@vger.kernel.org>; Sun, 18 Dec 2022 17:06:26 -0800 (PST)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id A49452C04A0;
+        Mon, 19 Dec 2022 14:06:23 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1671411983;
+        bh=wswQ/KMRzD2puKOHYOnzQLN1QFz3lsndlcSA4xBLrfM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=xqy+f1ee0j39EP1Hi7Qx00th3Gs7pjErfd4InWhhZnnbv9FfvnMwV5rSkljZFjsei
+         hRSRVipncDe/3o8PGfMaJa1jW4IXme10h3SNOpmCvA8l03rvp5X/v+MQfw5FlqO0Pg
+         ZnrNLms7qH/2rkggOG++i+X+Xx4xBN2+n+jP1nzEsKQ7ChB/ZVKRnI3oPJW1HVq10z
+         WhPw1iJwDfnYUnysXEmO8NiXCiE/Ng18BVzOFjcLAuw9qfMPoPf6eIESKamYGL0HFr
+         IDUH4ExLqDeHyEThQp8DbSgk7gVAXwMlMSGC/A69PPh2ioIteWFmzUagkteagBPxDi
+         llhfq8mnXFwmQ==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B639fb90f0000>; Mon, 19 Dec 2022 14:06:23 +1300
+Received: from thomaswi-dl.ws.atlnz.lc (thomaswi-dl.ws.atlnz.lc [10.33.25.46])
+        by pat.atlnz.lc (Postfix) with ESMTP id 6896613EE3F;
+        Mon, 19 Dec 2022 14:06:23 +1300 (NZDT)
+Received: by thomaswi-dl.ws.atlnz.lc (Postfix, from userid 1719)
+        id 66D123E5131; Mon, 19 Dec 2022 14:06:23 +1300 (NZDT)
+From:   Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, a@unstable.cc, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>
+Subject: [PATCH 0/2] ip/ip6_gre: Fix GRE tunnels not generating IPv6 link local addresses
+Date:   Mon, 19 Dec 2022 14:06:17 +1300
+Message-Id: <20221219010619.1826599-1-Thomas.Winter@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1017323.1671409205.1@warthog.procyon.org.uk>
-Date:   Mon, 19 Dec 2022 00:20:05 +0000
-Message-ID: <1017324.1671409205@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=X/cs11be c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=sHyYjHe8cH0A:10 a=IpZYufPWUN2N8bb5Va0A:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hillf Danton <hdanton@sina.com> wrote:
+For our point-to-point GRE tunnels, they have IN6_ADDR_GEN_MODE_NONE
+when they are created then we set IN6_ADDR_GEN_MODE_EUI64 when they
+come up to generate the IPv6 link local address for the interface.
+Recently we found that they were no longer generating IPv6 addresses.
 
-> > So once we've observed that we've been asked to stop, we need to check if
-> > there's more work to be done and, if so, do that work first.
-> 
-> In line with
-> 
-> 	if (condition)
-> 		return;
-> 	add to wait queue
-> 	if (!condition)
-> 		schedule();
-> 
-> this change should look like
-> 
->    		if (!skb_queue_empty(&local->rx_queue) ...)
->  			continue;
-> 
->  		if (kthread_should_stop())
->    			if (!skb_queue_empty(&local->rx_queue) ...)
->  				continue;
-> 			else
->   				break;
-> 
-> as checking condition once barely makes sense.
+Also, non-point-to-point tunnels were not generating any IPv6 link
+local address and instead generating an IPv6 compat address,
+breaking IPv6 communication on the tunnel.
 
-Note that these are not really analogous.  The add-to-wait-queue step is
-significantly more expensive than kthread_should_stop() and requires removal
-in the event that the condition becomes true in the window.
+These failures were caused by commit e5dd729460ca and this patch set
+aims to resolve these issues.
 
-In the case of kthread_should_stop(), it's just a test_bit() of a word that's
-in a cacheline not going to get changed until the thread is stopped.  Testing
-the value first and then checking the condition should be fine as the stop
-flag can be shared in the cpu's data cache until it's set.
+Thomas Winter (2):
+  ip/ip6_gre: Fix changing addr gen mode not generating IPv6 link local
+    address
+  ip/ip6_gre: Fix non-point-to-point tunnel not generating IPv6 link
+    local address
 
-Also from a code-maintenance PoV, I don't want to write the condition twice if
-I can avoid it.  That allows for the two copies to get out of sync.
+ net/ipv6/addrconf.c | 57 ++++++++++++++++++++++++---------------------
+ 1 file changed, 31 insertions(+), 26 deletions(-)
 
-> Because of a bit complex condition does not mean checking it once is neither
-> sane nor correct.
-
-So you agree with me, I think?
-
-David
+--=20
+2.37.3
 
