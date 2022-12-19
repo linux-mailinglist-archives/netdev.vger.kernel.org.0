@@ -2,126 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D90E2650D84
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 15:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97066650EA2
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 16:31:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232308AbiLSOkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 09:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S232299AbiLSPbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 10:31:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbiLSOkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 09:40:20 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7782E198;
-        Mon, 19 Dec 2022 06:40:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1unCginLesSkuj4hqRvXqnZG2iVnHjxMfFxmdxmFUXo=; b=nk08+RKg9qmIKScG/E8PNoDGD8
-        hdiV25CTyDmHQ5wqh92AaVFwnBpSaGTtp/E0ZrMcnU7JJg3+1wjhCzEVAeHfpeg3XKGfjhBvadv65
-        NVupC/8rK/55pvVyr4cSJw/aXhAQChsdODiZsTci9qEhAgh8eo8DHL9zTDseazd36UuENEDDzsaFI
-        xMKrEFRngTnYxOUVbQp5hMLcB3py6A80rqmWQ0wDnzLOF6QqAZjLr1oS6Xyqp2D/s0J7vlZ55EBFZ
-        B611/nI1s87XhWAkjDhtLwdFfmfoeEXpc+NVC2TeBUHLCEUY30V4NSi8+nNpYKR/nwcs6C0PEmH8p
-        DKx8N1aQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1p7HJF-00Cd4B-0L;
-        Mon, 19 Dec 2022 14:40:05 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id AA9D33001D6;
-        Mon, 19 Dec 2022 15:40:04 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6A36020A1AB9C; Mon, 19 Dec 2022 15:40:04 +0100 (CET)
-Date:   Mon, 19 Dec 2022 15:40:04 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     syzbot <syzbot+b8e8c01c8ade4fe6e48f@syzkaller.appspotmail.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        bpf@vger.kernel.org, jolsa@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KASAN: use-after-free Read in put_pmu_ctx
-Message-ID: <Y6B3xEgkbmFUCeni@hirez.programming.kicks-ass.net>
-References: <000000000000a20a2e05f029c577@google.com>
+        with ESMTP id S232289AbiLSPa7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 10:30:59 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF5921BA;
+        Mon, 19 Dec 2022 07:30:57 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id d82so6473994pfd.11;
+        Mon, 19 Dec 2022 07:30:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=AW2GlRcYIzwFd0FF5U4Py3ypyOgrWMB/b3sWQqDwzG8=;
+        b=C7pQxfo9/JZ/CYjpCF6+ETurYI6L+Jn7sIh9/EKWflNzhjvszs/BUz1hmm1PLN7aNK
+         LPFj4ICbKQ5ZhVNMo5d6Rqft8nBe43lx4EwCQmLci9Llcu55OaZF037OaYo3BW/nPVjm
+         dw346t7+eGUATbbRuwfi+Qef0i8M6yASSQahSJZN5zn/h2f0/UaJVvPvaGk5Hp86RoGm
+         o9QEScnwDjiRmRL4d4l7fzJUrHE/xW5VlZfuKAX+Jy1egDJIsOLvRhi3cFPDYzV8Ph65
+         r0AbWeevNMud9q7wqBxCZRFOswK50yHwOoVRleSawOKAkaRvTZCg0YMqKbkmRzaUZq3n
+         72Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AW2GlRcYIzwFd0FF5U4Py3ypyOgrWMB/b3sWQqDwzG8=;
+        b=CgmPUmZoxG87F8gjJyNB9ZpUjdIGk9zHOVNh8elkU/uHU0gcyaLulM1h4n1P5tVOt8
+         UauxYoRDWyrznvfySFJxqoSQlc5TD5G5RhzUQPeNkEA2GR09r5euXiK56Y64hg/g7PcR
+         PffvIjYhN9h+Xpw4Ed8h0j3RhbSA07ve1q6FUh78+95LTO5dc7Ejh5W7VvGGfi3/gRu7
+         z6kai6muJibMrC5mUef2IKUF8UWkVMYgSa/LEQ+e47fgbCoSYzFTQMO0yYJ8kV8LtAtn
+         h3+f+pANr28MBUlKGkzM3mvN5fPNn2+bwmHU72WuCt/ZzQdWTtODZrM6p9h+x91Fp1KP
+         BTIw==
+X-Gm-Message-State: ANoB5plt91RFemucJPaBRkvw+ZfJA6sHtfx5GLOKapBRagocxDL1Fh2E
+        gG0i9KP0oGqYLV0+bf5im9m+s9MqmTuiVbDmqP0=
+X-Google-Smtp-Source: AA0mqf5PSWvs90NUbrlLS+dMj+p6JR2lluCE7gSgs/wsWna4lj2h3qnFitPSPVhI/sdNM1kdiMMgQlhhAPuBit5gjEE=
+X-Received: by 2002:a05:6a00:d01:b0:577:ab75:cec9 with SMTP id
+ k1-20020a056a000d0100b00577ab75cec9mr5476941pfv.44.1671463857255; Mon, 19 Dec
+ 2022 07:30:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000a20a2e05f029c577@google.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221213074726.51756-1-lianglixuehao@126.com> <Y5l5pUKBW9DvHJAW@unreal>
+ <20221214085106.42a88df1@kernel.org> <Y5obql8TVeYEsRw8@unreal>
+ <20221214125016.5a23c32a@kernel.org> <Y57SPPmui6cwD5Ma@unreal>
+In-Reply-To: <Y57SPPmui6cwD5Ma@unreal>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 19 Dec 2022 07:30:45 -0800
+Message-ID: <CAKgT0UfZk3=b0q3AQiexaJ=gCz6vW_hnHRnFiYLFSCESYdenOw@mail.gmail.com>
+Subject: Re: [PATCH v7] igb: Assign random MAC address instead of fail in case
+ of invalid one
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Lixue Liang <lianglixuehao@126.com>,
+        anthony.l.nguyen@intel.com, linux-kernel@vger.kernel.org,
+        jesse.brandeburg@intel.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        lianglixue@greatwall.com.cn
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 19, 2022 at 12:04:43AM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    13e3c7793e2f Merge tag 'for-netdev' of https://git.kernel...
-> git tree:       bpf
-> console+strace: https://syzkaller.appspot.com/x/log.txt?x=177df7e0480000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b0e91ad4b5f69c47
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b8e8c01c8ade4fe6e48f
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15e87100480000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ceeb13880000
-> 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/373a99daa295/disk-13e3c779.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/7fa71ed0fe17/vmlinux-13e3c779.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/2842ad5c698b/bzImage-13e3c779.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+b8e8c01c8ade4fe6e48f@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: use-after-free in __lock_acquire+0x3ee7/0x56d0 kernel/locking/lockdep.c:4925
-> Read of size 8 at addr ffff8880237d6018 by task syz-executor287/8300
-> 
-> CPU: 0 PID: 8300 Comm: syz-executor287 Not tainted 6.1.0-syzkaller-09661-g13e3c7793e2f #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
->  print_address_description mm/kasan/report.c:284 [inline]
->  print_report+0x15e/0x45d mm/kasan/report.c:395
->  kasan_report+0xbf/0x1f0 mm/kasan/report.c:495
->  __lock_acquire+0x3ee7/0x56d0 kernel/locking/lockdep.c:4925
->  lock_acquire kernel/locking/lockdep.c:5668 [inline]
->  lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
->  __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
->  _raw_spin_lock_irqsave+0x3d/0x60 kernel/locking/spinlock.c:162
->  put_pmu_ctx kernel/events/core.c:4913 [inline]
->  put_pmu_ctx+0xad/0x390 kernel/events/core.c:4893
->  _free_event+0x3c5/0x13d0 kernel/events/core.c:5196
->  free_event+0x58/0xc0 kernel/events/core.c:5224
->  __do_sys_perf_event_open+0x66d/0x2980 kernel/events/core.c:12701
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+On Sun, Dec 18, 2022 at 12:41 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Wed, Dec 14, 2022 at 12:50:16PM -0800, Jakub Kicinski wrote:
+> > On Wed, 14 Dec 2022 20:53:30 +0200 Leon Romanovsky wrote:
+> > > On Wed, Dec 14, 2022 at 08:51:06AM -0800, Jakub Kicinski wrote:
+> > > > On Wed, 14 Dec 2022 09:22:13 +0200 Leon Romanovsky wrote:
+> > > > > NAK to any module driver parameter. If it is applicable to all drivers,
+> > > > > please find a way to configure it to more user-friendly. If it is not,
+> > > > > try to do the same as other drivers do.
+> > > >
+> > > > I think this one may be fine. Configuration which has to be set before
+> > > > device probing can't really be per-device.
+> > >
+> > > This configuration can be different between multiple devices
+> > > which use same igb module. Module parameters doesn't allow such
+> > > separation.
+> >
+> > Configuration of the device, sure, but this module param is more of
+> > a system policy.
+>
+> And system policy should be controlled by userspace and applicable to as
+> much as possible NICs, without custom module parameters.
+>
+> I would imagine global (at the beginning, till someone comes forward and
+> requests this parameter be per-device) to whole stack parameter with policies:
+>  * Be strict - fail if mac is not valid
+>  * Fallback to random
+>  * Random only ???
+>
+> Thanks
 
-Does this help?
-
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index e47914ac8732..bbff551783e1 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12689,7 +12689,8 @@ SYSCALL_DEFINE5(perf_event_open,
- 	return event_fd;
- 
- err_context:
--	/* event->pmu_ctx freed by free_event() */
-+	put_pmu_ctx(event->pmu_ctx);
-+	event->pmu_ctx = NULL; /* _free_event() */
- err_locked:
- 	mutex_unlock(&ctx->mutex);
- 	perf_unpin_context(ctx);
+So are you suggesting you would rather see something like this as a
+sysctl then? Maybe something like net.core.netdev_mac_behavior where
+we have some enum with a predetermined set of behaviors available? I
+would be fine with us making this a global policy if that is the route
+we want to go. It would just be a matter of adding the sysctl and an
+accessor so that drivers can determine if it is set or not.
