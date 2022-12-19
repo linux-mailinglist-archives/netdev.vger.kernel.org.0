@@ -2,171 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A10650AF7
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 12:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF43650B0F
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 13:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231786AbiLSLyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 06:54:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
+        id S231994AbiLSMBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 07:01:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbiLSLyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 06:54:11 -0500
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2062.outbound.protection.outlook.com [40.107.241.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4EF65C9;
-        Mon, 19 Dec 2022 03:54:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nx/neZDftvEcwBCL6uHTCqHZ65g6edcJxm1w03SE2l4cgvww72gUmXN3vRWOfoeV2MV0LJsJu7rPb9ZhTCLCDi2tK4kKTktxjxAjdRASDng3g6fEIjP5EZyLruwYIq1tO66KDX2AC0mxUyhVFN2UYdy4kKs4g+WZa/N78wzErESXOxww4R2BuxeOA+5bNfO4tJUZtkRksAsGUssc84/JiGJEHaPy2kqjwk0GGmF5BebYS/AR/WQdt+pH8DkKclHZ13pkDED6jyvzJElKPkV3Ktt5QA0ZY+yCm7PO0iKvxERcVgbdZCnVCiMBXowEI1BVfnGDcRewWjoso3Bf8yfhYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uYWF5rmGiub9ctQcYYtDRQmJJNUJSxF9VvbR4UIOqQ0=;
- b=HgoeGI7mpvtgAD4mOytWbVHM3WU1WIOyd0cU9IjMHOhi6SIXpZ46iTtD7hmWpqogYJKLC1qw5z81AUgd1oP1vjnckNmZ6m9Rx30K/V336hlobaVtosiIsE1mAFVyz11r+7BCxyATlah+MvhS/Q97UPmCJJ7OlfCIWkqzWHzdBaJ+P89nMS+QoW2HpGbGyyZZZD7NEnVN0qmlwRbXT3ZGnnURCN7Riz3/7HyIkRJDCyOYxo+B3ZDI7enTqAT3xiaXqJJwzbnm7Ti08FMCUl9QOgJujbVxzMiELaQMnLWPWIxpfFLPIFgdLzkYCbSRHwwh+FTLae50jF0pVhCUzkYSgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uYWF5rmGiub9ctQcYYtDRQmJJNUJSxF9VvbR4UIOqQ0=;
- b=cTVMOuenowb2GESokx2gDN7+JjERIW3/W/8Bkh/jRaNSko05Bu5W479Et7FAW7qkNspPO9xuqomzJcm+xDs1LtHgAAQydgb0bLHEgmZlsB46CroYuqxo4MLH30dwyUuzF1SFwnDqws2VOgJUNpNct7kdTyPFywbTDxwKTu8D10Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM7PR04MB6983.eurprd04.prod.outlook.com (2603:10a6:20b:102::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Mon, 19 Dec
- 2022 11:54:07 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::7c13:ef9:b52f:47d8]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::7c13:ef9:b52f:47d8%6]) with mapi id 15.20.5924.016; Mon, 19 Dec 2022
- 11:54:07 +0000
-Date:   Mon, 19 Dec 2022 13:54:02 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.15 41/46] net: dpaa2: publish MAC stringset to
- ethtool -S even if MAC is missing
-Message-ID: <20221219115402.evv5x2dzrb7tlwmn@skbuf>
-References: <20221218161244.930785-1-sashal@kernel.org>
- <20221218161244.930785-41-sashal@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221218161244.930785-41-sashal@kernel.org>
-X-ClientProxiedBy: AM4PR0101CA0073.eurprd01.prod.exchangelabs.com
- (2603:10a6:200:41::41) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S231686AbiLSMA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 07:00:59 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F924FCFE;
+        Mon, 19 Dec 2022 04:00:14 -0800 (PST)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 13364839D5;
+        Mon, 19 Dec 2022 13:00:12 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1671451212;
+        bh=7Tc08O5/QSZU9JKvbwkVI7bh4NdF+iLSTXKKDKKb9+I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FIrpeZz0t4AmQgZz1wwK6gVNwP0i0bnsweCmFKA8xLVCdqRCkB4wNKYDigrokRJHv
+         eqL8iXcu7SRq1bJGFy1Gyfzj1+p1Lc6qwC+ImrMOOX6HNgiYX3BBVOKXR+btocEDtQ
+         +JgtvF/ioC01E+HujxsDwrHEYeCuAqu1oRIM4RdjRo/7lc4HNpaX1ZWJ5DZOaHnWOD
+         yQOVNi6BcP0r/TLVw7kRzQ4huAInstETGDTkP8P3iCz4WTdfSlr0yVHd9x1tAS5ix/
+         v8W5pgMhtPiXcOPUhFyqYA+NkexojHdLxzbXDYJm1IGPt6pOBgHjm/XmEaFF+7zXoC
+         2HgBnd/JKEfFw==
+Date:   Mon, 19 Dec 2022 13:00:05 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <20221219130005.6e995cb0@wsk>
+In-Reply-To: <CAKgT0Udm6s8Wib1dFp6f4yVhdMm62-4kjetYSucLr-Ruyg7-yg@mail.gmail.com>
+References: <20221215144536.3810578-1-lukma@denx.de>
+        <4d16ffd327d193f8c1f7c40f968fda90a267348e.camel@gmail.com>
+        <20221216140526.799bd82f@wsk>
+        <CAKgT0Udm6s8Wib1dFp6f4yVhdMm62-4kjetYSucLr-Ruyg7-yg@mail.gmail.com>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM7PR04MB6983:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4b724bfa-c9e5-4562-0415-08dae1b7bb8b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FPCfpXtutBVu65uZXfK2VqYtYnRCgbd5g02HNlYbU9ClsaUwY9SN1u2EG6xI8oMxGxIkv9r+z7moRVtFGNAgLZZGYvrdJByK70IdiXZfNt7LG3qw7eHmTecEt8Pkz209c2MzOT8maX/K6pnDOwSL3mgga3AhGhCYvxoh4N0mVh3zy7tT4THCUOxwrBEm19wnVB8ixLlYKukk1HZKMzWW4CC08HHqbCU494v9QdPpKeMgIxnBwJT0mG1sxPEK86SCPBZcY1p9QMvg1WkxoHp4e5x5vU9gUCoYp+LFXxDD2l4MvPOhu0enFQ2DCScW9l1mrJ56O017CMkVtdY+kSC39b/doQYj8HvQlLmuJJfdjG7yRQlPCTymo9lVYPJ/nPBJ0DTEhv0LkCLPEK2MiZ0eU3Eo8gT8oHLwQHbtJZFFuHXM9Y0wN8tGC0N56Sy9Nj/fH6a6DfW3cx7XGv5F6tyHCZjjsgwO79+9+SNnsFPEYtRc/KeB6hNa35aYv4xk04H70QFRJOALOqmPCtSte7mIyY1m0YqcsXu47A8nh01S3bX/DVQMzt2ejUGCrWgAIw6HKF0EeHsfrZqteUQ3zpZbHoAExhBJV7ksHY1+8VE8kpzpo32swWOWyJ5HudN+2jzysY/KJnB/pmMlGs0E+Dd6adTbPwRsRPfslwh7NmkJmR4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(346002)(376002)(136003)(366004)(39860400002)(396003)(451199015)(478600001)(6666004)(33716001)(966005)(2906002)(186003)(4326008)(8676002)(83380400001)(38100700002)(1076003)(6486002)(44832011)(6512007)(9686003)(6506007)(26005)(316002)(54906003)(5660300002)(6916009)(8936002)(66946007)(86362001)(66556008)(66476007)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y9iUhzkDqyeW5vIWG8e23T4npJAR3rznor7UNMU/+Vl7t/AkoevJ2D3fzOXS?=
- =?us-ascii?Q?OLzvqRQV3iCgdP+9k7YFRlKha023uQpa88/x7Xy168gXiKLmdwUS5/fOKV7k?=
- =?us-ascii?Q?EJInOBNl5L5SL2euFykgM3G4roNABz8MyulOC/8LvZi2ywtIWOxnKKQwO3Cc?=
- =?us-ascii?Q?G7lyScAnxSvCvfbVw4PnVWBg93KOvqJoRo3LmuKvXxUjR5pgq7aArqyGMw7o?=
- =?us-ascii?Q?KNcNX8o83+vJNmRiL262r+PvyrNrGyEyzPHbFbwkHtSX6ZNC3TYMf+ucrGlO?=
- =?us-ascii?Q?AG/DZl+we21lvvDDwX+kSZrYVuWGMv3/04+Z1UX0z6+YA92AxMNWNz3CVuez?=
- =?us-ascii?Q?OXn4I9qgAwAR4LN8IPNum/3ZLjD00yzkC9bJxV6A8hbXjsFGY4uxK2Wt9pxX?=
- =?us-ascii?Q?uNuicvfv+yu4dhvFTNulAHna7E0dAvTnAVtarhzEDXzhO40Pl+oFAOnDRduL?=
- =?us-ascii?Q?BRjrtLKBVLwal+itu+ON/z+dzaMp9R6Csy/f/X/VmEzusqkpMh/jKXsxwpEa?=
- =?us-ascii?Q?sP6MowPtu0U/XCrR6jSGGP+9QzDfW3XKAuWR7nlU85YaOM7niWR0PZrOPBXt?=
- =?us-ascii?Q?fO009/of/gJjfUe1YFozrvPuQPBoFhSkhVEQ1CocjpqtIiN92rqA1TYDv8Gf?=
- =?us-ascii?Q?/fEtKP8RZia7Xgk+l8Qv3K5ZoOfnAi5peUHmRgsZ8nXd4KoFTcGEYd0yjGaj?=
- =?us-ascii?Q?v4WtIJiD2jhW33jx2vbkFoA530lbreIIkNyDh5C4dJ8XlEgudWyctVgwR8cI?=
- =?us-ascii?Q?O55qpjFGBLN086xnDR1q0eD252mu18sv5a8Rkb2325ENbGCgxp1clO2nyqQq?=
- =?us-ascii?Q?57dlXdyfVc0+okmMg7pMC1RHyVAJUzN5/EZ5YTzuPCiaKqdpM8GZD9dl7aqo?=
- =?us-ascii?Q?yx/ADWUkmewx9YL+L4mOYxF3p54/FjEd2cNQvC7esAmskL1YZdD5Ta8JU0VF?=
- =?us-ascii?Q?h2N1ZsyxiP+UVXBHTrGAnPHvP/qgGDeqjVZAY6+IIt3Hz1Pd1OY4X0bhRD1f?=
- =?us-ascii?Q?P+DSLfOZVZCVWRF7aCgz8DUmcsp0Xd0Oa77Az2bvG6CL++7IO+w2H0vB5F4Z?=
- =?us-ascii?Q?BAB9zuM6Kqz+3POEpyn8GOifmmAy9ylch/6UHf73EZlSEW82MjWnldQgNhjc?=
- =?us-ascii?Q?rZIMzldt8J72BNLv8odKI+SjZczHXDwYOIBTqB3EKoTH+Q2ktiRIANzuuNcM?=
- =?us-ascii?Q?u2iPqTZCRPxLKqD3wMSlT9s0okEooSzCfFzYA2e+snKFx9PozJoxY0rM0xq+?=
- =?us-ascii?Q?U2hRFeJ78CRgfPIbXaLSg8rCgyr52YqlJ9MImNVAYiuUmEaLxMmOQePUaOD5?=
- =?us-ascii?Q?DOew+DZ103vkWNHAuZbMqxoeUiGmMfDEXwi7vn0WKe571lSC2HwOmTcEqYxa?=
- =?us-ascii?Q?wLaKXWiNDGt4aEoAT+Ix1wCTeoeo1rmhb+Ka3+Czd2eCnVES9WG3lwWDxqJV?=
- =?us-ascii?Q?/V+eY25R9+oDbZie1GiGEHsKW/2+e5JxdrIuCc/ZmqNvTNNoVXTy5aEc4o25?=
- =?us-ascii?Q?PG+e1H+pItbYP0EaaRLflFHjuuJ277qQNhyZaqE3Wd0/aeApqXNLTIUs87iX?=
- =?us-ascii?Q?jViI/vCmocDVSzquFcDwvpOCovAdRBk4EnrvZhplzwv6OIUSuQ0mB/KL0pO4?=
- =?us-ascii?Q?Dw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b724bfa-c9e5-4562-0415-08dae1b7bb8b
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2022 11:54:07.0404
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Gw6ef2rsyaZeLEkI/kQITS7hI+4+oVxvre3hkqvKdxNVBTJ2TIbPtDKnjYyKxaC+dxJV9NOnl4b3X2JWQ+M3Gw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6983
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/7XCBTm3tbk2vu6GHzeVhVz3";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sasha,
+--Sig_/7XCBTm3tbk2vu6GHzeVhVz3
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 18, 2022 at 11:12:39AM -0500, Sasha Levin wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> [ Upstream commit 29811d6e19d795efcf26644b66c4152abbac35a6 ]
-> 
-> DPNIs and DPSW objects can connect and disconnect at runtime from DPMAC
-> objects on the same fsl-mc bus. The DPMAC object also holds "ethtool -S"
-> unstructured counters. Those counters are only shown for the entity
-> owning the netdev (DPNI, DPSW) if it's connected to a DPMAC.
-> 
-> The ethtool stringset code path is split into multiple callbacks, but
-> currently, connecting and disconnecting the DPMAC takes the rtnl_lock().
-> This blocks the entire ethtool code path from running, see
-> ethnl_default_doit() -> rtnl_lock() -> ops->prepare_data() ->
-> strset_prepare_data().
-> 
-> This is going to be a problem if we are going to no longer require
-> rtnl_lock() when connecting/disconnecting the DPMAC, because the DPMAC
-> could appear between ops->get_sset_count() and ops->get_strings().
-> If it appears out of the blue, we will provide a stringset into an array
-> that was dimensioned thinking the DPMAC wouldn't be there => array
-> accessed out of bounds.
-> 
-> There isn't really a good way to work around that, and I don't want to
-> put too much pressure on the ethtool framework by playing locking games.
-> Just make the DPMAC counters be always available. They'll be zeroes if
-> the DPNI or DPSW isn't connected to a DPMAC.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
+Hi Alexander,
 
-I think the algorithm has a problem in that it has a tendency to
-auto-pick preparatory patches which eliminate limitations that are
-preventing future development from taking place, rather than patches
-which fix present issues in the given code base.
+> On Fri, Dec 16, 2022 at 5:05 AM Lukasz Majewski <lukma@denx.de> wrote:
+> >
+> > Hi Alexander,
+> > =20
+> > > On Thu, 2022-12-15 at 15:45 +0100, Lukasz Majewski wrote: =20
+> > > > Different Marvell DSA switches support different size of max
+> > > > frame bytes to be sent.
+> > > >
+> > > > For example mv88e6185 supports max 1632 bytes, which is now
+> > > > in-driver standard value. On the other hand - mv88e6250 supports
+> > > > 2048 bytes.
+> > > >
+> > > > As this value is internal and may be different for each switch
+> > > > IC, new entry in struct mv88e6xxx_info has been added to store
+> > > > it.
+> > > >
+> > > > Signed-off-by: Lukasz Majewski <lukma@denx.de>
+> > > > ---
+> > > > Changes for v2:
+> > > > - Define max_frame_size with default value of 1632 bytes,
+> > > > - Set proper value for the mv88e6250 switch SoC (linkstreet)
+> > > > family ---
+> > > >  drivers/net/dsa/mv88e6xxx/chip.c | 13 ++++++++++++-
+> > > >  drivers/net/dsa/mv88e6xxx/chip.h |  1 +
+> > > >  2 files changed, 13 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c
+> > > > b/drivers/net/dsa/mv88e6xxx/chip.c index
+> > > > 2ca3cbba5764..7ae4c389ce50 100644 ---
+> > > > a/drivers/net/dsa/mv88e6xxx/chip.c +++
+> > > > b/drivers/net/dsa/mv88e6xxx/chip.c @@ -3093,7 +3093,9 @@ static
+> > > > int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port) if
+> > > > (chip->info->ops->port_set_jumbo_size) return 10240 -
+> > > > VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; else if
+> > > > (chip->info->ops->set_max_frame_size)
+> > > > -           return 1632 - VLAN_ETH_HLEN - EDSA_HLEN -
+> > > > ETH_FCS_LEN;
+> > > > +           return (chip->info->max_frame_size  - VLAN_ETH_HLEN
+> > > > +                   - EDSA_HLEN - ETH_FCS_LEN);
+> > > > +
+> > > >     return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+> > > >  }
+> > > >
+> > > > =20
+> > >
+> > > Is there any specific reason for triggering this based on the
+> > > existance of the function call? =20
+> >
+> > This was the original code in this driver.
+> >
+> > This value (1632 or 2048 bytes) is SoC (family) specific.
+> >
+> > By checking which device defines set_max_frame_size callback, I
+> > could fill the chip->info->max_frame_size with 1632 value.
+> > =20
+> > > Why not just replace:
+> > >       else if (chip->info->ops->set_max_frame_size)
+> > > with:
+> > >       else if (chip->info->max_frame_size)
+> > > =20
+> >
+> > I think that the callback check is a bit "defensive" approach ->
+> > 1522B is the default value and 1632 (or 10240 - jumbo) can be set
+> > only when proper callback is defined.
+> > =20
+> > > Otherwise my concern is one gets defined without the other
+> > > leading to a future issue as 0 - extra headers will likely wrap
+> > > and while the return value may be a signed int, it is usually
+> > > stored in an unsigned int so it would effectively uncap the MTU. =20
+> >
+> > Please correct me if I misunderstood something:
+> >
+> > The problem is with new mv88eXXXX devices, which will not provide
+> > max_frame_size information to their chip->info struct?
+> >
+> > Or is there any other issue? =20
+>=20
+> That was mostly my concern. I was adding a bit of my own defensive
+> programming in the event that somebody forgot to fill out the
+> chip->info. If nothing else it might make sense to add a check to
+> verify that the max_frame_size is populated before blindly using it.
+> So perhaps you could do something similar to the max_t approach I had
+> called out earlier but instead of applying it on the last case you
+> could apply it for the "set_max_frame_size" case with 1632 being the
+> minimum and being overwritten by 2048 if it is set in max_frame_size.
 
-In this case, the patch is part of a larger series which was at the
-boundary between "next" work and "stable" work (patch 07/12 of this)
-https://patchwork.kernel.org/project/netdevbpf/cover/20221129141221.872653-1-vladimir.oltean@nxp.com/
+I think that I shall add:
 
-Due to the volume of that rework, I intended it to go to "next", even
-though backporting the entire series to "stable" could have its own
-merits. But picking just patch 07/12 out of that series is pointless,
-so please drop this patch from the queue for 5.15, 6.0 and 6.1, please.
+else if (chip->info->ops->set_max_frame_size)
+	return max_t(int, chip->info->max_frame_size, 1632) - (headers)
 
-Thanks!
+So then the "default" value of 1632 will be overwritten by 2048 bytes.
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/7XCBTm3tbk2vu6GHzeVhVz3
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmOgUkUACgkQAR8vZIA0
+zr0IIgf8DFwX5ALMURFb3pBxRfxtz7QWbOAhFlH5dZMui438mh4Yt8vRsW05YSm0
+JT82EGxvq+o9XaCZh+7zIRtXa/gRJwOBnIYZ3Ouz/JDVAkLPd/qEbeilIlNVw9YU
+apvXST3vFR8O6GxwoT7zZhT/rK6lVhIzhmpEZXzuIOXXPKW26aQL+llHeTAN1/ha
+rJ9MS0bPgScyUQzZb/SbqhgCrDPPk8GfO7bhOQl8/8wzRiwmEqeTZFH72bXbIh60
+mMFJFzXeigGRoAia3R/zioa4er7/6licKMhKiUyeOM4hMjxn5FKQteCnJVhsdCAZ
+yHcrIXTWMYjtg/WGeUYoWohcD9DliQ==
+=gxDE
+-----END PGP SIGNATURE-----
+
+--Sig_/7XCBTm3tbk2vu6GHzeVhVz3--
