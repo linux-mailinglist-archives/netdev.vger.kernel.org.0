@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E51A4650BDE
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 13:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF5EC650BE1
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 13:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiLSMkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 07:40:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        id S231297AbiLSMkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 07:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiLSMkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 07:40:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF863A9
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 04:40:17 -0800 (PST)
+        with ESMTP id S231648AbiLSMkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 07:40:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EAD3A9
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 04:40:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A7B760F7C
+        by ams.source.kernel.org (Postfix) with ESMTPS id D51FBB80E07
         for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 12:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5F652C433EF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6526EC433F1;
         Mon, 19 Dec 2022 12:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1671453616;
-        bh=gOflSCTKm/enOHgWw/VIBr+n+TfyYI4SaepS/jx1l84=;
+        bh=8vdV2nx6l2gQaK8Hx5FTMX9EXb0TYVxsYIfg09AIV/c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HvPrhUv89GpziFCOLrG9WMZgDrmn8ONi7618RsusrU3JEHRa1HyFSBm2y2kP1Av1g
-         2aJQUNtWyI3nCIni47pEOF195b175LtEBJG9suLyGFjWPlUk1sgcwqXtTFSNhn6j78
-         KXl+Ht8jTe1PFustfSqS7rlmisJQQMONixJWe1Ke7XoMcyD6ezuLgxMl6hcfojFbHO
-         3NacIKgLh+y3a2kVU/P7X1EcJohSEapBrrpv6z+N+uH5B3HauoP9kOlVbpdiTvWO3L
-         TL5OPpjWTSWsvK2eSu56Tz+O4NDL0iOUlQgfJKmgA0INzZl7s2djF0nA1vkLN8szdK
-         CLTVUYyo9WQBQ==
+        b=CQY0tXKjC6ga/vm9MijuvzCHenQPQkMyFJT1082unGbbkPggrRGkmFbRIvYcLSgbF
+         XFKcBcU6JJktwPbFgYR3xNhJ3Qdz0L7ttpBXAoDxRxlNhtC8Af8PeqawhdZYxHf8/g
+         LF/V6lL5hbjmMvyODZp1TFGOL+yM6BWrMrKuEFoIEtvLslt2LwxJvgKaX/VL2PIeJI
+         j7XBLCklksdZ4qcSryy05yz8QZaUX2ghbBI9J/HUnqD1rKazYu9odKcB1CRsmh86hv
+         /MeLVDgZNiJc0ojVj+/DG8PF5aUnP8cLa/YxQmvKI1OmJpUCAyEplsH9DfaXDjBXAd
+         wEK+BWjZcSlyw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 434EEC00445;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A6E9E451B6;
         Mon, 19 Dec 2022 12:40:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: stream: purge sk_error_queue in
- sk_stream_kill_queues()
+Subject: Re: [PATCH net] nfp: fix unaligned io read of capabilities word
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167145361627.5637.12164235110886449919.git-patchwork-notify@kernel.org>
+Message-Id: <167145361630.5637.8547309631313186045.git-patchwork-notify@kernel.org>
 Date:   Mon, 19 Dec 2022 12:40:16 +0000
-References: <20221216162917.119406-1-edumazet@google.com>
-In-Reply-To: <20221216162917.119406-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
+References: <20221216143101.976739-1-simon.horman@corigine.com>
+In-Reply-To: <20221216143101.976739-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        darklight2357@icloud.com
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        huanhuan.wang@corigine.com, niklas.soderlund@corigine.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,22 +61,22 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 16 Dec 2022 16:29:17 +0000 you wrote:
-> Changheon Lee reported TCP socket leaks, with a nice repro.
+On Fri, 16 Dec 2022 15:31:01 +0100 you wrote:
+> From: Huanhuan Wang <huanhuan.wang@corigine.com>
 > 
-> It seems we leak TCP sockets with the following sequence:
+> The address of 32-bit extend capability is not qword aligned,
+> and may cause exception in some arch.
 > 
-> 1) SOF_TIMESTAMPING_TX_ACK is enabled on the socket.
-> 
->    Each ACK will cook an skb put in error queue, from __skb_tstamp_tx().
->    __skb_tstamp_tx() is using skb_clone(), unless
->    SOF_TIMESTAMPING_OPT_TSONLY was also requested.
+> Fixes: 484963ce9f1e ("nfp: extend capability and control words")
+> Signed-off-by: Huanhuan Wang <huanhuan.wang@corigine.com>
+> Reviewed-by: Niklas Söderlund <niklas.soderlund@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: stream: purge sk_error_queue in sk_stream_kill_queues()
-    https://git.kernel.org/netdev/net/c/e0c8bccd40fc
+  - [net] nfp: fix unaligned io read of capabilities word
+    https://git.kernel.org/netdev/net/c/1b0c84a32e37
 
 You are awesome, thank you!
 -- 
