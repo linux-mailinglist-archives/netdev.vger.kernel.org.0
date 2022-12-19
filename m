@@ -2,82 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FFD3650C27
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 13:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2580650C95
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 14:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbiLSMuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 07:50:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
+        id S231803AbiLSNVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 08:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbiLSMuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 07:50:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D4610058
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 04:50:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D92AB80E13
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 12:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D16AC433F0;
-        Mon, 19 Dec 2022 12:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671454216;
-        bh=ODt7m5fFkLUibUGmZ07IUvaolox/rGuK7/hvOCL8SXI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Tx2F+bib7kBOMijsTjNi2oXoChuKyjdKYQr1QtO+olrxa1atfc7gAaXLNlugGgxd5
-         nG7yHajReYpShx6KCsbSfCUN9r94zhKnHF3haB9OQ5ItrNaw5UL9C+V+IcTtPzJz82
-         SaG4+5XYAcFE/Uv53QRPBzvj+oZvbO8iJ1W2hD1KMSSxVG3YJHz2qL0aEuH94AiyOE
-         /aZDhZ4l4gDBhsOKnNELRGFe+et1wQBDHBv0y76fCZY62tMQDhZeDHzeGrth735ucf
-         k49cXSA/7YFWprkZW85vmnZ8eu+IspczakcJNjMqc2LBbnKY9bB73e8kPJw7OX+PSl
-         dgrf6kgcovBBQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 02BBBE21EF8;
-        Mon, 19 Dec 2022 12:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231197AbiLSNVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 08:21:03 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C150266B;
+        Mon, 19 Dec 2022 05:21:00 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R991e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VXhf1e9_1671456046;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VXhf1e9_1671456046)
+          by smtp.aliyun-inc.com;
+          Mon, 19 Dec 2022 21:20:57 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] wifi: ath10k: Remove the unused function ath10k_ce_shadow_src_ring_write_index_set()
+Date:   Mon, 19 Dec 2022 21:20:41 +0800
+Message-Id: <20221219132041.91418-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] mctp: serial: Fix starting value for frame check sequence
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167145421600.10746.10337384652720939675.git-patchwork-notify@kernel.org>
-Date:   Mon, 19 Dec 2022 12:50:16 +0000
-References: <20221216034409.27174-1-jk@codeconstruct.com.au>
-In-Reply-To: <20221216034409.27174-1-jk@codeconstruct.com.au>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, matt@codeconstruct.com.au,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, harshtya@google.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The function ath10k_ce_shadow_src_ring_write_index_set is defined in the
+ce.c file, but not called elsewhere, so remove this unused function.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+drivers/net/wireless/ath/ath10k/ce.c:212:1: warning: unused function 'ath10k_ce_shadow_dest_ring_write_index_set'.
 
-On Fri, 16 Dec 2022 11:44:09 +0800 you wrote:
-> RFC1662 defines the start state for the crc16 FCS to be 0xffff, but
-> we're currently starting at zero.
-> 
-> This change uses the correct start state. We're only early in the
-> adoption for the serial binding, so there aren't yet any other users to
-> interface to.
-> 
-> [...]
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3519
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/wireless/ath/ath10k/ce.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-Here is the summary with links:
-  - [net] mctp: serial: Fix starting value for frame check sequence
-    https://git.kernel.org/netdev/net/c/2856a62762c8
-
-You are awesome, thank you!
+diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
+index 59926227bd49..c2f3bd35c392 100644
+--- a/drivers/net/wireless/ath/ath10k/ce.c
++++ b/drivers/net/wireless/ath/ath10k/ce.c
+@@ -208,14 +208,6 @@ ath10k_ce_shadow_src_ring_write_index_set(struct ath10k *ar,
+ 	ath10k_ce_write32(ar, shadow_sr_wr_ind_addr(ar, ce_state), value);
+ }
+ 
+-static inline void
+-ath10k_ce_shadow_dest_ring_write_index_set(struct ath10k *ar,
+-					   struct ath10k_ce_pipe *ce_state,
+-					   unsigned int value)
+-{
+-	ath10k_ce_write32(ar, shadow_dst_wr_ind_addr(ar, ce_state), value);
+-}
+-
+ static inline void ath10k_ce_src_ring_base_addr_set(struct ath10k *ar,
+ 						    u32 ce_id,
+ 						    u64 addr)
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.20.1.7.g153144c
 
