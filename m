@@ -2,119 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D8E6509E9
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 11:16:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2F786509FA
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 11:20:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbiLSKQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 05:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
+        id S231690AbiLSKUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 05:20:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiLSKQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 05:16:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499D5A444
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 02:15:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671444920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0F60KxR0W9IzjgTzMiPaONsb+3DC5K9NhR1i6GY+9bw=;
-        b=UCyJWuRWj0jWxC73KOYjHtojHh6nXW+7UV36fdidehnR2PGoybgiQHbLO7xspk1LJKiMYW
-        4DpH62xFMl/9r/uo51fhf0x6wXc8Std2dAmQdqDLS/XAb8AzTFa26g5vvNQz/u2HKH3+vS
-        IW8RfFFNLnp7n8LYPCrhO8/zSRGFJJs=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-127-sBdDrLTcMgu8u_3QJXFfbw-1; Mon, 19 Dec 2022 05:15:18 -0500
-X-MC-Unique: sBdDrLTcMgu8u_3QJXFfbw-1
-Received: by mail-qk1-f199.google.com with SMTP id h13-20020a05620a244d00b006fb713618b8so7035404qkn.0
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 02:15:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0F60KxR0W9IzjgTzMiPaONsb+3DC5K9NhR1i6GY+9bw=;
-        b=SchPhFgVW9gg1EJk+UKkZ9q1EjagF6ReIkrRiJnzZP8s6LPmcFgq5irP7jmLzwWeUv
-         oSFGN0kecJAEjSyJ+YTnMRkxO2mOd672AF9hdLrcoRUsW1B6df78jewlBWj3ISVR5gyl
-         K03DNxQDwSQHXZPUqCsFZxGG7x57LU4B3QELnxs++aT48gVIOxwqHuSnZZ2iSG75qluZ
-         1LpLwtmckZDwh5+ASljsoayQv4ospzeZQgVI/nDqj7FKsspw3LRjbixb96U3eiWYv2Qe
-         3xGIEKfOMosJqeCwUPlYYn+jC3epk9fJCLDSWnbcX5XWf4cYdWMfsBAD9ti/VQBYqm2d
-         4Oyg==
-X-Gm-Message-State: ANoB5plJiThX4wbDcbwxOr8wlKVgRJFWiP8igkCTGa+Fe7ZWo0rISnGt
-        McvTRukonUMHOijkP63apOdYX663rtWGjVDIPGleMyItL740MAUlxTFdykefKceCkWCKo4tjqhv
-        AmQVPBoH1coCcVYOm
-X-Received: by 2002:ac8:4e51:0:b0:3a5:2704:d4bd with SMTP id e17-20020ac84e51000000b003a52704d4bdmr74303341qtw.16.1671444918004;
-        Mon, 19 Dec 2022 02:15:18 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5bm5Qnb85eW38Qmkj26T6UAoQXiAZKZbsD/6lF6kYKtBjYMui2UsCvc851kAw1QZmfTvQTLw==
-X-Received: by 2002:ac8:4e51:0:b0:3a5:2704:d4bd with SMTP id e17-20020ac84e51000000b003a52704d4bdmr74303318qtw.16.1671444917765;
-        Mon, 19 Dec 2022 02:15:17 -0800 (PST)
-Received: from redhat.com ([45.144.113.29])
-        by smtp.gmail.com with ESMTPSA id r17-20020a05620a299100b006fb8239db65sm6819951qkp.43.2022.12.19.02.15.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Dec 2022 02:15:17 -0800 (PST)
-Date:   Mon, 19 Dec 2022 05:15:09 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Li Zetao <lizetao1@huawei.com>, pbonzini@redhat.com,
-        stefanha@redhat.com, axboe@kernel.dk, kraxel@redhat.com,
-        david@redhat.com, ericvh@gmail.com, lucho@ionkov.net,
-        asmadeus@codewreck.org, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rusty@rustcorp.com.au,
-        virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/4] Fix probe failed when modprobe modules
-Message-ID: <20221219050716-mutt-send-email-mst@kernel.org>
-References: <20221128021005.232105-1-lizetao1@huawei.com>
- <20221128042945-mutt-send-email-mst@kernel.org>
- <CACGkMEtuOk+wyCsvY0uayGAvy926G381PC-csoXVAwCfiKCZQw@mail.gmail.com>
+        with ESMTP id S231754AbiLSKUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 05:20:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE9CDEE7;
+        Mon, 19 Dec 2022 02:20:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC14560EE7;
+        Mon, 19 Dec 2022 10:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 59FD1C433F0;
+        Mon, 19 Dec 2022 10:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671445217;
+        bh=5l2+H81WJDeQl++asDPSeSFnj4CQZAXDdnJPaHp4lD4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=u0zVSeHuZg9ATkyP9Qbsmp+0nvbNmVlekQ+qoKDXYr40R0rs9vDOqcRPxK39/vfQL
+         ys0CkChjcuBBIWGAiJk7z/aqUoQ4mIs7TBrqzHPOaCIHgFlkBr0vrm/2aixhb4KVNM
+         fN75D7OFxS13cJQLTABqlt4Bo4cC1R97gQCqwH2zDvp50VEvxjN4Ysp6P4KcHGRmrp
+         TesUlDmGjY7pwM1NStg1lnFSZPg/I/8pFQ2g8aAtFqM+tOlJAsSuS6juGEUGnS+94A
+         vp/OgTuJPWZj1IDjFUfi/VS9qxGSNgOwXDxbhGgKqXaO7rLvIP1ciuLW4M4V9KpVxM
+         +WG0BGgu/QQVw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 38886E21EEE;
+        Mon, 19 Dec 2022 10:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEtuOk+wyCsvY0uayGAvy926G381PC-csoXVAwCfiKCZQw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/9] rxrpc: Fixes for I/O thread conversion/SACK table
+ expansion
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167144521722.28172.4423252711475608734.git-patchwork-notify@kernel.org>
+Date:   Mon, 19 Dec 2022 10:20:17 +0000
+References: <167112117887.152641.6194213035340041732.stgit@warthog.procyon.org.uk>
+In-Reply-To: <167112117887.152641.6194213035340041732.stgit@warthog.procyon.org.uk>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org, error27@gmail.com,
+        linux-afs@lists.infradead.org, marc.dionne@auristor.com,
+        hdanton@sina.com,
+        syzbot+3538a6a72efa8b059c38@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 11:37:09AM +0800, Jason Wang wrote:
-> >
-> >
-> > Quite a lot of core work here. Jason are you still looking into
-> > hardening?
+Hello:
+
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 15 Dec 2022 16:19:38 +0000 you wrote:
+> Here are some fixes for AF_RXRPC:
 > 
-> Yes, last time we've discussed a solution that depends on the first
-> kick to enable the interrupt handler. But after some thought, it seems
-> risky since there's no guarantee that the device work in this way.
+>  (1) Fix missing unlock in rxrpc's sendmsg.
 > 
-> One example is the current vhost_net, it doesn't wait for the kick to
-> process the rx packets. Any more thought on this?
+>  (2) Fix (lack of) propagation of security settings to rxrpc_call.
 > 
-> Thanks
+>  (3) Fix NULL ptr deref in rxrpc_unuse_local().
+> 
+> [...]
 
-Specifically virtio net is careful to call virtio_device_ready
-under rtnl lock so buffers are only added after DRIVER_OK.
+Here is the summary with links:
+  - [net,1/9] rxrpc: Fix missing unlock in rxrpc_do_sendmsg()
+    https://git.kernel.org/netdev/net/c/4feb2c44629e
+  - [net,2/9] rxrpc: Fix security setting propagation
+    https://git.kernel.org/netdev/net/c/fdb99487b018
+  - [net,3/9] rxrpc: Fix NULL deref in rxrpc_unuse_local()
+    https://git.kernel.org/netdev/net/c/eaa02390adb0
+  - [net,4/9] rxrpc: Fix I/O thread startup getting skipped
+    https://git.kernel.org/netdev/net/c/8fbcc83334a7
+  - [net,5/9] rxrpc: Fix locking issues in rxrpc_put_peer_locked()
+    https://git.kernel.org/netdev/net/c/608aecd16a31
+  - [net,6/9] rxrpc: Fix switched parameters in peer tracing
+    https://git.kernel.org/netdev/net/c/c838f1a73d77
+  - [net,7/9] rxrpc: Fix I/O thread stop
+    https://git.kernel.org/netdev/net/c/743d1768a008
+  - [net,8/9] rxrpc: rxperf: Fix uninitialised variable
+    https://git.kernel.org/netdev/net/c/11e1706bc84f
+  - [net,9/9] rxrpc: Fix the return value of rxrpc_new_incoming_call()
+    https://git.kernel.org/netdev/net/c/31d35a02ad5b
 
-However we do not need to tie this to kick, this is what I wrote:
-
-> BTW Jason, I had the idea to disable callbacks until driver uses the
-> virtio core for the first time (e.g. by calling virtqueue_add* family of
-> APIs). Less aggressive than your ideas but I feel it will add security
-> to the init path at least.
-
-So not necessarily kick, we can make adding buffers allow the
-interrupt.
-
-
-
+You are awesome, thank you!
 -- 
-MST
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
