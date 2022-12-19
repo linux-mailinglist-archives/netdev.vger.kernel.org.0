@@ -2,275 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D03F651698
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 00:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC3BF6516B2
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 00:23:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233224AbiLSXFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 18:05:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
+        id S229853AbiLSXXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 18:23:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232054AbiLSXDs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 18:03:48 -0500
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7722617047;
-        Mon, 19 Dec 2022 15:01:20 -0800 (PST)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJIKvmX015286;
-        Mon, 19 Dec 2022 23:00:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=qcppdkim1;
- bh=SWJzjgVg9CxBHb/tHJ5rN/ghb1Be0SCQGn7z+gHv/Rw=;
- b=fH3cB2T1WJreeiJ/LAGY71vNdTnLJyvOqSGyObN9BGM7zDLU87yKQ/xEMExPM3HvJmzh
- NAnJRSEX9A98VAA932urzSj6HVTDq7KfRCoDHQUdZm8d3L0ATLdddnBhxcHoker8qmgV
- MHGdpie/Y8/NwFmxH6WeGONd0CLlkhgnd7l+gWTuU9X97AfpW94HO2hMCJ9CQMWfpHKw
- uGqDzuO5wyf/XWpig8+NRpCu71VNVhYs/Z15bi33YJIi1lXzg+VuPugEbFq+/6OIbZRP
- dj/GfsRpJvgRS9M+0ikdc+Ae//Pqe7W5ebkW6WVbAe2Lbj8iPPTf/tM1N8LtuxhWP289 cg== 
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3mh72gd4dg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 19 Dec 2022 23:00:46 +0000
-Received: from nasanex01b.na.qualcomm.com (corens_vlan604_snip.qualcomm.com [10.53.140.1])
-        by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2BJN0gBV006331
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 19 Dec 2022 23:00:42 GMT
-Received: from hu-eberman-lv.qualcomm.com (10.49.16.6) by
- nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Mon, 19 Dec 2022 15:00:41 -0800
-From:   Elliot Berman <quic_eberman@quicinc.com>
-To:     Bjorn Andersson <quic_bjorande@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     Elliot Berman <quic_eberman@quicinc.com>,
-        Murali Nalajala <quic_mnalajal@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        "Srivatsa Vaddagiri" <quic_svaddagi@quicinc.com>,
-        Carl van Schaik <quic_cvanscha@quicinc.com>,
-        Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-acpi@vger.kernel.org>, <ath10k@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>
-Subject: [PATCH v8 18/28] firmware: qcom_scm: Use fixed width src vm bitmap
-Date:   Mon, 19 Dec 2022 14:58:39 -0800
-Message-ID: <20221219225850.2397345-19-quic_eberman@quicinc.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221219225850.2397345-1-quic_eberman@quicinc.com>
-References: <20221219225850.2397345-1-quic_eberman@quicinc.com>
+        with ESMTP id S229489AbiLSXXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 18:23:32 -0500
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419C85FEB
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 15:23:32 -0800 (PST)
+Received: by mail-vk1-xa2f.google.com with SMTP id q7so5015074vka.7
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 15:23:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=01l7JFkP453NnyyjzaRZcIcVYzN32aOeM2k93v3ztAc=;
+        b=V2lO9PrEHtCqq8tPSqhjwnov24F/5TJFK1LzzpMHxoCX4LiKK6erOlR39npHrWArja
+         xF6tpIKanOaASmZCALhf2daujpMiDXj+K4gGfsMdgoHucVyF844Lwb+PQ7m0jA5hbpoV
+         az0MDP/C9refEnIrZGIb49c2wb7pJ3kNGN7XoiT46095OUW3LZDgs/5BO5GVKZIV8Bse
+         vC1jzjYd7vHX+KVBBr0i5Abh8fXFwYuA+sNj5KsvH8WrVRz2TBBmbD/lzjANu1eGJB6D
+         896BGJQ24XD/RRddSPxHeOiJMT40Lj1un73HfS4zA4FbsDM6+PmiJN18x5dZmGKdBlrP
+         QCrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=01l7JFkP453NnyyjzaRZcIcVYzN32aOeM2k93v3ztAc=;
+        b=6F4/4GFZZPCTxVj/Vbp+WXAHo53mHeVsqRiWFBy0IlggV23B/rZR7g3G52tYcUDi4A
+         UaPL6V9H6NSXy36IZ0XVm0G6GwOotpCF7JpH2QH+pxa7udCMuYbUQHzdfRu+08BKhMq5
+         BbD/lXFXXmFFGZftw05NbHI4P+llA1s01lVUQc52mfyLhvm3XkSque2yb72Q+EoIithL
+         Wo/AvpP85aTuJFJgswG/8c73j3FfrbMWPZK+BnSPCH+dlgfZbmi4wQHMXMYjnUYynYU6
+         AqGWeJjto8YS8MzK6tnObnNavyNTUv6jJorAAXMq0DDWoXOQk3AYAr9lVF3Goo2D6uQ0
+         9D3A==
+X-Gm-Message-State: AFqh2kr4gZDaCkUUo8OTVWnAWprwDEf/mn1NvBurCMfRm0ee2jN32Ais
+        QlO5UgdIyzeLuyBHegU+R016iD6pRfxh7TxU+qQ=
+X-Google-Smtp-Source: AMrXdXspPfG1j0OsYKIPYQJIIrASE86EDuu/i0aPJ/OL07B7AnEm31qlRmKtZq5wWm5/85X3Ykq9GKMCdVb1Y0LzIjM=
+X-Received: by 2002:a1f:d083:0:b0:3d1:fba1:3ada with SMTP id
+ h125-20020a1fd083000000b003d1fba13adamr657160vkg.39.1671492211305; Mon, 19
+ Dec 2022 15:23:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: rAJFpKPyIcVWf8l1hxpOMIY0DGylboWS
-X-Proofpoint-ORIG-GUID: rAJFpKPyIcVWf8l1hxpOMIY0DGylboWS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-19_01,2022-12-15_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1011
- suspectscore=0 impostorscore=0 bulkscore=0 mlxlogscore=999 adultscore=0
- spamscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2212190202
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6124:341c:b0:33f:1a99:fd8c with HTTP; Mon, 19 Dec 2022
+ 15:23:30 -0800 (PST)
+Reply-To: mrstheresaheidi8@gmail.com
+From:   Ms Theresa Heidi <sarahtheresa79@gmail.com>
+Date:   Mon, 19 Dec 2022 15:23:30 -0800
+Message-ID: <CAFYEg=bXUMJD-iZCvC10Zgyr+Sbat=CK3KERCBEf=oj_Z_0fKw@mail.gmail.com>
+Subject: =?UTF-8?B?5oCl5LqL5rGC5Yqp?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The maximum VMID for assign_mem is 63. Use a u64 to represent this
-bitmap instead of architecture-dependent "unsigned int" which varies in
-size on 32-bit and 64-bit platforms.
-
-Acked-by: Kalle Valo <kvalo@kernel.org> [ath10k]
-Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
----
- drivers/firmware/qcom_scm.c           | 12 +++++++-----
- drivers/misc/fastrpc.c                |  6 ++++--
- drivers/net/wireless/ath/ath10k/qmi.c |  4 ++--
- drivers/remoteproc/qcom_q6v5_mss.c    |  8 ++++----
- drivers/soc/qcom/rmtfs_mem.c          |  2 +-
- include/linux/qcom_scm.h              |  2 +-
- 6 files changed, 19 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index cdbfe54c8146..92763dce6477 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -898,7 +898,7 @@ static int __qcom_scm_assign_mem(struct device *dev, phys_addr_t mem_region,
-  * Return negative errno on failure or 0 on success with @srcvm updated.
-  */
- int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
--			unsigned int *srcvm,
-+			u64 *srcvm,
- 			const struct qcom_scm_vmperm *newvm,
- 			unsigned int dest_cnt)
- {
-@@ -915,9 +915,9 @@ int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
- 	__le32 *src;
- 	void *ptr;
- 	int ret, i, b;
--	unsigned long srcvm_bits = *srcvm;
-+	u64 srcvm_bits = *srcvm;
- 
--	src_sz = hweight_long(srcvm_bits) * sizeof(*src);
-+	src_sz = hweight64(srcvm_bits) * sizeof(*src);
- 	mem_to_map_sz = sizeof(*mem_to_map);
- 	dest_sz = dest_cnt * sizeof(*destvm);
- 	ptr_sz = ALIGN(src_sz, SZ_64) + ALIGN(mem_to_map_sz, SZ_64) +
-@@ -930,8 +930,10 @@ int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
- 	/* Fill source vmid detail */
- 	src = ptr;
- 	i = 0;
--	for_each_set_bit(b, &srcvm_bits, BITS_PER_LONG)
--		src[i++] = cpu_to_le32(b);
-+	for (b = 0; b < BITS_PER_TYPE(u64); b++) {
-+		if (srcvm_bits & BIT(b))
-+			src[i++] = cpu_to_le32(b);
-+	}
- 
- 	/* Fill details of mem buff to map */
- 	mem_to_map = ptr + ALIGN(src_sz, SZ_64);
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 7ff0b63c25e3..2ad388f99fe1 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -299,11 +299,13 @@ static void fastrpc_free_map(struct kref *ref)
- 		if (map->attr & FASTRPC_ATTR_SECUREMAP) {
- 			struct qcom_scm_vmperm perm;
- 			int err = 0;
-+			u64 src;
- 
-+			src = BIT(map->fl->cctx->vmperms[0].vmid);
- 			perm.vmid = QCOM_SCM_VMID_HLOS;
- 			perm.perm = QCOM_SCM_PERM_RWX;
- 			err = qcom_scm_assign_mem(map->phys, map->size,
--				&(map->fl->cctx->vmperms[0].vmid), &perm, 1);
-+				&src, &perm, 1);
- 			if (err) {
- 				dev_err(map->fl->sctx->dev, "Failed to assign memory phys 0x%llx size 0x%llx err %d",
- 						map->phys, map->size, err);
-@@ -744,7 +746,7 @@ static int fastrpc_map_create(struct fastrpc_user *fl, int fd,
- 		 * If subsystem VMIDs are defined in DTSI, then do
- 		 * hyp_assign from HLOS to those VM(s)
- 		 */
--		unsigned int perms = BIT(QCOM_SCM_VMID_HLOS);
-+		u64 perms = BIT(QCOM_SCM_VMID_HLOS);
- 
- 		map->attr = attr;
- 		err = qcom_scm_assign_mem(map->phys, (u64)map->size, &perms,
-diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-index 66cb7a1e628a..6d1d87e1cdde 100644
---- a/drivers/net/wireless/ath/ath10k/qmi.c
-+++ b/drivers/net/wireless/ath/ath10k/qmi.c
-@@ -28,7 +28,7 @@ static int ath10k_qmi_map_msa_permission(struct ath10k_qmi *qmi,
- {
- 	struct qcom_scm_vmperm dst_perms[3];
- 	struct ath10k *ar = qmi->ar;
--	unsigned int src_perms;
-+	u64 src_perms;
- 	u32 perm_count;
- 	int ret;
- 
-@@ -60,7 +60,7 @@ static int ath10k_qmi_unmap_msa_permission(struct ath10k_qmi *qmi,
- {
- 	struct qcom_scm_vmperm dst_perms;
- 	struct ath10k *ar = qmi->ar;
--	unsigned int src_perms;
-+	u64 src_perms;
- 	int ret;
- 
- 	src_perms = BIT(QCOM_SCM_VMID_MSS_MSA) | BIT(QCOM_SCM_VMID_WLAN);
-diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
-index fddb63cffee0..9e8bde7a7ec4 100644
---- a/drivers/remoteproc/qcom_q6v5_mss.c
-+++ b/drivers/remoteproc/qcom_q6v5_mss.c
-@@ -227,8 +227,8 @@ struct q6v5 {
- 	bool has_qaccept_regs;
- 	bool has_ext_cntl_regs;
- 	bool has_vq6;
--	int mpss_perm;
--	int mba_perm;
-+	u64 mpss_perm;
-+	u64 mba_perm;
- 	const char *hexagon_mdt_image;
- 	int version;
- };
-@@ -404,7 +404,7 @@ static void q6v5_pds_disable(struct q6v5 *qproc, struct device **pds,
- 	}
- }
- 
--static int q6v5_xfer_mem_ownership(struct q6v5 *qproc, int *current_perm,
-+static int q6v5_xfer_mem_ownership(struct q6v5 *qproc, u64 *current_perm,
- 				   bool local, bool remote, phys_addr_t addr,
- 				   size_t size)
- {
-@@ -939,7 +939,7 @@ static int q6v5_mpss_init_image(struct q6v5 *qproc, const struct firmware *fw,
- 	struct page *page;
- 	dma_addr_t phys;
- 	void *metadata;
--	int mdata_perm;
-+	u64 mdata_perm;
- 	int xferop_ret;
- 	size_t size;
- 	void *vaddr;
-diff --git a/drivers/soc/qcom/rmtfs_mem.c b/drivers/soc/qcom/rmtfs_mem.c
-index 0feaae357821..69991e47aa23 100644
---- a/drivers/soc/qcom/rmtfs_mem.c
-+++ b/drivers/soc/qcom/rmtfs_mem.c
-@@ -30,7 +30,7 @@ struct qcom_rmtfs_mem {
- 
- 	unsigned int client_id;
- 
--	unsigned int perms;
-+	u64 perms;
- };
- 
- static ssize_t qcom_rmtfs_mem_show(struct device *dev,
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index f8335644a01a..77f7b5837216 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -96,7 +96,7 @@ extern int qcom_scm_mem_protect_video_var(u32 cp_start, u32 cp_size,
- 					  u32 cp_nonpixel_start,
- 					  u32 cp_nonpixel_size);
- extern int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
--			       unsigned int *src,
-+			       u64 *src,
- 			       const struct qcom_scm_vmperm *newvm,
- 			       unsigned int dest_cnt);
- 
--- 
-2.25.1
-
+5oWI5ZaE5o2Q5qy+77yBDQoNCuivt+S7lOe7humYheivu++8jOaIkeefpemBk+i/meWwgeS/oeeh
+ruWunuWPr+iDveS8mue7meS9oOS4gOS4quaDiuWWnOOAgiDmiJHlnKjpnIDopoHkvaDluK7liqnn
+moTml7blgJnpgJrov4fnp4HkurrmkJzntKLpgYfliLDkuobkvaDnmoTnlLXlrZDpgq7ku7bogZTn
+s7vjgIINCuaIkeaAgOedgOayiemHjeeahOaCsuS8pOWGmei/meWwgemCruS7tue7meS9oO+8jOaI
+kemAieaLqemAmui/h+S6kuiBlOe9keS4juS9oOiBlOezu++8jOWboOS4uuWug+S7jeeEtuaYr+ac
+gOW/q+eahOayn+mAmuWqkuS7i+OAgg0KDQrmiJHmmK82MuWygeeahOeJueiVvuiOjirmtbfokoLl
+pKvkurrvvIznm67liY3lm6DogrrnmYzlnKjku6XoibLliJfnmoTkuIDlrrbnp4Hnq4vljLvpmaLk
+vY/pmaLmsrvnlpfjgIINCjTlubTliY3vvIzmiJHnmoTkuIjlpKvljrvkuJblkI7vvIzmiJHnq4vl
+jbPooqvor4rmlq3lh7rmgqPmnInogrrnmYzvvIzku5bmiorku5bmiYDmnInnmoTkuIDliIfpg73n
+lZnnu5nkuobmiJHjgIIg5oiR5bim552A5oiR55qE56yU6K6w5pys55S16ISR5Zyo5LiA5a625Yy7
+6Zmi6YeM77yM5oiR5LiA55u05Zyo5o6l5Y+X6IK66YOo55mM55eH55qE5rK755aX44CCDQoNCuaI
+keS7juaIkeW3suaVheeahOS4iOWkq+mCo+mHjOe7p+aJv+S6huS4gOeslOi1hOmHke+8jOWPquac
+ieS4gOeZvuS4h+S6jOWNgeS4h+e+juWFg++8iDEsMjAwLDAwMCwwMOe+juWFg++8ieOAgueOsOWc
+qOW+iOaYjuaYvu+8jOaIkeato+WcqOaOpei/keeUn+WRveeahOacgOWQjuWHoOWkqe+8jOaIkeiu
+pOS4uuaIkeS4jeWGjemcgOimgei/meeslOmSseS6huOAgg0K5oiR55qE5Yy755Sf6K6p5oiR5piO
+55m977yM55Sx5LqO6IK655mM55qE6Zeu6aKY77yM5oiR5LiN5Lya5oyB57ut5LiA5bm044CCDQoN
+Cui/meeslOmSsei/mOWcqOWbveWklumTtuihjO+8jOeuoeeQhuWxguS7peecn+ato+eahOS4u+S6
+uueahOi6q+S7veWGmeS/oee7meaIke+8jOimgeaxguaIkeWHuumdouaUtumSse+8jOaIluiAheet
+vuWPkeS4gOWwgeaOiOadg+S5pu+8jOiuqeWIq+S6uuS7o+aIkeaUtumSse+8jOWboOS4uuaIkeeU
+n+eXheS4jeiDvei/h+adpeOAgg0K5aaC5p6c5LiN6YeH5Y+W6KGM5Yqo77yM6ZO26KGM5Y+v6IO9
+5Lya5Zug5Li65L+d5oyB6L+Z5LmI6ZW/5pe26Ze06ICM6KKr5rKh5pS26LWE6YeR44CCDQoNCuaI
+keWGs+WumuS4juaCqOiBlOezu++8jOWmguaenOaCqOaEv+aEj+W5tuacieWFtOi2o+W4ruWKqeaI
+keS7juWkluWbvemTtuihjOaPkOWPlui/meeslOmSse+8jOeEtuWQjuWwhui/meeslOi1hOmHkeeU
+qOS6juaFiOWWhOS6i+S4mu+8jOW4ruWKqeW8seWKv+e+pOS9k+OAgg0K5oiR6KaB5L2g5Zyo5oiR
+5Ye65LqL5LmL5YmN55yf6K+a5Zyw5aSE55CG6L+Z5Lqb5L+h5omY5Z+66YeR44CCIOi/meS4jeaY
+r+S4gOeslOiiq+ebl+eahOmSse+8jOS5n+ayoeaciea2ieWPiueahOWNsemZqeaYrzEwMCXnmoTp
+o47pmanlhY3otLnkuI7lhYXliIbnmoTms5Xlvovor4HmmI7jgIINCg0K5oiR6KaB5L2g5ou/NDUl
+55qE6ZKx57uZ5L2g5Liq5Lq65L2/55So77yM6ICMNTUl55qE6ZKx5bCG55So5LqO5oWI5ZaE5bel
+5L2c44CCDQrmiJHlsIbmhJ/osKLkvaDlnKjov5nku7bkuovkuIrmnIDlpKfnmoTkv6Hku7vlkozk
+v53lr4bvvIzku6Xlrp7njrDmiJHlhoXlv4PnmoTmhL/mnJvvvIzlm6DkuLrmiJHkuI3mg7PopoHk
+u7vkvZXkvJrljbHlj4rmiJHmnIDlkI7nmoTmhL/mnJvnmoTkuJzopb/jgIINCuaIkeW+iOaKseat
+ie+8jOWmguaenOaCqOaUtuWIsOi/meWwgeS/oeWcqOaCqOeahOWeg+WcvumCruS7tu+8jOaYr+eU
+seS6juacgOi/keeahOi/nuaOpemUmeivr+WcqOi/memHjOeahOWbveWutuOAgg0KDQrkvaDkurLn
+iLHnmoTlprnlprnjgIINCueJueiVvuiOjirmtbfokoLlpKvkuroNCg==
