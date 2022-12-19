@@ -2,500 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DAF3651396
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 21:03:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A71486514B4
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 22:20:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232410AbiLSUDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 15:03:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
+        id S232584AbiLSVUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 16:20:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232207AbiLSUDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 15:03:13 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDC713F68
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 12:03:12 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id u6-20020a170903124600b00188cd4769bcso7564089plh.0
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 12:03:12 -0800 (PST)
+        with ESMTP id S232302AbiLSVUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 16:20:53 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2119.outbound.protection.outlook.com [40.107.14.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DB164D1;
+        Mon, 19 Dec 2022 13:20:51 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jV3/coCk8JwcoHscKj/3BMjqqoSIjPvR1saDwH6rd8t8dKX3/sjbRq0rjkgFWOmrwZX00o5dDF7EybrlSe++fCO3NkFEvY5E4d/7xfgXep+dSHlmVT9mYWwPwSnVou9yT4e1YrkU1NQGFZmapyeJGyEtiz1L4/iUj2LTmBfdkVnaWEkMpk5y+Gxqoj0LqOvyJ2KN0bx258Scj9GXDqkzlq395wBuvlGst6n8nTvZ5nuMDdTPQL6RXkvwL2uLWiDUYnd3e9CEdn8DRj2cY5l6kcaKvHXYL+K0cEC614a6g14v7qYyzyz70eOtSKAmD/PSIiyf/8CiOTtRJSQDK2p8ZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PfD56FZY0Mr4vfWZEBePcqybIvztVygR6kCha9lq+1Q=;
+ b=SAZ0PAdyZfHkXtUJfqDr59rTR0vj3x3lbEKh5ll8MmThjTSLDlqOF7UvVQ6HlYYBsnBss2lVSiMiUOPEn21Hky8KOfWpf4cB6y4UR/XxYwpR+0FEPsCBUNUtJ0k8OWL/Z9wK2hdLCvUx6L+fJKAO8Er8VDaaQZKSMckPlxSRfcGZptkIgIy9SJ7LkE/Bco4br59jQGOeBOOVSpvwVYWRaZmY0IBc5+KVcnhvG8PPHqrQMjm6fpYk+xEkeOCxBaJwoubDkSh0ieXaqBOJr3j6eg5ilj+3sKa3Vzx1/iNFdV6uxbPqmqcr4B7azo0ymuUBEkizZbwyo4VzGTYig4Zcgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
+ action=none header.from=esd.eu; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=B93Ere0lh6/8aqm4JgiAxJ/jdGiP7qSbPB4CT/66Oaw=;
-        b=Lfpguxg1frG0D7dBTC/sOSV3iTGWzZIjjDjX6GxO7UKgIrGgBPdsfwUdoEBGDy0FSu
-         iykv3g6pFQCM42WgaFvwRxGSbrXnW8tAhGOYI9u/xolNJBGDmtrhUrkDgeOgWEEr0oIj
-         +NS4+pDhy0gtzlJavgnMxdRGv6VdNKIbP+sv2zg7ZgzIWKK9Mx4iOfEWpWzZ1gZZyVap
-         D9HHaHZWdJhqWrXxf1nAWWr9ly3kbh2qgEB/ojs7xGwvbryXkLKBfIbAFJMxi0GSVFRY
-         kBdKreYqeMUfeMxKntBFLivjwMGky6b5Gzjp+1zwomL1hg7/TmfjHOQcTUhYzKI6wYim
-         XSLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=B93Ere0lh6/8aqm4JgiAxJ/jdGiP7qSbPB4CT/66Oaw=;
-        b=dWL/YPqTieVSVm2nEt+Y4owyymSgVdqujI1hIyuQjZVz+AFH8uvzOnZs6M0cIWMeIO
-         SQsGwosavkzp9U16JvZ6arQ0YZJfTrxeXWAFzBYJjJ/Gsdcogvees8DG3gpAa9nTQDUd
-         Rf/evc0lKxadNMTFKAnRAhj4n33J1ye17ZXlsEaaa2XThB6ypRvsGyWbYdLBdORhjYP7
-         pbRlUngAMaDi/QAezytZFg9U+JFoDNetp0jRPYPGdLq3CK87HGklNDT4+iDQZ/PduxbL
-         vktSZpwGNb53Jy+LRjwumOgvPf8Yc+oCli86lf6pL7VhnII2cGBB00qhDT56S2z3MSI1
-         pugA==
-X-Gm-Message-State: AFqh2krcSIL28A78dj3gFXEeNUfzoFbD/SaphwLcHYMg74C3Os3sEmA/
-        jFbXCB3V0XJWQrZ2igoHOu/vYVs=
-X-Google-Smtp-Source: AMrXdXsx6noD2wWH0DbWT6pPsOKfsqEWhJ1gVTk9BKTO1WPgvZTY40rYjG+JjMQVgVQdmbqLwC1d8MY=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90b:4ccf:b0:219:b015:58cd with SMTP id
- nd15-20020a17090b4ccf00b00219b01558cdmr2486553pjb.40.1671480191438; Mon, 19
- Dec 2022 12:03:11 -0800 (PST)
-Date:   Mon, 19 Dec 2022 12:03:09 -0800
-In-Reply-To: <43c340d440d8a87396198b301c5ffbf5ab56f304.1671462950.git.lorenzo@kernel.org>
-Mime-Version: 1.0
-References: <cover.1671462950.git.lorenzo@kernel.org> <43c340d440d8a87396198b301c5ffbf5ab56f304.1671462950.git.lorenzo@kernel.org>
-Message-ID: <Y6DDfVhOWRybVNUt@google.com>
-Subject: Re: [RFC bpf-next 2/8] net: introduce XDP features flag
-From:   sdf@google.com
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, grygorii.strashko@ti.com, mst@redhat.com,
-        bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
-        lorenzo.bianconi@redhat.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PfD56FZY0Mr4vfWZEBePcqybIvztVygR6kCha9lq+1Q=;
+ b=WCQ3k8UsZr2fGNPYlWflftmVKNok4ADdjlTU/cQOqHo0UAIVi+I9SDUmpj60X/R6txikxbSeZQiWxbtkL+MUo4UPtyd29Iz/+aMsSkSCyd+rl5+bkJm9SAnjzbDFBs+aGfMI3Z88HS+b1dI0VOdc2UD3JANMjJ72tQNijUA0NVU=
+Received: from AM6PR02CA0018.eurprd02.prod.outlook.com (2603:10a6:20b:6e::31)
+ by DU0PR03MB9849.eurprd03.prod.outlook.com (2603:10a6:10:44a::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Mon, 19 Dec
+ 2022 21:20:46 +0000
+Received: from VI1EUR06FT053.eop-eur06.prod.protection.outlook.com
+ (2603:10a6:20b:6e:cafe::bf) by AM6PR02CA0018.outlook.office365.com
+ (2603:10a6:20b:6e::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.20 via Frontend
+ Transport; Mon, 19 Dec 2022 21:20:46 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=esd.eu;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
+ discourages use of 80.151.164.27 as permitted sender)
+Received: from esd-s7.esd (80.151.164.27) by
+ VI1EUR06FT053.mail.protection.outlook.com (10.13.6.63) with Microsoft SMTP
+ Server id 15.20.5924.16 via Frontend Transport; Mon, 19 Dec 2022 21:20:45
+ +0000
+Received: from esd-s20.esd.local (debby [10.0.0.190])
+        by esd-s7.esd (Postfix) with ESMTPS id 16C167C16C8;
+        Mon, 19 Dec 2022 22:20:45 +0100 (CET)
+Received: by esd-s20.esd.local (Postfix, from userid 2046)
+        id 068352E1DC1; Mon, 19 Dec 2022 22:20:45 +0100 (CET)
+From:   Frank Jungclaus <frank.jungclaus@esd.eu>
+To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Frank Jungclaus <frank.jungclaus@esd.eu>
+Subject: [PATCH 0/3] can: esd_usb: Some more preparation for supporting esd CAN-USB/3
+Date:   Mon, 19 Dec 2022 22:20:11 +0100
+Message-Id: <20221219212013.1294820-1-frank.jungclaus@esd.eu>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1EUR06FT053:EE_|DU0PR03MB9849:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: c367d913-b41a-4ab0-1496-08dae206e498
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W/3+LNBeMyUz2PaJbNdpQp1xyQuQXPEBmvkRox+DRicoLfUyp7c1fbQpxh6DTnJcE/fAQrX08HjpYW1XZVHzPHplWjdLPTp8m1HPsu5NuIl82Z2mEhLE6bj3dYIuqTSyUV1kdCFU0q+OjrxZYIaBnEFuvK80bFi2eHaGpeneUIoJPIdryzcNNmsU5h0G5f+x8qW47g1cF6gBwRd6QD2ChMprqPAfTg2DK3vrW8VBYShoJBdqJNFChK/xKKZVcWYaX0jq+r7D6F0YgGCRWNvjKUZaMqIi2uQg7DmuYdk2S0yTnBEnAkv35h47CHlWx6mJAgZutQYNQmqex2Qv5UMkoT1EKmbQQBfDygwA+Ers0IShRa6bo5x1+zAyGFkeCHhlKEJWoNEfdowmdKmUCj1UW+gDGEW5z5VOzvZi9D6WDC4vNjJctPChelCtw4wWvxYz0j0XRSYj/ZKwzeJFJYVAv+blGi/l2ngxNSCTfu/tjOzM8uCU9bi+1ElRXhbrdD6eY5B9DFcTAUfYLS12UBv5LUX30RcrJfFZIfvfAstSG+a/608CCIJ+2zRYRlf2KvxyCRNdwxEHBxv5MzXUdIhKV7hripZ/aHoezNp33lF0g+vnWLeuNsSEnMVx8pRPcbKsZ1RdbG6wSYgoK5uQP2KsW42eHdB5fU/UkQW3ygtHBcE=
+X-Forefront-Antispam-Report: CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230022)(4636009)(376002)(39840400004)(396003)(346002)(136003)(451199015)(36840700001)(46966006)(6666004)(8936002)(47076005)(40480700001)(4744005)(5660300002)(83380400001)(186003)(6266002)(41300700001)(44832011)(26005)(2906002)(336012)(42186006)(316002)(36860700001)(478600001)(54906003)(36756003)(86362001)(356005)(1076003)(2616005)(70206006)(70586007)(82310400005)(81166007)(110136005)(4326008)(8676002);DIR:OUT;SFP:1102;
+X-OriginatorOrg: esd.eu
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2022 21:20:45.8418
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c367d913-b41a-4ab0-1496-08dae206e498
+X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
+X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT053.eop-eur06.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB9849
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/19, Lorenzo Bianconi wrote:
-> From: Marek Majtyka <alardam@gmail.com>
+Another small batch of patches to be seen as preparation for adding
+support of the newly available esd CAN-USB/3 to esd_usb.c.
 
-> Implement support for checking what kind of XDP features a netdev
-> supports. Previously, there was no way to do this other than to try to
-> create an AF_XDP socket on the interface or load an XDP program and see
-> if it worked. This commit changes this by adding a new variable which
-> describes all xdp supported functions on pretty detailed level:
+Due to some unresolved questions adding support for
+CAN_CTRLMODE_BERR_REPORTING has been postponed to one of the future
+patches.
 
->   - aborted
->   - drop
->   - pass
->   - tx
->   - redirect
->   - sock_zerocopy
->   - hw_offload
->   - redirect_target
->   - tx_lock
->   - frag_rx
->   - frag_target
+Frank Jungclaus (3):
+  can: esd_usb: Improved behavior on esd CAN_ERROR_EXT event (1)
+  can: esd_usb: Improved behavior on esd CAN_ERROR_EXT event (2)
+  can: esd_usb: Improved decoding for ESD_EV_CAN_ERROR_EXT messages
 
-> Zerocopy mode requires that redirect XDP operation is implemented in a
-> driver and the driver supports also zero copy mode. Full mode requires
-> that all XDP operation are implemented in the driver. Basic mode is just
-> full mode without redirect operation. Frag target requires
-> redirect_target one is supported by the driver.
+ drivers/net/can/usb/esd_usb.c | 36 +++++++++++++++++++++++------------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
-Can you share more about _why_ is it needed? If we can already obtain
-most of these signals via probing, why export the flags?
 
-> Initially, these new flags are disabled for all drivers by default.
-
-> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Marek Majtyka <alardam@gmail.com>
-> ---
->   .../networking/netdev-xdp-features.rst        | 60 +++++++++++++++++
->   include/linux/netdevice.h                     |  2 +
->   include/linux/xdp_features.h                  | 64 +++++++++++++++++++
->   include/uapi/linux/if_link.h                  |  7 ++
->   include/uapi/linux/xdp_features.h             | 34 ++++++++++
->   net/core/rtnetlink.c                          | 34 ++++++++++
->   tools/include/uapi/linux/if_link.h            |  7 ++
->   tools/include/uapi/linux/xdp_features.h       | 34 ++++++++++
->   8 files changed, 242 insertions(+)
->   create mode 100644 Documentation/networking/netdev-xdp-features.rst
->   create mode 100644 include/linux/xdp_features.h
->   create mode 100644 include/uapi/linux/xdp_features.h
->   create mode 100644 tools/include/uapi/linux/xdp_features.h
-
-> diff --git a/Documentation/networking/netdev-xdp-features.rst  
-> b/Documentation/networking/netdev-xdp-features.rst
-> new file mode 100644
-> index 000000000000..1dc803fe72dd
-> --- /dev/null
-> +++ b/Documentation/networking/netdev-xdp-features.rst
-> @@ -0,0 +1,60 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=====================
-> +Netdev XDP features
-> +=====================
-> +
-> + * XDP FEATURES FLAGS
-> +
-> +Following netdev xdp features flags can be retrieved over route netlink
-> +interface (compact form) - the same way as netdev feature flags.
-> +These features flags are read only and cannot be change at runtime.
-> +
-> +*  XDP_ABORTED
-> +
-> +This feature informs if netdev supports xdp aborted action.
-> +
-> +*  XDP_DROP
-> +
-> +This feature informs if netdev supports xdp drop action.
-> +
-> +*  XDP_PASS
-> +
-> +This feature informs if netdev supports xdp pass action.
-> +
-> +*  XDP_TX
-> +
-> +This feature informs if netdev supports xdp tx action.
-> +
-> +*  XDP_REDIRECT
-> +
-> +This feature informs if netdev supports xdp redirect action.
-> +It assumes the all beforehand mentioned flags are enabled.
-> +
-> +*  XDP_SOCK_ZEROCOPY
-> +
-> +This feature informs if netdev driver supports xdp zero copy.
-> +It assumes the all beforehand mentioned flags are enabled.
-> +
-> +*  XDP_HW_OFFLOAD
-> +
-> +This feature informs if netdev driver supports xdp hw oflloading.
-> +
-> +*  XDP_TX_LOCK
-> +
-> +This feature informs if netdev ndo_xdp_xmit function requires locking.
-> +
-> +*  XDP_REDIRECT_TARGET
-> +
-> +This feature informs if netdev implements ndo_xdp_xmit callback.
-> +
-> +*  XDP_FRAG_RX
-> +
-> +This feature informs if netdev implements non-linear xdp buff support in
-> +the driver napi callback.
-> +
-> +*  XDP_FRAG_TARGET
-> +
-> +This feature informs if netdev implements non-linear xdp buff support in
-> +ndo_xdp_xmit callback. XDP_FRAG_TARGET requires XDP_REDIRECT_TARGET is  
-> properly
-> +supported.
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index aad12a179e54..ae5a8564383b 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -43,6 +43,7 @@
->   #include <net/xdp.h>
-
->   #include <linux/netdev_features.h>
-> +#include <linux/xdp_features.h>
->   #include <linux/neighbour.h>
->   #include <uapi/linux/netdevice.h>
->   #include <uapi/linux/if_bonding.h>
-> @@ -2362,6 +2363,7 @@ struct net_device {
->   	struct rtnl_hw_stats64	*offload_xstats_l3;
-
->   	struct devlink_port	*devlink_port;
-> +	xdp_features_t		xdp_features;
->   };
->   #define to_net_dev(d) container_of(d, struct net_device, dev)
-
-> diff --git a/include/linux/xdp_features.h b/include/linux/xdp_features.h
-> new file mode 100644
-> index 000000000000..4e72a86ef329
-> --- /dev/null
-> +++ b/include/linux/xdp_features.h
-> @@ -0,0 +1,64 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * Network device xdp features.
-> + */
-> +#ifndef _LINUX_XDP_FEATURES_H
-> +#define _LINUX_XDP_FEATURES_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/bitops.h>
-> +#include <asm/byteorder.h>
-> +#include <uapi/linux/xdp_features.h>
-> +
-> +typedef u32 xdp_features_t;
-> +
-> +#define __XDP_F_BIT(bit)	((xdp_features_t)1 << (bit))
-> +#define __XDP_F(name)		__XDP_F_BIT(XDP_F_##name##_BIT)
-> +
-> +#define XDP_F_ABORTED		__XDP_F(ABORTED)
-> +#define XDP_F_DROP		__XDP_F(DROP)
-> +#define XDP_F_PASS		__XDP_F(PASS)
-> +#define XDP_F_TX		__XDP_F(TX)
-> +#define XDP_F_REDIRECT		__XDP_F(REDIRECT)
-> +#define XDP_F_REDIRECT_TARGET	__XDP_F(REDIRECT_TARGET)
-> +#define XDP_F_SOCK_ZEROCOPY	__XDP_F(SOCK_ZEROCOPY)
-> +#define XDP_F_HW_OFFLOAD	__XDP_F(HW_OFFLOAD)
-> +#define XDP_F_TX_LOCK		__XDP_F(TX_LOCK)
-> +#define XDP_F_FRAG_RX		__XDP_F(FRAG_RX)
-> +#define XDP_F_FRAG_TARGET	__XDP_F(FRAG_TARGET)
-> +
-> +#define XDP_F_BASIC		(XDP_F_ABORTED | XDP_F_DROP |	\
-> +				 XDP_F_PASS | XDP_F_TX)
-> +
-> +#define XDP_F_FULL		(XDP_F_BASIC | XDP_F_REDIRECT)
-> +
-> +#define XDP_F_FULL_ZC		(XDP_F_FULL | XDP_F_SOCK_ZEROCOPY)
-> +
-> +#define XDP_FEATURES_ABORTED_STR		"xdp-aborted"
-> +#define XDP_FEATURES_DROP_STR			"xdp-drop"
-> +#define XDP_FEATURES_PASS_STR			"xdp-pass"
-> +#define XDP_FEATURES_TX_STR			"xdp-tx"
-> +#define XDP_FEATURES_REDIRECT_STR		"xdp-redirect"
-> +#define XDP_FEATURES_REDIRECT_TARGET_STR	"xdp-redirect-target"
-> +#define XDP_FEATURES_SOCK_ZEROCOPY_STR		"xdp-sock-zerocopy"
-> +#define XDP_FEATURES_HW_OFFLOAD_STR		"xdp-hw-offload"
-> +#define XDP_FEATURES_TX_LOCK_STR		"xdp-tx-lock"
-> +#define XDP_FEATURES_FRAG_RX_STR		"xdp-frag-rx"
-> +#define XDP_FEATURES_FRAG_TARGET_STR		"xdp-frag-target"
-> +
-> +#define DECLARE_XDP_FEATURES_TABLE(name, length)				\
-> +	const char name[][length] = {						\
-> +		[XDP_F_ABORTED_BIT] = XDP_FEATURES_ABORTED_STR,			\
-> +		[XDP_F_DROP_BIT] = XDP_FEATURES_DROP_STR,			\
-> +		[XDP_F_PASS_BIT] = XDP_FEATURES_PASS_STR,			\
-> +		[XDP_F_TX_BIT] = XDP_FEATURES_TX_STR,				\
-> +		[XDP_F_REDIRECT_BIT] = XDP_FEATURES_REDIRECT_STR,		\
-> +		[XDP_F_REDIRECT_TARGET_BIT] = XDP_FEATURES_REDIRECT_TARGET_STR,	\
-> +		[XDP_F_SOCK_ZEROCOPY_BIT] = XDP_FEATURES_SOCK_ZEROCOPY_STR,	\
-> +		[XDP_F_HW_OFFLOAD_BIT] = XDP_FEATURES_HW_OFFLOAD_STR,		\
-> +		[XDP_F_TX_LOCK_BIT] = XDP_FEATURES_TX_LOCK_STR,			\
-> +		[XDP_F_FRAG_RX_BIT] = XDP_FEATURES_FRAG_RX_STR,			\
-> +		[XDP_F_FRAG_TARGET_BIT] = XDP_FEATURES_FRAG_TARGET_STR,		\
-> +	}
-> +
-> +#endif /* _LINUX_XDP_FEATURES_H */
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index 1021a7e47a86..971c658ceaea 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -374,6 +374,8 @@ enum {
-
->   	IFLA_DEVLINK_PORT,
-
-> +	IFLA_XDP_FEATURES,
-> +
->   	__IFLA_MAX
->   };
-
-> @@ -1318,6 +1320,11 @@ enum {
-
->   #define IFLA_XDP_MAX (__IFLA_XDP_MAX - 1)
-
-> +enum {
-> +	IFLA_XDP_FEATURES_WORD_UNSPEC = 0,
-> +	IFLA_XDP_FEATURES_BITS_WORD,
-> +};
-> +
->   enum {
->   	IFLA_EVENT_NONE,
->   	IFLA_EVENT_REBOOT,		/* internal reset / reboot */
-> diff --git a/include/uapi/linux/xdp_features.h  
-> b/include/uapi/linux/xdp_features.h
-> new file mode 100644
-> index 000000000000..48eb42069bcd
-> --- /dev/null
-> +++ b/include/uapi/linux/xdp_features.h
-> @@ -0,0 +1,34 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +/*
-> + * Copyright (c) 2020 Intel
-> + */
-> +
-> +#ifndef __UAPI_LINUX_XDP_FEATURES__
-> +#define __UAPI_LINUX_XDP_FEATURES__
-> +
-> +enum {
-> +	XDP_F_ABORTED_BIT,
-> +	XDP_F_DROP_BIT,
-> +	XDP_F_PASS_BIT,
-> +	XDP_F_TX_BIT,
-> +	XDP_F_REDIRECT_BIT,
-> +	XDP_F_REDIRECT_TARGET_BIT,
-> +	XDP_F_SOCK_ZEROCOPY_BIT,
-> +	XDP_F_HW_OFFLOAD_BIT,
-> +	XDP_F_TX_LOCK_BIT,
-> +	XDP_F_FRAG_RX_BIT,
-> +	XDP_F_FRAG_TARGET_BIT,
-> +	/*
-> +	 * Add your fresh new property above and remember to update
-> +	 * documentation.
-> +	 */
-> +	XDP_FEATURES_COUNT,
-> +};
-> +
-> +#define XDP_FEATURES_WORDS			((XDP_FEATURES_COUNT + 32 - 1) / 32)
-> +#define XDP_FEATURES_WORD(blocks, index)	((blocks)[(index) / 32U])
-> +#define XDP_FEATURES_FIELD_FLAG(index)		(1U << (index) % 32U)
-> +#define XDP_FEATURES_BIT_IS_SET(blocks, index)        \
-> +	(XDP_FEATURES_WORD(blocks, index) & XDP_FEATURES_FIELD_FLAG(index))
-> +
-> +#endif  /* __UAPI_LINUX_XDP_FEATURES__ */
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 64289bc98887..1c299746b614 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -1016,6 +1016,14 @@ static size_t rtnl_xdp_size(void)
->   	return xdp_size;
->   }
-
-> +static size_t rtnl_xdp_features_size(void)
-> +{
-> +	size_t xdp_size = nla_total_size(0) +	/* nest IFLA_XDP_FEATURES */
-> +			  XDP_FEATURES_WORDS * nla_total_size(4);
-> +
-> +	return xdp_size;
-> +}
-> +
->   static size_t rtnl_prop_list_size(const struct net_device *dev)
->   {
->   	struct netdev_name_node *name_node;
-> @@ -1103,6 +1111,7 @@ static noinline size_t if_nlmsg_size(const struct  
-> net_device *dev,
->   	       + rtnl_prop_list_size(dev)
->   	       + nla_total_size(MAX_ADDR_LEN) /* IFLA_PERM_ADDRESS */
->   	       + rtnl_devlink_port_size(dev)
-> +	       + rtnl_xdp_features_size() /* IFLA_XDP_FEATURES */
->   	       + 0;
->   }
-
-> @@ -1546,6 +1555,27 @@ static int rtnl_xdp_fill(struct sk_buff *skb,  
-> struct net_device *dev)
->   	return err;
->   }
-
-> +static int rtnl_xdp_features_fill(struct sk_buff *skb, struct net_device  
-> *dev)
-> +{
-> +	struct nlattr *attr;
-> +
-> +	attr = nla_nest_start_noflag(skb, IFLA_XDP_FEATURES);
-> +	if (!attr)
-> +		return -EMSGSIZE;
-> +
-> +	BUILD_BUG_ON(XDP_FEATURES_WORDS != 1);
-> +	if (nla_put_u32(skb, IFLA_XDP_FEATURES_BITS_WORD, dev->xdp_features))
-> +		goto err_cancel;
-> +
-> +	nla_nest_end(skb, attr);
-> +
-> +	return 0;
-> +
-> +err_cancel:
-> +	nla_nest_cancel(skb, attr);
-> +	return -EMSGSIZE;
-> +}
-> +
->   static u32 rtnl_get_event(unsigned long event)
->   {
->   	u32 rtnl_event_type = IFLA_EVENT_NONE;
-> @@ -1904,6 +1934,9 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
->   	if (rtnl_fill_devlink_port(skb, dev))
->   		goto nla_put_failure;
-
-> +	if (rtnl_xdp_features_fill(skb, dev))
-> +		goto nla_put_failure;
-> +
->   	nlmsg_end(skb, nlh);
->   	return 0;
-
-> @@ -1968,6 +2001,7 @@ static const struct nla_policy  
-> ifla_policy[IFLA_MAX+1] = {
->   	[IFLA_TSO_MAX_SIZE]	= { .type = NLA_REJECT },
->   	[IFLA_TSO_MAX_SEGS]	= { .type = NLA_REJECT },
->   	[IFLA_ALLMULTI]		= { .type = NLA_REJECT },
-> +	[IFLA_XDP_FEATURES]	= { .type = NLA_NESTED },
->   };
-
->   static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
-> diff --git a/tools/include/uapi/linux/if_link.h  
-> b/tools/include/uapi/linux/if_link.h
-> index 82fe18f26db5..994228e9909a 100644
-> --- a/tools/include/uapi/linux/if_link.h
-> +++ b/tools/include/uapi/linux/if_link.h
-> @@ -354,6 +354,8 @@ enum {
-
->   	IFLA_DEVLINK_PORT,
-
-> +	IFLA_XDP_FEATURES,
-> +
->   	__IFLA_MAX
->   };
-
-> @@ -1222,6 +1224,11 @@ enum {
-
->   #define IFLA_XDP_MAX (__IFLA_XDP_MAX - 1)
-
-> +enum {
-> +	IFLA_XDP_FEATURES_WORD_UNSPEC = 0,
-> +	IFLA_XDP_FEATURES_BITS_WORD,
-> +};
-> +
->   enum {
->   	IFLA_EVENT_NONE,
->   	IFLA_EVENT_REBOOT,		/* internal reset / reboot */
-> diff --git a/tools/include/uapi/linux/xdp_features.h  
-> b/tools/include/uapi/linux/xdp_features.h
-> new file mode 100644
-> index 000000000000..48eb42069bcd
-> --- /dev/null
-> +++ b/tools/include/uapi/linux/xdp_features.h
-> @@ -0,0 +1,34 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +/*
-> + * Copyright (c) 2020 Intel
-> + */
-> +
-> +#ifndef __UAPI_LINUX_XDP_FEATURES__
-> +#define __UAPI_LINUX_XDP_FEATURES__
-> +
-> +enum {
-> +	XDP_F_ABORTED_BIT,
-> +	XDP_F_DROP_BIT,
-> +	XDP_F_PASS_BIT,
-> +	XDP_F_TX_BIT,
-> +	XDP_F_REDIRECT_BIT,
-> +	XDP_F_REDIRECT_TARGET_BIT,
-> +	XDP_F_SOCK_ZEROCOPY_BIT,
-> +	XDP_F_HW_OFFLOAD_BIT,
-> +	XDP_F_TX_LOCK_BIT,
-> +	XDP_F_FRAG_RX_BIT,
-> +	XDP_F_FRAG_TARGET_BIT,
-> +	/*
-> +	 * Add your fresh new property above and remember to update
-> +	 * documentation.
-> +	 */
-> +	XDP_FEATURES_COUNT,
-> +};
-> +
-> +#define XDP_FEATURES_WORDS			((XDP_FEATURES_COUNT + 32 - 1) / 32)
-> +#define XDP_FEATURES_WORD(blocks, index)	((blocks)[(index) / 32U])
-> +#define XDP_FEATURES_FIELD_FLAG(index)		(1U << (index) % 32U)
-> +#define XDP_FEATURES_BIT_IS_SET(blocks, index)        \
-> +	(XDP_FEATURES_WORD(blocks, index) & XDP_FEATURES_FIELD_FLAG(index))
-> +
-> +#endif  /* __UAPI_LINUX_XDP_FEATURES__ */
-> --
-> 2.38.1
+base-commit: 47bf2b2393ea1aacdefbe4e9d643599e057bb3a2
+-- 
+2.25.1
 
