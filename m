@@ -2,106 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 780AE65110A
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 18:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE6AB65110F
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 18:15:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231811AbiLSRMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 12:12:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
+        id S231447AbiLSRPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 12:15:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231991AbiLSRLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 12:11:54 -0500
-X-Greylist: delayed 181 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 19 Dec 2022 09:11:53 PST
-Received: from box.opentheblackbox.net (box.opentheblackbox.net [IPv6:2600:3c02::f03c:92ff:fee2:82bc])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B6E1095;
-        Mon, 19 Dec 2022 09:11:53 -0800 (PST)
-Received: from authenticated-user (box.opentheblackbox.net [172.105.151.37])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S230403AbiLSRPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 12:15:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9331F44;
+        Mon, 19 Dec 2022 09:15:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by box.opentheblackbox.net (Postfix) with ESMTPSA id 2BB7A3EA50;
-        Mon, 19 Dec 2022 12:11:52 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pgazz.com; s=mail;
-        t=1671469912; bh=9bYAYnsF3sM0kY4DcqJgvSrfn3Yhvu5t4LsWQCVQ22c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QkzqOPRUuNa/qGz+0kKM5B8ydrXl9Ytr+JMz6Pmr9P7JxdXWyz4dhM2A5Z8ZqbhCa
-         KYDejVQfMZi9z57C561MkYLMyfB06tnpe+dd5ns5D3vkhZEtm0lngZHyJEeqgC9Ww4
-         LOmgxxjQEUZ9Kw5aOXcw5DO0FP8tgPuOEFb2jy3Y8g7hjMLql+wjURr9+22toh7WCd
-         bBTultH/RwGwlE3wPqFGKdgDNU/G5BC3J3Ra9bdp+6FuZX7cz+U0VJMXHtxKdxDK5z
-         WBCrkoZIygor8LuvRjNylL8Hcy56hxpBAeBTkSSekg3h8zg/rKfRpJFUcgUxu97kW9
-         boDnjoZZyTsGA==
-From:   Paul Gazzillo <paul@pgazz.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4146B6108E;
+        Mon, 19 Dec 2022 17:15:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41AA6C433EF;
+        Mon, 19 Dec 2022 17:15:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671470145;
+        bh=sfoj+z+/KgSaC2QLeTBWe4LDJAxz4o4w3GPXQmLL12g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nn5uAx170Brn2qFFchmhxW1qTFRz5A/rSuyc2PZspsHkj+/pv1KHN6nWL5huJEKpS
+         j1MZdbPCSu7tCQdxCSrQyg3EaPqfjANuvQSeUoTPGStRqBOYIrp9/DiRXeSu45zlN4
+         Bsu9112AP39XWmz6Yzw2a6Qv1UB9mBEl4FgW0UkPtU4+65Sviqu12+nkrt0TeWqQOF
+         3hvjOogTn08e4GgDkCOzWN7L7k0nyTvmEe3gPBL/f7HktJ4dCfM9foDMmwAKp+zpyk
+         ZzVtTHSpTlYhFII+6vSxJbHapL43uKWEcwVppzrxrNgNyoR/eJV40Ra+JSpo9IdBbe
+         YA0UoZSV6ERaQ==
+Date:   Mon, 19 Dec 2022 09:15:44 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zheng Bin <zhengbin13@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Suman Ghosh <sumang@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Paul Gazzillo <paul@pgazz.com>
-Subject: [PATCH] octeontx2_pf: Select NET_DEVLINK when enabling OCTEONTX2_PF
-Date:   Mon, 19 Dec 2022 12:11:28 -0500
-Message-Id: <20221219171149.833822-1-paul@pgazz.com>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v7 net-next 0/5] add PLCA RS support and onsemi NCN26000
+Message-ID: <20221219091544.695aa814@kernel.org>
+In-Reply-To: <Y52Vp+xMSUS2CgJe@gvm01>
+References: <cover.1671234284.git.piergiorgio.beruto@gmail.com>
+        <20221216204538.75ee3846@kernel.org>
+        <Y52Vp+xMSUS2CgJe@gvm01>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,RCVD_IN_XBL,
-        SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using COMPILE_TEST, the driver controlled by OCTEONTX2_PF does
-not select NET_DEVLINK while the related OCTEONTX2_AF driver does.
-This means that when OCTEONTX2_PF is enabled from a default
-configuration, linker errors will occur due to undefined references to
-code controlled by NET_DEVLINK.
+On Sat, 17 Dec 2022 11:10:47 +0100 Piergiorgio Beruto wrote:
+> > # Form letter - net-next is closed
+> > 
+> > We have already submitted the networking pull request to Linus
+> > for v6.2 and therefore net-next is closed for new drivers, features,
+> > code refactoring and optimizations. We are currently accepting
+> > bug fixes only.
+> > 
+> > Please repost when net-next reopens after Jan 2nd.
+> > 
+> > RFC patches sent for review only are obviously welcome at any time.  
+>
+> Hello Jakub, sorry for asking dumb questions, but what exactly "RFC"
+> means? I understand you cannot accept new submissions at this time, but
+> does this means the patchset I just submitted can still be reviewd so
+> they are ready for integration on Jan 2nd?
 
-1. make.cross ARCH=x86_64 defconfig
-2. make.cross ARCH=x86_64 menuconfig
-3. Enable COMPILE_TEST
-   General setup  --->
-     Compile also drivers which will not load
-4. Enable OCTEONTX2_PF
-   Device Drivers  --->
-     Network device support  --->
-       Ethernet driver support  --->
-         Marvell OcteonTX2 NIC Physical Function driver
-5. Exit and save configuration.  NET_DEVLINK will still be disabled.
-6. make.cross ARCH=x86_64 several linker errors, for example,
-   ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.o:
-     in function `otx2_register_dl':
-   otx2_devlink.c:(.text+0x142): undefined reference to `devlink_alloc_ns'
+Yes, exactly. You can keep posting new versions, to get reviews and get
+the code ready for merging once net-next re-opens. Once net-next
+re-opens you'll need to repost (it'd be too much work for us to keep
+track of all "pending" work during the shutdown).
 
-This fix adds "select NET_DEVLINK" link to OCTEONTX2_PF's Kconfig
-specification to match OCTEONTX2_AF.
-
-Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
-Signed-off-by: Paul Gazzillo <paul@pgazz.com>
----
-v1 -> v2: Added the fixes tag
-
- drivers/net/ethernet/marvell/octeontx2/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
-index 3f982ccf2c85..639893d87055 100644
---- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
-+++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
-@@ -31,6 +31,7 @@ config NDC_DIS_DYNAMIC_CACHING
- config OCTEONTX2_PF
- 	tristate "Marvell OcteonTX2 NIC Physical Function driver"
- 	select OCTEONTX2_MBOX
-+	select NET_DEVLINK
- 	depends on (64BIT && COMPILE_TEST) || ARM64
- 	depends on PCI
- 	depends on PTP_1588_CLOCK_OPTIONAL
--- 
-2.25.1
-
+By the RFC I mean - change the [PATCH net-next] to [RFC net-next] or
+[PATCH RFC net-next] if you post during shutdown, so that we know that
+you know that the patches can't be merged _right now_.
