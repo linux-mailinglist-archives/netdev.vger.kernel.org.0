@@ -2,297 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC06F650F62
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 16:54:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 010D1651042
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 17:23:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbiLSPyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 10:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
+        id S231860AbiLSQXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 11:23:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232628AbiLSPxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 10:53:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3945613F14
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 07:52:16 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p7IR4-0001wU-M5
-        for netdev@vger.kernel.org; Mon, 19 Dec 2022 16:52:14 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 0308B143228
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 15:52:13 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1BC0814320C;
-        Mon, 19 Dec 2022 15:52:12 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b0ee925a;
-        Mon, 19 Dec 2022 15:52:11 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Anssi Hannula <anssi.hannula@bitwise.fi>
-Subject: [PATCH net 3/3] can: kvaser_usb: hydra: help gcc-13 to figure out cmd_len
-Date:   Mon, 19 Dec 2022 16:52:10 +0100
-Message-Id: <20221219155210.1143439-4-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221219155210.1143439-1-mkl@pengutronix.de>
-References: <20221219155210.1143439-1-mkl@pengutronix.de>
+        with ESMTP id S232164AbiLSQXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 11:23:13 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2077.outbound.protection.outlook.com [40.107.15.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E77CD41;
+        Mon, 19 Dec 2022 08:23:12 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AcGz8uvuiAOk2fsYCMPOnUW5EhTZ736xvxDdffMpzdifnxMTNDF/FTp0yKr5Bxwz3EmQP7agr3CUs2nqPI3euFdhPnpF1tQ2ReGQJ2IHqRVBh4ZWt4bRv+70/aO/d/9Gcd7r+U5qEQF+jv+QprdQXywfPcVFGEQ5d06RFgnrCHU94YSYStxvBjO50Gz0eYASAvhJ5SBm8kCGOd8KiI9z9eOlAgHs3YccFs8guEet3MNGWbcpfdEWXzJR7k/vqIqa7SaMvmrPV3Lz3pbBC9UMA4Ew5hEEDibynqFVDxh60AUY/9xKUop4UPqVCYeNBiJ8vayiA8jmghxyZ1/AFVg7DA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cmwFLLjge3MUFNaC8kfp2B7iaXIKTpBOxnKzOmLX8E4=;
+ b=evesG8lsKdY9z7p3klele1+kLEvSK/CGqLuLooxbSaboTFHUVHBYI49XZSzth/fMXpWpzZ2abzhU2qXVn4nyoehLJTTnmBjPUJmRcZPFCFYju/e+bzGkRQumOVqUW/VXoDaCXSPK4v09aEnftq2D04StWusv3j8QXF7OwFyAJV88api1VhansopJmVWX1JONCG6APkb/CtkJRtbj6PWFojJgvLHcTFxbvuZas8chiRlKwzSjdPeQsjPV94lZ/RV0PJMZU33jT1bu+wN/4A9NPpsAiJwCdLQ1lLVc2O3+9rsvjJQ2WCp4o2dXfO2JruVnUCY0kZV5I/kIwK1wumEqhQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cmwFLLjge3MUFNaC8kfp2B7iaXIKTpBOxnKzOmLX8E4=;
+ b=G0/Lj5DXEQpqBejVBjCYWG0UwSKlU17xE2zdoQ0TI0toAKtw0W1ZJU/kNDEWqmxN8dZtZm6q5aWM1U/Fh270Po66i3n/WhzYFj6APzdTsvnBAL5SoaHtbICafH5OIuUKerq+xzYsXYHcVL0gUkrm//4gLJOS97tbxe9MIc7zHcI=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by DB9PR04MB9628.eurprd04.prod.outlook.com (2603:10a6:10:30b::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Mon, 19 Dec
+ 2022 16:23:09 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::75ca:4956:79f9:6d69]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::75ca:4956:79f9:6d69%7]) with mapi id 15.20.5924.016; Mon, 19 Dec 2022
+ 16:23:09 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: RE: [PATCH net v2] powerpc: dts: t208x: Disable 10G on MAC1 and MAC2
+Thread-Topic: [PATCH net v2] powerpc: dts: t208x: Disable 10G on MAC1 and MAC2
+Thread-Index: AQHZEXQBPotIqLiZVkqXNZXBHISHtK51Z8xA
+Date:   Mon, 19 Dec 2022 16:23:09 +0000
+Message-ID: <VI1PR04MB5807014739D89583FF87D43EF2E59@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <20221216172937.2960054-1-sean.anderson@seco.com>
+In-Reply-To: <20221216172937.2960054-1-sean.anderson@seco.com>
+Accept-Language: en-GB, ro-RO, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5807:EE_|DB9PR04MB9628:EE_
+x-ms-office365-filtering-correlation-id: 3d9b69bc-f3e2-4c07-9eb5-08dae1dd5133
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: m1IwH/xP2FoczxUGxquYWKQ8O67KTSHg/8ducCtCIIoXnC+IgeiM+G14j3RzMr+/7FrrXr5JKIPSISOJ62rQuSCwUU17BuQI9Zar3amRecqAx4owaZheCctRxEmpt1IuWARiLh/eEHZT7RlsHeCG78RWMm1ooKFXdjE4eChEeCqelNhePmbGho4AaBU3qO7J019Je6Eqyo+Hs5l4DQYBv4rp1lYR4FeEZ6+mDzcrNSV2EsZQkKT3wkn9xUdPesFwXA74SOK6Lf/QJwYo76AQiTKF1mw4xyzbYwh9OOfW27Z3jb1BJ49ajw4XfcJRuB3g9gw2pciIAsPhMjoDN3VPOfFc9iDyS3w1Swrv21p3mkyZi4UEuJduXTqRZm6UVmlvY+03Vdb9j4TVPDOAIoRPQzL21MYsDoP9V5gZ7CmmrccuNJBSlypa3HiD6jyHT53mDBLaUYDCgFmISP/BVK4cOWoydGH7hv6tZujdD2+t9j2KleMQL2Z27v6vCJgwslGTWb4hnrxPhrmkPYWcb0uUzq1XqvvVEt4PGCqzTV63yuJGE6QDmiF0mBpn408jPGkCoEr5p+fD8552cRRghwze1kAaZtS7l8lYzp79OuLFH1l6BpPZLK1qBSRZqSnS526/TKMSwh4+c1eGVOXUQ79Ejk8cWo5Q/GSk/j5wOiB9Ky8KCZu8VxJXyCfFSHOkLe5GLT7RGns5lL8CHcrLTbBYFA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(346002)(39860400002)(396003)(376002)(451199015)(8676002)(7416002)(4326008)(5660300002)(110136005)(54906003)(52536014)(76116006)(66556008)(66946007)(66446008)(2906002)(66476007)(64756008)(71200400001)(478600001)(6506007)(9686003)(186003)(26005)(41300700001)(7696005)(53546011)(55236004)(86362001)(55016003)(83380400001)(38070700005)(8936002)(38100700002)(316002)(33656002)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?32RBhJ1PbppLjxNqnMl+0o2gXo9bRyhpTvZ3RKN72UeYGUeqSvC0ZQ38rG5d?=
+ =?us-ascii?Q?kcURpNBi4Ufp/YY1T+yrpibRd3j6Wa9ecL8Jsmu6eq73juf20aew8kT/jLOj?=
+ =?us-ascii?Q?Do/rh4ePU3tO51sgrFvLJmJPsu6wup8nS0gbklkT2tOOlw6Ur4faZSgQHT41?=
+ =?us-ascii?Q?5vWDnSwVLl9ztK7UM8llwCAfxD/dqQnZIRVnn217KV9OfuFukZevE9grVu5b?=
+ =?us-ascii?Q?j4YDhjgpCdPTODrSdqFj26HRSftrx9lTEKwXKxoQ6oyYeNHKHwSWLvVKS4kg?=
+ =?us-ascii?Q?CvuxviMMi33KWUaiTtXa1zFJIauyRS/3nz/K6UuyyJJ/+g+RwBgxpePWZU33?=
+ =?us-ascii?Q?XbPFwLTib+X1b1LZTl9wAk9G29Fp7YCxDboCxQLa3yOpp2MRaShnyWHLgsD1?=
+ =?us-ascii?Q?2BE5ihjSHMFYiW6HITWsSm8CrJVZQPWkvZizLsR6iYwHFRAWURFyfFMgs2Ph?=
+ =?us-ascii?Q?fCsxpAlSOVxl6k8dlFf3iQt8Et4KAKtBzgpi2lcB31CnW3XspT2fFtwR6Mj8?=
+ =?us-ascii?Q?SSaI+pGxV3rVK/kriMvdwUv74k2p5dSeQPaOw+IzAOi8O2oDQMkj3NG5W7nn?=
+ =?us-ascii?Q?GJOGiWscrdsiRPAA43oHMPGjjs8XGMdRTpO3eZgEB+P8ida8h/ebrrdet6Mg?=
+ =?us-ascii?Q?16dh73D1ONx0o61JGyCYD10Y5xFFSRzEpCEAUcp4leVmCV/q4sK97pIWNSoC?=
+ =?us-ascii?Q?h180t3LifcD5jI16FjtIHa+uMWKYN6Bhy9YYYrD6eT55/xRahT5YEYnT8UQy?=
+ =?us-ascii?Q?ZwfWD8BiSs6JdktqeI0JkfOWKd3uBY6DRzu0u0vlezrbMXq4womLrGS9OMuz?=
+ =?us-ascii?Q?y2RRo7fr10KFOYgUmgE4hvnYt5x/eoncJ/Gwh/mL6GK9gmmmaIEs8vsc9hdC?=
+ =?us-ascii?Q?EAc9bsBCrM+tuCMPD2iRk7cxzgJccXrGO18LhjVzMnTCAqOgP+VZSI2s5HG+?=
+ =?us-ascii?Q?f1n9Pu6abKegnPPrr1Tc5OF/5nN4dzu1VewlYIMhqcZFKYfwRN/HA9Mysjn3?=
+ =?us-ascii?Q?LnEkfJai/aADShdlhI0nFKGgBu1XcKrxAijQBsVeAfv6Y30gbXAuuCQMj3DK?=
+ =?us-ascii?Q?BCGKNmIvSwYEBxENfDKwZ11M/Ta/s7jxm8K45LZ219qARg6y7HzsFp4ksIJX?=
+ =?us-ascii?Q?dOaMewAgGssLsJrC6sUYUJVRMkn9g+jGJjMFWHJH6rYG+Df5S9lTfKEFyYH2?=
+ =?us-ascii?Q?IdCD5opTmt87wMlhudToQa0N0Eg/MdT+R01JaLKmTvE6fIuh6VzNHF7Vi6W5?=
+ =?us-ascii?Q?q+h6sUeaB89OWkICi9OgppeWaf1SLob5vbKk+mZPNIPQmW51WjVLrxqeFo+6?=
+ =?us-ascii?Q?GZUgYHRENT44M7OFwe6GhR7iCRCu9tEnvPAb6NU1tMpINqEp8csaoee/SWS2?=
+ =?us-ascii?Q?cvqzmGAxzOEiJ7VvuoTq8yy8StuuMojZZRsBh4nV0DZLDvQDu6US55ThX6xR?=
+ =?us-ascii?Q?juvIeCQw0ouivZhnjAigs+IX0rZF1nTJJIiFE6XypdmffHITB/qdxlhUUzc5?=
+ =?us-ascii?Q?3/4gQn4G6kUI2rJm+0XvO4qYXwPz1sZtSc+0pldWLaBYKEQOT1sK32VwTvlk?=
+ =?us-ascii?Q?kHszc8FsSjO92w32CaazGzc7+2pxbAAc1U7IMLfU?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d9b69bc-f3e2-4c07-9eb5-08dae1dd5133
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2022 16:23:09.2237
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eRpfO/HeHZ8+WfZqQ3a1khcxGv2pRCeuDjhVKXpHDQvD+vkLBT2XA1RD5sV14pJM9HGNcvR7IcgBUufAFo5wPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9628
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Debian's gcc-13 [1] throws the following error in
-kvaser_usb_hydra_cmd_size():
+> -----Original Message-----
+> From: Sean Anderson <sean.anderson@seco.com>
+> Sent: Friday, December 16, 2022 19:30
+> To: David S . Miller <davem@davemloft.net>; netdev@vger.kernel.org
+> Cc: devicetree@vger.kernel.org; Rob Herring <robh+dt@kernel.org>;
+> Christophe Leroy <christophe.leroy@csgroup.eu>; Nicholas Piggin
+> <npiggin@gmail.com>; Michael Ellerman <mpe@ellerman.id.au>; linuxppc-
+> dev@lists.ozlabs.org; Krzysztof Kozlowski
+> <krzysztof.kozlowski+dt@linaro.org>; linux-kernel@vger.kernel.org; Cameli=
+a
+> Alexandra Groza <camelia.groza@nxp.com>; Sean Anderson
+> <sean.anderson@seco.com>
+> Subject: [PATCH net v2] powerpc: dts: t208x: Disable 10G on MAC1 and
+> MAC2
+>=20
+> There aren't enough resources to run these ports at 10G speeds. Disable
+> 10G for these ports, reverting to the previous speed.
+>=20
+> Fixes: 36926a7d70c2 ("powerpc: dts: t208x: Mark MAC1 and MAC2 as 10G")
+> Reported-by: Camelia Alexandra Groza <camelia.groza@nxp.com>
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
 
-[1] gcc version 13.0.0 20221214 (experimental) [master r13-4693-g512098a3316] (Debian 13-20221214-1)
+Thank you.
 
-| drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c:502:65: error:
-| array subscript ‘struct kvaser_cmd_ext[0]’ is partly outside array
-| bounds of ‘unsigned char[32]’ [-Werror=array-bounds=]
-|   502 |                 ret = le16_to_cpu(((struct kvaser_cmd_ext *)cmd)->len);
+Reviewed-by: Camelia Groza <camelia.groza@nxp.com>
+Tested-by: Camelia Groza <camelia.groza@nxp.com>
 
-kvaser_usb_hydra_cmd_size() returns the size of given command. It
-depends on the command number (cmd->header.cmd_no). For extended
-commands (cmd->header.cmd_no == CMD_EXTENDED) the above shown code is
-executed.
-
-Help gcc to recognize that this code path is not taken in all cases,
-by calling kvaser_usb_hydra_cmd_size() directly after assigning the
-command number.
-
-Fixes: aec5fb2268b7 ("can: kvaser_usb: Add support for Kvaser USB hydra family")
-Cc: Jimmy Assarsson <extja@kvaser.com>
-Cc: Anssi Hannula <anssi.hannula@bitwise.fi>
-Link: https://lore.kernel.org/all/20221219110104.1073881-1-mkl@pengutronix.de
-Tested-by: Jimmy Assarsson <extja@kvaser.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- .../net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 33 ++++++++++++++-----
- 1 file changed, 24 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-index f688124d6d66..ef341c4254fc 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -545,6 +545,7 @@ static int kvaser_usb_hydra_send_simple_cmd(struct kvaser_usb *dev,
- 					    u8 cmd_no, int channel)
- {
- 	struct kvaser_cmd *cmd;
-+	size_t cmd_len;
- 	int err;
- 
- 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
-@@ -552,6 +553,7 @@ static int kvaser_usb_hydra_send_simple_cmd(struct kvaser_usb *dev,
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = cmd_no;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	if (channel < 0) {
- 		kvaser_usb_hydra_set_cmd_dest_he
- 				(cmd, KVASER_USB_HYDRA_HE_ADDRESS_ILLEGAL);
-@@ -568,7 +570,7 @@ static int kvaser_usb_hydra_send_simple_cmd(struct kvaser_usb *dev,
- 	kvaser_usb_hydra_set_cmd_transid
- 				(cmd, kvaser_usb_hydra_get_next_transid(dev));
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 	if (err)
- 		goto end;
- 
-@@ -584,6 +586,7 @@ kvaser_usb_hydra_send_simple_cmd_async(struct kvaser_usb_net_priv *priv,
- {
- 	struct kvaser_cmd *cmd;
- 	struct kvaser_usb *dev = priv->dev;
-+	size_t cmd_len;
- 	int err;
- 
- 	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
-@@ -591,14 +594,14 @@ kvaser_usb_hydra_send_simple_cmd_async(struct kvaser_usb_net_priv *priv,
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = cmd_no;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 
- 	kvaser_usb_hydra_set_cmd_dest_he
- 		(cmd, dev->card_data.hydra.channel_to_he[priv->channel]);
- 	kvaser_usb_hydra_set_cmd_transid
- 				(cmd, kvaser_usb_hydra_get_next_transid(dev));
- 
--	err = kvaser_usb_send_cmd_async(priv, cmd,
--					kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd_async(priv, cmd, cmd_len);
- 	if (err)
- 		kfree(cmd);
- 
-@@ -742,6 +745,7 @@ static int kvaser_usb_hydra_get_single_capability(struct kvaser_usb *dev,
- {
- 	struct kvaser_usb_dev_card_data *card_data = &dev->card_data;
- 	struct kvaser_cmd *cmd;
-+	size_t cmd_len;
- 	u32 value = 0;
- 	u32 mask = 0;
- 	u16 cap_cmd_res;
-@@ -753,13 +757,14 @@ static int kvaser_usb_hydra_get_single_capability(struct kvaser_usb *dev,
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = CMD_GET_CAPABILITIES_REQ;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	cmd->cap_req.cap_cmd = cpu_to_le16(cap_cmd_req);
- 
- 	kvaser_usb_hydra_set_cmd_dest_he(cmd, card_data->hydra.sysdbg_he);
- 	kvaser_usb_hydra_set_cmd_transid
- 				(cmd, kvaser_usb_hydra_get_next_transid(dev));
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 	if (err)
- 		goto end;
- 
-@@ -1578,6 +1583,7 @@ static int kvaser_usb_hydra_get_busparams(struct kvaser_usb_net_priv *priv,
- 	struct kvaser_usb *dev = priv->dev;
- 	struct kvaser_usb_net_hydra_priv *hydra = priv->sub_priv;
- 	struct kvaser_cmd *cmd;
-+	size_t cmd_len;
- 	int err;
- 
- 	if (!hydra)
-@@ -1588,6 +1594,7 @@ static int kvaser_usb_hydra_get_busparams(struct kvaser_usb_net_priv *priv,
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = CMD_GET_BUSPARAMS_REQ;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	kvaser_usb_hydra_set_cmd_dest_he
- 		(cmd, dev->card_data.hydra.channel_to_he[priv->channel]);
- 	kvaser_usb_hydra_set_cmd_transid
-@@ -1597,7 +1604,7 @@ static int kvaser_usb_hydra_get_busparams(struct kvaser_usb_net_priv *priv,
- 
- 	reinit_completion(&priv->get_busparams_comp);
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 	if (err)
- 		return err;
- 
-@@ -1624,6 +1631,7 @@ static int kvaser_usb_hydra_set_bittiming(const struct net_device *netdev,
- 	struct kvaser_cmd *cmd;
- 	struct kvaser_usb_net_priv *priv = netdev_priv(netdev);
- 	struct kvaser_usb *dev = priv->dev;
-+	size_t cmd_len;
- 	int err;
- 
- 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
-@@ -1631,6 +1639,7 @@ static int kvaser_usb_hydra_set_bittiming(const struct net_device *netdev,
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = CMD_SET_BUSPARAMS_REQ;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	memcpy(&cmd->set_busparams_req.busparams_nominal, busparams,
- 	       sizeof(cmd->set_busparams_req.busparams_nominal));
- 
-@@ -1639,7 +1648,7 @@ static int kvaser_usb_hydra_set_bittiming(const struct net_device *netdev,
- 	kvaser_usb_hydra_set_cmd_transid
- 				(cmd, kvaser_usb_hydra_get_next_transid(dev));
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 
- 	kfree(cmd);
- 
-@@ -1652,6 +1661,7 @@ static int kvaser_usb_hydra_set_data_bittiming(const struct net_device *netdev,
- 	struct kvaser_cmd *cmd;
- 	struct kvaser_usb_net_priv *priv = netdev_priv(netdev);
- 	struct kvaser_usb *dev = priv->dev;
-+	size_t cmd_len;
- 	int err;
- 
- 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
-@@ -1659,6 +1669,7 @@ static int kvaser_usb_hydra_set_data_bittiming(const struct net_device *netdev,
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = CMD_SET_BUSPARAMS_FD_REQ;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	memcpy(&cmd->set_busparams_req.busparams_data, busparams,
- 	       sizeof(cmd->set_busparams_req.busparams_data));
- 
-@@ -1676,7 +1687,7 @@ static int kvaser_usb_hydra_set_data_bittiming(const struct net_device *netdev,
- 	kvaser_usb_hydra_set_cmd_transid
- 				(cmd, kvaser_usb_hydra_get_next_transid(dev));
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 
- 	kfree(cmd);
- 
-@@ -1804,6 +1815,7 @@ static int kvaser_usb_hydra_get_software_info(struct kvaser_usb *dev)
- static int kvaser_usb_hydra_get_software_details(struct kvaser_usb *dev)
- {
- 	struct kvaser_cmd *cmd;
-+	size_t cmd_len;
- 	int err;
- 	u32 flags;
- 	struct kvaser_usb_dev_card_data *card_data = &dev->card_data;
-@@ -1813,6 +1825,7 @@ static int kvaser_usb_hydra_get_software_details(struct kvaser_usb *dev)
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = CMD_GET_SOFTWARE_DETAILS_REQ;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	cmd->sw_detail_req.use_ext_cmd = 1;
- 	kvaser_usb_hydra_set_cmd_dest_he
- 				(cmd, KVASER_USB_HYDRA_HE_ADDRESS_ILLEGAL);
-@@ -1820,7 +1833,7 @@ static int kvaser_usb_hydra_get_software_details(struct kvaser_usb *dev)
- 	kvaser_usb_hydra_set_cmd_transid
- 				(cmd, kvaser_usb_hydra_get_next_transid(dev));
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 	if (err)
- 		goto end;
- 
-@@ -1938,6 +1951,7 @@ static int kvaser_usb_hydra_set_opt_mode(const struct kvaser_usb_net_priv *priv)
- {
- 	struct kvaser_usb *dev = priv->dev;
- 	struct kvaser_cmd *cmd;
-+	size_t cmd_len;
- 	int err;
- 
- 	if ((priv->can.ctrlmode &
-@@ -1953,6 +1967,7 @@ static int kvaser_usb_hydra_set_opt_mode(const struct kvaser_usb_net_priv *priv)
- 		return -ENOMEM;
- 
- 	cmd->header.cmd_no = CMD_SET_DRIVERMODE_REQ;
-+	cmd_len = kvaser_usb_hydra_cmd_size(cmd);
- 	kvaser_usb_hydra_set_cmd_dest_he
- 		(cmd, dev->card_data.hydra.channel_to_he[priv->channel]);
- 	kvaser_usb_hydra_set_cmd_transid
-@@ -1962,7 +1977,7 @@ static int kvaser_usb_hydra_set_opt_mode(const struct kvaser_usb_net_priv *priv)
- 	else
- 		cmd->set_ctrlmode.mode = KVASER_USB_HYDRA_CTRLMODE_NORMAL;
- 
--	err = kvaser_usb_send_cmd(dev, cmd, kvaser_usb_hydra_cmd_size(cmd));
-+	err = kvaser_usb_send_cmd(dev, cmd, cmd_len);
- 	kfree(cmd);
- 
- 	return err;
--- 
-2.35.1
-
+> Changes in v2:
+> - Remove the 10g properties, instead of removing the MAC dtsis.
+>=20
+>  arch/powerpc/boot/dts/fsl/t2081si-post.dtsi | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+>=20
+> diff --git a/arch/powerpc/boot/dts/fsl/t2081si-post.dtsi
+> b/arch/powerpc/boot/dts/fsl/t2081si-post.dtsi
+> index 74e17e134387..27714dc2f04a 100644
+> --- a/arch/powerpc/boot/dts/fsl/t2081si-post.dtsi
+> +++ b/arch/powerpc/boot/dts/fsl/t2081si-post.dtsi
+> @@ -659,3 +659,19 @@ L2_1: l2-cache-controller@c20000 {
+>  		interrupts =3D <16 2 1 9>;
+>  	};
+>  };
+> +
+> +&fman0_rx_0x08 {
+> +	/delete-property/ fsl,fman-10g-port;
+> +};
+> +
+> +&fman0_tx_0x28 {
+> +	/delete-property/ fsl,fman-10g-port;
+> +};
+> +
+> +&fman0_rx_0x09 {
+> +	/delete-property/ fsl,fman-10g-port;
+> +};
+> +
+> +&fman0_tx_0x29 {
+> +	/delete-property/ fsl,fman-10g-port;
+> +};
+> --
+> 2.35.1.1320.gc452695387.dirty
 
