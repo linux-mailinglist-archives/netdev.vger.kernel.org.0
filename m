@@ -2,153 +2,430 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15101650671
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 03:31:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D4C6506BC
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 04:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbiLSCb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Dec 2022 21:31:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        id S231271AbiLSDRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Dec 2022 22:17:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiLSCb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 21:31:26 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2054.outbound.protection.outlook.com [40.107.21.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C81AE75;
-        Sun, 18 Dec 2022 18:31:24 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YSxJIy8E5e+WbxJd6+dpab3yntTAnK5nz7T3IRhP+Q7jv0kymbywKX4I/HKLA7OIMjPip9Q4EDAPC/S6RI1GWpi44xWDxVp8dyaSh9C4f0DOxsyDM6Y3BrOq0RF3w+1/UkolZwg3+Z4YVfEw3IvXoFq6CEgi8h7l0OJbkOl8ef0ir3AGmUOXnUA7f7bX9BMQxvnovamPRFSPBLR2HNprqqAxgvWLbusdAX/FIVUI/nybckYlsGDH1KXmmu6ZdgmsuU45B+3/2X15L2hOzot/iZcptjFuu+shFZu1bE7gfSZyL8TaxzXiwMQHodORNeP+9LIUfNIcV5/NZveOKeOb2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GXWN+d6DK7fFS9SI2is81D8obGB65din31uk1cltcd4=;
- b=Aa2u0vo270sGv8KAzP0VWxk+fqnz/RYCIlDu6b7SDj35J4v12AbgtkZ0veAmOpIwC7q0NmG0RE7FLiF8k40nVAoDJvzbupMcxYHM3lMVx4fLQJEWpRqV6IExVeP4fr6l+dcGr0igDy0l1znsb89rjEB6krxGiuCCFzj63/ZZTUdtEnvBJvaKIE/aXG8w3ZML2UrhealsLyBLrjJ1xc6Up5+QMmpBWeuZilXVoaXiwFtk3w3hzH9IZN+97HnGnqhC0Zl07UWjkqwUCgTS13YGnvMZZI2R15WLO3ivzBajULbU4neeazhMSeoh2JWA4NTXupQb9xy83dqWm5LvNY8JUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GXWN+d6DK7fFS9SI2is81D8obGB65din31uk1cltcd4=;
- b=YcpKx0HTYczpWxCf430WNQsFsjuzIKGZ6Wxkl3GqHaZb5aU4c3zzXEQeKzoJthPDwhGkfB2H1a91O2BkZIT+v7HbOIdzY7/yNjWz90MHnLYvsrvxzGZ4qOsO6G04wTvbjAqm2RXQ/pzrklVKskflpLLX5exywUvF/5+tAMvdD4g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
- by DB8PR04MB6953.eurprd04.prod.outlook.com (2603:10a6:10:111::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Mon, 19 Dec
- 2022 02:31:22 +0000
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::e9c1:3e78:4fc8:9b24]) by DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::e9c1:3e78:4fc8:9b24%8]) with mapi id 15.20.5924.016; Mon, 19 Dec 2022
- 02:31:22 +0000
-From:   wei.fang@nxp.com
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, xiaoning.wang@nxp.com, shenwei.wang@nxp.com,
-        alexander.duyck@gmail.com, linux-imx@nxp.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V2 net] net: fec: Coverity issue: Dereference null return value
-Date:   Mon, 19 Dec 2022 10:27:55 +0800
-Message-Id: <20221219022755.1047573-1-wei.fang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0110.apcprd02.prod.outlook.com
- (2603:1096:4:92::26) To DB9PR04MB8106.eurprd04.prod.outlook.com
- (2603:10a6:10:24b::13)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR04MB8106:EE_|DB8PR04MB6953:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9049480-6be3-49b1-a9a3-08dae1691e1d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RmoEGrjTD+cBFWZ9rUd7AKPR3oPhMch+gEdRxz+sqRc82TklAELvFjAmjtzoVhzmq2vEM74EJCS2KWxQmxRRZ6Z3jJxXqVYqDpSduYCpsKXzzEPAl2/w8ANI8pGBhGezjub0LII9ieGCFhMV3KRQlru1x+PsuJDJOY3cGls5b2YFZN8ZpXL0omIRKL6TFLMf75W0Vl0siGVSJVzAfmU+cI9uNbnCyozGw2bUMk+DHcmFn8yWQKdovWM0+mbYuJO27tWgcqT6gQdXE0W75vp7LUtwulBm/twcKKxhVoiX1YSNj5IgkNbYPUfTmp7ZrumOzosDTN5DQ+3TvEVqA4tJgjkjIMmxxUdsxQTUxIHrUdFe//aVGcOVBntdelujtKV/Asnk9dAaeqguKYNzcELIKjpEg4Ssv87TPHe3EKjKI6jEibpo+y3y0nqoh5F2B6/F9gBZe8jWGxXtR0bne4BUXYo3fkD713+LDtSep0ZDfou0ChQzsD1WCn3WoUzDXiGEWgYKpNAMi3eINvC/udGoqrGLekNCaLmE7Df9hl0dzgR0Wgx2lcUO9usI2CbhSIUCBLWq/E4JE2Yu4F9i32bWLPbs5sXF8EhQ5xfb6m2rJ3oyfcL/CC5xluUVjwt3C6qhzsQJII4zax/hkdEqwLJJ0/5NbUSWNtxg0iwXqQxGRyHB3e0FE8UxKRY7/BzTTFQw
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(346002)(39860400002)(376002)(396003)(451199015)(5660300002)(66476007)(66946007)(2616005)(66556008)(4326008)(38350700002)(8676002)(36756003)(38100700002)(186003)(6512007)(26005)(9686003)(83380400001)(1076003)(316002)(41300700001)(8936002)(86362001)(6666004)(2906002)(478600001)(6506007)(52116002)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cnQmNGwOYu9USZms0qpJX6Wm53uuFGPu3o77s/yYPJ1dOq7TN0DD6H33/8kz?=
- =?us-ascii?Q?WbIg5geW91Ej38L317JzZNMeuNUYNHffqBUVWn/NvzHo+T1MECtKv7FWvkT7?=
- =?us-ascii?Q?Id1u+GX1KK6v7K7yJ9RrG7W3YnJdjWGBE5jyO2d1rPFzveX2oTgZ8if8ExOU?=
- =?us-ascii?Q?EZwrzSK5hQBHitUdUY547K8cHY3esaOamZRBTkqtTSUjEaM3xZtNH3sQPIye?=
- =?us-ascii?Q?m6M6/L53uN4nmp8ZEy/xplIpXphy7XmYW7KRVk0T5P1RWuUnKpbAVD0tjn88?=
- =?us-ascii?Q?0nsovAG0f53uAAKhzJI639pPzlNTu3kZVrIGzapHFjsi3efREfXAfbW7B1A2?=
- =?us-ascii?Q?Gz0doJPQNnytfpKYU9CDLFwhhDNobNrbUotRDSchupe7NGByfjB3b9dn19K6?=
- =?us-ascii?Q?lyy1aYop1g7xJpjpG8XTtPFF6lByZLvzmrw+cTcTRDk8YevHJNFfk8BtrFHy?=
- =?us-ascii?Q?iWL/VoBSUVTceUHgW0FfW4Ds8oEFbbF5E2osPk0nTm9/O3NFTtxJnZ3yexOg?=
- =?us-ascii?Q?mQmly5Sr21W2Gmv3ZAPlaeSlpZw5CBdtNnnpGc/xm/cCViaOek3kfcyT3rl0?=
- =?us-ascii?Q?pPkdYWp/yR8RNqggA33xrCaAUEZJJF1vWij2P3rUKSrhK5Cu4hmcTAg7E2U2?=
- =?us-ascii?Q?knGzFooXgJkdaaJNGMjft71/z0HWv2Qarthtyd//vj++Xf2AAC8YPPKO78Vg?=
- =?us-ascii?Q?vgbEWgZ1TGu1p7C4uoZtsKv+HoT5HrEmWQdetEZ/S3fSnqt/2vgfVwzk1cJJ?=
- =?us-ascii?Q?iX143Y5E+Ty+CtfSIGgbSyNlmKWgLLVfGaLcGB5LnnYpnoeY3DSus8xvYrvi?=
- =?us-ascii?Q?E0FqaVGqTZgnJu3YSHdNlGcNOnfj+YGeu9o1Dw+r1jabJ5s79zIRjW7fOXvg?=
- =?us-ascii?Q?hKssILe/iRHA+8aC5Um0zjD+aQu+o0JEtRbFeG+fauwhawcs6o/miSs1DF36?=
- =?us-ascii?Q?nmQYJOIc2suTl8ouUv1KmbrD0TLmni2Zpof+7KLSqHdmC0p1iwVi9ilv+Urs?=
- =?us-ascii?Q?EGUV9K/KhEBfVGjHufN5LkMCryn65IddcbYNEb/vhwqW6P1Od7dt4MxOClKN?=
- =?us-ascii?Q?VQYYUXm9gJqv4QAUk/xtbXR3SsvTE8X8q1Y1s/FpojkrbWReNkaGUWl+JtjV?=
- =?us-ascii?Q?8Yz+G22isUJVMitHV6zloGDldKr2XMX1MW9mndd7AcIKzj9Puk0TvCdnB8sA?=
- =?us-ascii?Q?Bsy1sKUJZr2IAGWNOPUWXHlh6He8jkFmJHrs10zq5gsvlsCxSCvCyL9Ng+Tm?=
- =?us-ascii?Q?pvAuiMeOLFzbpopmkin5XQtx9wgJehgWO1RUVNHNIF2wnzes3xRj+/C+hRVm?=
- =?us-ascii?Q?4oDT0ILUqklAa/9C7VoDM8LJjLPQzIBIhXW4nlaWlrmq566E0rrq7qR4rKdR?=
- =?us-ascii?Q?kQTEC2eoG4sHZs3V1DtPYdwy3xgHTK8m1snUpf8UlHpxxnUUFsDQojkfALbi?=
- =?us-ascii?Q?f+wGLpb2D6IHJtLq9BdV+JUNkvLIwMbR3T2n4Famjhvsj+5OjEXFvpJZ+N0Z?=
- =?us-ascii?Q?rBX+AUrH5Ii0CdNfkDqW8wfoOM4ApEugn5mhJcFjML3ydP+bd8cTQkpWw4JN?=
- =?us-ascii?Q?YZx3jYgj4lMn5S0AaQGvtUtarmYJNh+t4LpZG/dL?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9049480-6be3-49b1-a9a3-08dae1691e1d
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2022 02:31:22.1296
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: n3Ke2uQMzzfiAgeWaRX/KWgq1Xlymv6PtdlkvDCexULYoJ4cpNyXWIDY3gVmzS4ixz/nJBCQC3qOdDNi/PiuuQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6953
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231265AbiLSDRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Dec 2022 22:17:11 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41EFB7E4;
+        Sun, 18 Dec 2022 19:17:08 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7C7135C0097;
+        Sun, 18 Dec 2022 22:17:06 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 18 Dec 2022 22:17:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pjd.dev; h=cc:cc
+        :content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1671419826; x=
+        1671506226; bh=aA+1FqT/IEAngGATjTakkPuD0t/W3DQcklCp78h4WN4=; b=h
+        7O9oQFx1qvur6wFZZO+y5WHOfz3V+QPMDm05RqeRfipVQXC8IndthKQbmaMdtZ0Y
+        9/XNjdawEkR63cZJXqvwrd1dd3xILL0wsVeipkiDCxPfyvpYSO/gK8X5dtrh+vjL
+        0nR2oQJo162V1U+3FV8iZEgKGsIDQw2XZ/PoUPdEAFqT/UK0Tlb7tvADqNJ/ugck
+        QqimQ3e5mxSsVljcDdhxs72KB8Cmb0ghP4OcZ48dXX243wx+3UlKciqyGSoG+Jl5
+        wjdVFB5NmnDOelL0dGsNIs5QkIhjoY64QKR0J6Wu2IrYDabDpPWn5zoey0ej3w0J
+        bb4lfkoiQwQ4lb0kmgX6g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1671419826; x=
+        1671506226; bh=aA+1FqT/IEAngGATjTakkPuD0t/W3DQcklCp78h4WN4=; b=p
+        a7c9+OHkuKSnQCx45UQdG3SHIBveDrmHxkpDiVpaoK5cfFRf8RBtPo5bRGYAntpL
+        1gNqtddMbm0fKG0i/BxdRKE2dcY610ocHwEsZWoFVP7FJcjRoXXkcYr7NPK8HUIA
+        SfxROyR4b8ahPqLG9CNKM4+r0jmqtLolKit5ZWJvgcHKMsjdG0Lkn4MCeX0/hIfE
+        HCYmol80BLef6i78OimWUDhHS6hZUHuTMtvZctLRYMm8EpXCCQpbrZvap6yvGVqe
+        qkGTjCEbY//9iUa2Uk4ayvFczKdwqgwqQ5j3MhhA+jc5lCSnSirljCFfrG1KMY5C
+        dBh17l6m4VnmAWQwiwS+A==
+X-ME-Sender: <xms:stefY5JdRztGmeG-XiTEru8ltJNRURLVCKdweABC_xH22pj205l_dA>
+    <xme:stefY1IfAoIyUEC8Rzw687r-woQEukuPPBj8SjN1zuZKsU9S2zq_DTeeHwvkdC4MD
+    -vZ7HzDT_urn1lzlLE>
+X-ME-Received: <xmr:stefYxtaAzYWVm98ShN0sblSnlsInKz1kg6nsLovX0ToGwsaQz0RJniTyuofCY7Uutdp>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedvgdehiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
+    fuuhhsphgvtghtffhomhgrihhnucdlgeelmdenucfjughrpegtggfuhfgjffevgffkfhfv
+    ofesthhqmhdthhdtjeenucfhrhhomheprfgvthgvrhcuffgvlhgvvhhorhihrghsuceoph
+    gvthgvrhesphhjugdruggvvheqnecuggftrfgrthhtvghrnhepgfevieekudeugeevueek
+    gfdtudevtdefjeejgfeugeevheelueevudefffeiheejnecuffhomhgrihhnpehtihhnhi
+    hurhhlrdgtohhmpdhgihhthhhusgdrtghomhdpfhgsrdgtohhmpdhmrggtrgguughrvghs
+    shdrihhonecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epphgvthgvrhesphhjugdruggvvh
+X-ME-Proxy: <xmx:stefY6YLKcKGo3LDLn-NX8_fnuSW0_Wtiiv1uMAxkgsdMbEZ1JI6PQ>
+    <xmx:stefYwbePHlGm_yAHWaoLlaCR7AvYsIWMbeegJMf-XvSlD95n_nkew>
+    <xmx:stefY-CI0rC8bm44L9spzPFoyZixeig74YRzkvJZvI_jadPUqUDy5Q>
+    <xmx:stefYw4iWupXd_YsnlDpVG-2Keq8G_TMUTA2C-drPU4CsMREwhywsQ>
+Feedback-ID: i9e814621:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 18 Dec 2022 22:17:04 -0500 (EST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.200.110.1.12\))
+Subject: Re: [PATCH] net/ncsi: Always use unicast source MAC address
+From:   Peter Delevoryas <peter@pjd.dev>
+In-Reply-To: <CAKgT0UfOnJGf+n_PTizCyq77H+ZvWMU4i=D=GW3o13RNqWf-Gg@mail.gmail.com>
+Date:   Sun, 18 Dec 2022 19:16:54 -0800
+Cc:     Peter Delevoryas <peter@pjd.dev>, sam@mendozajonas.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B38CC11A-18E4-440F-8DE1-EF80C6C9A1DB@pjd.dev>
+References: <20221213004754.2633429-1-peter@pjd.dev>
+ <ac48b381b11c875cf36a471002658edafe04d9b9.camel@gmail.com>
+ <7A3DBE8E-C13D-430D-B851-207779148A77@pjd.dev>
+ <CAKgT0Uf-9XwvJJTZOD0EHby6Lr0R-tMYGiR_2og3k=d_eTBPAw@mail.gmail.com>
+ <09CDE7FD-2C7D-4A0B-B085-E877472FA997@pjd.dev>
+ <CAKgT0UfOnJGf+n_PTizCyq77H+ZvWMU4i=D=GW3o13RNqWf-Gg@mail.gmail.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+X-Mailer: Apple Mail (2.3731.200.110.1.12)
+X-Spam-Status: No, score=0.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FSL_HAS_TINYURL,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Fang <wei.fang@nxp.com>
 
-The build_skb might return a null pointer but there is no check on the
-return value in the fec_enet_rx_queue(). So a null pointer dereference
-might occur. To avoid this, we check the return value of build_skb. If
-the return value is a null pointer, the driver will recycle the page and
-update the statistic of ndev. Then jump to rx_processing_done to clear
-the status flags of the BD so that the hardware can recycle the BD.
 
-Signed-off-by: Wei Fang <wei.fang@nxp.com>
-Reviewed-by: Shenwei Wang <Shenwei.wang@nxp.com>
----
-V2 changes:
-1. Remove rx_packets and rx_bytes counters.
-2. Use netdev_err_once instead of netdev_err.
----
- drivers/net/ethernet/freescale/fec_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> On Dec 17, 2022, at 12:57 PM, Alexander Duyck =
+<alexander.duyck@gmail.com> wrote:
+>=20
+> On Fri, Dec 16, 2022 at 8:20 PM Peter Delevoryas <peter@pjd.dev> =
+wrote:
+>>=20
+>>=20
+>>=20
+>>> On Dec 16, 2022, at 10:29 AM, Alexander Duyck =
+<alexander.duyck@gmail.com> wrote:
+>>>=20
+>>> On Thu, Dec 15, 2022 at 5:08 PM Peter Delevoryas <peter@pjd.dev> =
+wrote:
+>>>>=20
+>>>>=20
+>>>>=20
+>>>>> On Dec 13, 2022, at 8:41 AM, Alexander H Duyck =
+<alexander.duyck@gmail.com> wrote:
+>>>>>=20
+>>>>> On Mon, 2022-12-12 at 16:47 -0800, Peter Delevoryas wrote:
+>=20
+> <...>
+>=20
+>>>=20
+>>>>> My main
+>>>>> concern would be that the dev_addr is not initialized for those =
+first
+>>>>> few messages so you may be leaking information.
+>>>>>=20
+>>>>>> This might have the effect of causing the NIC to learn 2 MAC =
+addresses from
+>>>>>> an NC-SI link if the BMC uses OEM Get MAC Address commands to =
+change its
+>>>>>> initial MAC address, but it shouldn't really matter. Who knows if =
+NIC's
+>>>>>> even have MAC learning enabled from the out-of-band BMC link, =
+lol.
+>>>>>>=20
+>>>>>> [1]: https://tinyurl.com/4933mhaj
+>>>>>> [2]: https://tinyurl.com/mr3tyadb
+>>>>>=20
+>>>>> The thing is the OpenBMC approach initializes the value themselves =
+to
+>>>>> broadcast[3]. As a result the two code bases are essentially doing =
+the
+>>>>> same thing since mac_addr is defaulted to the broadcast address =
+when
+>>>>> the ncsi interface is registered.
+>>>>=20
+>>>> That=E2=80=99s a very good point, thanks for pointing that out, I =
+hadn=E2=80=99t
+>>>> even noticed that!
+>>>>=20
+>>>> Anyways, let me know what you think of the traces I added above.
+>>>> Sorry for the delay, I=E2=80=99ve just been busy with some other =
+stuff,
+>>>> but I do really actually care about upstreaming this (and several
+>>>> other NC-SI changes I=E2=80=99ll submit after this one, which are =
+unrelated
+>>>> but more useful).
+>>>>=20
+>>>> Thanks,
+>>>> Peter
+>>>=20
+>>> So the NC-SI spec says any value can be used for the source MAC and
+>>> that broadcast "may" be used. I would say there are some debugging
+>>> advantages to using broadcast that will be obvious in a packet =
+trace.
+>>=20
+>> Ehhhhh yeah I guess, but the ethertype is what I filter for. But =
+sure,
+>> a broadcast source MAC is pretty unique too.
+>>=20
+>>> I wonder if we couldn't look at doing something like requiring
+>>> broadcast or LAA if the gma_flag isn't set.
+>>=20
+>> What is LAA? I=E2=80=99m out of the loop
+>=20
+> Locally administered MAC address[4]. Basically it is a MAC address
+> that is generated locally such as your random MAC address. Assuming
+> the other end of the NC-SI link is using a MAC address with a vendor
+> OUI there should be no risk of collisions on a point-to-point link.
+> Essentially if you wanted to you could probably just generate a random
+> MAC address for the NCSI protocol and then use that in place of the
+> broadcast address.
+>=20
+>> But also: aren=E2=80=99t we already using broadcast if the gma_flag =
+isn=E2=80=99t set?
+>>=20
+>> -       if (nca->ndp->gma_flag =3D=3D 1)
+>> -               memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, =
+ETH_ALEN);
+>> -       else
+>> -               eth_broadcast_addr(eh->h_source);
+>> +       memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, ETH_ALEN);
+>=20
+> That I am not sure about. You were using this kernel without your
+> patch right? With your patch it would make sense to see that behavior,
+> but without I am not sure why you would see that address for any NC-SI
+> commands before the gma_flag is set.
+>=20
+>>=20
+>>> With that we could at
+>>> least advertise that we don't expect this packet to be going out in =
+a
+>>> real network as we cannot guarantee the MAC is unique.
+>>=20
+>> Yeah, but it probably wouldn=E2=80=99t help my simulation scenario.
+>>=20
+>> I guess it sounds like this patch is not a good idea, which to be =
+fair,
+>> is totally reasonable.
+>>=20
+>> I can just add some iptables rules to tunnel these packets with a =
+different
+>> source MAC, or fix the multicast socket issue I was having. It=E2=80=99=
+s really
+>> not a big deal, and like you=E2=80=99re saying, we probably don=E2=80=99=
+t want to make
+>> it harder to maintain _forever_.
+>=20
+> Like I said before I would be good with either a Broadcast address OR
+> a LAA address. The one thing we need to watch out for though is any
+> sort of leak. One possible concern would be if for example you had 4
+> ports using 4 different MAC addresses but one BMC. You don't want to
+> accidently leak the MAC address from one port onto the other one. With
+> a LAA address if it were to leak and screw up ARP tables somewhere it
+> wouldn't be a big deal since it isn't expected to be switched in the
+> first place.
+>=20
+>> I would just suggest praying for the next guy that tries to test =
+NC-SI
+>> stuff with QEMU and finds out NC-SI traffic gets dropped by bridges.
+>> I had to resort to reading the source code and printing stuff with
+>> BPF to identify this. Maybe it=E2=80=99s more obvious to other people =
+this wouldn=E2=80=99t
+>> work though.
+>=20
+> Well it seems like NC-SI isn't meant to be bridged based on the fact
+> that it is using a broadcast MAC address as a source. If nothing else
+> I suppose you could try to work with the standards committee on that
+> to see what can be done to make the protocol more portable.. :-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 5528b0af82ae..644f3c963730 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1674,6 +1674,14 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
- 		 * bridging applications.
- 		 */
- 		skb = build_skb(page_address(page), PAGE_SIZE);
-+		if (unlikely(!skb)) {
-+			page_pool_recycle_direct(rxq->page_pool, page);
-+			ndev->stats.rx_dropped++;
+Well, I started preparing some of my other patches to send, and while
+digging up the history for that, I happened to notice this commit
+completely by chance while browsing Github:
+
+=
+https://github.com/facebook/openbmc-linux/commit/933b5bd024d28f48a6359e6a9=
+db631f778ba9ea7
+
+[openbmc.quanta][PR] FBAL:Fixed NCSI can't work when import BR function
+
+Summary:
+As title.
+Pull Request resolved: =
+https://github.com/facebookexternal/openbmc.quanta/pull/1668
+GitHub Author: Peter <peter.yin@quantatw.com>
+
+diff --git =
+a/meta-aspeed/recipes-kernel/linux/files/linux-aspeed-5.0/net/bridge/br_in=
+put.c =
+b/meta-aspeed/recipes-kernel/linux/files/linux-aspeed-5.0/net/bridge/br_in=
+put.c
+index 5ea7e56119c1..8ef0b627f5ec 100644
+--- =
+a/meta-aspeed/recipes-kernel/linux/files/linux-aspeed-5.0/net/bridge/br_in=
+put.c
++++ =
+b/meta-aspeed/recipes-kernel/linux/files/linux-aspeed-5.0/net/bridge/br_in=
+put.c
+@@ -220,6 +220,9 @@ rx_handler_result_t br_handle_frame(struct sk_buff =
+**pskb)
+        if (unlikely(skb->pkt_type =3D=3D PACKET_LOOPBACK))
+                return RX_HANDLER_PASS;
+
++       if (skb->protocol =3D=3D cpu_to_be16(ETH_P_NCSI))
++               return RX_HANDLER_PASS;
 +
-+			netdev_err_once(ndev, "build_skb failed!\n");
-+			goto rx_processing_done;
-+		}
-+
- 		skb_reserve(skb, data_start);
- 		skb_put(skb, pkt_len - sub_len);
- 		skb_mark_for_recycle(skb);
--- 
-2.25.1
+        if (!is_valid_ether_addr(eth_hdr(skb)->h_source))
+                goto drop;
+
+Which is accomplishing the same thing I suggested in my patch, except
+that it=E2=80=99s modifying the Linux bridge code instead of changing =
+the NC-SI
+packets=E2=80=99 source MAC address.
+
+To explain what I *think* this person was doing...
+
+Meta has a system called Zion that=E2=80=99s described here:
+
+=
+https://engineering.fb.com/2019/03/14/data-center-engineering/accelerating=
+-infrastructure/
+
+It consists of two chassis, =E2=80=9CAngel's Landing=E2=80=9D and =
+=E2=80=9CEmerald Pools=E2=80=9D.
+
+Together, it=E2=80=99s kinda like an Nvidia DGX A100 system, but with =
+generic
+PCIe switches, and =E2=80=9COCP Accelerators=E2=80=9D. There=E2=80=99s =
+like an AMD GPU or an
+Intel accelerator that can fit there. Maybe an A100 can fit too? I=E2=80=99=
+m
+not really completely clear on how its being used compared to =
+GrandTeton,
+announced at OCP 2022, which is even closer to the DGX architecture,
+but yeah.
+
+Angel=E2=80=99s Landing is 4 dual-socket boards stacked together, each =
+board
+with a BMC and NIC supporting NC-SI. I think in practice we reduced
+this to 1-2 dual-socket boards, each with 2 NIC=E2=80=99s (presumably =
+cause
+we don't need that many CPU's but still need the network bandwidth).
+
+Emerald Pools is a single board and 8 accelerator modules, and
+the board has a BMC on it. To get network connectivity to the BMC,
+there=E2=80=99s a USB from Emerald Pools to one of the Angel=E2=80=99s =
+Landing BMC's
+and the Angel=E2=80=99s Landing BMC bridges Emerald Pools traffic =
+through
+its NIC. If this doesn=E2=80=99t make sense, I think this is the whole =
+setup
+(Omitting the device tree and some MAC filtering stuff):
+
+On an Angel=E2=80=99s Landing BMC:
+
+$ ip link add br0 type bridge
+$ ip link set eth0 master br0
+$ ip link set eth1 master br0
+$ ip link set usb0 master br0
+
+And on the Emerald Pools BMC, there=E2=80=99s just a usb net intf:
+
+$ ifconfig
+lo        =E2=80=A6.
+
+usb0      Link encap:Ethernet  HWaddr xxxxxxxxxxx
+          inet6 addr: xxxxxx Scope:Link
+          inet6 addr: xxxxxx Scope:Global
+          inet6 addr: xxxxxx Scope:Global
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:999332 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:594253 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:211829527 (202.0 MiB)  TX bytes:150569888 (143.5 MiB)
+
+Anyways, so then my question was: is Zion actually relying on NC-SI
+packets traversing a bridge?
+
+The Emerald Pools BMC doesn=E2=80=99t have NC-SI enabled at all, not =
+even a
+userspace daemon or utility of any kind.
+
+NC-SI *is* enabled and used on the Angel's Landing BMC, so I checked
+to see if they traverse the bridge (in QEMU, I didn=E2=80=99t check on a =
+real
+system):
+
+root@bmc-oob:~# tcpdump -i br0 -v "ether proto 0x88f8" &
+[1] 12045
+root@bmc-oob:~# [ 1434.520314] device br0 entered promiscuous mode
+tcpdump: listening on br0, link-type EN10MB (Ethernet), snapshot length =
+262144 bytes
+ifconfig eth0 down
+[ 1442.863305] br0: port 1(eth0) entered disabled state
+root@bmc-oob:~# ifconfig eth0 up
+[ 1445.978424] br0: port 1(eth0) entered blocking state
+[ 1445.978743] br0: port 1(eth0) entered forwarding state
+[ 1445.979131] 8021q: adding VLAN 0 to HW filter on device eth0
+[ 1445.979814] ftgmac100 1e660000.ethernet eth0: NCSI: Handler for =
+packet type 0x82 returned -19
+root@bmc-oob:~# tcpdump -i eth0 -v "ether proto 0x88f8" &
+[2] 12258
+root@bmc-oob:~# tcpdump: listening on eth0, link-type EN10MB (Ethernet), =
+snapshot length 262144 bytes
+ifcon04:58:49.464810 fa:ce:b0:02:20:22 (oui Unknown) > Broadcast, =
+ethertype Unknown (0x88f8), length 60:
+        0x0000:  0001 0068 0a00 0000 0000 0000 0000 0000  =
+...h............
+        0x0010:  ffff f597 0000 0000 0000 0000 0000 0000  =
+................
+        0x0020:  0000 0000 0000 0000 0000 0000 0000       ..............
+04:58:49.465099 Broadcast > Broadcast, ethertype Unknown (0x88f8), =
+length 64:
+        0x0000:  0001 0068 8a00 0010 0000 0000 0000 0000  =
+...h............
+        0x0010:  0000 0000 0000 0001 0000 0000 0000 0000  =
+................
+        0x0020:  ffff 7586 0000 0000 0000 0000 0000 d8cd  =
+..u.............
+        0x0030:  c6bc                                     ..
+04:58:49.471206 fa:ce:b0:02:20:22 (oui Unknown) > Broadcast, ethertype =
+Unknown (0x88f8), length 60:
+        0x0000:  0001 0069 1500 0000 0000 0000 0000 0000  =
+...i............
+        0x0010:  ffff ea96 0000 0000 0000 0000 0000 0000  =
+................
+        0x0020:  0000 0000 0000 0000 0000 0000 0000       ..............
+04:58:49.471432 Broadcast > Broadcast, ethertype Unknown (0x88f8), =
+length 78:
+        0x0000:  0001 0069 9500 0028 0000 0000 0000 0000  =
+...i...(........
+        0x0010:  0000 0000 f1f0 f000 0000 0000 0000 0000  =
+................
+        0x0020:  0000 0000 0000 0000 0000 0000 0000 0000  =
+................
+        0x0030:  0000 0000 0000 8119 fffd 0765 84e0 9fa4  =
+...........e=E2=80=A6.
+
+So, I=E2=80=99m able to see packets on eth0, but so far I haven=E2=80=99t =
+really seen
+anything hitting the bridge. =C2=AF\_(=E3=83=84)_/=C2=AF
+
+Perhaps if there=E2=80=99s some cross-interface NC-SI traffic (eth0 <-> =
+eth1), then
+yes this would occur. But I don=E2=80=99t know why that would even =
+happen? Regular
+NC-SI failover or bonding (eth0, eth1) would be the actual solution? not =
+sure.
+
+The original commit was very vague, so perhaps I=E2=80=99ll follow up =
+with
+the author and reviewer to see if this patch was actually necessary.
+
+>=20
+> [4]: =
+https://macaddress.io/faq/what-are-a-universal-address-and-a-local-adminis=
+tered-address
+
 
