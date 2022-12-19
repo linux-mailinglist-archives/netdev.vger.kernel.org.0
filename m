@@ -2,187 +2,381 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F76650B17
-	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 13:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF7BA650B29
+	for <lists+netdev@lfdr.de>; Mon, 19 Dec 2022 13:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232037AbiLSMCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 07:02:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        id S231470AbiLSMHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 07:07:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231455AbiLSMBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 07:01:30 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C782B5FC6
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 04:01:00 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id h7so8386290wrs.6
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 04:01:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=WXt2m6zBLlKl4uZSwlUeVB0By4qoKfomTzxmXN+yN7Y=;
-        b=QqjtDXeJdjmg1IKPXVEFs8ZSA8HoD44LCTnKIJ7LhhTEzpXUw0RRwk1r/FJTRkcuCs
-         EMXVs0m+WN1AyBgUre62BtE3pfEA9aGuSOJhwXf5x+/58IQxvFwH3xQPlmJcT1lUefT/
-         bM20zI+Vxx/xGvYTR9OArsTyleTf5ZZDXq66c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WXt2m6zBLlKl4uZSwlUeVB0By4qoKfomTzxmXN+yN7Y=;
-        b=krsgA/uc+pnMqqVDKwXkX79EAiTwY3bffBh1EOzir/STxtEqozhl2TmqFCZEBLvn1O
-         lJjzJsSALxisgwQYfSEJ2zuFqJHOjHCTPYJhuvyHB4FKW7MIVBzUqNEOSZ3Kc6UY30lS
-         J5/xQhDLZewWk6J3rLx9yfhWNi2+tti6wd6JbNZjLDV5K5bb6cGurfWoD2WYXWZf/so+
-         SmV/s6h+pxzDMeWYO9vYnb+uWJTk96nUvx6XjAwLqIQqDa5uZPTLwcIcwOjzrWO/pMyp
-         XbWedg7ucZUyR0EoGPMky2iJz+tYaEwyckem0Uovn1yXwZJg0+a0Qmc8e3cbZklrSP7l
-         X5zQ==
-X-Gm-Message-State: ANoB5pnnTB/XywvFPD8hqdqHQEOqpFZz6K2h0cH8keEA2Pd+jrpY7QWd
-        US0Gpy/8psQ0Kkc9LEay8RDGOw==
-X-Google-Smtp-Source: AA0mqf7QRIS5U4CpgZCgErkLDmu8raOZAE/Mqn3DShgIzU8/o8nAtBZr//raOaa7p6R/TvTU90JUmA==
-X-Received: by 2002:a5d:4c82:0:b0:242:806d:b763 with SMTP id z2-20020a5d4c82000000b00242806db763mr26533804wrs.38.1671451259310;
-        Mon, 19 Dec 2022 04:00:59 -0800 (PST)
-Received: from [10.176.68.61] ([192.19.148.250])
-        by smtp.gmail.com with ESMTPSA id bq1-20020a5d5a01000000b00236545edc91sm9812524wrb.76.2022.12.19.04.00.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Dec 2022 04:00:58 -0800 (PST)
-Message-ID: <8485b70f-4120-192c-3f7e-6b4c8ac2ec33@broadcom.com>
-Date:   Mon, 19 Dec 2022 13:00:57 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH] dt-bindings: bcm4329-fmac: Add ingenic,iw8103-fmac
- compatible string
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S231700AbiLSMHB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 07:07:01 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1BCCD2;
+        Mon, 19 Dec 2022 04:06:59 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5B91837873;
+        Mon, 19 Dec 2022 12:06:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1671451618; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VRA2aH5S0Ze0sw4rTGnG/RKjsdW74LSqAB0FgYf7/K8=;
+        b=rtQCYUPC8WG9/Y5v90R4udOxE0QwjIrtVYsJ2DeTM7KFOrFdLtyfRJ3ckh0cHle6ymJjvZ
+        SLhg2vR3pHJTHuLh0PXwellD9PtLPD1FpdN1GIJjnCPWLz8KnsY1qk+FJLZsVigvT89Rhe
+        5xoSAvalOeCWpZ5NgbA7bRkP9qRL3M8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4173113910;
+        Mon, 19 Dec 2022 12:06:58 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id vvTvD+JToGMtbwAAMHmgww
+        (envelope-from <mhocko@suse.com>); Mon, 19 Dec 2022 12:06:58 +0000
+Date:   Mon, 19 Dec 2022 13:06:57 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Rik van Riel <riel@surriel.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Christian Brauner <brauner@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Arend van Spriel <arend@broadcom.com>
-Cc:     list@opendingux.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20221214155943.15418-1-paul@crapouillou.net>
- <036c3985-0dcc-c860-4db2-22f0dd4550dc@linaro.org>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-In-Reply-To: <036c3985-0dcc-c860-4db2-22f0dd4550dc@linaro.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000096083a05f02d123f"
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [RFC PATCH] mm: remove zap_page_range and change callers to use
+ zap_vma_page_range
+Message-ID: <Y6A6KqXObGKxvDrX@dhcp22.suse.cz>
+References: <20221216192012.13562-1-mike.kravetz@oracle.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221216192012.13562-1-mike.kravetz@oracle.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000096083a05f02d123f
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Fri 16-12-22 11:20:12, Mike Kravetz wrote:
+> zap_page_range was originally designed to unmap pages within an address
+> range that could span multiple vmas.  While working on [1], it was
+> discovered that all callers of zap_page_range pass a range entirely within
+> a single vma.  In addition, the mmu notification call within zap_page
+> range does not correctly handle ranges that span multiple vmas as calls
+> should be vma specific.
 
-On 12/14/2022 5:53 PM, Krzysztof Kozlowski wrote:
-> On 14/12/2022 16:59, Paul Cercueil wrote:
->> The MIPS CI20 board has a Ingenic IW8103 chip, which is supposedly just
->> a rebranded Broadcom BCM4330.
->>
->> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Could you spend a sentence or two explaining what is wrong here?
+
+> Instead of fixing zap_page_range, change all callers to use the new
+> routine zap_vma_page_range.  zap_vma_page_range is just a wrapper around
+> zap_page_range_single passing in NULL zap details.  The name is also
+> more in line with other exported routines that operate within a vma.
+> We can then remove zap_page_range.
+
+I would stick with zap_page_range_single rather than adding a new
+wrapper but nothing really critical.
+
+> Also, change madvise_dontneed_single_vma to use this new routine.
 > 
+> [1] https://lore.kernel.org/linux-mm/20221114235507.294320-2-mike.kravetz@oracle.com/
+> Suggested-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+
+Other than that LGTM
+Acked-by: Michal Hocko <mhocko@suse.com>
+
+Thanks!
+
+> ---
+>  arch/arm64/kernel/vdso.c                |  4 ++--
+>  arch/powerpc/kernel/vdso.c              |  2 +-
+>  arch/powerpc/platforms/book3s/vas-api.c |  2 +-
+>  arch/powerpc/platforms/pseries/vas.c    |  2 +-
+>  arch/riscv/kernel/vdso.c                |  4 ++--
+>  arch/s390/kernel/vdso.c                 |  2 +-
+>  arch/s390/mm/gmap.c                     |  2 +-
+>  arch/x86/entry/vdso/vma.c               |  2 +-
+>  drivers/android/binder_alloc.c          |  2 +-
+>  include/linux/mm.h                      |  7 ++++--
+>  mm/madvise.c                            |  4 ++--
+>  mm/memory.c                             | 30 -------------------------
+>  mm/page-writeback.c                     |  2 +-
+>  net/ipv4/tcp.c                          |  6 ++---
+>  14 files changed, 22 insertions(+), 49 deletions(-)
 > 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> diff --git a/arch/arm64/kernel/vdso.c b/arch/arm64/kernel/vdso.c
+> index e59a32aa0c49..a7b10e182f78 100644
+> --- a/arch/arm64/kernel/vdso.c
+> +++ b/arch/arm64/kernel/vdso.c
+> @@ -141,10 +141,10 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  		unsigned long size = vma->vm_end - vma->vm_start;
+>  
+>  		if (vma_is_special_mapping(vma, vdso_info[VDSO_ABI_AA64].dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  #ifdef CONFIG_COMPAT_VDSO
+>  		if (vma_is_special_mapping(vma, vdso_info[VDSO_ABI_AA32].dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  #endif
+>  	}
+>  
+> diff --git a/arch/powerpc/kernel/vdso.c b/arch/powerpc/kernel/vdso.c
+> index 507f8228f983..479d70fe8c55 100644
+> --- a/arch/powerpc/kernel/vdso.c
+> +++ b/arch/powerpc/kernel/vdso.c
+> @@ -123,7 +123,7 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  		unsigned long size = vma->vm_end - vma->vm_start;
+>  
+>  		if (vma_is_special_mapping(vma, &vvar_spec))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  	}
+>  	mmap_read_unlock(mm);
+>  
+> diff --git a/arch/powerpc/platforms/book3s/vas-api.c b/arch/powerpc/platforms/book3s/vas-api.c
+> index eb5bed333750..8f57388b760b 100644
+> --- a/arch/powerpc/platforms/book3s/vas-api.c
+> +++ b/arch/powerpc/platforms/book3s/vas-api.c
+> @@ -414,7 +414,7 @@ static vm_fault_t vas_mmap_fault(struct vm_fault *vmf)
+>  	/*
+>  	 * When the LPAR lost credits due to core removal or during
+>  	 * migration, invalidate the existing mapping for the current
+> -	 * paste addresses and set windows in-active (zap_page_range in
+> +	 * paste addresses and set windows in-active (zap_vma_page_range in
+>  	 * reconfig_close_windows()).
+>  	 * New mapping will be done later after migration or new credits
+>  	 * available. So continue to receive faults if the user space
+> diff --git a/arch/powerpc/platforms/pseries/vas.c b/arch/powerpc/platforms/pseries/vas.c
+> index 4ad6e510d405..2aef8d9295a2 100644
+> --- a/arch/powerpc/platforms/pseries/vas.c
+> +++ b/arch/powerpc/platforms/pseries/vas.c
+> @@ -760,7 +760,7 @@ static int reconfig_close_windows(struct vas_caps *vcap, int excess_creds,
+>  		 * is done before the original mmap() and after the ioctl.
+>  		 */
+>  		if (vma)
+> -			zap_page_range(vma, vma->vm_start,
+> +			zap_vma_page_range(vma, vma->vm_start,
+>  					vma->vm_end - vma->vm_start);
+>  
+>  		mmap_write_unlock(task_ref->mm);
+> diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+> index e410275918ac..a405119da2c0 100644
+> --- a/arch/riscv/kernel/vdso.c
+> +++ b/arch/riscv/kernel/vdso.c
+> @@ -127,10 +127,10 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  		unsigned long size = vma->vm_end - vma->vm_start;
+>  
+>  		if (vma_is_special_mapping(vma, vdso_info.dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  #ifdef CONFIG_COMPAT
+>  		if (vma_is_special_mapping(vma, compat_vdso_info.dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  #endif
+>  	}
+>  
+> diff --git a/arch/s390/kernel/vdso.c b/arch/s390/kernel/vdso.c
+> index ff7bf4432229..eccfcd505403 100644
+> --- a/arch/s390/kernel/vdso.c
+> +++ b/arch/s390/kernel/vdso.c
+> @@ -63,7 +63,7 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  
+>  		if (!vma_is_special_mapping(vma, &vvar_mapping))
+>  			continue;
+> -		zap_page_range(vma, vma->vm_start, size);
+> +		zap_vma_page_range(vma, vma->vm_start, size);
+>  		break;
+>  	}
+>  	mmap_read_unlock(mm);
+> diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+> index 74e1d873dce0..67d998152142 100644
+> --- a/arch/s390/mm/gmap.c
+> +++ b/arch/s390/mm/gmap.c
+> @@ -722,7 +722,7 @@ void gmap_discard(struct gmap *gmap, unsigned long from, unsigned long to)
+>  		if (is_vm_hugetlb_page(vma))
+>  			continue;
+>  		size = min(to - gaddr, PMD_SIZE - (gaddr & ~PMD_MASK));
+> -		zap_page_range(vma, vmaddr, size);
+> +		zap_vma_page_range(vma, vmaddr, size);
+>  	}
+>  	mmap_read_unlock(gmap->mm);
+>  }
+> diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
+> index b8f3f9b9e53c..5aafbd19e869 100644
+> --- a/arch/x86/entry/vdso/vma.c
+> +++ b/arch/x86/entry/vdso/vma.c
+> @@ -116,7 +116,7 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  		unsigned long size = vma->vm_end - vma->vm_start;
+>  
+>  		if (vma_is_special_mapping(vma, &vvar_mapping))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  	}
+>  	mmap_read_unlock(mm);
+>  
+> diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+> index 4ad42b0f75cd..f7f10248c742 100644
+> --- a/drivers/android/binder_alloc.c
+> +++ b/drivers/android/binder_alloc.c
+> @@ -1019,7 +1019,7 @@ enum lru_status binder_alloc_free_page(struct list_head *item,
+>  	if (vma) {
+>  		trace_binder_unmap_user_start(alloc, index);
+>  
+> -		zap_page_range(vma, page_addr, PAGE_SIZE);
+> +		zap_vma_page_range(vma, page_addr, PAGE_SIZE);
+>  
+>  		trace_binder_unmap_user_end(alloc, index);
+>  	}
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 6b28eb9c6ea2..706efaf95783 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -1980,10 +1980,13 @@ struct page *vm_normal_page_pmd(struct vm_area_struct *vma, unsigned long addr,
+>  
+>  void zap_vma_ptes(struct vm_area_struct *vma, unsigned long address,
+>  		  unsigned long size);
+> -void zap_page_range(struct vm_area_struct *vma, unsigned long address,
+> -		    unsigned long size);
+>  void zap_page_range_single(struct vm_area_struct *vma, unsigned long address,
+>  			   unsigned long size, struct zap_details *details);
+> +static inline void zap_vma_page_range(struct vm_area_struct *vma,
+> +				 unsigned long address, unsigned long size)
+> +{
+> +	zap_page_range_single(vma, address, size, NULL);
+> +}
+>  void unmap_vmas(struct mmu_gather *tlb, struct maple_tree *mt,
+>  		struct vm_area_struct *start_vma, unsigned long start,
+>  		unsigned long end);
+> diff --git a/mm/madvise.c b/mm/madvise.c
+> index 87703a19bbef..3c4d9829d4e1 100644
+> --- a/mm/madvise.c
+> +++ b/mm/madvise.c
+> @@ -787,7 +787,7 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
+>   * Application no longer needs these pages.  If the pages are dirty,
+>   * it's OK to just throw them away.  The app will be more careful about
+>   * data it wants to keep.  Be sure to free swap resources too.  The
+> - * zap_page_range_single call sets things up for shrink_active_list to actually
+> + * zap_vma_page_range call sets things up for shrink_active_list to actually
+>   * free these pages later if no one else has touched them in the meantime,
+>   * although we could add these pages to a global reuse list for
+>   * shrink_active_list to pick up before reclaiming other pages.
+> @@ -805,7 +805,7 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
+>  static long madvise_dontneed_single_vma(struct vm_area_struct *vma,
+>  					unsigned long start, unsigned long end)
+>  {
+> -	zap_page_range_single(vma, start, end - start, NULL);
+> +	zap_vma_page_range(vma, start, end - start);
+>  	return 0;
+>  }
+>  
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 5b2c137dfb2a..e953a0108278 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -1687,36 +1687,6 @@ void unmap_vmas(struct mmu_gather *tlb, struct maple_tree *mt,
+>  	mmu_notifier_invalidate_range_end(&range);
+>  }
+>  
+> -/**
+> - * zap_page_range - remove user pages in a given range
+> - * @vma: vm_area_struct holding the applicable pages
+> - * @start: starting address of pages to zap
+> - * @size: number of bytes to zap
+> - *
+> - * Caller must protect the VMA list
+> - */
+> -void zap_page_range(struct vm_area_struct *vma, unsigned long start,
+> -		unsigned long size)
+> -{
+> -	struct maple_tree *mt = &vma->vm_mm->mm_mt;
+> -	unsigned long end = start + size;
+> -	struct mmu_notifier_range range;
+> -	struct mmu_gather tlb;
+> -	MA_STATE(mas, mt, vma->vm_end, vma->vm_end);
+> -
+> -	lru_add_drain();
+> -	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
+> -				start, start + size);
+> -	tlb_gather_mmu(&tlb, vma->vm_mm);
+> -	update_hiwater_rss(vma->vm_mm);
+> -	mmu_notifier_invalidate_range_start(&range);
+> -	do {
+> -		unmap_single_vma(&tlb, vma, start, range.end, NULL);
+> -	} while ((vma = mas_find(&mas, end - 1)) != NULL);
+> -	mmu_notifier_invalidate_range_end(&range);
+> -	tlb_finish_mmu(&tlb);
+> -}
+> -
+>  /**
+>   * zap_page_range_single - remove user pages in a given range
+>   * @vma: vm_area_struct holding the applicable pages
+> diff --git a/mm/page-writeback.c b/mm/page-writeback.c
+> index ad608ef2a243..bd9fe6ff6557 100644
+> --- a/mm/page-writeback.c
+> +++ b/mm/page-writeback.c
+> @@ -2713,7 +2713,7 @@ void folio_account_cleaned(struct folio *folio, struct bdi_writeback *wb)
+>   *
+>   * The caller must hold lock_page_memcg().  Most callers have the folio
+>   * locked.  A few have the folio blocked from truncation through other
+> - * means (eg zap_page_range() has it mapped and is holding the page table
+> + * means (eg zap_vma_page_range() has it mapped and is holding the page table
+>   * lock).  This can also be called from mark_buffer_dirty(), which I
+>   * cannot prove is always protected against truncate.
+>   */
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index c567d5e8053e..afaad3cfed00 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -2092,7 +2092,7 @@ static int tcp_zerocopy_vm_insert_batch_error(struct vm_area_struct *vma,
+>  		maybe_zap_len = total_bytes_to_map -  /* All bytes to map */
+>  				*length + /* Mapped or pending */
+>  				(pages_remaining * PAGE_SIZE); /* Failed map. */
+> -		zap_page_range(vma, *address, maybe_zap_len);
+> +		zap_vma_page_range(vma, *address, maybe_zap_len);
+>  		err = 0;
+>  	}
+>  
+> @@ -2100,7 +2100,7 @@ static int tcp_zerocopy_vm_insert_batch_error(struct vm_area_struct *vma,
+>  		unsigned long leftover_pages = pages_remaining;
+>  		int bytes_mapped;
+>  
+> -		/* We called zap_page_range, try to reinsert. */
+> +		/* We called zap_vma_page_range, try to reinsert. */
+>  		err = vm_insert_pages(vma, *address,
+>  				      pending_pages,
+>  				      &pages_remaining);
+> @@ -2234,7 +2234,7 @@ static int tcp_zerocopy_receive(struct sock *sk,
+>  	total_bytes_to_map = avail_len & ~(PAGE_SIZE - 1);
+>  	if (total_bytes_to_map) {
+>  		if (!(zc->flags & TCP_RECEIVE_ZEROCOPY_FLAG_TLB_CLEAN_HINT))
+> -			zap_page_range(vma, address, total_bytes_to_map);
+> +			zap_vma_page_range(vma, address, total_bytes_to_map);
+>  		zc->length = total_bytes_to_map;
+>  		zc->recv_skip_hint = 0;
+>  	} else {
+> -- 
+> 2.38.1
 
-My guess is that Ingenic is not really a chip manufacturer, but this is 
-actually a wifi module using BCM4330 as wifi chip. Personally, I would 
-not add a compatible string for that and the commit message does not 
-offer any arguments for having this.
-
-Regards,
-Arend
-
---00000000000096083a05f02d123f
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
-Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
-ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
-zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
-sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
-BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
-N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
-p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
-bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCAOfUysUXcJfYRWqfCK
-eoDRkpHAqooyPjoDq4oxct+cmjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjEyMTkxMjAwNTlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAm7KNtjDm/VrppMMe+U7phWT/3Z3ValcwtkQt
-VJWt0veyWNYoqrI+gnzFXcNukEu0F3/eEScmzJIpTY2IwaCwEas1ElaBct2fLbcWwW7QTVTzfcZj
-db1K1vBmuxqtgerPH7N+AH7cEGupKb4XwZ+rwLxGURSB/5acKaSW0ku64/tZZ3/Y3lKwr7PM6m6+
-wRb5PoXWPgJeosyP4bNGWrhmiVeccucEaRP4K6YNzldMLVztoAO6OmhTawEP2nUTV6mjSm38PI4o
-YfwxDe6V2HJ00oyL5UC4AzTol8um0eEwbg7sfSG38NBi7le7ddjuiOIOLX0f+pAfVzyI41s9jN5Z
-tw==
---00000000000096083a05f02d123f--
+-- 
+Michal Hocko
+SUSE Labs
