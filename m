@@ -2,81 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F666529E7
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 00:35:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FC906529EB
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 00:36:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234274AbiLTXfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 18:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
+        id S234074AbiLTXgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 18:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233796AbiLTXf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 18:35:27 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A571FF8D;
-        Tue, 20 Dec 2022 15:35:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Et1XQAkk8Burzuw1hwryUWC1PbUtGtsyxLGWsj9/DEU=; b=NXewspVxBWnDAjUPwCXoEUwj28
-        dAXIC6lMG1ddfM/F7DA4iZ7ks+0p9XfS9NgcgmosGfk4Hm9Wh+oteMfLYTnlMIwFdsrXDoTgeZVRt
-        8kQOxuWTjco8oHg7jfU71I74q3Ms+um/Li4zKYXxkxEtT2+HJEBTG7L+tZTdFQ5J9jOs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p7m8i-0008Do-AO; Wed, 21 Dec 2022 00:35:16 +0100
-Date:   Wed, 21 Dec 2022 00:35:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH v7 01/11] leds: add support for hardware driven LEDs
-Message-ID: <Y6JGtC5XFRKdZq1t@lunn.ch>
-References: <20221214235438.30271-1-ansuelsmth@gmail.com>
- <20221214235438.30271-2-ansuelsmth@gmail.com>
- <Y5tHjwx1Boj3xMok@shell.armlinux.org.uk>
- <639ca0a4.050a0220.99395.8fd3@mx.google.com>
+        with ESMTP id S232195AbiLTXgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 18:36:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC22286;
+        Tue, 20 Dec 2022 15:36:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BD67B81A50;
+        Tue, 20 Dec 2022 23:36:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD0C0C433EF;
+        Tue, 20 Dec 2022 23:36:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671579362;
+        bh=or3VibEClSNnX7FezaPfIedUI6RimEA/qvi1rP5FF3E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=h54XDOSkQL53OlbdIICwuvGXPBWHExr/f7p8gRkynFKeNgtv0JuHWiTS+d/qtlHxa
+         Ekh+5TQUkilbDTCW4YiaHH0Zn1Opuq3ecXbNLf0Pkyny4oLgEOjqBiLyAyCpulXte4
+         U21WxOEV0fBdaGe0EGWCOxdYA/w4V8UM+/rj6o8tf7oA39vrFQuDHSJphQFbLyLJSw
+         cD5pxPtLs24FeCRGh2hl+R2A79/b7djUC2FJ+7Rw4TcbgjjYOMaU5yph6IBm6jpQWQ
+         WBAdEBNsGIt+HiSiWB/ErSdPnTV/9yEQeXTOgyk9T79eJqSxhMKNwh4LprMaSIYEWw
+         O1+ulimv4r5kg==
+Date:   Tue, 20 Dec 2022 15:36:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: tunnel: add sanity test for
+ checksums
+Message-ID: <20221220153601.5f16545b@kernel.org>
+In-Reply-To: <7372590a-f40b-17d1-f780-3bd1ce4f30bb@linux.dev>
+References: <20221220004701.402165-1-kuba@kernel.org>
+        <20221220004701.402165-2-kuba@kernel.org>
+        <7372590a-f40b-17d1-f780-3bd1ce4f30bb@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <639ca0a4.050a0220.99395.8fd3@mx.google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 16, 2022 at 05:45:25PM +0100, Christian Marangi wrote:
-> On Thu, Dec 15, 2022 at 04:13:03PM +0000, Russell King (Oracle) wrote:
-> > Hi Christian,
-> > 
-> > Thanks for the patch.
-> > 
-> > I think Andrew's email is offline at the moment.
-> >
+On Tue, 20 Dec 2022 15:21:08 -0800 Martin KaFai Lau wrote:
+> Thanks for the fix and the idea on how to test it.
 > 
-> Notice by gmail spamming me "I CAN'T SEND IT AHHHHH"
-> Holidy times I guess?
+> I have posted a patch to translate this test to a test for test_progs that can 
+> finish and exit such that it can be run continuously in CI.  The test attaches a 
+> tc-bpf at lo and the bpf prog directly checks for the skb->ip_summed == 
+> CHECKSUM_NONE and the broken csum_start condition.
+> 
+> If the test_progs patch looks good, patch 1 can be landed first and then land 
+> the test_progs patch.  wdyt?
 
-That was part of the problem. Away travelling when foot gun hit foot,
-and i didn't have access to the tools to fix it while away.
-
-    Andrew
+I'm not attached to the test, your patch looks good!
