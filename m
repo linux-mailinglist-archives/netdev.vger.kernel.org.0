@@ -2,264 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E330765239B
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6B46523A5
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:26:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbiLTPV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 10:21:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        id S233741AbiLTP0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 10:26:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233524AbiLTPVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:21:25 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2112.outbound.protection.outlook.com [40.107.223.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B097D199
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:21:23 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JyXCx4DCJt5X1pnIKAyLywdRNx/aLdzoA6Kezjo39iIkNnfz8LoxOX+sIeU3ZOk+16dcZwuQUeqVkIOxa35AB+c+0sp6D8JDPkrthcAujUzP3pdaw24TncGzUY30YUGIhR/I1tVSUNxkZHaljmqCdTRWSrtgp4CGxcgYmWwZNT8Xbtuxqur+cgg1pTcurXA2qk3nZzVNiJSgY9pMdhWm3UH2Sv/KPMTp3UHSXmb1By6qSORoLu+VSSVHN7c9IzyQ+GRp72jx+AvCO9P10faRyBElkFrwUUVkCRLBQKFrMeZ4uh8HwSsS1wu8WVbRbzf5BrreVip1KLUe4N34Qy0RDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fdwt9lXo+ykHVJTQ/95Fna1baEhLYjJdfgFry7vbc5Y=;
- b=GPDLA7dcxsJKKcm6+7pivRejeHUhklZwScPenKgjwl0d5QBqYPz7LkatHNyH92htIt/KIWP4BzCqTjebnuYfyV0HFkmZOcrmHw9CYgHXL2uU6qfLHHmm6XLvsjTzgX+XavAE6DsPH5nJ0xSAmU08l7idmm4rd1SKdW6gNwRWAboWMesYjEnDX5r7HOP6vXiNWSfcb/2Ky2BdmTNc7FVEGAA5kSwXOM5PesHh95kAsHfuX39SENeWD5FvjfxZ2wmkipEXKAP7Cy4K/MzZVopzOzZ0NoRHajzm47kwCu80+LMI5d23kModmfp7OiodFFyktQLmcS47g34chCNgp96PTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230149AbiLTP0F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:26:05 -0500
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E8424E
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:26:02 -0800 (PST)
+Received: by mail-oo1-xc32.google.com with SMTP id t15-20020a4a96cf000000b0049f7e18db0dso1937775ooi.10
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:26:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fdwt9lXo+ykHVJTQ/95Fna1baEhLYjJdfgFry7vbc5Y=;
- b=mnJY84m59B49t0E12aORI8Pjwf43+1FKPWviZVOZHFGYUEhDNslZs5VcJx4lVDy9ZyX2jmUEJTpK0kcQNmw34aIKYoZnC5EJH7zuhEFGEdTSBGdx90jAmv5h2JgQhckAIqaElhjnM1fCL7x6ap/QKmZUkS5ULmVHWBeSsyAzwFY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM8PR13MB5112.namprd13.prod.outlook.com (2603:10b6:8:11::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Tue, 20 Dec
- 2022 15:21:20 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::483b:9e84:fadc:da30]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::483b:9e84:fadc:da30%9]) with mapi id 15.20.5924.016; Tue, 20 Dec 2022
- 15:21:20 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net] nfp: fix schedule in atomic context when sync mc address
-Date:   Tue, 20 Dec 2022 16:21:00 +0100
-Message-Id: <20221220152100.1042774-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AS4P190CA0013.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5de::15) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=cloudflare.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2je3sUJheJxY1iG1CJzpC/yr0yMSjeCgBQ96wsakaog=;
+        b=vsk0FKxYgX+IweRqWqFGKdlAgfMi4z+SWeM0nWjWcLgW6GyH9NineAfYBT5wrGcoqS
+         KLhoy/dpbt8XBs5fm28vN4HSuNFUF76rWUkrSnUQSNP3q4xy4C1yJ2IiZCm5BuB9Z+2B
+         4EXel67uoVh7cZbTWxsriHKdkKpAr4GKNaiyM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2je3sUJheJxY1iG1CJzpC/yr0yMSjeCgBQ96wsakaog=;
+        b=HxfZLw8BOSq3kMyzJsQr0Odz5RdPirmLIA7oGwkoPkCMiiSt1E8xatpJL/IwDX9hjA
+         GxqKS9QseFq1/xwBjaoElfs9fazpy/Ebff/q0kGloGEVqDeYgFzTNg+wpH+PqmRr47B7
+         bhLpzZEHjfIu+sNKI/x6pHe2EiFrgJ8IS7DBTY79DQrqa8HPg4dnsztxEevkYDIsh58K
+         Bpf8Nkr56ZbcHI1y0w1pEGc+xMrZL8WMOG6aMFgJFfMO3wpZLK1xGNjj7GpQrlf7OV6I
+         es2gthCM4fYT/UWOXyqzf7SiUdyiusIA867/QRg1KvnCw5tLtrEeu/vk7teUBVSdRF3+
+         25RQ==
+X-Gm-Message-State: AFqh2koXFmwKQRthK/JYZEI1m1g2iUmwq5qJYb92s8mY5WMwIK/riyCx
+        ycjQeMw9ONDxKiGrpce+PnXGb29g48oHDuzX
+X-Google-Smtp-Source: AMrXdXtiJUuATMZBTcKrSljlyRkuYCcQbCFt+8KfxxGiO3X7kLso0O8nfwxjjntTCsK4A4unC14liA==
+X-Received: by 2002:a4a:5787:0:b0:4a0:c99c:acbc with SMTP id u129-20020a4a5787000000b004a0c99cacbcmr5736079ooa.5.1671549962175;
+        Tue, 20 Dec 2022 07:26:02 -0800 (PST)
+Received: from sbohrer-cf-dell ([24.28.97.120])
+        by smtp.gmail.com with ESMTPSA id r2-20020a4aa8c2000000b0049f098f4fb4sm5140712oom.24.2022.12.20.07.26.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Dec 2022 07:26:01 -0800 (PST)
+Date:   Tue, 20 Dec 2022 09:25:57 -0600
+From:   Shawn Bohrer <sbohrer@cloudflare.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
+        magnus.karlsson@intel.com, kernel-team@cloudflare.com
+Subject: Re: Possible race with xsk_flush
+Message-ID: <Y6HUBWCytyebNnOx@sbohrer-cf-dell>
+References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
+ <CAJ8uoz2Q6rtSyVk-7jmRAhy_Zx7fN=OOepUX0kwUThDBf-eXfw@mail.gmail.com>
+ <Y5u4dA01y9RjjdAW@sbohrer-cf-dell>
+ <CAJ8uoz1GKvoaM0DCo1Ki8q=LHR1cjrNC=1BK7chTKKW9Po5F5A@mail.gmail.com>
+ <Y6EQjd5w9Dfmy8ko@sbohrer-cf-dell>
+ <CAJ8uoz1D3WY=joXqMo80a5Vqx+3N=5YX6Lh=KC1=coM5zDb-dA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM8PR13MB5112:EE_
-X-MS-Office365-Filtering-Correlation-Id: b891907a-8290-442d-10a1-08dae29dd8e1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5gE62bYy8RruttfQeUo6ZhXswNy6MRU7codLwccjxZqypV2r9pdw4QaoKvLB0awbe1Sy4XlixlJnoAHW9xFCCT80stH+qZOeT6PC8JihV38P7wxROtIXB3a52XB9swGEpq6jla6JADU/P9gnUKwlVdc5hy769uvzafXEGn87D5B98LaPT96K8GDFRxATUdXJ74cEiwi6TnJNgHfFYFRRJh6xFNQFSMUUM1LKqD1LtzD40a1GjUOvyb8JAr11zE8Bv8si7W2tJlequ9jOND7bOiIsuo7KzxwpT+NcoEmuWIZWBrOde2M8QaNHuMr/YJabzph9dAusoTywQmdIcNFVzBqD0lkOGCyDHvXOoOLI5o1qvtUygaH+qfH6tkk2NWLFxQ4UnAVNPPOy1ZfjZRjXH7GfP/2D+bTcDySk94sN6FnOgJ/QWUvliqY16R3ThP5IaEROTkXsQ412Ni9rjO+a9fXc9mH97gukE7J068pCWVYn3A192ZHdGb0n3JjB7tOnNgyQMGDWaKjRlkmVQjqV+JUk9QrLmXuAFSKMrRsrVPBEWAkSLYC2SYtVolXId7rooo8Nu9g9rP2kkfHnw7yVEUDmDzXekqKJGHM81xENikfhGMeQHlsRx24Hpcgwh/P2esKb5UP6MXKzo3dRJ6tppQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39840400004)(136003)(366004)(376002)(396003)(346002)(451199015)(8936002)(8676002)(1076003)(4326008)(38100700002)(83380400001)(44832011)(36756003)(5660300002)(2906002)(41300700001)(52116002)(6506007)(6486002)(107886003)(6666004)(478600001)(110136005)(316002)(2616005)(86362001)(66946007)(54906003)(66476007)(186003)(6512007)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fm0gcPOo8+TtuhnLl54uxbA3FfLD5qGLbj6IEh64x13C4TS29eckGVjdLl1e?=
- =?us-ascii?Q?c1GfAreg30fcy/kq3TnK6ln8JD0osLQjXn8ael9bpcPYHyLwGxHggJWUAReM?=
- =?us-ascii?Q?V2W4HXyKGDg9gQqbyw9TGDTHia9u2Nopbxek6MxhUyMqFKz8jMtAB0WpPoIm?=
- =?us-ascii?Q?37quBn1bq4UGOxp2Plux5sghVkOX18Z1Zm8HzqUc+KE2vYnG/9oRVelbGQzb?=
- =?us-ascii?Q?yRNXc6Eo6xqs7AfxwZQTejzRE9tVkBVKU/sQOXZE1ON7zBglX7U1k1JJgTuS?=
- =?us-ascii?Q?4xxbgiG3u1W4pT0ke07DRfFYwoPaQjYJ0L91rL6feTJa9DnLbXlnAorKAUyj?=
- =?us-ascii?Q?+06B6NndxzHwf4QUNv0zTOb8KybKlAtv5Cyh7qHjZ2TMhV2wo/0M+/jPLRj2?=
- =?us-ascii?Q?fOQ4anpq5Y4WDq0PDmmeIUjMb2Pj7uyC5tP5goaBR6PMc3a6ihQzEjSAuTxS?=
- =?us-ascii?Q?A7bAMWgM9qf7fz3Yuu4ZHMCKI/IndBHBMDSVJ/MmIiJmXaiIovhWQGqSIO/o?=
- =?us-ascii?Q?C1fZaZVOT5x+Q0j1RdrkTzSGVaWSS3071L1+/F0CUAsHNo7+Ck1Zb5UgRM3L?=
- =?us-ascii?Q?jUSGG1zh2GPR6oQyzwVZqyL84Us1DVzENeyortRF/JyT6bF+Rutoc55FZv/0?=
- =?us-ascii?Q?V8bG7D7q5r5Jaty4IQXjPQtNHN0vnDPaeoXQg+QndpXpp1FZ9iyhY/4On/+x?=
- =?us-ascii?Q?4CHNtazRJSKILzPNVnfvW3OBeC2FnhRXwqYu7yeCKA5eCbUBvVbrt2f1nmSd?=
- =?us-ascii?Q?VgqPc30r7zZdr+QIen1uXJAYwag0dU23phCoJzgesTXCvXXGam4TMFjEgdwJ?=
- =?us-ascii?Q?jS/vBChiqc2iZYE9iA6BWhPCq17V83kIJARn1XahJQlqARAkVBGScsFXQrmS?=
- =?us-ascii?Q?hG3mdiEwaMjQW+fr/AI6LxJf/feERib9wfHxyK9/C6pM3XGxvQXfNALrM41N?=
- =?us-ascii?Q?FqGHI+JUg0ZV7oBM/Vsq1zhlTFEJg5uhivXZbgaHlQLLZcA7I/63oWDJpxSH?=
- =?us-ascii?Q?pU7FDsb8N8M9eSn42NB8bpFxXh0940KM9/7fNFulFMfkmhKMwElA2fT17Msq?=
- =?us-ascii?Q?X6c2NdFMfLe8/JfzRCHARqeFWxjRlanGHhy4RAEU4xwtdsVsEFx2T/bz66Ru?=
- =?us-ascii?Q?Gaf+GNnPkSEMaL5SGM6jD5NadvY4T7G3poeB7wqc/TtQJTTi+PuZZo9gE243?=
- =?us-ascii?Q?5nIFVMZKvdEzoRifn9hlutOGBx2VZT1ltplZ0fusnICSKHK2hjUfzkWmLyBh?=
- =?us-ascii?Q?z2GEIFntQFmLQlnYZ7MFRwGjxu9l/C4iqXjbaLRpzU2oXW3A08HLz9SRWWG9?=
- =?us-ascii?Q?7v0McxwEUhEcWnfnjhWO3nurwLdv8CU7neAOrqZjIrC98KBb8vRgy9fBPSyl?=
- =?us-ascii?Q?+Zue3lzoneEHpMgOcWJgAl2XhLN1y5kg5dGO8CUC4tHsL32mWWeD0Uf3aRaI?=
- =?us-ascii?Q?FP2tUvBWNoRMpqtAmHtRceQeivmiXnALs0ZIZFP89fuBy1BZYko1Cy9yBgtI?=
- =?us-ascii?Q?SjWp+rAp2QLhvTX86Ho72cnsyL4qJb4udZj0gs/ifNivPaSt/PIkGJ5Sv1b5?=
- =?us-ascii?Q?D7T+r1y1UmJl6XcYFaihQXDOuYd3/GaBp+axzNkbOFa8A/zgGLA08CguObnc?=
- =?us-ascii?Q?KFgsEwqS97cS4tUuAJuKvPSYXyBMw8k9pljZn/SD87swOqGJx/AUoZrgiTqB?=
- =?us-ascii?Q?jBeIHg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b891907a-8290-442d-10a1-08dae29dd8e1
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Dec 2022 15:21:20.4435
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +eGOwn2qHA8W+aDgxiHyJm6dFr0pgF7tdMD7MrKzum3xETT8ZUTKpxcwfzr/Mw5v1f/75NkLVSdBCchhOFphrccuztoJS0Xuh2KPVOgvJkI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR13MB5112
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ8uoz1D3WY=joXqMo80a5Vqx+3N=5YX6Lh=KC1=coM5zDb-dA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
+On Tue, Dec 20, 2022 at 10:06:48AM +0100, Magnus Karlsson wrote:
+> On Tue, Dec 20, 2022 at 2:32 AM Shawn Bohrer <sbohrer@cloudflare.com> wrote:
+> >
+> > On Fri, Dec 16, 2022 at 11:05:19AM +0100, Magnus Karlsson wrote:
+> > > To summarize, we are expecting this ordering:
+> > >
+> > > CPU 0 __xsk_rcv_zc()
+> > > CPU 0 __xsk_map_flush()
+> > > CPU 2 __xsk_rcv_zc()
+> > > CPU 2 __xsk_map_flush()
+> > >
+> > > But we are seeing this order:
+> > >
+> > > CPU 0 __xsk_rcv_zc()
+> > > CPU 2 __xsk_rcv_zc()
+> > > CPU 0 __xsk_map_flush()
+> > > CPU 2 __xsk_map_flush()
+> > >
+> > > Here is the veth NAPI poll loop:
+> > >
+> > > static int veth_poll(struct napi_struct *napi, int budget)
+> > > {
+> > >     struct veth_rq *rq =
+> > >     container_of(napi, struct veth_rq, xdp_napi);
+> > >     struct veth_stats stats = {};
+> > >     struct veth_xdp_tx_bq bq;
+> > >     int done;
+> > >
+> > >     bq.count = 0;
+> > >
+> > >     xdp_set_return_frame_no_direct();
+> > >     done = veth_xdp_rcv(rq, budget, &bq, &stats);
+> > >
+> > >     if (done < budget && napi_complete_done(napi, done)) {
+> > >         /* Write rx_notify_masked before reading ptr_ring */
+> > >        smp_store_mb(rq->rx_notify_masked, false);
+> > >        if (unlikely(!__ptr_ring_empty(&rq->xdp_ring))) {
+> > >            if (napi_schedule_prep(&rq->xdp_napi)) {
+> > >                WRITE_ONCE(rq->rx_notify_masked, true);
+> > >                __napi_schedule(&rq->xdp_napi);
+> > >             }
+> > >         }
+> > >     }
+> > >
+> > >     if (stats.xdp_tx > 0)
+> > >         veth_xdp_flush(rq, &bq);
+> > >     if (stats.xdp_redirect > 0)
+> > >         xdp_do_flush();
+> > >     xdp_clear_return_frame_no_direct();
+> > >
+> > >     return done;
+> > > }
+> > >
+> > > Something I have never seen before is that there is
+> > > napi_complete_done() and a __napi_schedule() before xdp_do_flush().
+> > > Let us check if this has something to do with it. So two suggestions
+> > > to be executed separately:
+> > >
+> > > * Put a probe at the __napi_schedule() above and check if it gets
+> > > triggered before this problem
+> > > * Move the "if (stats.xdp_redirect > 0) xdp_do_flush();" to just
+> > > before "if (done < budget && napi_complete_done(napi, done)) {"
+> > >
+> > > This might provide us some hints on what is going on.
+> >
+> > After staring at this code for way too long I finally made a
+> > breakthrough!  I could not understand how this race could occur when
+> > napi_poll() calls netpoll_poll_lock().  Here is netpoll_poll_lock():
+> >
+> > ```
+> >   static inline void *netpoll_poll_lock(struct napi_struct *napi)
+> >   {
+> >     struct net_device *dev = napi->dev;
+> >
+> >     if (dev && dev->npinfo) {
+> >       int owner = smp_processor_id();
+> >
+> >       while (cmpxchg(&napi->poll_owner, -1, owner) != -1)
+> >         cpu_relax();
+> >
+> >       return napi;
+> >     }
+> >     return NULL;
+> >   }
+> > ```
+> > If dev or dev->npinfo are NULL then it doesn't acquire a lock at all!
+> > Adding some more trace points I see:
+> >
+> > ```
+> >   iperf2-1325    [002] ..s1. 264246.626880: __napi_poll: (__napi_poll+0x0/0x150) n=0xffff91c885bff000 poll_owner=-1 dev=0xffff91c881d4e000 npinfo=0x0
+> >   iperf2-1325    [002] d.Z1. 264246.626882: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0x3b/0xc0) addr=0x1503100 len=0x42 xs=0xffff91c8bfe77000 fq=0xffff91c8c1a43f80 dev=0xffff91c881d4e000
+> >   iperf2-1325    [002] d.Z1. 264246.626883: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0x42/0xc0) addr=0x1503100 len=0x42 xs=0xffff91c8bfe77000 fq=0xffff91c8c1a43f80 dev=0xffff91c881d4e000
+> >   iperf2-1325    [002] d.Z1. 264246.626884: xsk_flush: (__xsk_map_flush+0x32/0xb0) xs=0xffff91c8bfe77000
+> > ```
+> >
+> > Here you can see that poll_owner=-1 meaning the lock was never
+> > acquired because npinfo is NULL.  This means that the same veth rx
+> > queue can be napi_polled from multiple CPU and nothing stops it from
+> > running concurrently.  They all look like this, just most of the time
+> > there aren't concurrent napi_polls running for the same queue.  They
+> > do however move around CPUs as I explained earlier.
+> >
+> > I'll note that I've ran with your suggested change of moving
+> > xdp_do_flush() before napi_complete_done() all weekend and I have not
+> > reproduced the issue.  I don't know if that truly means the issue is
+> > fixed by that change or not.  I suspect it does fix the issue because
+> > it prevents the napi_struct from being scheduled again before the
+> > first poll has completed, and nap_schedule_prep() ensures that only
+> > one instance is ever running.
+> 
+> Thanks Shawn! Good news that the patch seems to fix the problem. To
+> me, napi_schedule_prep() makes sure that only one NAPI instance is
+> running. Netpoll is an optional feature and I do not even have it
+> compiled into my kernel. At least I do not have it defined in my
+> .config and I cannot find any netpoll symbols with a readelf command.
+> If netpoll is not used, I would suspect that npinfo == NULL. So to me,
+> it is still a mystery why this is happening.
 
-The callback `.ndo_set_rx_mode` is called in atomic context, sleep
-is not allowed in the implementation. Now use workqueue mechanism
-to avoid this issue.
+Oh I don't think it is a mystery anymore.  The napi_complete_done()
+signals that this instance of of the napi_poll is complete.  As you
+said nap_schedule_prep() checks to ensure that only one instance of
+napi_poll is running at a time, but we just indicated it was done with
+napi_complete_done().  This allows this CPU or more importantly any
+other CPU to reschedule napi polling for this receive queue, but we
+haven't called xdp_do_flush() yet so the flush can race.  I'll note
+that the napi_schedule_prep()/__napi_schedule() in veth_poll really
+isn't the problem since it will schedule itself back on the same CPU.
+The problem is simply that another CPU is free to call
+napi_scheulde_prep()/__napi_schedule() in that window after
+napi_complete_done() and before xdp_do_flush().  The veth driver can
+schedule a napi_poll from the transmit path which is what starts the
+poll on a second CPU.
 
-Fixes: de6248644966 ("nfp: add support for multicast filter")
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/nfp_net.h  |  7 +++
- .../ethernet/netronome/nfp/nfp_net_common.c   | 61 +++++++++++++++++--
- 2 files changed, 64 insertions(+), 4 deletions(-)
+I was simply blinded by that stupid netpoll_poll_lock() but it is
+completely unnecessary.
+ 
+> To validate or disprove that there are two instances of the same napi
+> running, could you please put a probe in veth_poll() right after
+> veth_xdp_rcv() and one at xdp_do_flush() and dump the napi id in both
+> cases? And run the original code with the bug :-). It would be good to
+> know what exactly happens in the code between these points when this
+> bug occurs. Maybe we could do this by enabling the trace buffer and
+> dumping it when the bug occurs.
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index da33f09facb9..432d79d691c2 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -617,6 +617,9 @@ struct nfp_net_dp {
-  * @vnic_no_name:	For non-port PF vNIC make ndo_get_phys_port_name return
-  *			-EOPNOTSUPP to keep backwards compatibility (set by app)
-  * @port:		Pointer to nfp_port structure if vNIC is a port
-+ * @mc_lock:		Protect mc_addrs list
-+ * @mc_addrs:		List of mc addrs to add/del to HW
-+ * @mc_work:		Work to update mc addrs
-  * @app_priv:		APP private data for this vNIC
-  */
- struct nfp_net {
-@@ -718,6 +721,10 @@ struct nfp_net {
- 
- 	struct nfp_port *port;
- 
-+	spinlock_t mc_lock;
-+	struct list_head mc_addrs;
-+	struct work_struct mc_work;
-+
- 	void *app_priv;
- };
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 09053373288f..18fc9971f1c8 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -1334,9 +1334,14 @@ int nfp_ctrl_open(struct nfp_net *nn)
- 	return err;
- }
- 
--static int nfp_net_mc_cfg(struct net_device *netdev, const unsigned char *addr, const u32 cmd)
-+struct nfp_mc_addr_entry {
-+	u8 addr[ETH_ALEN];
-+	u32 cmd;
-+	struct list_head list;
-+};
-+
-+static int nfp_net_mc_cfg(struct nfp_net *nn, const unsigned char *addr, const u32 cmd)
- {
--	struct nfp_net *nn = netdev_priv(netdev);
- 	int ret;
- 
- 	ret = nfp_net_mbox_lock(nn, NFP_NET_CFG_MULTICAST_SZ);
-@@ -1351,6 +1356,25 @@ static int nfp_net_mc_cfg(struct net_device *netdev, const unsigned char *addr,
- 	return nfp_net_mbox_reconfig_and_unlock(nn, cmd);
- }
- 
-+static int nfp_net_mc_prep(struct nfp_net *nn, const unsigned char *addr, const u32 cmd)
-+{
-+	struct nfp_mc_addr_entry *entry;
-+
-+	entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-+	if (!entry)
-+		return -ENOMEM;
-+
-+	ether_addr_copy(entry->addr, addr);
-+	entry->cmd = cmd;
-+	spin_lock_bh(&nn->mc_lock);
-+	list_add_tail(&entry->list, &nn->mc_addrs);
-+	spin_unlock_bh(&nn->mc_lock);
-+
-+	schedule_work(&nn->mc_work);
-+
-+	return 0;
-+}
-+
- static int nfp_net_mc_sync(struct net_device *netdev, const unsigned char *addr)
- {
- 	struct nfp_net *nn = netdev_priv(netdev);
-@@ -1361,12 +1385,35 @@ static int nfp_net_mc_sync(struct net_device *netdev, const unsigned char *addr)
- 		return -EINVAL;
- 	}
- 
--	return nfp_net_mc_cfg(netdev, addr, NFP_NET_CFG_MBOX_CMD_MULTICAST_ADD);
-+	return nfp_net_mc_prep(nn, addr, NFP_NET_CFG_MBOX_CMD_MULTICAST_ADD);
- }
- 
- static int nfp_net_mc_unsync(struct net_device *netdev, const unsigned char *addr)
- {
--	return nfp_net_mc_cfg(netdev, addr, NFP_NET_CFG_MBOX_CMD_MULTICAST_DEL);
-+	struct nfp_net *nn = netdev_priv(netdev);
-+
-+	return nfp_net_mc_prep(nn, addr, NFP_NET_CFG_MBOX_CMD_MULTICAST_DEL);
-+}
-+
-+static void nfp_net_mc_addr_config(struct work_struct *work)
-+{
-+	struct nfp_net *nn = container_of(work, struct nfp_net, mc_work);
-+	struct nfp_mc_addr_entry *entry, *tmp;
-+	struct list_head tmp_list;
-+
-+	INIT_LIST_HEAD(&tmp_list);
-+
-+	spin_lock_bh(&nn->mc_lock);
-+	list_splice_init(&nn->mc_addrs, &tmp_list);
-+	spin_unlock_bh(&nn->mc_lock);
-+
-+	list_for_each_entry_safe(entry, tmp, &tmp_list, list) {
-+		if (nfp_net_mc_cfg(nn, entry->addr, entry->cmd))
-+			nn_err(nn, "Config mc address to HW failed.\n");
-+
-+		list_del(&entry->list);
-+		kfree(entry);
-+	}
- }
- 
- static void nfp_net_set_rx_mode(struct net_device *netdev)
-@@ -2633,6 +2680,11 @@ int nfp_net_init(struct nfp_net *nn)
- 
- 	if (!nn->dp.netdev)
- 		return 0;
-+
-+	spin_lock_init(&nn->mc_lock);
-+	INIT_LIST_HEAD(&nn->mc_addrs);
-+	INIT_WORK(&nn->mc_work, nfp_net_mc_addr_config);
-+
- 	return register_netdev(nn->dp.netdev);
- 
- err_clean_mbox:
-@@ -2652,5 +2704,6 @@ void nfp_net_clean(struct nfp_net *nn)
- 	unregister_netdev(nn->dp.netdev);
- 	nfp_net_ipsec_clean(nn);
- 	nfp_ccm_mbox_clean(nn);
-+	flush_work(&nn->mc_work);
- 	nfp_net_reconfig_wait_posted(nn);
- }
--- 
-2.30.2
+The two instances that race are definitely different napi_polls, the
+second one is scheduled from the veth transmit path.
 
+> > If we think this is the correct fix I'll let it run for another day or
+> > two and prepare a patch.
+> 
+> There is one more advantage to this bug fix and that is performance.
+> By calling __xdp_map_flush() immediately after the receive function,
+> user space can start to work on the packets quicker so performance
+> will improve.
+
+Yes definitely.
+
+Thanks,
+Shawn Bohrer
