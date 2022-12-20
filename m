@@ -2,101 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B03651E8A
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 11:13:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F697651ED6
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 11:32:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233678AbiLTKNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 05:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        id S230179AbiLTKcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 05:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233705AbiLTKNQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 05:13:16 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849B26388
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 02:13:15 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id d20so16859790edn.0
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 02:13:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6UrO2j9DEey1G8UqydjmxQqMxVbqAZzAn1bK1fPzhSc=;
-        b=Ce84Cz9ZMLrEN2Gk2uhhVVozKt2Ab9/SVRJooyCg87u9QWuaXj2DzyRfdtJPOtJ/y1
-         caxj6AxhZeVQV21Mz7mN99Oe9sUOteH83ZZBnEC1zGQIS+y56hR0g9LEc4yKwfcI876m
-         8BL/xL0n1Zkpxa4xIK8ntmNbuGmbMqXb6DMKHmlGAeEQ07STXlZkyerrchrhlcAXsq5O
-         fEuxO7r57G7VHe8XV15zLqyUdmuh4l/DQIhRor++mvff2ByfO+/2rKHymzbFOkLs2/RX
-         OyoVx1HDQm1yNO0rfnMdz7pIKj106xQFQo/JrlKIe1Ae9oFkDn+G/SislAwKHyP3092p
-         Ssow==
+        with ESMTP id S229768AbiLTKcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 05:32:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460F21583A
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 02:31:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671532279;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ymr7dvYm0bPIMGfQN+EFR1KRA6011TA++6Gv0jSwMRI=;
+        b=ZNMOnTgftsysAiTrYdiH5JR6qEJIYBpnUqyO6xKrzw/iIjpMiHDKqVOeDnvIuEo6a/K9CV
+        t103u8FEFZjIww08ksHmP6kt1Ng0JQNjIYSq90BNWq7MEuF62X6IlctnW3ResRrdB/ms9l
+        d2U6ievO0DIy2fViYtFcW37GwZmcOVg=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-596-ttphs7-hPYilEvOqq_exXQ-1; Tue, 20 Dec 2022 05:31:18 -0500
+X-MC-Unique: ttphs7-hPYilEvOqq_exXQ-1
+Received: by mail-wm1-f69.google.com with SMTP id o5-20020a05600c510500b003cfca1a327fso6360811wms.8
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 02:31:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6UrO2j9DEey1G8UqydjmxQqMxVbqAZzAn1bK1fPzhSc=;
-        b=Hnzzmj8x8Jy6xhi9fR5D5vnaojV3iWf5NHvYnNdB7cT6xv9V9GTs503/jwccrjK+P7
-         5eeWRcKjPjI4naVJG2l59CAUspOt7AONFJxmzdMm4iI9G1eR+cjQfgg4O3l083H55LKW
-         bGqJRV75lJmdI+tvaRxBzXReP0K6dBu0ZWg+Szupg+/dqIH1VCm63d8zeXaL8LXIhmmG
-         E/oyP3EMFZNmkGydXFAL4g/lvDRTGsYPt2zYiiemIUQm20ztJBpFo9lBGMdwkJIGzszB
-         iLLYdeOFX3Uu7q+wuZBcUn9r4N9yNsa42CnjpBtHhokm+aiJM6lMrDAbgQm5UN7eWuPp
-         kJBA==
-X-Gm-Message-State: ANoB5pnkcygDkQLpSerc62M9tPVxhRpTlEMjnFUMx2iAFwFgzPDJIZjE
-        dmyJW/yXhe64WnYsBHdJHTFpeg==
-X-Google-Smtp-Source: AA0mqf526bxkpxOkdLFI2Q1atb7+xe2frMnb8gtgGOtE6L+34AT1XQfmQutkBdDLaHHRiCaFlZSlhQ==
-X-Received: by 2002:a05:6402:3641:b0:462:6d7d:ab09 with SMTP id em1-20020a056402364100b004626d7dab09mr41021775edb.38.1671531193850;
-        Tue, 20 Dec 2022 02:13:13 -0800 (PST)
-Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id n1-20020a05640206c100b0046150ee13besm5360318edy.65.2022.12.20.02.13.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Dec 2022 02:13:13 -0800 (PST)
-Message-ID: <05d630bf-7fa8-4495-6345-207f133ef746@blackwall.org>
-Date:   Tue, 20 Dec 2022 12:13:12 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ymr7dvYm0bPIMGfQN+EFR1KRA6011TA++6Gv0jSwMRI=;
+        b=40iL/Ajk0QWabqFN4HQ9USG0jgVQGHV+LH5bpC1fHdyg1NW8O73Zw/RHIebYexNxlo
+         PkF+zgPXE224eepgMPdYh6Jh2UHeuDF7UrV0fcTNSKqdAsvZ1w+VYgDvnRFg3+9RRDu5
+         O9NBy0UZ2UKgwcJkFy3e+KAO7bzLYXMKVFZS2AfgzHw6ed8lWFvvjGEbC2vM9LHn7E20
+         spWTD0nnPDydDFljJ4FBvcBzhlMM9eqx9iEH/eAwAQPG9C96lwvZkuY3IWwhhviqPDJf
+         oErHPgWpCph99rmuzOZVbZc5FLGGylHGgZFuYCSXwla6yZb49yKoc9PEhUPZrLhSKk/C
+         Px+Q==
+X-Gm-Message-State: ANoB5pnj1nTtGngMY0E8hA25zCInN9LgwCS31Oa8OwoGGGmBjDLR8ecX
+        Nn7v18RToN+27seoBtteL8KoyrnHxCAQM5xOrDzbqAhDS0XHhfcaABNeE6sW7YAF1EUtwmvCRo/
+        Oc5nbf+/zkQHp13pK
+X-Received: by 2002:a05:600c:6549:b0:3c7:1359:783b with SMTP id dn9-20020a05600c654900b003c71359783bmr37201623wmb.1.1671532276955;
+        Tue, 20 Dec 2022 02:31:16 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5x1TeapVDCTlsoX2XzG7CqIUw11/Yk6M+YURbcyrD4F7TcwGxHCWM4JyoUR/l0n84xqNGPTg==
+X-Received: by 2002:a05:600c:6549:b0:3c7:1359:783b with SMTP id dn9-20020a05600c654900b003c71359783bmr37201614wmb.1.1671532276748;
+        Tue, 20 Dec 2022 02:31:16 -0800 (PST)
+Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
+        by smtp.gmail.com with ESMTPSA id r8-20020a05600c35c800b003a2f2bb72d5sm30909143wmq.45.2022.12.20.02.31.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Dec 2022 02:31:16 -0800 (PST)
+Date:   Tue, 20 Dec 2022 11:31:05 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        kernel <kernel@sberdevices.ru>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v5 1/4] vsock: return errors other than -ENOMEM to
+ socket
+Message-ID: <20221220103105.njugghpvvjusfjrs@sgarzare-redhat>
+References: <e04f749e-f1a7-9a1d-8213-c633ffcc0a69@sberdevices.ru>
+ <c22a2ad3-1670-169b-7184-8f4a6d90ba06@sberdevices.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH] net: bridge: mcast: read ngrec once in igmp3/mld2 report
-Content-Language: en-US
-To:     Joy Gu <jgu@purestorage.com>, bridge@lists.linux-foundation.org
-Cc:     roopa@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, joern@purestorage.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221220024807.36502-1-jgu@purestorage.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221220024807.36502-1-jgu@purestorage.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <c22a2ad3-1670-169b-7184-8f4a6d90ba06@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/12/2022 04:48, Joy Gu wrote:
-> In br_ip4_multicast_igmp3_report() and br_ip6_multicast_mld2_report(),
-> "ih" or "mld2r" is a pointer into the skb header. It's dereferenced to
-> get "num", which is used in the for-loop condition that follows.
-> 
-> Compilers are free to not spend a register on "num" and dereference that
-> pointer every time "num" would be used, i.e. every loop iteration. Which
-> would be a bug if pskb_may_pull() (called by ip_mc_may_pull() or
-> ipv6_mc_may_pull() in the loop body) were to change pointers pointing
-> into the skb header, e.g. by freeing "skb->head".
-> 
-> We can avoid this by using READ_ONCE().
-> 
-> Suggested-by: Joern Engel <joern@purestorage.com>
-> Signed-off-by: Joy Gu <jgu@purestorage.com>
-> ---
->  net/bridge/br_multicast.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
+On Tue, Dec 20, 2022 at 07:18:48AM +0000, Arseniy Krasnov wrote:
+>This removes behaviour, where error code returned from any transport
+>was always switched to ENOMEM. For example when user tries to send too
+>big message via SEQPACKET socket, transport layers return EMSGSIZE, but
+>this error code was always replaced with ENOMEM and returned to user.
+>
+>Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> net/vmw_vsock/af_vsock.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I doubt any compiler would do that (partly due to the ntohs()). If you have hit a bug or
-seen this with some compiler please provide more details, disassembly of the resulting
-code would be best.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Thanks.
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index d593d5b6d4b1..19aea7cba26e 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1861,8 +1861,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+> 			written = transport->stream_enqueue(vsk,
+> 					msg, len - total_written);
+> 		}
+>+
+> 		if (written < 0) {
+>-			err = -ENOMEM;
+>+			err = written;
+> 			goto out_err;
+> 		}
+>
+>-- 
+>2.25.1
 
