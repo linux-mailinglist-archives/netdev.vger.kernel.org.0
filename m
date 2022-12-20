@@ -2,139 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA306517A6
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 02:14:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C7E6517FC
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 02:24:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233022AbiLTBO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 20:14:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
+        id S232984AbiLTBXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 20:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233044AbiLTBOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 20:14:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1C7175B6;
-        Mon, 19 Dec 2022 17:13:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC2EDB80F9B;
-        Tue, 20 Dec 2022 01:13:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE75C433F0;
-        Tue, 20 Dec 2022 01:13:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671498803;
-        bh=GhvR/+DG+rgM08a/7XAG0bKpkCNp0hJgF6NxkYUzmDI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kHHwVJlX7XGbfdBf/t7Y6+zrIB5I/9waRcwcxJaY91y93RDnYJgwsudGZbuLbbAv4
-         ZoDGqKe+m+WaGVO2aixhOlNDH2wTBVGL0KCIU12TVOhubLPgET+Kih+UEn+B7Snx+v
-         dy3a2L2yrYdiBdrsI3n9Hdkp2YRUFGBE0VY7OZGz2TX1rpG6g6bx18AIrsh9VmrT/D
-         b3WW5GykoiDyk3cHupelEHHoax6frsLvY0T5wJqBm+AeBp3SH79SkcUsCr0/hrungq
-         oFoWkbgpERG8hzXa4qxTSHmX4iGsrICDhQRD4c4NKiWNe80ZeqZuWtv/9sBfqcBJlq
-         Ki5bdWysGMj9w==
-Date:   Mon, 19 Dec 2022 17:13:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
-        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        grygorii.strashko@ti.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com
-Subject: Re: [RFC bpf-next 2/8] net: introduce XDP features flag
-Message-ID: <20221219171321.7a67002b@kernel.org>
-In-Reply-To: <43c340d440d8a87396198b301c5ffbf5ab56f304.1671462950.git.lorenzo@kernel.org>
-References: <cover.1671462950.git.lorenzo@kernel.org>
-        <43c340d440d8a87396198b301c5ffbf5ab56f304.1671462950.git.lorenzo@kernel.org>
+        with ESMTP id S233003AbiLTBWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 20:22:20 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB4713F0F
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 17:21:40 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id s196so7385717pgs.3
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 17:21:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=h8Zl3OLJvmj+VW1Nm9v7BDlSntkj5cpurC3AlErukc4=;
+        b=Zy0YMXr7CEHnnetLQf1CPx67LtkIWMv7seOF/pTnYGnI4Ttq+fDdrZdm/YWNbVakTw
+         PfIWEQrrLJEs6erJTL80SvRkyUawc97Z6ZhJAn9p1xP21PpuVVNoOlsZMCyiEOX2XvyS
+         aih7f9HYiSeFM1+1IggYsZoF++MsOq6/zNpmVXaWXZZDpcsa1BisYmxykQNtsYm0Fjss
+         1fg/Zi5shAuZRSV2sTcZjovYWXNLw9OpgZd9y7HA2On4sTeH7zDBny7wwAkwMmiSEnWB
+         wYasoCq2f4+fL/zfk07OVdw+mKsglfLF5bJAv1iTxgHUHtIFzNyg/g4fl6Fv7yHb5RET
+         PKuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=h8Zl3OLJvmj+VW1Nm9v7BDlSntkj5cpurC3AlErukc4=;
+        b=vTzpE+Bd6XtlhYb4gVP1NfxG30a/k+h0+TD8vJn2XoZLidI/DzgRwx4PAPh3Qa9AZ4
+         wdhfCY07oha364T4OC1d2Ua22b7drB5bEQ5u96zzG00MiJCdR2k9JbHy1XYubcytCBvc
+         MDxmUt8QWeYUpZncMs02A7McxvE2ioGuVIIozNFpu3IDHfktStesf3/FE+rtcgaHz4GM
+         RoKE81AX4V1psOOavF3sBp4VB1wwcmAL8VU6qrLZXptyHy+jRFjoH22OAERBchTjAicz
+         wfUmNJX+q8+eVJctAWjEFKAbpmXe0YVHwr2bYTISdYmB9JKZ6O8Nl3KtrpM2/FCzMaxT
+         0/gg==
+X-Gm-Message-State: ANoB5plj6UzomfpOP1aZcmB8qfURFWYfO0imABkYdlvF11H1Kii39rLj
+        41qDX+YjP8i1Q3HVqZLXN22ngrAwtJkcyC6XqsPEAAcTdRAF2/Wy
+X-Google-Smtp-Source: AA0mqf59zxigJnrnk593w8QlMqgZuyWE4somP5HkxcRMcS43wi6NdcUh5LFI7QtfQAjYIp8QtK5eqCgqPTc6n1G6/vs=
+X-Received: by 2002:aa7:9006:0:b0:578:8d57:12ce with SMTP id
+ m6-20020aa79006000000b005788d5712cemr1938999pfo.42.1671499299407; Mon, 19 Dec
+ 2022 17:21:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221220004701.402165-1-kuba@kernel.org>
+In-Reply-To: <20221220004701.402165-1-kuba@kernel.org>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 19 Dec 2022 17:21:27 -0800
+Message-ID: <CAKH8qBvVTHXsgVLHuCmdFM1dnYEiDFovOFfXNq1=8igPCCO7jQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] bpf: pull before calling skb_postpull_rcsum()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Anand Parthasarathy <anpartha@meta.com>, martin.lau@linux.dev,
+        song@kernel.org, john.fastabend@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Dec 2022 16:41:31 +0100 Lorenzo Bianconi wrote:
-> +=====================
-> +Netdev XDP features
-> +=====================
+On Mon, Dec 19, 2022 at 4:47 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Anand hit a BUG() when pulling off headers on egress to a SW tunnel.
+> We get to skb_checksum_help() with an invalid checksum offset
+> (commit d7ea0d9df2a6 ("net: remove two BUG() from skb_checksum_help()")
+> converted those BUGs to WARN_ONs()).
+> He points out oddness in how skb_postpull_rcsum() gets used.
+> Indeed looks like we should pull before "postpull", otherwise
+> the CHECKSUM_PARTIAL fixup from skb_postpull_rcsum() will not
+> be able to do its job:
+>
+>         if (skb->ip_summed == CHECKSUM_PARTIAL &&
+>             skb_checksum_start_offset(skb) < 0)
+>                 skb->ip_summed = CHECKSUM_NONE;
+>
+> Reported-by: Anand Parthasarathy <anpartha@meta.com>
+> Fixes: 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: daniel@iogearbox.net
+> CC: martin.lau@linux.dev
+> CC: song@kernel.org
+> CC: john.fastabend@gmail.com
+> CC: sdf@google.com
+> CC: bpf@vger.kernel.org
+> ---
+>  net/core/filter.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 929358677183..43cc1fe58a2c 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3180,15 +3180,18 @@ static int bpf_skb_generic_push(struct sk_buff *skb, u32 off, u32 len)
+>
+>  static int bpf_skb_generic_pop(struct sk_buff *skb, u32 off, u32 len)
+>  {
+> +       void *old_data;
 > +
-> + * XDP FEATURES FLAGS
-> +
-> +Following netdev xdp features flags can be retrieved over route netlink
-> +interface (compact form) - the same way as netdev feature flags.
+>         /* skb_ensure_writable() is not needed here, as we're
+>          * already working on an uncloned skb.
+>          */
+>         if (unlikely(!pskb_may_pull(skb, off + len)))
+>                 return -ENOMEM;
+>
+> -       skb_postpull_rcsum(skb, skb->data + off, len);
+> -       memmove(skb->data + len, skb->data, off);
+> +       old_data = skb->data;
+>         __skb_pull(skb, len);
 
-How likely is it that I'll be able to convince you that cramming more
-stuff in rtnl is a bad idea? I can convert this for you to a YAML-
--compatible genetlink family for you in a jiffy, just say yes :S
+[..]
 
-rtnl is hard to parse, and already overloaded with random stuff.
-And the messages are enormous.
+> +       skb_postpull_rcsum(skb, old_data + off, len);
 
-> +These features flags are read only and cannot be change at runtime.
-> +
-> +*  XDP_ABORTED
-> +
-> +This feature informs if netdev supports xdp aborted action.
-> +
-> +*  XDP_DROP
-> +
-> +This feature informs if netdev supports xdp drop action.
-> +
-> +*  XDP_PASS
-> +
-> +This feature informs if netdev supports xdp pass action.
-> +
-> +*  XDP_TX
-> +
-> +This feature informs if netdev supports xdp tx action.
-> +
-> +*  XDP_REDIRECT
-> +
-> +This feature informs if netdev supports xdp redirect action.
-> +It assumes the all beforehand mentioned flags are enabled.
-> +
-> +*  XDP_SOCK_ZEROCOPY
-> +
-> +This feature informs if netdev driver supports xdp zero copy.
-> +It assumes the all beforehand mentioned flags are enabled.
+Are you sure about the 'old_data + off' part here (for
+CHECKSUM_COMPLETE)? Shouldn't it be old_data?
+I'm assuming we need to negate the old parts that we've pulled?
 
-Why is this "assumption" worth documenting?
+Maybe safer/more correct to do the following?
 
-> +*  XDP_HW_OFFLOAD
-> +
-> +This feature informs if netdev driver supports xdp hw oflloading.
-> +
-> +*  XDP_TX_LOCK
-> +
-> +This feature informs if netdev ndo_xdp_xmit function requires locking.
+skb_pull_rcsum(skb, off);
+memmove(skb->data, skb->data-off, off);
 
-Why is it relevant to the user?
 
-> +*  XDP_REDIRECT_TARGET
-> +
-> +This feature informs if netdev implements ndo_xdp_xmit callback.
-
-Does it make sense to rename XDP_REDIRECT -> XDP_REDIRECT_SOURCE then?
-
-> +*  XDP_FRAG_RX
-> +
-> +This feature informs if netdev implements non-linear xdp buff support in
-> +the driver napi callback.
-
-Who's the target audience? Maybe FRAG is not the best name?
-Scatter-gather or multi-buf may be more widely understood.
-
-> +*  XDP_FRAG_TARGET
-> +
-> +This feature informs if netdev implements non-linear xdp buff support in
-> +ndo_xdp_xmit callback. XDP_FRAG_TARGET requires XDP_REDIRECT_TARGET is properly
-> +supported.
+> +       memmove(skb->data, old_data, off);
+>
+>         return 0;
+>  }
+> --
+> 2.38.1
+>
