@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE93A65274F
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A77652760
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:53:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233542AbiLTTtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 14:49:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37346 "EHLO
+        id S234004AbiLTTwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 14:52:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230189AbiLTTtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:49:22 -0500
-Received: from box.opentheblackbox.net (box.opentheblackbox.net [IPv6:2600:3c02::f03c:92ff:fee2:82bc])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A8B12AA0;
-        Tue, 20 Dec 2022 11:49:21 -0800 (PST)
-Received: from authenticated-user (box.opentheblackbox.net [172.105.151.37])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.opentheblackbox.net (Postfix) with ESMTPSA id B2B4A3EA1C;
-        Tue, 20 Dec 2022 14:49:19 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pgazz.com; s=mail;
-        t=1671565759; bh=YEdn9UuxbnZzT/vU7uDcMPxRwt0PF2O8LWosbzEhqXw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OS6jFAqnIbW0xBjVDVUHJQEEYLsHbsDvbl/m/Ro4x7ER/fqV8BFSHO7hkSIZ1aRAt
-         UBNpLD0yIt72vPGjT5g/BjW+pYNIbeZ0C22ceNPokq/1pmKVdIAvQmmg3HpOaOvWsc
-         2r1NP1XWLJ4f3Bx2M8XhqblFNB7OzPMNkE79+yO9isYtWgM7fwlnT7VmwNqTC5ONqR
-         Ywrnevo+JkoKLp0n3VfP4Jti3QtQFJtn3I13IkpgMYAX3Ns0w7jyaz5zRou9PnHCb8
-         gQOskTXUSE7jvXBJD53hAFb/kLWasz0UFuqmkSfARJzAmusnNlPRFVkXOUHVT89/kQ
-         nCqJj8SCTMfxw==
-Date:   Tue, 20 Dec 2022 14:49:18 -0500
-From:   Paul Gazzillo <paul@pgazz.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Zheng Bin <zhengbin13@huawei.com>,
-        Suman Ghosh <sumang@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] octeontx2_pf: Select NET_DEVLINK when enabling
- OCTEONTX2_PF
-Message-ID: <20221220194918.4mrrbbjcpj5dvps3@device>
-References: <20221219171918.834772-1-paul@pgazz.com>
- <20221220113822.4efe142e@kernel.org>
+        with ESMTP id S233028AbiLTTwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:52:33 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F6C1A81B
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:52:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671565952; x=1703101952;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Tdwr4tSuEEph9K5A0iUIg96ixLr3HopsgYZRUV8gxs4=;
+  b=mfnZ10LqYs7p0CVczFSH4WNZpyoH7Vy3Za9pkuC6p3ijQX4yDnNJn4Vu
+   3KYlOLRaVrApA+GBT5cdBHYloqSgOUVsBvM6DsF8itzd131F3HRSe0Lln
+   vcxwgkN1WQFv3Z5H9GdP4nJq0D2DFUym/phVR7yHdU38L4JtAwUZ1RxJo
+   qmqOPkw4hniVkwVoC6bOg7SCbxjtOZHg72zJCEjy0UPAASFE65bsOp9lj
+   dhVVn5fS5O7VW9uPg5axUehgBsmeHV4BD4ISwz2Oq0C99H18pzdTwXjzH
+   M85ePN/+jFPzaFSuK1jsIB+TEDYNiYmgJznzzXEvSEpK/mU0YnBjwtWU/
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10567"; a="299376683"
+X-IronPort-AV: E=Sophos;i="5.96,259,1665471600"; 
+   d="scan'208";a="299376683"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2022 11:52:21 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10567"; a="681780963"
+X-IronPort-AV: E=Sophos;i="5.96,259,1665471600"; 
+   d="scan'208";a="681780963"
+Received: from mdaugher-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.232.138])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2022 11:52:21 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, imagedong@tencent.com, mptcp@lists.linux.dev
+Subject: [PATCH net 0/2] mptcp: Locking fixes
+Date:   Tue, 20 Dec 2022 11:52:13 -0800
+Message-Id: <20221220195215.238353-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221220113822.4efe142e@kernel.org>
-X-Spam-Status: No, score=1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,RCVD_IN_XBL,
-        SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/20/2022, Jakub Kicinski wrote:
-> On Mon, 19 Dec 2022 12:19:11 -0500 Paul Gazzillo wrote:
-> > When using COMPILE_TEST, the driver controlled by OCTEONTX2_PF does
-> > not select NET_DEVLINK while the related OCTEONTX2_AF driver does.
-> > This means that when OCTEONTX2_PF is enabled from a default
-> > configuration, linker errors will occur due to undefined references to
-> > code controlled by NET_DEVLINK.
-> 
-> This has been fixed a long time ago by 9cbc3367968d ("octeontx2-pf:
-> select CONFIG_NET_DEVLINK") no?
+Two separate locking fixes for the networking tree:
 
-You are right.  My apologies.  I was looking at an older kernel.
+Patch 1 addresses a MPTCP fastopen error-path deadlock that was found
+with syzkaller.
+
+Patch 2 works around a lockdep false-positive between MPTCP listening and
+non-listening sockets at socket destruct time.
+
+
+Paolo Abeni (2):
+  mptcp: fix deadlock in fastopen error path
+  mptcp: fix lockdep false positive
+
+ net/mptcp/protocol.c | 20 ++++++++++++++++----
+ net/mptcp/protocol.h |  4 ++--
+ net/mptcp/subflow.c  | 19 +++++++++++++++++--
+ 3 files changed, 35 insertions(+), 8 deletions(-)
+
+
+base-commit: 4be84df38a6f49b81e5909ede78242ba1538c1e6
+-- 
+2.39.0
+
