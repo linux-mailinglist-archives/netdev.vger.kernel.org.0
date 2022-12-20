@@ -2,69 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B8665271C
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:36:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC656652720
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:37:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234142AbiLTTgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 14:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        id S233896AbiLTThV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 14:37:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234105AbiLTTgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:36:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4FE1021;
-        Tue, 20 Dec 2022 11:36:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8038761583;
-        Tue, 20 Dec 2022 19:36:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4936EC433EF;
-        Tue, 20 Dec 2022 19:36:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671564972;
-        bh=5i5tZcR0DoYMnhmB8mGmz6H6Gh3tfK0AahqQF+YC/Xo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c5+XeIXTx1CrKCLLk+aJgr4h+8Hg2lGc1Oc9YmkQWfFJf9FfdhXnu8Cl89nEBYCcH
-         S6/LU5Vh+Les9mngc4IY96mZXDAdvpaYOws6vYz5q2u9yLj87wPWdKB1LH1VJBhCiX
-         FeYfCaCWXPPrw/C3OmzNIEgBPin6LhwVlERsO5DplWG9Y3IuUX4UlGlSqViJtCjSUD
-         sCWAaqjtR4cVjiI/2XA+Yo+JTLJhWyyHQLCzk1sSsI4pcHZqtIEyzkjh7K5ByvuDOm
-         l5PgDXrAniF1bnQXF4fdcvrGQSKPWfqAKkOu3QuoZaF2UY2hh+mNle7o8rRbkoTT6v
-         gsxstlZNXivFg==
-Date:   Tue, 20 Dec 2022 11:36:10 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     wei.fang@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        xiaoning.wang@nxp.com, shenwei.wang@nxp.com,
-        alexander.duyck@gmail.com, linux-imx@nxp.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 net] net: fec: Coverity issue: Dereference null
- return value
-Message-ID: <20221220113610.77a11f25@kernel.org>
-In-Reply-To: <20221219022755.1047573-1-wei.fang@nxp.com>
-References: <20221219022755.1047573-1-wei.fang@nxp.com>
+        with ESMTP id S229938AbiLTThT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:37:19 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A19DD2D0
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:37:18 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id a10-20020a056e02180a00b0030bc09c6b94so2537279ilv.6
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:37:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xtf3kK/4JkO5DVd4qOuGUgyJBsIREUJl3kcqk4Bwjr4=;
+        b=beLH1NXeWnlUTqccYT68vuGbeE9LpCp08PuTR4wyYxjXgsjNlpvLfpT0PbKIGYcodP
+         zBOQF+O6j747G7E0w1+KXiySxZXU4Y+da+xdlm1tIyn5n+AXOFGhDmO5CJNNV6IgFXtY
+         7OlwTUt9kvC2nCBpfi6nCTJ2YbgLUu9MWBOmhhAyVcLIyQF5k8GjISISbH2e5ISBFvky
+         qFed3Tp34YEmvpyJ1Q7/c+6xqNFQ5aTHxD8pBZ0TWwKHVSphTJ1xn8DuDG/O+/9ZkxxQ
+         XqTVgYmqUeBplQzbS5sx5LtSsWUfTaZWE2KlUzVxqeepro3v09VSmbDvhGk7cR7kntLC
+         iiTA==
+X-Gm-Message-State: ANoB5pk//gnd80rvuIfYrsl+WvF7fT0/Bok/5IGqXQKf+4D97WcKypSs
+        7tXRAado5YpRlvtkKGFVsJtRscKlQefcFPLA/CfpxXRar24n
+X-Google-Smtp-Source: AA0mqf79LM6cuQfmZgkg9I2E8BaJp2XadINP9woNrMjfuuHwCStlay7Ncmm1QjAAXXiaNN1Z3ZOaFyHazaxPHao1vnryZURMltfR
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:d8ca:0:b0:303:6b79:14bb with SMTP id
+ l10-20020a92d8ca000000b003036b7914bbmr11203430ilo.9.1671565038025; Tue, 20
+ Dec 2022 11:37:18 -0800 (PST)
+Date:   Tue, 20 Dec 2022 11:37:18 -0800
+In-Reply-To: <CAKH8qBs1UiikX=_CBzRC_2rg3sp8CU5hhB7sOkNkNBqm8OqFEw@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004f881505f047903b@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in put_pmu_ctx
+From:   syzbot <syzbot+b8e8c01c8ade4fe6e48f@syzkaller.appspotmail.com>
+To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        bpf@vger.kernel.org, jolsa@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
+        netdev@vger.kernel.org, peterz@infradead.org, sdf@google.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Dec 2022 10:27:55 +0800 wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
-> 
-> The build_skb might return a null pointer but there is no check on the
-> return value in the fec_enet_rx_queue(). So a null pointer dereference
-> might occur. To avoid this, we check the return value of build_skb. If
-> the return value is a null pointer, the driver will recycle the page and
-> update the statistic of ndev. Then jump to rx_processing_done to clear
-> the status flags of the BD so that the hardware can recycle the BD.
+Hello,
 
-Applied but I had to change the subject because the subject should
-describe the change. Mentioning the tool which found the problem
-belongs in the body of the message.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+INFO: rcu detected stall in corrupted
+
+rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { P5778 } 2673 jiffies s: 2773 root: 0x0/T
+rcu: blocking rcu_node structures (internal RCU debug):
+
+
+Tested on:
+
+commit:         13e3c779 Merge tag 'for-netdev' of https://git.kernel...
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=12cb0e5d880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b0e91ad4b5f69c47
+dashboard link: https://syzkaller.appspot.com/bug?extid=b8e8c01c8ade4fe6e48f
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=12df6a9b880000
+
