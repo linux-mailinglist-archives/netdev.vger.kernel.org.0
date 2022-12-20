@@ -2,46 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E088E65187F
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 02:48:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ACE3651882
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 02:49:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233341AbiLTBs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Dec 2022 20:48:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
+        id S233192AbiLTBtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Dec 2022 20:49:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiLTBsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 20:48:08 -0500
+        with ESMTP id S233183AbiLTBsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Dec 2022 20:48:24 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073793B2;
-        Mon, 19 Dec 2022 17:45:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845D3BC;
+        Mon, 19 Dec 2022 17:46:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0FD3B80F4B;
-        Tue, 20 Dec 2022 01:45:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18657C433EF;
-        Tue, 20 Dec 2022 01:45:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E2B7B80BA5;
+        Tue, 20 Dec 2022 01:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760A8C433D2;
+        Tue, 20 Dec 2022 01:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671500706;
-        bh=hOgDKRG3QN2KDKqTDB9a6+ebhkTn4QldF3NgP7ikdJM=;
+        s=k20201202; t=1671500764;
+        bh=zwP+BJJcw/m+OSD7rwNCXS4QdnamcYcjhOSJBdSJX/I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NJ83dciTECgvqrgdnpb+ZUIawQovLwJ6o5rWXILaky5MYZxj4w+7/0o+jt7dLKdIw
-         Gw8FHNbYdZW0b2pb48oLRG++r5XGutH6ux1zxZy0va0VNGcCjCOWADcCe0HBJKggG0
-         yq2KZ1kTWTptHQylJyFx/fMl/M0Q9UqLwp6yl9gvL+/9kL4ZV9dsSiLh3DCqwXBZuD
-         /moIYFzleVgOwIeDbZGRAamS7U7eVJzRvGJiXRrb1bwq8KEzrUfpdaUXNpocZBodpo
-         UT1Jiny8JoIDz5jVMk9tBOxqh8dXyrZiJv4FixhTgy+AdBLyYFogEH38fRQ11TGG1J
-         QJktp6oPlJprg==
-Date:   Mon, 19 Dec 2022 17:45:05 -0800
+        b=jT60VrfPUldPuiK2FWSpQXyBPiFUGaFFuw4hq1PPYZDcB8XOaivnKLV+O2WfFdUio
+         9OZVWy6YKuXys/pSj0NE9/XvP6OznCwAkixfeR2Xq08B2pBmDSECG0uT2xXJNiUsk6
+         zrnF9uh10bZIYAr1zKGxrRp7A7w8NWAVIEDnZ/TwF+Qx1H59toNmKV8RSVHjjIBN5V
+         eEIZ7c3jKah1qJJW6KgJWpnSpFzTtJLQCAPaLcwErsq3gmFH4jI1rmwr29fUQrQ2up
+         QY7NUKMvyOF8gp0bFUCr92oFnSq4gSoyL/CRzMiPjJiYemY++s6FY0WEetF43aqBTL
+         CjolFXV52wNrA==
+Date:   Mon, 19 Dec 2022 17:46:03 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Anand Parthasarathy <anpartha@meta.com>, martin.lau@linux.dev,
-        song@kernel.org, john.fastabend@gmail.com
-Subject: Re: [PATCH bpf 1/2] bpf: pull before calling skb_postpull_rcsum()
-Message-ID: <20221219174505.67014ea5@kernel.org>
-In-Reply-To: <CAKH8qBvVTHXsgVLHuCmdFM1dnYEiDFovOFfXNq1=8igPCCO7jQ@mail.gmail.com>
-References: <20221220004701.402165-1-kuba@kernel.org>
-        <CAKH8qBvVTHXsgVLHuCmdFM1dnYEiDFovOFfXNq1=8igPCCO7jQ@mail.gmail.com>
+To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
+Cc:     netdev@vger.kernel.org,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v1 0/2] net: marvell: prestera: add ipv6 routes
+ offloading
+Message-ID: <20221219174603.39b4183c@kernel.org>
+In-Reply-To: <Y5+RDIIGWGeKGUAo@yorlov.ow.s>
+References: <Y5+RDIIGWGeKGUAo@yorlov.ow.s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,54 +61,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Dec 2022 17:21:27 -0800 Stanislav Fomichev wrote:
-> > -       skb_postpull_rcsum(skb, skb->data + off, len);
-> > -       memmove(skb->data + len, skb->data, off);
-> > +       old_data = skb->data;
-> >         __skb_pull(skb, len);  
+On Mon, 19 Dec 2022 00:15:40 +0200 Yevhen Orlov wrote:
+> Add support for IPv6 nexthop/blackhole/connected routes for Marvell Prestera driver.
+> Handle AF_INET6 neigbours, fib entries.
 > 
-> [..]
+> Add features:
+>  - IPv6:
+>    - Support "offload", "offload_failed", "trap" flags
+>    - Support blackhole, nexthop, local/connected/unreachable/etc (trap)
+>      e.g.: "ip addr add 2001:1::1/64 dev sw1p2"
+>      e.g.: "ip route add 2002:2::/64 via 2001:2::2"
+>      e.g.: "ip route add blachole 2003:2::/64 dev lo"
 
-Very counter-productively trimmed ;)
+# Form letter - net-next is closed
 
-> > +       skb_postpull_rcsum(skb, old_data + off, len);  
-> 
-> Are you sure about the 'old_data + off' part here (for
-> CHECKSUM_COMPLETE)? Shouldn't it be old_data?
+We have already submitted the networking pull request to Linus
+for v6.2 and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
 
-AFAIU before:
+Please repost when net-next reopens after Jan 2nd.
 
-      old_data (aka skb->data before)
-     /
-    / off  len 
-   V-----><--->
-[ .=======xxxxx... buffer ...... ]
-          ^
-           \
-            the xxx part is what we delete
-
-after:
-          skb->data (after)
-         /
-        v
-[ .yyyyy=======... buffer ...... ]
-   <---><----->
-    len   off  
-   ^
-    \
-     the yyy part is technically the old values of === but now "outside"
-     of the valid packet data
-
-> I'm assuming we need to negate the old parts that we've pulled?
-
-Yes.
-
-> Maybe safer/more correct to do the following?
-> 
-> skb_pull_rcsum(skb, off);
-
-This just pulls from the front, we need to skip over various L2/L3
-headers thanks to off. Hopefully the diagrams help, LMK if they are
-wrong.
-
-> memmove(skb->data, skb->data-off, off);
+RFC patches sent for review only are obviously welcome at any time.
