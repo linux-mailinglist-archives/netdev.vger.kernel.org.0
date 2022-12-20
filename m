@@ -2,135 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C5BE652134
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5912B652141
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:08:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233760AbiLTNDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 08:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
+        id S230074AbiLTNIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 08:08:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233507AbiLTNDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:03:37 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA41DE4;
-        Tue, 20 Dec 2022 05:03:36 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id i9so17399483edj.4;
-        Tue, 20 Dec 2022 05:03:36 -0800 (PST)
+        with ESMTP id S233760AbiLTNIe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:08:34 -0500
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F208EE0E
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:08:33 -0800 (PST)
+Received: by mail-qk1-x749.google.com with SMTP id bs13-20020a05620a470d00b007024c37f800so4398726qkb.10
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:08:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2Og7+6ieoeZuMIctQHPANXasHJDVTyU4dmzcZDyN7Ac=;
-        b=dGc1U/criCMUlZ26juiBEWKIo6M5IOAyYaRRR9bPbccHG2Bv0V5iQSUV7SF2HDOuYP
-         874d9OO8mdtMzLCvFJz31lEWfUB+4nT8iUrzAnssAIZWBZ11MaW0TeBOOtgfrG3xZRMv
-         TxCTHSFBQlqiB6eJHvOgcXEMbYGf8c+XCjykMKTa3GtXrtPIYL3FDK8JKHTxTH5bCro7
-         dWnuB7hGVbjOCB6cD2Wo2i4sLERioaiECwZVfmCa8d8hQUImu1l1+aOagGPUmqFhrMFJ
-         nnUz/dHgJbi81woO0rqK/0QcT9/Td9ma8Q7oiUM51Q2eZ41wGCdOwoUiyfJHkFAf80+3
-         NTKQ==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=saza6E2vz8eRndK+00UyLwXDZPg7d17YZq8TkmybwTc=;
+        b=ijfTAyfijzGLDjOnQojgY2uximMTYnuAQ1MjvSATpyZyTiDfTyvymf4Cvfax/IFKtu
+         RV8VZLLHr/7Xyu1PECNIrMi2CzMSG1aV9c9hQKqlgXfTicrwjKlFbn6GFxye3FVdHb5D
+         QuII563Kewysbh+BdlpWBDZuqfnvsBB5pRw9eEzNGYaS6J0qmP3GmXzpqO56XPhXEsMo
+         GCvednCxFGzpHg4lDiIgr9arpdSCZ916Js4Grm0YLCzYG/iMrD6ZAZLzpWM696CdduhH
+         aBmfRmapGZKPWc50yBjeojMkZHi+M3nyJq4V7sEUXWCLJTpgQA5s8lwtK5liTynLqyBr
+         iKfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2Og7+6ieoeZuMIctQHPANXasHJDVTyU4dmzcZDyN7Ac=;
-        b=R1uiRMoZjvEVUoKBdHpVT+GcmG1L0t99c/LsimEZQTRXhRNETwmrpr44LleJcf8if+
-         TURVcf19EvRxxXX8eir9/8qmhby6KiEJDGAvcgqxo1Z0/Hq/fJFzW2rmhWRs08zVyiyf
-         60QXplJJvRhpEu8EP3urL6BPLj6dTPkbM6gvA9dUYxkjBJpWaFXPiYNLNDoxpEXZnaFo
-         xb/2BuBsn62lVa8eBwrLZFjZt75bYFQ+lS8rKVCEmToKyRv0vIPwiVpRj0mk+RAD9hdP
-         StWz+J1meZ1tQQjsY9wQF0Rg4xdXinAXDqVyQBavAakek80MThDd0aKdEQ/UF3rsui6G
-         RQNw==
-X-Gm-Message-State: AFqh2krubJxldgGhw0yhvVkpuJOybgnsy6IRlJqHBdGC2KGTVwtIMUcy
-        1Nyq4bJVzBtHVuNWMAGsXW0=
-X-Google-Smtp-Source: AMrXdXszumQc1+m89EmwpWp8+ABnsVMGN+0TFPOk5wqHQ7FENd1exMf+pVQUN3TER5M3VUW0L8P9tw==
-X-Received: by 2002:aa7:c850:0:b0:472:adc9:6eb2 with SMTP id g16-20020aa7c850000000b00472adc96eb2mr17840559edt.29.1671541414923;
-        Tue, 20 Dec 2022 05:03:34 -0800 (PST)
-Received: from [192.168.1.50] ([79.119.240.153])
-        by smtp.gmail.com with ESMTPSA id cf25-20020a0564020b9900b0045b4b67156fsm5675936edb.45.2022.12.20.05.03.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Dec 2022 05:03:34 -0800 (PST)
-Message-ID: <33b2b585-c5b1-5888-bcee-ca74ce809a44@gmail.com>
-Date:   Tue, 20 Dec 2022 15:03:33 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Jun ASAKA <JunASAKA@zzy040330.moe>,
-        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
- <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
-Content-Language: en-US
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-In-Reply-To: <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=saza6E2vz8eRndK+00UyLwXDZPg7d17YZq8TkmybwTc=;
+        b=vWPPW6shYNFq7uPXgEzzt3BpUf8YygBgxFVdfT1zOJo2sGg0v40xC2UwQ2CKv7htn6
+         ibo8b5p4gdSEwj32t9NhwwA86WdvLKS2VSFpybpWLt1EHPl8JuMeen2xtuzZzYVYoKuh
+         lknQ6zcqWS7jDr8wmLvBq3Q74eyjTf+wIFZYlMTVJvQPtYmpugxqmTVRz4P8LOFufz5j
+         evTJxR9nlBpLrLZu5Jv6qOzJNMkKQ2e4a1+yPdcdJLgU53zjcDlAMt6fFjvD53EhHiBE
+         3KkPdUtBvC7TDpc+9aPkwZdtSDXLtdNe5ZJxXRGvZTfUzFjLBf5dZSrY56OcZ07CjoI5
+         J2pA==
+X-Gm-Message-State: AFqh2kqDQRD/jRnC6m2LHyjvjgZ4APvCUW8EazEV2yhJTSOXdcmk/uFS
+        3nMqHZJQxFyycXxOrB320qPc2NAsrgdKSQ==
+X-Google-Smtp-Source: AMrXdXthXil2tDOw/5STxUYdzECibZBAsGoJFLXAFiO9dWG8k1d/bGbKA1JE+09J/Bx90VJYfLkB/yy57ZSVUQ==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:ac8:47c8:0:b0:3a9:68aa:a216 with SMTP id
+ d8-20020ac847c8000000b003a968aaa216mr841820qtr.300.1671541712791; Tue, 20 Dec
+ 2022 05:08:32 -0800 (PST)
+Date:   Tue, 20 Dec 2022 13:08:31 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
+Message-ID: <20221220130831.1480888-1-edumazet@google.com>
+Subject: [PATCH net] bonding: fix lockdep splat in bond_miimon_commit()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/12/2022 07:44, Ping-Ke Shih wrote:
-> 
-> 
->> -----Original Message-----
->> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->> Sent: Saturday, December 17, 2022 11:07 AM
->> To: Jes.Sorensen@gmail.com
->> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
->> <JunASAKA@zzy040330.moe>
->> Subject: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
->>
->> Fixing transmission failure which results in
->> "authentication with ... timed out". This can be
->> fixed by disable the REG_TXPAUSE.
->>
->> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->> ---
->>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> index a7d76693c02d..9d0ed6760cb6 100644
->> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
->>  	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
->>  	val8 &= ~BIT(0);
->>  	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
->> +
->> +	/*
->> +	 * Fix transmission failure of rtl8192e.
->> +	 */
->> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
-> 
-> I trace when rtl8xxxu set REG_TXPAUSE=0xff that will stop TX.
-> The occasions include RF calibration, LPS mode (called by power off), and
-> going to stop. So, I think RF calibration does TX pause but not restore
-> settings after calibration, and causes TX stuck. As the flow I traced,
-> this patch looks reasonable. But, I wonder why other people don't meet
-> this problem.
-> 
-Other people have this problem too:
-https://bugzilla.kernel.org/show_bug.cgi?id=196769
-https://bugzilla.kernel.org/show_bug.cgi?id=216746
+bond_miimon_commit() is run while RTNL is held, not RCU.
 
-The RF calibration does restore REG_TXPAUSE at the end. What happens is
-when you plug in the device, something (mac80211? wpa_supplicant?) calls
-rtl8xxxu_start(), then rtl8xxxu_stop(), then rtl8xxxu_start() again.
-rtl8xxxu_stop() sets REG_TXPAUSE to 0xff and nothing sets it back to 0.
+WARNING: suspicious RCU usage
+6.1.0-syzkaller-09671-g89529367293c #0 Not tainted
+-----------------------------
+drivers/net/bonding/bond_main.c:2704 suspicious rcu_dereference_check() usage!
+
+Fixes: e95cc44763a4 ("bonding: do failover when high prio link up")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Hangbin Liu <liuhangbin@gmail.com>
+Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+Cc: Veaceslav Falico <vfalico@gmail.com>
+Cc: Andy Gospodarek <andy@greyhouse.net>
+---
+ drivers/net/bonding/bond_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index b4c65783960a5aa14de5d64aeea190f02a04be44..0363ce597661422b82a7d33ef001151b275f9ada 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2654,10 +2654,12 @@ static void bond_miimon_link_change(struct bonding *bond,
+ 
+ static void bond_miimon_commit(struct bonding *bond)
+ {
+-	struct slave *slave, *primary;
++	struct slave *slave, *primary, *active;
+ 	bool do_failover = false;
+ 	struct list_head *iter;
+ 
++	ASSERT_RTNL();
++
+ 	bond_for_each_slave(bond, slave, iter) {
+ 		switch (slave->link_new_state) {
+ 		case BOND_LINK_NOCHANGE:
+@@ -2700,8 +2702,8 @@ static void bond_miimon_commit(struct bonding *bond)
+ 
+ 			bond_miimon_link_change(bond, slave, BOND_LINK_UP);
+ 
+-			if (!rcu_access_pointer(bond->curr_active_slave) || slave == primary ||
+-			    slave->prio > rcu_dereference(bond->curr_active_slave)->prio)
++			active = rtnl_dereference(bond->curr_active_slave);
++			if (!active || slave == primary || slave->prio > active->prio)
+ 				do_failover = true;
+ 
+ 			continue;
+-- 
+2.39.0.314.g84b9a713c41-goog
+
