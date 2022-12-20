@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F1EE652198
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34886521AA
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:46:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233411AbiLTNer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 08:34:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        id S231648AbiLTNqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 08:46:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233541AbiLTNeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:34:46 -0500
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBAF18B1A
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:34:44 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 385163200912;
-        Tue, 20 Dec 2022 08:34:42 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 20 Dec 2022 08:34:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1671543281; x=1671629681; bh=P5kC81balsgGf9/oorLdwVsiLaI8
-        EcpPlmO8igcM4+U=; b=Es7BPpBK0aW9SIFSKWlkHcuUJbunnXyIu+eSY30VcMJk
-        yxIfUnaYF3X7Tb5FTb67Mrp0vumf1GT3pDetJ1mMwWq1L4zCU1FhN4th8i9ioaof
-        e5g4K/wvuO6BhSgN0f0GrXekOlUgpmzDDz9UJKmsOziWsuKT3KqpX7Llt/cL8JUl
-        zFv0X8+wlni27OB0esLYyosI6SuKp0fioiAEnIBU738jD6QOTktNFtwLgOr2wL68
-        LH80SqMrjPIcNpWhy2vzamYylUTeLLhR56/m5BMWAludjj+MN+8hCTe7ZaJsj4KY
-        vfPTBLM0gZoBW18Y3Bii+NNsr5gU86KegoJ1y7kcCw==
-X-ME-Sender: <xms:8bmhY2x3QRqU_ulnh0KV7h98BOEunH02N_it5Zgwrfv9Zx5yg4zb5g>
-    <xme:8bmhYyT9sAYO4bRf4hgaOGBLRBxCr9pS6MwPPmmPi1G-bjH3E8hcmas7Y82EFoXlS
-    BJBAtaIR8Vddec>
-X-ME-Received: <xmr:8bmhY4V4WmlBRpWn-UGV2xDuO3yaOz6DtIQadk9Qbcp13JU2H_cLS2JXd-0vV9Zgn-c5IzHU8Jp_N3T5Ic0psBnqRGk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeeigddviecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:8bmhY8g6TNkyzGBvD0wH3oNpFzMPWajEWnZR8dpaAGXghNu24YTxTg>
-    <xmx:8bmhY4B76N7LxAkrUKLj2TQyssrk1JN58Iqn9zoV13kZa-_Z1Dk_jQ>
-    <xmx:8bmhY9Ix2CKCle1qFhX-KsCs3FnFghVxKVdoV_W5J6d24Ye8bY8zQg>
-    <xmx:8bmhY87tZPCxVeMFdh4cTLi-NhJj__gLKNzMEkOYSMdtS1RRciMsmg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 20 Dec 2022 08:34:40 -0500 (EST)
-Date:   Tue, 20 Dec 2022 15:34:36 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hao Lan <lanhao@huawei.com>
-Cc:     lipeng321@huawei.com, shenjian15@huawei.com,
-        huangguangbin2@huawei.com, chenjunxin1@huawei.com,
-        netdev@vger.kernel.org, dsahern@kernel.org,
-        stephen@networkplumber.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        petrm@nvidia.com
-Subject: Re: [PATCH iproute2] dcb: unblock mnl_socket_recvfrom if not message
- received
-Message-ID: <Y6G57PG6hQh1SvlX@shredder>
-References: <20221019012008.11322-1-lanhao@huawei.com>
+        with ESMTP id S230132AbiLTNqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:46:34 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C523F63EC;
+        Tue, 20 Dec 2022 05:46:33 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id o12so12435830pjo.4;
+        Tue, 20 Dec 2022 05:46:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5Mi7AIDjIfOPqR55AXqe7e5c1t5p7e8HTIfmStCSqNY=;
+        b=P6YimTcI2NVjm/mvcgxx18QsOM1+dHBvOSjKI93SRuLwCpScJWDzm6HFdRXPVws3kt
+         xnjcAi7spd5cggU61SRWtHYwXivJt36PSFsK4UZIOYR3vxR2PJv1m7EseZEsr1MwSeyR
+         XkwrWS2GVBKSoYxXglpUGSC5Bi4OfPvNXc3betVtb4vO834YQud+VxehHyB7cgCzj3yV
+         B8up0ukIu7ncgfM9LxOqRxPpQO1kmH43557vrM1pmjukDp056u0/dVCFSYoC6QFwj0iy
+         O/VhFXR2BC84ysL4hillKM5RED6mJFG8+lmD1EEqebEjEk7VWEuDV90PDTd+dPXDEaa7
+         E9Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5Mi7AIDjIfOPqR55AXqe7e5c1t5p7e8HTIfmStCSqNY=;
+        b=yUXDe5z388FyDxVpnwrM4GhUGlICI3hzNBbXikPbCxzgU3HqOBz0kliFbFmtGx0Zy8
+         OQsTu/V3AWn7Pkg5dQchT+rP8TakKusr4JarK+ACxt0HctATJs4b1dIm04alXgCesTVy
+         XeX6f6edgC0b1uz9LAiNZLinxlsoAOGwE4wwa6olEgjxNUVnsY8pY9HviG6KVSfTK+ve
+         QRdAG60lFYxwc42n+M/Qi6j0AW8gPytuzhBwWnxtz3Ghcoeuw7nHFuPw2eb4davKBINZ
+         Su042Ikfl8trwZk05pR4z+ohNEA5npXuy/0nnsyB0H0ZVe5Urx5J/ULyBcd2yIxbUG2W
+         y/Sw==
+X-Gm-Message-State: ANoB5pm3pA59C/MdSC/mhgtevkXPfkkU5K5b2O76rRBMNbcNd9ycoPIi
+        m0IEznu9OqKHmS8lE6gzNxmx2zNLgZP5IFXu
+X-Google-Smtp-Source: AA0mqf4bKfQ4hJWTxJTdgYW0ASN+Dg3qXnbmwgc0jSy6lzMXH1MGqGef3ajpTAxnifUdCQ2NHmYVvA==
+X-Received: by 2002:a17:90a:420f:b0:219:4793:2979 with SMTP id o15-20020a17090a420f00b0021947932979mr48117302pjg.22.1671543993339;
+        Tue, 20 Dec 2022 05:46:33 -0800 (PST)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id on16-20020a17090b1d1000b0020b21019086sm1519598pjb.3.2022.12.20.05.46.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Dec 2022 05:46:32 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Samuel Ortiz <sameo@linux.intel.com>,
+        Christophe Ricard <christophe.ricard@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] nfc:  Fix potential resource leaks
+Date:   Tue, 20 Dec 2022 17:46:23 +0400
+Message-Id: <20221220134623.2084443-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019012008.11322-1-lanhao@huawei.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,68 +74,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 09:20:08AM +0800, Hao Lan wrote:
-> From: Junxin Chen <chenjunxin1@huawei.com>
-> 
-> Currently, the dcb command sinks to the kernel through the netlink
-> to obtain information. However, if the kernel fails to obtain infor-
-> mation or is not processed, the dcb command is suspended.
-> 
-> For example, if we don't implement dcbnl_ops->ieee_getpfc in the
-> kernel, the command "dcb pfc show dev eth1" will be stuck and subsequent
-> commands cannot be executed.
-> 
-> This patch adds the NLM_F_ACK flag to the netlink in mnlu_msg_prepare
-> to ensure that the kernel responds to user requests.
+nfc_get_device() take reference for the device, add missing
+nfc_put_device() to release it when not need anymore.
+Also fix the style warnning by use error EOPNOTSUPP instead of
+ENOTSUPP.
 
-The analysis is not correct: The kernel does reply, but the reply does not
-contain the 'DCB_ATTR_IEEE_PFC' attribute, causing the dcb utility to block on
-recvmsg(). Since you changed the utility to request an ACK you need to make
-sure this ACK is processed before issuing another request. Please test the
-following patch. I would like to post it tomorrow.
+Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
+Fixes: 29e76924cf08 ("nfc: netlink: Add capability to reply to vendor_cmd with data")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ net/nfc/netlink.c | 51 ++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 37 insertions(+), 14 deletions(-)
 
-Thanks
-
-commit 7b545308a2273a7fd26204688fa632ec1b4c0205
-Author: Ido Schimmel <idosch@nvidia.com>
-Date:   Tue Dec 20 14:27:46 2022 +0200
-
-    dcb: Do not leave ACKs in socket receive buffer
-    
-    Originally, the dcb utility only stopped receiving messages from a
-    socket when it found the attribute it was looking for. Cited commit
-    changed that, so that the utility will also stop when seeing an ACK
-    (NLMSG_ERROR message), by setting the NLM_F_ACK flag on requests.
-    
-    This is problematic because it means a successful request will leave an
-    ACK in the socket receive buffer, causing the next request to bail
-    before reading its response.
-    
-    Fix that by not stopping when finding the required attribute in a
-    response. Instead, stop on the subsequent ACK.
-    
-    Fixes: 84c036972659 ("dcb: unblock mnl_socket_recvfrom if not message received")
-    Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-
-diff --git a/dcb/dcb.c b/dcb/dcb.c
-index 3ffa91d64d0d..9b996abac529 100644
---- a/dcb/dcb.c
-+++ b/dcb/dcb.c
-@@ -72,7 +72,7 @@ static int dcb_get_attribute_attr_ieee_cb(const struct nlattr *attr, void *data)
+diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+index 9d91087b9399..d081beaf4828 100644
+--- a/net/nfc/netlink.c
++++ b/net/nfc/netlink.c
+@@ -1497,6 +1497,7 @@ static int nfc_genl_se_io(struct sk_buff *skb, struct genl_info *info)
+ 	u32 dev_idx, se_idx;
+ 	u8 *apdu;
+ 	size_t apdu_len;
++	int error;
  
- 	ga->payload = mnl_attr_get_payload(attr);
- 	ga->payload_len = mnl_attr_get_payload_len(attr);
--	return MNL_CB_STOP;
-+	return MNL_CB_OK;
+ 	if (!info->attrs[NFC_ATTR_DEVICE_INDEX] ||
+ 	    !info->attrs[NFC_ATTR_SE_INDEX] ||
+@@ -1510,25 +1511,37 @@ static int nfc_genl_se_io(struct sk_buff *skb, struct genl_info *info)
+ 	if (!dev)
+ 		return -ENODEV;
+ 
+-	if (!dev->ops || !dev->ops->se_io)
+-		return -ENOTSUPP;
++	if (!dev->ops || !dev->ops->se_io) {
++		error = -EOPNOTSUPP;
++		goto put_dev;
++	}
+ 
+ 	apdu_len = nla_len(info->attrs[NFC_ATTR_SE_APDU]);
+-	if (apdu_len == 0)
+-		return -EINVAL;
++	if (apdu_len == 0) {
++		error = -EINVAL;
++		goto put_dev;
++	}
+ 
+ 	apdu = nla_data(info->attrs[NFC_ATTR_SE_APDU]);
+-	if (!apdu)
+-		return -EINVAL;
++	if (!apdu) {
++		error = -EINVAL;
++		goto put_dev;
++	}
+ 
+ 	ctx = kzalloc(sizeof(struct se_io_ctx), GFP_KERNEL);
+-	if (!ctx)
+-		return -ENOMEM;
++	if (!ctx) {
++		error = -ENOMEM;
++		goto put_dev;
++	}
+ 
+ 	ctx->dev_idx = dev_idx;
+ 	ctx->se_idx = se_idx;
+ 
+-	return nfc_se_io(dev, se_idx, apdu, apdu_len, se_io_cb, ctx);
++	error = nfc_se_io(dev, se_idx, apdu, apdu_len, se_io_cb, ctx);
++
++put_dev:
++	nfc_put_device(dev);
++	return error;
  }
  
- static int dcb_get_attribute_attr_cb(const struct nlattr *attr, void *data)
-@@ -126,7 +126,7 @@ static int dcb_set_attribute_attr_cb(const struct nlattr *attr, void *data)
- 		return MNL_CB_ERROR;
+ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
+@@ -1551,14 +1564,20 @@ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
+ 	subcmd = nla_get_u32(info->attrs[NFC_ATTR_VENDOR_SUBCMD]);
+ 
+ 	dev = nfc_get_device(dev_idx);
+-	if (!dev || !dev->vendor_cmds || !dev->n_vendor_cmds)
++	if (!dev)
+ 		return -ENODEV;
++	if (!dev->vendor_cmds || !dev->n_vendor_cmds) {
++		err = -ENODEV;
++		goto put_dev;
++	}
+ 
+ 	if (info->attrs[NFC_ATTR_VENDOR_DATA]) {
+ 		data = nla_data(info->attrs[NFC_ATTR_VENDOR_DATA]);
+ 		data_len = nla_len(info->attrs[NFC_ATTR_VENDOR_DATA]);
+-		if (data_len == 0)
+-			return -EINVAL;
++		if (data_len == 0) {
++			err = -EINVAL;
++			goto put_dev;
++		}
+ 	} else {
+ 		data = NULL;
+ 		data_len = 0;
+@@ -1573,10 +1592,14 @@ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
+ 		dev->cur_cmd_info = info;
+ 		err = cmd->doit(dev, data, data_len);
+ 		dev->cur_cmd_info = NULL;
+-		return err;
++		goto put_dev;
  	}
  
--	return MNL_CB_STOP;
-+	return MNL_CB_OK;
+-	return -EOPNOTSUPP;
++	err = -EOPNOTSUPP;
++
++put_dev:
++	nfc_put_device(dev);
++	return err;
  }
  
- static int dcb_set_attribute_cb(const struct nlmsghdr *nlh, void *data)
+ /* message building helper */
+-- 
+2.25.1
+
