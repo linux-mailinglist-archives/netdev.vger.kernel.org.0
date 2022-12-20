@@ -2,231 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6B46523A5
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:26:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8992E6523AA
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233741AbiLTP0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 10:26:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
+        id S232021AbiLTP3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 10:29:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbiLTP0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:26:05 -0500
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E8424E
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:26:02 -0800 (PST)
-Received: by mail-oo1-xc32.google.com with SMTP id t15-20020a4a96cf000000b0049f7e18db0dso1937775ooi.10
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:26:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2je3sUJheJxY1iG1CJzpC/yr0yMSjeCgBQ96wsakaog=;
-        b=vsk0FKxYgX+IweRqWqFGKdlAgfMi4z+SWeM0nWjWcLgW6GyH9NineAfYBT5wrGcoqS
-         KLhoy/dpbt8XBs5fm28vN4HSuNFUF76rWUkrSnUQSNP3q4xy4C1yJ2IiZCm5BuB9Z+2B
-         4EXel67uoVh7cZbTWxsriHKdkKpAr4GKNaiyM=
+        with ESMTP id S229861AbiLTP3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:29:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED71B7
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:28:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671550132;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/74ZcnfRnP6hfriDq7Kyi6quMr/Tq9CepA6GPX++5Bg=;
+        b=dasBB1AvcAeG2Z+Dk+Gdh4UQ5TQtRHbcOzlgoPSrUT/mwh6gwbh0mSLtjZaQl8p15XaRIo
+        /PKAH+BciLmEx9/y6utFAsVjElcMh4bu2QL6X2xdugEaPDTrFZP9XgCUZvcO/wao4bMP2h
+        7FPumGUri7tIHp45VQ7T5lu17rxd55g=
+Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com
+ [209.85.128.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-358-_tZSIv2DN52JaqtaIy0APg-1; Tue, 20 Dec 2022 10:28:51 -0500
+X-MC-Unique: _tZSIv2DN52JaqtaIy0APg-1
+Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-45c1b233dd7so9109547b3.20
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:28:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2je3sUJheJxY1iG1CJzpC/yr0yMSjeCgBQ96wsakaog=;
-        b=HxfZLw8BOSq3kMyzJsQr0Odz5RdPirmLIA7oGwkoPkCMiiSt1E8xatpJL/IwDX9hjA
-         GxqKS9QseFq1/xwBjaoElfs9fazpy/Ebff/q0kGloGEVqDeYgFzTNg+wpH+PqmRr47B7
-         bhLpzZEHjfIu+sNKI/x6pHe2EiFrgJ8IS7DBTY79DQrqa8HPg4dnsztxEevkYDIsh58K
-         Bpf8Nkr56ZbcHI1y0w1pEGc+xMrZL8WMOG6aMFgJFfMO3wpZLK1xGNjj7GpQrlf7OV6I
-         es2gthCM4fYT/UWOXyqzf7SiUdyiusIA867/QRg1KvnCw5tLtrEeu/vk7teUBVSdRF3+
-         25RQ==
-X-Gm-Message-State: AFqh2koXFmwKQRthK/JYZEI1m1g2iUmwq5qJYb92s8mY5WMwIK/riyCx
-        ycjQeMw9ONDxKiGrpce+PnXGb29g48oHDuzX
-X-Google-Smtp-Source: AMrXdXtiJUuATMZBTcKrSljlyRkuYCcQbCFt+8KfxxGiO3X7kLso0O8nfwxjjntTCsK4A4unC14liA==
-X-Received: by 2002:a4a:5787:0:b0:4a0:c99c:acbc with SMTP id u129-20020a4a5787000000b004a0c99cacbcmr5736079ooa.5.1671549962175;
-        Tue, 20 Dec 2022 07:26:02 -0800 (PST)
-Received: from sbohrer-cf-dell ([24.28.97.120])
-        by smtp.gmail.com with ESMTPSA id r2-20020a4aa8c2000000b0049f098f4fb4sm5140712oom.24.2022.12.20.07.26.01
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/74ZcnfRnP6hfriDq7Kyi6quMr/Tq9CepA6GPX++5Bg=;
+        b=s3uIYLW7lP7Sua4IMkewcrtAVbup7q4JH9ArymkccXFHc4qKerCojnbpLHxSyA2l4d
+         O0/Ae3Z79Ee4MReFIoRVCpF28m8Vv7IcgUja3B4+NQarwk7aqoPEycmrf3BfT4nv+2yg
+         4rII2GHEgayj7tbRGYY8uyp2Xmfqvb8Mn2/rTHY1w0xuHniBYcMjof37P5lkk1ULE7b+
+         s6tx12+XuMVCbMKa1t65BSL/eRBOFQ3EsO/ngxTamxY/rVnE4i+wrnKiFnqmLB+4Xn06
+         aho4d0XwftrQwWjjY0fRouZzczi4ukBc2RPBu5XEN4LV5TIpMZ9HziKCdpiVJ9LJqxiM
+         EhEA==
+X-Gm-Message-State: AFqh2kp74xXy8bbTavhJwQ6JizD1PKsIfvav9e3il1n7O1tveKex3sau
+        TH3/X8JVRRJOV/sO8oVyIoZ2Ic1SwtzC9o7vXeOdvg1AKrpysqPNJWwup59zgOQs5R7+N0Qa9we
+        tkUdEn+iRKkcZXbA6
+X-Received: by 2002:a25:4e87:0:b0:6c3:8ce3:a926 with SMTP id c129-20020a254e87000000b006c38ce3a926mr11780258ybb.65.1671550128121;
+        Tue, 20 Dec 2022 07:28:48 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXu7AUxg3jp6I6OtVwJ9usm41tyPsr1iORF36dVVjXNmqRAQ5biNVYDPOuSccDbfrxhhsas7qw==
+X-Received: by 2002:a25:4e87:0:b0:6c3:8ce3:a926 with SMTP id c129-20020a254e87000000b006c38ce3a926mr11780226ybb.65.1671550127800;
+        Tue, 20 Dec 2022 07:28:47 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
+        by smtp.gmail.com with ESMTPSA id s191-20020a37a9c8000000b006feb0007217sm8952073qke.65.2022.12.20.07.28.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 07:26:01 -0800 (PST)
-Date:   Tue, 20 Dec 2022 09:25:57 -0600
-From:   Shawn Bohrer <sbohrer@cloudflare.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
-        magnus.karlsson@intel.com, kernel-team@cloudflare.com
-Subject: Re: Possible race with xsk_flush
-Message-ID: <Y6HUBWCytyebNnOx@sbohrer-cf-dell>
-References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
- <CAJ8uoz2Q6rtSyVk-7jmRAhy_Zx7fN=OOepUX0kwUThDBf-eXfw@mail.gmail.com>
- <Y5u4dA01y9RjjdAW@sbohrer-cf-dell>
- <CAJ8uoz1GKvoaM0DCo1Ki8q=LHR1cjrNC=1BK7chTKKW9Po5F5A@mail.gmail.com>
- <Y6EQjd5w9Dfmy8ko@sbohrer-cf-dell>
- <CAJ8uoz1D3WY=joXqMo80a5Vqx+3N=5YX6Lh=KC1=coM5zDb-dA@mail.gmail.com>
+        Tue, 20 Dec 2022 07:28:47 -0800 (PST)
+Message-ID: <3bf0ab2e58acbb203fa36fbdb0cc41de4d9ad6dc.camel@redhat.com>
+Subject: Re: [PATCH net-next v3 2/3] net: qualcomm: rmnet: add tx packets
+ aggregation
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Gal Pressman <gal@nvidia.com>,
+        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dave Taht <dave.taht@gmail.com>, netdev@vger.kernel.org
+Date:   Tue, 20 Dec 2022 16:28:43 +0100
+In-Reply-To: <CAGRyCJEzg2gFCf3svgKGSv5+W4QRsVhbYQ+KZoEfvw_=2Rb+Zg@mail.gmail.com>
+References: <20221205093359.49350-1-dnlplm@gmail.com>
+         <20221205093359.49350-3-dnlplm@gmail.com>
+         <ad410abb19bdbcdac617878d14a4e37228f1157b.camel@redhat.com>
+         <CAGRyCJFL5VmeserfoTMY4bR+EWKSEWrdhSTSY8UQsAZphg8PWw@mail.gmail.com>
+         <CAGRyCJEzg2gFCf3svgKGSv5+W4QRsVhbYQ+KZoEfvw_=2Rb+Zg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ8uoz1D3WY=joXqMo80a5Vqx+3N=5YX6Lh=KC1=coM5zDb-dA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 20, 2022 at 10:06:48AM +0100, Magnus Karlsson wrote:
-> On Tue, Dec 20, 2022 at 2:32 AM Shawn Bohrer <sbohrer@cloudflare.com> wrote:
-> >
-> > On Fri, Dec 16, 2022 at 11:05:19AM +0100, Magnus Karlsson wrote:
-> > > To summarize, we are expecting this ordering:
-> > >
-> > > CPU 0 __xsk_rcv_zc()
-> > > CPU 0 __xsk_map_flush()
-> > > CPU 2 __xsk_rcv_zc()
-> > > CPU 2 __xsk_map_flush()
-> > >
-> > > But we are seeing this order:
-> > >
-> > > CPU 0 __xsk_rcv_zc()
-> > > CPU 2 __xsk_rcv_zc()
-> > > CPU 0 __xsk_map_flush()
-> > > CPU 2 __xsk_map_flush()
-> > >
-> > > Here is the veth NAPI poll loop:
-> > >
-> > > static int veth_poll(struct napi_struct *napi, int budget)
-> > > {
-> > >     struct veth_rq *rq =
-> > >     container_of(napi, struct veth_rq, xdp_napi);
-> > >     struct veth_stats stats = {};
-> > >     struct veth_xdp_tx_bq bq;
-> > >     int done;
-> > >
-> > >     bq.count = 0;
-> > >
-> > >     xdp_set_return_frame_no_direct();
-> > >     done = veth_xdp_rcv(rq, budget, &bq, &stats);
-> > >
-> > >     if (done < budget && napi_complete_done(napi, done)) {
-> > >         /* Write rx_notify_masked before reading ptr_ring */
-> > >        smp_store_mb(rq->rx_notify_masked, false);
-> > >        if (unlikely(!__ptr_ring_empty(&rq->xdp_ring))) {
-> > >            if (napi_schedule_prep(&rq->xdp_napi)) {
-> > >                WRITE_ONCE(rq->rx_notify_masked, true);
-> > >                __napi_schedule(&rq->xdp_napi);
-> > >             }
-> > >         }
-> > >     }
-> > >
-> > >     if (stats.xdp_tx > 0)
-> > >         veth_xdp_flush(rq, &bq);
-> > >     if (stats.xdp_redirect > 0)
-> > >         xdp_do_flush();
-> > >     xdp_clear_return_frame_no_direct();
-> > >
-> > >     return done;
-> > > }
-> > >
-> > > Something I have never seen before is that there is
-> > > napi_complete_done() and a __napi_schedule() before xdp_do_flush().
-> > > Let us check if this has something to do with it. So two suggestions
-> > > to be executed separately:
-> > >
-> > > * Put a probe at the __napi_schedule() above and check if it gets
-> > > triggered before this problem
-> > > * Move the "if (stats.xdp_redirect > 0) xdp_do_flush();" to just
-> > > before "if (done < budget && napi_complete_done(napi, done)) {"
-> > >
-> > > This might provide us some hints on what is going on.
-> >
-> > After staring at this code for way too long I finally made a
-> > breakthrough!  I could not understand how this race could occur when
-> > napi_poll() calls netpoll_poll_lock().  Here is netpoll_poll_lock():
-> >
-> > ```
-> >   static inline void *netpoll_poll_lock(struct napi_struct *napi)
-> >   {
-> >     struct net_device *dev = napi->dev;
-> >
-> >     if (dev && dev->npinfo) {
-> >       int owner = smp_processor_id();
-> >
-> >       while (cmpxchg(&napi->poll_owner, -1, owner) != -1)
-> >         cpu_relax();
-> >
-> >       return napi;
-> >     }
-> >     return NULL;
-> >   }
-> > ```
-> > If dev or dev->npinfo are NULL then it doesn't acquire a lock at all!
-> > Adding some more trace points I see:
-> >
-> > ```
-> >   iperf2-1325    [002] ..s1. 264246.626880: __napi_poll: (__napi_poll+0x0/0x150) n=0xffff91c885bff000 poll_owner=-1 dev=0xffff91c881d4e000 npinfo=0x0
-> >   iperf2-1325    [002] d.Z1. 264246.626882: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0x3b/0xc0) addr=0x1503100 len=0x42 xs=0xffff91c8bfe77000 fq=0xffff91c8c1a43f80 dev=0xffff91c881d4e000
-> >   iperf2-1325    [002] d.Z1. 264246.626883: __xsk_rcv_zc_L7: (__xsk_rcv_zc+0x42/0xc0) addr=0x1503100 len=0x42 xs=0xffff91c8bfe77000 fq=0xffff91c8c1a43f80 dev=0xffff91c881d4e000
-> >   iperf2-1325    [002] d.Z1. 264246.626884: xsk_flush: (__xsk_map_flush+0x32/0xb0) xs=0xffff91c8bfe77000
-> > ```
-> >
-> > Here you can see that poll_owner=-1 meaning the lock was never
-> > acquired because npinfo is NULL.  This means that the same veth rx
-> > queue can be napi_polled from multiple CPU and nothing stops it from
-> > running concurrently.  They all look like this, just most of the time
-> > there aren't concurrent napi_polls running for the same queue.  They
-> > do however move around CPUs as I explained earlier.
-> >
-> > I'll note that I've ran with your suggested change of moving
-> > xdp_do_flush() before napi_complete_done() all weekend and I have not
-> > reproduced the issue.  I don't know if that truly means the issue is
-> > fixed by that change or not.  I suspect it does fix the issue because
-> > it prevents the napi_struct from being scheduled again before the
-> > first poll has completed, and nap_schedule_prep() ensures that only
-> > one instance is ever running.
+On Tue, 2022-12-20 at 15:28 +0100, Daniele Palmas wrote:
+> Hello Paolo,
 > 
-> Thanks Shawn! Good news that the patch seems to fix the problem. To
-> me, napi_schedule_prep() makes sure that only one NAPI instance is
-> running. Netpoll is an optional feature and I do not even have it
-> compiled into my kernel. At least I do not have it defined in my
-> .config and I cannot find any netpoll symbols with a readelf command.
-> If netpoll is not used, I would suspect that npinfo == NULL. So to me,
-> it is still a mystery why this is happening.
-
-Oh I don't think it is a mystery anymore.  The napi_complete_done()
-signals that this instance of of the napi_poll is complete.  As you
-said nap_schedule_prep() checks to ensure that only one instance of
-napi_poll is running at a time, but we just indicated it was done with
-napi_complete_done().  This allows this CPU or more importantly any
-other CPU to reschedule napi polling for this receive queue, but we
-haven't called xdp_do_flush() yet so the flush can race.  I'll note
-that the napi_schedule_prep()/__napi_schedule() in veth_poll really
-isn't the problem since it will schedule itself back on the same CPU.
-The problem is simply that another CPU is free to call
-napi_scheulde_prep()/__napi_schedule() in that window after
-napi_complete_done() and before xdp_do_flush().  The veth driver can
-schedule a napi_poll from the transmit path which is what starts the
-poll on a second CPU.
-
-I was simply blinded by that stupid netpoll_poll_lock() but it is
-completely unnecessary.
- 
-> To validate or disprove that there are two instances of the same napi
-> running, could you please put a probe in veth_poll() right after
-> veth_xdp_rcv() and one at xdp_do_flush() and dump the napi id in both
-> cases? And run the original code with the bug :-). It would be good to
-> know what exactly happens in the code between these points when this
-> bug occurs. Maybe we could do this by enabling the trace buffer and
-> dumping it when the bug occurs.
-
-The two instances that race are definitely different napi_polls, the
-second one is scheduled from the veth transmit path.
-
-> > If we think this is the correct fix I'll let it run for another day or
-> > two and prepare a patch.
+> Il giorno ven 9 dic 2022 alle ore 08:38 Daniele Palmas
+> <dnlplm@gmail.com> ha scritto:
+> > 
+> > Il giorno mer 7 dic 2022 alle ore 13:46 Paolo Abeni
+> > <pabeni@redhat.com> ha scritto:
+> > > > +static void rmnet_map_flush_tx_packet_work(struct work_struct *work)
+> > > > +{
+> > > > +     struct sk_buff *skb = NULL;
+> > > > +     struct rmnet_port *port;
+> > > > +
+> > > > +     port = container_of(work, struct rmnet_port, agg_wq);
+> > > > +
+> > > > +     spin_lock_bh(&port->agg_lock);
+> > > > +     if (likely(port->agg_state == -EINPROGRESS)) {
+> > > > +             /* Buffer may have already been shipped out */
+> > > > +             if (likely(port->skbagg_head)) {
+> > > > +                     skb = port->skbagg_head;
+> > > > +                     reset_aggr_params(port);
+> > > > +             }
+> > > > +             port->agg_state = 0;
+> > > > +     }
+> > > > +
+> > > > +     spin_unlock_bh(&port->agg_lock);
+> > > > +     if (skb)
+> > > > +             rmnet_send_skb(port, skb);
+> > > > +}
+> > > > +
+> > > > +static enum hrtimer_restart rmnet_map_flush_tx_packet_queue(struct hrtimer *t)
+> > > > +{
+> > > > +     struct rmnet_port *port;
+> > > > +
+> > > > +     port = container_of(t, struct rmnet_port, hrtimer);
+> > > > +
+> > > > +     schedule_work(&port->agg_wq);
+> > > 
+> > > Why you need to schedule a work and you can't instead call the core of
+> > > rmnet_map_flush_tx_packet_work() here? it looks like the latter does
+> > > not need process context...
+> > > 
+> > 
+> > Ack.
+> > 
 > 
-> There is one more advantage to this bug fix and that is performance.
-> By calling __xdp_map_flush() immediately after the receive function,
-> user space can start to work on the packets quicker so performance
-> will improve.
+> looks like removing the work is not as straightforward as I thought.
+> 
+> Now the timer cb has become:
+> 
+> static enum hrtimer_restart rmnet_map_flush_tx_packet_cb(struct hrtimer *t)
+> {
+>     struct sk_buff *skb = NULL;
+>     struct rmnet_port *port;
+> 
+>     port = container_of(t, struct rmnet_port, hrtimer);
+> 
+>     spin_lock_bh(&port->agg_lock);
+>     if (likely(port->agg_state == -EINPROGRESS)) {
+>         /* Buffer may have already been shipped out */
+>         if (likely(port->skbagg_head)) {
+>             skb = port->skbagg_head;
+>             reset_aggr_params(port);
+>         }
+>         port->agg_state = 0;
+>     }
+>     spin_unlock_bh(&port->agg_lock);
+> 
+>     if (skb)
+>         rmnet_send_skb(port, skb);
+> 
+>     return HRTIMER_NORESTART;
+> }
+> 
+> but this is causing the following warning:
+> 
+> [ 3106.701296] WARNING: CPU: 15 PID: 0 at kernel/softirq.c:375
+> __local_bh_enable_ip+0x54/0x70
+> ...
+> [ 3106.701537] CPU: 15 PID: 0 Comm: swapper/15 Tainted: G           OE
+>      6.1.0-rc5-rmnet-v4-warn #1
+> [ 3106.701543] Hardware name: LENOVO 30DH00H2IX/1048, BIOS S08KT40A 08/23/2021
+> [ 3106.701546] RIP: 0010:__local_bh_enable_ip+0x54/0x70
+> [ 3106.701554] Code: a9 00 ff ff 00 74 27 65 ff 0d 08 bb 75 61 65 8b
+> 05 01 bb 75 61 85 c0 74 06 5d c3 cc cc cc cc 0f 1f 44 00 00 5d c3 cc
+> cc cc cc <0f> 0b eb bf 65 66 8b 05 e0 ca 76 61 66 85 c0 74 cc e8 e6 fd
+> ff ff
+> [ 3106.701559] RSP: 0018:ffffb8aa80510ec8 EFLAGS: 00010006
+> [ 3106.701564] RAX: 0000000080010202 RBX: ffff932d7b687868 RCX: 0000000000000000
+> [ 3106.701569] RDX: 0000000000000001 RSI: 0000000000000201 RDI: ffffffffc0bd5f7c
+> [ 3106.701573] RBP: ffffb8aa80510ec8 R08: ffff933bdc3e31a0 R09: 000002d355c2f99d
+> [ 3106.701576] R10: 0000000000000000 R11: ffffb8aa80510ff8 R12: ffff932d7b687828
+> [ 3106.701580] R13: ffff932d7b687000 R14: ffff932cc1a76400 R15: ffff933bdc3e3180
+> [ 3106.701584] FS:  0000000000000000(0000) GS:ffff933bdc3c0000(0000)
+> knlGS:0000000000000000
+> [ 3106.701589] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 3106.701593] CR2: 00007ffc26dae080 CR3: 0000000209f04003 CR4: 00000000007706e0
+> [ 3106.701597] PKRU: 55555554
+> [ 3106.701599] Call Trace:
+> [ 3106.701602]  <IRQ>
+> [ 3106.701608]  _raw_spin_unlock_bh+0x1d/0x30
+> [ 3106.701623]  rmnet_map_flush_tx_packet_cb+0x4c/0x90 [rmnet]
+> [ 3106.701640]  ? rmnet_send_skb+0x90/0x90 [rmnet]
+> [ 3106.701655]  __hrtimer_run_queues+0x106/0x260
+> [ 3106.701664]  hrtimer_interrupt+0x101/0x220
+> [ 3106.701671]  __sysvec_apic_timer_interrupt+0x61/0x110
+> [ 3106.701677]  sysvec_apic_timer_interrupt+0x7b/0x90
+> [ 3106.701685]  </IRQ>
+> [ 3106.701687]  <TASK>
+> [ 3106.701689]  asm_sysvec_apic_timer_interrupt+0x1b/0x20
+> [ 3106.701694] RIP: 0010:cpuidle_enter_state+0xde/0x6e0
+> [ 3106.701704] Code: eb d6 60 e8 74 01 68 ff 8b 53 04 49 89 c7 0f 1f
+> 44 00 00 31 ff e8 b2 23 67 ff 80 7d d0 00 0f 85 da 00 00 00 fb 0f 1f
+> 44 00 00 <45> 85 f6 0f 88 01 02 00 00 4d 63 ee 49 83 fd 09 0f 87 b6 04
+> 00 00
+> [ 3106.701709] RSP: 0018:ffffb8aa801dbe38 EFLAGS: 00000246
+> [ 3106.701713] RAX: ffff933bdc3f1380 RBX: ffffd8aa7fbc0700 RCX: 000000000000001f
+> [ 3106.701717] RDX: 000000000000000f RSI: 0000000000000002 RDI: 0000000000000000
+> [ 3106.701720] RBP: ffffb8aa801dbe88 R08: 000002d355d34146 R09: 000000000006e988
+> [ 3106.701723] R10: 0000000000000004 R11: 071c71c71c71c71c R12: ffffffffa04ba5c0
+> [ 3106.701727] R13: 0000000000000001 R14: 0000000000000001 R15: 000002d355d34146
+> [ 3106.701735]  ? cpuidle_enter_state+0xce/0x6e0
+> [ 3106.701744]  cpuidle_enter+0x2e/0x50
+> [ 3106.701751]  do_idle+0x204/0x290
+> [ 3106.701758]  cpu_startup_entry+0x20/0x30
+> [ 3106.701763]  start_secondary+0x122/0x160
+> [ 3106.701773]  secondary_startup_64_no_verify+0xe5/0xeb
+> [ 3106.701784]  </TASK>
+> 
+> The reason is not obvious to me, so I need to dig further...
 
-Yes definitely.
+It happens because __hrtimer_run_queues runs in hard-IRQ context.
 
-Thanks,
-Shawn Bohrer
+To address the above you need to replace all the
+
+spin_lock_bh(&port->agg_lock);
+
+instances with the spin_lock_irqsave() variant. With one exception: in
+rmnet_map_flush_tx_packet_cb() you can use simply spin_lock() as such
+fuction is already in hard-irq context.
+
+Cheers,
+
+Paolo
+
