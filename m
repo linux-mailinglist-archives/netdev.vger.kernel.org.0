@@ -2,130 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AC81651A7C
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 07:03:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA5D651A9C
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 07:23:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232937AbiLTGCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 01:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
+        id S230090AbiLTGXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 01:23:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbiLTGCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 01:02:32 -0500
-Received: from pv50p00im-ztbu10021601.me.com (pv50p00im-ztbu10021601.me.com [17.58.6.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B9A14D1E
-        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 22:02:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
-        s=sig1; t=1671516148;
-        bh=7qE9xHexBnOSQP7DLwAIc3M9AGwYnVABLly0YPrjr8A=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=nJyvAOpnjXw3HDo+bjrSq3f+9gyNPaMuxpKgU0SYbt9BPAM6KwkTGpZxY5uBMSZHI
-         gmTQ2tIjVZAAsIxTDL0wOf+noiYK+P2jYkOhEuqHzfHnE9mathwJw4hBH5c9XOBAMX
-         bFkXb6+MelOiEU2CauDFEMTsdT/iouBs6ymYslRoT8SzE73cXzUgAblRfUXs9RjXCx
-         FyGVej9HfPSv0sn4Lt3hrjFCRjSY/9wYm9L9Olv2FMChvJS4XRrg29Q/DoL5tsj9KI
-         LY5YbC5Sq58odlp5pWRbXnF2zZcn1CdSw/i/NLpFELDiK37OVkZ1HX3z8eEUzsjLpG
-         Hr5CgFj4DXjtA==
-Received: from [192.168.1.30] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-ztbu10021601.me.com (Postfix) with ESMTPSA id 34CCA8089D;
-        Tue, 20 Dec 2022 06:02:24 +0000 (UTC)
-Message-ID: <feb8e6f0-be76-925d-e85d-793085dface6@zzy040330.moe>
-Date:   Tue, 20 Dec 2022 14:02:22 +0800
+        with ESMTP id S229500AbiLTGXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 01:23:00 -0500
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEFF13E04;
+        Mon, 19 Dec 2022 22:22:59 -0800 (PST)
+Received: by mail-ed1-f54.google.com with SMTP id i9so16096516edj.4;
+        Mon, 19 Dec 2022 22:22:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1XzGIMiqBhgv2PEcRSAgBf4utolAOX1ZbZTjBRd5KR8=;
+        b=sbtQoTJgFQbHKfoHOksLXUXVqNNH2iWMpxwp1k2cg1T9aicLUVlCXy4ttLL9YOY4HT
+         PfFGMP9ZYAOL81KEKYyGStf8i8gmy8Vd2t4h6lCEW3NThpTR+B52xu+F8i9xfpoBDLoW
+         ecfPXN1eMoqguiQbaop1HqXd3ANIY6kzlJNfmSshWJVgd7opyyMQLEsdPMH585MoK2Qf
+         G5ZG0fd0CkREJMc1VVC8Yr7aSjwAEXLwTq9AaEVJC5U1Vhldr/RBiUQkmtgRGI8VMm9A
+         xS1iWTZuqlORtI2WSXaoYKxJPDkG8pViS3gKXzLp9dT3iR5jQJDebZ5urxYNBkTRpoQO
+         J0tA==
+X-Gm-Message-State: ANoB5pk8rbzy4AlYYlxc64pA06nF2oDhinpI3By9AbHRuA0ey0Q4rXhW
+        OPu45TAOSHI0KzTbpXINxZU=
+X-Google-Smtp-Source: AA0mqf4LkyJ1sXaUUIBNHxX9lqV96cttdjk6fczG6Dfw6cJDawsRWCp9dsjUBdMHxDaGbE5KikJbbg==
+X-Received: by 2002:a05:6402:205c:b0:46d:c48c:50eb with SMTP id bc28-20020a056402205c00b0046dc48c50ebmr55319962edb.13.1671517378271;
+        Mon, 19 Dec 2022 22:22:58 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id p26-20020a056402045a00b004610899742asm5215572edw.13.2022.12.19.22.22.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Dec 2022 22:22:57 -0800 (PST)
+Message-ID: <5bb57ae6-c2a7-e6ea-3fe8-62b8b61bc7c5@kernel.org>
+Date:   Tue, 20 Dec 2022 07:22:56 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.0
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
- <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
+Subject: Re: [PULL] Networking for next-6.1
 Content-Language: en-US
-From:   Jun ASAKA <JunASAKA@zzy040330.moe>
-In-Reply-To: <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, joannelkoong@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+References: <6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org>
+ <20221218232547.44526-1-kuniyu@amazon.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20221218232547.44526-1-kuniyu@amazon.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: Ab5CiSP5moxstGcKAV8LZuvltnmr-6h9
-X-Proofpoint-GUID: Ab5CiSP5moxstGcKAV8LZuvltnmr-6h9
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.517,18.0.572,17.11.64.514.0000000_definitions?=
- =?UTF-8?Q?=3D2022-06-21=5F01:2022-06-21=5F01,2020-02-14=5F11,2022-02-23?=
- =?UTF-8?Q?=5F01_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- mlxlogscore=741 malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0
- clxscore=1030 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2212200050
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 20/12/2022 13:44, Ping-Ke Shih wrote:
->
->> -----Original Message-----
->> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->> Sent: Saturday, December 17, 2022 11:07 AM
->> To: Jes.Sorensen@gmail.com
->> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
->> <JunASAKA@zzy040330.moe>
->> Subject: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+On 19. 12. 22, 0:25, Kuniyuki Iwashima wrote:
+> From:   Jiri Slaby <jirislaby@kernel.org>
+> Date:   Fri, 16 Dec 2022 11:49:01 +0100
+>> Hi,
 >>
->> Fixing transmission failure which results in
->> "authentication with ... timed out". This can be
->> fixed by disable the REG_TXPAUSE.
+>> On 04. 10. 22, 7:20, Jakub Kicinski wrote:
+>>> Joanne Koong (7):
 >>
->> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->> ---
->>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
->>   1 file changed, 5 insertions(+)
+>>>         net: Add a bhash2 table hashed by port and address
 >>
->> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> index a7d76693c02d..9d0ed6760cb6 100644
->> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
->>   	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
->>   	val8 &= ~BIT(0);
->>   	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
->> +
->> +	/*
->> +	 * Fix transmission failure of rtl8192e.
->> +	 */
->> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
-> I trace when rtl8xxxu set REG_TXPAUSE=0xff that will stop TX.
-> The occasions include RF calibration, LPS mode (called by power off), and
-> going to stop. So, I think RF calibration does TX pause but not restore
-> settings after calibration, and causes TX stuck. As the flow I traced,
-> this patch looks reasonable. But, I wonder why other people don't meet
-> this problem.
->
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
->
->>   }
+>> This makes regression tests of python-ephemeral-port-reserve to fail.
 >>
->>   static s8 rtl8192e_cck_rssi(struct rtl8xxxu_priv *priv, u8 cck_agc_rpt)
->> --
->> 2.31.1
+>> I'm not sure if the issue is in the commit or in the test.
+> 
+> Hi Jiri,
+> 
+> Thanks for reporting the issue.
+> 
+> It seems we forgot to add TIME_WAIT sockets into bhash2 in
+> inet_twsk_hashdance(), therefore inet_bhash2_conflict() misses
+> TIME_WAIT sockets when validating bind() requests if the address
+> is not a wildcard one.
+> 
+> I'll fix it.
 
-For my occasion, one of my rtl8192ru device which is Tenda U1 doesn't 
-work originally with this module, it prints "authentication with ... 
-timed out" in dmesg. And this change can fix the problem.
+Hi,
 
-Thanks for your review.
+is there a fix for this available somewhere yet?
 
-
-Jun ASAKA.
+thanks,
+-- 
+js
+suse labs
 
