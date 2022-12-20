@@ -2,57 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CC2D65262C
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 19:26:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD82652633
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 19:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233948AbiLTS0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 13:26:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S233852AbiLTS2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 13:28:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiLTS03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 13:26:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52492DC6
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 10:25:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671560742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8L0VV2lq8zL7OiW2Mg/Mv76PXH9xfoSEugTXSKHlbiA=;
-        b=Mg6THfJcGDybw/fPPIXV/CSnUfsOXsq9Aw6ZPYtxFuDtAM3Wd+drvdE7gU/ayxCpi024Xd
-        TkklZx4PvlkYDbOfMunKQ0czSefqLJmpWn0lFPeaMBoWdXXN+ombkzXa9mzPazIq/ueO87
-        uxqb8suzC7wXIP2HZKbBetUYjECYHO0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-500-LHtynSkuNbWGnXFpwtG_fw-1; Tue, 20 Dec 2022 13:25:39 -0500
-X-MC-Unique: LHtynSkuNbWGnXFpwtG_fw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BD3F7183B3C1;
-        Tue, 20 Dec 2022 18:25:38 +0000 (UTC)
-Received: from dcaratti.users.ipa.redhat.com (unknown [10.32.181.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B9F3492C14;
-        Tue, 20 Dec 2022 18:25:37 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, jiri@resnulli.us, marcelo.leitner@gmail.com,
-        pabeni@redhat.com, wizhao@redhat.com, xiyou.wangcong@gmail.com,
-        lucien.xin@gmail.com
-Subject: [RFC net-next 2/2] act_mirred: use the backlog for nested calls to mirred ingress
-Date:   Tue, 20 Dec 2022 19:25:23 +0100
-Message-Id: <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
-In-Reply-To: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
-References: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
+        with ESMTP id S229720AbiLTS2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 13:28:01 -0500
+Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2081DA59;
+        Tue, 20 Dec 2022 10:28:00 -0800 (PST)
+Received: by mail-ua1-x936.google.com with SMTP id z23so528543uae.7;
+        Tue, 20 Dec 2022 10:28:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jIT6fF5gjfLCiNasKGkoBaNWOPI0QJSFqW2RO835jA4=;
+        b=P6hHUtJo+wZUfhtWkXLr7H5eONR4z7bhH+Dd2Pu6drAyozwW4Rmg8/cKU8uE2blr6B
+         LBqB/IA5soQBF/NJC9w1ZoA1WTNThXvPrSBXhGDO5adDpwfZTyNvBRcpxLR44EaKQAXr
+         LMTe8WU4WxF9iwSS+ufRzydfXNyS1eqTqceEBQNsua9BdPYWt0iDRDpDuAVR6WqHtHk4
+         HbBSpxSx7hz7S0VBS+iwOpnwzVKP48t2fYpiesyaxy9JLSIx9Y+JwQ1i+hwehk66oVlU
+         bTFOivWkCoswK20RW4abWK/USW+wBBXiemserv92pOLn7FwgXN86lUPfCSqDOnYC81lC
+         NZaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jIT6fF5gjfLCiNasKGkoBaNWOPI0QJSFqW2RO835jA4=;
+        b=ZOEQJMW6Q+H9u0IMJFlq/1WKMtCqgFcxKqeJX78iW3HRdgMJrYZizZgPrOtam3WCKE
+         fBaj5+9NDs/UHXmP8p9UFe3rsKWC/x4oNl2rOTunzFzZ6dCc7V/7WPH5/FXLnbW2B+UW
+         4m7vEcwQI5urxTTUdjDHFvgVn9uqjvH8NbhEAc4iTvzMQwYc4df7ORzNPcKHwQ5gqsTZ
+         A/8uHr6V7CAL/vSsWec2SWdZPiLHD/eWUSzwcA7Y6igEqvhj0fr+3cxs30cg/lvjNNUw
+         zEE4ykuFIYuNXvCXtZ7EcttOp22jIVeZJ7BsstowqoR0UyVbHgM5YLdNKfrHDYHshm2n
+         d+6g==
+X-Gm-Message-State: ANoB5pnjNdi9j66ozGzwtcsmFJEKHS9l/ERqvJgHH3NPi08oKSk8K2zt
+        upQW5wHJ3sSJARidC2wvRg3KPh79yhQmKJAv/Sg=
+X-Google-Smtp-Source: AA0mqf4cCuDAam2bj0nbK1acGmhmPmCV5Sx0C10cMjh7B1N9LbnOouKDGjfvDFI1xq5STO7LuL2meHifp9VbWAhqqPs=
+X-Received: by 2002:ab0:3194:0:b0:418:f8f7:d9d7 with SMTP id
+ d20-20020ab03194000000b00418f8f7d9d7mr41242563uan.116.1671560879538; Tue, 20
+ Dec 2022 10:27:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
+In-Reply-To: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 20 Dec 2022 13:27:22 -0500
+Message-ID: <CAF=yD-KEwVnH6PRyxbJZt4iGfKasadYwU_6_V+hHW2s+ZqFNcw@mail.gmail.com>
+Subject: Re: kernel BUG in __skb_gso_segment
+To:     Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc:     mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, edumazet@google.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, willemb@google.com,
+        syzkaller@googlegroups.com, liuhangbin@gmail.com,
+        linux-kernel@vger.kernel.org, joneslee@google.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,129 +70,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-William reports kernel soft-lockups on some OVS topologies when TC mirred
-egress->ingress action is hit by local TCP traffic [1].
-The same can also be reproduced with SCTP (thanks Xin for verifying), when
-client and server reach themselves through mirred egress to ingress, and
-one of the two peers sends a "heartbeat" packet (from within a timer).
+On Tue, Dec 20, 2022 at 8:21 AM Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
+>
+> Hi,
+>
+> There's a bug [1] reported by syzkaller in linux-5.15.y that I'd like
+> to squash. The commit in stable that introduces the bug is:
+> b99c71f90978 net: skip virtio_net_hdr_set_proto if protocol already set
+> The upstream commit for this is:
+> 1ed1d592113959f00cc552c3b9f47ca2d157768f
+>
+> I discovered that in mainline this bug was squashed by the following
+> commits:
+> e9d3f80935b6 ("net/af_packet: make sure to pull mac header")
+> dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO")
+>
+> I'm seeking for some guidance on how to fix linux-5.15.y. From what I
+> understand, the bug in stable is triggered because we end up with a
+> header offset of 18, that eventually triggers the GSO crash in
+> __skb_pull. If I revert the commit in culprit from linux-5.15.y, we'll
+> end up with a header offset of 14, the bug is not hit and the packet is
+> dropped at validate_xmit_skb() time. I'm wondering if reverting it is
+> the right thing to do, as the commit is marked as a fix. Backporting the
+> 2 commits from mainline is not an option as they introduce new support.
+> Would such a patch be better than reverting the offending commit?
 
-Enqueueing to backlog proved to fix this soft lockup; however, as Cong
-noticed [2], we should preserve - when possible - the current mirred
-behavior that counts as "overlimits" any eventual packet drop subsequent to
-the mirred forwarding action [3]. A compromise solution might use the
-backlog only when tcf_mirred_act() has a nest level greater than one:
-change tcf_mirred_forward() accordingly.
+If both patches can be backported without conflicts, in this case I
+think that is the preferred solution.
 
-Also, add a kselftest that can reproduce the lockup and verifies TC mirred
-ability to account for further packet drops after TC mirred egress->ingress
-(when the nest level is 1).
+If the fix were obvious that would be an option. But the history for
+this code indicates that it isn't. It has a history of fixes for edge
+cases.
 
- [1] https://lore.kernel.org/netdev/33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com/
- [2] https://lore.kernel.org/netdev/Y0w%2FWWY60gqrtGLp@pop-os.localdomain/
- [3] such behavior is not guaranteed: for example, if RPS or skb RX
-     timestamping is enabled on the mirred target device, the kernel
-     can defer receiving the skb and return NET_RX_SUCCESS inside
-     tcf_mirred_forward().
+Backporting the two avoids a fork that would make backporting
+additional fixes harder. The first of the two is technically not a
+fix, but evidently together they are for this case. And the additional
+logic and risk backported seems manageable.
 
-Reported-by: William Zhao <wizhao@redhat.com>
-CC: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/sched/act_mirred.c                        |  7 +++
- .../selftests/net/forwarding/tc_actions.sh    | 49 ++++++++++++++++++-
- 2 files changed, 55 insertions(+), 1 deletion(-)
-
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index c8abb5136491..8037ec9b1d31 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -206,12 +206,19 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
- 	return err;
- }
- 
-+static bool is_mirred_nested(void)
-+{
-+	return unlikely(__this_cpu_read(mirred_nest_level) > 1);
-+}
-+
- static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
- {
- 	int err;
- 
- 	if (!want_ingress)
- 		err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
-+	else if (is_mirred_nested())
-+		err = netif_rx(skb);
- 	else
- 		err = netif_receive_skb(skb);
- 
-diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
-index 1e0a62f638fe..919c0dd9fe4b 100755
---- a/tools/testing/selftests/net/forwarding/tc_actions.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
-@@ -3,7 +3,8 @@
- 
- ALL_TESTS="gact_drop_and_ok_test mirred_egress_redirect_test \
- 	mirred_egress_mirror_test matchall_mirred_egress_mirror_test \
--	gact_trap_test mirred_egress_to_ingress_test"
-+	gact_trap_test mirred_egress_to_ingress_test \
-+	mirred_egress_to_ingress_tcp_test"
- NUM_NETIFS=4
- source tc_common.sh
- source lib.sh
-@@ -198,6 +199,52 @@ mirred_egress_to_ingress_test()
- 	log_test "mirred_egress_to_ingress ($tcflags)"
- }
- 
-+mirred_egress_to_ingress_tcp_test()
-+{
-+	local tmpfile=$(mktemp) tmpfile1=$(mktemp)
-+
-+	RET=0
-+	dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$tmpfile
-+	tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
-+		$tcflags ip_proto tcp src_ip 192.0.2.1 dst_ip 192.0.2.2 \
-+			action ct commit nat src addr 192.0.2.2 pipe \
-+			action ct clear pipe \
-+			action ct commit nat dst addr 192.0.2.1 pipe \
-+			action ct clear pipe \
-+			action skbedit ptype host pipe \
-+			action mirred ingress redirect dev $h1
-+	tc filter add dev $h1 protocol ip pref 101 handle 101 egress flower \
-+		$tcflags ip_proto icmp \
-+			action mirred ingress redirect dev $h1
-+	tc filter add dev $h1 protocol ip pref 102 handle 102 ingress flower \
-+		ip_proto icmp \
-+			action drop
-+
-+	ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $tmpfile1  &
-+	local rpid=$!
-+	ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$tmpfile
-+	wait -n $rpid
-+	cmp -s $tmpfile $tmpfile1
-+	check_err $? "server output check failed"
-+
-+	$MZ $h1 -c 10 -p 64 -a $h1mac -b $h1mac -A 192.0.2.1 -B 192.0.2.1 \
-+		-t icmp "ping,id=42,seq=5" -q
-+	tc_check_packets "dev $h1 egress" 101 10
-+	check_err $? "didn't mirred redirect ICMP"
-+	tc_check_packets "dev $h1 ingress" 102 10
-+	check_err $? "didn't drop mirred ICMP"
-+	local overlimits=$(tc_rule_stats_get ${h1} 101 egress .overlimits)
-+	test ${overlimits} = 10
-+	check_err $? "wrong overlimits, expected 10 got ${overlimits}"
-+
-+	tc filter del dev $h1 egress protocol ip pref 100 handle 100 flower
-+	tc filter del dev $h1 egress protocol ip pref 101 handle 101 flower
-+	tc filter del dev $h1 ingress protocol ip pref 102 handle 102 flower
-+
-+	rm -f $tmpfile $tmpfile1
-+	log_test "mirred_egress_to_ingress_tcp ($tcflags)"
-+}
-+
- setup_prepare()
- {
- 	h1=${NETIFS[p1]}
--- 
-2.38.1
-
+Admittedly that is subjective. I can help take a closer look at a
+custom fix if consensus is that is preferable.
