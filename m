@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9203652009
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 13:00:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6CD65200C
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 13:00:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233438AbiLTL77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 06:59:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S231648AbiLTMAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 07:00:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233336AbiLTL7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 06:59:43 -0500
+        with ESMTP id S232097AbiLTL7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 06:59:45 -0500
 Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7753917E13;
-        Tue, 20 Dec 2022 03:59:42 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id fy4so12214434pjb.0;
-        Tue, 20 Dec 2022 03:59:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E6D16598;
+        Tue, 20 Dec 2022 03:59:44 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id fy4so12214527pjb.0;
+        Tue, 20 Dec 2022 03:59:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0ChfKO2eeBoMULr5ewcllVR5YsnxKeW8Y85F/urf2ac=;
-        b=lCsRlQYDOx2sddcCaiYgxCKvCzigmio9/pLm2MwR43zRRkivbD1iQ1Y0Suuu+j2hHi
-         PAgPg3fPTZ0Pt8unFbCCHo3xfRq8SVMAwQsx9exDb7II71o8OqiWuVJMzEv5CcNrgYb/
-         msoLmj9pDELBOGMeKkLJklWIKL9p7JjW07zmeRVU/nbYzRzuEjwuaOaNaH1AzRJrndPb
-         GDElWpPbVHuKOy8lU6syu7umesa8p/aOiTbfLXwxttSVQvTF8iBuiR09Zsv6nfiURDIy
-         lcTr9C0emMQWax4LSy3bqDho4754z6TDdnDB9JtQXqmkP1+/kVsLE25WDuUiJ4lXlIcC
-         Js1w==
+        bh=YZV/Ygg5ZLK/icKlwhdiYUcrDkEBcDRF0QNzCkC6zPE=;
+        b=KnAXW0kFi43Q478adbdX8W+JEMl1sSx3fiivWNYoQ1WAhPGMmvN9yQYcXRQaLq5O+O
+         6LTMT58pWHvfDSIDbD2w1DSew8tZXkMegOxx/qz9F1HXLQbQiU3ks80bOF0SadqAs8Kf
+         1bYOLZ3PrDW1RuGccmsEr8SKzaedHnRDTz8CR+n2bPpePERFCoShUNVi/gph2+TkSsjw
+         YouDtAX8qHDRVaAPN7fL0zqEve5ABl8O/MZ058hPYCBQJ7LC0QJtksRZL7k6InzcWM7K
+         BRP2HAYB+OSbtJed6VajdU/dqE8IFFpzvLl+YbJvJje8cGll5lAFK8CLywJCKtDR7Jbz
+         +8ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0ChfKO2eeBoMULr5ewcllVR5YsnxKeW8Y85F/urf2ac=;
-        b=VB1cbljceNQcvO0Jy3n2XsXUf50UL6mFVKLAbENBlaTVOaAgEmU5FurSf1wAazIYrG
-         VOioBBWzII1XLubyIWp1yPng5V5S1k1Sw3pci2u82vRhB+xXhLMC9SDRg4NsqscS1ZRq
-         oJNPWVxX6v4g4cIP6K0IU33j7MdHkzrbXuom0+ClRHruULrG56258HTCQR2gQMfVqt/Y
-         0jJpi70x/uboGx7vSr9pg+6ycLwqQARa3EGQFP9bxkO6MwaPjceul+ib263rF8h9snl0
-         MtqbgiSGHUmtycdjjYhiQMfS3XaOMkYcYkf8R6Wet65274HerJw1zxdZGvuZ7Z2N1O9x
-         mtGQ==
-X-Gm-Message-State: AFqh2krtP1zKTs9/zcSMBOZ163tSTo04ttX35eEOm/tt2AV63Tb40cZZ
-        RcWMXSpAVaVN4ZzGMPI9WA==
-X-Google-Smtp-Source: AMrXdXvnmaib6VFB94aIo/5L34sh7JlfjZcfF3Ure3MXIMQ7dAt7O2L8mVmlKnXGA0jcBLJOAq/Ryg==
-X-Received: by 2002:a17:90a:d910:b0:213:9bf5:6a10 with SMTP id c16-20020a17090ad91000b002139bf56a10mr13005905pjv.49.1671537582074;
-        Tue, 20 Dec 2022 03:59:42 -0800 (PST)
+        bh=YZV/Ygg5ZLK/icKlwhdiYUcrDkEBcDRF0QNzCkC6zPE=;
+        b=EhgReimKL0X/issNAFFwuQMN6DofTr3ZNng1pWhSXD1jgpfhLYgQG4mSmuZ1D6pe36
+         mI8k2bMx1Hbw72O20kP6T3626UoXqWbrwcaDpCngEjiISc1fh+aVM+qlv+s9NIF2yIzl
+         N78mtzoYZrE6AzVj2nhamqOlQqKYtc+12LY8aDY/Tw7PaYgPyAJrJZCaY3RD6mFDgFoK
+         cung8E81VUC+cpccNnELe51i+LkfcNuXQkZROIkJsFCot9GyLvXE2jVg41DKpFCV1aWW
+         2qkGQrY6yx5VKhihvYYqOi0pwVbbAmTDVJm8R3eB2z/0IuAiGtSi3naUO4yEdQOrC0uc
+         5Y7Q==
+X-Gm-Message-State: ANoB5pk0aSrLVJzPWI1vLCXrBuOSWjA4Fz+tUyHILyLrZkUzIdY+Yj5R
+        bTA0nHIVnPpJum7HWL0LkQ==
+X-Google-Smtp-Source: AA0mqf4cC9ovgUH8iqDQBDUrfZ47OoxQUaOkQKsKXu3VnDq/oEimiPN5x3Wi5NkpGDsXCQyj2P7j9Q==
+X-Received: by 2002:a17:90b:702:b0:219:5f68:586e with SMTP id s2-20020a17090b070200b002195f68586emr48418537pjz.18.1671537584364;
+        Tue, 20 Dec 2022 03:59:44 -0800 (PST)
 Received: from WDIR.. ([182.209.58.25])
-        by smtp.gmail.com with ESMTPSA id z10-20020a17090a170a00b00219752c8ea3sm10982482pjd.48.2022.12.20.03.59.40
+        by smtp.gmail.com with ESMTPSA id z10-20020a17090a170a00b00219752c8ea3sm10982482pjd.48.2022.12.20.03.59.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 03:59:41 -0800 (PST)
+        Tue, 20 Dec 2022 03:59:43 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Yonghong Song <yhs@fb.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [bpf-next v2 4/5] samples/bpf: fix tracex2 by using BPF_KSYSCALL macro
-Date:   Tue, 20 Dec 2022 20:59:27 +0900
-Message-Id: <20221220115928.11979-5-danieltimlee@gmail.com>
+Subject: [bpf-next v2 5/5] samples/bpf: use BPF_KSYSCALL macro in syscall tracing programs
+Date:   Tue, 20 Dec 2022 20:59:28 +0900
+Message-Id: <20221220115928.11979-6-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221220115928.11979-1-danieltimlee@gmail.com>
 References: <20221220115928.11979-1-danieltimlee@gmail.com>
@@ -73,73 +73,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, there is a problem with tracex2, as it doesn't print the
-histogram properly and the results are misleading. (all results report
-as 0)
-
-The problem is caused by a change in arguments of the function to which
-the kprobe connects. This tracex2 bpf program uses kprobe (attached
-to __x64_sys_write) to figure out the size of the write system call. In
-order to achieve this, the third argument 'count' must be intact.
-
-The following is a prototype of the sys_write variant. (checked with
-pfunct)
-
-    ~/git/linux$ pfunct -P fs/read_write.o | grep sys_write
-    ssize_t ksys_write(unsigned int fd, const char  * buf, size_t count);
-    long int __x64_sys_write(const struct pt_regs  * regs);
-    ... cross compile with s390x ...
-    long int __s390_sys_write(struct pt_regs * regs);
-
-Since the nature of SYSCALL_WRAPPER function wraps the argument once,
-additional process of argument extraction is required to properly parse
-the argument.
-
-    #define BPF_KSYSCALL(name, args...)
-    ... snip ...
-    struct pt_regs *regs = LINUX_HAS_SYSCALL_WRAPPER                    \
-			   ? (struct pt_regs *)PT_REGS_PARM1(ctx)       \
-			   : ctx;                                       \
-
-In order to fix this problem, the BPF_SYSCALL macro has been used. This
-reduces the hassle of parsing arguments from pt_regs. Since the macro
-uses the CORE version of argument extraction, additional portability
-comes too.
+This commit enhances the syscall tracing programs by using the
+BPF_SYSCALL macro to reduce the inconvenience of parsing arguments from
+pt_regs. By simplifying argument extraction, bpf program will become
+clear to understand.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- samples/bpf/tracex2.bpf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ samples/bpf/map_perf_test.bpf.c               | 26 ++++++++-----------
+ .../bpf/test_current_task_under_cgroup.bpf.c  |  4 ++-
+ samples/bpf/test_probe_write_user.bpf.c       | 12 ++++-----
+ 3 files changed, 19 insertions(+), 23 deletions(-)
 
-diff --git a/samples/bpf/tracex2.bpf.c b/samples/bpf/tracex2.bpf.c
-index a712eefc742e..0a5c75b367be 100644
---- a/samples/bpf/tracex2.bpf.c
-+++ b/samples/bpf/tracex2.bpf.c
-@@ -8,6 +8,7 @@
+diff --git a/samples/bpf/map_perf_test.bpf.c b/samples/bpf/map_perf_test.bpf.c
+index 0c7885057ffe..3cdeba2afe12 100644
+--- a/samples/bpf/map_perf_test.bpf.c
++++ b/samples/bpf/map_perf_test.bpf.c
+@@ -101,7 +101,7 @@ struct {
+ } lru_hash_lookup_map SEC(".maps");
+ 
+ SEC("ksyscall/getuid")
+-int stress_hmap(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_hmap)
+ {
+ 	u32 key = bpf_get_current_pid_tgid();
+ 	long init_val = 1;
+@@ -119,7 +119,7 @@ int stress_hmap(struct pt_regs *ctx)
+ }
+ 
+ SEC("ksyscall/geteuid")
+-int stress_percpu_hmap(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_percpu_hmap)
+ {
+ 	u32 key = bpf_get_current_pid_tgid();
+ 	long init_val = 1;
+@@ -136,7 +136,7 @@ int stress_percpu_hmap(struct pt_regs *ctx)
+ }
+ 
+ SEC("ksyscall/getgid")
+-int stress_hmap_alloc(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_hmap_alloc)
+ {
+ 	u32 key = bpf_get_current_pid_tgid();
+ 	long init_val = 1;
+@@ -153,7 +153,7 @@ int stress_hmap_alloc(struct pt_regs *ctx)
+ }
+ 
+ SEC("ksyscall/getegid")
+-int stress_percpu_hmap_alloc(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_percpu_hmap_alloc)
+ {
+ 	u32 key = bpf_get_current_pid_tgid();
+ 	long init_val = 1;
+@@ -168,11 +168,10 @@ int stress_percpu_hmap_alloc(struct pt_regs *ctx)
+ 	}
+ 	return 0;
+ }
+-
+ SEC("ksyscall/connect")
+-int stress_lru_hmap_alloc(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_lru_hmap_alloc, int fd, struct sockaddr_in *uservaddr,
++		 int addrlen)
+ {
+-	struct pt_regs *real_regs = (struct pt_regs *)PT_REGS_PARM1_CORE(ctx);
+ 	char fmt[] = "Failed at stress_lru_hmap_alloc. ret:%dn";
+ 	union {
+ 		u16 dst6[8];
+@@ -185,14 +184,11 @@ int stress_lru_hmap_alloc(struct pt_regs *ctx)
+ 			u32 key;
+ 		};
+ 	} test_params;
+-	struct sockaddr_in6 *in6;
++	struct sockaddr_in6 *in6 = (struct sockaddr_in6 *)uservaddr;
+ 	u16 test_case;
+-	int addrlen, ret;
+ 	long val = 1;
+ 	u32 key = 0;
+-
+-	in6 = (struct sockaddr_in6 *)PT_REGS_PARM2_CORE(real_regs);
+-	addrlen = (int)PT_REGS_PARM3_CORE(real_regs);
++	int ret;
+ 
+ 	if (addrlen != sizeof(*in6))
+ 		return 0;
+@@ -250,7 +246,7 @@ int stress_lru_hmap_alloc(struct pt_regs *ctx)
+ }
+ 
+ SEC("ksyscall/gettid")
+-int stress_lpm_trie_map_alloc(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_lpm_trie_map_alloc)
+ {
+ 	union {
+ 		u32 b32[2];
+@@ -272,7 +268,7 @@ int stress_lpm_trie_map_alloc(struct pt_regs *ctx)
+ }
+ 
+ SEC("ksyscall/getpgid")
+-int stress_hash_map_lookup(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_hash_map_lookup)
+ {
+ 	u32 key = 1, i;
+ 	long *value;
+@@ -285,7 +281,7 @@ int stress_hash_map_lookup(struct pt_regs *ctx)
+ }
+ 
+ SEC("ksyscall/getppid")
+-int stress_array_map_lookup(struct pt_regs *ctx)
++int BPF_KSYSCALL(stress_array_map_lookup)
+ {
+ 	u32 key = 1, i;
+ 	long *value;
+diff --git a/samples/bpf/test_current_task_under_cgroup.bpf.c b/samples/bpf/test_current_task_under_cgroup.bpf.c
+index 0b059cee3cba..58b9cf7ed659 100644
+--- a/samples/bpf/test_current_task_under_cgroup.bpf.c
++++ b/samples/bpf/test_current_task_under_cgroup.bpf.c
+@@ -8,6 +8,8 @@
+ #include "vmlinux.h"
  #include <linux/version.h>
  #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
++#include <bpf/bpf_tracing.h>
 +#include <bpf/bpf_core_read.h>
  
  struct {
- 	__uint(type, BPF_MAP_TYPE_HASH);
-@@ -76,14 +77,13 @@ struct {
- } my_hist_map SEC(".maps");
+ 	__uint(type, BPF_MAP_TYPE_CGROUP_ARRAY);
+@@ -25,7 +27,7 @@ struct {
  
- SEC("ksyscall/write")
--int bpf_prog3(struct pt_regs *ctx)
-+int BPF_KSYSCALL(bpf_prog3, unsigned int fd, const char *buf, size_t count)
+ /* Writes the last PID that called sync to a map at index 0 */
+ SEC("ksyscall/sync")
+-int bpf_prog1(struct pt_regs *ctx)
++int BPF_KSYSCALL(bpf_prog1)
  {
--	long write_size = PT_REGS_PARM3(ctx);
- 	long init_val = 1;
- 	long *value;
- 	struct hist_key key;
+ 	u64 pid = bpf_get_current_pid_tgid();
+ 	int idx = 0;
+diff --git a/samples/bpf/test_probe_write_user.bpf.c b/samples/bpf/test_probe_write_user.bpf.c
+index a0f10c5ca273..a4f3798b7fb0 100644
+--- a/samples/bpf/test_probe_write_user.bpf.c
++++ b/samples/bpf/test_probe_write_user.bpf.c
+@@ -27,24 +27,22 @@ struct {
+  * of course, across platforms, and over time, the ABI may change.
+  */
+ SEC("ksyscall/connect")
+-int bpf_prog1(struct pt_regs *ctx)
++int BPF_KSYSCALL(bpf_prog1, int fd, struct sockaddr_in *uservaddr,
++		 int addrlen)
+ {
+-	struct pt_regs *real_regs = (struct pt_regs *)PT_REGS_PARM1_CORE(ctx);
+-	void *sockaddr_arg = (void *)PT_REGS_PARM2_CORE(real_regs);
+-	int sockaddr_len = (int)PT_REGS_PARM3_CORE(real_regs);
+ 	struct sockaddr_in new_addr, orig_addr = {};
+ 	struct sockaddr_in *mapped_addr;
  
--	key.index = log2l(write_size);
-+	key.index = log2l(count);
- 	key.pid_tgid = bpf_get_current_pid_tgid();
- 	key.uid_gid = bpf_get_current_uid_gid();
- 	bpf_get_current_comm(&key.comm, sizeof(key.comm));
+-	if (sockaddr_len > sizeof(orig_addr))
++	if (addrlen > sizeof(orig_addr))
+ 		return 0;
+ 
+-	if (bpf_probe_read_user(&orig_addr, sizeof(orig_addr), sockaddr_arg) != 0)
++	if (bpf_probe_read_user(&orig_addr, sizeof(orig_addr), uservaddr) != 0)
+ 		return 0;
+ 
+ 	mapped_addr = bpf_map_lookup_elem(&dnat_map, &orig_addr);
+ 	if (mapped_addr != NULL) {
+ 		memcpy(&new_addr, mapped_addr, sizeof(new_addr));
+-		bpf_probe_write_user(sockaddr_arg, &new_addr,
++		bpf_probe_write_user(uservaddr, &new_addr,
+ 				     sizeof(new_addr));
+ 	}
+ 	return 0;
 -- 
 2.34.1
 
