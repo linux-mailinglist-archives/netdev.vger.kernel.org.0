@@ -2,74 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7519F6523CD
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AD126523F1
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:48:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbiLTPlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 10:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        id S233669AbiLTPsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 10:48:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbiLTPl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:41:29 -0500
-Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F057110045;
-        Tue, 20 Dec 2022 07:41:27 -0800 (PST)
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 4DB3535200;
-        Tue, 20 Dec 2022 17:41:27 +0200 (EET)
-Received: from ink.ssi.bg (unknown [193.238.174.40])
-        by mg.ssi.bg (Proxmox) with ESMTP id 6BCB435183;
-        Tue, 20 Dec 2022 17:41:25 +0200 (EET)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id C441F3C07CC;
-        Tue, 20 Dec 2022 17:41:22 +0200 (EET)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 2BKFfKDx068357;
-        Tue, 20 Dec 2022 17:41:20 +0200
-Date:   Tue, 20 Dec 2022 17:41:20 +0200 (EET)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     Jon Maxwell <jmaxwell37@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
-In-Reply-To: <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
-Message-ID: <98a8f9b6-36d1-d184-d860-e07a2e24fc9c@ssi.bg>
-References: <20221218234801.579114-1-jmaxwell37@gmail.com> <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+        with ESMTP id S233849AbiLTPsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:48:35 -0500
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E133C193CE
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:48:27 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 9DA879C08B8;
+        Tue, 20 Dec 2022 10:48:26 -0500 (EST)
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id QTsrRAFJmf0a; Tue, 20 Dec 2022 10:48:25 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id D1C959C08BF;
+        Tue, 20 Dec 2022 10:48:25 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com D1C959C08BF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
+        t=1671551305; bh=3A9DhZv/qBx/2GmV7vy4mTJYIzYxgeqdmdvUMcxajvQ=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=VoK3dPvL21PnQuzJTqiVFJVqFtj2GgRBVk+rQ4Ig0zlb4FY4f/p8m7vu+qsNICnZ5
+         /xpAD2CnIFQoLlF4kpJpQcUxgRY2ydEIsLeOX2l+LJD0a3OT7wpSq3w1D/+4otHEth
+         md4WxgqH7jbihieg9Musnq672hab3/BvCcrtYNX9NgbTfMhB4saYFit/v87UNKJfFO
+         a2WyqsrngjDrjC9aiO52KC3GKAn1GIcfbZqd3FRNElq2pRciiDkFIiOw7t9KY84OeL
+         e7012xbjWrWGVYCckKrVooR5aJnbLj7h/EmEFCuw0Y9zmQ+tJjtBVl1sRoE4AEVcA8
+         Iqj3/phLm3R2w==
+X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id xE08E1CTk2h4; Tue, 20 Dec 2022 10:48:25 -0500 (EST)
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [192.168.48.237])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id A737F9C08B8;
+        Tue, 20 Dec 2022 10:48:25 -0500 (EST)
+Date:   Tue, 20 Dec 2022 10:48:25 -0500 (EST)
+From:   Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        woojung huh <woojung.huh@microchip.com>,
+        davem <davem@davemloft.net>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Message-ID: <1567686748.473254.1671551305632.JavaMail.zimbra@savoirfairelinux.com>
+In-Reply-To: <cc720a28-9e73-7c88-86af-8814b02ee580@gmail.com>
+References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com> <20221220131921.806365-2-enguerrand.de-ribaucourt@savoirfairelinux.com> <7ac42bd4-3088-5bd5-dcfc-c1e74466abb5@gmail.com> <1721908413.470634.1671548576554.JavaMail.zimbra@savoirfairelinux.com> <cc720a28-9e73-7c88-86af-8814b02ee580@gmail.com>
+Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+ phy_disable_interrupts()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: Zimbra 8.8.15_GA_4481 (ZimbraWebClient - FF107 (Linux)/8.8.15_GA_4481)
+Thread-Topic: add EXPORT_SYMBOL to phy_disable_interrupts()
+Thread-Index: LJSgTNw9NqhjpYK17nWr39H8edpf4w==
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> From: "Heiner Kallweit" <hkallweit1@gmail.com>
+> To: "Enguerrand de Ribaucourt" <enguerrand.de-ribaucourt@savoirfairelinux.com>
+> Cc: "netdev" <netdev@vger.kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "woojung huh" <woojung.huh@microchip.com>,
+> "davem" <davem@davemloft.net>, "UNGLinuxDriver" <UNGLinuxDriver@microchip.com>, "Andrew Lunn" <andrew@lunn.ch>,
+> "Russell King - ARM Linux" <linux@armlinux.org.uk>
+> Sent: Tuesday, December 20, 2022 4:19:40 PM
+> Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to phy_disable_interrupts()
 
-	Hello,
+> On 20.12.2022 16:02, Enguerrand de Ribaucourt wrote:
+> >> From: "Heiner Kallweit" <hkallweit1@gmail.com>
+> >> To: "Enguerrand de Ribaucourt" <enguerrand.de-ribaucourt@savoirfairelinux.com>,
+> >> "netdev" <netdev@vger.kernel.org>
+> >> Cc: "Paolo Abeni" <pabeni@redhat.com>, "woojung huh"
+> >> <woojung.huh@microchip.com>, "davem" <davem@davemloft.net>, "UNGLinuxDriver"
+> >> <UNGLinuxDriver@microchip.com>, "Andrew Lunn" <andrew@lunn.ch>, "Russell King -
+> >> ARM Linux" <linux@armlinux.org.uk>
+> >> Sent: Tuesday, December 20, 2022 3:40:15 PM
+> >> Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+> >> phy_disable_interrupts()
 
-On Tue, 20 Dec 2022, Paolo Abeni wrote:
+> >> On 20.12.2022 14:19, Enguerrand de Ribaucourt wrote:
+> >>> It seems EXPORT_SYMBOL was forgotten when phy_disable_interrupts() was
+> >>> made non static. For consistency with the other exported functions in
+> >>> this file, EXPORT_SYMBOL should be used.
 
-> Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
-> ipvs, seg6?
+> >> No, it wasn't forgotten. It's intentional. The function is supposed to
+> >> be used within phylib only.
 
-	I forgot to mention one thing: IPVS can cache such routes in
-its own storage, one per backend server, it still calls dst->ops->check
-for them. So, such route can live for long time, that is why they were 
-created as uncached. So, IPVS requests one route, remembers it and then 
-can attach it to multiple packets for this backend server with
-skb_dst_set_noref. So, IPVS have to use 4096 backend servers to
-hit this limit.
+> >> None of the phylib maintainers was on the addressee list of your patch.
+> >> Seems you didn't check with get_maintainers.pl.
 
-	It does not look correct in this patch to invalidate the
-FLOWI_FLAG_KNOWN_NH flag with a FLOWI_FLAG_SKIP_RAW flag. The
-same thing would be to not set FLOWI_FLAG_KNOWN_NH which is
-wrong for the hdrincl case.
+> >> You should explain your use case to the phylib maintainers. Maybe lan78xx
+> >> uses phylib in a wrong way, maybe an extension to phylib is needed.
+> >> Best start with explaining why lan78xx_link_status_change() needs to
+> >> fiddle with the PHY interrupt. It would help be helpful to understand
+> >> what "chip" refers to in the comment. The MAC, or the PHY?
+> >> Does the lan78xx code assume that a specific PHY is used, and the
+> >> functionality would actually belong to the respective PHY driver?
 
-Regards
+> > Thank you for your swift reply,
 
---
-Julian Anastasov <ja@ssi.bg>
+> > The requirement to toggle the PHY interrupt in lan78xx_link_status_change() (the
+> > LAN7801 MAC driver) comes from a workaround by the original author which resets
+> > the fixed speed in the PHY when the Ethernet cable is swapped. According to his
+> > message, the link could not be correctly setup without this workaround.
 
+> > Unfortunately, I don't have the cables to test the code without the workaround
+> > and it's description doesn't explain what problem happens more precisely.
+
+> > The PHY the original author used is a LAN8835. The workaround code directly
+> > modified the interrupt configuration registers of this LAN8835 PHY within
+> > lan78xx_link_status_change(). This caused problems if a different PHY was used
+> > because the register at this address did not correspond to the interrupts
+> > configuration. As suggested by the lan78xx.c maintainer, a generic function
+> > should be used instead to toggle the interrupts of the PHY. However, it seems
+> > that maybe the MAC driver shouldn't meddle with the PHY's interrupts according
+> > to you. Would you consider this use case a valid one?
+
+> So this workaround works around a silicon bug in LAN8835?
+> Then the code supposedly should go to the link_change_notify handler of the
+> Microchip PHY driver for LAN8835.
+> There's just a generic PHY driver for LAN88xx. Would be helpful to know
+> which Microchip PHY's are affected.
+
+link_change_notify() seems very promising indeed!
+
+My proposed approach would be to copy the original workaround actions
+within link_change_notify():
+ 1. disable interrupts
+ 2. reset speed
+ 3. enable interrupts
+
+However, I don't have access to the LAN8835 to test if this would work. I also
+don't have knowledge about which other Microchip PHYs could be impacted. Maybe
+there is an active Microchip developer we could communicate with to find out?
+
+Either way, it now seems clear that the LAN8835 interrupt code should be
+removed from lan78xx.c.
+
+> > Enguerrand
+
+> >>> Fixes: 3dd4ef1bdbac ("net: phy: make phy_disable_interrupts() non-static")
+> >>> Signed-off-by: Enguerrand de Ribaucourt
+> >>> <enguerrand.de-ribaucourt@savoirfairelinux.com>
+> >>> ---
+> >>> drivers/net/phy/phy.c | 1 +
+> >>> 1 file changed, 1 insertion(+)
+
+> >>> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> >>> index e5b6cb1a77f9..33250da76466 100644
+> >>> --- a/drivers/net/phy/phy.c
+> >>> +++ b/drivers/net/phy/phy.c
+> >>> @@ -992,6 +992,7 @@ int phy_disable_interrupts(struct phy_device *phydev)
+> >>> /* Disable PHY interrupts */
+> >>> return phy_config_interrupt(phydev, PHY_INTERRUPT_DISABLED);
+> >>> }
+> >>> +EXPORT_SYMBOL(phy_disable_interrupts);
+
+> >>> /**
+> >>> * phy_interrupt - PHY interrupt handler
