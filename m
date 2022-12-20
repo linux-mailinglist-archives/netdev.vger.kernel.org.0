@@ -2,129 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C397651A67
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 06:49:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC81651A7C
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 07:03:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbiLTFtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 00:49:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
+        id S232937AbiLTGCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 01:02:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiLTFtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 00:49:42 -0500
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEEE20D;
-        Mon, 19 Dec 2022 21:49:41 -0800 (PST)
-Received: by mail-pj1-f54.google.com with SMTP id b13-20020a17090a5a0d00b0021906102d05so11042181pjd.5;
-        Mon, 19 Dec 2022 21:49:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NRazUl1sRq3nHsv4iSumaCdK0OTW7rNnCuqNd/Xi384=;
-        b=yg88aU2ybi63pXPdtjQRhVODu9Ij/SEnSJYYXCEaFOcW2rNwe7TzsnI+VzX1jboYLF
-         N6cxQcECvRxgKTe4visDmUj98dGfnL7hsC/ju2+Ch6ARKQ+XzINm9WfozS8bsHkm0jI8
-         VZEG6qXFKMcI7q6DkjPv3NEg/IcH3qMIKUKXVDFn/fKawiB0SYqKrCkuR1dH6T+RKDPB
-         mlHfvs0Uj2GoQ03AUj+lDZMuNxy1urJ9SNsZevSjB2N6bxYj/OXL+3zmV6tCq8g/CGmQ
-         fniz+2oUcMOOaIYIA0Tq6+ATOOpJgWPUR/zZq0M1rMspNDmnkjR/77k08atOXCBiKLC3
-         Sz+Q==
-X-Gm-Message-State: AFqh2kr7rTm7byK/lipr+9Xc9LloyBgw3lpKRxE//hzd9xGMtfgQVM61
-        klKZZuT3lFUv08oiT8V0JFOYdND5yf3fSDI2KhE=
-X-Google-Smtp-Source: AMrXdXvfV1TvcAeZAo3YfDXWC5f/F5u6QP1TLuI8WS42DPMzbxPHdhhk5CIMP1LTlwDre2hjczIfEVotQS10Gt+3a4c=
-X-Received: by 2002:a17:90b:23ca:b0:221:4b1c:3b29 with SMTP id
- md10-20020a17090b23ca00b002214b1c3b29mr1650503pjb.92.1671515380691; Mon, 19
- Dec 2022 21:49:40 -0800 (PST)
+        with ESMTP id S233143AbiLTGCc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 01:02:32 -0500
+Received: from pv50p00im-ztbu10021601.me.com (pv50p00im-ztbu10021601.me.com [17.58.6.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B9A14D1E
+        for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 22:02:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
+        s=sig1; t=1671516148;
+        bh=7qE9xHexBnOSQP7DLwAIc3M9AGwYnVABLly0YPrjr8A=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=nJyvAOpnjXw3HDo+bjrSq3f+9gyNPaMuxpKgU0SYbt9BPAM6KwkTGpZxY5uBMSZHI
+         gmTQ2tIjVZAAsIxTDL0wOf+noiYK+P2jYkOhEuqHzfHnE9mathwJw4hBH5c9XOBAMX
+         bFkXb6+MelOiEU2CauDFEMTsdT/iouBs6ymYslRoT8SzE73cXzUgAblRfUXs9RjXCx
+         FyGVej9HfPSv0sn4Lt3hrjFCRjSY/9wYm9L9Olv2FMChvJS4XRrg29Q/DoL5tsj9KI
+         LY5YbC5Sq58odlp5pWRbXnF2zZcn1CdSw/i/NLpFELDiK37OVkZ1HX3z8eEUzsjLpG
+         Hr5CgFj4DXjtA==
+Received: from [192.168.1.30] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+        by pv50p00im-ztbu10021601.me.com (Postfix) with ESMTPSA id 34CCA8089D;
+        Tue, 20 Dec 2022 06:02:24 +0000 (UTC)
+Message-ID: <feb8e6f0-be76-925d-e85d-793085dface6@zzy040330.moe>
+Date:   Tue, 20 Dec 2022 14:02:22 +0800
 MIME-Version: 1.0
-References: <20221219212717.1298282-1-frank.jungclaus@esd.eu>
-In-Reply-To: <20221219212717.1298282-1-frank.jungclaus@esd.eu>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 20 Dec 2022 14:49:29 +0900
-Message-ID: <CAMZ6RqKAmrgQUKLehUZx+hiSk3jD+o44uGtzrRFk+RBk8Bt81A@mail.gmail.com>
-Subject: Re: [PATCH 2/3] can: esd_usb: Improved behavior on esd CAN_ERROR_EXT
- event (2)
-To:     Frank Jungclaus <frank.jungclaus@esd.eu>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
+Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
+ <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
+Content-Language: en-US
+From:   Jun ASAKA <JunASAKA@zzy040330.moe>
+In-Reply-To: <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: Ab5CiSP5moxstGcKAV8LZuvltnmr-6h9
+X-Proofpoint-GUID: Ab5CiSP5moxstGcKAV8LZuvltnmr-6h9
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.517,18.0.572,17.11.64.514.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-06-21=5F01:2022-06-21=5F01,2020-02-14=5F11,2022-02-23?=
+ =?UTF-8?Q?=5F01_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ mlxlogscore=741 malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0
+ clxscore=1030 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2212200050
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 20 Dec. 2022 at 06:29, Frank Jungclaus <frank.jungclaus@esd.eu> wrote:
-> Started a rework initiated by Vincents remarks "You should not report
-> the greatest of txerr and rxerr but the one which actually increased."
-> [1]
 
-I do not see this comment being addressed. You are still assigning the
-flags depending on the highest value, not the one which actually
-changed.
-
-> and "As far as I understand, those flags should be set only when
-> the threshold is *reached*" [2] .
+On 20/12/2022 13:44, Ping-Ke Shih wrote:
 >
-> Now setting the flags for CAN_ERR_CRTL_[RT]X_WARNING and
-> CAN_ERR_CRTL_[RT]X_PASSIVE regarding REC and TEC, when the
-> appropriate threshold is reached.
+>> -----Original Message-----
+>> From: Jun ASAKA <JunASAKA@zzy040330.moe>
+>> Sent: Saturday, December 17, 2022 11:07 AM
+>> To: Jes.Sorensen@gmail.com
+>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
+>> <JunASAKA@zzy040330.moe>
+>> Subject: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+>>
+>> Fixing transmission failure which results in
+>> "authentication with ... timed out". This can be
+>> fixed by disable the REG_TXPAUSE.
+>>
+>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
+>> ---
+>>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>> index a7d76693c02d..9d0ed6760cb6 100644
+>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
+>>   	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
+>>   	val8 &= ~BIT(0);
+>>   	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
+>> +
+>> +	/*
+>> +	 * Fix transmission failure of rtl8192e.
+>> +	 */
+>> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
+> I trace when rtl8xxxu set REG_TXPAUSE=0xff that will stop TX.
+> The occasions include RF calibration, LPS mode (called by power off), and
+> going to stop. So, I think RF calibration does TX pause but not restore
+> settings after calibration, and causes TX stuck. As the flow I traced,
+> this patch looks reasonable. But, I wonder why other people don't meet
+> this problem.
 >
-> Fixes: 96d8e90382dc ("can: Add driver for esd CAN-USB/2 device")
-> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
-> Link: [1] https://lore.kernel.org/all/CAMZ6RqKGBWe15aMkf8-QLf-cOQg99GQBebSm+1wEzTqHgvmNuw@mail.gmail.com/
-> Link: [2] https://lore.kernel.org/all/CAMZ6Rq+QBO1yTX_o6GV0yhdBj-RzZSRGWDZBS0fs7zbSTy4hmA@mail.gmail.com/
-> ---
->  drivers/net/can/usb/esd_usb.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
+> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
 >
-> diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-> index 5e182fadd875..09745751f168 100644
-> --- a/drivers/net/can/usb/esd_usb.c
-> +++ b/drivers/net/can/usb/esd_usb.c
-> @@ -255,10 +255,18 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
->                                 can_bus_off(priv->netdev);
->                                 break;
->                         case ESD_BUSSTATE_WARN:
-> +                               cf->can_id |= CAN_ERR_CRTL;
-> +                               cf->data[1] = (txerr > rxerr) ?
-> +                                               CAN_ERR_CRTL_TX_WARNING :
-> +                                               CAN_ERR_CRTL_RX_WARNING;
+>>   }
+>>
+>>   static s8 rtl8192e_cck_rssi(struct rtl8xxxu_priv *priv, u8 cck_agc_rpt)
+>> --
+>> 2.31.1
 
-Nitpick: when a ternary operator is too long to fit on one line,
-prefer an if/else.
+For my occasion, one of my rtl8192ru device which is Tenda U1 doesn't 
+work originally with this module, it prints "authentication with ... 
+timed out" in dmesg. And this change can fix the problem.
 
->                                 priv->can.state = CAN_STATE_ERROR_WARNING;
->                                 priv->can.can_stats.error_warning++;
->                                 break;
->                         case ESD_BUSSTATE_ERRPASSIVE:
-> +                               cf->can_id |= CAN_ERR_CRTL;
-> +                               cf->data[1] = (txerr > rxerr) ?
-> +                                               CAN_ERR_CRTL_TX_PASSIVE :
-> +                                               CAN_ERR_CRTL_RX_PASSIVE;
+Thanks for your review.
 
-Same.
 
->                                 priv->can.state = CAN_STATE_ERROR_PASSIVE;
->                                 priv->can.can_stats.error_passive++;
->                                 break;
-> @@ -296,12 +304,6 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
->                         /* Bit stream position in CAN frame as the error was detected */
->                         cf->data[3] = ecc & SJA1000_ECC_SEG;
->
-> -                       if (priv->can.state == CAN_STATE_ERROR_WARNING ||
-> -                           priv->can.state == CAN_STATE_ERROR_PASSIVE) {
-> -                               cf->data[1] = (txerr > rxerr) ?
-> -                                       CAN_ERR_CRTL_TX_PASSIVE :
-> -                                       CAN_ERR_CRTL_RX_PASSIVE;
-> -                       }
->                         cf->data[6] = txerr;
->                         cf->data[7] = rxerr;
->                 }
+Jun ASAKA.
 
-Yours sincerely,
-Vincent Mailhol
