@@ -2,145 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82CB36526B7
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC146526D7
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:15:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233899AbiLTTAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 14:00:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
+        id S233010AbiLTTPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 14:15:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234012AbiLTTAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:00:20 -0500
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B60C1DF39
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:00:11 -0800 (PST)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-1445ca00781so16546308fac.1
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:00:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JXYLTDkptpPzYOrGeGF4jhqPDZLV+o0bhBUVOjDZSsg=;
-        b=pxW2qrad7LK/jLVrTk4AYMqzTPaxs5aGJAEdNvhoIOE1AgjiRdGsHgh8cedV8aW7de
-         dnXAAyaPgKaQgSG0lS9SKAGrwS4h2jo/bxG1a4RWijZ4EqkeqUFEWsBN0Q/CmQuudGUi
-         lA4et4hM1rIHh50Oznu5fMHelWe/drgH3SvPQ=
+        with ESMTP id S229758AbiLTTPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:15:22 -0500
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A7EE0C3
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:15:21 -0800 (PST)
+Received: by mail-io1-f72.google.com with SMTP id b77-20020a6bb250000000b006e4ec8b2364so5994779iof.20
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:15:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JXYLTDkptpPzYOrGeGF4jhqPDZLV+o0bhBUVOjDZSsg=;
-        b=0G5PMo/pxNYl5EpdhEEahbRUNUDUE7fiCZWTD0VCr+DZKZiZh/HQc5V1o7dX1VkfVC
-         1ezds8vbo4AxGd/2WkZQ2FOQ0BZ6ZPyoz8wFz61YwRdCo/cYuJktno74elLl775IysbM
-         m5Yim6+M+6Q3EaF4nkoAMULRcri3VkaMeSlcIrBi8uRX04qJ9oYvaqQYChAAdG8aMocW
-         4Vi9vsGsgNFyrDDfT3UCLTRy+wE0IBwuKwI0dK55o3h4AKsXT+XyEq3P6wRr3Wu89Iek
-         YEcinnzYHcNi8ps4AHVxb6npbrQwF+JRwfDW3Crq/YK0SwAykL+L7XUNz1QgCdRMZv3L
-         7LNw==
-X-Gm-Message-State: ANoB5pmis3enJrEkd9IVKhgptwiHtIZkDpAn5v5obWFuoY2zn+JK/+zH
-        m/rA+9givG6dr3Tb6NzqgpN1iQ==
-X-Google-Smtp-Source: AA0mqf7wIvQPmpVJgp1NF721D7EsiJnRJvoP98EoiFJU+6lKd376dW5acXZRl7qHG4BwDonwQEmLQQ==
-X-Received: by 2002:a05:6870:f59d:b0:141:f39c:bd2a with SMTP id eh29-20020a056870f59d00b00141f39cbd2amr24434823oab.21.1671562810567;
-        Tue, 20 Dec 2022 11:00:10 -0800 (PST)
-Received: from sbohrer-cf-dell.. ([24.28.97.120])
-        by smtp.gmail.com with ESMTPSA id s8-20020a4adb88000000b0049f3f5afcbasm5331103oou.13.2022.12.20.11.00.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 11:00:09 -0800 (PST)
-From:   Shawn Bohrer <sbohrer@cloudflare.com>
-To:     magnus.karlsson@gmail.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
-        kernel-team@cloudflare.com, davem@davemloft.net,
-        Shawn Bohrer <sbohrer@cloudflare.com>
-Subject: [PATCH] veth: Fix race with AF_XDP exposing old or uninitialized descriptors
-Date:   Tue, 20 Dec 2022 12:59:03 -0600
-Message-Id: <20221220185903.1105011-1-sbohrer@cloudflare.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
-References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kGV90AA/X0nTzuzvmG+X764dVgauxsWjPVfmjrcPhsc=;
+        b=Up7zi4++cp1orHKgk8SiURMAAAIa3iZILFkYhlYb1NXFj+4MP4k6wVshDVVySisepC
+         F2YvgYwWv8yNJerADIwMztVyyxxRS6ZP4dfMa8Ucv689PQT2+Tlf8Xpba4UNL4Ot2slQ
+         fWd+/o2qjzzPOOxhcchHFB1UxbQRgfB7A33HDXVug/EEegVI/8SJfJnqxe0ytHrtUj94
+         eUDMdFcBWBNcY4U9MEKjJpzDdCj0AZ1W2srsmF7ZCXHoBOTrLZYnatVQCYhuDUdLmO+r
+         A+kfisIZYJP7hH4h4sSsCjp7hsioeDTnzVHAA9JxmNBr83DkayVpnY2Ehjo9qUBQmHYN
+         jv4w==
+X-Gm-Message-State: ANoB5pmXrDBwAvQLi4H2L5BmyvR6rq1O/HWklZPrEl2EMxfnFHLF2Kkw
+        eaqHgFTzRbPq0CeS24bPCIxduQRvgetjPnjJHh6YimAWZ+db
+X-Google-Smtp-Source: AA0mqf4Tb0gUAc0ob7+P6Tt6bdase52ycimGI6/V+tr7EItBqWQGrIlYa9jXJ7h5kvSuG1HY6y7Yt8uzuwxyZw0hda/OpU62eYjI
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:954d:0:b0:375:569e:fb3f with SMTP id
+ y71-20020a02954d000000b00375569efb3fmr49008772jah.200.1671563720670; Tue, 20
+ Dec 2022 11:15:20 -0800 (PST)
+Date:   Tue, 20 Dec 2022 11:15:20 -0800
+In-Reply-To: <1924955.1671552163@warthog.procyon.org.uk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ca452805f04741f9@google.com>
+Subject: Re: [syzbot] kernel BUG in rxrpc_put_peer
+From:   syzbot <syzbot+c22650d2844392afdcfd@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When AF_XDP is used on on a veth interface the RX ring is updated in two
-steps.  veth_xdp_rcv() removes packet descriptors from the FILL ring
-fills them and places them in the RX ring updating the cached_prod
-pointer.  Later xdp_do_flush() syncs the RX ring prod pointer with the
-cached_prod pointer allowing user-space to see the recently filled in
-descriptors.  The rings are intended to be SPSC, however the existing
-order in veth_poll allows the xdp_do_flush() to run concurrently with
-another CPU creating a race condition that allows user-space to see old
-or uninitialized descriptors in the RX ring.  This bug has been observed
-in production systems.
+Hello,
 
-To summarize, we are expecting this ordering:
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+INFO: rcu detected stall in corrupted
 
-CPU 0 __xsk_rcv_zc()
-CPU 0 __xsk_map_flush()
-CPU 2 __xsk_rcv_zc()
-CPU 2 __xsk_map_flush()
+rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { P5782 } 2677 jiffies s: 2821 root: 0x0/T
+rcu: blocking rcu_node structures (internal RCU debug):
 
-But we are seeing this order:
 
-CPU 0 __xsk_rcv_zc()
-CPU 2 __xsk_rcv_zc()
-CPU 0 __xsk_map_flush()
-CPU 2 __xsk_map_flush()
+Tested on:
 
-This occurs because we rely on NAPI to ensure that only one napi_poll
-handler is running at a time for the given veth receive queue.
-napi_schedule_prep() will prevent multiple instances from getting
-scheduled. However calling napi_complete_done() signals that this
-napi_poll is complete and allows subsequent calls to
-napi_schedule_prep() and __napi_schedule() to succeed in scheduling a
-concurrent napi_poll before the xdp_do_flush() has been called.  For the
-veth driver a concurrent call to napi_schedule_prep() and
-__napi_schedule() can occur on a different CPU because the veth xmit
-path can additionally schedule a napi_poll creating the race.
+commit:         2bc80899 rxrpc: Fix a couple of potential use-after-fr..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=12729378480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b0e91ad4b5f69c47
+dashboard link: https://syzkaller.appspot.com/bug?extid=c22650d2844392afdcfd
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-The fix as suggested by Magnus Karlsson, is to simply move the
-xdp_do_flush() call before napi_complete_done().  This syncs the
-producer ring pointers before another instance of napi_poll can be
-scheduled on another CPU.  It will also slightly improve performance by
-moving the flush closer to when the descriptors were placed in the
-RX ring.
-
-Fixes: d1396004dd86 ("veth: Add XDP TX and REDIRECT")
-Suggested-by: Magnus Karlsson <magnus.karlsson@gmail.com>
-Signed-off-by: Shawn Bohrer <sbohrer@cloudflare.com>
----
- drivers/net/veth.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index ac7c0653695f..dfc7d87fad59 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -974,6 +974,9 @@ static int veth_poll(struct napi_struct *napi, int budget)
- 	xdp_set_return_frame_no_direct();
- 	done = veth_xdp_rcv(rq, budget, &bq, &stats);
- 
-+	if (stats.xdp_redirect > 0)
-+		xdp_do_flush();
-+
- 	if (done < budget && napi_complete_done(napi, done)) {
- 		/* Write rx_notify_masked before reading ptr_ring */
- 		smp_store_mb(rq->rx_notify_masked, false);
-@@ -987,8 +990,6 @@ static int veth_poll(struct napi_struct *napi, int budget)
- 
- 	if (stats.xdp_tx > 0)
- 		veth_xdp_flush(rq, &bq);
--	if (stats.xdp_redirect > 0)
--		xdp_do_flush();
- 	xdp_clear_return_frame_no_direct();
- 
- 	return done;
--- 
-2.38.1
-
+Note: no patches were applied.
