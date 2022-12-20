@@ -2,90 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8EAE6526B3
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82CB36526B7
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 20:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbiLTS6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 13:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        id S233899AbiLTTAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 14:00:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiLTS6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 13:58:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F0D1B1F5
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 10:58:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84F1DB81979
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 18:58:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04640C433D2;
-        Tue, 20 Dec 2022 18:58:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671562707;
-        bh=o/q6PmbyzDUD05jSsGV2QMxXsJLP5rveEOqAtGyDIJ4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kq7Bi7tjQIydqTALy5Uz1R6zX/y8iMjdeN+WwrX8d3BukAYo68W5KkHMH36ov53cz
-         R1xgSfnO1yboDlWUMsi2utWSnZS8UIZlu4UPKQPPJ6G0obUfdzOgRwt8bKFtIvJVXM
-         8fDrxc2mLR0KU64GcuNI5fDFtrmDDPCXISbQrTDevOJ68n+XBy+gfe4fxiqK5lf22w
-         ga6peb6w/FrPClQ0Krdw2RgqOLiLtUl0MF4HXTB794RapJPzWpdBRjGmPbNyYumP3P
-         2dizTyLRH0Vb2U4yxdFDl2RhXZGRavQ4FpBBZ9/dD/T/tRIb6vVvU7g//ww71Cqo4X
-         gseXywcjpjjOA==
-Message-ID: <5fc56e61-487f-96e8-5b39-c64f891eb334@kernel.org>
-Date:   Tue, 20 Dec 2022 11:58:26 -0700
+        with ESMTP id S234012AbiLTTAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 14:00:20 -0500
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B60C1DF39
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:00:11 -0800 (PST)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-1445ca00781so16546308fac.1
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 11:00:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JXYLTDkptpPzYOrGeGF4jhqPDZLV+o0bhBUVOjDZSsg=;
+        b=pxW2qrad7LK/jLVrTk4AYMqzTPaxs5aGJAEdNvhoIOE1AgjiRdGsHgh8cedV8aW7de
+         dnXAAyaPgKaQgSG0lS9SKAGrwS4h2jo/bxG1a4RWijZ4EqkeqUFEWsBN0Q/CmQuudGUi
+         lA4et4hM1rIHh50Oznu5fMHelWe/drgH3SvPQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JXYLTDkptpPzYOrGeGF4jhqPDZLV+o0bhBUVOjDZSsg=;
+        b=0G5PMo/pxNYl5EpdhEEahbRUNUDUE7fiCZWTD0VCr+DZKZiZh/HQc5V1o7dX1VkfVC
+         1ezds8vbo4AxGd/2WkZQ2FOQ0BZ6ZPyoz8wFz61YwRdCo/cYuJktno74elLl775IysbM
+         m5Yim6+M+6Q3EaF4nkoAMULRcri3VkaMeSlcIrBi8uRX04qJ9oYvaqQYChAAdG8aMocW
+         4Vi9vsGsgNFyrDDfT3UCLTRy+wE0IBwuKwI0dK55o3h4AKsXT+XyEq3P6wRr3Wu89Iek
+         YEcinnzYHcNi8ps4AHVxb6npbrQwF+JRwfDW3Crq/YK0SwAykL+L7XUNz1QgCdRMZv3L
+         7LNw==
+X-Gm-Message-State: ANoB5pmis3enJrEkd9IVKhgptwiHtIZkDpAn5v5obWFuoY2zn+JK/+zH
+        m/rA+9givG6dr3Tb6NzqgpN1iQ==
+X-Google-Smtp-Source: AA0mqf7wIvQPmpVJgp1NF721D7EsiJnRJvoP98EoiFJU+6lKd376dW5acXZRl7qHG4BwDonwQEmLQQ==
+X-Received: by 2002:a05:6870:f59d:b0:141:f39c:bd2a with SMTP id eh29-20020a056870f59d00b00141f39cbd2amr24434823oab.21.1671562810567;
+        Tue, 20 Dec 2022 11:00:10 -0800 (PST)
+Received: from sbohrer-cf-dell.. ([24.28.97.120])
+        by smtp.gmail.com with ESMTPSA id s8-20020a4adb88000000b0049f3f5afcbasm5331103oou.13.2022.12.20.11.00.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Dec 2022 11:00:09 -0800 (PST)
+From:   Shawn Bohrer <sbohrer@cloudflare.com>
+To:     magnus.karlsson@gmail.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
+        kernel-team@cloudflare.com, davem@davemloft.net,
+        Shawn Bohrer <sbohrer@cloudflare.com>
+Subject: [PATCH] veth: Fix race with AF_XDP exposing old or uninitialized descriptors
+Date:   Tue, 20 Dec 2022 12:59:03 -0600
+Message-Id: <20221220185903.1105011-1-sbohrer@cloudflare.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
+References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [PATCH net] net: vrf: determine the dst using the original
- ifindex for multicast
-Content-Language: en-US
-To:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
-Cc:     netdev@vger.kernel.org, Jianlin Shi <jishi@redhat.com>
-References: <20221220171825.1172237-1-atenart@kernel.org>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20221220171825.1172237-1-atenart@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/20/22 10:18 AM, Antoine Tenart wrote:
-> Multicast packets received on an interface bound to a VRF are marked as
-> belonging to the VRF and the skb device is updated to point to the VRF
-> device itself. This was fine even when a route was associated to a
-> device as when performing a fib table lookup 'oif' in fib6_table_lookup
-> (coming from 'skb->dev->ifindex' in ip6_route_input) was set to 0 when
-> FLOWI_FLAG_SKIP_NH_OIF was set.
-> 
-> With commit 40867d74c374 ("net: Add l3mdev index to flow struct and
-> avoid oif reset for port devices") this is not longer true and multicast
-> traffic is not received on the original interface.
-> 
-> Instead of adding back a similar check in fib6_table_lookup determine
-> the dst using the original ifindex for multicast VRF traffic. To make
-> things consistent across the function do the above for all strict
-> packets, which was the logic before commit 6f12fa775530 ("vrf: mark skb
-> for multicast or link-local as enslaved to VRF"). Note that reverting to
-> this behavior should be fine as the change was about marking packets
-> belonging to the VRF, not about their dst.
-> 
-> Fixes: 40867d74c374 ("net: Add l3mdev index to flow struct and avoid oif reset for port devices")
-> Cc: David Ahern <dsahern@kernel.org>
-> Reported-by: Jianlin Shi <jishi@redhat.com>
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> ---
->  drivers/net/vrf.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
+When AF_XDP is used on on a veth interface the RX ring is updated in two
+steps.  veth_xdp_rcv() removes packet descriptors from the FILL ring
+fills them and places them in the RX ring updating the cached_prod
+pointer.  Later xdp_do_flush() syncs the RX ring prod pointer with the
+cached_prod pointer allowing user-space to see the recently filled in
+descriptors.  The rings are intended to be SPSC, however the existing
+order in veth_poll allows the xdp_do_flush() to run concurrently with
+another CPU creating a race condition that allows user-space to see old
+or uninitialized descriptors in the RX ring.  This bug has been observed
+in production systems.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+To summarize, we are expecting this ordering:
 
+CPU 0 __xsk_rcv_zc()
+CPU 0 __xsk_map_flush()
+CPU 2 __xsk_rcv_zc()
+CPU 2 __xsk_map_flush()
+
+But we are seeing this order:
+
+CPU 0 __xsk_rcv_zc()
+CPU 2 __xsk_rcv_zc()
+CPU 0 __xsk_map_flush()
+CPU 2 __xsk_map_flush()
+
+This occurs because we rely on NAPI to ensure that only one napi_poll
+handler is running at a time for the given veth receive queue.
+napi_schedule_prep() will prevent multiple instances from getting
+scheduled. However calling napi_complete_done() signals that this
+napi_poll is complete and allows subsequent calls to
+napi_schedule_prep() and __napi_schedule() to succeed in scheduling a
+concurrent napi_poll before the xdp_do_flush() has been called.  For the
+veth driver a concurrent call to napi_schedule_prep() and
+__napi_schedule() can occur on a different CPU because the veth xmit
+path can additionally schedule a napi_poll creating the race.
+
+The fix as suggested by Magnus Karlsson, is to simply move the
+xdp_do_flush() call before napi_complete_done().  This syncs the
+producer ring pointers before another instance of napi_poll can be
+scheduled on another CPU.  It will also slightly improve performance by
+moving the flush closer to when the descriptors were placed in the
+RX ring.
+
+Fixes: d1396004dd86 ("veth: Add XDP TX and REDIRECT")
+Suggested-by: Magnus Karlsson <magnus.karlsson@gmail.com>
+Signed-off-by: Shawn Bohrer <sbohrer@cloudflare.com>
+---
+ drivers/net/veth.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index ac7c0653695f..dfc7d87fad59 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -974,6 +974,9 @@ static int veth_poll(struct napi_struct *napi, int budget)
+ 	xdp_set_return_frame_no_direct();
+ 	done = veth_xdp_rcv(rq, budget, &bq, &stats);
+ 
++	if (stats.xdp_redirect > 0)
++		xdp_do_flush();
++
+ 	if (done < budget && napi_complete_done(napi, done)) {
+ 		/* Write rx_notify_masked before reading ptr_ring */
+ 		smp_store_mb(rq->rx_notify_masked, false);
+@@ -987,8 +990,6 @@ static int veth_poll(struct napi_struct *napi, int budget)
+ 
+ 	if (stats.xdp_tx > 0)
+ 		veth_xdp_flush(rq, &bq);
+-	if (stats.xdp_redirect > 0)
+-		xdp_do_flush();
+ 	xdp_clear_return_frame_no_direct();
+ 
+ 	return done;
+-- 
+2.38.1
 
