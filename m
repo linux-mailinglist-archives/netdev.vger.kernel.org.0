@@ -2,63 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2145B6520EF
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 13:48:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D2A65210F
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 13:57:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbiLTMsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 07:48:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
+        id S229812AbiLTM5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 07:57:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233665AbiLTMrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 07:47:52 -0500
-Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F13BE4F
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 04:47:50 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1AE919C0828;
-        Tue, 20 Dec 2022 07:47:49 -0500 (EST)
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id pZGv28hs0M_S; Tue, 20 Dec 2022 07:47:48 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 7C03A9C088E;
-        Tue, 20 Dec 2022 07:47:48 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 7C03A9C088E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
-        t=1671540468; bh=x0iqthYt5CHOhUhKD7B/nPxGe88L1pGyJgg0Civ2OtY=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=BhY9cmus0XGmOr/qhv9sl4R85z2WA6J8U88mXLOAGQ1ALkDIFKSggniXXPQMHjwh9
-         jW5E0uKBgVXymZmqXXMv4T/gOpPIirmQmETvES0m5C6w86jqwrY+1z97XE3CHbDYqL
-         Biue6wFpViiP84nB72/0pQjGKlqlIdcQSy0iZQ1pgRZ2rz/AkNNE/cXJ5qqjCZHDjr
-         VbS4uJ+8CTQw75C0k1uqkLcT8gozia/eB0vnXvGpB2t6qSo7vtjScslO2A0ztiHMaM
-         QbT/4gbPetqahs92FHmMLxjzEYr0dIq/hWRVAvzC4+YrwWLc/aPLr1pIe4ouJzROIQ
-         /IpmwLaZqEd7Q==
-X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id I8uKjgcp_71G; Tue, 20 Dec 2022 07:47:48 -0500 (EST)
-Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [192.168.48.237])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 57C589C0828;
-        Tue, 20 Dec 2022 07:47:48 -0500 (EST)
-Date:   Tue, 20 Dec 2022 07:47:47 -0500 (EST)
-From:   Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        woojung huh <woojung.huh@microchip.com>,
-        davem <davem@davemloft.net>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Message-ID: <1650367438.466155.1671540467993.JavaMail.zimbra@savoirfairelinux.com>
-In-Reply-To: <1061700ecedf92911d474a675bd3c47354ab600a.camel@redhat.com>
-References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com> <20221220113733.714233-1-enguerrand.de-ribaucourt@savoirfairelinux.com> <1061700ecedf92911d474a675bd3c47354ab600a.camel@redhat.com>
-Subject: Re: [PATCH v2] net: lan78xx: prevent LAN88XX specific operations
+        with ESMTP id S229498AbiLTM5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 07:57:03 -0500
+Received: from forwardcorp1a.mail.yandex.net (forwardcorp1a.mail.yandex.net [178.154.239.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D24BBC29;
+        Tue, 20 Dec 2022 04:57:01 -0800 (PST)
+Received: from vla5-b2806cb321eb.qloud-c.yandex.net (vla5-b2806cb321eb.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3e0d:0:640:b280:6cb3])
+        by forwardcorp1a.mail.yandex.net (Yandex) with ESMTP id A85675FEA8;
+        Tue, 20 Dec 2022 15:56:59 +0300 (MSK)
+Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:b519::1:14])
+        by vla5-b2806cb321eb.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id pukBv71RZ8c1-9pi6xWIM;
+        Tue, 20 Dec 2022 15:56:59 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1671541019; bh=vFwXBebNUlstJNleJj/+YwuX9WYFUWsusCZsNeUI/tI=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=P26cwXMrMC1AmK/pAG1ea6we/Fx114ISiscz/reQIKWtSQMQRAfe4T1GEVXhwF2Ve
+         PgT8lrWrjGhs/gL5rWPxSieC8+eM8TuwEgh0jtlCVmf2Cys2Zi1DdpjqSF/mJUjW66
+         HXc7Jdh8mGWdgHesa59oAalESOX1si+/mUpgtJtA=
+Authentication-Results: vla5-b2806cb321eb.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+To:     Shahed Shaikh <shshaikh@marvell.com>
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] qlcnic: prevent ->dcb use-after-free on qlcnic_dcb_enable() failure
+Date:   Tue, 20 Dec 2022 15:56:49 +0300
+Message-Id: <20221220125649.1637829-1-d-tatianin@yandex-team.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: Zimbra 8.8.15_GA_4481 (ZimbraWebClient - FF107 (Linux)/8.8.15_GA_4481)
-Thread-Topic: lan78xx: prevent LAN88XX specific operations
-Thread-Index: yOsYNKpDqbKWxPFjnnNeuGV9qFYZzQ==
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -68,82 +53,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ Original Message -----
-> From: "Paolo Abeni" <pabeni@redhat.com>
-> To: "Enguerrand de Ribaucourt" <enguerrand.de-ribaucourt@savoirfairelinux.com>, "netdev" <netdev@vger.kernel.org>
-> Cc: "woojung huh" <woojung.huh@microchip.com>, "davem" <davem@davemloft.net>, "UNGLinuxDriver"
-> <UNGLinuxDriver@microchip.com>
-> Sent: Tuesday, December 20, 2022 1:41:08 PM
-> Subject: Re: [PATCH v2] net: lan78xx: prevent LAN88XX specific operations
+adapter->dcb would get silently freed inside qlcnic_dcb_enable() in
+case qlcnic_dcb_attach() would return an error, which always happens
+under OOM conditions. This would lead to use-after-free because both
+of the existing callers invoke qlcnic_dcb_get_info() on the obtained
+pointer, which is potentially freed at that point.
 
-> On Tue, 2022-12-20 at 12:37 +0100, Enguerrand de Ribaucourt wrote:
-> > Some operations during the cable switch workaround modify the register
-> > LAN88XX_INT_MASK of the PHY. However, this register is specific to the
-> > LAN8835 PHY. For instance, if a DP8322I PHY is connected to the LAN7801,
-> > that register (0x19), corresponds to the LED and MAC address
-> > configuration, resulting in unapropriate behavior.
+Propagate errors from qlcnic_dcb_enable(), and instead free the dcb
+pointer at callsite.
 
-> > Use the generic phy interrupt functions instead.
+Found by Linux Verification Center (linuxtesting.org) with the SVACE
+static analysis tool.
 
-> > Fixes: 89b36fb5e532 ("lan78xx: Lan7801 Support for Fixed PHY")
-> > Reviewed-by: Paolo Abeni <pabeni@redhat.com>;
+Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 9 ++++++++-
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h       | 5 ++---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c      | 9 ++++++++-
+ 3 files changed, 18 insertions(+), 5 deletions(-)
 
-> You should not attach this tag (or acked-by) on your own.
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+index dbb800769cb6..465f149d94d4 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+@@ -2505,7 +2505,14 @@ int qlcnic_83xx_init(struct qlcnic_adapter *adapter)
+ 		goto disable_mbx_intr;
+ 
+ 	qlcnic_83xx_clear_function_resources(adapter);
+-	qlcnic_dcb_enable(adapter->dcb);
++
++	err = qlcnic_dcb_enable(adapter->dcb);
++	if (err) {
++		qlcnic_clear_dcb_ops(adapter->dcb);
++		adapter->dcb = NULL;
++		goto disable_mbx_intr;
++	}
++
+ 	qlcnic_83xx_initialize_nic(adapter, 1);
+ 	qlcnic_dcb_get_info(adapter->dcb);
+ 
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+index 7519773eaca6..e1460f9c38bf 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+@@ -112,9 +112,8 @@ static inline void qlcnic_dcb_init_dcbnl_ops(struct qlcnic_dcb *dcb)
+ 		dcb->ops->init_dcbnl_ops(dcb);
+ }
+ 
+-static inline void qlcnic_dcb_enable(struct qlcnic_dcb *dcb)
++static inline int qlcnic_dcb_enable(struct qlcnic_dcb *dcb)
+ {
+-	if (dcb && qlcnic_dcb_attach(dcb))
+-		qlcnic_clear_dcb_ops(dcb);
++	return dcb ? qlcnic_dcb_attach(dcb) : 0;
+ }
+ #endif
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+index 28476b982bab..36ba15fc9776 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+@@ -2599,7 +2599,14 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			 "Device does not support MSI interrupts\n");
+ 
+ 	if (qlcnic_82xx_check(adapter)) {
+-		qlcnic_dcb_enable(adapter->dcb);
++		err = qlcnic_dcb_enable(adapter->dcb);
++		if (err) {
++			qlcnic_clear_dcb_ops(adapter->dcb);
++			adapter->dcb = NULL;
++			dev_err(&pdev->dev, "Failed to enable DCB\n");
++			goto err_out_free_hw;
++		}
++
+ 		qlcnic_dcb_get_info(adapter->dcb);
+ 		err = qlcnic_setup_intr(adapter);
+ 
+-- 
+2.25.1
 
-Thanks, I'm still new with the patching process.
-
-> The following is not even the code I was _asking_ about...
-
->> Signed-off-by: Enguerrand de Ribaucourt
-> > <enguerrand.de-ribaucourt@savoirfairelinux.com>
-> > ---
-> > drivers/net/usb/lan78xx.c | 14 +++-----------
-> > 1 file changed, 3 insertions(+), 11 deletions(-)
-
-> > diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-> > index f18ab8e220db..65d5d54994ff 100644
-> > --- a/drivers/net/usb/lan78xx.c
-> > +++ b/drivers/net/usb/lan78xx.c
-> > @@ -28,6 +28,7 @@
-> > #include <linux/phy_fixed.h>
-> > #include <linux/of_mdio.h>
-> > #include <linux/of_net.h>
-> > +#include <linux/phy.h>
-> > #include "lan78xx.h"
-
-> > #define DRIVER_AUTHOR "WOOJUNG HUH <woojung.huh@microchip.com>"
->> @@ -2123,10 +2124,7 @@ static void lan78xx_link_status_change(struct net_device
-> > *net)
-> > * at forced 100 F/H mode.
-> > */
-> > if (!phydev->autoneg && (phydev->speed == 100)) {
-> > - /* disable phy interrupt */
-> > - temp = phy_read(phydev, LAN88XX_INT_MASK);
-> > - temp &= ~LAN88XX_INT_MASK_MDINTPIN_EN_;
-> > - phy_write(phydev, LAN88XX_INT_MASK, temp);
-> > + phy_disable_interrupts(phydev);
-
-> > temp = phy_read(phydev, MII_BMCR);
-> > temp &= ~(BMCR_SPEED100 | BMCR_SPEED1000);
->> @@ -2134,13 +2132,7 @@ static void lan78xx_link_status_change(struct net_device
-> > *net)
-> > temp |= BMCR_SPEED100;
-> > phy_write(phydev, MII_BMCR, temp); /* set to 100 later */
-
-> > - /* clear pending interrupt generated while workaround */
-> > - temp = phy_read(phydev, LAN88XX_INT_STS);
-> > -
-> > - /* enable phy interrupt back */
-> > - temp = phy_read(phydev, LAN88XX_INT_MASK);
-> > - temp |= LAN88XX_INT_MASK_MDINTPIN_EN_;
-> > - phy_write(phydev, LAN88XX_INT_MASK, temp);
-> > + phy_request_interrupt(phydev);
-
-> This looks wrong. Should probably be:
-
-> phy_enable_interrupts(phydev);
-
-phy_enable_interrupts isn't exported in the header. I'll add a
-dedicated commit for that.
-
-> Paolo
