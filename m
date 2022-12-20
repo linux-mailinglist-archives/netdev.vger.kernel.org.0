@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F34886521AA
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:46:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 890796521B0
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiLTNqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 08:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        id S233652AbiLTNs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 08:48:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiLTNqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:46:34 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C523F63EC;
-        Tue, 20 Dec 2022 05:46:33 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id o12so12435830pjo.4;
-        Tue, 20 Dec 2022 05:46:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5Mi7AIDjIfOPqR55AXqe7e5c1t5p7e8HTIfmStCSqNY=;
-        b=P6YimTcI2NVjm/mvcgxx18QsOM1+dHBvOSjKI93SRuLwCpScJWDzm6HFdRXPVws3kt
-         xnjcAi7spd5cggU61SRWtHYwXivJt36PSFsK4UZIOYR3vxR2PJv1m7EseZEsr1MwSeyR
-         XkwrWS2GVBKSoYxXglpUGSC5Bi4OfPvNXc3betVtb4vO834YQud+VxehHyB7cgCzj3yV
-         B8up0ukIu7ncgfM9LxOqRxPpQO1kmH43557vrM1pmjukDp056u0/dVCFSYoC6QFwj0iy
-         O/VhFXR2BC84ysL4hillKM5RED6mJFG8+lmD1EEqebEjEk7VWEuDV90PDTd+dPXDEaa7
-         E9Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5Mi7AIDjIfOPqR55AXqe7e5c1t5p7e8HTIfmStCSqNY=;
-        b=yUXDe5z388FyDxVpnwrM4GhUGlICI3hzNBbXikPbCxzgU3HqOBz0kliFbFmtGx0Zy8
-         OQsTu/V3AWn7Pkg5dQchT+rP8TakKusr4JarK+ACxt0HctATJs4b1dIm04alXgCesTVy
-         XeX6f6edgC0b1uz9LAiNZLinxlsoAOGwE4wwa6olEgjxNUVnsY8pY9HviG6KVSfTK+ve
-         QRdAG60lFYxwc42n+M/Qi6j0AW8gPytuzhBwWnxtz3Ghcoeuw7nHFuPw2eb4davKBINZ
-         Su042Ikfl8trwZk05pR4z+ohNEA5npXuy/0nnsyB0H0ZVe5Urx5J/ULyBcd2yIxbUG2W
-         y/Sw==
-X-Gm-Message-State: ANoB5pm3pA59C/MdSC/mhgtevkXPfkkU5K5b2O76rRBMNbcNd9ycoPIi
-        m0IEznu9OqKHmS8lE6gzNxmx2zNLgZP5IFXu
-X-Google-Smtp-Source: AA0mqf4bKfQ4hJWTxJTdgYW0ASN+Dg3qXnbmwgc0jSy6lzMXH1MGqGef3ajpTAxnifUdCQ2NHmYVvA==
-X-Received: by 2002:a17:90a:420f:b0:219:4793:2979 with SMTP id o15-20020a17090a420f00b0021947932979mr48117302pjg.22.1671543993339;
-        Tue, 20 Dec 2022 05:46:33 -0800 (PST)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id on16-20020a17090b1d1000b0020b21019086sm1519598pjb.3.2022.12.20.05.46.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 05:46:32 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        Christophe Ricard <christophe.ricard@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] nfc:  Fix potential resource leaks
-Date:   Tue, 20 Dec 2022 17:46:23 +0400
-Message-Id: <20221220134623.2084443-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229834AbiLTNsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:48:55 -0500
+Received: from pv50p00im-ztdg10021901.me.com (pv50p00im-ztdg10021901.me.com [17.58.6.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D4363EC
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:48:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
+        s=sig1; t=1671544134;
+        bh=urUTsBdrwL9I2ZT1boNQEfwYLQQMShMrrqH0rVVbrRQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=hxXLRvEY1Rw90AMW1xuOflDjkIAEi6yOifccnQqfhTN+rHhYIqQGQi36UP+dTULY2
+         dC1j0dXbnd+Lwdiu8kkMVFiSJ6CGBPcLc7i1xtwMhSZe1LkS7hzZZHCtUEe3AIQQBu
+         OxRaEC3CuaDMZcRKHQbyJBVAMQCsxcUCkdTOpDNn6sSzfTFodJEJdttsgZawo1TbNS
+         836qnX6RXG662HKxiR7ksNFhK9jZmDzJdxVer7VhGf6Ua5hGvPNvxBLlR8bxeZTxm+
+         6GKQiF8avPyHipXPG/DJHfQ9AHb77OJQSrDyun+TxnHM6fz8JL/a6xLkk89/cRA8M4
+         2Ju7/P70wM8Kw==
+Received: from [192.168.1.30] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+        by pv50p00im-ztdg10021901.me.com (Postfix) with ESMTPSA id A408C814DA;
+        Tue, 20 Dec 2022 13:48:50 +0000 (UTC)
+Message-ID: <192a31a9-ea33-0c51-6549-0525fd3a5b4e@zzy040330.moe>
+Date:   Tue, 20 Dec 2022 21:48:47 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+Content-Language: en-US
+To:     Bitterblue Smith <rtl8821cerfe2@gmail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
+Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
+ <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
+ <33b2b585-c5b1-5888-bcee-ca74ce809a44@gmail.com>
+From:   Jun ASAKA <JunASAKA@zzy040330.moe>
+In-Reply-To: <33b2b585-c5b1-5888-bcee-ca74ce809a44@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: q507JHXLFw3SkZ5kvQgEzDwMs_YeXnWm
+X-Proofpoint-GUID: q507JHXLFw3SkZ5kvQgEzDwMs_YeXnWm
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.883,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-06-21=5F08:2020-02-14=5F02,2022-06-21=5F08,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 clxscore=1030 bulkscore=0
+ mlxlogscore=692 adultscore=0 suspectscore=0 mlxscore=0 malwarescore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2212200113
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,118 +72,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nfc_get_device() take reference for the device, add missing
-nfc_put_device() to release it when not need anymore.
-Also fix the style warnning by use error EOPNOTSUPP instead of
-ENOTSUPP.
+On 20/12/2022 21:03, Bitterblue Smith wrote:
 
-Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
-Fixes: 29e76924cf08 ("nfc: netlink: Add capability to reply to vendor_cmd with data")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- net/nfc/netlink.c | 51 ++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 37 insertions(+), 14 deletions(-)
-
-diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-index 9d91087b9399..d081beaf4828 100644
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1497,6 +1497,7 @@ static int nfc_genl_se_io(struct sk_buff *skb, struct genl_info *info)
- 	u32 dev_idx, se_idx;
- 	u8 *apdu;
- 	size_t apdu_len;
-+	int error;
- 
- 	if (!info->attrs[NFC_ATTR_DEVICE_INDEX] ||
- 	    !info->attrs[NFC_ATTR_SE_INDEX] ||
-@@ -1510,25 +1511,37 @@ static int nfc_genl_se_io(struct sk_buff *skb, struct genl_info *info)
- 	if (!dev)
- 		return -ENODEV;
- 
--	if (!dev->ops || !dev->ops->se_io)
--		return -ENOTSUPP;
-+	if (!dev->ops || !dev->ops->se_io) {
-+		error = -EOPNOTSUPP;
-+		goto put_dev;
-+	}
- 
- 	apdu_len = nla_len(info->attrs[NFC_ATTR_SE_APDU]);
--	if (apdu_len == 0)
--		return -EINVAL;
-+	if (apdu_len == 0) {
-+		error = -EINVAL;
-+		goto put_dev;
-+	}
- 
- 	apdu = nla_data(info->attrs[NFC_ATTR_SE_APDU]);
--	if (!apdu)
--		return -EINVAL;
-+	if (!apdu) {
-+		error = -EINVAL;
-+		goto put_dev;
-+	}
- 
- 	ctx = kzalloc(sizeof(struct se_io_ctx), GFP_KERNEL);
--	if (!ctx)
--		return -ENOMEM;
-+	if (!ctx) {
-+		error = -ENOMEM;
-+		goto put_dev;
-+	}
- 
- 	ctx->dev_idx = dev_idx;
- 	ctx->se_idx = se_idx;
- 
--	return nfc_se_io(dev, se_idx, apdu, apdu_len, se_io_cb, ctx);
-+	error = nfc_se_io(dev, se_idx, apdu, apdu_len, se_io_cb, ctx);
-+
-+put_dev:
-+	nfc_put_device(dev);
-+	return error;
- }
- 
- static int nfc_genl_vendor_cmd(struct sk_buff *skb,
-@@ -1551,14 +1564,20 @@ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
- 	subcmd = nla_get_u32(info->attrs[NFC_ATTR_VENDOR_SUBCMD]);
- 
- 	dev = nfc_get_device(dev_idx);
--	if (!dev || !dev->vendor_cmds || !dev->n_vendor_cmds)
-+	if (!dev)
- 		return -ENODEV;
-+	if (!dev->vendor_cmds || !dev->n_vendor_cmds) {
-+		err = -ENODEV;
-+		goto put_dev;
-+	}
- 
- 	if (info->attrs[NFC_ATTR_VENDOR_DATA]) {
- 		data = nla_data(info->attrs[NFC_ATTR_VENDOR_DATA]);
- 		data_len = nla_len(info->attrs[NFC_ATTR_VENDOR_DATA]);
--		if (data_len == 0)
--			return -EINVAL;
-+		if (data_len == 0) {
-+			err = -EINVAL;
-+			goto put_dev;
-+		}
- 	} else {
- 		data = NULL;
- 		data_len = 0;
-@@ -1573,10 +1592,14 @@ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
- 		dev->cur_cmd_info = info;
- 		err = cmd->doit(dev, data, data_len);
- 		dev->cur_cmd_info = NULL;
--		return err;
-+		goto put_dev;
- 	}
- 
--	return -EOPNOTSUPP;
-+	err = -EOPNOTSUPP;
-+
-+put_dev:
-+	nfc_put_device(dev);
-+	return err;
- }
- 
- /* message building helper */
--- 
-2.25.1
-
+> On 20/12/2022 07:44, Ping-Ke Shih wrote:
+>>
+>>> -----Original Message-----
+>>> From: Jun ASAKA <JunASAKA@zzy040330.moe>
+>>> Sent: Saturday, December 17, 2022 11:07 AM
+>>> To: Jes.Sorensen@gmail.com
+>>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
+>>> <JunASAKA@zzy040330.moe>
+>>> Subject: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+>>>
+>>> Fixing transmission failure which results in
+>>> "authentication with ... timed out". This can be
+>>> fixed by disable the REG_TXPAUSE.
+>>>
+>>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
+>>> ---
+>>>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
+>>>   1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>> index a7d76693c02d..9d0ed6760cb6 100644
+>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
+>>>   	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
+>>>   	val8 &= ~BIT(0);
+>>>   	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
+>>> +
+>>> +	/*
+>>> +	 * Fix transmission failure of rtl8192e.
+>>> +	 */
+>>> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
+>> I trace when rtl8xxxu set REG_TXPAUSE=0xff that will stop TX.
+>> The occasions include RF calibration, LPS mode (called by power off), and
+>> going to stop. So, I think RF calibration does TX pause but not restore
+>> settings after calibration, and causes TX stuck. As the flow I traced,
+>> this patch looks reasonable. But, I wonder why other people don't meet
+>> this problem.
+>>
+> Other people have this problem too:
+> https://bugzilla.kernel.org/show_bug.cgi?id=196769
+> https://bugzilla.kernel.org/show_bug.cgi?id=216746
+Actually, one of the two bug was issued by me. Also, my friend who is 
+using a TP-Link rtl8192eu device said that his device doesn't work as well.
+>
+> The RF calibration does restore REG_TXPAUSE at the end. What happens is
+> when you plug in the device, something (mac80211? wpa_supplicant?) calls
+> rtl8xxxu_start(), then rtl8xxxu_stop(), then rtl8xxxu_start() again.
+> rtl8xxxu_stop() sets REG_TXPAUSE to 0xff and nothing sets it back to 0.
