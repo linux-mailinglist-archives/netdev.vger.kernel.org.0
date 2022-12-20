@@ -2,120 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5015652350
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:00:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71207652369
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 16:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234087AbiLTPAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 10:00:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
+        id S234039AbiLTPDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 10:03:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbiLTPAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:00:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261161AF
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 06:59:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671548365;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=loRMWcnY9Zc3gsu659uSvWGLXQHgBLYyUdhTzCHdJL4=;
-        b=RXLVF7mv8T5jf2HA4GcCGIgKEEVwhUImmmGS5synt6IUKD1QwpehMC6bwGdrRFz5b4fWvB
-        UhpYov+bQcOzY+8tAVHiqg8LpKDp6IhFzCwwI20EXtSOULKQNxxVjQlL1gTT4Mz+j/dC88
-        yTJaAugV1/kPvNbHvnQVxIoX97Xn7qk=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-672-qTQUjor7PIeGqVq5liDhzQ-1; Tue, 20 Dec 2022 09:59:21 -0500
-X-MC-Unique: qTQUjor7PIeGqVq5liDhzQ-1
-Received: by mail-qk1-f197.google.com with SMTP id q20-20020a05620a0d9400b006fcaa1eac9bso9554407qkl.23
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 06:59:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=loRMWcnY9Zc3gsu659uSvWGLXQHgBLYyUdhTzCHdJL4=;
-        b=fb3LxvlymrcHFRunFqBGJ/AnbdBoSqf/JwHsYUnsZ7NHIkfwVT9Fi9Ljv9fCnDU7qe
-         oCUmDNSbcyklI63ye8o6gb13ujoWpApy9eX/121ixUdiCtjDyaLb5rRpf98HJG3qA9bF
-         M9QEFvBTcN+RBRdYozqtY+9+s7b1r3L+ByxjeKnFJNrPCt6qOIQ4v27N3lMsrGtf8lkg
-         wzOyqXjmxQXS72DphibGNwSxEMKt4pAysFJRzfADvEtTl+hMeCYKOP+6E8lgRWYDJKOH
-         T6kqFE/2mC2gQfp8gwJF4dWYC1vFT3hxZHGn/f2rqAyg/fwvCuKXuNZWqPDQqblfswhz
-         LW6A==
-X-Gm-Message-State: ANoB5pl2+DRaKRRwlRS5t/IlAZZewEvoYA24lOeI0f2yS2qrXL1plPvV
-        ZlAG4doETck/vE7HrkHz04vGlf6ef6YBes4866jr3jger1n8MhxQjaRZrZKLj8Wt8AXnr/WGltR
-        NZgJObzVkTnhZGlwW
-X-Received: by 2002:ac8:5c03:0:b0:3a6:6181:f4ef with SMTP id i3-20020ac85c03000000b003a66181f4efmr82323448qti.60.1671548360855;
-        Tue, 20 Dec 2022 06:59:20 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf50BUcQSQHcEJygADcQA4vzlJrzyssyNaJu8beb5GdIxP7FEGhAjq5wBqu7xFkLkoDZIUDEVw==
-X-Received: by 2002:ac8:5c03:0:b0:3a6:6181:f4ef with SMTP id i3-20020ac85c03000000b003a66181f4efmr82323421qti.60.1671548360597;
-        Tue, 20 Dec 2022 06:59:20 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
-        by smtp.gmail.com with ESMTPSA id bn1-20020a05620a2ac100b006fafc111b12sm8962497qkb.83.2022.12.20.06.59.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 06:59:19 -0800 (PST)
-Message-ID: <367438a5296d6b43d92287289f44f0e1dfe01d1a.camel@redhat.com>
-Subject: Re: [PATCH] net: bridge: mcast: read ngrec once in igmp3/mld2 report
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Joy Gu <jgu@purestorage.com>, bridge@lists.linux-foundation.org
-Cc:     roopa@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, joern@purestorage.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 20 Dec 2022 15:59:15 +0100
-In-Reply-To: <05d630bf-7fa8-4495-6345-207f133ef746@blackwall.org>
-References: <20221220024807.36502-1-jgu@purestorage.com>
-         <05d630bf-7fa8-4495-6345-207f133ef746@blackwall.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S234009AbiLTPDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 10:03:04 -0500
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69118B6E
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 07:02:59 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 64CBE9C08B5;
+        Tue, 20 Dec 2022 10:02:57 -0500 (EST)
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id R68cp0FWUWW3; Tue, 20 Dec 2022 10:02:56 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id BD2809C08BA;
+        Tue, 20 Dec 2022 10:02:56 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com BD2809C08BA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
+        t=1671548576; bh=N069hIUKR9+LPD8r5eCPrDASFh+SBqcOjod6EOfj9ec=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=G4s9q/p4pe2yAaxuGZbuWheJ2Y6SaSWdi8Z19F+JLbGUEnlHLxra6ewZ/UDNonnzn
+         J15UhywXUG3tMn5J60TZBjHXCT6riEcd5HcE3bwIIt/XAYYHnx/P6nLbDvpFUJMXoE
+         BozeLj8+Z+KyI35jB/mRYBlH0GMoOhEgrTCJ3jJWYoGiPPqjoLKaRkMQGtmEAT+X2M
+         ZtEwM4PETga0vKZoQNuQ9YH+csYNlh/Vq3E00tM/dPBWFJeZ6a9/u7a3jlrql+eOcN
+         mnSQYP8e2SPdSyBUGxo49fQW4nYwac4El/uvPjhrVKKgOS81/E61GfqxkRUfb3tvdf
+         rzZZ0T7EV/RPA==
+X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id CSakpillc6io; Tue, 20 Dec 2022 10:02:56 -0500 (EST)
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [192.168.48.237])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 91CE39C08B5;
+        Tue, 20 Dec 2022 10:02:56 -0500 (EST)
+Date:   Tue, 20 Dec 2022 10:02:56 -0500 (EST)
+From:   Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        woojung huh <woojung.huh@microchip.com>,
+        davem <davem@davemloft.net>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Message-ID: <1721908413.470634.1671548576554.JavaMail.zimbra@savoirfairelinux.com>
+In-Reply-To: <7ac42bd4-3088-5bd5-dcfc-c1e74466abb5@gmail.com>
+References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com> <20221220131921.806365-2-enguerrand.de-ribaucourt@savoirfairelinux.com> <7ac42bd4-3088-5bd5-dcfc-c1e74466abb5@gmail.com>
+Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+ phy_disable_interrupts()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: Zimbra 8.8.15_GA_4481 (ZimbraWebClient - FF107 (Linux)/8.8.15_GA_4481)
+Thread-Topic: add EXPORT_SYMBOL to phy_disable_interrupts()
+Thread-Index: BhkIgmF++xn3tJ7yW4FptRdtRLL8oQ==
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-12-20 at 12:13 +0200, Nikolay Aleksandrov wrote:
-> On 20/12/2022 04:48, Joy Gu wrote:
-> > In br_ip4_multicast_igmp3_report() and br_ip6_multicast_mld2_report(),
-> > "ih" or "mld2r" is a pointer into the skb header. It's dereferenced to
-> > get "num", which is used in the for-loop condition that follows.
-> > 
-> > Compilers are free to not spend a register on "num" and dereference that
-> > pointer every time "num" would be used, i.e. every loop iteration. Which
-> > would be a bug if pskb_may_pull() (called by ip_mc_may_pull() or
-> > ipv6_mc_may_pull() in the loop body) were to change pointers pointing
-> > into the skb header, e.g. by freeing "skb->head".
-> > 
-> > We can avoid this by using READ_ONCE().
-> > 
-> > Suggested-by: Joern Engel <joern@purestorage.com>
-> > Signed-off-by: Joy Gu <jgu@purestorage.com>
+> From: "Heiner Kallweit" <hkallweit1@gmail.com>
+> To: "Enguerrand de Ribaucourt" <enguerrand.de-ribaucourt@savoirfairelinux.com>,
+> "netdev" <netdev@vger.kernel.org>
+> Cc: "Paolo Abeni" <pabeni@redhat.com>, "woojung huh"
+> <woojung.huh@microchip.com>, "davem" <davem@davemloft.net>, "UNGLinuxDriver"
+> <UNGLinuxDriver@microchip.com>, "Andrew Lunn" <andrew@lunn.ch>, "Russell King -
+> ARM Linux" <linux@armlinux.org.uk>
+> Sent: Tuesday, December 20, 2022 3:40:15 PM
+> Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+> phy_disable_interrupts()
+
+> On 20.12.2022 14:19, Enguerrand de Ribaucourt wrote:
+> > It seems EXPORT_SYMBOL was forgotten when phy_disable_interrupts() was
+> > made non static. For consistency with the other exported functions in
+> > this file, EXPORT_SYMBOL should be used.
+
+> No, it wasn't forgotten. It's intentional. The function is supposed to
+> be used within phylib only.
+
+> None of the phylib maintainers was on the addressee list of your patch.
+> Seems you didn't check with get_maintainers.pl.
+
+> You should explain your use case to the phylib maintainers. Maybe lan78xx
+> uses phylib in a wrong way, maybe an extension to phylib is needed.
+> Best start with explaining why lan78xx_link_status_change() needs to
+> fiddle with the PHY interrupt. It would help be helpful to understand
+> what "chip" refers to in the comment. The MAC, or the PHY?
+> Does the lan78xx code assume that a specific PHY is used, and the
+> functionality would actually belong to the respective PHY driver?
+
+Thank you for your swift reply,
+
+The requirement to toggle the PHY interrupt in lan78xx_link_status_change() (the
+LAN7801 MAC driver) comes from a workaround by the original author which resets
+the fixed speed in the PHY when the Ethernet cable is swapped. According to his
+message, the link could not be correctly setup without this workaround.
+
+Unfortunately, I don't have the cables to test the code without the workaround
+and it's description doesn't explain what problem happens more precisely.
+
+The PHY the original author used is a LAN8835. The workaround code directly
+modified the interrupt configuration registers of this LAN8835 PHY within
+lan78xx_link_status_change(). This caused problems if a different PHY was used
+because the register at this address did not correspond to the interrupts
+configuration. As suggested by the lan78xx.c maintainer, a generic function
+should be used instead to toggle the interrupts of the PHY. However, it seems
+that maybe the MAC driver shouldn't meddle with the PHY's interrupts according
+to you. Would you consider this use case a valid one?
+
+Enguerrand
+
+> > Fixes: 3dd4ef1bdbac ("net: phy: make phy_disable_interrupts() non-static")
+>> Signed-off-by: Enguerrand de Ribaucourt
+> > <enguerrand.de-ribaucourt@savoirfairelinux.com>
 > > ---
-> >  net/bridge/br_multicast.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> 
-> I doubt any compiler would do that (partly due to the ntohs()). 
+> > drivers/net/phy/phy.c | 1 +
+> > 1 file changed, 1 insertion(+)
 
-I would say that any compiler behaving as described above is buggy, as
-'skb' is modified inside the loop, and the header pointer is fetched
-from the skb, it can't be considered invariant.
+> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> > index e5b6cb1a77f9..33250da76466 100644
+> > --- a/drivers/net/phy/phy.c
+> > +++ b/drivers/net/phy/phy.c
+> > @@ -992,6 +992,7 @@ int phy_disable_interrupts(struct phy_device *phydev)
+> > /* Disable PHY interrupts */
+> > return phy_config_interrupt(phydev, PHY_INTERRUPT_DISABLED);
+> > }
+> > +EXPORT_SYMBOL(phy_disable_interrupts);
 
-> If you have hit a bug or
-> seen this with some compiler please provide more details, disassembly of the resulting
-> code would be best.
-
-Exactly. A more detailed description of the issue you see is necessary.
-And very likely the proposed solution is not the correct one.
-
-Cheers,
-
-Paolo
-
+> > /**
+> > * phy_interrupt - PHY interrupt handler
