@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04CC66529C0
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 00:20:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E39F6529C4
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 00:21:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234242AbiLTXUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 18:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
+        id S229842AbiLTXVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 18:21:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiLTXUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 18:20:37 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4952C19C2A;
-        Tue, 20 Dec 2022 15:20:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jP1SznLk4QqKOeAQ29Z+yBmKm0jVtejwu0lLKovrjPA=; b=XGouaF1h0RrR6vGj9PvB5XiU7W
-        x5g6chWr2bEk11CMq0ahuXCdEj8jA67u2lcjac0mKV7FAehvY/TWE2uDraiax+Oi2UGIvjghWGTwp
-        J76YUFli/0j0LNbbTBHCJCi8FqoxilvDX2l8c/bFH3DQL7rNOlYQjdKnONLl5lR5M5Qs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p7luK-00089h-By; Wed, 21 Dec 2022 00:20:24 +0100
-Date:   Wed, 21 Dec 2022 00:20:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: Re: [PATCH v7 11/11] dt-bindings: net: dsa: qca8k: add LEDs
- definition example
-Message-ID: <Y6JDOFmcEQ3FjFKq@lunn.ch>
-References: <20221214235438.30271-1-ansuelsmth@gmail.com>
- <20221214235438.30271-12-ansuelsmth@gmail.com>
- <20221220173958.GA784285-robh@kernel.org>
+        with ESMTP id S229804AbiLTXVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 18:21:13 -0500
+Received: from out-127.mta0.migadu.com (out-127.mta0.migadu.com [IPv6:2001:41d0:1004:224b::7f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84B4B6E
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 15:21:12 -0800 (PST)
+Message-ID: <7372590a-f40b-17d1-f780-3bd1ce4f30bb@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1671578470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3rJJdWwF5tZwAZGlG9S4+BM5oF4WqZa/1LhVRAvblzc=;
+        b=uHIdeFu+nq1WAZ3W9XuXsb344ouUymlyEkd5bwRxF9F1xgNXNidtYi9YjEdUDAQdh7DG9L
+        Rdv/FYTx7fZdOJ8lrsyXUDqGlBuyMOhCzHab/IY2W+b9/XV2Neru/ahYhsPM/7tlycSqWN
+        pSXSWvB4z2MUsPdsTRU3AWJNFIHos0s=
+Date:   Tue, 20 Dec 2022 15:21:08 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221220173958.GA784285-robh@kernel.org>
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: tunnel: add sanity test for
+ checksums
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net
+References: <20221220004701.402165-1-kuba@kernel.org>
+ <20221220004701.402165-2-kuba@kernel.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221220004701.402165-2-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,74 +49,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 20, 2022 at 11:39:58AM -0600, Rob Herring wrote:
-> On Thu, Dec 15, 2022 at 12:54:38AM +0100, Christian Marangi wrote:
-> > Add LEDs definition example for qca8k using the offload trigger as the
-> > default trigger and add all the supported offload triggers by the
-> > switch.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
-> >  1 file changed, 24 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > index 978162df51f7..4090cf65c41c 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > @@ -65,6 +65,8 @@ properties:
-> >                   internal mdio access is used.
-> >                   With the legacy mapping the reg corresponding to the internal
-> >                   mdio is the switch reg with an offset of -1.
-> > +                 Each phy have at least 3 LEDs connected and can be declared
-> > +                 using the standard LEDs structure.
-> >  
-> >  patternProperties:
-> >    "^(ethernet-)?ports$":
-> > @@ -202,6 +204,7 @@ examples:
-> >      };
-> >    - |
-> >      #include <dt-bindings/gpio/gpio.h>
-> > +    #include <dt-bindings/leds/common.h>
-> >  
-> >      mdio {
-> >          #address-cells = <1>;
-> > @@ -284,6 +287,27 @@ examples:
-> >  
-> >                  internal_phy_port1: ethernet-phy@0 {
-> >                      reg = <0>;
-> > +
-> > +                    leds {
-> > +                        #address-cells = <1>;
-> > +                        #size-cells = <0>;
-> > +
-> > +                        led@0 {
-> > +                            reg = <0>;
-> > +                            color = <LED_COLOR_ID_WHITE>;
-> > +                            function = LED_FUNCTION_LAN;
-> > +                            function-enumerator = <1>;
-> > +                            linux,default-trigger = "netdev";
+On 12/19/22 4:47 PM, Jakub Kicinski wrote:
+> Simple netdevsim based test. Netdevsim will validate xmit'ed
+> packets, in particular we care about checksum sanity (along
+> the lines of checks inside skb_checksum_help()). Triggering
+> skb_checksum_help() directly would require the right HW device
+> or a crypto device setup, netdevsim is much simpler.
 > 
-> 'function' should replace this. Don't encourage more users. 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>   drivers/net/netdevsim/netdev.c                |  5 ++++
+>   tools/testing/selftests/bpf/test_tc_tunnel.sh | 27 +++++++++++++++++++
+>   2 files changed, 32 insertions(+)
 > 
-> Also, 'netdev' is not documented which leaves me wondering why there's 
-> no warning? Either this patch didn't apply or there's a problem in the 
-> schema that's not checking this node.
+> diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
+> index 6db6a75ff9b9..e4808a6d37a4 100644
+> --- a/drivers/net/netdevsim/netdev.c
+> +++ b/drivers/net/netdevsim/netdev.c
+> @@ -33,6 +33,11 @@ static netdev_tx_t nsim_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>   	if (!nsim_ipsec_tx(ns, skb))
+>   		goto out;
+>   
+> +	/* Validate the packet */
+> +	if (skb->ip_summed == CHECKSUM_PARTIAL)
+> +		WARN_ON_ONCE((unsigned int)skb_checksum_start_offset(skb) >=
+> +			     skb_headlen(skb));
+> +
+>   	u64_stats_update_begin(&ns->syncp);
+>   	ns->tx_packets++;
+>   	ns->tx_bytes += skb->len;
+> diff --git a/tools/testing/selftests/bpf/test_tc_tunnel.sh b/tools/testing/selftests/bpf/test_tc_tunnel.sh
+> index 334bdfeab940..4dac87f6a6fa 100755
+> --- a/tools/testing/selftests/bpf/test_tc_tunnel.sh
+> +++ b/tools/testing/selftests/bpf/test_tc_tunnel.sh
+> @@ -15,6 +15,7 @@ readonly ns1_v4=192.168.1.1
+>   readonly ns2_v4=192.168.1.2
+>   readonly ns1_v6=fd::1
+>   readonly ns2_v6=fd::2
+> +readonly nsim_v4=192.168.2.1
+>   
+>   # Must match port used by bpf program
+>   readonly udpport=5555
+> @@ -67,6 +68,10 @@ cleanup() {
+>   	if [[ -n $server_pid ]]; then
+>   		kill $server_pid 2> /dev/null
+>   	fi
+> +
+> +	if [ -e /sys/bus/netdevsim/devices/netdevsim1 ]; then
+> +	    echo 1 > /sys/bus/netdevsim/del_device
+> +	fi
+>   }
+>   
+>   server_listen() {
+> @@ -93,6 +98,25 @@ verify_data() {
+>   	fi
+>   }
+>   
+> +decap_sanity() {
+> +    echo "test decap sanity"
+> +    modprobe netdevsim
+> +    echo 1 1 > /sys/bus/netdevsim/new_device
+> +    udevadm settle
+> +    nsim=$(ls /sys/bus/netdevsim/devices/netdevsim1/net/)
+> +    ip link set dev $nsim up
+> +    ip addr add dev $nsim $nsim_v4/24
+> +
+> +    tc qdisc add dev $nsim clsact
+> +    tc filter add dev $nsim egress \
+> +       bpf direct-action object-file ${BPF_FILE} section decap
+> +
+> +    echo abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz | \
+> +	nc -u 192.168.2.2 7777
 
-It is probably the usual limitation that the tools require a
-compatible, where as the kernel does not.
+Thanks for the fix and the idea on how to test it.
 
-> > +                        };
-> > +
-> > +                        led@1 {
-> > +                            reg = <1>;
-> > +                            color = <LED_COLOR_ID_AMBER>;
-> > +                            function = LED_FUNCTION_LAN;
-> > +                            function-enumerator = <1>;
-> 
-> Typo? These are supposed to be unique. Can't you use 'reg' in your case?
+I have posted a patch to translate this test to a test for test_progs that can 
+finish and exit such that it can be run continuously in CI.  The test attaches a 
+tc-bpf at lo and the bpf prog directly checks for the skb->ip_summed == 
+CHECKSUM_NONE and the broken csum_start condition.
 
-reg in this context is the address of the PHY on the MDIO bus. This is
-an Ethernet switch, so has many PHYs, each with its own address.
-
-   Andrew
+If the test_progs patch looks good, patch 1 can be landed first and then land 
+the test_progs patch.  wdyt?
