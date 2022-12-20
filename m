@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7336B6520E8
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 13:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD3F6520EE
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 13:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbiLTMpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 07:45:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        id S233819AbiLTMrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 07:47:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233733AbiLTMpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 07:45:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FFD12634
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 04:41:15 -0800 (PST)
+        with ESMTP id S229861AbiLTMrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 07:47:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33091192AF
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 04:45:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671540074;
+        s=mimecast20190719; t=1671540313;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2q8SwI06rG85fDetmmuxQo59eHILI8/YdzNmZm6nI1I=;
-        b=H5dS/Xv3B+GnaYZQ4PnfhD1n6AOW5mFl3JdLcrSuQC0ByNxpqTG7NGTJKwqHOPN7pc+gHb
-        deehekWFOBDYwUOamPBAXB6SHSU4V/6o1YtFH7+eq8C+Mddl9REMutoKMypy1OyfhlYpdv
-        sDHcQsrV20LKWr2Z/ES8POyRHD4ElaA=
+        bh=3UNjEclpm+e/XTNsRG0cyZjq9glUF7fC/NlLJ+OGTKE=;
+        b=G2ZKHDdCoLxAqkwLBYuQ3oagZyD9SMdhehve1kjnK1eXgvq5XliOt2k0rxyuFvrk02JCLj
+        TufxBAIqrv8aww+vC589grlJHl7XBb69GkFiM1Ve9C6P7eiljxP17I5ZDGWWSRbtVX3i2/
+        vDbsA00gHluTkH88KH/myPm4KG9OzYw=
 Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
  [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-529-J6Atji9RPy21B9VYzmG6Lg-1; Tue, 20 Dec 2022 07:41:13 -0500
-X-MC-Unique: J6Atji9RPy21B9VYzmG6Lg-1
-Received: by mail-qk1-f199.google.com with SMTP id bk24-20020a05620a1a1800b006ffcdd05756so9362892qkb.22
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 04:41:13 -0800 (PST)
+ us-mta-178-HOmEEXA3ObuB5fd9s1_BZw-1; Tue, 20 Dec 2022 07:45:12 -0500
+X-MC-Unique: HOmEEXA3ObuB5fd9s1_BZw-1
+Received: by mail-qk1-f199.google.com with SMTP id br6-20020a05620a460600b007021e1a5c48so9257550qkb.6
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 04:45:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:user-agent:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=2q8SwI06rG85fDetmmuxQo59eHILI8/YdzNmZm6nI1I=;
-        b=v3tmrjVV+3uQuCRDL2TKqCjATZ0PIjxf/sGbzW71gm431FtRG5Tyn2Y1fF2ZdCeIxy
-         QKw00uMmOW+iiWOj8bBMBtIHH3yQOsEGq7p4KcvPa5nXVBxUbJzfcg2NJtzCy3obxwzJ
-         /uQ/WeGVTamFV3przVKL/fACqkVNZ4KBBbvKHFEKLCYZYoA3iWZlLE4WAiYUG2TOu+9c
-         pvS6bCKUXmsvyReXUGanR3yMAJPvr2/a3aDLn5V45qv/DfZ6PF9I3ms/MuosCf+KGBcG
-         9QJCIBLG+nyCbY1EIzaE+pyOyHPrXagErERTJDxbYwfrmXOw0wo8ziy/MR7jlhMXa6YC
-         Clow==
-X-Gm-Message-State: ANoB5plCnHV6Kzqph9FVtMlqXUzANO14xf+c0VniTn/cMeYl9EaScYWq
-        8TbtfEWz3Df2Nmc8tBItG/IlDDVPNa9w+DfxzjumnlwL6Vqtl/i8pn+fxFs94EtEUcO8MYOFu8I
-        Ob6vJ6f+TsBkD9Zdh
-X-Received: by 2002:a05:622a:514d:b0:39c:da21:6c06 with SMTP id ew13-20020a05622a514d00b0039cda216c06mr63252015qtb.8.1671540072740;
-        Tue, 20 Dec 2022 04:41:12 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7MUsDvnrgvQ7EDcDaMYiLJIyNquPtq5d9fqUADnnh2YK/ADyek24vnSfWPqL13Q0HFBihl/w==
-X-Received: by 2002:a05:622a:514d:b0:39c:da21:6c06 with SMTP id ew13-20020a05622a514d00b0039cda216c06mr63251997qtb.8.1671540072461;
-        Tue, 20 Dec 2022 04:41:12 -0800 (PST)
+        bh=3UNjEclpm+e/XTNsRG0cyZjq9glUF7fC/NlLJ+OGTKE=;
+        b=SczU62MNNvSpWap8CguNk6pSK27ZL8SG/NnVxSodcGwUDMrwc6oQloRl+VUH8peDwk
+         /ufxMYtxoBzDNhpNNpm1p51NViUice/D1SPz/XZCG/392MmMH2TtsJJz8ukc0Pasl5+c
+         OzoXcCZl2TDmgT5igEA9FNYoGHq49gudMCdYdumXfaOGcSoAbE2JSt1dE2rAqFIMm6qN
+         iy3eKeFNfybqgCkXjN7n9QlXpk0P171YkJKBx7BtOqObkbKbYJYud9Dulhf7Nhk37Nqx
+         O9rG7OxZXTQXOaUMI2PPQGQ/eV2/llkwsc10xEvbSGo3DsA428yS0gSf2ojGHXPm7Gm8
+         HI0w==
+X-Gm-Message-State: AFqh2kqIzMxUxDvBfBo5m/yccZDXE20yKa/eFxfnhCFVG6vJzKSNp+nN
+        byr52gXOhpjDqBLnLrE871W1Fp98fNyV+qgjxf3xhT/+zOJfmGSN3yYfND2d+3X752jpZRCxxZg
+        7s+hM0EHfDzupR8lo
+X-Received: by 2002:ac8:7082:0:b0:3a8:1593:f15b with SMTP id y2-20020ac87082000000b003a81593f15bmr3123440qto.50.1671540311727;
+        Tue, 20 Dec 2022 04:45:11 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXt0kdNBcIX8/dEgzoydDa0U7HPLbVzCtyoNwoQc0ZMK2RI5/tvg6dfxyF2MSVVDiE1f6SilOw==
+X-Received: by 2002:ac8:7082:0:b0:3a8:1593:f15b with SMTP id y2-20020ac87082000000b003a81593f15bmr3123418qto.50.1671540311455;
+        Tue, 20 Dec 2022 04:45:11 -0800 (PST)
 Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
-        by smtp.gmail.com with ESMTPSA id x18-20020a05620a259200b006fc2b672950sm8792696qko.37.2022.12.20.04.41.10
+        by smtp.gmail.com with ESMTPSA id i12-20020ac813cc000000b003ab1ee36ee7sm826884qtj.51.2022.12.20.04.45.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 04:41:11 -0800 (PST)
-Message-ID: <1061700ecedf92911d474a675bd3c47354ab600a.camel@redhat.com>
+        Tue, 20 Dec 2022 04:45:11 -0800 (PST)
+Message-ID: <d382c89ca5dc8675ed88efeae62f4adc0e72d6c0.camel@redhat.com>
 Subject: Re: [PATCH v2] net: lan78xx: prevent LAN88XX specific operations
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     Enguerrand de Ribaucourt 
@@ -63,7 +63,7 @@ To:     Enguerrand de Ribaucourt
         netdev@vger.kernel.org
 Cc:     woojung.huh@microchip.com, davem@davemloft.net,
         UNGLinuxDriver@microchip.com
-Date:   Tue, 20 Dec 2022 13:41:08 +0100
+Date:   Tue, 20 Dec 2022 13:45:08 +0100
 In-Reply-To: <20221220113733.714233-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
 References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com>
          <20221220113733.714233-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
@@ -92,11 +92,6 @@ On Tue, 2022-12-20 at 12:37 +0100, Enguerrand de Ribaucourt wrote:
 > 
 > Fixes: 89b36fb5e532 ("lan78xx: Lan7801 Support for Fixed PHY")
 > Reviewed-by: Paolo Abeni <pabeni@redhat.com>;
-
-You should not attach this tag (or acked-by) on your own. 
-
-The following is not even the code I was _asking_ about...
-
 > Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
 > ---
 >  drivers/net/usb/lan78xx.c | 14 +++-----------
@@ -138,11 +133,12 @@ The following is not even the code I was _asking_ about...
 > -		temp |= LAN88XX_INT_MASK_MDINTPIN_EN_;
 > -		phy_write(phydev, LAN88XX_INT_MASK, temp);
 > +		phy_request_interrupt(phydev);
+>  	}
+>  }
+> 
 
-This looks wrong. Should probably be:
-
-	phy_enable_interrupts(phydev);
-
+Oops, this does not even build... please take your time testing the
+code before sending patches to the ML.
 
 Paolo
 
