@@ -2,120 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0760652148
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9D2D652151
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:17:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233851AbiLTNMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 08:12:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
+        id S229738AbiLTNRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 08:17:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233849AbiLTNMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:12:14 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EC4192BB
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:12:11 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id a1so2392710edf.5
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:12:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:subject:cc:to:from:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j4EnR1Q2u0KKc+AisGhIqSegw9gJYBOb4g7u1uoRDKQ=;
-        b=qmvRNGGfv5Q9RsUhDR3YCEjut9VKcvoxCb2plew0zftB4wQ8tjg807fW2FKQm+1pKH
-         EEQSA0ArV/KMpzFq7hAjCnubq84xon/6NTjdw8Wqh6lmI716+A4tAc+dltkK/C/4upFG
-         X8BOnx37ut/P/VRj+frZWrFfo23RUwWAT9jtviN66lYYP1OlHQG5xKXwlHpNmEkqy/0j
-         ZCvjfSoqcgndd7+TsgtOM4Oo3NC1NUKZ8btlLAJ9ANu9h16bEuPi/gn8WU485VIJYpHH
-         A9+Ch8k/OBtl7Jiofz+9C2h267cAuBLUcdeSidbIOWbplcpyf6qELDIl804wJkQ4BULl
-         BB3A==
+        with ESMTP id S229994AbiLTNRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:17:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331211826
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:16:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671542178;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DS9J7lgOk15cDqTwjWfeKKD/FSaeCVKaKczagIUj+Pc=;
+        b=aB9u5/2ioYLg4NT/ygCte9Xh/W9ggilV1TyRs1HcpNP4jK+MeLB0c1Vbx8FpATwMnfAIww
+        YZSmKkRwMMx1obAl9eMFH9f1PFI7Oy2DX6yrkanZ8sMBxetVvht20vLYheTIBDQpz+Ub1N
+        BfejLMWbPneUsrBo0OYq5X3cOFej0QM=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-272-Xf_v3b2cMsiFDEdssvN2tQ-1; Tue, 20 Dec 2022 08:16:15 -0500
+X-MC-Unique: Xf_v3b2cMsiFDEdssvN2tQ-1
+Received: by mail-wr1-f72.google.com with SMTP id k1-20020adfb341000000b0024215e0f486so2210362wrd.21
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:16:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:subject:cc:to:from:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=j4EnR1Q2u0KKc+AisGhIqSegw9gJYBOb4g7u1uoRDKQ=;
-        b=l7h7OWgHoAShtpd3uZz84Pw4vXsEYCexkItL9gV9NcgBxOO1IteoyStn2cSZvSL08I
-         x8hEf8rZDNKH+GUGw+ZD1sT5LHkn+OAlRaPx/p+TGOEuSgPG/+moOtrfD4i/N3C4QegS
-         7X6na8NbvIvfTaM/PDBkc1CiozsvuttnJFUm/ar9cIk1H2Jeb5JIDNL2RgF80EKogxun
-         PYa96uoXtb8JcDPLYIm6z3zBEkX4U/yZxAQih4kQW6ro2n9a8F1KwxGSa0qRL+C/ePq5
-         xArfWZUis5CZbNByrQTtKZgc9PxrDyjqxnjnnlhnpwrQqveQKLU0t1mCvpYQgCCvkkXB
-         8mpw==
-X-Gm-Message-State: ANoB5pmswlJ6ffctKsZoEUVf3uvxjB9G51eCzE6gRiKz16BGqlm0vUl+
-        1i1Kkb84ySsYtx3KDwcgTqTXHkjD7SFdV9Ym
-X-Google-Smtp-Source: AA0mqf5K8Jho4KqtiH8YiRCiYCCCv+pz5OVPHPtuUaFRmec4xRyybJhBjw+mLc2l4m9CTzoYLs7nrg==
-X-Received: by 2002:aa7:db43:0:b0:46c:2c94:d30b with SMTP id n3-20020aa7db43000000b0046c2c94d30bmr54636028edt.33.1671541930207;
-        Tue, 20 Dec 2022 05:12:10 -0800 (PST)
-Received: from [192.168.0.104] ([82.77.81.131])
-        by smtp.gmail.com with ESMTPSA id h31-20020a0564020e9f00b0046ba536ce52sm5533691eda.95.2022.12.20.05.12.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Dec 2022 05:12:09 -0800 (PST)
-Message-ID: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
-Date:   Tue, 20 Dec 2022 15:12:07 +0200
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=DS9J7lgOk15cDqTwjWfeKKD/FSaeCVKaKczagIUj+Pc=;
+        b=u1OuDwEmoTlfc93NTeJLtKIpGFfDSXTZFisofa7o0cunmzZ4nBOl5SlnZ+sSn/scqH
+         twGsj0xQi7B2kbhUJ7ydMEOp8xdAzc7ULboNMlV+pnuaYT0KRy+m19UcoicDxyavpIeh
+         9w80hi42HFVlulL92sOALtpcQjUY06HXFCmGcmFEQ+qx9YUdDC+OQE1+GAj2lRDpa4uo
+         M9JdFyLFz6mhiSk9RkkVW+JNp7yKNP15zVKrNTm6yUuM/FgQNeaJL8S6K8AsQIWZjRWo
+         xL/udK8KkWbUsxHfxhBvYShmG9S/+BgyeWvjbS9kR9tK/SS0cVRbBrZsIgt0io/35Dzu
+         +B7Q==
+X-Gm-Message-State: AFqh2krnVzA7tYxUGLnzM2PDlct17ThlAgU4sJpZoFEFNn+XxrmGjyJj
+        TCVqoo0TiIxE+2Fep2O5ys+gBFWwqXAkWMO1mK+g6+eex/exU5ILQWwWrPU74oadE+0gw9mAnpx
+        fjR1CTlwqDtgfBRIA
+X-Received: by 2002:a05:600c:3d1b:b0:3cf:497c:c59e with SMTP id bh27-20020a05600c3d1b00b003cf497cc59emr1607031wmb.6.1671542174180;
+        Tue, 20 Dec 2022 05:16:14 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvGHB0Vm0N+GWclP9xoL00JzHm/gVmyEhL8QABmZbBqz9VMfRNIecyUqwbLPH2ZQv6KIPjUqg==
+X-Received: by 2002:a05:600c:3d1b:b0:3cf:497c:c59e with SMTP id bh27-20020a05600c3d1b00b003cf497cc59emr1607018wmb.6.1671542173947;
+        Tue, 20 Dec 2022 05:16:13 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
+        by smtp.gmail.com with ESMTPSA id n7-20020a05600c3b8700b003b492753826sm17549353wms.43.2022.12.20.05.16.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Dec 2022 05:16:13 -0800 (PST)
+Message-ID: <2264ca933c234539774d9ae1d1de5a27dd1c12ae.camel@redhat.com>
+Subject: Re: [PATCH 1/2] ip/ip6_gre: Fix changing addr gen mode not
+ generating IPv6 link local address
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, a@unstable.cc, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 20 Dec 2022 14:16:11 +0100
+In-Reply-To: <20221219010619.1826599-2-Thomas.Winter@alliedtelesis.co.nz>
+References: <20221219010619.1826599-1-Thomas.Winter@alliedtelesis.co.nz>
+         <20221219010619.1826599-2-Thomas.Winter@alliedtelesis.co.nz>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Content-Language: en-US
-From:   Tudor Ambarus <tudor.ambarus@linaro.org>
-To:     mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, edumazet@google.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, willemb@google.com,
-        syzkaller@googlegroups.com, liuhangbin@gmail.com
-Cc:     linux-kernel@vger.kernel.org, joneslee@google.com
-Subject: kernel BUG in __skb_gso_segment
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, 2022-12-19 at 14:06 +1300, Thomas Winter wrote:
+> Commit e5dd729460ca changed the code path so that GRE tunnels
+> generate an IPv6 address based on the tunnel source address.
+> It also changed the code path so GRE tunnels don't call addrconf_addr_gen
+> in addrconf_dev_config which is called by addrconf_sysctl_addr_gen_mode
+> when the IN6_ADDR_GEN_MODE is changed.
+> 
+> This patch aims to fix this issue by moving the code in addrconf_notify
+> which calls the addr gen for GRE and SIT into a separate function
+> and calling it in the places that expect the IPv6 address to be
+> generated.
+> 
+> The previous addrconf_dev_config is renamed to addrconf_eth_config
+> since it only expected eth type interfaces and follows the
+> addrconf_gre/sit_config format.
+> 
+> Fixes: e5dd729460ca ("ip/ip6_gre: use the same logic as SIT interfaces when computing v6LL address")
+> Signed-off-by: Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>
+> ---
+>  net/ipv6/addrconf.c | 47 +++++++++++++++++++++++++--------------------
+>  1 file changed, 26 insertions(+), 21 deletions(-)
+> 
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index 6dcf034835ec..e9d7ec03316d 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -3355,7 +3355,7 @@ static void addrconf_addr_gen(struct inet6_dev *idev, bool prefix_route)
+>  	}
+>  }
+>  
+> -static void addrconf_dev_config(struct net_device *dev)
+> +static void addrconf_eth_config(struct net_device *dev)
 
-There's a bug [1] reported by syzkaller in linux-5.15.y that I'd like
-to squash. The commit in stable that introduces the bug is:
-b99c71f90978 net: skip virtio_net_hdr_set_proto if protocol already set
-The upstream commit for this is:
-1ed1d592113959f00cc552c3b9f47ca2d157768f
+You are creating a new function with the name of an existing one, while
+renaming the latter. IMHO this makes the patch hard to review as there
+are some existing call side for the old name, which we likelly want to
+explicitly see here.
 
-I discovered that in mainline this bug was squashed by the following
-commits:
-e9d3f80935b6 ("net/af_packet: make sure to pull mac header")
-dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO")
+>  {
+>  	struct inet6_dev *idev;
+>  
+> @@ -3447,6 +3447,30 @@ static void addrconf_gre_config(struct net_device *dev)
+>  }
+>  #endif
+>  
+> +static void addrconf_dev_config(struct net_device *dev)
+> +{
+> +	switch (dev->type) {
+> +#if IS_ENABLED(CONFIG_IPV6_SIT)
+> +	case ARPHRD_SIT:
+> +		addrconf_sit_config(dev);
+> +		break;
+> +#endif
+> +#if IS_ENABLED(CONFIG_NET_IPGRE) || IS_ENABLED(CONFIG_IPV6_GRE)
+> +	case ARPHRD_IP6GRE:
+> +	case ARPHRD_IPGRE:
+> +		addrconf_gre_config(dev);
+> +		break;
+> +#endif
+> +	case ARPHRD_LOOPBACK:
+> +		init_loopback(dev);
+> +		break;
 
-I'm seeking for some guidance on how to fix linux-5.15.y. From what I
-understand, the bug in stable is triggered because we end up with a
-header offset of 18, that eventually triggers the GSO crash in
-__skb_pull. If I revert the commit in culprit from linux-5.15.y, we'll
-end up with a header offset of 14, the bug is not hit and the packet is 
-dropped at validate_xmit_skb() time. I'm wondering if reverting it is
-the right thing to do, as the commit is marked as a fix. Backporting the
-2 commits from mainline is not an option as they introduce new support.
-Would such a patch be better than reverting the offending commit?
+If I read correctly, this change will cause unneeded attempt to re-add
+the loopback address on the loopback device when the lo.addr_gen_mode
+sysfs entry is touched. I think such side effect should be avoided.
 
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index a960de68ac69..188b6f05e5bd 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -25,7 +25,7 @@ static inline bool virtio_net_hdr_match_proto(__be16 
-protocol, __u8 gso_type)
-  static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
-                                            const struct virtio_net_hdr 
-*hdr)
-  {
--       if (skb->protocol)
-+       if (skb->protocol && skb->protocol != htons(ETH_P_ALL))
-                 return 0;
+Thanks,
 
-         switch (hdr->gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
+Paolo
 
-
-Thanks!
-ta
-
-[1] 
-https://syzkaller.appspot.com/bug?id=ce5575575f074c33ff80d104f5baee26f22e95f5
