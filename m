@@ -2,132 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0682865287A
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 22:39:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56E7E652887
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 22:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234060AbiLTVjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 16:39:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S233934AbiLTVsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 16:48:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiLTVjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 16:39:20 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1A413CEF;
-        Tue, 20 Dec 2022 13:39:18 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 9A5241671;
-        Tue, 20 Dec 2022 22:39:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1671572355;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gJ8vPJvhmfQd+HsvkLEHJ78qftKzWXZ2mSV54HXT5wg=;
-        b=I313p0n4IxiCSWvUmqw6tY2FxgeiJfjDq/2SbCCQu6aQPYPAwtC+6M3NMcFFCJ63F32UKZ
-        4FpsWHE/QV69n8nWHgFvtVjZfleutHUEOcSL5uQMPqNk7+27v33EHQYyPM8B1CAAfnANul
-        L8PUrHxGjewN6f4OuVWtBthvVm65v1WuyrEi+fCaal0BrcqpLQ50tKxBEZ1hZWL4FuVIYW
-        xGBSf4t/9SxKXIX9N5l0RFhkzx6qSvpDNPgfHITOc/0rYCYXltX2KzUdsNGqKIsL9LXHFM
-        Gss+xfl+bGyPrMiah9RzLYsWUuwgqgFRWuCVnl7mjdLERdlXwe3E2GNJWl9VdQ==
+        with ESMTP id S229451AbiLTVsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 16:48:50 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EB1B867;
+        Tue, 20 Dec 2022 13:48:50 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id v11so13774957ljk.12;
+        Tue, 20 Dec 2022 13:48:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=zKdby5jz1dpXnJrBgCDeZHqY7CetYnf+rddUGWikGd8=;
+        b=LtuYYUO4y4anNRiDR9VxdCz9svNTEEzoi2IJE7Pr+nOG55Vtu0ZImP/8W71R3G5n94
+         6ozdzrhj7jctdQj2v4Ucy669R8l0R7/KczTwZApy/tPj9ZTA522l5zf5tcm8zBnKC54q
+         2xIkgk1eLVV5cJ7x+nAGwO/T4GE15a7iVQR7ucjoc5bj4nwKJmUqlKvxBZSoGuv9Nezt
+         11MLvkjgYLbs0pXj5DxXffqWFp6FzFRHdWmxseyR0VtbVBfq+/QyU7pbljX8Xb/dqfCv
+         BhOCYdlQcT5lnoBdobE08OsEHvQkfZyxgaZMNDolTHTEDZoTJ+TF0X/Xim8TXz+5HUkd
+         n6RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zKdby5jz1dpXnJrBgCDeZHqY7CetYnf+rddUGWikGd8=;
+        b=jm5o7aJEs6qxjotVNjC9SoFHlDWyMH5tmmdJ8M54p0XkTy0KAUs4MMLs8bwG/tc08Q
+         3F6gWCvYb7zgYF77ntB9vNqizLfzuT9uFEZbYNoz5i5hPEi54vrsaqDut/kwsaGQWH1p
+         kTI877KDRwtvMjC3hScV2gZhSFFW5oqeh1xp3EUcVcDWdIpchEefcjGYhTEvTR+xdPkU
+         q/N6hv5R2k1turPJS5lJ3rPj8tGcvpNi7Pg2YMKltnCjcpzk8O/GwZ2RGaqHVjqW/9y3
+         tQxkQLzZkAj7MAGJq7yjhJPnhvs+bg42YTS6oGanXpbB6fm5stXuWtpdRk7lQxUJCk9R
+         Elbg==
+X-Gm-Message-State: ANoB5pkrWDfqqBPgB73SKMfl6C2ifHNQetz6g2GDnIkpD3Xf1ETsC5Z9
+        0Ts9NWTat8TeJcBijtqaQzD2fT+oXjZMESGaPqs=
+X-Google-Smtp-Source: AA0mqf6Ot5BbhKa9nqhoWKc7zCkXPZaY9j/Fc/XYicCvofHnkGVqSHdeU+JJZ+8iSuF8Ln3O6mpM2CqNTNOEIE9VQf4=
+X-Received: by 2002:a2e:bc0b:0:b0:27b:5a9f:3bf5 with SMTP id
+ b11-20020a2ebc0b000000b0027b5a9f3bf5mr1880153ljf.320.1671572928246; Tue, 20
+ Dec 2022 13:48:48 -0800 (PST)
 MIME-Version: 1.0
-Date:   Tue, 20 Dec 2022 22:39:15 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Xu Liang <lxu@maxlinear.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 4/4] net: phy: mxl-gpy: disable interrupts on
- GPY215 by default
-In-Reply-To: <Y6G5phSGSPk+7Dgj@lunn.ch>
-References: <20221202151204.3318592-1-michael@walle.cc>
- <20221202151204.3318592-5-michael@walle.cc> <Y4pHCQrDbXXmOT+A@lunn.ch>
- <69e0468cf192455fd2dc7fc93194a8ff@walle.cc> <Y4uzYVSRiE9feD01@lunn.ch>
- <34dc81b01930e594ca4773ddb8c24160@walle.cc> <Y6G5phSGSPk+7Dgj@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <28c24c43a758fcbc0a648f676a6d7524@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221218234801.579114-1-jmaxwell37@gmail.com> <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+In-Reply-To: <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+From:   Jonathan Maxwell <jmaxwell37@gmail.com>
+Date:   Wed, 21 Dec 2022 08:48:11 +1100
+Message-ID: <CAGHK07ALtLTjRP-XOepqoc8xzWcT8=0v5ccL-98f4+SU9vwfsg@mail.gmail.com>
+Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-12-20 14:33, schrieb Andrew Lunn:
->> > > > I think a better place for this test is in gpy_config_intr(), return
->> > > > -EOPNOTSUPP. phy_enable_interrupts() failing should then cause
->> > > > phy_request_interrupt() to use polling.
->> > >
->> > > Which will then print a warning, which might be misleading.
->> > > Or we disable the warning if -EOPNOTSUPP is returned?
->> >
->> > Disabling the warning is the right thing to do.
->> 
->> There is more to this. .config_intr() is also used in
->> phy_init_hw() and phy_drv_supports_irq(). The latter would
->> still return true in our case. I'm not sure that is correct.
->> 
->> After trying your suggestion, I'm still in favor of somehow
->> tell the phy core to force polling mode during probe() of the
->> driver.
-> 
-> The problem is that the MAC can set the interrupt number after the PHY
-> probe has been called. e.g.
-> 
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c#L524
-> 
-> The interrupt needs to be set by the time the PHY is connected to the
-> MAC, which is often in the MAC open method, much later than the PHY
-> probe.
+On Tue, Dec 20, 2022 at 11:35 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
+> > Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
+> > route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
+> > consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
+> > these warnings:
+> >
+> > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > .
+> > .
+> > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+>
+> If I read correctly, the maximum number of dst that the raw socket can
+> use this way is limited by the number of packets it allows via the
+> sndbuf limit, right?
+>
 
-Ok, then phydev->irq should be updated within the phy_attach_direct().
-Something like the following:
+Yes, but in my test sndbuf limit is never hit so it clones a route for
+every packet.
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index e865be3d7f01..c6c5830f5214 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1537,6 +1537,14 @@ int phy_attach_direct(struct net_device *dev, 
-struct phy_device *phydev,
+e.g:
 
-         phydev->interrupts = PHY_INTERRUPT_DISABLED;
+output from C program sending 5000000 packets via a raw socket.
 
-+       /* PHYs can request to use poll mode even though they have an
-+        * associated interrupt line. This could be the case if they
-+        * detect a broken interrupt handling.
-+        */
-+       if (phydev->drv->force_polling_mode &&
-+           phydev->drv->force_polling_mode(phydev))
-+               phydev->irq = PHY_POLL;
-+
-         /* Port is set to PORT_TP by default and the actual PHY driver 
-will set
-          * it to different value depending on the PHY configuration. If 
-we have
-          * the generic PHY driver we can't figure it out, thus set the 
-old
+ip raw: total num pkts 5000000
 
-That callback could be too specifc, I don't know. We could also have
-phydev->drv->pre_attach() which then can update the phydev->irq itself.
+# bpftrace -e 'kprobe:dst_alloc {@count[comm] = count()}'
+Attaching 1 probe...
 
-Btw. the phy_attached_info() in the stmmac seems to be a leftover
-from before the phylink conversion. phylink will print a similar info
-but when the PHY is actually attached.
+@count[a.out]: 5000009
 
--michael
+> Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
+> ipvs, seg6?
+>
+
+Any call to ip6_pol_route(s) where no res.nh->fib_nh_gw_family is 0 can do it.
+But we have only seen this for raw sockets so far.
+
+Regards
+
+Jon
+
+> @DavidA: why do we need to create RTF_CACHE clones for KNOWN_NH flows?
+>
+> Thanks,
+>
+> Paolo
+>
