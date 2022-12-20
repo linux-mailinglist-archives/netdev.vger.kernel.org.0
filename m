@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 611EB65262B
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 19:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CC2D65262C
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 19:26:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233946AbiLTS0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 13:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
+        id S233948AbiLTS0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 13:26:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiLTS03 (ORCPT
+        with ESMTP id S229819AbiLTS03 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 13:26:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662FC2DDF
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52492DC6
         for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 10:25:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1671560742;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TDo/IWYI6rQHEi3h5eiM+f+7wXtUbPdkTw+DQAf+oHI=;
-        b=GtUeelB4KdCEF3eLWlIvVSgCjCQiD3/1WGxJB7zs//lb+e43NPkf1PokqvvzqpoeC+U8Jj
-        IxEBeESPtLKRQsG1DjJRaUehKVtRRyFlEv4+SXtrObFQQdkuz7y/fLx1F9WX7yE9iISUTv
-        Nl4HQUNaKri71pN6Czq0b+n5+Wf4CjI=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8L0VV2lq8zL7OiW2Mg/Mv76PXH9xfoSEugTXSKHlbiA=;
+        b=Mg6THfJcGDybw/fPPIXV/CSnUfsOXsq9Aw6ZPYtxFuDtAM3Wd+drvdE7gU/ayxCpi024Xd
+        TkklZx4PvlkYDbOfMunKQ0czSefqLJmpWn0lFPeaMBoWdXXN+ombkzXa9mzPazIq/ueO87
+        uxqb8suzC7wXIP2HZKbBetUYjECYHO0=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-503-rTGLRUdyNd2l6sqn9tSV8w-1; Tue, 20 Dec 2022 13:25:36 -0500
-X-MC-Unique: rTGLRUdyNd2l6sqn9tSV8w-1
+ us-mta-500-LHtynSkuNbWGnXFpwtG_fw-1; Tue, 20 Dec 2022 13:25:39 -0500
+X-MC-Unique: LHtynSkuNbWGnXFpwtG_fw-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 36C93811E6E;
-        Tue, 20 Dec 2022 18:25:36 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BD3F7183B3C1;
+        Tue, 20 Dec 2022 18:25:38 +0000 (UTC)
 Received: from dcaratti.users.ipa.redhat.com (unknown [10.32.181.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B41BA492C14;
-        Tue, 20 Dec 2022 18:25:34 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B9F3492C14;
+        Tue, 20 Dec 2022 18:25:37 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, jiri@resnulli.us, marcelo.leitner@gmail.com,
         pabeni@redhat.com, wizhao@redhat.com, xiyou.wangcong@gmail.com,
         lucien.xin@gmail.com
-Subject: [RFC net-next 1/2] net/sched: act_mirred: better wording on protection against excessive stack growth
-Date:   Tue, 20 Dec 2022 19:25:22 +0100
-Message-Id: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
+Subject: [RFC net-next 2/2] act_mirred: use the backlog for nested calls to mirred ingress
+Date:   Tue, 20 Dec 2022 19:25:23 +0100
+Message-Id: <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
+In-Reply-To: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
+References: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
@@ -57,77 +60,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-with commit e2ca070f89ec ("net: sched: protect against stack overflow in
-TC act_mirred"), act_mirred protected itself against excessive stack growth
-using per_cpu counter of nested calls to tcf_mirred_act(), and capping it
-to MIRRED_RECURSION_LIMIT. However, such protection does not detect
-recursion/loops in case the packet is enqueued to the backlog (for example,
-when the mirred target device has RPS or skb timestamping enabled). Change
-the wording from "recursion" to "nesting" to make it more clear to readers.
+William reports kernel soft-lockups on some OVS topologies when TC mirred
+egress->ingress action is hit by local TCP traffic [1].
+The same can also be reproduced with SCTP (thanks Xin for verifying), when
+client and server reach themselves through mirred egress to ingress, and
+one of the two peers sends a "heartbeat" packet (from within a timer).
 
-CC: Jamal Hadi Salim <jhs@mojatatu.com>
+Enqueueing to backlog proved to fix this soft lockup; however, as Cong
+noticed [2], we should preserve - when possible - the current mirred
+behavior that counts as "overlimits" any eventual packet drop subsequent to
+the mirred forwarding action [3]. A compromise solution might use the
+backlog only when tcf_mirred_act() has a nest level greater than one:
+change tcf_mirred_forward() accordingly.
+
+Also, add a kselftest that can reproduce the lockup and verifies TC mirred
+ability to account for further packet drops after TC mirred egress->ingress
+(when the nest level is 1).
+
+ [1] https://lore.kernel.org/netdev/33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com/
+ [2] https://lore.kernel.org/netdev/Y0w%2FWWY60gqrtGLp@pop-os.localdomain/
+ [3] such behavior is not guaranteed: for example, if RPS or skb RX
+     timestamping is enabled on the mirred target device, the kernel
+     can defer receiving the skb and return NET_RX_SUCCESS inside
+     tcf_mirred_forward().
+
+Reported-by: William Zhao <wizhao@redhat.com>
+CC: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- net/sched/act_mirred.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/sched/act_mirred.c                        |  7 +++
+ .../selftests/net/forwarding/tc_actions.sh    | 49 ++++++++++++++++++-
+ 2 files changed, 55 insertions(+), 1 deletion(-)
 
 diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 7284bcea7b0b..c8abb5136491 100644
+index c8abb5136491..8037ec9b1d31 100644
 --- a/net/sched/act_mirred.c
 +++ b/net/sched/act_mirred.c
-@@ -29,8 +29,8 @@
- static LIST_HEAD(mirred_list);
- static DEFINE_SPINLOCK(mirred_list_lock);
- 
--#define MIRRED_RECURSION_LIMIT    4
--static DEFINE_PER_CPU(unsigned int, mirred_rec_level);
-+#define MIRRED_NEST_LIMIT    4
-+static DEFINE_PER_CPU(unsigned int, mirred_nest_level);
- 
- static bool tcf_mirred_is_act_redirect(int action)
- {
-@@ -226,7 +226,7 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
- 	struct sk_buff *skb2 = skb;
- 	bool m_mac_header_xmit;
- 	struct net_device *dev;
--	unsigned int rec_level;
-+	unsigned int nest_level;
- 	int retval, err = 0;
- 	bool use_reinsert;
- 	bool want_ingress;
-@@ -237,11 +237,11 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
- 	int mac_len;
- 	bool at_nh;
- 
--	rec_level = __this_cpu_inc_return(mirred_rec_level);
--	if (unlikely(rec_level > MIRRED_RECURSION_LIMIT)) {
-+	nest_level = __this_cpu_inc_return(mirred_nest_level);
-+	if (unlikely(nest_level > MIRRED_NEST_LIMIT)) {
- 		net_warn_ratelimited("Packet exceeded mirred recursion limit on dev %s\n",
- 				     netdev_name(skb->dev));
--		__this_cpu_dec(mirred_rec_level);
-+		__this_cpu_dec(mirred_nest_level);
- 		return TC_ACT_SHOT;
- 	}
- 
-@@ -310,7 +310,7 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
- 			err = tcf_mirred_forward(want_ingress, skb);
- 			if (err)
- 				tcf_action_inc_overlimit_qstats(&m->common);
--			__this_cpu_dec(mirred_rec_level);
-+			__this_cpu_dec(mirred_nest_level);
- 			return TC_ACT_CONSUMED;
- 		}
- 	}
-@@ -322,7 +322,7 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
- 		if (tcf_mirred_is_act_redirect(m_eaction))
- 			retval = TC_ACT_SHOT;
- 	}
--	__this_cpu_dec(mirred_rec_level);
-+	__this_cpu_dec(mirred_nest_level);
- 
- 	return retval;
+@@ -206,12 +206,19 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
+ 	return err;
  }
+ 
++static bool is_mirred_nested(void)
++{
++	return unlikely(__this_cpu_read(mirred_nest_level) > 1);
++}
++
+ static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
+ {
+ 	int err;
+ 
+ 	if (!want_ingress)
+ 		err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
++	else if (is_mirred_nested())
++		err = netif_rx(skb);
+ 	else
+ 		err = netif_receive_skb(skb);
+ 
+diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
+index 1e0a62f638fe..919c0dd9fe4b 100755
+--- a/tools/testing/selftests/net/forwarding/tc_actions.sh
++++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
+@@ -3,7 +3,8 @@
+ 
+ ALL_TESTS="gact_drop_and_ok_test mirred_egress_redirect_test \
+ 	mirred_egress_mirror_test matchall_mirred_egress_mirror_test \
+-	gact_trap_test mirred_egress_to_ingress_test"
++	gact_trap_test mirred_egress_to_ingress_test \
++	mirred_egress_to_ingress_tcp_test"
+ NUM_NETIFS=4
+ source tc_common.sh
+ source lib.sh
+@@ -198,6 +199,52 @@ mirred_egress_to_ingress_test()
+ 	log_test "mirred_egress_to_ingress ($tcflags)"
+ }
+ 
++mirred_egress_to_ingress_tcp_test()
++{
++	local tmpfile=$(mktemp) tmpfile1=$(mktemp)
++
++	RET=0
++	dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$tmpfile
++	tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
++		$tcflags ip_proto tcp src_ip 192.0.2.1 dst_ip 192.0.2.2 \
++			action ct commit nat src addr 192.0.2.2 pipe \
++			action ct clear pipe \
++			action ct commit nat dst addr 192.0.2.1 pipe \
++			action ct clear pipe \
++			action skbedit ptype host pipe \
++			action mirred ingress redirect dev $h1
++	tc filter add dev $h1 protocol ip pref 101 handle 101 egress flower \
++		$tcflags ip_proto icmp \
++			action mirred ingress redirect dev $h1
++	tc filter add dev $h1 protocol ip pref 102 handle 102 ingress flower \
++		ip_proto icmp \
++			action drop
++
++	ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $tmpfile1  &
++	local rpid=$!
++	ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$tmpfile
++	wait -n $rpid
++	cmp -s $tmpfile $tmpfile1
++	check_err $? "server output check failed"
++
++	$MZ $h1 -c 10 -p 64 -a $h1mac -b $h1mac -A 192.0.2.1 -B 192.0.2.1 \
++		-t icmp "ping,id=42,seq=5" -q
++	tc_check_packets "dev $h1 egress" 101 10
++	check_err $? "didn't mirred redirect ICMP"
++	tc_check_packets "dev $h1 ingress" 102 10
++	check_err $? "didn't drop mirred ICMP"
++	local overlimits=$(tc_rule_stats_get ${h1} 101 egress .overlimits)
++	test ${overlimits} = 10
++	check_err $? "wrong overlimits, expected 10 got ${overlimits}"
++
++	tc filter del dev $h1 egress protocol ip pref 100 handle 100 flower
++	tc filter del dev $h1 egress protocol ip pref 101 handle 101 flower
++	tc filter del dev $h1 ingress protocol ip pref 102 handle 102 flower
++
++	rm -f $tmpfile $tmpfile1
++	log_test "mirred_egress_to_ingress_tcp ($tcflags)"
++}
++
+ setup_prepare()
+ {
+ 	h1=${NETIFS[p1]}
 -- 
 2.38.1
 
