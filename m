@@ -2,67 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A6565586D
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 05:59:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C4F651FD0
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 12:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbiLXEyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 23:54:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        id S231470AbiLTLis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 06:38:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiLXEyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 23:54:09 -0500
-X-Greylist: delayed 4589 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 20:54:07 PST
-Received: from mail.gigabizplan.pl (mail.gigabizplan.pl [51.195.90.253])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BADA11A2B
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 20:54:07 -0800 (PST)
-Received: by mail.gigabizplan.pl (Postfix, from userid 1002)
-        id 88EFD31317; Mon, 19 Dec 2022 08:45:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gigabizplan.pl;
-        s=mail; t=1671444659;
-        bh=XwhyqI/moZPDJ7KCfcA6Gip8fA7ZKcg5SWsKuF/26zk=;
-        h=Date:From:To:Subject:From;
-        b=NiJ++VZd4cYnJZ8G6RGND5bbD8boVzSzmrLQLnsAeo/QM2Na9aFtR95C+aaz66euO
-         QaFr4SIopAD7GEq9MSmWWUkarKzvAajwiVegGfM9htszcgih4y+r+OjjbpXyx2orBw
-         gLxdarN2AJzJkhWJU+/axCeoLAE/LdUagohKZIICGZ3v4rQXiGXplK/ekYRzn5cMjW
-         LPlJTyiuR7laN8QL1GdVO0yvPIL4VYY8gYN2ywzVGXPA58jkbOSpO7VgXTAdEnkLOJ
-         OQw5RnS2pAdmupv4n223o4V7xrpeAaEaSyLOkvaT0J8HgVeKsfEyXhA07jZUMfjEYJ
-         JtKBWZ0VSG0kg==
-Received: by mail.gigabizplan.pl for <netdev@vger.kernel.org>; Mon, 19 Dec 2022 08:45:11 GMT
-Message-ID: <20221219074500-0.1.2y.9gwa.0.p627ygephd@gigabizplan.pl>
-Date:   Mon, 19 Dec 2022 08:45:11 GMT
-From:   "Dominik Perkowski" <dominik.perkowski@gigabizplan.pl>
-To:     <netdev@vger.kernel.org>
-Subject: Pozycjonowanie- informacja
-X-Mailer: mail.gigabizplan.pl
+        with ESMTP id S229657AbiLTLiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 06:38:46 -0500
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0B42AC6
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 03:38:43 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id A3A439C071C;
+        Tue, 20 Dec 2022 06:38:41 -0500 (EST)
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id nWc4XNCkJWSB; Tue, 20 Dec 2022 06:38:41 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1E8EE9C088C;
+        Tue, 20 Dec 2022 06:38:41 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 1E8EE9C088C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
+        t=1671536321; bh=iWdsU9CaWF66cplWZwSAs1I+rqil2/Qk3m0WHaAD3CU=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=C5f80JRYdtVYpVmtSuQdZu9b3d/9m3Wuc4oRAOJ7lfS32mKQQmxqXwxAQgVd2s2XN
+         tgluTN0qlUFIL066N0Q7pqIN6QkHCMdd1LxuXG86lrF2lTrtUAk+GMN0iEtlC54JQB
+         /1K66hszBR/QOGXU1vp0rqej57ygdCHg6vLzfAvwjwykCqcy9Wvnf3W7jQl/HdTS1m
+         Ttx/pCq0BFFe6SS5csxhd07xM8gM0y+JtLrW+Z6bKYsfebpFWJLFZUbM2bIjy4ceaR
+         QI0FrmXX1TR/8c6tuhgay2LO+nfeUAhOCexZVdca98YZenAYhqIMcR9dDpZSBED4D2
+         J/ic00tYLdlDg==
+X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id P-A5KCJP9pNJ; Tue, 20 Dec 2022 06:38:41 -0500 (EST)
+Received: from sfl-deribaucourt.rennes.sfl (mtl.savoirfairelinux.net [192.168.50.3])
+        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 2D24E9C071C;
+        Tue, 20 Dec 2022 06:38:40 -0500 (EST)
+From:   Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+To:     netdev@vger.kernel.org
+Cc:     pabeni@redhat.com, woojung.huh@microchip.com, davem@davemloft.net,
+        UNGLinuxDriver@microchip.com,
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Subject: [PATCH v2] net: lan78xx: prevent LAN88XX specific operations
+Date:   Tue, 20 Dec 2022 12:37:34 +0100
+Message-Id: <20221220113733.714233-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com>
+References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=1.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_VALIDITY_RPBL,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dzie=C5=84 dobry,=20
+Some operations during the cable switch workaround modify the register
+LAN88XX_INT_MASK of the PHY. However, this register is specific to the
+LAN8835 PHY. For instance, if a DP8322I PHY is connected to the LAN7801,
+that register (0x19), corresponds to the LED and MAC address
+configuration, resulting in unapropriate behavior.
 
-jaki=C5=9B czas temu zg=C5=82osi=C5=82a si=C4=99 do nas firma, kt=C3=B3re=
-j strona internetowa nie pozycjonowa=C5=82a si=C4=99 wysoko w wyszukiwarc=
-e Google.=20
+Use the generic phy interrupt functions instead.
 
-Na podstawie wykonanego przez nas audytu SEO zoptymalizowali=C5=9Bmy tre=C5=
-=9Bci na stronie pod k=C4=85tem wcze=C5=9Bniej opracowanych s=C5=82=C3=B3=
-w kluczowych. Nasz wewn=C4=99trzny system codziennie analizuje prawid=C5=82=
-owe dzia=C5=82anie witryny.  Dzi=C4=99ki indywidualnej strategii, firma z=
-dobywa coraz wi=C4=99cej Klient=C3=B3w. =20
+Fixes: 89b36fb5e532 ("lan78xx: Lan7801 Support for Fixed PHY")
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>;
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
+airelinux.com>
+---
+ drivers/net/usb/lan78xx.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-Czy chcieliby Pa=C5=84stwo zwi=C4=99kszy=C4=87 liczb=C4=99 os=C3=B3b odwi=
-edzaj=C4=85cych stron=C4=99 internetow=C4=85 firmy? M=C3=B3g=C5=82bym prz=
-edstawi=C4=87 ofert=C4=99?=20
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index f18ab8e220db..65d5d54994ff 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -28,6 +28,7 @@
+ #include <linux/phy_fixed.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
++#include <linux/phy.h>
+ #include "lan78xx.h"
+=20
+ #define DRIVER_AUTHOR	"WOOJUNG HUH <woojung.huh@microchip.com>"
+@@ -2123,10 +2124,7 @@ static void lan78xx_link_status_change(struct net_=
+device *net)
+ 	 * at forced 100 F/H mode.
+ 	 */
+ 	if (!phydev->autoneg && (phydev->speed =3D=3D 100)) {
+-		/* disable phy interrupt */
+-		temp =3D phy_read(phydev, LAN88XX_INT_MASK);
+-		temp &=3D ~LAN88XX_INT_MASK_MDINTPIN_EN_;
+-		phy_write(phydev, LAN88XX_INT_MASK, temp);
++		phy_disable_interrupts(phydev);
+=20
+ 		temp =3D phy_read(phydev, MII_BMCR);
+ 		temp &=3D ~(BMCR_SPEED100 | BMCR_SPEED1000);
+@@ -2134,13 +2132,7 @@ static void lan78xx_link_status_change(struct net_=
+device *net)
+ 		temp |=3D BMCR_SPEED100;
+ 		phy_write(phydev, MII_BMCR, temp); /* set to 100 later */
+=20
+-		/* clear pending interrupt generated while workaround */
+-		temp =3D phy_read(phydev, LAN88XX_INT_STS);
+-
+-		/* enable phy interrupt back */
+-		temp =3D phy_read(phydev, LAN88XX_INT_MASK);
+-		temp |=3D LAN88XX_INT_MASK_MDINTPIN_EN_;
+-		phy_write(phydev, LAN88XX_INT_MASK, temp);
++		phy_request_interrupt(phydev);
+ 	}
+ }
+=20
+--=20
+2.25.1
 
-
-Pozdrawiam serdecznie,
-Dominik Perkowski
