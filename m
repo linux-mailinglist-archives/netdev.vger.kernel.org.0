@@ -2,96 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39412652196
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:33:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F1EE652198
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:34:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbiLTNdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 08:33:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
+        id S233411AbiLTNer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 08:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiLTNdh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:33:37 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613BF18B3E;
-        Tue, 20 Dec 2022 05:33:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PBKohcfzjSqRdddPpAv4Rwpq7IkcN9J0lMnnbLlGi0M=; b=Z9cx2J1jhbD8p1DOS0Grff44Qn
-        5pp0l9vnMbZknZIlhVTaanZNAJrZ7hCXkOyvCGELpS/Pddu7B5x6tOAS9riIEDi2hDtZzwdRJM4pJ
-        gEzkqbDNXRr6j86EJFL6H8M5eVvVWpqemh0+HsOYXB8NP0WWF3NHGTrDjlOd63wlPkMo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p7ckI-0005gG-Lp; Tue, 20 Dec 2022 14:33:26 +0100
-Date:   Tue, 20 Dec 2022 14:33:26 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Xu Liang <lxu@maxlinear.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 4/4] net: phy: mxl-gpy: disable interrupts on
- GPY215 by default
-Message-ID: <Y6G5phSGSPk+7Dgj@lunn.ch>
-References: <20221202151204.3318592-1-michael@walle.cc>
- <20221202151204.3318592-5-michael@walle.cc>
- <Y4pHCQrDbXXmOT+A@lunn.ch>
- <69e0468cf192455fd2dc7fc93194a8ff@walle.cc>
- <Y4uzYVSRiE9feD01@lunn.ch>
- <34dc81b01930e594ca4773ddb8c24160@walle.cc>
+        with ESMTP id S233541AbiLTNeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:34:46 -0500
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBAF18B1A
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 05:34:44 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 385163200912;
+        Tue, 20 Dec 2022 08:34:42 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Tue, 20 Dec 2022 08:34:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1671543281; x=1671629681; bh=P5kC81balsgGf9/oorLdwVsiLaI8
+        EcpPlmO8igcM4+U=; b=Es7BPpBK0aW9SIFSKWlkHcuUJbunnXyIu+eSY30VcMJk
+        yxIfUnaYF3X7Tb5FTb67Mrp0vumf1GT3pDetJ1mMwWq1L4zCU1FhN4th8i9ioaof
+        e5g4K/wvuO6BhSgN0f0GrXekOlUgpmzDDz9UJKmsOziWsuKT3KqpX7Llt/cL8JUl
+        zFv0X8+wlni27OB0esLYyosI6SuKp0fioiAEnIBU738jD6QOTktNFtwLgOr2wL68
+        LH80SqMrjPIcNpWhy2vzamYylUTeLLhR56/m5BMWAludjj+MN+8hCTe7ZaJsj4KY
+        vfPTBLM0gZoBW18Y3Bii+NNsr5gU86KegoJ1y7kcCw==
+X-ME-Sender: <xms:8bmhY2x3QRqU_ulnh0KV7h98BOEunH02N_it5Zgwrfv9Zx5yg4zb5g>
+    <xme:8bmhYyT9sAYO4bRf4hgaOGBLRBxCr9pS6MwPPmmPi1G-bjH3E8hcmas7Y82EFoXlS
+    BJBAtaIR8Vddec>
+X-ME-Received: <xmr:8bmhY4V4WmlBRpWn-UGV2xDuO3yaOz6DtIQadk9Qbcp13JU2H_cLS2JXd-0vV9Zgn-c5IzHU8Jp_N3T5Ic0psBnqRGk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeeigddviecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
+    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:8bmhY8g6TNkyzGBvD0wH3oNpFzMPWajEWnZR8dpaAGXghNu24YTxTg>
+    <xmx:8bmhY4B76N7LxAkrUKLj2TQyssrk1JN58Iqn9zoV13kZa-_Z1Dk_jQ>
+    <xmx:8bmhY9Ix2CKCle1qFhX-KsCs3FnFghVxKVdoV_W5J6d24Ye8bY8zQg>
+    <xmx:8bmhY87tZPCxVeMFdh4cTLi-NhJj__gLKNzMEkOYSMdtS1RRciMsmg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 20 Dec 2022 08:34:40 -0500 (EST)
+Date:   Tue, 20 Dec 2022 15:34:36 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hao Lan <lanhao@huawei.com>
+Cc:     lipeng321@huawei.com, shenjian15@huawei.com,
+        huangguangbin2@huawei.com, chenjunxin1@huawei.com,
+        netdev@vger.kernel.org, dsahern@kernel.org,
+        stephen@networkplumber.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        petrm@nvidia.com
+Subject: Re: [PATCH iproute2] dcb: unblock mnl_socket_recvfrom if not message
+ received
+Message-ID: <Y6G57PG6hQh1SvlX@shredder>
+References: <20221019012008.11322-1-lanhao@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <34dc81b01930e594ca4773ddb8c24160@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221019012008.11322-1-lanhao@huawei.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Yes, it is a valid point to do this check, but on its own i don't
-> > think it is sufficient.
+On Wed, Oct 19, 2022 at 09:20:08AM +0800, Hao Lan wrote:
+> From: Junxin Chen <chenjunxin1@huawei.com>
 > 
-> Care to elaborate a bit? E.g. what is the difference to the case
-> the phy would have an interrupt described but no .config_intr()
-> op.
+> Currently, the dcb command sinks to the kernel through the netlink
+> to obtain information. However, if the kernel fails to obtain infor-
+> mation or is not processed, the dcb command is suspended.
 > 
-> > > > I think a better place for this test is in gpy_config_intr(), return
-> > > > -EOPNOTSUPP. phy_enable_interrupts() failing should then cause
-> > > > phy_request_interrupt() to use polling.
-> > > 
-> > > Which will then print a warning, which might be misleading.
-> > > Or we disable the warning if -EOPNOTSUPP is returned?
-> > 
-> > Disabling the warning is the right thing to do.
+> For example, if we don't implement dcbnl_ops->ieee_getpfc in the
+> kernel, the command "dcb pfc show dev eth1" will be stuck and subsequent
+> commands cannot be executed.
 > 
-> There is more to this. .config_intr() is also used in
-> phy_init_hw() and phy_drv_supports_irq(). The latter would
-> still return true in our case. I'm not sure that is correct.
-> 
-> After trying your suggestion, I'm still in favor of somehow
-> tell the phy core to force polling mode during probe() of the
-> driver.
+> This patch adds the NLM_F_ACK flag to the netlink in mnlu_msg_prepare
+> to ensure that the kernel responds to user requests.
 
-The problem is that the MAC can set the interrupt number after the PHY
-probe has been called. e.g.
+The analysis is not correct: The kernel does reply, but the reply does not
+contain the 'DCB_ATTR_IEEE_PFC' attribute, causing the dcb utility to block on
+recvmsg(). Since you changed the utility to request an ACK you need to make
+sure this ACK is processed before issuing another request. Please test the
+following patch. I would like to post it tomorrow.
 
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c#L524
+Thanks
 
-The interrupt needs to be set by the time the PHY is connected to the
-MAC, which is often in the MAC open method, much later than the PHY
-probe.
+commit 7b545308a2273a7fd26204688fa632ec1b4c0205
+Author: Ido Schimmel <idosch@nvidia.com>
+Date:   Tue Dec 20 14:27:46 2022 +0200
 
-     Andrew
+    dcb: Do not leave ACKs in socket receive buffer
+    
+    Originally, the dcb utility only stopped receiving messages from a
+    socket when it found the attribute it was looking for. Cited commit
+    changed that, so that the utility will also stop when seeing an ACK
+    (NLMSG_ERROR message), by setting the NLM_F_ACK flag on requests.
+    
+    This is problematic because it means a successful request will leave an
+    ACK in the socket receive buffer, causing the next request to bail
+    before reading its response.
+    
+    Fix that by not stopping when finding the required attribute in a
+    response. Instead, stop on the subsequent ACK.
+    
+    Fixes: 84c036972659 ("dcb: unblock mnl_socket_recvfrom if not message received")
+    Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+
+diff --git a/dcb/dcb.c b/dcb/dcb.c
+index 3ffa91d64d0d..9b996abac529 100644
+--- a/dcb/dcb.c
++++ b/dcb/dcb.c
+@@ -72,7 +72,7 @@ static int dcb_get_attribute_attr_ieee_cb(const struct nlattr *attr, void *data)
+ 
+ 	ga->payload = mnl_attr_get_payload(attr);
+ 	ga->payload_len = mnl_attr_get_payload_len(attr);
+-	return MNL_CB_STOP;
++	return MNL_CB_OK;
+ }
+ 
+ static int dcb_get_attribute_attr_cb(const struct nlattr *attr, void *data)
+@@ -126,7 +126,7 @@ static int dcb_set_attribute_attr_cb(const struct nlattr *attr, void *data)
+ 		return MNL_CB_ERROR;
+ 	}
+ 
+-	return MNL_CB_STOP;
++	return MNL_CB_OK;
+ }
+ 
+ static int dcb_set_attribute_cb(const struct nlmsghdr *nlh, void *data)
