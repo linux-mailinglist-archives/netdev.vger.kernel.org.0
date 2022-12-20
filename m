@@ -2,118 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7996652160
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:22:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57061652192
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 14:32:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbiLTNWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 08:22:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
+        id S230100AbiLTNcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 08:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbiLTNV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:21:56 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D91B16496;
-        Tue, 20 Dec 2022 05:21:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=yG9JT2qsJ2n+skS1+0XzJ/VYZa3AXEt7ITVQuCUV1C0=; b=aT1aKF06u3GCpyS2nN5Mip9dok
-        7cSBZ4usFrAq3Yov6E7gOReOYM8xYez4xHpA1TM4NAuF8rJRxO9Oecfjkld/zx9V0q/yDNGViyN76
-        SC3ywvArxUg2Z20BmlXsd+vGOkgWYdNY2YFOoQ+i7scdGE6Kde4jnaTg4YMVLJESGNPU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p7cYk-0005b6-06; Tue, 20 Dec 2022 14:21:30 +0100
-Date:   Tue, 20 Dec 2022 14:21:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>, Xu Liang <lxu@maxlinear.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229522AbiLTNcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 08:32:54 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D745A1BE;
+        Tue, 20 Dec 2022 05:32:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671543173; x=1703079173;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NoDHutZfIDRsf0ub0AOWtZ9DL1dRnfTbWJbUb3LNtiE=;
+  b=EBqswi5XBW/bRJ/cGj2HhjTFVRW2BM54GOCAOsSuF6434HKynOJ02jR9
+   bvjPe7JSNDNTIzH4M6F0M+m/GtTGlWkJT386jUmdXlux2Yg3lSnH0UkBh
+   UHHHzWBb/h2dWeJrp9iZaQebcx7qh3h4bMf60ALqWaNnBhdPEuuQjbtOO
+   e+6/avtlH7DOrZ/+Lf5iCGy51DeW9aWP2BQGXZAuvtdUuRu094Ag9ZyIF
+   3tlrih0qlALD7X5+u2KoHtcjRYVBAHdWfrtzIIOP5py3rBX4iShCMhFMr
+   uKcwX0ydTTRESs4wFeiLxM+6BuY8miXgFf8x7AdR0CekEzwQPLdmG1vSI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10566"; a="321515420"
+X-IronPort-AV: E=Sophos;i="5.96,259,1665471600"; 
+   d="scan'208";a="321515420"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2022 05:32:51 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10566"; a="644426367"
+X-IronPort-AV: E=Sophos;i="5.96,259,1665471600"; 
+   d="scan'208";a="644426367"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2022 05:32:49 -0800
+Date:   Tue, 20 Dec 2022 14:32:41 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
+Cc:     Shahed Shaikh <shshaikh@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 3/4] dt-bindings: net: phy: add MaxLinear
- GPY2xx bindings
-Message-ID: <Y6G22e06gQ2+kM+G@lunn.ch>
-References: <20221202151204.3318592-1-michael@walle.cc>
- <20221202151204.3318592-4-michael@walle.cc>
- <20221205212924.GA2638223-robh@kernel.org>
- <99d4f476d4e0ce5945fa7e1823d9824a@walle.cc>
- <9c0506a6f654f72ea62fed864c1b2a26@walle.cc>
- <2597b9e5-7c61-e91c-741c-3fe18247e27c@linaro.org>
- <6c82b403962aaf1450eb5014c9908328@walle.cc>
- <796a528b23aded95c1a647317c277b1f@walle.cc>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] qlcnic: prevent ->dcb use-after-free on
+ qlcnic_dcb_enable() failure
+Message-ID: <Y6G5eWWucdaJXmQu@localhost.localdomain>
+References: <20221220125649.1637829-1-d-tatianin@yandex-team.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <796a528b23aded95c1a647317c277b1f@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221220125649.1637829-1-d-tatianin@yandex-team.ru>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  (2) Krzysztof pointed out that there is still the issue raised by
->      Rob, that the schemas haven't any compatible and cannot be
->      validated. I think that applies to all the network PHY bindings
->      in the tree right now. I don't know how to fix them.
+On Tue, Dec 20, 2022 at 03:56:49PM +0300, Daniil Tatianin wrote:
+> adapter->dcb would get silently freed inside qlcnic_dcb_enable() in
+> case qlcnic_dcb_attach() would return an error, which always happens
+> under OOM conditions. This would lead to use-after-free because both
+> of the existing callers invoke qlcnic_dcb_get_info() on the obtained
+> pointer, which is potentially freed at that point.
+> 
+> Propagate errors from qlcnic_dcb_enable(), and instead free the dcb
+> pointer at callsite.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with the SVACE
+> static analysis tool.
+> 
+> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
 
-i've been offline for a while, i sabotaged my own mail server...
+Please add Fix tag and net as target (net-next is close till the end of
+this year)
 
-You can always add an unneeded compatible, using the PHY devices ID:
+> ---
+>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 9 ++++++++-
+>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h       | 5 ++---
+>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c      | 9 ++++++++-
+>  3 files changed, 18 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+> index dbb800769cb6..465f149d94d4 100644
+> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+> @@ -2505,7 +2505,14 @@ int qlcnic_83xx_init(struct qlcnic_adapter *adapter)
+>  		goto disable_mbx_intr;
+>  
+>  	qlcnic_83xx_clear_function_resources(adapter);
+> -	qlcnic_dcb_enable(adapter->dcb);
+> +
+> +	err = qlcnic_dcb_enable(adapter->dcb);
+> +	if (err) {
+> +		qlcnic_clear_dcb_ops(adapter->dcb);
+> +		adapter->dcb = NULL;
+> +		goto disable_mbx_intr;
+> +	}
 
-      - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
-        description:
-          If the PHY reports an incorrect ID (or none at all) then the
-          compatible list may contain an entry with the correct PHY ID
-          in the above form.
-          The first group of digits is the 16 bit Phy Identifier 1
-          register, this is the chip vendor OUI bits 3:18. The
-          second group of digits is the Phy Identifier 2 register,
-          this is the chip vendor OUI bits 19:24, followed by 10
-          bits of a vendor specific ID.
+Maybe I miss sth but it looks like there can be memory leak.
+For example if error in attach happen after allocating of dcb->cfg.
+Isn't it better to call qlcnic_dcb_free instead of qlcnic_clear_dcb_ops?
 
-It would be fine to do this in the example in the binding, but i would
-add a comment something like:
-
-"Compatible generally only needed to make DT lint tools work. Mostly
-not needed for real DT descriptions"
-
-Examples often get cut/paste without thinking, and we don't really
-want the compatible used unless it is really needed.
-
-This is however a bigger problem than just PHYs. It applies to any
-device which can be enumerated on a bus, e.g. USB, PCI. So maybe this
-limitation of the DT linting tools should be fixed once at a higher
-level?
-
->  (3) The main problem with the broken interrupt handling of the PHY
->      is that it will disturb other devices on that interrupt line.
->      IOW if the interrupt line is shared the PHY should fall back
->      to polling mode. I haven't found anything in the interrupt
->      subsys to query if a line is shared and I guess it's also
->      conceptually impossible to do such a thing, because there
->      might be any driver probed at a later time which also uses
->      that line.
->      Rob had the idea to walk the device tree and determine if
->      a particular interrupt is used by other devices, too. If
->      feasable, this sounds like a good enough heuristic for our
->      problem. Although there might be some edge cases, like
->      DT overlays loaded at linux runtime (?!).
-
-My humble opinion is that it is not worth the complexity for just one
-PHY which should work in polling mode without problems. I think the
-boolean property you propose is KISS and does what is needed.
-
-	Andrew
-
+> +
+>  	qlcnic_83xx_initialize_nic(adapter, 1);
+>  	qlcnic_dcb_get_info(adapter->dcb);
+>  
+> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+> index 7519773eaca6..e1460f9c38bf 100644
+> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+> @@ -112,9 +112,8 @@ static inline void qlcnic_dcb_init_dcbnl_ops(struct qlcnic_dcb *dcb)
+>  		dcb->ops->init_dcbnl_ops(dcb);
+>  }
+>  
+> -static inline void qlcnic_dcb_enable(struct qlcnic_dcb *dcb)
+> +static inline int qlcnic_dcb_enable(struct qlcnic_dcb *dcb)
+>  {
+> -	if (dcb && qlcnic_dcb_attach(dcb))
+> -		qlcnic_clear_dcb_ops(dcb);
+> +	return dcb ? qlcnic_dcb_attach(dcb) : 0;
+>  }
+>  #endif
+> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+> index 28476b982bab..36ba15fc9776 100644
+> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+> @@ -2599,7 +2599,14 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  			 "Device does not support MSI interrupts\n");
+>  
+>  	if (qlcnic_82xx_check(adapter)) {
+> -		qlcnic_dcb_enable(adapter->dcb);
+> +		err = qlcnic_dcb_enable(adapter->dcb);
+> +		if (err) {
+> +			qlcnic_clear_dcb_ops(adapter->dcb);
+> +			adapter->dcb = NULL;
+> +			dev_err(&pdev->dev, "Failed to enable DCB\n");
+> +			goto err_out_free_hw;
+> +		}
+> +
+>  		qlcnic_dcb_get_info(adapter->dcb);
+>  		err = qlcnic_setup_intr(adapter);
+>  
+> -- 
+> 2.25.1
+> 
