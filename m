@@ -2,107 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F33652577
-	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 18:18:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9E46525A0
+	for <lists+netdev@lfdr.de>; Tue, 20 Dec 2022 18:34:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiLTRS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 12:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
+        id S233923AbiLTReM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 12:34:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234004AbiLTRSd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 12:18:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC241D312
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 09:18:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229626AbiLTReK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 12:34:10 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7EA1A3B4;
+        Tue, 20 Dec 2022 09:34:08 -0800 (PST)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A7A56151F
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 17:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04578C433D2;
-        Tue, 20 Dec 2022 17:18:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671556708;
-        bh=R5IFTKNT0vebHOzgnonYmqWrlLSrujWOsBk+f1EULQk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FzlITNicY5B7qJSG2t7AHrrxBanKXhovBrToUjn/yfzHv4Lq/6isso7me1pfN2y1s
-         MmpH7SPng1xL3XsITp2YS5j+C5DlyELs33OXc1XWA6E/IyJE85MOOCwEeCeankToxo
-         JQoVxO+0dB5yo5cnwj634Q+ZJZaS6Ck8NWjrkhDWfiGDBohNeQSurRS9Kph7XwTRqJ
-         xUHYV3sjFeZPzAZ5qSkalucbUX2dUnA4d5cZc2VhbYE3judd/1Qgq25jTMuZAUkZOc
-         72QClCldhlFr/xVvsGVb2H2meKPN+fNIr8fQzn6vErWr6qh3ZbdOd3QeQYgjjPmJq7
-         wLPxgT9Qi5D2w==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Jianlin Shi <jishi@redhat.com>
-Subject: [PATCH net] net: vrf: determine the dst using the original ifindex for multicast
-Date:   Tue, 20 Dec 2022 18:18:25 +0100
-Message-Id: <20221220171825.1172237-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 5D9FB851EE;
+        Tue, 20 Dec 2022 18:34:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1671557646;
+        bh=e6i2o1JZsIOo4aNIzLcaOSiBPGTjt24suNHUWdBp7aQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CoMyUqCDMAq/4ooZ4MuAE5DWfyerc4wAkudLxyDp31y4O+ZK0C/+VAK8W0f1d3TCx
+         8zvjr7agVBU+Zy+FVju7HdKZThNw4lggIJBAhCTx9hbtzRVuqfXim0uMl/Kby+hjxg
+         rXSCBbSUpnnmufG+lTG2XVhvGRTSGMtnlHG3UoYsfAAbZRMAo+BTuCuD+vJgfW46E0
+         KMVZqqejl5KVn1WGGnO19gjlyrjbHrFJbn5v8zwyx7KFYgKMrv/BT3s/1afY24V9Gb
+         SFSCWSoufpEuW2uOuj+OOhMmmBIWdr9ZsInOLU3tZpGuZOy0iC9QwLI3nwiSGG15Vo
+         5Qo/LL+0KHYiw==
+Date:   Tue, 20 Dec 2022 18:33:59 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dsa: marvell: Provide per device information
+ about max frame size
+Message-ID: <20221220183359.4b9cd95c@wsk>
+In-Reply-To: <20221219130005.6e995cb0@wsk>
+References: <20221215144536.3810578-1-lukma@denx.de>
+        <4d16ffd327d193f8c1f7c40f968fda90a267348e.camel@gmail.com>
+        <20221216140526.799bd82f@wsk>
+        <CAKgT0Udm6s8Wib1dFp6f4yVhdMm62-4kjetYSucLr-Ruyg7-yg@mail.gmail.com>
+        <20221219130005.6e995cb0@wsk>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/V55Prcsx6GdYTgrCs5T4fzE";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Multicast packets received on an interface bound to a VRF are marked as
-belonging to the VRF and the skb device is updated to point to the VRF
-device itself. This was fine even when a route was associated to a
-device as when performing a fib table lookup 'oif' in fib6_table_lookup
-(coming from 'skb->dev->ifindex' in ip6_route_input) was set to 0 when
-FLOWI_FLAG_SKIP_NH_OIF was set.
+--Sig_/V55Prcsx6GdYTgrCs5T4fzE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-With commit 40867d74c374 ("net: Add l3mdev index to flow struct and
-avoid oif reset for port devices") this is not longer true and multicast
-traffic is not received on the original interface.
+Hi Alexander,
 
-Instead of adding back a similar check in fib6_table_lookup determine
-the dst using the original ifindex for multicast VRF traffic. To make
-things consistent across the function do the above for all strict
-packets, which was the logic before commit 6f12fa775530 ("vrf: mark skb
-for multicast or link-local as enslaved to VRF"). Note that reverting to
-this behavior should be fine as the change was about marking packets
-belonging to the VRF, not about their dst.
+> Hi Alexander,
+>=20
+> > On Fri, Dec 16, 2022 at 5:05 AM Lukasz Majewski <lukma@denx.de>
+> > wrote: =20
+> > >
+> > > Hi Alexander,
+> > >   =20
+> > > > On Thu, 2022-12-15 at 15:45 +0100, Lukasz Majewski wrote:   =20
+> > > > > Different Marvell DSA switches support different size of max
+> > > > > frame bytes to be sent.
+> > > > >
+> > > > > For example mv88e6185 supports max 1632 bytes, which is now
+> > > > > in-driver standard value. On the other hand - mv88e6250
+> > > > > supports 2048 bytes.
+> > > > >
+> > > > > As this value is internal and may be different for each switch
+> > > > > IC, new entry in struct mv88e6xxx_info has been added to store
+> > > > > it.
+> > > > >
+> > > > > Signed-off-by: Lukasz Majewski <lukma@denx.de>
+> > > > > ---
+> > > > > Changes for v2:
+> > > > > - Define max_frame_size with default value of 1632 bytes,
+> > > > > - Set proper value for the mv88e6250 switch SoC (linkstreet)
+> > > > > family ---
+> > > > >  drivers/net/dsa/mv88e6xxx/chip.c | 13 ++++++++++++-
+> > > > >  drivers/net/dsa/mv88e6xxx/chip.h |  1 +
+> > > > >  2 files changed, 13 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c
+> > > > > b/drivers/net/dsa/mv88e6xxx/chip.c index
+> > > > > 2ca3cbba5764..7ae4c389ce50 100644 ---
+> > > > > a/drivers/net/dsa/mv88e6xxx/chip.c +++
+> > > > > b/drivers/net/dsa/mv88e6xxx/chip.c @@ -3093,7 +3093,9 @@
+> > > > > static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int
+> > > > > port) if (chip->info->ops->port_set_jumbo_size) return 10240 -
+> > > > > VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; else if
+> > > > > (chip->info->ops->set_max_frame_size)
+> > > > > -           return 1632 - VLAN_ETH_HLEN - EDSA_HLEN -
+> > > > > ETH_FCS_LEN;
+> > > > > +           return (chip->info->max_frame_size  -
+> > > > > VLAN_ETH_HLEN
+> > > > > +                   - EDSA_HLEN - ETH_FCS_LEN);
+> > > > > +
+> > > > >     return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+> > > > >  }
+> > > > >
+> > > > >   =20
+> > > >
+> > > > Is there any specific reason for triggering this based on the
+> > > > existance of the function call?   =20
+> > >
+> > > This was the original code in this driver.
+> > >
+> > > This value (1632 or 2048 bytes) is SoC (family) specific.
+> > >
+> > > By checking which device defines set_max_frame_size callback, I
+> > > could fill the chip->info->max_frame_size with 1632 value.
+> > >   =20
+> > > > Why not just replace:
+> > > >       else if (chip->info->ops->set_max_frame_size)
+> > > > with:
+> > > >       else if (chip->info->max_frame_size)
+> > > >   =20
+> > >
+> > > I think that the callback check is a bit "defensive" approach ->
+> > > 1522B is the default value and 1632 (or 10240 - jumbo) can be set
+> > > only when proper callback is defined.
+> > >   =20
+> > > > Otherwise my concern is one gets defined without the other
+> > > > leading to a future issue as 0 - extra headers will likely wrap
+> > > > and while the return value may be a signed int, it is usually
+> > > > stored in an unsigned int so it would effectively uncap the
+> > > > MTU.   =20
+> > >
+> > > Please correct me if I misunderstood something:
+> > >
+> > > The problem is with new mv88eXXXX devices, which will not provide
+> > > max_frame_size information to their chip->info struct?
+> > >
+> > > Or is there any other issue?   =20
+> >=20
+> > That was mostly my concern. I was adding a bit of my own defensive
+> > programming in the event that somebody forgot to fill out the
+> > chip->info. If nothing else it might make sense to add a check to
+> > verify that the max_frame_size is populated before blindly using it.
+> > So perhaps you could do something similar to the max_t approach I
+> > had called out earlier but instead of applying it on the last case
+> > you could apply it for the "set_max_frame_size" case with 1632
+> > being the minimum and being overwritten by 2048 if it is set in
+> > max_frame_size. =20
+>=20
+> I think that I shall add:
+>=20
+> else if (chip->info->ops->set_max_frame_size)
+> 	return max_t(int, chip->info->max_frame_size, 1632) -
+> (headers)
+>=20
+> So then the "default" value of 1632 will be overwritten by 2048 bytes.
+>=20
 
-Fixes: 40867d74c374 ("net: Add l3mdev index to flow struct and avoid oif reset for port devices")
-Cc: David Ahern <dsahern@kernel.org>
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
- drivers/net/vrf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Is this approach acceptable for you?
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 6b5a4d036d15..bdb3a76a352e 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1385,8 +1385,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 
- 	/* loopback, multicast & non-ND link-local traffic; do not push through
- 	 * packet taps again. Reset pkt_type for upper layers to process skb.
--	 * For strict packets with a source LLA, determine the dst using the
--	 * original ifindex.
-+	 * For non-loopback strict packets, determine the dst using the original
-+	 * ifindex.
- 	 */
- 	if (skb->pkt_type == PACKET_LOOPBACK || (need_strict && !is_ndisc)) {
- 		skb->dev = vrf_dev;
-@@ -1395,7 +1395,7 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 
- 		if (skb->pkt_type == PACKET_LOOPBACK)
- 			skb->pkt_type = PACKET_HOST;
--		else if (ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL)
-+		else
- 			vrf_ip6_input_dst(skb, vrf_dev, orig_iif);
- 
- 		goto out;
--- 
-2.38.1
+>=20
+> Best regards,
+>=20
+> Lukasz Majewski
+>=20
+> --
+>=20
+> DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+> HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+> Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email:
+> lukma@denx.de
 
+
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/V55Prcsx6GdYTgrCs5T4fzE
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmOh8gcACgkQAR8vZIA0
+zr0jRwf/YKx8sTurFMMsicIKIhMlAHQ+vcrCXDVACtJhUOm6FFluAbvXHsWiWo6S
+XFA1gY7zDyD+H7v0G4nzLyxN8+VIK0P/GWGVrE4ghSShtbZoqKqm35PRYFf9F33Y
+d8fuv4zzQGEO98ej/YwuLHjn+4TKu8jau67UiuEj1gAYKasD6n/FFOZ/PnCpLpbv
+4B3ZAScS9SaH3cIJbJUPLpMlqs2wknNkibGx4EVzcyPmeEvBj4IcRqEE3Rt8bIO9
+iuC2Uod8y5vb4Hf1RWHPGm95GMKSih9l67BRO/nkWhid5OH+KctbHtUBYR1bVKXa
+UVGYI55ueXbamxbKxKV4fyXNpSWhqw==
+=G6wU
+-----END PGP SIGNATURE-----
+
+--Sig_/V55Prcsx6GdYTgrCs5T4fzE--
