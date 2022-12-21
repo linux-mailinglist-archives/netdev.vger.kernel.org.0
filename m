@@ -2,82 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9676530A0
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:14:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 313816530B3
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:21:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiLUMO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 07:14:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        id S229873AbiLUMVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 07:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiLUMO0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:14:26 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353DC220CD;
-        Wed, 21 Dec 2022 04:14:25 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id m18so36346225eji.5;
-        Wed, 21 Dec 2022 04:14:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mAZPv0Vt+5frz1B6uHNIq3BKzCQcwhRuSmIZNKwA36M=;
-        b=iw3vDirpPhUoDCIgjPPh3gyjFSp8Vo1WVZRdVGpc0ficOXDwOpSyYRgVNaYcKNXf71
-         jgqFFiIER8IVLnjirnypZl/JdBc9pySJglI61guR2aNJ46OfcGaFgNqCL3utKRjDbiEo
-         euxnSxz2XQV3hiDBW/mnCvR/pSHbvakk5RRoBQ097HziCHdung1NhnStmTGLKI9SCyy5
-         GTGXN9zzZX16AhzVz1JcLJ1bi4W+FEw9ozuqzCz54yeGP4lo3q+wDuae8OPey+SR1WMS
-         Jhfh6Y1nGdUVVlvR5sw+8/y9nMDD7Omo9lPlghFxS7miGBR/xb/f70Ie1UhD1W2JH7lJ
-         dNKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mAZPv0Vt+5frz1B6uHNIq3BKzCQcwhRuSmIZNKwA36M=;
-        b=k72eoOdMfZa9Unnj5eDsGVAd20O63D1ujlTVrQrt8NpQxsIqmPn0fVEFIue/8agVrd
-         2RfW4U3X0ySBi2YSaOBj2RDpDw3Nj/LrojNPZGe+fBGT7MVEZOWFrxeIvdI9ZExIwXIq
-         qJZtM4R7iG/+XFzJe/S+7MGLGnZAbjsvWsuQI9TTWYGqZY0CUS9I+kgJau3Z3emSx5n8
-         BO7TKYPG9sfHX43E/fzivqhLYmmaKg1tk8ey4rKrP4V2i5Uf131bEszVkaz5Wr88uJiv
-         LeyKeCtFKsepXs4PDl96VsKzXW7AN6wFW/DUkAInRDbBSa/7V37/powAB9nWgvpf0hV+
-         4/Wg==
-X-Gm-Message-State: AFqh2koCuLF2ou7NDWiYXjlpHsg7T/wH1VXBSv7LoSSfbDjh9Thg6UV7
-        ly7o+10huRLGn8B5XRWtZPo=
-X-Google-Smtp-Source: AMrXdXudT0UlY85eAzXGOU0R87PDATyBfegH4yXLcmdns/OhHekZwbRwJerj9jH9yqFCbg7dl0UGIA==
-X-Received: by 2002:a17:907:a07c:b0:841:13b0:7238 with SMTP id ia28-20020a170907a07c00b0084113b07238mr265566ejc.25.1671624863538;
-        Wed, 21 Dec 2022 04:14:23 -0800 (PST)
-Received: from [192.168.1.50] ([79.119.240.153])
-        by smtp.gmail.com with ESMTPSA id k17-20020a170906971100b007c0b6e1c7fdsm7013302ejx.104.2022.12.21.04.14.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Dec 2022 04:14:23 -0800 (PST)
-Message-ID: <0c92d4bf-42d0-2094-a576-ad32cdb7b531@gmail.com>
-Date:   Wed, 21 Dec 2022 14:14:21 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>,
-        "JunASAKA@zzy040330.moe" <JunASAKA@zzy040330.moe>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        with ESMTP id S229547AbiLUMVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:21:00 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA1F2A3
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:20:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6PlkvH/CRzBNLPL0LQFiLXXLBym4MHvTaB9y8F8HcR0=; b=hEv23qw5mz+cYnduCjNeL59l2K
+        HZk666CPlpvUl3g02a+cxXrfIa3OM5xm1XV8jyXW2/6Oij1AjxS0RHJ9dAFSrXiW6h1JJ0hzZIiZA
+        4wmww3OTd+yP+T96CHlwpMRHPCPfWQgO0Ix8Epg3NL8L8aLd01jBO/GkoSrPSprFW8M5kLNtzD6kF
+        hpBFJ5DV2oAaoZyfF/op1wgNJS+YrxQ12jMX08HOXR4ToS0Ad3FIIAV7SJx0B8C90TrsFTdP9Y7qr
+        Zp+7To5dlNkxD1j90bHltWobLP7zg0STjuotiKRtcd49MuogX1uymyGMTQw+hqLOWMZ+4Vk8UsuEq
+        HApxZ7eQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35802)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p7y5W-0000aj-J0; Wed, 21 Dec 2022 12:20:46 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p7y5T-0006XK-M5; Wed, 21 Dec 2022 12:20:43 +0000
+Date:   Wed, 21 Dec 2022 12:20:43 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     Michael Walle <michael@walle.cc>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
- <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
- <33b2b585-c5b1-5888-bcee-ca74ce809a44@gmail.com>
- <fb0a7d6c0897464550ed7ee75c6318c525a0f001.camel@realtek.com>
-Content-Language: en-US
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-In-Reply-To: <fb0a7d6c0897464550ed7ee75c6318c525a0f001.camel@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Mohren <tmohren@maxlinear.com>
+Subject: Re: [PATCH] net: phy: enhance Maxlinear GPY loopback disable function
+Message-ID: <Y6L6G3bPVony+B5X@shell.armlinux.org.uk>
+References: <20221214082924.54990-1-lxu@maxlinear.com>
+ <20221214090037.383118-1-michael@walle.cc>
+ <PH7PR19MB56130FA71635455AE9DB8524BDE09@PH7PR19MB5613.namprd19.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH7PR19MB56130FA71635455AE9DB8524BDE09@PH7PR19MB5613.namprd19.prod.outlook.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,71 +65,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/12/2022 03:42, Ping-Ke Shih wrote:
-> On Tue, 2022-12-20 at 15:03 +0200, Bitterblue Smith wrote:
->> On 20/12/2022 07:44, Ping-Ke Shih wrote:
->>>
->>>> -----Original Message-----
->>>> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->>>> Sent: Saturday, December 17, 2022 11:07 AM
->>>> To: Jes.Sorensen@gmail.com
->>>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; 
->>>> pabeni@redhat.com;
->>>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun
->>>> ASAKA
->>>> <JunASAKA@zzy040330.moe>
->>>> Subject: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
->>>>
->>>> Fixing transmission failure which results in
->>>> "authentication with ... timed out". This can be
->>>> fixed by disable the REG_TXPAUSE.
->>>>
->>>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->>>> ---
->>>>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
->>>>  1 file changed, 5 insertions(+)
->>>>
->>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> index a7d76693c02d..9d0ed6760cb6 100644
->>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
->>>>  	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
->>>>  	val8 &= ~BIT(0);
->>>>  	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
->>>> +
->>>> +	/*
->>>> +	 * Fix transmission failure of rtl8192e.
->>>> +	 */
->>>> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
->>>
->>> I trace when rtl8xxxu set REG_TXPAUSE=0xff that will stop TX.
->>> The occasions include RF calibration, LPS mode (called by power off), and
->>> going to stop. So, I think RF calibration does TX pause but not restore
->>> settings after calibration, and causes TX stuck. As the flow I traced,
->>> this patch looks reasonable. But, I wonder why other people don't meet
->>> this problem.
->>>
->> Other people have this problem too:
->> https://bugzilla.kernel.org/show_bug.cgi?id=196769
->> https://bugzilla.kernel.org/show_bug.cgi?id=216746
+Hi,
+
+On Wed, Dec 14, 2022 at 09:16:46AM +0000, Liang Xu wrote:
+> From: Michael Walle <michael@walle.cc>
+> Sent: Wednesday, December 14, 2022 5:00 PM
+> Subject: Re: [PATCH] net: phy: enhance Maxlinear GPY loopback disable function
 > 
-> In the threads, you have answered my question with
-> "kernel 4.8.0 works, but 4.9.? does not work."
+> This email was sent from outside of MaxLinear.
 > 
->>
->> The RF calibration does restore REG_TXPAUSE at the end. What happens is
->> when you plug in the device, something (mac80211? wpa_supplicant?) calls
->> rtl8xxxu_start(), then rtl8xxxu_stop(), then rtl8xxxu_start() again.
->> rtl8xxxu_stop() sets REG_TXPAUSE to 0xff and nothing sets it back to 0.
->>
 > 
-> You are correct. That is clear to me. I miss the point that RF calibration
-> does backup/restore registers containing REG_TXPAUSE.
+> Subject is missing the correct target, "net" in this case.
 > 
-> Then, I think my reviewed-by can be still applied, right?
+> > GPY need 3 seconds to switch out of loopback mode.
 > 
-> Ping-Ke
+> What does that mean, what goes wrong with the current 100ms?
+> Could you elaborate a bit more and update the commit message
+> and the comment? Is this true for any GPY PHY supported by
+> this driver?
 > 
-Yes.
+> The internal state machine need almost 3s to fully restore to original state when leaving the loopback mode.
+> This is true for all models supported by this driver.
+> I will update the commit message and fix the target.
+> Thank you.
+
+When you state that it takes almost 3 seconds to fully restore the
+state, what are you basing that upon - what are you using to determine
+that the state has been fully restored?
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
