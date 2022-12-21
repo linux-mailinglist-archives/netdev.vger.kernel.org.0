@@ -2,64 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C81D0653878
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 23:21:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB6F65390F
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 23:53:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234412AbiLUWVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 17:21:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
+        id S230286AbiLUWxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 17:53:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiLUWVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 17:21:09 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40C6F03A
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 14:21:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=uNgUn2Ex+dDtmB/zyQyEP6zX9Vq79c779U8rsIOYejI=; b=DdBnqWcruDAfXCRSdYpYWLzMGk
-        WjugOjLF04sBOeWEKZA/zcqn5EssJguXLAhfuICxhv7wI/WXZ+cm2E2q6BQElc48rPNkSAtWH6mUA
-        PV0wg6kygG6SjqAb6WSwD50t5K+3PAZ47QAbB5dvkN4CbODuqiMnbfwMCnaoUXuqsU/A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p87SM-000DRu-7N; Wed, 21 Dec 2022 23:20:58 +0100
-Date:   Wed, 21 Dec 2022 23:20:58 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, f.fainelli@gmail.com, rdunlap@infradead.org
-Subject: Re: [PATCH net 0/2] netdev doc de-FAQization
-Message-ID: <Y6OGyrmLKqy51k6K@lunn.ch>
-References: <20221221184007.1170384-1-kuba@kernel.org>
+        with ESMTP id S229742AbiLUWxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 17:53:36 -0500
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050:0:465::101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E54423E96
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 14:53:34 -0800 (PST)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4NcpdN4N6dz9sZ1;
+        Wed, 21 Dec 2022 23:53:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
+        t=1671663208;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rA9YpxVrjoLJfN9Oaq6nu9p+cmJYsXCGzxW6F2NsZOU=;
+        b=BoGTDkM3ZzimNGvHKgappqZHqB1/jsNsPmqRaw9RkrqD40FLseOZhRHIKTX5QKuPFNY69O
+        dUx1Y54l6NbGlx2e2kKip8rz0H6EvFrHCFbVSlKdUD/K1Nbb109ygN6LHAnsHc5+3tK+A4
+        ivjCzkVjNRpSbW+27dF7bzSdqWcX/YUugKr4Wkrj/1gd1a/xIKwYXXYckTiYvxyFDyM6Xj
+        Xz1xzWEEVaWESRUZHQe2OgK7JvEHjXhwUjWpvSop877HOFSOj3Pcc8juF3d0a3502/7quZ
+        SZdbxz8CIIbhG6IHPbKbWAk8QAbtDQQNmvakZ7CBwJ7ABRllcQV89KpdgHBUAQ==
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+To:     netdev@vger.kernel.org
+Cc:     heiko.thiery@gmail.com, Hauke Mehrtens <hauke@hauke-m.de>
+Subject: [PATCH iproute2] configure: Remove include <sys/stat.h>
+Date:   Wed, 21 Dec 2022 23:53:04 +0100
+Message-Id: <20221221225304.3477126-1-hauke@hauke-m.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221221184007.1170384-1-kuba@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 4NcpdN4N6dz9sZ1
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 21, 2022 at 10:40:05AM -0800, Jakub Kicinski wrote:
-> I've been tempted to do this for a while. I think that we have outgrown
-> the FAQ format for our process doc. I'm curious what others think but
-> I often find myself struggling to locate information in this doc,
-> because the questions do not serve well as section headers.
+The check_name_to_handle_at() function in the configure script is
+including sys/stat.h. This include fails with glibc 2.36 like this:
+````
+In file included from /linux-5.15.84/include/uapi/linux/stat.h:5,
+                 from /toolchain-x86_64_gcc-12.2.0_glibc/include/bits/statx.h:31,
+                 from /toolchain-x86_64_gcc-12.2.0_glibc/include/sys/stat.h:465,
+                 from config.YExfMc/name_to_handle_at_test.c:3:
+/linux-5.15.84/include/uapi/linux/types.h:10:2: warning: #warning "Attempt to use kernel headers from user space, see https://kernelnewbies.org/KernelHeaders" [-Wcpp]
+   10 | #warning "Attempt to use kernel headers from user space, see https://kernelnewbies.org/KernelHeaders"
+      |  ^~~~~~~
+In file included from /linux-5.15.84/include/uapi/linux/posix_types.h:5,
+                 from /linux-5.15.84/include/uapi/linux/types.h:14:
+/linux-5.15.84/include/uapi/linux/stddef.h:5:10: fatal error: linux/compiler_types.h: No such file or directory
+    5 | #include <linux/compiler_types.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+````
 
-Looks good to me. It has grown beyond a simple FAQ.
+Just removing the include works, the manpage of name_to_handle_at() says
+only fcntl.h is needed.
 
-I think you kept the top level header 'netdev FAQ'. Do we also want to
-change that, since it is no longer question/answer formatted? Not that
-i have a good idea what to call it instead.
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+---
+ configure | 1 -
+ 1 file changed, 1 deletion(-)
 
-Anyway:
+diff --git a/configure b/configure
+index c02753bb..18be5a03 100755
+--- a/configure
++++ b/configure
+@@ -214,7 +214,6 @@ check_name_to_handle_at()
+     cat >$TMPDIR/name_to_handle_at_test.c <<EOF
+ #define _GNU_SOURCE
+ #include <sys/types.h>
+-#include <sys/stat.h>
+ #include <fcntl.h>
+ int main(int argc, char **argv)
+ {
+-- 
+2.35.1
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
