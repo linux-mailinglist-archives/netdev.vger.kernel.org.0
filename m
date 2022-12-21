@@ -2,67 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50359653103
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:45:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECC9E65311E
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:55:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229568AbiLUMpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 07:45:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
+        id S232763AbiLUMzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 07:55:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiLUMo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:44:59 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FA422BCB
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:44:58 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id 65so10587348pfx.9
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:44:58 -0800 (PST)
+        with ESMTP id S229601AbiLUMzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:55:01 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79AE2317F;
+        Wed, 21 Dec 2022 04:54:59 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id p1-20020a05600c1d8100b003d8c9b191e0so397353wms.4;
+        Wed, 21 Dec 2022 04:54:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=87voKorkYhypVq01JjwM4w1ZUjFR2Vq5AJTk3xYnW4M=;
-        b=aXWghNEfHt5qgm+LwHg4CjtcdfHnPyh7E1ET7j19TH452iazmQEnoC6MyN43uJpnaV
-         Bs8djyw3mI6q03FYPa2JN/sYnD0weqSk5R1Fw0TN42ohXqEKynUfp0ohp3+DGlGNvjvi
-         qJfD3wxUuajIBNGA4wHflHqourg3q+ix6blvA4fr6+NjeR+LtzBn7G3UvX+AW9Opm9yO
-         17r5y+r6v6TtRrGi5lMH31Ru3SsrWrcIIt3heRyDjUl6GBoviQ6lfaDpVTVh9LBawZoC
-         W3ObK+2uTLdm0akPUcXGITfOQE3p93s65jGmOd7yOzTQCnJfGddcURHtqAZ+cWB6LY1h
-         J92g==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=dRK8jAShw4FKHMFTqOEZH8n9jGsLhbWM5T+ViFrWZBg=;
+        b=DA/xPznmaeVcfMgPhSYETFahuh+6m6bx4PqwjjS3ya7Z9cNxQxuJDQ+8eRMylBRlLD
+         wBD9T4/o4FuOu0rF62/OBwbm5QjXw2ARMiWmwjAI5kiVQGxjGrNVe7q5+7rEfshhGYjX
+         fn4kMnqgmN8zGD3B3DieUgyC53GjduWUUfyGLUaKoP26L+qj8sj1ZbEzJ3ILbJhnfi8u
+         7Ir72KoeeAcBre+acZlpfd3eI5K8VYHF6kPtcCVws3wWGc+aqClcBqhYFImpFPQgOzEG
+         Jufw3hKzIpRp3HORukhmMsvZPpFhlGAnn11Qg39wLgBmz6aq/2mhjeVsyjcKPNSpNDZo
+         fx6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=87voKorkYhypVq01JjwM4w1ZUjFR2Vq5AJTk3xYnW4M=;
-        b=A89ekXdj1oDQbpfNILkiccb8DXSWZrW4lzw1mHWHE7YYpF9CjbLiNnT+1YU4d5Ci1j
-         95Wgkt2I8lDA6XNIpqEkprMnox2xpbnX6/FSehwNd+jkiDFM3CDG+f18ju/HCFD3zvJG
-         MWJVb50pJdfLdW7QXWdA1aUBptaSnVvouFcc0BnCZPftiWocYMH1LqGvkBob2cX2PdZ6
-         1DSoN/2qHKAzKaTP/zlxbVNOIt7mqW57yfj3vY9kfSkHAIip7CCQxgHsGus0nCRKoHTA
-         uDcbyXKC/A87lxCj4KOsiMa7HzB4lnUBtpkD6lpG9wgMuJ77LGvAY8Q4rtkQTmbQm2jl
-         tacA==
-X-Gm-Message-State: AFqh2koiI+GEcYa47kXkp36eDFDF0u1o/1qVUwbrZi5Smp0Rf5eyRWDI
-        9FGjuAa/GHLVKsguc3Fi6ecPVGsrUbmFRfRu8Oc4/g==
-X-Google-Smtp-Source: AMrXdXt40PUOzzRkKPCAkXe6IfTye8YwOcziGNnm5ARbI2MeEsAGACZCnMHtldIPXSAAJMzOpNTjulqIN4necTCBwps=
-X-Received: by 2002:aa7:9418:0:b0:577:8bad:4f9e with SMTP id
- x24-20020aa79418000000b005778bad4f9emr116308pfo.77.1671626697532; Wed, 21 Dec
- 2022 04:44:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20221221120618.652074-1-alvaro.karsz@solid-run.com> <20221221073256-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20221221073256-mutt-send-email-mst@kernel.org>
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date:   Wed, 21 Dec 2022 14:44:21 +0200
-Message-ID: <CAJs=3_CVUydOpH=a-RJLWUQ0_1EbkwKtGD2F3Xvw=dR5QFXP5g@mail.gmail.com>
-Subject: Re: [PATCH] virtio_net: send notification coalescing command only if
- value changed
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dRK8jAShw4FKHMFTqOEZH8n9jGsLhbWM5T+ViFrWZBg=;
+        b=haXUEy3Bo7/1RATrP/ktm+y8G/ZNz65sUsKqq0+JYF5i/YhJbYv2Fg6OhJ+lESf0gu
+         OHrFOIMKN2f1X45XB0n8nWZjfDhNYqRtYuKdLUPhp1KlbZihr9BbRT/Y6AsqI5kbcPoF
+         M4OvMcAuwyZ95Zc+/swNZ+TWH8Z704yE2hmbm3K1ZtDG9iz/Upa/oD7GZrRfi1SBx/g4
+         rDkfEFAhR/gjEMr334Xt4F5DcywWI+ZlhBcAKkQruxlXUGZtJZynNJYbBLxs1jdeyre8
+         KXpCecMeU2G1kNincxZjxRHQvdMoznnBnRWHwZjfc6GlmEHXLSgfMwUDf1t//bA4RGnd
+         K1Vw==
+X-Gm-Message-State: AFqh2kq7uUXjnNvPYCPq/h+v30yAVrh+958LK3xbzumdo1+j1RxtWmgO
+        7cvCKTfqdogRyGHXqZyM9RPS3mmXlGw=
+X-Google-Smtp-Source: AMrXdXsBytjhLZWs4x8v2DyBBkxP6etAA7zXggbAgPbplpRiy/tGRvWhF4zzKk2yBTSh1IGrY/vZeg==
+X-Received: by 2002:a05:600c:500e:b0:3cf:88c3:d008 with SMTP id n14-20020a05600c500e00b003cf88c3d008mr4419819wmr.28.1671627298046;
+        Wed, 21 Dec 2022 04:54:58 -0800 (PST)
+Received: from Ansuel-xps. (host-82-55-238-56.retail.telecomitalia.it. [82.55.238.56])
+        by smtp.gmail.com with ESMTPSA id 21-20020a05600c021500b003cf37c5ddc0sm2111276wmi.22.2022.12.21.04.54.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Dec 2022 04:54:57 -0800 (PST)
+Message-ID: <63a30221.050a0220.16e5f.653a@mx.google.com>
+X-Google-Original-Message-ID: <Y6MCHwWMABd0yUyG@Ansuel-xps.>
+Date:   Wed, 21 Dec 2022 13:54:55 +0100
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Tim Harvey <tharvey@gateworks.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Subject: Re: [PATCH v7 11/11] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+References: <20221214235438.30271-1-ansuelsmth@gmail.com>
+ <20221214235438.30271-12-ansuelsmth@gmail.com>
+ <20221220173958.GA784285-robh@kernel.org>
+ <Y6JDOFmcEQ3FjFKq@lunn.ch>
+ <Y6JkXnp0/lF4p0N1@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y6JkXnp0/lF4p0N1@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,18 +90,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Why do we bother? Resending needs more code and helps
-> reliability ...
+On Wed, Dec 21, 2022 at 02:41:50AM +0100, Andrew Lunn wrote:
+> > > > +                        };
+> > > > +
+> > > > +                        led@1 {
+> > > > +                            reg = <1>;
+> > > > +                            color = <LED_COLOR_ID_AMBER>;
+> > > > +                            function = LED_FUNCTION_LAN;
+> > > > +                            function-enumerator = <1>;
+> > > 
+> > > Typo? These are supposed to be unique. Can't you use 'reg' in your case?
+> > 
+> > reg in this context is the address of the PHY on the MDIO bus. This is
+> > an Ethernet switch, so has many PHYs, each with its own address.
+> 
+> Actually, i'm wrong about that. reg in this context is the LED number
+> of the PHY. Typically there are 2 or 3 LEDs per PHY.
+> 
+> There is no reason the properties need to be unique. Often the LEDs
+> have 8 or 16 functions, identical for each LED, but with different
+> reset defaults so they show different things.
+> 
 
-It just seems unnecessary.
-If a user changes just one parameter:
-$ ethtool -C <iface> tx-usecs 30
-It will trigger 2 commands, including
-VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, even though no rx parameter changed.
+Are we taking about reg or function-enumerator?
 
-If we'll add more ethtool coalescing parameters, changing one of the
-new parameter will trigger meaningless
-VIRTIO_NET_CTRL_NOTF_COAL_RX_SET and VIRTIO_NET_CTRL_NOTF_COAL_TX_SET
-commands.
+For reg it's really specific to the driver... My idea was that since a
+single phy can have multiple leds attached, reg will represent the led
+number.
 
-Alvaro
+This is an example of the dt implemented on a real device.
+
+		mdio {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			phy_port1: phy@0 {
+				reg = <0>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					lan1_led@0 {
+						reg = <0>;
+						color = <LED_COLOR_ID_WHITE>;
+						function = LED_FUNCTION_LAN;
+						function-enumerator = <1>;
+						linux,default-trigger = "netdev";
+					};
+
+					lan1_led@1 {
+						reg = <1>;
+						color = <LED_COLOR_ID_AMBER>;
+						function = LED_FUNCTION_LAN;
+						function-enumerator = <1>;
+						linux,default-trigger = "netdev";
+					};
+				};
+			};
+
+			phy_port2: phy@1 {
+				reg = <1>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+
+					lan2_led@0 {
+						reg = <0>;
+						color = <LED_COLOR_ID_WHITE>;
+						function = LED_FUNCTION_LAN;
+						function-enumerator = <2>;
+						linux,default-trigger = "netdev";
+					};
+
+					lan2_led@1 {
+						reg = <1>;
+						color = <LED_COLOR_ID_AMBER>;
+						function = LED_FUNCTION_LAN;
+						function-enumerator = <2>;
+						linux,default-trigger = "netdev";
+					};
+				};
+			};
+
+			phy_port3: phy@2 {
+				reg = <2>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					lan3_led@0 {
+						reg = <0>;
+						color = <LED_COLOR_ID_WHITE>;
+						function = LED_FUNCTION_LAN;
+						function-enumerator = <3>;
+						linux,default-trigger = "netdev";
+					};
+
+					lan3_led@1 {
+						reg = <1>;
+						color = <LED_COLOR_ID_AMBER>;
+						function = LED_FUNCTION_LAN;
+						function-enumerator = <3>;
+						linux,default-trigger = "netdev";
+					};
+				};
+			};
+
+In the following implementation. Each port have 2 leds attached (out of
+3) one white and one amber. The driver parse the reg and calculate the
+offset to set the correct option with the regs by also checking the phy
+number.
+
+An alternative way would be set the reg to be the global led number in
+the switch and deatch the phy from the calculation.
+
+Something like
+port 0 led 0 = reg 0
+port 0 led 1 = reg 1
+port 1 led 0 = reg 2
+port 1 led 1 = reg 3
+...
+
+Using the function-enumerator can be problematic since ideally someone
+would declare a dedicated function for wan led.
+
+I'm very open to discuss and improve/fix this!
+
+-- 
+	Ansuel
