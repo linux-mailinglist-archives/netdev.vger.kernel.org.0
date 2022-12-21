@@ -2,215 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D652A652D7C
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 08:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C03652DA0
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 09:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbiLUHxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 02:53:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
+        id S234522AbiLUID7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 03:03:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiLUHxY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 02:53:24 -0500
-Received: from out29-177.mail.aliyun.com (out29-177.mail.aliyun.com [115.124.29.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C9E20F7E;
-        Tue, 20 Dec 2022 23:53:21 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436266|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.00335086-7.3198e-05-0.996576;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047203;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.QaOHgqA_1671609177;
-Received: from sunhua.motor-comm.com(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QaOHgqA_1671609177)
-          by smtp.aliyun-inc.com;
-          Wed, 21 Dec 2022 15:53:18 +0800
-From:   Frank <Frank.Sae@motor-comm.com>
-To:     andrew@lunn.ch
-Cc:     Frank.Sae@motor-comm.com, davem@davemloft.net, edumazet@google.com,
-        fei.zhang@motor-comm.com, hkallweit1@gmail.com,
-        hua.sun@motor-comm.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com, pgwipeout@gmail.com,
-        xiaogang.fan@motor-comm.com
-Subject: Re: [PATCH net-next v2] net: phy: Add driver for Motorcomm yt8531 gigabit ethernet phy
-Date:   Wed, 21 Dec 2022 15:53:14 +0800
-Message-Id: <20221221075314.1990-1-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.31.0.windows.1
+        with ESMTP id S234497AbiLUIDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 03:03:38 -0500
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB4B21820;
+        Wed, 21 Dec 2022 00:03:36 -0800 (PST)
+Received: by mail-pj1-f49.google.com with SMTP id n65-20020a17090a2cc700b0021bc5ef7a14so1374435pjd.0;
+        Wed, 21 Dec 2022 00:03:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=S6bhRp4WBLcDJ1rkcGiP9uV5hcS5HELckUtTTBKpWiU=;
+        b=6lliVL6QuqH4pO49pyVHCzWsbXccNXEOwyliTXa1PBNwA/iOl9I1ZggUkyHFq/Uchq
+         vJAbhCUOTorcoaN1L+hZfb+X4I+tJ+vv7c3wuvJ3DLpnRbS2n5/l3p2MsRs4iBcRvLCP
+         30sZg1tNxmqkdWclKkcLuZN8Ee7lQ9R5GSQM4JUtgS1jGTizWP801PzwgvEPY4z2ebk2
+         5BWwTaVogKezDGaiAGWWgjlJ+Np+i6WQSmzxAYVTyy1twF3MVj0z3OudsycFZ3hVoIPC
+         JsKi3+KFENHim6DQOsiAeK43werV3k3VKR4sAxp0pw2ZzOMy3fwRXjKF2PuYLkVB4aPW
+         ZFQg==
+X-Gm-Message-State: AFqh2kri6HseVcaBI4vvNuLkA9I/DlYd7onzTrDr1FxqLf6XeaT8jzdx
+        pUDDYUBIGsPVqoDdPFaN9GYLvz575u6f1VN2
+X-Google-Smtp-Source: AMrXdXuj5drmDHM+tFwCEcvwZ5ELz7h0tr8ghqlRvLfBKTWalhuqXi6TQyxyaZfuS2+fyW7y7/dsBw==
+X-Received: by 2002:a05:6a20:a690:b0:a5:418:8341 with SMTP id ba16-20020a056a20a69000b000a504188341mr1703217pzb.28.1671609815650;
+        Wed, 21 Dec 2022 00:03:35 -0800 (PST)
+Received: from localhost.localdomain ([14.4.134.166])
+        by smtp.gmail.com with ESMTPSA id q9-20020aa78429000000b0057716769289sm9890776pfn.196.2022.12.21.00.03.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Dec 2022 00:03:35 -0800 (PST)
+From:   Leesoo Ahn <lsahn@ooseel.net>
+To:     lsahn@ooseel.net
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Greg KH <greg@kroah.com>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] usbnet: optimize usbnet_bh() to reduce CPU load
+Date:   Wed, 21 Dec 2022 16:59:24 +0900
+Message-Id: <20221221075924.1141346-1-lsahn@ooseel.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-  I send you this mail on 2022-12-14 11:07 UTC, but it failed: 
-  "Connect to the recipient Email system failed. (9)connect to the "vps0.lunn.ch(x.x.x.x) of lunn.ch" server failed"
-  so I send it again.
+The current source pushes skb into dev->done queue by calling
+skb_queue_tail() and then pop it by calling skb_dequeue() to branch to
+rx_cleanup state for freeing urb/skb in usbnet_bh(). It takes extra CPU
+load, 2.21% (skb_queue_tail) as follows.
 
-on Dec. 3, 2022, 8:47 p.m. UTC , Andrew Lunn wrote:
-> On Fri, Dec 02, 2022 at 01:34:16PM +0000, Russell King (Oracle) wrote:
-> > On Fri, Dec 02, 2022 at 02:27:43PM +0100, Andrew Lunn wrote:
-> > > > +static bool mdio_is_locked(struct phy_device *phydev)
-> > > > +{
-> > > > +	return mutex_is_locked(&phydev->mdio.bus->mdio_lock);
-> > > > +}
-> > > > +
-> > > > +#define ASSERT_MDIO(phydev) \
-> > > > +	WARN_ONCE(!mdio_is_locked(phydev), \
-> > > > +		  "MDIO: assertion failed at %s (%d)\n", __FILE__,  __LINE__)
-> > > > +
-> > > 
-> > > Hi Frank
-> > > 
-> > > You are not the only one who gets locking wrong. This could be used in
-> > > other drivers. Please add it to include/linux/phy.h,
-> > 
-> > That placement doesn't make much sense.
-> > 
-> > As I already said, we have lockdep checks in drivers/net/phy/mdio_bus.c,
-> > and if we want to increase their effectiveness, then that's the place
-> > that it should be done.
-> 
-> I was following the ASSERT_RTNL model, but that is used in quite deep
-> and complex call stacks, and it is useful to scatter the macro in lots
-> of places. PHY drivers are however very shallow, so yes, putting them
-> in mdio_bus.c makes a lot of sense.
-> 
-> > I don't see any point in using __FILE__ and __LINE__ in the above
-> > macro either. Firstly, WARN_ONCE() already includes the file and line,
-> > and secondly, the backtrace is more useful than the file and line where
-> > the assertion occurs especially if it's placed in mdio_bus.c
-> 
-> And PHY driver functions are simpler, there is a lot less inlining
-> going on, so the function name is probably all you need to know to
-> find where you messed up the locking. So i agree, they can be removed.
-> 
->      Andrew
+-   11.58%     0.26%  swapper          [k] usbnet_bh
+   - 11.32% usbnet_bh
+      - 6.43% skb_dequeue
+           6.34% _raw_spin_unlock_irqrestore
+      - 2.21% skb_queue_tail
+           2.19% _raw_spin_unlock_irqrestore
+      - 1.68% consume_skb
+         - 0.97% kfree_skbmem
+              0.80% kmem_cache_free
+           0.53% skb_release_data
 
- Hi Andrew and Russell, Thanks!
+To reduce the extra CPU load use return values jumping to rx_cleanup
+state directly to free them instead of calling skb_queue_tail() and
+skb_dequeue() for push/pop respectively.
+
+-    7.87%     0.25%  swapper          [k] usbnet_bh
+   - 7.62% usbnet_bh
+      - 4.81% skb_dequeue
+           4.74% _raw_spin_unlock_irqrestore
+      - 1.75% consume_skb
+         - 0.98% kfree_skbmem
+              0.78% kmem_cache_free
+           0.58% skb_release_data
+        0.53% smsc95xx_rx_fixup
+
+Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
+---
+v3:
+  - Replace return values with proper -ERR values in rx_process()
+
+v2:
+  - Replace goto label with return statement to reduce goto entropy
+  - Add CPU load information by perf in commit message
+
+v1 at:
+  https://patchwork.kernel.org/project/netdevbpf/patch/20221217161851.829497-1-lsahn@ooseel.net/
+
+---
+ drivers/net/usb/usbnet.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 64a9a80b2309..98d594210df4 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -555,32 +555,30 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
  
- change the mdio_bus.c like follow ok?
+ /*-------------------------------------------------------------------------*/
  
- -add "ASSERT_MDIO"
- -add "ASSERT_MDIO(bus);" in __mdiobus_read and __mdiobus_write function 
+-static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
++static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
+ {
+ 	if (dev->driver_info->rx_fixup &&
+ 	    !dev->driver_info->rx_fixup (dev, skb)) {
+ 		/* With RX_ASSEMBLE, rx_fixup() must update counters */
+ 		if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
+ 			dev->net->stats.rx_errors++;
+-		goto done;
++		return -EPROTO;
+ 	}
+ 	// else network stack removes extra byte if we forced a short packet
  
+ 	/* all data was already cloned from skb inside the driver */
+ 	if (dev->driver_info->flags & FLAG_MULTI_PACKET)
+-		goto done;
++		return -EALREADY;
  
- static inline bool mdiobus_is_locked(struct mii_bus *bus)
-{
-	return mutex_is_locked(&bus->mdio_lock);
-}
-
-#define ASSERT_MDIO(bus) \
-	WARN_ONCE(!mdiobus_is_locked(bus), \
-		  "MDIO: assertion failed\n")
-		  
- int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
-{
-	int retval;
-
-	ASSERT_MDIO(bus);
-	lockdep_assert_held_once(&bus->mdio_lock);
-
-	retval = bus->read(bus, addr, regnum);
-...
-}
-
- int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
-{
-	int err;
-
-	ASSERT_MDIO(bus);
-	lockdep_assert_held_once(&bus->mdio_lock);
-
-	err = bus->write(bus, addr, regnum, val);
-...
-}
-
-
-on Dec. 2, 2022, 1:27 p.m. UTC , Andrew Lunn wrote:
-> >  /**
-> >   * ytphy_read_ext() - read a PHY's extended register
-> >   * @phydev: a pointer to a &struct phy_device
-> > @@ -258,6 +271,8 @@ static int ytphy_read_ext(struct phy_device *phydev, u16 regnum)
-> >  {
-> >  	int ret;
-> >  
-> > +	ASSERT_MDIO(phydev);
-> > +
-> >  	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -297,6 +312,8 @@ static int ytphy_write_ext(struct phy_device *phydev, u16 regnum, u16 val)
-> >  {
-> >  	int ret;
-> >  
-> > +	ASSERT_MDIO(phydev);
-> > +
-> >  	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -342,6 +359,8 @@ static int ytphy_modify_ext(struct phy_device *phydev, u16 regnum, u16 mask,
-> >  {
-> >  	int ret;
-> >  
-> > +	ASSERT_MDIO(phydev);
-> > +
-> >  	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -479,6 +498,76 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
-> >  	return phy_restore_page(phydev, old_page, ret);
-> >  }
-> 
-> Please make the above one patch, which adds the macro and its
-> users. There are a couple more below as well.
-> 
-> Did it find any problems in the current code? Any fixes mixed
-> in here?
-> 
-> Then add yt8531 is another patch.
-> 
-
- Thanks! 
- It not find any problems in the current code. 
- ASSERT_MDIO in motorcomm.c will be removed. 
+ 	if (skb->len < ETH_HLEN) {
+ 		dev->net->stats.rx_errors++;
+ 		dev->net->stats.rx_length_errors++;
+ 		netif_dbg(dev, rx_err, dev->net, "rx length %d\n", skb->len);
+-	} else {
+-		usbnet_skb_return(dev, skb);
+-		return;
++		return -EPROTO;
+ 	}
  
-> > +/**
-> > + * yt8531_set_wol() - turn wake-on-lan on or off
-> > + * @phydev: a pointer to a &struct phy_device
-> > + * @wol: a pointer to a &struct ethtool_wolinfo
-> > + *
-> > + * returns 0 or negative errno code
-> > + */
-> > +static int yt8531_set_wol(struct phy_device *phydev,
-> > +			  struct ethtool_wolinfo *wol)
-> > +{
-> > +	struct net_device *p_attached_dev;
-> > +	const u16 mac_addr_reg[] = {
-> > +		YTPHY_WOL_MACADDR2_REG,
-> > +		YTPHY_WOL_MACADDR1_REG,
-> > +		YTPHY_WOL_MACADDR0_REG,
-> > +	};
-> > +	const u8 *mac_addr;
-> > +	u16 mask;
-> > +	u16 val;
-> > +	int ret;
-> > +	u8 i;
-> > +
-> > +	if (wol->wolopts & WAKE_MAGIC) {
-> > +		p_attached_dev = phydev->attached_dev;
-> > +		if (!p_attached_dev)
-> > +			return -ENODEV;
-> > +
-> > +		mac_addr = (const u8 *)p_attached_dev->dev_addr;
-> 
-> Why the cast?
-
- I'm sorry. What does "Why the cast?" mean?
+-done:
+-	skb_queue_tail(&dev->done, skb);
++	usbnet_skb_return(dev, skb);
++	return 0;
+ }
  
-> 
-> > +		if (!is_valid_ether_addr(mac_addr))
-> > +			return -EINVAL;
-> 
->   Andrew
-> 
+ /*-------------------------------------------------------------------------*/
+@@ -1528,13 +1526,14 @@ static void usbnet_bh (struct timer_list *t)
+ 		entry = (struct skb_data *) skb->cb;
+ 		switch (entry->state) {
+ 		case rx_done:
+-			entry->state = rx_cleanup;
+-			rx_process (dev, skb);
++			if (rx_process(dev, skb))
++				goto cleanup;
+ 			continue;
+ 		case tx_done:
+ 			kfree(entry->urb->sg);
+ 			fallthrough;
+ 		case rx_cleanup:
++cleanup:
+ 			usb_free_urb (entry->urb);
+ 			dev_kfree_skb (skb);
+ 			continue;
+-- 
+2.34.1
 
