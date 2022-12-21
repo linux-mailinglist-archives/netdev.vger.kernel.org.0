@@ -2,148 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ECE265308D
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9676530A0
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:14:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiLUMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 07:06:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
+        id S229925AbiLUMO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 07:14:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiLUMG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:06:27 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD841C930
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:06:24 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id ay40so11011011wmb.2
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:06:23 -0800 (PST)
+        with ESMTP id S229522AbiLUMO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:14:26 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353DC220CD;
+        Wed, 21 Dec 2022 04:14:25 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id m18so36346225eji.5;
+        Wed, 21 Dec 2022 04:14:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=aK+harKFdh05j7ikUbsUL9aBNPAUblg48ttg0Rk1PY0=;
-        b=IEVuxoUap2KilZ+w1fxmOQtAeVzY82k+84OlD6p3sdYWVhvtl+JrA8hIBYpyoaX8uY
-         qdbg8yYRVY/avh7iOGf3ZJYwXYpMeOW6BE36hINj3oXhR0ifgPKBQqYCRbJzj6C4p70b
-         50O8gTPNsAed4ijZJSCclUl+RB0VHZDcErLJGTRq6aXnk9D+/NoXkWxSQRVYUrKWt0Er
-         PzTaCdv3eP+I6mNsmMeTS5N7udle4qqQGE7kMLjBdMgZUPuWhIZzTNESt/J/JlS33p2L
-         hDC7941sBhFh9JZjUTgvKwQg7ae0B9FxlWAtWrvqEPOJRs4BWN0GZpSYxJDqDXMG2/+j
-         cgNQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mAZPv0Vt+5frz1B6uHNIq3BKzCQcwhRuSmIZNKwA36M=;
+        b=iw3vDirpPhUoDCIgjPPh3gyjFSp8Vo1WVZRdVGpc0ficOXDwOpSyYRgVNaYcKNXf71
+         jgqFFiIER8IVLnjirnypZl/JdBc9pySJglI61guR2aNJ46OfcGaFgNqCL3utKRjDbiEo
+         euxnSxz2XQV3hiDBW/mnCvR/pSHbvakk5RRoBQ097HziCHdung1NhnStmTGLKI9SCyy5
+         GTGXN9zzZX16AhzVz1JcLJ1bi4W+FEw9ozuqzCz54yeGP4lo3q+wDuae8OPey+SR1WMS
+         Jhfh6Y1nGdUVVlvR5sw+8/y9nMDD7Omo9lPlghFxS7miGBR/xb/f70Ie1UhD1W2JH7lJ
+         dNKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aK+harKFdh05j7ikUbsUL9aBNPAUblg48ttg0Rk1PY0=;
-        b=jRD4HDFxQreuwqH/gl6+dTwgEs9VBYAHBuKzcUsYqzVINymMS7moOZLcMn1+J7ujI1
-         oxEsABQr+uuEyOL4elehiQ6FrKe+TOL0gEZ7rm2nSZuCIZrZr0jWROE7Fl743o0+8COO
-         rQoxfONL7ZW6sE8RHoX+5VrMHLYgbkdtLSKsg3OPlkvD3x3lIoeBe1aLGaAb9RAFsIab
-         695k3HXzRJ/nsZJf6DHrchph1TXnTuGsA9d/ueJrU42kFRtgZ6AumPjeR7jI6svs05OZ
-         d4VyBh5IFaDspShoHD84K9lcQ+zdfpk3kOfqJ3b0zY6XCwTNmRslL+BCXtcwg+y2EY8I
-         CjAw==
-X-Gm-Message-State: AFqh2konvQCGtjUKt/d2aof6twxMWcN033aVjI495lh3qAv2NU5o4Wun
-        W6UXF/+/nC7zLL/tRM+5q0T3EQ==
-X-Google-Smtp-Source: AMrXdXvBSiQ4tAsA58ZmJ3PR3kRIyMor2XrvlGzrcNCf5mS9vAReIO1EeuyEqqJlszY260oiHhZA8Q==
-X-Received: by 2002:a05:600c:1e18:b0:3d2:5e4e:701 with SMTP id ay24-20020a05600c1e1800b003d25e4e0701mr1467731wmb.31.1671624382538;
-        Wed, 21 Dec 2022 04:06:22 -0800 (PST)
-Received: from localhost.localdomain (bzq-84-110-153-254.static-ip.bezeqint.net. [84.110.153.254])
-        by smtp.gmail.com with ESMTPSA id a7-20020a05600c348700b003cf6e1df4a8sm2118768wmq.15.2022.12.21.04.06.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Dec 2022 04:06:21 -0800 (PST)
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH] virtio_net: send notification coalescing command only if value changed
-Date:   Wed, 21 Dec 2022 14:06:18 +0200
-Message-Id: <20221221120618.652074-1-alvaro.karsz@solid-run.com>
-X-Mailer: git-send-email 2.32.0
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mAZPv0Vt+5frz1B6uHNIq3BKzCQcwhRuSmIZNKwA36M=;
+        b=k72eoOdMfZa9Unnj5eDsGVAd20O63D1ujlTVrQrt8NpQxsIqmPn0fVEFIue/8agVrd
+         2RfW4U3X0ySBi2YSaOBj2RDpDw3Nj/LrojNPZGe+fBGT7MVEZOWFrxeIvdI9ZExIwXIq
+         qJZtM4R7iG/+XFzJe/S+7MGLGnZAbjsvWsuQI9TTWYGqZY0CUS9I+kgJau3Z3emSx5n8
+         BO7TKYPG9sfHX43E/fzivqhLYmmaKg1tk8ey4rKrP4V2i5Uf131bEszVkaz5Wr88uJiv
+         LeyKeCtFKsepXs4PDl96VsKzXW7AN6wFW/DUkAInRDbBSa/7V37/powAB9nWgvpf0hV+
+         4/Wg==
+X-Gm-Message-State: AFqh2koCuLF2ou7NDWiYXjlpHsg7T/wH1VXBSv7LoSSfbDjh9Thg6UV7
+        ly7o+10huRLGn8B5XRWtZPo=
+X-Google-Smtp-Source: AMrXdXudT0UlY85eAzXGOU0R87PDATyBfegH4yXLcmdns/OhHekZwbRwJerj9jH9yqFCbg7dl0UGIA==
+X-Received: by 2002:a17:907:a07c:b0:841:13b0:7238 with SMTP id ia28-20020a170907a07c00b0084113b07238mr265566ejc.25.1671624863538;
+        Wed, 21 Dec 2022 04:14:23 -0800 (PST)
+Received: from [192.168.1.50] ([79.119.240.153])
+        by smtp.gmail.com with ESMTPSA id k17-20020a170906971100b007c0b6e1c7fdsm7013302ejx.104.2022.12.21.04.14.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Dec 2022 04:14:23 -0800 (PST)
+Message-ID: <0c92d4bf-42d0-2094-a576-ad32cdb7b531@gmail.com>
+Date:   Wed, 21 Dec 2022 14:14:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>,
+        "JunASAKA@zzy040330.moe" <JunASAKA@zzy040330.moe>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
+ <3b4124ebabcb4ceaae89cd9ccf84c7de@realtek.com>
+ <33b2b585-c5b1-5888-bcee-ca74ce809a44@gmail.com>
+ <fb0a7d6c0897464550ed7ee75c6318c525a0f001.camel@realtek.com>
+Content-Language: en-US
+From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
+In-Reply-To: <fb0a7d6c0897464550ed7ee75c6318c525a0f001.camel@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't send a VIRTIO_NET_CTRL_NOTF_COAL_TX_SET or
-VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command if the coalescing parameters
-haven't changed.
-
-Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
----
- drivers/net/virtio_net.c | 48 ++++++++++++++++++++++------------------
- 1 file changed, 27 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 7723b2a49d8..1d7118de62a 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2760,31 +2760,37 @@ static int virtnet_send_notf_coal_cmds(struct virtnet_info *vi,
- 	struct virtio_net_ctrl_coal_tx coal_tx;
- 	struct virtio_net_ctrl_coal_rx coal_rx;
- 
--	coal_tx.tx_usecs = cpu_to_le32(ec->tx_coalesce_usecs);
--	coal_tx.tx_max_packets = cpu_to_le32(ec->tx_max_coalesced_frames);
--	sg_init_one(&sgs_tx, &coal_tx, sizeof(coal_tx));
--
--	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
--				  VIRTIO_NET_CTRL_NOTF_COAL_TX_SET,
--				  &sgs_tx))
--		return -EINVAL;
-+	if (ec->tx_coalesce_usecs != vi->tx_usecs ||
-+	    ec->tx_max_coalesced_frames != vi->tx_max_packets) {
-+		coal_tx.tx_usecs = cpu_to_le32(ec->tx_coalesce_usecs);
-+		coal_tx.tx_max_packets = cpu_to_le32(ec->tx_max_coalesced_frames);
-+		sg_init_one(&sgs_tx, &coal_tx, sizeof(coal_tx));
-+
-+		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-+					  VIRTIO_NET_CTRL_NOTF_COAL_TX_SET,
-+					  &sgs_tx))
-+			return -EINVAL;
- 
--	/* Save parameters */
--	vi->tx_usecs = ec->tx_coalesce_usecs;
--	vi->tx_max_packets = ec->tx_max_coalesced_frames;
-+		/* Save parameters */
-+		vi->tx_usecs = ec->tx_coalesce_usecs;
-+		vi->tx_max_packets = ec->tx_max_coalesced_frames;
-+	}
- 
--	coal_rx.rx_usecs = cpu_to_le32(ec->rx_coalesce_usecs);
--	coal_rx.rx_max_packets = cpu_to_le32(ec->rx_max_coalesced_frames);
--	sg_init_one(&sgs_rx, &coal_rx, sizeof(coal_rx));
-+	if (ec->rx_coalesce_usecs != vi->rx_usecs ||
-+	    ec->rx_max_coalesced_frames != vi->rx_max_packets) {
-+		coal_rx.rx_usecs = cpu_to_le32(ec->rx_coalesce_usecs);
-+		coal_rx.rx_max_packets = cpu_to_le32(ec->rx_max_coalesced_frames);
-+		sg_init_one(&sgs_rx, &coal_rx, sizeof(coal_rx));
- 
--	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
--				  VIRTIO_NET_CTRL_NOTF_COAL_RX_SET,
--				  &sgs_rx))
--		return -EINVAL;
-+		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-+					  VIRTIO_NET_CTRL_NOTF_COAL_RX_SET,
-+					  &sgs_rx))
-+			return -EINVAL;
- 
--	/* Save parameters */
--	vi->rx_usecs = ec->rx_coalesce_usecs;
--	vi->rx_max_packets = ec->rx_max_coalesced_frames;
-+		/* Save parameters */
-+		vi->rx_usecs = ec->rx_coalesce_usecs;
-+		vi->rx_max_packets = ec->rx_max_coalesced_frames;
-+	}
- 
- 	return 0;
- }
--- 
-2.32.0
-
+On 21/12/2022 03:42, Ping-Ke Shih wrote:
+> On Tue, 2022-12-20 at 15:03 +0200, Bitterblue Smith wrote:
+>> On 20/12/2022 07:44, Ping-Ke Shih wrote:
+>>>
+>>>> -----Original Message-----
+>>>> From: Jun ASAKA <JunASAKA@zzy040330.moe>
+>>>> Sent: Saturday, December 17, 2022 11:07 AM
+>>>> To: Jes.Sorensen@gmail.com
+>>>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; 
+>>>> pabeni@redhat.com;
+>>>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun
+>>>> ASAKA
+>>>> <JunASAKA@zzy040330.moe>
+>>>> Subject: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
+>>>>
+>>>> Fixing transmission failure which results in
+>>>> "authentication with ... timed out". This can be
+>>>> fixed by disable the REG_TXPAUSE.
+>>>>
+>>>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
+>>>> ---
+>>>>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
+>>>>  1 file changed, 5 insertions(+)
+>>>>
+>>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>>> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>>> index a7d76693c02d..9d0ed6760cb6 100644
+>>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+>>>> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
+>>>>  	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
+>>>>  	val8 &= ~BIT(0);
+>>>>  	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
+>>>> +
+>>>> +	/*
+>>>> +	 * Fix transmission failure of rtl8192e.
+>>>> +	 */
+>>>> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
+>>>
+>>> I trace when rtl8xxxu set REG_TXPAUSE=0xff that will stop TX.
+>>> The occasions include RF calibration, LPS mode (called by power off), and
+>>> going to stop. So, I think RF calibration does TX pause but not restore
+>>> settings after calibration, and causes TX stuck. As the flow I traced,
+>>> this patch looks reasonable. But, I wonder why other people don't meet
+>>> this problem.
+>>>
+>> Other people have this problem too:
+>> https://bugzilla.kernel.org/show_bug.cgi?id=196769
+>> https://bugzilla.kernel.org/show_bug.cgi?id=216746
+> 
+> In the threads, you have answered my question with
+> "kernel 4.8.0 works, but 4.9.? does not work."
+> 
+>>
+>> The RF calibration does restore REG_TXPAUSE at the end. What happens is
+>> when you plug in the device, something (mac80211? wpa_supplicant?) calls
+>> rtl8xxxu_start(), then rtl8xxxu_stop(), then rtl8xxxu_start() again.
+>> rtl8xxxu_stop() sets REG_TXPAUSE to 0xff and nothing sets it back to 0.
+>>
+> 
+> You are correct. That is clear to me. I miss the point that RF calibration
+> does backup/restore registers containing REG_TXPAUSE.
+> 
+> Then, I think my reviewed-by can be still applied, right?
+> 
+> Ping-Ke
+> 
+Yes.
