@@ -2,271 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A81D565335E
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 16:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF53653371
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 16:34:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234821AbiLUP2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 10:28:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
+        id S234874AbiLUPei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 10:34:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234774AbiLUP0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 10:26:35 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC4724F1F
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 07:25:58 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id m21so11989076edc.3
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 07:25:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xnuTWgs891MmWmFfR4Qv/YHEM/0HR/0MI73lfSbcCY4=;
-        b=aDBvkMWROJJ1SF+9K9XlqbliT77HqNm+Vg5LPrt86sC4Ox5IwW9S7z2MqBRFrwymjk
-         x7HxUiz5K3uaKEspxe6fxE7SNlrdB/bWXv09FrzCMWHgpVAYsOeKjOEVeqtMjSWF3Yg8
-         WX2sngaQTsSIA7AJSuQu38M1rxX8VC6NEPdDFqV3PBRoEvM/4MCvqu7tBTjx93bUpU91
-         rBt88EiXsD8zuGQ1GhkgCceg4wn015vd7Qw/8VgCB2nLuZxCurot8eNjf4nQErgTCcOP
-         UgvKDKyLu4ksD/vcMo6gQ8mqmaGNQHys7TstbQ9HsR44nEQdz+njgtBBNZ6oQGh2zCUY
-         avoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xnuTWgs891MmWmFfR4Qv/YHEM/0HR/0MI73lfSbcCY4=;
-        b=hh+1nSoVtHLULwDl/MV/ZM/1UnIJCd5hfs03QrBBDLUvAfRpcFCChIqbTiPaGwJ0YA
-         yrnoqTFNGhwClFSugocQqajlbnf3pm0uTNLsKV4Ny17CksdiabOwsYgQ6k3KkwWe9wsm
-         36J9g9HU6PdJp7YvzPUHeXvGJsdUf6de+uks49FFfdk/Z+SSLf5NS+JZHeejPsjwu2cK
-         cG1uJi/ekxo7O9fceVyyXrE6K/5GRUVIDznSupGFbjKplNfPuz57TtHYlG+ru/IRMrbX
-         oaOsFXbTTCJ7o6v80ytIxPi/dWrvlTR4xLTTlOq+jzGT1ISN6fAOjMEpSUe3rgUseqaM
-         M4DA==
-X-Gm-Message-State: AFqh2krfj6y3MATh5wDqRgAmaRXvp621YdA17okyKDutqOb4qw1FmuKw
-        m3aASD2ckzfGB5g4rVo8nLkXkA==
-X-Google-Smtp-Source: AMrXdXvXBnVEANUHuH8J6f3JaGNS3lJlvVbNU9b6rlvuhc1hs1KbMNUqeWvEeHdBjrov1egw19JJfA==
-X-Received: by 2002:a05:6402:14d8:b0:45c:835b:944f with SMTP id f24-20020a05640214d800b0045c835b944fmr1651513edx.11.1671636358062;
-        Wed, 21 Dec 2022 07:25:58 -0800 (PST)
-Received: from blmsp.fritz.box ([2001:4091:a245:805c:8713:84e4:2a9e:cbe8])
-        by smtp.gmail.com with ESMTPSA id n19-20020aa7c793000000b0045cf4f72b04sm7105428eds.94.2022.12.21.07.25.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Dec 2022 07:25:57 -0800 (PST)
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>
-Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH 18/18] can: m_can: Implement transmit submission coalescing
-Date:   Wed, 21 Dec 2022 16:25:37 +0100
-Message-Id: <20221221152537.751564-19-msp@baylibre.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221221152537.751564-1-msp@baylibre.com>
-References: <20221221152537.751564-1-msp@baylibre.com>
+        with ESMTP id S234663AbiLUPeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 10:34:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5482611D;
+        Wed, 21 Dec 2022 07:29:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0EEA61808;
+        Wed, 21 Dec 2022 15:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D87C43392;
+        Wed, 21 Dec 2022 15:29:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671636568;
+        bh=wFkYUylJbr4FMDZjTmOjoxFQ4meaXsYE5Tb4CvtoGe0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=n3aeSl2BOQoCA/GBy2uTAGGbrl9Bk8vlvuVScyTqZUlx14P6/0HSb4EY0mBQlE/Di
+         BLxtw3Z9plP2YWp5QKfeQK0GcsI58at8PmzuGBj2h0OpkXvxhC+EwVT1KFHF6HT6qU
+         bCeR0NHzUkqzxt+TFa1qelipWE9Atn5+U5ZpZQ7lgQFvthXE8gAP6SXQWoY8EOGSHc
+         LtqIEgwBnoktw27gv8UC8h2YwSc9/blZaTdhvCYsD6X9OTyqIaQZm6/mhDpI/UORG2
+         dK2EagVkwiYPc1BYYpjJPaSLFN/MAS+9gm9DdDvmMASvTn21CoogI5gTjWkJczAnUu
+         O6YfCic3mCQvw==
+Received: by mail-vs1-f52.google.com with SMTP id i2so15075337vsc.1;
+        Wed, 21 Dec 2022 07:29:28 -0800 (PST)
+X-Gm-Message-State: AFqh2kr6afNiCzSYqG7iIAaNZc6bagek6Tf+ufrt7d/Hp+Pv4828ZV1D
+        /QYmHwS9xB+f8GahgK39EHfuOn2hcZzBbfUpDA==
+X-Google-Smtp-Source: AMrXdXsmJHoE603TUd9P+L+qPTU5ouQ1XqdRnUXlItEa+ZM/qHoda888Y6IWITfLU8au2mnVNozJJOSADJ4wqm2QVVk=
+X-Received: by 2002:a67:edd4:0:b0:3b5:1fe4:f1c2 with SMTP id
+ e20-20020a67edd4000000b003b51fe4f1c2mr260718vsp.0.1671636567233; Wed, 21 Dec
+ 2022 07:29:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20221214235438.30271-1-ansuelsmth@gmail.com> <20221214235438.30271-12-ansuelsmth@gmail.com>
+ <20221220173958.GA784285-robh@kernel.org> <Y6JDOFmcEQ3FjFKq@lunn.ch>
+ <Y6JkXnp0/lF4p0N1@lunn.ch> <63a30221.050a0220.16e5f.653a@mx.google.com>
+In-Reply-To: <63a30221.050a0220.16e5f.653a@mx.google.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 21 Dec 2022 09:29:15 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLOvCJ_aHk4jSp64u1LbGyoeTjY_vRgVkvvVNCOp=3NmA@mail.gmail.com>
+Message-ID: <CAL_JsqLOvCJ_aHk4jSp64u1LbGyoeTjY_vRgVkvvVNCOp=3NmA@mail.gmail.com>
+Subject: Re: [PATCH v7 11/11] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Tim Harvey <tharvey@gateworks.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-m_can supports submitting mulitple transmits with one register write.
-This is an interesting option to reduce the number of SPI transfers for
-peripheral chips.
+On Wed, Dec 21, 2022 at 6:55 AM Christian Marangi <ansuelsmth@gmail.com> wrote:
+>
+> On Wed, Dec 21, 2022 at 02:41:50AM +0100, Andrew Lunn wrote:
+> > > > > +                        };
+> > > > > +
+> > > > > +                        led@1 {
+> > > > > +                            reg = <1>;
+> > > > > +                            color = <LED_COLOR_ID_AMBER>;
+> > > > > +                            function = LED_FUNCTION_LAN;
+> > > > > +                            function-enumerator = <1>;
+> > > >
+> > > > Typo? These are supposed to be unique. Can't you use 'reg' in your case?
+> > >
+> > > reg in this context is the address of the PHY on the MDIO bus. This is
+> > > an Ethernet switch, so has many PHYs, each with its own address.
+> >
+> > Actually, i'm wrong about that. reg in this context is the LED number
+> > of the PHY. Typically there are 2 or 3 LEDs per PHY.
+> >
+> > There is no reason the properties need to be unique. Often the LEDs
+> > have 8 or 16 functions, identical for each LED, but with different
+> > reset defaults so they show different things.
+> >
+>
+> Are we taking about reg or function-enumerator?
+>
+> For reg it's really specific to the driver... My idea was that since a
+> single phy can have multiple leds attached, reg will represent the led
+> number.
+>
+> This is an example of the dt implemented on a real device.
+>
+>                 mdio {
+>                         #address-cells = <1>;
+>                         #size-cells = <0>;
+>
+>                         phy_port1: phy@0 {
+>                                 reg = <0>;
+>
+>                                 leds {
+>                                         #address-cells = <1>;
+>                                         #size-cells = <0>;
+>
+>                                         lan1_led@0 {
+>                                                 reg = <0>;
+>                                                 color = <LED_COLOR_ID_WHITE>;
+>                                                 function = LED_FUNCTION_LAN;
+>                                                 function-enumerator = <1>;
+>                                                 linux,default-trigger = "netdev";
+>                                         };
+>
+>                                         lan1_led@1 {
+>                                                 reg = <1>;
+>                                                 color = <LED_COLOR_ID_AMBER>;
+>                                                 function = LED_FUNCTION_LAN;
+>                                                 function-enumerator = <1>;
+>                                                 linux,default-trigger = "netdev";
+>                                         };
+>                                 };
+>                         };
+>
+>                         phy_port2: phy@1 {
+>                                 reg = <1>;
+>
+>                                 leds {
+>                                         #address-cells = <1>;
+>                                         #size-cells = <0>;
+>
+>
+>                                         lan2_led@0 {
+>                                                 reg = <0>;
+>                                                 color = <LED_COLOR_ID_WHITE>;
+>                                                 function = LED_FUNCTION_LAN;
+>                                                 function-enumerator = <2>;
+>                                                 linux,default-trigger = "netdev";
+>                                         };
+>
+>                                         lan2_led@1 {
+>                                                 reg = <1>;
+>                                                 color = <LED_COLOR_ID_AMBER>;
+>                                                 function = LED_FUNCTION_LAN;
+>                                                 function-enumerator = <2>;
+>                                                 linux,default-trigger = "netdev";
+>                                         };
+>                                 };
+>                         };
+>
+>                         phy_port3: phy@2 {
+>                                 reg = <2>;
+>
+>                                 leds {
+>                                         #address-cells = <1>;
+>                                         #size-cells = <0>;
+>
+>                                         lan3_led@0 {
+>                                                 reg = <0>;
+>                                                 color = <LED_COLOR_ID_WHITE>;
+>                                                 function = LED_FUNCTION_LAN;
+>                                                 function-enumerator = <3>;
+>                                                 linux,default-trigger = "netdev";
+>                                         };
+>
+>                                         lan3_led@1 {
+>                                                 reg = <1>;
+>                                                 color = <LED_COLOR_ID_AMBER>;
+>                                                 function = LED_FUNCTION_LAN;
+>                                                 function-enumerator = <3>;
+>                                                 linux,default-trigger = "netdev";
+>                                         };
+>                                 };
+>                         };
+>
+> In the following implementation. Each port have 2 leds attached (out of
+> 3) one white and one amber. The driver parse the reg and calculate the
+> offset to set the correct option with the regs by also checking the phy
+> number.
 
-The m_can_tx_op is extended with a bool that signals if it is the last
-transmission and the submit should be executed immediately.
+Okay, the full example makes more sense. But I still thought
+'function-enumerator' values should be globally unique within a value
+of 'function'. Maybe Jacek has an opinion on this?
 
-The worker then writes the skb to the FIFO and submits it only if the
-submit bool is set. If it isn't set, the worker will write the next skb
-which is waiting in the workqueue to the FIFO, etc.
+You are using it to distinguish phys/ports, but there's already enough
+information in the DT to do that. You have the parent nodes and I
+assume you have port numbers under 'ethernet-ports'. For each port,
+get the phy node and then get the LEDs.
 
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
----
+> An alternative way would be set the reg to be the global led number in
+> the switch and deatch the phy from the calculation.
+>
+> Something like
+> port 0 led 0 = reg 0
+> port 0 led 1 = reg 1
+> port 1 led 0 = reg 2
+> port 1 led 1 = reg 3
+> ...
 
-Notes:
-    Notes:
-    - I ran into lost messages in the receive FIFO when using this
-      implementation. I guess this only shows up with my test setup in
-      loopback mode and maybe not enough CPU power.
-    - I put this behind the tx-frames ethtool coalescing option as we do
-      wait before submitting packages but it is something different than the
-      tx-frames-irq option. I am not sure if this is the correct option,
-      please let me know.
+No.
 
- drivers/net/can/m_can/m_can.c | 56 ++++++++++++++++++++++++++++++++---
- drivers/net/can/m_can/m_can.h |  6 ++++
- 2 files changed, 58 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 719a7dfe154a..9431735fb887 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -1457,6 +1457,9 @@ static void m_can_start(struct net_device *dev)
- 	/* basic m_can configuration */
- 	m_can_chip_config(dev);
- 
-+	netdev_queue_set_dql_min_limit(netdev_get_tx_queue(cdev->net, 0),
-+				       cdev->tx_max_coalesced_frames);
-+
- 	cdev->can.state = CAN_STATE_ERROR_ACTIVE;
- 
- 	m_can_enable_all_interrupts(cdev);
-@@ -1764,8 +1767,13 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev,
- 		 */
- 		can_put_echo_skb(skb, dev, putidx, frame_len);
- 
--		/* Enable TX FIFO element to start transfer  */
--		m_can_write(cdev, M_CAN_TXBAR, (1 << putidx));
-+		if (cdev->is_peripheral) {
-+			/* Delay enabling TX FIFO element */
-+			cdev->tx_peripheral_submit |= BIT(putidx);
-+		} else {
-+			/* Enable TX FIFO element to start transfer  */
-+			m_can_write(cdev, M_CAN_TXBAR, BIT(putidx));
-+		}
- 		cdev->tx_fifo_putidx = (++cdev->tx_fifo_putidx >= cdev->can.echo_skb_max ?
- 					0 : cdev->tx_fifo_putidx);
- 	}
-@@ -1778,6 +1786,17 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev,
- 	return NETDEV_TX_BUSY;
- }
- 
-+static void m_can_tx_submit(struct m_can_classdev *cdev)
-+{
-+	if (cdev->version == 30)
-+		return;
-+	if (!cdev->is_peripheral)
-+		return;
-+
-+	m_can_write(cdev, M_CAN_TXBAR, cdev->tx_peripheral_submit);
-+	cdev->tx_peripheral_submit = 0;
-+}
-+
- static void m_can_tx_work_queue(struct work_struct *ws)
- {
- 	struct m_can_tx_op *op = container_of(ws, struct m_can_tx_op, work);
-@@ -1786,11 +1805,15 @@ static void m_can_tx_work_queue(struct work_struct *ws)
- 
- 	op->skb = NULL;
- 	m_can_tx_handler(cdev, skb);
-+	if (op->submit)
-+		m_can_tx_submit(cdev);
- }
- 
--static void m_can_tx_queue_skb(struct m_can_classdev *cdev, struct sk_buff *skb)
-+static void m_can_tx_queue_skb(struct m_can_classdev *cdev, struct sk_buff *skb,
-+			       bool submit)
- {
- 	cdev->tx_ops[cdev->next_tx_op].skb = skb;
-+	cdev->tx_ops[cdev->next_tx_op].submit = submit;
- 	queue_work(cdev->tx_wq, &cdev->tx_ops[cdev->next_tx_op].work);
- 
- 	++cdev->next_tx_op;
-@@ -1801,6 +1824,8 @@ static void m_can_tx_queue_skb(struct m_can_classdev *cdev, struct sk_buff *skb)
- static netdev_tx_t m_can_start_peripheral_xmit(struct m_can_classdev *cdev,
- 					       struct sk_buff *skb)
- {
-+	bool submit;
-+
- 	if (cdev->can.state == CAN_STATE_BUS_OFF) {
- 		m_can_clean(cdev->net);
- 		return NETDEV_TX_OK;
-@@ -1818,7 +1843,15 @@ static netdev_tx_t m_can_start_peripheral_xmit(struct m_can_classdev *cdev,
- 	}
- 	spin_unlock(&cdev->tx_handling_spinlock);
- 
--	m_can_tx_queue_skb(cdev, skb);
-+	++cdev->nr_txs_without_submit;
-+	if (cdev->nr_txs_without_submit >= cdev->tx_max_coalesced_frames ||
-+	    !netdev_xmit_more()) {
-+		cdev->nr_txs_without_submit = 0;
-+		submit = true;
-+	} else {
-+		submit = false;
-+	}
-+	m_can_tx_queue_skb(cdev, skb, submit);
- 
- 	return NETDEV_TX_OK;
- }
-@@ -1954,6 +1987,7 @@ static int m_can_get_coalesce(struct net_device *dev,
- 
- 	ec->rx_max_coalesced_frames_irq = cdev->rx_max_coalesced_frames_irq;
- 	ec->rx_coalesce_usecs_irq = cdev->rx_coalesce_usecs_irq;
-+	ec->tx_max_coalesced_frames = cdev->tx_max_coalesced_frames;
- 	ec->tx_max_coalesced_frames_irq = cdev->tx_max_coalesced_frames_irq;
- 	ec->tx_coalesce_usecs_irq = cdev->tx_coalesce_usecs_irq;
- 
-@@ -1998,6 +2032,18 @@ static int m_can_set_coalesce(struct net_device *dev,
- 		netdev_err(dev, "tx-frames-irq and tx-usecs-irq can only be set together\n");
- 		return -EINVAL;
- 	}
-+	if (ec->tx_max_coalesced_frames > cdev->mcfg[MRAM_TXE].num) {
-+		netdev_err(dev, "tx-frames (%u) greater than the TX event FIFO (%u)\n",
-+			   ec->tx_max_coalesced_frames,
-+			   cdev->mcfg[MRAM_TXE].num);
-+		return -EINVAL;
-+	}
-+	if (ec->tx_max_coalesced_frames > cdev->mcfg[MRAM_TXB].num) {
-+		netdev_err(dev, "tx-frames (%u) greater than the TX FIFO (%u)\n",
-+			   ec->tx_max_coalesced_frames,
-+			   cdev->mcfg[MRAM_TXB].num);
-+		return -EINVAL;
-+	}
- 	if (ec->rx_coalesce_usecs_irq != 0 && ec->tx_coalesce_usecs_irq != 0 &&
- 	    ec->rx_coalesce_usecs_irq != ec->tx_coalesce_usecs_irq) {
- 		netdev_err(dev, "rx-usecs-irq (%u) needs to be equal to tx-usecs-irq (%u) if both are enabled\n",
-@@ -2008,6 +2054,7 @@ static int m_can_set_coalesce(struct net_device *dev,
- 
- 	cdev->rx_max_coalesced_frames_irq = ec->rx_max_coalesced_frames_irq;
- 	cdev->rx_coalesce_usecs_irq = ec->rx_coalesce_usecs_irq;
-+	cdev->tx_max_coalesced_frames = ec->tx_max_coalesced_frames;
- 	cdev->tx_max_coalesced_frames_irq = ec->tx_max_coalesced_frames_irq;
- 	cdev->tx_coalesce_usecs_irq = ec->tx_coalesce_usecs_irq;
- 
-@@ -2025,6 +2072,7 @@ static const struct ethtool_ops m_can_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS_IRQ |
- 		ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ |
- 		ETHTOOL_COALESCE_TX_USECS_IRQ |
-+		ETHTOOL_COALESCE_TX_MAX_FRAMES |
- 		ETHTOOL_COALESCE_TX_MAX_FRAMES_IRQ,
- 	.get_ts_info = ethtool_op_get_ts_info,
- 	.get_coalesce = m_can_get_coalesce,
-diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index adbd4765accc..40d90016285b 100644
---- a/drivers/net/can/m_can/m_can.h
-+++ b/drivers/net/can/m_can/m_can.h
-@@ -74,6 +74,7 @@ struct m_can_tx_op {
- 	struct m_can_classdev *cdev;
- 	struct work_struct work;
- 	struct sk_buff *skb;
-+	bool submit;
- };
- 
- struct m_can_classdev {
-@@ -103,6 +104,7 @@ struct m_can_classdev {
- 	u32 active_interrupts;
- 	u32 rx_max_coalesced_frames_irq;
- 	u32 rx_coalesce_usecs_irq;
-+	u32 tx_max_coalesced_frames;
- 	u32 tx_max_coalesced_frames_irq;
- 	u32 tx_coalesce_usecs_irq;
- 
-@@ -117,6 +119,10 @@ struct m_can_classdev {
- 	int nr_tx_ops;
- 	int next_tx_op;
- 
-+	int nr_txs_without_submit;
-+	/* bitfield of fifo elements that will be submitted together */
-+	u32 tx_peripheral_submit;
-+
- 	struct mram_cfg mcfg[MRAM_CFG_NUM];
- };
- 
--- 
-2.38.1
-
+Rob
