@@ -2,165 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBC1652D3D
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 08:19:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34490652D45
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 08:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234434AbiLUHTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 02:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
+        id S231712AbiLUH2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 02:28:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234040AbiLUHTv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 02:19:51 -0500
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7952DA;
-        Tue, 20 Dec 2022 23:19:50 -0800 (PST)
-Received: by mail-pl1-f172.google.com with SMTP id d15so14696068pls.6;
-        Tue, 20 Dec 2022 23:19:50 -0800 (PST)
+        with ESMTP id S229516AbiLUH2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 02:28:21 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7345C1CFDE
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 23:28:20 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id bj12so34643650ejb.13
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 23:28:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=z+bHBCE2MXh1kW8rjyOWsgxy9qRS48It+Vaz6G2WMT0=;
+        b=mVk9vm+URVhq0VX3W1uhjC3bUeF40EvBRVpiT7krAj5yU98pHMAAuUjziAgNLDgc+u
+         xydWRwGzfau2Z/BgVTnMh9MuqRAvHs404eoDgnZn6TGBPZQuVZZsrvBzRLhYMz4hC1/k
+         fzWZ56PpFRduSYipPgvsRlEDB8Xmu03BD0bA4MSDJ8jrYhRfLQKE5FyTRXjm8RBsdTX2
+         FrGDZSRnI0G7oGMmloPhJDH7IZM3acXAZ50KGUj1QVLe/G56WVaJgDe2d5b/HvOnpYDU
+         GsfNCrjhKZGXiYsXZ5D1B+c6fzXSOF1XpQy9flziTwyM5kpuz3eyr8HF2yd6o37ZHOR2
+         R4eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fNp8m2LDVsPPcD0Zs4UZSAN2iWMB2g5usgyu5XJskKU=;
-        b=2k8H0FyG5BCMvLz13CqUFxc6tOTh7KJI2D1SQMG6F6op95HzV5tM/PHmUe1ZL+Uu/2
-         U0G27vXl2t1wRAtT1wAbSWe004e9V55RpLmiq7Fsukrfqw2mJgTLAvuGX95YE1lKOosU
-         iWIN6gYDU0gxhXYRwt+m6lAyGX/QE3gXc7Z5Mkpzk75Tvzh+cOJQQ1Vgtkx3oXBbp9Xf
-         6cAX67EyEZpuvhqh7lCo6PIajVop0qCkPgKajufpJlm0QB3ycY4m0EFUyLbuMS950Gzx
-         iF10bxpR1OePXwv/nIiDv7IW2QqmKh4gEUxI1c3J/Bgqj71KtGNyBvx29d+4avMUWO3M
-         BTQQ==
-X-Gm-Message-State: AFqh2kp/sLKBvvxEZEPhoE5x1Eci8ox+A7YrhlFlIYwaFLkoSYsvDRx2
-        TmZxbNcKcPlQ7YSvi2/qTxddQ0GUzux2XUTP
-X-Google-Smtp-Source: AMrXdXtw6/uAv+el3BR9wZ4gpSFmlVM23HDTW/M7dKePVVYWT92alwiZGoahoj62PoZwmt84AKwzfw==
-X-Received: by 2002:a05:6a20:5489:b0:b0:b870:54e1 with SMTP id i9-20020a056a20548900b000b0b87054e1mr2082396pzk.12.1671607190168;
-        Tue, 20 Dec 2022 23:19:50 -0800 (PST)
-Received: from [192.168.219.101] ([14.4.134.166])
-        by smtp.gmail.com with ESMTPSA id x12-20020a63cc0c000000b004468cb97c01sm9385928pgf.56.2022.12.20.23.19.47
+        bh=z+bHBCE2MXh1kW8rjyOWsgxy9qRS48It+Vaz6G2WMT0=;
+        b=sDX/Jg1QWjM8oV3c7FToyRIZ/fNNlVi7XWdV5nvqge2yvxo4CLonGTaEvJjk9taUds
+         DWjvVtE6k0o7G7RCgwho905+CO7sHpQXaqgVxHxQYzW5sALuZo3/ddB3AkngzCe7TAgz
+         KuQuFbp9YHOKP6/YkIUYmoNRv7uk7AVNa5S4eafBqE20lkb979YEyyAybMjisdHFd7R9
+         mynj7h+6FvBAj/6tLowzI/d+U8cPkR8DQutG8wbqwwpm0T6+AFs3cWKt15xI/28dYE6/
+         FANdIIPYWeXR0vKOtq/AzcPYwtmSOPtOzCNhTC8kwamhm3u+L4dwWehKzxsOAxO8zka7
+         gF6g==
+X-Gm-Message-State: AFqh2krjfNrUE64ijKTmY56ZDEnwJ36QUAmk60rIArjiNCV0TDvdNPwB
+        kOC6yG0eJU1FFaA0LAeawekkxA==
+X-Google-Smtp-Source: AMrXdXuhVtTnfPDeHgZiNlrbPEC2BXwNQzHIcORFZqmaNw19rlO0CrgJckUQCjTzesYSbrtCVgx5+Q==
+X-Received: by 2002:a17:907:c717:b0:7c1:ad6:638a with SMTP id ty23-20020a170907c71700b007c10ad6638amr575163ejc.17.1671607699037;
+        Tue, 20 Dec 2022 23:28:19 -0800 (PST)
+Received: from [192.168.0.173] ([82.77.81.131])
+        by smtp.gmail.com with ESMTPSA id a14-20020a170906670e00b007c0f45ad6bcsm6666612ejp.109.2022.12.20.23.28.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Dec 2022 23:19:49 -0800 (PST)
-Message-ID: <2d4033ea-3034-24cf-493c-f60258f9988d@ooseel.net>
-Date:   Wed, 21 Dec 2022 16:19:45 +0900
+        Tue, 20 Dec 2022 23:28:18 -0800 (PST)
+Message-ID: <a13f83f3-737d-1bfe-c9ef-031a6cd4d131@linaro.org>
+Date:   Wed, 21 Dec 2022 09:28:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v2] usbnet: optimize usbnet_bh() to reduce CPU load
+ Thunderbird/102.4.2
+Subject: Re: kernel BUG in __skb_gso_segment
 Content-Language: en-US
-To:     Greg KH <greg@kroah.com>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221221044230.1012787-1-lsahn@ooseel.net>
- <Y6KoglOyuFEqfp2k@kroah.com>
-From:   Leesoo Ahn <lsahn@ooseel.net>
-In-Reply-To: <Y6KoglOyuFEqfp2k@kroah.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        gregkh@linuxfoundation.org
+Cc:     mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, edumazet@google.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, willemb@google.com,
+        syzkaller@googlegroups.com, liuhangbin@gmail.com,
+        linux-kernel@vger.kernel.org, joneslee@google.com
+References: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
+ <CAF=yD-KEwVnH6PRyxbJZt4iGfKasadYwU_6_V+hHW2s+ZqFNcw@mail.gmail.com>
+From:   Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <CAF=yD-KEwVnH6PRyxbJZt4iGfKasadYwU_6_V+hHW2s+ZqFNcw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 22. 12. 21. 15:32, Greg KH wrote:
-> On Wed, Dec 21, 2022 at 01:42:30PM +0900, Leesoo Ahn wrote:
->> The current source pushes skb into dev->done queue by calling
->> skb_queue_tail() and then pop it by calling skb_dequeue() to branch to
->> rx_cleanup state for freeing urb/skb in usbnet_bh(). It takes extra CPU
->> load, 2.21% (skb_queue_tail) as follows.
+I added Greg KH to the thread, maybe he can shed some light on whether
+new support can be marked as fixes and backported to stable. The rules
+on what kind of patches are accepted into the -stable tree don't mention
+new support:
+https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+
+On 20.12.2022 20:27, Willem de Bruijn wrote:
+> On Tue, Dec 20, 2022 at 8:21 AM Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
 >>
->> -   11.58%     0.26%  swapper          [k] usbnet_bh
->>     - 11.32% usbnet_bh
->>        - 6.43% skb_dequeue
->>             6.34% _raw_spin_unlock_irqrestore
->>        - 2.21% skb_queue_tail
->>             2.19% _raw_spin_unlock_irqrestore
->>        - 1.68% consume_skb
->>           - 0.97% kfree_skbmem
->>                0.80% kmem_cache_free
->>             0.53% skb_release_data
+>> Hi,
 >>
->> To reduce the extra CPU load use return values jumping to rx_cleanup
->> state directly to free them instead of calling skb_queue_tail() and
->> skb_dequeue() for push/pop respectively.
+>> There's a bug [1] reported by syzkaller in linux-5.15.y that I'd like
+>> to squash. The commit in stable that introduces the bug is:
+>> b99c71f90978 net: skip virtio_net_hdr_set_proto if protocol already set
+>> The upstream commit for this is:
+>> 1ed1d592113959f00cc552c3b9f47ca2d157768f
 >>
->> -    7.87%     0.25%  swapper          [k] usbnet_bh
->>     - 7.62% usbnet_bh
->>        - 4.81% skb_dequeue
->>             4.74% _raw_spin_unlock_irqrestore
->>        - 1.75% consume_skb
->>           - 0.98% kfree_skbmem
->>                0.78% kmem_cache_free
->>             0.58% skb_release_data
->>          0.53% smsc95xx_rx_fixup
+>> I discovered that in mainline this bug was squashed by the following
+>> commits:
+>> e9d3f80935b6 ("net/af_packet: make sure to pull mac header")
+>> dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO")
 >>
->> Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
->> ---
->> v2:
->>    - Replace goto label with return statement to reduce goto entropy
->>    - Add CPU load information by perf in commit message
->>
->> v1 at:
->>    https://patchwork.kernel.org/project/netdevbpf/patch/20221217161851.829497-1-lsahn@ooseel.net/
->> ---
->>   drivers/net/usb/usbnet.c | 19 +++++++++----------
->>   1 file changed, 9 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
->> index 64a9a80b2309..6e82fef90dd9 100644
->> --- a/drivers/net/usb/usbnet.c
->> +++ b/drivers/net/usb/usbnet.c
->> @@ -555,32 +555,30 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
->>   
->>   /*-------------------------------------------------------------------------*/
->>   
->> -static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
->> +static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
->>   {
->>   	if (dev->driver_info->rx_fixup &&
->>   	    !dev->driver_info->rx_fixup (dev, skb)) {
->>   		/* With RX_ASSEMBLE, rx_fixup() must update counters */
->>   		if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
->>   			dev->net->stats.rx_errors++;
->> -		goto done;
->> +		return 1;
-> "1" means that you processed 1 byte, not that this is an error, which is
-> what you want to say here, right?
-No not at all..
-> Please return a negative error value
-> like I asked this to be changed to last time :(
-Could you help me to decide the message type at this point please? I am 
-confused.
+>> I'm seeking for some guidance on how to fix linux-5.15.y. From what I
+>> understand, the bug in stable is triggered because we end up with a
+>> header offset of 18, that eventually triggers the GSO crash in
+>> __skb_pull. If I revert the commit in culprit from linux-5.15.y, we'll
+>> end up with a header offset of 14, the bug is not hit and the packet is
+>> dropped at validate_xmit_skb() time. I'm wondering if reverting it is
+>> the right thing to do, as the commit is marked as a fix. Backporting the
+>> 2 commits from mainline is not an option as they introduce new support.
+>> Would such a patch be better than reverting the offending commit?
+> 
+> If both patches can be backported without conflicts, in this case I
+> think that is the preferred solution.
 
-The return value totally depends on how rx_fixup() is. For instance, in 
-smsc95xx.c, smsc95xx_rx_fixup() function returns 0 in two cases that
+I confirm both patches can be backported without conflicts.
 
-1) frame size is greater than ETH_FRAME_LEN(1526 bytes) as follows
+> 
+> If the fix were obvious that would be an option. But the history for
+> this code indicates that it isn't. It has a history of fixes for edge
+> cases.
+> 
+> Backporting the two avoids a fork that would make backporting
+> additional fixes harder. The first of the two is technically not a
 
-  1853             /* ETH_FRAME_LEN + 4(CRC) + 2(COE) + 4(Vlan) */
-  1854             if (unlikely(size > (ETH_FRAME_LEN + 12))) {
-  1855                 netif_dbg(dev, rx_err, dev->net,
-  1856                       "size err header=0x%08x\n", header);
-  1857                 return 0;
-  1858             }
+I agree that a fork would make backporting additional fixes harder.
+I'm no networking guy, but I can debug further to understand whether the
+patch that I proposed or other would make sense for both mainline and
+stable kernels. We'll avoid the fork this way.
 
-2) it is failed for skb allocation, but memory?
+> fix, but evidently together they are for this case. And the additional
+> logic and risk backported seems manageable.
 
-  1870             ax_skb = skb_clone(skb, GFP_ATOMIC);
-  1871             if (unlikely(!ax_skb)) {
-  1872                 netdev_warn(dev->net, "Error allocating skb\n");
-  1873                 return 0;
-  1874             }
+It is, indeed.
 
-I guess EPROTO or ENOMEM, one of them could be the value at the point 
-but I have no ideas..
+> 
+> Admittedly that is subjective. I can help take a closer look at a
+> custom fix if consensus is that is preferable.
 
-Best regards,
-Leesoo
+Thanks. Let's wait for others to comment so that we have an agreement.
 
+Cheers,
+ta
