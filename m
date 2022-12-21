@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE70652E60
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 10:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22E55652E8A
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 10:29:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234520AbiLUJUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 04:20:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
+        id S234485AbiLUJ3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 04:29:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233195AbiLUJUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 04:20:33 -0500
-X-Greylist: delayed 593 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 21 Dec 2022 01:20:32 PST
-Received: from mail.svorkabrattegg.com (mail.svorkabrattegg.com [51.38.115.213])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6376186A5
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 01:20:32 -0800 (PST)
-Received: by mail.svorkabrattegg.com (Postfix, from userid 1002)
-        id C7F36A2ED5; Wed, 21 Dec 2022 09:10:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svorkabrattegg.com;
-        s=mail; t=1671613837;
-        bh=Y+XRYQY8ltLtFzls3R7OdDHLHuCDiF1fyvM1egRuKlc=;
-        h=Date:From:To:Subject:From;
-        b=Qw2CsYBdGhPVDsBzS2z/Jg89pjyChW8pXEcnDFnezGgROtTaEnjp7nv5q3CkR/eWT
-         9Jx+n8kmYw7nMRYlJY2bsPJa2uAi3ZjKq9koNWi95Sj3XHd1Y1STB2iwNRVrtqCARj
-         yPIFYzX0eDufXy1i6YyHTCn2IDpWoEUMrzu29lT/iydS/eppSXTtK9MA++3u6+jDh1
-         XLg0HcDNArGLTA43Yt3UOkTSIvcEVmgbiSDb1VDB+vNDNrXNWVu7/eHOTFJ6/6xLWz
-         ohBpppa5WQkixna5ln/yMeb9wMAIoA+k2zvWZZBoTe1XR/xuG0CU70WiTLjB1m14VZ
-         jQ3NiYzwpRO4g==
-Received: by mail.svorkabrattegg.com for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 09:10:36 GMT
-Message-ID: <20221221074500-0.1.7y.hf6w.0.hhq8hc2m4u@svorkabrattegg.com>
-Date:   Wed, 21 Dec 2022 09:10:36 GMT
-From:   "Timeo Moreau" <timeo.moreau@svorkabrattegg.com>
-To:     <netdev@vger.kernel.org>
-Subject: Livraison d'emballage
-X-Mailer: mail.svorkabrattegg.com
+        with ESMTP id S234489AbiLUJ24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 04:28:56 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3481921888;
+        Wed, 21 Dec 2022 01:28:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1671614935; x=1703150935;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3WKvHVDNb03Jat865yIQb6SOcxCvC//LGxrFtZRCdxA=;
+  b=ik8SCtyhafgY0cAUORZ1yXAnW+rbMUdXh3ZC/f7msrp0gf15wDswnd+C
+   FVCGmAjlIA/6uVAP5LpBR1AapP0GYrFIIigygDeNT+XF3V3seb+rT/okw
+   Kjd0PKb3lxHWpHpgDZf0sAA2nWUYy/cbU8DV6xjwmloWjKRaxe/UX27pw
+   xeIWw3r/w/z7/Mp8ou8AZvXFbwjFWoFot0kMTELwJqH1AVdlHoxKEWGtZ
+   xEiLeTjVaw2biFYjJZya8PVEOQvL7OcTuMErEFx9w7UeMsrok6pJItKzx
+   Fg2pKOj68k4vX19g8kALoyjWdlsgVVJewyW0yxROADya+rQCbtiySCCUT
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,262,1665471600"; 
+   d="scan'208";a="193885296"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Dec 2022 02:28:53 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 21 Dec 2022 02:28:53 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Wed, 21 Dec 2022 02:28:51 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
+        <linux@armlinux.org.uk>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net] net: lan966x: Fix configuration of the PCS
+Date:   Wed, 21 Dec 2022 10:33:15 +0100
+Message-ID: <20221221093315.939133-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_FMBLA_NEWDOM28,
-        RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,URIBL_CSS_A,URIBL_DBL_SPAM
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  2.5 URIBL_DBL_SPAM Contains a spam URL listed in the Spamhaus DBL
-        *      blocklist
-        *      [URIs: svorkabrattegg.com]
-        *  3.3 RCVD_IN_SBL_CSS RBL: Received via a relay in Spamhaus SBL-CSS
-        *      [51.38.115.213 listed in zen.spamhaus.org]
-        *  0.1 URIBL_CSS_A Contains URL's A record listed in the Spamhaus CSS
-        *      blocklist
-        *      [URIs: svorkabrattegg.com]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.8 FROM_FMBLA_NEWDOM28 From domain was registered in last 14-28
-        *      days
-X-Spam-Level: *******
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonjour,
+When the PCS was taken out of reset, we were changing by mistake also
+the speed to 100 Mbit. But in case the link was going down, the link
+up routine was setting correctly the link speed. If the link was not
+getting down then the speed was forced to run at 100 even if the
+speed was something else.
+On lan966x, to set the speed link to 1G or 2.5G a value of 1 needs to be
+written in DEV_CLOCK_CFG_LINK_SPEED. This is similar to the procedure in
+lan966x_port_init.
 
-Je vous contacte au nom d'une entreprise qui a de nombreuses ann=C3=A9es =
-d'exp=C3=A9rience dans l'industrie de l'emballage.
+The issue was reproduced using 1000base-x sfp module using the commands:
+ip link set dev eth2 up
+ip link addr add 10.97.10.2/24 dev eth2
+ethtool -s eth2 speed 1000 autoneg off
 
-Nous produisons des mat=C3=A9riaux d'emballage en feuille modernes, impri=
-m=C3=A9s en technologie flexographique.
+Fixes: d28d6d2e37d1 ("net: lan966x: add port module support")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_port.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Nous ex=C3=A9cutons les commandes en coop=C3=A9ration avec les fournisseu=
-rs de mati=C3=A8res premi=C3=A8res les plus importants et r=C3=A9put=C3=A9=
-s, garantissant une qualit=C3=A9 stable et reproductible des produits pro=
-pos=C3=A9s.
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+index 1a61c6cdb0779..0050fcb988b75 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+@@ -381,7 +381,7 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
+ 	}
+ 
+ 	/* Take PCS out of reset */
+-	lan_rmw(DEV_CLOCK_CFG_LINK_SPEED_SET(2) |
++	lan_rmw(DEV_CLOCK_CFG_LINK_SPEED_SET(LAN966X_SPEED_1000) |
+ 		DEV_CLOCK_CFG_PCS_RX_RST_SET(0) |
+ 		DEV_CLOCK_CFG_PCS_TX_RST_SET(0),
+ 		DEV_CLOCK_CFG_LINK_SPEED |
+-- 
+2.38.0
 
-Les produits dans nos emballages sont disponibles dans les plus grandes c=
-ha=C3=AEnes de magasins, ce qui est la meilleure preuve de la haute quali=
-t=C3=A9 de nos emballages.
-
-Souhaitez-vous parler d'opportunit=C3=A9s de coop=C3=A9ration?
-
-
-Timeo Moreau
