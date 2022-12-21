@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6FBF6530DF
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:36:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0460A6530F9
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:42:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231618AbiLUMgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 07:36:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39912 "EHLO
+        id S231617AbiLUMmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 07:42:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiLUMgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:36:36 -0500
-Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643F71A3A6;
-        Wed, 21 Dec 2022 04:36:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1671626191;
-        bh=PHssQIIcG/OnBIFPY5sJXgvOu5LyKV2Mnt7w1hnvoCI=;
-        h=From:To:Cc:Subject:Date;
-        b=x8n4JebP+71sEC4bXG/vG9hukn+cawsYg7Rhx2O257iSrhrikB8n7ns0qi/l+Eo9w
-         c2R/2VnFoZqVBqWCWzbFn2BvLJHquDZaM6psq1ElF/2dM0gYDi2+hxUDv6FhNVs5SP
-         XpTENkEbwdOu9j1aFtz0E2lzD2bCwLWtn2DnxpAo=
-Received: from localhost.localdomain ([39.156.73.13])
-        by newxmesmtplogicsvrszb1-0.qq.com (NewEsmtp) with SMTP
-        id 91D036C0; Wed, 21 Dec 2022 20:36:29 +0800
-X-QQ-mid: xmsmtpt1671626189tbjc771wu
-Message-ID: <tencent_F1354BEC925C65EA357E741E91DF2044E805@qq.com>
-X-QQ-XMAILINFO: NMGzQWUSIfvT47z0yqmb0dSmYife1iARkf2zJMgpZ92GOKz7EDdfQ54KVYWztz
-         9sE+iUREtzczPfMx+TkaaJVTc8Y4epsu2vQGFbPFlPo7N9q/K32+RtxBq5B91h53sxXf3GNhceEE
-         gVP8xis9VPZ4gLOJ77TMqEeOKTbqisNFrR8hY72mb/Oho1rFY049klmWX2QBz6XP7ZGzQJXf1QQp
-         FSXpQRD0Z4IfNGYgfVx3x34s+P0arpW3PSIHROXzfGiNbLSbdMGi01dqcsdEu3bY/qSRApS6Z3Dx
-         fq3XFgHipShh9kt4RUrEf84DjuTm1cF88ghf4HVYwSDoZFeB8KQrTN2DjsIhNCpPP8339t0SM3AV
-         n3xPUNEp6LdD/V9PqHTS6sFzupah4tRprped/7EeppL2xp/Rv7y0C1I6ErRRn7hUyjqSxwUA0Caj
-         k7BVlLIF2OzwoZhOQPDfhDipRDkOPfrmLScwV8rmVQWL+StxHNo0irhsKiqhjHbTJH6HwefbkLsC
-         JzPDqgpbVziW0Ji03k9x37sfqqsPWMAh2X7T2JQZSQGXkvHGWRKpB9O0f34SgZ4Rj3wtSVEgYRBL
-         MMLiLIKDS2bgK4DdRwqsYTJZlKELJq3JE9/5ADYkbOlIvNh2Qrc7U1QI9y2bwP9KtGwWd2q3fM7O
-         MvdgqBg2VoCw+BAAJsZUYXhuU/3iq1ziwDZQOo696AEpUfaptQDUxpDo7Pap79zSSUonPo7qGIGj
-         uW56GIdXxhL2zIpCQ2wGBbhxx9mJutANCbqicgill10XU098W2Hi9ULjEP0yE5Io/h96NOo8+9ap
-         L5BeNH6kxLP8TiCpyE3mnO+HyzTBVJoxeSVS3KG7qenF84IgXLrhZ3fVF1JlI/W16eFaQLTFQTYu
-         P5y3VKolVjZhApmLk03uHm1mRaef1iGkT72/GCmqFDDeLVMm4LgO/DarXOZFOAQTZ2EU2zs5BCCm
-         niyGqIvhYUwRyGk56zu6IhoBzAfaQfb5raJ8PmurwerqQC5O4tiQ==
-From:   Rong Tao <rtoax@foxmail.com>
-To:     3chas3@gmail.com
-Cc:     Rong Tao <rongtao@cestc.cn>,
-        linux-atm-general@lists.sourceforge.net (moderated list:ATM),
-        netdev@vger.kernel.org (open list:ATM),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] UAPI: fix spelling typos in comments
-Date:   Wed, 21 Dec 2022 20:36:27 +0800
-X-OQ-MSGID: <20221221123627.82584-1-rtoax@foxmail.com>
-X-Mailer: git-send-email 2.39.0
+        with ESMTP id S231991AbiLUMmG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:42:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760A922BD0;
+        Wed, 21 Dec 2022 04:42:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCE59B81B08;
+        Wed, 21 Dec 2022 12:42:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC34C433EF;
+        Wed, 21 Dec 2022 12:42:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1671626522;
+        bh=gQUFpEO6Bldd7g3YthL9Gzsvs+Z4eFoaLG9TyOi5QPY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hXPp7+hBYdB1DUfU5s9xr/o6OB4LsGlmipuTFugx9ufNhcSR3yHDYK74aGJEmekvH
+         BBdojzzMb3poEm32umegR7l+3tWVAUQ8NmB/LGUrYRwdbWezgYNoWNIdpOXks1qiZv
+         cOeHe6ZSkcX61WFsp6lAxE2Q+ORL3R7WQXYYCJy0=
+Date:   Wed, 21 Dec 2022 13:41:59 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>, mst@redhat.com,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, willemb@google.com,
+        syzkaller@googlegroups.com, liuhangbin@gmail.com,
+        linux-kernel@vger.kernel.org, joneslee@google.com
+Subject: Re: kernel BUG in __skb_gso_segment
+Message-ID: <Y6L/F2Hwm7BRdYj8@kroah.com>
+References: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
+ <CAF=yD-KEwVnH6PRyxbJZt4iGfKasadYwU_6_V+hHW2s+ZqFNcw@mail.gmail.com>
+ <a13f83f3-737d-1bfe-c9ef-031a6cd4d131@linaro.org>
+ <Y6K3q6Bo3wwC57bK@kroah.com>
+ <fc60e8da-1187-ca2b-1aa8-28e01ea2769a@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RDNS_DYNAMIC,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fc60e8da-1187-ca2b-1aa8-28e01ea2769a@linaro.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rong Tao <rongtao@cestc.cn>
+On Wed, Dec 21, 2022 at 09:42:59AM +0200, Tudor Ambarus wrote:
+> 
+> 
+> On 21.12.2022 09:37, Greg KH wrote:
+> > On Wed, Dec 21, 2022 at 09:28:16AM +0200, Tudor Ambarus wrote:
+> > > Hi,
+> > > 
+> > > I added Greg KH to the thread, maybe he can shed some light on whether
+> > > new support can be marked as fixes and backported to stable. The rules
+> > > on what kind of patches are accepted into the -stable tree don't mention
+> > > new support:
+> > > https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> > 
+> > As you say, we don't take new features into older kernels.  Unless they
+> > fix a reported problem, if so, submit the git ids to us and we will be
+> > glad to review them.
+> > 
+> 
+> They do fix a bug. I'm taking care of it. Shall I update
+> Documentation/process/stable-kernel-rules.rst to mention this rule as
+> well?
 
-Fix the typo of 'Unsuported' in atmbr2684.h
-
-Signed-off-by: Rong Tao <rongtao@cestc.cn>
----
- include/uapi/linux/atmbr2684.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/atmbr2684.h b/include/uapi/linux/atmbr2684.h
-index a9e2250cd720..d47c47d06f11 100644
---- a/include/uapi/linux/atmbr2684.h
-+++ b/include/uapi/linux/atmbr2684.h
-@@ -38,7 +38,7 @@
-  */
- #define BR2684_ENCAPS_VC	(0)	/* VC-mux */
- #define BR2684_ENCAPS_LLC	(1)
--#define BR2684_ENCAPS_AUTODETECT (2)	/* Unsuported */
-+#define BR2684_ENCAPS_AUTODETECT (2)	/* Unsupported */
- 
- /*
-  * Is this VC bridged or routed?
--- 
-2.39.0
-
+How exactly would you change it, and why?
