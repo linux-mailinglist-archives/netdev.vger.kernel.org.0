@@ -2,168 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27DA8652C25
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 05:43:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C699C652C59
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 06:22:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234413AbiLUEnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 23:43:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        id S234214AbiLUFW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 00:22:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiLUEnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 23:43:02 -0500
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E049818377;
-        Tue, 20 Dec 2022 20:43:00 -0800 (PST)
-Received: by mail-pl1-f170.google.com with SMTP id d15so14403107pls.6;
-        Tue, 20 Dec 2022 20:43:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GWX6ezao04Awur4XebBcbzgdL1TSR5w6fZheybAPgFI=;
-        b=upz2i6Tr9zB+x+wrCGeS9Pm1KlTAuY9CeS3RvYfYJ+tAxHLYZBTt/ZbQKTsWPtUmP+
-         0S8dcPg79PT/LMtNU8Tdl8ytgmowme7SHPYKynzM46QYHjheUj/ziBdqtT+QIWtyNOKI
-         6jCaQ+5GSvAgZTyuVMTpXGLxQr3Sf0cGhmS/YRyTdG8IurfGO1wyEJ/2+r9JJZB9cR+n
-         ynrbddADyayYucyUOBX8u/1xPvWIPr5ELJHHMfmZQUnfrDixip+JzoFerYu4h/GA/QfU
-         Mk/VZ4YSaw8TU8i8sb1FWhZrYoz1+72jplZkJn83bevmjE6rKWwSR50do01dZ5h1rPJe
-         GOZQ==
-X-Gm-Message-State: AFqh2kpB/CWHXL+4NFbYvkVDg95i9r4pMODI/x5H4LpXVdn5xxShkKh8
-        xeR5Qds3uFmHPFPDktpHp7M=
-X-Google-Smtp-Source: AMrXdXuhyJ8IKOgh9gs3aeAJN84oGf5dcWiporDykv5SuLdJB/vtF3wVfmXs+vjcOgT5h0+3kiFmTA==
-X-Received: by 2002:a05:6a21:6da5:b0:a4:414c:84c5 with SMTP id wl37-20020a056a216da500b000a4414c84c5mr1350832pzb.12.1671597780216;
-        Tue, 20 Dec 2022 20:43:00 -0800 (PST)
-Received: from localhost.localdomain ([14.4.134.166])
-        by smtp.gmail.com with ESMTPSA id e13-20020a6558cd000000b004768ce9e4fasm9072136pgu.59.2022.12.20.20.42.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 20:42:59 -0800 (PST)
-From:   Leesoo Ahn <lsahn@ooseel.net>
-To:     lsahn@ooseel.net
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Greg KH <greg@kroah.com>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        with ESMTP id S229482AbiLUFW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 00:22:56 -0500
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17F0205C6;
+        Tue, 20 Dec 2022 21:22:53 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id BF9BF32007BE;
+        Wed, 21 Dec 2022 00:22:48 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 21 Dec 2022 00:22:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pjd.dev; h=cc:cc
+        :content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1671600168; x=1671686568; bh=7tbpemXh0VafIGgg/pzTEoZlW
+        +RVtkobri/l8+5Gu7I=; b=YnTTqjS5HoTiDhx/yp/G8mDIJofpYPYjBb0xL+PfA
+        O1PrnLAhZMvZIzffITSrjYuoPO93Z7DILFNVnyYNt8J2Qfi0YD6hx0t7d0+aJSr1
+        pobp7gfYFY3jkAo945gvRL+4SZoluBBmB2qBDuQZY/UM2ocJnWXCvLCftUWZ8krk
+        cTyB5kH3tcVb7adA2FG6kxKz07AcZP1DqzD9/M5X0/to3qtpFAoDRvsBSSw1HNxd
+        yxe7gRaCDfQ4+TeV37crF5xo01By2Q0DK9t+2cWzRvQSIw8kIomIn0oxDLootDaG
+        9JlVF0V+lYoZdDBpD53zR38yCLnpWE/TgHKO9UE3sV0vQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1671600168; x=1671686568; bh=7tbpemXh0VafIGgg/pzTEoZlW+RVtkobri/
+        l8+5Gu7I=; b=PCwmBqFnz70uVZKU1H6/I/PEP+tV3sW0jT9C5I3XoihpW7WrA1T
+        cos7Av8AttGma56EtnFuwDxmXvRkmedgiDMUEpdW8u8MreGvT9LS7p3OkGSHCb5x
+        dJZUnNvfTanI55rFIpy84KhC0On+mN7XVrxgrw5gZ8jx/HIJdNPKlQ2L6qjbLFtk
+        rdfajM+EJoYf4Q72bNrbbg8dQv6OYlYbRatYFz4hC07D2SaylAWPdkW5g25l9QfZ
+        Nag9fBfmiu722FiVTQT2vTphALMFtPwS5zVe/6Tizgd2aHhG915ldtupJc6deG5l
+        7utV83YNM+ICbDJG2HkAKkhFpEcJe1iHRkA==
+X-ME-Sender: <xms:KJiiY09_uApeNt2-XPFQAeECu5ZZcX09LLuStPfBmdYboNDutb5ESw>
+    <xme:KJiiY8tKuXnSJq9EB38Ji_-oo4eeN_6n42LONamtHhDtYE81Nhy5ooX9up2ihuYVR
+    GP-Y6p5YrsYjc3dybI>
+X-ME-Received: <xmr:KJiiY6CSm0HM-AMJ1L-DnHK8qinslcmkH88t1QGUQaaR39ZVtRMFbR05wd8V5oQD3woxYrOCw9djPT0_rLSO>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeejgdekfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecumhhishhsihhnghcuvffquchfihgvlhguucdlfedtmd
+    enogetfedtuddqtdduucdludehmdenucfjughrpefhvfevufffkffoggfgsedtkeertder
+    tddtnecuhfhrohhmpefrvghtvghrucffvghlvghvohhrhigrshcuoehpvghtvghrsehpjh
+    gurdguvghvqeenucggtffrrghtthgvrhhnpeetgefggfeihedvgfefveekjedvjeejgfdv
+    uefgleevudfhvedtudfhueegleefteenucffohhmrghinhepughmthhfrdhorhhgpdhfrh
+    gvvgguvghskhhtohhprdhorhhgpdhgihhthhhusgdrtghomhenucevlhhushhtvghrufhi
+    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehpvghtvghrsehpjhgurdguvghv
+X-ME-Proxy: <xmx:KJiiY0eaXOUIA15X6j7kFiQBB60ConEUM6D-iL0sz0-Z6t6Lc0jLOQ>
+    <xmx:KJiiY5M-weKscmoNhBVn-QcIh78grGdJpN1ZqTMglWq5NSQdF8vaRA>
+    <xmx:KJiiY-lS6tTGOWZaz06lvzk-UKJG3xoGjz6t-jDpXJMSxQuSL77sWw>
+    <xmx:KJiiYyhj1IeY8Tc5bVBTfAWHLA0cJQNb2zYdjj3H9rrT1YKY8S-2mQ>
+Feedback-ID: i9e814621:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 21 Dec 2022 00:22:47 -0500 (EST)
+From:   Peter Delevoryas <peter@pjd.dev>
+Cc:     peter@pjd.dev, sam@mendozajonas.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        joel@jms.id.au, gwshan@linux.vnet.ibm.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2] usbnet: optimize usbnet_bh() to reduce CPU load
-Date:   Wed, 21 Dec 2022 13:42:30 +0900
-Message-Id: <20221221044230.1012787-1-lsahn@ooseel.net>
-X-Mailer: git-send-email 2.34.1
+Subject: [PATCH 0/3] net/ncsi: Add NC-SI 1.2 Get MC MAC Address command
+Date:   Tue, 20 Dec 2022 21:22:43 -0800
+Message-Id: <20221221052246.519674-1-peter@pjd.dev>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current source pushes skb into dev->done queue by calling
-skb_queue_tail() and then pop it by calling skb_dequeue() to branch to
-rx_cleanup state for freeing urb/skb in usbnet_bh(). It takes extra CPU
-load, 2.21% (skb_queue_tail) as follows.
+NC-SI 1.2 isn't officially released yet, but the DMTF takes way too long
+to finalize stuff, and there's hardware out there that actually supports
+this command (Just the Broadcom 200G NIC afaik).
 
--   11.58%     0.26%  swapper          [k] usbnet_bh
-   - 11.32% usbnet_bh
-      - 6.43% skb_dequeue
-           6.34% _raw_spin_unlock_irqrestore
-      - 2.21% skb_queue_tail
-           2.19% _raw_spin_unlock_irqrestore
-      - 1.68% consume_skb
-         - 0.97% kfree_skbmem
-              0.80% kmem_cache_free
-           0.53% skb_release_data
+The work in progress spec document is here:
 
-To reduce the extra CPU load use return values jumping to rx_cleanup
-state directly to free them instead of calling skb_queue_tail() and
-skb_dequeue() for push/pop respectively.
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0222_1.2WIP90_0.pdf
 
--    7.87%     0.25%  swapper          [k] usbnet_bh
-   - 7.62% usbnet_bh
-      - 4.81% skb_dequeue
-           4.74% _raw_spin_unlock_irqrestore
-      - 1.75% consume_skb
-         - 0.98% kfree_skbmem
-              0.78% kmem_cache_free
-           0.58% skb_release_data
-        0.53% smsc95xx_rx_fixup
+The command code is 0x58, the command has no data, and the response
+returns a variable-length array of MAC addresses for the BMC.
 
-Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
----
-v2:
-  - Replace goto label with return statement to reduce goto entropy
-  - Add CPU load information by perf in commit message
+I've tested this out using QEMU emulation (I added the Mellanox OEM Get
+MAC Address command to libslirp a while ago [1], although the QEMU code
+to use it is still not in upstream QEMU [2] [3]. I worked on some more
+emulation code for this as well), and on the new Broadcom 200G NIC.
 
-v1 at:
-  https://patchwork.kernel.org/project/netdevbpf/patch/20221217161851.829497-1-lsahn@ooseel.net/
----
- drivers/net/usb/usbnet.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+The Nvidia ConnectX-7 NIC doesn't support NC-SI 1.2 yet afaik. Neither
+do older versions in newer firmware, they all just report NC-SI 1.1.
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 64a9a80b2309..6e82fef90dd9 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -555,32 +555,30 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
- 
- /*-------------------------------------------------------------------------*/
- 
--static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
-+static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
- {
- 	if (dev->driver_info->rx_fixup &&
- 	    !dev->driver_info->rx_fixup (dev, skb)) {
- 		/* With RX_ASSEMBLE, rx_fixup() must update counters */
- 		if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
- 			dev->net->stats.rx_errors++;
--		goto done;
-+		return 1;
- 	}
- 	// else network stack removes extra byte if we forced a short packet
- 
- 	/* all data was already cloned from skb inside the driver */
- 	if (dev->driver_info->flags & FLAG_MULTI_PACKET)
--		goto done;
-+		return 1;
- 
- 	if (skb->len < ETH_HLEN) {
- 		dev->net->stats.rx_errors++;
- 		dev->net->stats.rx_length_errors++;
- 		netif_dbg(dev, rx_err, dev->net, "rx length %d\n", skb->len);
--	} else {
--		usbnet_skb_return(dev, skb);
--		return;
-+		return 1;
- 	}
- 
--done:
--	skb_queue_tail(&dev->done, skb);
-+	usbnet_skb_return(dev, skb);
-+	return 0;
- }
- 
- /*-------------------------------------------------------------------------*/
-@@ -1528,13 +1526,14 @@ static void usbnet_bh (struct timer_list *t)
- 		entry = (struct skb_data *) skb->cb;
- 		switch (entry->state) {
- 		case rx_done:
--			entry->state = rx_cleanup;
--			rx_process (dev, skb);
-+			if (rx_process(dev, skb))
-+				goto cleanup;
- 			continue;
- 		case tx_done:
- 			kfree(entry->urb->sg);
- 			fallthrough;
- 		case rx_cleanup:
-+cleanup:
- 			usb_free_urb (entry->urb);
- 			dev_kfree_skb (skb);
- 			continue;
+Let me know what I can do to change this patch to be more suitable for
+upstreaming, I'm happy to work on it more!
+
+Thanks,
+Peter
+
+[1] https://gitlab.freedesktop.org/slirp/libslirp/-/blob/0dd7f05095c0a77d9d2ec4764e8617192b4fa6ec/src/ncsi.c#L59
+[2] https://github.com/facebook/openbmc/blob/a33dbcc25759f00baf113fd497c8d9db60eeed9e/common/recipes-devtools/qemu/qemu/0003-slirp-Add-mfr-id-to-netdev-options.patch
+[3] https://github.com/facebook/openbmc/blob/a33dbcc25759f00baf113fd497c8d9db60eeed9e/common/recipes-devtools/qemu/qemu/0004-slirp-Add-oob-eth-addr-to-netdev-options.patch
+
+Peter Delevoryas (3):
+  net/ncsi: Simplify Kconfig/dts control flow
+  net/ncsi: Fix netlink major/minor verison numbers
+  net/ncsi: Add NC-SI 1.2 Get MC MAC Address command
+
+ net/ncsi/internal.h     |  7 ++--
+ net/ncsi/ncsi-cmd.c     |  3 +-
+ net/ncsi/ncsi-manage.c  | 29 ++++++-----------
+ net/ncsi/ncsi-netlink.c |  4 +--
+ net/ncsi/ncsi-pkt.h     | 17 ++++++++--
+ net/ncsi/ncsi-rsp.c     | 71 +++++++++++++++++++++++++++++++++++++++--
+ 6 files changed, 102 insertions(+), 29 deletions(-)
+
 -- 
-2.34.1
+2.30.2
 
