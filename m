@@ -2,172 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C03652DA0
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 09:04:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F123652D95
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 09:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234522AbiLUID7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 03:03:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
+        id S234457AbiLUICp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 03:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234497AbiLUIDi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 03:03:38 -0500
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB4B21820;
-        Wed, 21 Dec 2022 00:03:36 -0800 (PST)
-Received: by mail-pj1-f49.google.com with SMTP id n65-20020a17090a2cc700b0021bc5ef7a14so1374435pjd.0;
-        Wed, 21 Dec 2022 00:03:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=S6bhRp4WBLcDJ1rkcGiP9uV5hcS5HELckUtTTBKpWiU=;
-        b=6lliVL6QuqH4pO49pyVHCzWsbXccNXEOwyliTXa1PBNwA/iOl9I1ZggUkyHFq/Uchq
-         vJAbhCUOTorcoaN1L+hZfb+X4I+tJ+vv7c3wuvJ3DLpnRbS2n5/l3p2MsRs4iBcRvLCP
-         30sZg1tNxmqkdWclKkcLuZN8Ee7lQ9R5GSQM4JUtgS1jGTizWP801PzwgvEPY4z2ebk2
-         5BWwTaVogKezDGaiAGWWgjlJ+Np+i6WQSmzxAYVTyy1twF3MVj0z3OudsycFZ3hVoIPC
-         JsKi3+KFENHim6DQOsiAeK43werV3k3VKR4sAxp0pw2ZzOMy3fwRXjKF2PuYLkVB4aPW
-         ZFQg==
-X-Gm-Message-State: AFqh2kri6HseVcaBI4vvNuLkA9I/DlYd7onzTrDr1FxqLf6XeaT8jzdx
-        pUDDYUBIGsPVqoDdPFaN9GYLvz575u6f1VN2
-X-Google-Smtp-Source: AMrXdXuj5drmDHM+tFwCEcvwZ5ELz7h0tr8ghqlRvLfBKTWalhuqXi6TQyxyaZfuS2+fyW7y7/dsBw==
-X-Received: by 2002:a05:6a20:a690:b0:a5:418:8341 with SMTP id ba16-20020a056a20a69000b000a504188341mr1703217pzb.28.1671609815650;
-        Wed, 21 Dec 2022 00:03:35 -0800 (PST)
-Received: from localhost.localdomain ([14.4.134.166])
-        by smtp.gmail.com with ESMTPSA id q9-20020aa78429000000b0057716769289sm9890776pfn.196.2022.12.21.00.03.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Dec 2022 00:03:35 -0800 (PST)
-From:   Leesoo Ahn <lsahn@ooseel.net>
-To:     lsahn@ooseel.net
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Greg KH <greg@kroah.com>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] usbnet: optimize usbnet_bh() to reduce CPU load
-Date:   Wed, 21 Dec 2022 16:59:24 +0900
-Message-Id: <20221221075924.1141346-1-lsahn@ooseel.net>
+        with ESMTP id S234274AbiLUICj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 03:02:39 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2056.outbound.protection.outlook.com [40.107.21.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5EC15FF6;
+        Wed, 21 Dec 2022 00:02:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V0zVeY7+iVptLWRu11bYwzNRjA3TCxOuhIcYzVr7MC4V4HqE94wubNNd3r5lBXwXZ6baQqgiQUryxGl+dgpJ+rElYBkPz4/TAhXOHEOANUM6a/wX5qr3SfIwXPTYWa9Z/KdYS336M2OPBn6AGztYXrYpK43K5xhsCjtbPfzbEVsYQ5aM9noxKjwHNROtleN3SNf9lksdWDHp16cdclheE9LxBtRb6BwLX0UOy2xdi8Cc+dTxvHNuwofiLcIqo1q6qJE7KuB/qmK7w8x4M8K12dQ6DpWAs6on/DHKUIToLcQAqaFjAPFKdUk4RAD5f25oPuE5iB2jGDPfj08GeOuoNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e5po+u9iUjtIeAUdElaNVNZI1j989hzTNa9KUovfEd4=;
+ b=JASwLgRa7ePadFyq2RFS4+R0d5OLf2q2loBZOfrD6DF3N2QioqKQCHtiq3Hbg8bmlpGJ+wLgMf/0GxY8QJGrca0TcpognJJHsZV1pqGD46INe4o7LxyGAacqn3hrriBjTV6oCamPfLBqFso72fSyRBTICa6/EPra//SvxnEByvgfex2XJ9eChv/QHbrzbtJOS9BTVW2fvxLOyLk3Be7ymWQIEK+HFKpLmtFLrY+Fdj4DW8pIpUoVsMoXhLUCsmI3nLcbOmyXrYCUMLVw9DF7fXt13NKdK7NlDFr0RlfJ0te2gK2bZSBWHhR9LvtPenr+Z3TtL5tvISDV1k7gGQrW0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e5po+u9iUjtIeAUdElaNVNZI1j989hzTNa9KUovfEd4=;
+ b=DzrWiy0/hBMsqlrvca9TOTpIIIpmK47WQGeVV1jvQa1GjtEC9mgp3Bwdu2q8oSVY0Ze67b/wYiUQzmDSFhLBeT0naCF/bOvA7y/KCr9SdBKdmL5ZAH1634MLdhS1sd3IkX4E4B9juiU0xkbj0euLKZ1FkLrGaAmyFBsR/xL2cmg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from HE1PR0402MB2939.eurprd04.prod.outlook.com (2603:10a6:3:db::18)
+ by PAXPR04MB8426.eurprd04.prod.outlook.com (2603:10a6:102:1ca::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Wed, 21 Dec
+ 2022 08:02:33 +0000
+Received: from HE1PR0402MB2939.eurprd04.prod.outlook.com
+ ([fe80::76a3:36aa:1144:616c]) by HE1PR0402MB2939.eurprd04.prod.outlook.com
+ ([fe80::76a3:36aa:1144:616c%11]) with mapi id 15.20.5924.016; Wed, 21 Dec
+ 2022 08:02:32 +0000
+From:   Clark Wang <xiaoning.wang@nxp.com>
+To:     linux@armlinux.org.uk, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mcoquelin.stm32@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V2 0/2] fix mac not working after system resumed with WoL enabled
+Date:   Wed, 21 Dec 2022 16:01:42 +0800
+Message-Id: <20221221080144.2549125-1-xiaoning.wang@nxp.com>
 X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0051.apcprd02.prod.outlook.com
+ (2603:1096:4:196::10) To HE1PR0402MB2939.eurprd04.prod.outlook.com
+ (2603:10a6:3:db::18)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: HE1PR0402MB2939:EE_|PAXPR04MB8426:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3d3b9a74-b8cc-4e8a-b90d-08dae329b6b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JLEFY8LlQVjSDCXFvVMwvDAs7DWzmTEQ8VQI8QdeRa0Rdar1zdEGtE2i3BqadainCrca2LOhVXCR3YcGpExt3g4Pu9bBbL14DjXo5SCi9bAsMSUqdx5T3hn0BXG8xT51PDFz1g7i1AnCA/KEWg7s7dAHa4u8Shlvyrpovih73+JSWujBad46yAglTfPOiDK9/ghGHTTVxsfRlPMGoInDz49MRwA2V2ASBn1xC0mgCaMZ1A2LK0Ce6fSyspaqoJWHEOYsg7H2FvAHDJu0wJeFY69JDxnrTXAlZmd5u/H/xvKXx844z2o7fTKQ9Ij1ay6lFxaUgRJ06ItkT3uwhcMVU0kwPRjPSIgBvH5hXbHcjEEoC0IX/3+d6b+T70IosTCMgj5nHppvtnST7VIyPqJKgujYIL0ZXOAdZYYfuQ16QFNYE8a2C99/zSmJeh7SFeEzQJHHaiwLEFnXUcf2uGUKc4LYqF/Lk/3dPVDEcqiwCMvNomH6YCCwWdNV590bzFtqezSOZMvOQ7DQKNvnb9CsYFVNUbLlM03h66BowwnFNWXfIs2Vt0ps6Dd7gGt1D/I8DZKllYKG6tsJV3jIuofpFUJ49nZdFvCjrDe4pqSworvZ+BU1JCKwfYkEJt8P+YGoa6MkAF7w4yEW8CnSF9qKbvYKJav8gtnVzyOd9H4zZS2Q/f2ClF98Lx02uElj6o2UgQouZM1XFp8LXDx2vu+P0Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0402MB2939.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(346002)(39860400002)(396003)(376002)(451199015)(478600001)(6486002)(6506007)(186003)(6512007)(2906002)(26005)(36756003)(52116002)(41300700001)(66476007)(66556008)(66946007)(8676002)(4326008)(4744005)(5660300002)(7416002)(83380400001)(921005)(1076003)(316002)(8936002)(38350700002)(38100700002)(2616005)(86362001)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2jXPvxcniP2grZZKDuMO5CTmb5BZEvsOlxWDx/watG8Vhf7VPPX2X3UCdSCt?=
+ =?us-ascii?Q?yQ/NPTsU8YZiHemyNlgVhDM4XEr6MA49DnXsOf4nb87aydO2zNKw9KLDNTiv?=
+ =?us-ascii?Q?NNAhDmmoJKqTyn0ZAYlaiGlr4k1h5FgmewoAeICpE8iACr4XcYx6EPlLveCl?=
+ =?us-ascii?Q?vk4msoPcwoircQSGVPnMNXN5ppaOnzqbUUbo5ZQzwOPX4rxA1GHFQmdW5h+U?=
+ =?us-ascii?Q?paqYv+rl+JwN9CpB9gDW8N1BGd7CNNCg7lRBtNcnnMON28dQ5HR5aFOPYiPk?=
+ =?us-ascii?Q?SfxprUddp41jZm+Om7QnaONPOLUPP/OzrXsZWSig/3xOhe7u7ccsSlHhSEXn?=
+ =?us-ascii?Q?qTevGwNvOAcFABzaN+TeXTjuxYQWlmryyUpTgthwl3j50yO+//O2I/65G4/V?=
+ =?us-ascii?Q?WNnSFa6/9WD8xwFWCfjgHhcyJGf0mwRh73KMBYQImigpiuoI8KDm+rK+gNjo?=
+ =?us-ascii?Q?YfBifnDstu8wxisHuX5pnF+5J4Dt0jM8IcSxjbsxrik7ojKnJ4sk96o2DyzL?=
+ =?us-ascii?Q?NVdHWNP+R0rfw4UlhnAEiCm/coeSu602ds5kfKNYfxHXNQxk8f/PHEa+P22l?=
+ =?us-ascii?Q?uuGDlVfvwFYuLVAKuLxQUwEx1vigk/hIOoPL6RiPhlFdeASJLp4m+MYof5bU?=
+ =?us-ascii?Q?slsbK7C3US8fGTF2P8hHLnNVB58meELPhvgrNT+YhhKorSy38vSHGtg0l2e2?=
+ =?us-ascii?Q?SRvPdDLQnphBLr2oPtddW8t/RIccPOPx6R5CAQLW0FWiSxzjSmBFIR6LWXab?=
+ =?us-ascii?Q?N+JEPoBzi6Q3s1htoCNKgmXwM6cWii48kvaGvQBIl3HASS+dQ48nZcB8Qh0U?=
+ =?us-ascii?Q?iFYE8D4+C3BZtU2bm+miTIb0F/L5KXK3E04fFLW03zk5etKXAeBQsugF9q9R?=
+ =?us-ascii?Q?DCs3CxBJUFXbhpl8HnBUC8dq1oWU/oblIcmyHEtYjMjhybxuKosKVuafYmsk?=
+ =?us-ascii?Q?wJVMH5qM2r/dE0+Q/3c+l/UEaUwePERhfJzwg2/DaKjLGby6NrAFiUIHQL1k?=
+ =?us-ascii?Q?qrdFhcrWqvkPzFQ33eEs3opGu8ilYTLe21/tmdGwdXn1ZFaaWl1i/4wvyf+d?=
+ =?us-ascii?Q?rz6SyhmUlG9fifO7hCt4hIY+7r910MjPLg79+9Bj07LtHvLyXHKnuAKWc9TK?=
+ =?us-ascii?Q?CiY/C16fo+ftYMumwDURlu7lAoxi+c+aixIS32Jc4WgzR+Ht6Fnne38aRsaP?=
+ =?us-ascii?Q?ivvtDZ1SQDydsRzblFfIewD/7w/TNALtaFNwXBMSlkYL0Sv3znsb92R4b6fk?=
+ =?us-ascii?Q?BJeQI4PriGhsld4bonSZwISjySnDHBdbvOGyH0MZnk5K7OfPSPleuNk9Wct2?=
+ =?us-ascii?Q?MZxeMSrQw3fmDCIvGk/3UhWCkq5FKK4fhhK7h99/pIIhC5Y4Dpf9QT4QlCHd?=
+ =?us-ascii?Q?RMr+AV2B+X1Oq1UcOki8/5p4wsy/ESPTOoTZrGaR1KEg3yj5QeTz8ol34ce+?=
+ =?us-ascii?Q?eQ1rhnjMlSPSArnm10l7rjcqypKsfviHxrXKaqjdydBnxSdsPV4OpxCeaNke?=
+ =?us-ascii?Q?sUDGThE9jMJEJ6e0rJ47xe15tMQNd/HOuxNBC+14Dzp2Ov87fcyjVf8P4oj4?=
+ =?us-ascii?Q?rhqGsVsnYjUjyYDTC8z5YuzgfoJTQSylG0h5hYFhwTH935WvKlE8WKuxnKEw?=
+ =?us-ascii?Q?hw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d3b9a74-b8cc-4e8a-b90d-08dae329b6b8
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR0402MB2939.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Dec 2022 08:02:32.8663
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /h+sO58krgoNG/I9Py7qR9hwEaZKnzaZo8Y3NxjnIVBYxoabsXoLKjSfbVi0YddJVhExW1aJZuJdf/wSADU3lA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8426
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current source pushes skb into dev->done queue by calling
-skb_queue_tail() and then pop it by calling skb_dequeue() to branch to
-rx_cleanup state for freeing urb/skb in usbnet_bh(). It takes extra CPU
-load, 2.21% (skb_queue_tail) as follows.
+Hi,
+The issue description is in the commit message.
 
--   11.58%     0.26%  swapper          [k] usbnet_bh
-   - 11.32% usbnet_bh
-      - 6.43% skb_dequeue
-           6.34% _raw_spin_unlock_irqrestore
-      - 2.21% skb_queue_tail
-           2.19% _raw_spin_unlock_irqrestore
-      - 1.68% consume_skb
-         - 0.97% kfree_skbmem
-              0.80% kmem_cache_free
-           0.53% skb_release_data
+This patchset is the second version following discussions with Russell.
+But the name of each patch has changed, so V2 is not marked in each patch.
 
-To reduce the extra CPU load use return values jumping to rx_cleanup
-state directly to free them instead of calling skb_queue_tail() and
-skb_dequeue() for push/pop respectively.
+Thanks.
 
--    7.87%     0.25%  swapper          [k] usbnet_bh
-   - 7.62% usbnet_bh
-      - 4.81% skb_dequeue
-           4.74% _raw_spin_unlock_irqrestore
-      - 1.75% consume_skb
-         - 0.98% kfree_skbmem
-              0.78% kmem_cache_free
-           0.58% skb_release_data
-        0.53% smsc95xx_rx_fixup
+Clark Wang (2):
+  net: phylink: add a function to resume phy alone to fix resume issue
+    with WoL enabled
+  net: stmmac: resume phy separately before calling stmmac_hw_setup()
 
-Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
----
-v3:
-  - Replace return values with proper -ERR values in rx_process()
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 16 +++++++-------
+ drivers/net/phy/phylink.c                     | 21 ++++++++++++++++++-
+ include/linux/phylink.h                       |  1 +
+ 3 files changed, 28 insertions(+), 10 deletions(-)
 
-v2:
-  - Replace goto label with return statement to reduce goto entropy
-  - Add CPU load information by perf in commit message
-
-v1 at:
-  https://patchwork.kernel.org/project/netdevbpf/patch/20221217161851.829497-1-lsahn@ooseel.net/
-
----
- drivers/net/usb/usbnet.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 64a9a80b2309..98d594210df4 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -555,32 +555,30 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
- 
- /*-------------------------------------------------------------------------*/
- 
--static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
-+static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
- {
- 	if (dev->driver_info->rx_fixup &&
- 	    !dev->driver_info->rx_fixup (dev, skb)) {
- 		/* With RX_ASSEMBLE, rx_fixup() must update counters */
- 		if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
- 			dev->net->stats.rx_errors++;
--		goto done;
-+		return -EPROTO;
- 	}
- 	// else network stack removes extra byte if we forced a short packet
- 
- 	/* all data was already cloned from skb inside the driver */
- 	if (dev->driver_info->flags & FLAG_MULTI_PACKET)
--		goto done;
-+		return -EALREADY;
- 
- 	if (skb->len < ETH_HLEN) {
- 		dev->net->stats.rx_errors++;
- 		dev->net->stats.rx_length_errors++;
- 		netif_dbg(dev, rx_err, dev->net, "rx length %d\n", skb->len);
--	} else {
--		usbnet_skb_return(dev, skb);
--		return;
-+		return -EPROTO;
- 	}
- 
--done:
--	skb_queue_tail(&dev->done, skb);
-+	usbnet_skb_return(dev, skb);
-+	return 0;
- }
- 
- /*-------------------------------------------------------------------------*/
-@@ -1528,13 +1526,14 @@ static void usbnet_bh (struct timer_list *t)
- 		entry = (struct skb_data *) skb->cb;
- 		switch (entry->state) {
- 		case rx_done:
--			entry->state = rx_cleanup;
--			rx_process (dev, skb);
-+			if (rx_process(dev, skb))
-+				goto cleanup;
- 			continue;
- 		case tx_done:
- 			kfree(entry->urb->sg);
- 			fallthrough;
- 		case rx_cleanup:
-+cleanup:
- 			usb_free_urb (entry->urb);
- 			dev_kfree_skb (skb);
- 			continue;
 -- 
 2.34.1
 
