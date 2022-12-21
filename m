@@ -2,84 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC9E65311E
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:55:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B8F1653124
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:57:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiLUMzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 07:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48908 "EHLO
+        id S232976AbiLUM5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 07:57:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiLUMzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:55:01 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79AE2317F;
-        Wed, 21 Dec 2022 04:54:59 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id p1-20020a05600c1d8100b003d8c9b191e0so397353wms.4;
-        Wed, 21 Dec 2022 04:54:59 -0800 (PST)
+        with ESMTP id S229601AbiLUM47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:56:59 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B0A22BEF;
+        Wed, 21 Dec 2022 04:56:58 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id f13-20020a1cc90d000000b003d08c4cf679so1370352wmb.5;
+        Wed, 21 Dec 2022 04:56:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:subject:cc
          :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=dRK8jAShw4FKHMFTqOEZH8n9jGsLhbWM5T+ViFrWZBg=;
-        b=DA/xPznmaeVcfMgPhSYETFahuh+6m6bx4PqwjjS3ya7Z9cNxQxuJDQ+8eRMylBRlLD
-         wBD9T4/o4FuOu0rF62/OBwbm5QjXw2ARMiWmwjAI5kiVQGxjGrNVe7q5+7rEfshhGYjX
-         fn4kMnqgmN8zGD3B3DieUgyC53GjduWUUfyGLUaKoP26L+qj8sj1ZbEzJ3ILbJhnfi8u
-         7Ir72KoeeAcBre+acZlpfd3eI5K8VYHF6kPtcCVws3wWGc+aqClcBqhYFImpFPQgOzEG
-         Jufw3hKzIpRp3HORukhmMsvZPpFhlGAnn11Qg39wLgBmz6aq/2mhjeVsyjcKPNSpNDZo
-         fx6A==
+        bh=Xv4cGbJ2lw4EoY2EPo5WFdBPvwJO/ifxc5USrYkH2UE=;
+        b=DU6JbJKLHO037qvAgdXAWe8AeuTpBvvI4AmJwL1wvwR7aUdvTlouittVr6P/8wNN6M
+         s2b/dnJDodrrsXjKOrMHahLjXLLMnPx2jvuCnCLjtJAO6wM6uG4Mbxgb0Elfw31E9OVw
+         i2stTpATQdXqKn0wqGm5aHprxPmQFjnYfmyYdAPNM5WQVqptTTDixf4QumMz6JmFSQuE
+         0s0+4DwrBFjyQv1uW0HRWh/QE0WL2LQI0DgTvL6SltUfXGBZMJxXX52dLb5i8G0VS6lz
+         dgOp4UyRsF6PqfCEDqHsW8+4ta4n68rMWgpuAVaxnHycfpVOCPkHOJ5a0nddCKjVr081
+         NLXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:subject:cc
          :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dRK8jAShw4FKHMFTqOEZH8n9jGsLhbWM5T+ViFrWZBg=;
-        b=haXUEy3Bo7/1RATrP/ktm+y8G/ZNz65sUsKqq0+JYF5i/YhJbYv2Fg6OhJ+lESf0gu
-         OHrFOIMKN2f1X45XB0n8nWZjfDhNYqRtYuKdLUPhp1KlbZihr9BbRT/Y6AsqI5kbcPoF
-         M4OvMcAuwyZ95Zc+/swNZ+TWH8Z704yE2hmbm3K1ZtDG9iz/Upa/oD7GZrRfi1SBx/g4
-         rDkfEFAhR/gjEMr334Xt4F5DcywWI+ZlhBcAKkQruxlXUGZtJZynNJYbBLxs1jdeyre8
-         KXpCecMeU2G1kNincxZjxRHQvdMoznnBnRWHwZjfc6GlmEHXLSgfMwUDf1t//bA4RGnd
-         K1Vw==
-X-Gm-Message-State: AFqh2kq7uUXjnNvPYCPq/h+v30yAVrh+958LK3xbzumdo1+j1RxtWmgO
-        7cvCKTfqdogRyGHXqZyM9RPS3mmXlGw=
-X-Google-Smtp-Source: AMrXdXsBytjhLZWs4x8v2DyBBkxP6etAA7zXggbAgPbplpRiy/tGRvWhF4zzKk2yBTSh1IGrY/vZeg==
-X-Received: by 2002:a05:600c:500e:b0:3cf:88c3:d008 with SMTP id n14-20020a05600c500e00b003cf88c3d008mr4419819wmr.28.1671627298046;
-        Wed, 21 Dec 2022 04:54:58 -0800 (PST)
+        bh=Xv4cGbJ2lw4EoY2EPo5WFdBPvwJO/ifxc5USrYkH2UE=;
+        b=HJwcelOJwixfK+mJtuTK4KsZTz8aUeTae14iBvDHA97E9mqmLJMtBHbgsq8SfpjuPa
+         k2VuVMKGIj9AiJq2Z0pyCr3lc8jWR6v+mYwpSRayCvsuMjKyFwI7gh4N97GqRyHTKIuP
+         8hmcAyHyhniJag7Q4THolCGtMv18je9S7xnyhgeH7jy8R4aF5OnB57qj8YgK81S3ftEE
+         5q105lxyV0yujUsfvF4YJNUbQsOzX8b7m4RB9yymiwqESvOvvNuRSPMgkBrp6o9+k8MR
+         te6QoGrydmGe3GpLQhgUJ/cll5pqeJ4e5Pq/ZB61EtpfvZ88piCpIybJzAiHVQJWG+6B
+         cihw==
+X-Gm-Message-State: AFqh2kqvxcIfLmDmrL+vNdcVBLpJaOSB57+mhOEIGMx5wafKJaM+BrvY
+        FIIxzhnX/mvqjw9AVHh1r3U=
+X-Google-Smtp-Source: AMrXdXtUtSzdur8o78D0ku8asI6PFaALZAbRSRmsrcimaXlb2rXlxYwSkedxV/V2GinwvHXRZD3dLg==
+X-Received: by 2002:a7b:ca4f:0:b0:3c6:edc0:5170 with SMTP id m15-20020a7bca4f000000b003c6edc05170mr1580433wml.25.1671627416435;
+        Wed, 21 Dec 2022 04:56:56 -0800 (PST)
 Received: from Ansuel-xps. (host-82-55-238-56.retail.telecomitalia.it. [82.55.238.56])
-        by smtp.gmail.com with ESMTPSA id 21-20020a05600c021500b003cf37c5ddc0sm2111276wmi.22.2022.12.21.04.54.55
+        by smtp.gmail.com with ESMTPSA id v15-20020a05600c444f00b003cf54b77bfesm2484377wmn.28.2022.12.21.04.56.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Dec 2022 04:54:57 -0800 (PST)
-Message-ID: <63a30221.050a0220.16e5f.653a@mx.google.com>
-X-Google-Original-Message-ID: <Y6MCHwWMABd0yUyG@Ansuel-xps.>
-Date:   Wed, 21 Dec 2022 13:54:55 +0100
+        Wed, 21 Dec 2022 04:56:55 -0800 (PST)
+Message-ID: <63a30297.050a0220.46b0f.7533@mx.google.com>
+X-Google-Original-Message-ID: <Y6MClVcoFAJweGj0@Ansuel-xps.>
+Date:   Wed, 21 Dec 2022 13:56:53 +0100
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Rob Herring <robh@kernel.org>,
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
         Tim Harvey <tharvey@gateworks.com>,
         Alexander Stein <alexander.stein@ew.tq-group.com>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: Re: [PATCH v7 11/11] dt-bindings: net: dsa: qca8k: add LEDs
- definition example
+Subject: Re: [PATCH v7 09/11] leds: trigger: netdev: add additional hardware
+ only triggers
 References: <20221214235438.30271-1-ansuelsmth@gmail.com>
- <20221214235438.30271-12-ansuelsmth@gmail.com>
- <20221220173958.GA784285-robh@kernel.org>
- <Y6JDOFmcEQ3FjFKq@lunn.ch>
- <Y6JkXnp0/lF4p0N1@lunn.ch>
+ <20221214235438.30271-10-ansuelsmth@gmail.com>
+ <Y5ta87eCAQ8XsY8L@shell.armlinux.org.uk>
+ <Y6JPYBQhtpZLadry@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y6JkXnp0/lF4p0N1@lunn.ch>
+In-Reply-To: <Y6JPYBQhtpZLadry@lunn.ch>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -90,135 +89,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 21, 2022 at 02:41:50AM +0100, Andrew Lunn wrote:
-> > > > +                        };
-> > > > +
-> > > > +                        led@1 {
-> > > > +                            reg = <1>;
-> > > > +                            color = <LED_COLOR_ID_AMBER>;
-> > > > +                            function = LED_FUNCTION_LAN;
-> > > > +                            function-enumerator = <1>;
+On Wed, Dec 21, 2022 at 01:12:16AM +0100, Andrew Lunn wrote:
+> On Thu, Dec 15, 2022 at 05:35:47PM +0000, Russell King (Oracle) wrote:
+> > On Thu, Dec 15, 2022 at 12:54:36AM +0100, Christian Marangi wrote:
+> > > Add additional hardware only triggers commonly supported by switch LEDs.
 > > > 
-> > > Typo? These are supposed to be unique. Can't you use 'reg' in your case?
+> > > Additional modes:
+> > > link_10: LED on with link up AND speed 10mbps
+> > > link_100: LED on with link up AND speed 100mbps
+> > > link_1000: LED on with link up AND speed 1000mbps
+> > > half_duplex: LED on with link up AND half_duplex mode
+> > > full_duplex: LED on with link up AND full duplex mode
 > > 
-> > reg in this context is the address of the PHY on the MDIO bus. This is
-> > an Ethernet switch, so has many PHYs, each with its own address.
+> > Looking at Marvell 88e151x, I don't think this is usable there.
+> > We have the option of supporting link_1000 on one of the LEDs,
+> > link_100 on another, and link_10 on the other. It's rather rare
+> > for all three leds to be wired though.
 > 
-> Actually, i'm wrong about that. reg in this context is the LED number
-> of the PHY. Typically there are 2 or 3 LEDs per PHY.
+> The 88e151x will need to enumerate what it actually supports from the
+> above list, per LED. I also think we can carefully expand the list
+> above, adding a few more modes. We just need to ensure what is added
+> is reasonably generic, modes we expect multiple PHY to support. What
+> we need to avoid is adding every single mode a PHY supports, but no
+> other PHY has.
 > 
-> There is no reason the properties need to be unique. Often the LEDs
-> have 8 or 16 functions, identical for each LED, but with different
-> reset defaults so they show different things.
+> > This is also a PHY where "activity" mode is supported (illuminated
+> > or blinking if any traffic is transmitted or received) but may not
+> > support individual directional traffic in hardware. However, it
+> > does support forcing the LED on or off, so software mode can handle
+> > those until the user selects a combination of modes that are
+> > supported in the hardware.
+> > 
+> > > Additional blink interval modes:
+> > > blink_2hz: LED blink on any even at 2Hz (250ms)
+> > > blink_4hz: LED blink on any even at 4Hz (125ms)
+> > > blink_8hz: LED blink on any even at 8Hz (62ms)
+> > 
+> > This seems too restrictive. For example, Marvell 88e151x supports
+> > none of these, but does support 42, 84, 170, 340, 670ms.
+> 
+> I would actually drop this whole idea of being able to configure the
+> blink period. It seems like it is going to cause problems. I expect
+> most PHYs actual share the period across multiple LEDs, which you
+> cannot easily model here.
+> 
+> So i would have the driver hard coded to pick a frequency at thats' it.
 > 
 
-Are we taking about reg or function-enumerator?
-
-For reg it's really specific to the driver... My idea was that since a
-single phy can have multiple leds attached, reg will represent the led
-number.
-
-This is an example of the dt implemented on a real device.
-
-		mdio {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			phy_port1: phy@0 {
-				reg = <0>;
-
-				leds {
-					#address-cells = <1>;
-					#size-cells = <0>;
-
-					lan1_led@0 {
-						reg = <0>;
-						color = <LED_COLOR_ID_WHITE>;
-						function = LED_FUNCTION_LAN;
-						function-enumerator = <1>;
-						linux,default-trigger = "netdev";
-					};
-
-					lan1_led@1 {
-						reg = <1>;
-						color = <LED_COLOR_ID_AMBER>;
-						function = LED_FUNCTION_LAN;
-						function-enumerator = <1>;
-						linux,default-trigger = "netdev";
-					};
-				};
-			};
-
-			phy_port2: phy@1 {
-				reg = <1>;
-
-				leds {
-					#address-cells = <1>;
-					#size-cells = <0>;
-
-
-					lan2_led@0 {
-						reg = <0>;
-						color = <LED_COLOR_ID_WHITE>;
-						function = LED_FUNCTION_LAN;
-						function-enumerator = <2>;
-						linux,default-trigger = "netdev";
-					};
-
-					lan2_led@1 {
-						reg = <1>;
-						color = <LED_COLOR_ID_AMBER>;
-						function = LED_FUNCTION_LAN;
-						function-enumerator = <2>;
-						linux,default-trigger = "netdev";
-					};
-				};
-			};
-
-			phy_port3: phy@2 {
-				reg = <2>;
-
-				leds {
-					#address-cells = <1>;
-					#size-cells = <0>;
-
-					lan3_led@0 {
-						reg = <0>;
-						color = <LED_COLOR_ID_WHITE>;
-						function = LED_FUNCTION_LAN;
-						function-enumerator = <3>;
-						linux,default-trigger = "netdev";
-					};
-
-					lan3_led@1 {
-						reg = <1>;
-						color = <LED_COLOR_ID_AMBER>;
-						function = LED_FUNCTION_LAN;
-						function-enumerator = <3>;
-						linux,default-trigger = "netdev";
-					};
-				};
-			};
-
-In the following implementation. Each port have 2 leds attached (out of
-3) one white and one amber. The driver parse the reg and calculate the
-offset to set the correct option with the regs by also checking the phy
-number.
-
-An alternative way would be set the reg to be the global led number in
-the switch and deatch the phy from the calculation.
-
-Something like
-port 0 led 0 = reg 0
-port 0 led 1 = reg 1
-port 1 led 0 = reg 2
-port 1 led 1 = reg 3
-...
-
-Using the function-enumerator can be problematic since ideally someone
-would declare a dedicated function for wan led.
-
-I'm very open to discuss and improve/fix this!
+Yes I think "for now" it's the only way and just drop blink
+configuration support.
 
 -- 
 	Ansuel
