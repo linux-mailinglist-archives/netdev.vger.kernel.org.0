@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9B36536A9
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 19:53:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A36A165377A
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 21:19:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234565AbiLUSwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 13:52:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        id S234746AbiLUUTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 15:19:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230045AbiLUSw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 13:52:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F28D4;
-        Wed, 21 Dec 2022 10:52:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD3CB81C02;
-        Wed, 21 Dec 2022 18:52:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3730C433EF;
-        Wed, 21 Dec 2022 18:52:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671648745;
-        bh=294I+nc1Z178iGlV8q6cr6b/T9AZgrivgxACLPTLhsE=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=acMuHG+mj1CIE0qfvAYuyyOJJ/sef3xzophyp4Ot1fvuM6MQAE0m7jPfYE28YA5f0
-         kn/QWX1gCkZ7KIZPt3+BNSyW8wk8/u87nLDTQ0F4sZteH+JPiSEUZAR2LeVTYRETcw
-         5RPvJTe/bgWo9/DIT/suwyfO+M4mVo2sgxMsT7htwH7eYAwzkPqn/9fjQ+g9PXJgC/
-         ry4frdr3D3vZslCz8Zv8eW5CxxI1XZDHmdjxNjq0lQjneQAKLGWdV+fnimPtOLk8Kz
-         vVzzx/CAN/1Uc61GpTwTbzk0Yb0Cdlk4suygNOauLCJXjGQoR+a2e8DjqUZkhWV49i
-         g1HL0B2t4ctHQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229844AbiLUUTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 15:19:32 -0500
+Received: from mx09lb.world4you.com (mx09lb.world4you.com [81.19.149.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD0C1EAE0;
+        Wed, 21 Dec 2022 12:19:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=SnAjacwlJ7rU2cyc9J2bver9+0r8jRlMXZNrnmN8D/c=; b=KuRUIL/hT+ly+9HFJjREwYO8aU
+        PV+9rCxp8Q1E9DMVV4BCPERgMK8fFFT9uSHIy8Q3h6ONoLeEtbSmPaQtpvjdQedgH8a08ZizPgsXi
+        9XJWT3ikYI1OZx+c9+rFvnVpeKMUHJvm73vHYj+j7EguzTUzZt1FCrHTJCrMRiD3qRX8=;
+Received: from [88.117.53.17] (helo=[10.0.0.160])
+        by mx09lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1p85Ym-00076j-5r; Wed, 21 Dec 2022 21:19:28 +0100
+Message-ID: <7bd4c51e-304d-575f-84df-2ec5b52a885b@engleder-embedded.com>
+Date:   Wed, 21 Dec 2022 21:19:27 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
-References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
-To:     Jun ASAKA <JunASAKA@zzy040330.moe>
-Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jun ASAKA <JunASAKA@zzy040330.moe>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167164874162.5196.4709849135082513449.kvalo@kernel.org>
-Date:   Wed, 21 Dec 2022 18:52:23 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2 3/6] tsnep: Support XDP BPF program setup
+Content-Language: en-US
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com
+References: <20221208054045.3600-1-gerhard@engleder-embedded.com>
+ <20221208054045.3600-4-gerhard@engleder-embedded.com> <Y5KErK9c3Nafn45V@x130>
+ <caf29726-c470-7fbb-bbae-56b3a412aa4f@engleder-embedded.com>
+In-Reply-To: <caf29726-c470-7fbb-bbae-56b3a412aa4f@engleder-embedded.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jun ASAKA <JunASAKA@zzy040330.moe> wrote:
-
-> Fixing transmission failure which results in
-> "authentication with ... timed out". This can be
-> fixed by disable the REG_TXPAUSE.
+On 09.12.22 09:06, Gerhard Engleder wrote:
+> On 09.12.22 01:43, Saeed Mahameed wrote:
+>>> +int tsnep_xdp_setup_prog(struct tsnep_adapter *adapter, struct 
+>>> bpf_prog *prog,
+>>> +             struct netlink_ext_ack *extack)
+>>> +{
+>>> +    struct net_device *dev = adapter->netdev;
+>>> +    bool if_running = netif_running(dev);
+>>> +    struct bpf_prog *old_prog;
+>>> +
+>>> +    if (if_running)
+>>> +        tsnep_netdev_close(dev);
+>>> +
+>>> +    old_prog = xchg(&adapter->xdp_prog, prog);
+>>> +    if (old_prog)
+>>> +        bpf_prog_put(old_prog);
+>>> +
+>>> +    if (if_running)
+>>> +        tsnep_netdev_open(dev);
+>>
+>> this could fail silently, and then cause double free, when close ndo 
+>> will be called, the stack won't be aware of the closed state..
 > 
-> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+> I will ensure that no double free will happen when ndo_close is called.
 
-Patch applied to wireless-next.git, thanks.
+Other drivers like igc/igb/netsec/stmmac also fail silently and
+I don't see any measures against double free in this drivers.
+mvneta forwards the return value of open. How are these drivers
+solving this issue? I cannot find this detail, but I also do not
+believe that all this drivers are buggy.
 
-c6015bf3ff1f wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221217030659.12577-1-JunASAKA@zzy040330.moe/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+gerhard
