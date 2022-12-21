@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0460A6530F9
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50359653103
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 13:45:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbiLUMmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 07:42:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
+        id S229568AbiLUMpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 07:45:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231991AbiLUMmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:42:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760A922BD0;
-        Wed, 21 Dec 2022 04:42:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCE59B81B08;
-        Wed, 21 Dec 2022 12:42:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC34C433EF;
-        Wed, 21 Dec 2022 12:42:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1671626522;
-        bh=gQUFpEO6Bldd7g3YthL9Gzsvs+Z4eFoaLG9TyOi5QPY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hXPp7+hBYdB1DUfU5s9xr/o6OB4LsGlmipuTFugx9ufNhcSR3yHDYK74aGJEmekvH
-         BBdojzzMb3poEm32umegR7l+3tWVAUQ8NmB/LGUrYRwdbWezgYNoWNIdpOXks1qiZv
-         cOeHe6ZSkcX61WFsp6lAxE2Q+ORL3R7WQXYYCJy0=
-Date:   Wed, 21 Dec 2022 13:41:59 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Tudor Ambarus <tudor.ambarus@linaro.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, willemb@google.com,
-        syzkaller@googlegroups.com, liuhangbin@gmail.com,
-        linux-kernel@vger.kernel.org, joneslee@google.com
-Subject: Re: kernel BUG in __skb_gso_segment
-Message-ID: <Y6L/F2Hwm7BRdYj8@kroah.com>
-References: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
- <CAF=yD-KEwVnH6PRyxbJZt4iGfKasadYwU_6_V+hHW2s+ZqFNcw@mail.gmail.com>
- <a13f83f3-737d-1bfe-c9ef-031a6cd4d131@linaro.org>
- <Y6K3q6Bo3wwC57bK@kroah.com>
- <fc60e8da-1187-ca2b-1aa8-28e01ea2769a@linaro.org>
+        with ESMTP id S229628AbiLUMo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 07:44:59 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FA422BCB
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:44:58 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id 65so10587348pfx.9
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 04:44:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=87voKorkYhypVq01JjwM4w1ZUjFR2Vq5AJTk3xYnW4M=;
+        b=aXWghNEfHt5qgm+LwHg4CjtcdfHnPyh7E1ET7j19TH452iazmQEnoC6MyN43uJpnaV
+         Bs8djyw3mI6q03FYPa2JN/sYnD0weqSk5R1Fw0TN42ohXqEKynUfp0ohp3+DGlGNvjvi
+         qJfD3wxUuajIBNGA4wHflHqourg3q+ix6blvA4fr6+NjeR+LtzBn7G3UvX+AW9Opm9yO
+         17r5y+r6v6TtRrGi5lMH31Ru3SsrWrcIIt3heRyDjUl6GBoviQ6lfaDpVTVh9LBawZoC
+         W3ObK+2uTLdm0akPUcXGITfOQE3p93s65jGmOd7yOzTQCnJfGddcURHtqAZ+cWB6LY1h
+         J92g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=87voKorkYhypVq01JjwM4w1ZUjFR2Vq5AJTk3xYnW4M=;
+        b=A89ekXdj1oDQbpfNILkiccb8DXSWZrW4lzw1mHWHE7YYpF9CjbLiNnT+1YU4d5Ci1j
+         95Wgkt2I8lDA6XNIpqEkprMnox2xpbnX6/FSehwNd+jkiDFM3CDG+f18ju/HCFD3zvJG
+         MWJVb50pJdfLdW7QXWdA1aUBptaSnVvouFcc0BnCZPftiWocYMH1LqGvkBob2cX2PdZ6
+         1DSoN/2qHKAzKaTP/zlxbVNOIt7mqW57yfj3vY9kfSkHAIip7CCQxgHsGus0nCRKoHTA
+         uDcbyXKC/A87lxCj4KOsiMa7HzB4lnUBtpkD6lpG9wgMuJ77LGvAY8Q4rtkQTmbQm2jl
+         tacA==
+X-Gm-Message-State: AFqh2koiI+GEcYa47kXkp36eDFDF0u1o/1qVUwbrZi5Smp0Rf5eyRWDI
+        9FGjuAa/GHLVKsguc3Fi6ecPVGsrUbmFRfRu8Oc4/g==
+X-Google-Smtp-Source: AMrXdXt40PUOzzRkKPCAkXe6IfTye8YwOcziGNnm5ARbI2MeEsAGACZCnMHtldIPXSAAJMzOpNTjulqIN4necTCBwps=
+X-Received: by 2002:aa7:9418:0:b0:577:8bad:4f9e with SMTP id
+ x24-20020aa79418000000b005778bad4f9emr116308pfo.77.1671626697532; Wed, 21 Dec
+ 2022 04:44:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fc60e8da-1187-ca2b-1aa8-28e01ea2769a@linaro.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221221120618.652074-1-alvaro.karsz@solid-run.com> <20221221073256-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221221073256-mutt-send-email-mst@kernel.org>
+From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date:   Wed, 21 Dec 2022 14:44:21 +0200
+Message-ID: <CAJs=3_CVUydOpH=a-RJLWUQ0_1EbkwKtGD2F3Xvw=dR5QFXP5g@mail.gmail.com>
+Subject: Re: [PATCH] virtio_net: send notification coalescing command only if
+ value changed
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 21, 2022 at 09:42:59AM +0200, Tudor Ambarus wrote:
-> 
-> 
-> On 21.12.2022 09:37, Greg KH wrote:
-> > On Wed, Dec 21, 2022 at 09:28:16AM +0200, Tudor Ambarus wrote:
-> > > Hi,
-> > > 
-> > > I added Greg KH to the thread, maybe he can shed some light on whether
-> > > new support can be marked as fixes and backported to stable. The rules
-> > > on what kind of patches are accepted into the -stable tree don't mention
-> > > new support:
-> > > https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-> > 
-> > As you say, we don't take new features into older kernels.  Unless they
-> > fix a reported problem, if so, submit the git ids to us and we will be
-> > glad to review them.
-> > 
-> 
-> They do fix a bug. I'm taking care of it. Shall I update
-> Documentation/process/stable-kernel-rules.rst to mention this rule as
-> well?
+> Why do we bother? Resending needs more code and helps
+> reliability ...
 
-How exactly would you change it, and why?
+It just seems unnecessary.
+If a user changes just one parameter:
+$ ethtool -C <iface> tx-usecs 30
+It will trigger 2 commands, including
+VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, even though no rx parameter changed.
+
+If we'll add more ethtool coalescing parameters, changing one of the
+new parameter will trigger meaningless
+VIRTIO_NET_CTRL_NOTF_COAL_RX_SET and VIRTIO_NET_CTRL_NOTF_COAL_TX_SET
+commands.
+
+Alvaro
