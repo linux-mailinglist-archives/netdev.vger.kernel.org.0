@@ -2,67 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE16652FCA
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 11:47:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB8D652FCD
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 11:48:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234548AbiLUKrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 05:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
+        id S234589AbiLUKsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 05:48:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234610AbiLUKrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 05:47:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7191EEFC;
-        Wed, 21 Dec 2022 02:47:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 498ADB81B29;
-        Wed, 21 Dec 2022 10:47:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73A87C433EF;
-        Wed, 21 Dec 2022 10:47:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671619638;
-        bh=aVDDiFOJK4tI1KD4ouwvUzCRM24HCXz/rMHIn+pJYrE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BsWtqG42vKr4ZSW4MqJiGO60bXWpHqLTGur2mwIPQNOZIKVyNM94y+cJFVSMhgtzH
-         vHb99vGAuKzJ/Kd4gzeBaOf8B5R0at23nab4n/jZvlxW9KMRA1U3FGK4RcBqFZ3gVj
-         6YeR7SzFwy7a9GL3i271y1pKRPVasqALKhW4Hzddfc2agMMgj2hRHjvL0Gb1jLhFex
-         FQZbger9/Dojk/+PlXp2eW2UbWPJ6XdAOBrHHMQckyvvwRjgFavN0hGxz9IY5Vh0yV
-         MeHMymapK01kCl3XTmUuUrKinju6+ynUStIbQE2YhUsYF8/NZhnDIsNrauz5B+mA4f
-         7XqXM+q6pudjw==
-Date:   Wed, 21 Dec 2022 11:47:14 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marek Majtyka <alardam@gmail.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        hawk@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        toke@redhat.com, memxor@gmail.com, saeedm@nvidia.com,
-        anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        grygorii.strashko@ti.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [RFC bpf-next 2/8] net: introduce XDP features flag
-Message-ID: <Y6LkMtURZEjfVWVv@lore-desk>
-References: <cover.1671462950.git.lorenzo@kernel.org>
- <43c340d440d8a87396198b301c5ffbf5ab56f304.1671462950.git.lorenzo@kernel.org>
- <20221219171321.7a67002b@kernel.org>
- <Y6F+YJSkI19m/kMv@lore-desk>
- <CAAOQfrF963NoMhQUTdGXyzLMdAjHfUmvzvxpOL0A1Cv4NhY97w@mail.gmail.com>
- <20221220153903.3fb7a54b@kernel.org>
- <20221220204102.5e516196@kernel.org>
+        with ESMTP id S229612AbiLUKsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 05:48:10 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C876394
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 02:48:10 -0800 (PST)
+Received: from dude05.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::54])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1p7wds-00065f-9P; Wed, 21 Dec 2022 11:48:08 +0100
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
+Subject: [PATCH 1/2] dt-bindings: net: Add rfkill-gpio binding
+Date:   Wed, 21 Dec 2022 11:48:02 +0100
+Message-Id: <20221221104803.1693874-1-p.zabel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="+eCb0XDvva+nTJ1R"
-Content-Disposition: inline
-In-Reply-To: <20221220204102.5e516196@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::54
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,42 +41,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add a device tree binding document for GPIO controlled rfkill switches.
+The name, type, shutdown-gpios and reset-gpios properties are the same
+as defined for ACPI.
 
---+eCb0XDvva+nTJ1R
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+---
+ .../devicetree/bindings/net/rfkill-gpio.yaml  | 60 +++++++++++++++++++
+ 1 file changed, 60 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/rfkill-gpio.yaml
 
-> On Tue, 20 Dec 2022 15:39:03 -0800 Jakub Kicinski wrote:
-> > On Tue, 20 Dec 2022 23:51:31 +0100 Marek Majtyka wrote:
-> > > Everybody is allowed to make a good use of it. Every improvement is
-> > > highly appreciated. Thanks Lorenzo for taking this over. =20
-> >=20
-> > IIUC this comment refers to the rtnl -> genl/yaml conversion.
-> > In which case, unless someone objects, I'll take a stab at it=20
-> > in an hour or two and push the result out my kernel.org tree ...
->=20
-> I pushed something here:
->=20
-> https://github.com/kuba-moo/ynl/commits/xdp-features
->=20
-> without replacing all you have. But it should give enough of an idea=20
-> to comment on.
+diff --git a/Documentation/devicetree/bindings/net/rfkill-gpio.yaml b/Documentation/devicetree/bindings/net/rfkill-gpio.yaml
+new file mode 100644
+index 000000000000..6e62e6c96456
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/rfkill-gpio.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/rfkill-gpio.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: GPIO controlled rfkill switch
++
++maintainers:
++  - Johannes Berg <johannes@sipsolutions.net>
++  - Philipp Zabel <p.zabel@pengutronix.de>
++
++properties:
++  compatible:
++    const: rfkill-gpio
++
++  name:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: rfkill switch name, defaults to node name
++
++  type:
++    description: rfkill radio type
++    enum:
++      - wlan
++      - bluetooth
++      - ultrawideband
++      - wimax
++      - wwan
++      - gps
++      - fm
++      - nfc
++
++  shutdown-gpios:
++    maxItems: 1
++
++  reset-gpios:
++    maxItems: 1
++
++required:
++  - compatible
++  - type
++
++oneOf:
++  - required:
++      - shutdown-gpios
++  - required:
++      - reset-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    rfkill-pcie-wlan {
++        compatible = "rfkill-gpio";
++        name = "rfkill-pcie-wlan";
++        type = "wlan";
++        shutdown-gpios = <&gpio2 25 GPIO_ACTIVE_HIGH>;
++    };
+-- 
+2.30.2
 
-ack, thx. I will look into it.
-
-Regards,
-Lorenzo
-
---+eCb0XDvva+nTJ1R
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY6LkMgAKCRA6cBh0uS2t
-rOyiAQD5NVL/9N4NHfxoSJKlDMMG7ppq80Eax6fJ/Klm4n2WrAD9EA8vAIZ4TItH
-WtCvhtFiz0xWJmKiDgKq9r6AMiTB5gs=
-=nnX9
------END PGP SIGNATURE-----
-
---+eCb0XDvva+nTJ1R--
