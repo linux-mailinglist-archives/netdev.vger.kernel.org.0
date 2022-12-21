@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1E2652BD3
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 04:34:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2415F652C1D
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 05:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234390AbiLUDeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 22:34:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        id S229756AbiLUEbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 23:31:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiLUDeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 22:34:03 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4767F1FCFF
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 19:34:03 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id 4so14290209plj.3
-        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 19:34:03 -0800 (PST)
+        with ESMTP id S229448AbiLUEbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 23:31:49 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426071B7AA;
+        Tue, 20 Dec 2022 20:31:48 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id g13so5030898lfv.7;
+        Tue, 20 Dec 2022 20:31:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZckNp/SxSb41wyWcqGUpv2efaBxW8UzQQeYvh9J6sKs=;
-        b=TrAGnHEdoZ50fbI2KnrvEVP5JIEE13G2+DIJ9m/ZX80HcTHKvIIZ8JiIvLWYGYAbsZ
-         dU7cnT5k1pepFmf6dmvXX47T2AAxY78vrct+X56maOG+qsrfgZg2e99OXopn5vaBwx6y
-         i5WYeGkBjsIF0rAArtsNlPVtiSNUidjMops3z26A+aGZbfTSP/lyTZ757Z4MPVGBoc8X
-         hiSGWwQd8a++33BeQI/jxXxCCIgaxPq80khUaVEWvLcALhU+9gZHZi8MZMDNllJHWHVx
-         15k2C1NeEHUSkLE7Tfp53vYC2XcSzasdtZM/dJ93OrRxp54oqJovz/ntGFIXIBPSwh/p
-         DyqQ==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=QrfSpq2RuHitJmMx7OLWY9yENTrqHZf988KtFFSfC5U=;
+        b=nR6AwJrYHhNYR2C08kUjWC96E2EqS4G24E4dNpLHsiWz0D4lFts7h4fINsvq+Xs7ZZ
+         OZLxRTajFjIuTUMnVm5mOq6SrFVZXqmF+94iOElTK2s+JypsVn+nQjLaz5vaAkFDZ1g6
+         Tx/beFVo8SoyrbByjrM8T5+DmKWT7Fz95xLaHEmgbaseRCcAN5DnIf1XCrIbYvxKgviL
+         qjQ3IIccSeK1jYyJFe4zDJVCC3UkKrdV4bNa2Jn+gYQPLv1KALEkBNJybQDNk9z3oUHE
+         QSeNzN8wwog088zTzR88M1fFCb1qyTk52LyCJtho5YcFNK5ed1BeMXKTUKj59xEL0YLh
+         3Tug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZckNp/SxSb41wyWcqGUpv2efaBxW8UzQQeYvh9J6sKs=;
-        b=fB8nzEPwmbKmIGrQW56VZSiyHbzepp8K5aN0vWP4ymMcrTetiGL295BPugmPgT6HL2
-         qJ0YFDdlq4eVn8S+LVpoOSi99vPnhqlHB28fnGQ9x09R3n9kI2fT/Fy6KeEpxkgvwb4i
-         1oWN0uK/bFaDJlFdHPKTwS7R7ti9XeqlPFL/2ht/8AHzqMfi5OpO0RDBtUYlQwNaMMDk
-         5JefI37uS6zysvbN/ivOnewT0/grK2fyJ4qRAVKT1qlkiQI/lvth4BRXPM6l2GFSoJd6
-         nausxtPhyiX0CMk8eVGUZloPeHYdH3vJUI4dO2GeafwuwkQrtuKardm3QX5XYmY01IOx
-         nNBg==
-X-Gm-Message-State: AFqh2kpIjm0D/tRRAsIk1XaQkoKdRw/0NTZhHmMYZgBRhocUzgteDx5s
-        WPBNUXcf4npbJneHYwRPk6I=
-X-Google-Smtp-Source: AMrXdXtdvzB/HHJJUc0fiC/ka3HDnhIQ6jgizN4Zmd/UZlZ4hQc5H5UgSySY3vLr39XDzkgbg3OIOg==
-X-Received: by 2002:a17:902:b402:b0:188:d434:9c67 with SMTP id x2-20020a170902b40200b00188d4349c67mr450528plr.32.1671593642809;
-        Tue, 20 Dec 2022 19:34:02 -0800 (PST)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id ja5-20020a170902efc500b001873aa85e1fsm10105657plb.305.2022.12.20.19.33.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Dec 2022 19:34:01 -0800 (PST)
-Date:   Wed, 21 Dec 2022 11:33:56 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH net] bonding: fix lockdep splat in bond_miimon_commit()
-Message-ID: <Y6J+pOX5hAupkge2@Laptop-X1>
-References: <20221220130831.1480888-1-edumazet@google.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QrfSpq2RuHitJmMx7OLWY9yENTrqHZf988KtFFSfC5U=;
+        b=zAtvSPMVAjocXLCxTxgyad3OUy2I2x3X2QWSvrKFqGMX632OxphdjFMMxw3kzNQKPV
+         lBJKQI2oZ4dkLrwGXIweRlPF1kafcq0o0wZv2kyDfYGpMwDx59CmylbfMC0nv3xPoHMx
+         m9fQjVHR37zJVLUcmeKh8z/DUEPXxR+F9vATV3gBs29RsKo676tFUJP/dDnmcRibfJGP
+         KuKQC7oZvjmGIqtddBz+2Ds7VoByjniX9T7zs6HCT814yzFJabaAqA5+KUbJGPpnHvSM
+         fi8WvoLiPhnE3S+sQMQVJZIEC9KS2cXagqgEtHPH5z1aqoVQknaRVQFm/xwjWhvDqEXq
+         rNIw==
+X-Gm-Message-State: AFqh2kreglr+ZQjxJtWdcKDJmEaR0Ic/n6PI5Xq/r+yUVmEqC9w75Xfm
+        GDWbxcqalEVCdLJL+Hu6ZGEGYCPuVrQce9MJtmw=
+X-Google-Smtp-Source: AMrXdXte+h8LaeQHtFKwpjYSVuVNQShQ2R2LMleRAFjVwUFtXY5FeiDYocweZ97iX/rFecTBxEHHNCxqArxtDtd6Ye8=
+X-Received: by 2002:a05:6512:20c1:b0:4b7:ba:3cf8 with SMTP id
+ u1-20020a05651220c100b004b700ba3cf8mr64402lfr.511.1671597106453; Tue, 20 Dec
+ 2022 20:31:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221220130831.1480888-1-edumazet@google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221218234801.579114-1-jmaxwell37@gmail.com> <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+ <bf56c3aa-85df-734d-f419-835a35e66e03@kernel.org> <CAGHK07BehyHXoS+27=cfZoKz4XNTcJjyB5us33sNS7P+_fudHQ@mail.gmail.com>
+In-Reply-To: <CAGHK07BehyHXoS+27=cfZoKz4XNTcJjyB5us33sNS7P+_fudHQ@mail.gmail.com>
+From:   Jonathan Maxwell <jmaxwell37@gmail.com>
+Date:   Wed, 21 Dec 2022 15:31:09 +1100
+Message-ID: <CAGHK07D2Dy4zFGHqwdyg+nsRC_iL4ArWTPk7L2ndA2PaLfOMYQ@mail.gmail.com>
+Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,86 +68,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 20, 2022 at 01:08:31PM +0000, Eric Dumazet wrote:
-> bond_miimon_commit() is run while RTNL is held, not RCU.
-> 
-> WARNING: suspicious RCU usage
-> 6.1.0-syzkaller-09671-g89529367293c #0 Not tainted
-> -----------------------------
-> drivers/net/bonding/bond_main.c:2704 suspicious rcu_dereference_check() usage!
-> 
-> Fixes: e95cc44763a4 ("bonding: do failover when high prio link up")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: Hangbin Liu <liuhangbin@gmail.com>
-> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> Cc: Veaceslav Falico <vfalico@gmail.com>
-> Cc: Andy Gospodarek <andy@greyhouse.net>
-> ---
->  drivers/net/bonding/bond_main.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index b4c65783960a5aa14de5d64aeea190f02a04be44..0363ce597661422b82a7d33ef001151b275f9ada 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -2654,10 +2654,12 @@ static void bond_miimon_link_change(struct bonding *bond,
->  
->  static void bond_miimon_commit(struct bonding *bond)
->  {
-> -	struct slave *slave, *primary;
-> +	struct slave *slave, *primary, *active;
->  	bool do_failover = false;
->  	struct list_head *iter;
->  
-> +	ASSERT_RTNL();
-> +
->  	bond_for_each_slave(bond, slave, iter) {
->  		switch (slave->link_new_state) {
->  		case BOND_LINK_NOCHANGE:
-> @@ -2700,8 +2702,8 @@ static void bond_miimon_commit(struct bonding *bond)
->  
->  			bond_miimon_link_change(bond, slave, BOND_LINK_UP);
->  
-> -			if (!rcu_access_pointer(bond->curr_active_slave) || slave == primary ||
-> -			    slave->prio > rcu_dereference(bond->curr_active_slave)->prio)
-> +			active = rtnl_dereference(bond->curr_active_slave);
-> +			if (!active || slave == primary || slave->prio > active->prio)
->  				do_failover = true;
+On Wed, Dec 21, 2022 at 8:55 AM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+>
+> On Wed, Dec 21, 2022 at 2:10 AM David Ahern <dsahern@kernel.org> wrote:
+> >
+> > On 12/20/22 5:35 AM, Paolo Abeni wrote:
+> > > On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
+> > >> Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
+> > >> route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
+> > >> consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
+> > >> these warnings:
+> > >>
+> > >> [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > >> [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > >> .
+> > >> .
+> > >> [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > >
+> > > If I read correctly, the maximum number of dst that the raw socket can
+> > > use this way is limited by the number of packets it allows via the
+> > > sndbuf limit, right?
+> > >
+> > > Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
+> > > ipvs, seg6?
+> > >
+> > > @DavidA: why do we need to create RTF_CACHE clones for KNOWN_NH flows?
+> > >
+> > > Thanks,
+> > >
+> > > Paolo
+> > >
+> >
+> > If I recall the details correctly: that sysctl limit was added back when
+> > ipv6 routes were managed as dst_entries and there was a desire to allow
+> > an admin to limit the memory consumed. At this point in time, IPv6 is
+> > more inline with IPv4 - a separate struct for fib entries from dst
+> > entries. That "Route cache is full" message is now out of date since
+> > this is dst_entries which have a gc mechanism.
+> >
+> > IPv4 does not limit the number of dst_entries that can be allocated
+> > (ip_rt_max_size is the sysctl variable behind the ipv4 version of
+> > max_size and it is a no-op). IPv6 can probably do the same here?
+> >
+>
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index dbc224023977..701aba7feaf5 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -6470,7 +6470,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+>  #endif
+>
+>         net->ipv6.sysctl.flush_delay = 0;
+> -       net->ipv6.sysctl.ip6_rt_max_size = 4096;
+> +       net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
+>         net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
+>         net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
+>         net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
+>
+> The above patch resolved it for the Ipv6 reproducer.
+>
+> Would that be sufficient?
+>
 
-Hi Eric,
+Otherwise if you prefer to make Ipv6 behaviour similar to IPv4.
+Rather than upping max_size.
 
-Thanks for the fix. I have some silly questions.
+Here is prototype patch that removes the max_size check for Ipv6:
 
-Is there an easy way or tool that could find if the functions is holding via
-RTNL lock or RCU lock, except review all the call chains? I have faced
-this issue in commit 9b80ccda233f ("bonding: fix missed rcu protection"),
-which we though the function is under RTNL, while there is a call chain that
-not hold rcu lock. Adding ASSERT_RTNL() could find it during running. I just
-want to know if there is another way that we could find it in code review.
+diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+index 88ff7bb2bb9b..632086b2f644 100644
+--- a/include/net/dst_ops.h
++++ b/include/net/dst_ops.h
+@@ -16,7 +16,7 @@ struct dst_ops {
+        unsigned short          family;
+        unsigned int            gc_thresh;
 
+-       int                     (*gc)(struct dst_ops *ops);
++       void                    (*gc)(struct dst_ops *ops);
+        struct dst_entry *      (*check)(struct dst_entry *, __u32 cookie);
+        unsigned int            (*default_advmss)(const struct dst_entry *);
+        unsigned int            (*mtu)(const struct dst_entry *);
+diff --git a/net/core/dst.c b/net/core/dst.c
+index 497ef9b3fc6a..dcb85267bc4c 100644
+--- a/net/core/dst.c
++++ b/net/core/dst.c
+@@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
 
-Another questions is, I'm still a little confused with the mixing usage of
-rcu_access_pointer() and rtnl_dereference() under RTNL. e.g.
+        if (ops->gc &&
+            !(flags & DST_NOCOUNT) &&
+-           dst_entries_get_fast(ops) > ops->gc_thresh) {
+-               if (ops->gc(ops)) {
+-                       pr_notice_ratelimited("Route cache is full:
+consider increasing sysctl net.ipv6.route.max_size.\n");
+-                       return NULL;
+-               }
+-       }
++           dst_entries_get_fast(ops) > ops->gc_thresh)
++               ops->gc(ops);
 
-In bond_miimon_commit() we use rcu_access_pointer() to check the pointers.
-                case BOND_LINK_DOWN:
-                        if (slave == rcu_access_pointer(bond->curr_active_slave))
-                                do_failover = true;
+        dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+        if (!dst)
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index dbc224023977..8db7c5436da4 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct
+dst_entry *);
+ static void            ip6_dst_destroy(struct dst_entry *);
+ static void            ip6_dst_ifdown(struct dst_entry *,
+                                       struct net_device *dev, int how);
+-static int              ip6_dst_gc(struct dst_ops *ops);
++static void             ip6_dst_gc(struct dst_ops *ops);
 
-In bond_ab_arp_commit() we use rtnl_dereference() to check the pointer
+ static int             ip6_pkt_discard(struct sk_buff *skb);
+ static int             ip6_pkt_discard_out(struct net *net, struct
+sock *sk, struct sk_buff *skb);
+@@ -3295,32 +3295,21 @@ struct dst_entry *icmp6_dst_alloc(struct
+net_device *dev,
+        return dst;
+ }
 
-                case BOND_LINK_DOWN:
-                        if (slave == rtnl_dereference(bond->curr_active_slave)) {
-                                RCU_INIT_POINTER(bond->current_arp_slave, NULL);
-                                do_failover = true;
-                        }
-                case BOND_LINK_FAIL:
-                        if (rtnl_dereference(bond->curr_active_slave))
-                                RCU_INIT_POINTER(bond->current_arp_slave, NULL);
+-static int ip6_dst_gc(struct dst_ops *ops)
++static void ip6_dst_gc(struct dst_ops *ops)
+ {
+        struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
+-       int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
+-       int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
+        int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+        int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+-       unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+        int entries;
 
-Does it matter to use which one? Should we change to rcu_access_pointer()
-if there is no dereference?
+        entries = dst_entries_get_fast(ops);
+-       if (entries > rt_max_size)
+-               entries = dst_entries_get_slow(ops);
+-
+-       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+-           entries <= rt_max_size)
+-               goto out;
 
-Thanks
-Hangbin
+        net->ipv6.ip6_rt_gc_expire++;
+        fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
+        entries = dst_entries_get_slow(ops);
+        if (entries < ops->gc_thresh)
+                net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
+-out:
+        net->ipv6.ip6_rt_gc_expire -= net->ipv6.ip6_rt_gc_expire>>rt_elasticity;
+-       return entries > rt_max_size;
+ }
+
+ static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
+
+> > I do not believe the suggested flag is the right change.
+>
+> Regards
+>
+> Jon
