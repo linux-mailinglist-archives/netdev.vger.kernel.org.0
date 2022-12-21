@@ -2,95 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B366652BB5
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 04:15:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7C81652BC5
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 04:24:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234241AbiLUDPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Dec 2022 22:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
+        id S229983AbiLUDYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Dec 2022 22:24:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiLUDPN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 22:15:13 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B6612629;
-        Tue, 20 Dec 2022 19:15:11 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4NcJTg0Mtbz4x3w;
-        Wed, 21 Dec 2022 14:15:02 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1671592506;
-        bh=eqAIBLUmcICy3LgEU8+CzGPHy97CiqYlcBozr88VRgM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=nEnpH5yKCXg49RR2P2OgASyKUTK1v/Cpt25ZodcDuYQhuzTY4bfmiopmNdXaSJcxG
-         aT2giTer1CXp4QrKyb0L3iEMExYYi45d6YNdHP/hsCuZ0ooVSZAHVP+TaH2VeP+mV0
-         m7KqD7FQGyuOV2IM8pdQBoAydfWwg9TXYyD/1MwjCHXsflSyAQ9fUUg4pbm6i1ouBK
-         SZjj31OHTFa/rSnU4LNO/R3FzH6Cmo/n1VbDuQf7YV3yJoyt+M/z7P9wZUe0G0LDmb
-         GVN8E+MF/N6Cs5RWhwq5KdcguwthwmMBOOWoIsEsuVPmDTrbRkQpUSO0ShmLK7R0zK
-         zzORrsjT0jX2g==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     David Hildenbrand <david@redhat.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Rik van Riel <riel@surriel.com>,
-        Will Deacon <will@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: Re: [RFC PATCH] mm: remove zap_page_range and change callers to use
- zap_vma_page_range
-In-Reply-To: <20221216192012.13562-1-mike.kravetz@oracle.com>
-References: <20221216192012.13562-1-mike.kravetz@oracle.com>
-Date:   Wed, 21 Dec 2022 14:15:02 +1100
-Message-ID: <87tu1pih1l.fsf@mpe.ellerman.id.au>
+        with ESMTP id S234392AbiLUDYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Dec 2022 22:24:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F591ADB9
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 19:23:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671593010;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CFnvNj9hg0uk4ty9l25TpJtyYdolUCT1QyYJMfBzM80=;
+        b=GNC4nU9uxmFlTsnvSW8EyvwmEo30URokeMhcfnHi2TP2FBKX1QIknUTYA0sV0fde8bhnTg
+        nAyr4nNXAiUvJXfiUBgBGGJLoE82z5V9bxZvtfZMt4eMgwc6a/Upft7Vyce3M8feQGbl/p
+        5oqcJk+2CGL24K64XPZ5P2LMMx4M1FA=
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com
+ [209.85.160.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-169-BUS5x3QXMhq_bfWrBhRqMQ-1; Tue, 20 Dec 2022 22:23:21 -0500
+X-MC-Unique: BUS5x3QXMhq_bfWrBhRqMQ-1
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-1447ffe6046so6263565fac.3
+        for <netdev@vger.kernel.org>; Tue, 20 Dec 2022 19:23:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CFnvNj9hg0uk4ty9l25TpJtyYdolUCT1QyYJMfBzM80=;
+        b=44/4Ah1riKO/+81UNb5W6ERc2san51lRqkhoS0/2NYWIoY4kbHtASAYoA8ZEk/kxXt
+         B3KOeReTD3Jiqk3VjV833F4Cdb+Cd2Pt/2r48h1Il7WQ9i00QbTFPh525vKOyInAtxYd
+         fms9z+28MRa1fiasnivVrK6VFW+O5F33moITnEjRIQulZ9AD6Kz0NsOffRK+hG6s0Ig7
+         Fb7TvuLpNpZsnxj6HeTlmdco9jTi+uJx8Klb3ARBd/0A0Q2HXkSWCahyrYlCSkWZl3OY
+         qJ0ufZ8gngybQvV2x6MGM+VdVrJM70cG/p2RPa7BovME53zfJhOvKvnDvpMChIkpsPHH
+         +1bw==
+X-Gm-Message-State: AFqh2kqa5YJvkCQBdN8YBRX1UvmuhAHYff6KSIX3qK5pY4qRLuoBzAu/
+        X+HtFNOUTFIpRC/RSurV3N5dvZpVqmdJizQhhzVVMXqwsjk3RBJykVSQ6lcckFOaa0iGv74454I
+        BiDZIENSzdZ0umohnteuhkdWM6guj/zmk
+X-Received: by 2002:a05:6870:4413:b0:144:a97b:1ae2 with SMTP id u19-20020a056870441300b00144a97b1ae2mr5750oah.35.1671593000985;
+        Tue, 20 Dec 2022 19:23:20 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvCqHucOMNWaOuq5hOMU7pwt2QCc0KdTdowmUytqZw+Vtlqfi8EU47R4djYK+989+3MChf2+uVMV3LQ50Op9xs=
+X-Received: by 2002:a05:6870:4413:b0:144:a97b:1ae2 with SMTP id
+ u19-20020a056870441300b00144a97b1ae2mr5744oah.35.1671593000701; Tue, 20 Dec
+ 2022 19:23:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221220140205.795115-1-lulu@redhat.com>
+In-Reply-To: <20221220140205.795115-1-lulu@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 21 Dec 2022 11:23:09 +0800
+Message-ID: <CACGkMEuJuUrA220XgHDOruK-aHWSfJ6mTaqNVQCAcOsPEwV91A@mail.gmail.com>
+Subject: Re: [PATCH] vhost_vdpa: fix the compile issue in commit 881ac7d2314f
+To:     Cindy Lu <lulu@redhat.com>
+Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mike Kravetz <mike.kravetz@oracle.com> writes:
-> zap_page_range was originally designed to unmap pages within an address
-> range that could span multiple vmas.  While working on [1], it was
-> discovered that all callers of zap_page_range pass a range entirely within
-> a single vma.  In addition, the mmu notification call within zap_page
-> range does not correctly handle ranges that span multiple vmas as calls
-> should be vma specific.
+On Tue, Dec 20, 2022 at 10:02 PM Cindy Lu <lulu@redhat.com> wrote:
 >
-> Instead of fixing zap_page_range, change all callers to use the new
-> routine zap_vma_page_range.  zap_vma_page_range is just a wrapper around
-> zap_page_range_single passing in NULL zap details.  The name is also
-> more in line with other exported routines that operate within a vma.
-> We can then remove zap_page_range.
+> The input of  vhost_vdpa_iotlb_unmap() was changed in 881ac7d2314f,
+> But some function was not changed while calling this function.
+> Add this change
 >
-> Also, change madvise_dontneed_single_vma to use this new routine.
->
-> [1] https://lore.kernel.org/linux-mm/20221114235507.294320-2-mike.kravetz@oracle.com/
-> Suggested-by: Peter Xu <peterx@redhat.com>
-> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-> ---
->  arch/arm64/kernel/vdso.c                |  4 ++--
->  arch/powerpc/kernel/vdso.c              |  2 +-
->  arch/powerpc/platforms/book3s/vas-api.c |  2 +-
->  arch/powerpc/platforms/pseries/vas.c    |  2 +-
-  
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+> Cc: stable@vger.kernel.org
+> Fixes: 881ac7d2314f ("vhost_vdpa: fix the crash in unmap a large memory")
 
-cheers
+Is this commit merged into Linus tree?
+
+Btw, Michael, I'd expect there's a respin of the patch so maybe Cindy
+can squash the fix into the new version?
+
+Thanks
+
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Cindy Lu <lulu@redhat.com>
+> ---
+>  drivers/vhost/vdpa.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 46ce35bea705..ec32f785dfde 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -66,8 +66,8 @@ static DEFINE_IDA(vhost_vdpa_ida);
+>  static dev_t vhost_vdpa_major;
+>
+>  static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v,
+> -                                  struct vhost_iotlb *iotlb,
+> -                                  u64 start, u64 last);
+> +                                  struct vhost_iotlb *iotlb, u64 start,
+> +                                  u64 last, u32 asid);
+>
+>  static inline u32 iotlb_to_asid(struct vhost_iotlb *iotlb)
+>  {
+> @@ -139,7 +139,7 @@ static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
+>                 return -EINVAL;
+>
+>         hlist_del(&as->hash_link);
+> -       vhost_vdpa_iotlb_unmap(v, &as->iotlb, 0ULL, 0ULL - 1);
+> +       vhost_vdpa_iotlb_unmap(v, &as->iotlb, 0ULL, 0ULL - 1, asid);
+>         kfree(as);
+>
+>         return 0;
+> --
+> 2.34.3
+>
+
