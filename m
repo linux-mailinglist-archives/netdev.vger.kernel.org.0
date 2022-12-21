@@ -2,202 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58D366535C1
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 19:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD146535CC
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 19:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbiLUSB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 13:01:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
+        id S234489AbiLUSDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 13:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiLUSBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 13:01:55 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2119.outbound.protection.outlook.com [40.107.21.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AD4119;
-        Wed, 21 Dec 2022 10:01:54 -0800 (PST)
+        with ESMTP id S229814AbiLUSDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 13:03:30 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86151F5
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 10:03:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1671645805; x=1703181805;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=e01a9LM0bNKe3Avcscw+gmimSlNfS5eAcaobvI3qGPk=;
+  b=FuFxkbeoJSmMsJUIFvvI+G1Vhb4EiN+WR+TfWgLxszaSIFeAyq05TDnr
+   WKXiywNN2hCvj9YXO+XnAzCq+v7yNYPI9p9SYgKfeSyf5yKr2nK/t7zRN
+   AgDH5I+JwhkzeBuhnFuB2fn3b2jECrYqfdUcsF3rVxcE3AKBK3t7pnLuP
+   ZWw9pn77JDB4qki3Fmalqs+W797rsmeTImhYiSsnhwwxg5sDq9Yjoq6kx
+   b6QpGeW2nYoIw5AlbmIc8LanST7TjW4in1VYmfsY0TsP93hM5RP/Sgc+d
+   zrsK7E6Hv8WxlpRIH9JvpLP4TWPJypqmG8sy6DFgfgzRrR1c5UgMGHrbu
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
+   d="scan'208";a="194001095"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Dec 2022 11:03:25 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 21 Dec 2022 11:03:23 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 21 Dec 2022 11:03:23 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DjG6ErEN+STH5fzsUPdm40h7Ku+kKmu8J4d+sXjKMenZFNQbjTolM2JA+NzPi1EhKDfPYvb5KEtVSsvZH7v+dh4Do/L2hDFXtuhsFL0CarZ6Kfrzr89O4fxvZQVp9OdbmzqJH2wqtbXfFYEbyKdP4sv08ws8uYlgQc5/uUiXzHRwNEhqgjKwbQZJVSqit9XffNY2kuFYO5s5oLFvSXpjE8BEdvb7dtMA7ewXspVrKRj0Ygpg0Yo1f/rldzga+nzqzELQxSNqJpV7zW57l8w51vcsNmUCeB03ww5S7zuvsXk3l9fCOpKzThRcxpaLrPNIfdq6YjAmgU1vlieqol2kYw==
+ b=DUxF2gTfOtgo4fE+gkKfzNbEheZwzorORBbE5NS5TsM7AS6Ixo5+CgRb0IYuaJnXa3vayvCsSmXwHeEC/Qb8mjF1SXeLzpAu3J4bzi0kmSfrmN4tm0p05c5GfrR/YJZP2rAos8RzD4VbOxfwuyjIW781LpNVF7Z4y1NWzkRBPEIKYAV4PxnBGnjnXdJySjhLnXn8Wd+bCF0PiFedls2Ufzoxk1DU842nxHVkNhFOhjXAyK1Ehl+nW5r23T81MpUcrqc53QY7+mRPKUs3UdvFpNjGwaM7XbjBuovrK0ywf6p1lnT+ohoYAXq7hYaUKnDEF6hI+Oc/gWIj8PlbC4R/Eg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4ME0g0i8kpm7IMvu3YWUHx/VYVKQuY0+xqx75nf9rdU=;
- b=aXaHTRP0trWSEndkyAvRYzKyMiODQ2m4XM6iS4RyhkZq3L0eiQfQOMKikBFc8Rp9gYr2Zdz5ztn3ZbQgzFgw+kSg4UAFUHGH+ExhVyiIdmqxomzBE9lCKTUaKZWo//+8Fhwto7c5Y04SDX8+1Wcjbjqq39dxuPqkzOPmCgrSoBtbFs1xC2yh4LiMEX1eih4IVDhKGlnIR/T58YoduL0y84OiYIf1t3VZdhjgK9EW0qDEMgcMZdeVnkXxCovV7MPQCtCquu6B9xMDZFWcqIeT3Lw6obeIhepq7SpagfMYEeNz3aYtZGr8ps6TQjZamNfLU6M/XUA2jeTtyuxYZRK68w==
+ bh=hESd5tpsVpNGxwrOmiibOQw37M8SIlE/E3IwP0C/8I0=;
+ b=GQBNgac3sx2Dj9fnWBwt9bjdzyJGYo6Zh3xvbNv3IZPJ+ZgCfzRCtAcBORYJsQSGZ3gaUutoEcUUZ24/QZkZrNToOsHjfcQaEDSQvqrfsPKn2CCo6lR5ylugliR7Zb4ZSus6wShDAMMRG7xIH4hkCZ4YvQZHgmZpR6bjQMmK/Z8riQFIU628/Eo5ngTzugeQjyiPGRqCDHPzmtHHUiWd6cX7t9Dh5QeO5GRNtrU0beah59sFUVBpCNUA8MN/EiNd6/XbtPgXRp3rYdPgLzoMWKI026ZL/1ouTiRV5htggx8W3BR/A2RDT/H6gFfRzhiN4DfYWDPtUw1WjfVze0VtJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=esd.eu; dmarc=pass action=none header.from=esd.eu; dkim=pass
- header.d=esd.eu; arc=none
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4ME0g0i8kpm7IMvu3YWUHx/VYVKQuY0+xqx75nf9rdU=;
- b=fNsv5HqrH6C6B7ICJ/o857Z0lq0GTaENJSXmhuZkalRJZ4yo77P2oY4hPde8fGlFls8tlkdXdnyfXU+oF2Skwh95FoOuXk5NsD9wW7mflCpARh3JN6wg9jqS+Kz3TePaJZKZ/O+ZRZkBsnpxJG8XOxWTXnSm7pZ1IMaYeEW2s3c=
-Received: from GVXPR03MB8426.eurprd03.prod.outlook.com (2603:10a6:150:4::9) by
- DU0PR03MB9151.eurprd03.prod.outlook.com (2603:10a6:10:467::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5924.16; Wed, 21 Dec 2022 18:01:50 +0000
-Received: from GVXPR03MB8426.eurprd03.prod.outlook.com
- ([fe80::acef:56e7:b5cf:317d]) by GVXPR03MB8426.eurprd03.prod.outlook.com
- ([fe80::acef:56e7:b5cf:317d%3]) with mapi id 15.20.5924.016; Wed, 21 Dec 2022
- 18:01:50 +0000
-From:   Frank Jungclaus <Frank.Jungclaus@esd.eu>
-To:     "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
-CC:     =?iso-8859-15?Q?Stefan_M=E4tje?= <Stefan.Maetje@esd.eu>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] can: esd_usb: Improved decoding for
- ESD_EV_CAN_ERROR_EXT messages
-Thread-Topic: [PATCH 3/3] can: esd_usb: Improved decoding for
- ESD_EV_CAN_ERROR_EXT messages
-Thread-Index: AQHZE/C023IBXwmcgEW0dqi5txYJI652P5GAgAA5mwCAAiuKgA==
-Date:   Wed, 21 Dec 2022 18:01:50 +0000
-Message-ID: <0c585aefd4c5d4961980e41c7c4857bfafba921c.camel@esd.eu>
-References: <20221219212717.1298282-1-frank.jungclaus@esd.eu>
-         <20221219212717.1298282-2-frank.jungclaus@esd.eu>
-         <CAMZ6RqKMSGpxBbgfD6Q4DB9V0EWmzXknUW6btWudtjDu=uF4iQ@mail.gmail.com>
-         <CAMZ6RqKRzJwmMShVT9QKwiQ5LJaQupYqkPkKjhRBsP=12QYpfA@mail.gmail.com>
-In-Reply-To: <CAMZ6RqKRzJwmMShVT9QKwiQ5LJaQupYqkPkKjhRBsP=12QYpfA@mail.gmail.com>
-Accept-Language: en-001, de-DE, en-US
+ bh=hESd5tpsVpNGxwrOmiibOQw37M8SIlE/E3IwP0C/8I0=;
+ b=p/rvDVq4Pm6LKYK0/ZEFPQ9a+OkOYOM4LGseyrlB7DBKCz6IhZIJ0wKao90waJEnOi6asD6yfuSFx93PTIFwEyCu0W47i2EHV7UJU/OShI6M1ZpXfi/+4dc69g1skZKCVom1HSn5MLVpZWi3oyJzVl5jywn8GQh63+b4Fp0hPJM=
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
+ by DS0PR11MB8133.namprd11.prod.outlook.com (2603:10b6:8:15b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Wed, 21 Dec
+ 2022 18:03:22 +0000
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::58f4:512d:ec74:2f31]) by CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::58f4:512d:ec74:2f31%5]) with mapi id 15.20.5924.016; Wed, 21 Dec 2022
+ 18:03:22 +0000
+From:   <Yuiko.Oshino@microchip.com>
+To:     <Woojung.Huh@microchip.com>, <andrew@lunn.ch>,
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+CC:     <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>
+Subject: RE: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+ phy_disable_interrupts()
+Thread-Topic: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+ phy_disable_interrupts()
+Thread-Index: AQHZFHXQaD3fYCnHDUqUrGntzzIs7q522QaAgAAGVgCAAAStAIAACAmAgAASnACAAC8QAIABdSgw
+Date:   Wed, 21 Dec 2022 18:03:22 +0000
+Message-ID: <CH0PR11MB5561E53FF45F4AB6262671B28EEB9@CH0PR11MB5561.namprd11.prod.outlook.com>
+References: <9235D6609DB808459E95D78E17F2E43D408987FF@CHN-SV-EXMX02.mchp-main.com>
+ <20221220131921.806365-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
+ <7ac42bd4-3088-5bd5-dcfc-c1e74466abb5@gmail.com>
+ <1721908413.470634.1671548576554.JavaMail.zimbra@savoirfairelinux.com>
+ <cc720a28-9e73-7c88-86af-8814b02ee580@gmail.com>
+ <1567686748.473254.1671551305632.JavaMail.zimbra@savoirfairelinux.com>
+ <Y6Ho5rIlRHYPePEo@lunn.ch>
+ <BL0PR11MB29131080A183B94D1E4F1C39E7EA9@BL0PR11MB2913.namprd11.prod.outlook.com>
+In-Reply-To: <BL0PR11MB29131080A183B94D1E4F1C39E7EA9@BL0PR11MB2913.namprd11.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.44.4-0ubuntu1 
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=esd.eu;
+ header.d=none;dmarc=none action=none header.from=microchip.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: GVXPR03MB8426:EE_|DU0PR03MB9151:EE_
-x-ms-office365-filtering-correlation-id: 80087a40-38d7-432a-a0a9-08dae37d6f5f
+x-ms-traffictypediagnostic: CH0PR11MB5561:EE_|DS0PR11MB8133:EE_
+x-ms-office365-filtering-correlation-id: d6e16dfd-9371-4ff3-a907-08dae37da61c
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: W2fl8lXZhDm1IfY0QNIwoXHg5j00RegXpQ4TDLsfrXvVQACeI81q8ZKbadjkbDxowfApAzPxShrYcIPxPO2ux9Y0DzmTIUVOisz1aCV8leQ2RSCL0wIM+ynavS1zN4aiJSlZOpKe09ZrEEHeunXKagt+beDH+gx+33MUgz8qwHF8Z8cM5ItswdI1qVzjFK2uIhKTeppWl8XDhEtjZwuNIs+AdiMGBdPfVWunPX0E47OGnanOFT1Y42oFM27QB4H2FCEOGJSZHZQAIE8EMphZgxCIS8i+x9wb9Ps6g2MSUXF6LDWrbMfl1rrDsIIfiY59QL9WCUYpM3tjoZUYKc2DNbRfjIRUcdBbd2aqfitECkJEIVdt+YtefGSPNQsWtpcp0j938qdCFEQely6SFp3/tRDpNgVGbxUY/uifvYf5rY+F8SMG/kHy+s1LQN0KNCu+IvC4JuUS1EPBMizN5DiTBzEy2HMlZTylngLPP73FGkXqnALlDxJ3pQ1t8XO8kKx/ZtVj2Z8uLIwtF2hPdqCaeke0fShopEnw0ZpaGN7dx7Ow4VMdi1/dFXMlGmHFSURei/5CFdnwt0Ig3LRsuBwuFkWmmy/2IttWhRyd8O+BJhpej3F5s/ehvZg3kPwU2STG1gF39nRQhVDti2QLiy+bltr8GrFZT9mDxKlQP69ZbXgoGH50elWg3XCkX/KAYHf5gnXzOptd4hPVFgKuQD/eRGCojWZG3ap5ysAJjHUVxX0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVXPR03MB8426.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39840400004)(136003)(376002)(346002)(451199015)(6512007)(6506007)(41300700001)(26005)(186003)(2906002)(38100700002)(478600001)(15650500001)(6486002)(66556008)(966005)(66946007)(8676002)(64756008)(122000001)(86362001)(66446008)(4326008)(316002)(36756003)(2616005)(91956017)(66476007)(4001150100001)(76116006)(38070700005)(54906003)(71200400001)(6916009)(83380400001)(5660300002)(8936002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: 1jd5WXW8boK9X7pWOOP5UT0DNn+ltRxuDBYLTyihJItb6e8OfXo5DpFoZecS4hPKpgY8KB3EnBmvN0Lh6j/F8iklPFdBbZdATO+2ZKUVG4Dq7pkj1+MsBuJqJq6i6/rZJKyeVQdjyj64vRw2Ywr/oUgMzhiFUPV2e3red8DoxrwKI57nCwXLBJpFJH8eR52LA+gQi8RrTG5r69hU8hqc5WBShooJWy7Ydd/Uyvb7n0ruteoDpCGkqINZ3jxvteO22VDjH0IkOMaM3fU34zXJnWz7e1cc9RAz8MuJtJ3nBcKBzlVBa7kF1MdMLbd0Q1+atejQhIXYjQ1sTZqdVb0FvLuxjVT0yib7Uf15GHnoTsGZyJAuU635YxZmX6rRb+561GomfBsJunIhvMSkLWW/s1bPXTcZw52ZKPe5gtkS3oBSnR5lUMx0c95gwjuaMRh9OHMjnGgIcURgxCBw2hmiG+5HZGl7oh+QgBL80q1oBgtW/DLxS6IaJpc0Ga04E94u4eW6b8p3t7eWQj19eO1QvPMmz6mvUeOKWwgUAyykKiTnnKsq5E1pLIqMl3fr6e4Cnof7GZ3BsZXMt6+GLM65Gl+VOE08/hIyNAsN1hDGcgAkOxfDzMGvznt//c25pv8JNHiWb2ErM/nRSl00H0xj14Q3wv+NKCKMpFqaJ8MJ6UocVnpQWr+j7Y6O4CQ746U7Ysl8NG68VCd2uUp9p5rQqw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(39860400002)(366004)(396003)(346002)(451199015)(55016003)(33656002)(8676002)(76116006)(66476007)(66446008)(4326008)(64756008)(66556008)(83380400001)(8936002)(5660300002)(52536014)(66946007)(53546011)(6506007)(110136005)(7696005)(71200400001)(54906003)(478600001)(26005)(186003)(9686003)(316002)(86362001)(38070700005)(41300700001)(122000001)(2906002)(38100700002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-15?Q?CGSSkhW28mtZRH1g4zMIg2ve1R6IQvPMCe9sOqIwC7CLCkL4plj+DWYUW?=
- =?iso-8859-15?Q?upebOy4rP56Rtufj51aQSFo51dmX8dCyAuxG0TUZRYGuFGYSyXNCC1N3W?=
- =?iso-8859-15?Q?S1tyNhVoSwwucDodiZrKr+dDfY13mYlMjsXEk5tcwN6tf3//D1KyQQRJT?=
- =?iso-8859-15?Q?rJ7FvnnOux/HLACnLRzxaYzN0a5+cb8N/n5nfMb+q7+GdlW40R9hHoQri?=
- =?iso-8859-15?Q?KittY+BS6Cr1V5mnxKBs5dpxV7EIuhx4TIikn4eb0q3MT8VffoJjHGSJN?=
- =?iso-8859-15?Q?D2Tt5Hj2U7s1Z0w1zFBh50qwKJR/U9tsrZwvVLhQYD7IOfayEE4mcEEMs?=
- =?iso-8859-15?Q?7ewHKs4HZwzCdQCbyDae1Gog55VClVCRPJMKUcFTliZaehTLAuPyz6W+d?=
- =?iso-8859-15?Q?heQU+DWTI34t3i+1KwoESMmCFTyeoo3TpibSOg718cZMl18qBXE7PM53l?=
- =?iso-8859-15?Q?98BCeTz2VXHAuaBYDEUe7iGpZI2RwUaRbMRDRS9S32NWDULEbp/qNZGL9?=
- =?iso-8859-15?Q?DZeubaD6m5z1FVD+Lv4Ag2JccMDmMl2qa2T5Ec1GiSYVUNcEhRs7kwFF2?=
- =?iso-8859-15?Q?ODdo3Qv1crThcBDi35BqkF6heSomp17Tp36eq6HDgx+rBw/Q5+uzxIM5r?=
- =?iso-8859-15?Q?WHhSG/h1BqWCOxBXQ+ptD8IqYeZWk2AIB8i4s5J9VD/4tomEApJv0Qwwo?=
- =?iso-8859-15?Q?ISJocUm79pJ0HYPwWHw0l5OkSRYT8FE4RZuxROFDVMVq3i0Urn5GUsWzY?=
- =?iso-8859-15?Q?Tr62HdV3X1tpRBXJdXqcj6UGhx9LjonDPc5H7tjepnXl0Hcj+lxxqxOE0?=
- =?iso-8859-15?Q?F8PPD3PR3y+y6z66bYuYtSD+3BkFidD8WA96qOcYHdBuvvh8EgDsS/x0Q?=
- =?iso-8859-15?Q?kCpYsIRNy2gU29uMfB/C0XWnJ/MMzQBXNEzF1waHwm/X8mykAnTQwiAYz?=
- =?iso-8859-15?Q?8XNeXEwdL6IKeIQhBTNHAMmLN7sWHZ7gHuYnPGk7JT1ubE3FfjizKc0QE?=
- =?iso-8859-15?Q?vWeAJjrYpFlpvUBglHIGLMn4UVZJsZqYP6c4QlvbBZilrfEHWxUwVGkrz?=
- =?iso-8859-15?Q?WIVHxAVe2WNaWCmK7DuER55jpZi3VeQkWXRoMKKFiGNJrHHD+/BzgRr8i?=
- =?iso-8859-15?Q?LJBJ1bEugteJyyMWFlP5PRitp9OYcZ8Z1Osr1LWiapQ5O9p0wH6nPHYB5?=
- =?iso-8859-15?Q?dV75+B9sRKj/bWFIIO9PKu0+RiKEmlX9wC0vd39TToEt//02UZU+wvSuj?=
- =?iso-8859-15?Q?85LP2IF9eBgLeus0Dl5Da+FcX6QTpKgDqdHK3qVNmvDRvEzowQtIwje06?=
- =?iso-8859-15?Q?KYEuUl/+f1TR16Z8mOe8yQy4AKc8y8rUORs53ZlZNwchf6zgMKDCTV+Qa?=
- =?iso-8859-15?Q?Q68+yI5UCto8Tsyf0xeT+kI1mT2IAVxtyM5bUf5ZZtQsAWXLyDrSJ7FQf?=
- =?iso-8859-15?Q?UYP3mjBGVSfKOhRn4aQk8wg1i1yFRnflAJiD4/Ffy3jrXhJx+2SaWjogX?=
- =?iso-8859-15?Q?2DLbYlxFjrrOm4p65zV6JIBPojO/tyyPFCjpW1A38hSwoM2eV0avKn71E?=
- =?iso-8859-15?Q?n9RWsvLY5Bu75OBOlSVWjvRP0DKe5r8Su5e6tfYascdBfh9at2IXZ8xQc?=
- =?iso-8859-15?Q?qti4zXEzFVqu5aB6bl3X1Qckei8AOwEbq7TcrNE7mCb8cJ94enM57sLSV?=
- =?iso-8859-15?Q?82DHM0V2HCyaQlNAihsHv0qgng=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-15"
-Content-ID: <B4BD59D45D8692458987CA501B265103@eurprd03.prod.outlook.com>
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fZLUz5vBNk36fKbugGSawbBL2HIUV0Npax2mHm4ezwsGwMqfdmduh7ZIja4K?=
+ =?us-ascii?Q?P/JD0PEI/Ib871PznNvACx5JoWl+CgDTHTd7Mtntt73h3Ix60Qm5pfntwe3U?=
+ =?us-ascii?Q?04AQN0GDyeJKo8fVG6QKSevO+khXSUPmhuRQ3UBD0XeI1jdsPT3uLb1dJTys?=
+ =?us-ascii?Q?IQ2WK6wxiRX7/iH1bRYqUK2jyPQhs01QQWM58ZHqRiqTs9uCllXw1E8IgIMv?=
+ =?us-ascii?Q?8N/Hoh+Q20sG39UkKJS8qENjqVOkV89dOCOv2q4OQKEsztXrMA2nMy2/opJw?=
+ =?us-ascii?Q?pAX6F+hzsMM00+gHrlfuNi9A75R8XsmzPGcwSCr+LqEC4YJeIlWkvDyX+jy4?=
+ =?us-ascii?Q?ONZYDuoa7oIw+pI/1hCEI4KzqD1nTS7P7kpSOBK2AauFxYIe0RTu+6RF1hB3?=
+ =?us-ascii?Q?MI2/r9clVr9gHse/6KgltTXSRwWnTMtWEaRkGWrxEBJoas+Gf03sawTp2WCX?=
+ =?us-ascii?Q?G3NhDQjPRjxzcTAsHAYS9S3ggHHI6aI6RIRHHkP8rVTafMnlqR6hFw/j0GM5?=
+ =?us-ascii?Q?la5DYaskyjKpBfky2HaJVX8gUnqyW1mdlfyjNNOeAqRFwy5LUlYL4z8SfmxJ?=
+ =?us-ascii?Q?IQakcyt/9Ko5QfqRt7Cu0z9XUl59dUrc+u66dMNirGhTft/ltOrwRAdtpyF5?=
+ =?us-ascii?Q?+hUib1NBqNvlxW3/XjVVusXpeWChcwxBsIOOKnjmy5uzaRRsBzb9CAw8PRu2?=
+ =?us-ascii?Q?5eC9naW4OlgJ/Au6IONejJeLLRCejXC/2DEHeibFHFefrvp+aJfJeg7fhF2z?=
+ =?us-ascii?Q?zCmt5ey1zI35H+wdmhFOqUcU5zwj2zeXUSRo7AWiSqfd7KB+JMdBAgWuMkYP?=
+ =?us-ascii?Q?PbIg/GqEyhidsj/TxiM2COjbvd2vgrqSGYrbZvLjbdsMKLoOtWUabADUCOTH?=
+ =?us-ascii?Q?1CZB9OKxAV9qetR0DtpDetDUNKrsIwEPbPohyPB1g4vlgkkzE5j/OrpqTHB/?=
+ =?us-ascii?Q?2NPflGC0GbBfUwwu/5Q6vef3gkTnm4Somih/P1BdTkvqzsG3u/10VQnk355f?=
+ =?us-ascii?Q?NMQ1D9LTYV7mL0M6cjegXLNflyh7BqDhE2WDrpmktNpYkVMkYN0gfxKjfi+J?=
+ =?us-ascii?Q?c+Xpja9sIhyw1wYzgP23phQXSb8l7CO6MGX6q4rgGyHZq9kPEq69FPHO3B+Z?=
+ =?us-ascii?Q?/aEvNhk6RIybojKuQ20A7BHuy0ytU53TIFNuMANibKQv/lZBWZfI5xUhvPE+?=
+ =?us-ascii?Q?YDTQ25AKmLQnoIkY1I4UPIA3UXHb2AsCt4ZbOOj8+ZfjxunH5R/IOe1mi1/e?=
+ =?us-ascii?Q?+gjLY+1CcVXtwSmcu1E5boFqh7QRiR2e7Kd9e2fMXVvDgqWAVNlN+3SOlNlg?=
+ =?us-ascii?Q?nvaeHHB3djXRac7BP2jfNCxO3Cjy9dqHz2KBXMQWGpwe0cTyO7l/ajln5Hht?=
+ =?us-ascii?Q?P4t4koWHAcm+mKtKqsl7zAwPOsPVSO+tBSGuHGwF2pZJbZezDcp34EQaROoZ?=
+ =?us-ascii?Q?h6+/Wz8Esu66qowQObNd6Dx4qADI0U94y5kXqEnMie4zULTpqMadY4TLNj4s?=
+ =?us-ascii?Q?A+SkYctJAm/T5KS3Xgg3cg3N6OlixAa8HpSwZH9PJRVBzopZKWeyqMyhBYOX?=
+ =?us-ascii?Q?cbIZ6DbMAFC7QwLfBaAr3jKrH9TPxWQ1HKgkhfc3?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: esd.eu
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: GVXPR03MB8426.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80087a40-38d7-432a-a0a9-08dae37d6f5f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Dec 2022 18:01:50.5144
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6e16dfd-9371-4ff3-a907-08dae37da61c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Dec 2022 18:03:22.3347
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5asbMBuT6U+0i2zr1M5/Sb7cKIVjZRGOgxEnf5Ga6/TtRfp8XdB55mVPVV4iwfelmjMQOD9UxDC9e5tGdZS0Ug==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB9151
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-userprincipalname: qpwDQ6OF8ZpJuQSEMuohrW6Am+6/N9mUV29wNkUBQgNGFloSJ7dg2KrGWzVdhmWWY2a7mhmT4ZTg+xEkWjtOUMpqwW98L7ysOqh+kzwduQs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB8133
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-12-20 at 17:53 +0900, Vincent MAILHOL wrote:
-> On Tue. 20 Dec. 2022 at 14:27, Vincent MAILHOL
-> <mailhol.vincent@wanadoo.fr> wrote:
-> > Le mar. 20 d=E9c. 2022 =E0 06:28, Frank Jungclaus <frank.jungclaus@esd.=
-eu> a =E9crit :
-> > > As suggested by Marc there now is a union plus a struct ev_can_err_ex=
-t
-> > > for easier decoding of an ESD_EV_CAN_ERROR_EXT event message (which
-> > > simply is a rx_msg with some dedicated data).
-> > >=20
-> > > Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> > > Link: https://lore.kernel.org/linux-can/20220621071152.ggyhrr5sbzvwpk=
-px@pengutronix.de/
-> > > Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
-> > > ---
-> > >  drivers/net/can/usb/esd_usb.c | 18 +++++++++++++-----
-> > >  1 file changed, 13 insertions(+), 5 deletions(-)
-> > >=20
-> > > diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_=
-usb.c
-> > > index 09745751f168..f90bb2c0ba15 100644
-> > > --- a/drivers/net/can/usb/esd_usb.c
-> > > +++ b/drivers/net/can/usb/esd_usb.c
-> > > @@ -127,7 +127,15 @@ struct rx_msg {
-> > >         u8 dlc;
-> > >         __le32 ts;
-> > >         __le32 id; /* upper 3 bits contain flags */
-> > > -       u8 data[8];
-> > > +       union {
-> > > +               u8 data[8];
-> > > +               struct {
-> > > +                       u8 status; /* CAN Controller Status */
-> > > +                       u8 ecc;    /* Error Capture Register */
-> > > +                       u8 rec;    /* RX Error Counter */
-> > > +                       u8 tec;    /* TX Error Counter */
-> > > +               } ev_can_err_ext;  /* For ESD_EV_CAN_ERROR_EXT */
-> > > +       };
-> > >  };
-> > >=20
-> > >  struct tx_msg {
-> > > @@ -229,10 +237,10 @@ static void esd_usb_rx_event(struct esd_usb_net=
-_priv *priv,
-> > >         u32 id =3D le32_to_cpu(msg->msg.rx.id) & ESD_IDMASK;
-> > >=20
-> > >         if (id =3D=3D ESD_EV_CAN_ERROR_EXT) {
-> > > -               u8 state =3D msg->msg.rx.data[0];
-> > > -               u8 ecc =3D msg->msg.rx.data[1];
-> > > -               u8 rxerr =3D msg->msg.rx.data[2];
-> > > -               u8 txerr =3D msg->msg.rx.data[3];
-> > > +               u8 state =3D msg->msg.rx.ev_can_err_ext.status;
-> > > +               u8 ecc =3D msg->msg.rx.ev_can_err_ext.ecc;
-> > > +               u8 rxerr =3D msg->msg.rx.ev_can_err_ext.rec;
-> > > +               u8 txerr =3D msg->msg.rx.ev_can_err_ext.tec;
-> >=20
-> > I do not like how you have to write msg->msg.rx.something. I think it
-> > would be better to make the union within struct esd_usb_msg anonymous:
-> >=20
-> >   https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/es=
-d_usb.c#L169
->=20
-> Or maybe just declare esd_usb_msg as an union instead of a struct:
->=20
->   union esd_usb_msg {
->           struct header_msg hdr;
->           struct version_msg version;
->           struct version_reply_msg version_reply;
->           struct rx_msg rx;
->           struct tx_msg tx;
->           struct tx_done_msg txdone;
->           struct set_baudrate_msg setbaud;
->           struct id_filter_msg filter;
->   };
+Hi Andrew and all,
 
-Apart from the fact that this change would probably require several
-dozen lines of code to be adjusted, I like the idea ;)
+Microchip team can review the drivers and test affected devices next month.
+We will submit additional patches if necessary.
+
+Thank you and best regards,
+Yuiko
+
+>-----Original Message-----
+>From: Woojung Huh - C21699 <Woojung.Huh@microchip.com>
+>Sent: Tuesday, December 20, 2022 2:43 PM
+>To: Andrew Lunn <andrew@lunn.ch>; Enguerrand de Ribaucourt <enguerrand.de-
+>ribaucourt@savoirfairelinux.com>
+>Cc: Heiner Kallweit <hkallweit1@gmail.com>; netdev <netdev@vger.kernel.org=
+>;
+>Paolo Abeni <pabeni@redhat.com>; davem <davem@davemloft.net>;
+>UNGLinuxDriver <UNGLinuxDriver@microchip.com>; Russell King - ARM Linux
+><linux@armlinux.org.uk>
+>Subject: RE: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+>phy_disable_interrupts()
+>
+>Hi Andrew,
+>
+>Let me check with our team.
+>
+>Best regards,
+>Woojung
+>
+>> -----Original Message-----
+>> From: Andrew Lunn <andrew@lunn.ch>
+>> Sent: Tuesday, December 20, 2022 11:55 AM
+>> To: Enguerrand de Ribaucourt <enguerrand.de-
+>> ribaucourt@savoirfairelinux.com>
+>> Cc: Heiner Kallweit <hkallweit1@gmail.com>; netdev
+>> <netdev@vger.kernel.org>; Paolo Abeni <pabeni@redhat.com>; Woojung Huh
+>> - C21699 <Woojung.Huh@microchip.com>; davem <davem@davemloft.net>;
+>> UNGLinuxDriver <UNGLinuxDriver@microchip.com>; Russell King - ARM
+>> Linux <linux@armlinux.org.uk>
+>> Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+>> phy_disable_interrupts()
+>>
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know
+>> the content is safe
+>>
+>> On Tue, Dec 20, 2022 at 10:48:25AM -0500, Enguerrand de Ribaucourt wrote=
+:
+>> > > From: "Heiner Kallweit" <hkallweit1@gmail.com>
+>> > > To: "Enguerrand de Ribaucourt" <enguerrand.de-
+>> ribaucourt@savoirfairelinux.com>
+>> > > Cc: "netdev" <netdev@vger.kernel.org>, "Paolo Abeni"
+>> <pabeni@redhat.com>, "woojung huh" <woojung.huh@microchip.com>,
+>> > > "davem" <davem@davemloft.net>, "UNGLinuxDriver"
+>> <UNGLinuxDriver@microchip.com>, "Andrew Lunn" <andrew@lunn.ch>,
+>> > > "Russell King - ARM Linux" <linux@armlinux.org.uk>
+>> > > Sent: Tuesday, December 20, 2022 4:19:40 PM
+>> > > Subject: Re: [PATCH v3 1/3] net: phy: add EXPORT_SYMBOL to
+>> phy_disable_interrupts()
+>> > My proposed approach would be to copy the original workaround
+>> > actions within link_change_notify():
+>> >  1. disable interrupts
+>> >  2. reset speed
+>> >  3. enable interrupts
+>> >
+>> > However, I don't have access to the LAN8835 to test if this would
+>> > work. I
+>> also
+>> > don't have knowledge about which other Microchip PHYs could be
+>> impacted. Maybe
+>> > there is an active Microchip developer we could communicate with to
+>> > find
+>> out?
+>>
+>> Woojung Huh added this code, and he sometimes contributes here.
+>>
+>> Woojung, do you still have access to the hardware?
+>>
+>>          Andrew
