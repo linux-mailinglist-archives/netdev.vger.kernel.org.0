@@ -2,204 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A7C652EC9
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 10:45:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02DBB652ECE
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 10:46:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiLUJpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 04:45:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52480 "EHLO
+        id S234575AbiLUJqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 04:46:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbiLUJpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 04:45:34 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CF421E34
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 01:45:32 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id m29so22442048lfo.11
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 01:45:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=00Inf63iGaAsVhYSavXD2K2q3AWuG2Zj5gcQJk+z2i4=;
-        b=qTLeLBAcwolPiW0pMxHIgX/+j4GMOVsFLzYLYdKKubLh89RJVmTl1YEtvk8+IFqm+w
-         uNFT8wrUcNT8ohDTMB/IoJZ1hAaUblf1Nwjvo6+CyArxUKbFDKAQcXi6G6rUqj7Veyv1
-         p4N/MDL+UvnFv5bxX2/iVT6se0BPJ8le7aDutnLJsatj9/k2lnhCle43ZyP1GB0LtzS4
-         NQF+Mcaxli1Z8EjkFJ6GF+jxWg+der6A3j1ORGy19Nr6XiRayjHML2EIILLhcB4MTd/D
-         zsKx2sC09KszSvML1G6T6L97u9c185I0x+83Z7l5Kq8wOBjZ+sF0lYzyRaSZViSme3Yd
-         ikMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=00Inf63iGaAsVhYSavXD2K2q3AWuG2Zj5gcQJk+z2i4=;
-        b=YiNy/95hcpFzuRYoZ+/SNbcdEuwqflaVvI3vL7RfYMAlt8lvdDKPo2FRrPhXmzmrjd
-         IO5TKpOpqmPf+WtBNT87RmAgoqYEVd8hh8ngFDHkB15+ZNx9WinyqdSWxWdO+QWIf6BJ
-         PjIH+SOfIpog/UDeKoqus3TkZzfFjloWCeYZW4X++NOpxxafmqG3MFGY8OhcM4pdaJUX
-         mgqIDYv1R8uJsXZLagYHReu9Py3ikHVU77Q5oOGDhmfJry8Te6CbelLScvBGY26AaTYD
-         9uyh4uepNcJcfR60iTlewWB2WDijhIVWjH5JBYn0q5ZLSbGDKYykvZqEu21omxCCUVDA
-         US+g==
-X-Gm-Message-State: AFqh2krWm8vBvCnRrc69ssIr1HOIfkzXLVDgVLUqECYtthiD/MfH5UlF
-        1caPYPEoMSFeIW4V8egk60rJMQ==
-X-Google-Smtp-Source: AMrXdXv6F0T1mgD1kw4HVCZHPSMdZt2dpa2hqSxaIodKeBscaNn14i0wcVM+58/+5+y3O4o6SvPRjw==
-X-Received: by 2002:a05:6512:6d0:b0:4b5:d:efb2 with SMTP id u16-20020a05651206d000b004b5000defb2mr410566lff.14.1671615930786;
-        Wed, 21 Dec 2022 01:45:30 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id y4-20020a197504000000b0049c29389b98sm1777424lfe.151.2022.12.21.01.45.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Dec 2022 01:45:30 -0800 (PST)
-Message-ID: <0f1d8479-657a-acb2-4a8d-69ae5a451a63@linaro.org>
-Date:   Wed, 21 Dec 2022 10:45:29 +0100
+        with ESMTP id S234368AbiLUJqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 04:46:34 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486A8B95;
+        Wed, 21 Dec 2022 01:46:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1671615991; x=1703151991;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QvgZM0AHu9miFZUHa20cBkHJ3002cVC9Isa1tj5BIi8=;
+  b=SENpNc6sZtzuZRj0Z+ukAT5bRnN6kWVT3hESFvoMVLJbpqipHQvIUHhH
+   XIV6wCrIYe71La7h8+xA8FrAOnY0A29RI2CaUnQqOir+7XQkAxYW0RbES
+   HZ1tfiKYUFKmPfOZdmQW2EWTGe/brGPR6UEZNlW/xFgKwBDIHzydYikxH
+   ZPqKZZsJdoVBNVMeMmxZEaS3zv7JFC+a7ZijI01VJjvJ1VHzmBBqrjjlf
+   kyCeKzZsnV01CgwAPNgKKx0wBjA6F7IufsZj6sKXx6QxOR5BejfuCXLwj
+   cFOQDTYA18FenvlnNQkffH1MR2DvuP6FSH9/p48ghXxyRpSHiz7IOWUIV
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,262,1665471600"; 
+   d="scan'208";a="129151173"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Dec 2022 02:46:30 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 21 Dec 2022 02:46:29 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Wed, 21 Dec 2022 02:46:23 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
+        <richardcochran@gmail.com>, <ceggers@arri.de>,
+        <jacob.e.keller@intel.com>
+Subject: [RFC Patch net-next v5 00/13] net: dsa: microchip: add PTP support for KSZ9563/KSZ8563 and LAN937x
+Date:   Wed, 21 Dec 2022 15:15:59 +0530
+Message-ID: <20221221094612.22372-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH] nfc: Fix potential resource leaks
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        Christophe Ricard <christophe.ricard@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221220134623.2084443-1-linmq006@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221220134623.2084443-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/12/2022 14:46, Miaoqian Lin wrote:
-> nfc_get_device() take reference for the device, add missing
-> nfc_put_device() to release it when not need anymore.
-> Also fix the style warnning by use error EOPNOTSUPP instead of
-> ENOTSUPP.
-> 
-> Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
-> Fixes: 29e76924cf08 ("nfc: netlink: Add capability to reply to vendor_cmd with data")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  net/nfc/netlink.c | 51 ++++++++++++++++++++++++++++++++++-------------
->  1 file changed, 37 insertions(+), 14 deletions(-)
-> 
-> diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-> index 9d91087b9399..d081beaf4828 100644
-> --- a/net/nfc/netlink.c
-> +++ b/net/nfc/netlink.c
-> @@ -1497,6 +1497,7 @@ static int nfc_genl_se_io(struct sk_buff *skb, struct genl_info *info)
->  	u32 dev_idx, se_idx;
->  	u8 *apdu;
->  	size_t apdu_len;
-> +	int error;
+KSZ9563/KSZ8563 and  LAN937x switch are capable for supporting IEEE 1588 PTP
+protocol.  LAN937x has the same PTP register set similar to KSZ9563, hence the
+implementation has been made common for the KSZ switches.  KSZ9563 does not
+support two step timestamping but LAN937x supports both.  Tested the 1step &
+2step p2p timestamping in LAN937x and p2p1step timestamping in KSZ9563.
 
-Let's don't introduce the third or fourth style. Existing code calls it
-"rc".
+This patch series is based on the Christian Eggers PTP support for KSZ9563.
+Applied the Christian patch and updated as per the latest refactoring of KSZ
+series code. The features added on top are PTP packet Interrupt
+implementation based on nested handler, LAN937x two step timestamping and
+programmable per_out pins.
 
->  
->  	if (!info->attrs[NFC_ATTR_DEVICE_INDEX] ||
->  	    !info->attrs[NFC_ATTR_SE_INDEX] ||
-> @@ -1510,25 +1511,37 @@ static int nfc_genl_se_io(struct sk_buff *skb, struct genl_info *info)
->  	if (!dev)
->  		return -ENODEV;
->  
-> -	if (!dev->ops || !dev->ops->se_io)
-> -		return -ENOTSUPP;
-> +	if (!dev->ops || !dev->ops->se_io) {
-> +		error = -EOPNOTSUPP;
-> +		goto put_dev;
-> +	}
->  
->  	apdu_len = nla_len(info->attrs[NFC_ATTR_SE_APDU]);
-> -	if (apdu_len == 0)
-> -		return -EINVAL;
-> +	if (apdu_len == 0) {
-> +		error = -EINVAL;
-> +		goto put_dev;
-> +	}
->  
->  	apdu = nla_data(info->attrs[NFC_ATTR_SE_APDU]);
-> -	if (!apdu)
-> -		return -EINVAL;
-> +	if (!apdu) {
-> +		error = -EINVAL;
-> +		goto put_dev;
-> +	}
->  
->  	ctx = kzalloc(sizeof(struct se_io_ctx), GFP_KERNEL);
-> -	if (!ctx)
-> -		return -ENOMEM;
-> +	if (!ctx) {
-> +		error = -ENOMEM;
-> +		goto put_dev;
-> +	}
->  
->  	ctx->dev_idx = dev_idx;
->  	ctx->se_idx = se_idx;
->  
-> -	return nfc_se_io(dev, se_idx, apdu, apdu_len, se_io_cb, ctx);
-> +	error = nfc_se_io(dev, se_idx, apdu, apdu_len, se_io_cb, ctx);
-> +
-> +put_dev:
-> +	nfc_put_device(dev);
-> +	return error;
->  }
->  
->  static int nfc_genl_vendor_cmd(struct sk_buff *skb,
-> @@ -1551,14 +1564,20 @@ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
->  	subcmd = nla_get_u32(info->attrs[NFC_ATTR_VENDOR_SUBCMD]);
->  
->  	dev = nfc_get_device(dev_idx);
-> -	if (!dev || !dev->vendor_cmds || !dev->n_vendor_cmds)
-> +	if (!dev)
->  		return -ENODEV;
+Link: https://www.spinics.net/lists/netdev/msg705531.html
 
-Blank line
+Patch v4 -> v5
+- Replaced irq_domain_add_simple with irq_doamin_add_linear
+- Used the helper diff_by_scaled_ppm() for adjfine.
 
-> +	if (!dev->vendor_cmds || !dev->n_vendor_cmds) {
-> +		err = -ENODEV;
-> +		goto put_dev;
-> +	}
->  
->  	if (info->attrs[NFC_ATTR_VENDOR_DATA]) {
->  		data = nla_data(info->attrs[NFC_ATTR_VENDOR_DATA]);
->  		data_len = nla_len(info->attrs[NFC_ATTR_VENDOR_DATA]);
-> -		if (data_len == 0)
-> -			return -EINVAL;
-> +		if (data_len == 0) {
-> +			err = -EINVAL;
-> +			goto put_dev;
-> +		}
->  	} else {
->  		data = NULL;
->  		data_len = 0;
-> @@ -1573,10 +1592,14 @@ static int nfc_genl_vendor_cmd(struct sk_buff *skb,
->  		dev->cur_cmd_info = info;
->  		err = cmd->doit(dev, data, data_len);
->  		dev->cur_cmd_info = NULL;
-> -		return err;
-> +		goto put_dev;
->  	}
->  
-> -	return -EOPNOTSUPP;
-> +	err = -EOPNOTSUPP;
-> +
-> +put_dev:
-> +	nfc_put_device(dev);
-> +	return err;
->  }
->  
->  /* message building helper */
+Patch v3 -> v4
+- removed IRQF_TRIGGER_FALLING from the request_threaded_irq of ptp msg
+- addressed review comments on patch 10 periodic output
+- added sign off in patch 6 & 9
+- reverted to set PTP_1STEP bit for lan937x which is missed during v3 regression
 
-Best regards,
-Krzysztof
+Patch v2-> v3
+- used port_rxtstamp for reconstructing the absolute timestamp instead of
+tagger function pointer.
+- Reverted to setting of 802.1As bit.
+
+Patch v1 -> v2
+- GPIO perout enable bit is different for LAN937x and KSZ9x. Added new patch
+for configuring LAN937x programmable pins.
+- PTP enabled in hardware based on both tx and rx timestamping of all the user
+ports.
+- Replaced setting of 802.1AS bit with P2P bit in PTP_MSG_CONF1 register.
+
+RFC v2 -> Patch v1
+- Changed the patch author based on past patch submission
+- Changed the commit message prefix as net: dsa: microchip: ptp
+Individual patch changes are listed in correspondig commits.
+
+RFC v1 -> v2
+- Added the p2p1step timestamping and conditional execution of 2 step for
+  LAN937x only.
+- Added the periodic output support
+
+Arun Ramadoss (5):
+  net: dsa: microchip: ptp: add 4 bytes in tail tag when ptp enabled
+  net: dsa: microchip: ptp: enable interrupt for timestamping
+  net: dsa: microchip: ptp: add support for perout programmable pins
+  net: dsa: microchip: ptp: lan937x: add 2 step timestamping
+  net: dsa: microchip: ptp: lan937x: Enable periodic output in LED pins
+
+Christian Eggers (8):
+  net: dsa: microchip: ptp: add the posix clock support
+  net: dsa: microchip: ptp: Initial hardware time stamping support
+  net: dsa: microchip: ptp: manipulating absolute time using ptp hw
+    clock
+  net: ptp: add helper for one-step P2P clocks
+  net: dsa: microchip: ptp: add packet reception timestamping
+  net: dsa: microchip: ptp: add packet transmission timestamping
+  net: dsa: microchip: ptp: move pdelay_rsp correction field to tail tag
+  net: dsa: microchip: ptp: add periodic output signal
+
+ MAINTAINERS                             |    1 +
+ drivers/net/dsa/microchip/Kconfig       |   11 +
+ drivers/net/dsa/microchip/Makefile      |    5 +
+ drivers/net/dsa/microchip/ksz_common.c  |   44 +-
+ drivers/net/dsa/microchip/ksz_common.h  |   48 +
+ drivers/net/dsa/microchip/ksz_ptp.c     | 1191 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ptp.h     |   86 ++
+ drivers/net/dsa/microchip/ksz_ptp_reg.h |  142 +++
+ include/linux/dsa/ksz_common.h          |   53 +
+ include/linux/ptp_classify.h            |   71 ++
+ net/dsa/tag_ksz.c                       |  213 +++-
+ 11 files changed, 1847 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz_ptp.c
+ create mode 100644 drivers/net/dsa/microchip/ksz_ptp.h
+ create mode 100644 drivers/net/dsa/microchip/ksz_ptp_reg.h
+ create mode 100644 include/linux/dsa/ksz_common.h
+
+
+base-commit: 9054b41c4e1b5725e573c13166cee56bf7034bbd
+-- 
+2.36.1
 
