@@ -2,83 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ACE3652FCF
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 11:48:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCCB653049
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 12:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234603AbiLUKsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 05:48:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
+        id S234608AbiLULaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 06:30:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234534AbiLUKsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 05:48:12 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459D86394
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 02:48:12 -0800 (PST)
-Received: from dude05.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::54])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1p7wdu-00065f-I0; Wed, 21 Dec 2022 11:48:10 +0100
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH 2/2] net: rfkill: gpio: add DT support
-Date:   Wed, 21 Dec 2022 11:48:03 +0100
-Message-Id: <20221221104803.1693874-2-p.zabel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221221104803.1693874-1-p.zabel@pengutronix.de>
-References: <20221221104803.1693874-1-p.zabel@pengutronix.de>
+        with ESMTP id S234612AbiLULaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 06:30:12 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2A022BDC;
+        Wed, 21 Dec 2022 03:30:10 -0800 (PST)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1p7xIV-0003rv-UI; Wed, 21 Dec 2022 12:30:07 +0100
+Message-ID: <d6c68083-25e3-3ff5-9b0d-8928d1e077f1@leemhuis.info>
+Date:   Wed, 21 Dec 2022 12:30:07 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PULL] Networking for next-6.1 #forregzbot
+Content-Language: en-US, de-DE
+To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221004052000.2645894-1-kuba@kernel.org>
+ <6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::54
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1671622210;e8ddaa4c;
+X-HE-SMSGID: 1p7xIV-0003rv-UI
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow probing rfkill-gpio via device tree. This just hooks up the
-already existing support that was started in commit 262c91ee5e52 ("net:
-rfkill: gpio: prepare for DT and ACPI support") via the "rfkill-gpio"
-compatible.
+[Note: this mail contains only information for Linux kernel regression
+tracking. Mails like these contain '#forregzbot' in the subject to make
+then easy to spot and filter out. The author also tried to remove most
+or all individuals from the list of recipients to spare them the hassle.]
 
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
----
- net/rfkill/rfkill-gpio.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+On 16.12.22 11:49, Jiri Slaby wrote:
+> 
+> On 04. 10. 22, 7:20, Jakub Kicinski wrote:
+>> Joanne Koong (7):
+> 
+>>        net: Add a bhash2 table hashed by port and address
+> 
+> This makes regression tests of python-ephemeral-port-reserve to fail.
 
-diff --git a/net/rfkill/rfkill-gpio.c b/net/rfkill/rfkill-gpio.c
-index f5afc9bcdee6..9f763654cd27 100644
---- a/net/rfkill/rfkill-gpio.c
-+++ b/net/rfkill/rfkill-gpio.c
-@@ -157,12 +157,21 @@ static const struct acpi_device_id rfkill_acpi_match[] = {
- MODULE_DEVICE_TABLE(acpi, rfkill_acpi_match);
- #endif
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id rfkill_of_match[] = {
-+	{ .compatible = "rfkill-gpio", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, rfkill_of_match);
-+#endif
-+
- static struct platform_driver rfkill_gpio_driver = {
- 	.probe = rfkill_gpio_probe,
- 	.remove = rfkill_gpio_remove,
- 	.driver = {
- 		.name = "rfkill_gpio",
- 		.acpi_match_table = ACPI_PTR(rfkill_acpi_match),
-+		.of_match_table = of_match_ptr(rfkill_of_match),
- 	},
- };
- 
--- 
-2.30.2
+Thanks for the report. To be sure below issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
+tracking bot:
 
+#regzbot ^introduced 28044fc1d495
+#regzbot title new: regression tests of python-ephemeral-port-reserve fail
+#regzbot ignore-activity
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
