@@ -2,152 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1133B653690
-	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 19:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0A76536A4
+	for <lists+netdev@lfdr.de>; Wed, 21 Dec 2022 19:51:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234914AbiLUSsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 13:48:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S234930AbiLUSu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 13:50:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234296AbiLUSsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 13:48:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2E01E70C;
-        Wed, 21 Dec 2022 10:48:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D247B81BA6;
-        Wed, 21 Dec 2022 18:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6C4C433EF;
-        Wed, 21 Dec 2022 18:47:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671648479;
-        bh=hTuIjHBHd+Tec1DAOqqIPFW5jFXlpQ7ZWnftXs2hg6Q=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=XiS53svtnGlZKUpJLWpjIb00pvlTavkGyE/yhXeS7hKFYS8V/5Xav/+mlpRGezW6h
-         BljUFnHKQWw/igsJKn42+z68Zwy3Z5sPZrjhFME/Kwqkbwjx7njFSsJY/zjJWCYIs2
-         hg7VB/Upxxl01DViL7TGCOLjNQW9ZDg1YFt1aai4iFOc2yVu8ujua8wy7VEyZXvui4
-         /1bJ/zTi5VZkqa0c9me5b9nyIRR+8AGM7a6aXGScjL7jgysNOOGh6mrX4vs3UGAGXF
-         1s0aX5L7Ze9A8zWY2oezGwBJF7QaIiwiLIJLyqjhe4qpPeepExO7oc4XqzOCONcDBc
-         /pYLvZHxEpyuQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>, linux-sh@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        drbd-dev@lists.linbit.com, linux-bluetooth@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-scsi@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-ext4@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, bridge@lists.linux-foundation.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        lvs-devel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
-Subject: Re: [PATCH] treewide: Convert del_timer*() to timer_shutdown*()
-References: <20221220134519.3dd1318b@gandalf.local.home>
-Date:   Wed, 21 Dec 2022 20:47:50 +0200
-In-Reply-To: <20221220134519.3dd1318b@gandalf.local.home> (Steven Rostedt's
-        message of "Tue, 20 Dec 2022 13:45:19 -0500")
-Message-ID: <87mt7gk2zt.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S235008AbiLUSuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 13:50:44 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B4226549;
+        Wed, 21 Dec 2022 10:50:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671648634; x=1703184634;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Z01BVsejbngTM6ruRmidtKJYXyXGIth2OroyVk1DGBk=;
+  b=hrvHIUU3/2K7c3DF4f1EFgOsTUesWCoGp14cWmIiGP0plC/2cc2t6Xnb
+   j7DWxg3Vsl2JPQETTSvhj953mhDw+SIS8cpzCtIB5+fM+cFBJzb8us9Hq
+   gNY/Cif9BupG3lXbz1rPIpu1w9DtTUVskTrg/qMaUsCh8EqlCFu8McmyM
+   KBAl8EzvbR6KetrLv/wKvcvb9yaIhCrsqMzMsMHrj1wJbXkRm4n4PxS5Q
+   cf4vuy1CtldZsBl3s1d6bqwye4VfmTFo92IPeqNNxPNfhVq5iTv6Qi8cO
+   +HZq0J1ZF4oPim9I7Q/AAiCfmcJngPdGlXzWh8jDptaONKvOzTX/jYCKH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="319999393"
+X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
+   d="scan'208";a="319999393"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2022 10:50:34 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="653595156"
+X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
+   d="scan'208";a="653595156"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2022 10:50:31 -0800
+Date:   Wed, 21 Dec 2022 19:50:23 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Krzysztof Halasa <khalasa@piap.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khc@pm.waw.pl>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] ixp4xx_eth: Fix an error handling path in
+ ixp4xx_eth_probe()
+Message-ID: <Y6NVb8igxFCwwdw5@localhost.localdomain>
+References: <3ab37c3934c99066a124f99e73c0fc077fcb69b4.1671607040.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3ab37c3934c99066a124f99e73c0fc077fcb69b4.1671607040.git.christophe.jaillet@wanadoo.fr>
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+On Wed, Dec 21, 2022 at 08:17:52AM +0100, Christophe JAILLET wrote:
+> If an error occurs after a successful ixp4xx_mdio_register() call, it
+> should be undone by a corresponding ixp4xx_mdio_remove().
 
-> [
->   Linus,
->
->     I ran the script against your latest master branch:
->     commit b6bb9676f2165d518b35ba3bea5f1fcfc0d969bf
->
->     As the timer_shutdown*() code is now in your tree, I figured
->     we can start doing the conversions. At least add the trivial ones
->     now as Thomas suggested that this gets applied at the end of the
->     merge window, to avoid conflicts with linux-next during the
->     development cycle. I can wait to Friday to run it again, and
->     resubmit.
->
->     What is the best way to handle this?
-> ]
->
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
->
-> Due to several bugs caused by timers being re-armed after they are
-> shutdown and just before they are freed, a new state of timers was added
-> called "shutdown". After a timer is set to this state, then it can no
-> longer be re-armed.
->
-> The following script was run to find all the trivial locations where
-> del_timer() or del_timer_sync() is called in the same function that the
-> object holding the timer is freed. It also ignores any locations where the
-> timer->function is modified between the del_timer*() and the free(), as
-> that is not considered a "trivial" case.
->
-> This was created by using a coccinelle script and the following commands:
->
->  $ cat timer.cocci
-> @@
-> expression ptr, slab;
-> identifier timer, rfield;
-> @@
-> (
-> -       del_timer(&ptr->timer);
-> +       timer_shutdown(&ptr->timer);
-> |
-> -       del_timer_sync(&ptr->timer);
-> +       timer_shutdown_sync(&ptr->timer);
-> )
->   ... when strict
->       when != ptr->timer
-> (
->         kfree_rcu(ptr, rfield);
-> |
->         kmem_cache_free(slab, ptr);
-> |
->         kfree(ptr);
-> )
->
->  $ spatch timer.cocci . > /tmp/t.patch
->  $ patch -p1 < /tmp/t.patch
->
-> Link: https://lore.kernel.org/lkml/20221123201306.823305113@linutronix.de/
->
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+What about error when mdio_bus is 0? It means that mdio_register can
+return no error, but sth happen and there is no need to call mdio_remove
+in this case?
 
-For wireless:
+I mean:
+ /* If the instance with the MDIO bus has not yet appeared,
+  * defer probing until it gets probed.
+  */
+  if (!mdio_bus)
+	return -EPROBE_DEFER;
+> 
+> Add the missing call in the error handling path, as already done in the
+> remove function.
+> 
+> Fixes: 2098c18d6cf6 ("IXP4xx: Add PHYLIB support to Ethernet driver.")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/net/ethernet/xscale/ixp4xx_eth.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+> index 3b0c5f177447..007d68b385a5 100644
+> --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
+> +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+> @@ -1490,8 +1490,10 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+>  
+>  	netif_napi_add_weight(ndev, &port->napi, eth_poll, NAPI_WEIGHT);
+netif_napi_add_weight() doesn't need to be unrolled in case of error
+(call netif_napi_del() or something)?
 
->  .../broadcom/brcm80211/brcmfmac/btcoex.c         |  2 +-
->  drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c |  2 +-
->  drivers/net/wireless/intel/iwlwifi/mvm/sta.c     |  2 +-
->  drivers/net/wireless/intersil/hostap/hostap_ap.c |  2 +-
->  drivers/net/wireless/marvell/mwifiex/main.c      |  2 +-
->  drivers/net/wireless/microchip/wilc1000/hif.c    |  6 +++---
+Thanks
 
-Acked-by: Kalle Valo <kvalo@kernel.org>
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>  
+> -	if (!(port->npe = npe_request(NPE_ID(port->id))))
+> -		return -EIO;
+> +	if (!(port->npe = npe_request(NPE_ID(port->id)))) {
+> +		err = -EIO;
+> +		goto err_remove_mdio;
+> +	}
+>  
+>  	port->plat = plat;
+>  	npe_port_tab[NPE_ID(port->id)] = port;
+> @@ -1530,6 +1532,8 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+>  err_free_mem:
+>  	npe_port_tab[NPE_ID(port->id)] = NULL;
+>  	npe_release(port->npe);
+> +err_remove_mdio:
+> +	ixp4xx_mdio_remove();
+>  	return err;
+>  }
+>  
+> -- 
+> 2.34.1
+> 
