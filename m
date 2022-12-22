@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B7C653C3E
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 07:44:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A36B653C9C
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 08:39:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbiLVGox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 01:44:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
+        id S235056AbiLVHiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 02:38:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234932AbiLVGow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 01:44:52 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657ECF5B5
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 22:44:51 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id f3so740301pgc.2
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 22:44:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=086dsIWiKVuDdE5qHTcupmnKCG4y2yzrnr4Huev2NRw=;
-        b=UtaOxFFLchWt5Jb/3Qqzm81/vYaqvIO89JpWehCUn/CUHFGzoM5mnpGGBFlYqQAoGd
-         HNaC4hz9Wsd4cdrkLx4Nc3B37RZeAXNTTbWL+/LYmA84syobG+0riP0NUwuuMOLk0vM9
-         31gmckA5xEiwm+8UXywQe5qkGm3622bwgeIVe534hNeHlbnrHCysSoCqhjwrJwPlkRNH
-         xmSbqkhkZGSyFCxhD8DJcIVlOqa5aOvOkcRUxPZKzzjMp46TLQ3zogc3AjHVRg2Hd/hE
-         u7zVrjzMsbBqYzgul0riADWu8PTfE+0rGq7xHVnf0NatXFT2v3uTvvZPalPduYNE26Vg
-         GhsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=086dsIWiKVuDdE5qHTcupmnKCG4y2yzrnr4Huev2NRw=;
-        b=ryJXW6VQi/VlyY6rYSgWJCPyHx+OwKDl56Ya4rs1O7i/fYsJ4sDTBoAj/nCbUp0fOy
-         7jvmtkek4lYSEkz+8VBl9ySNBWMlSEGujZLvduc5dxtZDOxkmbc6TPJUgwZa6ozTXyuZ
-         RfN1K79/Wu6zmRrYj75Z1yg7P44WM2ySvltCJwPiUfgez2Wv8+Lu9Wmr4pAYTyChaX8L
-         4IsNWWh6HYn9BbEVY618DlVH6UkekiMw3v01VM2+q8uLmNShFZS32iGYk7+1dJpuP4NO
-         ey/evdXefKIxmTimOVxN42q+FQjt8oJTKnYpCAABoFm63USwyrz4Bo5KOspS1iO4OlSZ
-         h8hg==
-X-Gm-Message-State: AFqh2ko9lvupx8mXwr5aSkx8jXKdjEARHQMTZWipbKIjrOyCrHm9Gb4i
-        aJWD1ETWj5dk7lVSVGB71hYM+83neRF2QZnbC+FZKg==
-X-Google-Smtp-Source: AMrXdXt0UcjoP66yyusLKIKTSX4FRsTvLnD0LVdmB5/Zjm2T6SMC5OAPDw1o6lqRfglsrE+itHgRlexlQR8eCOjBmiM=
-X-Received: by 2002:a65:45c8:0:b0:48c:5903:2f5b with SMTP id
- m8-20020a6545c8000000b0048c59032f5bmr224962pgr.504.1671691490591; Wed, 21 Dec
- 2022 22:44:50 -0800 (PST)
+        with ESMTP id S234964AbiLVHiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 02:38:06 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD7219281;
+        Wed, 21 Dec 2022 23:38:05 -0800 (PST)
+Date:   Thu, 22 Dec 2022 08:38:00 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1671694683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0EWXzDsrAEorzDZh3Kox+mXLrcYjGJT3zppjt5m8lhU=;
+        b=sn1I8WB9AvT6NkaylHOBRIOC4Y5w/Tv0ZzJj6SNP8a2rdvOUkjxYvcI/ZBtNTbIBnU3NTP
+        nYW0j4QB9FjlGTLTpFn1ndOmKwXsyYOUufkwuipI5LNyiHowuCRSCFQ4hUHNJHquVUH25g
+        UQw2FG2y5Z74YcxOwNMTWX59Zg7fXOctBpislhcpLR+USO8lU3AE6GpnvH/+iPvuVhDcAW
+        3NFX4sgFu6CBE/s4LXmVU6Xmg/eySYV9tPUZz9ZO3s75Ifr4utyKavlCJ6lZtG+mvPA/ep
+        Rua1owxnEKeG406OBH2yKzyt2iu56L8uRwlVnAVQyrFfeEdtJYXKW3Y6H6Nq7Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1671694683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0EWXzDsrAEorzDZh3Kox+mXLrcYjGJT3zppjt5m8lhU=;
+        b=QV6/5UwwuXGdNjEz5DkHhUEQYplmYJIYDz8FTNLBDs+Gt0yKVaclhPkVbEotc/3sWepqy8
+        IZEbt3nT3OEm41DA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, wright.feng@cypress.com,
+        chi-hsien.lin@cypress.com, a.fatoum@pengutronix.de,
+        alsi@bang-olufsen.dk, pieterpg@broadcom.com, dekim@broadcom.com,
+        linville@tuxdriver.com, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH] wifi: brcmfmac: unmap dma buffer in
+ brcmf_msgbuf_alloc_pktid()
+Message-ID: <Y6QJWPDXglDjUP9p@linutronix.de>
+References: <20221207013114.1748936-1-shaozhengchao@huawei.com>
+ <167164758059.5196.17408082243455710150.kvalo@kernel.org>
 MIME-Version: 1.0
-References: <20221222060427.21626-1-jasowang@redhat.com> <20221222060427.21626-5-jasowang@redhat.com>
-In-Reply-To: <20221222060427.21626-5-jasowang@redhat.com>
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date:   Thu, 22 Dec 2022 08:44:12 +0200
-Message-ID: <CAJs=3_D6sug80Bb9tnAw5T0_NaL_b=u8ZMcwZtd-dy+AH_yqzQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 4/4] virtio-net: sleep instead of busy waiting for cvq command
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, maxime.coquelin@redhat.com,
-        eperezma@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <167164758059.5196.17408082243455710150.kvalo@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,
+On 2022-12-21 18:33:06 [+0000], Kalle Valo wrote:
+> Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+> 
+> > After the DMA buffer is mapped to a physical address, address is stored
+> > in pktids in brcmf_msgbuf_alloc_pktid(). Then, pktids is parsed in
+> > brcmf_msgbuf_get_pktid()/brcmf_msgbuf_release_array() to obtain physaddr
+> > and later unmap the DMA buffer. But when count is always equal to
+> > pktids->array_size, physaddr isn't stored in pktids and the DMA buffer
+> > will not be unmapped anyway.
+> > 
+> > Fixes: 9a1bb60250d2 ("brcmfmac: Adding msgbuf protocol.")
+> > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> 
+> Can someone review this?
 
-Adding timeout to the cvq is a great idea IMO.
+After looking at the code, that skb is mapped but not inserted into the
+ringbuffer in this condition. The function returns with an error and the
+caller will free that skb (or add to a list for later). Either way the
+skb remains mapped which is wrong. The unmap here is the right thing to
+do.
 
-> -       /* Spin for a response, the kick causes an ioport write, trapping
-> -        * into the hypervisor, so the request should be handled immediately.
-> -        */
-> -       while (!virtqueue_get_buf(vi->cvq, &tmp) &&
-> -              !virtqueue_is_broken(vi->cvq))
-> -               cpu_relax();
-> +       virtqueue_wait_for_used(vi->cvq, &tmp);
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Do you think that we should continue like nothing happened in case of a timeout?
-Shouldn't we reset the device?
-What happens if a device completes the control command after timeout?
-
-Thanks
-
-Alvaro
+Sebastian
