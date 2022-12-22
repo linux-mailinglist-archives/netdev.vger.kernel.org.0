@@ -2,226 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6A0653B04
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 04:51:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F79E653B2B
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 05:19:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234675AbiLVDvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 22:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
+        id S234919AbiLVETO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 23:19:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiLVDva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 22:51:30 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3FDE03B;
-        Wed, 21 Dec 2022 19:51:28 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id gt4so645515pjb.1;
-        Wed, 21 Dec 2022 19:51:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JVzO4A59GJB73e9OIQftd9aBkwarFNLE+P23ExPClEM=;
-        b=qW0XcbZxdZyDL63iJUAiP669akZV9hxLJMLxmTAcNnpxiuAgGR9EZ5FNZugHi0GlUJ
-         Wuj1LB8OSAxTDa7IQsG8OUFKErmWK32XlMTRplVIgSu+Mq2yPhJrtln77I8LW2de33x4
-         fJA6C3DeyUjHD7sBNkAzITWZpbWvhXUEA+2e+EK3Q/v33ASzmyxMYc1fKdsMvmJmWirM
-         e40iaKjXBNH9ENfxteeX0xV8SLB1S2u5BGvSAGfcRmez5Hdc4yJ2x6DWK6j0pVqATm26
-         6W+ToaURZ1+X9qqSIn52WMCoXUS2AaDSHNb00sf9AQtI5Yi+1IVIHTC2Sk/dFCi39fIA
-         VRRQ==
+        with ESMTP id S229601AbiLVETM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 23:19:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7443521829
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 20:18:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671682702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Qy8hVVHmVV3a9aFahEig8gWF7+7mU2tU8B+FtzuZ9U=;
+        b=Jy7qT3z/PwbhKypKPt92PhcRtA48MIj+0++LG6KkrOa1Q0PZRtmoYOgIdaergqhNBQy7Wu
+        56aq8c4MPD0IxnR4HY4olA7gO7XCAO5/wbsaKlN3mlR+XTZyeuphz7MpBzoWs/za3RNd4R
+        5kaGI7J/5I3uqYk4SOSoc3vUJigs+Jk=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-619-mysiD3w_MLG8kcHERs_y7Q-1; Wed, 21 Dec 2022 23:18:21 -0500
+X-MC-Unique: mysiD3w_MLG8kcHERs_y7Q-1
+Received: by mail-pl1-f199.google.com with SMTP id o5-20020a170903210500b0018f9edbba6eso646355ple.11
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 20:18:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JVzO4A59GJB73e9OIQftd9aBkwarFNLE+P23ExPClEM=;
-        b=TuSluhaMnr5sKjHJrroCzE9zLZpypAoPWn4CrBJBulRn1vINBEbkd98qLmqHpLtibF
-         wWSZ+gDnikv6Xpx+ipF/fHjaKkMplMvhwg6SC10gfrYlzp51mhrAM7nu978H/beGVtKU
-         xVHwUMiilZaZqopuOAhG+DUJAA/1cpiFkwPl/qboYQG8rNtiB+7xEZyLnQ8UvOrQoPV+
-         qzPPK99Cla9QTKdNX34dYOKfQuYSnxqFxmg8WeN61Zw4Q+BQyLcxs+1g02NpsVpLiQKL
-         9SBMxHjkmzq8a8IqWjtCGV//f+4REs7w9GmaJhMGcfiNonBTQbT52ItkEmUqi7i851VO
-         jElg==
-X-Gm-Message-State: AFqh2ko7GfUQuBkUwDY2iC9XIIgyIioK7EICD32WAEPy9E/6XgsUtTfB
-        +uhrUNfhi4qY0W32mYR/cv0=
-X-Google-Smtp-Source: AMrXdXu5K0IVh5WW/L2+I5GfrbR4kt3moFA+mACbA5AQURZtGwmoducJ5x5qgAMOOAftQzS4z9er7A==
-X-Received: by 2002:a17:90a:a08c:b0:223:4bfe:f215 with SMTP id r12-20020a17090aa08c00b002234bfef215mr4883914pjp.15.1671681087961;
-        Wed, 21 Dec 2022 19:51:27 -0800 (PST)
-Received: from localhost ([1.83.245.70])
-        by smtp.gmail.com with ESMTPSA id x11-20020a17090a294b00b00225a127b2a2sm1991748pjf.5.2022.12.21.19.51.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Dec 2022 19:51:27 -0800 (PST)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     yin31149@gmail.com, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     18801353760@163.com, cong.wang@bytedance.com, dvyukov@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com
-Subject: [PATCH v4] net: sched: fix memory leak in tcindex_set_parms
-Date:   Thu, 22 Dec 2022 11:51:19 +0800
-Message-Id: <20221222035119.7118-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1Qy8hVVHmVV3a9aFahEig8gWF7+7mU2tU8B+FtzuZ9U=;
+        b=p9Ij0mGj7D1t+gGk3/8xi3ekkXpR98vtd/QZk1IrYgT9MLCuHr4XmBGT41FZCSiOXu
+         wdkw09dQV9ebFAK53+SB6HewNNs0WLtsQ1mVSmqxa3UEdo6aJsxIwMFISt4wXc7mTIlw
+         9wjBEr05nfxHfdkeExN2jrEF9R7xMW28kr8vudmo7o5W3QhOr1IXQtJ0051FMfb9ACy+
+         j94LxyOCovIi0vlZweMWdicZR7oBKAtxtFvfiqL7DbhFatj86YfiX0GviNaEAmNPC1zq
+         43/DYFH0j6N7cvEqNEygO+oTUlw9ju07VCz9pb88VL9vG41RhivbhDPnGi7R2lWEjpKn
+         HF9Q==
+X-Gm-Message-State: AFqh2kouZ2KOKHyZZWFZJBGqlnvG1VFKQc/54l0XHu6iiX7Zc62pcPtI
+        HtOpiSNBxNoOdO1plv2k/VNZq6Yv3KkYUVJv2uKyEWoZ93xm1XiquIZ2wGhMBCHmjAw0UDb20g4
+        O2XKFT3WtYDZhwpTQ
+X-Received: by 2002:a17:902:8693:b0:191:e0b0:f8df with SMTP id g19-20020a170902869300b00191e0b0f8dfmr4257953plo.58.1671682700228;
+        Wed, 21 Dec 2022 20:18:20 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvZKUVvz7e/snSM74hURYmadL6kaZsaTLi4j3NcrD1AHY0tQQj2CPhCtOvjsaEFfVjLLRP5tg==
+X-Received: by 2002:a17:902:8693:b0:191:e0b0:f8df with SMTP id g19-20020a170902869300b00191e0b0f8dfmr4257947plo.58.1671682700005;
+        Wed, 21 Dec 2022 20:18:20 -0800 (PST)
+Received: from [10.72.13.15] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id n10-20020a170902e54a00b0018b025d9a40sm12290654plf.256.2022.12.21.20.18.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Dec 2022 20:18:19 -0800 (PST)
+Message-ID: <bd1c0fea-9934-1956-b3fe-0442d90b0477@redhat.com>
+Date:   Thu, 22 Dec 2022 12:18:15 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.0
+Subject: Re: [RFC PATCH 1/6] vdpa: add bind_mm callback
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, eperezma@redhat.com,
+        stefanha@redhat.com, netdev@vger.kernel.org
+References: <20221214163025.103075-1-sgarzare@redhat.com>
+ <20221214163025.103075-2-sgarzare@redhat.com>
+ <CACGkMEtB6uQ_6fKU5F-D0vG+gQz9mMdYWUQwre-yp1sVpGvKPQ@mail.gmail.com>
+ <20221216081738.wlhevfmvzfs3rsrg@sgarzare-redhat>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20221216081738.wlhevfmvzfs3rsrg@sgarzare-redhat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports a memory leak as follows:
-====================================
-BUG: memory leak
-unreferenced object 0xffff88810c287f00 (size 256):
-  comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
-    [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
-    [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
-    [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
-    [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
-    [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
-    [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
-    [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
-    [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
-    [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
-    [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-    [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
-    [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
-    [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
-    [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
-    [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
-    [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
-    [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
-    [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
-    [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
-    [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
-    [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-====================================
 
-Kernel uses tcindex_change() to change an existing
-filter properties.
+在 2022/12/16 16:17, Stefano Garzarella 写道:
+> On Fri, Dec 16, 2022 at 02:37:45PM +0800, Jason Wang wrote:
+>> On Thu, Dec 15, 2022 at 12:30 AM Stefano Garzarella 
+>> <sgarzare@redhat.com> wrote:
+>>>
+>>> This new optional callback is used to bind the device to a specific
+>>> address space so the vDPA framework can use VA when this callback
+>>> is implemented.
+>>>
+>>> Suggested-by: Jason Wang <jasowang@redhat.com>
+>>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>>> ---
+>>>  include/linux/vdpa.h | 8 ++++++++
+>>>  1 file changed, 8 insertions(+)
+>>>
+>>> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+>>> index 6d0f5e4e82c2..34388e21ef3f 100644
+>>> --- a/include/linux/vdpa.h
+>>> +++ b/include/linux/vdpa.h
+>>> @@ -282,6 +282,12 @@ struct vdpa_map_file {
+>>>   *                             @iova: iova to be unmapped
+>>>   *                             @size: size of the area
+>>>   *                             Returns integer: success (0) or 
+>>> error (< 0)
+>>> + * @bind_mm:                   Bind the device to a specific 
+>>> address space
+>>> + *                             so the vDPA framework can use VA 
+>>> when this
+>>> + *                             callback is implemented. (optional)
+>>> + *                             @vdev: vdpa device
+>>> + *                             @mm: address space to bind
+>>
+>> Do we need an unbind or did a NULL mm mean unbind?
+>
+> Yep, your comment in patch 6 makes it necessary. I will add it!
+>
+>>
+>>> + *                             @owner: process that owns the 
+>>> address space
+>>
+>> Any reason we need the task_struct here?
+>
+> Mainly to attach to kthread to the process cgroups, but that part is 
+> still in TODO since I need to understand it better.
 
-Yet the problem is that, during the process of changing,
-if `old_r` is retrieved from `p->perfect`, then
-kernel uses tcindex_alloc_perfect_hash() to newly
-allocate filter results, uses tcindex_filter_result_init()
-to clear the old filter result, without destroying
-its tcf_exts structure, which triggers the above memory leak.
 
-To be more specific, there are only two source for the `old_r`,
-according to the tcindex_lookup(). `old_r` is retrieved from
-`p->perfect`, or `old_r` is retrieved from `p->h`.
+Ok I see.
 
-  * If `old_r` is retrieved from `p->perfect`, kernel uses
-tcindex_alloc_perfect_hash() to newly allocate the
-filter results. Then `r` is assigned with `cp->perfect + handle`,
-which is newly allocated. So condition `old_r && old_r != r` is
-true in this situation, and kernel uses tcindex_filter_result_init()
-to clear the old filter result, without destroying
-its tcf_exts structure
 
-  * If `old_r` is retrieved from `p->h`, then `p->perfect` is NULL
-according to the tcindex_lookup(). Considering that `cp->h`
-is directly copied from `p->h` and `p->perfect` is NULL,
-`r` is assigned with `tcindex_lookup(cp, handle)`, whose value
-should be the same as `old_r`, so condition `old_r && old_r != r`
-is false in this situation, kernel ignores using
-tcindex_filter_result_init() to clear the old filter result.
+>
+> Maybe we can remove the task_struct here and use `current` directly in 
+> the callback.
 
-So only when `old_r` is retrieved from `p->perfect` does kernel use
-tcindex_filter_result_init() to clear the old filter result, which
-triggers the above memory leak.
 
-Considering that there already exists a tc_filter_wq workqueue
-to destroy the old tcindex_data by tcindex_partial_destroy_work()
-at the end of tcindex_set_parms(), this patch solves
-this memory leak bug by removing this old filter result
-clearing part and delegating it to the tc_filter_wq workqueue.
+Yes, it's easier to start without cgroup and we can add it on top.
 
-Note that this patch doesn't introduce any other issues. If
-`old_r` is retrieved from `p->perfect`, this patch just
-delegates old filter result clearing part to the
-tc_filter_wq workqueue; If `old_r` is retrieved from `p->h`,
-kernel doesn't reach the old filter result clearing part, so
-removing this part has no effect.
+Thanks
 
-[Thanks to the suggestion from Jakub Kicinski, Cong Wang, Paolo Abeni
-and Dmitry Vyukov]
 
-Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
-Link: https://lore.kernel.org/all/0000000000001de5c505ebc9ec59@google.com/
-Reported-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
-Tested-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
-Cc: Cong Wang <cong.wang@bytedance.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
----
-v4:
- - make commit message clearer
- - clean up the `old_r`
- - retest the patch on kernel v6.1 suggested by
-Paolo Abeni
-
-v3: https://lore.kernel.org/all/20221129025249.463833-1-yin31149@gmail.com/
-v2: https://lore.kernel.org/all/20221113170507.8205-1-yin31149@gmail.com/
-v1: https://lore.kernel.org/all/20221031060835.11722-1-yin31149@gmail.com/
-
- net/sched/cls_tcindex.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
-
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index eb0e9458e722..ee2a050c887b 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -333,7 +333,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 		  struct tcindex_filter_result *r, struct nlattr **tb,
- 		  struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
- {
--	struct tcindex_filter_result new_filter_result, *old_r = r;
-+	struct tcindex_filter_result new_filter_result;
- 	struct tcindex_data *cp = NULL, *oldp;
- 	struct tcindex_filter *f = NULL; /* make gcc behave */
- 	struct tcf_result cr = {};
-@@ -402,7 +402,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 	err = tcindex_filter_result_init(&new_filter_result, cp, net);
- 	if (err < 0)
- 		goto errout_alloc;
--	if (old_r)
-+	if (r)
- 		cr = r->res;
- 
- 	err = -EBUSY;
-@@ -479,14 +479,6 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 		tcf_bind_filter(tp, &cr, base);
- 	}
- 
--	if (old_r && old_r != r) {
--		err = tcindex_filter_result_init(old_r, cp, net);
--		if (err < 0) {
--			kfree(f);
--			goto errout_alloc;
--		}
--	}
--
- 	oldp = p;
- 	r->res = cr;
- 	tcf_exts_change(&r->exts, &e);
--- 
-2.25.1
+>
+> Thanks,
+> Stefano
+>
 
