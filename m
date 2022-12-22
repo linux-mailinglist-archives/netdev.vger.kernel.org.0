@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7FF7653E92
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 11:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96684653E9C
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 12:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235274AbiLVKyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 05:54:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
+        id S235148AbiLVK77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 05:59:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiLVKyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 05:54:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3089286DD
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 02:53:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671706398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8G2t4EncMzIPIeZuX+4iivTLgYuFur9QluEHx6LDvQ8=;
-        b=WEY2hsgPJLd1TlsqjaQR6N94/9hVUU45kT04QZfGXdQC+SoM/cIqprNr8QTX17PqmSKFKQ
-        3dUS2XDC29sotvv8BbYDxmnFje/L8Utx2UMcz4vOXjdxlMlAJpO4e+xOSLP2MuOEQWZpIv
-        34Wuwy/oZ2nk5TTncoQt3bu5R2INg7c=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-398-MejOQGNqN2ynVAp1JZ3ppA-1; Thu, 22 Dec 2022 05:53:16 -0500
-X-MC-Unique: MejOQGNqN2ynVAp1JZ3ppA-1
-Received: by mail-wr1-f72.google.com with SMTP id g18-20020adfa492000000b0027174820fdbso186929wrb.4
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 02:53:16 -0800 (PST)
+        with ESMTP id S229907AbiLVK76 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 05:59:58 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E6E27B26
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 02:59:57 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id h10so1258293wrx.3
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 02:59:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=OJT+PAklSdaKy6llARFI4ZrfHXg1FM5sbFzsRJnsx/c=;
+        b=JWRyTMG468WEidxf822vMHXPpUZGSCDLQFHw301ujDvZLeB4pbL7HxAfgr8VS7gjb6
+         bSK9GZvjf+S3lynXkH8xmlAvs0rysQRfTfLXvx7APWlbC98GPrwZ3/+LhI5AjbtUC0jq
+         QpnO5BDmgLMWy7Z9KRp3ebyL2n5SBaKA6USA8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8G2t4EncMzIPIeZuX+4iivTLgYuFur9QluEHx6LDvQ8=;
-        b=6bUbKnie26flJ73EER1VdeBP71OgzGyXuxWoQ7vLA/uGR0vcFcArZ9WmZjHuWDd8HC
-         6rwVvYEA5gECt4puemmJmZLXu8Z7V1hwQS5m/28fhSBf2WMbncN3CkBB13uIHdSx8Nbo
-         ehHmRqO8Bc2QpltiQDwUUjLjlGo8o1kJFsJOrHL0C6x5hPiceRSRFPDpEs1ZLydhueIH
-         rxfqFUtayXvXBMyf+NV50fhF+gYt1QWYv+HNXXzTOWdY9LtRr48rci81NeE5S99yBLkH
-         Tqw9l8B8FO1BJ4CVk46PWHfDj85v5C6Wfuj2KOn6NpHFAQ4v1laO7YlvumqpVdIxtD3R
-         UjJQ==
-X-Gm-Message-State: AFqh2koxB+xEEDMm6Jew/cm96ipFSymPYcEllbRqIRNf6ClsenRpP2MA
-        RjOjGeF5Pwcu9Id4KfQvNwJfFew6/9OnGoOiMksadJ/vM/fn9sB9UANSgA4v9Sf7kbw9offidsj
-        Xt5bruxPkH3EbYIga
-X-Received: by 2002:a7b:cb89:0:b0:3d2:2101:1f54 with SMTP id m9-20020a7bcb89000000b003d221011f54mr4088296wmi.4.1671706395603;
-        Thu, 22 Dec 2022 02:53:15 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXuWy0Wp+keurAyyZDEg4bOQUbTq2wJRgZQKCZGHKk9AOq3sK2SNmvUXsdQwg+ta4Y0Xv7buqg==
-X-Received: by 2002:a7b:cb89:0:b0:3d2:2101:1f54 with SMTP id m9-20020a7bcb89000000b003d221011f54mr4088281wmi.4.1671706395348;
-        Thu, 22 Dec 2022 02:53:15 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
-        by smtp.gmail.com with ESMTPSA id ay39-20020a05600c1e2700b003cfa80443a0sm554729wmb.35.2022.12.22.02.53.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Dec 2022 02:53:14 -0800 (PST)
-Message-ID: <a198f9fa6737b22ed2839a5dbfbcfdf6c6d7508d.camel@redhat.com>
-Subject: Re: [PATCH 3/3] net/ncsi: Add NC-SI 1.2 Get MC MAC Address command
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Peter Delevoryas <peter@pjd.dev>
-Cc:     sam@mendozajonas.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, joel@jms.id.au, gwshan@linux.vnet.ibm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 22 Dec 2022 11:53:13 +0100
-In-Reply-To: <20221221052246.519674-4-peter@pjd.dev>
-References: <20221221052246.519674-1-peter@pjd.dev>
-         <20221221052246.519674-4-peter@pjd.dev>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OJT+PAklSdaKy6llARFI4ZrfHXg1FM5sbFzsRJnsx/c=;
+        b=xrlJoHj1hXUY6QIlzzwqLtw8zViuMXPYNkXnPSslpXkTpD3+ncNnwKyezAGDq+nw3j
+         by2h5qFsJHvmsmOGtPGJSe75RBj8t16hkt8QqIg9b7P6jx1e2/GGzodYvMgksPHHVIDr
+         FHMZkVtisFfA39OkrWwlYhPgloOP9IacRipTN0odONe62sKukNCgaz/ZN9oareVfDsCw
+         AMOS8dg1Tq6eStfJj6/GUrvYAFLnOKPTfqm7u2wzVJac9ONWOyZQxL0OKvYZEb/c68nl
+         jKz0VAPgVwOmyiUdjMS8BWlrnbaWyB+6FZa6ekOsfu17IVUcJ+SDNbt21JWZae25IhpS
+         BnXg==
+X-Gm-Message-State: AFqh2krUy5rW/Ck9a0sx+kCG6/n3SWqcYBlRtUyqXHPn7wgz4BfqmKvG
+        NKE/YT4A/tn7/v1YAGkzllVZJQ==
+X-Google-Smtp-Source: AMrXdXstpSb5PRjYbnQpmHSeMdczyI1f80jkvRMw9taIftyAONIU2eaXlTA4V8Aqla9/2jTi9Ae/9g==
+X-Received: by 2002:adf:f742:0:b0:242:1551:974f with SMTP id z2-20020adff742000000b002421551974fmr3485418wrp.13.1671706795708;
+        Thu, 22 Dec 2022 02:59:55 -0800 (PST)
+Received: from [10.176.68.61] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id h6-20020adffa86000000b0024246991121sm183514wrr.116.2022.12.22.02.59.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Dec 2022 02:59:54 -0800 (PST)
+Message-ID: <6b529058-3650-72bb-7541-9fbfb8c6ad9b@broadcom.com>
+Date:   Thu, 22 Dec 2022 11:59:53 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH] wifi: brcmfmac: unmap dma buffer in
+ brcmf_msgbuf_alloc_pktid()
+To:     shaozhengchao <shaozhengchao@huawei.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, wright.feng@cypress.com,
+        chi-hsien.lin@cypress.com, a.fatoum@pengutronix.de,
+        alsi@bang-olufsen.dk, pieterpg@broadcom.com, dekim@broadcom.com,
+        linville@tuxdriver.com, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+References: <20221207013114.1748936-1-shaozhengchao@huawei.com>
+ <167164758059.5196.17408082243455710150.kvalo@kernel.org>
+ <Y6QJWPDXglDjUP9p@linutronix.de> <87cz8bkeqp.fsf@kernel.org>
+ <47236b24-6b47-b03a-c7b8-c46ea07cac6f@huawei.com>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <47236b24-6b47-b03a-c7b8-c46ea07cac6f@huawei.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000be0d5b05f068911e"
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,161 +83,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-12-20 at 21:22 -0800, Peter Delevoryas wrote:
-> This change adds support for the NC-SI 1.2 Get MC MAC Address command,
-> specified here:
-> 
-> https://www.dmtf.org/sites/default/files/standards/documents/DSP0222_1.2WIP90_0.pdf
-> 
-> It serves the exact same function as the existing OEM Get MAC Address
-> commands, so if a channel reports that it supports NC-SI 1.2, we prefer
-> to use the standard command rather than the OEM command.
-> 
-> Verified with an invalid MAC address and 2 valid ones:
-> 
-> [   55.137072] ftgmac100 1e690000.ftgmac eth0: NCSI: Received 3 provisioned MAC addresses
-> [   55.137614] ftgmac100 1e690000.ftgmac eth0: NCSI: MAC address 0: 00:00:00:00:00:00
-> [   55.138026] ftgmac100 1e690000.ftgmac eth0: NCSI: MAC address 1: fa:ce:b0:0c:20:22
-> [   55.138528] ftgmac100 1e690000.ftgmac eth0: NCSI: MAC address 2: fa:ce:b0:0c:20:23
-> [   55.139241] ftgmac100 1e690000.ftgmac eth0: NCSI: Unable to assign 00:00:00:00:00:00 to device
-> [   55.140098] ftgmac100 1e690000.ftgmac eth0: NCSI: Set MAC address to fa:ce:b0:0c:20:22
-> 
-> IMPORTANT NOTE:
-> 
-> The code I'm submitting here is parsing the MAC addresses as if they are
-> transmitted in *reverse* order.
-> 
-> This is different from how every other NC-SI command is parsed in the
-> Linux kernel, even though the spec describes the format in the same way
-> for every command.
-> 
-> The *reason* for this is that I was able to test this code against the
-> new 200G Broadcom NIC, which reports that it supports NC-SI 1.2 in Get
-> Version ID and successfully responds to this command. It transmits the
-> MAC addresses in reverse byte order.
-> 
-> Nvidia's new 200G NIC doesn't support NC-SI 1.2 yet. I don't know how
-> they're planning to implement it.
+--000000000000be0d5b05f068911e
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-All the above looks like a good reason to wait for at least a
-stable/documented H/W implementation, before pushing code to the
-networking core.
-
->  net/ncsi/ncsi-cmd.c    |  3 ++-
->  net/ncsi/ncsi-manage.c |  9 +++++++--
->  net/ncsi/ncsi-pkt.h    | 10 ++++++++++
->  net/ncsi/ncsi-rsp.c    | 45 +++++++++++++++++++++++++++++++++++++++++-
->  4 files changed, 63 insertions(+), 4 deletions(-)
+On 12/22/2022 9:52 AM, shaozhengchao wrote:
 > 
-> diff --git a/net/ncsi/ncsi-cmd.c b/net/ncsi/ncsi-cmd.c
-> index dda8b76b7798..7be177f55173 100644
-> --- a/net/ncsi/ncsi-cmd.c
-> +++ b/net/ncsi/ncsi-cmd.c
-> @@ -269,7 +269,8 @@ static struct ncsi_cmd_handler {
->  	{ NCSI_PKT_CMD_GPS,    0, ncsi_cmd_handler_default },
->  	{ NCSI_PKT_CMD_OEM,   -1, ncsi_cmd_handler_oem     },
->  	{ NCSI_PKT_CMD_PLDM,   0, NULL                     },
-> -	{ NCSI_PKT_CMD_GPUUID, 0, ncsi_cmd_handler_default }
-> +	{ NCSI_PKT_CMD_GPUUID, 0, ncsi_cmd_handler_default },
-> +	{ NCSI_PKT_CMD_GMCMA,  0, ncsi_cmd_handler_default }
->  };
->  
->  static struct ncsi_request *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
-> diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-> index f56795769893..bc1887a2543d 100644
-> --- a/net/ncsi/ncsi-manage.c
-> +++ b/net/ncsi/ncsi-manage.c
-> @@ -1038,11 +1038,16 @@ static void ncsi_configure_channel(struct ncsi_dev_priv *ndp)
->  	case ncsi_dev_state_config_oem_gma:
->  		nd->state = ncsi_dev_state_config_clear_vids;
->  
-> -		nca.type = NCSI_PKT_CMD_OEM;
->  		nca.package = np->id;
->  		nca.channel = nc->id;
->  		ndp->pending_req_num = 1;
-> -		ret = ncsi_gma_handler(&nca, nc->version.mf_id);
-> +		if (nc->version.major >= 1 && nc->version.minor >= 2) {
-> +			nca.type = NCSI_PKT_CMD_GMCMA;
-> +			ret = ncsi_xmit_cmd(&nca);
-> +		} else {
-> +			nca.type = NCSI_PKT_CMD_OEM;
-> +			ret = ncsi_gma_handler(&nca, nc->version.mf_id);
-> +		}
->  		if (ret < 0)
->  			schedule_work(&ndp->work);
->  
-> diff --git a/net/ncsi/ncsi-pkt.h b/net/ncsi/ncsi-pkt.h
-> index c9d1da34dc4d..f2f3b5c1b941 100644
-> --- a/net/ncsi/ncsi-pkt.h
-> +++ b/net/ncsi/ncsi-pkt.h
-> @@ -338,6 +338,14 @@ struct ncsi_rsp_gpuuid_pkt {
->  	__be32                  checksum;
->  };
->  
-> +/* Get MC MAC Address */
-> +struct ncsi_rsp_gmcma_pkt {
-> +	struct ncsi_rsp_pkt_hdr rsp;
-> +	unsigned char           address_count;
-> +	unsigned char           reserved[3];
-> +	unsigned char           addresses[][ETH_ALEN];
-> +};
-> +
->  /* AEN: Link State Change */
->  struct ncsi_aen_lsc_pkt {
->  	struct ncsi_aen_pkt_hdr aen;        /* AEN header      */
-> @@ -398,6 +406,7 @@ struct ncsi_aen_hncdsc_pkt {
->  #define NCSI_PKT_CMD_GPUUID	0x52 /* Get package UUID                 */
->  #define NCSI_PKT_CMD_QPNPR	0x56 /* Query Pending NC PLDM request */
->  #define NCSI_PKT_CMD_SNPR	0x57 /* Send NC PLDM Reply  */
-> +#define NCSI_PKT_CMD_GMCMA	0x58 /* Get MC MAC Address */
->  
->  
->  /* NCSI packet responses */
-> @@ -433,6 +442,7 @@ struct ncsi_aen_hncdsc_pkt {
->  #define NCSI_PKT_RSP_GPUUID	(NCSI_PKT_CMD_GPUUID + 0x80)
->  #define NCSI_PKT_RSP_QPNPR	(NCSI_PKT_CMD_QPNPR   + 0x80)
->  #define NCSI_PKT_RSP_SNPR	(NCSI_PKT_CMD_SNPR   + 0x80)
-> +#define NCSI_PKT_RSP_GMCMA	(NCSI_PKT_CMD_GMCMA  + 0x80)
->  
->  /* NCSI response code/reason */
->  #define NCSI_PKT_RSP_C_COMPLETED	0x0000 /* Command Completed        */
-> diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
-> index 7a805b86a12d..28a042688d0b 100644
-> --- a/net/ncsi/ncsi-rsp.c
-> +++ b/net/ncsi/ncsi-rsp.c
-> @@ -1140,6 +1140,48 @@ static int ncsi_rsp_handler_netlink(struct ncsi_request *nr)
->  	return ret;
->  }
->  
-> +static int ncsi_rsp_handler_gmcma(struct ncsi_request *nr)
-> +{
-> +	struct ncsi_dev_priv *ndp = nr->ndp;
-> +	struct net_device *ndev = ndp->ndev.dev;
-> +	struct ncsi_rsp_gmcma_pkt *rsp;
-> +	struct sockaddr saddr;
-> +	int ret = -1;
-> +	int i;
-> +	int j;
-> +
-> +	rsp = (struct ncsi_rsp_gmcma_pkt *)skb_network_header(nr->rsp);
-> +	saddr.sa_family = ndev->type;
-> +	ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
-> +
-> +	netdev_warn(ndev, "NCSI: Received %d provisioned MAC addresses\n",
-> +		    rsp->address_count);
-> +	for (i = 0; i < rsp->address_count; i++) {
-> +		netdev_warn(ndev, "NCSI: MAC address %d: "
-> +			    "%02x:%02x:%02x:%02x:%02x:%02x\n", i,
-> +			    rsp->addresses[i][5], rsp->addresses[i][4],
-> +			    rsp->addresses[i][3], rsp->addresses[i][2],
-> +			    rsp->addresses[i][1], rsp->addresses[i][0]);
-> +	}
+> 
+> On 2022/12/22 16:46, Kalle Valo wrote:
+>> Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
+>>
+>>> On 2022-12-21 18:33:06 [+0000], Kalle Valo wrote:
+>>>> Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+>>>>
+>>>>> After the DMA buffer is mapped to a physical address, address is 
+>>>>> stored
+>>>>> in pktids in brcmf_msgbuf_alloc_pktid(). Then, pktids is parsed in
+>>>>> brcmf_msgbuf_get_pktid()/brcmf_msgbuf_release_array() to obtain 
+>>>>> physaddr
+>>>>> and later unmap the DMA buffer. But when count is always equal to
+>>>>> pktids->array_size, physaddr isn't stored in pktids and the DMA buffer
+>>>>> will not be unmapped anyway.
+>>>>>
+>>>>> Fixes: 9a1bb60250d2 ("brcmfmac: Adding msgbuf protocol.")
+>>>>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+>>>>
+>>>> Can someone review this?
+>>>
+>>> After looking at the code, that skb is mapped but not inserted into the
+>>> ringbuffer in this condition. The function returns with an error and the
+>>> caller will free that skb (or add to a list for later). Either way the
+>>> skb remains mapped which is wrong. The unmap here is the right thing to
+>>> do.
+>>>
+>>> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>>
+>> Thanks for the review, very much appreciated.
+>>
+> 
+> Thank you very much.
 
-You must avoid this kind of debug messages on 'warn' level (more
-below). You could consider pr_debug() instead or completely drop the
-message.
+Good catch. Has this path been observed or is this found by inspecting 
+the code? Just curious.
 
-Cheers,
+Regards,
+Arend
 
-Paolo
+--000000000000be0d5b05f068911e
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
+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
+2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
+Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
+ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
+zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
+sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
+BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
+N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
+p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
+bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCOpCzy0KN27wCXQdNW
+OM2K3eApbaXHDs4+oB5FrSVfZzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjEyMjIxMDU5NTVaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEA1fBEQRG1TWPMfC5dZ/O7aSTIoBwUfjJdyzUS
+43LoWT6zdohat2UkSPUEaxisOHBRLZTQWheXDhY4ee94MaSuG/UBCpmHdYUSg4s3hM/8g4w2ua4u
+vINgF5DpNR3jgwpoapptFpZmW4I8l07vB/kG4mLRbUXd8ZBO7GnKGgKRNVFpCXOZphXGNKX9hERl
+of9GFNCuHbKNfxNb0fwXyzm4pFJtaYy47b2uGX0N7pi+iHI0TEUu5itts+EEhoAvn+45/baYlbAo
+YduTk3HRX+DPhTulKcsfIMp5UYNi1wXcfWLHfxf89EwLprLT86x7pImjSFES/m9joFSNH8luzEc5
+0A==
+--000000000000be0d5b05f068911e--
