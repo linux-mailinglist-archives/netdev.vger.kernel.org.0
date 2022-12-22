@@ -2,160 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 090B8654334
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 15:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C2D654343
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 15:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235779AbiLVOem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 09:34:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
+        id S229879AbiLVOkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 09:40:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235770AbiLVOej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 09:34:39 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930AF2B626;
-        Thu, 22 Dec 2022 06:34:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GYQZnbopL0raC7rLaDWaAW0xzhT+Z/xrWz90yKT+r8s=; b=mVxNLmc6SMtnlEVEod854eFGzY
-        Y+rKvdZQulq03Th2It4k4TOuHDcHOfEeCO/RCQluCtLRbAhQuusN/R3MRupzv/9RlEtLNDclGQtDx
-        eMEfea48OEtXlaHDF0zt0D2epoL98XQUT+3jHQumjHFPZyIA5VpezC8OHWyBN2ddZzrw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p8MeR-000GGh-Ee; Thu, 22 Dec 2022 15:34:27 +0100
-Date:   Thu, 22 Dec 2022 15:34:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lee Jones <lee@kernel.org>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: Advice on MFD-style probing of DSA switch SoCs
-Message-ID: <Y6Rq8+wYpDkGGbYs@lunn.ch>
-References: <20221222134844.lbzyx5hz7z5n763n@skbuf>
+        with ESMTP id S229526AbiLVOkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 09:40:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE672A27B;
+        Thu, 22 Dec 2022 06:40:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FF9AB81DCC;
+        Thu, 22 Dec 2022 14:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 18750C433D2;
+        Thu, 22 Dec 2022 14:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671720016;
+        bh=mesbrDVl2N17I6VECslJAXZSNpf4I6xgG+gsEQAKHk0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hDeKgm0+sB1v53Ux0hyaN0In/agWxbcJQRzx5ICi/dnrXI2mfOkNFPbGU4XbckDbE
+         NvZWnjRtZEnSsVjJAWrkOrdTvhw1HRto7J4mKidJF2enaW3y95g4aRSL3C2wGQgAUj
+         RGhbAiEpy8cosbSqVsaCeb4fiRpVSQJoQ0Nm1gzsOgV0Bz/QRlIdoKqUAXZ//+86Jk
+         mjcrk2gmWj73gkrOnws/tvBOMf695vECzpllC4ctazCaE0lPm3OHOzMN7PXyuYC/lE
+         Tzh59ilAcF543mMfN6dB9VQ69OXPyMNkbvTg+y00hYeSG5mFLyLvGKJoitMLHVS/uu
+         lcluN9MIKV1UA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0045FC395EA;
+        Thu, 22 Dec 2022 14:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221222134844.lbzyx5hz7z5n763n@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] veth: Fix race with AF_XDP exposing old or uninitialized
+ descriptors
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167172001599.2279.15742715253058774343.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Dec 2022 14:40:15 +0000
+References: <20221220185903.1105011-1-sbohrer@cloudflare.com>
+In-Reply-To: <20221220185903.1105011-1-sbohrer@cloudflare.com>
+To:     Shawn Bohrer <sbohrer@cloudflare.com>
+Cc:     magnus.karlsson@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, bjorn@kernel.org, kernel-team@cloudflare.com,
+        davem@davemloft.net
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I think that doesn't scale very well either, so I was looking into
-> transitioning the sja1105 bindings to something similar to what Colin
-> Foster has done with vsc7512 (ocelot). For this switch, new-style
-> bindings would look like this:
+Hello:
 
-Have you looked at probe ordering issues? MFD devices i've played with
-are very independent. They are a bunch of IP blocks sharing a bus. A
-switch however is very interconnected.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
+On Tue, 20 Dec 2022 12:59:03 -0600 you wrote:
+> When AF_XDP is used on on a veth interface the RX ring is updated in two
+> steps.  veth_xdp_rcv() removes packet descriptors from the FILL ring
+> fills them and places them in the RX ring updating the cached_prod
+> pointer.  Later xdp_do_flush() syncs the RX ring prod pointer with the
+> cached_prod pointer allowing user-space to see the recently filled in
+> descriptors.  The rings are intended to be SPSC, however the existing
+> order in veth_poll allows the xdp_do_flush() to run concurrently with
+> another CPU creating a race condition that allows user-space to see old
+> or uninitialized descriptors in the RX ring.  This bug has been observed
+> in production systems.
 > 
-> 	soc@2 {
-> 		compatible = "nxp,sja1110-soc";
-> 		reg = <2>;
-> 		spi-max-frequency = <4000000>;
-> 		spi-cpol;
-> 		#address-cells = <1>;
-> 		#size-cells = <1>;
-> 
-> 		sw2: ethernet-switch@0 {
-> 			compatible = "nxp,sja1110a";
-> 			reg = <0x000000 0x400000>;
-> 			resets = <&sw2_rgu SJA1110_RGU_ETHSW_RST>;
-> 			dsa,member = <0 1>;
-> 
-> 			ethernet-ports {
-> 				#address-cells = <1>;
-> 				#size-cells = <0>;
+> [...]
 
-...
+Here is the summary with links:
+  - veth: Fix race with AF_XDP exposing old or uninitialized descriptors
+    https://git.kernel.org/netdev/net/c/fa349e396e48
 
-> 
-> 				port@3 {
-> 					reg = <3>;
-> 					label = "1ge_p2";
-> 					phy-mode = "rgmii-id";
-> 					phy-handle = <&sw2_mii3_phy>;
-> 				};
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-
-So for the switch to probe, the PHY needs to probe first.
-
-> 		mdio@704000 {
-> 			compatible = "nxp,sja1110-base-t1-mdio";
-> 			#address-cells = <1>;
-> 			#size-cells = <0>;
-> 			reg = <0x704000 0x1000>;
-> 
-> 			sw2_port5_base_t1_phy: ethernet-phy@1 {
-> 				compatible = "ethernet-phy-ieee802.3-c45";
-> 				reg = <0x1>;
-> 				interrupts-extended = <&slir2 SJA1110_IRQ_CBT1_PHY1>;
-> 			};
-
-For the PHY to probe requires that the interrupt controller probes first.
-
-
-> 		slir2: interrupt-controller@711fe0 {
-> 			compatible = "nxp,sja1110-acu-slir";
-> 			reg = <0x711fe0 0x10>;
-> 			interrupt-controller;
-> 			#interrupt-cells = <1>;
-> 			interrupt-parent = <&gpio 10>;
-> 		};
-
-and the interrupt controller requires its parent gpio controller
-probes first. I assume this is the host SOC GPIO controller, not the
-switches GPIO controller.
-
-> 		sw2_rgu: reset@718000 {
-> 			compatible = "nxp,sja1110-rgu";
-> 			reg = <0x718000 0x1000>;
-> 			#reset-cells = <1>;
-> 		};
-
-and presumably something needs to hit the reset at some point? Will
-there be DT phandles to this?
-
-> 
-> 		sw2_cgu: clock-controller@719000 {
-> 			compatible = "nxp,sja1110-cgu";
-> 			reg = <0x719000 0x1000>;
-> 			#clock-cells = <1>;
-> 		};
-
-and phandles to the clock driver?
-
-Before doing too much in this direction, i would want to be sure you
-have sufficient control of ordering and the DT loops are not too
-complex, that the MFD core and the driver core can actually get
-everything probed.
-
-The current way of doing it, with the drivers embedded inside the DSA
-driver is that DT blob only exposes what needs to be seen outside of
-the DSA driver. And the driver has full control over the order it
-probes its internal sub drivers, so ensuring they are probed in the
-correct order, and the linking is done in C, not DT, were again the
-driver is in full control.
-
-I do however agree that being able to split sub drivers out of the
-main driver is a good idea, and putting them in the appropriated
-subsystem would help with code review.
-
-Maybe the media subsystem has some pointers how to do this. It also
-has complex devices made up from lots of sub devices.
-
-    Andrew
 
