@@ -2,120 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D98CE654238
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 14:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEA66542CE
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 15:23:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235263AbiLVN5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 08:57:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
+        id S235504AbiLVOXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 09:23:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiLVN5m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 08:57:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2952913EA3;
-        Thu, 22 Dec 2022 05:57:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6538B81DA5;
-        Thu, 22 Dec 2022 13:57:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762F8C433D2;
-        Thu, 22 Dec 2022 13:57:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671717458;
-        bh=m4BhhoLs0SHSKY2sSWcAGIJSCilLlLfjaBNVjEGhwrk=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=H0HmuXkswh4X+/si5WMZLDgC3liPMt970G+q2tQfnquI1pj+PPHnfQnODoFI7O6BU
-         vCqid/QYSGzhb5O4oBz/AQveVeGK9eksEAtP5VacivcbqkBq1c+pG5JpGGI9ANkqyO
-         Y/IVN9xYYunIt4P3S762X4yYZWCSoSCp5zOG9gXJAOBryZFrijM1ko6OTgSZEvZ0IK
-         lXc4OorgtqD2fpkZaL15nj2mJXViNFK15QfrDiEUkO5IBN/MWhtoyd4NxoUw9ZRrFM
-         OtqSElmmHoJ+oMFQVvATKrv0ym1/OI9G/C8TVgxE8bTAJWRmUYwVOGmdxpBlxWqeSc
-         jvSalIjQT65Cw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Robert Marko <robert.marko@sartura.hr>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>,
-        Robert Marko <robimarko@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, elder@linaro.org,
-        hemantk@codeaurora.org, quic_jhugo@quicinc.com,
-        quic_qianyu@quicinc.com, bbhatt@codeaurora.org,
-        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, ansuelsmth@gmail.com
-Subject: Re: [PATCH 2/2] wifi: ath11k: use unique QRTR instance ID
-References: <20221105194943.826847-1-robimarko@gmail.com>
-        <20221105194943.826847-2-robimarko@gmail.com>
-        <20221107174727.GA7535@thinkpad> <87cz9xcqbd.fsf@kernel.org>
-        <877czn8c2n.fsf@kernel.org>
-        <CA+HBbNFCFtJwzN=6SCsWnDmAjPkmxE4guH1RrLc+-HByLcVVXA@mail.gmail.com>
-Date:   Thu, 22 Dec 2022 15:57:32 +0200
-In-Reply-To: <CA+HBbNFCFtJwzN=6SCsWnDmAjPkmxE4guH1RrLc+-HByLcVVXA@mail.gmail.com>
-        (Robert Marko's message of "Wed, 14 Dec 2022 13:02:42 +0100")
-Message-ID: <87k02jzgkz.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S235612AbiLVOXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 09:23:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B0828717
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 06:22:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671718938;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mMgekTLXsAQ2q0wUPkhRLoJ34D3Iu1pE56+7MU/IOrE=;
+        b=HoCeU96SSJdFZ+cOW/h7Ml1uPssEF+GZWQcfw4fXwUgGp+ybs+5ty4qsXT7ihjZ9Xq5hof
+        OC8A1qGmqy1VAMxU6kWx8DLi4Cjo3K7tvfdcZwkgRcSA9oEsY2GNkvh8JP/5GZivBCloqL
+        jh/LWAn+P1ytsVlwElck0rpMzgow4RU=
+Received: from mail-vs1-f69.google.com (mail-vs1-f69.google.com
+ [209.85.217.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-102-Zq6tKMp0PCW7cS6TJ6Z_uA-1; Thu, 22 Dec 2022 09:22:16 -0500
+X-MC-Unique: Zq6tKMp0PCW7cS6TJ6Z_uA-1
+Received: by mail-vs1-f69.google.com with SMTP id h6-20020a056102104600b003b1371d70e8so453316vsq.11
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 06:22:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mMgekTLXsAQ2q0wUPkhRLoJ34D3Iu1pE56+7MU/IOrE=;
+        b=8Mz6p879MhZxYHRXMehL57pZ2bH4uwksfUVhVWaOQTpF4fUf0ND+/mVjCJXgG0CdOG
+         VT6zZkgmyevRodkEfJipj151f8wSm/MSI3gmAjs4FnH7rDMDGgoF6m8gWwLibP3HZlV3
+         Wku738m8VglMHs+01oUqfAhfnanWWG1egF8VsjectMM2cTfXCVXTqbtpOtePQZ2LsZIH
+         yTixpsQina4MMZJ2Ytz3/pfERFfORkOmXxGWFeAe1gXqzxaQju5uTqTWBDIjp/PeDvp1
+         /cUmJm67LuFlf9aIt+z7mvY8vYLJa6swoxEpWW6DQLC3ahXzcDse9e6gzrLnGNSPriOG
+         aXyw==
+X-Gm-Message-State: AFqh2kqf3hzOdW+X1xzfmMBknaBI2zPqeCDRTaQKUx+WGsJTrRWvcBU8
+        LEDXUW6q+cLl6DbqN56YrCgO1TIZCwx2XroI+/buCMxq3ktp24sM1r2HH9XBpSCaArxxWl4ytFQ
+        2xKxwjtIrfAorJXcG
+X-Received: by 2002:a67:eb5a:0:b0:3b5:1c66:8462 with SMTP id x26-20020a67eb5a000000b003b51c668462mr2629841vso.12.1671718935773;
+        Thu, 22 Dec 2022 06:22:15 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtwyw9Z+LcJ9dpEG9P9afhFXLi0GxMfLp+zU4iEXlv4iTOSPG+1dv6HL0kIQQrmS+UX20ycGw==
+X-Received: by 2002:a67:eb5a:0:b0:3b5:1c66:8462 with SMTP id x26-20020a67eb5a000000b003b51c668462mr2629819vso.12.1671718935509;
+        Thu, 22 Dec 2022 06:22:15 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
+        by smtp.gmail.com with ESMTPSA id bq43-20020a05620a46ab00b0070209239b87sm380834qkb.41.2022.12.22.06.22.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Dec 2022 06:22:14 -0800 (PST)
+Message-ID: <0efd4a7072fb90cc9bc9992b00d9ade233a38de1.camel@redhat.com>
+Subject: Re: [PATCH net 0/8] Add support for two classes of VCAP rules
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     UNGLinuxDriver@microchip.com, Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Dan Carpenter <error27@gmail.com>
+Date:   Thu, 22 Dec 2022 15:22:10 +0100
+In-Reply-To: <20221221132517.2699698-1-steen.hegelund@microchip.com>
+References: <20221221132517.2699698-1-steen.hegelund@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Robert Marko <robert.marko@sartura.hr> writes:
+Hello,
+On Wed, 2022-12-21 at 14:25 +0100, Steen Hegelund wrote:
+> This adds support for two classes of VCAP rules:
+> 
+> - Permanent rules (added e.g. for PTP support)
+> - TC user rules (added by the TC userspace tool)
+> 
+> For this to work the VCAP Loopups must be enabled from boot, so that the
+> "internal" clients like PTP can add rules that are always active.
+> 
+> When the TC tool add a flower filter the VCAP rule corresponding to this
+> filter will be disabled (kept in memory) until a TC matchall filter creates
+> a link from chain 0 to the chain (lookup) where the flower filter was
+> added.
+> 
+> When the flower filter is enabled it will be written to the appropriate
+> VCAP lookup and become active in HW.
+> 
+> Likewise the flower filter will be disabled if there is no link from chain
+> 0 to the chain of the filter (lookup), and when that happens the
+> corresponding VCAP rule will be read from the VCAP instance and stored in
+> memory until it is deleted or enabled again.
 
-> On Tue, Nov 22, 2022 at 12:26 PM Kalle Valo <kvalo@kernel.org> wrote:
->
->>
->> Kalle Valo <kvalo@kernel.org> writes:
->>
->> > Manivannan Sadhasivam <mani@kernel.org> writes:
->> >
->> >> On Sat, Nov 05, 2022 at 08:49:43PM +0100, Robert Marko wrote:
->> >>> Currently, trying to use AHB + PCI/MHI cards or multiple PCI/MHI cards
->> >>> will cause a clash in the QRTR instance node ID and prevent the driver
->> >>> from talking via QMI to the card and thus initializing it with:
->> >>> [    9.836329] ath11k c000000.wifi: host capability request failed: 1 90
->> >>> [    9.842047] ath11k c000000.wifi: failed to send qmi host cap: -22
->> >>>
->> >>
->> >> There is still an outstanding issue where you cannot connect two WLAN modules
->> >> with same node id.
->> >>
->> >>> So, in order to allow for this combination of cards, especially AHB + PCI
->> >>> cards like IPQ8074 + QCN9074 (Used by me and tested on) set the desired
->> >>> QRTR instance ID offset by calculating a unique one based on PCI domain
->> >>> and bus ID-s and writing it to bits 7-0 of BHI_ERRDBG2 MHI register by
->> >>> using the SBL state callback that is added as part of the series.
->> >>> We also have to make sure that new QRTR offset is added on top of the
->> >>> default QRTR instance ID-s that are currently used in the driver.
->> >>>
->> >>
->> >> Register BHI_ERRDBG2 is listed as Read only from Host as per the BHI spec.
->> >> So I'm not sure if this solution is going to work on all ath11k supported
->> >> chipsets.
->> >>
->> >> Kalle, can you confirm?
->> >
->> > I can't look at this in detail right now, but hopefully in few days.
->> > I'll get back to you.
->>
->> The solution we have been thinking internally would not use
->> MHI_CB_EE_SBL_MODE at all, it's not clear for me yet why the mode was
->> not needed in our solution. Maybe there are firmware modifications? I
->> think it's best that we submit our proposal as well, then we can then
->> compare implementations and see what is the best course of action.
->
-> Kalle, any ETA when you will post your idea? I am constantly hitting
-> this crazy limitation and my idea does not work on cards like QCA6390
-> so it's not a viable workaround at all.
+Despite the 'net' target, this looks really like net-next material as
+most patches look like large refactor. I see there are a bunch of fixes
+in patches 3-8, but quite frankly it's not obvious at all what the
+refactors/new features described into the commit messages themself
+really fix.
 
-Really sorry, I just didn't manage to get this finalised due to other
-stuff and now I'm leaving for a two week vacation :(
+I suggest to move this series to net-next (and thus repost after Jan
+2), unless you come-up with some good reasons to keep it in net.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Thanks,
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Paolo
+
