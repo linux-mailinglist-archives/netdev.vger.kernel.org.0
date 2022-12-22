@@ -2,81 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 705736547AD
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 22:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5925D6547D7
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 22:26:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235636AbiLVVND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 16:13:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41430 "EHLO
+        id S230125AbiLVVZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 16:25:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiLVVNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 16:13:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F39A193DF
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:12:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671743535;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xm3zfx2w0Rv/QhCPp43l1d4YnOjZ2jCv9sko5e0//UM=;
-        b=htsLC8tE8gp+AF5rFhUto1XJa6vjP1bpSu3Y2mlKvjg6M1wevzXyLftypL2uM8q5/+TMHe
-        c4/QWL5zHuX5EcJ/OzqYOkhP9PcXxNv1T60j2+mXzlfOlXjluBJ9HRM2C0Z9Ulb8jXMibo
-        XHH1L1RFttlk3YAjohLdFrwfrZ0zjQg=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-12-VPIY24qtO0SnEKSDWw2g1w-1; Thu, 22 Dec 2022 16:12:12 -0500
-X-MC-Unique: VPIY24qtO0SnEKSDWw2g1w-1
-Received: by mail-io1-f72.google.com with SMTP id a14-20020a6b660e000000b006bd37975cdfso1191278ioc.10
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:12:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xm3zfx2w0Rv/QhCPp43l1d4YnOjZ2jCv9sko5e0//UM=;
-        b=0n+KZrjyi6L/1QaMuwVj6OHu6+d9V4kxzfERORqgcDFYYLwygSiPX94eG1Q415dNk+
-         PTuNJU2W6K4iiSNVu9VFt7NSzxgfF9H1Z4y2BqEiQAJvnlhlaWfUgZX1pg8iNWY7AryE
-         /Wa2c6F6KaeiWn2q0ohpHQWbYv8XUZCJvHfynT8YsREzjZ5XzYRwpjQi0gJVCYi+x7Kp
-         9KjUsbswH7qSlaxY8iXpy60vShEsFD7HOnQgBtAmOBNcphAqaRScqwMCiKqBTwRX5+pG
-         qWh1o2kwVATP6KfUt77Y8RxaVb2exlxW4ZzXHhM2Zi1IQEKyGkN2jQ0IrBv5ej21O3VV
-         gRnQ==
-X-Gm-Message-State: AFqh2krEUGeD7qKvhW6aE++1Yro9kXJgJR9EJu8GPWDhi/CTObfJxtQs
-        CHKmnUaYx3gO1u8gbzfLtIZCF2zHKUiPY2pCCxqgPYYvVRdXcXO8co9yomblurqeFwmxtXxb6FU
-        ppo6uS09XEktycWaURhh2soJ9OaE8ToOA
-X-Received: by 2002:a02:cbb4:0:b0:39d:2ab3:d819 with SMTP id v20-20020a02cbb4000000b0039d2ab3d819mr548724jap.221.1671743531394;
-        Thu, 22 Dec 2022 13:12:11 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvZEz2ocbnnyvLr+TW4iQ7/91FUvUfuHg4WGWFgzaujg/CI4SQoqrB0K05HszUkil3yhVFotx6AXjwacX9EPiU=
-X-Received: by 2002:a02:cbb4:0:b0:39d:2ab3:d819 with SMTP id
- v20-20020a02cbb4000000b0039d2ab3d819mr548714jap.221.1671743531178; Thu, 22
- Dec 2022 13:12:11 -0800 (PST)
+        with ESMTP id S229674AbiLVVZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 16:25:56 -0500
+Received: from mx14lb.world4you.com (mx14lb.world4you.com [81.19.149.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428BFEE1E
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:25:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=C5L2lyICSdwoZ9ESk0JS5o6ks5NIoXo9kWo6CY1cllw=; b=orY8HffauUWDibltvzkhfKFOKn
+        RIPi9Edr7JHBzdVSCtrO37wKgJPxhhDMMmfDVETNeUVfNxTKrUtFmcycsAyZtp0WEf8DXE87qsNid
+        eg8+EI8JNpxIkQRGSUBykwmg1DGvbZOB78QinG7UvyQA6zAR83yFsFAbdzwPHgqSqBWg=;
+Received: from [88.117.53.17] (helo=[10.0.0.160])
+        by mx14lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1p8T4Z-0001BD-Ov; Thu, 22 Dec 2022 22:25:51 +0100
+Message-ID: <6ca87c55-9cda-294e-43f2-2c9d74b91939@engleder-embedded.com>
+Date:   Thu, 22 Dec 2022 22:25:51 +0100
 MIME-Version: 1.0
-References: <20221222-hid-v1-0-f4a6c35487a5@weissschuh.net> <20221222-hid-v1-2-f4a6c35487a5@weissschuh.net>
-In-Reply-To: <20221222-hid-v1-2-f4a6c35487a5@weissschuh.net>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Thu, 22 Dec 2022 22:12:00 +0100
-Message-ID: <CAO-hwJL+zenkC+qPuPWLO-dFkg_pWoGTQYXR5mzSqUrnX6MObA@mail.gmail.com>
-Subject: Re: [PATCH 2/8] HID: usbhid: Make hid_is_usb() non-inline
-To:     =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        David Rheinsberg <david.rheinsberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v7] vmxnet3: Add XDP support.
+Content-Language: en-US
+To:     William Tu <u9012063@gmail.com>, netdev@vger.kernel.org
+Cc:     tuc@vmware.com, gyang@vmware.com, doshir@vmware.com
+References: <20221222154648.21497-1-u9012063@gmail.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <20221222154648.21497-1-u9012063@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,69 +53,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 22, 2022 at 6:16 AM Thomas Wei=C3=9Fschuh <linux@weissschuh.net=
-> wrote:
->
-> By making hid_is_usb() a non-inline function the lowlevel usbhid driver
-> does not have to be exported anymore.
->
-> Also mark the argument as const as it is not modified.
->
-> Signed-off-by: Thomas Wei=C3=9Fschuh <linux@weissschuh.net>
-> ---
->  drivers/hid/usbhid/hid-core.c | 6 ++++++
->  include/linux/hid.h           | 5 +----
->  2 files changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/hid/usbhid/hid-core.c b/drivers/hid/usbhid/hid-core.=
-c
-> index be4c731aaa65..54b0280d0073 100644
-> --- a/drivers/hid/usbhid/hid-core.c
-> +++ b/drivers/hid/usbhid/hid-core.c
-> @@ -1334,6 +1334,12 @@ struct hid_ll_driver usb_hid_driver =3D {
->  };
->  EXPORT_SYMBOL_GPL(usb_hid_driver);
->
-> +bool hid_is_usb(const struct hid_device *hdev)
+On 22.12.22 16:46, William Tu wrote:
+> @@ -1776,6 +1800,7 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
+>   
+>   	rq->comp_ring.gen = VMXNET3_INIT_GEN;
+>   	rq->comp_ring.next2proc = 0;
+> +	rq->xdp_bpf_prog = NULL;
+
+Reference to BPF program is lost without calling bpf_prog_put(). Are you
+sure this is ok? This function is called during ndo_stop too.
+
+[...]
+
+> +static int
+> +vmxnet3_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf,
+> +		struct netlink_ext_ack *extack)
 > +{
-> +       return hdev->ll_driver =3D=3D &usb_hid_driver;
-> +}
-> +EXPORT_SYMBOL_GPL(hid_is_usb);
+> +	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+> +	struct bpf_prog *new_bpf_prog = bpf->prog;
+> +	struct bpf_prog *old_bpf_prog;
+> +	bool need_update;
+> +	bool running;
+> +	int err = 0;
 > +
->  static int usbhid_probe(struct usb_interface *intf, const struct usb_dev=
-ice_id *id)
->  {
->         struct usb_host_interface *interface =3D intf->cur_altsetting;
-> diff --git a/include/linux/hid.h b/include/linux/hid.h
-> index 8677ae38599e..e8400aa78522 100644
-> --- a/include/linux/hid.h
-> +++ b/include/linux/hid.h
-> @@ -864,10 +864,7 @@ static inline bool hid_is_using_ll_driver(struct hid=
-_device *hdev,
->         return hdev->ll_driver =3D=3D driver;
->  }
->
-> -static inline bool hid_is_usb(struct hid_device *hdev)
-> -{
-> -       return hid_is_using_ll_driver(hdev, &usb_hid_driver);
-> -}
-> +extern bool hid_is_usb(const struct hid_device *hdev);
+> +	if (new_bpf_prog && netdev->mtu > VMXNET3_XDP_MAX_MTU) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	old_bpf_prog = READ_ONCE(adapter->rx_queue[0].xdp_bpf_prog);
 
-The problem here is that CONFIG_USB_HID can be set to either m or n.
-In the n case, you'll end up with an undefined symbol, in the m case,
-it won't link too if CONFIG_HID is set to Y (and it'll be quite a mess
-to call it if the module is not loaded yet).
+Wouldn't it be simpler if xdp_bpf_prog is move from rx_queue to
+adapter?
 
-Cheers,
-Benjamin
+[...]
 
+> +/* This is the main xdp call used by kernel to set/unset eBPF program. */
+> +int
+> +vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
+> +{
+> +	switch (bpf->command) {
+> +	case XDP_SETUP_PROG:
+> +		netdev_dbg(netdev, "XDP: set program to ");
 
->
->
->  #define        PM_HINT_FULLON  1<<5
->  #define PM_HINT_NORMAL 1<<1
->
-> --
-> 2.39.0
->
+Did you forget to delete this debug output?
 
+[...]
+
+> +int
+> +vmxnet3_xdp_xmit(struct net_device *dev,
+> +		 int n, struct xdp_frame **frames, u32 flags)
+> +{
+> +	struct vmxnet3_adapter *adapter;
+> +	struct vmxnet3_tx_queue *tq;
+> +	struct netdev_queue *nq;
+> +	int i, err, cpu;
+> +	int nxmit = 0;
+> +	int tq_number;
+> +
+> +	adapter = netdev_priv(dev);
+> +
+> +	if (unlikely(test_bit(VMXNET3_STATE_BIT_QUIESCED, &adapter->state)))
+> +		return -ENETDOWN;
+> +	if (unlikely(test_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state)))
+> +		return -EINVAL;
+> +
+> +	tq_number = adapter->num_tx_queues;
+> +	cpu = smp_processor_id();
+> +	tq = &adapter->tx_queue[cpu % tq_number];
+> +	if (tq->stopped)
+> +		return -ENETDOWN;
+> +
+> +	nq = netdev_get_tx_queue(adapter->netdev, tq->qid);
+> +
+> +	__netif_tx_lock(nq, cpu);
+> +	for (i = 0; i < n; i++) {
+> +		err = vmxnet3_xdp_xmit_frame(adapter, frames[i], tq);
+> +		/* vmxnet3_xdp_xmit_frame has copied the data
+> +		 * to skb, so we free xdp frame below.
+> +		 */
+> +		get_page(virt_to_page(frames[i]->data));
+> +		xdp_return_frame(frames[i]);
+> +		if (err) {
+> +			tq->stats.xdp_xmit_err++;
+> +			break;
+> +		}
+> +		nxmit++;
+
+You could just use the loop iterator and drop nxmit. I got this comment
+for one of my XDP patches from Saeed Mahameed.
+
+[...]
+
+Did you consider to split this patch into multiple patches to make
+review easier?
+
+Gerhard
