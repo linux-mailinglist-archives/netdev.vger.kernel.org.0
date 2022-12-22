@@ -2,355 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FBFC6546CD
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 20:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98DB66546EF
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 20:56:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235747AbiLVToj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 14:44:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
+        id S235498AbiLVT4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 14:56:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiLVToi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 14:44:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA1413FAD
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 11:43:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671738232;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Jqg4l9ppU4/LoATwhQrDYp/3VHTevvJa8cFjxg3vEVw=;
-        b=FpUxj0mP4u0jZM1D1rxiX4cch0ZrRjvjS1Sm8/2DL5RQrIypkCjH5dLJjFB6ULy1cHPML+
-        Y3AmiskEGMMF8DM4mZqpKAPGaInc/niJx7npz2k6fahzmdKkHcqgO+3wAk+ggVKPosPw3U
-        luHBTU7Sz4HrUnOpTypa5qc+EWw8yg8=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-632-s9nGsnvXP3SQbhx56Am1sQ-1; Thu, 22 Dec 2022 14:43:51 -0500
-X-MC-Unique: s9nGsnvXP3SQbhx56Am1sQ-1
-Received: by mail-ej1-f71.google.com with SMTP id qk40-20020a1709077fa800b007eeb94ecdb5so2050493ejc.12
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 11:43:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Jqg4l9ppU4/LoATwhQrDYp/3VHTevvJa8cFjxg3vEVw=;
-        b=5bYt2FNDh4GS3twDaxyzE7rSbuwnqv2krsIoOWadcIZHWlHcNGpWjsTUJnb53oX0O/
-         K7PBch8be0ZPWdakKvcYsU8Aar6FgGObVzRB2PaPEG1NRs6tHLvUq0KLH9P0miAJwTvy
-         W4ZkFd5Mula6QQE2GuuBIPCMZh6AGu4nrb246zGvz1Wcc9lWvPh9VansC4AWIUPfevyU
-         LNnV3wyzcHQ3+RlExTab+xPBJ0UV5Q9g2pTa5hEK8dDuO8YnKB4wYXPn8FcZoGdt5fRV
-         NP8V+iB3GPosgWx8/t7f03NnAabE2M8eoV9dGwP/SqGRYab4hTDmj0OfT31WxE4HdaNY
-         F8yw==
-X-Gm-Message-State: AFqh2kovvjqyp97qhlxvrmJyUnHgB2Rr+pC7tzrTzHeokbMBSZirt8Fy
-        Z8Y9m1NwbDR3P0vTrft6Al1whMHxxNrp7HAYwV9w4FZ/QdpQZlnPfqVRE5X7F/2jLw66pBJqDla
-        OnELv+sY72cLWnvd7
-X-Received: by 2002:a17:907:6d0c:b0:7c1:652:d109 with SMTP id sa12-20020a1709076d0c00b007c10652d109mr6520510ejc.35.1671738230445;
-        Thu, 22 Dec 2022 11:43:50 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvLlDzf2yxva+GWIB8SmxNohbeD3HjmEQmM7Dh7TSaob2mNG9+TQ7FtyP3KjZNNoenU+30zOA==
-X-Received: by 2002:a17:907:6d0c:b0:7c1:652:d109 with SMTP id sa12-20020a1709076d0c00b007c10652d109mr6520497ejc.35.1671738230166;
-        Thu, 22 Dec 2022 11:43:50 -0800 (PST)
-Received: from redhat.com ([2.55.175.215])
-        by smtp.gmail.com with ESMTPSA id v1-20020a170906292100b0073c10031dc9sm566202ejd.80.2022.12.22.11.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Dec 2022 11:43:49 -0800 (PST)
-Date:   Thu, 22 Dec 2022 14:43:43 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        almasrymina@google.com, alvaro.karsz@solid-run.com,
-        anders.roxell@linaro.org, angus.chen@jaguarmicro.com,
-        bobby.eshleman@bytedance.com, colin.i.king@gmail.com,
-        dave@stgolabs.net, dengshaomin@cdjrlc.com, dmitry.fomichev@wdc.com,
-        elic@nvidia.com, eperezma@redhat.com, gautam.dawar@xilinx.com,
-        harshit.m.mogalapalli@oracle.com, jasowang@redhat.com,
-        leiyang@redhat.com, lingshan.zhu@intel.com, lkft@linaro.org,
-        lulu@redhat.com, mst@redhat.com, m.szyprowski@samsung.com,
-        nathan@kernel.org, pabeni@redhat.com, pizhenwei@bytedance.com,
-        rafaelmendsr@gmail.com, ricardo.canuelo@collabora.com,
-        ruanjinjie@huawei.com, sammler@google.com, set_pte_at@outlook.com,
-        sfr@canb.auug.org.au, sgarzare@redhat.com, shaoqin.huang@intel.com,
-        si-wei.liu@oracle.com, stable@vger.kernel.org, stefanha@gmail.com,
-        sunnanyong@huawei.com, wangjianli@cdjrlc.com,
-        wangrong68@huawei.com, weiyongjun1@huawei.com,
-        xuanzhuo@linux.alibaba.com, yuancan@huawei.com
-Subject: [GIT PULL] virtio,vhost,vdpa: features, fixes, cleanups
-Message-ID: <20221222144343-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        with ESMTP id S229754AbiLVT4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 14:56:45 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7D519021;
+        Thu, 22 Dec 2022 11:56:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671739004; x=1703275004;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=MZwVDRGg39JMKDu0r99clAhAaWH4PkVMHpXyXMqbYHI=;
+  b=OgflItj8kHLhfrSGjXcunfC3Ondhibp/C5C0xJJEHnhIOiGOxdYO4HFP
+   9B/iVa1uDvY7Nci5R3jP/xvkqjW1QGosSbLBBjRDHcixGRTJRXTb4JzOl
+   yNekzqKSVGf4DChLZJAV06ztERv7v/NiSqxE0YAtl3lvz37GYkVywvE1M
+   81l63YoZVPAJDqFPhmAlNRUWMStrzbrmp7uV+qw1tdED08O3fo/GZBQ9r
+   u+1cclpKdcpWTX6iljE+Dx+KgQc0uHisMlVnR0tG3VGQypczcsixU1Pi/
+   0VsBOWVCKIvXOezgdILrcZtlSEo7PctfFzUTqqwZV/VwkIsJ4vAiE83yQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10569"; a="382462916"
+X-IronPort-AV: E=Sophos;i="5.96,266,1665471600"; 
+   d="scan'208";a="382462916"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2022 11:56:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10569"; a="826080789"
+X-IronPort-AV: E=Sophos;i="5.96,266,1665471600"; 
+   d="scan'208";a="826080789"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga005.jf.intel.com with ESMTP; 22 Dec 2022 11:56:43 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 22 Dec 2022 11:56:43 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Thu, 22 Dec 2022 11:56:43 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Thu, 22 Dec 2022 11:56:43 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=La6hv0K1g2CxFg0aJdDKm+0REMWTPlTYaJJKTV9BARNEf0BysfipudIDM+8bfRafjM364F4R/i8SqdhMdYNMHJC1FQ/3+d+ch+skiQ7yPqfM9esGH3lkaM/9fR1gh5LYFwzbRWzWG/R6Kc7j0ZZOAWe/PH/0qchIp3dy4YNhYFxXKWTbrqkGSTpX4AVASRdOTsBmFiaocsLpKOI6G8Oc1YiNTU4trr3NGAkAiD0AouSo/p4xetXCzQNLNacPVymcx3xeuG1ijxJILGF1Y9280jTZkkYPKESe537FDG0rJXhzfjq26f1Ru58uriu70adqMOXj+7dUILBxYAzMqySg+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XzIVY77WnzSGCA+VpIQsrRksRcUfADrXk06yE+39T5M=;
+ b=NederfCD14C1Pz+dFo92fDorDjrB2pmZkLOGPQW4ZiDK9Se3GymqfgHTwxeSG9Xbb3SFlufSEbfcEEztY2oFXj7OOlgoqvVLbbtg3T9U+d7KjrHk+TuZVaMmbfbcT1WU+4p+JqbPOin/kc46tIBSIksmd7PXfIZy94KK9iRnbJNPf0w50uSSCbHWx9Ykjhz43S9VGMfZsi7F+5uBvH+hk23T9/knH2wYDjn7xIFnn2vvcZapezifFmEMUmQIHOPZd9Y76dAFnwLBhH3Re+Ww53UgmDC9EF5nOU9Nb6NgaqGs1p2/FtcttChQIYWacFHC+bmsvp82Az73v6ilIskTtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BN6PR1101MB2227.namprd11.prod.outlook.com
+ (2603:10b6:405:51::14) by DS0PR11MB7507.namprd11.prod.outlook.com
+ (2603:10b6:8:150::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.12; Thu, 22 Dec
+ 2022 19:56:42 +0000
+Received: from BN6PR1101MB2227.namprd11.prod.outlook.com
+ ([fe80::5d3a:5bc9:4e57:622e]) by BN6PR1101MB2227.namprd11.prod.outlook.com
+ ([fe80::5d3a:5bc9:4e57:622e%7]) with mapi id 15.20.5924.016; Thu, 22 Dec 2022
+ 19:56:42 +0000
+Date:   Thu, 22 Dec 2022 20:56:39 +0100
+From:   Piotr Raczynski <piotr.raczynski@intel.com>
+To:     Clark Wang <xiaoning.wang@nxp.com>
+CC:     <linux@armlinux.org.uk>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@foss.st.com>, <joabreu@synopsys.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mcoquelin.stm32@gmail.com>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 0/2] fix mac not working after system resumed with WoL
+ enabled
+Message-ID: <Y6S2d6mQ+Vl+wp+D@nimitz>
+References: <20221221080144.2549125-1-xiaoning.wang@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Mutt-Fcc: =sent
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221221080144.2549125-1-xiaoning.wang@nxp.com>
+X-ClientProxiedBy: FR2P281CA0015.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a::25) To BN6PR1101MB2227.namprd11.prod.outlook.com
+ (2603:10b6:405:51::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN6PR1101MB2227:EE_|DS0PR11MB7507:EE_
+X-MS-Office365-Filtering-Correlation-Id: 57b069de-6557-48f9-8213-08dae456a53e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0SP3fTV7EA1Xw9oLbbPDbGO6XhpWRuK5IqM/bieCGKNiMD0zXuz24qofi+utv8zTOhk9/T6DkoAmrbAIuzcxT7ndB/2oyUUJ2HdO2Nj5Z8HmpSEPvqo0oIBy2tF1cECX825aUQ5HDdlzx3Y9HfeJ3nEOQWmFn5nd0TcRQ4O7cwRa10nAYhVHE/WVmMYuaVrdCcsSeMB44slxT4RuR7tRXEAsCEemkg60RFxszIYYLYKw8b1Fbxd3Cwt7FGTGoNmZsyYTnwdkyUDo1KSJolXso15mvIVQWY1UOSMRvVGgwwShfIdmkrkavNABWDEk6scpDKdRpSQU1JSRqj1swzQM9CbfeuKxf5wOXTyAI40cJ4+Y7Oijc291pbGzbPKvRLKAsb0uKnovzkqWyu1U7abKJ60KfqgK7ANmDHOfGiYMY9MpDOyc2FmADoi8gCsb5gkTwoo0mt7cRkG+k8DDB+lX4nxVxMXHLWtBiOox0V7WTNwmtAfUT4N08iG7zQFPRHCyDP457xV6IZXxbf4veVQVILLnuu2Z7TEQdLhZVbl64JsSMw603N7hDau1tFLXaMgmGwBxfivKxjMeS+2WERKP8wbCIQxqndMPVbXnQquyc0jpt23+26LyKAiNjx21e7Fl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1101MB2227.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(366004)(396003)(376002)(136003)(39860400002)(346002)(451199015)(4744005)(44832011)(478600001)(8936002)(8676002)(66946007)(7416002)(2906002)(66476007)(66556008)(4326008)(5660300002)(6916009)(316002)(6486002)(6666004)(6506007)(33716001)(186003)(6512007)(9686003)(83380400001)(26005)(38100700002)(82960400001)(41300700001)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KpWwIvcoCcBDrBmQox5ZgkSvKota3buOcdVTxo+p3rwBNR28HoIHrUlqdsdg?=
+ =?us-ascii?Q?pyetuiM+v6yhQ2kvayaZLN/TAagsYAuAK3Ohm2r9FguXOAXxmLrjnyCFKKMI?=
+ =?us-ascii?Q?VBuXqv2JmheuLN7PIH8iON5WUGptJJGHGaQDQm3l8UsXkZjBb7oLrgcD0Fcw?=
+ =?us-ascii?Q?1f6BqsuzogOgH6bui1H6qDaIuz+Kw75X9dljARG7rvvMjGzG/ornv7GyTIxP?=
+ =?us-ascii?Q?NcTrf8HqDUcf5HHks7UP5Prl1y7Uvw472iiowgmVacEuzN7mwomTB0df365A?=
+ =?us-ascii?Q?EfHhcyPKHb7++VREYtPTP9N0L4/vqaTyc4wKA4BtZo2uyC1f6axNIJR/3caY?=
+ =?us-ascii?Q?3vmd/J+PkBoo+F48LVFBvR1vBxLFL3bI1TiVn1LLk2QX03AC2p0v3Him/man?=
+ =?us-ascii?Q?iNL5uC+QrBPViIMsHRQrbHQpvELM2KrN5mnh4djLmh3TBFKciKQZCTJnGfn9?=
+ =?us-ascii?Q?nUfKZtDDW5iFymbeXRb3SXsZ9XHTnL9WmqvbGCtzo2lSrpu1Bfh1skKy3ati?=
+ =?us-ascii?Q?lHW1eAlzbBZ6Qo8lFW794yct7D8ZUbwaeii5Ks/PyoYanGWBSQmmiGBpBUbc?=
+ =?us-ascii?Q?BPI5lJQJFzY8VwoQrYoXFwOlNdUka+zoq9tXiMLrlv+CHFh+kVXLae8bZ3nM?=
+ =?us-ascii?Q?Y/iUZ7UuqQW7fFEiozqwtfsYWTLWA77Q0AmkOpMb/AgU0R7VH79jyRs+PLYL?=
+ =?us-ascii?Q?YgpdRtQocm9q9HiaIPGSi7x1mUs8Nu+FcbP8tm1wKyk0Oh7zFP3eIkMsFMtS?=
+ =?us-ascii?Q?etFeIWke7DMYRlGfZoOrYSeIrWqykGBq03TpwNmXzblzcGPSA2S5A2SJ8PqD?=
+ =?us-ascii?Q?a33Wx0unnPUdF1TI4OpIIRFmsrT3uNbxd96BbnsMsIiLaNxSbAHgm3R+a5BV?=
+ =?us-ascii?Q?HqdbdDEmk5qCccHsfCV6gX4QoEcaqExbv6QknGAxpUh+3TZkao95SrHSRgAx?=
+ =?us-ascii?Q?T0h2PHJ/LURyloGdXcYEXwpRDhII9HBu8gP5ZE5QPG+4BL4Ud1clQTmiuWsv?=
+ =?us-ascii?Q?mxK5/x2WJVFtop3wW1MCrqVWtAwbZZqP0UTZmOpv2A8lY5/QL/fC2TZz7VyF?=
+ =?us-ascii?Q?KG0B+XRbqHNisAVs780cpK8Mp4hvglOFNIp9d9FYn155BNKfM1sHZe0kW3sy?=
+ =?us-ascii?Q?BZ8+8NflU1j9DYd+NSX8I2TM3HpFEj6OAHPJMYgR76F2ufmM2cN4GZlt/Y8B?=
+ =?us-ascii?Q?LNTFbcOX91wrYp26GvUk6ypHfWzOxbpMc6CMmkcvSIHUpp6HQueoAth8EwDm?=
+ =?us-ascii?Q?YpZagBWkrtTUc8IL/VdPk8gXYtXlxuc7/jrGjSkpoS/XL9NGEpgM6VnUtcXW?=
+ =?us-ascii?Q?K58Juxh6RI7Me0qgARRzJTOKWVg3IcnTs25D4I+nMKTiPj82ZwZLDSsuJHlZ?=
+ =?us-ascii?Q?yUbl7WwgnrfF+i6h8Vp5PqUNKbmXpJkjKX0BmLoFoVF45dBs+swZ5vtLo5aS?=
+ =?us-ascii?Q?+yVuEdo0AByXhgd1liSJ1PTTV7hSA+Aa5Wvo9r2HSj8lBIo612rEtFnm14fi?=
+ =?us-ascii?Q?V4tOob1tJ/EmPZP+/dE2BRC8iwNZNca9YKgSeEbmGmAOZJTSJ9szuWhgYjyG?=
+ =?us-ascii?Q?/54twB2CEvxpoqQto9ihJhA6rnsCovfk+pVCn3z3qPsHH7Qnblu4m/zvYJME?=
+ =?us-ascii?Q?vg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57b069de-6557-48f9-8213-08dae456a53e
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR1101MB2227.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2022 19:56:41.9503
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 56fXKEpV4EJ1C5mGrtXQFit33IvivoEwS/tK7+RPP+uppWDJ4lINJQ5YGLFQlJu4N+fifqOlYaJimtSKMVi/VbrJsQ/g0cPkCKfGqQZMzo0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7507
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476:
+On Wed, Dec 21, 2022 at 04:01:42PM +0800, Clark Wang wrote:
+> Hi,
+> The issue description is in the commit message.
+> 
+> This patchset is the second version following discussions with Russell.
+> But the name of each patch has changed, so V2 is not marked in each patch.
+> 
+> Thanks.
+> 
 
-  Linux 6.1 (2022-12-11 14:15:18 -0800)
+Please include target tree name in the subject eg. [net 1/2]
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to 98dd6b2ef50d6f7876606a86c8d8a767c9fef6f5:
-
-  virtio_blk: mark all zone fields LE (2022-12-22 14:32:36 -0500)
-
-
-Note: merging this upstream results in a conflict
-between commit:
-
-  de4eda9de2d9 ("use less confusing names for iov_iter direction initializers")
-
-from Linus' tree and commit:
-
-  ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
-
-from this tree.
-
-This resolution below fixes it up, due to Stephen Rothwell
-
-diff --cc drivers/vhost/vsock.c
-index cd6f7776013a,830bc823addc..000000000000
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@@ -165,8 -157,9 +157,9 @@@ vhost_transport_do_send_pkt(struct vhos
-  			break;
-  		}
-  
- -		iov_iter_init(&iov_iter, READ, &vq->iov[out], in, iov_len);
- +		iov_iter_init(&iov_iter, ITER_DEST, &vq->iov[out], in, iov_len);
-- 		payload_len = pkt->len - pkt->off;
-+ 		payload_len = skb->len;
-+ 		hdr = virtio_vsock_hdr(skb);
-  
-  		/* If the packet is greater than the space available in the
-  		 * buffer, we split it using multiple buffers.
-@@@ -366,18 -340,21 +340,22 @@@ vhost_vsock_alloc_skb(struct vhost_virt
-  		return NULL;
-  	}
-  
-- 	pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
-- 	if (!pkt)
-+ 	len = iov_length(vq->iov, out);
-+ 
-+ 	/* len contains both payload and hdr */
-+ 	skb = virtio_vsock_alloc_skb(len, GFP_KERNEL);
-+ 	if (!skb)
-  		return NULL;
-  
- -	iov_iter_init(&iov_iter, WRITE, vq->iov, out, len);
- +	len = iov_length(vq->iov, out);
- +	iov_iter_init(&iov_iter, ITER_SOURCE, vq->iov, out, len);
-  
-- 	nbytes = copy_from_iter(&pkt->hdr, sizeof(pkt->hdr), &iov_iter);
-- 	if (nbytes != sizeof(pkt->hdr)) {
-+ 	hdr = virtio_vsock_hdr(skb);
-+ 	nbytes = copy_from_iter(hdr, sizeof(*hdr), &iov_iter);
-+ 	if (nbytes != sizeof(*hdr)) {
-  		vq_err(vq, "Expected %zu bytes for pkt->hdr, got %zu bytes\n",
-- 		       sizeof(pkt->hdr), nbytes);
-- 		kfree(pkt);
-+ 		       sizeof(*hdr), nbytes);
-+ 		kfree_skb(skb);
-  		return NULL;
-  	}
-  
-
-It can also be found in linux-next, see next-20221220.
-
-
-----------------------------------------------------------------
-virtio,vhost,vdpa: features, fixes, cleanups
-
-zoned block device support
-lifetime stats support (for virtio devices backed by memory supporting that)
-vsock rework to use skbuffs
-ifcvf features provisioning
-new SolidNET DPU driver
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Alvaro Karsz (5):
-      Add SolidRun vendor id
-      New PCI quirk for SolidRun SNET DPU.
-      virtio: vdpa: new SolidNET DPU driver.
-      virtio_blk: add VIRTIO_BLK_F_LIFETIME feature support
-      virtio: vdpa: fix snprintf size argument in snet_vdpa driver
-
-Angus Chen (2):
-      virtio_pci: modify ENOENT to EINVAL
-      virtio_blk: use UINT_MAX instead of -1U
-
-Bobby Eshleman (1):
-      virtio/vsock: replace virtio_vsock_pkt with sk_buff
-
-Cindy Lu (2):
-      vhost_vdpa: fix the crash in unmap a large memory
-      vdpa_sim_net: should not drop the multicast/broadcast packet
-
-Colin Ian King (1):
-      RDMA/mlx5: remove variable i
-
-Davidlohr Bueso (2):
-      tools/virtio: remove stray characters
-      tools/virtio: remove smp_read_barrier_depends()
-
-Dawei Li (1):
-      virtio: Implementing attribute show with sysfs_emit
-
-Dmitry Fomichev (2):
-      virtio-blk: use a helper to handle request queuing errors
-      virtio-blk: add support for zoned block devices
-
-Eli Cohen (8):
-      vdpa/mlx5: Fix rule forwarding VLAN to TIR
-      vdpa/mlx5: Return error on vlan ctrl commands if not supported
-      vdpa/mlx5: Fix wrong mac address deletion
-      vdpa/mlx5: Avoid using reslock in event_handler
-      vdpa/mlx5: Avoid overwriting CVQ iotlb
-      vdpa/mlx5: Move some definitions to a new header file
-      vdpa/mlx5: Add debugfs subtree
-      vdpa/mlx5: Add RX counters to debugfs
-
-Eugenio Pérez (1):
-      vdpa_sim_net: Offer VIRTIO_NET_F_STATUS
-
-Harshit Mogalapalli (1):
-      vduse: Validate vq_num in vduse_validate_config()
-
-Jason Wang (2):
-      vdpa: conditionally fill max max queue pair for stats
-      vdpasim: fix memory leak when freeing IOTLBs
-
-Michael S. Tsirkin (3):
-      virtio_blk: temporary variable type tweak
-      virtio_blk: zone append in header type tweak
-      virtio_blk: mark all zone fields LE
-
-Michael Sammler (1):
-      virtio_pmem: populate numa information
-
-Rafael Mendonca (1):
-      virtio_blk: Fix signedness bug in virtblk_prep_rq()
-
-Ricardo Cañuelo (2):
-      tools/virtio: initialize spinlocks in vring_test.c
-      docs: driver-api: virtio: virtio on Linux
-
-Rong Wang (1):
-      vdpa/vp_vdpa: fix kfree a wrong pointer in vp_vdpa_remove
-
-Shaomin Deng (1):
-      tools: Delete the unneeded semicolon after curly braces
-
-Shaoqin Huang (2):
-      virtio_pci: use helper function is_power_of_2()
-      virtio_ring: use helper function is_power_of_2()
-
-Si-Wei Liu (1):
-      vdpa: merge functionally duplicated dev_features attributes
-
-Stefano Garzarella (4):
-      vringh: fix range used in iotlb_translate()
-      vhost: fix range used in translate_desc()
-      vhost-vdpa: fix an iotlb memory leak
-      vdpa_sim: fix vringh initialization in vdpasim_queue_ready()
-
-Wei Yongjun (1):
-      virtio-crypto: fix memory leak in virtio_crypto_alg_skcipher_close_session()
-
-Yuan Can (1):
-      vhost/vsock: Fix error handling in vhost_vsock_init()
-
-Zhu Lingshan (12):
-      vDPA/ifcvf: decouple hw features manipulators from the adapter
-      vDPA/ifcvf: decouple config space ops from the adapter
-      vDPA/ifcvf: alloc the mgmt_dev before the adapter
-      vDPA/ifcvf: decouple vq IRQ releasers from the adapter
-      vDPA/ifcvf: decouple config IRQ releaser from the adapter
-      vDPA/ifcvf: decouple vq irq requester from the adapter
-      vDPA/ifcvf: decouple config/dev IRQ requester and vectors allocator from the adapter
-      vDPA/ifcvf: ifcvf_request_irq works on ifcvf_hw
-      vDPA/ifcvf: manage ifcvf_hw in the mgmt_dev
-      vDPA/ifcvf: allocate the adapter in dev_add()
-      vDPA/ifcvf: retire ifcvf_private_to_vf
-      vDPA/ifcvf: implement features provisioning
-
-ruanjinjie (1):
-      vdpa_sim: fix possible memory leak in vdpasim_net_init() and vdpasim_blk_init()
-
-wangjianli (1):
-      tools/virtio: Variable type completion
-
- Documentation/driver-api/index.rst                 |    1 +
- Documentation/driver-api/virtio/index.rst          |   11 +
- Documentation/driver-api/virtio/virtio.rst         |  144 +++
- .../driver-api/virtio/writing_virtio_drivers.rst   |  197 ++++
- MAINTAINERS                                        |    6 +
- drivers/block/virtio_blk.c                         |  522 ++++++++-
- .../crypto/virtio/virtio_crypto_skcipher_algs.c    |    3 +-
- drivers/nvdimm/virtio_pmem.c                       |   11 +-
- drivers/pci/quirks.c                               |    8 +
- drivers/vdpa/Kconfig                               |   22 +
- drivers/vdpa/Makefile                              |    1 +
- drivers/vdpa/ifcvf/ifcvf_base.c                    |   32 +-
- drivers/vdpa/ifcvf/ifcvf_base.h                    |   10 +-
- drivers/vdpa/ifcvf/ifcvf_main.c                    |  162 ++-
- drivers/vdpa/mlx5/Makefile                         |    2 +-
- drivers/vdpa/mlx5/core/mlx5_vdpa.h                 |    5 +-
- drivers/vdpa/mlx5/core/mr.c                        |   46 +-
- drivers/vdpa/mlx5/net/debug.c                      |  152 +++
- drivers/vdpa/mlx5/net/mlx5_vnet.c                  |  252 +++--
- drivers/vdpa/mlx5/net/mlx5_vnet.h                  |   94 ++
- drivers/vdpa/solidrun/Makefile                     |    6 +
- drivers/vdpa/solidrun/snet_hwmon.c                 |  188 ++++
- drivers/vdpa/solidrun/snet_main.c                  | 1111 ++++++++++++++++++++
- drivers/vdpa/solidrun/snet_vdpa.h                  |  196 ++++
- drivers/vdpa/vdpa.c                                |   11 +-
- drivers/vdpa/vdpa_sim/vdpa_sim.c                   |    7 +-
- drivers/vdpa/vdpa_sim/vdpa_sim_blk.c               |    4 +-
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c               |    8 +-
- drivers/vdpa/vdpa_user/vduse_dev.c                 |    3 +
- drivers/vdpa/virtio_pci/vp_vdpa.c                  |    2 +-
- drivers/vhost/vdpa.c                               |   52 +-
- drivers/vhost/vhost.c                              |    4 +-
- drivers/vhost/vringh.c                             |    5 +-
- drivers/vhost/vsock.c                              |  224 ++--
- drivers/virtio/virtio.c                            |   12 +-
- drivers/virtio/virtio_pci_modern.c                 |    4 +-
- drivers/virtio/virtio_ring.c                       |    2 +-
- include/linux/pci_ids.h                            |    2 +
- include/linux/virtio_config.h                      |    8 +-
- include/linux/virtio_vsock.h                       |  126 ++-
- include/uapi/linux/vdpa.h                          |    4 +-
- include/uapi/linux/virtio_blk.h                    |  133 +++
- include/uapi/linux/virtio_blk_ioctl.h              |   44 +
- net/vmw_vsock/virtio_transport.c                   |  149 +--
- net/vmw_vsock/virtio_transport_common.c            |  420 ++++----
- net/vmw_vsock/vsock_loopback.c                     |   51 +-
- tools/virtio/ringtest/main.h                       |   37 +-
- tools/virtio/virtio-trace/trace-agent-ctl.c        |    2 +-
- tools/virtio/virtio_test.c                         |    2 +-
- tools/virtio/vringh_test.c                         |    2 +
- 50 files changed, 3661 insertions(+), 839 deletions(-)
- create mode 100644 Documentation/driver-api/virtio/index.rst
- create mode 100644 Documentation/driver-api/virtio/virtio.rst
- create mode 100644 Documentation/driver-api/virtio/writing_virtio_drivers.rst
- create mode 100644 drivers/vdpa/mlx5/net/debug.c
- create mode 100644 drivers/vdpa/mlx5/net/mlx5_vnet.h
- create mode 100644 drivers/vdpa/solidrun/Makefile
- create mode 100644 drivers/vdpa/solidrun/snet_hwmon.c
- create mode 100644 drivers/vdpa/solidrun/snet_main.c
- create mode 100644 drivers/vdpa/solidrun/snet_vdpa.h
- create mode 100644 include/uapi/linux/virtio_blk_ioctl.h
-
+> Clark Wang (2):
+>   net: phylink: add a function to resume phy alone to fix resume issue
+>     with WoL enabled
+>   net: stmmac: resume phy separately before calling stmmac_hw_setup()
+> 
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 16 +++++++-------
+>  drivers/net/phy/phylink.c                     | 21 ++++++++++++++++++-
+>  include/linux/phylink.h                       |  1 +
+>  3 files changed, 28 insertions(+), 10 deletions(-)
+> 
+> -- 
+> 2.34.1
+> 
