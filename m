@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 356D9653BA5
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 06:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB67D653BA1
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 06:11:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235060AbiLVFLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 00:11:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59922 "EHLO
+        id S235075AbiLVFLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 00:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234973AbiLVFK5 (ORCPT
+        with ESMTP id S234968AbiLVFK5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 00:10:57 -0500
 Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E42F178A5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D39217067;
         Wed, 21 Dec 2022 21:10:55 -0800 (PST)
 From:   Thomas =?utf-8?q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
         s=mail; t=1671685848;
-        bh=FtucXeOqhf/uwSmZUOmwGhFgKFDCA9qaKfFhVklXs0M=;
+        bh=aJ7IVJ34rJu4bypYe1rv5vqdZ+Bmi73wBdQLIivw4ts=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-        b=YHzejwL7SuWZwjrhLR4DKptcjvIT0orp+tF+YwprS6dypbmp5pN0ErmSymXZ8rHaq
-         b8qEunKXylgKdVCial+uCfm7rLoNo7q8xzz45BIpWTtgePfpw4VyOgJVJvCkOwN+9g
-         yQ/FHPfOZM2uuJfFqb6bSYCIuDa3BOIqIjvhYnd4=
-Date:   Thu, 22 Dec 2022 05:10:45 +0000
-Subject: [PATCH 2/8] HID: usbhid: Make hid_is_usb() non-inline
+        b=nzvPq4V4YM3yepefWrKQUEa+Nby91i6BGB4MbAPtZ9zCehBQTP7ZpumFTXCngMTPy
+         b/oKA3a98bIv/t3N+WjrRDOIWjX0AM5Bteqs1FSAEd1sR+WrLz4MJY0m4sqxC8tKlc
+         3jCIbs3NbFjQ/GhUp0eDBxj0UZWf7KtbgF29MyM4=
+Date:   Thu, 22 Dec 2022 05:10:46 +0000
+Subject: [PATCH 3/8] HID: Remove unused function hid_is_using_ll_driver()
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Message-Id: <20221222-hid-v1-2-f4a6c35487a5@weissschuh.net>
+Message-Id: <20221222-hid-v1-3-f4a6c35487a5@weissschuh.net>
 References: <20221222-hid-v1-0-f4a6c35487a5@weissschuh.net>
 In-Reply-To: <20221222-hid-v1-0-f4a6c35487a5@weissschuh.net>
 To:     Hans de Goede <hdegoede@redhat.com>,
@@ -46,11 +46,11 @@ Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org,
         Thomas =?utf-8?q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
 X-Mailer: b4 0.11.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1671685845; l=1506;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1671685845; l=761;
  i=linux@weissschuh.net; s=20221212; h=from:subject:message-id;
- bh=FtucXeOqhf/uwSmZUOmwGhFgKFDCA9qaKfFhVklXs0M=;
- b=UB9Y4WcNg/MqRsY8fH/mjN2XW796kfEfNDKTuo1LtScaZE8nN1kABWW19n6EWmxAjQoUxpyFCdsW
- iDklWEpCCfNE5urMvYanl8sjuNuTpr5lCp+bnHJVX94T5Pje9X+N
+ bh=aJ7IVJ34rJu4bypYe1rv5vqdZ+Bmi73wBdQLIivw4ts=;
+ b=CO/ajOHSL68RVBZncIxSRsKPvD1NB0gAon57+ErnZ3WV+3ZsBndBhdn4vhj39QQXFDdBmKBW3Fnl
+ n/fw2GoHClUGZswPDlzct7sDSUC125wbm+rYgxjPxpSxQNl9uN37
 X-Developer-Key: i=linux@weissschuh.net; a=ed25519;
  pk=KcycQgFPX2wGR5azS7RhpBqedglOZVgRPfdFSPB1LNw=
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -62,50 +62,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By making hid_is_usb() a non-inline function the lowlevel usbhid driver
-does not have to be exported anymore.
-
-Also mark the argument as const as it is not modified.
+As the last user was removed we can delete this function.
 
 Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
 ---
- drivers/hid/usbhid/hid-core.c | 6 ++++++
- include/linux/hid.h           | 5 +----
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ include/linux/hid.h | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/hid/usbhid/hid-core.c b/drivers/hid/usbhid/hid-core.c
-index be4c731aaa65..54b0280d0073 100644
---- a/drivers/hid/usbhid/hid-core.c
-+++ b/drivers/hid/usbhid/hid-core.c
-@@ -1334,6 +1334,12 @@ struct hid_ll_driver usb_hid_driver = {
- };
- EXPORT_SYMBOL_GPL(usb_hid_driver);
- 
-+bool hid_is_usb(const struct hid_device *hdev)
-+{
-+	return hdev->ll_driver == &usb_hid_driver;
-+}
-+EXPORT_SYMBOL_GPL(hid_is_usb);
-+
- static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *id)
- {
- 	struct usb_host_interface *interface = intf->cur_altsetting;
 diff --git a/include/linux/hid.h b/include/linux/hid.h
-index 8677ae38599e..e8400aa78522 100644
+index e8400aa78522..7c5fce6a189e 100644
 --- a/include/linux/hid.h
 +++ b/include/linux/hid.h
-@@ -864,10 +864,7 @@ static inline bool hid_is_using_ll_driver(struct hid_device *hdev,
- 	return hdev->ll_driver == driver;
- }
+@@ -858,12 +858,6 @@ extern struct hid_ll_driver hidp_hid_driver;
+ extern struct hid_ll_driver uhid_hid_driver;
+ extern struct hid_ll_driver usb_hid_driver;
  
--static inline bool hid_is_usb(struct hid_device *hdev)
+-static inline bool hid_is_using_ll_driver(struct hid_device *hdev,
+-		struct hid_ll_driver *driver)
 -{
--	return hid_is_using_ll_driver(hdev, &usb_hid_driver);
+-	return hdev->ll_driver == driver;
 -}
-+extern bool hid_is_usb(const struct hid_device *hdev);
+-
+ extern bool hid_is_usb(const struct hid_device *hdev);
  
  #define	PM_HINT_FULLON	1<<5
- #define PM_HINT_NORMAL	1<<1
 
 -- 
 2.39.0
