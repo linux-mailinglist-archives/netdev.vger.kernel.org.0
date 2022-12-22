@@ -2,116 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABDD653D64
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 10:20:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D88653D6C
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 10:23:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235095AbiLVJUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 04:20:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
+        id S235146AbiLVJXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 04:23:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbiLVJUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 04:20:06 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780D32182B
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 01:20:05 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id h10so1011694wrx.3
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 01:20:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kjgQOOM0LndXbSekqrlHxP9Q5j0PBJkQ1caUYMWBeA8=;
-        b=eJGDya+riRrsaY92y3ZW2VGbaK0zqrUozYCIjZs9EPPwztC0GbkEr4UpVO+jDUjuy8
-         4dgfo0jwsp9tI4zh5xgnx+tDPDEhVpgx5J7rSENBzW3tkG3rfFgsLW3fd5cwkumlsYc5
-         gWmLl4JWnqaybkI+6Z3SDcZfVNyuJrCnAs0mhspMAF4n2xj3GAbft6v6y8ICa0FcLy1Y
-         AuW+kC+fzTanc9b3bOkYaNR5IpMcA6fMbLv13/etnyUAVu404DvTMaK/n6Jcs8fxF4aa
-         hJcz4v3MPbOZxuqkD8N0wScsG5fsITjEL3GISHkDbXJbwbExXeG/mPsE8AVVb2CGPCDh
-         Mqog==
+        with ESMTP id S229608AbiLVJXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 04:23:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EC71EAD9
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 01:22:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671700950;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IKaTi4+rwFLmrmyaDkBv4CqTil1Gw+F5+6xdhW+tfX8=;
+        b=M66jBwXCinAO1sTIf/8dM+POICJEe53Vr+/VPWEX6dWABMJeUUbfdWKyHyQSrn9RTVpPht
+        Qf8D7SjVPVZ4DDod8UzPVjgV/hwZ8lanl220rQb8zx1Zw40NUp22LCr1+6Y6Unm3hYabAG
+        iKGoq96C51SZth0hNOhNqBsv24yBrOo=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-14-gXM22ERJNfG8tJyICvoHCA-1; Thu, 22 Dec 2022 04:22:28 -0500
+X-MC-Unique: gXM22ERJNfG8tJyICvoHCA-1
+Received: by mail-wm1-f70.google.com with SMTP id c1-20020a7bc001000000b003cfe40fca79so336723wmb.6
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 01:22:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kjgQOOM0LndXbSekqrlHxP9Q5j0PBJkQ1caUYMWBeA8=;
-        b=8C8eqNEp7s5zh39kXHR3u1jVJBykoBkt6u+peonG4dM/1QnyeLnn6xgzSlHo3krLNs
-         CElEXCzlcva8hJUrnm7fY1B17OUM2gmwEWGOCZMoCo7yIY730qQ6NXnSxRNYE2GpD0X1
-         hGj76M14gdAGBitYZCyHhHWFffD0YiOFZCJvxG46s8jU395UMEEYydwUXIBBwSl3zyq8
-         121OJOFZW53qFCNfve+xMjWg7sgLh5mAMQt+pNEG+NOAED5AqHF10Q2oklh72nwWGi2U
-         5OjCQsmu5093CWOjTXZKq8lCEJbKanFlwj2b40h1koWURMX9Yl0qSNNwDl+9qKbMQ8Y6
-         7/IQ==
-X-Gm-Message-State: AFqh2kqxCDx+ssGH12Rw8CK2GptUXRqJ0RSqqW2qOhroN+B5bf8zbo59
-        5boWxFhMvWwW4FCPkO0eeJUsVg==
-X-Google-Smtp-Source: AMrXdXvgK+M12PDcOC6lX+3wM32Tx+wJiKIYzOkbPVRFe8/WcbcMqKaOtgmyULN79PnURezIE4WJqA==
-X-Received: by 2002:adf:e303:0:b0:242:1926:783c with SMTP id b3-20020adfe303000000b002421926783cmr3037517wrj.58.1671700804067;
-        Thu, 22 Dec 2022 01:20:04 -0800 (PST)
-Received: from [192.168.0.173] ([82.77.81.131])
-        by smtp.gmail.com with ESMTPSA id i7-20020adffc07000000b00241d544c9b1sm20161609wrr.90.2022.12.22.01.20.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Dec 2022 01:20:03 -0800 (PST)
-Message-ID: <544202ef-37f8-9055-7f2e-69fa46907930@linaro.org>
-Date:   Thu, 22 Dec 2022 11:20:01 +0200
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IKaTi4+rwFLmrmyaDkBv4CqTil1Gw+F5+6xdhW+tfX8=;
+        b=OvSgc++86GYqsD4Xeeq3qLJUayyXFr0WfqJY3dxilbtMsfydinFT3LIFqBJXXJNNDb
+         vv3DvaOYcbPAzuAx7cuYY4AIMzRKr1WblhfhOWqVgO/gBEOh6RKrW9jbNwgr108UnEEr
+         gxWvc/DfXVfBiSBKIlRMs08+QKQK28uIZe53+uLtxY7lC9UygsBqvW/nWXKtj2+dks6t
+         M1TFA4MTKCwQbQWR+q1f1CEPBCstkX0c3blpOx3lic7Tr3bDmy1XeZtq6R2ZIArUYjck
+         ubPg9/LVqitd4rm/w6iuVdXrL7vqW8+irSUOc+0rErV+TCuq11MHPdMRj+JiVCxDWw3t
+         xa1w==
+X-Gm-Message-State: AFqh2koPl6h4LVVyMHt+fTeclUe1vvdm5XT8as4m8tNRTlhMv3GYyyvb
+        VmmZGKu0JEd7R3ayfSjCcyJdETvWxl1DhRCxy8wvcWw4fMOkt3bCdV/3LMSQrzcUhI8U60SjE8H
+        /fPME9QNTp5AYCo8V
+X-Received: by 2002:a5d:5268:0:b0:242:3fb4:1cb with SMTP id l8-20020a5d5268000000b002423fb401cbmr3074065wrc.43.1671700947314;
+        Thu, 22 Dec 2022 01:22:27 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuqAV7j5VUJKiku3Oywgow89RKAM1M6mZZ+ql2pwNX/SgfVOdd/7R7TsBiSnZHH+sMEOR8ClA==
+X-Received: by 2002:a5d:5268:0:b0:242:3fb4:1cb with SMTP id l8-20020a5d5268000000b002423fb401cbmr3074052wrc.43.1671700947094;
+        Thu, 22 Dec 2022 01:22:27 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
+        by smtp.gmail.com with ESMTPSA id b13-20020a05600003cd00b0024cb961b6aesm17743533wrg.104.2022.12.22.01.22.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Dec 2022 01:22:26 -0800 (PST)
+Message-ID: <6209669358d038b30e5fe20ba571f93241b5248d.camel@redhat.com>
+Subject: Re: [PATCH] sctp: Make sha1 as default algorithm if fips is enabled
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Ashwin Dayanand Kamat <kashwindayan@vmware.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     srivatsab@vmware.com, srivatsa@csail.mit.edu, amakhalov@vmware.com,
+        vsirnapalli@vmware.com, akaher@vmware.com
+Date:   Thu, 22 Dec 2022 10:22:24 +0100
+In-Reply-To: <1671513037-8958-1-git-send-email-kashwindayan@vmware.com>
+References: <1671513037-8958-1-git-send-email-kashwindayan@vmware.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: kernel BUG in __skb_gso_segment
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, willemb@google.com,
-        syzkaller@googlegroups.com, liuhangbin@gmail.com,
-        linux-kernel@vger.kernel.org, joneslee@google.com
-References: <82b18028-7246-9af9-c992-528a0e77f6ba@linaro.org>
- <CAF=yD-KEwVnH6PRyxbJZt4iGfKasadYwU_6_V+hHW2s+ZqFNcw@mail.gmail.com>
- <a13f83f3-737d-1bfe-c9ef-031a6cd4d131@linaro.org>
- <Y6K3q6Bo3wwC57bK@kroah.com>
- <fc60e8da-1187-ca2b-1aa8-28e01ea2769a@linaro.org>
- <Y6L/F2Hwm7BRdYj8@kroah.com>
-From:   Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <Y6L/F2Hwm7BRdYj8@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 21.12.2022 14:41, Greg KH wrote:
-> On Wed, Dec 21, 2022 at 09:42:59AM +0200, Tudor Ambarus wrote:
->>
->>
->> On 21.12.2022 09:37, Greg KH wrote:
->>> On Wed, Dec 21, 2022 at 09:28:16AM +0200, Tudor Ambarus wrote:
->>>> Hi,
->>>>
->>>> I added Greg KH to the thread, maybe he can shed some light on whether
->>>> new support can be marked as fixes and backported to stable. The rules
->>>> on what kind of patches are accepted into the -stable tree don't mention
->>>> new support:
->>>> https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
->>>
->>> As you say, we don't take new features into older kernels.  Unless they
->>> fix a reported problem, if so, submit the git ids to us and we will be
->>> glad to review them.
->>>
->>
->> They do fix a bug. I'm taking care of it. Shall I update
->> Documentation/process/stable-kernel-rules.rst to mention this rule as
->> well?
+On Tue, 2022-12-20 at 10:40 +0530, Ashwin Dayanand Kamat wrote:
+> MD5 is not FIPS compliant. But still md5 was used as the default algorithm
+> for sctp if fips was enabled.
+> Due to this, listen() system call in ltp tests was failing for sctp
+> in fips environment, with below error message.
 > 
-> How exactly would you change it, and why?
+> [ 6397.892677] sctp: failed to load transform for md5: -2
+> 
+> Fix is to not assign md5 as default algorithm for sctp
+> if fips_enabled is true. Instead make sha1 as default algorithm.
+> 
+> Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 
-Something like this:
+I don't know the fips standard in details, but it feel strange that you
+get fips compliance _disabling_ the encryption. Can you please point
+which part of the standard states it?
 
-https://lore.kernel.org/linux-kernel/20221222091658.1975240-1-tudor.ambarus@linaro.org/T/#u
+Since this is fix, you should also provide a suitable fixes tag. When
+you will repost additionally include the target tree name (net) into
+the subject, thanks!
 
-Cheers,
-ta
+> ---
+>  net/sctp/protocol.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+> index 909a89a..b6e9810 100644
+> --- a/net/sctp/protocol.c
+> +++ b/net/sctp/protocol.c
+> @@ -34,6 +34,7 @@
+>  #include <linux/memblock.h>
+>  #include <linux/highmem.h>
+>  #include <linux/slab.h>
+> +#include <linux/fips.h>
+>  #include <net/net_namespace.h>
+>  #include <net/protocol.h>
+>  #include <net/ip.h>
+> @@ -1321,14 +1322,13 @@ static int __net_init sctp_defaults_init(struct net *net)
+>  	/* Whether Cookie Preservative is enabled(1) or not(0) */
+>  	net->sctp.cookie_preserve_enable 	= 1;
+>  
+> -	/* Default sctp sockets to use md5 as their hmac alg */
+> -#if defined (CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5)
+> -	net->sctp.sctp_hmac_alg			= "md5";
+> -#elif defined (CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1)
+> -	net->sctp.sctp_hmac_alg			= "sha1";
+> -#else
+> -	net->sctp.sctp_hmac_alg			= NULL;
+> -#endif
+> +	/* Default sctp sockets to use md5 as default only if fips is not enabled */
+> +	if (!fips_enabled && IS_ENABLED(CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5))
+> +		net->sctp.sctp_hmac_alg = "md5";
+> +	else if (IS_ENABLED(CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1))
+> +		net->sctp.sctp_hmac_alg = "sha1";
+> +	else
+> +		net->sctp.sctp_hmac_alg = NULL;
+
+It looks like the listener can still fail if fips mode is enabled after
+that the netns is initialized. I think it would be better to take
+action in sctp_listen_start() and buming a ratelimited notice the
+selected hmac is changed due to fips.
+
+Thanks,
+
+Paolo
+
+>  
+>  	/* Max.Burst		    - 4 */
+>  	net->sctp.max_burst			= SCTP_DEFAULT_MAX_BURST;
+
