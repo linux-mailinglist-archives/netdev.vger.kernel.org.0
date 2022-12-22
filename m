@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28D9C6544BD
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 17:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 322C96544C5
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 17:05:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235056AbiLVQB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 11:01:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60354 "EHLO
+        id S230141AbiLVQFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 11:05:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiLVQBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 11:01:25 -0500
+        with ESMTP id S229870AbiLVQFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 11:05:35 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890D1102A;
-        Thu, 22 Dec 2022 08:01:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DF918B0F;
+        Thu, 22 Dec 2022 08:05:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27AA961C36;
-        Thu, 22 Dec 2022 16:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BDDCC433D2;
-        Thu, 22 Dec 2022 16:01:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D87E61C27;
+        Thu, 22 Dec 2022 16:05:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1CBC433D2;
+        Thu, 22 Dec 2022 16:05:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671724883;
-        bh=K2JjOPdLe6p7TeCT7N6YrUkgLNDqAeGFUTw14h5uQK8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=mqfEIXW6a7u+sj73dJ+oSBV1AUqaUIdHLjrV6jTf1hQECOWSbol3Grgp/SRqPm3Y/
-         K42/eYnHCGQXG5KEolf8GVyZOUZSDEudP1AcF4FtVdN3+pDDtEFR51e/j65ANg5xZC
-         j6713OtEF6kB8JlCnmr1chvXMV6EXNcBnurhfw2fmpcQxjm+tK0jfUJJ2XQQi+RQof
-         IgGBGM6GnobAnpKq3xDccbB0gwMaDv/4HwOHioQe58c8eLNga9mMEmVvSEt6fFrDYN
-         KwGFkfKy3bI7Ke2+UlhRg7PeUdnoft/EuiB6HtEzmVRERA9xNIMnpWs8zKzGUZdEvJ
-         ivgIGmO7E5BDw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        alsi@bang-olufsen.dk, rmk+kernel@armlinux.org.uk,
-        linus.walleij@linaro.org, marcan@marcan.st,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: brcmfmac: fix potential resource leak in brcmf_usb_probe_phase2()
-References: <20221120103807.7588-1-niejianglei2021@163.com>
-Date:   Thu, 22 Dec 2022 18:01:17 +0200
-In-Reply-To: <20221120103807.7588-1-niejianglei2021@163.com> (Jianglei Nie's
-        message of "Sun, 20 Nov 2022 18:38:07 +0800")
-Message-ID: <874jtnjulu.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1671725134;
+        bh=cW3jyW2N+O4Ffc3ACdzYPNrQDrjgtqNppbdLOaFyoYo=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=sZ0s1g2pfb9FrDyrko9a1DyZObmMLCuBH9Ba/4xravWvxivA3Vb3HhjKmZRE5x4CP
+         5PUslVNXQwEnvb1eAjt9otWCZQBbngcqqYXcqlCVTJpZqWUa1tWYdSDh3VtobW7PGp
+         A6x2kE69AnE61vdtsSiN4nP8gQvOyK3B6S4JN9diezukg/EFijKoiphDjkO5a0Ipu8
+         EK7hUzEdLcKTfMGyF8aeRJFaxQPGrxyf0lu5/7rKrqmIXqRH+9H9amdWlruBraHxaR
+         7OAvnAAn/v8d4IN3hrdb30BrgwXt9nXHjf+9qawOfovCwZu5sJFh3iM6EEx/QvbaXu
+         mhmJZK++ZbE2g==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Subject: Re: [v2] wifi: ipw2200: fix memory leak in ipw_wdev_init()
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20221209012422.182669-1-shaozhengchao@huawei.com>
+References: <20221209012422.182669-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <stas.yakovlev@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linville@tuxdriver.com>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167172512673.8231.13701483342037956356.kvalo@kernel.org>
+Date:   Thu, 22 Dec 2022 16:05:31 +0000 (UTC)
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,37 +56,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jianglei Nie <niejianglei2021@163.com> writes:
+Zhengchao Shao <shaozhengchao@huawei.com> wrote:
 
-> brcmf_usb_probe_phase2() allocates resource for dev with brcmf_alloc().
-> The related resource should be released when the function gets some error.
-> But when brcmf_attach() fails, relevant resource is not released, which
-> will lead to resource leak.
->
-> Fix it by calling brcmf_free() when brcmf_attach() fails.
->
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-> index 85e18fb9c497..5d8c12b2c4d7 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-> @@ -1215,6 +1215,7 @@ static void brcmf_usb_probe_phase2(struct device *dev, int ret,
->  	return;
->  error:
->  	brcmf_dbg(TRACE, "failed: dev=%s, err=%d\n", dev_name(dev), ret);
-> +	brcmf_free(devinfo->dev);
->  	complete(&devinfo->dev_init_done);
->  	device_release_driver(dev);
->  }
+> In the error path of ipw_wdev_init(), exception value is returned, and
+> the memory applied for in the function is not released. Also the memory
+> is not released in ipw_pci_probe(). As a result, memory leakage occurs.
+> So memory release needs to be added to the error path of ipw_wdev_init().
+> 
+> Fixes: a3caa99e6c68 ("libipw: initiate cfg80211 API conversion (v2)")
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 
-This doesn't look right. Now we would call brfmf_free() even before
-brcmf_alloc() is called.
+Patch applied to wireless-next.git, thanks.
+
+9fe21dc62611 wifi: ipw2200: fix memory leak in ipw_wdev_init()
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+https://patchwork.kernel.org/project/linux-wireless/patch/20221209012422.182669-1-shaozhengchao@huawei.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
