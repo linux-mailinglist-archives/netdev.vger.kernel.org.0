@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EDF6547FA
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 22:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 894DC654808
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 22:47:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiLVVlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 16:41:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
+        id S235374AbiLVVrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 16:47:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbiLVVlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 16:41:24 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2DC23327
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:41:23 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-3b48b139b46so42881247b3.12
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:41:23 -0800 (PST)
+        with ESMTP id S229704AbiLVVrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 16:47:09 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C6E13D4E
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:47:08 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id o127so3473109yba.5
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 13:47:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=uCFHd6D1KillGb1thxjpKO8HldSHVVHhJaZ2UEX1cRM=;
-        b=Ec4Uu+jwmN24pOxJMcurz37VStxcLNcWykBHffwjbBYplEZdNRrYMCC3RMPqRf2vR8
-         2ejWwq+4NQAbS+M/WoceYu0glG2V9E32rjZKr0Ex7V5Yoa323MpDYPWPyRlDod2yZfw2
-         evKhDsDWMEh5HPkPOBAsoHgV7qsrw9uuZCjy/3E2usR0ms2YRIclPGGFeFgygF1sd9Kd
-         VRLPSh3LAcdKAypFwHczgYq5trz3IRSHfTSUG4JTcn5kXEuymORmeGuC7S/RLwvXIUHa
-         GOxZ8MWhe0Zvd+x843i2m7GfY9qqnTuT4lbuefH4pGgMmhaJM01EPXKQ+gltKQsSXyHg
-         CZyQ==
+        bh=IHKW/UYh8AR6b99fJnCGGe38aX1RLSFdq4cd+6sQxnU=;
+        b=R5dVmWX9uznVV/vbtqSxZZhyCpGi2J4HUY07dFhPBBo7QZC64Vm582eE/BzVtryodX
+         HHxK9TSnovmCQghXHIH9ASBjI4c+d9HTN1UljDEu+/2ZwFJH/TeFp5OUbVNRqE1xP6uk
+         kb3w8T9255G1reCgW4ruvDZmKEcYVvJj/1UlLIexsI6J6R7AH08r/43/ITjwnvuwLnF8
+         ZQRZs6g6xN0nszBQkcqPZCMk75Up0hsPxiqegme2wKe+Z8wBpQ0+IBtKZ+xPactqDHQe
+         s/1Xljev1reQTBJOjDnIeb1RkoT/i6fxxndix9emWt06IC1Kh4jL1ETlw6iEJ/IcC91T
+         naiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=uCFHd6D1KillGb1thxjpKO8HldSHVVHhJaZ2UEX1cRM=;
-        b=iUxgLiaj/ZeWC91WMLNomzNQzSmZFKHjlnVDSelQT5J9u8TxdUgUYUf95qu3XCMosy
-         1UV/UuQNgiHJlSx5FiE53BGho4HhozUtA2RkJoUyTfy9ymNx1DegRCAxPxdkvpYSkwQj
-         3nlNLXUncbvTmbTH5GEiNAOKIkjB8xSTq27ZRA7oKW6FIi3l45mIFCIC3uAi6pXmgUK4
-         rc2sVt4yl7WtxEQyjj7+a6BsEmRTzQ5NyRMcpTYYdIOoX4AAu2Q2UQ/h/JS/Tf5+DnZ3
-         /f6F4lUsx8nUnDVhC6BFt6bxlxcVCBHv0LpinRqc9kwHFY/eCs2ydtiIN3Ch21TqHZd6
-         /ruA==
-X-Gm-Message-State: AFqh2koRkqQMD5F7oqYJnRe3iGG3BxA5dbEzYNbsT3cdtv4B8n/bl9On
-        GNxSuge387I8Opvtgk+Ct5eH+MaT2+KJdgCf7zU=
-X-Google-Smtp-Source: AMrXdXvQotJyRACGs5Uw5gg3ba9m+tK5RqTqV3X4noubqcmVP/v8j5B/AW1qBM6kRgD62KH3W8IEE+GJDPCNEPUoi3w=
-X-Received: by 2002:a0d:eb49:0:b0:460:8f19:5ea9 with SMTP id
- u70-20020a0deb49000000b004608f195ea9mr743236ywe.21.1671745282287; Thu, 22 Dec
- 2022 13:41:22 -0800 (PST)
+        bh=IHKW/UYh8AR6b99fJnCGGe38aX1RLSFdq4cd+6sQxnU=;
+        b=pJOQH5AZOKE5V4kp/9WH2zBp9/9FRspmAT0C/JaiTKUUuVryMDe9LYMqlUpuShpiMj
+         /FTGfqU9WUq2GK0OCqIFiXuy9SquDXJVvYPnY+VnP8KkUcYQriJEFVgmPJhOHgxkKFwS
+         8SckjIYDvnrWa0V0F6tNK4Nx7rN00qxzsRdOdvTZQ8m/Yw7jCFLWF/bNoY5margU1n8o
+         nLE+Ej86W/cff9zHMRpjooIXT9UoXQLbfp8QdrP6X7ln8C+cw+4/BwcyX7TklL+MDlNu
+         UgYu7R278g19UL0beI1z1oJfD2KZFD+ysMggFIL2txbcPIei+3J5NiGk2bP0iua0Y4SE
+         a2Rg==
+X-Gm-Message-State: AFqh2krgl9WOs3g9n3PaLFEEF2lLxmQOyA+mcuIrYQ0YxtcTERpgu8N/
+        1dfUDaRxjv8smLOh3ugvKs6Wi+3l5ETaFjEPHxo=
+X-Google-Smtp-Source: AMrXdXuM0vFKOz9E33an+lP9VwepId+FMAYPRCcptYUgKY/3yLZoEbWj+3bwSXPKIG9G90R5pgA/LhC1gc9KGg6jFFs=
+X-Received: by 2002:a25:f03:0:b0:718:7dec:7137 with SMTP id
+ 3-20020a250f03000000b007187dec7137mr472898ybp.129.1671745628110; Thu, 22 Dec
+ 2022 13:47:08 -0800 (PST)
 MIME-Version: 1.0
-References: <20221221151258.25748-1-kuniyu@amazon.com> <20221221151258.25748-3-kuniyu@amazon.com>
-In-Reply-To: <20221221151258.25748-3-kuniyu@amazon.com>
+References: <20221221151258.25748-1-kuniyu@amazon.com> <20221221151258.25748-2-kuniyu@amazon.com>
+ <95544fb4dd85d5acaca883bb8bae0e43821758bd.camel@redhat.com>
+In-Reply-To: <95544fb4dd85d5acaca883bb8bae0e43821758bd.camel@redhat.com>
 From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Thu, 22 Dec 2022 13:41:11 -0800
-Message-ID: <CAJnrk1Zc5Zz7c5CY8t14-Mg3SPmGFwCB6TFbPHfSSkexFJW8uw@mail.gmail.com>
-Subject: Re: [PATCH RFC net 2/2] tcp: Add selftest for bind() and TIME_WAIT.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Date:   Thu, 22 Dec 2022 13:46:57 -0800
+Message-ID: <CAJnrk1YcDEFhKGmpFCULfJBwf3p8Bg-D0VPzTPRdbs4HxdDbVQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net 1/2] tcp: Add TIME_WAIT sockets in bhash2.
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
         Jiri Slaby <jirislaby@kernel.org>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
@@ -70,173 +71,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 21, 2022 at 7:14 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Thu, Dec 22, 2022 at 7:06 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
-> bhash2 split the bind() validation logic into wildcard and non-wildcard
-> cases.  Let's add a test to catch the same regression.
->
-> Before the previous patch:
->
->   # ./bind_timewait
->   TAP version 13
->   1..2
->   # Starting 2 tests from 3 test cases.
->   #  RUN           bind_timewait.localhost.1 ...
->   # bind_timewait.c:87:1:Expected ret (0) == -1 (-1)
->   # 1: Test terminated by assertion
->   #          FAIL  bind_timewait.localhost.1
->   not ok 1 bind_timewait.localhost.1
->   #  RUN           bind_timewait.addrany.1 ...
->   #            OK  bind_timewait.addrany.1
->   ok 2 bind_timewait.addrany.1
->   # FAILED: 1 / 2 tests passed.
->   # Totals: pass:1 fail:1 xfail:0 xpass:0 skip:0 error:0
->
-> After:
->
->   # ./bind_timewait
->   TAP version 13
->   1..2
->   # Starting 2 tests from 3 test cases.
->   #  RUN           bind_timewait.localhost.1 ...
->   #            OK  bind_timewait.localhost.1
->   ok 1 bind_timewait.localhost.1
->   #  RUN           bind_timewait.addrany.1 ...
->   #            OK  bind_timewait.addrany.1
->   ok 2 bind_timewait.addrany.1
->   # PASSED: 2 / 2 tests passed.
->   # Totals: pass:2 fail:0 xfail:0 xpass:0 skip:0 error:0
->
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  tools/testing/selftests/net/.gitignore      |  1 +
->  tools/testing/selftests/net/bind_timewait.c | 93 +++++++++++++++++++++
->  2 files changed, 94 insertions(+)
->  create mode 100644 tools/testing/selftests/net/bind_timewait.c
->
-> diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-> index 9cc84114741d..a6911cae368c 100644
-> --- a/tools/testing/selftests/net/.gitignore
-> +++ b/tools/testing/selftests/net/.gitignore
-> @@ -1,5 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  bind_bhash
-> +bind_timewait
->  csum
->  cmsg_sender
->  diag_uid
-> diff --git a/tools/testing/selftests/net/bind_timewait.c b/tools/testing/selftests/net/bind_timewait.c
-> new file mode 100644
-> index 000000000000..2d40403128ff
-> --- /dev/null
-> +++ b/tools/testing/selftests/net/bind_timewait.c
-> @@ -0,0 +1,93 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright Amazon.com Inc. or its affiliates. */
-> +
-> +#include "../kselftest_harness.h"
+> On Thu, 2022-12-22 at 00:12 +0900, Kuniyuki Iwashima wrote:
+> > Jiri Slaby reported regression of bind() with a simple repro. [0]
+> >
+> > The repro creates a TIME_WAIT socket and tries to bind() a new socket
+> > with the same local address and port.  Before commit 28044fc1d495 ("net:
+> > Add a bhash2 table hashed by port and address"), the bind() failed with
+> > -EADDRINUSE, but now it succeeds.
+> >
+> > The cited commit should have put TIME_WAIT sockets into bhash2; otherwise,
+> > inet_bhash2_conflict() misses TIME_WAIT sockets when validating bind()
+> > requests if the address is not a wildcard one.
 
-nit: Not sure if this matters or not, but from looking at the other
-selftests/net it seems like the convention is to have relative path
-#include defined below absolute path #includes.
+(resending my reply because it wasn't in plaintext mode)
 
-> +
-> +#include <sys/socket.h>
-> +#include <netinet/in.h>
-> +#include <netinet/tcp.h>
+Thanks for adding this! I hadn't realized TIME_WAIT sockets also are
+considered when checking against inet bind conflicts.
 
-nit: i don't think we need this netinet/tcp.h include
+>
+> How does keeping the timewait sockets inside bhash2 affect the bind
+> loopup performance? I fear that could defeat completely the goal of
+> 28044fc1d495, on quite busy server we could have quite a bit of tw with
+> the same address/port. If so, we could even consider reverting
+> 28044fc1d495.
+>
 
-> +
-> +FIXTURE(bind_timewait)
-> +{
-> +       struct sockaddr_in addr;
-> +       socklen_t addrlen;
-> +};
-> +
-> +FIXTURE_VARIANT(bind_timewait)
-> +{
-> +       __u32 addr_const;
-> +};
-> +
-> +FIXTURE_VARIANT_ADD(bind_timewait, localhost)
-> +{
-> +       .addr_const = INADDR_LOOPBACK
-> +};
-> +
-> +FIXTURE_VARIANT_ADD(bind_timewait, addrany)
-> +{
-> +       .addr_const = INADDR_ANY
-> +};
-> +
-> +FIXTURE_SETUP(bind_timewait)
-> +{
-> +       self->addr.sin_family = AF_INET;
-> +       self->addr.sin_port = 0;
-> +       self->addr.sin_addr.s_addr = htonl(variant->addr_const);
-> +       self->addrlen = sizeof(self->addr);
-> +}
-> +
-> +FIXTURE_TEARDOWN(bind_timewait)
-> +{
-> +}
-> +
-> +void create_timewait_socket(struct __test_metadata *_metadata,
-> +                           FIXTURE_DATA(bind_timewait) *self)
-> +{
-> +       int server_fd, client_fd, child_fd, ret;
-> +       struct sockaddr_in addr;
-> +       socklen_t addrlen;
-> +
-> +       server_fd = socket(AF_INET, SOCK_STREAM, 0);
-> +       ASSERT_GT(server_fd, 0);
+Can you clarify what you mean by bind loopup?
 
-If any of these assertions fail, do we leak fds because we don't get
-to calling the close()s at the end of this function? Do we need to
-have the fds cleaned up in the teardown fixture function?
+> > [0]: https://lore.kernel.org/netdev/6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org/
+> >
+> > Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
+> > Reported-by: Jiri Slaby <jirislaby@kernel.org>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> >  include/net/inet_timewait_sock.h |  2 ++
+> >  include/net/sock.h               |  5 +++--
+> >  net/ipv4/inet_hashtables.c       |  5 +++--
+> >  net/ipv4/inet_timewait_sock.c    | 31 +++++++++++++++++++++++++++++--
+> >  4 files changed, 37 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/include/net/inet_timewait_sock.h b/include/net/inet_timewait_sock.h
+> > index 5b47545f22d3..c46ed239ad9a 100644
+> > --- a/include/net/inet_timewait_sock.h
+> > +++ b/include/net/inet_timewait_sock.h
+> > @@ -44,6 +44,7 @@ struct inet_timewait_sock {
+> >  #define tw_bound_dev_if              __tw_common.skc_bound_dev_if
+> >  #define tw_node                      __tw_common.skc_nulls_node
+> >  #define tw_bind_node         __tw_common.skc_bind_node
+> > +#define tw_bind2_node                __tw_common.skc_bind2_node
+> >  #define tw_refcnt            __tw_common.skc_refcnt
+> >  #define tw_hash                      __tw_common.skc_hash
+> >  #define tw_prot                      __tw_common.skc_prot
+> > @@ -73,6 +74,7 @@ struct inet_timewait_sock {
+> >       u32                     tw_priority;
+> >       struct timer_list       tw_timer;
+> >       struct inet_bind_bucket *tw_tb;
+> > +     struct inet_bind2_bucket        *tw_tb2;
+> >  };
+> >  #define tw_tclass tw_tos
+> >
+> > diff --git a/include/net/sock.h b/include/net/sock.h
+> > index dcd72e6285b2..aaec985c1b5b 100644
+> > --- a/include/net/sock.h
+> > +++ b/include/net/sock.h
+> > @@ -156,6 +156,7 @@ typedef __u64 __bitwise __addrpair;
+> >   *   @skc_tw_rcv_nxt: (aka tw_rcv_nxt) TCP window next expected seq number
+> >   *           [union with @skc_incoming_cpu]
+> >   *   @skc_refcnt: reference count
+> > + *   @skc_bind2_node: bind node in the bhash2 table
+> >   *
+> >   *   This is the minimal network layer representation of sockets, the header
+> >   *   for struct sock and struct inet_timewait_sock.
+> > @@ -241,6 +242,7 @@ struct sock_common {
+> >               u32             skc_window_clamp;
+> >               u32             skc_tw_snd_nxt; /* struct tcp_timewait_sock */
+> >       };
+> > +     struct hlist_node       skc_bind2_node;
+>
+> I *think* it would be better adding a tw_bind2_node field to the
+> inet_timewait_sock struct, so that we leave unmodified the request
+> socket and we don't change the struct sock binary layout. That could
+> affect performances moving hot fields on different cachelines.
+>
++1. The rest of this patch LGTM.
 
-> +
-> +       ret = bind(server_fd, (struct sockaddr *)&self->addr, self->addrlen);
-> +       ASSERT_EQ(ret, 0);
-> +
-> +       ret = listen(server_fd, 1);
-> +       ASSERT_EQ(ret, 0);
-> +
-> +       ret = getsockname(server_fd, (struct sockaddr *)&self->addr, &self->addrlen);
-> +       ASSERT_EQ(ret, 0);
-> +
-> +       client_fd = socket(AF_INET, SOCK_STREAM, 0);
-> +       ASSERT_GT(client_fd, 0);
-> +
-> +       ret = connect(client_fd, (struct sockaddr *)&self->addr, self->addrlen);
-> +       ASSERT_EQ(ret, 0);
-> +
-> +       addrlen = sizeof(addr);
-> +       child_fd = accept(server_fd, (struct sockaddr *)&addr, &addrlen);
-> +       ASSERT_GT(child_fd, 0);
-> +
-> +       close(child_fd);
-> +       close(client_fd);
-> +       close(server_fd);
-> +}
-> +
-> +TEST_F(bind_timewait, 1)
-> +{
-> +       int fd, ret;
-> +
-> +       create_timewait_socket(_metadata, self);
-> +
-> +       fd = socket(AF_INET, SOCK_STREAM, 0);
-> +       ASSERT_GT(fd, 0);
-> +
-> +       ret = bind(fd, (struct sockaddr *)&self->addr, self->addrlen);
-> +       ASSERT_EQ(ret, -1);
-> +       ASSERT_EQ(errno, EADDRINUSE);
-> +
-> +       close(fd);
-> +}
-> +
-> +TEST_HARNESS_MAIN
-> --
-> 2.30.2
+>
+> Thanks,
+>
+> Paolo
 >
