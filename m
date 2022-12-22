@@ -2,154 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E407653BBC
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 06:24:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91082653BCB
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 06:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiLVFYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 00:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
+        id S230417AbiLVFkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 00:40:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiLVFYG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 00:24:06 -0500
-Received: from us-smtp-delivery-115.mimecast.com (us-smtp-delivery-115.mimecast.com [170.10.133.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7972E1D338
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 21:23:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1671686597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QkC8qCSx4wzvV693UKzXYOzPWlAE19hl1QWYP+HaIEc=;
-        b=FSHkzW153ePyypweiwqbBIDMxZpPa9OFnrgMlbuF4ozh12ULPSntRsxFFgz7s/JSzdlpMu
-        inkgu4S9jomPefSdatQQqwQiyNGz/hKMiifoGYLxX/OGoiQCRgLV0wmL8skXpny086aQFb
-        ebt8+BJ1Sx+4ahu56WvFEmk8F6wlVRoRNJrTOEO4mUeQlT4Xkr41p+D3DcCNBPvw2EGRlu
-        FLXRVQ/fR0Cj8PnYCNNolSEq/2vEhcwDh6BxomK3cEyUZ2RqG/TR/UpacQoTdFs0GkT2nq
-        tDvWRjvImjV/abQhU9vP72lv0KwcS1EqAd7VHLAqdHYg8dChb3ZnjHjyRz2B0Q==
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12lp2169.outbound.protection.outlook.com [104.47.59.169]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-sK2NTSNoOLO3gWh18FjlLA-2; Thu, 22 Dec 2022 00:23:16 -0500
-X-MC-Unique: sK2NTSNoOLO3gWh18FjlLA-2
-Received: from PH7PR19MB5613.namprd19.prod.outlook.com (2603:10b6:510:136::5)
- by SN7PR19MB7020.namprd19.prod.outlook.com (2603:10b6:806:2ab::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Thu, 22 Dec
- 2022 05:23:12 +0000
-Received: from PH7PR19MB5613.namprd19.prod.outlook.com
- ([fe80::df5c:94ac:829:b7df]) by PH7PR19MB5613.namprd19.prod.outlook.com
- ([fe80::df5c:94ac:829:b7df%9]) with mapi id 15.20.5924.016; Thu, 22 Dec 2022
- 05:23:12 +0000
-From:   Liang Xu <lxu@maxlinear.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>,
-        "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        Samuels Xu <samuelsdream@hotmail.com>
-Subject: Re: [PATCH net v2] net: phy: mxl-gpy: fix delay time required by
- loopback disable function
-Thread-Topic: [PATCH net v2] net: phy: mxl-gpy: fix delay time required by
- loopback disable function
-Thread-Index: AQHZFSDXt1XlR2zIL0KMzq4mWIZF+K54Q1qAgAEb+iQ=
-Date:   Thu, 22 Dec 2022 05:23:12 +0000
-Message-ID: <PH7PR19MB5613E43211EB8E566C1C1F40BDE89@PH7PR19MB5613.namprd19.prod.outlook.com>
-References: <20221221094358.29639-1-lxu@maxlinear.com>
- <Y6L6X2w5EdUBq5ON@shell.armlinux.org.uk>
-In-Reply-To: <Y6L6X2w5EdUBq5ON@shell.armlinux.org.uk>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH7PR19MB5613:EE_|SN7PR19MB7020:EE_
-x-ms-office365-filtering-correlation-id: 445cddd3-4295-43c6-37bb-08dae3dc9ef3
-x-ld-processed: dac28005-13e0-41b8-8280-7663835f2b1d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: X+Yasmg+rEtLRTVwdQOqNFHPTu+HasTIJy3kHhKt4xHH44opUw7Pd/6g8ktKVsRKr3ssoUH5gEH7Oq2B07lh04KNsRrbBgoayyEOQmpjWcfMdUDzJCymrrbPc2zLxbwPmhckebnooELpZcgdVui/4rMxye+ogwf6k/IOZjV7gcjI/puwqk4yUAJ8UgnS5WL18VNuSZUsQCv3o4kfCYG0jOZ7ERe9dNdQ3vppYevgsf8FM4tsOUZ76Fw8bqRUnZ1sROSVyE4Fdl6kJT6nOnAiOcKTQt9Dbnxo5e+7M/vjxM9Q2pdWdjK8hERCYjWST3kCRB5bSWwhYg65Ih21M/1WnB3WPbq/7tytBEhqwGHTqZt82xzjm9Jr2sjyQzpsUkd/fr+WdCWKlpwr14ctFBCTssai2dC0/tRuxgk0u0lt8roJZrPb0QMs2un87XXT0KRrYhmLXBtR+P+9X+ZM8gHAW24TcChkb3cqIRtCG+ut0ZYEzgtYhB/0MOtrKrBQ2yPUYf4gq3PtySHD7g86L1wqT8V0wA9MBWiT7GBHIE2jQoES5KzTC1hQMmc0EjLs7bMUcGvetLmTmpjAyoZZGA4g7yXOGBcZTl6XLx+CwRl3c+nuUq9h4SrijHr2pMKZkphvtZ70xv3CXdzc9ZIHaWCFBVDPMiP+GoNOPUxQTU5fzoQDtMt7Oi8OvQMd987T2MmF5iT8iOB05o1Ogznkh8yyI2P9/JMlQVqza9M7qRX6F+E=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR19MB5613.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(39850400004)(136003)(366004)(376002)(396003)(451199015)(7696005)(6506007)(41300700001)(26005)(186003)(53546011)(9686003)(966005)(478600001)(38100700002)(66946007)(66476007)(66446008)(4326008)(122000001)(76116006)(66556008)(91956017)(86362001)(64756008)(8676002)(2906002)(316002)(71200400001)(38070700005)(54906003)(5660300002)(7416002)(33656002)(83380400001)(55016003)(52536014)(8936002)(6916009);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?eHfdGBwZnXT7mHBjpeHe9RGePdApzZR9Bc6TCntwFOILc2P5Z9hArOGtQU?=
- =?iso-8859-1?Q?+4wG94pvruavENtSaTWEyflnCY0jSbg5kkmmCjS8oyUkCmzP/Ba02z3pMS?=
- =?iso-8859-1?Q?QAaLI5tQlCjvNQHYok/tjzwZUFXr7UoTRPDvaGT/MEuh8MJD4XcQKgW6S/?=
- =?iso-8859-1?Q?QZPqY9a9AQ3fTsd3HjiW5iz4QASzqzg+b3E253a89u7EFLjjjNZNvZ3l2F?=
- =?iso-8859-1?Q?el4rC7xbQR2xaZHTcMu+RFRAzGdUxyEagna8RNoouF8Vvc0KC6wtsCC9wB?=
- =?iso-8859-1?Q?yOh4/WGPPqDLdaRGpl2LltRxNkHBpqW+fQ4nCvwr9x0IfQ+M/7e496Q9qt?=
- =?iso-8859-1?Q?yiyI04gS8NzsohyyIBPzW6Mo9gwHklTK6UhCmWsL4AmCm8uW2ThwJRleOb?=
- =?iso-8859-1?Q?dfEs768o6IfPOWMeyuf1DvVmAAq6T1FgJ2oCXVUwV2Hf6z2a0Tk66L9pO4?=
- =?iso-8859-1?Q?jyfzi0cN5iEl3AG56PxsjFd/c/sw2E9LCzjdXa5nOS/eF27wOxRq4yKgVQ?=
- =?iso-8859-1?Q?rvo8I9G6dzz3JzV/hNcc54xNUmJoVfOorUVFDCyglHMel4xuxmHf62CSOw?=
- =?iso-8859-1?Q?wDKFU4okp5cKC4vg/4uJoI7JErVdDTDIr1G9buEg5OjzfG8eh7h6i7W9Gv?=
- =?iso-8859-1?Q?UzqrUaoJP3aA9HdbXt//0UB+wCg/Q75EC61iTa+hNDY+ah4hGVBD6fyOau?=
- =?iso-8859-1?Q?XQMC/NksQ2fzIOyZg4VyYQf1kkueZ/2EJxjchJu9h184aT76nS8tHxkxbp?=
- =?iso-8859-1?Q?Uia9N2gYKnCFJd6EC57SiToQRjzqzIULgD3Bpy6ICHi1z6JzHHCCbEcDQE?=
- =?iso-8859-1?Q?FDDHlygT2AKBZtq8fI921KOUc+MrANTd5k9q9lDqQ49EGbYaLU9hxq7+7J?=
- =?iso-8859-1?Q?PsivKug+ECViEbvI7ShVkUY7oyyDgKnT2y6R4hpWdz+ruIxOlaBNt8+cUV?=
- =?iso-8859-1?Q?dxbDw4QdabiZGp9WPc6h2NEsOIMaJVzaiZcGzuqD9F3V8rm7Vf62gm2Rm+?=
- =?iso-8859-1?Q?ln/JdRrhuw+TtvN0NeHZbpCfd9HrdikyQOxXXYMdxCYsQve5yB5pwH1qir?=
- =?iso-8859-1?Q?+YHjcU2Ub/XbXx2vseEG5NANVzYx0Iv5NScw/09W8Dt/FpEtF0dYbhptQp?=
- =?iso-8859-1?Q?HClZfIaNYMq4rQWwAZcnhVw/rKRAhYNJS9NA+gcWyKNF+VKI5FzOZoxjIa?=
- =?iso-8859-1?Q?VUlztylCFMrtN0RCetTx3pVTDM5DHFPvsdikp5bvmcLAuZn/8HQKs1FNVT?=
- =?iso-8859-1?Q?T+Cx9/JKEwAxZV+AuJsk/EcN1DhwKl0DQhmm8xi0FuqChQUbXc3kvleeAV?=
- =?iso-8859-1?Q?fLne9knnMpA0dSGDU+qz07hxOPU0GcXbxvHyU8fwp2I3Z9Zof+SJnUMCTs?=
- =?iso-8859-1?Q?0x5fK/LGhx+s9no4JRrwjhL9qU1nXmcLYqAmHRE+5bxqIqDMRvB9WTr9cb?=
- =?iso-8859-1?Q?Kz+rX6wB7tWPgDcqVau2lVfMix9GlBAX9clabYaRw+UUiqSctqRjR25Xkj?=
- =?iso-8859-1?Q?Tti9FuSH08afG+DEqPXVJMNj8bcetROz8c03FmBIBIDrh2vM+58DcrwWbD?=
- =?iso-8859-1?Q?zsJ2rmqx7LojGuqxcyKiQVd2nvLivTbKDob61FBrdKIWzmcnLGNlrqsLvX?=
- =?iso-8859-1?Q?b9DPZQFM8GzDE=3D?=
+        with ESMTP id S229531AbiLVFkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 00:40:01 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B88713EBC;
+        Wed, 21 Dec 2022 21:40:00 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id x11so1231061lfn.0;
+        Wed, 21 Dec 2022 21:40:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q2wMW4A7w/lGCoVRU7jKGf5pziTEUEGOvTu5cpMPFGo=;
+        b=XgkriJeRzw3TuTEkJlMTg7lt3CW6sVRjPycUFqcEpyL9FvVk6lsAQHyOkjLZdi3NcL
+         PMS3Nois69/vR34Dw3LTp+uiPy5L3WhXv9Nl5PiLTx9ZxhUQhKV9eiYzGfCSQFMUcPrq
+         /luZFu22J2bkQzC1JWnu8Uih1qP+bznHo/k6aa9epHZhKh3vysuyz+sE4wz/xpej77fS
+         E2Vr2zX8v3t8nlnizJR69Jf6acjEw06Pq/q0aWvuReRV2kGx6mdS97RJg3kKEfpvHac3
+         YglDIippPwBDIZFnzm5TkHUZLyReUdHDUbZb6Pyblo4lvyDK5OYw7Q3Ju8T6krkqOcpN
+         drCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Q2wMW4A7w/lGCoVRU7jKGf5pziTEUEGOvTu5cpMPFGo=;
+        b=LQGJXv8k+Sjci7fAnEDkDNXVai4EsQc/QXaierE6J27OhmKPAENvM8JtSOpz6kLqqc
+         ZKoSbTwDip7kNH8wHFsBPAwpfsVZl6Ub/fw8zCbtTllC7fgcp0kq3vSh7YritxXfCnxP
+         CzGygBrxZMjHXIURb/8SLorEoyRNFvI15Rq05TkAgN+LEDVajH+dg6/6QacDfsnbawHZ
+         4w0Yhb20ZmPL5CHplTnHtvZ+2A9O+9tGY8gAqJwKlzJ4Cig7dkIlkscWQwIKYx+Vk0h9
+         BCLxWkGmadtJjX026HpJ/rvJXOslOYFTtPpV1TWkVMnWr5lIgHZR/GKEnvHjtI/25Mc+
+         NERw==
+X-Gm-Message-State: AFqh2kqt1ifv6pKBgZu9lgF5j1VhB0XRixwXjytI+/tp2iRq+/4d1u7O
+        nv5R4ILFbyicUNr99qWP5ocW/bPFQ+Ba4219EVQ=
+X-Google-Smtp-Source: AMrXdXs//td63oy92QcY5/viNOMn0IRgcHT2NuhED1i0wZii8vyvRQUIJzyAt9sgyqpem/sXH+ORnJyeeKxGeQ8WV7I=
+X-Received: by 2002:ac2:41da:0:b0:4b4:af05:4a8d with SMTP id
+ d26-20020ac241da000000b004b4af054a8dmr228392lfi.415.1671687598455; Wed, 21
+ Dec 2022 21:39:58 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: maxlinear.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR19MB5613.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 445cddd3-4295-43c6-37bb-08dae3dc9ef3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Dec 2022 05:23:12.5240
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: n/KnrjDb+apH8x2gQTn2Hyte3zGvmeVmtaAutgKpqCVvJHqAMn8pvu25TgZQGLQnrgZJZx5vnvHecDjrBc+Qzg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR19MB7020
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Language: en-US
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221218234801.579114-1-jmaxwell37@gmail.com> <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+ <bf56c3aa-85df-734d-f419-835a35e66e03@kernel.org> <CAGHK07BehyHXoS+27=cfZoKz4XNTcJjyB5us33sNS7P+_fudHQ@mail.gmail.com>
+ <CAGHK07D2Dy4zFGHqwdyg+nsRC_iL4ArWTPk7L2ndA2PaLfOMYQ@mail.gmail.com>
+In-Reply-To: <CAGHK07D2Dy4zFGHqwdyg+nsRC_iL4ArWTPk7L2ndA2PaLfOMYQ@mail.gmail.com>
+From:   Jonathan Maxwell <jmaxwell37@gmail.com>
+Date:   Thu, 22 Dec 2022 16:39:21 +1100
+Message-ID: <CAGHK07DU15NhFvGuLB6WHUF0fffT3MefL3E3JWHmtWR6Wzm0bA@mail.gmail.com>
+Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=0A=0AThanks & Regards,=0AXu Liang=0A=0A> _________________________________=
-_______=0A> From: Russell King <linux@armlinux.org.uk> on behalf of Russell=
- King (Oracle) <linux@armlinux.org.uk>=0A> Sent: Wednesday, December 21, 20=
-22 8:21 PM=0A> To: Liang Xu=0A> Cc: andrew@lunn.ch; hkallweit1@gmail.com; n=
-etdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org; Hauke Mehrtens=
-; Thomas Mohren; Ismail, Mohammad Athari; edumazet@google.com; pabeni@redha=
-t.com=0A> Subject: Re: [PATCH net v2] net: phy: mxl-gpy: fix delay time req=
-uired by loopback disable function=0A>=20=0A> This email was sent from outs=
-ide of MaxLinear.=0A>=20=0A> Hi,=0A>=20=0A> On Wed, Dec 21, 2022 at 05:43:5=
-8PM +0800, Xu Liang wrote:=0A> > GPY2xx devices need 3 seconds to fully swi=
-tch out of loopback mode=0A> > before it can safely re-enter loopback mode.=
-=0A>=20=0A> Would it be better to record the time that loopback mode is exi=
-ted,=0A> and then delay an attempt to re-enter loopback mode if it's less t=
-han=0A> three seconds since we exited?=0A=0ALoopback is usually used in sel=
-f-test or debugging.=0ASo I just made a simple delay to avoid complexity of=
- time recording.=0APlease let me know if you think it's worth to change, th=
-en I will update the patch.=0A=0A>=20=0A> Thanks.=0A>=20=0A> --=0A> RMK's P=
-atch system: https://www.armlinux.org.uk/developer/patches/<https://www.arm=
-linux.org.uk/developer/patches>=0A> FTTP is here! 40Mbps down 10Mbps up. De=
-cent connectivity at last!=0A>=20
+On Wed, Dec 21, 2022 at 3:31 PM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+>
+> On Wed, Dec 21, 2022 at 8:55 AM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+> >
+> > On Wed, Dec 21, 2022 at 2:10 AM David Ahern <dsahern@kernel.org> wrote:
+> > >
+> > > On 12/20/22 5:35 AM, Paolo Abeni wrote:
+> > > > On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
+> > > >> Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
+> > > >> route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
+> > > >> consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
+> > > >> these warnings:
+> > > >>
+> > > >> [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > >> [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > >> .
+> > > >> .
+> > > >> [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > >
+> > > > If I read correctly, the maximum number of dst that the raw socket can
+> > > > use this way is limited by the number of packets it allows via the
+> > > > sndbuf limit, right?
+> > > >
+> > > > Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
+> > > > ipvs, seg6?
+> > > >
+> > > > @DavidA: why do we need to create RTF_CACHE clones for KNOWN_NH flows?
+> > > >
+> > > > Thanks,
+> > > >
+> > > > Paolo
+> > > >
+> > >
+> > > If I recall the details correctly: that sysctl limit was added back when
+> > > ipv6 routes were managed as dst_entries and there was a desire to allow
+> > > an admin to limit the memory consumed. At this point in time, IPv6 is
+> > > more inline with IPv4 - a separate struct for fib entries from dst
+> > > entries. That "Route cache is full" message is now out of date since
+> > > this is dst_entries which have a gc mechanism.
+> > >
+> > > IPv4 does not limit the number of dst_entries that can be allocated
+> > > (ip_rt_max_size is the sysctl variable behind the ipv4 version of
+> > > max_size and it is a no-op). IPv6 can probably do the same here?
+> > >
+> >
+> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> > index dbc224023977..701aba7feaf5 100644
+> > --- a/net/ipv6/route.c
+> > +++ b/net/ipv6/route.c
+> > @@ -6470,7 +6470,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+> >  #endif
+> >
+> >         net->ipv6.sysctl.flush_delay = 0;
+> > -       net->ipv6.sysctl.ip6_rt_max_size = 4096;
+> > +       net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
+> >         net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
+> >         net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
+> >         net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
+> >
+> > The above patch resolved it for the Ipv6 reproducer.
+> >
+> > Would that be sufficient?
+> >
+>
+> Otherwise if you prefer to make Ipv6 behaviour similar to IPv4.
+> Rather than upping max_size.
+>
+> Here is prototype patch that removes the max_size check for Ipv6:
+>
 
+There are some mistakes in this prototype patch. Let me come up with a
+better one. I'll submit a new patch in the new year for review. Thanks for
+the suggestion DavidA.
+
+Regards
+
+Jon
+
+> diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+> index 88ff7bb2bb9b..632086b2f644 100644
+> --- a/include/net/dst_ops.h
+> +++ b/include/net/dst_ops.h
+> @@ -16,7 +16,7 @@ struct dst_ops {
+>         unsigned short          family;
+>         unsigned int            gc_thresh;
+>
+> -       int                     (*gc)(struct dst_ops *ops);
+> +       void                    (*gc)(struct dst_ops *ops);
+>         struct dst_entry *      (*check)(struct dst_entry *, __u32 cookie);
+>         unsigned int            (*default_advmss)(const struct dst_entry *);
+>         unsigned int            (*mtu)(const struct dst_entry *);
+> diff --git a/net/core/dst.c b/net/core/dst.c
+> index 497ef9b3fc6a..dcb85267bc4c 100644
+> --- a/net/core/dst.c
+> +++ b/net/core/dst.c
+> @@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+>
+>         if (ops->gc &&
+>             !(flags & DST_NOCOUNT) &&
+> -           dst_entries_get_fast(ops) > ops->gc_thresh) {
+> -               if (ops->gc(ops)) {
+> -                       pr_notice_ratelimited("Route cache is full:
+> consider increasing sysctl net.ipv6.route.max_size.\n");
+> -                       return NULL;
+> -               }
+> -       }
+> +           dst_entries_get_fast(ops) > ops->gc_thresh)
+> +               ops->gc(ops);
+>
+>         dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+>         if (!dst)
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index dbc224023977..8db7c5436da4 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct
+> dst_entry *);
+>  static void            ip6_dst_destroy(struct dst_entry *);
+>  static void            ip6_dst_ifdown(struct dst_entry *,
+>                                        struct net_device *dev, int how);
+> -static int              ip6_dst_gc(struct dst_ops *ops);
+> +static void             ip6_dst_gc(struct dst_ops *ops);
+>
+>  static int             ip6_pkt_discard(struct sk_buff *skb);
+>  static int             ip6_pkt_discard_out(struct net *net, struct
+> sock *sk, struct sk_buff *skb);
+> @@ -3295,32 +3295,21 @@ struct dst_entry *icmp6_dst_alloc(struct
+> net_device *dev,
+>         return dst;
+>  }
+>
+> -static int ip6_dst_gc(struct dst_ops *ops)
+> +static void ip6_dst_gc(struct dst_ops *ops)
+>  {
+>         struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
+> -       int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
+> -       int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
+>         int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+>         int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+> -       unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+>         int entries;
+>
+>         entries = dst_entries_get_fast(ops);
+> -       if (entries > rt_max_size)
+> -               entries = dst_entries_get_slow(ops);
+> -
+> -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> -           entries <= rt_max_size)
+> -               goto out;
+>
+>         net->ipv6.ip6_rt_gc_expire++;
+>         fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
+>         entries = dst_entries_get_slow(ops);
+>         if (entries < ops->gc_thresh)
+>                 net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
+> -out:
+>         net->ipv6.ip6_rt_gc_expire -= net->ipv6.ip6_rt_gc_expire>>rt_elasticity;
+> -       return entries > rt_max_size;
+>  }
+>
+>  static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
+>
+> > > I do not believe the suggested flag is the right change.
+> >
+> > Regards
+> >
+> > Jon
