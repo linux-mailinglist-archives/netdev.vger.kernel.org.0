@@ -2,33 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 960B3653F16
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 12:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE21E653F1D
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 12:37:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235499AbiLVLfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 06:35:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42966 "EHLO
+        id S235507AbiLVLhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 06:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiLVLfY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 06:35:24 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F820FCE8;
-        Thu, 22 Dec 2022 03:35:23 -0800 (PST)
-Received: from dggpeml100026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Nd7WC1WpjzJqbk;
-        Thu, 22 Dec 2022 19:34:15 +0800 (CST)
-Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
- dggpeml100026.china.huawei.com (7.185.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 22 Dec 2022 19:35:16 +0800
-Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
- dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.034;
- Thu, 22 Dec 2022 19:35:16 +0800
-From:   shaozhengchao <shaozhengchao@huawei.com>
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        with ESMTP id S235104AbiLVLhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 06:37:11 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0126205F3
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 03:37:09 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id x11so1082070qtv.13
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 03:37:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=CeLNuBbrP530src0Z6NCrItj4/+wVeEtwCPVc4BuF5Y=;
+        b=Vqda0nKrOLj8xINU0m5yCraWtC9LnYAC0x3ehyJl3BasENJbnHjFUWRF7+IdDgX8NO
+         XjEe7iYwKLfg4EBLUmpcb2m3emczsCNWIweBjT9wZdksF2O3runw7iJurtprkdgZGUQA
+         MlAedVrNDFfJztV8+LuBO4+4Kivkh6iiSy8Rg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CeLNuBbrP530src0Z6NCrItj4/+wVeEtwCPVc4BuF5Y=;
+        b=3TKBg9XkGRdJ2/7GNPEFQviXluX5zdKaeDqQrXbVtlIji1VCXAlEYeZgY1nK+dvI3n
+         WbyoJ9N8pKch8bjQcjwPqERnK0aSsTahMAn/Ng3V3Hz6phDW9SqMdPaa6cyWC2A6SW4c
+         WAkduEMqKPZqw8C9LwiF3NLZtmnf5kxy7eIeYDob4IQJ73iiraHZjDAdxQBOihQ7Y1V1
+         HJPdCTvFsDtAdahmIRTkiF7vaUSJa88HiMHFymWipjFLPDBpowAnnrn+4raChYYph4u8
+         C4V+F69Mg08SP+zuv5ckp917WjBP2t7Ku0bCnH9lJ+afimLSHfVETJUiJu5VIhbCtHAu
+         eo+A==
+X-Gm-Message-State: AFqh2kobi058Oq1rIuTR69tALWxjmCPIHzZWltxVEHY4mARpGoiPQxnO
+        B3VY9atun6pYNveZLktaIjs/6SElVxGGE7JC
+X-Google-Smtp-Source: AMrXdXsgrmSpI1wqz9afmQ1MMfc8bAWQGMhm223lGfvhvC2F3UZxrpozfDbNqJBc0Ye8JsabRlBggg==
+X-Received: by 2002:ac8:4f17:0:b0:3a6:95ff:ffd4 with SMTP id b23-20020ac84f17000000b003a695ffffd4mr6515138qte.52.1671709028795;
+        Thu, 22 Dec 2022 03:37:08 -0800 (PST)
+Received: from [10.176.68.61] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id g8-20020ac81248000000b003a69de747c9sm241955qtj.19.2022.12.22.03.37.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Dec 2022 03:37:07 -0800 (PST)
+Message-ID: <58d61ba6-3cd9-cfee-d6d1-2bb800853eb4@broadcom.com>
+Date:   Thu, 22 Dec 2022 12:37:04 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH] wifi: brcmfmac: unmap dma buffer in
+ brcmf_msgbuf_alloc_pktid()
+To:     shaozhengchao <shaozhengchao@huawei.com>,
         Kalle Valo <kvalo@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         "brcm80211-dev-list.pdl@broadcom.com" 
         <brcm80211-dev-list.pdl@broadcom.com>,
@@ -49,76 +76,175 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linville@tuxdriver.com" <linville@tuxdriver.com>,
         "weiyongjun (A)" <weiyongjun1@huawei.com>,
         yuehaibing <yuehaibing@huawei.com>
-Subject: RE: [PATCH] wifi: brcmfmac: unmap dma buffer in
- brcmf_msgbuf_alloc_pktid()
-Thread-Topic: [PATCH] wifi: brcmfmac: unmap dma buffer in
- brcmf_msgbuf_alloc_pktid()
-Thread-Index: AQHZFWq8yViv4H2Lj0+i8vYu8peAZ654/7AAgACZYfD//3tpgIAAI56AgACPiMA=
-Date:   Thu, 22 Dec 2022 11:35:16 +0000
-Message-ID: <fc8a7c6ac335473b901aa9815167754f@huawei.com>
 References: <20221207013114.1748936-1-shaozhengchao@huawei.com>
  <167164758059.5196.17408082243455710150.kvalo@kernel.org>
  <Y6QJWPDXglDjUP9p@linutronix.de> <87cz8bkeqp.fsf@kernel.org>
  <47236b24-6b47-b03a-c7b8-c46ea07cac6f@huawei.com>
  <6b529058-3650-72bb-7541-9fbfb8c6ad9b@broadcom.com>
-In-Reply-To: <6b529058-3650-72bb-7541-9fbfb8c6ad9b@broadcom.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.84.75.11]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+ <fc8a7c6ac335473b901aa9815167754f@huawei.com>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <fc8a7c6ac335473b901aa9815167754f@huawei.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000d853c805f0691606"
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBBcmVuZCB2YW4gU3ByaWVsIFtt
-YWlsdG86YXJlbmQudmFuc3ByaWVsQGJyb2FkY29tLmNvbV0gDQpTZW50OiBUaHVyc2RheSwgRGVj
-ZW1iZXIgMjIsIDIwMjIgNzowMCBQTQ0KVG86IHNoYW96aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9A
-aHVhd2VpLmNvbT47IEthbGxlIFZhbG8gPGt2YWxvQGtlcm5lbC5vcmc+OyBTZWJhc3RpYW4gQW5k
-cnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9uaXguZGU+DQpDYzogbmV0ZGV2QHZnZXIua2Vy
-bmVsLm9yZzsgbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnOyBicmNtODAyMTEtZGV2LWxp
-c3QucGRsQGJyb2FkY29tLmNvbTsgU0hBLWN5Zm1hYy1kZXYtbGlzdEBpbmZpbmVvbi5jb207IGRh
-dmVtQGRhdmVtbG9mdC5uZXQ7IGVkdW1hemV0QGdvb2dsZS5jb207IGt1YmFAa2VybmVsLm9yZzsg
-cGFiZW5pQHJlZGhhdC5jb207IGFzcHJpZWxAZ21haWwuY29tOyBmcmFua3kubGluQGJyb2FkY29t
-LmNvbTsgaGFudGUubWV1bGVtYW5AYnJvYWRjb20uY29tOyB3cmlnaHQuZmVuZ0BjeXByZXNzLmNv
-bTsgY2hpLWhzaWVuLmxpbkBjeXByZXNzLmNvbTsgYS5mYXRvdW1AcGVuZ3V0cm9uaXguZGU7IGFs
-c2lAYmFuZy1vbHVmc2VuLmRrOyBwaWV0ZXJwZ0Bicm9hZGNvbS5jb207IGRla2ltQGJyb2FkY29t
-LmNvbTsgbGludmlsbGVAdHV4ZHJpdmVyLmNvbTsgd2VpeW9uZ2p1biAoQSkgPHdlaXlvbmdqdW4x
-QGh1YXdlaS5jb20+OyB5dWVoYWliaW5nIDx5dWVoYWliaW5nQGh1YXdlaS5jb20+DQpTdWJqZWN0
-OiBSZTogW1BBVENIXSB3aWZpOiBicmNtZm1hYzogdW5tYXAgZG1hIGJ1ZmZlciBpbiBicmNtZl9t
-c2didWZfYWxsb2NfcGt0aWQoKQ0KDQpPbiAxMi8yMi8yMDIyIDk6NTIgQU0sIHNoYW96aGVuZ2No
-YW8gd3JvdGU6DQo+IA0KPiANCj4gT24gMjAyMi8xMi8yMiAxNjo0NiwgS2FsbGUgVmFsbyB3cm90
-ZToNCj4+IFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3IgPGJpZ2Vhc3lAbGludXRyb25peC5kZT4g
-d3JpdGVzOg0KPj4NCj4+PiBPbiAyMDIyLTEyLTIxIDE4OjMzOjA2IFsrMDAwMF0sIEthbGxlIFZh
-bG8gd3JvdGU6DQo+Pj4+IFpoZW5nY2hhbyBTaGFvIDxzaGFvemhlbmdjaGFvQGh1YXdlaS5jb20+
-IHdyb3RlOg0KPj4+Pg0KPj4+Pj4gQWZ0ZXIgdGhlIERNQSBidWZmZXIgaXMgbWFwcGVkIHRvIGEg
-cGh5c2ljYWwgYWRkcmVzcywgYWRkcmVzcyBpcyANCj4+Pj4+IHN0b3JlZA0KPj4+Pj4gaW4gcGt0
-aWRzIGluIGJyY21mX21zZ2J1Zl9hbGxvY19wa3RpZCgpLiBUaGVuLCBwa3RpZHMgaXMgcGFyc2Vk
-IGluDQo+Pj4+PiBicmNtZl9tc2didWZfZ2V0X3BrdGlkKCkvYnJjbWZfbXNnYnVmX3JlbGVhc2Vf
-YXJyYXkoKSB0byBvYnRhaW4gDQo+Pj4+PiBwaHlzYWRkcg0KPj4+Pj4gYW5kIGxhdGVyIHVubWFw
-IHRoZSBETUEgYnVmZmVyLiBCdXQgd2hlbiBjb3VudCBpcyBhbHdheXMgZXF1YWwgdG8NCj4+Pj4+
-IHBrdGlkcy0+YXJyYXlfc2l6ZSwgcGh5c2FkZHIgaXNuJ3Qgc3RvcmVkIGluIHBrdGlkcyBhbmQg
-dGhlIERNQSBidWZmZXINCj4+Pj4+IHdpbGwgbm90IGJlIHVubWFwcGVkIGFueXdheS4NCj4+Pj4+
-DQo+Pj4+PiBGaXhlczogOWExYmI2MDI1MGQyICgiYnJjbWZtYWM6IEFkZGluZyBtc2didWYgcHJv
-dG9jb2wuIikNCj4+Pj4+IFNpZ25lZC1vZmYtYnk6IFpoZW5nY2hhbyBTaGFvIDxzaGFvemhlbmdj
-aGFvQGh1YXdlaS5jb20+DQo+Pj4+DQo+Pj4+IENhbiBzb21lb25lIHJldmlldyB0aGlzPw0KPj4+
-DQo+Pj4gQWZ0ZXIgbG9va2luZyBhdCB0aGUgY29kZSwgdGhhdCBza2IgaXMgbWFwcGVkIGJ1dCBu
-b3QgaW5zZXJ0ZWQgaW50byB0aGUNCj4+PiByaW5nYnVmZmVyIGluIHRoaXMgY29uZGl0aW9uLiBU
-aGUgZnVuY3Rpb24gcmV0dXJucyB3aXRoIGFuIGVycm9yIGFuZCB0aGUNCj4+PiBjYWxsZXIgd2ls
-bCBmcmVlIHRoYXQgc2tiIChvciBhZGQgdG8gYSBsaXN0IGZvciBsYXRlcikuIEVpdGhlciB3YXkg
-dGhlDQo+Pj4gc2tiIHJlbWFpbnMgbWFwcGVkIHdoaWNoIGlzIHdyb25nLiBUaGUgdW5tYXAgaGVy
-ZSBpcyB0aGUgcmlnaHQgdGhpbmcgdG8NCj4+PiBkby4NCj4+Pg0KPj4+IFJldmlld2VkLWJ5OiBT
-ZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9uaXguZGU+DQo+Pg0KPj4g
-VGhhbmtzIGZvciB0aGUgcmV2aWV3LCB2ZXJ5IG11Y2ggYXBwcmVjaWF0ZWQuDQo+Pg0KPiANCj4g
-VGhhbmsgeW91IHZlcnkgbXVjaC4NCg0KPkdvb2QgY2F0Y2guIEhhcyB0aGlzIHBhdGggYmVlbiBv
-YnNlcnZlZCBvciBpcyB0aGlzIGZvdW5kIGJ5IGluc3BlY3RpbmcgDQo+dGhlIGNvZGU/IEp1c3Qg
-Y3VyaW91cy4NCg0KPlJlZ2FyZHMsDQo+QXJlbmQNCg0KSGkgQXJlbmTvvJoNCglJIHJldmlldyBj
-b2RlIGFuZCBmaW5kIHRoZSBidWcuIA0KDQpaaGVuZ2NoYW8gU2hhbw0K
+--000000000000d853c805f0691606
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+
+
+On 12/22/2022 12:35 PM, shaozhengchao wrote:
+> 
+> 
+> -----Original Message-----
+> From: Arend van Spriel [mailto:arend.vanspriel@broadcom.com]
+> Sent: Thursday, December 22, 2022 7:00 PM
+> To: shaozhengchao <shaozhengchao@huawei.com>; Kalle Valo <kvalo@kernel.org>; Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: netdev@vger.kernel.org; linux-wireless@vger.kernel.org; brcm80211-dev-list.pdl@broadcom.com; SHA-cyfmac-dev-list@infineon.com; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com; aspriel@gmail.com; franky.lin@broadcom.com; hante.meuleman@broadcom.com; wright.feng@cypress.com; chi-hsien.lin@cypress.com; a.fatoum@pengutronix.de; alsi@bang-olufsen.dk; pieterpg@broadcom.com; dekim@broadcom.com; linville@tuxdriver.com; weiyongjun (A) <weiyongjun1@huawei.com>; yuehaibing <yuehaibing@huawei.com>
+> Subject: Re: [PATCH] wifi: brcmfmac: unmap dma buffer in brcmf_msgbuf_alloc_pktid()
+> 
+> On 12/22/2022 9:52 AM, shaozhengchao wrote:
+>>
+>>
+>> On 2022/12/22 16:46, Kalle Valo wrote:
+>>> Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
+>>>
+>>>> On 2022-12-21 18:33:06 [+0000], Kalle Valo wrote:
+>>>>> Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+>>>>>
+>>>>>> After the DMA buffer is mapped to a physical address, address is
+>>>>>> stored
+>>>>>> in pktids in brcmf_msgbuf_alloc_pktid(). Then, pktids is parsed in
+>>>>>> brcmf_msgbuf_get_pktid()/brcmf_msgbuf_release_array() to obtain
+>>>>>> physaddr
+>>>>>> and later unmap the DMA buffer. But when count is always equal to
+>>>>>> pktids->array_size, physaddr isn't stored in pktids and the DMA buffer
+>>>>>> will not be unmapped anyway.
+>>>>>>
+>>>>>> Fixes: 9a1bb60250d2 ("brcmfmac: Adding msgbuf protocol.")
+>>>>>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+>>>>>
+>>>>> Can someone review this?
+>>>>
+>>>> After looking at the code, that skb is mapped but not inserted into the
+>>>> ringbuffer in this condition. The function returns with an error and the
+>>>> caller will free that skb (or add to a list for later). Either way the
+>>>> skb remains mapped which is wrong. The unmap here is the right thing to
+>>>> do.
+>>>>
+>>>> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>>>
+>>> Thanks for the review, very much appreciated.
+>>>
+>>
+>> Thank you very much.
+> 
+>> Good catch. Has this path been observed or is this found by inspecting
+>> the code? Just curious.
+> 
+>> Regards,
+>> Arend
+> 
+> Hi Arend：
+> 	I review code and find the bug.
+
+
+Much appreciated.
+
+Regards,
+Arend
+
+> Zhengchao Shao
+
+--000000000000d853c805f0691606
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
+Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
+ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
+zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
+sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
+BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
+N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
+p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
+bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBn4YmxMlybyTKYUck3
+g+QzvLr7vK/vfo4lClMGCb5t3jAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjEyMjIxMTM3MDlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAX9jQ04R+dTyhlWaurcdCKjjNZWGcUf0OZHb0
+QujWNHCexNzmC+LQR+9uhIT0zRK05b4epKWza/lWCm0fi+jUlfJJvcrfeK8NqbJ+nUqmdDyVhBYX
+TzciVBI+L6I5JAga73aUi7cpKgy6poQDrxDkmfyefhrocIiyJUVWVZT2rpBze7M6FVMyjt0Cu9Xo
+X4vWtNfSHUvufAVZ1hRHDitKQYetF4m7DvTVJSvcfL5UBs0+Nwqi9jSLf6Eyxgf/LflRe25M/9B8
+dpM23LjgwiOKQhrzS3giB+YdZmm7G1fBxFSWKF7Wu42Ky+MQvgC9BwYhnibGTVQTa7VzHGduOgGG
+Dg==
+--000000000000d853c805f0691606--
