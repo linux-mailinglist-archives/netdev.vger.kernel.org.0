@@ -2,456 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41958653A0A
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 01:17:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B2DC653A2D
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 01:47:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234834AbiLVAR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Dec 2022 19:17:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S234861AbiLVArD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Dec 2022 19:47:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234779AbiLVARs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 19:17:48 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200CC248D8
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 16:17:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671668267; x=1703204267;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=l6eMeMMlQsH9of0xPsfJCF6Mo57IHvvcG3CrQ0TGvdU=;
-  b=MaL0Q0DmEFRK9q3A4TyqPd7/bNMc85ht4NRHqMve+Ll5I7RNrm1/mlkd
-   laQrGLRtc4OofRYTUFG3rZry2hDJfeg13rgRqAyiDlD0Qaot3UlJ4TDun
-   9zhWOI/WaqDy2NHmWZRr7wFYFLP+02gchbkS1Tyt+TMl34YP29+LfFWA5
-   GoZEmw7q8vTc94NrOXke4NfMQ8kuV4Q7vd43QZOFQ8OKErcklIb8yLaak
-   RpVXFIhE9lhzRa4xHAjXg7x/mN/UkHDHujIDRZnSK0wDUkGMhOxeYxcT2
-   mlfrrZcwOBgR2M2mqyan/fHrcxONIn++8UmxwCNaFG8kani/2eNIEyShW
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="318701448"
-X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
-   d="scan'208";a="318701448"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2022 16:17:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="720117642"
-X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
-   d="scan'208";a="720117642"
-Received: from msu-dell.jf.intel.com ([10.166.233.5])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Dec 2022 16:17:44 -0800
-From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch, corbet@lwn.net,
-        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
-Subject: [PATCH ethtool-next v2 2/2] netlink: add netlink handler for get rss (-x)
-Date:   Wed, 21 Dec 2022 16:13:43 -0800
-Message-Id: <20221222001343.1220090-3-sudheer.mogilappagari@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20221222001343.1220090-1-sudheer.mogilappagari@intel.com>
-References: <20221222001343.1220090-1-sudheer.mogilappagari@intel.com>
+        with ESMTP id S229601AbiLVArC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Dec 2022 19:47:02 -0500
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6A2314;
+        Wed, 21 Dec 2022 16:47:00 -0800 (PST)
+Received: by mail-pg1-f180.google.com with SMTP id s196so340969pgs.3;
+        Wed, 21 Dec 2022 16:47:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D8q+249haixB7NYYpN2RHdBV90bkuxv5Hi/JR+Cotic=;
+        b=nZnvQnYyKBPQ78V++T6KAA8f45BHvb42rwZpNa9fV9dreFM5M7b9Tkp6HqOIIXcXEs
+         xaxBd45I7HNdNoyUUropgssACIvicc5TiufGRlFakCKNljlOHu8NkMA0BHL8sJJyBlzl
+         BMLNksaIqHCd5FDXeQfXr6FU/qMZdhc0mpRRDfu0vEAKPX2u3Nr6A+Kaux5SUeOd0rhZ
+         0ki/PfzWWczSHOUfsWEFMs4LnAM2cyldayTrv54KpfZN3lS2dZ5QHQzM4mjr1b17nbis
+         +OM4sd2t0UHBqMZObKhynInvRA4euk5d2uCeUduaizHA28dGRQ2G6Cg8k5ZF37D+8vIg
+         k8Sg==
+X-Gm-Message-State: AFqh2kosjtHVI60oubhstzz6BE1TCbII9qV5IuT4fEyz49TPb3BWq7fM
+        scmkzKLClDptSTby+YVeUblaUkrXYZORB56dgrEp1q318CI=
+X-Google-Smtp-Source: AMrXdXvRy0gMj7jpUxsIu5yTJZvAgCC1niu1PLKOOTN9T/h4F8EvgV2okW2zQLST6MZvo/mVilmodZPyvtWKFIa0o/g=
+X-Received: by 2002:a05:6a00:3387:b0:572:7c58:540 with SMTP id
+ cm7-20020a056a00338700b005727c580540mr238341pfb.69.1671670019429; Wed, 21 Dec
+ 2022 16:46:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221219212013.1294820-1-frank.jungclaus@esd.eu>
+ <20221219212013.1294820-2-frank.jungclaus@esd.eu> <CAMZ6RqKc0mvfQGEGb7gCE69Mskhzq5YKF88Jhe+1VR=43YW3Xg@mail.gmail.com>
+ <f9c68625149673fec635d64a21608f3b53866cd7.camel@esd.eu>
+In-Reply-To: <f9c68625149673fec635d64a21608f3b53866cd7.camel@esd.eu>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 22 Dec 2022 09:46:48 +0900
+Message-ID: <CAMZ6RqL+7zLLkL_bXAR0iwk6XH_7F_-t472vnq_-jMgT4XC6UA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] can: esd_usb: Improved behavior on esd CAN_ERROR_EXT
+ event (1)
+To:     Frank Jungclaus <Frank.Jungclaus@esd.eu>
+Cc:     =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for netlink based "ethtool -x <dev>" command using
-ETHTOOL_MSG_RSS_GET netlink message. It implements same functionality
-provided by traditional ETHTOOL_GRSSH subcommand. This displays RSS
-table, hash key and hash function along with JSON support.
+On Tue. 22 Dec. 2022 at 02:55, Frank Jungclaus <Frank.Jungclaus@esd.eu> wrote:
+> On Tue, 2022-12-20 at 14:16 +0900, Vincent MAILHOL wrote:
+> > On Tue. 20 Dec. 2022 at 06:25, Frank Jungclaus <frank.jungclaus@esd.eu> wrote:
+> > >
+> > > Moved the supply for cf->data[3] (bit stream position of CAN error)
+> > > outside of the "switch (ecc & SJA1000_ECC_MASK){}"-statement, because
+> > > this position is independent of the error type.
+> > >
+> > > Fixes: 96d8e90382dc ("can: Add driver for esd CAN-USB/2 device")
+> > > Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+> > > ---
+> > >  drivers/net/can/usb/esd_usb.c | 4 +++-
+> > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
+> > > index 42323f5e6f3a..5e182fadd875 100644
+> > > --- a/drivers/net/can/usb/esd_usb.c
+> > > +++ b/drivers/net/can/usb/esd_usb.c
+> > > @@ -286,7 +286,6 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+> > >                                 cf->data[2] |= CAN_ERR_PROT_STUFF;
+> > >                                 break;
+> > >                         default:
+> > > -                               cf->data[3] = ecc & SJA1000_ECC_SEG;
+> > >                                 break;
+> > >                         }
+> > >
+> > > @@ -294,6 +293,9 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+> > >                         if (!(ecc & SJA1000_ECC_DIR))
+> > >                                 cf->data[2] |= CAN_ERR_PROT_TX;
+> > >
+> > > +                       /* Bit stream position in CAN frame as the error was detected */
+> > > +                       cf->data[3] = ecc & SJA1000_ECC_SEG;
+> >
+> > Can you confirm that the value returned by the device matches the
+> > specifications from linux/can/error.h?
+>
+> The value returned is supposed to be compatible to the SJA1000 ECC
+> register.
+>
+> See
+> https://esd.eu/fileadmin/esd/docs/manuals/NTCAN_Part1_Function_API_Manual_en_56.pdf
+>
+> Chapter "6.2.10 EV_CAN_ERROR_EXT" (page 185)
+> and
+> "Annex B: Bus Error Code" table 37 and 38 (page 272 and following).
+>
+> So this should be compliant with the values given in linux/can/error.h.
 
-Sample output with json option:
-$ethtool --json -x eno2
-[ {
-    "ifname": "eno2",
-    "RSS indirection table": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-    ...skip similar lines...
-    7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 ],
-    "RSS hash Key": "be:c3:13:a6:59:9a:c3:c5:d8:60:75:2b:4c:
-    b2:12:cc:5c:4e:34:8a:f9:ab:16:c7:19:5d:ab:1d:b5:c1:c7:57:
-    c7:a2:e1:2b:e3:ea:02:60:88:8e:96:ef:2d:64:d2:de:2c:16:72:b6",
-    "RSS hash function": {
-            "toeplitz": "on",
-            "xor": "off",
-            "crc32": "off"
-        }
-    } ]
+Thanks for the link. It is indeed compliant.
 
-Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
----
- Makefile.am            |   2 +-
- ethtool.c              |   2 +
- netlink/desc-ethtool.c |  11 ++
- netlink/extapi.h       |   2 +
- netlink/rss.c          | 271 +++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 287 insertions(+), 1 deletion(-)
- create mode 100644 netlink/rss.c
+Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-diff --git a/Makefile.am b/Makefile.am
-index 663f40a..c3e7401 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -39,7 +39,7 @@ ethtool_SOURCES += \
- 		  netlink/eee.c netlink/tsinfo.c netlink/fec.c \
- 		  netlink/stats.c \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
--		  netlink/module-eeprom.c netlink/module.c \
-+		  netlink/module-eeprom.c netlink/module.c netlink/rss.c \
- 		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
-diff --git a/ethtool.c b/ethtool.c
-index 209dbd1..5c16b10 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5850,7 +5850,9 @@ static const struct option args[] = {
- 	},
- 	{
- 		.opts	= "-x|--show-rxfh-indir|--show-rxfh",
-+		.json	= true,
- 		.func	= do_grxfh,
-+		.nlfunc	= nl_grss,
- 		.help	= "Show Rx flow hash indirection table and/or RSS hash key",
- 		.xhelp	= "		[ context %d ]\n"
- 	},
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index b3ac64d..ed83dae 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -442,6 +442,15 @@ static const struct pretty_nla_desc __pse_desc[] = {
- 	NLATTR_DESC_U32_ENUM(ETHTOOL_A_PODL_PSE_PW_D_STATUS, pse_pw_d_status),
- };
- 
-+static const struct pretty_nla_desc __rss_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_MODULE_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_MODULE_HEADER, header),
-+	NLATTR_DESC_U32(ETHTOOL_A_RSS_CONTEXT),
-+	NLATTR_DESC_U32(ETHTOOL_A_RSS_HFUNC),
-+	NLATTR_DESC_BINARY(ETHTOOL_A_RSS_INDIR),
-+	NLATTR_DESC_BINARY(ETHTOOL_A_RSS_HKEY),
-+};
-+
- const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
- 	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
-@@ -481,6 +490,7 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_SET, module),
- 	NLMSG_DESC(ETHTOOL_MSG_PSE_GET, pse),
- 	NLMSG_DESC(ETHTOOL_MSG_PSE_SET, pse),
-+	NLMSG_DESC(ETHTOOL_MSG_RSS_GET, rss),
- };
- 
- const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
-@@ -524,6 +534,7 @@ const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_GET_REPLY, module),
- 	NLMSG_DESC(ETHTOOL_MSG_MODULE_NTF, module),
- 	NLMSG_DESC(ETHTOOL_MSG_PSE_GET_REPLY, pse),
-+	NLMSG_DESC(ETHTOOL_MSG_RSS_GET_REPLY, rss),
- };
- 
- const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 1bb580a..9b6dd1a 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -47,6 +47,7 @@ int nl_gmodule(struct cmd_context *ctx);
- int nl_smodule(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
- int nl_getmodule(struct cmd_context *ctx);
-+int nl_grss(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
- 
-@@ -114,6 +115,7 @@ nl_get_eeprom_page(struct cmd_context *ctx __maybe_unused,
- #define nl_getmodule		NULL
- #define nl_gmodule		NULL
- #define nl_smodule		NULL
-+#define nl_grss			NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/rss.c b/netlink/rss.c
-new file mode 100644
-index 0000000..c78f60b
---- /dev/null
-+++ b/netlink/rss.c
-@@ -0,0 +1,271 @@
-+/*
-+ * rss.c - netlink implementation of RSS context commands
-+ *
-+ * Implementation of "ethtool -x <dev>"
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+#include "strset.h"
-+#include "parser.h"
-+
-+struct cb_args {
-+	struct nl_context	*nlctx;
-+	u32			num_rings;
-+};
-+
-+void dump_rss_info(struct cmd_context *ctx, struct ethtool_rxfh *rss,
-+		   const struct stringset *hash_funcs)
-+{
-+	unsigned int indir_bytes = rss->indir_size * sizeof(u32);
-+	char *indir_str = NULL;
-+	char *hkey_str = NULL;
-+	unsigned int i;
-+
-+	open_json_object(NULL);
-+	print_string(PRINT_JSON, "ifname", NULL, ctx->devname);
-+
-+	if (rss->indir_size) {
-+		indir_str = calloc(1, indir_bytes * 3);
-+		if (!indir_str) {
-+			perror("Cannot allocate memory for RSS config");
-+			goto err;
-+		}
-+
-+		open_json_array("RSS indirection table", NULL);
-+		for (i = 0; i < rss->indir_size; i++)
-+			print_uint(PRINT_ANY, NULL, "%u", rss->rss_config[i]);
-+		close_json_array("\n");
-+	} else {
-+		print_string(PRINT_JSON, "RSS indirection table", NULL,
-+			     "not supported");
-+	}
-+
-+	if (rss->key_size) {
-+		const char *hkey = ((char *)rss->rss_config + indir_bytes);
-+
-+		hkey_str  = calloc(1, rss->key_size * 3);
-+		if (!hkey_str) {
-+			perror("Cannot allocate memory for RSS config");
-+			goto err_hkey;
-+		}
-+
-+		for (i = 0; i < rss->key_size; i++)
-+			sprintf(hkey_str + i * 3, "%02x:", (u8)hkey[i]);
-+		hkey_str[rss->key_size * 3 - 1] = '\0';
-+		print_string(PRINT_JSON, "RSS hash Key", NULL, hkey_str);
-+	} else {
-+		print_string(PRINT_JSON, "RSS hash Key", NULL, "not supported");
-+	}
-+
-+	if (rss->hfunc) {
-+		open_json_object("RSS hash function");
-+		for (unsigned int i = 0; i < get_count(hash_funcs); i++)
-+			print_string(PRINT_JSON, get_string(hash_funcs, i), NULL,
-+				     (rss->hfunc & (1 << i)) ? "on" : "off");
-+		close_json_object();
-+	} else {
-+		print_string(PRINT_JSON, "RSS hash function", NULL,
-+			     "not supported");
-+	}
-+	close_json_object();
-+
-+	if (hkey_str)
-+		free(hkey_str);
-+err_hkey:
-+	if (indir_str)
-+		free(indir_str);
-+err:
-+	return;
-+}
-+
-+int rss_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_RSS_MAX + 1] = {};
-+	unsigned int indir_bytes = 0, hkey_bytes = 0;
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct cb_args *args = data;
-+	struct nl_context *nlctx =  args->nlctx;
-+	const struct stringset *hash_funcs;
-+	u32 rss_config_size, rss_hfunc;
-+	const char *indir_table, *hkey;
-+
-+	struct ethtool_rxfh *rss;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+
-+	silent = nlctx->is_dump || nlctx->is_monitor;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_RSS_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	if (silent)
-+		putchar('\n');
-+
-+	rss_hfunc = mnl_attr_get_u32(tb[ETHTOOL_A_RSS_HFUNC]);
-+
-+	indir_bytes = mnl_attr_get_payload_len(tb[ETHTOOL_A_RSS_INDIR]);
-+	indir_table = mnl_attr_get_str(tb[ETHTOOL_A_RSS_INDIR]);
-+
-+	hkey_bytes = mnl_attr_get_payload_len(tb[ETHTOOL_A_RSS_HKEY]);
-+	hkey = mnl_attr_get_str(tb[ETHTOOL_A_RSS_HKEY]);
-+
-+	rss_config_size = indir_bytes + hkey_bytes;
-+
-+	rss = calloc(1, sizeof(*rss) + rss_config_size);
-+	if (!rss) {
-+		perror("Cannot allocate memory for RX flow hash config");
-+		return 1;
-+	}
-+
-+	rss->indir_size = indir_bytes / sizeof(u32);
-+	rss->key_size = hkey_bytes;
-+	rss->hfunc = rss_hfunc;
-+
-+	memcpy(rss->rss_config, indir_table, indir_bytes);
-+	memcpy(rss->rss_config + rss->indir_size, hkey, hkey_bytes);
-+
-+	/* Fetch RSS hash functions and their status and print */
-+
-+	if (!nlctx->is_monitor) {
-+		ret = netlink_init_ethnl2_socket(nlctx);
-+		if (ret < 0)
-+			return MNL_CB_ERROR;
-+	}
-+	hash_funcs = global_stringset(ETH_SS_RSS_HASH_FUNCS,
-+				      nlctx->ethnl2_socket);
-+
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_RSS_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return MNL_CB_OK;
-+
-+	if (is_json_context()) {
-+		dump_rss_info(nlctx->ctx, rss, hash_funcs);
-+	} else {
-+		print_rss_info(nlctx->ctx, args->num_rings, rss);
-+		printf("RSS hash function:\n");
-+		if (!rss_hfunc) {
-+			printf("    Operation not supported\n");
-+			return 0;
-+		}
-+		for (unsigned int i = 0; i < get_count(hash_funcs); i++) {
-+			printf("    %s: %s\n", get_string(hash_funcs, i),
-+			       (rss_hfunc & (1 << i)) ? "on" : "off");
-+		}
-+	}
-+
-+	free(rss);
-+	return MNL_CB_OK;
-+}
-+
-+/* RSS_GET */
-+static const struct param_parser grss_params[] = {
-+	{
-+		.arg		= "context",
-+		.type		= ETHTOOL_A_RSS_CONTEXT,
-+		.handler	= nl_parse_direct_u32,
-+		.min_argc	= 1,
-+	},
-+	{}
-+};
-+
-+int get_channels_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_CHANNELS_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct cb_args *args = data;
-+	struct nl_context *nlctx =  args->nlctx;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+
-+	silent = nlctx->is_dump || nlctx->is_monitor;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_CHANNELS_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	args->num_rings = mnl_attr_get_u8(tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT]);
-+	return MNL_CB_OK;
-+}
-+
-+int nl_grss(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	struct nl_msg_buff *msgbuff;
-+	struct cb_args args;
-+	int ret;
-+
-+	nlctx->cmd = "-x";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
-+	nlsk = nlctx->ethnl_socket;
-+	msgbuff = &nlsk->msgbuff;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_RSS_GET, true))
-+		return -EOPNOTSUPP;
-+
-+	/* save rings information into args.num_rings */
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_CHANNELS_GET, true))
-+		return -EOPNOTSUPP;
-+
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_CHANNELS_GET,
-+				      ETHTOOL_A_CHANNELS_HEADER, 0);
-+	if (ret < 0)
-+		goto err;
-+
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		goto err;
-+
-+	args.nlctx = nlsk->nlctx;
-+	ret = nlsock_process_reply(nlsk, get_channels_cb, &args);
-+	if (ret < 0)
-+		goto err;
-+
-+	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_RSS_GET,
-+		       NLM_F_REQUEST | NLM_F_ACK);
-+	if (ret < 0)
-+		return 1;
-+	if (ethnla_fill_header(msgbuff, ETHTOOL_A_RSS_HEADER,
-+			       ctx->devname, 0))
-+		return -EMSGSIZE;
-+
-+	ret = nl_parser(nlctx, grss_params, NULL, PARSER_GROUP_NONE, NULL);
-+	if (ret < 0)
-+		goto err;
-+
-+	new_json_obj(ctx->json);
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		goto err;
-+
-+	args.nlctx = nlctx;
-+	ret = nlsock_process_reply(nlsk, rss_reply_cb, &args);
-+	delete_json_obj();
-+
-+	if (ret == 0)
-+		return 0;
-+
-+err:
-+	return nlctx->exit_code ?: 1;
-+}
-+
--- 
-2.31.1
-
+> >   https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/can/error.h#L90
+> >
+> > >                         if (priv->can.state == CAN_STATE_ERROR_WARNING ||
+> > >                             priv->can.state == CAN_STATE_ERROR_PASSIVE) {
+> > >                                 cf->data[1] = (txerr > rxerr) ?
+> > > --
+> > > 2.25.1
+> > >
+>
