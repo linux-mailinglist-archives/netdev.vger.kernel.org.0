@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E8A654522
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 17:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D387654537
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 17:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbiLVQ0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 11:26:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        id S229902AbiLVQge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 11:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235230AbiLVQ0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 11:26:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D9133CD0
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 08:26:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A74CB81EB6
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 16:26:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6F9C433D2;
-        Thu, 22 Dec 2022 16:26:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671726375;
-        bh=LQdFkzzuPpBYhytote6d00p8uRnxT3WgUkjbnBtW/RQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=sZVOB/3qEyxn3FcfNpAyAZlLmKxN6CBhBz8hydvQfTg670fVB/bMhOVUDDxYD3Bo6
-         1WOeldfi7+0bpF8ab2CrjZA7+U2eBCKg/oGfV0uk3Wpg9w7BxqE3iHlscxTmaL4Qtw
-         /bb2OZdypAVtGiIVqEcWSW5Gj4YnBEX9xubYtNcft/5mrHPLNu/Z+9QHjYYGAGp8Xe
-         KVAucuFQN1Aqq/8To7Buqz946VN8mmFHI/sM5/UKhFQTi/LjMf8q/cLZ4gdIg3k+79
-         N9GYzN92dW3RdxccQe3O7My2Nwh5pNnwCNrtQqBz++CilIisgHzZ7cBRyLePqADcac
-         Zh58JutG7Xc2g==
-Message-ID: <de4920b8-366b-0336-ddc2-46cb40e00dbb@kernel.org>
-Date:   Thu, 22 Dec 2022 09:26:14 -0700
+        with ESMTP id S229674AbiLVQgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 11:36:32 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D7827DFC;
+        Thu, 22 Dec 2022 08:36:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=d99wBLUq4yQ4eQDQtyjO01+kHuKyie+U+1uevyf9EBU=; b=53zDqYwiG4C835IlzVAdpx44nM
+        OfEUQO8pz2dGRMnDvhFA7jIZopgYFjq4LjtPfXL0lkqj4l+T9Cf90HZ+DoMpV6ptk8nihRbGIkrR9
+        +jeagLNU39thNGwsqHqf158MMvg1Igd8lN+wnMfMRBwdYMT2gIEOpzAH9gNuVrduMZ18=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p8OYQ-000GtY-Ew; Thu, 22 Dec 2022 17:36:22 +0100
+Date:   Thu, 22 Dec 2022 17:36:22 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lee Jones <lee@kernel.org>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: Advice on MFD-style probing of DSA switch SoCs
+Message-ID: <Y6SHhiMx4V9tyJuG@lunn.ch>
+References: <20221222134844.lbzyx5hz7z5n763n@skbuf>
+ <Y6Rq8+wYpDkGGbYs@lunn.ch>
+ <20221222161806.mhqsr2ot64v34al2@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCHv2 net-next] sched: multicast sched extack messages
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-References: <20221221093940.2086025-1-liuhangbin@gmail.com>
- <20221221172817.0da16ffa@kernel.org> <Y6QLz7pCnle0048z@Laptop-X1>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <Y6QLz7pCnle0048z@Laptop-X1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221222161806.mhqsr2ot64v34al2@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/22/22 12:48 AM, Hangbin Liu wrote:
-> On Wed, Dec 21, 2022 at 05:28:17PM -0800, Jakub Kicinski wrote:
->> On Wed, 21 Dec 2022 17:39:40 +0800 Hangbin Liu wrote:
->>> +	nlh = nlmsg_put(skb, portid, n->nlmsg_seq, NLMSG_ERROR, sizeof(*errmsg),
->>> +			NLM_F_ACK_TLVS | NLM_F_CAPPED);
->>> +	if (!nlh)
->>> +		return -1;
->>> +
->>> +	errmsg = (struct nlmsgerr *)nlmsg_data(nlh);
->>> +	errmsg->error = 0;
->>> +	errmsg->msg = *n;
->>> +
->>> +	if (nla_put_string(skb, NLMSGERR_ATTR_MSG, extack->_msg))
->>> +		return -1;
->>> +
->>> +	nlmsg_end(skb, nlh);
->>
->> I vote "no", notifications should not generate NLMSG_ERRORs.
->> (BTW setting pid and seq on notifications is odd, no?)
+> > Maybe the media subsystem has some pointers how to do this. It also
+> > has complex devices made up from lots of sub devices.
 > 
-> I'm not sure if this error message should be counted to notifications generation.
-> The error message is generated as there is extack message, which is from
-> qdisc/filter adding/deleting.
+> You mean something like struct v4l2_subdev_ops? This seems like the
+> precise definition of what I'd like to avoid: a predefined set of
+> subfunctions decided by the DSA core.
 > 
-> Can't we multicast error message?
-> 
-> If we can't multicast the extack message via NLMSG_ERROR or NLMSG_DONE. I
-> think there is no other way to do it via netlink.
-> 
+> Or maybe something else? To be honest, I don't know much about the media
+> subsystem. This is what I saw.
 
-it is confusing as an API to send back information or debugging strings
-marked as an "error message."
+Russell King put in some infrastructure where a media 'glue' driver
+has a list of other drivers which need to probe and register there
+resources with the kernel before it then becomes active and glues all
+the parts together. I just know it exists, i've never used it, so i've
+no idea if it could be useful or not.
 
+What i'm really trying to say is that we should look outside of netdev
+and see if similar problems have been solved somewhere else and all
+that is needed is some code copying.
+
+     Andrew
