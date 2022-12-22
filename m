@@ -2,175 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CDAB653C3C
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 07:43:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B7C653C3E
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 07:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234634AbiLVGnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 01:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
+        id S234973AbiLVGox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 01:44:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbiLVGns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 01:43:48 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7A6F5B5
-        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 22:43:46 -0800 (PST)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Nd0yv5r5PzqTK3;
-        Thu, 22 Dec 2022 14:39:19 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 22 Dec 2022 14:43:45 +0800
-From:   Hao Lan <lanhao@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <richardcochran@gmail.com>, <huangguangbin2@huawei.com>,
-        <wangjie125@huawei.com>, <shenjian15@huawei.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net 3/3] net: hns3: fix VF promisc mode not update when mac table full
-Date:   Thu, 22 Dec 2022 14:43:43 +0800
-Message-ID: <20221222064343.61537-4-lanhao@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20221222064343.61537-1-lanhao@huawei.com>
-References: <20221222064343.61537-1-lanhao@huawei.com>
+        with ESMTP id S234932AbiLVGow (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 01:44:52 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657ECF5B5
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 22:44:51 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id f3so740301pgc.2
+        for <netdev@vger.kernel.org>; Wed, 21 Dec 2022 22:44:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=086dsIWiKVuDdE5qHTcupmnKCG4y2yzrnr4Huev2NRw=;
+        b=UtaOxFFLchWt5Jb/3Qqzm81/vYaqvIO89JpWehCUn/CUHFGzoM5mnpGGBFlYqQAoGd
+         HNaC4hz9Wsd4cdrkLx4Nc3B37RZeAXNTTbWL+/LYmA84syobG+0riP0NUwuuMOLk0vM9
+         31gmckA5xEiwm+8UXywQe5qkGm3622bwgeIVe534hNeHlbnrHCysSoCqhjwrJwPlkRNH
+         xmSbqkhkZGSyFCxhD8DJcIVlOqa5aOvOkcRUxPZKzzjMp46TLQ3zogc3AjHVRg2Hd/hE
+         u7zVrjzMsbBqYzgul0riADWu8PTfE+0rGq7xHVnf0NatXFT2v3uTvvZPalPduYNE26Vg
+         GhsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=086dsIWiKVuDdE5qHTcupmnKCG4y2yzrnr4Huev2NRw=;
+        b=ryJXW6VQi/VlyY6rYSgWJCPyHx+OwKDl56Ya4rs1O7i/fYsJ4sDTBoAj/nCbUp0fOy
+         7jvmtkek4lYSEkz+8VBl9ySNBWMlSEGujZLvduc5dxtZDOxkmbc6TPJUgwZa6ozTXyuZ
+         RfN1K79/Wu6zmRrYj75Z1yg7P44WM2ySvltCJwPiUfgez2Wv8+Lu9Wmr4pAYTyChaX8L
+         4IsNWWh6HYn9BbEVY618DlVH6UkekiMw3v01VM2+q8uLmNShFZS32iGYk7+1dJpuP4NO
+         ey/evdXefKIxmTimOVxN42q+FQjt8oJTKnYpCAABoFm63USwyrz4Bo5KOspS1iO4OlSZ
+         h8hg==
+X-Gm-Message-State: AFqh2ko9lvupx8mXwr5aSkx8jXKdjEARHQMTZWipbKIjrOyCrHm9Gb4i
+        aJWD1ETWj5dk7lVSVGB71hYM+83neRF2QZnbC+FZKg==
+X-Google-Smtp-Source: AMrXdXt0UcjoP66yyusLKIKTSX4FRsTvLnD0LVdmB5/Zjm2T6SMC5OAPDw1o6lqRfglsrE+itHgRlexlQR8eCOjBmiM=
+X-Received: by 2002:a65:45c8:0:b0:48c:5903:2f5b with SMTP id
+ m8-20020a6545c8000000b0048c59032f5bmr224962pgr.504.1671691490591; Wed, 21 Dec
+ 2022 22:44:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221222060427.21626-1-jasowang@redhat.com> <20221222060427.21626-5-jasowang@redhat.com>
+In-Reply-To: <20221222060427.21626-5-jasowang@redhat.com>
+From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date:   Thu, 22 Dec 2022 08:44:12 +0200
+Message-ID: <CAJs=3_D6sug80Bb9tnAw5T0_NaL_b=u8ZMcwZtd-dy+AH_yqzQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 4/4] virtio-net: sleep instead of busy waiting for cvq command
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, maxime.coquelin@redhat.com,
+        eperezma@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+Hi Jason,
 
-Currently, it missed set HCLGE_VPORT_STATE_PROMISC_CHANGE
-flag for VF when vport->overflow_promisc_flags changed.
-So the VF won't check whether to update promisc mode in
-this case. So add it.
+Adding timeout to the cvq is a great idea IMO.
 
-Fixes: 1e6e76101fd9 ("net: hns3: configure promisc mode for VF asynchronously")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Hao Lan <lanhao@huawei.com>
----
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 75 +++++++++++--------
- 1 file changed, 43 insertions(+), 32 deletions(-)
+> -       /* Spin for a response, the kick causes an ioport write, trapping
+> -        * into the hypervisor, so the request should be handled immediately.
+> -        */
+> -       while (!virtqueue_get_buf(vi->cvq, &tmp) &&
+> -              !virtqueue_is_broken(vi->cvq))
+> -               cpu_relax();
+> +       virtqueue_wait_for_used(vi->cvq, &tmp);
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 4e54f91f7a6c..6c2742f59c77 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -12754,60 +12754,71 @@ static int hclge_gro_en(struct hnae3_handle *handle, bool enable)
- 	return ret;
- }
- 
--static void hclge_sync_promisc_mode(struct hclge_dev *hdev)
-+static int hclge_sync_vport_promisc_mode(struct hclge_vport *vport)
- {
--	struct hclge_vport *vport = &hdev->vport[0];
- 	struct hnae3_handle *handle = &vport->nic;
-+	struct hclge_dev *hdev = vport->back;
-+	bool uc_en = false;
-+	bool mc_en = false;
- 	u8 tmp_flags;
-+	bool bc_en;
- 	int ret;
--	u16 i;
- 
- 	if (vport->last_promisc_flags != vport->overflow_promisc_flags) {
- 		set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state);
- 		vport->last_promisc_flags = vport->overflow_promisc_flags;
- 	}
- 
--	if (test_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state)) {
-+	if (!test_and_clear_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE,
-+				&vport->state))
-+		return 0;
-+
-+	/* for PF */
-+	if (!vport->vport_id) {
- 		tmp_flags = handle->netdev_flags | vport->last_promisc_flags;
- 		ret = hclge_set_promisc_mode(handle, tmp_flags & HNAE3_UPE,
- 					     tmp_flags & HNAE3_MPE);
--		if (!ret) {
--			clear_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE,
--				  &vport->state);
-+		if (!ret)
- 			set_bit(HCLGE_VPORT_STATE_VLAN_FLTR_CHANGE,
- 				&vport->state);
--		}
-+		else
-+			set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE,
-+				&vport->state);
-+		return ret;
- 	}
- 
--	for (i = 1; i < hdev->num_alloc_vport; i++) {
--		bool uc_en = false;
--		bool mc_en = false;
--		bool bc_en;
-+	/* for VF */
-+	if (vport->vf_info.trusted) {
-+		uc_en = vport->vf_info.request_uc_en > 0 ||
-+			vport->overflow_promisc_flags & HNAE3_OVERFLOW_UPE;
-+		mc_en = vport->vf_info.request_mc_en > 0 ||
-+			vport->overflow_promisc_flags & HNAE3_OVERFLOW_MPE;
-+	}
-+	bc_en = vport->vf_info.request_bc_en > 0;
- 
--		vport = &hdev->vport[i];
-+	ret = hclge_cmd_set_promisc_mode(hdev, vport->vport_id, uc_en,
-+					 mc_en, bc_en);
-+	if (ret) {
-+		set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state);
-+		return ret;
-+	}
-+	hclge_set_vport_vlan_fltr_change(vport);
- 
--		if (!test_and_clear_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE,
--					&vport->state))
--			continue;
-+	return 0;
-+}
- 
--		if (vport->vf_info.trusted) {
--			uc_en = vport->vf_info.request_uc_en > 0 ||
--				vport->overflow_promisc_flags &
--				HNAE3_OVERFLOW_UPE;
--			mc_en = vport->vf_info.request_mc_en > 0 ||
--				vport->overflow_promisc_flags &
--				HNAE3_OVERFLOW_MPE;
--		}
--		bc_en = vport->vf_info.request_bc_en > 0;
-+static void hclge_sync_promisc_mode(struct hclge_dev *hdev)
-+{
-+	struct hclge_vport *vport;
-+	int ret;
-+	u16 i;
- 
--		ret = hclge_cmd_set_promisc_mode(hdev, vport->vport_id, uc_en,
--						 mc_en, bc_en);
--		if (ret) {
--			set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE,
--				&vport->state);
-+	for (i = 0; i < hdev->num_alloc_vport; i++) {
-+		vport = &hdev->vport[i];
-+
-+		ret = hclge_sync_vport_promisc_mode(vport);
-+		if (ret)
- 			return;
--		}
--		hclge_set_vport_vlan_fltr_change(vport);
- 	}
- }
- 
--- 
-2.30.0
+Do you think that we should continue like nothing happened in case of a timeout?
+Shouldn't we reset the device?
+What happens if a device completes the control command after timeout?
 
+Thanks
+
+Alvaro
