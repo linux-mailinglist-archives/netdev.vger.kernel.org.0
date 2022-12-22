@@ -2,114 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C89E2653F35
-	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 12:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196CE65408B
+	for <lists+netdev@lfdr.de>; Thu, 22 Dec 2022 13:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235379AbiLVLql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 06:46:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
+        id S235835AbiLVMAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 07:00:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiLVLqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 06:46:39 -0500
+        with ESMTP id S235750AbiLVL7u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 06:59:50 -0500
 Received: from forwardcorp1c.mail.yandex.net (forwardcorp1c.mail.yandex.net [178.154.239.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C32D41;
-        Thu, 22 Dec 2022 03:46:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F144F28E3C;
+        Thu, 22 Dec 2022 03:52:39 -0800 (PST)
 Received: from iva4-f06c35e68a0a.qloud-c.yandex.net (iva4-f06c35e68a0a.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:152e:0:640:f06c:35e6])
-        by forwardcorp1c.mail.yandex.net (Yandex) with ESMTP id 59C8B5E8FA;
-        Thu, 22 Dec 2022 14:46:34 +0300 (MSK)
-Received: from [IPV6:2a02:6b8:b081:b5b0::1:4] (unknown [2a02:6b8:b081:b5b0::1:4])
-        by iva4-f06c35e68a0a.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id WklqJ10RgiE1-4EonBEYl;
-        Thu, 22 Dec 2022 14:46:33 +0300
+        by forwardcorp1c.mail.yandex.net (Yandex) with ESMTP id 777825ED07;
+        Thu, 22 Dec 2022 14:52:35 +0300 (MSK)
+Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:b5b0::1:4])
+        by iva4-f06c35e68a0a.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id Uql0L10RamI1-Nz9wTebk;
+        Thu, 22 Dec 2022 14:52:34 +0300
 X-Yandex-Fwd: 1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1671709593; bh=v+YXuoAWt5kCRFjKyaUhO+Sfafoa/+MDXkI+ks4y4KI=;
-        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-        b=onuwFFL1BiDfSJd++DXCzKHWi92XRUtCnxuHlrhKU5gXz1GYyOSqrZo41qZA1YOEN
-         qvXj+ouKZ5U2tfczt3RfkdogkUzv9tgWV0A8uzIsTd4WVCLu0h13scl3FUW9ogqk4X
-         uAz//pQGNmOEjX+DmjFwf3tGWyzBPeDFrmmkEENE=
+        t=1671709954; bh=PDqBs6sytd7e7iW5rws+4VDRRZNe5A7+1c+MU2J3r5U=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=0wLfS88yP3xUCGtZClDrG1fnwKPpMLVZ5j+uxnR1Sx6oNi8G0oD7Sfk2wL5I2aJsv
+         mcjuqe/qxYbn8UdgkUyOTn+2L4ZQHVOkypW3LgFgsbf+9hxxVAHWY4g+l1hDbLKB6w
+         YC3IoRWYlB4y4XL5owgkKZsq5jUtwT8gL+Q/2K5Y=
 Authentication-Results: iva4-f06c35e68a0a.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Message-ID: <89723faa-b0c2-54c9-89bd-f1bf025636ab@yandex-team.ru>
-Date:   Thu, 22 Dec 2022 14:46:32 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net v2] qlcnic: prevent ->dcb use-after-free on
- qlcnic_dcb_enable() failure
-Content-Language: en-US
-To:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Cc:     Shahed Shaikh <shshaikh@marvell.com>,
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+To:     Shahed Shaikh <shshaikh@marvell.com>
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
         Manish Chopra <manishc@marvell.com>,
         GR-Linux-NIC-Dev@marvell.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20221222074223.1746072-1-d-tatianin@yandex-team.ru>
- <Y6QqDLoqCXHG8KVl@localhost.localdomain>
-From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
-In-Reply-To: <Y6QqDLoqCXHG8KVl@localhost.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        linux-kernel@vger.kernel.org,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: [PATCH net v3] qlcnic: prevent ->dcb use-after-free on qlcnic_dcb_enable() failure
+Date:   Thu, 22 Dec 2022 14:52:28 +0300
+Message-Id: <20221222115228.1766265-1-d-tatianin@yandex-team.ru>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/22/22 12:57 PM, Michal Swiatkowski wrote:
-> On Thu, Dec 22, 2022 at 10:42:23AM +0300, Daniil Tatianin wrote:
->> adapter->dcb would get silently freed inside qlcnic_dcb_enable() in
->> case qlcnic_dcb_attach() would return an error, which always happens
->> under OOM conditions. This would lead to use-after-free because both
->> of the existing callers invoke qlcnic_dcb_get_info() on the obtained
->> pointer, which is potentially freed at that point.
->>
->> Propagate errors from qlcnic_dcb_enable(), and instead free the dcb
->> pointer at callsite using qlcnic_dcb_free(). This also removes the now
->> unused qlcnic_clear_dcb_ops() helper, which was a simple wrapper around
->> kfree() also causing memory leaks for partially initialized dcb.
->>
->> Found by Linux Verification Center (linuxtesting.org) with the SVACE
->> static analysis tool.
->>
->> Fixes: 3c44bba1d270 ("qlcnic: Disable DCB operations from SR-IOV VFs")
->> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
->> ---
->> Changes since v1:
->> - Add a fixes tag + net as a target
->> - Remove qlcnic_clear_dcb_ops entirely & use qlcnic_dcb_free instead
->> ---
->>   drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c |  9 ++++++++-
->>   drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h       | 10 ++--------
->>   drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c      |  9 ++++++++-
->>   3 files changed, 18 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
->> index dbb800769cb6..774f2c6875ec 100644
->> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
->> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
->> @@ -2505,7 +2505,14 @@ int qlcnic_83xx_init(struct qlcnic_adapter *adapter)
->>   		goto disable_mbx_intr;
->>   
->>   	qlcnic_83xx_clear_function_resources(adapter);
->> -	qlcnic_dcb_enable(adapter->dcb);
->> +
->> +	err = qlcnic_dcb_enable(adapter->dcb);
->> +	if (err) {
->> +		qlcnic_dcb_free(adapter->dcb);
->> +		adapter->dcb = NULL;
-> Small nit, I think qlcnic_dcb_free() already set adapter->dcb to NULL.
-Oops, you're right. Thanks for spotting.
-> Otherwise, thanks for changing:
-> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> 
-> Thanks,
-> Michal
-> 
-> [...]
->> -- 
->> 2.25.1
+adapter->dcb would get silently freed inside qlcnic_dcb_enable() in
+case qlcnic_dcb_attach() would return an error, which always happens
+under OOM conditions. This would lead to use-after-free because both
+of the existing callers invoke qlcnic_dcb_get_info() on the obtained
+pointer, which is potentially freed at that point.
+
+Propagate errors from qlcnic_dcb_enable(), and instead free the dcb
+pointer at callsite using qlcnic_dcb_free(). This also removes the now
+unused qlcnic_clear_dcb_ops() helper, which was a simple wrapper around
+kfree() also causing memory leaks for partially initialized dcb.
+
+Found by Linux Verification Center (linuxtesting.org) with the SVACE
+static analysis tool.
+
+Fixes: 3c44bba1d270 ("qlcnic: Disable DCB operations from SR-IOV VFs")
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+---
+Changes since v1:
+- Add a fixes tag + net as a target
+- Remove qlcnic_clear_dcb_ops entirely & use qlcnic_dcb_free instead
+
+Changes since v2:
+- Don't set ->dcb to NULL explicitly since it's already done by
+  qlcnic_dcb_free() for us
+---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c |  8 +++++++-
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h       | 10 ++--------
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c      |  8 +++++++-
+ 3 files changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+index dbb800769cb6..c95d56e56c59 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+@@ -2505,7 +2505,13 @@ int qlcnic_83xx_init(struct qlcnic_adapter *adapter)
+ 		goto disable_mbx_intr;
+ 
+ 	qlcnic_83xx_clear_function_resources(adapter);
+-	qlcnic_dcb_enable(adapter->dcb);
++
++	err = qlcnic_dcb_enable(adapter->dcb);
++	if (err) {
++		qlcnic_dcb_free(adapter->dcb);
++		goto disable_mbx_intr;
++	}
++
+ 	qlcnic_83xx_initialize_nic(adapter, 1);
+ 	qlcnic_dcb_get_info(adapter->dcb);
+ 
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+index 7519773eaca6..22afa2be85fd 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+@@ -41,11 +41,6 @@ struct qlcnic_dcb {
+ 	unsigned long			state;
+ };
+ 
+-static inline void qlcnic_clear_dcb_ops(struct qlcnic_dcb *dcb)
+-{
+-	kfree(dcb);
+-}
+-
+ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
+ {
+ 	if (dcb && dcb->ops->get_hw_capability)
+@@ -112,9 +107,8 @@ static inline void qlcnic_dcb_init_dcbnl_ops(struct qlcnic_dcb *dcb)
+ 		dcb->ops->init_dcbnl_ops(dcb);
+ }
+ 
+-static inline void qlcnic_dcb_enable(struct qlcnic_dcb *dcb)
++static inline int qlcnic_dcb_enable(struct qlcnic_dcb *dcb)
+ {
+-	if (dcb && qlcnic_dcb_attach(dcb))
+-		qlcnic_clear_dcb_ops(dcb);
++	return dcb ? qlcnic_dcb_attach(dcb) : 0;
+ }
+ #endif
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+index 28476b982bab..44dac3c0908e 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+@@ -2599,7 +2599,13 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			 "Device does not support MSI interrupts\n");
+ 
+ 	if (qlcnic_82xx_check(adapter)) {
+-		qlcnic_dcb_enable(adapter->dcb);
++		err = qlcnic_dcb_enable(adapter->dcb);
++		if (err) {
++			qlcnic_dcb_free(adapter->dcb);
++			dev_err(&pdev->dev, "Failed to enable DCB\n");
++			goto err_out_free_hw;
++		}
++
+ 		qlcnic_dcb_get_info(adapter->dcb);
+ 		err = qlcnic_setup_intr(adapter);
+ 
+-- 
+2.25.1
+
