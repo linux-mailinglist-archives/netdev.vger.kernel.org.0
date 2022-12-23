@@ -2,25 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BD06556AD
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C40865569F
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbiLXAWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 19:22:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46310 "EHLO
+        id S231592AbiLXAVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 19:21:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233418AbiLXAWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:22:34 -0500
-Received: from 9.mo546.mail-out.ovh.net (9.mo546.mail-out.ovh.net [46.105.72.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065691A216
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:22:30 -0800 (PST)
-Received: from ex4.mail.ovh.net (unknown [10.108.20.92])
-        by mo546.mail-out.ovh.net (Postfix) with ESMTPS id DADF62711D;
-        Fri, 23 Dec 2022 23:43:44 +0000 (UTC)
+        with ESMTP id S231127AbiLXAVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:21:14 -0500
+X-Greylist: delayed 604 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 16:21:13 PST
+Received: from 3.mo619.mail-out.ovh.net (3.mo619.mail-out.ovh.net [46.105.36.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB71F035
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:21:13 -0800 (PST)
+Received: from ex4.mail.ovh.net (unknown [10.109.143.173])
+        by mo619.mail-out.ovh.net (Postfix) with ESMTPS id 8C1AD22E82;
+        Fri, 23 Dec 2022 23:44:49 +0000 (UTC)
 Received: from dev-fedora-x86-64.naccy.de (37.65.8.229) by
  DAG10EX1.indiv4.local (172.16.2.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sat, 24 Dec 2022 00:43:43 +0100
+ 15.1.2507.16; Sat, 24 Dec 2022 00:44:48 +0100
 From:   Quentin Deslandes <qde@naccy.de>
 To:     <qde@naccy.de>
 CC:     <kernel-team@meta.com>, Dmitrii Banshchikov <me@ubique.spb.ru>,
@@ -40,9 +41,9 @@ CC:     <kernel-team@meta.com>, Dmitrii Banshchikov <me@ubique.spb.ru>,
         Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
-Subject: [PATCH bpf-next v3 01/16] bpfilter: add types for usermode helper
-Date:   Sat, 24 Dec 2022 00:40:09 +0100
-Message-ID: <20221223234127.474463-2-qde@naccy.de>
+Subject: [PATCH bpf-next v3 02/16] tools: add bpfilter usermode helper header
+Date:   Sat, 24 Dec 2022 00:40:10 +0100
+Message-ID: <20221223234127.474463-3-qde@naccy.de>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221223234127.474463-1-qde@naccy.de>
 References: <20221223234127.474463-1-qde@naccy.de>
@@ -52,49 +53,61 @@ Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [37.65.8.229]
 X-ClientProxiedBy: CAS6.indiv4.local (172.16.1.6) To DAG10EX1.indiv4.local
  (172.16.2.91)
-X-Ovh-Tracer-Id: 4409305514236374647
+X-Ovh-Tracer-Id: 4427601385733353079
 X-VR-SPAMSTATE: OK
 X-VR-SPAMSCORE: -85
 X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrheefgddufecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenogetfedtuddqtdduucdludehmdenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpefsuhgvnhhtihhnucffvghslhgrnhguvghsuceoqhguvgesnhgrtggthidruggvqeenucggtffrrghtthgvrhhnpeduledugfeileetvdelieeujedttedtvedtgfetteevfeejhfffkeeujeetfffgudenucfkphepuddvjedrtddrtddruddpfeejrdeihedrkedrvddvleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomhepoehquggvsehnrggttgihrdguvgeqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepshgufhesghhoohhglhgvrdgtohhmpdgsphhfsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpshhhuhgrhheskhgvrhhnvghlrdhorhhgpdhmhihkohhlrghlsehfsgdrtghomhdpphgrsggvnhhisehrvgguhhgrthdrtghomhdpkhhusggrsehkvghrnhgvlhdrohhrghdpvgguuhhmrgiivghtsehgohhoghhlvgdrtghomhdpuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvth
- dpjhholhhsrgeskhgvrhhnvghlrdhorhhgpdhhrgholhhuohesghhoohhglhgvrdgtohhmpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhmvgesuhgsihhquhgvrdhsphgsrdhruhdpkhgvrhhnvghlqdhtvggrmhesmhgvthgrrdgtohhmpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheegiedpmhhouggvpehsmhhtphhouhht
+ dpjhholhhsrgeskhgvrhhnvghlrdhorhhgpdhhrgholhhuohesghhoohhglhgvrdgtohhmpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhmvgesuhgsihhquhgvrdhsphgsrdhruhdpkhgvrhhnvghlqdhtvggrmhesmhgvthgrrdgtohhmpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoieduledpmhhouggvpehsmhhtphhouhht
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add required definitions that mirror existing iptables' ABI. Those
-definitions are needed by usermode helper.
+Add header containing bpfilter structures definitions, for test
+purposes.
 
 Co-developed-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 Signed-off-by: Quentin Deslandes <qde@naccy.de>
 ---
- include/uapi/linux/bpfilter.h | 154 ++++++++++++++++++++++++++++++++++
- 1 file changed, 154 insertions(+)
+ tools/include/uapi/linux/bpfilter.h | 175 ++++++++++++++++++++++++++++
+ 1 file changed, 175 insertions(+)
+ create mode 100644 tools/include/uapi/linux/bpfilter.h
 
-diff --git a/include/uapi/linux/bpfilter.h b/include/uapi/linux/bpfilter.h
-index cbc1f5813f50..295fd9caa3c8 100644
---- a/include/uapi/linux/bpfilter.h
-+++ b/include/uapi/linux/bpfilter.h
-@@ -3,6 +3,10 @@
- #define _UAPI_LINUX_BPFILTER_H
- 
- #include <linux/if.h>
+diff --git a/tools/include/uapi/linux/bpfilter.h b/tools/include/uapi/linux/bpfilter.h
+new file mode 100644
+index 000000000000..295fd9caa3c8
+--- /dev/null
++++ b/tools/include/uapi/linux/bpfilter.h
+@@ -0,0 +1,175 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _UAPI_LINUX_BPFILTER_H
++#define _UAPI_LINUX_BPFILTER_H
++
++#include <linux/if.h>
 +#include <linux/const.h>
 +
 +#define BPFILTER_STANDARD_TARGET        ""
 +#define BPFILTER_ERROR_TARGET           "ERROR"
- 
- enum {
- 	BPFILTER_IPT_SO_SET_REPLACE = 64,
-@@ -18,4 +22,154 @@ enum {
- 	BPFILTER_IPT_GET_MAX,
- };
- 
++
++enum {
++	BPFILTER_IPT_SO_SET_REPLACE = 64,
++	BPFILTER_IPT_SO_SET_ADD_COUNTERS = 65,
++	BPFILTER_IPT_SET_MAX,
++};
++
++enum {
++	BPFILTER_IPT_SO_GET_INFO = 64,
++	BPFILTER_IPT_SO_GET_ENTRIES = 65,
++	BPFILTER_IPT_SO_GET_REVISION_MATCH = 66,
++	BPFILTER_IPT_SO_GET_REVISION_TARGET = 67,
++	BPFILTER_IPT_GET_MAX,
++};
++
 +enum {
 +	BPFILTER_XT_TABLE_MAXNAMELEN = 32,
 +	BPFILTER_FUNCTION_MAXNAMELEN = 30,
@@ -245,7 +258,7 @@ index cbc1f5813f50..295fd9caa3c8 100644
 +	struct bpfilter_ipt_entry entries[];
 +};
 +
- #endif /* _UAPI_LINUX_BPFILTER_H */
++#endif /* _UAPI_LINUX_BPFILTER_H */
 -- 
 2.38.1
 
