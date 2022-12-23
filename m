@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F637654FFB
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 13:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0CB3654FFF
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 13:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236221AbiLWMCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 07:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
+        id S236093AbiLWMCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 07:02:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235429AbiLWMBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 07:01:33 -0500
+        with ESMTP id S236095AbiLWMBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 07:01:48 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4FA4080C
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 04:00:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D870844949
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 04:00:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671796817;
+        s=mimecast20190719; t=1671796824;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IdJKWvU8oan6R0NG+jgffjDQcUrJ6USgTLYJyQRM0Qc=;
-        b=dnjeKJeCvQSFn6YP0k84hDVK3URqXpveQS69TwfkaY29oQNMPF9K4+rvpn8R/WiLrTfZYY
-        hLYLDXdb4xQYrq5BNso05+RUSt7no90ltWLlSN8ebAI487pEWuuErts80Xb+E+bg/1sVZ5
-        fNeHDYJ5d2LtyD+RmXQ35xMrGILBMfQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Ir6hlC98ha96yugZ9Hax992a/pYSGiooy4Ha/NQOKs8=;
+        b=XkDZXW/BPuo9BTFbPRr8pczsiN6Zd63sZpqyZ3KQoYfeLbuxZULUJHFS6LkPE6VMd8BfpH
+        JB2CydDTXieQVqS06lzKQx1534qYogJo0ryWRs3ufirIutj5MRwceA8P+FqJlNLQRtfESp
+        cuIZAn0G4K2Llirf1WzUj/lNLaaa2Fo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-IZvs7AU_Ohe4yJg9s1TPuA-1; Fri, 23 Dec 2022 07:00:14 -0500
-X-MC-Unique: IZvs7AU_Ohe4yJg9s1TPuA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-605-bQNyeoZkPCWAllvQZmKw4A-1; Fri, 23 Dec 2022 07:00:20 -0500
+X-MC-Unique: bQNyeoZkPCWAllvQZmKw4A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 165968F6E83;
-        Fri, 23 Dec 2022 12:00:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7F7A21C25E87;
+        Fri, 23 Dec 2022 12:00:20 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5BD9C492C14;
-        Fri, 23 Dec 2022 12:00:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C4B262166B34;
+        Fri, 23 Dec 2022 12:00:19 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 02/19] rxrpc: Stash the network namespace pointer in
- rxrpc_local
+Subject: [PATCH net-next 03/19] rxrpc: Make the local endpoint hold a ref on a
+ connected call
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 23 Dec 2022 12:00:12 +0000
-Message-ID: <167179681276.2516210.17147293431614618254.stgit@warthog.procyon.org.uk>
+Date:   Fri, 23 Dec 2022 12:00:19 +0000
+Message-ID: <167179681923.2516210.12904779383912537114.stgit@warthog.procyon.org.uk>
 In-Reply-To: <167179679960.2516210.10739247907156079872.stgit@warthog.procyon.org.uk>
 References: <167179679960.2516210.10739247907156079872.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,194 +67,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stash the network namespace pointer in the rxrpc_local struct in addition
-to a pointer to the rxrpc-specific net namespace info.  Use this to remove
-some places where the socket is passed as a parameter.
+Make the local endpoint and it's I/O thread hold a reference on a connected
+call until that call is disconnected.  Without this, we're reliant on
+either the AF_RXRPC socket to hold a ref (which is dropped when the call is
+released) or a queued work item to hold a ref (the work item is being
+replaced with the I/O thread).
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/ar-internal.h  |    8 ++++----
- net/rxrpc/call_accept.c  |    2 +-
- net/rxrpc/conn_client.c  |    2 +-
- net/rxrpc/local_object.c |    7 ++++---
- net/rxrpc/peer_object.c  |   23 ++++++++++-------------
- 5 files changed, 20 insertions(+), 22 deletions(-)
+ include/trace/events/rxrpc.h |    3 +++
+ net/rxrpc/call_object.c      |    2 ++
+ net/rxrpc/conn_client.c      |    6 +++---
+ net/rxrpc/conn_object.c      |   25 +++++++++++++++----------
+ 4 files changed, 23 insertions(+), 13 deletions(-)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 18092526d3c8..fe2785c648f2 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -283,7 +283,8 @@ struct rxrpc_local {
- 	struct rcu_head		rcu;
- 	atomic_t		active_users;	/* Number of users of the local endpoint */
- 	refcount_t		ref;		/* Number of references to the structure */
--	struct rxrpc_net	*rxnet;		/* The network ns in which this resides */
-+	struct net		*net;		/* The network namespace */
-+	struct rxrpc_net	*rxnet;		/* Our bits in the network namespace */
- 	struct hlist_node	link;
- 	struct socket		*socket;	/* my UDP socket */
- 	struct task_struct	*io_thread;
-@@ -1063,12 +1064,11 @@ void rxrpc_peer_keepalive_worker(struct work_struct *);
-  */
- struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *,
- 					 const struct sockaddr_rxrpc *);
--struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *, struct rxrpc_local *,
-+struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *,
- 				     struct sockaddr_rxrpc *, gfp_t);
- struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *, gfp_t,
- 				    enum rxrpc_peer_trace);
--void rxrpc_new_incoming_peer(struct rxrpc_sock *, struct rxrpc_local *,
--			     struct rxrpc_peer *);
-+void rxrpc_new_incoming_peer(struct rxrpc_local *, struct rxrpc_peer *);
- void rxrpc_destroy_all_peers(struct rxrpc_net *);
- struct rxrpc_peer *rxrpc_get_peer(struct rxrpc_peer *, enum rxrpc_peer_trace);
- struct rxrpc_peer *rxrpc_get_peer_maybe(struct rxrpc_peer *, enum rxrpc_peer_trace);
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index c02401656fa9..c957e4415cdc 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -280,7 +280,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
- 					  (peer_tail + 1) &
- 					  (RXRPC_BACKLOG_MAX - 1));
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index 5f9dd7389536..b526d982da7e 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -148,6 +148,7 @@
+ 	E_(rxrpc_client_to_idle,		"->Idle")
  
--			rxrpc_new_incoming_peer(rx, local, peer);
-+			rxrpc_new_incoming_peer(local, peer);
- 		}
+ #define rxrpc_call_traces \
++	EM(rxrpc_call_get_io_thread,		"GET iothread") \
+ 	EM(rxrpc_call_get_input,		"GET input   ") \
+ 	EM(rxrpc_call_get_kernel_service,	"GET krnl-srv") \
+ 	EM(rxrpc_call_get_notify_socket,	"GET notify  ") \
+@@ -160,6 +161,7 @@
+ 	EM(rxrpc_call_new_prealloc_service,	"NEW prealloc") \
+ 	EM(rxrpc_call_put_discard_prealloc,	"PUT disc-pre") \
+ 	EM(rxrpc_call_put_discard_error,	"PUT disc-err") \
++	EM(rxrpc_call_put_io_thread,		"PUT iothread") \
+ 	EM(rxrpc_call_put_input,		"PUT input   ") \
+ 	EM(rxrpc_call_put_kernel,		"PUT kernel  ") \
+ 	EM(rxrpc_call_put_poke,			"PUT poke    ") \
+@@ -173,6 +175,7 @@
+ 	EM(rxrpc_call_see_activate_client,	"SEE act-clnt") \
+ 	EM(rxrpc_call_see_connect_failed,	"SEE con-fail") \
+ 	EM(rxrpc_call_see_connected,		"SEE connect ") \
++	EM(rxrpc_call_see_disconnected,		"SEE disconn ") \
+ 	EM(rxrpc_call_see_distribute_error,	"SEE dist-err") \
+ 	EM(rxrpc_call_see_input,		"SEE input   ") \
+ 	EM(rxrpc_call_see_release,		"SEE release ") \
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 89dcf60b1158..239fc3c75079 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -453,6 +453,8 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
+ 		BUG();
+ 	}
  
- 		/* Now allocate and set up the connection */
++	rxrpc_get_call(call, rxrpc_call_get_io_thread);
++
+ 	/* Set the channel for this call.  We don't get channel_lock as we're
+ 	 * only defending against the data_ready handler (which we're called
+ 	 * from) and the RESPONSE packet parser (which is only really
 diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 87efa0373aed..e4063c4f4bb2 100644
+index e4063c4f4bb2..1edd65883c55 100644
 --- a/net/rxrpc/conn_client.c
 +++ b/net/rxrpc/conn_client.c
-@@ -378,7 +378,7 @@ static struct rxrpc_bundle *rxrpc_prep_call(struct rxrpc_sock *rx,
+@@ -725,8 +725,11 @@ int rxrpc_connect_call(struct rxrpc_sock *rx,
  
- 	_enter("{%d,%lx},", call->debug_id, call->user_call_ID);
+ 	rxrpc_discard_expired_client_conns(&rxnet->client_conn_reaper);
  
--	cp->peer = rxrpc_lookup_peer(rx, cp->local, srx, gfp);
-+	cp->peer = rxrpc_lookup_peer(cp->local, srx, gfp);
- 	if (!cp->peer)
- 		goto error;
++	rxrpc_get_call(call, rxrpc_call_get_io_thread);
++
+ 	bundle = rxrpc_prep_call(rx, call, cp, srx, gfp);
+ 	if (IS_ERR(bundle)) {
++		rxrpc_put_call(call, rxrpc_call_get_io_thread);
+ 		ret = PTR_ERR(bundle);
+ 		goto out;
+ 	}
+@@ -820,7 +823,6 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
+ 	_enter("c=%x", call->debug_id);
  
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 270b63d8f37a..c0ac2fe07ec4 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -85,7 +85,7 @@ static long rxrpc_local_cmp_key(const struct rxrpc_local *local,
+ 	spin_lock(&bundle->channel_lock);
+-	set_bit(RXRPC_CALL_DISCONNECTED, &call->flags);
+ 
+ 	/* Calls that have never actually been assigned a channel can simply be
+ 	 * discarded.
+@@ -912,8 +914,6 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
+ 
+ out:
+ 	spin_unlock(&bundle->channel_lock);
+-	_leave("");
+-	return;
+ }
+ 
  /*
-  * Allocate a new local endpoint.
-  */
--static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
-+static struct rxrpc_local *rxrpc_alloc_local(struct net *net,
- 					     const struct sockaddr_rxrpc *srx)
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index 3c8f83dacb2b..354a5ecb34ee 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -178,6 +178,9 @@ void rxrpc_disconnect_call(struct rxrpc_call *call)
  {
- 	struct rxrpc_local *local;
-@@ -94,7 +94,8 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
- 	if (local) {
- 		refcount_set(&local->ref, 1);
- 		atomic_set(&local->active_users, 1);
--		local->rxnet = rxnet;
-+		local->net = net;
-+		local->rxnet = rxrpc_net(net);
- 		INIT_HLIST_NODE(&local->link);
- 		init_rwsem(&local->defrag_sem);
- 		init_completion(&local->io_thread_ready);
-@@ -248,7 +249,7 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 		goto found;
+ 	struct rxrpc_connection *conn = call->conn;
+ 
++	set_bit(RXRPC_CALL_DISCONNECTED, &call->flags);
++	rxrpc_see_call(call, rxrpc_call_see_disconnected);
++
+ 	call->peer->cong_ssthresh = call->cong_ssthresh;
+ 
+ 	if (!hlist_unhashed(&call->error_link)) {
+@@ -186,18 +189,20 @@ void rxrpc_disconnect_call(struct rxrpc_call *call)
+ 		spin_unlock(&call->peer->lock);
  	}
  
--	local = rxrpc_alloc_local(rxnet, srx);
-+	local = rxrpc_alloc_local(net, srx);
- 	if (!local)
- 		goto nomem;
+-	if (rxrpc_is_client_call(call))
+-		return rxrpc_disconnect_client_call(conn->bundle, call);
++	if (rxrpc_is_client_call(call)) {
++		rxrpc_disconnect_client_call(conn->bundle, call);
++	} else {
++		spin_lock(&conn->bundle->channel_lock);
++		__rxrpc_disconnect_call(conn, call);
++		spin_unlock(&conn->bundle->channel_lock);
  
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index 4eecea2be307..8d7a715a0bb1 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -147,10 +147,10 @@ struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *local,
-  * assess the MTU size for the network interface through which this peer is
-  * reached
-  */
--static void rxrpc_assess_MTU_size(struct rxrpc_sock *rx,
-+static void rxrpc_assess_MTU_size(struct rxrpc_local *local,
- 				  struct rxrpc_peer *peer)
- {
--	struct net *net = sock_net(&rx->sk);
-+	struct net *net = local->net;
- 	struct dst_entry *dst;
- 	struct rtable *rt;
- 	struct flowi fl;
-@@ -236,11 +236,11 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp,
+-	spin_lock(&conn->bundle->channel_lock);
+-	__rxrpc_disconnect_call(conn, call);
+-	spin_unlock(&conn->bundle->channel_lock);
++		conn->idle_timestamp = jiffies;
++		if (atomic_dec_and_test(&conn->active))
++			rxrpc_set_service_reap_timer(
++				conn->rxnet, jiffies + rxrpc_connection_expiry);
++	}
+ 
+-	set_bit(RXRPC_CALL_DISCONNECTED, &call->flags);
+-	conn->idle_timestamp = jiffies;
+-	if (atomic_dec_and_test(&conn->active))
+-		rxrpc_set_service_reap_timer(conn->rxnet,
+-					     jiffies + rxrpc_connection_expiry);
++	rxrpc_put_call(call, rxrpc_call_put_io_thread);
+ }
+ 
  /*
-  * Initialise peer record.
-  */
--static void rxrpc_init_peer(struct rxrpc_sock *rx, struct rxrpc_peer *peer,
-+static void rxrpc_init_peer(struct rxrpc_local *local, struct rxrpc_peer *peer,
- 			    unsigned long hash_key)
- {
- 	peer->hash_key = hash_key;
--	rxrpc_assess_MTU_size(rx, peer);
-+	rxrpc_assess_MTU_size(local, peer);
- 	peer->mtu = peer->if_mtu;
- 	peer->rtt_last_req = ktime_get_real();
- 
-@@ -272,8 +272,7 @@ static void rxrpc_init_peer(struct rxrpc_sock *rx, struct rxrpc_peer *peer,
- /*
-  * Set up a new peer.
-  */
--static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_sock *rx,
--					    struct rxrpc_local *local,
-+static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_local *local,
- 					    struct sockaddr_rxrpc *srx,
- 					    unsigned long hash_key,
- 					    gfp_t gfp)
-@@ -285,7 +284,7 @@ static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_sock *rx,
- 	peer = rxrpc_alloc_peer(local, gfp, rxrpc_peer_new_client);
- 	if (peer) {
- 		memcpy(&peer->srx, srx, sizeof(*srx));
--		rxrpc_init_peer(rx, peer, hash_key);
-+		rxrpc_init_peer(local, peer, hash_key);
- 	}
- 
- 	_leave(" = %p", peer);
-@@ -304,14 +303,13 @@ static void rxrpc_free_peer(struct rxrpc_peer *peer)
-  * since we've already done a search in the list from the non-reentrant context
-  * (the data_ready handler) that is the only place we can add new peers.
-  */
--void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
--			     struct rxrpc_peer *peer)
-+void rxrpc_new_incoming_peer(struct rxrpc_local *local, struct rxrpc_peer *peer)
- {
- 	struct rxrpc_net *rxnet = local->rxnet;
- 	unsigned long hash_key;
- 
- 	hash_key = rxrpc_peer_hash_key(local, &peer->srx);
--	rxrpc_init_peer(rx, peer, hash_key);
-+	rxrpc_init_peer(local, peer, hash_key);
- 
- 	spin_lock(&rxnet->peer_hash_lock);
- 	hash_add_rcu(rxnet->peer_hash, &peer->hash_link, hash_key);
-@@ -322,8 +320,7 @@ void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
- /*
-  * obtain a remote transport endpoint for the specified address
-  */
--struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
--				     struct rxrpc_local *local,
-+struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
- 				     struct sockaddr_rxrpc *srx, gfp_t gfp)
- {
- 	struct rxrpc_peer *peer, *candidate;
-@@ -343,7 +340,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
- 		/* The peer is not yet present in hash - create a candidate
- 		 * for a new record and then redo the search.
- 		 */
--		candidate = rxrpc_create_peer(rx, local, srx, hash_key, gfp);
-+		candidate = rxrpc_create_peer(local, srx, hash_key, gfp);
- 		if (!candidate) {
- 			_leave(" = NULL [nomem]");
- 			return NULL;
 
 
