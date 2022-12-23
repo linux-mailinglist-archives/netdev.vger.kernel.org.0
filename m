@@ -2,76 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF09A654BE2
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 05:07:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A10654C7F
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 07:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235639AbiLWEHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 23:07:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
+        id S230444AbiLWGap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 01:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235877AbiLWEHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 23:07:22 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415AB23395
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 20:07:21 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id 7so2613711pga.1
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 20:07:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=uuRoS5f+F8qdvavLV7QeHdX9SfeSfZjDpTq44MsniBI=;
-        b=aiUbit8nI0Qh4akK1B2FcpZRewpESB9clKE6W9Ij7/1o+mfp2SHvkXg77KT1mSyuyR
-         C3d0IUJBgzATy99SRRcCEA4+DjOx7b3yzdg29oMjrzXrp+d0akP9AX3JaGw64u60ACzf
-         Ps1PT5MW7U0LG3VlHVEn/6ivGo144GHPab2/g5qLFTBN8HHn+W65o4WkIWqSWZoCKQFA
-         VzN9jWczmvBIZjaPBNFRzHytLmNrG5qKIZvcYSPhFHt89r0QNRmFAiQHlewyeUlwp+zg
-         I8NvByhaiA1xUwxmFUs1oY7seKIMEGfGiccVn/Oh8HhBbT1MH8j1Miqu2Mu//5Zq48YM
-         foQg==
+        with ESMTP id S229506AbiLWGam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 01:30:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8D95FAB
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 22:29:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671776996;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WiikjAKCvnHp1vgV1Kaih+JCYQ6gPd1e+8fFKg9J1Ac=;
+        b=PcIeEK6upoqP38jhBXJSrKW/11SbeaTHWMPX7sQB/JrLbNAMMCBSQLKc4E+jlxHPwWj/sn
+        FgvaShf1x24CXXpgHAs1PUu0i1kH4pnst2Pxc01jL4ZkkDF85PwSmid+M4l8KreeMipo+w
+        Qm259/zFj9EpBLryw49lz1mkWkZL9LU=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-553-oe-QVX2WNl-CU6PBJGa4eg-1; Fri, 23 Dec 2022 01:29:55 -0500
+X-MC-Unique: oe-QVX2WNl-CU6PBJGa4eg-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-14c958c18b5so2046345fac.23
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 22:29:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=uuRoS5f+F8qdvavLV7QeHdX9SfeSfZjDpTq44MsniBI=;
-        b=QPTudjILdb2/jiH47xVWbDdZ5rTFw/y83GbvHJT0AFZa3Kkd8CbAvHNBz2d9hRRh1a
-         tILCalETUihfwuZuxWfam87SLKA5lYe7G3jRSfPAplZhHHrQOf2R1ktxeV4QkvOB75Cz
-         yGBOnOu4M9ePV6pRgzH1asO4QlgEOV/M9//221vQFTiUqUhN8D8EIuLSXNpos20tH9XN
-         sO5ObpseTCjdkd5Hl5WZQYIUg48xdk759kZPnnA+WrRY0hRseuQIyaiSqlA9CqpT//yX
-         M+zpdLF6nEboi4iIR1NgOSiVCHKnwcOwHVps8RPDhDne0PzSJmEBFTR9Eti9svDnrr2u
-         lwiw==
-X-Gm-Message-State: AFqh2kpqjwYc5DfNpsRiCs0cmAUsTuczZs8j2DIxUBec+1lp1BySzoQX
-        BYvjQ0GZ4Ojtf4UWEXht53C2Myzm5Jye51tCHjvVGQ==
-X-Google-Smtp-Source: AMrXdXtHF3+xazC2Hrx5AjudWDyWXqDOqdnnxfEKkohBiAQlDSqR35HrJ5Gn7v/a+YtZ6xbiMno6mXfQshK/aEWCwjw=
-X-Received: by 2002:a63:1e11:0:b0:490:afd1:55b2 with SMTP id
- e17-20020a631e11000000b00490afd155b2mr411193pge.112.1671768440589; Thu, 22
- Dec 2022 20:07:20 -0800 (PST)
+        bh=WiikjAKCvnHp1vgV1Kaih+JCYQ6gPd1e+8fFKg9J1Ac=;
+        b=JIU47Axdnod1JRB6liNB/3e/NrLb2Y7x57U41L2v/kYBSy74F7/VkEMtDalVSjIFyx
+         kMV8wpCqig8MzmGa4NY1Y9LEk8Mdp/+aKQW17R+ida9mwwGJwqoxJhZ6Z/dG1mbIGkDZ
+         51iUI/HcPQQX3gA0A3uqs6v9tRaz4UXr5YcPgmwd9j/vDLA4tQOj6faZCLGf+mLvdX0o
+         AGeFWi1txBsA1FJcf9bUgeBMQPH/2u+NwDEBzznFmDeZzQ6XHpAW57H6EbzVdsRG2hUL
+         mkVBb1gK7owikIu3EzmMzUaGjB7tCYE7QAVW9DQxtTbKXivcXnkvfpmRoDepgQN32m2q
+         mVWQ==
+X-Gm-Message-State: AFqh2koDH1WmOZoWq1IK/oDHZ2FYK4XmBji2LnCDue1S9p58xJGqKHxy
+        15mCncqNa2yr/DfoXs1YpUyjsYCc0PI8B/6m2UHC4jh/4/HMnyRcFoHBOBLz8aFf+68+Mfbv3ev
+        skAbrtJZE/mStDZSN10+83cxOsW5wCJNb
+X-Received: by 2002:aca:1111:0:b0:35e:7a42:7ab5 with SMTP id 17-20020aca1111000000b0035e7a427ab5mr431953oir.280.1671776994359;
+        Thu, 22 Dec 2022 22:29:54 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvwAmVj4pYtzy/MEZCDVErGxTjIQ/hOw+CgSBao5LSUxKEJOkd++cRwrwP4isqzNYUGYGNhsdIslmcmRpir8RE=
+X-Received: by 2002:aca:1111:0:b0:35e:7a42:7ab5 with SMTP id
+ 17-20020aca1111000000b0035e7a427ab5mr431949oir.280.1671776994092; Thu, 22 Dec
+ 2022 22:29:54 -0800 (PST)
 MIME-Version: 1.0
-References: <20221220222043.3348718-1-sdf@google.com> <20221220222043.3348718-18-sdf@google.com>
- <95e79329-b7c9-550b-290e-e5e4ea6e7a01@linux.dev>
-In-Reply-To: <95e79329-b7c9-550b-290e-e5e4ea6e7a01@linux.dev>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 22 Dec 2022 20:07:08 -0800
-Message-ID: <CAKH8qBscxiYcZY1u-xyTzypU-GfFQe4mW519RzYi6bXx19x4rw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 17/17] selftests/bpf: Simple program to dump
- XDP RX metadata
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20221215032719.72294-1-jasowang@redhat.com> <20221215034740-mutt-send-email-mst@kernel.org>
+ <CACGkMEsLeCRDqyuyGzWw+kjYrTVDjUjOw6+xHESPT2D1p03=sQ@mail.gmail.com>
+ <20221215042918-mutt-send-email-mst@kernel.org> <CACGkMEsbvTQrEp5dmQRHp58Mu=E7f433Xrvsbs4nZMA5R3B6mQ@mail.gmail.com>
+In-Reply-To: <CACGkMEsbvTQrEp5dmQRHp58Mu=E7f433Xrvsbs4nZMA5R3B6mQ@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 23 Dec 2022 14:29:43 +0800
+Message-ID: <CACGkMEsu_OFFs15d2dzNbfSjzAZfYXLn9CNcO3ELPbDqZsndzg@mail.gmail.com>
+Subject: Re: [PATCH net V2] virtio-net: correctly enable callback during start_xmit
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,114 +76,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 22, 2022 at 4:53 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+On Fri, Dec 16, 2022 at 11:43 AM Jason Wang <jasowang@redhat.com> wrote:
 >
-> On 12/20/22 2:20 PM, Stanislav Fomichev wrote:
-> > To be used for verification of driver implementations. Note that
-> > the skb path is gone from the series, but I'm still keeping the
-> > implementation for any possible future work.
+> On Thu, Dec 15, 2022 at 5:35 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> > $ xdp_hw_metadata <ifname>
+> > On Thu, Dec 15, 2022 at 05:15:43PM +0800, Jason Wang wrote:
+> > > On Thu, Dec 15, 2022 at 5:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Thu, Dec 15, 2022 at 11:27:19AM +0800, Jason Wang wrote:
+> > > > > Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
+> > > > > virtqueue callback via the following statement:
+> > > > >
+> > > > >         do {
+> > > > >            ......
+> > > > >       } while (use_napi && kick &&
+> > > > >                unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > > > >
+> > > > > When NAPI is used and kick is false, the callback won't be enabled
+> > > > > here. And when the virtqueue is about to be full, the tx will be
+> > > > > disabled, but we still don't enable tx interrupt which will cause a TX
+> > > > > hang. This could be observed when using pktgen with burst enabled.
+> > > > >
+> > > > > Fixing this by trying to enable tx interrupt after we disable TX when
+> > > > > we're not using napi or kick is false.
+> > > > >
+> > > > > Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
+> > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > ---
+> > > > > The patch is needed for -stable.
+> > > > > Changes since V1:
+> > > > > - enable tx interrupt after we disable tx
+> > > > > ---
+> > > > >  drivers/net/virtio_net.c | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > index 86e52454b5b5..dcf3a536d78a 100644
+> > > > > --- a/drivers/net/virtio_net.c
+> > > > > +++ b/drivers/net/virtio_net.c
+> > > > > @@ -1873,7 +1873,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> > > > >        */
+> > > > >       if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
+> > > > >               netif_stop_subqueue(dev, qnum);
+> > > > > -             if (!use_napi &&
+> > > > > +             if ((!use_napi || !kick) &&
+> > > > >                   unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
+> > > > >                       /* More just got used, free them then recheck. */
+> > > > >                       free_old_xmit_skbs(sq, false);
+> > > >
+> > > > This will work but the following lines are:
+> > > >
+> > > >                        if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
+> > > >                                 netif_start_subqueue(dev, qnum);
+> > > >                                 virtqueue_disable_cb(sq->vq);
+> > > >                         }
+> > > >
+> > > >
+> > > > and I thought we are supposed to keep callbacks enabled with napi?
+> > >
+> > > This seems to be the opposite logic of commit a7766ef18b33 that
+> > > disables callbacks for NAPI.
+> > >
+> > > It said:
+> > >
+> > >     There are currently two cases where we poll TX vq not in response to a
+> > >     callback: start xmit and rx napi.  We currently do this with callbacks
+> > >     enabled which can cause extra interrupts from the card.  Used not to be
+> > >     a big issue as we run with interrupts disabled but that is no longer the
+> > >     case, and in some cases the rate of spurious interrupts is so high
+> > >     linux detects this and actually kills the interrupt.
+> > >
+> > > My undersatnding is that it tries to disable callbacks on TX.
 > >
-> > On the other machine:
-> >
-> > $ echo -n xdp | nc -u -q1 <target> 9091 # for AF_XDP
-> > $ echo -n skb | nc -u -q1 <target> 9092 # for skb
-> >
-> > Sample output:
-> >
-> >    # xdp
-> >    xsk_ring_cons__peek: 1
-> >    0x19f9090: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
-> >    rx_timestamp_supported: 1
-> >    rx_timestamp: 1667850075063948829
-> >    0x19f9090: complete idx=8 addr=8000
-> >
-> >    # skb
-> >    found skb hwtstamp = 1668314052.854274681
-> >
-> > Decoding:
-> >    # xdp
-> >    rx_timestamp=1667850075.063948829
-> >
-> >    $ date -d @1667850075
-> >    Mon Nov  7 11:41:15 AM PST 2022
-> >    $ date
-> >    Mon Nov  7 11:42:05 AM PST 2022
-> >
-> >    # skb
-> >    $ date -d @1668314052
-> >    Sat Nov 12 08:34:12 PM PST 2022
-> >    $ date
-> >    Sat Nov 12 08:37:06 PM PST 2022
-> >
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: David Ahern <dsahern@gmail.com>
-> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> > Cc: Maryam Tahhan <mtahhan@redhat.com>
-> > Cc: xdp-hints@xdp-project.net
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   tools/testing/selftests/bpf/.gitignore        |   1 +
-> >   tools/testing/selftests/bpf/Makefile          |   6 +-
-> >   .../selftests/bpf/progs/xdp_hw_metadata.c     |  81 ++++
-> >   tools/testing/selftests/bpf/xdp_hw_metadata.c | 405 ++++++++++++++++++
-> >   4 files changed, 492 insertions(+), 1 deletion(-)
-> >   create mode 100644 tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> >   create mode 100644 tools/testing/selftests/bpf/xdp_hw_metadata.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-> > index 07d2d0a8c5cb..01e3baeefd4f 100644
-> > --- a/tools/testing/selftests/bpf/.gitignore
-> > +++ b/tools/testing/selftests/bpf/.gitignore
-> > @@ -46,3 +46,4 @@ test_cpp
-> >   xskxceiver
-> >   xdp_redirect_multi
-> >   xdp_synproxy
-> > +xdp_hw_metadata
-> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > index e6cbc04a7920..b7d5d3aa554e 100644
-> > --- a/tools/testing/selftests/bpf/Makefile
-> > +++ b/tools/testing/selftests/bpf/Makefile
-> > @@ -83,7 +83,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
-> >   TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
-> >       flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
-> >       test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
-> > -     xskxceiver xdp_redirect_multi xdp_synproxy veristat
-> > +     xskxceiver xdp_redirect_multi xdp_synproxy veristat xdp_hw_metadata
-> >
-> >   TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read $(OUTPUT)/sign-file
-> >   TEST_GEN_FILES += liburandom_read.so
-> > @@ -241,6 +241,9 @@ $(OUTPUT)/test_maps: $(TESTING_HELPERS)
-> >   $(OUTPUT)/test_verifier: $(TESTING_HELPERS) $(CAP_HELPERS)
-> >   $(OUTPUT)/xsk.o: $(BPFOBJ)
-> >   $(OUTPUT)/xskxceiver: $(OUTPUT)/xsk.o
-> > +$(OUTPUT)/xdp_hw_metadata: $(OUTPUT)/xsk.o $(OUTPUT)/xdp_hw_metadata.skel.h
-> > +$(OUTPUT)/xdp_hw_metadata: $(OUTPUT)/network_helpers.o
-> > +$(OUTPUT)/xdp_hw_metadata: LDFLAGS += -static
+> > I think we want to disable callbacks while polling, yes. here we are not
+> > polling, and I think we want a callback because otherwise nothing will
+> > orphan skbs and a socket can be blocked, not transmitting anything - a
+> > deadlock.
 >
+> I'm not sure how I got here, did you mean a partial revert of
+> a7766ef18b33 (the part that disables TX callbacks on start_xmit)?
+
+Michael, any idea on this?
+
+Thanks
+
 >
-> This test binary fails to build for llvm.  gcc looks fine though.  The CI tests
-> cannot be run on this set because of this.  Please take a look:
+> Btw, I plan to remove non NAPI mode completely, since it was disabled
+> by default for years and we don't see any complaint, then we may have
+> modern features like BQL and better TCP performance. In that sense we
+> may simply keep tx callback open as most of modern NIC did.
 >
-> https://github.com/kernel-patches/bpf/actions/runs/3745257032/jobs/6359527599#step:11:2202
+> >
+> > > > One of the ideas of napi is to free on napi callback, not here
+> > > > immediately.
+> > > >
+> > > > I think it is easier to just do a separate branch here. Along the
+> > > > lines of:
+> > > >
+> > > >                 if (use_napi) {
+> > > >                         if (unlikely(!virtqueue_enable_cb_delayed(sq->vq)))
+> > > >                                 virtqueue_napi_schedule(napi, vq);
+> > >
+> > > This seems to be a new logic and it causes some delay in processing TX
+> > > (unnecessary NAPI).
+> >
+> > That's good, we overloaded the queue so we are already going
+> > too fast, deferring tx so queue has chance to drain
+> > will allow better batching in the qdisc.
+>
+> I meant, compare to
+>
+> 1) schedule NAPI and poll TX
+>
+> The current code did
+>
+> 2) poll TX immediately
+>
+> 2) seems faster?
+>
+> Thanks
+>
+> >
+> > > >                 } else {
+> > > >                         ... old code ...
+> > > >                 }
+> > > >
+> > > > also reduces chances of regressions on !napi (which is not well tested)
+> > > > and keeps callbacks off while we free skbs.
+> > >
+> > > I think my patch doesn't change the logic of !napi? (It checks !napi || kick).
+> > >
+> > > Thanks
+> >
+> > I agree it doesn't seem to as written.
+> >
+> > > >
+> > > > No?
+> > > >
+> > > >
+> > > > > --
+> > > > > 2.25.1
+> > > >
+> >
 
-Ugh, again, I was hoping I fixed it :-(
-
-clang: error: cannot specify -o when generating multiple output files
-
-Will give it another try; for some reason can't reproduce locally
-(LLVM version 16.0.0git)
-
-> I only have minor comments on the set.  Looking forward to v6.
-
-Thank you for another round of reviews! I'll probably keep quiet next
-week to give us some family time during holidays and will publish v6
-early January. Happy holidays!
