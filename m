@@ -2,128 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9E46554FE
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 23:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82324655518
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 23:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiLWWTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 17:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
+        id S231575AbiLWW2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 17:28:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiLWWTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 17:19:12 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA53A10B49;
-        Fri, 23 Dec 2022 14:19:10 -0800 (PST)
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p8qNg-0007sF-49; Fri, 23 Dec 2022 23:19:08 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        martin.lau@linux.dev, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2022-12-23
-Date:   Fri, 23 Dec 2022 23:19:07 +0100
-Message-Id: <20221223221907.10465-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S231578AbiLWW2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 17:28:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D631ADBE
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 14:27:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671834471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NtRKjrrbYIdgIGkqJ3VqinENOoahNs+OyBFqva7XmGo=;
+        b=E7DqpYKTGehP8+1P8QLubJAG/tC6tW28WOqY7A4C3iTrBE6Idrn7T1MbbG24kcb+mw1YLv
+        cEvC4nL7bTMwzmwk5GUvjNvhL3z+S7fFhe7Kmyp2Ol9yyg2GmFz3KfEasFGM5i9MGbv5O6
+        NqLv3aOTUsMbB+8dggqma1kBb0xZVt0=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-507-dg8qW9U8NZWfxOBJ90EdAw-1; Fri, 23 Dec 2022 17:27:50 -0500
+X-MC-Unique: dg8qW9U8NZWfxOBJ90EdAw-1
+Received: by mail-wr1-f69.google.com with SMTP id v4-20020adfa1c4000000b002753317406aso274804wrv.21
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 14:27:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NtRKjrrbYIdgIGkqJ3VqinENOoahNs+OyBFqva7XmGo=;
+        b=DRuJflouPj1e7R2SLR8NYRT6YHNpB7RdqND4+uRqQ0IrZ7p9xPRwiEyYxPzW6P2eb8
+         u5F/kzNipsJvX/agFKDwlPvE2X6bvcp0yYnxpYChATEkyjAldsqszthgWQ7VqJX7deRy
+         Kj7O/I4ikpO192WLwpsxp+eBnsaP7bdUnz3sG97621mNdB/vlveBGa7TdpZIW2UQvaFL
+         8VEGn/2cIFMQsaLWhsrpkhnhVAr/1CyUK3bEED9gKeMzLFavnBlvSfHs7CmNYARmxfEx
+         z5F0H4DHVyX+mkGlFa064kAGVOBO7VadeDTgi2MqCG+gy0hPwD/wgYfVShAkCLqJQ4A8
+         X8Pw==
+X-Gm-Message-State: AFqh2krF9glMirPK5MscjRjauaIaBFdPOkmUeKqCQzxNH4FHZJr0K9Um
+        pCfAn0b4ouR8NXwfL6+DAn274PM3phRXS3QTw4plb3yQ0w/SI4kws2VfBTbNKIN1Z1FtqtLq2SX
+        cinfBq4OCUmAFaF04
+X-Received: by 2002:a1c:770b:0:b0:3cf:a18d:399c with SMTP id t11-20020a1c770b000000b003cfa18d399cmr8706211wmi.1.1671834468903;
+        Fri, 23 Dec 2022 14:27:48 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtypUNzb7VgDxwSmNV5kkZqdNzHIvqFLFIqRXIsvO8K841mwmSg7ycczPWKeRCh2AE62HTTFw==
+X-Received: by 2002:a1c:770b:0:b0:3cf:a18d:399c with SMTP id t11-20020a1c770b000000b003cfa18d399cmr8706186wmi.1.1671834468656;
+        Fri, 23 Dec 2022 14:27:48 -0800 (PST)
+Received: from redhat.com ([2.55.175.215])
+        by smtp.gmail.com with ESMTPSA id h12-20020a05600c350c00b003d355ad9bb7sm11729817wmq.20.2022.12.23.14.27.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Dec 2022 14:27:47 -0800 (PST)
+Date:   Fri, 23 Dec 2022 17:27:41 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        almasrymina@google.com, alvaro.karsz@solid-run.com,
+        anders.roxell@linaro.org, angus.chen@jaguarmicro.com,
+        bobby.eshleman@bytedance.com, colin.i.king@gmail.com,
+        dave@stgolabs.net, dengshaomin@cdjrlc.com, dmitry.fomichev@wdc.com,
+        elic@nvidia.com, eperezma@redhat.com, gautam.dawar@xilinx.com,
+        harshit.m.mogalapalli@oracle.com, jasowang@redhat.com,
+        leiyang@redhat.com, lingshan.zhu@intel.com, lkft@linaro.org,
+        lulu@redhat.com, m.szyprowski@samsung.com, nathan@kernel.org,
+        pabeni@redhat.com, pizhenwei@bytedance.com, rafaelmendsr@gmail.com,
+        ricardo.canuelo@collabora.com, ruanjinjie@huawei.com,
+        sammler@google.com, set_pte_at@outlook.com, sfr@canb.auug.org.au,
+        sgarzare@redhat.com, shaoqin.huang@intel.com,
+        si-wei.liu@oracle.com, stable@vger.kernel.org, stefanha@gmail.com,
+        sunnanyong@huawei.com, wangjianli@cdjrlc.com,
+        wangrong68@huawei.com, weiyongjun1@huawei.com,
+        xuanzhuo@linux.alibaba.com, yuancan@huawei.com
+Subject: Re: [GIT PULL] virtio,vhost,vdpa: features, fixes, cleanups
+Message-ID: <20221223172549-mutt-send-email-mst@kernel.org>
+References: <20221222144343-mutt-send-email-mst@kernel.org>
+ <CAHk-=wi6Gkr7hJz20+xD=pBuTrseccVgNR9ajU7=Bqbrdk1t4g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26759/Fri Dec 23 10:30:57 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wi6Gkr7hJz20+xD=pBuTrseccVgNR9ajU7=Bqbrdk1t4g@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+On Fri, Dec 23, 2022 at 11:54:41AM -0800, Linus Torvalds wrote:
+> On Thu, Dec 22, 2022 at 11:43 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+> 
+> I see none of this in linux-next.
+> 
+>                Linus
 
-The following pull-request contains BPF updates for your *net* tree.
+They were all there, just not as these commits, as I squashed fixups to
+avoid bisect breakages with some configs. Did I do wrong?
 
-We've added 7 non-merge commits during the last 5 day(s) which contain
-a total of 11 files changed, 231 insertions(+), 3 deletions(-).
+-- 
+MST
 
-The main changes are:
-
-1) Fix a splat in bpf_skb_generic_pop() under CHECKSUM_PARTIAL due to
-   misuse of skb_postpull_rcsum(), from Jakub Kicinski with test case
-   from Martin Lau.
-
-2) Fix BPF verifier's nullness propagation when registers are of
-   type PTR_TO_BTF_ID, from Hao Sun.
-
-3) Fix bpftool build for JIT disassembler under statically built
-   libllvm, from Anton Protopopov.
-
-4) Fix warnings reported by resolve_btfids when building vmlinux
-   with CONFIG_SECURITY_NETWORK disabled, from Hou Tao.
-
-5) Minor fix up for BPF selftest gitignore, from Stanislav Fomichev.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
-
-Thanks a lot and merry Xmas everyone!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Anand Parthasarathy, John Sperbeck, Stanislav Fomichev, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit 2856a62762c8409e360d4fd452194c8e57ba1058:
-
-  mctp: serial: Fix starting value for frame check sequence (2022-12-19 12:38:45 +0000)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
-
-for you to fetch changes up to fcbb408a1aaf426f88d8fb3b4c14e3625745b02f:
-
-  selftests/bpf: Add host-tools to gitignore (2022-12-23 22:49:19 +0100)
-
-----------------------------------------------------------------
-bpf-for-netdev
-
-----------------------------------------------------------------
-Anton Protopopov (1):
-      bpftool: Fix linkage with statically built libllvm
-
-Hao Sun (2):
-      bpf: fix nullness propagation for reg to reg comparisons
-      selftests/bpf: check null propagation only neither reg is PTR_TO_BTF_ID
-
-Hou Tao (1):
-      bpf: Define sock security related BTF IDs under CONFIG_SECURITY_NETWORK
-
-Jakub Kicinski (1):
-      bpf: pull before calling skb_postpull_rcsum()
-
-Martin KaFai Lau (1):
-      selftests/bpf: Test bpf_skb_adjust_room on CHECKSUM_PARTIAL
-
-Stanislav Fomichev (1):
-      selftests/bpf: Add host-tools to gitignore
-
- kernel/bpf/bpf_lsm.c                               |  2 +
- kernel/bpf/verifier.c                              |  9 ++-
- net/core/filter.c                                  |  7 +-
- tools/bpf/bpftool/Makefile                         |  4 +
- tools/testing/selftests/bpf/.gitignore             |  1 +
- tools/testing/selftests/bpf/DENYLIST.s390x         |  1 +
- .../selftests/bpf/prog_tests/decap_sanity.c        | 85 ++++++++++++++++++++++
- .../selftests/bpf/prog_tests/jeq_infer_not_null.c  |  9 +++
- .../testing/selftests/bpf/progs/bpf_tracing_net.h  |  6 ++
- tools/testing/selftests/bpf/progs/decap_sanity.c   | 68 +++++++++++++++++
- .../selftests/bpf/progs/jeq_infer_not_null_fail.c  | 42 +++++++++++
- 11 files changed, 231 insertions(+), 3 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/decap_sanity.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/jeq_infer_not_null.c
- create mode 100644 tools/testing/selftests/bpf/progs/decap_sanity.c
- create mode 100644 tools/testing/selftests/bpf/progs/jeq_infer_not_null_fail.c
