@@ -2,69 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6B4655414
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 21:04:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E4D655419
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 21:05:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231324AbiLWUD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 15:03:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
+        id S232273AbiLWUFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 15:05:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiLWUDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 15:03:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FF3175B1;
-        Fri, 23 Dec 2022 12:03:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3835EB8210B;
-        Fri, 23 Dec 2022 20:03:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE07DC433D2;
-        Fri, 23 Dec 2022 20:03:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671825831;
-        bh=tBwHQlmqRBeYWxGS6uKd2RdDCEZpbyIt8nBUwGIEJ38=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AF+SO8CYPY3Mh4Mr5Ilwh1TfbJw5kxgwW2ek1WmvcrNvk8ynPgL8r5Y018lRkBVRn
-         8iBAT6ftBg3rwqfb2TEmn7s+radjrF1o9DwEt1KyNokZjmJoW0pK0yTcYKEcpE5Fso
-         1zeg0KpmP/HAxfcMEmklDvHMwSoJach1aPXtDnRNKx0B1RY4Nc1V6wmjPUXVHGosRN
-         Piwf3HCf7luTbK7NLlXGJZUNy4T9BhmDGoaBwLhHIv8M55SUmSKNyetOz3a+0ra9e4
-         75xZ+4bwE5TB+hzq3qaJ2Or1CgYru5UAEbso03cXRf20NiXYU3MIhtQAnyBYgHh4MB
-         ap6XS2r14MG8w==
-Date:   Fri, 23 Dec 2022 12:03:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     syzbot <syzbot+e5341b984215b66e5b19@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] net-next build error (5)
-Message-ID: <20221223120350.7af6afa2@kernel.org>
-In-Reply-To: <00000000000060476705f07bbba5@google.com>
-References: <00000000000060476705f07bbba5@google.com>
+        with ESMTP id S230387AbiLWUFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 15:05:33 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5922A120B2
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 12:05:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=B/ny6lRUDZlKra0NspUiOdiw5ofFGewPcO02ik6Qrpk=; b=VrFEh0/q0RGohhhzQ92SbrMwlS
+        Jxad1uJMoy6flNTqV9nBUin+CgIDwmU/2mLGEMkCvTF+aVELSxBNvKQsTjmQe/IeJM9/p0KI8+K5r
+        MWoCxs4NBsHcocKdYGNJ8Gd71YhWb+GN7paITP1T+dO6aZaMpHOEo5ki0z8llEc/sGyE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p8oIJ-000MEr-As; Fri, 23 Dec 2022 21:05:27 +0100
+Date:   Fri, 23 Dec 2022 21:05:27 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        netdev@vger.kernel.org
+Subject: Re: Crosschip bridge functionality
+Message-ID: <Y6YKBzDJfs8LP0ny@lunn.ch>
+References: <Y6YDi0dtiKVezD8/@euler>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y6YDi0dtiKVezD8/@euler>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Dec 2022 01:51:38 -0800 syzbot wrote:
-> syzbot found the following issue on:
+On Fri, Dec 23, 2022 at 11:37:47AM -0800, Colin Foster wrote:
+> Hello,
 > 
-> HEAD commit:    1d330d4fa8ba net: alx: Switch to DEFINE_SIMPLE_DEV_PM_OPS(..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16c71ba3880000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b0e91ad4b5f69c47
-> dashboard link: https://syzkaller.appspot.com/bug?extid=e5341b984215b66e5b19
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> I've been looking into what it would take to add the Distributed aspect
+> to the Felix driver, and I have some general questions about the theory
+> of operation and if there are any limitations I don't foresee. It might
+> be a fair bit of work for me to get hardware to even test, so avoiding
+> dead ends early would be really nice!
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+e5341b984215b66e5b19@syzkaller.appspotmail.com
+> Also it seems like all the existing Felix-like hardware is all
+> integrated into a SOC, so there's really no other potential users at
+> this time.
 > 
-> failed to run ["make" "-j" "64" "ARCH=x86_64" "bzImage"]: exit status 2
+> For a distributed setup, it looks like I'd just need to create
+> felix_crosschip_bridge_{join,leave} routines, and use the mv88e6xxx as a
+> template. These routines would create internal VLANs where, assuming
+> they use a tagging protocol that the switch can offload (your
+> documentation specifically mentions Marvell-tagged frames for this
+> reason, seemingly) everything should be fully offloaded to the switches.
+> 
+> What's the catch?
 
-This is syzbot ooming during build or such? I don't see any error.
+I actually think you need silicon support for this. Earlier versions
+of the Marvell Switches are missing some functionality, which results
+in VLANs leaking in distributed setups. I think the switches also
+share information between themselves, over the DSA ports, i.e. the
+ports between switches.
+
+I've no idea if you can replicate the Marvell DSA concept with VLANs.
+The Marvell header has D in DSA as a core concept. The SoC can request
+a frame is sent out a specific port of a specific switch. And each
+switch has a routing table which indicates what egress port to use to
+go towards a specific switch. Frames received at the SoC indicate both
+the ingress port and the ingress switch, etc.
+
+> In the Marvell case, is there any gotcha where "under these scenarios,
+> the controlling CPU needs to process packets at line rate"?
+
+None that i know of. But i'm sure Marvell put a reasonable amount of
+thought into how to make a distributed switch. There is at least one
+patent covering the concept. It could be that a VLAN based
+re-implemention could have such problems. 
+
+	Andrew
