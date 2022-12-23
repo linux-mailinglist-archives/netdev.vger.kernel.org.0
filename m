@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F386B6553B5
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 19:44:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 324616553C6
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 20:07:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232242AbiLWSo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 13:44:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
+        id S231228AbiLWTHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 14:07:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231836AbiLWSo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 13:44:26 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C42A1CB2B
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 10:44:25 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id jr11so4344273qtb.7
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 10:44:25 -0800 (PST)
+        with ESMTP id S230280AbiLWTHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 14:07:22 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F8D1B9F0
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 11:07:21 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id h21so4363628qta.12
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 11:07:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ISSNi5g8+83vFNG4zUWTK5It3MNE4YXnaRha+djQqBw=;
-        b=XK7m6VhqBikWWDV2oOx6FkNGmZccdzxHEeN94hRuIrM5cJItYJ5Nyuph1fb1LDQXYV
-         fr/dPlX9rIKq3/rIoVy1E7VXbGiRbsPj9ylXuxCqVqviueaV8OWtW6SwqWYDIK7Dky5h
-         4sHL0aBImzrysKfCzxWKiX2MlyfRQtl8Ph+vg=
+        bh=HGw9oRroFvPZ2dyQcKWKF0FY4soMbEIhC7lZPLQhPjY=;
+        b=HmlyjN0EM9c5k+W/8twiDyNwtL4iIkEk+itfoYVQWrXjlJAflSsOolovl+8prOU0XE
+         l3/x47GBmfyqzrLb1Cp1GyaQU9sS4GHbnvznDR+Yx/j6IjI+4xIgzdLttkx2R/RRrQfv
+         7cm4SVHqjoc5mTYMdO646JC/I8jyHL7Ryehsc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ISSNi5g8+83vFNG4zUWTK5It3MNE4YXnaRha+djQqBw=;
-        b=BlsgiR1qSd5x+OkrXwU+9uDrpdUakKcvpByv9vjLms5nObbTdGGYK84uqYH7vTDH5J
-         pfz72PMoMPr/hCDcbZEa8X7h2ZPamp13T9erYPNJ5KFlPHSzSiN9z+15ipL/Er5k3bHm
-         F9aVQQnUNbPKQUpRzkeLFOpxlwW3KeevxqmEaSfSzJX2UuZmGqhPrQbQW7DBNBx/j36O
-         raE9DqcpYIn2EeNz9zBiEB3Lsg1nUYzYBHsWffcjEJKfbQV/ZvGEihFotPcSgVCADJBS
-         Bhw4s6eTAgahegZdH/SNzSjJqyVSHIPxiYYRCeNtxD8U2Y8AlGzr9lZHEO1lTHljjXka
-         o2gA==
-X-Gm-Message-State: AFqh2koXqb4EAqfmdCNf07EdkV+mcv7w5cxANi4WkBqRJ161MOa8uUib
-        R5CEweXIWd7oK2kPVn07Zh38YuQZylO01j/Z
-X-Google-Smtp-Source: AMrXdXvfMb4wVdJvYPGcKU//xFlBUl5HulQvOt0hToj/R7Afufu8EvZ0X7Kik8V11AKuUG9ZQ4JJ8Q==
-X-Received: by 2002:a05:622a:509f:b0:3a9:81f0:d8e2 with SMTP id fp31-20020a05622a509f00b003a981f0d8e2mr19674342qtb.60.1671821064283;
-        Fri, 23 Dec 2022 10:44:24 -0800 (PST)
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com. [209.85.160.171])
-        by smtp.gmail.com with ESMTPSA id s24-20020ac87598000000b003a7f1e16649sm2356131qtq.42.2022.12.23.10.44.23
+        bh=HGw9oRroFvPZ2dyQcKWKF0FY4soMbEIhC7lZPLQhPjY=;
+        b=URucdMWpNake52CNrbvzzxSWsqofivQeqsbeTHo7Hyj61L6m7773roFVkNU6KVlc1O
+         BxgHCNbwjiZBpLbLJu/aefXj2gAJ0rDYipB+IuhliSoN20b04JqV8hcX3SJqnm4vCPZ+
+         wqx2SDh7MT/ffx0SIpIU/GFAUbOrqCyxvxqV0SBK/HxlaQaUbl461qAw1DTBXNowjNLJ
+         yerEOTEEX4FFA8gIZx29ppehu6vOzN4jk1y8OekC0mBc8g8GOtC/H8HIysRr9bUPFfeA
+         JZc2X7GuIA+5b7XICPW8jsGOIJER/+0UYL/ROU2omQ+rdMWpTRFsRGGtiOAHB5qAP8Q5
+         fG6Q==
+X-Gm-Message-State: AFqh2krlIuagRSC0myOkGYmjZ7mF7rS5b/2YK8Wbb+q5CS4ENGBQIXrW
+        Hapa0c9b+CGndnxUPKIm4z6Q5lqKklM8oZWG
+X-Google-Smtp-Source: AMrXdXssnHyy8Fp0o+9y+7w84N0FzCtXGkEINc0Hyvr/PTIeB9TTasL3xZg+XPBemYjhKC619fY/sg==
+X-Received: by 2002:ac8:73c7:0:b0:3a7:f3e7:5149 with SMTP id v7-20020ac873c7000000b003a7f3e75149mr12515652qtp.61.1671822439849;
+        Fri, 23 Dec 2022 11:07:19 -0800 (PST)
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com. [209.85.222.178])
+        by smtp.gmail.com with ESMTPSA id r12-20020ac8520c000000b0039a55f78792sm2333267qtn.89.2022.12.23.11.07.19
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Dec 2022 10:44:23 -0800 (PST)
-Received: by mail-qt1-f171.google.com with SMTP id x11so4319138qtv.13
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 10:44:23 -0800 (PST)
-X-Received: by 2002:a05:622a:5daa:b0:3a7:ef7b:6aa5 with SMTP id
- fu42-20020a05622a5daa00b003a7ef7b6aa5mr301991qtb.436.1671821062915; Fri, 23
- Dec 2022 10:44:22 -0800 (PST)
+        Fri, 23 Dec 2022 11:07:19 -0800 (PST)
+Received: by mail-qk1-f178.google.com with SMTP id pa22so2748917qkn.9
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 11:07:19 -0800 (PST)
+X-Received: by 2002:a05:620a:1379:b0:6fc:c48b:8eab with SMTP id
+ d25-20020a05620a137900b006fcc48b8eabmr347377qkl.216.1671822438709; Fri, 23
+ Dec 2022 11:07:18 -0800 (PST)
 MIME-Version: 1.0
-References: <Y5uprmSmSfYechX2@yury-laptop>
-In-Reply-To: <Y5uprmSmSfYechX2@yury-laptop>
+References: <Y5uprmSmSfYechX2@yury-laptop> <CAHk-=wj_4xsWxLqPvkCV6eOJt7quXS8DyXn3zWw3W94wN=6yig@mail.gmail.com>
+In-Reply-To: <CAHk-=wj_4xsWxLqPvkCV6eOJt7quXS8DyXn3zWw3W94wN=6yig@mail.gmail.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 23 Dec 2022 10:44:07 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wj_4xsWxLqPvkCV6eOJt7quXS8DyXn3zWw3W94wN=6yig@mail.gmail.com>
-Message-ID: <CAHk-=wj_4xsWxLqPvkCV6eOJt7quXS8DyXn3zWw3W94wN=6yig@mail.gmail.com>
+Date:   Fri, 23 Dec 2022 11:07:03 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgrzisX2_MCcw3Qqa0J3d7mL14aab9F0JkjGF=VfAk5Ow@mail.gmail.com>
+Message-ID: <CAHk-=wgrzisX2_MCcw3Qqa0J3d7mL14aab9F0JkjGF=VfAk5Ow@mail.gmail.com>
 Subject: Re: [GIT PULL] bitmap changes for v6.2-rc1
 To:     Yury Norov <yury.norov@gmail.com>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -77,102 +77,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 15, 2022 at 3:11 PM Yury Norov <yury.norov@gmail.com> wrote:
+On Fri, Dec 23, 2022 at 10:44 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Please pull bitmap patches for v6.2. They spent in -next for more than
-> a week without any issues. The branch consists of:
+> Honestly, in this case, I think the logical thing to do is "check that
+> the upper bits are the same". The way you do that is probably
+> something like
+>
+>    !((off) ^ ((nbits)-1) & ~(BITS_PER_LONG-1))
 
-So I've been holding off on this because these bitmap pulls have
-always scared me, and I wanted to have the time to actually look
-through them in detail before pulling.
+Note that while the above is probably correct (but you always need to
+double-check my emailed "something like this" code - I literally write
+it in the MUA, and I make mistakes too), I'd never want to see that as
+part of one big complex macro.
 
-I'm back home, over the travel chaos, and while I have other pulls
-pending, they seem to be benign fixes so I started looking at this.
+In fact, I think I am missing a set of parentheses, because '&' has a
+higher precedence than '^', so the above is actually buggy.
 
-And when looking at it, I did indeed finx what I think is a
-fundamental arithmetic bug.
+So I'd much rather see something like this
 
-That small_const_nbits_off() is simply buggy.
+  #define COMPILE_TIME_TRUE(x) (__builtin_constant_p(x) && (x))
 
-Try this:
+  #define bits_in_same_word(x,y) \
+        (!(((x)^(y))&~(BITS_PER_LONG-1)))
 
-        small_const_nbits_off(64,-1);
+  #define bitmap_off_in_last_word(nbits,off) \
+        bits_in_same_word((nbits)-1,off)
 
-and see it return true.
+  #define small_const_nbits_off(nbits, off) \
+        (__builtin_constant_p(nbits) && (nbits) > 0 && \
+         COMPILE_TIME_TRUE(bitmap_off_in_last_word(nbits,off)))
 
-The thing is, doing divides in C is something you need to be very
-careful about, because they do *not* behave nicely with signed values.
-They do the "mathematically intuitive" thing of truncating towards
-zero, but when you are talking about bit ranges like this, that is
-*NOT* what you want.
+where each step does one thing and one thing only, and you don't have
+one complicated thing that is hard to read.
 
-The comment is fairly good, but it just doesn't match the code.
+And again, don't take my word blindly for the above.  I *think* the
+above may be correct, but there's a "think" and a "may" there.
 
-If you want to check that 'nbits-1' and 'off' are in the same word,
-you simply should not use division at all. Sure, it would work, if you
-verify that they are both non-negative, but the fact is, even then
-it's just wrong, wrong, wrong. You want a shift operation or a masking
-operation.
-
-Honestly, in this case, I think the logical thing to do is "check that
-the upper bits are the same". The way you do that is probably
-something like
-
-   !((off) ^ ((nbits)-1) & ~(BITS_PER_LONG-1))
-
-which doesn't have the fundamental bug that the divide version has.
-
-So anyway, I won't be pulling this. I appreciate that you are trying
-to micro-optimize the bitop functions, but this is not the first time
-your pull requests have made me worried and caused me to not pull.
-This is such basic functionality that I really need these pull
-requests to be less worrisome.
-
-In other words, not only don't I want to see these kinds of bugs -
-please make sure that there isn't anythign that looks even *remotely*
-scary. The micro-optimizations had better be *so* obvious and so well
-thought through that I not only don't find bugs in them, I don't even
-get nervous about finding bugs.
-
-Side note: that whole small_const_nbits_off() thing could be possibly
-improved in other ways. It's actually unnecessarily strict (if it was
-correct, that is): we don't really require 'off' to be constant, what
-we *do* want is
-
- - "nbits > off" needs to be a compile-time true constant
-
- - that "off is in the same word as nbits-1" also needs to be a
-compile-time true constant.
-
-and the compiler could determine both of those to be the case even if
-'off' itself isn't a constant, if there is code around it that
-verifies it.
-
-For example, if you have code like this:
-
-        off = a & 7;
-        n = find_next_bit(bitmap, 64, off);
-
-then the compiler could still see that it's that "last word only"
-case, even though 'off' isn't actually a constant value.
-
-So you could try using a helper macro like
-
-   #define COMPILE_TIME_TRUE(x) (__builtin_constant_p(x) && (x))
-
-to handle those kinds of things. But again - the code needs to be
-OBVIOUSLY CORRECT. Make me feel those warm and fuzzies about it
-because it's so obviously safe and correct.
-
-That said, I see your test-cases for your micro-optimizations, but I'd
-also like to see references to where it actually improves real code.
-
-I know for a fact that 'small_const_nbits()' actually triggers in real
-life. I don't see that your 'small_const_nbits_off()' would trigger in
-real life in any situation that isn't already covered by
-'small_const_nbits()'.
-
-So convince me not only that the optimizations are obviously correct,
-but also that they actually matter.
+Plus I'd still like to hear about where the above would actually
+matter and make a code generation difference in real life (compared to
+just the simple "optimize the single-word bitmap" case).
 
                 Linus
