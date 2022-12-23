@@ -2,127 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5EAB6555FE
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 00:33:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 361E76556AC
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:22:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbiLWXbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 18:31:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
+        id S233277AbiLXAWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 19:22:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiLWXbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 18:31:39 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2100.outbound.protection.outlook.com [40.107.244.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CF710FCF
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 15:31:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S0j29h17azxwQMq9VXgmgnbduOvTKBm7qYnkjjnNF7lrQcCIAyOkaCnzJsNfYRNmhNW9LnY8IToDklZg0g0LubGyLcSKg4uKZiluG/cwSC7BS6w2VM9wLv43nZthaWHeGZipaLf3zYO64PHGrGfIA87eFzM/OwArbLkpIKF65syTS9cxEVYfWmNPck0gQOVfYmYSxmnFkYKFTi78/i/X92RzXSvHN007ave8J1o6BTIRaeYu8QR9ty4tLuSx2hLQdMNGN2SIlp2q5tUy3GhXPtmOdWyarUd4UQMDoRA31EzFUcN4LzAsTbprvkFQqGT9YzthvV4n3l6cum0JjYJJ/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=udXIeqoMRdO3MX2p6Tdw8FQ95ZbpVfgCFNMvMyvWBdU=;
- b=mJn8ACtb5WLThoimq7tFFcEehhXnmdRd8R4T8heUmZpJl2+76oboD3jCIz7+ucxSKTZHy0ecvrHpZnOJ4vIXkTKX9mAGSerlQhE2u4cxxNr/M4GZoTqaH3ADLUR4FtC2OrC8D4kH9ZznQacGha78UisKcYXSI2sz/Mb4DgqA84PMK4inYf3n6UEoAvK8slXGVVCEOLk2YTucj66kn2i+JyLvOe8gYiZZ9sP6zRuY4Ru+Iu7b3J5JZH58htkspOsNnonLUdiO/yoTucNQxS4ktl4KCqXy4IyNNaWnqqb62T4F1W5zM/f6MhV0JJEYS6LReOYXgv+l/tanGvxPFPZ6iQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=udXIeqoMRdO3MX2p6Tdw8FQ95ZbpVfgCFNMvMyvWBdU=;
- b=QwhLvYFSeIop/hWWe80N4X0aiemakcoWBq1Tdp4xVjqyd05O42fQyD9czXErO2SlaoRfR4AyGuxHbs1bTjmmAVdu0yGJ0Awxtdan0/M9OZ4FRm8WiyMsLSku5QrUOY0EOpl5WCp/kDwwgum2GfcWH+S61JR48iYbe3hQKOrCl8s=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by SA1PR10MB5783.namprd10.prod.outlook.com
- (2603:10b6:806:23e::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.13; Fri, 23 Dec
- 2022 23:31:35 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::45b5:a860:9cea:a74c]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::45b5:a860:9cea:a74c%4]) with mapi id 15.20.5944.013; Fri, 23 Dec 2022
- 23:31:35 +0000
-Date:   Fri, 23 Dec 2022 15:31:32 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org
-Subject: Re: Crosschip bridge functionality
-Message-ID: <Y6Y6VDwAIPgZoJOJ@euler>
-References: <Y6YDi0dtiKVezD8/@euler>
- <Y6YKBzDJfs8LP0ny@lunn.ch>
- <Y6YVhWSTg4zgQ6is@euler>
- <Y6YbPiI+pRjOQcxZ@lunn.ch>
- <Y6YtiwqJWyv3yW9r@euler>
- <Y6Yzp84WW1tQLdsB@lunn.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y6Yzp84WW1tQLdsB@lunn.ch>
-X-ClientProxiedBy: BYAPR11CA0047.namprd11.prod.outlook.com
- (2603:10b6:a03:80::24) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        with ESMTP id S233538AbiLXAWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:22:33 -0500
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 16:22:29 PST
+Received: from 5.mo546.mail-out.ovh.net (5.mo546.mail-out.ovh.net [46.105.34.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42501AA19
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:22:29 -0800 (PST)
+Received: from ex4.mail.ovh.net (unknown [10.111.208.63])
+        by mo546.mail-out.ovh.net (Postfix) with ESMTPS id 920EF24CA9;
+        Fri, 23 Dec 2022 23:42:40 +0000 (UTC)
+Received: from dev-fedora-x86-64.naccy.de (37.65.8.229) by
+ DAG10EX1.indiv4.local (172.16.2.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Sat, 24 Dec 2022 00:42:38 +0100
+From:   Quentin Deslandes <qde@naccy.de>
+To:     <qde@naccy.de>
+CC:     <kernel-team@meta.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Dmitrii Banshchikov <me@ubique.spb.ru>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
+Subject: [PATCH bpf-next v3 00/16] bpfilter
+Date:   Sat, 24 Dec 2022 00:40:08 +0100
+Message-ID: <20221223234127.474463-1-qde@naccy.de>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|SA1PR10MB5783:EE_
-X-MS-Office365-Filtering-Correlation-Id: c95e951b-2391-4518-b919-08dae53dd4d2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0kr1819zr34FdKqPMhnRimgj9+LydUEJLkpcR1+C6YgIAduJQWilkZGap1HgyzGHAiILqEqv2G0nwWxpybsvJsh3lnA5ATxP+RO2iHbWCf/jBudlK15D9zAlz+Sw5glJDh6hX2xpNp5iAugN+qGn1L7dlLnD8gFaVtbU0VfENJUhmqH0DCOu0EmXGcYZTj7DmeoC2ImvbgEeXzRF4XlWv3r5jtbXcXaV51RWbSTvXqBgDQdaVp5fDKtJO8NZAqwV480k2kQJDrYgjOigDiqx08FcvkOGrevupBPrDW4vRwxE169H4GvEqsItl7WF4dlwdGHg3M6mrLy+VY3Yg1T6nIeJ5uVXTaP3hMNl8i9IXeuYxxBco3o+IJKxldlUVIVor9GV0p+uMEMRyDytuJmWgINZvRDwnkD8D0v1FOSAkJ9tOSsYk4lYXDVVss6AxIVbu0CV6SvELA348R6TCjROzMsqVV9FaJAWmhEtyPOdZBhe527ohUnLhYx+stUFxOOl15GOfopiZVBVxouHQqdMM+WALGEi/APwZvh55VX2gzQ69yiUxOZjniWI/wK2TpkW1Qo9vOXqDDSkLKCa8bsUMltcrUm4YKpwGcGPkUi7utj0Fa0G2lwaDHSCPNsP+ZH/DG4MUULYwve7eXgvKNd5Ug==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(366004)(39830400003)(346002)(396003)(376002)(136003)(451199015)(54906003)(6916009)(316002)(38100700002)(66556008)(66476007)(8936002)(66946007)(7116003)(8676002)(4326008)(41300700001)(9686003)(6512007)(26005)(186003)(86362001)(3480700007)(33716001)(478600001)(558084003)(6486002)(6506007)(6666004)(2906002)(5660300002)(44832011);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OiRvZRB4f0O8Wi1/Gnr7Uo0bNcDEE/WBNw+75sK936rNWXu/HcNtP1mRzvwA?=
- =?us-ascii?Q?4aHA+kizqYdAIBnuItPblXul+cT0bRFky9bcHacuSzf43Iv/ElcnydGWGPE+?=
- =?us-ascii?Q?CYcPBCYkR77AvpUEX/cppBCQjXx7ATC5wZoPZAgmtvQYKyHF1ty9ed1SudIN?=
- =?us-ascii?Q?j9K/doNVdm1DIXn5+idAR3KfoWbhh3bixz6JDk1LOJxlNPzvfiUHnHml3nrY?=
- =?us-ascii?Q?c1uRVK8e1V3/rUI6Hh9Hh4707o1FUUlZXCUn/lTvnDLJ0V7bxpBgGKBMMkj4?=
- =?us-ascii?Q?yekX9a4F6gvWcGGTEu9ZCxK0QMJhUxya3ILxXlk3URtbpeQoNaKoDx5qhEYn?=
- =?us-ascii?Q?WBIM2oxYjAWZRTTwGfLVsC1atNxnsb6b6MLp8jMMyqp03mlV1SUnSJGPSJqf?=
- =?us-ascii?Q?Ve7MBqRUYvhqfNNwyVkkhORNZ6Mh9nvJJcRyjni9UXZOJOud6s5CVm6lHFj0?=
- =?us-ascii?Q?Iuuktj4kF78Kx/DxgHLCQFFqEEzgasB2KoKo3XqSUW7THlk+fxDUBeV13R9f?=
- =?us-ascii?Q?6o5rT9GXyfRfAXdBY3HljEr+26+3/Ug6BBfb8vlmi6V/SE021dSg7bc/kk9O?=
- =?us-ascii?Q?S2t1zti6P5wyWFaWc/HrcmvULfFZ1Wtb15FSXBF/ZQDTJWb6DNvV++dw8GEY?=
- =?us-ascii?Q?fUQkEdm3YY2sh/zf8Z+sExK0p6helVzjPIZUuxdn37AZ85g03i8EHnL96NC9?=
- =?us-ascii?Q?rpW1dqbhIDleIRePEHM5zH5E/Cycnr43NQxCaE5Ilo8MMOc7Y7oyDckVwtdR?=
- =?us-ascii?Q?5VMlM54L7wy8uK3ch7kDVj0/FHxCLdOq58qEEgmcPd/QzY5p2L4MXOV9kxbY?=
- =?us-ascii?Q?kj8kOuAbdMmNjjIyQMdsNPfqPwOsu0YXPna1YqpjnVDxjE0zIG1ujrYoOyV6?=
- =?us-ascii?Q?fvA+3lYtoZciWNktLfX+XKAILfcnGuvGLkQNCp5lcTnnHjf6j6fBfBWmM7gI?=
- =?us-ascii?Q?+SpvYxvNIGAWvsxw0Pyu34eVsLm+x/0YBvIu0Obro36wCPxDU4hZbzai965/?=
- =?us-ascii?Q?XSXJIXR/06C6pPQxNuAYbTb2Eax2O88mepLoYbUMzh107Pl8uVciSGCG8dS8?=
- =?us-ascii?Q?Rp7d0ZiIcyHJAgPEJJ68H7hGh8vmIBYIvvLn8fPhzb2RNtkh7GnGrofYjDEc?=
- =?us-ascii?Q?NLKEQHcBOr6pFv4qZREJsIIZ2lcnt/ymOChZX2A/IbY40DvauaksSevDXjnm?=
- =?us-ascii?Q?rwKqUsnicPxr8T5h4wqATwh1AOnN66JEpE276joKOrRwJsc3erBryI3v0Hxk?=
- =?us-ascii?Q?BwRtPhAcSxQMeuGaEIJUZUCawb+0HOreF4MSkqkUnlmz3jQzZdSg1xkBABJ7?=
- =?us-ascii?Q?+5s/eZF2uDlKmoMRgRkXArm+7edndhdfW3yLP6TpK3+nyBorxHPXjYYwS4FQ?=
- =?us-ascii?Q?TJQ6aePsk+yO5AYzQk6tMPdXjKMH1rpdjZ2rFwpQ6H4OD1xopN4r53CwJzTm?=
- =?us-ascii?Q?kBm331XICNfp7tojWzHB4+mCuD16DblzOHErNWVH899heCZkIlIABb4zSp7G?=
- =?us-ascii?Q?hhpJq5FN4LQ2TDMb9hQFR3E3Xrgm/F3aj31pMwDzA5sJUqCXzmPLaVRegRgS?=
- =?us-ascii?Q?q+5GpRL1F2hBMQVXItywGGifxMCL9Vk92JQGerHo19XzGFxPvTswI0NQkiZv?=
- =?us-ascii?Q?KuIuYHOZNJ4kQWAR6XA5Y1E=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c95e951b-2391-4518-b919-08dae53dd4d2
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2022 23:31:35.4254
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vg5+im4wdCXGEhRCLaPE7jbMk0mtQUubd7kezRh/zjPT+Q1vIknAHCw3ddhd1t3a5DB5vhWgWEE+fDyxDiVAEKEMQTIbtg8Y62vGofrhviU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB5783
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [37.65.8.229]
+X-ClientProxiedBy: CAS6.indiv4.local (172.16.1.6) To DAG10EX1.indiv4.local
+ (172.16.2.91)
+X-Ovh-Tracer-Id: 4391572586693783159
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -85
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrheefgddufecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenogetfedtuddqtdduucdludehmdenucfjughrpefhvfevufffkffoggfgtghisehtkeertdertddtnecuhfhrohhmpefsuhgvnhhtihhnucffvghslhgrnhguvghsuceoqhguvgesnhgrtggthidruggvqeenucggtffrrghtthgvrhhnpeejgeehueefjeeihfeugefftdehtdeikeduvdettefgieekffekuefgveekgedvheenucffohhmrghinhepkhgvrhhnvghlrdhorhhgpdhusghunhhtuhdrtghomhenucfkphepuddvjedrtddrtddruddpfeejrdeihedrkedrvddvleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomhepoehquggvsehnrggttgihrdguvgeqpdhnsggprhgtphhtthhopedupdhrtghpthhtohephhgrohhluhhosehgohhoghhlvgdrtghomhdpsghpfhesvhhgvghrrdhkvghrnhgvlhdrohhrghdplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhmvgesuhgsihhquhgvrdhsphgsrdhruhdpshhhuhgrhheskhgvrhhnvghlrdhorhhgpdhmhihkohhlrghlsehfsgdrtghomhdpphgrsggvnhhisehrvgguhhgrthdrtghomhdpkhhusggrsehkvg
+ hrnhgvlhdrohhrghdpvgguuhhmrgiivghtsehgohhoghhlvgdrtghomhdpuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvthdpjhholhhsrgeskhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhsughfsehgohhoghhlvgdrtghomhdpkhhpshhinhhghheskhgvrhhnvghlrdhorhhgpdhjohhhnhdrfhgrshhtrggsvghnugesghhmrghilhdrtghomhdphihhshesfhgsrdgtohhmpdhsohhngheskhgvrhhnvghlrdhorhhgpdhmrghrthhinhdrlhgruheslhhinhhugidruggvvhdprghnughrihhisehkvghrnhgvlhdrohhrghdpuggrnhhivghlsehiohhgvggrrhgsohigrdhnvghtpdgrshhtsehkvghrnhgvlhdrohhrghdpkhgvrhhnvghlqdhtvggrmhesmhgvthgrrdgtohhmpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheegiedpmhhouggvpehsmhhtphhouhht
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 24, 2022 at 12:03:03AM +0100, Andrew Lunn wrote:
-> You might want get hold of a Turris Mox system, with a few different
-> cards in it. That will give you a Marvell D in DSA system to play
-> with. And your system seems quite similar in some ways.
+The patchset is based on the patches from David S. Miller [1],
+Daniel Borkmann [2], and Dmitrii Banshchikov [3].
 
-Indeed I do. Thanks Andrew!
+The main goal of the patchset is to prepare bpfilter for
+iptables' configuration blob parsing and code generation.
 
+The patchset introduces data structures and code for matches,
+targets, rules and tables. Beside that the code generation
+is introduced.
+
+The first version of the code generation supports only "inline"
+mode - all chains and their rules emit instructions in linear
+approach.
+
+Things that are not implemented yet:
+  1) The process of switching from the previous BPF programs to the
+     new set isn't atomic.
+  2) No support of device ifindex - it's hardcoded
+  3) No helper subprog for counters update
+
+Another problem is using iptables' blobs for tests and filter
+table initialization. While it saves lines something more
+maintainable should be done here.
+
+The plan for the next iteration:
+  1) Add a helper program for counters update
+  2) Handle ifindex
+
+Patches 1/2 adds definitions of the used types.
+Patch 3 adds logging to bpfilter.
+Patch 4 adds an associative map.
+Patch 5 add runtime context structure.
+Patches 6/7 add code generation infrastructure and TC code generator.
+Patches 8/9/10/11/12 add code for matches, targets, rules and table.
+Patch 13 adds code generation for table.
+Patch 14 handles hooked setsockopt(2) calls.
+Patch 15 adds filter table
+Patch 16 uses prepared code in main().
+
+Due to poor hardware availability on my side, I've not been able to
+benchmark those changes. I plan to get some numbers for the next iteration.
+
+FORWARD filter chain is now supported, however, it's attached to
+TC INGRESS along with INPUT filter chain. This is due to XDP not supporting
+multiple programs to be attached. I could generate a single program
+out of both INPUT and FORWARD chains, but that would prevent another
+BPF program to be attached to the interface anyway. If a solution
+exists to attach both those programs to XDP while allowing for other
+programs to be attached, it requires more investigation. In the meantime,
+INPUT and FORWARD filtering is supported using TC.
+
+Most of the code in this series was written by Dmitrii Banshchikov,
+my changes are limited to v3. I've tried to reflect this fact in the
+commits by adding 'Co-developed-by:' and 'Signed-off-by:' for Dmitrii,
+please tell me this was done the wrong way.
+
+v2 -> v3
+Chains:
+  * Add support for FORWARD filter chain.
+  * Add generation of BPF bytecode to assess whether a packet should be
+    forwarded or not, using bpf_fib_lookup().
+  * Allow for multiple programs to be attached to TC.
+  * Allow for multiple TC hooks to be used.
+Code generation:
+  * Remove duplicated BPF bytecode generation.
+  * Fix a bug regarding jump offset during generation.
+  * Remove support for XDP from the series, as it's not currently
+    used.
+Table:
+  * Add new filter_table_update_counters() virtual call. It updates
+    the table's counter stored in the ipt_entry structure. This way,
+    when iptables tries to fetch the values of the counters, bpfilter only
+    has to copy the ipt_entry cached in the table structure.
+Logging:
+  * Refactor logging primitives.
+Sockopts:
+  * Add support for userspace counters querying.
+Rule:
+  * Store the rule's index inside struct rule, to each counters'
+    map usage.
+
+v1 -> v2
+Maps:
+  * Use map_upsert instead of separate map_insert and map_update
+Matches:
+  * Add a new virtual call - gen_inline. The call is used for
+  * inline generating of a rule's match.
+Targets:
+  * Add a new virtual call - gen_inline. The call is used for inline
+    generating of a rule's target.
+Rules:
+  * Add code generation for rules
+Table:
+  * Add struct table_ops
+  * Add map for table_ops
+  * Add filter table
+  * Reorganize the way filter table is initialized
+Sockopts:
+  * Install/uninstall BPF programs while handling
+    IPT_SO_SET_REPLACE
+Code generation:
+  * Add first version of the code generation
+Dependencies:
+  * Add libbpf
+
+v0 -> v1
+IO:
+  * Use ssize_t in pvm_read, pvm_write for total_bytes
+  * Move IO functions into sockopt.c and main.c
+Logging:
+  * Use LOGLEVEL_EMERG, LOGLEVEL_NOTICE, LOGLEVE_DEBUG
+    while logging to /dev/kmsg
+  * Prepend log message with <n> where n is log level
+  * Conditionally enable BFLOG_DEBUG messages
+  * Merge bflog.{h,c} into context.h
+Matches:
+  * Reorder fields in struct match_ops for tight packing
+  * Get rid of struct match_ops_map
+  * Rename udp_match_ops to xt_udp
+  * Use XT_ALIGN macro
+  * Store payload size in match size
+  * Move udp match routines into a separate file
+Targets:
+  * Reorder fields in struct target_ops for tight packing
+  * Get rid of struct target_ops_map
+  * Add comments for convert_verdict function
+Rules:
+  * Add validation
+Tables:
+  * Combine table_map and table_list into table_index
+  * Add validation
+Sockopts:
+  * Handle IPT_SO_GET_REVISION_TARGET
+
+1. https://lore.kernel.org/patchwork/patch/902785/
+2. https://lore.kernel.org/patchwork/patch/902783/
+3. https://kernel.ubuntu.com/~cking/stress-ng/stress-ng.pdf
+
+Quentin Deslandes (16):
+  bpfilter: add types for usermode helper
+  tools: add bpfilter usermode helper header
+  bpfilter: add logging facility
+  bpfilter: add map container
+  bpfilter: add runtime context
+  bpfilter: add BPF bytecode generation infrastructure
+  bpfilter: add support for TC bytecode generation
+  bpfilter: add match structure
+  bpfilter: add support for src/dst addr and ports
+  bpfilter: add target structure
+  bpfilter: add rule structure
+  bpfilter: add table structure
+  bpfilter: add table code generation
+  bpfilter: add setsockopt() support
+  bpfilter: add filter table
+  bpfilter: handle setsockopt() calls
+
+ include/uapi/linux/bpfilter.h                 |  154 +++
+ net/bpfilter/Makefile                         |   16 +-
+ net/bpfilter/codegen.c                        | 1040 +++++++++++++++++
+ net/bpfilter/codegen.h                        |  183 +++
+ net/bpfilter/context.c                        |  168 +++
+ net/bpfilter/context.h                        |   24 +
+ net/bpfilter/filter-table.c                   |  344 ++++++
+ net/bpfilter/filter-table.h                   |   18 +
+ net/bpfilter/logger.c                         |   52 +
+ net/bpfilter/logger.h                         |   80 ++
+ net/bpfilter/main.c                           |  132 ++-
+ net/bpfilter/map-common.c                     |   51 +
+ net/bpfilter/map-common.h                     |   19 +
+ net/bpfilter/match.c                          |   55 +
+ net/bpfilter/match.h                          |   37 +
+ net/bpfilter/rule.c                           |  286 +++++
+ net/bpfilter/rule.h                           |   37 +
+ net/bpfilter/sockopt.c                        |  533 +++++++++
+ net/bpfilter/sockopt.h                        |   15 +
+ net/bpfilter/table.c                          |  391 +++++++
+ net/bpfilter/table.h                          |   59 +
+ net/bpfilter/target.c                         |  203 ++++
+ net/bpfilter/target.h                         |   57 +
+ net/bpfilter/xt_udp.c                         |  111 ++
+ tools/include/uapi/linux/bpfilter.h           |  175 +++
+ .../testing/selftests/bpf/bpfilter/.gitignore |    8 +
+ tools/testing/selftests/bpf/bpfilter/Makefile |   57 +
+ .../selftests/bpf/bpfilter/bpfilter_util.h    |   80 ++
+ .../selftests/bpf/bpfilter/test_codegen.c     |  338 ++++++
+ .../testing/selftests/bpf/bpfilter/test_map.c |   63 +
+ .../selftests/bpf/bpfilter/test_match.c       |   69 ++
+ .../selftests/bpf/bpfilter/test_rule.c        |   56 +
+ .../selftests/bpf/bpfilter/test_target.c      |   83 ++
+ .../selftests/bpf/bpfilter/test_xt_udp.c      |   48 +
+ 34 files changed, 4999 insertions(+), 43 deletions(-)
+ create mode 100644 net/bpfilter/codegen.c
+ create mode 100644 net/bpfilter/codegen.h
+ create mode 100644 net/bpfilter/context.c
+ create mode 100644 net/bpfilter/context.h
+ create mode 100644 net/bpfilter/filter-table.c
+ create mode 100644 net/bpfilter/filter-table.h
+ create mode 100644 net/bpfilter/logger.c
+ create mode 100644 net/bpfilter/logger.h
+ create mode 100644 net/bpfilter/map-common.c
+ create mode 100644 net/bpfilter/map-common.h
+ create mode 100644 net/bpfilter/match.c
+ create mode 100644 net/bpfilter/match.h
+ create mode 100644 net/bpfilter/rule.c
+ create mode 100644 net/bpfilter/rule.h
+ create mode 100644 net/bpfilter/sockopt.c
+ create mode 100644 net/bpfilter/sockopt.h
+ create mode 100644 net/bpfilter/table.c
+ create mode 100644 net/bpfilter/table.h
+ create mode 100644 net/bpfilter/target.c
+ create mode 100644 net/bpfilter/target.h
+ create mode 100644 net/bpfilter/xt_udp.c
+ create mode 100644 tools/include/uapi/linux/bpfilter.h
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_codegen.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_map.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_match.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_rule.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_target.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_xt_udp.c
+
+--
+2.38.1
