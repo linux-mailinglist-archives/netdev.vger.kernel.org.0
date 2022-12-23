@@ -2,170 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF79654EF7
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 11:08:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD5A2654F05
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 11:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiLWKIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 05:08:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
+        id S230214AbiLWKQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 05:16:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiLWKIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 05:08:39 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE6518E1B
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 02:08:12 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id 82so3071171pgc.0
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 02:08:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vsiiQtY7KUhLsu7tHulvoDHQIbC/xIC+4feb9aIDeEg=;
-        b=lkNSnYBRTlrsKbyNti3fXQiuHh+aWeW+aWea7bV3Ik4J/xm1DLM7xcepU8VlchQ5Ew
-         adqdf2uLZGrlPzxfRPBGW64naKH2/yioLbtMcWygZtO5XLQmlkfzhYC9pY+drP0OxNt2
-         4sQWVUrw3YDUB4KOJF3256YrnCw2NMIZdye0BTGk46paswGGdeZg2rA71DLPlAgjNxOq
-         R9VuNuZ3pil/x+BkvYn6wlW4J6mRuKq5EFe13ZeGlskdeNC6Jb3lNcASjFWNn5Jzf3BC
-         T8yon+XUQ99si4h8L/yk1BdXTe/X3lodEKRusTjdWLABUp8EKJNZOtMhEkCvQq6xDyex
-         45Eg==
+        with ESMTP id S231345AbiLWKQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 05:16:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5D02618
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 02:15:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1671790528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u1U1kXFD5YoO6mGdNH+xJ62te4wv4JV0jDXhW6CfwZY=;
+        b=c/Wl4fpYUDduRWKLeFl+Tu1PxAtkppmuot4NnTYzCgHSy9tdq47ygi70ldSMvSHxDBX6RU
+        pXHqThKXmXABIeXPrtREmdQ6FCWQA+4LtyaSnNsRO3izOCdr9GyaxSc+dAiQ6tlS4Y+8Jr
+        xvCdXx71cJf7Q+S3Oh2fO9AhmDIqt6E=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-63-Y_7BEA3lOF20n-5g2JeFhg-1; Fri, 23 Dec 2022 05:15:27 -0500
+X-MC-Unique: Y_7BEA3lOF20n-5g2JeFhg-1
+Received: by mail-wr1-f69.google.com with SMTP id n12-20020adfc60c000000b0026647ef69f4so915286wrg.10
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 02:15:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vsiiQtY7KUhLsu7tHulvoDHQIbC/xIC+4feb9aIDeEg=;
-        b=Og+4IA95jsBGsXK6/vAgpYPWgfpQ6eJj/e+DxOm0/MSgXkYYny5uWi6Nb1psx5Qs4/
-         7QtWl3MWeISsQ9o4hWqmGiPmnDQn+HtLm19v1TGS6QVf4TV+hbEQU0jC3trkKJcbrcMF
-         0od11VIYAeN2Z4jMT+XS4aOx2DalTBYOw7AmbwXKtnkBXeLeWV98lIcO/DhBy7gcy4pk
-         ZwtR5Xkb+C4kE2ydY1/BbaVURvEYfi8C+C9UOmfOeAgAdp4fitiuJRW/fUmjWvDgdH4W
-         1hJ7xvsxtxtknCDvGmx73HDBurQScB93VbhuIXoWmXOCXedKRkCcL4SRT37yq20Ydd2/
-         4XIw==
-X-Gm-Message-State: AFqh2krA7yH4a9xksXBhH1f2PXf22slCe5ErfmKMCfcAagx8iafugSct
-        auY/ewf67Ys2FxT6+CzYVmZeGw==
-X-Google-Smtp-Source: AMrXdXulf22YtlRSSFRXVHWoW+nmU+DzjCs4ejoTVtDRtZuWxHWxxV6sQmSO69BCOrWov5kX7LqXwQ==
-X-Received: by 2002:a62:648b:0:b0:57a:a199:93e7 with SMTP id y133-20020a62648b000000b0057aa19993e7mr10327722pfb.28.1671790092144;
-        Fri, 23 Dec 2022 02:08:12 -0800 (PST)
-Received: from [10.5.203.163] ([139.177.225.249])
-        by smtp.gmail.com with ESMTPSA id d7-20020aa797a7000000b0056b9df2a15esm2184332pfq.62.2022.12.23.02.08.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Dec 2022 02:08:11 -0800 (PST)
-Message-ID: <b4a3fc9d-bd15-0682-2c56-4e63e0fb30cd@bytedance.com>
-Date:   Fri, 23 Dec 2022 18:08:03 +0800
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=u1U1kXFD5YoO6mGdNH+xJ62te4wv4JV0jDXhW6CfwZY=;
+        b=ZH1qnYOVfe0nokTrHQ6DpEBoZFHC6HFgpEDUqZWUck4dhG9qy1NSIi+W7RpDArM9rX
+         735KprEwGwXJzbWi8fXLmGcPmyntRewzBjT50873PcxIcPvWS8zx1h4kDvdfAdVDBJ6j
+         UaojeoxqZ5bFhkuE16VPXuJbzCq/KLz0buFXO7fDGsmP81CVOtXCWZ2AyBijUalyzPrc
+         jElJhQi56Mgntw6Mv04FLM1nnYVb94JWA2Fx1Y/hkiRFeJx+2ZP5jYECoxaNNfbHmZ69
+         G7C8Qr6F8CuGQXdcw3dys+VPuFsa9EbZ9x0sZDTfjMZy11jm8heSNDKOrvUUv0idyPvk
+         sj2w==
+X-Gm-Message-State: AFqh2kqSoy/NEmm0pfiRlPmjCTJuKvmAVkN/7ss3O8C08SSqYXupthIV
+        CpDpHHBHE4rzFoVEa7nDL2UuA7LbWg8GEHRKW3pRLSK+Cd8SakHh2Rps2D1nnuzNjIicc1AHpZz
+        KunrUfzc6SKCHKQ6j
+X-Received: by 2002:a5d:4908:0:b0:242:187f:ed44 with SMTP id x8-20020a5d4908000000b00242187fed44mr6060256wrq.68.1671790526338;
+        Fri, 23 Dec 2022 02:15:26 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuNRIlOnYQ/M8zAXwnJyutGIRuxrbKoqw7CdmUVJ07bYtDSu0RcvCDYlAlnNRRKONbNpV5N6A==
+X-Received: by 2002:a5d:4908:0:b0:242:187f:ed44 with SMTP id x8-20020a5d4908000000b00242187fed44mr6060239wrq.68.1671790526041;
+        Fri, 23 Dec 2022 02:15:26 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-101-173.dyn.eolo.it. [146.241.101.173])
+        by smtp.gmail.com with ESMTPSA id e15-20020a5d500f000000b002427bfd17b6sm3270467wrt.63.2022.12.23.02.15.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Dec 2022 02:15:25 -0800 (PST)
+Message-ID: <99793af4ce55ba878bc201571c824a17a37ef81d.camel@redhat.com>
+Subject: Re: [PATCH RFC net 1/2] tcp: Add TIME_WAIT sockets in bhash2.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>, joannelkoong@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, jirislaby@kernel.org,
+        kuba@kernel.org, kuni1840@gmail.com, netdev@vger.kernel.org
+Date:   Fri, 23 Dec 2022 11:15:24 +0100
+In-Reply-To: <20221222232647.95259-1-kuniyu@amazon.com>
+References: <CAJnrk1YcDEFhKGmpFCULfJBwf3p8Bg-D0VPzTPRdbs4HxdDbVQ@mail.gmail.com>
+         <20221222232647.95259-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.0
-Subject: Re: [syzbot] KASAN: use-after-free Read in put_pmu_ctx
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     syzbot <syzbot+b8e8c01c8ade4fe6e48f@syzkaller.appspotmail.com>,
-        acme@kernel.org, alexander.shishkin@linux.intel.com,
-        bpf@vger.kernel.org, jolsa@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <000000000000a20a2e05f029c577@google.com>
- <Y6B3xEgkbmFUCeni@hirez.programming.kicks-ass.net>
- <3a5a4738-2868-8f2f-f8b2-a28c10fbe25b@linux.dev>
- <Y6TFKdVJ9BY56fkI@hirez.programming.kicks-ass.net>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <Y6TFKdVJ9BY56fkI@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/12/23 04:59, Peter Zijlstra wrote:
-> On Wed, Dec 21, 2022 at 10:42:39AM +0800, Chengming Zhou wrote:
+On Fri, 2022-12-23 at 08:26 +0900, Kuniyuki Iwashima wrote:
+> From:   Joanne Koong <joannelkoong@gmail.com>
+> Date:   Thu, 22 Dec 2022 13:46:57 -0800
+> > On Thu, Dec 22, 2022 at 7:06 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > 
+> > > On Thu, 2022-12-22 at 00:12 +0900, Kuniyuki Iwashima wrote:
+> > > > Jiri Slaby reported regression of bind() with a simple repro. [0]
+> > > > 
+> > > > The repro creates a TIME_WAIT socket and tries to bind() a new socket
+> > > > with the same local address and port.  Before commit 28044fc1d495 ("net:
+> > > > Add a bhash2 table hashed by port and address"), the bind() failed with
+> > > > -EADDRINUSE, but now it succeeds.
+> > > > 
+> > > > The cited commit should have put TIME_WAIT sockets into bhash2; otherwise,
+> > > > inet_bhash2_conflict() misses TIME_WAIT sockets when validating bind()
+> > > > requests if the address is not a wildcard one.
+> > 
+> > (resending my reply because it wasn't in plaintext mode)
+> > 
+> > Thanks for adding this! I hadn't realized TIME_WAIT sockets also are
+> > considered when checking against inet bind conflicts.
+> > 
+> > > 
+> > > How does keeping the timewait sockets inside bhash2 affect the bind
+> > > loopup performance? I fear that could defeat completely the goal of
+> > > 28044fc1d495, on quite busy server we could have quite a bit of tw with
+> > > the same address/port. If so, we could even consider reverting
+> > > 28044fc1d495.
 > 
->>> Does this help?
->>>
->>> diff --git a/kernel/events/core.c b/kernel/events/core.c
->>> index e47914ac8732..bbff551783e1 100644
->>> --- a/kernel/events/core.c
->>> +++ b/kernel/events/core.c
->>> @@ -12689,7 +12689,8 @@ SYSCALL_DEFINE5(perf_event_open,
->>>  	return event_fd;
->>>  
->>>  err_context:
->>> -	/* event->pmu_ctx freed by free_event() */
->>> +	put_pmu_ctx(event->pmu_ctx);
->>> +	event->pmu_ctx = NULL; /* _free_event() */
->>>  err_locked:
->>>  	mutex_unlock(&ctx->mutex);
->>>  	perf_unpin_context(ctx);
->>
->> Tested-by: Chengming Zhou <zhouchengming@bytedance.com>
->>
->> While reviewing the code, I found perf_event_create_kernel_counter()
->> has the similar problem in the "err_pmu_ctx" error handling path:
-> 
-> Right you are, updated the patch, thanks!
-> 
->> CPU0					CPU1
->> perf_event_create_kernel_counter()
->>   // inc ctx refcnt
->>   find_get_context(task, event) (1)
->>
->>   // inc pmu_ctx refcnt
->>   pmu_ctx = find_get_pmu_context()
->>
->>   event->pmu_ctx = pmu_ctx
->>   ...
->>   goto err_pmu_ctx:
->>     // dec pmu_ctx refcnt
->>     put_pmu_ctx(pmu_ctx) (2)
->>
->>     mutex_unlock(&ctx->mutex)
->>     // dec ctx refcnt
->>     put_ctx(ctx)
->> 					perf_event_exit_task_context()
->> 					  mutex_lock()
->> 					  mutex_unlock()
->> 					  // last refcnt put
->> 					  put_ctx()
->>     free_event(event)
->>       if (event->pmu_ctx) // True
->>         put_pmu_ctx() (3)
->>           // will access freed pmu_ctx or ctx
->>
->>       if (event->ctx) // False
->>         put_ctx()
-> 
-> This doesn't look right; iirc you can hit this without concurrency,
-> something like so:
+> It will slow down along the number of twsk, but I think it's still faster
+> than bhash if we listen() on multiple IP.  If we don't, bhash is always
+> faster because of bhash2's additional locking.  However, this is the
+> nature of bhash2 from the beginning.
 
-Right, pmu_ctx UaF can hit without concurrency.
+I see. Before 28044fc1d495, todo a bind lookup, we had to traverse all
+the tw in bhash. After 28044fc1d495, tw were ignored (in some cases).
+My point is: if the number of tw sockets is >> the number of listeners
+on multiple IPs, the bhash2 traversal time after this patch will be
+comparable to the bhash traversal time before 28044fc1d495, with the
+added cost of the double spin lock.
 
-But ctx has been created with refcnt == 1, which referenced by the task,
-so the last refcnt put must be in perf_event_exit_task_context().
-
-Maybe we can improve this, don't let ctx referenced by the task? Then ctx
-can be freed when all perf_events are removed, instead of having to wait
-for the task to exit. Maybe I missed something...
-
+> > 
+> > Can you clarify what you mean by bind loopup?
 > 
-> 
-> 	// note that when getting here, we've not passed
-> 	// perf_install_in_context() and event->ctx == NULL.
-> err_pmu_ctx:
-> 	put_pmu_ctx();
-> 	put_ctx(); // last, actually frees ctx
+> I think it means just bhash2 traversal.  (s/loopup/lookup/)
 
-This put_ctx() dec refcnt from 2 to 1, perf_event_exit_task_context()
-will put the last refcnt and free it.
+Indeed, sorry for the typo!
+> 
+> > 
+> > > > [0]: https://lore.kernel.org/netdev/6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org/
+> > > > 
+> > > > Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
+> > > > Reported-by: Jiri Slaby <jirislaby@kernel.org>
+> > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > ---
+> > > >  include/net/inet_timewait_sock.h |  2 ++
+> > > >  include/net/sock.h               |  5 +++--
+> > > >  net/ipv4/inet_hashtables.c       |  5 +++--
+> > > >  net/ipv4/inet_timewait_sock.c    | 31 +++++++++++++++++++++++++++++--
+> > > >  4 files changed, 37 insertions(+), 6 deletions(-)
+> > > > 
+> > > > diff --git a/include/net/inet_timewait_sock.h b/include/net/inet_timewait_sock.h
+> > > > index 5b47545f22d3..c46ed239ad9a 100644
+> > > > --- a/include/net/inet_timewait_sock.h
+> > > > +++ b/include/net/inet_timewait_sock.h
+> > > > @@ -44,6 +44,7 @@ struct inet_timewait_sock {
+> > > >  #define tw_bound_dev_if              __tw_common.skc_bound_dev_if
+> > > >  #define tw_node                      __tw_common.skc_nulls_node
+> > > >  #define tw_bind_node         __tw_common.skc_bind_node
+> > > > +#define tw_bind2_node                __tw_common.skc_bind2_node
+> > > >  #define tw_refcnt            __tw_common.skc_refcnt
+> > > >  #define tw_hash                      __tw_common.skc_hash
+> > > >  #define tw_prot                      __tw_common.skc_prot
+> > > > @@ -73,6 +74,7 @@ struct inet_timewait_sock {
+> > > >       u32                     tw_priority;
+> > > >       struct timer_list       tw_timer;
+> > > >       struct inet_bind_bucket *tw_tb;
+> > > > +     struct inet_bind2_bucket        *tw_tb2;
+> > > >  };
+> > > >  #define tw_tclass tw_tos
+> > > > 
+> > > > diff --git a/include/net/sock.h b/include/net/sock.h
+> > > > index dcd72e6285b2..aaec985c1b5b 100644
+> > > > --- a/include/net/sock.h
+> > > > +++ b/include/net/sock.h
+> > > > @@ -156,6 +156,7 @@ typedef __u64 __bitwise __addrpair;
+> > > >   *   @skc_tw_rcv_nxt: (aka tw_rcv_nxt) TCP window next expected seq number
+> > > >   *           [union with @skc_incoming_cpu]
+> > > >   *   @skc_refcnt: reference count
+> > > > + *   @skc_bind2_node: bind node in the bhash2 table
+> > > >   *
+> > > >   *   This is the minimal network layer representation of sockets, the header
+> > > >   *   for struct sock and struct inet_timewait_sock.
+> > > > @@ -241,6 +242,7 @@ struct sock_common {
+> > > >               u32             skc_window_clamp;
+> > > >               u32             skc_tw_snd_nxt; /* struct tcp_timewait_sock */
+> > > >       };
+> > > > +     struct hlist_node       skc_bind2_node;
+> > > 
+> > > I *think* it would be better adding a tw_bind2_node field to the
+> > > inet_timewait_sock struct, so that we leave unmodified the request
+> > > socket and we don't change the struct sock binary layout. That could
+> > > affect performances moving hot fields on different cachelines.
+> > > 
+> > +1. The rest of this patch LGTM.
+> 
+> Then we can't use sk_for_each_bound_bhash2(), or we have to guarantee this.
+> 
+>   BUILD_BUG_ON(offsetof(struct sock, sk_bind2_node),
+>                offsetof(struct inet_timewait_sock, tw_bind2_node))
+> 
+> Considering the number of members in struct sock, at least we have
+> to move sk_bind2_node forward.
 
-> 	..
-> err_alloc:
-> 	free_event()
-> 	  _free_event()
-> 	    if (event->pmu_ctx) // true, because we forgot to clear
-> 	      put_pmu_ctx() // hits 0 because double put
-> 	        // goes and touch epc->ctx and UaF
-> 
-> 
+You are right, I missed that point.
+
+
+> Another option is to have another TIME_WAIT list in inet_bind2_bucket like
+> tb2->deathrow or something.  sk_for_each_bound_bhash2() is used only in
+> inet_bhash2_conflict(), so I think this is feasible.
+
+This will add some more memory cost. I hope it's not a big deal, and
+looks like the better option IMHO.
+
+Cheers,
+
+Paolo
+
