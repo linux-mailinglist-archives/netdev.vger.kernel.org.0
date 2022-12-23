@@ -2,119 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81607654C7E
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 07:30:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB3B654C81
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 07:31:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiLWGak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 01:30:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S235525AbiLWGbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 01:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiLWGaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 01:30:39 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FDA1705E
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 22:30:35 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id g14so4052825ljh.10
-        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 22:30:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=UsteLFOe3RV7/92oM+l7nr3DWVyDJidDgLpy6nMLlvM=;
-        b=jVTfbxwhV/QIcwFRStedxZuQnE74i2UWhT58tg3Twh5ECtr7JTMAcHcT0Z17sZYm2m
-         c3p9f1ZzmH/M2GFsBpQHv4juWnjo6m86HX+C08wlY+Xx2arBk52LMuDQOOWfRfFEnB0B
-         22pRikIcSaM8YtXVHdCWjnpi8egadCv1LFBdpTcUFsMIoFwaTbnIC1cJnv4rL1Uze1/m
-         Avw4g30XmzDoddooze6l9Df7Qd8v6VKLldAggUUAZq7/1jyL+aPkjz0/C6gRx4M++NQu
-         i20O2oRU/laTJjZmEJ7BL48x7Oig9H9LnVImSIHofSkkRxXAyAixmop0oMkWaTy5BZ6V
-         NM7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UsteLFOe3RV7/92oM+l7nr3DWVyDJidDgLpy6nMLlvM=;
-        b=TO2NWG4h4fZTNqGGOmEjwYs8ZugxJ+54dKHJF5oVdTMbaIKpnBAO1pLCY4Psczv0ez
-         zbdsrAt66/bpzoiF9A/p5yGVY6eP7OnZnSztAW2/6IxjzOTYR9v7BDfbyqePqMKoMGVv
-         o8Kjud9iHh4IJCthk13Hw48X0MaGZcq58m/OjvuWpopcwTzDlIyXokxfk6fYV7xIYoQX
-         GYOMmp+ZQOjHOWLspD/uBTKL8R15iXtPDM3K4RavmkQu4AItb3dHEfUQqqeXGmRRwV4v
-         pKVH94X3YZouqmLMJ8aL69iqt+3mulx1POXYfLlL29gWQRny0Um551YVwA/zU+b/SEzb
-         EX8Q==
-X-Gm-Message-State: AFqh2kolWIJpQxzXA2QbQhwcnaLWIkJ5Iv+bCitN11Eogz+BRhM2MmgW
-        i+SOiAB403ybsRtxK4BvH9ydlw0l18OK3c0vNlOFzOnIveA=
-X-Google-Smtp-Source: AMrXdXuz/4jtChDCaF9i+WRwjvDJCqZQ8lM3t/TJ3ap8j2ZajIFgiSMx0FtL2cFKoqaAnf7VYdDzqRxUSougWoXNy+E=
-X-Received: by 2002:a05:651c:384:b0:279:ea3b:5a35 with SMTP id
- e4-20020a05651c038400b00279ea3b5a35mr357440ljp.419.1671777033797; Thu, 22 Dec
- 2022 22:30:33 -0800 (PST)
+        with ESMTP id S235518AbiLWGbO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 01:31:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA362C767;
+        Thu, 22 Dec 2022 22:31:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 684BFB81F54;
+        Fri, 23 Dec 2022 06:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853A3C433EF;
+        Fri, 23 Dec 2022 06:31:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671777071;
+        bh=lr0f3tny8DtczVnRvNqmxVJZKPbWkCMC9EtJBM2ueoI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=riI23Saz64+uxtxD6jYFatyl8edxBnVg8OeJ02JlUDCx7ZfkNx4Pe/hPtVV5s9MPs
+         NDkkSgUVFUMrs7uPi96VX79McOpJ/AiseIvo4EkDewOnuqDeyduCHpZI0WNoFmWsLg
+         /jrRDlSGvS2UWJSjK4lhC+SPJlFFEVrSXyFMzzIkXnFlmHoAse5RLlo9Vc2OGWB8xM
+         wonmgaJ7LCNQ6DktBDC4yFer11Ce4kDw0ybbG3NZ88EdYv1Um2GTX/DHlfSU5inZke
+         3XAhgyWXeEAcGa1pUYG9UBhXc2rc9mwjqM2Wg9xWXb51vjgYRGZBc0CeESp8Sa2/8a
+         ngKPjcDUPVZdQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     <yang.yang29@zte.com.cn>
+Cc:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xu.panda@zte.com.cn>
+Subject: Re: [PATCH net-next] wl18xx: use strscpy() to instead of strncpy()
+References: <202212231057406402834@zte.com.cn>
+Date:   Fri, 23 Dec 2022 08:31:02 +0200
+In-Reply-To: <202212231057406402834@zte.com.cn> (yang's message of "Fri, 23
+        Dec 2022 10:57:40 +0800 (CST)")
+Message-ID: <87y1qyiqc9.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20221221225304.3477126-1-hauke@hauke-m.de>
-In-Reply-To: <20221221225304.3477126-1-hauke@hauke-m.de>
-From:   Heiko Thiery <heiko.thiery@gmail.com>
-Date:   Fri, 23 Dec 2022 07:30:21 +0100
-Message-ID: <CAEyMn7bK7rfXfg99RyMvyudGHd1JVP1v1r-7rzRsx4ABgP10Lg@mail.gmail.com>
-Subject: Re: [PATCH iproute2] configure: Remove include <sys/stat.h>
-To:     Hauke Mehrtens <hauke@hauke-m.de>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hauke,
+<yang.yang29@zte.com.cn> writes:
 
-Am Mi., 21. Dez. 2022 um 23:53 Uhr schrieb Hauke Mehrtens <hauke@hauke-m.de>:
+> From: Xu Panda <xu.panda@zte.com.cn>
 >
-> The check_name_to_handle_at() function in the configure script is
-> including sys/stat.h. This include fails with glibc 2.36 like this:
-> ````
-> In file included from /linux-5.15.84/include/uapi/linux/stat.h:5,
->                  from /toolchain-x86_64_gcc-12.2.0_glibc/include/bits/statx.h:31,
->                  from /toolchain-x86_64_gcc-12.2.0_glibc/include/sys/stat.h:465,
->                  from config.YExfMc/name_to_handle_at_test.c:3:
-> /linux-5.15.84/include/uapi/linux/types.h:10:2: warning: #warning "Attempt to use kernel headers from user space, see https://kernelnewbies.org/KernelHeaders" [-Wcpp]
->    10 | #warning "Attempt to use kernel headers from user space, see https://kernelnewbies.org/KernelHeaders"
->       |  ^~~~~~~
-> In file included from /linux-5.15.84/include/uapi/linux/posix_types.h:5,
->                  from /linux-5.15.84/include/uapi/linux/types.h:14:
-> /linux-5.15.84/include/uapi/linux/stddef.h:5:10: fatal error: linux/compiler_types.h: No such file or directory
->     5 | #include <linux/compiler_types.h>
->       |          ^~~~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
-> ````
+> The implementation of strscpy() is more robust and safer.
+> That's now the recommended way to copy NUL-terminated strings.
 >
-> Just removing the include works, the manpage of name_to_handle_at() says
-> only fcntl.h is needed.
-> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-
-Unfortunately I do not have an environment with uclibc-ng < 1.0.35 to
-test it against this. But I just build the package in buildroot with a
-newer version and it works with your changes.
-
-Tested-by: Heiko Thiery <heiko.thiery@gmail.com>
-
-thanks
-
+> Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
+> Signed-off-by: Yang Yang <yang.yang29@zte.com>
 > ---
->  configure | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/configure b/configure
-> index c02753bb..18be5a03 100755
-> --- a/configure
-> +++ b/configure
-> @@ -214,7 +214,6 @@ check_name_to_handle_at()
->      cat >$TMPDIR/name_to_handle_at_test.c <<EOF
->  #define _GNU_SOURCE
->  #include <sys/types.h>
-> -#include <sys/stat.h>
->  #include <fcntl.h>
->  int main(int argc, char **argv)
->  {
-> --
-> 2.35.1
->
+>  drivers/net/wireless/ti/wl18xx/main.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+
+Wireless patches go to wireless-next, not net-next. Also always Cc
+linux-wireless list, more info in the wiki link below.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
