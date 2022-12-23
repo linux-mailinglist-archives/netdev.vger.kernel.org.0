@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5F0654A9F
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 03:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CFD654AA4
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 03:02:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235769AbiLWCAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Dec 2022 21:00:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53448 "EHLO
+        id S235783AbiLWCC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Dec 2022 21:02:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiLWCAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 21:00:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AAEC75E;
-        Thu, 22 Dec 2022 18:00:17 -0800 (PST)
+        with ESMTP id S235604AbiLWCC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Dec 2022 21:02:26 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE151EAE0
+        for <netdev@vger.kernel.org>; Thu, 22 Dec 2022 18:02:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A45E661E08;
-        Fri, 23 Dec 2022 02:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0939AC433F0;
-        Fri, 23 Dec 2022 02:00:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 01C26CE1B8B
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 02:02:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAFC8C433EF;
+        Fri, 23 Dec 2022 02:02:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671760816;
-        bh=fwvSWB2s9SlQYbz2JB6wiQ2msaLPGTMWu5lU92DYC+E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=btHwIS4z9bWPNKT/itvQrcnefxYcnYFFv9qBBqDBUODtO65DqipfHJY3Ju8IxftQf
-         qOOUE6EgQamu+0KE+UM0z+UuK9L8ODhufAiGUYnv59Y4NJsIXYCSGSsxo3q+brqQWh
-         vE2ECsxds1R2GvYQoOwL+lk0IiqoUrwpDCOXAclbrIC8M676lhpH+eg/TVKiD2XqBG
-         Lujz/0WF5VAsmJV5ujV9wtJQP0ygb03OAz5csnAGpjMCO4fd/yeK8R7KMU61N5x3IY
-         wBoFnzbOnqjDyft7f+DxUC7nIz9BJmQ/TcLE+PepokxANS3S3pfYvdCJIKQbP4d/uV
-         n/ZPNDYKmrOrw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E05A9C5C7C4;
-        Fri, 23 Dec 2022 02:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1671760941;
+        bh=X6JcGwUNJ1IlM0wpWVnbOtXHlhLno0Pi7KeQIIRMcIk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f+deVkcSYDWuI0Ii7Y81t9LU5NTXKOa87kGi0PNvCTmd/EyWVlAgxHV8MVAYk2sBQ
+         7uQUx09jCuXWa56Hs7MVyDM8msxXzmtoiS7LAq/D+1FvRQHCeSEiCHHugNEh/psAE6
+         xxOlCrWrIMKDH7M5QPPfb6VdeO2FTbmb60JoDS2On5VL5HzYfLtHgD7F8f9XWBZGfB
+         BadkN03ajW5+83cs8/MWJKCp1GpGzY9Ppha8CCVA58kHOTZx8rF8z98MvohrWcL+Py
+         otKOOZc4KvX8LvGIwk9wMRoiRcXzkdC62PCAK56dFI/RYoZgCKZpGZz2U0VzNAlSRx
+         2OnYlxb7XQPxg==
+Date:   Thu, 22 Dec 2022 18:02:19 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH ethtool-next v2 2/2] netlink: add netlink handler for
+ get rss (-x)
+Message-ID: <20221222180219.22b109c5@kernel.org>
+In-Reply-To: <IA1PR11MB6266430ED759770807768D4EE4E89@IA1PR11MB6266.namprd11.prod.outlook.com>
+References: <20221222001343.1220090-1-sudheer.mogilappagari@intel.com>
+        <20221222001343.1220090-3-sudheer.mogilappagari@intel.com>
+        <20221221172207.30127f4f@kernel.org>
+        <IA1PR11MB6266430ED759770807768D4EE4E89@IA1PR11MB6266.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] powerpc: dts: t208x: Disable 10G on MAC1 and MAC2
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167176081591.4251.11693761416005779690.git-patchwork-notify@kernel.org>
-Date:   Fri, 23 Dec 2022 02:00:15 +0000
-References: <20221216172937.2960054-1-sean.anderson@seco.com>
-In-Reply-To: <20221216172937.2960054-1-sean.anderson@seco.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        christophe.leroy@csgroup.eu, npiggin@gmail.com, mpe@ellerman.id.au,
-        linuxppc-dev@lists.ozlabs.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-kernel@vger.kernel.org, camelia.groza@nxp.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,28 +60,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, 22 Dec 2022 22:57:19 +0000 Mogilappagari, Sudheer wrote:
+> Will use "RSS hash-key' as key name and array. 
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+rss-hash-key ?
 
-On Fri, 16 Dec 2022 12:29:37 -0500 you wrote:
-> There aren't enough resources to run these ports at 10G speeds. Disable
-> 10G for these ports, reverting to the previous speed.
-> 
-> Fixes: 36926a7d70c2 ("powerpc: dts: t208x: Mark MAC1 and MAC2 as 10G")
-> Reported-by: Camelia Alexandra Groza <camelia.groza@nxp.com>
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> 
-> [...]
+> Output in hex bytes like [ be,c3,13,... ] will be better
+> I fell but it needs below changes. Without below changes
+> output looks ["be", "c3", "13"...].  Will send out 
+> v3 (with below changes as additional patch) unless there 
+> is an objection. 
 
-Here is the summary with links:
-  - [net,v2] powerpc: dts: t208x: Disable 10G on MAC1 and MAC2
-    https://git.kernel.org/netdev/net/c/8d8bee13ae9e
+Hex would be great, but AFAIR JSON does not support hex :(
+Imagine dealing with this in python, or bash. Do you really
+want the values to be strings? They will have to get converted 
+manually to integers. So I think just making them integers is
+best, JSON is for machines not for looking at...
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> +++ b/json_print.c
+> void print_hex(enum output_type type, unsigned int hex)
+>  {
+>         if (_IS_JSON_CONTEXT(type)) {
+> -               SPRINT_BUF(b1);
+> -               snprintf(b1, sizeof(b1), "%x", hex);
+>                 if (key)
+> -                       jsonw_string_field(_jw, key, b1);
+> +                       jsonw_xint_field(_jw, key, hex);
+>                 else
+> -                       jsonw_string(_jw, b1);
+> +                       jsonw_xint(_jw, hex);
+>         } else if (_IS_FP_CONTEXT(type)) {
+>                 fprintf(stdout, fmt, hex);
+>         }
