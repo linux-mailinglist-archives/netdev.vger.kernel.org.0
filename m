@@ -2,90 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9C3655422
-	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 21:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAF10655436
+	for <lists+netdev@lfdr.de>; Fri, 23 Dec 2022 21:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232273AbiLWUKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 15:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S232495AbiLWUdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 15:33:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiLWUKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 15:10:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3C622287
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 12:10:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20058B82141
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 20:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C3147C433F0;
-        Fri, 23 Dec 2022 20:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671826216;
-        bh=pEmD2xhG4Ul2FY//aJRAYsIlQ5xv/kKB7yNiXxeuobY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=amLF8nYOSg9I7haAVKY04iZL3cOlFGFFJC2412VJlIYJLseY0ctAIloQzhjvH+S5u
-         hMgLy4nPiIIS235DVPST3DU+/+pXPCZ+aSdPmwQKT8t2miU1h11Ls5f8lmxEvjjRrz
-         lQl7ZpW8nPemNU6o8Ll490oNIZwFw144gwknOqwFMgy8wPYw3yz8vfvGTqbPkasbES
-         YSwIKHkuX7iltq8+QDNN0VrirWwCDlhWJ9DDvwOsCH+AbT1vu9ewk6nva2rTXNktFQ
-         ATFHrs2GG2MgDZBB/pu/75YL3rR53UrvZsc1ny87XR/bjojaP8Ecs0+ICKM5yA7CQm
-         Bzp60dMICmlGA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A9163C395E0;
-        Fri, 23 Dec 2022 20:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] net: hns3: fix some bug for hns3
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167182621668.5438.15923384969286109014.git-patchwork-notify@kernel.org>
-Date:   Fri, 23 Dec 2022 20:10:16 +0000
-References: <20221222064343.61537-1-lanhao@huawei.com>
-In-Reply-To: <20221222064343.61537-1-lanhao@huawei.com>
-To:     Hao Lan <lanhao@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, edumazet@google.com, pabeni@redhat.com,
-        richardcochran@gmail.com, huangguangbin2@huawei.com,
-        wangjie125@huawei.com, shenjian15@huawei.com,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229650AbiLWUdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 15:33:17 -0500
+X-Greylist: delayed 236 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 12:33:15 PST
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987C8D2CC
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 12:33:14 -0800 (PST)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 2BNKSdGa001410;
+        Fri, 23 Dec 2022 21:28:45 +0100
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 717B312092C;
+        Fri, 23 Dec 2022 21:28:35 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1671827315; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Py36qjrgcICiChkOdOG3s4z5m+sypuiLz/tKO0u1foc=;
+        b=MCqfTBclSQDbii99wNA4iy6VJ+Bfv6ZTglHJ2eVPX5WcHmycZbV6qX2W1Y6rKHQgsiQeO4
+        IvmKM6CJgxyuxGBA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1671827315; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Py36qjrgcICiChkOdOG3s4z5m+sypuiLz/tKO0u1foc=;
+        b=xjm2JE+UwHvnIcmIDxovG3376hhK2tFvmA5IukSfNKFGfbEUEZFmu9BaR9bQDLRWml5o+p
+        lSXvyrSobSIQAm9XGJHOHoXpxdB7hPAKL+tvEZ2bRQWojuUGZOUdMTOlELB3uRRaSo25qz
+        Ra7vTLik4+vGrBxzVTPuGBaeM/QratyIpo0u7z3GBEB1aWzY2wv0Qe9ApV5DI5U2+4PYb3
+        IkD7o0b3AS2vLiQjZDGuqe2EBMAmfnl/xUPhZQYcwxVXoF0Z6nvTShnw7bEWM4+NYjB8KH
+        zHFESbkgUzmuR7mxFP2EpJRy6ubbwDdbJk4zntADP6N1AqnTdjQTuuNFWeyUaw==
+Date:   Fri, 23 Dec 2022 21:28:35 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Jonathan Maxwell <jmaxwell37@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
+Message-Id: <20221223212835.eb9d03f3f7db22360e34341d@uniroma2.it>
+In-Reply-To: <CAGHK07ALtLTjRP-XOepqoc8xzWcT8=0v5ccL-98f4+SU9vwfsg@mail.gmail.com>
+References: <20221218234801.579114-1-jmaxwell37@gmail.com>
+        <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+        <CAGHK07ALtLTjRP-XOepqoc8xzWcT8=0v5ccL-98f4+SU9vwfsg@mail.gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Jon,
+please see below, thanks.
 
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On Wed, 21 Dec 2022 08:48:11 +1100
+Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
 
-On Thu, 22 Dec 2022 14:43:40 +0800 you wrote:
-> There are some bugfixes for the HNS3 ethernet driver. patch#1 fix miss
-> checking for rx packet. patch#2 fixes VF promisc mode not update
-> when mac table full bug, and patch#3 fixes a nterrupts not
-> initialization in VF FLR bug.
+> On Tue, Dec 20, 2022 at 11:35 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> >
+> > On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
+> > > Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
+> > > route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
+> > > consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
+> > > these warnings:
+> > >
+> > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > .
+> > > .
+> > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> >
+> > If I read correctly, the maximum number of dst that the raw socket can
+> > use this way is limited by the number of packets it allows via the
+> > sndbuf limit, right?
+> >
 > 
-> Jian Shen (2):
->   net: hns3: fix miss L3E checking for rx packet
->   net: hns3: fix VF promisc mode not update when mac table full
+> Yes, but in my test sndbuf limit is never hit so it clones a route for
+> every packet.
 > 
-> [...]
+> e.g:
+> 
+> output from C program sending 5000000 packets via a raw socket.
+> 
+> ip raw: total num pkts 5000000
+> 
+> # bpftrace -e 'kprobe:dst_alloc {@count[comm] = count()}'
+> Attaching 1 probe...
+> 
+> @count[a.out]: 5000009
+> 
+> > Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
+> > ipvs, seg6?
+> >
+> 
+> Any call to ip6_pol_route(s) where no res.nh->fib_nh_gw_family is 0 can do it.
+> But we have only seen this for raw sockets so far.
+> 
 
-Here is the summary with links:
-  - [net,1/3] net: hns3: add interrupts re-initialization while doing VF FLR
-    https://git.kernel.org/netdev/net/c/09e6b30eeb25
-  - [net,2/3] net: hns3: fix miss L3E checking for rx packet
-    https://git.kernel.org/netdev/net/c/7d89b53cea1a
-  - [net,3/3] net: hns3: fix VF promisc mode not update when mac table full
-    https://git.kernel.org/netdev/net/c/8ee57c7b8406
+In the SRv6 subsystem, the seg6_lookup_nexthop() is used by some
+cross-connecting behaviors such as End.X and End.DX6 to forward traffic to a
+specified nexthop. SRv6 End.X/DX6 can specify an IPv6 DA (i.e., a nexthop)
+different from the one carried by the IPv6 header. For this purpose,
+seg6_lookup_nexthop() sets the FLOWI_FLAG_KNOWN_NH.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > .
+> > > .
+> > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
 
+I can reproduce the same warning messages reported by you, by instantiating an
+End.X behavior whose nexthop is handled by a route for which there is no "via".
+In this configuration, the ip6_pol_route() (called by seg6_lookup_nexthop())
+triggers ip6_rt_cache_alloc() because i) the FLOWI_FLAG_KNOWN_NH is present ii)
+and the res.nh->fib_nh_gw_family is 0 (as already pointed out).
 
+> Regards
+> 
+> Jon
+
+Ciao,
+Andrea
