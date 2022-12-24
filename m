@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E92965568E
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:12:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2ED96556C8
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233096AbiLXAMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 19:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
+        id S231127AbiLXAl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 19:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232728AbiLXAMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:12:19 -0500
-X-Greylist: delayed 1773 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 16:12:17 PST
-Received: from 8.mo545.mail-out.ovh.net (8.mo545.mail-out.ovh.net [46.105.72.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0128313F3F
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:12:16 -0800 (PST)
-Received: from ex4.mail.ovh.net (unknown [10.109.138.122])
-        by mo545.mail-out.ovh.net (Postfix) with ESMTPS id 90F2825EF4;
-        Sat, 24 Dec 2022 00:04:29 +0000 (UTC)
+        with ESMTP id S230312AbiLXAl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:41:56 -0500
+X-Greylist: delayed 1199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 16:41:54 PST
+Received: from 5.mo541.mail-out.ovh.net (5.mo541.mail-out.ovh.net [46.105.59.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB93E10545
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:41:54 -0800 (PST)
+Received: from ex4.mail.ovh.net (unknown [10.108.16.78])
+        by mo541.mail-out.ovh.net (Postfix) with ESMTPS id A59B124F31;
+        Sat, 24 Dec 2022 00:04:30 +0000 (UTC)
 Received: from dev-fedora-x86-64.naccy.de (37.65.8.229) by
  DAG10EX1.indiv4.local (172.16.2.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sat, 24 Dec 2022 01:04:27 +0100
+ 15.1.2507.16; Sat, 24 Dec 2022 01:04:29 +0100
 From:   Quentin Deslandes <qde@naccy.de>
 To:     <qde@naccy.de>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -42,9 +42,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
         Kernel Team <kernel-team@meta.com>
-Subject: [PATCH bpf-next v3 03/16] bpfilter: add logging facility
-Date:   Sat, 24 Dec 2022 01:03:49 +0100
-Message-ID: <20221224000402.476079-4-qde@naccy.de>
+Subject: [PATCH bpf-next v3 04/16] bpfilter: add map container
+Date:   Sat, 24 Dec 2022 01:03:50 +0100
+Message-ID: <20221224000402.476079-5-qde@naccy.de>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221224000402.476079-1-qde@naccy.de>
 References: <20221224000402.476079-1-qde@naccy.de>
@@ -54,11 +54,11 @@ Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [37.65.8.229]
 X-ClientProxiedBy: CAS6.indiv4.local (172.16.1.6) To DAG10EX1.indiv4.local
  (172.16.2.91)
-X-Ovh-Tracer-Id: 4759741857371254391
+X-Ovh-Tracer-Id: 4760023332849315447
 X-VR-SPAMSTATE: OK
 X-VR-SPAMSCORE: -85
 X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrheefgddujecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenogetfedtuddqtdduucdludehmdenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpefsuhgvnhhtihhnucffvghslhgrnhguvghsuceoqhguvgesnhgrtggthidruggvqeenucggtffrrghtthgvrhhnpeduledugfeileetvdelieeujedttedtvedtgfetteevfeejhfffkeeujeetfffgudenucfkphepuddvjedrtddrtddruddpfeejrdeihedrkedrvddvleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomhepoehquggvsehnrggttgihrdguvgeqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepjhholhhsrgeskhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdgsphhfsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpmhgvsehusghiqhhuvgdrshhpsgdrrhhupdhshhhurghhsehkvghrnhgvlhdrohhrghdpmhihkhholhgrlhesfhgsrdgtohhmpdhprggsvghnihesrhgvughhrghtrdgtohhmpdhkuhgsrg
- eskhgvrhhnvghlrdhorhhgpdgvughumhgriigvthesghhoohhglhgvrdgtohhmpdgurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhkvghrnhgvlhdqthgvrghmsehmvghtrgdrtghomhdphhgrohhluhhosehgohhoghhlvgdrtghomhdpshgufhesghhoohhglhgvrdgtohhmpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeghedpmhhouggvpehsmhhtphhouhht
+ eskhgvrhhnvghlrdhorhhgpdgvughumhgriigvthesghhoohhglhgvrdgtohhmpdgurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhkvghrnhgvlhdqthgvrghmsehmvghtrgdrtghomhdphhgrohhluhhosehgohhoghhlvgdrtghomhdpshgufhesghhoohhglhgvrdgtohhmpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeguddpmhhouggvpehsmhhtphhouhht
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
         version=3.4.6
@@ -68,175 +68,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpfilter will log to /dev/kmsg by default. Four different log levels are
-available. LOG_EMERG() will exit the usermode helper after logging.
+Introduce common code for an associative container. This common code
+will be used for maps of matches, targets, and tables. Hash search
+tables from libc are used as an index.
 
+The supported sets of operations is: create, find, upsert, free.
+
+Co-developed-by: Dmitrii Banshchikov <me@ubique.spb.ru>
+Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 Signed-off-by: Quentin Deslandes <qde@naccy.de>
 ---
- net/bpfilter/Makefile |  2 +-
- net/bpfilter/logger.c | 52 ++++++++++++++++++++++++++++
- net/bpfilter/logger.h | 80 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 133 insertions(+), 1 deletion(-)
- create mode 100644 net/bpfilter/logger.c
- create mode 100644 net/bpfilter/logger.h
+ net/bpfilter/Makefile                         |  2 +-
+ net/bpfilter/map-common.c                     | 51 +++++++++++++++
+ net/bpfilter/map-common.h                     | 19 ++++++
+ .../testing/selftests/bpf/bpfilter/.gitignore |  2 +
+ tools/testing/selftests/bpf/bpfilter/Makefile | 19 ++++++
+ .../testing/selftests/bpf/bpfilter/test_map.c | 63 +++++++++++++++++++
+ 6 files changed, 155 insertions(+), 1 deletion(-)
+ create mode 100644 net/bpfilter/map-common.c
+ create mode 100644 net/bpfilter/map-common.h
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_map.c
 
 diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
-index cdac82b8c53a..8d9c726ba1a5 100644
+index 8d9c726ba1a5..1b0c399c19df 100644
 --- a/net/bpfilter/Makefile
 +++ b/net/bpfilter/Makefile
 @@ -4,7 +4,7 @@
  #
  
  userprogs := bpfilter_umh
--bpfilter_umh-objs := main.o
-+bpfilter_umh-objs := main.o logger.o
+-bpfilter_umh-objs := main.o logger.o
++bpfilter_umh-objs := main.o logger.o map-common.o
  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
  
  ifeq ($(CONFIG_BPFILTER_UMH), y)
-diff --git a/net/bpfilter/logger.c b/net/bpfilter/logger.c
+diff --git a/net/bpfilter/map-common.c b/net/bpfilter/map-common.c
 new file mode 100644
-index 000000000000..c256bfef7e6c
+index 000000000000..cc6c3a59b315
 --- /dev/null
-+++ b/net/bpfilter/logger.c
-@@ -0,0 +1,52 @@
++++ b/net/bpfilter/map-common.c
+@@ -0,0 +1,51 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
++ * Copyright (c) 2021 Telegram FZ-LLC
 + * Copyright (c) 2022 Meta Platforms, Inc. and affiliates.
 + */
 +
-+#include "logger.h"
++#include "map-common.h"
++
++#include <linux/err.h>
 +
 +#include <errno.h>
++#include <string.h>
 +
-+static const char *log_file_path = "/dev/kmsg";
-+static FILE *log_file;
-+
-+int logger_init(void)
++int create_map(struct hsearch_data *htab, size_t nelem)
 +{
-+	if (log_file)
-+		return 0;
-+
-+	log_file = fopen(log_file_path, "w");
-+	if (!log_file)
-+		return -errno;
-+
-+	if (setvbuf(log_file, 0, _IOLBF, 0))
++	memset(htab, 0, sizeof(*htab));
++	if (!hcreate_r(nelem, htab))
 +		return -errno;
 +
 +	return 0;
 +}
 +
-+void logger_set_file(FILE *file)
++void *map_find(struct hsearch_data *htab, const char *key)
 +{
-+	log_file = file;
++	const ENTRY needle = { .key = (char *)key };
++	ENTRY *found;
++
++	if (!hsearch_r(needle, FIND, &found, htab))
++		return ERR_PTR(-ENOENT);
++
++	return found->data;
 +}
 +
-+FILE *logger_get_file(void)
++int map_upsert(struct hsearch_data *htab, const char *key, void *value)
 +{
-+	return log_file;
-+}
++	const ENTRY needle = { .key = (char *)key, .data = value };
++	ENTRY *found;
 +
-+int logger_clean(void)
-+{
-+	int r;
-+
-+	if (!log_file)
-+		return 0;
-+
-+	r = fclose(log_file);
-+	if (r == EOF)
++	if (!hsearch_r(needle, ENTER, &found, htab))
 +		return -errno;
 +
-+	log_file = NULL;
++	found->key = (char *)key;
++	found->data = value;
 +
 +	return 0;
 +}
-diff --git a/net/bpfilter/logger.h b/net/bpfilter/logger.h
++
++void free_map(struct hsearch_data *htab)
++{
++	hdestroy_r(htab);
++}
+diff --git a/net/bpfilter/map-common.h b/net/bpfilter/map-common.h
 new file mode 100644
-index 000000000000..c44739ec0069
+index 000000000000..666a4ffe9b29
 --- /dev/null
-+++ b/net/bpfilter/logger.h
-@@ -0,0 +1,80 @@
++++ b/net/bpfilter/map-common.h
+@@ -0,0 +1,19 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
++ * Copyright (c) 2021 Telegram FZ-LLC
 + * Copyright (c) 2022 Meta Platforms, Inc. and affiliates.
 + */
 +
-+#ifndef NET_BPFILTER_LOGGER_H
-+#define NET_BPFILTER_LOGGER_H
++#ifndef NET_BPFILTER_MAP_COMMON_H
++#define NET_BPFILTER_MAP_COMMON_H
 +
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <syslog.h>
++#define _GNU_SOURCE
 +
-+#define _BFLOG_IMPL(level, fmt, ...)					      \
-+	do {								      \
-+		typeof(level) __level = level;				      \
-+		if (logger_get_file()) {				      \
-+			fprintf(logger_get_file(), "<%d>bpfilter: " fmt "\n", \
-+				(__level), ##__VA_ARGS__);		      \
-+		}							      \
-+		if ((__level) == LOG_EMERG)				      \
-+			exit(EXIT_FAILURE);				      \
-+	} while (0)
++#include <search.h>
 +
-+#define BFLOG_EMERG(fmt, ...) \
-+	_BFLOG_IMPL(LOG_KERN | LOG_EMERG, fmt, ##__VA_ARGS__)
-+#define BFLOG_ERR(fmt, ...) \
-+	_BFLOG_IMPL(LOG_KERN | LOG_ERR, fmt, ##__VA_ARGS__)
-+#define BFLOG_NOTICE(fmt, ...) \
-+	_BFLOG_IMPL(LOG_KERN | LOG_NOTICE, fmt, ##__VA_ARGS__)
++int create_map(struct hsearch_data *htab, size_t nelem);
++void *map_find(struct hsearch_data *htab, const char *key);
++int map_upsert(struct hsearch_data *htab, const char *key, void *value);
++void free_map(struct hsearch_data *htab);
 +
-+#ifdef DEBUG
-+#define BFLOG_DBG(fmt, ...) BFLOG_IMPL(LOG_KERN | LOG_DEBUG, fmt, ##__VA_ARGS__)
-+#else
-+#define BFLOG_DBG(fmt, ...)
-+#endif
++#endif // NET_BPFILTER_MAP_COMMON_H
+diff --git a/tools/testing/selftests/bpf/bpfilter/.gitignore b/tools/testing/selftests/bpf/bpfilter/.gitignore
+new file mode 100644
+index 000000000000..983fd06cbefa
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/.gitignore
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++test_map
+diff --git a/tools/testing/selftests/bpf/bpfilter/Makefile b/tools/testing/selftests/bpf/bpfilter/Makefile
+new file mode 100644
+index 000000000000..c262aad8c2a4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/Makefile
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+#define STRERR(v) strerror(abs(v))
++top_srcdir = ../../../../..
++TOOLSDIR := $(abspath ../../../../)
++TOOLSINCDIR := $(TOOLSDIR)/include
++APIDIR := $(TOOLSINCDIR)/uapi
++BPFILTERSRCDIR := $(top_srcdir)/net/bpfilter
 +
-+/**
-+ * logger_init() - Initialise logging facility.
-+ *
-+ * This function is used to open a file to write logs to (see @log_file_path).
-+ * It must be called before using any logging macro, otherwise log messages
-+ * will be discarded.
-+ *
-+ * Return: 0 on success, negative errno value on error.
-+ */
-+int logger_init(void);
++CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR)
 +
-+/**
-+ * logger_set_file() - Set the FILE pointer to use to log messages.
-+ * @file: new FILE * to the log file.
-+ *
-+ * This function won't check whether the FILE pointer is valid, nor whether
-+ * a file is already opened, this is the responsibility of the caller. Once
-+ * logger_set_file() returns, all new log messages will be printed to the
-+ * FILE * provided.
-+ */
-+void logger_set_file(FILE *file);
++TEST_GEN_PROGS += test_map
 +
-+/**
-+ * logger_get_file() - Returns a FILE * pointer to the log file.
-+ *
-+ * Return: pointer to the file to log to (as a FILE *), or NULL if the file
-+ *	is not valid.
-+ */
-+FILE *logger_get_file(void);
++KSFT_KHDR_INSTALL := 1
 +
-+/**
-+ * logger_clean() - Close the log file.
-+ *
-+ * On success, the log file pointer will be NULL. If the function fails,
-+ * the log file pointer remain unchanged and the file should be considered open.
-+ *
-+ * Return: 0 on success, negative errno value on error.
-+ */
-+int logger_clean(void);
++include ../../lib.mk
 +
-+#endif // NET_BPFILTER_LOGGER_H
++BPFILTER_MAP_SRCS := $(BPFILTERSRCDIR)/map-common.c
++
++$(OUTPUT)/test_map: test_map.c $(BPFILTER_MAP_SRCS)
+diff --git a/tools/testing/selftests/bpf/bpfilter/test_map.c b/tools/testing/selftests/bpf/bpfilter/test_map.c
+new file mode 100644
+index 000000000000..7ed737b78816
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/test_map.c
+@@ -0,0 +1,63 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "map-common.h"
++
++#include <linux/err.h>
++
++#include "../../kselftest_harness.h"
++
++FIXTURE(test_map)
++{
++	struct hsearch_data map;
++	const char *key;
++	void *expected;
++	void *actual;
++};
++
++FIXTURE_SETUP(test_map)
++{
++	const int max_nelements = 100;
++
++	create_map(&self->map, max_nelements);
++	self->key = "key";
++	self->expected = "expected";
++	self->actual = "actual";
++}
++
++FIXTURE_TEARDOWN(test_map)
++{
++	free_map(&self->map);
++}
++
++TEST_F(test_map, upsert_and_find)
++{
++	void *found;
++
++	found = map_find(&self->map, self->key);
++	ASSERT_TRUE(IS_ERR(found))
++	ASSERT_EQ(-ENOENT, PTR_ERR(found))
++
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->expected));
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->expected));
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->actual));
++
++	found = map_find(&self->map, self->key);
++
++	ASSERT_FALSE(IS_ERR(found));
++	ASSERT_STREQ(self->actual, found);
++}
++
++TEST_F(test_map, update)
++{
++	void *found;
++
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->actual));
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->expected));
++
++	found = map_find(&self->map, self->key);
++
++	ASSERT_FALSE(IS_ERR(found));
++	ASSERT_STREQ(self->expected, found);
++}
++
++TEST_HARNESS_MAIN
 -- 
 2.38.1
 
