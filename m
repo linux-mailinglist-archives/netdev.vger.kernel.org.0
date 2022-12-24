@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC12565587A
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 06:36:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67EB1655882
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 06:49:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbiLXFgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Dec 2022 00:36:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S231281AbiLXFts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Dec 2022 00:49:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231176AbiLXFg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Dec 2022 00:36:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E252B2
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 21:35:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671860142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9inerhQQEwTB9gS95jFKFAYGecKLrmD2EeG2lXh213o=;
-        b=XVBiQH0HjGknBolDo1qf968foUuhnAqhnQHfOPMcNvOaaEx39yZALcwqP13EYa0tc37rB/
-        bzOLHbb3u71x/kzwuaKAzPZ0xw96A/UIo3gyesrvjA/CC09gWtz/RAeEcrbFcreJhXjA1C
-        wBiFWyYjhjnEc66OAeRemGT+vNVKtyo=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-284-NjX6qA3mME2qZ-yZE0Urtg-1; Sat, 24 Dec 2022 00:35:40 -0500
-X-MC-Unique: NjX6qA3mME2qZ-yZE0Urtg-1
-Received: by mail-ej1-f69.google.com with SMTP id qa18-20020a170907869200b007df87611618so4434410ejc.1
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 21:35:39 -0800 (PST)
+        with ESMTP id S230152AbiLXFtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Dec 2022 00:49:46 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24B3E0EB
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 21:49:44 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id a14so4472666pfa.1
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 21:49:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sladewatkins.net; s=googled;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Be9qZ3HVvy/Sm+xJabwUjsOwonZrbpMs2ouPpFo3Qww=;
+        b=jYLtKGR6pjYlo/9SgNfH/rHB6TwlRImRgehoQupICfDVWz00aaFn/gJSvaBAhbuRvL
+         Jn09iFoYEVss3akSYPsRJZQj7l/0Za91bfLe/8imbQ4zmiCg62UusJounftbzB7nRYWP
+         iotK3ok+WB3ckMxq7d+7f0eskAo+okxMWYU8UzOEkM4T/p9UVxKpvLNFg/SrBaVC6bzf
+         julhp15V05lHSfwBUDfzg6z4F2r7y5Kgd4F4me7wdOgaDa/RTKdqw4FnVynpnICWHqGz
+         W1MiRwmuosS01C+GGkWUEzPnY+U39xglvy3XB/3sAdMTemQoQT3SFRqmSo8LlJO9TuYZ
+         uRvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9inerhQQEwTB9gS95jFKFAYGecKLrmD2EeG2lXh213o=;
-        b=oh1FkuXTCg5NgwrrG2jpNWFHVpa82AaIIKR2DKbVSsH8/EsAjMECg+IBRbaDphyEHo
-         JPwSq34ClADf+vY1D5/mzxB5qfEhmBQ+eV1lLRg3SrJgqi3vCOoCJnuw87ts/k8TOTW1
-         576IETXGmNnn5LwlmTYNJJm/89AORhRqZY3DAaQAREJIwuX6cLpoZiIX53Y/kIHuQRVB
-         7aI2zkyj221PjHmYK2/eedlCvoVxygB5xxCymqPwRepvzj6b71ytRIbwJw/SQmVbmP7V
-         iE84r7uhokroTpuZVUfz/7aYOUTmStFyRq6/Y4IQCI2qno/IO2TRg/zKbP/YSffXIYI9
-         kyLA==
-X-Gm-Message-State: AFqh2kp2dB5JFaWIDGiH7X9f5DYB/prboYjqx+ryqEfezeZ7XeoEkoGh
-        KUXhCwyutlmu0dSQIy9IXl03kDs3HAebyepna1jCw9yDDQsxZ2DkE3Xwp5ZzV5DPTnTHHYaDrmA
-        YI772sWuUEIzPn7rO
-X-Received: by 2002:a17:906:65a:b0:7c1:7045:1a53 with SMTP id t26-20020a170906065a00b007c170451a53mr9229026ejb.15.1671860137871;
-        Fri, 23 Dec 2022 21:35:37 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXud/Fb0wtBmXHI4TVa1R5iStbJI7HVjmtxNzdJlo5vEGwnAH05ulhj4IafppoZeQFZu1DEQKg==
-X-Received: by 2002:a17:906:65a:b0:7c1:7045:1a53 with SMTP id t26-20020a170906065a00b007c170451a53mr9229005ejb.15.1671860137631;
-        Fri, 23 Dec 2022 21:35:37 -0800 (PST)
-Received: from redhat.com ([2.55.175.215])
-        by smtp.gmail.com with ESMTPSA id a1-20020a170906684100b007c0f90a9cc5sm2140091ejs.105.2022.12.23.21.35.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Dec 2022 21:35:36 -0800 (PST)
-Date:   Sat, 24 Dec 2022 00:35:30 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Be9qZ3HVvy/Sm+xJabwUjsOwonZrbpMs2ouPpFo3Qww=;
+        b=K7aHY/taExHdrQjw9lfjB3KtJqkcOwCCaZwh2EMpYIQ9OAojB77TRq8XLzjoOoZeSF
+         iFDxc2el3DQpxHmODJm8HK9IikqnYncFBU3P2Uoo9gqebGk57wZs7bSWU2C1vkfw01u4
+         t6O20mWIB08fywf97sFIsF8xzojzElohYyO/O3V5P4XaO7pnhrG8HkGMrzLCrnmZ3Gwv
+         XSW/RLNPWQSyZSG+KGH01GqnC2QSgCcRsgBRSV7VnnhYjp1sz6sTUqb81rL52xJLVd5n
+         bdxOjROv7t+629PXC+HFetWajYQPYpxTlfO50wkJEoiCAQaLAyYF3wfb/OVUphoYjRtF
+         kIgA==
+X-Gm-Message-State: AFqh2kr9RTjFSVcQHqgrLS1B2WTspqikJtbTmNWttBazU0A7mAcevcj+
+        xvSxrEsKh6pvh4nh4VbpAFfTP3dYqUIgzHVvTxk+cg==
+X-Google-Smtp-Source: AMrXdXtYGrvP5/vnyJe/l0eVcSeMHu3kFu34JbU583rmSM5zS8TwLEz9dKY+xHKywot2IrdknSHm3E+8k61DAXT+bJE=
+X-Received: by 2002:a63:161d:0:b0:46f:6225:c2f9 with SMTP id
+ w29-20020a63161d000000b0046f6225c2f9mr493439pgl.225.1671860984183; Fri, 23
+ Dec 2022 21:49:44 -0800 (PST)
+MIME-Version: 1.0
+References: <20221222144343-mutt-send-email-mst@kernel.org>
+ <CAHk-=wi6Gkr7hJz20+xD=pBuTrseccVgNR9ajU7=Bqbrdk1t4g@mail.gmail.com>
+ <20221223172549-mutt-send-email-mst@kernel.org> <CAHk-=whpdP7X+L8RtGsonthr7Ffug=FhR+TrFe3JUyb5-zaYCA@mail.gmail.com>
+ <20221224003445-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221224003445-mutt-send-email-mst@kernel.org>
+From:   Slade Watkins <srw@sladewatkins.net>
+Date:   Sat, 24 Dec 2022 00:49:32 -0500
+Message-ID: <CA+pv=HM-Ur7g4Kd3-0nO3TPRgyojgdk8XVTgTnNfebTA6ARg5Q@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio,vhost,vdpa: features, fixes, cleanups
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         almasrymina@google.com, alvaro.karsz@solid-run.com,
         anders.roxell@linaro.org, angus.chen@jaguarmicro.com,
@@ -75,19 +75,10 @@ Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         sunnanyong@huawei.com, wangjianli@cdjrlc.com,
         wangrong68@huawei.com, weiyongjun1@huawei.com,
         xuanzhuo@linux.alibaba.com, yuancan@huawei.com
-Subject: Re: [GIT PULL] virtio,vhost,vdpa: features, fixes, cleanups
-Message-ID: <20221224003445-mutt-send-email-mst@kernel.org>
-References: <20221222144343-mutt-send-email-mst@kernel.org>
- <CAHk-=wi6Gkr7hJz20+xD=pBuTrseccVgNR9ajU7=Bqbrdk1t4g@mail.gmail.com>
- <20221223172549-mutt-send-email-mst@kernel.org>
- <CAHk-=whpdP7X+L8RtGsonthr7Ffug=FhR+TrFe3JUyb5-zaYCA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whpdP7X+L8RtGsonthr7Ffug=FhR+TrFe3JUyb5-zaYCA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,28 +86,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 23, 2022 at 02:36:46PM -0800, Linus Torvalds wrote:
-> On Fri, Dec 23, 2022 at 2:27 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Sat, Dec 24, 2022 at 12:36 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Fri, Dec 23, 2022 at 02:36:46PM -0800, Linus Torvalds wrote:
+> > On Fri, Dec 23, 2022 at 2:27 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > They were all there, just not as these commits, as I squashed fixups to
+> > > avoid bisect breakages with some configs. Did I do wrong?
 > >
-> > They were all there, just not as these commits, as I squashed fixups to
-> > avoid bisect breakages with some configs. Did I do wrong?
-> 
-> I am literally looking at the next-20221214 state right now, doing
-> 
->     git log linus/master.. -- drivers/vhost/vsock.c
->     git log linus/master.. -- drivers/vdpa/mlx5/
->     git log --grep="temporary variable type tweak"
-> 
-> and seeing nothing.
-> 
-> So none of these commits - in *any* form - were in linux-next last
-> week as far as I can tell.
-> 
->              Linus
+> > I am literally looking at the next-20221214 state right now, doing
+> >
+> >     git log linus/master.. -- drivers/vhost/vsock.c
+> >     git log linus/master.. -- drivers/vdpa/mlx5/
+> >     git log --grep="temporary variable type tweak"
+> >
+> > and seeing nothing.
+> >
+> > So none of these commits - in *any* form - were in linux-next last
+> > week as far as I can tell.
+> >
+> >              Linus
+>
+>
+> They were in  next-20221220 though.
+>
 
++1, just checked and these appear to be in next-20221220.
 
-They were in  next-20221220 though.
-
--- 
-MST
-
+-- Slade
