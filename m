@@ -2,67 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB45865581F
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 03:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E811D655833
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 04:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233418AbiLXCr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 21:47:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        id S232748AbiLXDLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 22:11:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230505AbiLXCr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 21:47:26 -0500
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F47D1900D;
-        Fri, 23 Dec 2022 18:47:24 -0800 (PST)
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4Nf7kG2Sksz8QrkZ;
-        Sat, 24 Dec 2022 10:47:18 +0800 (CST)
-Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
-        by mse-fl1.zte.com.cn with SMTP id 2BO2lCEK020722;
-        Sat, 24 Dec 2022 10:47:12 +0800 (+08)
-        (envelope-from yang.yang29@zte.com.cn)
-Received: from mapi (szxlzmapp02[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Sat, 24 Dec 2022 10:47:13 +0800 (CST)
-Date:   Sat, 24 Dec 2022 10:47:13 +0800 (CST)
-X-Zmail-TransId: 2b0463a66831ffffffffb7a3b4cd
-X-Mailer: Zmail v1.0
-Message-ID: <202212241047135426119@zte.com.cn>
-In-Reply-To: <Y6XDHRVgKLbDLPNj@bombadil.infradead.org>
-References: 202212231034450492161@zte.com.cn,Y6XDHRVgKLbDLPNj@bombadil.infradead.org
-Mime-Version: 1.0
-From:   <yang.yang29@zte.com.cn>
-To:     <mcgrof@kernel.org>
-Cc:     <jirislaby@kernel.org>, <mickflemm@gmail.com>, <kvalo@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <xu.panda@zte.com.cn>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCBuZXQtbmV4dF0gYXRoNWs6IHVzZSBzdHJzY3B5KCkgdG8gaW5zdGVhZCBvZiBzdHJuY3B5KCk=?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl1.zte.com.cn 2BO2lCEK020722
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.250.137.novalocal with ID 63A66836.000 by FangMail milter!
-X-FangMail-Envelope: 1671850038/4Nf7kG2Sksz8QrkZ/63A66836.000/10.5.228.132/[10.5.228.132]/mse-fl1.zte.com.cn/<yang.yang29@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 63A66836.000/4Nf7kG2Sksz8QrkZ
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229871AbiLXDLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 22:11:01 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36CEBF0;
+        Fri, 23 Dec 2022 19:11:00 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Nf89l2j4mz67vrS;
+        Sat, 24 Dec 2022 11:07:39 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Sat, 24 Dec 2022 03:10:57 +0000
+Message-ID: <dc0de995-00dc-9dd7-a783-f57b2c274cb2@huawei.com>
+Date:   Sat, 24 Dec 2022 06:10:56 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] landlock: Allow filesystem layout changes for domains
+ without such rule type
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <artem.kuzin@huawei.com>, <gnoack3000@gmail.com>,
+        <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>
+References: <5c6c99f7-4218-1f79-477e-5d943c9809fd@digikod.net>
+ <20221117185509.702361-1-mic@digikod.net>
+ <fb9a288a-aa86-9192-e6d7-d6678d740297@digikod.net>
+ <4b23de18-2ae9-e7e3-52a3-53151e8802f9@huawei.com>
+ <fd4c0396-af56-732b-808b-887c150e5e6b@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <fd4c0396-af56-732b-808b-887c150e5e6b@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> According to who? Are you sure you are not just sending stupid commits
-> to get an increase in your kernel commit count? Because this is an old
-> driver and who cares?
 
-This is suggested by Petr Mladek, please see:
-https://lore.kernel.org/all/Y4cz27AbZVVd9pLJ@alley/
 
-And if the driver no one cares, we may stop modify it.
+11/28/2022 11:23 PM, Mickaël Salaün пишет:
+> 
+> On 28/11/2022 04:04, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 11/18/2022 12:16 PM, Mickaël Salaün пишет:
+>>> Konstantin, this patch should apply cleanly just after "01/12 landlock:
+>>> Make ruleset's access masks more generic". You can easily get this patch
+>>> with https://git.kernel.org/pub/scm/utils/b4/b4.git/
+>>> Some adjustments are needed for the following patches. Feel free to
+>>> review this patch.
+>       Do you have this patch online? Can I fetch it from your repo?
+> 
+> You can cherry-pick from here: https://git.kernel.org/mic/c/439ea2d31e662
+
+Hi Mickaёl.
+
+Sorry for the delay. I was a bit busy with another task. Now I'm 
+preparing a new patch.
+
+I tried to apply your one but I got an error opening this the link : Bad 
+object id: 439ea2d31e662.
+
+Could please check it?
+
+Best regards.
+> .
