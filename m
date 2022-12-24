@@ -2,25 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4890D655677
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B60B4655675
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236516AbiLXAGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 19:06:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
+        id S236463AbiLXAFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 19:05:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232626AbiLXAFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:05:20 -0500
-Received: from smtpout5.r2.mail-out.ovh.net (smtpout5.r2.mail-out.ovh.net [54.36.141.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795C91A39A
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:04:41 -0800 (PST)
-Received: from ex4.mail.ovh.net (unknown [10.110.103.144])
-        by mo511.mail-out.ovh.net (Postfix) with ESMTPS id 8D54226732;
-        Sat, 24 Dec 2022 00:04:39 +0000 (UTC)
+        with ESMTP id S236235AbiLXAFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:05:16 -0500
+X-Greylist: delayed 1256 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 16:04:42 PST
+Received: from 3.mo546.mail-out.ovh.net (3.mo546.mail-out.ovh.net [178.33.251.186])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318F41B9C0
+        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:04:42 -0800 (PST)
+Received: from ex4.mail.ovh.net (unknown [10.108.1.236])
+        by mo546.mail-out.ovh.net (Postfix) with ESMTPS id 9EFBA277BB;
+        Sat, 24 Dec 2022 00:04:40 +0000 (UTC)
 Received: from dev-fedora-x86-64.naccy.de (37.65.8.229) by
  DAG10EX1.indiv4.local (172.16.2.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sat, 24 Dec 2022 01:04:38 +0100
+ 15.1.2507.16; Sat, 24 Dec 2022 01:04:39 +0100
 From:   Quentin Deslandes <qde@naccy.de>
 To:     <qde@naccy.de>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -41,9 +42,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
         Kernel Team <kernel-team@meta.com>
-Subject: [PATCH bpf-next v3 11/16] bpfilter: add rule structure
-Date:   Sat, 24 Dec 2022 01:03:57 +0100
-Message-ID: <20221224000402.476079-12-qde@naccy.de>
+Subject: [PATCH bpf-next v3 12/16] bpfilter: add table structure
+Date:   Sat, 24 Dec 2022 01:03:58 +0100
+Message-ID: <20221224000402.476079-13-qde@naccy.de>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221224000402.476079-1-qde@naccy.de>
 References: <20221224000402.476079-1-qde@naccy.de>
@@ -53,67 +54,187 @@ Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [37.65.8.229]
 X-ClientProxiedBy: CAS6.indiv4.local (172.16.1.6) To DAG10EX1.indiv4.local
  (172.16.2.91)
-X-Ovh-Tracer-Id: 4762556610060873335
+X-Ovh-Tracer-Id: 4762838084792544887
 X-VR-SPAMSTATE: OK
 X-VR-SPAMSCORE: -85
 X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrheefgddujecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenogetfedtuddqtdduucdludehmdenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpefsuhgvnhhtihhnucffvghslhgrnhguvghsuceoqhguvgesnhgrtggthidruggvqeenucggtffrrghtthgvrhhnpeduledugfeileetvdelieeujedttedtvedtgfetteevfeejhfffkeeujeetfffgudenucfkphepuddvjedrtddrtddruddpfeejrdeihedrkedrvddvleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomhepoehquggvsehnrggttgihrdguvgeqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepjhholhhsrgeskhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdgsphhfsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpmhgvsehusghiqhhuvgdrshhpsgdrrhhupdhshhhurghhsehkvghrnhgvlhdrohhrghdpmhihkhholhgrlhesfhgsrdgtohhmpdhprggsvghnihesrhgvughhrghtrdgtohhmpdhkuhgsrg
- eskhgvrhhnvghlrdhorhhgpdgvughumhgriigvthesghhoohhglhgvrdgtohhmpdgurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhkvghrnhgvlhdqthgvrghmsehmvghtrgdrtghomhdphhgrohhluhhosehgohhoghhlvgdrtghomhdpshgufhesghhoohhglhgvrdgtohhmpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheduuddpmhhouggvpehsmhhtphhouhht
+ eskhgvrhhnvghlrdhorhhgpdgvughumhgriigvthesghhoohhglhgvrdgtohhmpdgurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhkvghrnhgvlhdqthgvrghmsehmvghtrgdrtghomhdphhgrohhluhhosehgohhoghhlvgdrtghomhdpshgufhesghhoohhglhgvrdgtohhmpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheegiedpmhhouggvpehsmhhtphhouhht
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rule structure is an equivalent to ipt_entry structure. A rule
-consists of zero or more matches and a target. A rule has a pointer to
-its ipt_entry structure in entries blob. This structure is defined to
-ease iteration over the various rules of a given chain. The original
-ipt_entry blob is kept to simplify interaction with iptables binary.
+The table_ops structure describes a set of operations for an individual
+table type.
 
-Inline bytecode generation is performed by gen_inline_rule(), and
-consists of the following steps:
-1. Emit instructions for rule's L3 src/dst addresses and protocol.
-2. Emit instructions for each rule's match by calling match's interface.
-3. Emit instructions for rule's target by calling target's interface.
+Tables support the following set of operations:
+- create: create an instance of a table from an ipt_replace blob.
+- codegen: generate eBPF bytecode for a table.
+- install: load BPF maps, progs, and attach them.
+- uninstall: detach loaded BPF maps and progs, and unload them.
+- free: free all resources used by a table.
+
+Each table keeps an instance of iptables' table blob and an array of
+rules for this blob. The array of rules provides a more convenient way
+to interact with the blob's entries, while having a copy of the blob
+will ease communication with iptables.
+
+All tables created are stored in a map, used for lookups. Also, all
+tables are linked into a list to ease cleanup.
 
 Co-developed-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 Signed-off-by: Quentin Deslandes <qde@naccy.de>
 ---
  net/bpfilter/Makefile                         |   2 +-
- net/bpfilter/rule.c                           | 286 ++++++++++++++++++
- net/bpfilter/rule.h                           |  37 +++
- .../testing/selftests/bpf/bpfilter/.gitignore |   1 +
- tools/testing/selftests/bpf/bpfilter/Makefile |   4 +
- .../selftests/bpf/bpfilter/bpfilter_util.h    |   8 +
- .../selftests/bpf/bpfilter/test_rule.c        |  56 ++++
- 7 files changed, 393 insertions(+), 1 deletion(-)
- create mode 100644 net/bpfilter/rule.c
- create mode 100644 net/bpfilter/rule.h
- create mode 100644 tools/testing/selftests/bpf/bpfilter/test_rule.c
+ net/bpfilter/context.c                        |  64 +++
+ net/bpfilter/context.h                        |   4 +
+ net/bpfilter/table.c                          | 391 ++++++++++++++++++
+ net/bpfilter/table.h                          |  59 +++
+ tools/testing/selftests/bpf/bpfilter/Makefile |   2 +-
+ 6 files changed, 520 insertions(+), 2 deletions(-)
+ create mode 100644 net/bpfilter/table.c
+ create mode 100644 net/bpfilter/table.h
 
 diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
-index 7e642e0ae932..759fb6c847d1 100644
+index 759fb6c847d1..9f5b46c70a41 100644
 --- a/net/bpfilter/Makefile
 +++ b/net/bpfilter/Makefile
 @@ -13,7 +13,7 @@ $(LIBBPF_A):
  userprogs := bpfilter_umh
  bpfilter_umh-objs := main.o logger.o map-common.o
  bpfilter_umh-objs += context.o codegen.o
--bpfilter_umh-objs += match.o xt_udp.o target.o
-+bpfilter_umh-objs += match.o xt_udp.o target.o rule.o
+-bpfilter_umh-objs += match.o xt_udp.o target.o rule.o
++bpfilter_umh-objs += match.o xt_udp.o target.o rule.o table.o
  bpfilter_umh-userldlibs := $(LIBBPF_A) -lelf -lz
  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
  
-diff --git a/net/bpfilter/rule.c b/net/bpfilter/rule.c
+diff --git a/net/bpfilter/context.c b/net/bpfilter/context.c
+index ac07b678baa7..81c9751a2a2d 100644
+--- a/net/bpfilter/context.c
++++ b/net/bpfilter/context.c
+@@ -9,6 +9,7 @@
+ #include "context.h"
+ 
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ 
+ #include <string.h>
+ 
+@@ -72,6 +73,39 @@ static int init_target_ops_map(struct context *ctx)
+ 	return 0;
+ }
+ 
++static const struct table_ops *table_ops[] = {};
++
++static int init_table_ops_map(struct context *ctx)
++{
++	int r;
++
++	r = create_map(&ctx->table_ops_map, ARRAY_SIZE(table_ops));
++	if (r) {
++		BFLOG_ERR("failed to create tables map: %s", STRERR(r));
++		return r;
++	}
++
++	for (int i = 0; i < ARRAY_SIZE(table_ops); ++i) {
++		const struct table_ops *t = table_ops[i];
++
++		r = map_upsert(&ctx->table_ops_map, t->name, (void *)t);
++		if (r) {
++			BFLOG_ERR("failed to upsert in tables map: %s",
++				  STRERR(r));
++			return r;
++		}
++	}
++
++	return 0;
++}
++
++static int init_table_index(struct context *ctx)
++{
++	INIT_LIST_HEAD(&ctx->table_index.list);
++
++	return create_map(&ctx->table_index.map, ARRAY_SIZE(table_ops));
++}
++
+ int create_context(struct context *ctx)
+ {
+ 	int r;
+@@ -88,8 +122,26 @@ int create_context(struct context *ctx)
+ 		goto err_free_match_ops_map;
+ 	}
+ 
++	r = init_table_ops_map(ctx);
++	if (r) {
++		BFLOG_ERR("failed to initialize tables map: %s", STRERR(r));
++		goto err_free_target_ops_map;
++	}
++
++	r = init_table_index(ctx);
++	if (r) {
++		BFLOG_ERR("failed to initialize tables index: %s", STRERR(r));
++		goto err_free_table_ops_map;
++	}
++
+ 	return 0;
+ 
++err_free_table_ops_map:
++	free_map(&ctx->table_ops_map);
++
++err_free_target_ops_map:
++	free_map(&ctx->target_ops_map);
++
+ err_free_match_ops_map:
+ 	free_map(&ctx->match_ops_map);
+ 
+@@ -98,6 +150,18 @@ int create_context(struct context *ctx)
+ 
+ void free_context(struct context *ctx)
+ {
++	struct list_head *t;
++	struct list_head *n;
++
++	list_for_each_safe(t, n, &ctx->table_index.list) {
++		struct table *table;
++
++		table = list_entry(t, struct table, list);
++		table->table_ops->uninstall(ctx, table);
++		table->table_ops->free(table);
++	}
++	free_map(&ctx->table_index.map);
++	free_map(&ctx->table_ops_map);
+ 	free_map(&ctx->target_ops_map);
+ 	free_map(&ctx->match_ops_map);
+ }
+diff --git a/net/bpfilter/context.h b/net/bpfilter/context.h
+index f9c34a9968b8..b0e91e37d057 100644
+--- a/net/bpfilter/context.h
++++ b/net/bpfilter/context.h
+@@ -9,9 +9,13 @@
+ 
+ #include <search.h>
+ 
++#include "table.h"
++
+ struct context {
+ 	struct hsearch_data match_ops_map;
+ 	struct hsearch_data target_ops_map;
++	struct hsearch_data table_ops_map;
++	struct table_index table_index;
+ };
+ 
+ int create_context(struct context *ctx);
+diff --git a/net/bpfilter/table.c b/net/bpfilter/table.c
 new file mode 100644
-index 000000000000..0f5217f6ab16
+index 000000000000..4094c82c31de
 --- /dev/null
-+++ b/net/bpfilter/rule.c
-@@ -0,0 +1,286 @@
++++ b/net/bpfilter/table.c
+@@ -0,0 +1,391 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2021 Telegram FZ-LLC
@@ -122,450 +243,467 @@ index 000000000000..0f5217f6ab16
 +
 +#define _GNU_SOURCE
 +
-+#include "rule.h"
++#include "table.h"
 +
-+#include "../../include/uapi/linux/bpfilter.h"
-+
-+#include <linux/filter.h>
-+#include <linux/ip.h>
-+#include <linux/netfilter/x_tables.h>
-+#include <linux/netfilter_ipv4/ip_tables.h>
++#include <linux/err.h>
++#include <linux/list.h>
 +
 +#include <errno.h>
++#include <stdbool.h>
++#include <stdio.h>
 +#include <stdlib.h>
 +#include <string.h>
 +
-+#include "codegen.h"
 +#include "context.h"
 +#include "logger.h"
-+#include "match.h"
++#include "rule.h"
 +
-+static const struct bpfilter_ipt_target *ipt_entry_target(const struct bpfilter_ipt_entry *ipt_entry)
++static int rule_offset_comparator(const void *x, const void *y)
 +{
-+	return (const void *)ipt_entry + ipt_entry->target_offset;
++	const struct rule *rule = y;
++
++	return x - (const void *)rule->ipt_entry;
 +}
 +
-+static const struct bpfilter_ipt_match *ipt_entry_match(const struct bpfilter_ipt_entry *entry,
-+							size_t offset)
++static bool table_has_hook(const struct table *table, uint32_t hook)
 +{
-+	return (const void *)entry + offset;
++	BUG_ON(hook >= BPFILTER_INET_HOOK_MAX);
++
++	return table->valid_hooks & (1 << hook);
 +}
 +
-+static int ipt_entry_num_matches(const struct bpfilter_ipt_entry *ipt_entry)
++static int table_init_rules(struct context *ctx, struct table *table,
++			    const struct bpfilter_ipt_replace *ipt_replace)
 +{
-+	const struct bpfilter_ipt_match *ipt_match;
-+	uint32_t offset = sizeof(*ipt_entry);
-+	int num_matches = 0;
++	uint32_t offset;
 +
-+	while (offset < ipt_entry->target_offset) {
-+		ipt_match = ipt_entry_match(ipt_entry, offset);
-+
-+		if ((uintptr_t)ipt_match % __alignof__(struct bpfilter_ipt_match)) {
-+			BFLOG_ERR("match must be aligned on struct bpfilter_ipt_match size");
-+			return -EINVAL;
-+		}
-+
-+		if (ipt_entry->target_offset < offset + sizeof(*ipt_match)) {
-+			BFLOG_ERR("invalid target offset for struct ipt_entry");
-+			return -EINVAL;
-+		}
-+
-+		if (ipt_match->u.match_size < sizeof(*ipt_match)) {
-+			BFLOG_ERR("invalid match size for struct ipt_match");
-+			return -EINVAL;
-+		}
-+
-+		if (ipt_entry->target_offset < offset + ipt_match->u.match_size) {
-+			BFLOG_ERR("invalid target offset for struct ipt_entry");
-+			return -EINVAL;
-+		}
-+
-+		++num_matches;
-+		offset += ipt_match->u.match_size;
-+	}
-+
-+	if (offset != ipt_entry->target_offset) {
-+		BFLOG_ERR("invalid offset");
-+		return -EINVAL;
-+	}
-+
-+	return num_matches;
-+}
-+
-+static int init_rule_matches(struct context *ctx,
-+			     const struct bpfilter_ipt_entry *ipt_entry,
-+			     struct rule *rule)
-+{
-+	const struct bpfilter_ipt_match *ipt_match;
-+	uint32_t offset = sizeof(*ipt_entry);
-+	struct match *match;
-+	int r;
-+
-+	rule->matches = calloc(rule->num_matches, sizeof(rule->matches[0]));
-+	if (!rule->matches) {
++	table->entries = malloc(table->size);
++	if (!table->entries) {
 +		BFLOG_ERR("out of memory");
 +		return -ENOMEM;
 +	}
 +
-+	match = rule->matches;
-+	while (offset < ipt_entry->target_offset) {
-+		ipt_match = ipt_entry_match(ipt_entry, offset);
-+		r = init_match(ctx, ipt_match, match);
-+		if (r) {
-+			free(rule->matches);
-+			rule->matches = NULL;
-+			BFLOG_ERR("failed to initialize match: %s", STRERR(r));
-+			return r;
-+		}
++	memcpy(table->entries, ipt_replace->entries, table->size);
 +
-+		++match;
-+		offset += ipt_match->u.match_size;
++	table->rules = calloc(table->num_rules, sizeof(table->rules[0]));
++	if (!table->rules) {
++		BFLOG_ERR("out of memory");
++		return -ENOMEM;
 +	}
 +
-+	return 0;
-+}
++	offset = 0;
++	for (int i = 0; i < table->num_rules; ++i) {
++		const struct bpfilter_ipt_entry *ipt_entry;
++		int r;
 +
-+static int check_ipt_entry_ip(const struct bpfilter_ipt_ip *ip)
-+{
-+	if (ip->flags & ~BPFILTER_IPT_F_MASK) {
-+		BFLOG_ERR("invalid flags: %d", ip->flags);
-+		return -EINVAL;
-+	}
-+
-+	if (ip->invflags & ~BPFILTER_IPT_INV_MASK) {
-+		BFLOG_ERR("invalid inverse flags: %d", ip->invflags);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+bool rule_has_standard_target(const struct rule *rule)
-+{
-+	return rule->target.target_ops == &standard_target_ops;
-+}
-+
-+bool rule_is_unconditional(const struct rule *rule)
-+{
-+	static const struct bpfilter_ipt_ip unconditional;
-+
-+	if (rule->num_matches)
-+		return false;
-+
-+	return !memcmp(&rule->ipt_entry->ip, &unconditional,
-+		       sizeof(unconditional));
-+}
-+
-+int init_rule(struct context *ctx, const struct bpfilter_ipt_entry *ipt_entry,
-+	      struct rule *rule)
-+{
-+	const struct bpfilter_ipt_target *ipt_target;
-+	int r;
-+
-+	r = check_ipt_entry_ip(&ipt_entry->ip);
-+	if (r) {
-+		BFLOG_ERR("failed to check IPT entry IP: %s", STRERR(r));
-+		return r;
-+	}
-+
-+	if (ipt_entry->target_offset < sizeof(*ipt_entry)) {
-+		BFLOG_ERR("invalid struct ipt_entry target offset: %d",
-+			  ipt_entry->target_offset);
-+		return -EINVAL;
-+	}
-+
-+	if (ipt_entry->next_offset <
-+	    ipt_entry->target_offset + sizeof(*ipt_target)) {
-+		BFLOG_ERR("invalid struct ipt_entry next offset: %d",
-+			  ipt_entry->next_offset);
-+		return -EINVAL;
-+	}
-+
-+	ipt_target = ipt_entry_target(ipt_entry);
-+
-+	if (ipt_target->u.target_size < sizeof(*ipt_target)) {
-+		BFLOG_ERR("invalid struct ipt_target target size: %d",
-+			  ipt_target->u.target_size);
-+		return -EINVAL;
-+	}
-+
-+	if (ipt_entry->next_offset <
-+	    ipt_entry->target_offset + ipt_target->u.target_size) {
-+		BFLOG_ERR("invalid struct ipt_entry next offset: %d",
-+			  ipt_entry->next_offset);
-+		return -EINVAL;
-+	}
-+
-+	rule->ipt_entry = ipt_entry;
-+
-+	r = init_target(ctx, ipt_target, &rule->target);
-+	if (r) {
-+		BFLOG_ERR("failed to initialise target: %s", STRERR(r));
-+		return r;
-+	}
-+
-+	if (rule_has_standard_target(rule)) {
-+		if (XT_ALIGN(ipt_entry->target_offset + sizeof(struct bpfilter_ipt_standard_target)) !=
-+		    ipt_entry->next_offset) {
-+			BFLOG_ERR("invalid struct ipt_entry target offset alignment");
++		if (table->size < offset + sizeof(*ipt_entry)) {
++			BFLOG_ERR("invalid table size: %d", table->size);
 +			return -EINVAL;
 +		}
-+	}
 +
-+	rule->num_matches = ipt_entry_num_matches(ipt_entry);
-+	if (rule->num_matches < 0)
-+		return rule->num_matches;
++		ipt_entry = table->entries + offset;
 +
-+	return init_rule_matches(ctx, ipt_entry, rule);
-+}
++		if ((uintptr_t)ipt_entry % __alignof__(struct bpfilter_ipt_entry)) {
++			BFLOG_ERR("invalid alignment for struct ipt_entry");
++			return -EINVAL;
++		}
 +
-+int gen_inline_rule(struct codegen *ctx, const struct rule *rule)
-+{
-+	int r;
++		if (table->size < offset + ipt_entry->next_offset) {
++			BFLOG_ERR("invalid table size: %d", table->size);
++			return -EINVAL;
++		}
 +
-+	const struct bpfilter_ipt_ip *ipt_ip = &rule->ipt_entry->ip;
-+
-+	if (!ipt_ip->src_mask && !ipt_ip->src) {
-+		if (ipt_ip->invflags & IPT_INV_SRCIP)
-+			return 0;
-+	}
-+
-+	if (!ipt_ip->dst_mask && !ipt_ip->dst) {
-+		if (ipt_ip->invflags & IPT_INV_DSTIP)
-+			return 0;
-+	}
-+
-+	if (ipt_ip->src_mask || ipt_ip->src) {
-+		const int op = ipt_ip->invflags & IPT_INV_SRCIP ? BPF_JEQ : BPF_JNE;
-+
-+		EMIT(ctx, BPF_LDX_MEM(BPF_W, CODEGEN_REG_SCRATCH1, CODEGEN_REG_L3,
-+				      offsetof(struct iphdr, saddr)));
-+		EMIT(ctx, BPF_ALU32_IMM(BPF_AND, CODEGEN_REG_SCRATCH1, ipt_ip->src_mask));
-+		EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
-+			   BPF_JMP_IMM(op, CODEGEN_REG_SCRATCH1, ipt_ip->src, 0));
-+	}
-+
-+	if (ipt_ip->dst_mask || ipt_ip->dst) {
-+		const int op = ipt_ip->invflags & IPT_INV_DSTIP ? BPF_JEQ : BPF_JNE;
-+
-+		EMIT(ctx, BPF_LDX_MEM(BPF_W, CODEGEN_REG_SCRATCH2, CODEGEN_REG_L3,
-+				      offsetof(struct iphdr, daddr)));
-+		EMIT(ctx, BPF_ALU32_IMM(BPF_AND, CODEGEN_REG_SCRATCH2, ipt_ip->dst_mask));
-+		EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
-+			   BPF_JMP_IMM(op, CODEGEN_REG_SCRATCH2, ipt_ip->dst, 0));
-+	}
-+
-+	if (ipt_ip->protocol) {
-+		EMIT(ctx, BPF_LDX_MEM(BPF_B, CODEGEN_REG_SCRATCH4, CODEGEN_REG_L3,
-+				      offsetof(struct iphdr, protocol)));
-+		EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
-+			   BPF_JMP_IMM(BPF_JNE, CODEGEN_REG_SCRATCH4, ipt_ip->protocol, 0));
-+
-+		EMIT(ctx, BPF_LDX_MEM(BPF_B, CODEGEN_REG_SCRATCH4, CODEGEN_REG_L3,
-+				      offsetof(struct iphdr, protocol)));
-+		EMIT(ctx, BPF_MOV64_REG(CODEGEN_REG_L4, CODEGEN_REG_L3));
-+		EMIT(ctx, BPF_LDX_MEM(BPF_B, CODEGEN_REG_SCRATCH1, CODEGEN_REG_L3, 0));
-+		EMIT(ctx, BPF_ALU32_IMM(BPF_AND, CODEGEN_REG_SCRATCH1, 0x0f));
-+		EMIT(ctx, BPF_ALU32_IMM(BPF_LSH, CODEGEN_REG_SCRATCH1, 2));
-+		EMIT(ctx, BPF_ALU64_REG(BPF_ADD, CODEGEN_REG_L4, CODEGEN_REG_SCRATCH1));
-+	}
-+
-+	for (int i = 0; i < rule->num_matches; ++i) {
-+		const struct match *match;
-+
-+		match = &rule->matches[i];
-+		r = match->match_ops->gen_inline(ctx, match);
++		r = init_rule(ctx, ipt_entry, &table->rules[i]);
 +		if (r) {
-+			BFLOG_ERR("failed to generate inline code match: %s",
++			BFLOG_ERR("failed to initialize rule: %s",
 +				  STRERR(r));
 +			return r;
 +		}
++
++		table->rules[i].ipt_entry = ipt_entry;
++		offset += ipt_entry->next_offset;
 +	}
 +
-+	EMIT_ADD_COUNTER(ctx);
-+
-+	r = rule->target.target_ops->gen_inline(ctx, &rule->target);
-+	if (r) {
-+		BFLOG_ERR("failed to generate inline code for target: %s",
-+			  STRERR(r));
-+		return r;
++	if (offset != ipt_replace->size) {
++		BFLOG_ERR("invalid final offset: %d", offset);
++		return -EINVAL;
 +	}
 +
-+	codegen_fixup(ctx, CODEGEN_FIXUP_NEXT_RULE);
++	if (table->num_rules != ipt_replace->num_entries) {
++		BFLOG_ERR("mismatch in number of rules: got %d, expected %d",
++			  table->num_rules, ipt_replace->num_entries);
++		return -EINVAL;
++	}
 +
 +	return 0;
 +}
 +
-+void free_rule(struct rule *rule)
++static int table_check_hooks(const struct table *table)
 +{
-+	free(rule->matches);
++	uint32_t max_rule_front, max_rule_last;
++	bool check = false;
++
++	for (int i = 0; i < BPFILTER_INET_HOOK_MAX; ++i) {
++		if (!table_has_hook(table, i))
++			continue;
++
++		if (check) {
++			if (table->hook_entry[i] <= max_rule_front) {
++				BFLOG_ERR("invalid hook entry");
++				return -EINVAL;
++			}
++
++			if (table->underflow[i] <= max_rule_last) {
++				BFLOG_ERR("invalid underflow entry");
++				return -EINVAL;
++			}
++		}
++
++		max_rule_front = table->hook_entry[i];
++		max_rule_last = table->underflow[i];
++		check = true;
++	}
++
++	return 0;
 +}
-diff --git a/net/bpfilter/rule.h b/net/bpfilter/rule.h
++
++static int table_init_hooks(struct table *table,
++			    const struct bpfilter_ipt_replace *ipt_replace)
++{
++	for (int i = 0; i < BPFILTER_INET_HOOK_MAX; ++i) {
++		struct rule *rule_front;
++		struct rule *rule_last;
++		int verdict;
++
++		if (!table_has_hook(table, i))
++			continue;
++
++		rule_front = table_find_rule_by_offset(table, ipt_replace->hook_entry[i]);
++		rule_last = table_find_rule_by_offset(table, ipt_replace->underflow[i]);
++
++		if (!rule_front || !rule_last) {
++			BFLOG_ERR("expected a first and last rule");
++			return -EINVAL;
++		}
++
++		if (!rule_is_unconditional(rule_last)) {
++			BFLOG_ERR("expected unconditional rule");
++			return -EINVAL;
++		}
++
++		if (!rule_has_standard_target(rule_last)) {
++			BFLOG_ERR("expected rule for a standard target");
++			return -EINVAL;
++		}
++
++		verdict = standard_target_verdict(rule_last->target.ipt_target);
++		if (verdict >= 0) {
++			BFLOG_ERR("expected a valid standard target verdict: %d",
++				  verdict);
++			return -EINVAL;
++		}
++
++		verdict = convert_verdict(verdict);
++
++		if (verdict != BPFILTER_NF_DROP && verdict != BPFILTER_NF_ACCEPT) {
++			BFLOG_ERR("verdict must be either NF_DROP or NF_ACCEPT");
++			return -EINVAL;
++		}
++
++		table->hook_entry[i] = rule_front - table->rules;
++		table->underflow[i] = rule_last - table->rules;
++	}
++
++	return table_check_hooks(table);
++}
++
++static struct rule *next_rule(const struct table *table, struct rule *rule)
++{
++	const uint32_t i = rule - table->rules;
++
++	if (table->num_rules <= i + 1) {
++		BFLOG_ERR("rule index is out of range");
++		return ERR_PTR(-EINVAL);
++	}
++
++	++rule;
++	rule->came_from = i;
++
++	return rule;
++}
++
++static struct rule *backtrack_rule(const struct table *table, struct rule *rule)
++{
++	uint32_t i = rule - table->rules;
++	int prev_i;
++
++	do {
++		rule->hook_mask ^= (1 << BPFILTER_INET_HOOK_MAX);
++		prev_i = i;
++		i = rule->came_from;
++		rule->came_from = 0;
++
++		if (i == prev_i)
++			return NULL;
++
++		rule = &table->rules[i];
++	} while (prev_i == i + 1);
++
++	return next_rule(table, rule);
++}
++
++static int table_check_chain(struct table *table, uint32_t hook,
++			     struct rule *rule)
++{
++	uint32_t i = rule - table->rules;
++
++	rule->came_from = i;
++
++	for (;;) {
++		bool visited;
++		int verdict;
++
++		if (!rule)
++			return 0;
++
++		if (IS_ERR(rule))
++			return PTR_ERR(rule);
++
++		i = rule - table->rules;
++
++		if (table->num_rules <= i) {
++			BFLOG_ERR("rule index is out of range: %d", i);
++			return -EINVAL;
++		}
++
++		if (rule->hook_mask & (1 << BPFILTER_INET_HOOK_MAX)) {
++			BFLOG_ERR("hook index out of range");
++			return -EINVAL;
++		}
++
++		// already visited
++		visited = rule->hook_mask & (1 << hook);
++		rule->hook_mask |= (1 << hook) | (1 << BPFILTER_INET_HOOK_MAX);
++
++		if (visited) {
++			rule = backtrack_rule(table, rule);
++			continue;
++		}
++
++		if (!rule_has_standard_target(rule)) {
++			rule = next_rule(table, rule);
++			continue;
++		}
++
++		verdict = standard_target_verdict(rule->target.ipt_target);
++		if (verdict > 0) {
++			rule = table_find_rule_by_offset(table, verdict);
++			if (!rule) {
++				BFLOG_ERR("failed to find rule by offset");
++				return -EINVAL;
++			}
++
++			rule->came_from = i;
++			continue;
++		}
++
++		if (!rule_is_unconditional(rule)) {
++			rule = next_rule(table, rule);
++			continue;
++		}
++
++		rule = backtrack_rule(table, rule);
++	}
++
++	return 0;
++}
++
++static int table_check_chains(struct table *table)
++{
++	int r = 0;
++
++	for (int i = 0, r = 0; !r && i < BPFILTER_INET_HOOK_MAX; ++i) {
++		if (table_has_hook(table, i))
++			r = table_check_chain(table, i, &table->rules[table->hook_entry[i]]);
++	}
++
++	return r;
++}
++
++struct table *create_table(struct context *ctx,
++			   const struct bpfilter_ipt_replace *ipt_replace)
++{
++	struct table *table;
++	int r;
++
++	table = calloc(1, sizeof(*table));
++	if (!table) {
++		BFLOG_ERR("out of memory");
++		return ERR_PTR(-ENOMEM);
++	}
++
++	INIT_LIST_HEAD(&table->list);
++	table->valid_hooks = ipt_replace->valid_hooks;
++	table->num_rules = ipt_replace->num_entries;
++	table->num_counters = ipt_replace->num_counters;
++	table->size = ipt_replace->size;
++
++	r = table_init_rules(ctx, table, ipt_replace);
++	if (r) {
++		BFLOG_ERR("failed to initialise table rules: %s", STRERR(r));
++		goto err_free;
++	}
++
++	r = table_init_hooks(table, ipt_replace);
++	if (r) {
++		BFLOG_ERR("failed to initialise table hooks: %s", STRERR(r));
++		goto err_free;
++	}
++
++	r = table_check_chains(table);
++	if (r) {
++		BFLOG_ERR("failed to check table chains: %s", STRERR(r));
++		goto err_free;
++	}
++
++	return table;
++
++err_free:
++	free_table(table);
++
++	return ERR_PTR(r);
++}
++
++struct rule *table_find_rule_by_offset(const struct table *table,
++				       uint32_t offset)
++{
++	const struct bpfilter_ipt_entry *key;
++
++	key = table->entries + offset;
++
++	return bsearch(key, table->rules, table->num_rules,
++		       sizeof(table->rules[0]), rule_offset_comparator);
++}
++
++void table_get_info(const struct table *table,
++		    struct bpfilter_ipt_get_info *info)
++{
++	snprintf(info->name, sizeof(info->name), "%s", table->table_ops->name);
++	info->valid_hooks = table->valid_hooks;
++
++	for (int i = 0; i < BPFILTER_INET_HOOK_MAX; ++i) {
++		const struct rule *rule_front, *rule_last;
++
++		if (!table_has_hook(table, i)) {
++			info->hook_entry[i] = 0;
++			info->underflow[i] = 0;
++			continue;
++		}
++
++		rule_front = &table->rules[table->hook_entry[i]];
++		rule_last = &table->rules[table->underflow[i]];
++		info->hook_entry[i] = (const void *)rule_front->ipt_entry - table->entries;
++		info->underflow[i] = (const void *)rule_last->ipt_entry - table->entries;
++	}
++
++	info->num_entries = table->num_rules;
++	info->size = table->size;
++}
++
++void free_table(struct table *table)
++{
++	if (!table)
++		return;
++
++	list_del(&table->list);
++
++	if (table->rules) {
++		for (int i = 0; i < table->num_rules; ++i)
++			free_rule(&table->rules[i]);
++		free(table->rules);
++	}
++
++	free(table->entries);
++	free(table);
++}
+diff --git a/net/bpfilter/table.h b/net/bpfilter/table.h
 new file mode 100644
-index 000000000000..3a50c6112d3b
+index 000000000000..d683005e1755
 --- /dev/null
-+++ b/net/bpfilter/rule.h
-@@ -0,0 +1,37 @@
++++ b/net/bpfilter/table.h
+@@ -0,0 +1,59 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2021 Telegram FZ-LLC
 + * Copyright (c) 2022 Meta Platforms, Inc. and affiliates.
 + */
 +
-+#ifndef NET_BPFILTER_RULE_H
-+#define NET_BPFILTER_RULE_H
++#ifndef NET_BPFILTER_TABLE_H
++#define NET_BPFILTER_TABLE_H
 +
++#include "../../include/uapi/linux/bpfilter.h"
++
++#include <linux/types.h>
++
++#include <search.h>
 +#include <stdint.h>
-+#include <stdbool.h>
 +
-+#include "target.h"
-+
-+struct bpfilter_ipt_entry;
-+struct codegen;
 +struct context;
-+struct match;
++struct rule;
++struct table;
 +
-+struct rule {
-+	const struct bpfilter_ipt_entry *ipt_entry;
-+	uint32_t came_from;
-+	uint32_t hook_mask;
-+	uint16_t num_matches;
-+	struct match *matches;
-+	struct target target;
-+	uint32_t index;
++struct table_ops {
++	char name[BPFILTER_XT_TABLE_MAXNAMELEN];
++	struct table *(*create)(struct context *ctx,
++				const struct bpfilter_ipt_replace *ipt_replace);
++	int (*codegen)(struct context *ctx, struct table *table);
++	int (*install)(struct context *ctx, struct table *table);
++	void (*uninstall)(struct context *ctx, struct table *table);
++	void (*free)(struct table *table);
++	void (*update_counters)(struct table *table);
 +};
 +
-+bool rule_has_standard_target(const struct rule *rule);
-+bool rule_is_unconditional(const struct rule *rule);
-+int init_rule(struct context *ctx, const struct bpfilter_ipt_entry *ipt_entry,
-+	      struct rule *rule);
-+int gen_inline_rule(struct codegen *ctx, const struct rule *rule);
-+void free_rule(struct rule *rule);
++struct table {
++	const struct table_ops *table_ops;
++	uint32_t valid_hooks;
++	uint32_t num_rules;
++	uint32_t num_counters;
++	uint32_t size;
++	uint32_t hook_entry[BPFILTER_INET_HOOK_MAX];
++	uint32_t underflow[BPFILTER_INET_HOOK_MAX];
++	struct rule *rules;
++	void *entries;
++	void *ctx;
++	struct list_head list;
++};
 +
-+#endif // NET_BPFILTER_RULE_H
-diff --git a/tools/testing/selftests/bpf/bpfilter/.gitignore b/tools/testing/selftests/bpf/bpfilter/.gitignore
-index 89912a44109f..a934ddef58d2 100644
---- a/tools/testing/selftests/bpf/bpfilter/.gitignore
-+++ b/tools/testing/selftests/bpf/bpfilter/.gitignore
-@@ -4,3 +4,4 @@ test_map
- test_match
- test_xt_udp
- test_target
-+test_rule
++struct table_index {
++	struct hsearch_data map;
++	struct list_head list;
++};
++
++struct table *create_table(struct context *ctx,
++			   const struct bpfilter_ipt_replace *ipt_replace);
++struct rule *table_find_rule_by_offset(const struct table *table,
++				       uint32_t offset);
++void table_get_info(const struct table *table,
++		    struct bpfilter_ipt_get_info *info);
++void free_table(struct table *table);
++
++#endif // NET_BPFILTER_TABLE_H
 diff --git a/tools/testing/selftests/bpf/bpfilter/Makefile b/tools/testing/selftests/bpf/bpfilter/Makefile
-index 587951d14c0c..4ef52bfe2d21 100644
+index 4ef52bfe2d21..53634699d427 100644
 --- a/tools/testing/selftests/bpf/bpfilter/Makefile
 +++ b/tools/testing/selftests/bpf/bpfilter/Makefile
-@@ -14,6 +14,7 @@ TEST_GEN_PROGS += test_map
- TEST_GEN_PROGS += test_match
- TEST_GEN_PROGS += test_xt_udp
- TEST_GEN_PROGS += test_target
-+TEST_GEN_PROGS += test_rule
- 
- KSFT_KHDR_INSTALL := 1
- 
-@@ -39,12 +40,15 @@ BPFILTER_MAP_SRCS := $(BPFILTERSRCDIR)/map-common.c
- BPFILTER_CODEGEN_SRCS := $(BPFILTERSRCDIR)/codegen.c $(BPFOBJ) -lelf -lz
- BPFILTER_MATCH_SRCS := $(BPFILTERSRCDIR)/match.c $(BPFILTERSRCDIR)/xt_udp.c
- BPFILTER_TARGET_SRCS := $(BPFILTERSRCDIR)/target.c
-+BPFILTER_RULE_SRCS := $(BPFILTERSRCDIR)/rule.c
- 
+@@ -45,7 +45,7 @@ BPFILTER_RULE_SRCS := $(BPFILTERSRCDIR)/rule.c
  BPFILTER_COMMON_SRCS := $(BPFILTER_MAP_SRCS) $(BPFILTER_CODEGEN_SRCS)
  BPFILTER_COMMON_SRCS += $(BPFILTERSRCDIR)/context.c $(BPFILTERSRCDIR)/logger.c
  BPFILTER_COMMON_SRCS += $(BPFILTER_MATCH_SRCS) $(BPFILTER_TARGET_SRCS)
-+BPFILTER_COMMON_SRCS += $(BPFILTER_RULE_SRCS)
+-BPFILTER_COMMON_SRCS += $(BPFILTER_RULE_SRCS)
++BPFILTER_COMMON_SRCS += $(BPFILTER_RULE_SRCS) $(BPFILTERSRCDIR)/table.c
  
  $(OUTPUT)/test_map: test_map.c $(BPFILTER_MAP_SRCS)
  $(OUTPUT)/test_match: test_match.c $(BPFILTER_COMMON_SRCS)
- $(OUTPUT)/test_xt_udp: test_xt_udp.c $(BPFILTER_COMMON_SRCS)
- $(OUTPUT)/test_target: test_target.c $(BPFILTER_COMMON_SRCS)
-+$(OUTPUT)/test_rule: test_rule.c $(BPFILTER_COMMON_SRCS)
-diff --git a/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h b/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
-index 0d6a6bee5514..8dd7911fa06f 100644
---- a/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
-+++ b/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
-@@ -4,6 +4,7 @@
- #define BPFILTER_UTIL_H
- 
- #include <linux/netfilter/x_tables.h>
-+#include <linux/netfilter_ipv4/ip_tables.h>
- 
- #include <stdio.h>
- #include <stdint.h>
-@@ -42,4 +43,11 @@ static inline void init_error_target(struct xt_error_target *ipt_target,
- 		 error_name);
- }
- 
-+static inline void init_standard_entry(struct ipt_entry *entry, __u16 matches_size)
-+{
-+	memset(entry, 0, sizeof(*entry));
-+	entry->target_offset = sizeof(*entry) + matches_size;
-+	entry->next_offset = sizeof(*entry) + matches_size + sizeof(struct xt_standard_target);
-+}
-+
- #endif // BPFILTER_UTIL_H
-diff --git a/tools/testing/selftests/bpf/bpfilter/test_rule.c b/tools/testing/selftests/bpf/bpfilter/test_rule.c
-new file mode 100644
-index 000000000000..db2cc7c5586a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/bpfilter/test_rule.c
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#define _GNU_SOURCE
-+
-+#include "rule.h"
-+
-+#include <linux/bpfilter.h>
-+#include <linux/err.h>
-+
-+#include <linux/netfilter_ipv4/ip_tables.h>
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+
-+#include "../../kselftest_harness.h"
-+
-+#include "context.h"
-+#include "logger.h"
-+#include "rule.h"
-+
-+#include "bpfilter_util.h"
-+
-+FIXTURE(test_standard_rule)
-+{
-+	struct context ctx;
-+	struct {
-+		struct ipt_entry entry;
-+		struct xt_standard_target target;
-+	} entry;
-+	struct rule rule;
-+};
-+
-+FIXTURE_SETUP(test_standard_rule)
-+{
-+	const int verdict = BPFILTER_NF_ACCEPT;
-+
-+	logger_set_file(stderr);
-+	ASSERT_EQ(create_context(&self->ctx), 0);
-+
-+	init_standard_entry(&self->entry.entry, 0);
-+	init_standard_target(&self->entry.target, 0, -verdict - 1);
-+}
-+
-+FIXTURE_TEARDOWN(test_standard_rule)
-+{
-+	free_rule(&self->rule);
-+	free_context(&self->ctx);
-+}
-+
-+TEST_F(test_standard_rule, init)
-+{
-+	ASSERT_EQ(0, init_rule(&self->ctx, (const struct bpfilter_ipt_entry *)&self->entry.entry,
-+			       &self->rule));
-+}
-+
-+TEST_HARNESS_MAIN
 -- 
 2.38.1
 
