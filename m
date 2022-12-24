@@ -2,239 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CBBD65567B
-	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F826556B3
+	for <lists+netdev@lfdr.de>; Sat, 24 Dec 2022 01:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236215AbiLXAGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Dec 2022 19:06:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S231592AbiLXA3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Dec 2022 19:29:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236446AbiLXAFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:05:44 -0500
-X-Greylist: delayed 745 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Dec 2022 16:04:48 PST
-Received: from 7.mo545.mail-out.ovh.net (7.mo545.mail-out.ovh.net [46.105.63.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4F71A800
-        for <netdev@vger.kernel.org>; Fri, 23 Dec 2022 16:04:47 -0800 (PST)
-Received: from ex4.mail.ovh.net (unknown [10.109.143.149])
-        by mo545.mail-out.ovh.net (Postfix) with ESMTPS id 5D3B725F9C;
-        Sat, 24 Dec 2022 00:04:45 +0000 (UTC)
-Received: from dev-fedora-x86-64.naccy.de (37.65.8.229) by
- DAG10EX1.indiv4.local (172.16.2.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sat, 24 Dec 2022 01:04:44 +0100
-From:   Quentin Deslandes <qde@naccy.de>
-To:     <qde@naccy.de>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Dmitrii Banshchikov <me@ubique.spb.ru>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@meta.com>
-Subject: [PATCH bpf-next v3 16/16] bpfilter: handle setsockopt() calls
-Date:   Sat, 24 Dec 2022 01:04:02 +0100
-Message-ID: <20221224000402.476079-17-qde@naccy.de>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221224000402.476079-1-qde@naccy.de>
-References: <20221224000402.476079-1-qde@naccy.de>
+        with ESMTP id S230312AbiLXA3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Dec 2022 19:29:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0FA1A39D;
+        Fri, 23 Dec 2022 16:29:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DA6161FA3;
+        Sat, 24 Dec 2022 00:29:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DBA3C433EF;
+        Sat, 24 Dec 2022 00:29:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671841762;
+        bh=D8/RRmXxBlCJ2dVDP24Osx4Ge5pXkhUGS6I0xtbmJAk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kNN9dy/dfj7FTGUzLGg1SoUiugSuLsPVjUWqAixbaBX1u6JyoukzydQA/PdNV6oN0
+         rOZRD65ZuHZFS1UzhiJa3iHgJV3Za1/xQyw0u28069NFlgomZFpMOI7DNOguECforX
+         J63jA1GEB9qzpowrMJYpA1SMVHmrDthJiavxffL4j/7yK+nZsLgOSeSWOh2jWb7K6q
+         8jFhYFW+ANVqEGPmXdecOG82dLwqpV7jZdkFXgQygfBuSnmCUYn0CQHrsFGN23bF3b
+         DFMPCT34BiC8AEFlZzVfxgw6EB/+ICogP51r/rnM8gBakBYpEBPRQAHB8eAihCLaXF
+         Z4sRcJ3SxZtzQ==
+Date:   Fri, 23 Dec 2022 19:29:21 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.15 41/46] net: dpaa2: publish MAC stringset to
+ ethtool -S even if MAC is missing
+Message-ID: <Y6ZH4YCuBSiPDMNd@sashalap>
+References: <20221218161244.930785-1-sashal@kernel.org>
+ <20221218161244.930785-41-sashal@kernel.org>
+ <20221219115402.evv5x2dzrb7tlwmn@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [37.65.8.229]
-X-ClientProxiedBy: CAS6.indiv4.local (172.16.1.6) To DAG10EX1.indiv4.local
- (172.16.2.91)
-X-Ovh-Tracer-Id: 4763963984512609911
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -85
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrheefgddujecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenogetfedtuddqtdduucdludehmdenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpefsuhgvnhhtihhnucffvghslhgrnhguvghsuceoqhguvgesnhgrtggthidruggvqeenucggtffrrghtthgvrhhnpeduledugfeileetvdelieeujedttedtvedtgfetteevfeejhfffkeeujeetfffgudenucfkphepuddvjedrtddrtddruddpfeejrdeihedrkedrvddvleenucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomhepoehquggvsehnrggttgihrdguvgeqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepjhholhhsrgeskhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdgsphhfsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpmhgvsehusghiqhhuvgdrshhpsgdrrhhupdhshhhurghhsehkvghrnhgvlhdrohhrghdpmhihkhholhgrlhesfhgsrdgtohhmpdhprggsvghnihesrhgvughhrghtrdgtohhmpdhkuhgsrg
- eskhgvrhhnvghlrdhorhhgpdgvughumhgriigvthesghhoohhglhgvrdgtohhmpdgurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhkvghrnhgvlhdqthgvrghmsehmvghtrgdrtghomhdphhgrohhluhhosehgohhoghhlvgdrtghomhdpshgufhesghhoohhglhgvrdgtohhmpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeghedpmhhouggvpehsmhhtphhouhht
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20221219115402.evv5x2dzrb7tlwmn@skbuf>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use earlier introduced infrastructure and handle setsockopt(2) calls.
+On Mon, Dec 19, 2022 at 01:54:02PM +0200, Vladimir Oltean wrote:
+>Hi Sasha,
+>
+>On Sun, Dec 18, 2022 at 11:12:39AM -0500, Sasha Levin wrote:
+>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>>
+>> [ Upstream commit 29811d6e19d795efcf26644b66c4152abbac35a6 ]
+>>
+>> DPNIs and DPSW objects can connect and disconnect at runtime from DPMAC
+>> objects on the same fsl-mc bus. The DPMAC object also holds "ethtool -S"
+>> unstructured counters. Those counters are only shown for the entity
+>> owning the netdev (DPNI, DPSW) if it's connected to a DPMAC.
+>>
+>> The ethtool stringset code path is split into multiple callbacks, but
+>> currently, connecting and disconnecting the DPMAC takes the rtnl_lock().
+>> This blocks the entire ethtool code path from running, see
+>> ethnl_default_doit() -> rtnl_lock() -> ops->prepare_data() ->
+>> strset_prepare_data().
+>>
+>> This is going to be a problem if we are going to no longer require
+>> rtnl_lock() when connecting/disconnecting the DPMAC, because the DPMAC
+>> could appear between ops->get_sset_count() and ops->get_strings().
+>> If it appears out of the blue, we will provide a stringset into an array
+>> that was dimensioned thinking the DPMAC wouldn't be there => array
+>> accessed out of bounds.
+>>
+>> There isn't really a good way to work around that, and I don't want to
+>> put too much pressure on the ethtool framework by playing locking games.
+>> Just make the DPMAC counters be always available. They'll be zeroes if
+>> the DPNI or DPSW isn't connected to a DPMAC.
+>>
+>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>> Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+>> Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+>> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>> ---
+>
+>I think the algorithm has a problem in that it has a tendency to
+>auto-pick preparatory patches which eliminate limitations that are
+>preventing future development from taking place, rather than patches
+>which fix present issues in the given code base.
 
-Co-developed-by: Dmitrii Banshchikov <me@ubique.spb.ru>
-Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
-Signed-off-by: Quentin Deslandes <qde@naccy.de>
----
- net/bpfilter/main.c | 132 ++++++++++++++++++++++++++++++--------------
- 1 file changed, 90 insertions(+), 42 deletions(-)
+Yeah, I'd agree. I think that the tricky part is that preperatory
+patches usually resolve an issue, but it's not clear whether it's
+something that affects users, or is just a theoretical limitation needed
+by future patches.
 
-diff --git a/net/bpfilter/main.c b/net/bpfilter/main.c
-index 291a92546246..c157277c48b5 100644
---- a/net/bpfilter/main.c
-+++ b/net/bpfilter/main.c
-@@ -1,64 +1,112 @@
- // SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2021 Telegram FZ-LLC
-+ * Copyright (c) 2022 Meta Platforms, Inc. and affiliates.
-+ */
-+
- #define _GNU_SOURCE
--#include <sys/uio.h>
-+
- #include <errno.h>
- #include <stdio.h>
--#include <sys/socket.h>
--#include <fcntl.h>
-+#include <stdlib.h>
-+#include <sys/types.h>
- #include <unistd.h>
--#include "../../include/uapi/linux/bpf.h"
--#include <asm/unistd.h>
-+
-+#include "context.h"
-+#include "filter-table.h"
-+#include "logger.h"
- #include "msgfmt.h"
-+#include "sockopt.h"
- 
--FILE *debug_f;
-+#define do_exact(fd, op, buffer, count)							  \
-+	({										  \
-+		typeof(count) __count = count;						  \
-+		size_t total = 0;							  \
-+		int r = 0;								  \
-+											  \
-+		do {									  \
-+			const ssize_t part = op(fd, (buffer) + total, (__count) - total); \
-+			if (part > 0) {							  \
-+				total += part;						  \
-+			} else if (part == 0 && (__count) > 0) {			  \
-+				r = -EIO;						  \
-+				break;							  \
-+			} else if (part == -1) {					  \
-+				if (errno == EINTR)					  \
-+					continue;					  \
-+				r = -errno;						  \
-+				break;							  \
-+			}								  \
-+		} while (total < (__count));						  \
-+											  \
-+		r;									  \
-+	})
- 
--static int handle_get_cmd(struct mbox_request *cmd)
-+static int read_exact(int fd, void *buffer, size_t count)
- {
--	switch (cmd->cmd) {
--	case 0:
--		return 0;
--	default:
--		break;
--	}
--	return -ENOPROTOOPT;
-+	return do_exact(fd, read, buffer, count);
-+}
-+
-+static int write_exact(int fd, const void *buffer, size_t count)
-+{
-+	return do_exact(fd, write, buffer, count);
- }
- 
--static int handle_set_cmd(struct mbox_request *cmd)
-+static int setup_context(struct context *ctx)
- {
--	return -ENOPROTOOPT;
-+	int r;
-+
-+	r = logger_init();
-+	if (r < 0)
-+		return r;
-+
-+	BFLOG_DBG("log file opened and ready to use");
-+
-+	r = create_filter_table(ctx);
-+	if (r < 0)
-+		BFLOG_ERR("failed to created filter table: %s", STRERR(r));
-+
-+	return r;
- }
- 
--static void loop(void)
-+static void loop(struct context *ctx)
- {
--	while (1) {
--		struct mbox_request req;
--		struct mbox_reply reply;
--		int n;
--
--		n = read(0, &req, sizeof(req));
--		if (n != sizeof(req)) {
--			fprintf(debug_f, "invalid request %d\n", n);
--			return;
--		}
--
--		reply.status = req.is_set ?
--			handle_set_cmd(&req) :
--			handle_get_cmd(&req);
--
--		n = write(1, &reply, sizeof(reply));
--		if (n != sizeof(reply)) {
--			fprintf(debug_f, "reply failed %d\n", n);
--			return;
--		}
-+	struct mbox_request req;
-+	struct mbox_reply reply;
-+	int r;
-+
-+	for (;;) {
-+		r = read_exact(STDIN_FILENO, &req, sizeof(req));
-+		if (r)
-+			BFLOG_EMERG("cannot read request: %s", STRERR(r));
-+
-+		reply.status = handle_sockopt_request(ctx, &req);
-+
-+		r = write_exact(STDOUT_FILENO, &reply, sizeof(reply));
-+		if (r)
-+			BFLOG_EMERG("cannot write reply: %s", STRERR(r));
- 	}
- }
- 
- int main(void)
- {
--	debug_f = fopen("/dev/kmsg", "w");
--	setvbuf(debug_f, 0, _IOLBF, 0);
--	fprintf(debug_f, "<5>Started bpfilter\n");
--	loop();
--	fclose(debug_f);
-+	struct context ctx;
-+	int r;
-+
-+	r = create_context(&ctx);
-+	if (r)
-+		return r;
-+
-+	r = setup_context(&ctx);
-+	if (r) {
-+		free_context(&ctx);
-+		return r;
-+	}
-+
-+	loop(&ctx);
-+
-+	// Disregard return value, the application is closed anyway.
-+	(void)logger_clean();
-+
- 	return 0;
- }
+>In this case, the patch is part of a larger series which was at the
+>boundary between "next" work and "stable" work (patch 07/12 of this)
+>https://patchwork.kernel.org/project/netdevbpf/cover/20221129141221.872653-1-vladimir.oltean@nxp.com/
+>
+>Due to the volume of that rework, I intended it to go to "next", even
+>though backporting the entire series to "stable" could have its own
+>merits. But picking just patch 07/12 out of that series is pointless,
+>so please drop this patch from the queue for 5.15, 6.0 and 6.1, please.
+
+Now dropped, thanks!
+
 -- 
-2.38.1
-
+Thanks,
+Sasha
