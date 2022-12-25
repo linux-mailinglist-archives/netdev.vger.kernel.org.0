@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD42A655DA2
-	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 17:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1A2655DC8
+	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 17:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231136AbiLYQbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Dec 2022 11:31:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
+        id S231282AbiLYQnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Dec 2022 11:43:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiLYQbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 11:31:01 -0500
+        with ESMTP id S231230AbiLYQmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 11:42:46 -0500
 Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5005114B
-        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 08:31:00 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id ge16so5303951pjb.5
-        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 08:31:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1036179
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 08:42:35 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id gv5-20020a17090b11c500b00223f01c73c3so10975539pjb.0
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 08:42:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=evsJtBXmZFYV5w0j7RwUn02fRzW76H4z6fgKEi67ofQ=;
-        b=h/2CCItyqoK1hFChlkW+7FaB8r/3MYlztemzPh2Qk/mEJwZaNH3uK4j35HWUkO1ONw
-         KCo/sZ8VnUzslJVllPXIgHsF6WxuI86EqW/SWCuTubcfjTacPhxIZzU2H9WgM3OxVPF7
-         VaS6JT8UOoFOdAjI2SepIEddSa1AcO1OPw5Ck=
+        bh=iGvwC0QvxG0Ceg/z1tlHxt3RakZaD4F1LyJabesxyww=;
+        b=aHK+9aR6CANBz0ZEptTbAy1XRHaPHqedoF7NxkOWaWJZzjqRd+advB+RfxE9QZnB62
+         2wIP+BKuCNe9t+FyMK/zRi3ugJ30+NfphzLAh18mfuyYE0vTYUaxiOMhjvOytz4FdgOW
+         oQ7YO6MbjZiAQwrN3cUmtuu6tF6NwIRl5Sf0s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=evsJtBXmZFYV5w0j7RwUn02fRzW76H4z6fgKEi67ofQ=;
-        b=oi9oLyiISA2BXQCe/n4wGTarQQ9J3YiGjxGC4gOpmxUKUKSpHQD8Qtu9L9OynMQ6SY
-         e2GUZIz5kh8pud/LvFxQtmEzEowAKrvkhr9bvon6sHa9KttIQvoEvTLAYNhkGq3mEQ9E
-         32Yf8svUaR3LTjSH55RPLChdiaRX6wvm+QfsR8ovAHabIc3Ifh6fu1mEM6R3WqGCCf37
-         j4NxWkB2pNEkW9a020rmUTvHlhtMQvftnqlGrpwHIr1Zy47CP5KhXlACAGLTBz7ANdCu
-         LcGe3Py1rabJZ4OIJoYO/JMU2Xbsw1K1InJOqz8Sgk8KZSLS24BGZfv0NLr9bHKPoFG1
-         SkNA==
-X-Gm-Message-State: AFqh2krPAoJ4UqKGPj0a0VGRnJYk5zaNfZeSsS9dwgVULm4ryPBtLuX2
-        GYuCp4KJPvWcFLOdVLrcUiVpE2QTqqUbN/7UvzGoZkH/viSBiA==
-X-Google-Smtp-Source: AMrXdXsmXEbmI056D1fsZsm3Brc1ZAsRy94APhIiLAmEaKX/ic6SHTelKfPYnHrBVdaygzvQSavKqwb6fh16mn/WVQM=
-X-Received: by 2002:a17:90a:8a91:b0:219:1c3f:985d with SMTP id
- x17-20020a17090a8a9100b002191c3f985dmr1288231pjn.111.1671985860052; Sun, 25
- Dec 2022 08:31:00 -0800 (PST)
+        bh=iGvwC0QvxG0Ceg/z1tlHxt3RakZaD4F1LyJabesxyww=;
+        b=dYwNkUi9YFelJF5APU3BeYPb1jQzFBgYNFd9N2h+8IDDuhcd/CC10Is2NaPa6kyK4T
+         lVsLmilvtX8NaEhQEzYYT/HPEdOYtRKaDQorABZt2VMFR5PThyKbPkt+hyeihCFS7nAn
+         +/9l7dtBgi7zvfWpwNnzyr1K5x5mnobgBTW+AEYsJFmXsttqwSxJ7RFpNIXsfwu506zK
+         vOt04hiLJJtqV1h0Q2st4HDqnyeRrzzaPutyLI5CrjVPUYRL6MEyZ5SdSVYEO5oQFH6i
+         26h4xLhf93DiN3xZH89x4YcfqO2sN5TfdHmL2yq72uTgFb5KJMfUk1wt+vCfKWkFEgmF
+         F7VQ==
+X-Gm-Message-State: AFqh2kqiWmIKYWjU8qbpwgTJRZ8jlj8MK8RiPwexz/m0bhKdItq8ZfeJ
+        KcJrFMF6OKWSiBbT81JlWH6ypMzaKl+sNyvNCwDj2Q==
+X-Google-Smtp-Source: AMrXdXtIcy3IeHacv36T0C0cXF5EilV0gBmV6E/5x3tMzBOTOWPZmjQGak37O6cEpvWHSqqgY9m3UbixCrJApzMr+jA=
+X-Received: by 2002:a17:90a:d350:b0:223:fa07:7bfb with SMTP id
+ i16-20020a17090ad35000b00223fa077bfbmr1360719pjx.38.1671986554554; Sun, 25
+ Dec 2022 08:42:34 -0800 (PST)
 MIME-Version: 1.0
-References: <20221223005645.8709-1-gakula@marvell.com>
-In-Reply-To: <20221223005645.8709-1-gakula@marvell.com>
+References: <20221223074135.150076-1-standby24x7@gmail.com>
+In-Reply-To: <20221223074135.150076-1-standby24x7@gmail.com>
 From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Sun, 25 Dec 2022 22:00:48 +0530
-Message-ID: <CALs4sv3CZjrcC0nqH=RtTBp_aJ3Dd9Q-f7DJUo-+rq-vjVHA4Q@mail.gmail.com>
-Subject: Re: [PATCH net] octeontx2-pf: Fix lmtst Id used in aura free
-To:     Geetha sowjanya <gakula@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
-        edumazet@google.com, sbhatta@marvell.com, hkelam@marvell.com,
-        sgoutham@marvell.com
+Date:   Sun, 25 Dec 2022 22:12:23 +0530
+Message-ID: <CALs4sv3xd8HAhz5DY9MwyQtVMsv_o-4AoFh6P6xkmYff7_r4dw@mail.gmail.com>
+Subject: Re: [PATCH] atm: iphase: Fix a typo in printk message.
+To:     Masanari Iida <standby24x7@gmail.com>
+Cc:     3chas3@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-atm-general@lists.sourceforge.net
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000048c8c205f0a98bc0"
+        boundary="000000000000ad6b9305f0a9b4a9"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -65,141 +63,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000048c8c205f0a98bc0
+--000000000000ad6b9305f0a9b4a9
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Dec 23, 2022 at 6:27 AM Geetha sowjanya <gakula@marvell.com> wrote:
+On Fri, Dec 23, 2022 at 1:11 PM Masanari Iida <standby24x7@gmail.com> wrote:
 >
-> Current code uses per_cpu pointer to get the lmtst_id mapped to
-> the core on which aura_free() is executed. Using per_cpu pointer
-> without preemption disable causing mismatch between lmtst_id and
-> core on which pointer gets freed. This patch fixes the issue by
-> disabling preemption around aura_free.
+> This patch fixes a spelling typo in printk message.
 >
-> This patch also addresses the memory reservation issue,
-> currently NIX, NPA queue context memory is being allocated using
-> GFP_KERNEL flag which inturns allocates from memory reserved for
-> CMA_DMA. Sizing CMA_DMA memory is getting difficult due to this
-> dependency, the more number of interfaces enabled the more the
-> CMA_DMA memory requirement.
->
-> To fix this issue, GFP_KERNEL flag is replaced with GFP_ATOMIC,
-> with this memory will be allocated from unreserved memory.
->
-> Fixes: ef6c8da71eaf ("octeontx2-pf: cn10K: Reserve LMTST lines per core")
-
-Two separate issues are being fixed. I think these two fixes should be
-separate patches.
-
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+> Signed-off-by: Masanari Iida <standby24x7@gmail.com>
 > ---
->  .../ethernet/marvell/octeontx2/af/common.h    |  2 +-
->  .../marvell/octeontx2/nic/otx2_common.c       | 30 +++++++++++++------
->  2 files changed, 22 insertions(+), 10 deletions(-)
+>  drivers/atm/iphase.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/common.h b/drivers/net/ethernet/marvell/octeontx2/af/common.h
-> index 8931864ee110..4b4be9ca4d2f 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/common.h
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/common.h
-> @@ -61,7 +61,7 @@ static inline int qmem_alloc(struct device *dev, struct qmem **q,
->         qmem->entry_sz = entry_sz;
->         qmem->alloc_sz = (qsize * entry_sz) + OTX2_ALIGN;
->         qmem->base = dma_alloc_attrs(dev, qmem->alloc_sz, &qmem->iova,
-> -                                    GFP_KERNEL, DMA_ATTR_FORCE_CONTIGUOUS);
-> +                                    GFP_ATOMIC, DMA_ATTR_FORCE_CONTIGUOUS);
->         if (!qmem->base)
->                 return -ENOMEM;
->
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> index 9e10e7471b88..88f8772a61cd 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> @@ -1012,6 +1012,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
->         rbpool = cq->rbpool;
->         free_ptrs = cq->pool_ptrs;
->
-> +       get_cpu();
->         while (cq->pool_ptrs) {
->                 if (otx2_alloc_rbuf(pfvf, rbpool, &bufptr)) {
->                         /* Schedule a WQ if we fails to free atleast half of the
-> @@ -1031,6 +1032,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
->                 pfvf->hw_ops->aura_freeptr(pfvf, qidx, bufptr + OTX2_HEAD_ROOM);
->                 cq->pool_ptrs--;
->         }
-> +       put_cpu();
->         cq->refill_task_sched = false;
->  }
->
-> @@ -1368,6 +1370,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
->         if (err)
->                 goto fail;
->
-> +       get_cpu();
->         /* Allocate pointers and free them to aura/pool */
->         for (qidx = 0; qidx < hw->tot_tx_queues; qidx++) {
->                 pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
-> @@ -1376,18 +1379,24 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
->                 sq = &qset->sq[qidx];
->                 sq->sqb_count = 0;
->                 sq->sqb_ptrs = kcalloc(num_sqbs, sizeof(*sq->sqb_ptrs), GFP_KERNEL);
-> -               if (!sq->sqb_ptrs)
-> -                       return -ENOMEM;
-> +               if (!sq->sqb_ptrs) {
-> +                       err = -ENOMEM;
-> +                       goto err_mem;
-> +               }
->
->                 for (ptr = 0; ptr < num_sqbs; ptr++) {
-> -                       if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
-> -                               return -ENOMEM;
-> +                       err = otx2_alloc_rbuf(pfvf, pool, &bufptr);
-> +                       if (err)
-> +                               goto err_mem;
->                         pfvf->hw_ops->aura_freeptr(pfvf, pool_id, bufptr);
->                         sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
->                 }
->         }
->
-> -       return 0;
-> +err_mem:
-> +       put_cpu();
-> +       return err ? -ENOMEM : 0;
-> +
->  fail:
->         otx2_mbox_reset(&pfvf->mbox.mbox, 0);
->         otx2_aura_pool_free(pfvf);
-> @@ -1426,18 +1435,21 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
->         if (err)
->                 goto fail;
->
-> +       get_cpu();
->         /* Allocate pointers and free them to aura/pool */
->         for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
->                 pool = &pfvf->qset.pool[pool_id];
->                 for (ptr = 0; ptr < num_ptrs; ptr++) {
-> -                       if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
-> -                               return -ENOMEM;
-> +                       err = otx2_alloc_rbuf(pfvf, pool, &bufptr);
-> +                       if (err)
-> +                               goto err_mem;
->                         pfvf->hw_ops->aura_freeptr(pfvf, pool_id,
->                                                    bufptr + OTX2_HEAD_ROOM);
->                 }
->         }
-> -
-> -       return 0;
-> +err_mem:
-> +       put_cpu();
-> +       return err ? -ENOMEM : 0;
->  fail:
->         otx2_mbox_reset(&pfvf->mbox.mbox, 0);
->         otx2_aura_pool_free(pfvf);
+> diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+> index 324148686953..aea5fc4c206e 100644
+> --- a/drivers/atm/iphase.c
+> +++ b/drivers/atm/iphase.c
+> @@ -549,7 +549,7 @@ static int ia_cbr_setup (IADEV *dev, struct atm_vcc *vcc) {
+>            if (testSlot >= (int)dev->CbrTotEntries) { // Wrap if necessary
+>               testSlot -= dev->CbrTotEntries;
+>               IF_CBR(printk("TotCbrEntries=%d",dev->CbrTotEntries);)
+> -             IF_CBR(printk(" Testslot=0x%x ToBeAssgned=%d\n",
+> +             IF_CBR(printk(" Testslot=0x%x ToBeAssigned=%d\n",
+>                                              testSlot, toBeAssigned);)
+
+I think current checkpatch errors are valid even though the original
+code may be violating. You may fix them and also add a fixes tag.
+
+>            }
+>            // set table index and read in value
 > --
-> 2.25.1
+> 2.38.1
 >
 
---00000000000048c8c205f0a98bc0
+--000000000000ad6b9305f0a9b4a9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -270,13 +167,13 @@ pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
 Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPYxTIXEZf5V5qSuWCe9XorgTgCkq72/
-j98d+clOVJECMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIy
-NTE2MzEwMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJpMkLHXqLNuoc5yCFasHgKzTVWYxCYL
+cLAJip/3esnlMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIy
+NTE2NDIzNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCYFRjlAmYmV/TMu/9FpMx1RSZ4gWRUCiegB/X7nFzzCGbf1CoI
-1BFRsq/syecf2tAmjn5eI8YjuXw/lW69QZu15BI/3JkfXKlJnVT4RLxj97Q5DC6S80kNDaa1LToe
-bcGXTy9RcJCOMdur4XMzXrv+7ItkSd0jXEr9yANzrHZPYkW/R6QJiXkz/VNqVRsCttzwkVIKXRxo
-wqdBuDtflLQywWeJxy5QVPxhhirzq8U/SeuhA1vYgqPaE76jdYoLGfn3LhRdTqEEGz3iSSfAfZml
-hZpksYil3K/VRH34zg8S+n2HlPzA9kXePSvyr/yqh9kBdYMZmn9KaXHFJ/GrbwD9
---00000000000048c8c205f0a98bc0--
+ATANBgkqhkiG9w0BAQEFAASCAQCh+eZwNGEZqnE0EeCKkUkBFEqjnOXBQRpJVrmrhpYA8m9Xqd+n
+r83nCCYLF2nOFYKJ10xVP+i06XkvP40C7ONC0tQl8uUG/S+jV02/uAhP/OYV/JxooA4vnR96/7iH
+RnZpJNMaYBAviFuG5yh2G2zTLaf/18xBtoTpwEuMlLgFffeBD5AjjphWX2f5ESmifQ5e6iHAqIAi
+huJsDrawyzSbLAjYTM9ihgdEgDPMCEy7h2t2vwPB2hFecPEqCel/WOki2cszpYinHXMtY0v6idCQ
+azmiFFyzlOiyhvymjLnRcaGN5YJeSRMBOqjve4T5kiOoi6yVl/kIK09o7eDQCZWe
+--000000000000ad6b9305f0a9b4a9--
