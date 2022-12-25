@@ -2,101 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75DBE655CCD
-	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 10:47:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DEE655D28
+	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 13:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiLYJru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Dec 2022 04:47:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
+        id S231230AbiLYMHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Dec 2022 07:07:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiLYJrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 04:47:49 -0500
-Received: from gw.red-soft.ru (red-soft.ru [188.246.186.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 421BD62C8;
-        Sun, 25 Dec 2022 01:47:47 -0800 (PST)
-Received: from localhost.localdomain (unknown [10.81.81.211])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by gw.red-soft.ru (Postfix) with ESMTPSA id 0FCA53E0DB1;
-        Sun, 25 Dec 2022 12:47:44 +0300 (MSK)
-Date:   Sun, 25 Dec 2022 12:47:42 +0300
-From:   Artem Chernyshev <artem.chernyshev@red-soft.ru>
-To:     Sven Eckelmann <sven@narfation.org>
-Cc:     Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org,
-        Markus Pargmann <mpa@pengutronix.de>
-Subject: Re: [PATCH] batman-adv: Check return value
-Message-ID: <Y6gcPlvR18j17zlm@localhost.localdomain>
-References: <20221224233311.48678-1-artem.chernyshev@red-soft.ru>
- <2038034.tdWV9SEqCh@sven-l14>
+        with ESMTP id S229649AbiLYMHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 07:07:39 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D333BD
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 04:07:38 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-476e643d1d5so6688987b3.1
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 04:07:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UKTQU6JpYT/i5Ge3ms9B5Uj7VN4LVhAh6fCSSObj+sc=;
+        b=t3E2z8YQO7Chfw3KwTr+LNsg7PTaNF52eqrqdBYBkzM1tA4UQrsAclrqVSDjXCuD3O
+         y5kjlu2dfzHHhfK3NwbUMG7U2XZFrFXl3MhCwWTvZCcoATjtSUfYkILJSqfA6JD4lX67
+         T3KQv9/+BH2C4+stqsYdcez2W300sxdvo1PrXTgJg98Bi2Fz+K7wjUY6DU0CPKioTJm+
+         2BUIYFZfXGe717FXUA50jUcjFI2AoA4NmI2KYHYQcYVLFiC8z8fArRUZ1FI6yoRYwEgQ
+         iVZJeu58k0B+DM3QioyTSx6WHidCkuXcBXKHNN4ZGuRDyvj4oaV87FpWPPDSt+HbumVJ
+         +3UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UKTQU6JpYT/i5Ge3ms9B5Uj7VN4LVhAh6fCSSObj+sc=;
+        b=qPniyvZkaehVEVissebHyCJx63K47qnTSTgii9RrddE4oFUcAqeo4LQ82JKBmoeywL
+         q15QvnO30hUndiPe9k37HDB/zBykbi7blBNvOTifVAcQhASVIsE80lSEwrSNfpgePdP8
+         qHss8a4WVSFqbfWKcXMGkmHvKKQtcdwZ3Q+RaUrEuh7Eb7kJsmbHv9ovq9o3KYfpnnbL
+         zNEYhFKPFeRJHoc5sv3CkSMK/iq8rNL6hbYQty/kfEAI/W+LmjcFH8pt+qk62aV6hdcl
+         ZijnXj1Gru2D6UpNYdYp6/7mUVmn4u7PAWRdr7nKupHBGduNGAc/Dw4olw+1WlKiCgh5
+         iXkw==
+X-Gm-Message-State: AFqh2kpd0StnQyHJ2oHPX4IxLNgqVSWPPhxIa9lxgG+2FU0gDT25m7S1
+        CvZnM7KdOmC0mpQLxhLrO6zmRtLkecb2fdnV4uX0NQ==
+X-Google-Smtp-Source: AMrXdXu9DkaN9Y80+F8H02K1xM663fXeLzgYkxqYtnCcRfU0jLJ0G9d/MxK3qm5Et9wUWnmTmGnB26hq2K567oTY0Ys=
+X-Received: by 2002:a05:690c:80c:b0:46d:89d7:498f with SMTP id
+ bx12-20020a05690c080c00b0046d89d7498fmr613972ywb.461.1671970057918; Sun, 25
+ Dec 2022 04:07:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2038034.tdWV9SEqCh@sven-l14>
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 174384 [Dec 24 2022]
-X-KLMS-AntiSpam-Version: 5.9.59.0
-X-KLMS-AntiSpam-Envelope-From: artem.chernyshev@red-soft.ru
-X-KLMS-AntiSpam-Rate: 0
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, lists.open-mesh.org:7.1.1;127.0.0.199:7.1.2;patchwork.open-mesh.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;red-soft.ru:7.1.1
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2022/12/25 09:24:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2022/12/25 06:19:00 #20705928
-X-KLMS-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221223132235.16149-1-anand@edgeble.ai> <CA+VMnFz8nQ2DnD6L9cPmoRqk+uohRqTEpak9g=WGJnSBoONmrA@mail.gmail.com>
+ <CA+pv=HP8ckG8dsh-uZ6=k2nMGDGbw3gnh2b1ZWV31mzuYsjNig@mail.gmail.com>
+In-Reply-To: <CA+pv=HP8ckG8dsh-uZ6=k2nMGDGbw3gnh2b1ZWV31mzuYsjNig@mail.gmail.com>
+From:   Jagan Teki <jagan@edgeble.ai>
+Date:   Sun, 25 Dec 2022 17:37:27 +0530
+Message-ID: <CA+VMnFwGHk9OEZWjxWUqGqzwrxgRqy9VZ+tP2Ada5ErPo_dSVw@mail.gmail.com>
+Subject: Re: [PATCHv1 linux-next 1/4] dt-bindings: net: rockchip-dwmac: fix
+ rv1126 compatible warning
+To:     Slade Watkins <srw@sladewatkins.net>
+Cc:     Anand Moon <anand@edgeble.ai>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        David Wu <david.wu@rock-chips.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-On Sun, Dec 25, 2022 at 07:37:28AM +0100, Sven Eckelmann wrote:
-> Subject is missing something like ..." after calling rtnl_link_register()" or
-> ..."s during module initialization".
-> 
-> On Sunday, 25 December 2022 00:33:11 CET Artem Chernyshev wrote:
-> [...]
-> > diff --git a/net/batman-adv/main.c b/net/batman-adv/main.c
-> > index e8a449915566..04cd9682bd29 100644kwin
-> > @@ -113,7 +113,11 @@ static int __init batadv_init(void)
-> >  		goto err_create_wq;
-> >  
-> >  	register_netdevice_notifier(&batadv_hard_if_notifier);
-> > -	rtnl_link_register(&batadv_link_ops);
-> > +	ret = rtnl_link_register(&batadv_link_ops);
-> > +	if (ret) {
-> > +		pr_err("Can't register link_ops\n");
-> > +		goto err_create_wq;
-> > +	}
-> >  	batadv_netlink_register();
-> >  
-> >  	pr_info("B.A.T.M.A.N. advanced %s (compatibility version %i) loaded\n",
-> > 
-> 
-> This looks wrong to me. You missed to destroy the batadv_hard_if_notifier in 
-> this case.
-> 
-> And if you want to start adding the checks, you should also have added it for 
-> batadv_v_init, batadv_iv_init, batadv_nc_init, batadv_tp_meter_init and 
-> register_netdevice_notifier. You can use the unfinished patch from Markus 
-> Pargmann as starting point.
-> 
-> Kind regards,
-> 	Sven
-> 
-> [1] https://patchwork.open-mesh.org/project/b.a.t.m.a.n./patch/1419594103-10928-6-git-send-email-mpa@pengutronix.de/
->     https://lists.open-mesh.org/mailman3/hyperkitty/list/b.a.t.m.a.n@lists.open-mesh.org/thread/QDX46YARWUC4R7OBFHR5OJKWQIXDQWRR/#QDX46YARWUC4R7OBFHR5OJKWQIXDQWRR
+On Sun, 25 Dec 2022 at 02:54, Slade Watkins <srw@sladewatkins.net> wrote:
+>
+> On Sat, Dec 24, 2022 at 9:30 AM Jagan Teki <jagan@edgeble.ai> wrote:
+> >
+> > On Fri, 23 Dec 2022 at 18:55, Anand Moon <anand@edgeble.ai> wrote:
+> > >
+> > > Fix compatible string for RV1126 gmac, and constrain it to
+> > > be compatible with Synopsys dwmac 4.20a.
+> > >
+> > > fix below warning
+> > > arch/arm/boot/dts/rv1126-edgeble-neu2-io.dtb: ethernet@ffc40000:
+> > >                  compatible: 'oneOf' conditional failed, one must be fixed:
+> > >         ['rockchip,rv1126-gmac', 'snps,dwmac-4.20a'] is too long
+> > >         'rockchip,rv1126-gmac' is not one of ['rockchip,rk3568-gmac', 'rockchip,rk3588-gmac']
+> > >
+> > > Signed-off-by: Anand Moon <anand@edgeble.ai>
+> > > Signed-off-by: Jagan Teki <jagan@edgeble.ai>
+> > > ---
+> >
+> > Please add Fixes above SoB.
+>
+> That and, shouldn't the Signed-off-by: tags be reversed if Anand is
+> sending this?
 
-Thanks for review, I'll try to fix the errors in v2
+Agreed, Anand will resend the patch with SoB removed. thanks.
 
-Best,
-Artem
+Jagan.
