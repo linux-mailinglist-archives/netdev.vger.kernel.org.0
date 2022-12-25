@@ -2,86 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E867B655DF7
-	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 18:49:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B7E655DFA
+	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 19:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbiLYRtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Dec 2022 12:49:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
+        id S229563AbiLYSIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Dec 2022 13:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiLYRtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 12:49:09 -0500
-X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 25 Dec 2022 09:49:07 PST
-Received: from isengard.anuradha.dev (isengard.anuradha.dev [172.104.61.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6568C6248;
-        Sun, 25 Dec 2022 09:49:07 -0800 (PST)
-Received: from ninsei.anuradha.dev (<unknown> [112.134.163.9])
-        by anuradha.dev (OpenSMTPD) with ESMTPSA id 091ae1d8 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Sun, 25 Dec 2022 17:42:24 +0000 (UTC)
-Date:   Sun, 25 Dec 2022 23:12:22 +0530
-From:   Anuradha Weeraman <anuradha@debian.org>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     anuradha@debian.org
-Subject: [PATCH] net: ethernet: marvell: octeontx2: Fix uninitialized
- variable warning
-Message-ID: <Y6iLfnODkXm3rFC9@ninsei.anuradha.dev>
+        with ESMTP id S229445AbiLYSIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 13:08:04 -0500
+Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6132BC9
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 10:08:02 -0800 (PST)
+Received: from violet.fr.zoreil.com ([127.0.0.1])
+        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 2BPI7Voq2010337;
+        Sun, 25 Dec 2022 19:07:31 +0100
+DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 2BPI7Voq2010337
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
+        s=v20220413; t=1671991651;
+        bh=NqHV6OvafQ87tUvwNtZnjbzD4LznJjNhuYfIjvnA1cQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C+RU5xer4r2B35urnAVuXh7PtffPq3bTCT2sC73lhDxp/rcK8IcP3HxKUNkZHfPn8
+         fdvi7pydHhFx+18D61Gf5uoOrJ2Qq/9bAUXvncfh0dmf0msn504/7SNF4uM5NFsbl6
+         n4NcB6T9MjO0rdMQyLFJmShEV4ydy+Rbk1PY7jPI=
+Received: (from romieu@localhost)
+        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 2BPI7S0U2010336;
+        Sun, 25 Dec 2022 19:07:28 +0100
+Date:   Sun, 25 Dec 2022 19:07:28 +0100
+From:   Francois Romieu <romieu@fr.zoreil.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        stephen@networkplumber.org
+Subject: Re: [PATCH ethtool-next v2 2/2] netlink: add netlink handler for get
+ rss (-x)
+Message-ID: <Y6iRYO5+cIo5exxu@electric-eye.fr.zoreil.com>
+References: <20221222001343.1220090-1-sudheer.mogilappagari@intel.com>
+ <20221222001343.1220090-3-sudheer.mogilappagari@intel.com>
+ <20221221172207.30127f4f@kernel.org>
+ <IA1PR11MB6266430ED759770807768D4EE4E89@IA1PR11MB6266.namprd11.prod.outlook.com>
+ <20221222180219.22b109c5@kernel.org>
+ <Y6WMIANorlX8lMfN@electric-eye.fr.zoreil.com>
+ <20221223115049.12b985b1@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Developer-Signature: v=1; a=openpgp-sha256; l=845; i=anuradha@debian.org;
- h=from:subject; bh=4vPF/VviW8SKOwe6a9pdyzkgrpv3GpOVeyzO8eLHKRk=;
- b=owEBbQKS/ZANAwAKAWNttaHZGGD9AcsmYgBjqIpnBpAl1qmBNXLLSfXk+sR3W0nKP0VOkDpKlw6K
- wyF/xVOJAjMEAAEKAB0WIQT1a48U4BTN710Ef8FjbbWh2Rhg/QUCY6iKZwAKCRBjbbWh2Rhg/X4jD/
- 9FMybU1Np+OYIxRSU2KKWHMI0oNVnFvOVyb6qZtWKV7SSx3dYfj0NtFtTrnbN1TQ1kswY/i5DUTYbF
- iAJ+Ew6y8zY0vjGTqHAZcE5vpLCY1jKbNk76P0uP0d+UfCbgXdxddL4YOYYoHOT13/FJLvWRF8OnmZ
- oahd9cFNLGU/Ex2ItvqHJZM7pG6RdH9fM4yQcrbLpsY1JnuhZ2zD4mQZKFxIHvp85S/j6ZAekZq62G
- SwMSZGBWQm90VRBxesdhDzh1YqU8lgOyO8J5OHlgriCdhnk1o+CZZrC1zI4xH7nthIURdJZt18EUAp
- j+z0snWB++vTO4rYHlxQWbhwVvxruFfRTtGoXyV5b4LhB3TJmbtUTmqy16MyIyrxQKVekkvfEj8vbo
- lH7tizK9+VASAsyqpQJxhcja2/LLQR3EcU2hFFYN6n/VZncD54yOwWlml+yHyd4QMDaBXuK8FkvcoC
- 29z2CXcMVhlZsOatacufP3AWzyCQYleM2PI9uCdnv4YHzzsgNabwCcJNm/HsaMx30cyg0IQUJDtNLN
- uh9C+tnn0Ho2zgyXwS03sRJDX3YDpEmcSYMMSFL20tp1NKOmT4zM9hO3rudnTmZNEYDo7+RKKAJHId
- 5Yl7mere3dF72YmiBnXEK7TZxypwkotQVzmIPTUXtZ6ulRDeYTgedQB1j1aA==
-X-Developer-Key: i=anuradha@debian.org; a=openpgp;
- fpr=F56B8F14E014CDEF5D047FC1636DB5A1D91860FD
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221223115049.12b985b1@kernel.org>
+X-Organisation: Land of Sunshine Inc.
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix for uninitialized variable warning.
+Jakub Kicinski <kuba@kernel.org> :
+> On Fri, 23 Dec 2022 12:08:16 +0100 Francois Romieu wrote:
+[...]
+> > 'ip' json output does not use the suggested format.
+> > 
+> > It may be interesting to know if the experience proved it to be
+> > a poor choice.
+> 
+> Hopefully without sounding impolite let me clarify that it is precisely
+> *experience* using the JSON output of ip extensively in Python and Ruby
+> (chef) which leads me to make the suggestion.
 
-Addresses-Coverity: ("Uninitialized scalar variable")
-Signed-off-by: Anuradha Weeraman <anuradha@debian.org>
----
- drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you for the explanation.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c b/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
-index fa8029a94068..eb25e458266c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
-@@ -589,7 +589,7 @@ int rvu_mbox_handler_mcs_free_resources(struct rvu *rvu,
- 	u16 pcifunc = req->hdr.pcifunc;
- 	struct mcs_rsrc_map *map;
- 	struct mcs *mcs;
--	int rc;
-+	int rc = 0;
- 
- 	if (req->mcs_id >= rvu->mcs_blk_cnt)
- 		return MCS_AF_ERR_INVALID_MCSID;
+While misguided, I've always worked under the assumption that JSON could
+also be looked at (especially when tools take care of indenting it).
+Knowing that there is a strict "JSON as an interchange format only" policy
+and that apparent lack of consistency may be seen as the legacy of mistaken
+choices is an helpful hint.
+
+So, no place for hexadecimal, yes.
+
 -- 
-2.35.1
-
+Ueimor
