@@ -2,193 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA31655D97
-	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 16:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD42A655DA2
+	for <lists+netdev@lfdr.de>; Sun, 25 Dec 2022 17:31:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiLYP5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Dec 2022 10:57:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S231136AbiLYQbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Dec 2022 11:31:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiLYP5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 10:57:38 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77DD2BE1;
-        Sun, 25 Dec 2022 07:57:36 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id t17so22091047eju.1;
-        Sun, 25 Dec 2022 07:57:36 -0800 (PST)
+        with ESMTP id S229681AbiLYQbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Dec 2022 11:31:01 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5005114B
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 08:31:00 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id ge16so5303951pjb.5
+        for <netdev@vger.kernel.org>; Sun, 25 Dec 2022 08:31:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=dKOoFYMb23hz5hGId4Wz/IenSn26vXqIKiFsqflZL3w=;
-        b=G4KJclbw5GwJaoCKFjIVpXJ+c8XB0NTbwbsigkAbGPGNtFPMZxsNeFywGxlAsugOsq
-         NkUX0ibiNDXP8IiVenK1vFtLsL23TiDKe2BTOwnQNTYvVRINeBfWzS5bWrRQeO65M1ze
-         4zM/dbJgTGwb3LCf5atAIp+Hm2z9aKKV/YaZx7xcEptk8imV2EFB/tGy8CEbyIKIBFzR
-         J50eP1cwe1a5BfnojwKJyfVaGKxun45Ihxr8fBQORw1NWYfS+21p6LrjeZGtpxOpEq4d
-         b9F/INPHLTYgJB7gqHdB/aeceeYu9inq5TlXkr0PbcCb2gLt0kHA8dvzdL4tfHYEEFmg
-         lk+g==
+        d=broadcom.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=evsJtBXmZFYV5w0j7RwUn02fRzW76H4z6fgKEi67ofQ=;
+        b=h/2CCItyqoK1hFChlkW+7FaB8r/3MYlztemzPh2Qk/mEJwZaNH3uK4j35HWUkO1ONw
+         KCo/sZ8VnUzslJVllPXIgHsF6WxuI86EqW/SWCuTubcfjTacPhxIZzU2H9WgM3OxVPF7
+         VaS6JT8UOoFOdAjI2SepIEddSa1AcO1OPw5Ck=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dKOoFYMb23hz5hGId4Wz/IenSn26vXqIKiFsqflZL3w=;
-        b=fk4V0isJJxuKQDTDz6XVezZ5EaY4FF4l7EVgl0PknHqRrP+rNM2R/gr34bnsYawizj
-         j0ValTR2eExcOmqFMlgO8N5LE2nSy0VVTdr+s8IuguhVdbO4IDbbO4oqMA/ewmLgELfJ
-         uMpSIU5UzwNJgmIFhnwfbIjdHZCnbWTPN2rZpS51GKHKN5si1QPsd61ZAnBUdAxEHuZV
-         BzoajJERAdnnHwHizIaJ3AP3pdqZiNFRZU8Z7y+EuPCy90SWK2oTJj1jzFaPJ/yMf2cf
-         glMVzPa7bdJriafj7pQBxvA/kWUPxdeVUJ8DZXIZWs+0m8XK2QB+Z99iG0A2eaKiS5aD
-         uDYw==
-X-Gm-Message-State: AFqh2kqzD4zRMKngv67Dj+v/gWFO6BhtvrAEhIHoN1I7AqyIrfRuPevi
-        Dn9GD7yRCkQHSfxDWF2g8U5KaY/V3nBvfev/wD8=
-X-Google-Smtp-Source: AMrXdXtNijvwutA6ANdLMosvdoUrJbJuHXtFWb3RoFGMSdC2EFjz2bT/l4tuccig/fJ05iLdUbZHsgaROUk6fDOH5SA=
-X-Received: by 2002:a17:906:a383:b0:840:2076:5310 with SMTP id
- k3-20020a170906a38300b0084020765310mr1257471ejz.371.1671983854957; Sun, 25
- Dec 2022 07:57:34 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=evsJtBXmZFYV5w0j7RwUn02fRzW76H4z6fgKEi67ofQ=;
+        b=oi9oLyiISA2BXQCe/n4wGTarQQ9J3YiGjxGC4gOpmxUKUKSpHQD8Qtu9L9OynMQ6SY
+         e2GUZIz5kh8pud/LvFxQtmEzEowAKrvkhr9bvon6sHa9KttIQvoEvTLAYNhkGq3mEQ9E
+         32Yf8svUaR3LTjSH55RPLChdiaRX6wvm+QfsR8ovAHabIc3Ifh6fu1mEM6R3WqGCCf37
+         j4NxWkB2pNEkW9a020rmUTvHlhtMQvftnqlGrpwHIr1Zy47CP5KhXlACAGLTBz7ANdCu
+         LcGe3Py1rabJZ4OIJoYO/JMU2Xbsw1K1InJOqz8Sgk8KZSLS24BGZfv0NLr9bHKPoFG1
+         SkNA==
+X-Gm-Message-State: AFqh2krPAoJ4UqKGPj0a0VGRnJYk5zaNfZeSsS9dwgVULm4ryPBtLuX2
+        GYuCp4KJPvWcFLOdVLrcUiVpE2QTqqUbN/7UvzGoZkH/viSBiA==
+X-Google-Smtp-Source: AMrXdXsmXEbmI056D1fsZsm3Brc1ZAsRy94APhIiLAmEaKX/ic6SHTelKfPYnHrBVdaygzvQSavKqwb6fh16mn/WVQM=
+X-Received: by 2002:a17:90a:8a91:b0:219:1c3f:985d with SMTP id
+ x17-20020a17090a8a9100b002191c3f985dmr1288231pjn.111.1671985860052; Sun, 25
+ Dec 2022 08:31:00 -0800 (PST)
 MIME-Version: 1.0
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Sun, 25 Dec 2022 23:56:59 +0800
-Message-ID: <CAO4mrfdy+3umc43dtHudvjU8ec-PzAhrwPNqXS3n1vxQN24nng@mail.gmail.com>
-Subject: BUG: unable to handle kernel NULL pointer dereference in try_to_wake_up
-To:     dhowells@redhat.com, marc.dionne@auristor.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20221223005645.8709-1-gakula@marvell.com>
+In-Reply-To: <20221223005645.8709-1-gakula@marvell.com>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Sun, 25 Dec 2022 22:00:48 +0530
+Message-ID: <CALs4sv3CZjrcC0nqH=RtTBp_aJ3Dd9Q-f7DJUo-+rq-vjVHA4Q@mail.gmail.com>
+Subject: Re: [PATCH net] octeontx2-pf: Fix lmtst Id used in aura free
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
+        edumazet@google.com, sbhatta@marvell.com, hkelam@marvell.com,
+        sgoutham@marvell.com
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000048c8c205f0a98bc0"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux Developers,
+--00000000000048c8c205f0a98bc0
+Content-Type: text/plain; charset="UTF-8"
 
-Recently, when using our tool to fuzz kernel, the following crash was triggered.
+On Fri, Dec 23, 2022 at 6:27 AM Geetha sowjanya <gakula@marvell.com> wrote:
+>
+> Current code uses per_cpu pointer to get the lmtst_id mapped to
+> the core on which aura_free() is executed. Using per_cpu pointer
+> without preemption disable causing mismatch between lmtst_id and
+> core on which pointer gets freed. This patch fixes the issue by
+> disabling preemption around aura_free.
+>
+> This patch also addresses the memory reservation issue,
+> currently NIX, NPA queue context memory is being allocated using
+> GFP_KERNEL flag which inturns allocates from memory reserved for
+> CMA_DMA. Sizing CMA_DMA memory is getting difficult due to this
+> dependency, the more number of interfaces enabled the more the
+> CMA_DMA memory requirement.
+>
+> To fix this issue, GFP_KERNEL flag is replaced with GFP_ATOMIC,
+> with this memory will be allocated from unreserved memory.
+>
+> Fixes: ef6c8da71eaf ("octeontx2-pf: cn10K: Reserve LMTST lines per core")
 
-HEAD commit:  e45fb347b630 Linux 6.1.0-next-20221220
-git tree: linux-next
-compiler: clang 12.0.0
-console output:
-https://drive.google.com/file/d/1d2Bl86zvgz1mdE-cYUT3lnbPGAagNUZf/view?usp=share_link
-kernel config: https://drive.google.com/file/d/1mMD6aopttKDGK4aYUlgiwAk6bOQHivd-/view?usp=share_link
+Two separate issues are being fixed. I think these two fixes should be
+separate patches.
 
-Unfortunately, I do not have a reproducer for this crash. It seems
-like when dereferencing p->pi_lock->raw_lock->val->counter, null ptr
-deref is triggered.
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+> ---
+>  .../ethernet/marvell/octeontx2/af/common.h    |  2 +-
+>  .../marvell/octeontx2/nic/otx2_common.c       | 30 +++++++++++++------
+>  2 files changed, 22 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/common.h b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+> index 8931864ee110..4b4be9ca4d2f 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/common.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+> @@ -61,7 +61,7 @@ static inline int qmem_alloc(struct device *dev, struct qmem **q,
+>         qmem->entry_sz = entry_sz;
+>         qmem->alloc_sz = (qsize * entry_sz) + OTX2_ALIGN;
+>         qmem->base = dma_alloc_attrs(dev, qmem->alloc_sz, &qmem->iova,
+> -                                    GFP_KERNEL, DMA_ATTR_FORCE_CONTIGUOUS);
+> +                                    GFP_ATOMIC, DMA_ATTR_FORCE_CONTIGUOUS);
+>         if (!qmem->base)
+>                 return -ENOMEM;
+>
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> index 9e10e7471b88..88f8772a61cd 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> @@ -1012,6 +1012,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
+>         rbpool = cq->rbpool;
+>         free_ptrs = cq->pool_ptrs;
+>
+> +       get_cpu();
+>         while (cq->pool_ptrs) {
+>                 if (otx2_alloc_rbuf(pfvf, rbpool, &bufptr)) {
+>                         /* Schedule a WQ if we fails to free atleast half of the
+> @@ -1031,6 +1032,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
+>                 pfvf->hw_ops->aura_freeptr(pfvf, qidx, bufptr + OTX2_HEAD_ROOM);
+>                 cq->pool_ptrs--;
+>         }
+> +       put_cpu();
+>         cq->refill_task_sched = false;
+>  }
+>
+> @@ -1368,6 +1370,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
+>         if (err)
+>                 goto fail;
+>
+> +       get_cpu();
+>         /* Allocate pointers and free them to aura/pool */
+>         for (qidx = 0; qidx < hw->tot_tx_queues; qidx++) {
+>                 pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
+> @@ -1376,18 +1379,24 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
+>                 sq = &qset->sq[qidx];
+>                 sq->sqb_count = 0;
+>                 sq->sqb_ptrs = kcalloc(num_sqbs, sizeof(*sq->sqb_ptrs), GFP_KERNEL);
+> -               if (!sq->sqb_ptrs)
+> -                       return -ENOMEM;
+> +               if (!sq->sqb_ptrs) {
+> +                       err = -ENOMEM;
+> +                       goto err_mem;
+> +               }
+>
+>                 for (ptr = 0; ptr < num_sqbs; ptr++) {
+> -                       if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
+> -                               return -ENOMEM;
+> +                       err = otx2_alloc_rbuf(pfvf, pool, &bufptr);
+> +                       if (err)
+> +                               goto err_mem;
+>                         pfvf->hw_ops->aura_freeptr(pfvf, pool_id, bufptr);
+>                         sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
+>                 }
+>         }
+>
+> -       return 0;
+> +err_mem:
+> +       put_cpu();
+> +       return err ? -ENOMEM : 0;
+> +
+>  fail:
+>         otx2_mbox_reset(&pfvf->mbox.mbox, 0);
+>         otx2_aura_pool_free(pfvf);
+> @@ -1426,18 +1435,21 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
+>         if (err)
+>                 goto fail;
+>
+> +       get_cpu();
+>         /* Allocate pointers and free them to aura/pool */
+>         for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
+>                 pool = &pfvf->qset.pool[pool_id];
+>                 for (ptr = 0; ptr < num_ptrs; ptr++) {
+> -                       if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
+> -                               return -ENOMEM;
+> +                       err = otx2_alloc_rbuf(pfvf, pool, &bufptr);
+> +                       if (err)
+> +                               goto err_mem;
+>                         pfvf->hw_ops->aura_freeptr(pfvf, pool_id,
+>                                                    bufptr + OTX2_HEAD_ROOM);
+>                 }
+>         }
+> -
+> -       return 0;
+> +err_mem:
+> +       put_cpu();
+> +       return err ? -ENOMEM : 0;
+>  fail:
+>         otx2_mbox_reset(&pfvf->mbox.mbox, 0);
+>         otx2_aura_pool_free(pfvf);
+> --
+> 2.25.1
+>
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: Wei Chen <harperchen1110@gmail.com>
+--00000000000048c8c205f0a98bc0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-BUG: kernel NULL pointer dereference, address: 0000000000000834
-#PF: supervisor write access in kernel mode
-#PF: error_code(0x0002) - not-present page
-PGD 56ef4067 P4D 56ef4067 PUD 58112067 PMD 0
-Oops: 0002 [#1] PREEMPT SMP
-CPU: 0 PID: 12 Comm: ksoftirqd/0 Not tainted 6.1.0-next-20221220 #6
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-RIP: 0010:arch_atomic_try_cmpxchg arch/x86/include/asm/atomic.h:202 [inline]
-RIP: 0010:atomic_try_cmpxchg_acquire
-include/linux/atomic/atomic-instrumented.h:543 [inline]
-RIP: 0010:queued_spin_lock include/asm-generic/qspinlock.h:111 [inline]
-RIP: 0010:do_raw_spin_lock include/linux/spinlock.h:186 [inline]
-RIP: 0010:__raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:111 [inline]
-RIP: 0010:_raw_spin_lock_irqsave+0x4e/0xa0 kernel/locking/spinlock.c:162
-Code: 48 c7 04 24 00 00 00 00 9c 8f 04 24 48 89 df e8 88 fb 8d fc 48
-8b 1c 24 fa bd 01 00 00 00 bf 01 00 00 00 e8 a4 9c 66 fc 31 c0 <3e> 41
-0f b1 2e 75 1c 65 48 8b 04 25 28 00 00 00 48 3b 44 24 08 75
-RSP: 0018:ffffc90000497908 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: 0000000000000246 RCX: ffffffff84ad1b08
-RDX: 0000000000000996 RSI: 0000000000000000 RDI: 0000000000000001
-RBP: 0000000000000001 R08: 0001c9000049790f R09: 0000000000000000
-R10: 0001ffffffffffff R11: 0001c90000497908 R12: 0000000000000834
-R13: ffffffff84446de0 R14: 0000000000000834 R15: ffff888061b71700
-FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000834 CR3: 0000000057b36000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- try_to_wake_up+0x3d/0x430 kernel/sched/core.c:4100
- rxrpc_wake_up_io_thread net/rxrpc/ar-internal.h:967 [inline]
- rxrpc_encap_rcv+0xc7/0xf0 net/rxrpc/io_thread.c:40
- udp_queue_rcv_one_skb+0x64c/0x750 net/ipv4/udp.c:2164
- udp_queue_rcv_skb+0x53d/0x5c0 net/ipv4/udp.c:2241
- __udp4_lib_mcast_deliver net/ipv4/udp.c:2333 [inline]
- __udp4_lib_rcv+0x1c66/0x1d00 net/ipv4/udp.c:2468
- udp_rcv+0x4b/0x50 net/ipv4/udp.c:2655
- ip_protocol_deliver_rcu+0x380/0x720 net/ipv4/ip_input.c:205
- ip_local_deliver_finish net/ipv4/ip_input.c:233 [inline]
- NF_HOOK include/linux/netfilter.h:302 [inline]
- ip_local_deliver+0x210/0x340 net/ipv4/ip_input.c:254
- dst_input include/net/dst.h:454 [inline]
- ip_rcv_finish net/ipv4/ip_input.c:449 [inline]
- NF_HOOK include/linux/netfilter.h:302 [inline]
- ip_rcv+0x1b1/0x260 net/ipv4/ip_input.c:569
- __netif_receive_skb_one_core net/core/dev.c:5482 [inline]
- __netif_receive_skb+0x8b/0x1b0 net/core/dev.c:5596
- process_backlog+0x23f/0x3b0 net/core/dev.c:5924
- __napi_poll+0x65/0x420 net/core/dev.c:6485
- napi_poll net/core/dev.c:6552 [inline]
- net_rx_action+0x37e/0x730 net/core/dev.c:6663
- __do_softirq+0xf2/0x2c9 kernel/softirq.c:571
- run_ksoftirqd+0x1f/0x30 kernel/softirq.c:934
- smpboot_thread_fn+0x308/0x4a0 kernel/smpboot.c:164
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
- </TASK>
-Modules linked in:
-CR2: 0000000000000834
----[ end trace 0000000000000000 ]---
-RIP: 0010:arch_atomic_try_cmpxchg arch/x86/include/asm/atomic.h:202 [inline]
-RIP: 0010:atomic_try_cmpxchg_acquire
-include/linux/atomic/atomic-instrumented.h:543 [inline]
-RIP: 0010:queued_spin_lock include/asm-generic/qspinlock.h:111 [inline]
-RIP: 0010:do_raw_spin_lock include/linux/spinlock.h:186 [inline]
-RIP: 0010:__raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:111 [inline]
-RIP: 0010:_raw_spin_lock_irqsave+0x4e/0xa0 kernel/locking/spinlock.c:162
-Code: 48 c7 04 24 00 00 00 00 9c 8f 04 24 48 89 df e8 88 fb 8d fc 48
-8b 1c 24 fa bd 01 00 00 00 bf 01 00 00 00 e8 a4 9c 66 fc 31 c0 <3e> 41
-0f b1 2e 75 1c 65 48 8b 04 25 28 00 00 00 48 3b 44 24 08 75
-RSP: 0018:ffffc90000497908 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: 0000000000000246 RCX: ffffffff84ad1b08
-RDX: 0000000000000996 RSI: 0000000000000000 RDI: 0000000000000001
-RBP: 0000000000000001 R08: 0001c9000049790f R09: 0000000000000000
-R10: 0001ffffffffffff R11: 0001c90000497908 R12: 0000000000000834
-R13: ffffffff84446de0 R14: 0000000000000834 R15: ffff888061b71700
-FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000834 CR3: 0000000057b36000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0: 48 c7 04 24 00 00 00 movq   $0x0,(%rsp)
-   7: 00
-   8: 9c                   pushfq
-   9: 8f 04 24             popq   (%rsp)
-   c: 48 89 df             mov    %rbx,%rdi
-   f: e8 88 fb 8d fc       callq  0xfc8dfb9c
-  14: 48 8b 1c 24           mov    (%rsp),%rbx
-  18: fa                   cli
-  19: bd 01 00 00 00       mov    $0x1,%ebp
-  1e: bf 01 00 00 00       mov    $0x1,%edi
-  23: e8 a4 9c 66 fc       callq  0xfc669ccc
-  28: 31 c0                 xor    %eax,%eax
-* 2a: 3e 41 0f b1 2e       cmpxchg %ebp,%ds:(%r14) <-- trapping instruction
-  2f: 75 1c                 jne    0x4d
-  31: 65 48 8b 04 25 28 00 mov    %gs:0x28,%rax
-  38: 00 00
-  3a: 48 3b 44 24 08       cmp    0x8(%rsp),%rax
-  3f: 75                   .byte 0x75
-
-Best,
-Wei
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUwwggQ0oAMCAQICDBX9eQgKNWxyfhI1kzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODE3NDZaFw0yNTA5MTAwODE3NDZaMIGO
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDFBhdmFuIENoZWJiaTEoMCYGCSqGSIb3DQEJ
+ARYZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAK3X+BRR67FR5+Spki/E25HnHoYhm/cC6VA6qHwC3QqBNhCT13zsi1FLLERdKXPRrtVBM6d0
+mfg/0rQJJ8Ez4C3CcKiO1XHcmESeW6lBKxOo83ZwWhVhyhNbGSwcrytDCKUVYBwwxR3PAyXtIlWn
+kDqifgqn3R9r2vJM7ckge8dtVPS0j9t3CNfDBjGw1DhK91fnoH1s7tLdj3vx9ZnKTmSl7F1psK2P
+OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
+dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
+fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
+9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
+pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
+25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
+Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPYxTIXEZf5V5qSuWCe9XorgTgCkq72/
+j98d+clOVJECMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIy
+NTE2MzEwMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCYFRjlAmYmV/TMu/9FpMx1RSZ4gWRUCiegB/X7nFzzCGbf1CoI
+1BFRsq/syecf2tAmjn5eI8YjuXw/lW69QZu15BI/3JkfXKlJnVT4RLxj97Q5DC6S80kNDaa1LToe
+bcGXTy9RcJCOMdur4XMzXrv+7ItkSd0jXEr9yANzrHZPYkW/R6QJiXkz/VNqVRsCttzwkVIKXRxo
+wqdBuDtflLQywWeJxy5QVPxhhirzq8U/SeuhA1vYgqPaE76jdYoLGfn3LhRdTqEEGz3iSSfAfZml
+hZpksYil3K/VRH34zg8S+n2HlPzA9kXePSvyr/yqh9kBdYMZmn9KaXHFJ/GrbwD9
+--00000000000048c8c205f0a98bc0--
