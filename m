@@ -2,62 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28FA9656401
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 17:03:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2548565640D
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 17:31:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231845AbiLZQDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 11:03:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
+        id S229737AbiLZQbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 11:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiLZQDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 11:03:50 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49262ADB
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 08:03:46 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id j206so12030209ybj.1
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 08:03:46 -0800 (PST)
+        with ESMTP id S229502AbiLZQbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 11:31:37 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5EE249
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 08:31:36 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id 186so12060023ybe.8
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 08:31:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=4WBfGJR+rhhek1OzxsO7eZChkwh59QoJ7t0kvUo1Z98=;
-        b=iohADgP+p+c2d//Pwt2hBg+ZxyZxBIxNQPx43XA0+shI/y2YsCo0PsQlbIMhHd1MXh
-         RhaV9tJUU3bugv4IolOMKFJQ2yzHoJaXlg2I8pjlpDgec6xN6OeqmrYxij2oVy4E+utq
-         nJSRepTr/jXJokLb1QeRrfoOxQfvdROFV4fwxbb8rZ4l1HXxBxgmNWxbCuqYDIZY17TW
-         wEk+V7zyNdXsWI5qD76dSSUNhP73ICRje9JwF2d2nqnezajw5WeYmy/ENzAYBEznJIY1
-         6ehed5fnQRHUTKxrpXSU8GtXTEAAEBgU5YNAs0LLhLX19149wjOyJjlWy8nq9c3ZGjAf
-         crlw==
+        bh=tNyU3hi4+YHcw3wvohcr4k63kxaU1hZhqQ2UlHaU9PY=;
+        b=VK6yNPHlmxyJcqrIpTlk4pEpd3PmzhVQJCmNa3kGSXURprRwl10Qm+M/op7c6+43K8
+         uyz4p05IXcwLOOj4i1CMRW2xHc6ziRg1mVolv39xXkI15fPksxj/BtjRgt5NJWyg8NQ0
+         xj5eJSlgATQmr/3OH+hoYX2hjv9UT7x2mxuqv4xoqDqyC91lqnxEZf0cloa31R+qYpua
+         QOzttMbaqnUYa95rlbea2wm7leWzia7YKx+gXq5m3kWIJgPtkz15wVE9+R8pHLuWSOeV
+         nikFYb+Ncn448PyI/vgpFYfLYfyL8xS9o+YGckCvY38wuE93dzo5WcNdYCZX/lBQuMl7
+         eE5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4WBfGJR+rhhek1OzxsO7eZChkwh59QoJ7t0kvUo1Z98=;
-        b=fliVgM/iu9EI6zSZiAZ3TikmjMdVSudVuSMGMDT3H6fpbAwQ6Pgt1CtCHDc3A4J9fT
-         DpgqAoNVgoHr7CmBkUay16VfIOOaMvt73fL0tu7c8xph3GQ2MB3C8f/jVyzznepJ84uI
-         6qjxv8Jt6iO1fsylSfwvV4unCUjYaU1ejYwrVn/ZdUCdDKnNDX96SBOJBZYKJbp1p00v
-         UNG3jkzAaVD3KL2cXPwZEJUYlDU3LswCJxzyf3co8BURdxBgCVy2kbenDyTRMRxvmFhI
-         5RdxBSUJIs6cnVORN8ddtBdJva6RnP/0aKjB8lJ9WPbf1T5PKPYkC9EuXCbDMsjPr1iT
-         +ZOA==
-X-Gm-Message-State: AFqh2kp06OogAObuHNe2k40XrBzbMzdepJZoFuG4y0rdxGp9PyLSHguH
-        d6nXVdNGEAZJT+EWA2D2vR3kz01/HQDSgDfBvbNoXw==
-X-Google-Smtp-Source: AMrXdXtIMGtRNGHF74Zs9WxXEpsg9cpsr/zZv3WglgBjhduA2J+EUvUuwenBMewSAR5C91aMWdYp9EAAzr8zGHSR2v0=
-X-Received: by 2002:a25:34cd:0:b0:709:e347:747b with SMTP id
- b196-20020a2534cd000000b00709e347747bmr2208372yba.188.1672070625950; Mon, 26
- Dec 2022 08:03:45 -0800 (PST)
+        bh=tNyU3hi4+YHcw3wvohcr4k63kxaU1hZhqQ2UlHaU9PY=;
+        b=r/47Ta54MOK7h/J9GZUu8ZXg4ffmy1oPQ9GcPpO1T2QGbKpFGQ0tM3ei27NuiPZOW2
+         jkCnwAECXgUfVyKZC2F1w5PzWU5B9XT2KL/kd0+4wnAIjG4VLuPj74ahp86RKyRIUT7d
+         bqLpea2ENy70CdJYsBNg7HxHbTj1+ZCsoDm4e2rpRURxylbPLgYBWA+fuJgN5ecaiuj8
+         ckJI2rkKJqFOV5O1OpBc5/c433WRX7T3THth60G8j3LDw1NPSDFUevKQr8QBBFTFpi4k
+         IcUaEQivGI/pEWkhIFbb9+7RWfVSrYgywwBDyq2bW0HSMzeR7DUOH1r5fNptTGiLiAsG
+         rgPg==
+X-Gm-Message-State: AFqh2kpatIV8yuSUsPfxRdGn0qKnw8fCwJCQ6Zh7Lm0QVw8RO8qpx8Rx
+        NQIc4elq04D9o+Q1XcnRLqT/mPy6i0RDe8q3VZRmgd7wZ6nQzEY3
+X-Google-Smtp-Source: AMrXdXsu9vmlBSP3ufY3gvzD7gdQE99mOPY/yZQ2uwGwk88t1sT8NTKeGn362L3IaXsY3mwEGD2VBKkhUNFUSDLIryk=
+X-Received: by 2002:a25:6e87:0:b0:6dd:702f:c995 with SMTP id
+ j129-20020a256e87000000b006dd702fc995mr1584583ybc.204.1672072295268; Mon, 26
+ Dec 2022 08:31:35 -0800 (PST)
 MIME-Version: 1.0
-References: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
- <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
-In-Reply-To: <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
+References: <20221221093940.2086025-1-liuhangbin@gmail.com>
+ <20221221172817.0da16ffa@kernel.org> <Y6QLz7pCnle0048z@Laptop-X1>
+ <de4920b8-366b-0336-ddc2-46cb40e00dbb@kernel.org> <Y6UUBJQI6tIwn9tH@Laptop-X1>
+In-Reply-To: <Y6UUBJQI6tIwn9tH@Laptop-X1>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Mon, 26 Dec 2022 11:03:34 -0500
-Message-ID: <CAM0EoMnJeb3QsfxgsggEMjTACdu0hq6mb3O+uGOfVzG2RZ-hkw@mail.gmail.com>
-Subject: Re: [RFC net-next 2/2] act_mirred: use the backlog for nested calls
- to mirred ingress
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, pabeni@redhat.com, wizhao@redhat.com,
-        xiyou.wangcong@gmail.com, lucien.xin@gmail.com
+Date:   Mon, 26 Dec 2022 11:31:24 -0500
+Message-ID: <CAM0EoMndCfTkTBhG4VJKCmZG3c58eLRai71KzHG-FfzyzSwbew@mail.gmail.com>
+Subject: Re: [PATCHv2 net-next] sched: multicast sched extack messages
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -68,141 +73,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Davide,
-So this would fix the false positive you are seeing i believe;
-however, will it fix a real loop?
-In particular I am not sure if the next packet grabbed from the
-backlog will end up in the
-same CPU.
+My only concern is this is not generic enough i.e can other objects
+outside of filters do this?
+You are still doing it only for the filter (in tfilter_set_nl_ext() -
+sitting in cls_api)
+As i mentioned earlier, actions can also be offloaded independently;
+would this work with actions extack?
+If it wont work then perhaps we should go the avenue of using
+per-object(in this case filter) specific attributes
+to carry the extack as suggested by Jakub earlier.
+
+David, extacks are passed to user space today via NLMSG_ERROR  and in
+this case the error is being returned by
+the driver - so it makes sense to stick to that attribute so user
+space can interpret it as such.
+
+Jakub, I would argue this is an event given the original intent: Some
+human (or daemon) tried to add an entry to
+hardware and s/w (neither skip_sw nor skip_hw set in user space
+request) and it failed because the hardware does
+not support the request, and therefore the entry got added as to the
+kernel only.
+The event in this case is to tell whoever is listening that this
+happened i.e half the request worked.
+
+The secondary argument from Marcelo and Hangbin is: there is a
+practical use for this, you reducing the amount
+of operational tooling needed. Alternative is to get the extack
+equivalent in syslog and the other from from events and
+then do the heuristics.
 
 cheers,
 jamal
 
-On Tue, Dec 20, 2022 at 1:25 PM Davide Caratti <dcaratti@redhat.com> wrote:
+On Thu, Dec 22, 2022 at 9:35 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
 >
-> William reports kernel soft-lockups on some OVS topologies when TC mirred
-> egress->ingress action is hit by local TCP traffic [1].
-> The same can also be reproduced with SCTP (thanks Xin for verifying), when
-> client and server reach themselves through mirred egress to ingress, and
-> one of the two peers sends a "heartbeat" packet (from within a timer).
+> On Thu, Dec 22, 2022 at 09:26:14AM -0700, David Ahern wrote:
+> > On 12/22/22 12:48 AM, Hangbin Liu wrote:
+> > > On Wed, Dec 21, 2022 at 05:28:17PM -0800, Jakub Kicinski wrote:
+> > >> On Wed, 21 Dec 2022 17:39:40 +0800 Hangbin Liu wrote:
+> > >>> + nlh = nlmsg_put(skb, portid, n->nlmsg_seq, NLMSG_ERROR, sizeof(*errmsg),
+> > >>> +                 NLM_F_ACK_TLVS | NLM_F_CAPPED);
+> > >>> + if (!nlh)
+> > >>> +         return -1;
+> > >>> +
+> > >>> + errmsg = (struct nlmsgerr *)nlmsg_data(nlh);
+> > >>> + errmsg->error = 0;
+> > >>> + errmsg->msg = *n;
+> > >>> +
+> > >>> + if (nla_put_string(skb, NLMSGERR_ATTR_MSG, extack->_msg))
+> > >>> +         return -1;
+> > >>> +
+> > >>> + nlmsg_end(skb, nlh);
+> > >>
+> > >> I vote "no", notifications should not generate NLMSG_ERRORs.
+> > >> (BTW setting pid and seq on notifications is odd, no?)
+> > >
+> > > I'm not sure if this error message should be counted to notifications generation.
+> > > The error message is generated as there is extack message, which is from
+> > > qdisc/filter adding/deleting.
+> > >
+> > > Can't we multicast error message?
+> > >
+> > > If we can't multicast the extack message via NLMSG_ERROR or NLMSG_DONE. I
+> > > think there is no other way to do it via netlink.
+> > >
+> >
+> > it is confusing as an API to send back information or debugging strings
+> > marked as an "error message."
+> >
 >
-> Enqueueing to backlog proved to fix this soft lockup; however, as Cong
-> noticed [2], we should preserve - when possible - the current mirred
-> behavior that counts as "overlimits" any eventual packet drop subsequent to
-> the mirred forwarding action [3]. A compromise solution might use the
-> backlog only when tcf_mirred_act() has a nest level greater than one:
-> change tcf_mirred_forward() accordingly.
+> I think it's OK to send back information with error message. Based on rfc3549,
 >
-> Also, add a kselftest that can reproduce the lockup and verifies TC mirred
-> ability to account for further packet drops after TC mirred egress->ingress
-> (when the nest level is 1).
+>    An error code of zero indicates that the message is an ACK response.
+>    An ACK response message contains the original Netlink message header,
+>    which can be used to compare against (sent sequence numbers, etc).
 >
->  [1] https://lore.kernel.org/netdev/33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com/
->  [2] https://lore.kernel.org/netdev/Y0w%2FWWY60gqrtGLp@pop-os.localdomain/
->  [3] such behavior is not guaranteed: for example, if RPS or skb RX
->      timestamping is enabled on the mirred target device, the kernel
->      can defer receiving the skb and return NET_RX_SUCCESS inside
->      tcf_mirred_forward().
+> I tried to do it on netlink_ack[1]. But Jakub pointed that the message ids
+> are not same families. So I moved it to net/sched.
 >
-> Reported-by: William Zhao <wizhao@redhat.com>
-> CC: Xin Long <lucien.xin@gmail.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  net/sched/act_mirred.c                        |  7 +++
->  .../selftests/net/forwarding/tc_actions.sh    | 49 ++++++++++++++++++-
->  2 files changed, 55 insertions(+), 1 deletion(-)
+> I think the argue point is, can we multicast the error message?
 >
-> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-> index c8abb5136491..8037ec9b1d31 100644
-> --- a/net/sched/act_mirred.c
-> +++ b/net/sched/act_mirred.c
-> @@ -206,12 +206,19 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
->         return err;
->  }
+> [1] https://lore.kernel.org/all/Y4W9qEHzg5h9n%2Fod@Laptop-X1/
 >
-> +static bool is_mirred_nested(void)
-> +{
-> +       return unlikely(__this_cpu_read(mirred_nest_level) > 1);
-> +}
-> +
->  static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
->  {
->         int err;
->
->         if (!want_ingress)
->                 err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
-> +       else if (is_mirred_nested())
-> +               err = netif_rx(skb);
->         else
->                 err = netif_receive_skb(skb);
->
-> diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
-> index 1e0a62f638fe..919c0dd9fe4b 100755
-> --- a/tools/testing/selftests/net/forwarding/tc_actions.sh
-> +++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
-> @@ -3,7 +3,8 @@
->
->  ALL_TESTS="gact_drop_and_ok_test mirred_egress_redirect_test \
->         mirred_egress_mirror_test matchall_mirred_egress_mirror_test \
-> -       gact_trap_test mirred_egress_to_ingress_test"
-> +       gact_trap_test mirred_egress_to_ingress_test \
-> +       mirred_egress_to_ingress_tcp_test"
->  NUM_NETIFS=4
->  source tc_common.sh
->  source lib.sh
-> @@ -198,6 +199,52 @@ mirred_egress_to_ingress_test()
->         log_test "mirred_egress_to_ingress ($tcflags)"
->  }
->
-> +mirred_egress_to_ingress_tcp_test()
-> +{
-> +       local tmpfile=$(mktemp) tmpfile1=$(mktemp)
-> +
-> +       RET=0
-> +       dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$tmpfile
-> +       tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
-> +               $tcflags ip_proto tcp src_ip 192.0.2.1 dst_ip 192.0.2.2 \
-> +                       action ct commit nat src addr 192.0.2.2 pipe \
-> +                       action ct clear pipe \
-> +                       action ct commit nat dst addr 192.0.2.1 pipe \
-> +                       action ct clear pipe \
-> +                       action skbedit ptype host pipe \
-> +                       action mirred ingress redirect dev $h1
-> +       tc filter add dev $h1 protocol ip pref 101 handle 101 egress flower \
-> +               $tcflags ip_proto icmp \
-> +                       action mirred ingress redirect dev $h1
-> +       tc filter add dev $h1 protocol ip pref 102 handle 102 ingress flower \
-> +               ip_proto icmp \
-> +                       action drop
-> +
-> +       ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $tmpfile1  &
-> +       local rpid=$!
-> +       ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$tmpfile
-> +       wait -n $rpid
-> +       cmp -s $tmpfile $tmpfile1
-> +       check_err $? "server output check failed"
-> +
-> +       $MZ $h1 -c 10 -p 64 -a $h1mac -b $h1mac -A 192.0.2.1 -B 192.0.2.1 \
-> +               -t icmp "ping,id=42,seq=5" -q
-> +       tc_check_packets "dev $h1 egress" 101 10
-> +       check_err $? "didn't mirred redirect ICMP"
-> +       tc_check_packets "dev $h1 ingress" 102 10
-> +       check_err $? "didn't drop mirred ICMP"
-> +       local overlimits=$(tc_rule_stats_get ${h1} 101 egress .overlimits)
-> +       test ${overlimits} = 10
-> +       check_err $? "wrong overlimits, expected 10 got ${overlimits}"
-> +
-> +       tc filter del dev $h1 egress protocol ip pref 100 handle 100 flower
-> +       tc filter del dev $h1 egress protocol ip pref 101 handle 101 flower
-> +       tc filter del dev $h1 ingress protocol ip pref 102 handle 102 flower
-> +
-> +       rm -f $tmpfile $tmpfile1
-> +       log_test "mirred_egress_to_ingress_tcp ($tcflags)"
-> +}
-> +
->  setup_prepare()
->  {
->         h1=${NETIFS[p1]}
-> --
-> 2.38.1
->
+> Thanks
+> Hangbin
