@@ -2,125 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E9F656289
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 13:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABBE1656294
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 13:32:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbiLZM1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 07:27:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
+        id S230430AbiLZMcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 07:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiLZM1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 07:27:12 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94213110D
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:27:11 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id h6so5589508iof.9
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:27:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=fB4g2vcur5YFb2ggicxgn/EklvxqZxIPloWShYBYzog=;
-        b=QN4ecyfAIiveA3YUPjugr4QaoNbjoHS8W7UcNaHE9d8hIlOWQvyVVA6GVslS6f21DK
-         PXTg4g4lWPmUCuqSuZmn3RBMlM6wLpFTcSdeNiQ6u719RGRppis8OQ0XuCX/wcIEiAYt
-         UMzpK+QwzF6luEUJirRZAXQb82IqjDnDyQBcr2PH7s2Bup4Q+oZFswFjX9LnlxXA7csX
-         gnt+7ktXVfHHVZTXXiGyU9fdrVKKHmp1yR8jPqiWAjJ2DYeGHgBdAhtr+wu5aTB1U79l
-         tZrZEwRetMx8nFC9q0CcNmDntlWp5Rwpy6AGWl2kn0WpMrrIsf+VqUTYPvd+jbjxQN7a
-         2IdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fB4g2vcur5YFb2ggicxgn/EklvxqZxIPloWShYBYzog=;
-        b=C/gaXmib9Xn/8rd/8v8G6B4pRDsTeZ4s4XWarolNQVYp9XpkiBb4KNCVxOKOK7Wr+t
-         ZeL0qqU9920iAqYJwYHFKEW+6Bdp/Qrbz7KAZ6fZw/BNuBAusLiXTkavboc/cke0uaOj
-         dC3051Sq6akh7CkcS+Qlqc78cB6GgJPUn5wWesbaQGhcjvkdMgzHhAcAUFpv+OPburQo
-         ZR5OKcHZk64tRX1M6m1CEaHmLLv3YGlIRrmg02DHJ02fddbnWgxTtVo5abrII6sFKTGa
-         hZ4bZKwKCPEhc6owdGKVUMDG6KLunPGNEL/z1e1pzQHWRZuEMfxxaQYAobRhJz76x/q2
-         oI+Q==
-X-Gm-Message-State: AFqh2kr2xzWJVZhXPgvurXOxaWao9HoAOWjqo4yvUw5T2V0OOBJssUml
-        +of6alGZOcrnT/dLf7VDJMuoHmYW4PXkcpCymhaoQDy6hYFBWJg9
-X-Google-Smtp-Source: AMrXdXtolPt+hsLiDxprLIL710rvWie8UHsOBkQa7FvKQSukLQqZBs8/lSsH/IMrnjNjr+SJeSmzIVo7JlggLRapCik=
-X-Received: by 2002:a5d:9955:0:b0:6bb:b955:185e with SMTP id
- v21-20020a5d9955000000b006bbb955185emr1454288ios.22.1672057630317; Mon, 26
- Dec 2022 04:27:10 -0800 (PST)
+        with ESMTP id S229533AbiLZMcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 07:32:43 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2536391
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:32:42 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BQCViJxA011481, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BQCViJxA011481
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 26 Dec 2022 20:31:44 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Mon, 26 Dec 2022 20:32:37 +0800
+Received: from localhost.localdomain (172.21.182.190) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 26 Dec 2022 20:32:36 +0800
+From:   Chunhao Lin <hau@realtek.com>
+To:     <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        Chunhao Lin <hau@realtek.com>
+Subject: [PATCH net v3 0/2] fix dmar pte write access is not set error
+Date:   Mon, 26 Dec 2022 20:31:51 +0800
+Message-ID: <20221226123153.4406-1-hau@realtek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Mon, 26 Dec 2022 04:26:56 -0800
-Message-ID: <CANP3RGc15v262aev2ZSo3PG9dOmKiJ0-57XjKiOmO29dbt94=w@mail.gmail.com>
-Subject: A linux route cache (flush) irregularity...
-To:     Linux NetDev <netdev@vger.kernel.org>
-Cc:     Jean Chalard <jchalard@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.182.190]
+X-ClientProxiedBy: RTEXH36505.realtek.com.tw (172.21.6.25) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 12/26/2022 12:15:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzI2IKRXpMggMDk6MzE6MDA=?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I can't seem to explain the following...
-without there being some part/aspect of the route cache that 'ip route
-flush cached' doesn't actually flush...
-(ping output below slightly trimmed to make this log shorter)
+This series fixes dmar pte write access is not set error.
 
-This is on a 5.19.11-1rodete1-amd64 debian (or ubuntu?) based gLinux
-kernel (I don't *think* there's any special gLinux hacks in it that
-would be relevant though)
-on a laptop connected via wifi to a cellular hotspot with 1460 mtu
-path to the internet.
+Chunhao Lin (2):
+  r8169: move rtl_wol_enable_rx() and rtl_prepare_power_down()
+  r8169: fix dmar pte write access is not set error
 
-# ip route flush cached
-# ip route show cached
+v2:
+-update commit message
+-adjust the code according to current kernel code
+v3:
+-update title and commit message
+-split the patch
 
-# ping -c 1 -s $[1500-28] 8.8.8.8
-From 10.0.0.200 icmp_seq=1 Frag needed and DF set (mtu = 1460)
+ drivers/net/ethernet/realtek/r8169_main.c | 58 +++++++++++------------
+ 1 file changed, 29 insertions(+), 29 deletions(-)
 
-# ip route show cached
-8.8.8.8 via 10.0.0.200 dev wlp0s20f3
-    cache expires 86396sec mtu 1460
+-- 
+2.25.1
 
-# ping -c 1 -s $[1460-28] 8.8.8.8
-76 bytes from 8.8.8.8: icmp_seq=1 ttl=113 (truncated)
-
-# ip route show cached
-8.8.8.8 via 10.0.0.200 dev wlp0s20f3
-    cache expires 86390sec mtu 1460
-
-# ping -c 1 -s $[1460-28] 1.1.1.1
-1440 bytes from 1.1.1.1: icmp_seq=1 ttl=53 time=39.0 ms
-
-# ip route show cached
-8.8.8.8 via 10.0.0.200 dev wlp0s20f3
-    cache expires 86381sec mtu 1460
-
-# ip route flush cached
-# ip route show cached
-
-# ping -c 1 1.1.1.1
-64 bytes from 1.1.1.1: icmp_seq=1 ttl=53 time=26.9 ms
-
-# ping -c 1 8.8.8.8
-64 bytes from 8.8.8.8: icmp_seq=1 ttl=113 time=50.0 ms
-
-# ip route show cached
-8.8.8.8 via 10.0.0.200 dev wlp0s20f3
-    cache
-
-Up until this spot I could explain everything, but why is there now an
-entry for 8.8.8.8 but not 1.1.1.1?
-
-The only explanation I can think of is that *some* part of the route
-cache has actually remembered that a per-ip override for 8.8.8.8 needs
-to be generated, but not for 1.1.1.1...
-
-No, this doesn't really matter, but I'm the curious sort...
-[side note: it also appears that 'ip route flush cached' and/or 'ip
-route show cached' might be asynchronous...]
-
-- Maciej
