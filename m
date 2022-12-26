@@ -2,85 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A99EF65616C
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 10:20:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE4D6561AB
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 10:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231785AbiLZJUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 04:20:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S231693AbiLZJuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 04:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiLZJUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 04:20:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1361127;
-        Mon, 26 Dec 2022 01:20:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11ECAB802BE;
-        Mon, 26 Dec 2022 09:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB638C433F0;
-        Mon, 26 Dec 2022 09:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672046415;
-        bh=kjxJEX+PwFMsqnRFN92K7Un15lxgxiWqXlmQKldJQPY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dPAcZzRXIfLPM60PpxeeOXw8wpMxKLJ73dskjiaZtlxjZh2mesL+Jk73yreEs1D0k
-         IK8Ms7cCbVEScDikryQ4Lo2/4HEVzR6gOlypFBvXbPKx3uStmg1ToVJReE7VduPexG
-         slmX6SWC663EyLsTAhDLKc34ckLPgxXtEny8lyStJiYy9ZFSn/Q0RD2L8UjuZkHa1k
-         2r+EOtR+5CiFbTivTpYuFR23gPcbPZXVCoNxExlHe7QZqzOetS/AUMqRiWmg8E8X7A
-         2tajojRY56ffr7353KGeF1iORH8Ub0hqTn20RNpKzsnfS4GVfmTbP6HDmB0tzzHNj0
-         ly/MGc9IfT8sw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8B481E50D66;
-        Mon, 26 Dec 2022 09:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229484AbiLZJuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 04:50:22 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBF0234
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 01:50:21 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-417b63464c6so145224647b3.8
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 01:50:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=fmF2cGQbBs6YMQ3a2rCQYqoYyMFkRZzG4KKzAOl4kLE=;
+        b=bMQJ2p5T3B+1Eiwh0ozrHAFSKX35Q0vzPq3DrnZvLdIb6vM2G+ValqFymn66Om+Vhi
+         28fT1dH1eW6Dty1ibjLTu6Log4QqlnXfUteW1cFNoHCdDvKwEIFMkk4v6w6tn5pzhd8R
+         QOqlPlkTwcZ+vD/d9dAVA+vNDFQtgH/qlYGcjslLOYKQTxoZCo/d0HqUbVGJvXcLtKIk
+         2vL7SubckkEa5dur+drIIMjALFcA6GcFWHU7e8zxoA+k5BTMS8AKwTLE8FznvyST0dMT
+         RJk+3kpNSMjrF5R+pv615771wpwT+Nk+RWSJIz2y2BzdYh9DrPyJGOObh+wqYYoxp2Gk
+         XuOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fmF2cGQbBs6YMQ3a2rCQYqoYyMFkRZzG4KKzAOl4kLE=;
+        b=x14EbPVu4c8Wty8FAIoajalVQEVgSUUbCONoNYzwqSoUWAZ6o2kL0WqSIbCQCTxUT9
+         p7cCf1tpT6t3vj0TAlBJPzNvR26iOBB/KWFOaHHXeIuCY2KNWUCERFXtjrJt9votvMBS
+         X5Rx8i5R6YdNTswPFKtNeurh9USCh0GD42uIId4OO3f7J/77cEb3aO3Cxl8o2gxqsU5O
+         gf6bhxgtEy3G4qw/JeXkYeKIbSb6GeWb0kd9yb/dNVS3A/I2VwzaNeee66ZJqdYPBcqI
+         1gQMtDlOp4wqAOIf4grRyQIZdZQbM4zx7ksTPeln83ytVoNkfoFJOyQM9lSnjydtSfIK
+         QEvw==
+X-Gm-Message-State: AFqh2koavuwJ0P6DhFcTYR3GLN0WgFgzTCOxq65G40dpCtIE+UxuhnE4
+        YlYG702qmbtte9aiLu8r2JdfbxFbIP5ltElKtpWOdg==
+X-Google-Smtp-Source: AMrXdXvZTcC92hWOMbyIeK3dqSwaIggP+z9ZEXfdPvWXDfuzBL6uLz0bBSmiWglVMuUa1inps4rVFLku/JoLp2RZopU=
+X-Received: by 2002:a0d:ca88:0:b0:3f5:7f7d:2d4f with SMTP id
+ m130-20020a0dca88000000b003f57f7d2d4fmr2143854ywd.276.1672048220248; Mon, 26
+ Dec 2022 01:50:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] nfc:  Fix potential resource leaks
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167204641556.10716.12082519458105064136.git-patchwork-notify@kernel.org>
-Date:   Mon, 26 Dec 2022 09:20:15 +0000
-References: <20221223073718.805935-1-linmq006@gmail.com>
-In-Reply-To: <20221223073718.805935-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     krzysztof.kozlowski@linaro.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        sameo@linux.intel.com, christophe.ricard@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221226063625.1913-1-anand@edgeble.ai>
+In-Reply-To: <20221226063625.1913-1-anand@edgeble.ai>
+From:   Jagan Teki <jagan@edgeble.ai>
+Date:   Mon, 26 Dec 2022 15:20:09 +0530
+Message-ID: <CA+VMnFw_aHNuPKrSeLy9P3ZngYdyHMtiyW+GxdNCEGRC0N_TmA@mail.gmail.com>
+Subject: Re: [PATCHv2 linux-next 1/4] dt-bindings: net: rockchip-dwmac: fix
+ rv1126 compatible warning
+To:     Anand Moon <anand@edgeble.ai>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        David Wu <david.wu@rock-chips.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 26 Dec 2022 at 12:06, Anand Moon <anand@edgeble.ai> wrote:
+>
+> Fix compatible string for RV1126 gmac, and constrain it to
+> be compatible with Synopsys dwmac 4.20a.
+>
+> fix below warning
+> $ make CHECK_DTBS=y rv1126-edgeble-neu2-io.dtb
+> arch/arm/boot/dts/rv1126-edgeble-neu2-io.dtb: ethernet@ffc40000:
+>                  compatible: 'oneOf' conditional failed, one must be fixed:
+>         ['rockchip,rv1126-gmac', 'snps,dwmac-4.20a'] is too long
+>         'rockchip,rv1126-gmac' is not one of ['rockchip,rk3568-gmac', 'rockchip,rk3588-gmac']
+>
+> Fixes: b36fe2f43662 ("dt-bindings: net: rockchip-dwmac: add rv1126 compatible")
+> Signed-off-by: Anand Moon <anand@edgeble.ai>
+> ---
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 23 Dec 2022 11:37:18 +0400 you wrote:
-> nfc_get_device() take reference for the device, add missing
-> nfc_put_device() to release it when not need anymore.
-> Also fix the style warnning by use error EOPNOTSUPP instead of
-> ENOTSUPP.
-> 
-> Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
-> Fixes: 29e76924cf08 ("nfc: netlink: Add capability to reply to vendor_cmd with data")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2] nfc: Fix potential resource leaks
-    https://git.kernel.org/netdev/net/c/df49908f3c52
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Jagan Teki <jagan@edgeble.ai>
