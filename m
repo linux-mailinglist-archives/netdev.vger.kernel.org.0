@@ -2,159 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2548565640D
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 17:31:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F53656442
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 17:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiLZQbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 11:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        id S232220AbiLZQ4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 11:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiLZQbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 11:31:37 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5EE249
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 08:31:36 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id 186so12060023ybe.8
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 08:31:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=tNyU3hi4+YHcw3wvohcr4k63kxaU1hZhqQ2UlHaU9PY=;
-        b=VK6yNPHlmxyJcqrIpTlk4pEpd3PmzhVQJCmNa3kGSXURprRwl10Qm+M/op7c6+43K8
-         uyz4p05IXcwLOOj4i1CMRW2xHc6ziRg1mVolv39xXkI15fPksxj/BtjRgt5NJWyg8NQ0
-         xj5eJSlgATQmr/3OH+hoYX2hjv9UT7x2mxuqv4xoqDqyC91lqnxEZf0cloa31R+qYpua
-         QOzttMbaqnUYa95rlbea2wm7leWzia7YKx+gXq5m3kWIJgPtkz15wVE9+R8pHLuWSOeV
-         nikFYb+Ncn448PyI/vgpFYfLYfyL8xS9o+YGckCvY38wuE93dzo5WcNdYCZX/lBQuMl7
-         eE5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tNyU3hi4+YHcw3wvohcr4k63kxaU1hZhqQ2UlHaU9PY=;
-        b=r/47Ta54MOK7h/J9GZUu8ZXg4ffmy1oPQ9GcPpO1T2QGbKpFGQ0tM3ei27NuiPZOW2
-         jkCnwAECXgUfVyKZC2F1w5PzWU5B9XT2KL/kd0+4wnAIjG4VLuPj74ahp86RKyRIUT7d
-         bqLpea2ENy70CdJYsBNg7HxHbTj1+ZCsoDm4e2rpRURxylbPLgYBWA+fuJgN5ecaiuj8
-         ckJI2rkKJqFOV5O1OpBc5/c433WRX7T3THth60G8j3LDw1NPSDFUevKQr8QBBFTFpi4k
-         IcUaEQivGI/pEWkhIFbb9+7RWfVSrYgywwBDyq2bW0HSMzeR7DUOH1r5fNptTGiLiAsG
-         rgPg==
-X-Gm-Message-State: AFqh2kpatIV8yuSUsPfxRdGn0qKnw8fCwJCQ6Zh7Lm0QVw8RO8qpx8Rx
-        NQIc4elq04D9o+Q1XcnRLqT/mPy6i0RDe8q3VZRmgd7wZ6nQzEY3
-X-Google-Smtp-Source: AMrXdXsu9vmlBSP3ufY3gvzD7gdQE99mOPY/yZQ2uwGwk88t1sT8NTKeGn362L3IaXsY3mwEGD2VBKkhUNFUSDLIryk=
-X-Received: by 2002:a25:6e87:0:b0:6dd:702f:c995 with SMTP id
- j129-20020a256e87000000b006dd702fc995mr1584583ybc.204.1672072295268; Mon, 26
- Dec 2022 08:31:35 -0800 (PST)
+        with ESMTP id S232165AbiLZQzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 11:55:31 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A609F6413;
+        Mon, 26 Dec 2022 08:55:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672073701; x=1703609701;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SfZzdNV19bg9UmQpe6KYIZYymHxtUypJH/O7nO8s6g4=;
+  b=h31mID8Nj5IvQhElF9vkmX2MwemEqgYnIN6yGlU2CZyWEac6EvWXINt7
+   l5mr/uWh8P0XXMqpyY+DImnkCpzuQoiOLMHQNkjnGqMbt6mMQVAkvWg4z
+   hj+qhEZ5WAY5AFarg1LsBGlqdJ9qL67uPj6rUFbhHN0Y70lSuVLXgTXW8
+   rqQTxFviXwYYhJIIuAHkrPJNJDSzNLB+ShXcNPWJYa9GYJ/s3OqPVu6yD
+   idmnf7K4mV/AcO6GoTntodEJf3aM2/aWvOftu6AcpJLXRQRv1nfRoEGvR
+   9MlniTegoPbXWLjkxruZ33hcPBnYfy+hr1LAdqJpFRbQ79mQ4RMo4rCfc
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10572"; a="308338533"
+X-IronPort-AV: E=Sophos;i="5.96,276,1665471600"; 
+   d="scan'208";a="308338533"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Dec 2022 08:55:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10572"; a="646205184"
+X-IronPort-AV: E=Sophos;i="5.96,276,1665471600"; 
+   d="scan'208";a="646205184"
+Received: from lkp-server01.sh.intel.com (HELO b5d47979f3ad) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 26 Dec 2022 08:54:55 -0800
+Received: from kbuild by b5d47979f3ad with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1p9qkZ-000EZN-0D;
+        Mon, 26 Dec 2022 16:54:55 +0000
+Date:   Tue, 27 Dec 2022 00:54:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     virtualization@lists.linux-foundation.org,
+        speakup@linux-speakup.org, netdev@vger.kernel.org,
+        loongarch@lists.linux.dev, linux-xfs@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-media@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ c76083fac3bae1a87ae3d005b5cb1cbc761e31d5
+Message-ID: <63a9d1b2.869GAwHafmAB6R7M%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20221221093940.2086025-1-liuhangbin@gmail.com>
- <20221221172817.0da16ffa@kernel.org> <Y6QLz7pCnle0048z@Laptop-X1>
- <de4920b8-366b-0336-ddc2-46cb40e00dbb@kernel.org> <Y6UUBJQI6tIwn9tH@Laptop-X1>
-In-Reply-To: <Y6UUBJQI6tIwn9tH@Laptop-X1>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Mon, 26 Dec 2022 11:31:24 -0500
-Message-ID: <CAM0EoMndCfTkTBhG4VJKCmZG3c58eLRai71KzHG-FfzyzSwbew@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next] sched: multicast sched extack messages
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My only concern is this is not generic enough i.e can other objects
-outside of filters do this?
-You are still doing it only for the filter (in tfilter_set_nl_ext() -
-sitting in cls_api)
-As i mentioned earlier, actions can also be offloaded independently;
-would this work with actions extack?
-If it wont work then perhaps we should go the avenue of using
-per-object(in this case filter) specific attributes
-to carry the extack as suggested by Jakub earlier.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: c76083fac3bae1a87ae3d005b5cb1cbc761e31d5  Add linux-next specific files for 20221226
 
-David, extacks are passed to user space today via NLMSG_ERROR  and in
-this case the error is being returned by
-the driver - so it makes sense to stick to that attribute so user
-space can interpret it as such.
+Error/Warning reports:
 
-Jakub, I would argue this is an event given the original intent: Some
-human (or daemon) tried to add an entry to
-hardware and s/w (neither skip_sw nor skip_hw set in user space
-request) and it failed because the hardware does
-not support the request, and therefore the entry got added as to the
-kernel only.
-The event in this case is to tell whoever is listening that this
-happened i.e half the request worked.
+https://lore.kernel.org/oe-kbuild-all/202212020520.0OkMIno3-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212041528.4TbQL9ys-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212051759.cEv6fyHy-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212061455.6GE7y0jg-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212080938.RHVtvwt0-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212090509.NjAl9tbo-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212242239.hWUlGmm0-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202212250859.uLjFpJy3-lkp@intel.com
 
-The secondary argument from Marcelo and Hangbin is: there is a
-practical use for this, you reducing the amount
-of operational tooling needed. Alternative is to get the extack
-equivalent in syslog and the other from from events and
-then do the heuristics.
+Error/Warning: (recently discovered and may have been fixed)
 
-cheers,
-jamal
+ERROR: modpost: "input_ff_create_memless" [drivers/hid/hid-betopff.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/hid/hid-logitech.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/hid/hid-megaworld.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/hid/hid-mf.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/input/misc/drv260x.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/input/misc/drv2665.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/input/misc/gpio-vibra.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/input/misc/regulator-haptic.ko] undefined!
+ERROR: modpost: "input_ff_create_memless" [drivers/input/misc/sc27xx-vibra.ko] undefined!
+aarch64-linux-ld: ID map text too big or misaligned
+arch/arm/kernel/entry-armv.S:485:5: warning: "CONFIG_ARM_THUMB" is not defined, evaluates to 0 [-Wundef]
+arch/arm64/include/asm/pgtable-hwdef.h:82:64: warning: "PMD_SHIFT" is not defined, evaluates to 0 [-Wundef]
+arch/loongarch/kernel/asm-offsets.c:265:6: warning: no previous prototype for 'output_pbe_defines' [-Wmissing-prototypes]
+drivers/regulator/tps65219-regulator.c:310:32: warning: parameter 'dev' set but not used [-Wunused-but-set-parameter]
+drivers/regulator/tps65219-regulator.c:310:60: warning: parameter 'dev' set but not used [-Wunused-but-set-parameter]
+drivers/regulator/tps65219-regulator.c:370:26: sparse:    int
+drivers/regulator/tps65219-regulator.c:370:26: sparse:    struct regulator_dev *[assigned] rdev
+drivers/regulator/tps65219-regulator.c:370:26: warning: ordered comparison of pointer with integer zero [-Wextra]
+loongarch64-linux-ld: sleep.c:(.text+0x22c): undefined reference to `loongarch_wakeup_start'
+sleep.c:(.text+0x228): undefined reference to `loongarch_wakeup_start'
 
-On Thu, Dec 22, 2022 at 9:35 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> On Thu, Dec 22, 2022 at 09:26:14AM -0700, David Ahern wrote:
-> > On 12/22/22 12:48 AM, Hangbin Liu wrote:
-> > > On Wed, Dec 21, 2022 at 05:28:17PM -0800, Jakub Kicinski wrote:
-> > >> On Wed, 21 Dec 2022 17:39:40 +0800 Hangbin Liu wrote:
-> > >>> + nlh = nlmsg_put(skb, portid, n->nlmsg_seq, NLMSG_ERROR, sizeof(*errmsg),
-> > >>> +                 NLM_F_ACK_TLVS | NLM_F_CAPPED);
-> > >>> + if (!nlh)
-> > >>> +         return -1;
-> > >>> +
-> > >>> + errmsg = (struct nlmsgerr *)nlmsg_data(nlh);
-> > >>> + errmsg->error = 0;
-> > >>> + errmsg->msg = *n;
-> > >>> +
-> > >>> + if (nla_put_string(skb, NLMSGERR_ATTR_MSG, extack->_msg))
-> > >>> +         return -1;
-> > >>> +
-> > >>> + nlmsg_end(skb, nlh);
-> > >>
-> > >> I vote "no", notifications should not generate NLMSG_ERRORs.
-> > >> (BTW setting pid and seq on notifications is odd, no?)
-> > >
-> > > I'm not sure if this error message should be counted to notifications generation.
-> > > The error message is generated as there is extack message, which is from
-> > > qdisc/filter adding/deleting.
-> > >
-> > > Can't we multicast error message?
-> > >
-> > > If we can't multicast the extack message via NLMSG_ERROR or NLMSG_DONE. I
-> > > think there is no other way to do it via netlink.
-> > >
-> >
-> > it is confusing as an API to send back information or debugging strings
-> > marked as an "error message."
-> >
->
-> I think it's OK to send back information with error message. Based on rfc3549,
->
->    An error code of zero indicates that the message is an ACK response.
->    An ACK response message contains the original Netlink message header,
->    which can be used to compare against (sent sequence numbers, etc).
->
-> I tried to do it on netlink_ack[1]. But Jakub pointed that the message ids
-> are not same families. So I moved it to net/sched.
->
-> I think the argue point is, can we multicast the error message?
->
-> [1] https://lore.kernel.org/all/Y4W9qEHzg5h9n%2Fod@Laptop-X1/
->
-> Thanks
-> Hangbin
+Unverified Error/Warning (likely false positive, please contact us if interested):
+
+drivers/accessibility/speakup/main.c:1290:26: sparse: sparse: obsolete array initializer, use C99 syntax
+drivers/block/null_blk/zoned.c:769 zone_cond_store() warn: potential spectre issue 'dev->zones' [w] (local cap)
+drivers/block/virtio_blk.c:721:9: sparse:    bad type *
+drivers/block/virtio_blk.c:721:9: sparse:    unsigned int *
+drivers/block/virtio_blk.c:721:9: sparse: sparse: incompatible types in comparison expression (different base types):
+drivers/block/virtio_blk.c:721:9: sparse: sparse: no generic selection for 'restricted __le32 [addressable] virtio_cread_v'
+drivers/block/virtio_blk.c:721:9: sparse: sparse: no generic selection for 'restricted __le32 virtio_cread_v'
+drivers/cxl/core/mbox.c:832:18: sparse: sparse: cast from non-scalar
+drivers/cxl/core/mbox.c:832:18: sparse: sparse: cast to non-scalar
+drivers/i2c/busses/i2c-qcom-geni.c:1028:28: sparse: sparse: symbol 'i2c_master_hub' was not declared. Should it be static?
+drivers/iio/adc/twl6030-gpadc.c:955:16-23: duplicated argument to & or |
+drivers/iio/light/tsl2563.c:751:8-33: WARNING: Threaded IRQ with no primary handler requested without IRQF_ONESHOT (unless it is nested IRQ)
+drivers/media/platform/ti/davinci/vpif.c:483:20: sparse: sparse: cast from non-scalar
+drivers/media/platform/ti/davinci/vpif.c:483:20: sparse: sparse: cast to non-scalar
+drivers/media/test-drivers/visl/visl-video.c:690:22: sparse: sparse: symbol 'visl_qops' was not declared. Should it be static?
+fs/exfat/dir.c:862 exfat_get_dentry_set() warn: missing unwind goto?
+fs/xfs/xfs_iomap.c:86:29: sparse: sparse: symbol 'xfs_iomap_page_ops' was not declared. Should it be static?
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- alpha-allyesconfig
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- arc-allyesconfig
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- arc-randconfig-r024-20221225
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- arc-randconfig-s041-20221225
+|   `-- fs-xfs-xfs_iomap.c:sparse:sparse:symbol-xfs_iomap_page_ops-was-not-declared.-Should-it-be-static
+|-- arm-allyesconfig
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- arm-badge4_defconfig
+|   `-- arch-arm-kernel-entry-armv.S:warning:CONFIG_ARM_THUMB-is-not-defined-evaluates-to
+|-- arm64-allyesconfig
+|   |-- aarch64-linux-ld:ID-map-text-too-big-or-misaligned
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- arm64-randconfig-c034-20221225
+|   `-- arch-arm64-include-asm-pgtable-hwdef.h:warning:PMD_SHIFT-is-not-defined-evaluates-to
+|-- csky-randconfig-c033-20221225
+|   |-- drivers-iio-light-tsl2563.c:WARNING:Threaded-IRQ-with-no-primary-handler-requested-without-IRQF_ONESHOT-(unless-it-is-nested-IRQ)
+|   `-- drivers-mtd-ubi-build.c:WARNING:conversion-to-bool-not-needed-here
+|-- i386-allyesconfig
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- i386-randconfig-c021-20221226
+|   `-- drivers-iio-light-tsl2563.c:WARNING:Threaded-IRQ-with-no-primary-handler-requested-without-IRQF_ONESHOT-(unless-it-is-nested-IRQ)
+|-- i386-randconfig-m021-20221226
+|   `-- fs-exfat-dir.c-exfat_get_dentry_set()-warn:missing-unwind-goto
+|-- i386-randconfig-s002
+|   `-- fs-xfs-xfs_iomap.c:sparse:sparse:symbol-xfs_iomap_page_ops-was-not-declared.-Should-it-be-static
+|-- ia64-allmodconfig
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- loongarch-allyesconfig
+|   `-- arch-loongarch-kernel-asm-offsets.c:warning:no-previous-prototype-for-output_pbe_defines
+|-- loongarch-randconfig-s043-20221225
+|   |-- arch-loongarch-kernel-asm-offsets.c:warning:no-previous-prototype-for-output_pbe_defines
+|   |-- drivers-cxl-core-mbox.c:sparse:sparse:cast-from-non-scalar
+|   |-- drivers-cxl-core-mbox.c:sparse:sparse:cast-to-non-scalar
+|   |-- drivers-i2c-busses-i2c-qcom-geni.c:sparse:sparse:symbol-i2c_master_hub-was-not-declared.-Should-it-be-static
+|   |-- fs-xfs-xfs_iomap.c:sparse:sparse:symbol-xfs_iomap_page_ops-was-not-declared.-Should-it-be-static
+|   |-- loongarch64-linux-ld:sleep.c:(.text):undefined-reference-to-loongarch_wakeup_start
+|   `-- sleep.c:(.text):undefined-reference-to-loongarch_wakeup_start
+|-- m68k-allmodconfig
+|   |-- drivers-regulator-tps65219-regulator.c:warning:ordered-comparison-of-pointer-with-integer-zero
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+clang_recent_errors
+|-- hexagon-buildonly-randconfig-r003-20221225
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- hexagon-randconfig-r002-20221225
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- riscv-randconfig-r021-20221225
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+|-- x86_64-allyesconfig
+|   `-- drivers-regulator-tps65219-regulator.c:warning:parameter-dev-set-but-not-used
+`-- x86_64-randconfig-a003-20221226
+    `-- vmlinux.o:warning:objtool:___ksymtab_gpl-_RNvNtCsfATHBUcknU9_6kernel5print16call_printk_cont:data-relocation-to-ENDBR:_RNvNtCsfATHBUcknU9_6kernel5print16call_printk_cont
+
+elapsed time: 720m
+
+configs tested: 89
+configs skipped: 2
+
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+arc                                 defconfig
+alpha                               defconfig
+i386                 randconfig-a012-20221226
+x86_64                    rhel-8.3-kselftests
+arm                                 defconfig
+i386                 randconfig-a011-20221226
+x86_64                          rhel-8.3-func
+i386                                defconfig
+i386                 randconfig-a013-20221226
+x86_64                           rhel-8.3-bpf
+s390                             allmodconfig
+s390                                defconfig
+ia64                             allmodconfig
+i386                 randconfig-a014-20221226
+x86_64                           rhel-8.3-syz
+x86_64                              defconfig
+i386                 randconfig-a016-20221226
+s390                             allyesconfig
+i386                 randconfig-a015-20221226
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+x86_64                            allnoconfig
+x86_64               randconfig-a014-20221226
+powerpc                           allnoconfig
+x86_64               randconfig-a013-20221226
+x86_64                               rhel-8.3
+arm64                            allyesconfig
+x86_64               randconfig-a011-20221226
+arm                              allyesconfig
+x86_64               randconfig-a012-20221226
+i386                             allyesconfig
+x86_64               randconfig-a015-20221226
+x86_64               randconfig-a016-20221226
+sh                               allmodconfig
+m68k                             allyesconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+x86_64                           allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+arm                  randconfig-r046-20221225
+arc                  randconfig-r043-20221225
+arc                  randconfig-r043-20221226
+riscv                randconfig-r042-20221226
+s390                 randconfig-r044-20221226
+x86_64                           alldefconfig
+sh                          lboxre2_defconfig
+arc                               allnoconfig
+sh                             shx3_defconfig
+arm                           tegra_defconfig
+microblaze                          defconfig
+m68k                       m5475evb_defconfig
+m68k                        m5407c3_defconfig
+xtensa                              defconfig
+mips                      maltasmvp_defconfig
+parisc                           alldefconfig
+arm                          badge4_defconfig
+powerpc                     mpc83xx_defconfig
+sh                          rsk7201_defconfig
+sh                 kfr2r09-romimage_defconfig
+powerpc                    klondike_defconfig
+sh                  sh7785lcr_32bit_defconfig
+
+clang tested configs:
+x86_64                          rhel-8.3-rust
+i386                 randconfig-a004-20221226
+i386                 randconfig-a001-20221226
+x86_64               randconfig-a002-20221226
+i386                 randconfig-a003-20221226
+i386                 randconfig-a002-20221226
+x86_64               randconfig-a003-20221226
+x86_64               randconfig-a006-20221226
+i386                 randconfig-a005-20221226
+i386                 randconfig-a006-20221226
+x86_64               randconfig-a001-20221226
+x86_64               randconfig-a004-20221226
+x86_64               randconfig-a005-20221226
+hexagon              randconfig-r045-20221225
+hexagon              randconfig-r041-20221225
+hexagon              randconfig-r041-20221226
+arm                  randconfig-r046-20221226
+s390                 randconfig-r044-20221225
+hexagon              randconfig-r045-20221226
+riscv                randconfig-r042-20221225
+powerpc                     tqm5200_defconfig
+arm                         shannon_defconfig
+arm                         orion5x_defconfig
+arm                           sama7_defconfig
+x86_64                           allyesconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
