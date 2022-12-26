@@ -2,216 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3481C656245
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 12:49:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7609B656273
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 13:14:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbiLZLtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 06:49:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
+        id S231614AbiLZMOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 07:14:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231688AbiLZLsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 06:48:51 -0500
-Received: from forwardcorp1a.mail.yandex.net (forwardcorp1a.mail.yandex.net [178.154.239.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9E9E61;
-        Mon, 26 Dec 2022 03:48:48 -0800 (PST)
-Received: from vla1-81430ab5870b.qloud-c.yandex.net (vla1-81430ab5870b.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:35a1:0:640:8143:ab5])
-        by forwardcorp1a.mail.yandex.net (Yandex) with ESMTP id E52165FD70;
-        Mon, 26 Dec 2022 14:48:44 +0300 (MSK)
-Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:1::1:f])
-        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id SmMqpV0Q0uQ1-VihaauT0;
-        Mon, 26 Dec 2022 14:48:44 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1672055324; bh=Nuxuuf1lhfDfoOk+xEW3obUWSUiFsuqUm9EH4ZXnZWg=;
-        h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
-        b=F6GmxQu06XHnODjrFlMQpZEjNhsEVaS7BQXQS+noC42KMJ1Pg/w6GKDnaEZYgyu1d
-         XpvxgmQo+ab7DZ5AXKWqhS5dZoF3cP271Ho3L13PK3H7SzUB0vyGFxcFQ/TA4oirML
-         m4tCb4vstm2JtrDKSNH6dnwCxu4hXy1pQ1esjSuU=
-Authentication-Results: vla1-81430ab5870b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Maxim Korotkov <korotkov.maxim.s@gmail.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Tom Rix <trix@redhat.com>, Marco Bonelli <marco@mebeim.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 3/3] net/ethtool/ioctl: split ethtool_get_phy_stats into multiple helpers
-Date:   Mon, 26 Dec 2022 14:48:25 +0300
-Message-Id: <20221226114825.1937189-4-d-tatianin@yandex-team.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221226114825.1937189-1-d-tatianin@yandex-team.ru>
-References: <20221226114825.1937189-1-d-tatianin@yandex-team.ru>
+        with ESMTP id S231750AbiLZMOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 07:14:00 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 559116346
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:13:55 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BQCCvAO2029897, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BQCCvAO2029897
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 26 Dec 2022 20:12:57 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Mon, 26 Dec 2022 20:13:51 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 26 Dec 2022 20:13:50 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Mon, 26 Dec 2022 20:13:50 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH net v2] r8169: fix rtl8125b dmar pte write access not set error
+Thread-Topic: [PATCH net v2] r8169: fix rtl8125b dmar pte write access not set
+ error
+Thread-Index: AQHZFqI+QAzyLpduP0msiI3VXpiKqa56wjQAgAVWqYA=
+Date:   Mon, 26 Dec 2022 12:13:50 +0000
+Message-ID: <337435cc983e4c8ca1fc1b1c354c842d@realtek.com>
+References: <20221223074321.4862-1-hau@realtek.com>
+ <ea257540-edae-2803-4726-778a44f96a34@gmail.com>
+In-Reply-To: <ea257540-edae-2803-4726-778a44f96a34@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.74]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzI2IOS4iuWNiCAwOTozMTowMA==?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So that it's easier to follow and make sense of the branching and
-various conditions.
-
-Stats retrieval has been split into two separate functions
-ethtool_get_phy_stats_phydev & ethtool_get_phy_stats_ethtool.
-The former attempts to retrieve the stats using phydev & phy_ops, while
-the latter uses ethtool_ops.
-
-Actual n_stats validation & array allocation has been moved into a new
-ethtool_vzalloc_stats_array helper.
-
-This also fixes a potential NULL dereference of
-ops->get_ethtool_phy_stats where it was getting called in an else branch
-unconditionally without making sure it was actually present.
-
-Found by Linux Verification Center (linuxtesting.org) with the SVACE
-static analysis tool.
-
-Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- net/ethtool/ioctl.c | 102 ++++++++++++++++++++++++++++++--------------
- 1 file changed, 69 insertions(+), 33 deletions(-)
-
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 3379af21c29f..36792633ce5f 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -2072,23 +2072,8 @@ static int ethtool_get_stats(struct net_device *dev, void __user *useraddr)
- 	return ret;
- }
- 
--static int ethtool_get_phy_stats(struct net_device *dev, void __user *useraddr)
-+static int ethtool_vzalloc_stats_array(int n_stats, u64 **data)
- {
--	const struct ethtool_phy_ops *phy_ops = ethtool_phy_ops;
--	const struct ethtool_ops *ops = dev->ethtool_ops;
--	struct phy_device *phydev = dev->phydev;
--	struct ethtool_stats stats;
--	u64 *data;
--	int ret, n_stats;
--
--	if (!phydev && (!ops->get_ethtool_phy_stats || !ops->get_sset_count))
--		return -EOPNOTSUPP;
--
--	if (phydev && !ops->get_ethtool_phy_stats &&
--	    phy_ops && phy_ops->get_sset_count)
--		n_stats = phy_ops->get_sset_count(phydev);
--	else
--		n_stats = ops->get_sset_count(dev, ETH_SS_PHY_STATS);
- 	if (n_stats < 0)
- 		return n_stats;
- 	if (n_stats > S32_MAX / sizeof(u64))
-@@ -2096,31 +2081,82 @@ static int ethtool_get_phy_stats(struct net_device *dev, void __user *useraddr)
- 	if (WARN_ON_ONCE(!n_stats))
- 		return -EOPNOTSUPP;
- 
-+	*data = vzalloc(array_size(n_stats, sizeof(u64)));
-+	if (!*data)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static int ethtool_get_phy_stats_phydev(struct phy_device *phydev,
-+					 struct ethtool_stats *stats,
-+					 u64 **data)
-+ {
-+	const struct ethtool_phy_ops *phy_ops = ethtool_phy_ops;
-+	int n_stats, ret;
-+
-+	if (!phy_ops || !phy_ops->get_sset_count || !phy_ops->get_stats)
-+		return -EOPNOTSUPP;
-+
-+	n_stats = phy_ops->get_sset_count(phydev);
-+
-+	ret = ethtool_vzalloc_stats_array(n_stats, data);
-+	if (ret)
-+		return ret;
-+
-+	stats->n_stats = n_stats;
-+	return phy_ops->get_stats(phydev, stats, *data);
-+}
-+
-+static int ethtool_get_phy_stats_ethtool(struct net_device *dev,
-+					  struct ethtool_stats *stats,
-+					  u64 **data)
-+{
-+	const struct ethtool_ops *ops = dev->ethtool_ops;
-+	int n_stats, ret;
-+
-+	if (!ops || !ops->get_sset_count || ops->get_ethtool_phy_stats)
-+		return -EOPNOTSUPP;
-+
-+	n_stats = ops->get_sset_count(dev, ETH_SS_PHY_STATS);
-+
-+	ret = ethtool_vzalloc_stats_array(n_stats, data);
-+	if (ret)
-+		return ret;
-+
-+	stats->n_stats = n_stats;
-+	ops->get_ethtool_phy_stats(dev, stats, *data);
-+
-+	return 0;
-+}
-+
-+static int ethtool_get_phy_stats(struct net_device *dev, void __user *useraddr)
-+{
-+	struct phy_device *phydev = dev->phydev;
-+	struct ethtool_stats stats;
-+	u64 *data = NULL;
-+	int ret = -EOPNOTSUPP;
-+
- 	if (copy_from_user(&stats, useraddr, sizeof(stats)))
- 		return -EFAULT;
- 
--	stats.n_stats = n_stats;
-+	if (phydev)
-+		ret = ethtool_get_phy_stats_phydev(phydev, &stats, &data);
- 
--	data = vzalloc(array_size(n_stats, sizeof(u64)));
--	if (!data)
--		return -ENOMEM;
-+	if (ret == -EOPNOTSUPP)
-+		ret = ethtool_get_phy_stats_ethtool(dev, &stats, &data);
- 
--	if (phydev && !ops->get_ethtool_phy_stats &&
--		phy_ops && phy_ops->get_stats) {
--		ret = phy_ops->get_stats(phydev, &stats, data);
--		if (ret < 0)
--			goto out;
--	} else {
--		ops->get_ethtool_phy_stats(dev, &stats, data);
--	}
-+	if (ret)
-+		goto out;
- 
--	ret = -EFAULT;
--	if (copy_to_user(useraddr, &stats, sizeof(stats)))
-+	if (copy_to_user(useraddr, &stats, sizeof(stats))) {
-+		ret = -EFAULT;
- 		goto out;
-+	}
-+
- 	useraddr += sizeof(stats);
--	if (copy_to_user(useraddr, data, array_size(n_stats, sizeof(u64))))
--		goto out;
--	ret = 0;
-+	if (copy_to_user(useraddr, data, array_size(stats.n_stats, sizeof(u64))))
-+		ret = -EFAULT;
- 
-  out:
- 	vfree(data);
--- 
-2.25.1
-
+PiANCj4gT24gMjMuMTIuMjAyMiAwODo0MywgQ2h1bmhhbyBMaW4gd3JvdGU6DQo+ID4gV2hlbiBj
+bG9zZSBkZXZpY2UsIGlmIHdvbCBpcyBlbmFibGVkLCByeCB3aWxsIGJlIGVuYWJsZWQuIFdoZW4g
+b3Blbg0KPiA+IGRldmljZSBpdCB3aWxsIGNhdXNlIHJ4IHRvIGRtYSB0byB0aGUgd3JvbmcgbWVt
+b3J5IGFkZHJlc3MgYWZ0ZXINCj4gcGNpX3NldF9tYXN0ZXIoKS4NCj4gPiBTeXN0ZW0gbG9nIHdp
+bGwgc2hvdyBibG93IG1lc3NhZ2VzLg0KPiA+DQo+ID4gRE1BUjogRFJIRDogaGFuZGxpbmcgZmF1
+bHQgc3RhdHVzIHJlZyAzDQo+ID4gRE1BUjogW0RNQSBXcml0ZV0gUmVxdWVzdCBkZXZpY2UgWzAy
+OjAwLjBdIFBBU0lEIGZmZmZmZmZmIGZhdWx0IGFkZHINCj4gPiBmZmRkNDAwMCBbZmF1bHQgcmVh
+c29uIDA1XSBQVEUgV3JpdGUgYWNjZXNzIGlzIG5vdCBzZXQNCj4gPg0KPiA+IEluIHRoaXMgcGF0
+Y2gsIGRyaXZlciBkaXNhYmxlIHR4L3J4IHdoZW4gY2xvc2UgZGV2aWNlLiBJZiB3b2wgaXMNCj4g
+PiBlbmFibGVkLCBvbmx5IGVuYWJsZSByeCBmaWx0ZXIgYW5kIGRpc2FibGUgcnhkdl9nYXRlIHRv
+IGxldCBoYXJkd2FyZQ0KPiA+IG9ubHkgcmVjZWl2ZSBwYWNrZXQgdG8gZmlmbyBidXQgbm90IHRv
+IGRtYSBpdC4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IENodW5oYW8gTGluIDxoYXVAcmVhbHRl
+ay5jb20+DQo+ID4gLS0tDQo+ID4gdjEgLT4gdjI6IHVwZGF0ZSBjb21taXQgbWVzc2FnZSBhbmQg
+YWRqdXN0IHRoZSBjb2RlIGFjY29yZGluZyB0byBjdXJyZW50DQo+IGtlcm5lbCBjb2RlLg0KPiA+
+DQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jIHwgNTgNCj4g
+PiArKysrKysrKysrKy0tLS0tLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMjkgaW5zZXJ0
+aW9ucygrKSwgMjkgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4gaW5kZXggYTlkY2M5OGI2YWYxLi4yNDU5MmQ5
+NzI1MjMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2
+OV9tYWluLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21h
+aW4uYw0KPiA+IEBAIC0yMjEwLDI4ICsyMjEwLDYgQEAgc3RhdGljIGludCBydGxfc2V0X21hY19h
+ZGRyZXNzKHN0cnVjdCBuZXRfZGV2aWNlDQo+ICpkZXYsIHZvaWQgKnApDQo+ID4gIAlyZXR1cm4g
+MDsNCj4gPiAgfQ0KPiA+DQo+ID4gLXN0YXRpYyB2b2lkIHJ0bF93b2xfZW5hYmxlX3J4KHN0cnVj
+dCBydGw4MTY5X3ByaXZhdGUgKnRwKSAtew0KPiA+IC0JaWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBS
+VExfR0lHQV9NQUNfVkVSXzI1KQ0KPiA+IC0JCVJUTF9XMzIodHAsIFJ4Q29uZmlnLCBSVExfUjMy
+KHRwLCBSeENvbmZpZykgfA0KPiA+IC0JCQlBY2NlcHRCcm9hZGNhc3QgfCBBY2NlcHRNdWx0aWNh
+c3QgfCBBY2NlcHRNeVBoeXMpOw0KPiA+IC19DQo+ID4gLQ0KPiA+IC1zdGF0aWMgdm9pZCBydGxf
+cHJlcGFyZV9wb3dlcl9kb3duKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKSAtew0KPiA+IC0J
+aWYgKHRwLT5kYXNoX3R5cGUgIT0gUlRMX0RBU0hfTk9ORSkNCj4gPiAtCQlyZXR1cm47DQo+ID4g
+LQ0KPiA+IC0JaWYgKHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMyIHx8DQo+
+ID4gLQkgICAgdHAtPm1hY192ZXJzaW9uID09IFJUTF9HSUdBX01BQ19WRVJfMzMpDQo+ID4gLQkJ
+cnRsX2VwaHlfd3JpdGUodHAsIDB4MTksIDB4ZmY2NCk7DQo+ID4gLQ0KPiA+IC0JaWYgKGRldmlj
+ZV9tYXlfd2FrZXVwKHRwX3RvX2Rldih0cCkpKSB7DQo+ID4gLQkJcGh5X3NwZWVkX2Rvd24odHAt
+PnBoeWRldiwgZmFsc2UpOw0KPiA+IC0JCXJ0bF93b2xfZW5hYmxlX3J4KHRwKTsNCj4gPiAtCX0N
+Cj4gPiAtfQ0KPiA+IC0NCj4gPiAgc3RhdGljIHZvaWQgcnRsX2luaXRfcnhjZmcoc3RydWN0IHJ0
+bDgxNjlfcHJpdmF0ZSAqdHApICB7DQo+ID4gIAlzd2l0Y2ggKHRwLT5tYWNfdmVyc2lvbikgew0K
+PiA+IEBAIC0yNDU1LDYgKzI0MzMsMzEgQEAgc3RhdGljIHZvaWQgcnRsX2VuYWJsZV9yeGR2Z2F0
+ZShzdHJ1Y3QNCj4gcnRsODE2OV9wcml2YXRlICp0cCkNCj4gPiAgCXJ0bF93YWl0X3R4cnhfZmlm
+b19lbXB0eSh0cCk7DQo+ID4gIH0NCj4gPg0KPiA+ICtzdGF0aWMgdm9pZCBydGxfd29sX2VuYWJs
+ZV9yeChzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgew0KPiA+ICsJaWYgKHRwLT5tYWNfdmVy
+c2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzI1KQ0KPiA+ICsJCVJUTF9XMzIodHAsIFJ4Q29uZmln
+LCBSVExfUjMyKHRwLCBSeENvbmZpZykgfA0KPiA+ICsJCQlBY2NlcHRCcm9hZGNhc3QgfCBBY2Nl
+cHRNdWx0aWNhc3QgfCBBY2NlcHRNeVBoeXMpOw0KPiA+ICsNCj4gPiArCWlmICh0cC0+bWFjX3Zl
+cnNpb24gPj0gUlRMX0dJR0FfTUFDX1ZFUl80MCkNCj4gPiArCQlydGxfZGlzYWJsZV9yeGR2Z2F0
+ZSh0cCk7DQo+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyB2b2lkIHJ0bF9wcmVwYXJlX3Bvd2Vy
+X2Rvd24oc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsNCj4gPiArCWlmICh0cC0+ZGFzaF90
+eXBlICE9IFJUTF9EQVNIX05PTkUpDQo+ID4gKwkJcmV0dXJuOw0KPiA+ICsNCj4gPiArCWlmICh0
+cC0+bWFjX3ZlcnNpb24gPT0gUlRMX0dJR0FfTUFDX1ZFUl8zMiB8fA0KPiA+ICsJICAgIHRwLT5t
+YWNfdmVyc2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMzKQ0KPiA+ICsJCXJ0bF9lcGh5X3dyaXRl
+KHRwLCAweDE5LCAweGZmNjQpOw0KPiA+ICsNCj4gPiArCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0
+cF90b19kZXYodHApKSkgew0KPiA+ICsJCXBoeV9zcGVlZF9kb3duKHRwLT5waHlkZXYsIGZhbHNl
+KTsNCj4gPiArCQlydGxfd29sX2VuYWJsZV9yeCh0cCk7DQo+ID4gKwl9DQo+ID4gK30NCj4gPiAr
+DQo+ID4gIHN0YXRpYyB2b2lkIHJ0bF9zZXRfdHhfY29uZmlnX3JlZ2lzdGVycyhzdHJ1Y3QgcnRs
+ODE2OV9wcml2YXRlICp0cCkNCj4gPiB7DQo+ID4gIAl1MzIgdmFsID0gVFhfRE1BX0JVUlNUIDw8
+IFR4RE1BU2hpZnQgfCBAQCAtMzg3Miw3ICszODc1LDcgQEANCj4gc3RhdGljDQo+ID4gdm9pZCBy
+dGw4MTY5X3R4X2NsZWFyKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+ICAJbmV0ZGV2
+X3Jlc2V0X3F1ZXVlKHRwLT5kZXYpOw0KPiA+ICB9DQo+ID4NCj4gPiAtc3RhdGljIHZvaWQgcnRs
+ODE2OV9jbGVhbnVwKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwLCBib29sDQo+ID4gZ29pbmdf
+ZG93bikNCj4gPiArc3RhdGljIHZvaWQgcnRsODE2OV9jbGVhbnVwKHN0cnVjdCBydGw4MTY5X3By
+aXZhdGUgKnRwKQ0KPiA+ICB7DQo+ID4gIAluYXBpX2Rpc2FibGUoJnRwLT5uYXBpKTsNCj4gPg0K
+PiA+IEBAIC0zODg0LDkgKzM4ODcsNiBAQCBzdGF0aWMgdm9pZCBydGw4MTY5X2NsZWFudXAoc3Ry
+dWN0DQo+ID4gcnRsODE2OV9wcml2YXRlICp0cCwgYm9vbCBnb2luZ19kb3duKQ0KPiA+DQo+ID4g
+IAlydGxfcnhfY2xvc2UodHApOw0KPiA+DQo+ID4gLQlpZiAoZ29pbmdfZG93biAmJiB0cC0+ZGV2
+LT53b2xfZW5hYmxlZCkNCj4gPiAtCQlnb3RvIG5vX3Jlc2V0Ow0KPiA+IC0NCj4gPiAgCXN3aXRj
+aCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4gIAljYXNlIFJUTF9HSUdBX01BQ19WRVJfMjg6DQo+
+ID4gIAljYXNlIFJUTF9HSUdBX01BQ19WRVJfMzE6DQo+ID4gQEAgLTM5MDcsNyArMzkwNyw3IEBA
+IHN0YXRpYyB2b2lkIHJ0bDgxNjlfY2xlYW51cChzdHJ1Y3QgcnRsODE2OV9wcml2YXRlDQo+ICp0
+cCwgYm9vbCBnb2luZ19kb3duKQ0KPiA+ICAJfQ0KPiA+DQo+ID4gIAlydGxfaHdfcmVzZXQodHAp
+Ow0KPiA+IC1ub19yZXNldDoNCj4gPiArDQo+ID4gIAlydGw4MTY5X3R4X2NsZWFyKHRwKTsNCj4g
+PiAgCXJ0bDgxNjlfaW5pdF9yaW5nX2luZGV4ZXModHApOw0KPiA+ICB9DQo+ID4gQEAgLTM5MTgs
+NyArMzkxOCw3IEBAIHN0YXRpYyB2b2lkIHJ0bF9yZXNldF93b3JrKHN0cnVjdA0KPiA+IHJ0bDgx
+NjlfcHJpdmF0ZSAqdHApDQo+ID4NCj4gPiAgCW5ldGlmX3N0b3BfcXVldWUodHAtPmRldik7DQo+
+ID4NCj4gPiAtCXJ0bDgxNjlfY2xlYW51cCh0cCwgZmFsc2UpOw0KPiA+ICsJcnRsODE2OV9jbGVh
+bnVwKHRwKTsNCj4gPg0KPiA+ICAJZm9yIChpID0gMDsgaSA8IE5VTV9SWF9ERVNDOyBpKyspDQo+
+ID4gIAkJcnRsODE2OV9tYXJrX3RvX2FzaWModHAtPlJ4RGVzY0FycmF5ICsgaSk7IEBAIC00NjA1
+LDcNCj4gKzQ2MDUsNyBAQA0KPiA+IHN0YXRpYyB2b2lkIHJ0bDgxNjlfZG93bihzdHJ1Y3QgcnRs
+ODE2OV9wcml2YXRlICp0cCkNCj4gPiAgCXBjaV9jbGVhcl9tYXN0ZXIodHAtPnBjaV9kZXYpOw0K
+PiA+ICAJcnRsX3BjaV9jb21taXQodHApOw0KPiA+DQo+ID4gLQlydGw4MTY5X2NsZWFudXAodHAs
+IHRydWUpOw0KPiA+ICsJcnRsODE2OV9jbGVhbnVwKHRwKTsNCj4gPiAgCXJ0bF9kaXNhYmxlX2V4
+aXRfbDEodHApOw0KPiA+ICAJcnRsX3ByZXBhcmVfcG93ZXJfZG93bih0cCk7DQo+ID4gIH0NCj4g
+DQo+IFRoZSBjaGFuZ2UgYWZmZWN0cyBhbHNvIGNoaXAgdmVyc2lvbnMgb3RoZXIgdGhhbiBSVEw4
+MTI1Qi4NCj4gSXMgdGhlIHByb2JsZW0geW91J3JlIGZpeGluZyByZWFsbHkgc3BlY2lmaWMgdG8g
+UlRMODEyNUI/DQo+IE9yIGNvdWxkIGl0IGhhcHBlbiBhbHNvIHdpdGggb3RoZXIgY2hpcCB2ZXJz
+aW9ucz8NCj4NCkFsbCBjaGlwcyB0aGF0IHN1cHBvcnRlZCBieSByODE2OSB3aWxsIGJlIGFmZmVj
+dCBieSB0aGlzIHBhdGNoLg0KDQo+IEVpdGhlciBwYXRjaCBvciBjb21taXQgbWVzc2FnZSBuZWVk
+IHRvIGJlIGNoYW5nZWQuDQo+IEFuZCBpdCB3b3VsZCBiZSBiZXR0ZXIgdG8gc3BsaXQgdGhlIHBh
+dGNoOg0KPiAxLiBNb3ZpbmcgcnRsX3dvbF9lbmFibGVfcngoKSBhbmQgcnRsX3ByZXBhcmVfcG93
+ZXJfZG93bigpIGluIHRoZSBjb2RlIDIuDQo+IEFjdHVhbCBjaGFuZ2UgVGhpcyBtYWtlcyBpdCBl
+YXNpZXIgdG8gdHJhY2sgdGhlIGFjdHVhbCBjaGFuZ2UuDQo+DQpJIHdpbGwgZm9sbG93IHlvdXIg
+c3VnZ2VzdGlvbiBhbmQgc3VibWl0IHRoaXMgcGF0Y2ggYWdhaW4uDQogDQo+IC0tLS0tLVBsZWFz
+ZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
