@@ -2,90 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D92C4656217
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 12:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E374D656241
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 12:48:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231979AbiLZLOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 06:14:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        id S231690AbiLZLsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 06:48:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiLZLOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 06:14:18 -0500
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556342DC1;
-        Mon, 26 Dec 2022 03:14:17 -0800 (PST)
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4NgZtH4XSkz4xpyB;
-        Mon, 26 Dec 2022 19:14:15 +0800 (CST)
-Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
-        by mse-fl2.zte.com.cn with SMTP id 2BQBE3HI073008;
-        Mon, 26 Dec 2022 19:14:03 +0800 (+08)
-        (envelope-from yang.yang29@zte.com.cn)
-Received: from mapi (szxlzmapp01[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Mon, 26 Dec 2022 19:14:06 +0800 (CST)
-Date:   Mon, 26 Dec 2022 19:14:06 +0800 (CST)
-X-Zmail-TransId: 2b0363a981fe61526202
-X-Mailer: Zmail v1.0
-Message-ID: <202212261914060599112@zte.com.cn>
-Mime-Version: 1.0
-From:   <yang.yang29@zte.com.cn>
-To:     <kvalo@kernel.org>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <xu.panda@zte.com.cn>, <yang.yang29@zte.com.cn>
-Subject: =?UTF-8?B?W1BBVENIIHdpcmVsZXNzLW5leHQgdjJdIHdsMTh4eDogdXNlIHN0cnNjcHkoKSB0byBpbnN0ZWFkIG9mIHN0cm5jcHkoKQ==?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 2BQBE3HI073008
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.13.novalocal with ID 63A98207.001 by FangMail milter!
-X-FangMail-Envelope: 1672053255/4NgZtH4XSkz4xpyB/63A98207.001/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<yang.yang29@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 63A98207.001/4NgZtH4XSkz4xpyB
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229569AbiLZLsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 06:48:43 -0500
+Received: from forwardcorp1a.mail.yandex.net (forwardcorp1a.mail.yandex.net [178.154.239.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE94E61;
+        Mon, 26 Dec 2022 03:48:39 -0800 (PST)
+Received: from vla1-81430ab5870b.qloud-c.yandex.net (vla1-81430ab5870b.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:35a1:0:640:8143:ab5])
+        by forwardcorp1a.mail.yandex.net (Yandex) with ESMTP id 22BFD5FCE1;
+        Mon, 26 Dec 2022 14:48:37 +0300 (MSK)
+Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:1::1:f])
+        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id SmMqpV0Q0uQ1-KPMWOc5D;
+        Mon, 26 Dec 2022 14:48:36 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1672055316; bh=2cSwUgQKvrM1OCeQvc5FcSZd3aC0IduE7mqVyoJSC3s=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=kP2Payl5WYd12M9eEYS264cCskOuIq92rciciJSEKkK46l+F7MwEo7ZE8H/m80gzu
+         hxS9QdUDWRntMsd5gRpod45FUKigKKvC669oO7mKoHNeoIMpZiA/+JQBeXx+BvGMfc
+         ltgZ8wJcStL8MB+LSrOmCbOZhXm8JQiBY2u2MtvU=
+Authentication-Results: vla1-81430ab5870b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Maxim Korotkov <korotkov.maxim.s@gmail.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Tom Rix <trix@redhat.com>, Marco Bonelli <marco@mebeim.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2 0/3] net/ethtool/ioctl: split ethtool_get_phy_stats into multiple helpers
+Date:   Mon, 26 Dec 2022 14:48:22 +0300
+Message-Id: <20221226114825.1937189-1-d-tatianin@yandex-team.ru>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xu Panda <xu.panda@zte.com.cn>
+This series fixes a potential NULL dereference in ethtool_get_phy_stats
+while also attempting to refactor/split said function into multiple
+helpers so that it's easier to reason about what's going on.
 
-The implementation of strscpy() is more robust and safer.
-That's now the recommended way to copy NUL-terminated strings.
+I've taken Andrew Lunn's suggestions on the previous version of this
+patch and added a bit of my own.
 
-Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
-Signed-off-by: Yang Yang <yang.yang29@zte.com>
----
-change for v2
- - use the right tag of wireless-next. 
----
- drivers/net/wireless/ti/wl18xx/main.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Changes since v1:
+- Remove an extra newline in the first patch
+- Move WARN_ON_ONCE into the if check as it already returns the
+  result of the comparison 
+- Actually split ethtool_get_phy_stats instead of attempting to
+  refactor it
 
-diff --git a/drivers/net/wireless/ti/wl18xx/main.c b/drivers/net/wireless/ti/wl18xx/main.c
-index 0b3cf8477c6c..1e4a430d1543 100644
---- a/drivers/net/wireless/ti/wl18xx/main.c
-+++ b/drivers/net/wireless/ti/wl18xx/main.c
-@@ -1516,12 +1516,9 @@ static int wl18xx_handle_static_data(struct wl1271 *wl,
- 	struct wl18xx_static_data_priv *static_data_priv =
- 		(struct wl18xx_static_data_priv *) static_data->priv;
+Daniil Tatianin (3):
+  net/ethtool/ioctl: return -EOPNOTSUPP if we have no phy stats
+  net/ethtool/ioctl: remove if n_stats checks from ethtool_get_phy_stats
+  net/ethtool/ioctl: split ethtool_get_phy_stats into multiple helpers
 
--	strncpy(wl->chip.phy_fw_ver_str, static_data_priv->phy_version,
-+	strscpy(wl->chip.phy_fw_ver_str, static_data_priv->phy_version,
- 		sizeof(wl->chip.phy_fw_ver_str));
+ net/ethtool/ioctl.c | 107 +++++++++++++++++++++++++++++---------------
+ 1 file changed, 70 insertions(+), 37 deletions(-)
 
--	/* make sure the string is NULL-terminated */
--	wl->chip.phy_fw_ver_str[sizeof(wl->chip.phy_fw_ver_str) - 1] = '\0';
--
- 	wl1271_info("PHY firmware version: %s", static_data_priv->phy_version);
-
- 	return 0;
 -- 
-2.15.2
+2.25.1
+
