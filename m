@@ -2,148 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8DEE656296
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 13:32:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AFA56562A8
+	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 13:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbiLZMcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 07:32:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
+        id S231643AbiLZMrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 07:47:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbiLZMco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 07:32:44 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1ABDBC3
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:32:43 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BQCVjiK6011490, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BQCVjiK6011490
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 26 Dec 2022 20:31:45 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Mon, 26 Dec 2022 20:32:38 +0800
-Received: from localhost.localdomain (172.21.182.190) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Mon, 26 Dec 2022 20:32:37 +0800
-From:   Chunhao Lin <hau@realtek.com>
-To:     <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        Chunhao Lin <hau@realtek.com>
-Subject: [PATCH net v3 2/2] r8169: fix dmar pte write access is not set error
-Date:   Mon, 26 Dec 2022 20:31:53 +0800
-Message-ID: <20221226123153.4406-3-hau@realtek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221226123153.4406-1-hau@realtek.com>
-References: <20221226123153.4406-1-hau@realtek.com>
+        with ESMTP id S229448AbiLZMrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 07:47:24 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD30C3F
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:47:23 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id b88so8092495edf.6
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 04:47:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=foL0E+XmXJgWRYJHWJRKNv3OOeQkzHZ30eG06cAtkhE=;
+        b=GTyqJ+m4Fsuc3SrMtTylAtFDpeGyEpYp4YqIw0qSI71mNpYqGJyOCmLKHQWIo6/XGA
+         qsqBOojLDnZE5K0YStJpqUln+shEh8zdG9KGdf1w1djfOEC5fH1eG26RPilRR8W5QdQF
+         TOfIDEWDWZKPbyiekdx8huCTrykC5FjurAEQWh2fNsnRZjyHYRARzlPiYEBWTk6I61N0
+         /TZSKZh4ICpjbampLfe1bqk/l42R44hwLc+OWi+bhcO4rbo4e6+og0GTWU0Z2Evo0JYQ
+         0pfC65jDd7F0USsjsb3Ozx40vBgtksM3vY026TaLVfTdOrJgA/QsVwn2dvGABZeYlwMZ
+         PMYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=foL0E+XmXJgWRYJHWJRKNv3OOeQkzHZ30eG06cAtkhE=;
+        b=NR4FYHksI/O4SSBNAkurViaS7v+sstoGjDjz6YSS6eL3+MG9cBxeqjzdV1PvqhZYSw
+         lEy3ck0r3cBpHZJMZeEovgtE5r16wF/L4SFUGQjBo3UG0aw/cwbpcaw6hwEBXb1izFT8
+         lw7/SwY6/K1//Asx5O56puG742l8c0rPLk8Tql336/2nrWksPoTjRnkmZAnQ05sNL7zj
+         Yr5V4EvRP4a7tGfuTO6GYAmwtFC51k9oqh+DUWtZZApKzkDn0Qwh2VtdZmCfdFtKsKOi
+         UC/j+oy1s5w1KeZhonEOULNhXX164q7cvVSGo3fmgsOVPT+rI6fhOpEp9zNS6o4FkWB2
+         XVvA==
+X-Gm-Message-State: AFqh2krkaQ2406qViUgk55mDFMYyisNLzKh2SAeLV3g0sMds1tuluH+i
+        zDmsNNfrQ+p48h25ByFeXG9kACtdhCU=
+X-Google-Smtp-Source: AMrXdXt8VjFWMMJf55lo2jIx0MoBKxQq6IZ2ZhaaWGPz1DRkoh9O6zqoCLauIMkMu9eK7QZ2vRG7BQ==
+X-Received: by 2002:a05:6402:1948:b0:470:1f1:257a with SMTP id f8-20020a056402194800b0047001f1257amr16530145edz.25.1672058841610;
+        Mon, 26 Dec 2022 04:47:21 -0800 (PST)
+Received: from ?IPV6:2a01:c23:b980:7800:e1ac:248e:2848:f0b5? (dynamic-2a01-0c23-b980-7800-e1ac-248e-2848-f0b5.c23.pool.telefonica.de. [2a01:c23:b980:7800:e1ac:248e:2848:f0b5])
+        by smtp.googlemail.com with ESMTPSA id bx4-20020a170906a1c400b007c0e6d6bd10sm4777605ejb.132.2022.12.26.04.47.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Dec 2022 04:47:20 -0800 (PST)
+Message-ID: <0c19caa8-b91e-f939-49c2-89fcb92df942@gmail.com>
+Date:   Mon, 26 Dec 2022 13:47:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.182.190]
-X-ClientProxiedBy: RTEXH36505.realtek.com.tw (172.21.6.25) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 12/26/2022 12:15:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzI2IKRXpMggMDk6MzE6MDA=?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+To:     Chunhao Lin <hau@realtek.com>
+Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com
+References: <20221226123153.4406-1-hau@realtek.com>
+ <20221226123153.4406-2-hau@realtek.com>
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net v3 1/2] r8169: move rtl_wol_enable_rx() and
+ rtl_prepare_power_down()
+In-Reply-To: <20221226123153.4406-2-hau@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When close device, if wol is enabled, rx will be enabled. When open
-device it will cause rx packet to be dma to the wrong memory address
-after pci_set_master() and system log will show blow messages.
+On 26.12.2022 13:31, Chunhao Lin wrote:
+> There is no functional change. Moving these two functions for following
+> patch "r8169: fix dmar pte write access is not set error".
+> 
+> Signed-off-by: Chunhao Lin <hau@realtek.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 44 +++++++++++------------
+>  1 file changed, 22 insertions(+), 22 deletions(-)
+> 
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-DMAR: DRHD: handling fault status reg 3
-DMAR: [DMA Write] Request device [02:00.0] PASID ffffffff fault addr
-ffdd4000 [fault reason 05] PTE Write access is not set
-
-In this patch, driver disable tx/rx when close device. If wol is
-enabled, only enable rx filter and disable rxdv_gate(if support) to
-let hardware only receive packet to fifo but not to dma it.
-
-Signed-off-by: Chunhao Lin <hau@realtek.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index acc2500342ca..24592d972523 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2438,6 +2438,9 @@ static void rtl_wol_enable_rx(struct rtl8169_private *tp)
- 	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
- 		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
- 			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
-+
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_40)
-+		rtl_disable_rxdvgate(tp);
- }
- 
- static void rtl_prepare_power_down(struct rtl8169_private *tp)
-@@ -3872,7 +3875,7 @@ static void rtl8169_tx_clear(struct rtl8169_private *tp)
- 	netdev_reset_queue(tp->dev);
- }
- 
--static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
-+static void rtl8169_cleanup(struct rtl8169_private *tp)
- {
- 	napi_disable(&tp->napi);
- 
-@@ -3884,9 +3887,6 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
- 
- 	rtl_rx_close(tp);
- 
--	if (going_down && tp->dev->wol_enabled)
--		goto no_reset;
--
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_28:
- 	case RTL_GIGA_MAC_VER_31:
-@@ -3907,7 +3907,7 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
- 	}
- 
- 	rtl_hw_reset(tp);
--no_reset:
-+
- 	rtl8169_tx_clear(tp);
- 	rtl8169_init_ring_indexes(tp);
- }
-@@ -3918,7 +3918,7 @@ static void rtl_reset_work(struct rtl8169_private *tp)
- 
- 	netif_stop_queue(tp->dev);
- 
--	rtl8169_cleanup(tp, false);
-+	rtl8169_cleanup(tp);
- 
- 	for (i = 0; i < NUM_RX_DESC; i++)
- 		rtl8169_mark_to_asic(tp->RxDescArray + i);
-@@ -4605,7 +4605,7 @@ static void rtl8169_down(struct rtl8169_private *tp)
- 	pci_clear_master(tp->pci_dev);
- 	rtl_pci_commit(tp);
- 
--	rtl8169_cleanup(tp, true);
-+	rtl8169_cleanup(tp);
- 	rtl_disable_exit_l1(tp);
- 	rtl_prepare_power_down(tp);
- }
--- 
-2.25.1
+Note: This series doesn't apply on kernel versions older than 5.15
 
