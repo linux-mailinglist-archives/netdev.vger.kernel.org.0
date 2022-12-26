@@ -2,97 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8F2656572
-	for <lists+netdev@lfdr.de>; Mon, 26 Dec 2022 23:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E577E656612
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 00:35:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232535AbiLZWhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 17:37:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
+        id S232450AbiLZXfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 18:35:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbiLZWgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 17:36:16 -0500
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E86D29A;
-        Mon, 26 Dec 2022 14:36:06 -0800 (PST)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-1441d7d40c6so13803707fac.8;
-        Mon, 26 Dec 2022 14:36:06 -0800 (PST)
+        with ESMTP id S229886AbiLZXfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 18:35:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2DC271A
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 15:34:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672097685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ng2g0yYWgbxIEbydIqQjZjaHCJ47pT59sGYfx/xB8K8=;
+        b=ZflK0ltgLxrn8+MAjKtVzXDsBcN1zBlpgsOyNtRTWMYT++D867PbbVZfleCSBJTsfca+gJ
+        A++3BXoolMglZEpP8vTlc6UdEUlrdfqlBow334PgJx6T6CkUsAlv3ViPv1cG3yrmyqUIpl
+        bCiPZhu0KSENzrnjnH7nCvU2k+wjJik=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-217-yIdleduVNL-D4ZAicoyCoQ-1; Mon, 26 Dec 2022 18:34:44 -0500
+X-MC-Unique: yIdleduVNL-D4ZAicoyCoQ-1
+Received: by mail-ed1-f70.google.com with SMTP id z16-20020a05640235d000b0046d0912ae25so8196103edc.5
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 15:34:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Gd7h3ftOlRZgWS17O9lpNRf7y+BcCuyyNMntDSSxUI8=;
-        b=4AuHOH/niwFm4B5TcdR1/MiGttA9/4VdACzNGKSgYbPXkcwq0BqNOhyIBOs3fsml1z
-         BJHjOzAcaq01RmyU2RoTOLB9a943fqnjJ4B/SlbE2c9Jf7hdwwbVvRC5x/Vr1QLmfkBM
-         jqgVikRIY4tsndp0/PMBz3DuGlvO7mk7UfJCUK2IpGL8Ekb3Ec4rXe+aOhPIsvazWdwd
-         0w7dGrSEAwkiCrD6uIzgnUbIzofI+weSxUH5SRumkuAhpdt+T6o6LW65oRWXyI7y73ha
-         KyLfkG78aTOmSGEY2Q4vDYC5cYLwEf5raHRVZI9qet2h4IND7xcMY51cV/PXvur8ybNB
-         N05g==
-X-Gm-Message-State: AFqh2kpcLjhesc3EbLLamIr7YVnt0iun6DMd6uIj8+FK27IXKZwEV4yA
-        fYX/3N9ySBNNpZdBuIQcFX15/0xyxA==
-X-Google-Smtp-Source: AMrXdXvlImhitnYDbaRz3WRGUTuHJKfOVSDWrP/aMMwNqrnB5QrRh0QVVvlpZXvPyB6tchgNZ0o7pg==
-X-Received: by 2002:a05:6870:a54c:b0:14c:4479:84a6 with SMTP id p12-20020a056870a54c00b0014c447984a6mr9439484oal.52.1672094165689;
-        Mon, 26 Dec 2022 14:36:05 -0800 (PST)
-Received: from robh_at_kernel.org ([2605:ef80:80e8:2792:eb0e:539f:f657:547b])
-        by smtp.gmail.com with ESMTPSA id w9-20020a056871060900b0012763819bcasm5418018oan.50.2022.12.26.14.36.03
+        bh=Ng2g0yYWgbxIEbydIqQjZjaHCJ47pT59sGYfx/xB8K8=;
+        b=krbe2KIvffl4ZxKjZITQw9fsMjuNA/04X8hgv/vckeqnUuGDgZHajRnXHr4Yvt/Poc
+         Pyk8+SIRVxMbxFxLHSg/cfQfaLgysDYkVlLleQhl72HO6/7WEAOFl6TbjIN3EcN1bMEJ
+         LwddgPI35JAj0hbuhd7tAJUFpkmtlES/kZaiFAxMqPa1Kc7GWygG2sRu6BzxyOkQpYY5
+         Z42+07+pCDjnEycS1vsTrbTRXCpkh6nkfXSCoKINxQ5TOSJCy0Ocu5LmUfFcroR1sruL
+         QbRn3vGZofZ0X1PkUDdLLpzIlcMdsaGUAOPMJZ3knvG7IBy36SAsyFBPQl45qhMhgw7+
+         MOwQ==
+X-Gm-Message-State: AFqh2kpgD0Dg6bTL/AgICbYdLDQ8StAdo02xfOdg1n7k+fs3tGFvQhR4
+        7V45MIRVaQzsoWUPPpgb9tjqFyHCZhclLAPQTPBhEGFzB+96cWGr6ucP/Q10oJ3oVyijnuvbtyp
+        pnF+VZm/pN7zaFtR4
+X-Received: by 2002:a17:906:fcc1:b0:7c0:e310:3191 with SMTP id qx1-20020a170906fcc100b007c0e3103191mr23119256ejb.11.1672097683422;
+        Mon, 26 Dec 2022 15:34:43 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsIxLGY2K01obTyBFYBUFcxFDUBn2jzDJ0KXH7WGcJg6MHOSb0Gfde2xZleQL0FFlTneSfHXQ==
+X-Received: by 2002:a17:906:fcc1:b0:7c0:e310:3191 with SMTP id qx1-20020a170906fcc100b007c0e3103191mr23119251ejb.11.1672097683222;
+        Mon, 26 Dec 2022 15:34:43 -0800 (PST)
+Received: from redhat.com ([2.52.151.85])
+        by smtp.gmail.com with ESMTPSA id d24-20020a50fb18000000b004615f7495e0sm5154391edq.8.2022.12.26.15.34.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Dec 2022 14:36:05 -0800 (PST)
-Received: (nullmailer pid 76410 invoked by uid 1000);
-        Mon, 26 Dec 2022 22:01:20 -0000
-Date:   Mon, 26 Dec 2022 16:01:20 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Anand Moon <anand@edgeble.ai>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        linux-rockchip@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        David Wu <david.wu@rock-chips.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jagan Teki <jagan@edgeble.ai>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Heiko Stuebner <heiko@sntech.de>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCHv2 linux-next 1/4] dt-bindings: net: rockchip-dwmac: fix
- rv1126 compatible warning
-Message-ID: <167209208042.76358.12497793083674238127.robh@kernel.org>
-References: <20221226063625.1913-1-anand@edgeble.ai>
+        Mon, 26 Dec 2022 15:34:42 -0800 (PST)
+Date:   Mon, 26 Dec 2022 18:34:39 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        maxime.coquelin@redhat.com, alvaro.karsz@solid-run.com,
+        eperezma@redhat.com
+Subject: Re: [PATCH 3/4] virtio_ring: introduce a per virtqueue waitqueue
+Message-ID: <20221226183348-mutt-send-email-mst@kernel.org>
+References: <20221226074908.8154-1-jasowang@redhat.com>
+ <20221226074908.8154-4-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221226063625.1913-1-anand@edgeble.ai>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20221226074908.8154-4-jasowang@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Mon, 26 Dec 2022 06:36:19 +0000, Anand Moon wrote:
-> Fix compatible string for RV1126 gmac, and constrain it to
-> be compatible with Synopsys dwmac 4.20a.
+On Mon, Dec 26, 2022 at 03:49:07PM +0800, Jason Wang wrote:
+> This patch introduces a per virtqueue waitqueue to allow driver to
+> sleep and wait for more used. Two new helpers are introduced to allow
+> driver to sleep and wake up.
 > 
-> fix below warning
-> $ make CHECK_DTBS=y rv1126-edgeble-neu2-io.dtb
-> arch/arm/boot/dts/rv1126-edgeble-neu2-io.dtb: ethernet@ffc40000:
-> 		 compatible: 'oneOf' conditional failed, one must be fixed:
->         ['rockchip,rv1126-gmac', 'snps,dwmac-4.20a'] is too long
->         'rockchip,rv1126-gmac' is not one of ['rockchip,rk3568-gmac', 'rockchip,rk3588-gmac']
-> 
-> Fixes: b36fe2f43662 ("dt-bindings: net: rockchip-dwmac: add rv1126 compatible")
-> Signed-off-by: Anand Moon <anand@edgeble.ai>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 > ---
-> v2: drop SoB of Jagan Teki
->     added Fix tags and update the commit message of the warning.
+> Changes since V1:
+> - check virtqueue_is_broken() as well
+> - use more_used() instead of virtqueue_get_buf() to allow caller to
+>   get buffers afterwards
 > ---
->  Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/virtio/virtio_ring.c | 29 +++++++++++++++++++++++++++++
+>  include/linux/virtio.h       |  3 +++
+>  2 files changed, 32 insertions(+)
 > 
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 5cfb2fa8abee..9c83eb945493 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/dma-mapping.h>
+>  #include <linux/kmsan.h>
+>  #include <linux/spinlock.h>
+> +#include <linux/wait.h>
+>  #include <xen/xen.h>
+>  
+>  #ifdef DEBUG
+> @@ -60,6 +61,7 @@
+>  			"%s:"fmt, (_vq)->vq.name, ##args);	\
+>  		/* Pairs with READ_ONCE() in virtqueue_is_broken(). */ \
+>  		WRITE_ONCE((_vq)->broken, true);		       \
+> +		wake_up_interruptible(&(_vq)->wq);		       \
+>  	} while (0)
+>  #define START_USE(vq)
+>  #define END_USE(vq)
+> @@ -203,6 +205,9 @@ struct vring_virtqueue {
+>  	/* DMA, allocation, and size information */
+>  	bool we_own_ring;
+>  
+> +	/* Wait for buffer to be used */
+> +	wait_queue_head_t wq;
+> +
+>  #ifdef DEBUG
+>  	/* They're supposed to lock for us. */
+>  	unsigned int in_use;
+> @@ -2024,6 +2029,8 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>  	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
+>  		vq->weak_barriers = false;
+>  
+> +	init_waitqueue_head(&vq->wq);
+> +
+>  	err = vring_alloc_state_extra_packed(&vring_packed);
+>  	if (err)
+>  		goto err_state_extra;
+> @@ -2517,6 +2524,8 @@ static struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>  	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
+>  		vq->weak_barriers = false;
+>  
+> +	init_waitqueue_head(&vq->wq);
+> +
+>  	err = vring_alloc_state_extra_split(vring_split);
+>  	if (err) {
+>  		kfree(vq);
+> @@ -2654,6 +2663,8 @@ static void vring_free(struct virtqueue *_vq)
+>  {
+>  	struct vring_virtqueue *vq = to_vvq(_vq);
+>  
+> +	wake_up_interruptible(&vq->wq);
+> +
+>  	if (vq->we_own_ring) {
+>  		if (vq->packed_ring) {
+>  			vring_free_queue(vq->vq.vdev,
+> @@ -2863,4 +2874,22 @@ const struct vring *virtqueue_get_vring(struct virtqueue *vq)
+>  }
+>  EXPORT_SYMBOL_GPL(virtqueue_get_vring);
+>  
+> +int virtqueue_wait_for_used(struct virtqueue *_vq)
+> +{
+> +	struct vring_virtqueue *vq = to_vvq(_vq);
+> +
+> +	/* TODO: Tweak the timeout. */
+> +	return wait_event_interruptible_timeout(vq->wq,
+> +	       virtqueue_is_broken(_vq) || more_used(vq), HZ);
 
-Acked-by: Rob Herring <robh@kernel.org>
+There's no good timeout. Let's not even go there, if device goes
+bad it should set the need reset bit.
+
+
+> +}
+> +EXPORT_SYMBOL_GPL(virtqueue_wait_for_used);
+> +
+> +void virtqueue_wake_up(struct virtqueue *_vq)
+> +{
+> +	struct vring_virtqueue *vq = to_vvq(_vq);
+> +
+> +	wake_up_interruptible(&vq->wq);
+> +}
+> +EXPORT_SYMBOL_GPL(virtqueue_wake_up);
+> +
+>  MODULE_LICENSE("GPL");
+> diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> index dcab9c7e8784..2eb62c774895 100644
+> --- a/include/linux/virtio.h
+> +++ b/include/linux/virtio.h
+> @@ -72,6 +72,9 @@ void *virtqueue_get_buf(struct virtqueue *vq, unsigned int *len);
+>  void *virtqueue_get_buf_ctx(struct virtqueue *vq, unsigned int *len,
+>  			    void **ctx);
+>  
+> +int virtqueue_wait_for_used(struct virtqueue *vq);
+> +void virtqueue_wake_up(struct virtqueue *vq);
+> +
+>  void virtqueue_disable_cb(struct virtqueue *vq);
+>  
+>  bool virtqueue_enable_cb(struct virtqueue *vq);
+> -- 
+> 2.25.1
+
