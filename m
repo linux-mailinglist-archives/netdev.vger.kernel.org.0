@@ -2,119 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE2D6569B3
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 12:04:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7040656A16
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 12:55:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiL0LEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 06:04:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S229711AbiL0LzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 06:55:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbiL0LEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 06:04:02 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46526AE45;
-        Tue, 27 Dec 2022 03:03:59 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id t2so12952402ply.2;
-        Tue, 27 Dec 2022 03:03:59 -0800 (PST)
+        with ESMTP id S229533AbiL0LzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 06:55:16 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5429FE2;
+        Tue, 27 Dec 2022 03:55:12 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id m18so31409745eji.5;
+        Tue, 27 Dec 2022 03:55:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rgu6mM4Jqs66vBJ1eVaVAeL/gltzz7QwmhdjdBu7Ti8=;
-        b=YGv2EoxKtGKsK4vzLZZ9ZDdUasxdFDHKXA1DkT8M8nbn/CkOUehjMVv3gb0XGgr/u+
-         fapTR27fbCWbAn9Ap4MNFrAmssqFjEMqe7ZpnjUwRtKXhTZs8dHY8sAVWqPkVi004gKm
-         QhaTKvgwbn9zZzZVKsAVyZg1tyhk8qtjieFxXuTz4qIUdlCm/XTTBsyAZmzrBlY6BwiY
-         sluno+rvfAC3FKpa5uI7Zhxpmhg95Vk2cfJ6xKgBPmVTrlcoKyc1hE3TZmUzT86eFef4
-         j+wOaIuJzuttpsNKXJ7MtPXOeTEWeqguOqNUsxrOMhPDYvkTiWrPQDZ6cnrtfN4PEKgU
-         hQvw==
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=X6iaCG2BPEAfstDTQK7Chp1YWfal4CgLw9FeJm6/8OA=;
+        b=TMU3/v/jjzfRB7hJwXTKIAOGaY4rkzONqauW9KypWDdQUMtZBx7DJN0u9NQ33uG8KJ
+         fGRYDuPiQAx1VEr7H9kGSIYXdS7aq20jmFb1eiywnPwgnUkf2DGdjf9yxqt9ita5kCIG
+         cVFZu8tvi//MBIbjSFpZN5f8lRgy4NGeZPAArEKfNhEmzTHN/R0uizAU8wYQcTnFOUdv
+         3zWL+ZJ5xsD3WJvF1bJeQK2Xgu3V+TAxgDOo/nOzkG29JkoddtqMq+OEaUjswlVa4M/H
+         rSz2Oz+b1FkoucnkXzYXnKEiZGiRD3fh++LBYg+Wj+zIYqBmtvb2wpyRo6imz/212BgM
+         xMqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rgu6mM4Jqs66vBJ1eVaVAeL/gltzz7QwmhdjdBu7Ti8=;
-        b=ZRiJvnlG0Y5wKuirDLsy35Cby/OJZh/2dSOA+U89eUVJVDK0Mexb5YVde8UZFyAZjv
-         uYIL5/aSO8yBLZw6AymzfRt5qAd4Lx8CPF8u1xM8mXV65KESLsqHrlRSJvklqjW0MkD5
-         VYYzy4GclSMH0W4UaP6n3hgxsN2nxp8s+BbpjVGmoD8HW1kahDAjrZBmY2AmIKEarvhL
-         gf+BflKS1JsIL/QGN/e9sd2pR4ivX9MBW+pTp4s1DWu1F7wuzVmAUwWfZPjDSI3vN0s/
-         AmfjLaHWWGEmF013fea7tXhvUI7XEpJ4v4NZ/cd9CMW45Msn5Ez1eywXzxhXlEODAHZu
-         hqYg==
-X-Gm-Message-State: AFqh2kqq72CGzKlAPFZGaPkfwnbJLaTyc1oKPWI6dTvst3RQzg9JMz+m
-        j9BCqUem/zLOP996Zn9wViS1ikH4gK0FDg==
-X-Google-Smtp-Source: AMrXdXuz++twZ5maPvpwAmAyHMKpEoujELivOJCY8XWaNVyFLdaTCW5fvWeg9kn0Q+oB4RTTVlU5wg==
-X-Received: by 2002:a17:902:d590:b0:192:90b1:9007 with SMTP id k16-20020a170902d59000b0019290b19007mr345578plh.27.1672139038467;
-        Tue, 27 Dec 2022 03:03:58 -0800 (PST)
-Received: from carlis-virtual-machine.localdomain ([156.236.96.164])
-        by smtp.gmail.com with ESMTPSA id s1-20020a170902ea0100b00178143a728esm8816103plg.275.2022.12.27.03.03.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 03:03:58 -0800 (PST)
-From:   Xuezhi Zhang <zhangxuezhi3@gmail.com>
-To:     zhangxuezhi1@coolpad.com, wintera@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] s390/qeth: convert sysfs snprintf to sysfs_emit
-Date:   Tue, 27 Dec 2022 19:03:52 +0800
-Message-Id: <20221227110352.1436120-1-zhangxuezhi3@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=X6iaCG2BPEAfstDTQK7Chp1YWfal4CgLw9FeJm6/8OA=;
+        b=cZLUzD1d3GVoSTIzsMBsk0Nq1B/AV2s1pW3PqkALN6ato4R+6FJAIzUpY+IEUgr2UH
+         NTr/D/4wZR4iW0q9Rjj3PO2aS3UMc+5vNTMBdwMJAmr9OYwSUOO2VRNeHSoGB13h/sM3
+         gDFtaDZqS53hJgWYL3etimb2jMIW75Ydqql5/7LDAPdmxJBfDUUI1GX/9euMSDD99v43
+         lq6uz2ZKBY66MQd2mye7nycrRBwocs+jErqSQhuaRtdCuctDy7cPYQbrBu89yP71xti7
+         j2oJlXOQ8oujbgdhuBTmGavRXbvN/P9F8h4gSEYwZXKqZhLdbmSVQRnFl0+rhFNHJQ9e
+         9f/A==
+X-Gm-Message-State: AFqh2koFRvt12vb5z+lwRVHqzeUwJHj7mC6alfqXanb1FIhY0Ggg71qu
+        HIkCyQjZbXA2S1SqVwgwL05UL8sDvrs=
+X-Google-Smtp-Source: AMrXdXvQX9JN/0hXoM+n1PXaAzQEZouI9zk+r04XcJ4eXmN/Wv9lEHTUnuTGIiOFDeR3lEkwrMjr1w==
+X-Received: by 2002:a17:906:6b0f:b0:78d:f454:ba3d with SMTP id q15-20020a1709066b0f00b0078df454ba3dmr15991137ejr.60.1672142110714;
+        Tue, 27 Dec 2022 03:55:10 -0800 (PST)
+Received: from [192.168.2.1] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id p12-20020a17090653cc00b007aece68483csm5890362ejo.193.2022.12.27.03.55.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Dec 2022 03:55:10 -0800 (PST)
+Message-ID: <732352f3-fda0-039e-4fef-ceb6f5348086@gmail.com>
+Date:   Tue, 27 Dec 2022 12:55:08 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCHv3 linux-next 3/4] ARM: dts: rockchip: rv1126: Add GMAC
+ node
+To:     Anand Moon <anand@edgeble.ai>, Heiko Stuebner <heiko@sntech.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Jagan Teki <jagan@edgeble.ai>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20221227104837.27208-1-anand@edgeble.ai>
+ <20221227104837.27208-3-anand@edgeble.ai>
+Content-Language: en-US
+From:   Johan Jonker <jbx6244@gmail.com>
+In-Reply-To: <20221227104837.27208-3-anand@edgeble.ai>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 
-Follow the advice of the Documentation/filesystems/sysfs.rst
-and show() should only use sysfs_emit() or sysfs_emit_at()
-when formatting the value to be returned to user space.
 
-Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
----
- drivers/s390/net/qeth_core_sys.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+On 12/27/22 11:48, Anand Moon wrote:
+> Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
+> add GMAC node for RV1126 SoC.
+> 
+> Signed-off-by: Anand Moon <anand@edgeble.ai>
+> Signed-off-by: Jagan Teki <jagan@edgeble.ai>
+> ---
+> v3: drop the gmac_clkin_m0 & gmac_clkin_m1 fix clock node which are not
+> used, Add SoB of Jagan Teki.
+> V2: drop SoB of Jagan Teki.
+> ---
+>  arch/arm/boot/dts/rv1126.dtsi | 49 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/rv1126.dtsi b/arch/arm/boot/dts/rv1126.dtsi
+> index 1cb43147e90b..e20fdd0d333c 100644
+> --- a/arch/arm/boot/dts/rv1126.dtsi
+> +++ b/arch/arm/boot/dts/rv1126.dtsi
+> @@ -90,6 +90,55 @@ xin24m: oscillator {
+>  		#clock-cells = <0>;
+>  	};
+>  
 
-diff --git a/drivers/s390/net/qeth_core_sys.c b/drivers/s390/net/qeth_core_sys.c
-index 406be169173c..d1adc4b83193 100644
---- a/drivers/s390/net/qeth_core_sys.c
-+++ b/drivers/s390/net/qeth_core_sys.c
-@@ -410,13 +410,13 @@ static ssize_t qeth_dev_isolation_show(struct device *dev,
- 
- 	switch (card->options.isolation) {
- 	case ISOLATION_MODE_NONE:
--		return snprintf(buf, 6, "%s\n", ATTR_QETH_ISOLATION_NONE);
-+		return sysfs_emit(buf, "%s\n", ATTR_QETH_ISOLATION_NONE);
- 	case ISOLATION_MODE_FWD:
--		return snprintf(buf, 9, "%s\n", ATTR_QETH_ISOLATION_FWD);
-+		return sysfs_emit(buf, "%s\n", ATTR_QETH_ISOLATION_FWD);
- 	case ISOLATION_MODE_DROP:
--		return snprintf(buf, 6, "%s\n", ATTR_QETH_ISOLATION_DROP);
-+		return sysfs_emit(buf, "%s\n", ATTR_QETH_ISOLATION_DROP);
- 	default:
--		return snprintf(buf, 5, "%s\n", "N/A");
-+		return sysfs_emit(buf, "%s\n", "N/A");
- 	}
- }
- 
-@@ -500,9 +500,9 @@ static ssize_t qeth_hw_trap_show(struct device *dev,
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
- 	if (card->info.hwtrap)
--		return snprintf(buf, 5, "arm\n");
-+		return sysfs_emit(buf, "arm\n");
- 	else
--		return snprintf(buf, 8, "disarm\n");
-+		return sysfs_emit(buf, "disarm\n");
- }
- 
- static ssize_t qeth_hw_trap_store(struct device *dev,
--- 
-2.25.1
+> +	gmac: ethernet@ffc40000 {
 
+Nodes with a reg property are sort on reg address.
+Heiko can fix that.. ;)
+
+	timer0: timer@ff660000 {
+	gmac: ethernet@ffc40000 {
+	emmc: mmc@ffc50000 {
+
+> +		compatible = "rockchip,rv1126-gmac", "snps,dwmac-4.20a";
+> +		reg = <0xffc40000 0x4000>;
+> +		interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+> +		interrupt-names = "macirq", "eth_wake_irq";
+> +		rockchip,grf = <&grf>;
+> +		clocks = <&cru CLK_GMAC_SRC>, <&cru CLK_GMAC_TX_RX>,
+> +			 <&cru CLK_GMAC_TX_RX>, <&cru CLK_GMAC_REF>,
+> +			 <&cru ACLK_GMAC>, <&cru PCLK_GMAC>,
+> +			 <&cru CLK_GMAC_TX_RX>, <&cru CLK_GMAC_PTPREF>;
+> +		clock-names = "stmmaceth", "mac_clk_rx",
+> +			      "mac_clk_tx", "clk_mac_ref",
+> +			      "aclk_mac", "pclk_mac",
+> +			      "clk_mac_speed", "ptp_ref";
+> +		resets = <&cru SRST_GMAC_A>;
+> +		reset-names = "stmmaceth";
+> +
+> +		snps,mixed-burst;
+> +		snps,tso;
+> +
+> +		snps,axi-config = <&stmmac_axi_setup>;
+> +		snps,mtl-rx-config = <&mtl_rx_setup>;
+> +		snps,mtl-tx-config = <&mtl_tx_setup>;
+> +		status = "disabled";
+> +
+> +		mdio: mdio {
+> +			compatible = "snps,dwmac-mdio";
+> +			#address-cells = <0x1>;
+> +			#size-cells = <0x0>;
+> +		};
+> +
+> +		stmmac_axi_setup: stmmac-axi-config {
+> +			snps,wr_osr_lmt = <4>;
+> +			snps,rd_osr_lmt = <8>;
+> +			snps,blen = <0 0 0 0 16 8 4>;
+> +		};
+> +
+> +		mtl_rx_setup: rx-queues-config {
+> +			snps,rx-queues-to-use = <1>;
+> +			queue0 {};
+> +		};
+> +
+> +		mtl_tx_setup: tx-queues-config {
+> +			snps,tx-queues-to-use = <1>;
+> +			queue0 {};
+> +		};
+> +	};
+> +
+>  	grf: syscon@fe000000 {
+>  		compatible = "rockchip,rv1126-grf", "syscon", "simple-mfd";
+>  		reg = <0xfe000000 0x20000>;
