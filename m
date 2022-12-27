@@ -2,154 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BEB06568F9
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 10:39:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E00E6568F6
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 10:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbiL0Jju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 04:39:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52526 "EHLO
+        id S229885AbiL0Jir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 04:38:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbiL0JjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 04:39:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39DE262F
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 01:38:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672133912;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J3BLtHqoydlVUf+z9Cs67tPhoqV/CQzv2c7yUWqYhoE=;
-        b=FGXHCX7/J1P9lPs3V0pXOwU6ADXhRDfzVKrgxBwG4hveR07PHhDR2n8DN7kxtUr1ke64HC
-        qZOI+aIAz5ABo0I3n2MANhvg81l3LHXSeBZLjNHTRGjIoIjedJK7v4pSQAlyKsAQrbT4/n
-        vEXJVRbQ7SroHB8Gefiv7lKINgVVUW8=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-508-EkAHTloHOXGa-f1_xlCGxw-1; Tue, 27 Dec 2022 04:38:30 -0500
-X-MC-Unique: EkAHTloHOXGa-f1_xlCGxw-1
-Received: by mail-ej1-f69.google.com with SMTP id sd1-20020a1709076e0100b00810be49e7afso8948228ejc.22
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 01:38:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J3BLtHqoydlVUf+z9Cs67tPhoqV/CQzv2c7yUWqYhoE=;
-        b=YWVd/8mOiiAfsvk0LSQB5a498ds4QYXwGAYsbFrQtlHlu6JyMs/Vn84fFRYYxpciBr
-         T48x5xnyUZL5hLkLooiOibJs7HMZADoK2xgG63wYEKq5Ww7WTU4VvA+t/lCKZAk/s7XY
-         vwb9spBCBhU3F/slBFdfnQDzHHSpRfOakwXDcwYXYjha0vgM9fO8pu7AKjx03degjb9e
-         mc+UOqKHO44gMvp9CFinJ0QZDlXoJPpStS9f0h7hkH0UBrtJtMAfbSjVD0buJVDblZNK
-         PLs7PhiABrtMHhkn/nAaR2mWHdw9i2W1gEQsg3gEPd3O4mNHU16wWKsa7bNxOjXQER/A
-         +uLw==
-X-Gm-Message-State: AFqh2kphO4u4tMEzE5e/BpOnmI/rSnkrMGrz45e8KV1jwZFUnjcZ5DZd
-        rVNXhzZo3E6cTRwdwEKVw+MG/+F//gQjAD2CSh4oAaYTfPwRgSsbzuZoM1D9QgRlBDgD/yciSiO
-        Wm67ijRCj6LLslk/q
-X-Received: by 2002:a17:907:7f04:b0:7c1:36:9002 with SMTP id qf4-20020a1709077f0400b007c100369002mr21415457ejc.67.1672133909657;
-        Tue, 27 Dec 2022 01:38:29 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXu1izE+/u+Tuwf8tjP2vCdjI4kLYsk008OtSrOIXpnLKNcCpaysWJW9Xx5P3ns02pTzhv/LQg==
-X-Received: by 2002:a17:907:7f04:b0:7c1:36:9002 with SMTP id qf4-20020a1709077f0400b007c100369002mr21415444ejc.67.1672133909480;
-        Tue, 27 Dec 2022 01:38:29 -0800 (PST)
-Received: from redhat.com ([2.52.151.85])
-        by smtp.gmail.com with ESMTPSA id 9-20020a170906218900b007c4fbb79535sm5873901eju.82.2022.12.27.01.38.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 01:38:28 -0800 (PST)
-Date:   Tue, 27 Dec 2022 04:38:25 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        maxime.coquelin@redhat.com, alvaro.karsz@solid-run.com,
-        eperezma@redhat.com
-Subject: Re: [PATCH 3/4] virtio_ring: introduce a per virtqueue waitqueue
-Message-ID: <20221227043148-mutt-send-email-mst@kernel.org>
-References: <20221226074908.8154-1-jasowang@redhat.com>
- <20221226074908.8154-4-jasowang@redhat.com>
- <20221226183705-mutt-send-email-mst@kernel.org>
- <CACGkMEuNZLJRnWw+XNxJ-to1y8L2GrTrJkk0y0Gwb5H2YhDczQ@mail.gmail.com>
- <20221227022255-mutt-send-email-mst@kernel.org>
- <d77bc1ce-b73f-1ba8-f04f-b3bffeb731c3@redhat.com>
+        with ESMTP id S230072AbiL0Jio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 04:38:44 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D99395B1;
+        Tue, 27 Dec 2022 01:38:40 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 0E8D324E052;
+        Tue, 27 Dec 2022 17:38:33 +0800 (CST)
+Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 27 Dec
+ 2022 17:38:33 +0800
+Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
+ (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 27 Dec
+ 2022 17:38:31 +0800
+Message-ID: <134a2ead-e272-c32e-b14f-a9e98c8924ac@starfivetech.com>
+Date:   Tue, 27 Dec 2022 17:38:30 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d77bc1ce-b73f-1ba8-f04f-b3bffeb731c3@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 5/9] dt-bindings: net: motorcomm: add support for
+ Motorcomm YT8531
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
+ <20221216070632.11444-6-yanhong.wang@starfivetech.com>
+ <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
+From:   yanhong wang <yanhong.wang@starfivetech.com>
+In-Reply-To: <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX173.cuchost.com
+ (172.16.6.93)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 27, 2022 at 05:12:58PM +0800, Jason Wang wrote:
-> 
-> 在 2022/12/27 15:33, Michael S. Tsirkin 写道:
-> > On Tue, Dec 27, 2022 at 12:30:35PM +0800, Jason Wang wrote:
-> > > > But device is still going and will later use the buffers.
-> > > > 
-> > > > Same for timeout really.
-> > > Avoiding infinite wait/poll is one of the goals, another is to sleep.
-> > > If we think the timeout is hard, we can start from the wait.
-> > > 
-> > > Thanks
-> > If the goal is to avoid disrupting traffic while CVQ is in use,
-> > that sounds more reasonable. E.g. someone is turning on promisc,
-> > a spike in CPU usage might be unwelcome.
-> 
-> 
-> Yes, this would be more obvious is UP is used.
-> 
-> 
-> > 
-> > things we should be careful to address then:
-> > 1- debugging. Currently it's easy to see a warning if CPU is stuck
-> >     in a loop for a while, and we also get a backtrace.
-> >     E.g. with this - how do we know who has the RTNL?
-> >     We need to integrate with kernel/watchdog.c for good results
-> >     and to make sure policy is consistent.
-> 
-> 
-> That's fine, will consider this.
-> 
-> 
-> > 2- overhead. In a very common scenario when device is in hypervisor,
-> >     programming timers etc has a very high overhead, at bootup
-> >     lots of CVQ commands are run and slowing boot down is not nice.
-> >     let's poll for a bit before waiting?
-> 
-> 
-> Then we go back to the question of choosing a good timeout for poll. And
-> poll seems problematic in the case of UP, scheduler might not have the
-> chance to run.
-
-Poll just a bit :) Seriously I don't know, but at least check once
-after kick.
-
-> 
-> > 3- suprise removal. need to wake up thread in some way. what about
-> >     other cases of device breakage - is there a chance this
-> >     introduces new bugs around that? at least enumerate them please.
-> 
-> 
-> The current code did:
-> 
-> 1) check for vq->broken
-> 2) wakeup during BAD_RING()
-> 
-> So we won't end up with a never woke up process which should be fine.
-> 
-> Thanks
 
 
-BTW BAD_RING on removal will trigger dev_err. Not sure that is a good
-idea - can cause crashes if kernel panics on error.
-
+On 2022/12/16 19:15, Krzysztof Kozlowski wrote:
+> On 16/12/2022 08:06, Yanhong Wang wrote:
+>> Add support for Motorcomm Technology YT8531 10/100/1000 Ethernet PHY.
+>> The document describe details of clock delay train configuration.
+>> 
+>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
 > 
-> > 
-> > 
+> Missing vendor prefix documentation. I don't think you tested this at
+> all with checkpatch and dt_binding_check.
+> 
+>> ---
+>>  .../bindings/net/motorcomm,yt8531.yaml        | 111 ++++++++++++++++++
+>>  MAINTAINERS                                   |   1 +
+>>  2 files changed, 112 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml
+>> 
+>> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml
+>> new file mode 100644
+>> index 000000000000..c5b8a09a78bb
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8531.yaml
+>> @@ -0,0 +1,111 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/net/motorcomm,yt8531.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Motorcomm YT8531 Gigabit Ethernet PHY
+>> +
+>> +maintainers:
+>> +  - Yanhong Wang <yanhong.wang@starfivetech.com>
+>> +
+> 
+> Why there is no reference to ethernet-phy.yaml?
+> 
+>> +select:
+>> +  properties:
+>> +    $nodename:
+>> +      pattern: "^ethernet-phy(@[a-f0-9]+)?$"
+> 
+> I don't think that's correct approach. You know affect all phys.
+> 
+>> +
+>> +  required:
+>> +    - $nodename
+>> +
+>> +properties:
+>> +  $nodename:
+>> +    pattern: "^ethernet-phy(@[a-f0-9]+)?$"
+> 
+> Just reference ethernet-phy.yaml.
+> 
+>> +
+>> +  reg:
+>> +    minimum: 0
+>> +    maximum: 31
+>> +    description:
+>> +      The ID number for the PHY.
+> 
+> Drop duplicated properties.
+> 
+>> +
+>> +  rxc_dly_en:
+> 
+> No underscores in node names. Missing vendor prefix. Both apply to all
+> your other custom properties, unless they are not custom but generic.
+> 
+> Missing ref.
+> 
+>> +    description: |
+>> +      RGMII Receive PHY Clock Delay defined with fixed 2ns.This is used for
+> 
+> After every full stop goes space.
+> 
+>> +      PHY that have configurable RX internal delays. If this property set
+>> +      to 1, then automatically add 2ns delay pad for Receive PHY clock.
+> 
+> Nope, this is wrong. You wrote now boolean property as enum.
+> 
+>> +    enum: [0, 1]
+>> +    default: 0
+>> +
+>> +  rx_delay_sel:
+>> +    description: |
+>> +      This is supplement to rxc_dly_en property,and it can
+>> +      be specified in 150ps(pico seconds) steps. The effective
+>> +      delay is: 150ps * N.
+> 
+> Nope. Use proper units and drop all this register stuff.
+> 
+>> +    minimum: 0
+>> +    maximum: 15
+>> +    default: 0
+>> +
+>> +  tx_delay_sel_fe:
+>> +    description: |
+>> +      RGMII Transmit PHY Clock Delay defined in pico seconds.This is used for
+>> +      PHY's that have configurable TX internal delays when speed is 100Mbps
+>> +      or 10Mbps. It can be specified in 150ps steps, the effective delay
+>> +      is: 150ps * N.
+> 
+> The binding is in very poor shape. Please look carefully in
+> example-schema. All my previous comments apply everywhere.
+> 
+>> +    minimum: 0
+>> +    maximum: 15
+>> +    default: 15
+>> +
+>> +  tx_delay_sel:
+>> +    description: |
+>> +      RGMII Transmit PHY Clock Delay defined in pico seconds.This is used for
+>> +      PHY's that have configurable TX internal delays when speed is 1000Mbps.
+>> +      It can be specified in 150ps steps, the effective delay is: 150ps * N.
+>> +    minimum: 0
+>> +    maximum: 15
+>> +    default: 1
+>> +
+>> +  tx_inverted_10:
+>> +    description: |
+>> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
+>> +      Transmit PHY Clock delay train configuration when speed is 10Mbps.
+>> +      0: original   1: inverted
+>> +    enum: [0, 1]
+>> +    default: 0
+>> +
+>> +  tx_inverted_100:
+>> +    description: |
+>> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
+>> +      Transmit PHY Clock delay train configuration when speed is 100Mbps.
+>> +      0: original   1: inverted
+>> +    enum: [0, 1]
+>> +    default: 0
+>> +
+>> +  tx_inverted_1000:
+>> +    description: |
+>> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
+>> +      Transmit PHY Clock delay train configuration when speed is 1000Mbps.
+>> +      0: original   1: inverted
+>> +    enum: [0, 1]
+>> +    default: 0
+>> +
+>> +required:
+>> +  - reg
+>> +
+>> +additionalProperties: true
+> 
+> This must be false. After referencing ethernet-phy this should be
+> unevaluatedProperties: false.
+> 
+> 
 
+Thanks. Parts of this patch exist already, after discussion unanimity was achieved,
+i will remove the parts of YT8531 in the next version.
+
+> Best regards,
+> Krzysztof
+> 
