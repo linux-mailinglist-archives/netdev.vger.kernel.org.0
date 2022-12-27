@@ -2,131 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3286656873
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 09:33:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CB96568AE
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 10:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229837AbiL0Idb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 03:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
+        id S229445AbiL0JFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 04:05:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiL0Id3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 03:33:29 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5572A6470
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 00:33:27 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso16686975pjt.0
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 00:33:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=heitbaum.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cJHx4NOHvRf/XIDu7SdTGqUE9RfpKHxNuq88IOpL9o8=;
-        b=IdLGQ3GzzdJk4fE1sZJKE4/QPqdoSDGQ1+hAdNsamwouqh7fVA59ni08NkUDEZlq3K
-         fWqeFXBQDh9lHLfXNvWuJs04thU9MR96xQJALtJzNuNMPz+VkqKKExJhl6xY2ZQML76z
-         XU7MzOLDeekm9aIZ7QNU397kw6T+4cN55vbxw=
+        with ESMTP id S229776AbiL0JFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 04:05:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292018FE5
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 01:04:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672131834;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xwaWC7qhv1n472jAfAEwqv5nsnmhd0aYtU5tB8HHqyw=;
+        b=G0fPcVQZjzP+NKlKonyFzdpmYskN8S9SGSnhuH0D2fO9pRgUKLdyBlWs3ih2NCAhhLXcdn
+        IG1cfMPE7N4LCtyigkKH1TZNw90orUL87sy1Ehqd0XwBSrLlQBzELaHuHDP0aBTngb7LYZ
+        ITw7v7/cdWn2KJR/y3Dy0/iV0torhtg=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-439-595uDjYgNQiHF8eF0CSNJQ-1; Tue, 27 Dec 2022 04:03:52 -0500
+X-MC-Unique: 595uDjYgNQiHF8eF0CSNJQ-1
+Received: by mail-oi1-f199.google.com with SMTP id r65-20020acaf344000000b0035a1d791805so2105929oih.19
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 01:03:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cJHx4NOHvRf/XIDu7SdTGqUE9RfpKHxNuq88IOpL9o8=;
-        b=FfWGpnQoxSS+4XrUEUrA4SnlzxsUOHw0brgmmzEfXg2HVXQQkXPtJwGdzkL1zN8TT1
-         YrdicZb2s5fhW77gtJp3u7QF3ZlF6i0yrYGwEImCAkQ0egRon1sEZAbw85RBwYDqa0m0
-         xisP0sq3xcgH+tmv2zv/hYjv/7vGocKdAW6GcaK53OVoyVGO96nbxQcKcLDMKVFcqYkT
-         GgFofx+rkFebv8eDIt7pE8Vy+zflIYWD1Yj+yTUiNsPJbbpIVtmjRT4QQZQ7QjP0aVj6
-         fmMI7lIY+4xC+i49AnYgD7lrdumyKSlSO6xuFhHqLmWq2yvEgGWls/z6k5gw4GT2dHd3
-         I67A==
-X-Gm-Message-State: AFqh2kr8ujGOyiaJoeC32AgeyAdos2cdLr2yiEDDUvSXgJFcrIeeqREy
-        IukV62s4qljeovFn9k69wslCng==
-X-Google-Smtp-Source: AMrXdXs92rQ4Z5gPuVFRgc9X51B9sxIz8j3YWugvgnJ0VTzF7HfdnSt89k/fR9jLBMy36kCY8Nfdog==
-X-Received: by 2002:a17:903:134c:b0:189:e909:32e3 with SMTP id jl12-20020a170903134c00b00189e90932e3mr24805166plb.40.1672130006606;
-        Tue, 27 Dec 2022 00:33:26 -0800 (PST)
-Received: from 82a1e6c4c19b (lma3293270.lnk.telstra.net. [60.231.90.117])
-        by smtp.gmail.com with ESMTPSA id u7-20020a17090341c700b00189988a1a9esm8493363ple.135.2022.12.27.00.33.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 00:33:25 -0800 (PST)
-Date:   Tue, 27 Dec 2022 08:33:17 +0000
-From:   Rudi Heitbaum <rudi@heitbaum.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuniyu@amazon.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 0/4] net/sched: retpoline wrappers for tc
-Message-ID: <20221227083317.GA1025927@82a1e6c4c19b>
-References: <20221206135513.1904815-1-pctammela@mojatatu.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xwaWC7qhv1n472jAfAEwqv5nsnmhd0aYtU5tB8HHqyw=;
+        b=lU1G5Z/dmMcgkBzN7niK0nrNCSSxaGKP/JxQfwWdh3gczPXgTWreIXV4RWXxjLYMmX
+         0Dhvwxi5vW1HK+uftmTpDXYFNnKlscXVgM2UjTxQQZBuN+Tjit5o3A4OvAr5X7vi1IXm
+         vi7Etb4g8WFI0viI9+6DPqjvByXI6YD4qe0hVJLE2Mp07odEizEoHLvnO+xIXj79Le9g
+         Xu24uo0xz64devh0OsyOc8n+5TcsDSNdtyjkmhC2gkQD58n13+Vl4Ly8J9ZUVmcyV+Qo
+         FOkbm2LCLyIR/YME4K0K2ZHBXN/zzNUEbcpzJu2p9O5o8pU7Spcar0aNj1Qn8hFQnJrL
+         +rqQ==
+X-Gm-Message-State: AFqh2krtdhG33H51KLCjNcJw/N/t5mqkxb2pskt9hM9LfME041LCbqgS
+        EyAEXqneUGS0eBEK51dnyXPs9b7VouC45YGdcaxzBaf3v4pMzgRRoFq45StUCQDnf8a814IO7vS
+        TdYgu8NNs4+sxx6iR/OVwngcJqw3smNmp
+X-Received: by 2002:a05:6870:3d97:b0:144:b22a:38d3 with SMTP id lm23-20020a0568703d9700b00144b22a38d3mr1372400oab.280.1672131832122;
+        Tue, 27 Dec 2022 01:03:52 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvJmy3qoV6i2Qvz4anp5Z6wbHhhC955C1D1+oiqOLnAQc1zVZZZnGwH1SvPNoaeh2qsPP7EJTP2FSuMFsn2xO0=
+X-Received: by 2002:a05:6870:3d97:b0:144:b22a:38d3 with SMTP id
+ lm23-20020a0568703d9700b00144b22a38d3mr1372393oab.280.1672131831882; Tue, 27
+ Dec 2022 01:03:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221206135513.1904815-1-pctammela@mojatatu.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221220141449.115918-1-hengqi@linux.alibaba.com> <20221220141449.115918-10-hengqi@linux.alibaba.com>
+In-Reply-To: <20221220141449.115918-10-hengqi@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 27 Dec 2022 17:03:40 +0800
+Message-ID: <CACGkMEvorhL+KikOUu=ozpxo0KJSbkHF65h58srfXNd5wHWDgw@mail.gmail.com>
+Subject: Re: [PATCH v2 9/9] virtio_net: support multi-buffer xdp
+To:     Heng Qi <hengqi@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pedro,
+On Tue, Dec 20, 2022 at 10:15 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
+>
+> Driver can pass the skb to stack by build_skb_from_xdp_buff().
+>
+> Driver forwards multi-buffer packets using the send queue
+> when XDP_TX and XDP_REDIRECT, and clears the reference of multi
+> pages when XDP_DROP.
+>
+> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-Compiling kernel 6.2-rc1 fails on x86_64 when CONFIG_NET_CLS or
-CONFIG_NET_CLS_ACT is not set, when CONFIG_RETPOLINE=y is set.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Does tc_wrapper RETPOLINE need a dependency on NET_CLS/NET_CLS_ACT
-to be added? Or a default?
+Thanks
 
-net/sched/sch_api.c: In function 'pktsched_init':
-net/sched/sch_api.c:2306:9: error: implicit declaration of function
-'tc_wrapper_init' [-Werror=implicit-function-declaration]
- 2306 |         tc_wrapper_init();
-      |         ^~~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-make[3]: *** [scripts/Makefile.build:252: net/sched/sch_api.o] Error 1
-make[2]: *** [scripts/Makefile.build:504: net/sched] Error 2
-make[1]: *** [scripts/Makefile.build:504: net] Error 2
+> ---
+>  drivers/net/virtio_net.c | 65 ++++++----------------------------------
+>  1 file changed, 9 insertions(+), 56 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 398ffe2a5084..daa380b9d1cc 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1074,7 +1074,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>         struct bpf_prog *xdp_prog;
+>         unsigned int truesize = mergeable_ctx_to_truesize(ctx);
+>         unsigned int headroom = mergeable_ctx_to_headroom(ctx);
+> -       unsigned int metasize = 0;
+>         unsigned int frame_sz;
+>         int err;
+>
+> @@ -1165,63 +1164,22 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>
+>                 switch (act) {
+>                 case XDP_PASS:
+> -                       metasize = xdp.data - xdp.data_meta;
+> -
+> -                       /* recalculate offset to account for any header
+> -                        * adjustments and minus the metasize to copy the
+> -                        * metadata in page_to_skb(). Note other cases do not
+> -                        * build an skb and avoid using offset
+> -                        */
+> -                       offset = xdp.data - page_address(xdp_page) -
+> -                                vi->hdr_len - metasize;
+> -
+> -                       /* recalculate len if xdp.data, xdp.data_end or
+> -                        * xdp.data_meta were adjusted
+> -                        */
+> -                       len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
+> -
+> -                       /* recalculate headroom if xdp.data or xdp_data_meta
+> -                        * were adjusted, note that offset should always point
+> -                        * to the start of the reserved bytes for virtio_net
+> -                        * header which are followed by xdp.data, that means
+> -                        * that offset is equal to the headroom (when buf is
+> -                        * starting at the beginning of the page, otherwise
+> -                        * there is a base offset inside the page) but it's used
+> -                        * with a different starting point (buf start) than
+> -                        * xdp.data (buf start + vnet hdr size). If xdp.data or
+> -                        * data_meta were adjusted by the xdp prog then the
+> -                        * headroom size has changed and so has the offset, we
+> -                        * can use data_hard_start, which points at buf start +
+> -                        * vnet hdr size, to calculate the new headroom and use
+> -                        * it later to compute buf start in page_to_skb()
+> -                        */
+> -                       headroom = xdp.data - xdp.data_hard_start - metasize;
+> -
+> -                       /* We can only create skb based on xdp_page. */
+> -                       if (unlikely(xdp_page != page)) {
+> -                               rcu_read_unlock();
+> -                               put_page(page);
+> -                               head_skb = page_to_skb(vi, rq, xdp_page, offset,
+> -                                                      len, PAGE_SIZE);
+> -                               return head_skb;
+> -                       }
+> -                       break;
+> +                       head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
+> +                       rcu_read_unlock();
+> +                       return head_skb;
+>                 case XDP_TX:
+>                         stats->xdp_tx++;
+>                         xdpf = xdp_convert_buff_to_frame(&xdp);
+>                         if (unlikely(!xdpf)) {
+> -                               if (unlikely(xdp_page != page))
+> -                                       put_page(xdp_page);
+> -                               goto err_xdp;
+> +                               netdev_dbg(dev, "convert buff to frame failed for xdp\n");
+> +                               goto err_xdp_frags;
+>                         }
+>                         err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
+>                         if (unlikely(!err)) {
+>                                 xdp_return_frame_rx_napi(xdpf);
+>                         } else if (unlikely(err < 0)) {
+>                                 trace_xdp_exception(vi->dev, xdp_prog, act);
+> -                               if (unlikely(xdp_page != page))
+> -                                       put_page(xdp_page);
+> -                               goto err_xdp;
+> +                               goto err_xdp_frags;
+>                         }
+>                         *xdp_xmit |= VIRTIO_XDP_TX;
+>                         if (unlikely(xdp_page != page))
+> @@ -1231,11 +1189,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>                 case XDP_REDIRECT:
+>                         stats->xdp_redirects++;
+>                         err = xdp_do_redirect(dev, &xdp, xdp_prog);
+> -                       if (err) {
+> -                               if (unlikely(xdp_page != page))
+> -                                       put_page(xdp_page);
+> -                               goto err_xdp;
+> -                       }
+> +                       if (err)
+> +                               goto err_xdp_frags;
+>                         *xdp_xmit |= VIRTIO_XDP_REDIR;
+>                         if (unlikely(xdp_page != page))
+>                                 put_page(page);
+> @@ -1248,9 +1203,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>                         trace_xdp_exception(vi->dev, xdp_prog, act);
+>                         fallthrough;
+>                 case XDP_DROP:
+> -                       if (unlikely(xdp_page != page))
+> -                               __free_pages(xdp_page, 0);
+> -                       goto err_xdp;
+> +                       goto err_xdp_frags;
+>                 }
+>  err_xdp_frags:
+>                 shinfo = xdp_get_shared_info_from_buff(&xdp);
+> --
+> 2.19.1.6.gb485710b
+>
 
-below is the relevent lines from the .config file.
-
-$ grep -e RETPOLINE -e NET_CLS projects/Generic/linux/linux.x86_64.conf 
-CONFIG_RETPOLINE=y
-# CONFIG_NET_CLS_BASIC is not set
-# CONFIG_NET_CLS_TCINDEX is not set
-# CONFIG_NET_CLS_ROUTE4 is not set
-# CONFIG_NET_CLS_FW is not set
-# CONFIG_NET_CLS_U32 is not set
-# CONFIG_NET_CLS_RSVP is not set
-# CONFIG_NET_CLS_RSVP6 is not set
-# CONFIG_NET_CLS_FLOW is not set
-# CONFIG_NET_CLS_CGROUP is not set
-# CONFIG_NET_CLS_BPF is not set
-# CONFIG_NET_CLS_FLOWER is not set
-# CONFIG_NET_CLS_MATCHALL is not set
-# CONFIG_NET_CLS_ACT is not set
-
-On Tue, Dec 06, 2022 at 10:55:09AM -0300, Pedro Tammela wrote:
-> In tc all qdics, classifiers and actions can be compiled as modules.
-> This results today in indirect calls in all transitions in the tc hierarchy.
-> Due to CONFIG_RETPOLINE, CPUs with mitigations=on might pay an extra cost on
-> indirect calls. For newer Intel cpus with IBRS the extra cost is
-> nonexistent, but AMD Zen cpus and older x86 cpus still go through the
-> retpoline thunk.
-> 
-> Known built-in symbols can be optimized into direct calls, thus
-> avoiding the retpoline thunk. So far, tc has not been leveraging this
-> build information and leaving out a performance optimization for some
-> CPUs. In this series we wire up 'tcf_classify()' and 'tcf_action_exec()'
-> with direct calls when known modules are compiled as built-in as an
-> opt-in optimization.
-> 
-> We measured these changes in one AMD Zen 4 cpu (Retpoline), one AMD Zen 3 cpu (Retpoline),
-> one Intel 10th Gen CPU (IBRS), one Intel 3rd Gen cpu (Retpoline) and one
-> Intel Xeon CPU (IBRS) using pktgen with 64b udp packets. Our test setup is a
-> dummy device with clsact and matchall in a kernel compiled with every
-> tc module as built-in.  We observed a 3-8% speed up on the retpoline CPUs,
-> when going through 1 tc filter, and a 60-100% speed up when going through 100 filters.
-> For the IBRS cpus we observed a 1-2% degradation in both scenarios, we believe
-> the extra branches check introduced a small overhead therefore we added
-> a static key that bypasses the wrapper on kernels not using the retpoline mitigation,
-> but compiled with CONFIG_RETPOLINE.
-
-...
