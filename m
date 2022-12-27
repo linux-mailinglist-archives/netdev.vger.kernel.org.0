@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDBB065672C
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 04:52:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF68656730
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 04:58:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiL0DwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 22:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
+        id S229850AbiL0D6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 22:58:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiL0DwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 22:52:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71337319
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 19:51:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672113075;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mjSoArX5HY6uv1LNJcQFkVTx4PMTjeA2EWxVBFBuH60=;
-        b=YiaFGhB9p2icQJkiHBBo2GbtVzG9DTKw7BQHy17Y3+J+6vJPGvkJ4Fj1ZqYEv6U/isAUht
-        9Xo16Fm5mLb9hUww+IxTFffW1ylVwax2FYFIxeYRhvGRCZZe342t80khtybIYUTu7meYjQ
-        28xbTz40gF4mWbLY6yl5TILdmo9OrHE=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-42-k1V6qW0pOK2C8hUr2HqEqw-1; Mon, 26 Dec 2022 22:51:14 -0500
-X-MC-Unique: k1V6qW0pOK2C8hUr2HqEqw-1
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-1448c7afeccso5833436fac.15
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 19:51:14 -0800 (PST)
+        with ESMTP id S229824AbiL0D6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 22:58:31 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04BC6334
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 19:58:30 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id jl4so5901504plb.8
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 19:58:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4pnD+VKmtWNyIz77k45GFBFGYjPCVlBkVaePeWHK0Kg=;
+        b=jUBvjqRGrNGCo6oaPjntISpTmEOKivvLVUa2tl6Isxc5B8oxUWzfuLfuqsT79J6Vus
+         FQw7FLMAC7qzgcFQLhKZbOj1ux9gMttcuungDOVEXavXrMlUb5jxJWMhwbYvux4sbZ0+
+         1YYcq/E2av3BwJ7maJaVj+AmoVA3C73GMsjdE2lYAVf4lGBXtLPlinI1FvhrghNFu7g6
+         NxU0iEQtLzB02MouB745WNtBIZWlM2hnHI/egCBhxU/VoyNI3Rs2wtWrfnrsj+DN1QW0
+         ojarGrPVIwmDb8hTK4BTtzuKM1Uj4fDGgdvnvrarhHUXQ/cUHIwdnPRqmrBJ88tRbpPY
+         49Kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mjSoArX5HY6uv1LNJcQFkVTx4PMTjeA2EWxVBFBuH60=;
-        b=F2W14hZ0OwGf0lBjrGcAdDudl8JQ+eWKAHLkIvD0XJULX0JJIkoMP/CJNxJHUi6hI0
-         OMQwIEHZWpPglNFuUoOLpqQbAJrBgRkO0RboB+WOKBbeOdwflffG8EUzljaIvSP/iYMl
-         E22ZPRgHGgRhWmkVa72vGnl17d5RluIPjvRGVgINMJnu0/78kRX2y7dJGzztfvhunT3a
-         u+t85EYjXUjBQLYmAwV7FqB7RMCeYYpDw31cgrlQQx3GGoKSKXjOFEaMGMtT2R8XvxD/
-         DaxdF1AcZ2zWIuGXNBZCTFtGwg2NCaZ+S6AHZaclY3l4lC4poFpRP9PvPzNbTf/ukjYf
-         BFoQ==
-X-Gm-Message-State: AFqh2kprvjl/fJuhKxbz/P4gnOWtoVyHDHLVEmD9wl/v0YOcGrlJDV4S
-        czvP9DIGCGpZPyDqnXWr9LAb5ogTi2kAbP5kByoQ9lNtVFwetRAz5IVg1g0jbbZuPVkGmpNIY7c
-        9A3xxbW5roDaxqhIma+4fc7+O6EwVZEw4
-X-Received: by 2002:a54:4e89:0:b0:35c:303d:fe37 with SMTP id c9-20020a544e89000000b0035c303dfe37mr721890oiy.35.1672113073641;
-        Mon, 26 Dec 2022 19:51:13 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsCulI1T5cwjq8wWoaycCdKJLT0V8hvvOPAQssypU3+1Le5l09BrAre+/+QUnsIsGezI46+6cqY0LXGqi1asRg=
-X-Received: by 2002:a54:4e89:0:b0:35c:303d:fe37 with SMTP id
- c9-20020a544e89000000b0035c303dfe37mr721883oiy.35.1672113073448; Mon, 26 Dec
- 2022 19:51:13 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4pnD+VKmtWNyIz77k45GFBFGYjPCVlBkVaePeWHK0Kg=;
+        b=Xj07rVRMopu26yubslLLswa75n7wItoPSkmZ/EeWOAbVTlw1gUScayUQdnJZggwWOi
+         3fZ2B7pp3bdb6fscL3RQGB9+BVtso0dqxKK8otWOxhkDUurzLb19SlU5FvmgrByTY5Ys
+         seUPWhK6WZI0F5DTC2dty5kFQx+J2usdMCa3lUvCpaN6Joi2RGgbbUnbxrk65G8IN0Yy
+         Baqh0CiDrClaNJh+aZC/UcPblqnSSJ9rNHNlSDdlQUkr+GECbSUFFa+b6yzDLZK7jkCm
+         J7P8RxlVVpc4yZvZ4Ij3uDxfJmz4eNobLU7E9VMAQbaNUBiEbvcGidzVlFYveUeNVACm
+         EfVg==
+X-Gm-Message-State: AFqh2kpqq8XCP9cAma20lF/muhQikLTDKpPhhrIB6Xa6JY+FUFRnXIli
+        cKcSezj7//Wfxe+S88Nf8/8=
+X-Google-Smtp-Source: AMrXdXtUad5hl7ZOl9UXVloqy7j6PWCKu/ZMFD6gqQL0tgcps/jMqaqTbPJLWIK/tg104jkCtsw5EA==
+X-Received: by 2002:a17:902:8bc6:b0:187:16c2:d52c with SMTP id r6-20020a1709028bc600b0018716c2d52cmr23216535plo.50.1672113510189;
+        Mon, 26 Dec 2022 19:58:30 -0800 (PST)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id n16-20020a170902d2d000b00176b84eb29asm7753946plc.301.2022.12.26.19.58.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Dec 2022 19:58:29 -0800 (PST)
+Date:   Tue, 27 Dec 2022 11:58:23 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Subject: Re: [PATCHv2 net-next] sched: multicast sched extack messages
+Message-ID: <Y6ptX6Sq+F+tE+Ru@Laptop-X1>
+References: <20221221093940.2086025-1-liuhangbin@gmail.com>
+ <20221221172817.0da16ffa@kernel.org>
+ <Y6QLz7pCnle0048z@Laptop-X1>
+ <de4920b8-366b-0336-ddc2-46cb40e00dbb@kernel.org>
+ <Y6UUBJQI6tIwn9tH@Laptop-X1>
+ <CAM0EoMndCfTkTBhG4VJKCmZG3c58eLRai71KzHG-FfzyzSwbew@mail.gmail.com>
 MIME-Version: 1.0
-References: <20221226074908.8154-1-jasowang@redhat.com> <20221226074908.8154-3-jasowang@redhat.com>
- <20221226183604-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20221226183604-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 27 Dec 2022 11:51:02 +0800
-Message-ID: <CACGkMEuv9+o4anxnE8xewEaFj5Sc+bn4OFDrHYR6jyxb+3ApGw@mail.gmail.com>
-Subject: Re: [PATCH 2/4] virtio_ring: switch to use BAD_RING()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        maxime.coquelin@redhat.com, alvaro.karsz@solid-run.com,
-        eperezma@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM0EoMndCfTkTBhG4VJKCmZG3c58eLRai71KzHG-FfzyzSwbew@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,72 +81,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 27, 2022 at 7:36 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Dec 26, 2022 at 03:49:06PM +0800, Jason Wang wrote:
-> > Switch to reuse BAD_RING() to allow common logic to be implemented in
-> > BAD_RING().
-> >
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> > Changes since V1:
-> > - switch to use BAD_RING in virtio_break_device()
-> > ---
-> >  drivers/virtio/virtio_ring.c | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index 2e7689bb933b..5cfb2fa8abee 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -58,7 +58,8 @@
-> >       do {                                                    \
-> >               dev_err(&_vq->vq.vdev->dev,                     \
-> >                       "%s:"fmt, (_vq)->vq.name, ##args);      \
-> > -             (_vq)->broken = true;                           \
-> > +             /* Pairs with READ_ONCE() in virtqueue_is_broken(). */ \
->
-> I don't think WRITE_ONCE/READ_ONCE pair as such. Can you point
-> me at documentation of such pairing?
+Hi Jamal,
+On Mon, Dec 26, 2022 at 11:31:24AM -0500, Jamal Hadi Salim wrote:
+> My only concern is this is not generic enough i.e can other objects
+> outside of filters do this?
+> You are still doing it only for the filter (in tfilter_set_nl_ext() -
+> sitting in cls_api)
+> As i mentioned earlier, actions can also be offloaded independently;
+> would this work with actions extack?
+> If it wont work then perhaps we should go the avenue of using
+> per-object(in this case filter) specific attributes
+> to carry the extack as suggested by Jakub earlier.
 
-Introduced by:
+Yes, I think we can do it on action objects, e.g. call tfilter_set_nl_ext()
+in tca_get_fill:
 
-commit 60f0779862e4ab943810187752c462e85f5fa371
-Author: Parav Pandit <parav@nvidia.com>
-Date:   Wed Jul 21 17:26:45 2021 +0300
+tcf_add_notify() - tca_get_fill()
 
-    virtio: Improve vq->broken access to avoid any compiler optimization
+I will rename tfilter_set_nl_ext() to tc_set_nl_ext(). BTW, should we also
+do it in qdisc/ class?
 
-I think it might still apply here since virtqueue_is_broken() is still
-put into a loop inside wait_event().
+tclass_notify() - tc_fill_tclass()
+qdisc_notify() - tc_fill_qdisc()
 
 Thanks
-
->
-> > +             WRITE_ONCE((_vq)->broken, true);                       \
-> >       } while (0)
-> >  #define START_USE(vq)
-> >  #define END_USE(vq)
-> > @@ -2237,7 +2238,7 @@ bool virtqueue_notify(struct virtqueue *_vq)
-> >
-> >       /* Prod other side to tell it about changes. */
-> >       if (!vq->notify(_vq)) {
-> > -             vq->broken = true;
-> > +             BAD_RING(vq, "vq %d is broken\n", vq->vq.index);
-> >               return false;
-> >       }
-> >       return true;
-> > @@ -2786,8 +2787,7 @@ void virtio_break_device(struct virtio_device *dev)
-> >       list_for_each_entry(_vq, &dev->vqs, list) {
-> >               struct vring_virtqueue *vq = to_vvq(_vq);
-> >
-> > -             /* Pairs with READ_ONCE() in virtqueue_is_broken(). */
-> > -             WRITE_ONCE(vq->broken, true);
-> > +             BAD_RING(vq, "Device break vq %d", _vq->index);
-> >       }
-> >       spin_unlock(&dev->vqs_list_lock);
-> >  }
-> > --
-> > 2.25.1
->
-
+Hangbin
