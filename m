@@ -2,177 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B516567F1
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 08:48:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD746567F4
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 08:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiL0Hsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 02:48:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
+        id S230075AbiL0Htf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 02:49:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiL0Hse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 02:48:34 -0500
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132D2E1A;
-        Mon, 26 Dec 2022 23:48:29 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id B471C24E2B2;
-        Tue, 27 Dec 2022 15:48:21 +0800 (CST)
-Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 27 Dec
- 2022 15:48:21 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
- (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 27 Dec
- 2022 15:48:20 +0800
-Message-ID: <25fce6e7-604e-6c07-3ff1-b65a5115a491@starfivetech.com>
-Date:   Tue, 27 Dec 2022 15:48:18 +0800
+        with ESMTP id S229564AbiL0Hte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 02:49:34 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2FAE26
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 23:49:33 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id j1so2791057uan.1
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 23:49:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=W5to3Z4Sn21mWEIZEJGvSoWUEuZOvMtlIkM4pTNXTa4=;
+        b=athKvejDkz6WSCUOqN63r4RkPc7PljBcdn1pqKggjZSE8/UMue7d69Hl0+z0dS1T14
+         TMhEMq/PWya4AXj39g9+GOrmLL/6PF0RM4WrxXttFOwovqpHxNQYtyH4IboGtbgLeNqV
+         SXdXhdL07fADUCEVkrw4TPoqd61my8VqkLH8JoelYHKVxjoTN/wxYvv/ArhTnhs9dRHG
+         k5aaZcuYrmlAQmcwMjLycR0ZuNHCCCf3taivtDVAZ5oAdkOHU0A1//IUelvkKEKIWYYa
+         jNK5gRLbWE3DV++L1ZnaRG6YpOx9jMjvsaOPkoQD+v6pnSzOtW7vFH5SC2hG7hXGo4AN
+         ec2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W5to3Z4Sn21mWEIZEJGvSoWUEuZOvMtlIkM4pTNXTa4=;
+        b=S8YMykex8YYcsXcaU0zovtXebP6caG4K8wSCGtlP6dcQ9A4Nunaq07GE7r+DLAMLyQ
+         Go55EC5xQg1KOqZqoJPhPgsYRx0ErTcRWwztOjCoainr3tbAPf3KHW7bmC7AQb+1/Uog
+         1HDh0Gc8tRZ9Tkg3CH+wKY+iLYy3HoSYpRSdCZiWO58USrKtlAAOl+oCq+SmDh5myU4m
+         l5BspMdPb45yjs5+1F8c1Aa5oT+WU+pzdjRfolVUlNOHRoVKa6kT48lWqkVGmnlm7faq
+         3v3OaomAtfzyjVnfZKmJQKK0EimdHWQ4dA54nZr/hCXk7MBjB6b3+lzulu4EoIwX7Zek
+         9zUw==
+X-Gm-Message-State: AFqh2kpfuVGCmlN9aFoVjdxTwDsoSDYtwJKNyfuaVRc09HqGxykKIHh0
+        L2jRh8YvzRLvXAx7kRZpC7BscnZmYW9haLI60PPS6g==
+X-Google-Smtp-Source: AMrXdXusNUsGQL0Ne/cKnzjlrEkV3MuC9iimVicFSzsdURbLbmAJZHBO2efWxuvY91KyNogPqzmtu2qQDpJ5tYpw3H8=
+X-Received: by 2002:ab0:2eb7:0:b0:43a:243f:35b7 with SMTP id
+ y23-20020ab02eb7000000b0043a243f35b7mr2032126uay.101.1672127372773; Mon, 26
+ Dec 2022 23:49:32 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 2/9] dt-bindings: net: snps,dwmac: Update the maxitems
- number of resets and reset-names
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
- <20221216070632.11444-3-yanhong.wang@starfivetech.com>
- <040b56b1-c65c-34c3-e4a1-5cae4428d1d2@linaro.org>
- <7f4339df-6616-120f-f16a-cd38a2b6ea1d@starfivetech.com>
- <1a696768-45ef-0144-07f3-d356af9659e5@linaro.org>
-Content-Language: en-US
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <1a696768-45ef-0144-07f3-d356af9659e5@linaro.org>
+References: <20221227022528.609839-1-mie@igel.co.jp> <20221227022528.609839-5-mie@igel.co.jp>
+ <20221227020007-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221227020007-mutt-send-email-mst@kernel.org>
+From:   Shunsuke Mie <mie@igel.co.jp>
+Date:   Tue, 27 Dec 2022 16:49:21 +0900
+Message-ID: <CANXvt5pRy-i7=_ikNkZPp2HcRmWZYNJYpjO_ieBJJVc90nds+A@mail.gmail.com>
+Subject: Re: [RFC PATCH 4/9] vringh: unify the APIs for all accessors
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Rusty Russell <rusty@rustcorp.com.au>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX173.cuchost.com
- (172.16.6.93)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2022=E5=B9=B412=E6=9C=8827=E6=97=A5(=E7=81=AB) 16:04 Michael S. Tsirkin <ms=
+t@redhat.com>:
+>
+> On Tue, Dec 27, 2022 at 11:25:26AM +0900, Shunsuke Mie wrote:
+> > Each vringh memory accessors that are for user, kern and iotlb has own
+> > interfaces that calls common code. But some codes are duplicated and th=
+at
+> > becomes loss extendability.
+> >
+> > Introduce a struct vringh_ops and provide a common APIs for all accesso=
+rs.
+> > It can bee easily extended vringh code for new memory accessor and
+> > simplified a caller code.
+> >
+> > Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+> > ---
+> >  drivers/vhost/vringh.c | 667 +++++++++++------------------------------
+> >  include/linux/vringh.h | 100 +++---
+> >  2 files changed, 225 insertions(+), 542 deletions(-)
+> >
+> > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > index aa3cd27d2384..ebfd3644a1a3 100644
+> > --- a/drivers/vhost/vringh.c
+> > +++ b/drivers/vhost/vringh.c
+> > @@ -35,15 +35,12 @@ static __printf(1,2) __cold void vringh_bad(const c=
+har *fmt, ...)
+> >  }
+> >
+> >  /* Returns vring->num if empty, -ve on error. */
+> > -static inline int __vringh_get_head(const struct vringh *vrh,
+> > -                                 int (*getu16)(const struct vringh *vr=
+h,
+> > -                                               u16 *val, const __virti=
+o16 *p),
+> > -                                 u16 *last_avail_idx)
+> > +static inline int __vringh_get_head(const struct vringh *vrh, u16 *las=
+t_avail_idx)
+> >  {
+> >       u16 avail_idx, i, head;
+> >       int err;
+> >
+> > -     err =3D getu16(vrh, &avail_idx, &vrh->vring.avail->idx);
+> > +     err =3D vrh->ops.getu16(vrh, &avail_idx, &vrh->vring.avail->idx);
+> >       if (err) {
+> >               vringh_bad("Failed to access avail idx at %p",
+> >                          &vrh->vring.avail->idx);
+>
+> I like that this patch removes more lines of code than it adds.
+>
+> However one of the design points of vringh abstractions is that they were
+> carefully written to be very low overhead.
+> This is why we are passing function pointers to inline functions -
+> compiler can optimize that out.
+>
+> I think that introducing ops indirect functions calls here is going to br=
+eak
+> these assumptions and hurt performance.
+> Unless compiler can somehow figure it out and optimize?
+> I don't see how it's possible with ops pointer in memory
+> but maybe I'm wrong.
+I think your concern is correct. I have to understand the compiler
+optimization and redesign this approach If it is needed.
+> Was any effort taken to test effect of these patches on performance?
+I just tested vringh_test and already faced little performance reduction.
+I have to investigate that, as you said.
 
-
-On 2022/12/20 17:21, Krzysztof Kozlowski wrote:
-> On 20/12/2022 07:48, yanhong wang wrote:
-> 
->>>> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->>>> index e26c3e76ebb7..7870228b4cd3 100644
->>>> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->>>> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->>>> @@ -133,12 +133,19 @@ properties:
->>>>          - ptp_ref
->>>>  
->>>>    resets:
->>>> -    maxItems: 1
->>>> -    description:
->>>> -      MAC Reset signal.
->>>> +    minItems: 1
->>>> +    maxItems: 3
->>>> +    additionalItems: true
->>>> +    items:
->>>> +      - description: MAC Reset signal
->>>>  
->>>>    reset-names:
->>>> -    const: stmmaceth
->>>> +    minItems: 1
->>>> +    maxItems: 3
->>>> +    additionalItems: true
->>>> +    contains:
->>>> +      enum:
->>>> +        - stmmaceth
->>>
->>> No, this is highly unspecific and you know affect all the schemas using
->>> snps,dwmac.yaml. Both lists must be specific - for your device and for
->>> others.
->>>
->> 
->> I have tried to define the resets in "starfive,jh71x0-dwmac.yaml", but it can not over-write the maxItems limit in "snps,dwmac.yaml",therefore, it will report error "reset-names: ['stmmaceth', 'ahb'] is too long"  running "make dt_binding_check". Do you have any suggestions to deal with this situation?
-> 
-> The solution is not to affect all schemas with allowing anything as reset.
-> 
-> If you need more items for your case, you can change snps,dwmac.yaml and
-> add constraints in allOf:if:then: allowing it only for your compatible.
-> There are plenty of examples how this is done, e.g.:
-> 
-> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L57
-> 
-
-Thanks. Refer to the definition in the example and update the definition as follows:
-
-snps,dwmac.yaml[Partial Content]:
-
-properties:
-  resets:
-    maxItems: 1
-    description:
-      MAC Reset signal.
-
-  reset-names:
-    const: stmmaceth
-
-allOf:
-  - if:
-      properties:
-        compatible:
-          contains:
-            const: starfive,jh7110-dwmac
-
-    then:
-      properties:
-        resets:
-          minItems: 2
-          maxItems: 2
-        reset-names:
-          items:
-            - const: stmmaceth
-            - const: ahb
-      required:
-        - resets
-        - reset-names
-
-
-starfive,jh7110-dwmac.yaml[Partial Content]:
-
-properties:
-  resets:
-    items:
-      - description: MAC Reset signal.
-      - description: AHB Reset signal.
-
-  reset-names:
-    items:
-      - const: stmmaceth
-      - const: ahb
-
-allOf:
-  - $ref: snps,dwmac.yaml#
-
-It will also report error "reset-names: ['stmmaceth', 'ahb'] is too long"  running "make dt_binding_check" with 'starfive,jh7110-dwmac.yaml'. Do you have any better suggestions to solve this problem?
-
->> 
->>> Best regards,
->>> Krzysztof
->>>
-> 
-> Best regards,
-> Krzysztof
-> 
+Thank you for your comments.
+> Thanks!
+>
+>
+Best,
+Shunsuke.
