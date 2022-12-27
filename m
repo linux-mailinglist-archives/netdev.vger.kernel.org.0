@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E76CA6570C8
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 00:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 869AB6570C5
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 00:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbiL0XIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 18:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45142 "EHLO
+        id S230037AbiL0XIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 18:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbiL0XHn (ORCPT
+        with ESMTP id S232165AbiL0XHn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 18:07:43 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AE8EAE;
-        Tue, 27 Dec 2022 15:07:27 -0800 (PST)
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C22F8FC1;
+        Tue, 27 Dec 2022 15:07:28 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 7D1BB4E;
-        Wed, 28 Dec 2022 00:07:24 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 0BF7A1691;
+        Wed, 28 Dec 2022 00:07:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1672182444;
+        t=1672182446;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TRJcRR333rwL5PCfo8eZYRyTNn3aczY+GklZvIg5sSY=;
-        b=vJobZ7uDgnBqcNJVTD+NPckdxu2oXipLrsPAfDHIbxJVB7iXrJ+CCWCM2NW4C8aSNqcrze
-        F8wDuIHwX3neVjiVJNlstpEHQKiE8URJHm/R55y7XiUwSEWFAgqRFGbXiwF9Pc88e5spVy
-        Dq4tXerL6Ow30zNemsGELDLpeCwlrzTyRFzmBHz/RJA6erZC8YsOXeoXslP65xPEcKgxSQ
-        PqwetYkhuKiDfzBhImFPYs4hkccDs2X3vxrv4NiUyh/vtFp69bvyn72JJ2ib9HH9oAIqMh
-        LNR+6019sVyujch6Kn+bs3fEJKJJhp+aPSQNj++BQOBQbEtXiq+WsgKW7TqS8g==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2bhgExHn/ar4TfzsxVA1DWmb/VXmvJMEz1zy1qxzkSM=;
+        b=0BRwE3+CnQZBCkueooc1hgIlxrIo0V225AOr2XwrlQzWPJ8ugeR1BDPDeamA7dPiMF3K0L
+        /X/SEQZVotNLcfcLXxD1873LIdC8taHCSWHIMC9YVTfIX5Au7z9DL3sBb1cDeTF2Thcc8M
+        B3SV0iGKSP1k6BI8a6CExi7RIQd1FG5nCKzmcuFPl4PPV7ByXGS+uxrwK5bDgV4RjZNHuT
+        7RTutdIP9lS65jHnOHgKOLG+AXCjTl33MypfVk5RqDVfFPu2kPRF88yPMC197dzrpcyuUY
+        F/JvMQfaw1Yr77z2UPiPI6otSBkWBFJujTj7u/s3/ZDIwLsZ+yJa/CSAO26xxw==
 From:   Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 00/12] net: mdio: Start separating C22 and C45
-Date:   Wed, 28 Dec 2022 00:07:17 +0100
-Message-Id: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
+Date:   Wed, 28 Dec 2022 00:07:18 +0100
+Subject: [PATCH RFC net-next v2 02/12] net: pcs: pcs-xpcs: Use C45 MDIO API
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAKV6q2MC/x2NQQrCMBBFr1Jm7UAzpi24FTyAW3ExjVObhbHMh
- FIovbuJy/c+j7+DiUYxuDQ7qKzR4jcVoFMDYeb0FoyvwkAtkSMacO2RUIPD4Ds0WUQ5lwa78zT0
- 5H3L7KDUI5vgqJzCXPsPWxatw6Iyxe1/+YD77VpdkoxJtgzP4/gBxbsN8ZMAAAA=
+Message-Id: <20221227-v6-2-rc1-c45-seperation-v2-2-ddb37710e5a7@walle.cc>
+References: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
+In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
@@ -75,86 +75,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've picked this older series from Andrew up and rebased it onto
-v6.2-rc1.
+From: Andrew Lunn <andrew@lunn.ch>
 
-This patch set starts the separation of C22 and C45 MDIO bus
-transactions at the API level to the MDIO Bus drivers. C45 read and
-write ops are added to the MDIO bus driver structure, and the MDIO
-core will try to use these ops if requested to perform a C45
-transfer. If not available a fallback to the older API is made, to
-allow backwards compatibility until all drivers are converted.
+Convert the PCS-XPCS driver to make use of the C45 MDIO bus API for
+modify_change().
 
-A few drivers are then converted to this new API.
-
-Link to v1: https://lore.kernel.org/netdev/20220508153049.427227-1-andrew@lunn.ch/
-
-To: Heiner Kallweit <hkallweit1@gmail.com>
-To: Russell King <linux@armlinux.org.uk>
-To: "David S. Miller" <davem@davemloft.net>
-To: Eric Dumazet <edumazet@google.com>
-To: Jakub Kicinski <kuba@kernel.org>
-To: Paolo Abeni <pabeni@redhat.com>
-To: Jose Abreu <Jose.Abreu@synopsys.com>
-To: Sergey Shtylyov <s.shtylyov@omp.ru>
-To: Wei Fang <wei.fang@nxp.com>
-To: Shenwei Wang <shenwei.wang@nxp.com>
-To: Clark Wang <xiaoning.wang@nxp.com>
-To: NXP Linux Team <linux-imx@nxp.com>
-To: Sean Wang <sean.wang@mediatek.com>
-To: Landen Chao <Landen.Chao@mediatek.com>
-To: DENG Qingfang <dqfext@gmail.com>
-To: Florian Fainelli <f.fainelli@gmail.com>
-To: Vladimir Oltean <olteanv@gmail.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-Andrew Lunn (12):
-      net: mdio: Add dedicated C45 API to MDIO bus drivers
-      net: pcs: pcs-xpcs: Use C45 MDIO API
-      net: mdio: mdiobus_register: update validation test
-      net: mdio: C22 is now optional, EOPNOTSUPP if not provided
-      net: mdio: Move mdiobus_c45_addr() next to users
-      net: mdio: mdio-bitbang: Separate C22 and C45 transactions
-      net: mdio: mvmdio: Convert XSMI bus to new API
-      net: ethernet: freescale: xgmac: Separate C22 and C45 transactions for xgmac
-      net: ethernet: freescale: fec: Separate C22 and C45 transactions for xgmac
-      net: mdio: add mdiobus_c45_read/write_nested helpers
-      net: dsa: Separate C22 and C45 MDIO bus transaction methods
-      net: dsa: mv88e6xxx: Separate C22 and C45 transactions
-
- drivers/net/dsa/mt7530.c                    |  87 ++++-----
- drivers/net/dsa/mt7530.h                    |  15 +-
- drivers/net/dsa/mv88e6xxx/chip.c            | 175 +++++++++++++-----
- drivers/net/dsa/mv88e6xxx/chip.h            |   7 +
- drivers/net/dsa/mv88e6xxx/global2.c         |  66 ++++---
- drivers/net/dsa/mv88e6xxx/global2.h         |  18 +-
- drivers/net/dsa/mv88e6xxx/phy.c             |  32 ++++
- drivers/net/dsa/mv88e6xxx/phy.h             |   4 +
- drivers/net/dsa/mv88e6xxx/serdes.c          |   8 +-
- drivers/net/ethernet/freescale/fec_main.c   | 153 +++++++++++-----
- drivers/net/ethernet/freescale/xgmac_mdio.c | 150 +++++++++++----
- drivers/net/ethernet/marvell/mvmdio.c       |  24 +--
- drivers/net/ethernet/renesas/sh_eth.c       |  37 +++-
- drivers/net/mdio/mdio-bitbang.c             |  77 +++++---
- drivers/net/pcs/pcs-xpcs.c                  |   4 +-
- drivers/net/phy/mdio_bus.c                  | 273 +++++++++++++++++++++++++++-
- include/linux/mdio-bitbang.h                |   6 +-
- include/linux/mdio.h                        |  48 ++---
- include/linux/phy.h                         |   5 +
- include/net/dsa.h                           |   2 +-
- 20 files changed, 891 insertions(+), 300 deletions(-)
+v2:
+ - [al] new patch
 ---
-base-commit: 1b929c02afd37871d5afb9d498426f83432e71c2
-change-id: 20221227-v6-2-rc1-c45-seperation-53f762440aa1
+ drivers/net/pcs/pcs-xpcs.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Best regards,
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index f6a038a1d51e..bc428a816719 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -199,9 +199,7 @@ int xpcs_write(struct dw_xpcs *xpcs, int dev, u32 reg, u16 val)
+ static int xpcs_modify_changed(struct dw_xpcs *xpcs, int dev, u32 reg,
+ 			       u16 mask, u16 set)
+ {
+-	u32 reg_addr = mdiobus_c45_addr(dev, reg);
+-
+-	return mdiodev_modify_changed(xpcs->mdiodev, reg_addr, mask, set);
++	return mdiodev_c45_modify_changed(xpcs->mdiodev, dev, reg, mask, set);
+ }
+ 
+ static int xpcs_read_vendor(struct dw_xpcs *xpcs, int dev, u32 reg)
+
 -- 
-Michael Walle <michael@walle.cc>
+2.30.2
