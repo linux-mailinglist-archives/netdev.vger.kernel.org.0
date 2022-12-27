@@ -2,161 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB7586567B9
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 08:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A3F6567BB
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 08:14:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbiL0HNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 02:13:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
+        id S229766AbiL0HOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 02:14:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiL0HNG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 02:13:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220486355
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 23:12:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672125136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3xbSpmIT0V9UbrBBeK6SZDnItYFd1W/oZ/ou2OvHw7I=;
-        b=L6bSmi5RVuF8tCaBMLGJc1y6nRE9s6VcztQHnPTnUa1VoToxq0dLt9rOodYjDAljwKazdG
-        LJUeOyXPr+es1Pj99YfWCghaRlug2uKanG0c+8L6UBVtNECQYoFYLjjOC1+iSiexaZ7OBX
-        VvAbl2paeY3oyyjAW+fV/qHBEalQdc8=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-74-hD3bg12ZMPSG9JTg9Q0iMQ-1; Tue, 27 Dec 2022 02:12:14 -0500
-X-MC-Unique: hD3bg12ZMPSG9JTg9Q0iMQ-1
-Received: by mail-pg1-f200.google.com with SMTP id l63-20020a639142000000b0047942953738so6345062pge.15
-        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 23:12:14 -0800 (PST)
+        with ESMTP id S229719AbiL0HOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 02:14:04 -0500
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C668A639C
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 23:14:00 -0800 (PST)
+Received: by mail-vs1-xe30.google.com with SMTP id m2so11898200vsv.9
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 23:14:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+KQfd0qQa24pmN4jbSpJWNWeqDqVNRsi5GfHHVHb10I=;
+        b=JnDgLgH3KEZYTTFz2OogWOc6UzxCg8sWVfEVHFghkWlpxlqZqelxy06X6jxl+1Qu4U
+         5XbZ9CYTNySXfjx+Auz3LO7ziUDzSgOCEbwfyVWxcBj6aHAVy30eyInCPVqdjrDhDv5D
+         azzjNfXtFa5kF8SmRD+zMOl+khoViUXeCmhNAe9I72Wjdi9Ui5C8X9geF1uK+l4iH7Yk
+         3fd4ZsS+OZBcYdUAkNiCfqhm0ZUf8J05J/Y34snl9SUh4i+9ws7mgvc5B0ot+dCwyb9z
+         atFV+c2Hn+RKPH8wgEI+ZMKfo6h7s7HJ5APo3ZeAwVy6CrblZf3x2fXCkVo+ZEQH/TBJ
+         Ytuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3xbSpmIT0V9UbrBBeK6SZDnItYFd1W/oZ/ou2OvHw7I=;
-        b=Bb8jMVmEJ4dATyLpQ5zFvUc8NuM46pyzqHE7WVT9yFR21luzLvqVY7b0JR84uiRTVZ
-         3DWvPz8Fo0DFLRIDIQyPJ0kQSgy32ikeg9mUFzjRMTu4qNmbKLl2mq/1BSrf0ZxIZknT
-         GYjHuVm4Djcos/jwBwVTgBKEA+w7j1koFAIrnq+2ReOC7+uK0d0Tr5voHmjacmvtcrxa
-         HpQTWnIAkpVl8ixRhDmSjoow/OuQIV7DuwHd6zgZpUTZShsYAWTj63BsMP8P32RBUt4q
-         lf2BBFJsef4DQHYyoFyx898qUlo3HeD/nMk1p68A40s7273/nnS7G80A03RHkTa1/X7V
-         iYow==
-X-Gm-Message-State: AFqh2kpQ+DEgpAEzBE0W5mltL39pWOn9NS2rDnTomFETyR27HJ+Ajg9d
-        VRWBzfB6ohf/eUwnbQLz/a7uh7F09ISTsAgHqhfdvCqQfvhEefb8mLPCXDNWBLGE0XxcEBB71MQ
-        lm5Nu4C33cT8BqAks
-X-Received: by 2002:a05:6a00:1da2:b0:580:f804:d704 with SMTP id z34-20020a056a001da200b00580f804d704mr9356645pfw.28.1672125133891;
-        Mon, 26 Dec 2022 23:12:13 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsgLbeqx0NIBQBq3frQeMu1mbJ4AsJ39+9ZQ66fvH1Peg/unpM4+pVBQheDJLWWx3xNPqTTBg==
-X-Received: by 2002:a05:6a00:1da2:b0:580:f804:d704 with SMTP id z34-20020a056a001da200b00580f804d704mr9356627pfw.28.1672125133633;
-        Mon, 26 Dec 2022 23:12:13 -0800 (PST)
-Received: from [10.72.13.143] ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id y131-20020a626489000000b00574679561b4sm7869305pfb.134.2022.12.26.23.12.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Dec 2022 23:12:12 -0800 (PST)
-Message-ID: <af506b2f-698f-b3d8-8bc4-f48e2c429ce7@redhat.com>
-Date:   Tue, 27 Dec 2022 15:12:07 +0800
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+KQfd0qQa24pmN4jbSpJWNWeqDqVNRsi5GfHHVHb10I=;
+        b=ufxq3yPACbhhc8TZsGooF+1B6Jx11LQwR6mC4qWiOOqO2PS2HUqwcjS0DzrodRlvtF
+         amJmi2llqIja1IxKclYwGtqrIvCH5Wq+TzDzFYXouva4z0Gri7PwRHHDDUvFI4QnTYh1
+         9+J95nYD4HunaXbWr0L+wheWomy0PPIsAa4aIqbxRqggS6dMbsg6epWkZ/ZKBz4MbVu7
+         iNZIZEa08nsv+QNFzPmuF8dpUJzO7L0v1XpNacNHTbFkyRvGwNIjEiOm5fkzmp2TPOmu
+         tNZqPrw0dcE73H/2Tad289PT8oEjkBVdhQEf2VlZp4UvjV48GuevuFOZmCj+t8zrzDOj
+         29oQ==
+X-Gm-Message-State: AFqh2koALra0lJcIOIq1vnSHkH3F2TeLThww3ASSnJLu0ZaVEdtJJ38C
+        6W6VLH/QJiKhFBSBRfL4oTCEgeRdA4GnK4LDYxgIhA==
+X-Google-Smtp-Source: AMrXdXveVEzfaCgCX7ll10/TckFbSv+JK5mIYKf8aCht+1Noe74CJXwAERw1BZvxxJVNWvLE//EQJd/v6X6NLOza8Yc=
+X-Received: by 2002:a05:6102:14a7:b0:3b5:1126:2b62 with SMTP id
+ d39-20020a05610214a700b003b511262b62mr2182450vsv.51.1672125239853; Mon, 26
+ Dec 2022 23:13:59 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH v2 6/9] virtio_net: transmit the multi-buffer xdp
-Content-Language: en-US
-To:     Heng Qi <hengqi@linux.alibaba.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20221220141449.115918-1-hengqi@linux.alibaba.com>
- <20221220141449.115918-7-hengqi@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20221220141449.115918-7-hengqi@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221227022528.609839-1-mie@igel.co.jp> <20221227022528.609839-3-mie@igel.co.jp>
+ <CACGkMEtAaYpuZtS0gx_m931nFzcvqSNK9BhvUZH_tZXTzjgQCg@mail.gmail.com> <20221227020425-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221227020425-mutt-send-email-mst@kernel.org>
+From:   Shunsuke Mie <mie@igel.co.jp>
+Date:   Tue, 27 Dec 2022 16:13:49 +0900
+Message-ID: <CANXvt5pXkS=TTOU0+Lkx6CjcV7xvDHRS6FbFikJ4Ww8832sg8g@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/9] vringh: remove vringh_iov and unite to vringh_kiov
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Rusty Russell <rusty@rustcorp.com.au>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-在 2022/12/20 22:14, Heng Qi 写道:
-> This serves as the basis for XDP_TX and XDP_REDIRECT
-> to send a multi-buffer xdp_frame.
+2022=E5=B9=B412=E6=9C=8827=E6=97=A5(=E7=81=AB) 16:05 Michael S. Tsirkin <ms=
+t@redhat.com>:
 >
-> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->   drivers/net/virtio_net.c | 27 ++++++++++++++++++++++-----
->   1 file changed, 22 insertions(+), 5 deletions(-)
+> On Tue, Dec 27, 2022 at 02:04:03PM +0800, Jason Wang wrote:
+> > On Tue, Dec 27, 2022 at 10:25 AM Shunsuke Mie <mie@igel.co.jp> wrote:
+> > >
+> > > struct vringh_iov is defined to hold userland addresses. However, to =
+use
+> > > common function, __vring_iov, finally the vringh_iov converts to the
+> > > vringh_kiov with simple cast. It includes compile time check code to =
+make
+> > > sure it can be cast correctly.
+> > >
+> > > To simplify the code, this patch removes the struct vringh_iov and un=
+ifies
+> > > APIs to struct vringh_kiov.
+> > >
+> > > Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+> >
+> > While at this, I wonder if we need to go further, that is, switch to
+> > using an iov iterator instead of a vringh customized one.
+> >
+> > Thanks
 >
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 40bc58fa57f5..9f31bfa7f9a6 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -563,22 +563,39 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
->   				   struct xdp_frame *xdpf)
->   {
->   	struct virtio_net_hdr_mrg_rxbuf *hdr;
-> -	int err;
-> +	struct skb_shared_info *shinfo;
-> +	u8 nr_frags = 0;
-> +	int err, i;
->   
->   	if (unlikely(xdpf->headroom < vi->hdr_len))
->   		return -EOVERFLOW;
->   
-> -	/* Make room for virtqueue hdr (also change xdpf->headroom?) */
-> +	if (unlikely(xdp_frame_has_frags(xdpf))) {
-> +		shinfo = xdp_get_shared_info_from_frame(xdpf);
-> +		nr_frags = shinfo->nr_frags;
-> +	}
-> +
-> +	/* Need to adjust this to calculate the correct postion
-> +	 * for shinfo of the xdpf.
-> +	 */
-> +	xdpf->headroom -= vi->hdr_len;
+> Possibly, but when doing changes like this one needs to be careful
+> to avoid breaking all the inlining tricks vringh relies on for
+> performance.
+Definitely, I'm evaluating the performance using vringh_test. I'll add a
+result of the evaluation. But, If there are other evaluation methods, could=
+ you
+please tell me?
+> --
+> MST
+>
 
-
-Any reason we need to do this here? (Or if it is, is it only needed for 
-multibuffer XDP?)
-
-Other looks good.
-
-Thanks
-
-
->   	xdpf->data -= vi->hdr_len;
->   	/* Zero header and leave csum up to XDP layers */
->   	hdr = xdpf->data;
->   	memset(hdr, 0, vi->hdr_len);
->   	xdpf->len   += vi->hdr_len;
->   
-> -	sg_init_one(sq->sg, xdpf->data, xdpf->len);
-> +	sg_init_table(sq->sg, nr_frags + 1);
-> +	sg_set_buf(sq->sg, xdpf->data, xdpf->len);
-> +	for (i = 0; i < nr_frags; i++) {
-> +		skb_frag_t *frag = &shinfo->frags[i];
-> +
-> +		sg_set_page(&sq->sg[i + 1], skb_frag_page(frag),
-> +			    skb_frag_size(frag), skb_frag_off(frag));
-> +	}
->   
-> -	err = virtqueue_add_outbuf(sq->vq, sq->sg, 1, xdp_to_ptr(xdpf),
-> -				   GFP_ATOMIC);
-> +	err = virtqueue_add_outbuf(sq->vq, sq->sg, nr_frags + 1,
-> +				   xdp_to_ptr(xdpf), GFP_ATOMIC);
->   	if (unlikely(err))
->   		return -ENOSPC; /* Caller handle free/refcnt */
->   
-
+Best,
+Shunsuke
