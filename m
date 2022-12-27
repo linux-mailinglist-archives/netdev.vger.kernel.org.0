@@ -2,146 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 597376566AF
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 03:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3EA56566B1
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 03:25:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232504AbiL0CZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Dec 2022 21:25:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51846 "EHLO
+        id S232574AbiL0CZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Dec 2022 21:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbiL0CZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 21:25:06 -0500
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E64266C;
-        Mon, 26 Dec 2022 18:25:03 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VYBb5xz_1672107900;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VYBb5xz_1672107900)
-          by smtp.aliyun-inc.com;
-          Tue, 27 Dec 2022 10:25:00 +0800
-Message-ID: <1672107557.0142956-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH 4/4] virtio-net: sleep instead of busy waiting for cvq command
-Date:   Tue, 27 Dec 2022 10:19:17 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, eperezma@redhat.com,
-        edumazet@google.com, maxime.coquelin@redhat.com, kuba@kernel.org,
-        pabeni@redhat.com, davem@davemloft.net, mst@redhat.com,
-        jasowang@redhat.com
-References: <20221226074908.8154-1-jasowang@redhat.com>
- <20221226074908.8154-5-jasowang@redhat.com>
-In-Reply-To: <20221226074908.8154-5-jasowang@redhat.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232361AbiL0CZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Dec 2022 21:25:38 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328762707
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 18:25:37 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id gv5-20020a17090b11c500b00223f01c73c3so13400961pjb.0
+        for <netdev@vger.kernel.org>; Mon, 26 Dec 2022 18:25:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=XVIHb2xUd8sujupspgAGNpJyN016wzYVPc2YpZ2bDag=;
+        b=R7ffvjAvcrMZ1p1LMq+Euj4OlP/yRK1ztz7vAX2mfWZWhLy4PKsT3r/kZpWE/KmBW8
+         maRBuG+idbhR+rPlrNYg6m/KIUBBeIiRdWAHBURPpw5pUMX91PKiIOQccdwuVyH4q+Ml
+         6ASi7GlNpP43gmoUHjJI4V3NFPlkslPkD5Cz6UBuNwjvUlQ1G/K4L9ZLvq52lMix9WkY
+         OUcgrLgcnRiUM6cAiL4n7VLLFeWFn9MOVo/8H6PJgYat7bIGpdd/wOgkYPMUh8g/DxgQ
+         MU2sirbyrMZeyH88qpXiYAtSh7EzDwFJwE7Y/TVUcS1n5+wW7Y7jddzCrcvUAU1l7nl/
+         KtLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XVIHb2xUd8sujupspgAGNpJyN016wzYVPc2YpZ2bDag=;
+        b=i1bTxL7Phr6NVz8rkkJTrdTWpmoTEKPtBM1u6OnM0lHWDn8l+XHayg2GqSvy/PfAcJ
+         ETUzcn2JJA8zmlBFpfertWzHOOBRQyFuTLSeERHWNQb7C8Igo4atM30e0hy/fXyUtADQ
+         LNV+lr4rbrEn5i3QTp0UUD/5fs9HZIwcCzzg7nO7f2CrCouYefV/w5mEjVDX64Y0lmYT
+         TMSK7ogL6usk42OtB7UXkoue54SlaJjt10BX1xZlHDQz372AQxJzB5/YLTQgI0rsiZ7M
+         HoelunkOC1vxx++Sdgs1GzFXNbLNOcIQbCUGnmQamBT1yfVPxoFud+co5PkuoErLRK8l
+         XpvA==
+X-Gm-Message-State: AFqh2ko0A2csRp6k6++7hhu/Ass1u6iccMWEV4ZczGADw0FDNiEypl+L
+        0GDRCsaRJLPK2OCFru1yGxHgcsS3a2oU/Jq9tHc=
+X-Google-Smtp-Source: AMrXdXuKZS1Ph/IY6Bb5WWpBVaf6Yu1Vdz30CYa7Nf5FAmFaa4UtKH4qrnegeQAYBuEW0rq2BEA3bg==
+X-Received: by 2002:a17:902:b418:b0:191:1fc4:5c14 with SMTP id x24-20020a170902b41800b001911fc45c14mr20844566plr.49.1672107936658;
+        Mon, 26 Dec 2022 18:25:36 -0800 (PST)
+Received: from tyrell.hq.igel.co.jp (napt.igel.co.jp. [219.106.231.132])
+        by smtp.gmail.com with ESMTPSA id w15-20020a1709026f0f00b001870dc3b4c0sm2465014plk.74.2022.12.26.18.25.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Dec 2022 18:25:36 -0800 (PST)
+From:   Shunsuke Mie <mie@igel.co.jp>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Rusty Russell <rusty@rustcorp.com.au>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shunsuke Mie <mie@igel.co.jp>
+Subject: [RFC PATCH 0/6] Introduce a vringh accessor for IO memory
+Date:   Tue, 27 Dec 2022 11:25:22 +0900
+Message-Id: <20221227022528.609839-1-mie@igel.co.jp>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Dec 2022 15:49:08 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> We used to busy waiting on the cvq command this tends to be
-> problematic since:
->
-> 1) CPU could wait for ever on a buggy/malicous device
-> 2) There's no wait to terminate the process that triggers the cvq
->    command
->
-> So this patch switch to use virtqueue_wait_for_used() to sleep with a
-> timeout (1s) instead of busy polling for the cvq command forever. This
+Vringh is a host-side implementation of virtio rings, and supports the
+vring located on three kinds of memories, userspace, kernel space and a
+space translated iotlb.
 
-I don't think that a fixed 1S is a good choice. Some of the DPUs are very
-lazy for cvq handle. In particular, we will also directly break the device.
+The goal of this patchset is to refactor vringh and introduce a new vringh
+accessor for the vring located on the io memory region. The io memory
+accessor (iomem) is used by a driver that is not published yet, but I'm
+planning to publish it. Drivers affected by these changes are not included
+in this patchset. e.g. caif_virtio and vdpa (sim_net, sim_blk and net/mlx5)
+drivers.
 
-I think it is necessary to add a Virtio-Net parameter to allow users to define
-this timeout by themselves. Although I don't think this is a good way.
+This patchset can separate into 3 parts:
+1. Fix and prepare some code related vringh [1, 2, 3/6]
+2. Unify the vringh APIs and change related [4, 5/6]
+3. Support IOMEM to vringh [6/6]
 
-Thanks.
+This first part is preparation for the second part which has a little fix
+and changes. A test code for vringh named vringh_test is also updated along
+with the changes. In the second part, unify the vringh API for each
+accessors that are user, kern and iotlb. The main point is struct
+vringh_ops that fill the gap between all accessors. The final part
+introduces an iomem support to vringh according to the unified API in the
+second part.
 
+Those changes are tested for the user accessor using vringh_test and kern
+and iomem using a non published driver, but I think I can add a link to a
+patchset for the driver in the next version of this patchset.
 
-> gives the scheduler a breath and can let the process can respond to
-> asignal. If the device doesn't respond in the timeout, break the
-> device.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
-> Changes since V1:
-> - break the device when timeout
-> - get buffer manually since the virtio core check more_used() instead
-> ---
->  drivers/net/virtio_net.c | 24 ++++++++++++++++--------
->  1 file changed, 16 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index efd9dd55828b..6a2ea64cfcb5 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -405,6 +405,7 @@ static void disable_rx_mode_work(struct virtnet_info *vi)
->  	vi->rx_mode_work_enabled = false;
->  	spin_unlock_bh(&vi->rx_mode_lock);
->
-> +	virtqueue_wake_up(vi->cvq);
->  	flush_work(&vi->rx_mode_work);
->  }
->
-> @@ -1497,6 +1498,11 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
->  	return !oom;
->  }
->
-> +static void virtnet_cvq_done(struct virtqueue *cvq)
-> +{
-> +	virtqueue_wake_up(cvq);
-> +}
-> +
->  static void skb_recv_done(struct virtqueue *rvq)
->  {
->  	struct virtnet_info *vi = rvq->vdev->priv;
-> @@ -1984,6 +1990,8 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
->  	return err;
->  }
->
-> +static int virtnet_close(struct net_device *dev);
-> +
->  /*
->   * Send command via the control virtqueue and check status.  Commands
->   * supported by the hypervisor, as indicated by feature bits, should
-> @@ -2026,14 +2034,14 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
->  	if (unlikely(!virtqueue_kick(vi->cvq)))
->  		return vi->ctrl->status == VIRTIO_NET_OK;
->
-> -	/* Spin for a response, the kick causes an ioport write, trapping
-> -	 * into the hypervisor, so the request should be handled immediately.
-> -	 */
-> -	while (!virtqueue_get_buf(vi->cvq, &tmp) &&
-> -	       !virtqueue_is_broken(vi->cvq))
-> -		cpu_relax();
-> +	if (virtqueue_wait_for_used(vi->cvq)) {
-> +		virtqueue_get_buf(vi->cvq, &tmp);
-> +		return vi->ctrl->status == VIRTIO_NET_OK;
-> +	}
->
-> -	return vi->ctrl->status == VIRTIO_NET_OK;
-> +	netdev_err(vi->dev, "CVQ command timeout, break the virtio device.");
-> +	virtio_break_device(vi->vdev);
-> +	return VIRTIO_NET_ERR;
->  }
->
->  static int virtnet_set_mac_address(struct net_device *dev, void *p)
-> @@ -3526,7 +3534,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
->
->  	/* Parameters for control virtqueue, if any */
->  	if (vi->has_cvq) {
-> -		callbacks[total_vqs - 1] = NULL;
-> +		callbacks[total_vqs - 1] = virtnet_cvq_done;
->  		names[total_vqs - 1] = "control";
->  	}
->
-> --
-> 2.25.1
->
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+Shunsuke Mie (6):
+  vringh: fix a typo in comments for vringh_kiov
+  vringh: remove vringh_iov and unite to vringh_kiov
+  tools/virtio: convert to new vringh user APIs
+  vringh: unify the APIs for all accessors
+  tools/virtio: convert to use new unified vringh APIs
+  vringh: IOMEM support
+
+ drivers/vhost/Kconfig      |   6 +
+ drivers/vhost/vringh.c     | 721 ++++++++++++-------------------------
+ include/linux/vringh.h     | 147 +++-----
+ tools/virtio/vringh_test.c | 123 ++++---
+ 4 files changed, 356 insertions(+), 641 deletions(-)
+
+--
+2.25.1
+
