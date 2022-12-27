@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 741FA656DB8
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 18:52:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E305656DDB
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 19:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiL0Rw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 12:52:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        id S230240AbiL0SIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 13:08:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiL0RwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 12:52:24 -0500
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBA8C759
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 09:52:22 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id z18so7060824ils.3
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 09:52:22 -0800 (PST)
+        with ESMTP id S230194AbiL0SIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 13:08:35 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113B11010
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 10:08:35 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-45f4aef92daso193779777b3.0
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 10:08:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DjJAv8+dz5qzkt//9ChBMXUYM3gLvgUmgzPulr1q5L8=;
-        b=W9Oh1RHsibG9b5nJG2L0/G7avXFkSdVchArgZZ4h5wu33N7ck71irudkyLxayJmXeY
-         Ln1EQeyGfQJ632VOCVTZKDZiHbpkxm1K5zFfLFnhAxnkBgWio3gqfHdXZauTqE9t0Qjs
-         QsSzTuaqH7p7YzQnqcR2tKeguCIzFnIV4dSOJQVQvyeTxxtIFylTt5rmYp3QsHknV1aw
-         W1UF0f9x8bH36XJCg+86qJ9CgYnQlzvBAuMmJX9w3hOU6wp+nM59qhCJVfpqHiwQJhmC
-         Lbe70IOHCBpDkNJg8Y979NureLIk2lybRgXi4KrnJB4W1u+v3f71A1RwPjHZf7/USKkZ
-         wjPw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=cdy5lnJHEMRm8nW9P/7kpgqO464kgy8tCYbuqRo9Odw=;
+        b=Gc1zF069P6aZuWrrV4uMbl2grpDgK8qSqlicKPxb5woC+5mjIOJO3/+wdy9qLowc5D
+         YtyxYXr3yHq9Hbsaz1sYqhPtxlcKiDp/EC1nV+WOJCnPuFKIJ6HZGT2wBuH+LSOlxzL9
+         5mbj3PQE+S5kP0l0pDwg3kAcLZDa4qf2yz6mlqG6b5UYmXL/L5b7kdeaQx1AKt/x9YPC
+         9JC+ySxb9YNdbzv5hwJsSrKEyPr5LMCTTvnOoY9J7G2ZMQXkAfSyBrHS2AJPPiHucY9w
+         oWEshu2Q4W2YVbtgm45sTZFCxGlQQxbx9NP2sIsSfciDkSSMbz9BDbuqQ08T3VRz6TKX
+         r3fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=DjJAv8+dz5qzkt//9ChBMXUYM3gLvgUmgzPulr1q5L8=;
-        b=TqHewdZ5tJiHxISmgRo1PC+OFP29V6tTI//AQ5ggcxpIiPHSSGPojNEe5psBmK6oZK
-         bkw+Ejy/jZ3/iK1MPRejOiyG24XGy/lOmZcjnkjP/RP/sAz+ZEQp7On9pzqXyFg+IBn3
-         2LZn+gPQCbYgrBfKN7BxMbdMCvIMjC20DnEDJBcMAxe2vxWAFClWMFPJrk7K5XHiC8I6
-         OgZLLy+yf18HYziNxUm8VniqrO5HcEdwyUHx36UzovWgDdHr9IzBBvP9JDbHW+xF/2to
-         gCVu0DMeAQNarFuUu9IJyhll3lEnr5iWct8o9HQsn7sgnkgaNTFKtYiBb2deyBckxhKp
-         WDMA==
-X-Gm-Message-State: AFqh2kpoYGs1NTI2zTMe6wgvtcWK1hscgwUQLGFhCE4eeKgxl519WUQs
-        ySqk1kpPGTwR0DHVVPMM1A0=
-X-Google-Smtp-Source: AMrXdXvo50LS2QGR/NU5M5RNinqflT+zGyl73s2OP2xjAhM5T2/lxRGKGbvm/EA0dTkDfAv7w/NbZg==
-X-Received: by 2002:a92:6511:0:b0:303:5f4c:a8f8 with SMTP id z17-20020a926511000000b003035f4ca8f8mr14124415ilb.29.1672163542190;
-        Tue, 27 Dec 2022 09:52:22 -0800 (PST)
-Received: from fedora.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
-        by smtp.gmail.com with ESMTPSA id c37-20020a029628000000b00389de6759b8sm4519266jai.162.2022.12.27.09.52.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 09:52:21 -0800 (PST)
-From:   Maxim Georgiev <glipus@gmail.com>
-To:     mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, glipus@gmail.com
-Subject: [PATCH ethtool-next] JSON output support for Netlink implementation of --show-ring option
-Date:   Tue, 27 Dec 2022 10:52:21 -0700
-Message-Id: <20221227175221.7762-1-glipus@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        bh=cdy5lnJHEMRm8nW9P/7kpgqO464kgy8tCYbuqRo9Odw=;
+        b=CgCIWFtJuQpQK2Gdetmh5Htq7s1TI5ZfVazPixqaCU/JC2VK5Mw/tZUJIapY0dEpDd
+         5Tbp/pNDTDOaZFuKaYCrT6PMYGwoHcBa+SDXMyx+fBMJpMtbt+vXI500tBR5OdqDMTVK
+         YWbddX9Oje0j5lQfafdCUs/glyJZ7fJkNWtqv3QJh4mU+ZHzGNksM4eUxzTNUNo4Djjb
+         4VFAR68ynhCaXLFagYsdKT1Uy1cYraPXl++mt5nIAIYAsnN/VJo6oqEwMUBnK9W55dj+
+         sqmGpJVycMrBigM3K3n9NmA9FY51aDzoJ+LuXd3eDyw1oloxHUs5ePrX0x58QhHd6DUG
+         ppCw==
+X-Gm-Message-State: AFqh2krbOGs6++82t4GabtpIJ9JcUAzJ9eqLkCPfP7jjUF7/v+6US0rC
+        kLKu31IGlVTwPJvRb/Rh4PPeZn7idcgkkd0PFB4=
+X-Google-Smtp-Source: AMrXdXulnimUvSXIWBRvrWNuuLeytkBm/ecCqmxVvL7LlE35ZbHXGRQscAuVbMKpgFNl2m9iZJA81t48pl6KhKGnfx8=
+X-Received: by 2002:a0d:dc86:0:b0:3d5:ecbb:2923 with SMTP id
+ f128-20020a0ddc86000000b003d5ecbb2923mr2863353ywe.485.1672164514211; Tue, 27
+ Dec 2022 10:08:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20221226132753.44175-1-kuniyu@amazon.com> <20221226132753.44175-3-kuniyu@amazon.com>
+In-Reply-To: <20221226132753.44175-3-kuniyu@amazon.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Tue, 27 Dec 2022 10:08:22 -0800
+Message-ID: <CAJnrk1aWLfvgit5CgoctMK03LtOMc-SuGu5J=jB1LwCPCYNfiA@mail.gmail.com>
+Subject: Re: [PATCH v1 net 2/2] tcp: Add selftest for bind() and TIME_WAIT.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -67,141 +70,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add --json support for Netlink implementation of --show-ring option
-No changes for non-JSON output for this featire.
+On Mon, Dec 26, 2022 at 5:29 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> bhash2 split the bind() validation logic into wildcard and non-wildcard
+> cases.  Let's add a test to catch future regression.
+>
+> Before the previous patch:
+>
+>   # ./bind_timewait
+>   TAP version 13
+>   1..2
+>   # Starting 2 tests from 3 test cases.
+>   #  RUN           bind_timewait.localhost.1 ...
+>   # bind_timewait.c:87:1:Expected ret (0) == -1 (-1)
+>   # 1: Test terminated by assertion
+>   #          FAIL  bind_timewait.localhost.1
+>   not ok 1 bind_timewait.localhost.1
+>   #  RUN           bind_timewait.addrany.1 ...
+>   #            OK  bind_timewait.addrany.1
+>   ok 2 bind_timewait.addrany.1
+>   # FAILED: 1 / 2 tests passed.
+>   # Totals: pass:1 fail:1 xfail:0 xpass:0 skip:0 error:0
+>
+> After:
+>
+>   # ./bind_timewait
+>   TAP version 13
+>   1..2
+>   # Starting 2 tests from 3 test cases.
+>   #  RUN           bind_timewait.localhost.1 ...
+>   #            OK  bind_timewait.localhost.1
+>   ok 1 bind_timewait.localhost.1
+>   #  RUN           bind_timewait.addrany.1 ...
+>   #            OK  bind_timewait.addrany.1
+>   ok 2 bind_timewait.addrany.1
+>   # PASSED: 2 / 2 tests passed.
+>   # Totals: pass:2 fail:0 xfail:0 xpass:0 skip:0 error:0
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Example output without --json:
-[ethtool-git]$ /ethtool -g enp9s0u2u1u2
-Ring parameters for enp9s0u2u1u2:
-Pre-set maximums:
-RX:		4096
-RX Mini:	n/a
-RX Jumbo:	n/a
-TX:		n/a
-Current hardware settings:
-RX:		100
-RX Mini:	n/a
-RX Jumbo:	n/a
-TX:		n/a
-RX Buf Len:	n/a
-CQE Size:	n/a
-TX Push:	off
-TCP data split:	n/a
+Acked-by: Joanne Koong <joannelkoong@gmail.com>
 
-Same output with --json:
-[ethtool-git]$ ./ethtool --json -g enp9s0u2u1u2
-[ {
-        "ifname": "enp9s0u2u1u2",
-        "rx-max": 4096,
-        "rx": 100,
-        "tx-push": false
-    } ]
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Maxim Georgiev <glipus@gmail.com>
----
- ethtool.c       |  1 +
- netlink/rings.c | 35 +++++++++++++++++++++++++----------
- 2 files changed, 26 insertions(+), 10 deletions(-)
-
-diff --git a/ethtool.c b/ethtool.c
-index 60da8af..cf08a69 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5751,6 +5751,7 @@ static const struct option args[] = {
- 	},
- 	{
- 		.opts	= "-g|--show-ring",
-+		.json	= true,
- 		.func	= do_gring,
- 		.nlfunc	= nl_gring,
- 		.help	= "Query RX/TX ring parameters"
-diff --git a/netlink/rings.c b/netlink/rings.c
-index 5996d5a..d51ef78 100644
---- a/netlink/rings.c
-+++ b/netlink/rings.c
-@@ -21,6 +21,9 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	DECLARE_ATTR_TB_INFO(tb);
- 	struct nl_context *nlctx = data;
- 	unsigned char tcp_hds;
-+	char *tcp_hds_fmt;
-+	char *tcp_hds_key;
-+	char tcp_hds_buf[256];
- 	bool silent;
- 	int err_ret;
- 	int ret;
-@@ -34,16 +37,19 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	if (!dev_ok(nlctx))
- 		return err_ret;
- 
-+	open_json_object(NULL);
-+
- 	if (silent)
--		putchar('\n');
--	printf("Ring parameters for %s:\n", nlctx->devname);
--	printf("Pre-set maximums:\n");
-+		show_cr();
-+	print_string(PRINT_ANY, "ifname", "Ring parameters for %s:\n",
-+		     nlctx->devname);
-+	print_string(PRINT_FP, NULL, "Pre-set maximums:\n", NULL);
- 	show_u32("rx-max", "RX:\t\t", tb[ETHTOOL_A_RINGS_RX_MAX]);
- 	show_u32("rx-mini-max", "RX Mini:\t", tb[ETHTOOL_A_RINGS_RX_MINI_MAX]);
- 	show_u32("rx-jumbo-max", "RX Jumbo:\t",
- 		 tb[ETHTOOL_A_RINGS_RX_JUMBO_MAX]);
- 	show_u32("tx-max", "TX:\t\t", tb[ETHTOOL_A_RINGS_TX_MAX]);
--	printf("Current hardware settings:\n");
-+	print_string(PRINT_FP, NULL, "Current hardware settings:\n", NULL);
- 	show_u32("rx", "RX:\t\t", tb[ETHTOOL_A_RINGS_RX]);
- 	show_u32("rx-mini", "RX Mini:\t", tb[ETHTOOL_A_RINGS_RX_MINI]);
- 	show_u32("rx-jumbo", "RX Jumbo:\t", tb[ETHTOOL_A_RINGS_RX_JUMBO]);
-@@ -52,24 +58,29 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	show_u32("cqe-size", "CQE Size:\t", tb[ETHTOOL_A_RINGS_CQE_SIZE]);
- 	show_bool("tx-push", "TX Push:\t%s\n", tb[ETHTOOL_A_RINGS_TX_PUSH]);
- 
-+	tcp_hds_fmt = "TCP data split:\t%s\n";
-+	tcp_hds_key = "tcp-data-split";
- 	tcp_hds = tb[ETHTOOL_A_RINGS_TCP_DATA_SPLIT] ?
- 		mnl_attr_get_u8(tb[ETHTOOL_A_RINGS_TCP_DATA_SPLIT]) : 0;
--	printf("TCP data split:\t");
- 	switch (tcp_hds) {
- 	case ETHTOOL_TCP_DATA_SPLIT_UNKNOWN:
--		printf("n/a\n");
-+		print_string(PRINT_FP, tcp_hds_key, tcp_hds_fmt, "n/a");
- 		break;
- 	case ETHTOOL_TCP_DATA_SPLIT_DISABLED:
--		printf("off\n");
-+		print_string(PRINT_ANY, tcp_hds_key, tcp_hds_fmt, "off");
- 		break;
- 	case ETHTOOL_TCP_DATA_SPLIT_ENABLED:
--		printf("on\n");
-+		print_string(PRINT_ANY, tcp_hds_key, tcp_hds_fmt, "on");
- 		break;
- 	default:
--		printf("unknown(%d)\n", tcp_hds);
-+		snprintf(tcp_hds_buf, sizeof(tcp_hds_buf),
-+			 "unknown(%d)\n", tcp_hds);
-+		print_string(PRINT_ANY, tcp_hds_key, tcp_hds_fmt, tcp_hds_buf);
- 		break;
- 	}
- 
-+	close_json_object();
-+
- 	return MNL_CB_OK;
- }
- 
-@@ -91,7 +102,11 @@ int nl_gring(struct cmd_context *ctx)
- 				      ETHTOOL_A_RINGS_HEADER, 0);
- 	if (ret < 0)
- 		return ret;
--	return nlsock_send_get_request(nlsk, rings_reply_cb);
-+
-+	new_json_obj(ctx->json);
-+	ret = nlsock_send_get_request(nlsk, rings_reply_cb);
-+	delete_json_obj();
-+	return ret;
- }
- 
- /* RINGS_SET */
--- 
-2.38.1
-
+> ---
+>  tools/testing/selftests/net/.gitignore      |  1 +
+>  tools/testing/selftests/net/bind_timewait.c | 92 +++++++++++++++++++++
+>  2 files changed, 93 insertions(+)
+>  create mode 100644 tools/testing/selftests/net/bind_timewait.c
+>
+> diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+> index 9cc84114741d..a6911cae368c 100644
+> --- a/tools/testing/selftests/net/.gitignore
+> +++ b/tools/testing/selftests/net/.gitignore
+> @@ -1,5 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  bind_bhash
+> +bind_timewait
+>  csum
+>  cmsg_sender
+>  diag_uid
+> diff --git a/tools/testing/selftests/net/bind_timewait.c b/tools/testing/selftests/net/bind_timewait.c
+> new file mode 100644
+> index 000000000000..cb9fdf51ea59
+> --- /dev/null
+> +++ b/tools/testing/selftests/net/bind_timewait.c
+> @@ -0,0 +1,92 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright Amazon.com Inc. or its affiliates. */
+> +
+> +#include <sys/socket.h>
+> +#include <netinet/in.h>
+> +
+> +#include "../kselftest_harness.h"
+> +
+> +FIXTURE(bind_timewait)
+> +{
+> +       struct sockaddr_in addr;
+> +       socklen_t addrlen;
+> +};
+> +
+> +FIXTURE_VARIANT(bind_timewait)
+> +{
+> +       __u32 addr_const;
+> +};
+> +
+> +FIXTURE_VARIANT_ADD(bind_timewait, localhost)
+> +{
+> +       .addr_const = INADDR_LOOPBACK
+> +};
+> +
+> +FIXTURE_VARIANT_ADD(bind_timewait, addrany)
+> +{
+> +       .addr_const = INADDR_ANY
+> +};
+> +
+> +FIXTURE_SETUP(bind_timewait)
+> +{
+> +       self->addr.sin_family = AF_INET;
+> +       self->addr.sin_port = 0;
+> +       self->addr.sin_addr.s_addr = htonl(variant->addr_const);
+> +       self->addrlen = sizeof(self->addr);
+> +}
+> +
+> +FIXTURE_TEARDOWN(bind_timewait)
+> +{
+> +}
+> +
+> +void create_timewait_socket(struct __test_metadata *_metadata,
+> +                           FIXTURE_DATA(bind_timewait) *self)
+> +{
+> +       int server_fd, client_fd, child_fd, ret;
+> +       struct sockaddr_in addr;
+> +       socklen_t addrlen;
+> +
+> +       server_fd = socket(AF_INET, SOCK_STREAM, 0);
+> +       ASSERT_GT(server_fd, 0);
+> +
+> +       ret = bind(server_fd, (struct sockaddr *)&self->addr, self->addrlen);
+> +       ASSERT_EQ(ret, 0);
+> +
+> +       ret = listen(server_fd, 1);
+> +       ASSERT_EQ(ret, 0);
+> +
+> +       ret = getsockname(server_fd, (struct sockaddr *)&self->addr, &self->addrlen);
+> +       ASSERT_EQ(ret, 0);
+> +
+> +       client_fd = socket(AF_INET, SOCK_STREAM, 0);
+> +       ASSERT_GT(client_fd, 0);
+> +
+> +       ret = connect(client_fd, (struct sockaddr *)&self->addr, self->addrlen);
+> +       ASSERT_EQ(ret, 0);
+> +
+> +       addrlen = sizeof(addr);
+> +       child_fd = accept(server_fd, (struct sockaddr *)&addr, &addrlen);
+> +       ASSERT_GT(child_fd, 0);
+> +
+> +       close(child_fd);
+> +       close(client_fd);
+> +       close(server_fd);
+> +}
+> +
+> +TEST_F(bind_timewait, 1)
+> +{
+> +       int fd, ret;
+> +
+> +       create_timewait_socket(_metadata, self);
+> +
+> +       fd = socket(AF_INET, SOCK_STREAM, 0);
+> +       ASSERT_GT(fd, 0);
+> +
+> +       ret = bind(fd, (struct sockaddr *)&self->addr, self->addrlen);
+> +       ASSERT_EQ(ret, -1);
+> +       ASSERT_EQ(errno, EADDRINUSE);
+> +
+> +       close(fd);
+> +}
+> +
+> +TEST_HARNESS_MAIN
+> --
+> 2.30.2
+>
