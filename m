@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16786570D7
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 00:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5E326570D9
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 00:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232494AbiL0XIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 18:08:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44346 "EHLO
+        id S232538AbiL0XIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 18:08:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232210AbiL0XHp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 18:07:45 -0500
+        with ESMTP id S232225AbiL0XHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 18:07:46 -0500
 Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B8F766E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3067B4A3;
         Tue, 27 Dec 2022 15:07:30 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 0A70416E2;
+        by mail.3ffe.de (Postfix) with ESMTPSA id A15E416E4;
         Wed, 28 Dec 2022 00:07:28 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1672182448;
@@ -26,20 +26,19 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail20220821
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HenFeMJJHR8jOxjl7oLQQnysEHe4M2/BX8/WSa6lrOA=;
-        b=DlENZoXaTXR+4O5KCi8ja8pPuN6LAX0jrjx4eXQ8np0YGdJTAdomcUVXYvjJJtnTE9d2Ck
-        lTWUh4x+GFmWDLMwv8kjp4hTtV8UBZXZjtJ3qrbXAQfU/ytp0xKhiWa8V9qR2crFswImW0
-        6nHjUiKNfZr51h01XVNFdVxis4cNyVvbzdNP6eWKUpQ0yjtk9Ew4fHpHoxiD3UlVPy2P0A
-        +dS3RO3dwUR2KzRjqYOEmFDmqi5VjPseZdAIMxPAxsNkGnr6udgZhd3keSAks3CmqHhzLz
-        MjcNIXbDL+uxU6HAFYQvcenoVKBPi0MXlU1OdQOf8D4WQwGhB1StdM06jXZyAQ==
+        bh=Lgn0fUyj9IFSMk8AaMRWHgs4+wjSuyxk0Wk78bhVnA0=;
+        b=IG0HA2I8gt7HTMttS+b2tDKuI+ZaK9lzIPDjQBgMcPDv+Sb+AQ04m0EIUHjw0vVjK3qAfP
+        Jjc1a6hxYB7nXWgWzd4Mp/YFFEZj4pdgYbpDeRlP4y4pCCOkaHptZjaR5GoQfgoBvkPhen
+        uKC7DNiXTYMiJAJcMqpyIR2wpNjzJUvp6j7XXnTcleUDN+1nE6gepIOPcco06qgQU102HZ
+        3HyGptcDoFFK6PgavhIw+fZma1kC85QGmPShdRozl5NtLesMgWQCUwM/pMZ5NZiKwu1OHy
+        Hz2taTVz9lmvUkfLkI3tCAViCdGPkzBqusQnp0EOv8Y6i/BbkVIboWqtISCwMw==
 From:   Michael Walle <michael@walle.cc>
-Date:   Wed, 28 Dec 2022 00:07:22 +0100
-Subject: [PATCH RFC net-next v2 06/12] net: mdio: mdio-bitbang: Separate C22
- and C45 transactions
+Date:   Wed, 28 Dec 2022 00:07:23 +0100
+Subject: [PATCH RFC net-next v2 07/12] net: mdio: mvmdio: Convert XSMI bus to new API
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20221227-v6-2-rc1-c45-seperation-v2-6-ddb37710e5a7@walle.cc>
+Message-Id: <20221227-v6-2-rc1-c45-seperation-v2-7-ddb37710e5a7@walle.cc>
 References: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
 In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -78,236 +77,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-The bitbbanging bus driver can perform both C22 and C45 transfers.
-Create separate functions for each and register the C45 versions using
-the new driver API calls.
+The marvell MDIO driver supports two different hardware blocks. The
+XSMI block is C45 only. Convert this block to the new API, and only
+populate the c45 calls in the bus structure.
 
-The SH Ethernet driver places wrappers around these functions. In
-order to not break boards which might be using C45, add similar
-wrappers for C45 operations.
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/ethernet/renesas/sh_eth.c | 37 ++++++++++++++---
- drivers/net/mdio/mdio-bitbang.c       | 77 +++++++++++++++++++++++------------
- include/linux/mdio-bitbang.h          |  6 ++-
- 3 files changed, 87 insertions(+), 33 deletions(-)
+ drivers/net/ethernet/marvell/mvmdio.c | 24 ++++++++----------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-index 71a499113308..ed17163d7811 100644
---- a/drivers/net/ethernet/renesas/sh_eth.c
-+++ b/drivers/net/ethernet/renesas/sh_eth.c
-@@ -3044,23 +3044,46 @@ static int sh_mdio_release(struct sh_eth_private *mdp)
- 	return 0;
- }
- 
--static int sh_mdiobb_read(struct mii_bus *bus, int phy, int reg)
-+static int sh_mdiobb_read_c22(struct mii_bus *bus, int phy, int reg)
- {
- 	int res;
- 
- 	pm_runtime_get_sync(bus->parent);
--	res = mdiobb_read(bus, phy, reg);
-+	res = mdiobb_read_c22(bus, phy, reg);
- 	pm_runtime_put(bus->parent);
- 
- 	return res;
- }
- 
--static int sh_mdiobb_write(struct mii_bus *bus, int phy, int reg, u16 val)
-+static int sh_mdiobb_write_c22(struct mii_bus *bus, int phy, int reg, u16 val)
- {
- 	int res;
- 
- 	pm_runtime_get_sync(bus->parent);
--	res = mdiobb_write(bus, phy, reg, val);
-+	res = mdiobb_write_c22(bus, phy, reg, val);
-+	pm_runtime_put(bus->parent);
-+
-+	return res;
-+}
-+
-+static int sh_mdiobb_read_c45(struct mii_bus *bus, int phy, int devad, int reg)
-+{
-+	int res;
-+
-+	pm_runtime_get_sync(bus->parent);
-+	res = mdiobb_read_c45(bus, phy, devad, reg);
-+	pm_runtime_put(bus->parent);
-+
-+	return res;
-+}
-+
-+static int sh_mdiobb_write_c45(struct mii_bus *bus, int phy, int devad,
-+			       int reg, u16 val)
-+{
-+	int res;
-+
-+	pm_runtime_get_sync(bus->parent);
-+	res = mdiobb_write_c45(bus, phy, devad, reg, val);
- 	pm_runtime_put(bus->parent);
- 
- 	return res;
-@@ -3091,8 +3114,10 @@ static int sh_mdio_init(struct sh_eth_private *mdp,
- 		return -ENOMEM;
- 
- 	/* Wrap accessors with Runtime PM-aware ops */
--	mdp->mii_bus->read = sh_mdiobb_read;
--	mdp->mii_bus->write = sh_mdiobb_write;
-+	mdp->mii_bus->read = sh_mdiobb_read_c22;
-+	mdp->mii_bus->write = sh_mdiobb_write_c22;
-+	mdp->mii_bus->read_c45 = sh_mdiobb_read_c45;
-+	mdp->mii_bus->write_c45 = sh_mdiobb_write_c45;
- 
- 	/* Hook up MII support for ethtool */
- 	mdp->mii_bus->name = "sh_mii";
-diff --git a/drivers/net/mdio/mdio-bitbang.c b/drivers/net/mdio/mdio-bitbang.c
-index 07609114a26b..b83932562be2 100644
---- a/drivers/net/mdio/mdio-bitbang.c
-+++ b/drivers/net/mdio/mdio-bitbang.c
-@@ -127,14 +127,12 @@ static void mdiobb_cmd(struct mdiobb_ctrl *ctrl, int op, u8 phy, u8 reg)
- 
- /* In clause 45 mode all commands are prefixed by MDIO_ADDR to specify the
-    lower 16 bits of the 21 bit address. This transfer is done identically to a
--   MDIO_WRITE except for a different code. To enable clause 45 mode or
--   MII_ADDR_C45 into the address. Theoretically clause 45 and normal devices
--   can exist on the same bus. Normal devices should ignore the MDIO_ADDR
-+   MDIO_WRITE except for a different code. Theoretically clause 45 and normal
-+   devices can exist on the same bus. Normal devices should ignore the MDIO_ADDR
-    phase. */
--static int mdiobb_cmd_addr(struct mdiobb_ctrl *ctrl, int phy, u32 addr)
-+static void mdiobb_cmd_addr(struct mdiobb_ctrl *ctrl, int phy, int dev_addr,
-+			    int reg)
- {
--	unsigned int dev_addr = (addr >> 16) & 0x1F;
--	unsigned int reg = addr & 0xFFFF;
- 	mdiobb_cmd(ctrl, MDIO_C45_ADDR, phy, dev_addr);
- 
- 	/* send the turnaround (10) */
-@@ -145,21 +143,13 @@ static int mdiobb_cmd_addr(struct mdiobb_ctrl *ctrl, int phy, u32 addr)
- 
- 	ctrl->ops->set_mdio_dir(ctrl, 0);
- 	mdiobb_get_bit(ctrl);
--
--	return dev_addr;
- }
- 
--int mdiobb_read(struct mii_bus *bus, int phy, int reg)
-+static int mdiobb_read_common(struct mii_bus *bus, int phy)
- {
- 	struct mdiobb_ctrl *ctrl = bus->priv;
- 	int ret, i;
- 
--	if (reg & MII_ADDR_C45) {
--		reg = mdiobb_cmd_addr(ctrl, phy, reg);
--		mdiobb_cmd(ctrl, MDIO_C45_READ, phy, reg);
--	} else
--		mdiobb_cmd(ctrl, ctrl->op_c22_read, phy, reg);
--
- 	ctrl->ops->set_mdio_dir(ctrl, 0);
- 
- 	/* check the turnaround bit: the PHY should be driving it to zero, if this
-@@ -180,17 +170,31 @@ int mdiobb_read(struct mii_bus *bus, int phy, int reg)
- 	mdiobb_get_bit(ctrl);
- 	return ret;
- }
--EXPORT_SYMBOL(mdiobb_read);
- 
--int mdiobb_write(struct mii_bus *bus, int phy, int reg, u16 val)
-+int mdiobb_read_c22(struct mii_bus *bus, int phy, int reg)
- {
- 	struct mdiobb_ctrl *ctrl = bus->priv;
- 
--	if (reg & MII_ADDR_C45) {
--		reg = mdiobb_cmd_addr(ctrl, phy, reg);
--		mdiobb_cmd(ctrl, MDIO_C45_WRITE, phy, reg);
--	} else
--		mdiobb_cmd(ctrl, ctrl->op_c22_write, phy, reg);
-+	mdiobb_cmd(ctrl, ctrl->op_c22_read, phy, reg);
-+
-+	return mdiobb_read_common(bus, phy);
-+}
-+EXPORT_SYMBOL(mdiobb_read_c22);
-+
-+int mdiobb_read_c45(struct mii_bus *bus, int phy, int devad, int reg)
-+{
-+	struct mdiobb_ctrl *ctrl = bus->priv;
-+
-+	mdiobb_cmd_addr(ctrl, phy, devad, reg);
-+	mdiobb_cmd(ctrl, MDIO_C45_READ, phy, reg);
-+
-+	return mdiobb_read_common(bus, phy);
-+}
-+EXPORT_SYMBOL(mdiobb_read_c45);
-+
-+static int mdiobb_write_common(struct mii_bus *bus, u16 val)
-+{
-+	struct mdiobb_ctrl *ctrl = bus->priv;
- 
- 	/* send the turnaround (10) */
- 	mdiobb_send_bit(ctrl, 1);
-@@ -202,7 +206,27 @@ int mdiobb_write(struct mii_bus *bus, int phy, int reg, u16 val)
- 	mdiobb_get_bit(ctrl);
- 	return 0;
- }
--EXPORT_SYMBOL(mdiobb_write);
-+
-+int mdiobb_write_c22(struct mii_bus *bus, int phy, int reg, u16 val)
-+{
-+	struct mdiobb_ctrl *ctrl = bus->priv;
-+
-+	mdiobb_cmd(ctrl, ctrl->op_c22_write, phy, reg);
-+
-+	return mdiobb_write_common(bus, val);
-+}
-+EXPORT_SYMBOL(mdiobb_write_c22);
-+
-+int mdiobb_write_c45(struct mii_bus *bus, int phy, int devad, int reg, u16 val)
-+{
-+	struct mdiobb_ctrl *ctrl = bus->priv;
-+
-+	mdiobb_cmd_addr(ctrl, phy, devad, reg);
-+	mdiobb_cmd(ctrl, MDIO_C45_WRITE, phy, reg);
-+
-+	return mdiobb_write_common(bus, val);
-+}
-+EXPORT_SYMBOL(mdiobb_write_c45);
- 
- struct mii_bus *alloc_mdio_bitbang(struct mdiobb_ctrl *ctrl)
- {
-@@ -214,8 +238,11 @@ struct mii_bus *alloc_mdio_bitbang(struct mdiobb_ctrl *ctrl)
- 
- 	__module_get(ctrl->ops->owner);
- 
--	bus->read = mdiobb_read;
--	bus->write = mdiobb_write;
-+	bus->read = mdiobb_read_c22;
-+	bus->write = mdiobb_write_c22;
-+	bus->read_c45 = mdiobb_read_c45;
-+	bus->write_c45 = mdiobb_write_c45;
-+
- 	bus->priv = ctrl;
- 	if (!ctrl->override_op_c22) {
- 		ctrl->op_c22_read = MDIO_READ;
-diff --git a/include/linux/mdio-bitbang.h b/include/linux/mdio-bitbang.h
-index 373630fe5c28..cffabdbce075 100644
---- a/include/linux/mdio-bitbang.h
-+++ b/include/linux/mdio-bitbang.h
-@@ -38,8 +38,10 @@ struct mdiobb_ctrl {
- 	u8 op_c22_write;
+diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
+index ef878973b859..2d654a40af13 100644
+--- a/drivers/net/ethernet/marvell/mvmdio.c
++++ b/drivers/net/ethernet/marvell/mvmdio.c
+@@ -204,21 +204,17 @@ static const struct orion_mdio_ops orion_mdio_xsmi_ops = {
+ 	.poll_interval_max = MVMDIO_XSMI_POLL_INTERVAL_MAX,
  };
  
--int mdiobb_read(struct mii_bus *bus, int phy, int reg);
--int mdiobb_write(struct mii_bus *bus, int phy, int reg, u16 val);
-+int mdiobb_read_c22(struct mii_bus *bus, int phy, int reg);
-+int mdiobb_write_c22(struct mii_bus *bus, int phy, int reg, u16 val);
-+int mdiobb_read_c45(struct mii_bus *bus, int devad, int phy, int reg);
-+int mdiobb_write_c45(struct mii_bus *bus, int devad, int phy, int reg, u16 val);
+-static int orion_mdio_xsmi_read(struct mii_bus *bus, int mii_id,
+-				int regnum)
++static int orion_mdio_xsmi_read_c45(struct mii_bus *bus, int mii_id,
++				    int dev_addr, int regnum)
+ {
+ 	struct orion_mdio_dev *dev = bus->priv;
+-	u16 dev_addr = (regnum >> 16) & GENMASK(4, 0);
+ 	int ret;
  
- /* The returned bus is not yet registered with the phy layer. */
- struct mii_bus *alloc_mdio_bitbang(struct mdiobb_ctrl *ctrl);
+-	if (!(regnum & MII_ADDR_C45))
+-		return -EOPNOTSUPP;
+-
+ 	ret = orion_mdio_wait_ready(&orion_mdio_xsmi_ops, bus);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	writel(regnum & GENMASK(15, 0), dev->regs + MVMDIO_XSMI_ADDR_REG);
++	writel(regnum, dev->regs + MVMDIO_XSMI_ADDR_REG);
+ 	writel((mii_id << MVMDIO_XSMI_PHYADDR_SHIFT) |
+ 	       (dev_addr << MVMDIO_XSMI_DEVADDR_SHIFT) |
+ 	       MVMDIO_XSMI_READ_OPERATION,
+@@ -237,21 +233,17 @@ static int orion_mdio_xsmi_read(struct mii_bus *bus, int mii_id,
+ 	return readl(dev->regs + MVMDIO_XSMI_MGNT_REG) & GENMASK(15, 0);
+ }
+ 
+-static int orion_mdio_xsmi_write(struct mii_bus *bus, int mii_id,
+-				int regnum, u16 value)
++static int orion_mdio_xsmi_write_c45(struct mii_bus *bus, int mii_id,
++				     int dev_addr, int regnum, u16 value)
+ {
+ 	struct orion_mdio_dev *dev = bus->priv;
+-	u16 dev_addr = (regnum >> 16) & GENMASK(4, 0);
+ 	int ret;
+ 
+-	if (!(regnum & MII_ADDR_C45))
+-		return -EOPNOTSUPP;
+-
+ 	ret = orion_mdio_wait_ready(&orion_mdio_xsmi_ops, bus);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	writel(regnum & GENMASK(15, 0), dev->regs + MVMDIO_XSMI_ADDR_REG);
++	writel(regnum, dev->regs + MVMDIO_XSMI_ADDR_REG);
+ 	writel((mii_id << MVMDIO_XSMI_PHYADDR_SHIFT) |
+ 	       (dev_addr << MVMDIO_XSMI_DEVADDR_SHIFT) |
+ 	       MVMDIO_XSMI_WRITE_OPERATION | value,
+@@ -302,8 +294,8 @@ static int orion_mdio_probe(struct platform_device *pdev)
+ 		bus->write = orion_mdio_smi_write;
+ 		break;
+ 	case BUS_TYPE_XSMI:
+-		bus->read = orion_mdio_xsmi_read;
+-		bus->write = orion_mdio_xsmi_write;
++		bus->read_c45 = orion_mdio_xsmi_read_c45;
++		bus->write_c45 = orion_mdio_xsmi_write_c45;
+ 		break;
+ 	}
+ 
 
 -- 
 2.30.2
