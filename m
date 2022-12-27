@@ -2,108 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC1BF656931
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 10:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC03656944
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 10:57:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbiL0JxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 04:53:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
+        id S231468AbiL0J5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 04:57:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231574AbiL0Jw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 04:52:28 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBC3A465
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 01:52:16 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id b3so18969537lfv.2
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 01:52:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+Wr97SYXbDVVyZVbytiLskD6+gchYHrxEC/WA01J5dA=;
-        b=N5zZrCr5jGWU0PNc0ktwf74ghaOf/jNfXrUuqPOk+v+DzhKUAHoLFwcsXrzodnL7tQ
-         cDBWqu7QlrbeuQSLhZ/0Z15Iao0JiSE7o1hMQu/NhQ+SEzCsifT0jWRx5BdChTBOTZIo
-         wofxIhUW5v/oNhN8KsChmIEgqyGy8qQkGeJlQjrOPsh2UqlTI1z9drSb/cOQK8qrSB6Q
-         oKQ56CBniGkDwLbMoMBOr85emDqhm6tRjKEvNz48rz0kYZPWe4S0WOeHLQp+rnfNto18
-         m8OyyFJ3u9dvOfiLugeoZo2liVpuBQ/bOn2zY5aiBCdz/oP3ZjSdTU4ub3m7zx84Wmpw
-         uyhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Wr97SYXbDVVyZVbytiLskD6+gchYHrxEC/WA01J5dA=;
-        b=tAxJ63AVHtISYyeTkKECbImOnSLo7yLNDF1IEe61Sr2X2oJ7+ls4UlkEaGc9VPq5v8
-         IeyclBMWKyETeeyjpDzaNNXtZFJXOpqN4lJKtr+6rnBGShToPBT6LdpxKZPE06lvNXyw
-         nC5IpCT8i8qjp3pWO6LkggXYUmL4sysvR6ITeJUYFVDaKiacMkylLsbCp38cVsJ/TPHk
-         qUaRRaoIxLVsO5kWya7GOvot67X4bMJJV/7BCoNavv90g/EBR65LQB3PVkXIJ4ZeIwNo
-         58dltrstXnTajnfc98/ldSvQrKq7sE7kbsnx0iIKJVfhNJ4UUSMPoQCmlv84qSAMFw2d
-         TUBA==
-X-Gm-Message-State: AFqh2kofGQYd1Vler6e34gtnddU7Tu20+jAARk+Ej/tNxQXvgNbrFCZ9
-        h/WCEh/Mq3oyLbL4lEOq7oVf05Ac4iT6lorb
-X-Google-Smtp-Source: AMrXdXv0e2ffNVRfwokE/9RQbPQsXbBIx/hqMsDpgLFJrwc+icn7OJe/v3aXVR/9FghthYK1ObYaKA==
-X-Received: by 2002:a05:6512:15a7:b0:4ae:8476:2df with SMTP id bp39-20020a05651215a700b004ae847602dfmr8295564lfb.10.1672134734752;
-        Tue, 27 Dec 2022 01:52:14 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id h13-20020a05651211cd00b004a2511b8224sm2144989lfr.103.2022.12.27.01.52.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Dec 2022 01:52:14 -0800 (PST)
-Message-ID: <c296cf6b-6c50-205d-d5f5-6095c0a6c523@linaro.org>
-Date:   Tue, 27 Dec 2022 10:52:12 +0100
+        with ESMTP id S231616AbiL0J4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 04:56:51 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9209FFC;
+        Tue, 27 Dec 2022 01:56:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
+        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=s5JtDBhzmiCYKFeCcbSGtbqGBoUAybbEuGC/hLArT4c=; b=B97kKfoQET0Oyt2jzS6spXRM+8
+        cxFwF2+lFIxzjjK9Ac9AbfmW7XMiyrPZKaTTjYu0qKmEq4ZaErxCCb5Ipx81PfEYKBN7VUMcO87Cr
+        JZu72Bo8zT8nbFbZNGGfdH6Rvc/MhGhjNuzSZ3cQaZrCWJ1cUDTv7Xu2xuKdAbYXPyUE=;
+Received: from p200300daa720fc040c81ba64b0a9b1e5.dip0.t-ipconnect.de ([2003:da:a720:fc04:c81:ba64:b0a9:b1e5] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pA6gg-00C1ck-GN; Tue, 27 Dec 2022 10:55:58 +0100
+Message-ID: <9e4685a4-5dd1-9f7b-1235-30aebcc9dfd3@nbd.name>
+Date:   Tue, 27 Dec 2022 10:55:57 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 5/9] dt-bindings: net: motorcomm: add support for
- Motorcomm YT8531
-Content-Language: en-US
-To:     yanhong wang <yanhong.wang@starfivetech.com>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
- <20221216070632.11444-6-yanhong.wang@starfivetech.com>
- <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
- <134a2ead-e272-c32e-b14f-a9e98c8924ac@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <134a2ead-e272-c32e-b14f-a9e98c8924ac@starfivetech.com>
-Content-Type: text/plain; charset=UTF-8
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20221123095754.36821-1-nbd@nbd.name>
+ <20221123095754.36821-3-nbd@nbd.name>
+ <20221124175410.5684-1-alexandr.lobakin@intel.com>
+Content-Language: en-US
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH 3/5] net: ethernet: mtk_eth_soc: work around issue with
+ sending small fragments
+In-Reply-To: <20221124175410.5684-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/12/2022 10:38, yanhong wang wrote:
->>
->> This must be false. After referencing ethernet-phy this should be
->> unevaluatedProperties: false.
->>
->>
+On 24.11.22 18:54, Alexander Lobakin wrote:
+> From: Felix Fietkau <nbd@nbd.name>
+> Date: Wed, 23 Nov 2022 10:57:52 +0100
 > 
-> Thanks. Parts of this patch exist already, after discussion unanimity was achieved,
-> i will remove the parts of YT8531 in the next version.
+>> When frames are sent with very small fragments, the DMA engine appears to
+>> lock up and transmit attempts time out. Fix this by detecting the presence
+>> of small fragments and use skb_gso_segment + skb_linearize to deal with
+>> them
+> 
+> Nit: all of your commit messages don't have a trailing dot (.), not
+> sure if it's important, but my eye is missing it definitely :D
+> 
+> skb_gso_segment() and skb_linearize() are slow as hell. I think you
+> can do it differently. I guess only the first (head) and the last
+> frag can be so small, right?
+> 
+> So, if a frag from shinfo->frags is less than 16, get a new frag of
+> the minimum acceptable size via netdev_alloc_frag(), copy the data
+> to it and pad the rest with zeroes. Then increase skb->len and
+> skb->data_len, skb_frag_unref() the current, "invalid" frag and
+> replace the pointer to the new frag. I didn't miss anything I
+> believe... Zero padding the tail is usual thing for NICs. skb frag
+> substitution is less common, but should be legit.
+> 
+> If skb_headlen() is less than 16, try doing pskb_may_pull() +
+> __skb_pull() at first. The argument would be `16 - headlen`. If
+> pskb_may_pull() returns false, then yeah, you have no choice other
+> than segmenting and linearizing ._.
+I looked into this some more and spoke with people at MTK. It appears 
+that in principle, the DMA engine is able to process very small 
+fragments. However, when it is being flooded with them, a FIFO can 
+overflow, which causes the hang that I was observing.
+I think your suggestion likely would not fix the issue completely.
+A MTK engineer also confirmed that my approach is the correct one for 
+handling this.
+I will send v2 with an updated description.
 
-I don't understand what does it mean. You sent duplicated patch? If so,
-please do not... you waste reviewers time.
+Thanks,
 
-Anyway this entire patch does not meet criteria for submission at all,
-so please start over from example-schema.
-
-Best regards,
-Krzysztof
+- Felix
 
