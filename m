@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA75656D72
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 18:37:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 741FA656DB8
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 18:52:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiL0RgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 12:36:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
+        id S229798AbiL0Rw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 12:52:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiL0RgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 12:36:23 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE172652
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 09:36:22 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id u8so7010048ilq.13
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 09:36:22 -0800 (PST)
+        with ESMTP id S229665AbiL0RwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 12:52:24 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBA8C759
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 09:52:22 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id z18so7060824ils.3
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 09:52:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=smbRtPix3phAazFHEqnSaP3v1M/yT1Gt8/0I+tzWvyQ=;
-        b=oAVdZUIYHrd+buByS3ENc+V0eyW0FrKzv+C6ZJ3r0LHIJvB3mg09an331KIMSZuCLi
-         jv13X+QxVu3YVJi0Tazwn5Ps6Kmwi2YjFagmeZhIw2xaozv7WmSsGdyKM7tMkKBRCNkb
-         zn9g8AVJnVUE3IrSt4ggWmHQeYzCWNTLaqG+DukbTTEQopKNOwtecQAW8vL8cz/5igIp
-         piqt2bw9cxF05v4Q6sqM10Gwi9DuGjMx1GKuW5pJpu/oZ2ST9aokHOHJrqYZ4b5oRtAl
-         UV9BH6Ly0nrPMDhR1zLmM37AHU4G9tIHrxlvr8NQdjYdarJlRt1fraKWg1rQBmP4qGYj
-         Lquw==
+        bh=DjJAv8+dz5qzkt//9ChBMXUYM3gLvgUmgzPulr1q5L8=;
+        b=W9Oh1RHsibG9b5nJG2L0/G7avXFkSdVchArgZZ4h5wu33N7ck71irudkyLxayJmXeY
+         Ln1EQeyGfQJ632VOCVTZKDZiHbpkxm1K5zFfLFnhAxnkBgWio3gqfHdXZauTqE9t0Qjs
+         QsSzTuaqH7p7YzQnqcR2tKeguCIzFnIV4dSOJQVQvyeTxxtIFylTt5rmYp3QsHknV1aw
+         W1UF0f9x8bH36XJCg+86qJ9CgYnQlzvBAuMmJX9w3hOU6wp+nM59qhCJVfpqHiwQJhmC
+         Lbe70IOHCBpDkNJg8Y979NureLIk2lybRgXi4KrnJB4W1u+v3f71A1RwPjHZf7/USKkZ
+         wjPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=smbRtPix3phAazFHEqnSaP3v1M/yT1Gt8/0I+tzWvyQ=;
-        b=n6XafiFuoly7gMhPSBiTViJ8bur1mtzZyFrefieUYwvSxe61F3UdL81lAXE8fLUpGY
-         enI8BR9DVDFagdOBbM2BwP7r/p6+ojptxmRltRiJw8tMaJ7DlV8t1UfQBw7QzYWallN1
-         Ka8lFlimIBq7wFMH32NpnnyFKTIqgq0CouIbr9JjVrnfGakM8sK25wrO/Ku+eZHtysZQ
-         JrZLq/x5ddFv5uNsomk1StlDcTCHwRcf8AlQ0vK828y/9UC3QDTcIlhHNc9Ved5KR0UY
-         yvS2GOp4U9aAbijH7ro+FGH0rq/4X7FSTA+U+N/AUsW8EpzGoPSPb9vzLq1T+VtGHROq
-         gIng==
-X-Gm-Message-State: AFqh2kqUgW9yP1ptw1K1U3u0Jm3PWoGgSycW7EWv2w5t/Vl6mvOstlC0
-        9AT8aT4gRLHEAB/O5AFDh60=
-X-Google-Smtp-Source: AMrXdXv4OvRjcbTwJmkTP/Od4+LSnPHG2uTCuVEVWjWCDgOtSYitIV/uKIsFXhgTkKwFNWfUmSUTiw==
-X-Received: by 2002:a92:c085:0:b0:30c:f88:e807 with SMTP id h5-20020a92c085000000b0030c0f88e807mr2074912ile.6.1672162582199;
-        Tue, 27 Dec 2022 09:36:22 -0800 (PST)
+        bh=DjJAv8+dz5qzkt//9ChBMXUYM3gLvgUmgzPulr1q5L8=;
+        b=TqHewdZ5tJiHxISmgRo1PC+OFP29V6tTI//AQ5ggcxpIiPHSSGPojNEe5psBmK6oZK
+         bkw+Ejy/jZ3/iK1MPRejOiyG24XGy/lOmZcjnkjP/RP/sAz+ZEQp7On9pzqXyFg+IBn3
+         2LZn+gPQCbYgrBfKN7BxMbdMCvIMjC20DnEDJBcMAxe2vxWAFClWMFPJrk7K5XHiC8I6
+         OgZLLy+yf18HYziNxUm8VniqrO5HcEdwyUHx36UzovWgDdHr9IzBBvP9JDbHW+xF/2to
+         gCVu0DMeAQNarFuUu9IJyhll3lEnr5iWct8o9HQsn7sgnkgaNTFKtYiBb2deyBckxhKp
+         WDMA==
+X-Gm-Message-State: AFqh2kpoYGs1NTI2zTMe6wgvtcWK1hscgwUQLGFhCE4eeKgxl519WUQs
+        ySqk1kpPGTwR0DHVVPMM1A0=
+X-Google-Smtp-Source: AMrXdXvo50LS2QGR/NU5M5RNinqflT+zGyl73s2OP2xjAhM5T2/lxRGKGbvm/EA0dTkDfAv7w/NbZg==
+X-Received: by 2002:a92:6511:0:b0:303:5f4c:a8f8 with SMTP id z17-20020a926511000000b003035f4ca8f8mr14124415ilb.29.1672163542190;
+        Tue, 27 Dec 2022 09:52:22 -0800 (PST)
 Received: from fedora.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
-        by smtp.gmail.com with ESMTPSA id v14-20020a92cd4e000000b0030258f9670bsm4304630ilq.13.2022.12.27.09.36.21
+        by smtp.gmail.com with ESMTPSA id c37-20020a029628000000b00389de6759b8sm4519266jai.162.2022.12.27.09.52.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 09:36:21 -0800 (PST)
+        Tue, 27 Dec 2022 09:52:21 -0800 (PST)
 From:   Maxim Georgiev <glipus@gmail.com>
 To:     mkubecek@suse.cz
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, glipus@gmail.com
-Subject: [PATCH ethtool-next] Fixing boolean value output for Netlink reported values in JSON format
-Date:   Tue, 27 Dec 2022 10:36:20 -0700
-Message-Id: <20221227173620.6577-1-glipus@gmail.com>
+Subject: [PATCH ethtool-next] JSON output support for Netlink implementation of --show-ring option
+Date:   Tue, 27 Dec 2022 10:52:21 -0700
+Message-Id: <20221227175221.7762-1-glipus@gmail.com>
 X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,50 +67,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current implementation of show_bool_val() passes "val" parameter of pointer
-type as a last parameter to print_bool():
-https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/tree/netlink/netlink.h#n131
-...
-static inline void show_bool_val(const char *key, const char *fmt, uint8_t *val)
-{
-	if (is_json_context()) {
-		if (val)
->			print_bool(PRINT_JSON, key, NULL, val);
-	} else {
-...
-print_bool() expects the last parameter to be bool:
-https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/tree/json_print.c#n153
-...
-void print_bool(enum output_type type,
-		const char *key,
-		const char *fmt,
-		bool value)
-{
-...
-Current show_bool_val() implementation converts "val" pointer to bool while
-calling show_bool_val(). As a result show_bool_val() always prints the value
-as "true" as long as it gets a non-null pointer to the boolean value, even if
-the referred boolean value is false.
+Add --json support for Netlink implementation of --show-ring option
+No changes for non-JSON output for this featire.
 
-Fixes: 7e5c1ddbe67d ("pause: add --json support")
+Example output without --json:
+[ethtool-git]$ /ethtool -g enp9s0u2u1u2
+Ring parameters for enp9s0u2u1u2:
+Pre-set maximums:
+RX:		4096
+RX Mini:	n/a
+RX Jumbo:	n/a
+TX:		n/a
+Current hardware settings:
+RX:		100
+RX Mini:	n/a
+RX Jumbo:	n/a
+TX:		n/a
+RX Buf Len:	n/a
+CQE Size:	n/a
+TX Push:	off
+TCP data split:	n/a
+
+Same output with --json:
+[ethtool-git]$ ./ethtool --json -g enp9s0u2u1u2
+[ {
+        "ifname": "enp9s0u2u1u2",
+        "rx-max": 4096,
+        "rx": 100,
+        "tx-push": false
+    } ]
+
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Maxim Georgiev <glipus@gmail.com>
 ---
- netlink/netlink.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ ethtool.c       |  1 +
+ netlink/rings.c | 35 +++++++++++++++++++++++++----------
+ 2 files changed, 26 insertions(+), 10 deletions(-)
 
-diff --git a/netlink/netlink.h b/netlink/netlink.h
-index 3240fca..1274a3b 100644
---- a/netlink/netlink.h
-+++ b/netlink/netlink.h
-@@ -128,7 +128,7 @@ static inline void show_bool_val(const char *key, const char *fmt, uint8_t *val)
- {
- 	if (is_json_context()) {
- 		if (val)
--			print_bool(PRINT_JSON, key, NULL, val);
-+			print_bool(PRINT_JSON, key, NULL, *val);
- 	} else {
- 		print_string(PRINT_FP, NULL, fmt, u8_to_bool(val));
+diff --git a/ethtool.c b/ethtool.c
+index 60da8af..cf08a69 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5751,6 +5751,7 @@ static const struct option args[] = {
+ 	},
+ 	{
+ 		.opts	= "-g|--show-ring",
++		.json	= true,
+ 		.func	= do_gring,
+ 		.nlfunc	= nl_gring,
+ 		.help	= "Query RX/TX ring parameters"
+diff --git a/netlink/rings.c b/netlink/rings.c
+index 5996d5a..d51ef78 100644
+--- a/netlink/rings.c
++++ b/netlink/rings.c
+@@ -21,6 +21,9 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	DECLARE_ATTR_TB_INFO(tb);
+ 	struct nl_context *nlctx = data;
+ 	unsigned char tcp_hds;
++	char *tcp_hds_fmt;
++	char *tcp_hds_key;
++	char tcp_hds_buf[256];
+ 	bool silent;
+ 	int err_ret;
+ 	int ret;
+@@ -34,16 +37,19 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	if (!dev_ok(nlctx))
+ 		return err_ret;
+ 
++	open_json_object(NULL);
++
+ 	if (silent)
+-		putchar('\n');
+-	printf("Ring parameters for %s:\n", nlctx->devname);
+-	printf("Pre-set maximums:\n");
++		show_cr();
++	print_string(PRINT_ANY, "ifname", "Ring parameters for %s:\n",
++		     nlctx->devname);
++	print_string(PRINT_FP, NULL, "Pre-set maximums:\n", NULL);
+ 	show_u32("rx-max", "RX:\t\t", tb[ETHTOOL_A_RINGS_RX_MAX]);
+ 	show_u32("rx-mini-max", "RX Mini:\t", tb[ETHTOOL_A_RINGS_RX_MINI_MAX]);
+ 	show_u32("rx-jumbo-max", "RX Jumbo:\t",
+ 		 tb[ETHTOOL_A_RINGS_RX_JUMBO_MAX]);
+ 	show_u32("tx-max", "TX:\t\t", tb[ETHTOOL_A_RINGS_TX_MAX]);
+-	printf("Current hardware settings:\n");
++	print_string(PRINT_FP, NULL, "Current hardware settings:\n", NULL);
+ 	show_u32("rx", "RX:\t\t", tb[ETHTOOL_A_RINGS_RX]);
+ 	show_u32("rx-mini", "RX Mini:\t", tb[ETHTOOL_A_RINGS_RX_MINI]);
+ 	show_u32("rx-jumbo", "RX Jumbo:\t", tb[ETHTOOL_A_RINGS_RX_JUMBO]);
+@@ -52,24 +58,29 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	show_u32("cqe-size", "CQE Size:\t", tb[ETHTOOL_A_RINGS_CQE_SIZE]);
+ 	show_bool("tx-push", "TX Push:\t%s\n", tb[ETHTOOL_A_RINGS_TX_PUSH]);
+ 
++	tcp_hds_fmt = "TCP data split:\t%s\n";
++	tcp_hds_key = "tcp-data-split";
+ 	tcp_hds = tb[ETHTOOL_A_RINGS_TCP_DATA_SPLIT] ?
+ 		mnl_attr_get_u8(tb[ETHTOOL_A_RINGS_TCP_DATA_SPLIT]) : 0;
+-	printf("TCP data split:\t");
+ 	switch (tcp_hds) {
+ 	case ETHTOOL_TCP_DATA_SPLIT_UNKNOWN:
+-		printf("n/a\n");
++		print_string(PRINT_FP, tcp_hds_key, tcp_hds_fmt, "n/a");
+ 		break;
+ 	case ETHTOOL_TCP_DATA_SPLIT_DISABLED:
+-		printf("off\n");
++		print_string(PRINT_ANY, tcp_hds_key, tcp_hds_fmt, "off");
+ 		break;
+ 	case ETHTOOL_TCP_DATA_SPLIT_ENABLED:
+-		printf("on\n");
++		print_string(PRINT_ANY, tcp_hds_key, tcp_hds_fmt, "on");
+ 		break;
+ 	default:
+-		printf("unknown(%d)\n", tcp_hds);
++		snprintf(tcp_hds_buf, sizeof(tcp_hds_buf),
++			 "unknown(%d)\n", tcp_hds);
++		print_string(PRINT_ANY, tcp_hds_key, tcp_hds_fmt, tcp_hds_buf);
+ 		break;
  	}
+ 
++	close_json_object();
++
+ 	return MNL_CB_OK;
+ }
+ 
+@@ -91,7 +102,11 @@ int nl_gring(struct cmd_context *ctx)
+ 				      ETHTOOL_A_RINGS_HEADER, 0);
+ 	if (ret < 0)
+ 		return ret;
+-	return nlsock_send_get_request(nlsk, rings_reply_cb);
++
++	new_json_obj(ctx->json);
++	ret = nlsock_send_get_request(nlsk, rings_reply_cb);
++	delete_json_obj();
++	return ret;
+ }
+ 
+ /* RINGS_SET */
 -- 
 2.38.1
 
