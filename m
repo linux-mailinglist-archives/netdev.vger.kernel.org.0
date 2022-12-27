@@ -2,330 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83266656DF3
-	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 19:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06002656EEB
+	for <lists+netdev@lfdr.de>; Tue, 27 Dec 2022 21:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiL0S1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 13:27:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
+        id S232535AbiL0UgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 15:36:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiL0S06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 13:26:58 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F560B7D3
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 10:26:57 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id o127so15211829yba.5
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 10:26:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=5xU37PxWBEWndAEXqMACHy8/gFLnuXb1mXji5Jgtwdo=;
-        b=GTOY2ExLFLJH4G02HDMyRnQfmy6RTGUSPbfttRzBc/9MGSUTWBZhkZd4KLANEDCMz/
-         ksF/VNcKLhNbm2036MzAEr7GcxN2rXyeBTiEFAZaUk1oiONLnRCbaaiKNR24XNC+DYhk
-         k49OKwAsead7/aezFSyY22PscROQeHGVvV1yFQtmUEVU8itf55gutXMGZcBFyHuxcgc4
-         Hmr5BR9K8Y0huRwODVtgrexrZvFRCG+YDyZ/8g0mnNse5Y9dwsHKNU9sXbS1hTGL0XaB
-         qe0jcSH6NEZqVNDp+wBJbSwXA5SqqgaR3rZ88bUIPSH2Ehllu4oD5mzFgddOfSLh4RJp
-         QmEg==
+        with ESMTP id S231608AbiL0UeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 15:34:03 -0500
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AA465DB;
+        Tue, 27 Dec 2022 12:33:48 -0800 (PST)
+Received: by mail-vs1-f46.google.com with SMTP id k4so9572932vsc.4;
+        Tue, 27 Dec 2022 12:33:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5xU37PxWBEWndAEXqMACHy8/gFLnuXb1mXji5Jgtwdo=;
-        b=HQ4kOg0Ab/najjvAW07yMnfydbyjpp5RccL6bOj/FXE2DwFxm8WMo6IVz1gCWYDi5Y
-         nsAOuVozsbfWDlRJPeqTZCXoKXU5P67Ils7Acc+OxJNqZvW/+GIVBv09eB/HuikB0dJB
-         rv+tKmJKtQNA3vhWGEfxBEgDTEXSfmmrqGUGvii6PDhuFdNJhHN/dNYVJyg11X+xDo6D
-         1cKF0HQg431UTv1Ecnf7SdMg2X0URa/2ISysnwj9+Rj9pqJxF4zhB+pN5NnMzbLn9Z4b
-         YTYOTMKeoH1dBofUqIVwCS2I5bOEpeuk4zwkVYtmMOI5sfFlr/97P74yqzmfiFdUJXOI
-         F5QQ==
-X-Gm-Message-State: AFqh2kpFgjtUu/1m0z6T8nsgt7icut6z4WGrVEaoqcJpuAQSPJ/xiDbq
-        OJsCIfLVXmSeySD3q+i0Ck2X5cQ9NxaNsgkaHEDJOmFI
-X-Google-Smtp-Source: AMrXdXt3QFldP5myvpgGmVAAbbtZs+gKCdtn4Xum7XDDK1CkGZKMCWg5hhkbFQwQkEG/t91fdEUtPyxv4Cvu784iLP4=
-X-Received: by 2002:a25:8b82:0:b0:70c:bbcb:3432 with SMTP id
- j2-20020a258b82000000b0070cbbcb3432mr2601087ybl.173.1672165616143; Tue, 27
- Dec 2022 10:26:56 -0800 (PST)
-MIME-Version: 1.0
-References: <20221226132753.44175-1-kuniyu@amazon.com> <20221226132753.44175-2-kuniyu@amazon.com>
-In-Reply-To: <20221226132753.44175-2-kuniyu@amazon.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 27 Dec 2022 10:26:44 -0800
-Message-ID: <CAJnrk1aWrFbYMFwTOReVw4yeGO6hACkoRQyHW-2qfR6L+HXRYA@mail.gmail.com>
-Subject: Re: [PATCH v1 net 1/2] tcp: Add TIME_WAIT sockets in bhash2.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jPzbbgu9k+12axNhvSl4/wTiUsXQwmOMXV5hrHa+tmc=;
+        b=vhjZ9ZffOV8YqoKwWuHeBgGEBJABvlZSvNg+12Y2uFUEARAtjIWRQh9WtXofGM+wWa
+         4SaJsil0sEoiVSxMU6kx01KmAXimWwM3/S2ZEQbA7yE4bvS/cArh+d3WzoU+uy5qm1wX
+         sWVAHICjFc2UIO3RQndLuY5T1ujGlbHvqHKGZ3YqdCTg6tdlbbvgSNOnAuT0bjhcXk2l
+         nEUjnc81NwfNEZVyJGoamOKA41B/FpCzC4ZhpkUG54KdXmxgRpRDApBGkdt42fcwphOR
+         2HU90O6EIc7/omfsL17gqZeqP5j7cQSTbFgSWtZ7P5MvxLcKGi1GEnfDPr40GNEry4kj
+         EI0A==
+X-Gm-Message-State: AFqh2krFRAeZGLx7QlCbg84tdmdArM3OVtjDb8lfx5qaNhvojYBZTzNx
+        v5NgrYGRj2ynE9X0tXU/7QA=
+X-Google-Smtp-Source: AMrXdXtSdeUM8rPjnrF/YFyecb7nI6FgtSLrjMGJ0+kBLUb4ndndRYgWqw1HDIynYZTSX1aSOXzihQ==
+X-Received: by 2002:a05:6102:830:b0:3c8:2851:c2df with SMTP id k16-20020a056102083000b003c82851c2dfmr2364703vsb.16.1672173226955;
+        Tue, 27 Dec 2022 12:33:46 -0800 (PST)
+Received: from maniforge.lan ([2620:10d:c091:480::1:13c8])
+        by smtp.gmail.com with ESMTPSA id o5-20020a05620a2a0500b006fc2f74ad12sm10111442qkp.92.2022.12.27.12.33.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Dec 2022 12:33:46 -0800 (PST)
+Date:   Tue, 27 Dec 2022 14:33:50 -0600
+From:   David Vernet <void@manifault.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v5 07/17] bpf: XDP metadata RX kfuncs
+Message-ID: <Y6tWrtltKfAlo0rT@maniforge.lan>
+References: <20221220222043.3348718-1-sdf@google.com>
+ <20221220222043.3348718-8-sdf@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221220222043.3348718-8-sdf@google.com>
+User-Agent: Mutt/2.2.9 (2022-11-12)
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 26, 2022 at 5:28 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> Jiri Slaby reported regression of bind() with a simple repro. [0]
->
-> The repro creates a TIME_WAIT socket and tries to bind() a new socket
-> with the same local address and port.  Before commit 28044fc1d495 ("net:
-> Add a bhash2 table hashed by port and address"), the bind() failed with
-> -EADDRINUSE, but now it succeeds.
->
-> The cited commit should have put TIME_WAIT sockets into bhash2; otherwise,
-> inet_bhash2_conflict() misses TIME_WAIT sockets when validating bind()
-> requests if the address is not a wildcard one.
->
-> The straight option is to move sk_bind2_node from struct sock to struct
-> sock_common to add twsk to bhash2 as implemented as RFC. [1]  However, the
-> binary layout change in the struct sock could affect performances moving
-> hot fields on different cachelines.
->
-> To avoid that, we add another TIME_WAIT list in inet_bind2_bucket and check
-> it while validating bind().
->
-> [0]: https://lore.kernel.org/netdev/6b971a4e-c7d8-411e-1f92-fda29b5b2fb9@kernel.org/
-> [1]: https://lore.kernel.org/netdev/20221221151258.25748-2-kuniyu@amazon.com/
->
-> Fixes: 28044fc1d495 ("net: Add a bhash2 table hashed by port and address")
-> Reported-by: Jiri Slaby <jirislaby@kernel.org>
-> Suggested-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Tue, Dec 20, 2022 at 02:20:33PM -0800, Stanislav Fomichev wrote:
 
-Acked-by: Joanne Koong <joannelkoong@gmail.com>
+Hey Stanislav,
 
-> ---
->  include/net/inet_hashtables.h    |  4 ++++
->  include/net/inet_timewait_sock.h |  5 +++++
->  net/ipv4/inet_connection_sock.c  | 26 ++++++++++++++++++++++----
->  net/ipv4/inet_hashtables.c       |  8 +++++---
->  net/ipv4/inet_timewait_sock.c    | 31 +++++++++++++++++++++++++++++--
->  5 files changed, 65 insertions(+), 9 deletions(-)
->
-> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> index 69174093078f..99bd823e97f6 100644
-> --- a/include/net/inet_hashtables.h
-> +++ b/include/net/inet_hashtables.h
-> @@ -108,6 +108,10 @@ struct inet_bind2_bucket {
->         struct hlist_node       node;
->         /* List of sockets hashed to this bucket */
->         struct hlist_head       owners;
-> +       /* bhash has twsk in owners, but bhash2 has twsk in
-> +        * deathrow not to add a member in struct sock_common.
+[...]
 
-nit: I think "but bhash2 has twsk in deathrow to avoid adding a member
-to struct sock_common" would be clearer.
-
-> +        */
-> +       struct hlist_head       deathrow;
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index aad12a179e54..b41d18490595 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -74,6 +74,7 @@ struct udp_tunnel_nic_info;
+>  struct udp_tunnel_nic;
+>  struct bpf_prog;
+>  struct xdp_buff;
+> +struct xdp_md;
+>  
+>  void synchronize_net(void);
+>  void netdev_set_default_ethtool_ops(struct net_device *dev,
+> @@ -1618,6 +1619,11 @@ struct net_device_ops {
+>  						  bool cycles);
 >  };
->
->  static inline struct net *ib_net(const struct inet_bind_bucket *ib)
-> diff --git a/include/net/inet_timewait_sock.h b/include/net/inet_timewait_sock.h
-> index 5b47545f22d3..4a8e578405cb 100644
-> --- a/include/net/inet_timewait_sock.h
-> +++ b/include/net/inet_timewait_sock.h
-> @@ -73,9 +73,14 @@ struct inet_timewait_sock {
->         u32                     tw_priority;
->         struct timer_list       tw_timer;
->         struct inet_bind_bucket *tw_tb;
-> +       struct inet_bind2_bucket        *tw_tb2;
-> +       struct hlist_node               tw_bind2_node;
->  };
->  #define tw_tclass tw_tos
->
-> +#define twsk_for_each_bound_bhash2(__tw, list) \
-> +       hlist_for_each_entry(__tw, list, tw_bind2_node)
+>  
+> +struct xdp_metadata_ops {
+> +	int	(*xmo_rx_timestamp)(const struct xdp_md *ctx, u64 *timestamp);
+> +	int	(*xmo_rx_hash)(const struct xdp_md *ctx, u32 *hash);
+> +};
 > +
->  static inline struct inet_timewait_sock *inet_twsk(const struct sock *sk)
->  {
->         return (struct inet_timewait_sock *)sk;
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index b366ab9148f2..848ffc3e0239 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -173,22 +173,40 @@ static bool inet_bind_conflict(const struct sock *sk, struct sock *sk2,
->         return false;
->  }
->
-> +static bool __inet_bhash2_conflict(const struct sock *sk, struct sock *sk2,
-> +                                  kuid_t sk_uid, bool relax,
-> +                                  bool reuseport_cb_ok, bool reuseport_ok)
-> +{
-> +       if (sk->sk_family == AF_INET && ipv6_only_sock(sk2))
-> +               return false;
-> +
-> +       return inet_bind_conflict(sk, sk2, sk_uid, relax,
-> +                                 reuseport_cb_ok, reuseport_ok);
-> +}
-> +
->  static bool inet_bhash2_conflict(const struct sock *sk,
->                                  const struct inet_bind2_bucket *tb2,
->                                  kuid_t sk_uid,
->                                  bool relax, bool reuseport_cb_ok,
->                                  bool reuseport_ok)
->  {
-> +       struct inet_timewait_sock *tw2;
->         struct sock *sk2;
->
->         sk_for_each_bound_bhash2(sk2, &tb2->owners) {
-> -               if (sk->sk_family == AF_INET && ipv6_only_sock(sk2))
-> -                       continue;
-> +               if (__inet_bhash2_conflict(sk, sk2, sk_uid, relax,
-> +                                          reuseport_cb_ok, reuseport_ok))
-> +                       return true;
-> +       }
->
-> -               if (inet_bind_conflict(sk, sk2, sk_uid, relax,
-> -                                      reuseport_cb_ok, reuseport_ok))
-> +       twsk_for_each_bound_bhash2(tw2, &tb2->deathrow) {
-> +               sk2 = (struct sock *)tw2;
-> +
-> +               if (__inet_bhash2_conflict(sk, sk2, sk_uid, relax,
-> +                                          reuseport_cb_ok, reuseport_ok))
->                         return true;
->         }
-> +
->         return false;
->  }
->
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index d039b4e732a3..24a38b56fab9 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -116,6 +116,7 @@ static void inet_bind2_bucket_init(struct inet_bind2_bucket *tb,
->  #endif
->                 tb->rcv_saddr = sk->sk_rcv_saddr;
->         INIT_HLIST_HEAD(&tb->owners);
-> +       INIT_HLIST_HEAD(&tb->deathrow);
->         hlist_add_head(&tb->node, &head->chain);
->  }
->
-> @@ -137,7 +138,7 @@ struct inet_bind2_bucket *inet_bind2_bucket_create(struct kmem_cache *cachep,
->  /* Caller must hold hashbucket lock for this tb with local BH disabled */
->  void inet_bind2_bucket_destroy(struct kmem_cache *cachep, struct inet_bind2_bucket *tb)
->  {
-> -       if (hlist_empty(&tb->owners)) {
-> +       if (hlist_empty(&tb->owners) && hlist_empty(&tb->deathrow)) {
->                 __hlist_del(&tb->node);
->                 kmem_cache_free(cachep, tb);
->         }
-> @@ -1103,15 +1104,16 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
->         /* Head lock still held and bh's disabled */
->         inet_bind_hash(sk, tb, tb2, port);
->
-> -       spin_unlock(&head2->lock);
-> -
->         if (sk_unhashed(sk)) {
->                 inet_sk(sk)->inet_sport = htons(port);
->                 inet_ehash_nolisten(sk, (struct sock *)tw, NULL);
->         }
->         if (tw)
->                 inet_twsk_bind_unhash(tw, hinfo);
-> +
-> +       spin_unlock(&head2->lock);
->         spin_unlock(&head->lock);
-> +
->         if (tw)
->                 inet_twsk_deschedule_put(tw);
->         local_bh_enable();
-> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-> index 66fc940f9521..1d77d992e6e7 100644
-> --- a/net/ipv4/inet_timewait_sock.c
-> +++ b/net/ipv4/inet_timewait_sock.c
-> @@ -29,6 +29,7 @@
->  void inet_twsk_bind_unhash(struct inet_timewait_sock *tw,
->                           struct inet_hashinfo *hashinfo)
->  {
-> +       struct inet_bind2_bucket *tb2 = tw->tw_tb2;
->         struct inet_bind_bucket *tb = tw->tw_tb;
->
->         if (!tb)
-> @@ -37,6 +38,11 @@ void inet_twsk_bind_unhash(struct inet_timewait_sock *tw,
->         __hlist_del(&tw->tw_bind_node);
->         tw->tw_tb = NULL;
->         inet_bind_bucket_destroy(hashinfo->bind_bucket_cachep, tb);
-> +
-> +       __hlist_del(&tw->tw_bind2_node);
-> +       tw->tw_tb2 = NULL;
-> +       inet_bind2_bucket_destroy(hashinfo->bind2_bucket_cachep, tb2);
-> +
->         __sock_put((struct sock *)tw);
->  }
->
-> @@ -45,7 +51,7 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
->  {
->         struct inet_hashinfo *hashinfo = tw->tw_dr->hashinfo;
->         spinlock_t *lock = inet_ehash_lockp(hashinfo, tw->tw_hash);
-> -       struct inet_bind_hashbucket *bhead;
-> +       struct inet_bind_hashbucket *bhead, *bhead2;
->
->         spin_lock(lock);
->         sk_nulls_del_node_init_rcu((struct sock *)tw);
-> @@ -54,9 +60,13 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
->         /* Disassociate with bind bucket. */
->         bhead = &hashinfo->bhash[inet_bhashfn(twsk_net(tw), tw->tw_num,
->                         hashinfo->bhash_size)];
-> +       bhead2 = inet_bhashfn_portaddr(hashinfo, (struct sock *)tw,
-> +                                      twsk_net(tw), tw->tw_num);
->
->         spin_lock(&bhead->lock);
-> +       spin_lock(&bhead2->lock);
->         inet_twsk_bind_unhash(tw, hashinfo);
-> +       spin_unlock(&bhead2->lock);
->         spin_unlock(&bhead->lock);
->
->         refcount_dec(&tw->tw_dr->tw_refcount);
-> @@ -93,6 +103,12 @@ static void inet_twsk_add_bind_node(struct inet_timewait_sock *tw,
->         hlist_add_head(&tw->tw_bind_node, list);
->  }
->
-> +static void inet_twsk_add_bind2_node(struct inet_timewait_sock *tw,
-> +                                    struct hlist_head *list)
-> +{
-> +       hlist_add_head(&tw->tw_bind2_node, list);
-> +}
-> +
->  /*
->   * Enter the time wait state. This is called with locally disabled BH.
->   * Essentially we whip up a timewait bucket, copy the relevant info into it
-> @@ -105,17 +121,28 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
->         const struct inet_connection_sock *icsk = inet_csk(sk);
->         struct inet_ehash_bucket *ehead = inet_ehash_bucket(hashinfo, sk->sk_hash);
->         spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
-> -       struct inet_bind_hashbucket *bhead;
-> +       struct inet_bind_hashbucket *bhead, *bhead2;
-> +
->         /* Step 1: Put TW into bind hash. Original socket stays there too.
->            Note, that any socket with inet->num != 0 MUST be bound in
->            binding cache, even if it is closed.
->          */
->         bhead = &hashinfo->bhash[inet_bhashfn(twsk_net(tw), inet->inet_num,
->                         hashinfo->bhash_size)];
-> +       bhead2 = inet_bhashfn_portaddr(hashinfo, sk, twsk_net(tw), inet->inet_num);
-> +
->         spin_lock(&bhead->lock);
-> +       spin_lock(&bhead2->lock);
-> +
->         tw->tw_tb = icsk->icsk_bind_hash;
->         WARN_ON(!icsk->icsk_bind_hash);
->         inet_twsk_add_bind_node(tw, &tw->tw_tb->owners);
-> +
-> +       tw->tw_tb2 = icsk->icsk_bind2_hash;
-> +       WARN_ON(!icsk->icsk_bind2_hash);
-> +       inet_twsk_add_bind2_node(tw, &tw->tw_tb2->deathrow);
-> +
-> +       spin_unlock(&bhead2->lock);
->         spin_unlock(&bhead->lock);
->
->         spin_lock(lock);
-> --
-> 2.30.2
->
+>  /**
+>   * enum netdev_priv_flags - &struct net_device priv_flags
+>   *
+> @@ -2050,6 +2056,7 @@ struct net_device {
+>  	unsigned int		flags;
+>  	unsigned long long	priv_flags;
+>  	const struct net_device_ops *netdev_ops;
+> +	const struct xdp_metadata_ops *xdp_metadata_ops;
+
+You need to document this field above the struct, or the docs build will
+complain:
+
+  SPHINX  htmldocs -->
+  <redacted>
+  make[2]: Nothing to be done for 'html'.
+  Using sphinx_rtd_theme theme
+  source directory: networking
+  ./include/linux/netdevice.h:2371: warning: Function parameter or
+  member 'xdp_metadata_ops' not described in 'net_device'
+
+>  	int			ifindex;
+>  	unsigned short		gflags;
+>  	unsigned short		hard_header_len;
+
+Thanks,
+David
