@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0295657103
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 00:30:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1D0657106
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 00:30:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232151AbiL0Xao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 18:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
+        id S232386AbiL0Xar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 18:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbiL0Xal (ORCPT
+        with ESMTP id S231809AbiL0Xal (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 18:30:41 -0500
 Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D661FB30;
-        Tue, 27 Dec 2022 15:30:37 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id i9so20869954edj.4;
-        Tue, 27 Dec 2022 15:30:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174F4640A;
+        Tue, 27 Dec 2022 15:30:39 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id i15so20927597edf.2;
+        Tue, 27 Dec 2022 15:30:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=h1onIReQ5ODXVSyv0b1/9HLSWm0hUVA7Xk38y7M8c2U=;
-        b=Df8qMwCuW8cm4WyFWmo2vn9IeBhUpQbbxzTpBts52ctPvyR66nbu95qWp0nuVkXbWT
-         8DyaeshDFmzvg48x2tAxGuhtJVxRNkOUGXewKplLtkyIqlTYqhF5uGRCHpSIrhBvAQYc
-         RRpwYhZWwGMfUK1yiyUq3/x6iPJaIk/OX3e9hdbsdhgTGwOTgoCBJPvEzJvg8VPhVcPt
-         5AV6gzEeN4izFixPg2s6xkJFAkFrW0iEhFF6A9wHuADDb66qsSHKrCPuf38UX+u5ukH0
-         7LA7Vp7KcN/07WaXqq9rJnVs9jcJ2nkq8i7OOSgREVy3JxxCP/I1QNbiI7Y8/0dHsUo8
-         v+vw==
+        bh=On9zqZfBSd6xwFAzv2KqvU5VwSXHqqET7/qhE6YwsIw=;
+        b=SNTmAxZHbI4rGrDL7WSqhXiMSYLuok7XiLn5jsUBjNZsBWfLGdEDvkwzYn9kEt+ExM
+         yM01zDvSzvFF7btI3VKgLCuKWyCjzSN+oxtbnnNtANe7++q877ohJS16q7qtb+peoLGT
+         379THwFkmXqEVK9LNWbZlaOwXWM9iWHwyXFNrN1L+LS62ez69W/wfVm9DP60TQxDcDMH
+         Q0KGjBV8EPo9dceholSgOX+RCkfC+K6D8rq7TOSrGFZrR73jNZaxK+dgq8e2H3dtwDCX
+         CRnRHBY8N6ymfOg0ZMvNjLoSF96sgPeplR8IkhyS5/ADf7al6pndKCfylPoELyjwhWSI
+         iE5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=h1onIReQ5ODXVSyv0b1/9HLSWm0hUVA7Xk38y7M8c2U=;
-        b=kSHgaspvNBV12/4toCVG0DQ3mgBqfhlGQAEXuyTD5OlgCf+evf7MiIer7SBNJE7ijJ
-         4fEp7Uvb6pbzCSCrT8dkROtykvYF49capmceMXWGNx8sYezu26fUrrAeGBGmGmT4V042
-         6rHnWlSE8MqjdT4C6OnBxW4PKk3AqzaIpKOY+qHUpgUnBRKF4LQKDctB7cle7IALqtiu
-         4+xWSG2kMSfTmx35pNIgcCqFihAwq+htzyDcPU+UdxsTBP4IW/YT4/aOeVCzqADnRtTA
-         tCb1u1V9eVNWw+9fSaDIudbt4vOkcvyIkZE79wd+Oam4KNiaNEue/eMzJ8NkKg3QwnHN
-         b0yg==
-X-Gm-Message-State: AFqh2kp2eoYCRpyfxL0Ip3d0y0PQ33ppwyAwgR3bTpN2MwkKDECNhRtz
-        ObHug8L2k6/Yvsg/cYn/vsClevkl+1U=
-X-Google-Smtp-Source: AMrXdXuC3Lrm0vqhcWSxgt9v2Dlw0EC+6jU6Yug/OR3FfYch83uV5zHH3+QRNBOfBNMFCGHdpUGU0g==
-X-Received: by 2002:a05:6402:5145:b0:462:7b85:33aa with SMTP id n5-20020a056402514500b004627b8533aamr19561385edd.2.1672183835963;
-        Tue, 27 Dec 2022 15:30:35 -0800 (PST)
+        bh=On9zqZfBSd6xwFAzv2KqvU5VwSXHqqET7/qhE6YwsIw=;
+        b=K3W+chiaRArHiKSV1lOoCmnCOznquzW+yTX7DxyPfSIN97SIOQ1y2ON66NPUVvF6U+
+         +p+v1q9alH56ll9haMyhzLHslPLL0lQqfkAsBvXhXu4VPphbgPML8kRGF/Uf4/ESmlNo
+         UK9fIMdKWPNrOG/PXJbSVmdC1KlsF0rgYr8tsfwM8a3aFtlbk8l1qMRy76e6CY+QjhVR
+         xZvnFFYcIkSjC/q1Ie5tPQSSAF6KE484lmlxIAVJgiODnDbjWt5zMYQfynctbLZHrGpK
+         KW1NAuIYfYK1e5Z0N3m6QP31F/CG+Az5H7/fgGvrf1rtyyfvMzhpDpJb9TuapU7hAmcq
+         ojuw==
+X-Gm-Message-State: AFqh2kqpzSyCyb18SioF6HlD7/0GVialvYtc/ue5762f5olQy8mkLmab
+        3izNhsS8hHtpUW4UlzKqJyauiA8S13Y=
+X-Google-Smtp-Source: AMrXdXuwosdtKiTC3mmRWDVuPEeTdqyk/vj73kPIT20gET9jjxQKc5Hyp65eea/c0ByvQPRSemJWOA==
+X-Received: by 2002:a05:6402:754:b0:485:9d0f:6193 with SMTP id p20-20020a056402075400b004859d0f6193mr5697630edy.38.1672183837463;
+        Tue, 27 Dec 2022 15:30:37 -0800 (PST)
 Received: from localhost.localdomain (dynamic-2a01-0c23-c4cf-d900-0000-0000-0000-0e63.c23.pool.telefonica.de. [2a01:c23:c4cf:d900::e63])
-        by smtp.googlemail.com with ESMTPSA id r7-20020aa7c147000000b0046cbcc86bdesm6489978edp.7.2022.12.27.15.30.34
+        by smtp.googlemail.com with ESMTPSA id r7-20020aa7c147000000b0046cbcc86bdesm6489978edp.7.2022.12.27.15.30.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 15:30:35 -0800 (PST)
+        Tue, 27 Dec 2022 15:30:36 -0800 (PST)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-wireless@vger.kernel.org
 Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
@@ -60,9 +60,9 @@ Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
         Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [RFC PATCH v1 01/19] rtw88: mac: Use existing interface mask macros in rtw_pwr_seq_parser()
-Date:   Wed, 28 Dec 2022 00:30:02 +0100
-Message-Id: <20221227233020.284266-2-martin.blumenstingl@googlemail.com>
+Subject: [RFC PATCH v1 02/19] rtw88: pci: Change type of rtw_hw_queue_mapping() and ac_to_hwq to enum
+Date:   Wed, 28 Dec 2022 00:30:03 +0100
+Message-Id: <20221227233020.284266-3-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
 References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
@@ -78,32 +78,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the magic numbers for the intf_mask with their existing
-RTW_PWR_INTF_PCI_MSK and RTW_PWR_INTF_USB_MSK macros to make the code
-easier to understand.
+rtw_hw_queue_mapping() and ac_to_hwq[] hold values of type enum
+rtw_tx_queue_type. Change their types to reflect this to make it easier
+to understand this part of the code.
+
+While here, also change the array to be static const as it is not
+supposed to be modified at runtime.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/net/wireless/realtek/rtw88/mac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/realtek/rtw88/pci.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/mac.c b/drivers/net/wireless/realtek/rtw88/mac.c
-index 98777f294945..4e5c194aac29 100644
---- a/drivers/net/wireless/realtek/rtw88/mac.c
-+++ b/drivers/net/wireless/realtek/rtw88/mac.c
-@@ -217,10 +217,10 @@ static int rtw_pwr_seq_parser(struct rtw_dev *rtwdev,
- 	cut_mask = cut_version_to_mask(cut);
- 	switch (rtw_hci_type(rtwdev)) {
- 	case RTW_HCI_TYPE_PCIE:
--		intf_mask = BIT(2);
-+		intf_mask = RTW_PWR_INTF_PCI_MSK;
- 		break;
- 	case RTW_HCI_TYPE_USB:
--		intf_mask = BIT(1);
-+		intf_mask = RTW_PWR_INTF_USB_MSK;
- 		break;
- 	default:
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 0975d27240e4..45ce7e624c03 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -669,7 +669,7 @@ static void rtw_pci_deep_ps(struct rtw_dev *rtwdev, bool enter)
+ 	spin_unlock_bh(&rtwpci->irq_lock);
+ }
+ 
+-static u8 ac_to_hwq[] = {
++static const enum rtw_tx_queue_type ac_to_hwq[] = {
+ 	[IEEE80211_AC_VO] = RTW_TX_QUEUE_VO,
+ 	[IEEE80211_AC_VI] = RTW_TX_QUEUE_VI,
+ 	[IEEE80211_AC_BE] = RTW_TX_QUEUE_BE,
+@@ -678,12 +678,12 @@ static u8 ac_to_hwq[] = {
+ 
+ static_assert(ARRAY_SIZE(ac_to_hwq) == IEEE80211_NUM_ACS);
+ 
+-static u8 rtw_hw_queue_mapping(struct sk_buff *skb)
++static enum rtw_tx_queue_type rtw_hw_queue_mapping(struct sk_buff *skb)
+ {
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
+ 	__le16 fc = hdr->frame_control;
+ 	u8 q_mapping = skb_get_queue_mapping(skb);
+-	u8 queue;
++	enum rtw_tx_queue_type queue;
+ 
+ 	if (unlikely(ieee80211_is_beacon(fc)))
+ 		queue = RTW_TX_QUEUE_BCN;
 -- 
 2.39.0
 
