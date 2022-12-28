@@ -2,153 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC39E6571E6
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 02:56:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85044657218
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 03:24:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiL1B4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Dec 2022 20:56:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        id S231263AbiL1CYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Dec 2022 21:24:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbiL1B4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 20:56:41 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68839203
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 17:56:39 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id j17so12297408lfr.3
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 17:56:39 -0800 (PST)
+        with ESMTP id S229951AbiL1CYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Dec 2022 21:24:24 -0500
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08982A46F
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 18:24:22 -0800 (PST)
+Received: by mail-vk1-xa2f.google.com with SMTP id i32so292293vkr.12
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 18:24:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Ya4OkwTxkQIsQisM/Dm9mdZB4FBQpxpLG/pVmuZn5L4=;
-        b=Jmkig8CX48nfiBERsCtde7QIRT0twnS96s3BpTt0B0ITmbwVmk/jZs0M5M+b0Z8M83
-         aLA6MekTcPxaFRbkxVsmD/rLYAguq9i9pNrAafQaFsotkoCz23OCWAsioM50+5YZB7g6
-         UrzhhlLStPOCi+86IReulMj3AiM2aTy6FT5BUHXEqfzBu6nNEFdBlfrzQSPO4/Ob0lGQ
-         fcn7fg5+czVUC4vqcZcf1beJwirxZP7iXgmjEV9v5VNOLybuPofxjfaxXqxcJllN/jI3
-         5qREHDaBfdTx/apFiu2HEZTGcRybUPp/YXxEMdMHMwc59TuIDfeZOVnffh1tj6llK+CN
-         r45w==
+        bh=lttqZKeMZ42Wftl+a8lEKBwDe2IpQRheXD3/dUIOrPE=;
+        b=vLsxbKjnqmN7ZOTHeMz7NeULAaBP7Lfep7XHvKEKppWhzJsr0kdCDXNIueyDJW7iVL
+         la70SsV6Ie6ZMuuy9gZiH0wLLJMRYSg2bTYDV14tlozyS3xAPU9gEHvXZVlTYbrgIuP8
+         aE9qw7gWzsANwTwSfOkhq3eh/Fo6ZRciivXlZObFquyr6pMO+DGhNIoEEW34DoTxowO0
+         CqQx7pam0TnoF72zI1W2XVJI5r5x9tD2jHyPsMl3d/IiP/Yx8UCWe2S1Ziw91SkBk8bU
+         NjTJYO+lSwXDsoRKiRin6oAsX+ieLJnv8B2QE/DPzvPaDbHM60/L30bM7tXNrBDN+PqM
+         qXQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Ya4OkwTxkQIsQisM/Dm9mdZB4FBQpxpLG/pVmuZn5L4=;
-        b=NEpV3T0KN1dditRa/fSbtGhyfITfiecc1xIkHn9+aHK/2iHWxl9RsS0PI9maw2O3WL
-         HB5BsQkquFNlwlLPD8mu67AHXz5qnyVSCL1OE8+uWhwvPGseJQxxIn5cgYR4lGPyG6jH
-         ufrHyjHm0lM1xvYeBT2x1NgMyzQlOTZzseOLDcyFuIau14ndLy+9L0lc6soq2yw7V5Nx
-         6PjUU5XNDSvqR7fs+H+Ru7zi/kntLBZz1w5oJp35b7bUYVRQxDqQOQjwzo8D36V0TaHy
-         zXdCyiGyvD7bITcvq8GNpFViWfdftgGRvRYm6KXZoZLhTz3rxOtVkmn6M0m4lJChm2rH
-         nxDQ==
-X-Gm-Message-State: AFqh2kq0AkTQLjLHC4XDYXlzvdlV/Z45LmMvJlBjvt2CrI8k1FQQgk8j
-        ItvYTP1p35ctIDDzbd2CP9EluQ==
-X-Google-Smtp-Source: AMrXdXswpTVzhGP9x29LisdW+YxBu8bpDSgNf2VvWKUP22usyT4Oykd1ed9f4Aw/ebsj32589xEcDQ==
-X-Received: by 2002:a05:6512:2527:b0:4b5:8504:7072 with SMTP id be39-20020a056512252700b004b585047072mr6558508lfb.14.1672192597725;
-        Tue, 27 Dec 2022 17:56:37 -0800 (PST)
-Received: from michal-H370M-DS3H.office.semihalf.net ([83.142.187.84])
-        by smtp.googlemail.com with ESMTPSA id h10-20020a2ea48a000000b002776eb5b1ccsm1842623lji.4.2022.12.27.17.56.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Dec 2022 17:56:37 -0800 (PST)
-From:   =?UTF-8?q?Micha=C5=82=20Grzelak?= <mig@semihalf.com>
-To:     krzysztof.kozlowski@linaro.org
-Cc:     andrew@lunn.ch, chris.packham@alliedtelesis.co.nz,
-        davem@davemloft.net, devicetree@vger.kernel.org,
-        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, mig@semihalf.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        upstream@semihalf.com
-Subject: [PATCH v2] dt-bindings: net: marvell,orion-mdio: Fix examples
-Date:   Wed, 28 Dec 2022 02:54:33 +0100
-Message-Id: <20221228015433.73919-1-mig@semihalf.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <7f6a2072-f26b-e2f0-9c07-d2ea43c8c4bc@linaro.org>
-References: <7f6a2072-f26b-e2f0-9c07-d2ea43c8c4bc@linaro.org>
+        bh=lttqZKeMZ42Wftl+a8lEKBwDe2IpQRheXD3/dUIOrPE=;
+        b=S24bKngdSm/4trgnK58RYqrXx5aQ8LwqCJR1aSxSk455WSPIA4tsfNuP6FxQOyh4ed
+         dx17GWtFZH9htYuY65Ol4VAOTJ+40lUrOOd0bYNkGDe/RXcJebIO39PDz/Dxrs5SIWtM
+         h3Mk+tehaRQpCgOLoEdN65KCgStYTi/P8K71htFPHYJ4lpoVtRG4rFrtXAw+vHhswF/C
+         fhoHV12nC0+FlxS0V26H2lUbA1z5CRzxXUAFMx0ZF2dquXpKXKwrrPoSVlWkrJjpqBxU
+         yJVlCMtL17WZgO5peDTMrmDlW8PpTjOYAIqcd1LVVyl3d6mfQtNdOSRZfVURJ0+P/3ui
+         ye7Q==
+X-Gm-Message-State: AFqh2kov9XveReei3JnYPhlLXpne/TItTGqGRu8DVbKyZsa7MZb5u8El
+        4NiB6tUl4z2v9OG8cRMzJTQmLFvdyVSvJHtL8gQNTw==
+X-Google-Smtp-Source: AMrXdXvLQNIe1PcsU5De/1MFPipsfDOPkaOr3HULUDZN915fVJLoMYjD7SkPBo8QjiIJb6mDo9iqWmSJIrELWUFy1fw=
+X-Received: by 2002:a1f:2016:0:b0:3d5:53d8:aa10 with SMTP id
+ g22-20020a1f2016000000b003d553d8aa10mr1129190vkg.21.1672194261032; Tue, 27
+ Dec 2022 18:24:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20221227022528.609839-1-mie@igel.co.jp> <20221227022528.609839-5-mie@igel.co.jp>
+ <20221227020007-mutt-send-email-mst@kernel.org> <CANXvt5pRy-i7=_ikNkZPp2HcRmWZYNJYpjO_ieBJJVc90nds+A@mail.gmail.com>
+ <CANXvt5qUUOqB1CVgAk5KyL9sV+NsnJSKhatvdV12jH5=kBjjJw@mail.gmail.com> <20221227075332-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20221227075332-mutt-send-email-mst@kernel.org>
+From:   Shunsuke Mie <mie@igel.co.jp>
+Date:   Wed, 28 Dec 2022 11:24:10 +0900
+Message-ID: <CANXvt5qTbGi7p5Y7eVSjyHJ7MLjiMgGKyAM-LEkJZXvhtSh7vw@mail.gmail.com>
+Subject: Re: [RFC PATCH 4/9] vringh: unify the APIs for all accessors
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Rusty Russell <rusty@rustcorp.com.au>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As stated in marvell-orion-mdio.txt deleted in commit 0781434af811f
-("dt-bindings: net: orion-mdio: Convert to JSON schema") if
-'interrupts' property is present, width of 'reg' should be 0x84.
-Otherwise, width of 'reg' should be 0x4. Fix 'examples:' and add
-constraints checking whether 'interrupts' property is present
-and validate it against fixed values in reg.
-
-Signed-off-by: Michał Grzelak <mig@semihalf.com>
----
-Changelog:
-v1->v2:
-- remove second example
-- add 'if:' constraint to 'allOf:'
-- move 'allOf:' before 'examples:'
-
- .../bindings/net/marvell,orion-mdio.yaml      | 31 ++++++++++++++++---
- 1 file changed, 27 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml b/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
-index d2906b4a0f59..381cd8edebed 100644
---- a/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
-@@ -16,9 +16,6 @@ description: |
-   8k has a second unit which provides an interface with the xMDIO bus. This
-   driver handles these interfaces.
- 
--allOf:
--  - $ref: "mdio.yaml#"
--
- properties:
-   compatible:
-     enum:
-@@ -39,13 +36,39 @@ required:
-   - compatible
-   - reg
- 
-+allOf:
-+
-+  - $ref: "mdio.yaml#"
-+
-+  - if:
-+      required:
-+        - interrupts
-+
-+    then:
-+      properties:
-+        reg:
-+          items:
-+            - items:
-+                - $ref: /schemas/types.yaml#/definitions/cell
-+                - const: 0x84
-+
-+    else:
-+      properties:
-+        reg:
-+          items:
-+            - items:
-+                - $ref: /schemas/types.yaml#/definitions/cell
-+                - enum:
-+                    - 0x4
-+                    - 0x10
-+
- unevaluatedProperties: false
- 
- examples:
-   - |
-     mdio@d0072004 {
-       compatible = "marvell,orion-mdio";
--      reg = <0xd0072004 0x4>;
-+      reg = <0xd0072004 0x84>;
-       #address-cells = <1>;
-       #size-cells = <0>;
-       interrupts = <30>;
--- 
-2.34.1
-
+2022=E5=B9=B412=E6=9C=8827=E6=97=A5(=E7=81=AB) 23:37 Michael S. Tsirkin <ms=
+t@redhat.com>:
+>
+> On Tue, Dec 27, 2022 at 07:22:36PM +0900, Shunsuke Mie wrote:
+> > 2022=E5=B9=B412=E6=9C=8827=E6=97=A5(=E7=81=AB) 16:49 Shunsuke Mie <mie@=
+igel.co.jp>:
+> > >
+> > > 2022=E5=B9=B412=E6=9C=8827=E6=97=A5(=E7=81=AB) 16:04 Michael S. Tsirk=
+in <mst@redhat.com>:
+> > > >
+> > > > On Tue, Dec 27, 2022 at 11:25:26AM +0900, Shunsuke Mie wrote:
+> > > > > Each vringh memory accessors that are for user, kern and iotlb ha=
+s own
+> > > > > interfaces that calls common code. But some codes are duplicated =
+and that
+> > > > > becomes loss extendability.
+> > > > >
+> > > > > Introduce a struct vringh_ops and provide a common APIs for all a=
+ccessors.
+> > > > > It can bee easily extended vringh code for new memory accessor an=
+d
+> > > > > simplified a caller code.
+> > > > >
+> > > > > Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+> > > > > ---
+> > > > >  drivers/vhost/vringh.c | 667 +++++++++++------------------------=
+------
+> > > > >  include/linux/vringh.h | 100 +++---
+> > > > >  2 files changed, 225 insertions(+), 542 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > > > > index aa3cd27d2384..ebfd3644a1a3 100644
+> > > > > --- a/drivers/vhost/vringh.c
+> > > > > +++ b/drivers/vhost/vringh.c
+> > > > > @@ -35,15 +35,12 @@ static __printf(1,2) __cold void vringh_bad(c=
+onst char *fmt, ...)
+> > > > >  }
+> > > > >
+> > > > >  /* Returns vring->num if empty, -ve on error. */
+> > > > > -static inline int __vringh_get_head(const struct vringh *vrh,
+> > > > > -                                 int (*getu16)(const struct vrin=
+gh *vrh,
+> > > > > -                                               u16 *val, const _=
+_virtio16 *p),
+> > > > > -                                 u16 *last_avail_idx)
+> > > > > +static inline int __vringh_get_head(const struct vringh *vrh, u1=
+6 *last_avail_idx)
+> > > > >  {
+> > > > >       u16 avail_idx, i, head;
+> > > > >       int err;
+> > > > >
+> > > > > -     err =3D getu16(vrh, &avail_idx, &vrh->vring.avail->idx);
+> > > > > +     err =3D vrh->ops.getu16(vrh, &avail_idx, &vrh->vring.avail-=
+>idx);
+> > > > >       if (err) {
+> > > > >               vringh_bad("Failed to access avail idx at %p",
+> > > > >                          &vrh->vring.avail->idx);
+> > > >
+> > > > I like that this patch removes more lines of code than it adds.
+> > > >
+> > > > However one of the design points of vringh abstractions is that the=
+y were
+> > > > carefully written to be very low overhead.
+> > > > This is why we are passing function pointers to inline functions -
+> > > > compiler can optimize that out.
+> > > >
+> > > > I think that introducing ops indirect functions calls here is going=
+ to break
+> > > > these assumptions and hurt performance.
+> > > > Unless compiler can somehow figure it out and optimize?
+> > > > I don't see how it's possible with ops pointer in memory
+> > > > but maybe I'm wrong.
+> > > I think your concern is correct. I have to understand the compiler
+> > > optimization and redesign this approach If it is needed.
+> > > > Was any effort taken to test effect of these patches on performance=
+?
+> > > I just tested vringh_test and already faced little performance reduct=
+ion.
+> > > I have to investigate that, as you said.
+> > I attempted to test with perf. I found that the performance of patched =
+code
+> > is almost the same as the upstream one. However, I have to investigate =
+way
+> > this patch leads to this result, also the profiling should be run on
+> > more powerful
+> > machines too.
+> >
+> > environment:
+> > $ grep 'model name' /proc/cpuinfo
+> > model name      : Intel(R) Core(TM) i3-7020U CPU @ 2.30GHz
+> > model name      : Intel(R) Core(TM) i3-7020U CPU @ 2.30GHz
+> > model name      : Intel(R) Core(TM) i3-7020U CPU @ 2.30GHz
+> > model name      : Intel(R) Core(TM) i3-7020U CPU @ 2.30GHz
+> >
+> > results:
+> > * for patched code
+> >  Performance counter stats for 'nice -n -20 ./vringh_test_patched
+> > --parallel --eventidx --fast-vringh --indirect --virtio-1' (20 runs):
+> >
+> >           3,028.05 msec task-clock                #    0.995 CPUs
+> > utilized            ( +-  0.12% )
+> >             78,150      context-switches          #   25.691 K/sec
+> >                ( +-  0.00% )
+> >                  5      cpu-migrations            #    1.644 /sec
+> >                ( +-  3.33% )
+> >                190      page-faults               #   62.461 /sec
+> >                ( +-  0.41% )
+> >      6,919,025,222      cycles                    #    2.275 GHz
+> >                ( +-  0.13% )
+> >      8,990,220,160      instructions              #    1.29  insn per
+> > cycle           ( +-  0.04% )
+> >      1,788,326,786      branches                  #  587.899 M/sec
+> >                ( +-  0.05% )
+> >          4,557,398      branch-misses             #    0.25% of all
+> > branches          ( +-  0.43% )
+> >
+> >            3.04359 +- 0.00378 seconds time elapsed  ( +-  0.12% )
+> >
+> > * for upstream code
+> >  Performance counter stats for 'nice -n -20 ./vringh_test_base
+> > --parallel --eventidx --fast-vringh --indirect --virtio-1' (10 runs):
+> >
+> >           3,058.41 msec task-clock                #    0.999 CPUs
+> > utilized            ( +-  0.14% )
+> >             78,149      context-switches          #   25.545 K/sec
+> >                ( +-  0.00% )
+> >                  5      cpu-migrations            #    1.634 /sec
+> >                ( +-  2.67% )
+> >                194      page-faults               #   63.414 /sec
+> >                ( +-  0.43% )
+> >      6,988,713,963      cycles                    #    2.284 GHz
+> >                ( +-  0.14% )
+> >      8,512,533,269      instructions              #    1.22  insn per
+> > cycle           ( +-  0.04% )
+> >      1,638,375,371      branches                  #  535.549 M/sec
+> >                ( +-  0.05% )
+> >          4,428,866      branch-misses             #    0.27% of all
+> > branches          ( +- 22.57% )
+> >
+> >            3.06085 +- 0.00420 seconds time elapsed  ( +-  0.14% )
+>
+>
+> How you compiled it also matters. ATM we don't enable retpolines
+> and it did not matter since we didn't have indirect calls,
+> but we should. Didn't yet investigate how to do that for virtio tools.
+I think the retpolines certainly affect performance. Thank you for pointing
+it out. I'd like to start the investigation that how to apply the
+retpolines to the
+virtio tools.
+> > > Thank you for your comments.
+> > > > Thanks!
+> > > >
+> > > >
+> > > Best,
+> > > Shunsuke.
+>
