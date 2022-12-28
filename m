@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AED646575FC
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 12:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB1E8657615
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 12:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232974AbiL1LpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 06:45:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
+        id S232931AbiL1LyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 06:54:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbiL1Lo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 06:44:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468C81178
-        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 03:44:11 -0800 (PST)
+        with ESMTP id S232655AbiL1LyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 06:54:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C43101DA
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 03:53:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672227850;
+        s=mimecast20190719; t=1672228401;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FPjY7Cy1Mg6WKTpNIpPpKalJWxGn29fqfriJCOyIl3w=;
-        b=gjN9UxGHIFaaH6l56b1ZP7HQRwowZ70NYbupud6Wr8HrKKdV6gOmRhf4s9CUvy2tj7Vhh1
-        F2YBVxhf97Zptasr9+ZnCfxP7tfaRW+WVsyQwYvpS5/EghZUmejGvjFFSnKbFOfh8GMd5F
-        YA60Hr1MVFlUynK1+0juhGJBh11AI+g=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=3hQKS1NwOrIIXUtr0/6kNG7P651iOA+L6EemF1Qhqo8=;
+        b=a3/ip11NJgo5ciZu+r1h09W/A1329peynAL+bUgFJfbFzb6V0h/xZieJGGi9Bh2HO+sGCm
+        295/1DMdVZTTyyDgO/AN1KZdIeiO5y0U33hQQOEy6pdFuNNtB8uCOCVIviF5d/sLAUd3Ia
+        AeOp2ZZMih0j0m4upN1I7N8WE9TFbbs=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-539-a8fSF1upMda4JlgZc_JnXA-1; Wed, 28 Dec 2022 06:44:08 -0500
-X-MC-Unique: a8fSF1upMda4JlgZc_JnXA-1
-Received: by mail-oi1-f197.google.com with SMTP id l21-20020a544115000000b0035e40187b9eso2556077oic.22
-        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 03:44:08 -0800 (PST)
+ us-mta-290-EcHwvu_aOdiKwEpo1qWf3Q-1; Wed, 28 Dec 2022 06:53:20 -0500
+X-MC-Unique: EcHwvu_aOdiKwEpo1qWf3Q-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-14c958c18b5so7622814fac.23
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 03:53:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FPjY7Cy1Mg6WKTpNIpPpKalJWxGn29fqfriJCOyIl3w=;
-        b=pNtyRVudLou9AV9qdlFnl0ygZMqWBW/2XJkaTAEL1vccfhoE2dUzos2zz8skl+lX3p
-         FYB3sUv8ksSqOKLIwtqGOhrEkG07v19FpKytBxegOFpPJ2vgtpN9R1DM8wTIL6DrZlAR
-         fe+HTSI4QC1BzH0sGqaJlCD+wYAEFwCY9Nef7ZNBMNbYSE4LXTCjGIfgeUddYh5tGj9z
-         4h+uMATRUKZZVivKTWALooAaVv1uh3cdq6qOQRHgZDoIIl9oWMkr8y2StcAlUUQdjBad
-         dgnFa7kQjtuikkJ13UulhMJc+MOAT7n6sa7QS2EsE3nfyQN2UCNabzvdArTLSd0CrOPT
-         5bYg==
-X-Gm-Message-State: AFqh2kp7shkKfQnr7KJjX8TESyQmt78TM2uuzdl5DJVEueb1eHu2qjYe
-        rJNZXuHdrpt4ndX11tuar3a+E7C+1z/ksocwfrF4+JfSotv0q0Xv+I96yLEYDtW+IFrzDu+Pt5D
-        dD5ACuBp4jwHeEcc7XYHi6jq5KG+kYICx
-X-Received: by 2002:aca:1111:0:b0:35e:7a42:7ab5 with SMTP id 17-20020aca1111000000b0035e7a427ab5mr1311565oir.280.1672227847861;
-        Wed, 28 Dec 2022 03:44:07 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXuZET8YtyOHtUA69u8b4mtI9mTXpOsgMPK2i7Rp8Qb9ZkpLhrS/iL2qb8kuQphVO3IvX1F6toQuOlLgFg8gWDI=
-X-Received: by 2002:aca:1111:0:b0:35e:7a42:7ab5 with SMTP id
- 17-20020aca1111000000b0035e7a427ab5mr1311558oir.280.1672227847622; Wed, 28
- Dec 2022 03:44:07 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3hQKS1NwOrIIXUtr0/6kNG7P651iOA+L6EemF1Qhqo8=;
+        b=cTnpNe+UWE6tPp+w2zbQfhJiAL4o3xkRvlsSuSxQD7N5iSTw0+uwQJ6kR6MlV67+7l
+         PpKRjtacJJ013dIBiorq73VxZe4y+4qN/9MKiDQhjoo6343fyzgsCHwmJ/tC4CRjMjla
+         Ieu9kxxFoSfMOiYUOF8Qr+oem650MCCoe/vZaQ69Z1JpbcuvoL4b3kj/FaFIcmSjx8aZ
+         nHRaycsVVaodIJ6ogRQ0NvQUzzYnScVFhWUCm++/60q3SbEMAY2YzoiSaoDWtBDgWRtF
+         onJQl2fVn0TPe0c2A+W2N/UpZqKvfXGpTiioAG5Y+yZWYlDTsp7R1NWwQF5EBsRyLi1k
+         1lag==
+X-Gm-Message-State: AFqh2kpT587b4Ex88WuVW9h/ZMgW4EtZ2+PKb5uCxgaVT7PtpD3NZUAt
+        uHxeSoFP8E03qJo5dJ2n9X2DPZirbLeYVRc9fQBrr7d9umVzGot50ZN0S9bKV6KDvmxq8iJLfQx
+        lkUmYP7grqhJUX0LvL/rLF5q16Jwid6FL
+X-Received: by 2002:a9d:7843:0:b0:678:1eb4:3406 with SMTP id c3-20020a9d7843000000b006781eb43406mr1573921otm.237.1672228399893;
+        Wed, 28 Dec 2022 03:53:19 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuiaCrxXL5+xhMG7tUHPCIJ4eF/3FYo5UTrnp+O2D9BcfxMWXCf0aeUTDXkBGQmvAAjX9SfrHhS9db4WpzKM1c=
+X-Received: by 2002:a9d:7843:0:b0:678:1eb4:3406 with SMTP id
+ c3-20020a9d7843000000b006781eb43406mr1573914otm.237.1672228399502; Wed, 28
+ Dec 2022 03:53:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20221226074908.8154-1-jasowang@redhat.com> <20221226074908.8154-5-jasowang@redhat.com>
- <1672107557.0142956-1-xuanzhuo@linux.alibaba.com> <CACGkMEvzhAFj5HCmP--9DKfCAq_4wPNwsmmg4h0Sbv6ra0+DrQ@mail.gmail.com>
- <1672216748.7057884-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1672216748.7057884-1-xuanzhuo@linux.alibaba.com>
+References: <20221226074908.8154-1-jasowang@redhat.com> <20221226074908.8154-4-jasowang@redhat.com>
+ <20221226183705-mutt-send-email-mst@kernel.org> <CACGkMEuNZLJRnWw+XNxJ-to1y8L2GrTrJkk0y0Gwb5H2YhDczQ@mail.gmail.com>
+ <20221227022255-mutt-send-email-mst@kernel.org> <d77bc1ce-b73f-1ba8-f04f-b3bffeb731c3@redhat.com>
+ <20221227043148-mutt-send-email-mst@kernel.org> <0d9f1b89-9374-747b-3fb0-b4b28ad0ace1@redhat.com>
+In-Reply-To: <0d9f1b89-9374-747b-3fb0-b4b28ad0ace1@redhat.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 28 Dec 2022 19:43:56 +0800
-Message-ID: <CACGkMEtr7r25s6Tgsj=fcw3MD3ShLmuuVHvx0WVNiQHyV_G=zw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] virtio-net: sleep instead of busy waiting for cvq command
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, eperezma@redhat.com,
-        edumazet@google.com, maxime.coquelin@redhat.com, kuba@kernel.org,
-        pabeni@redhat.com, davem@davemloft.net, mst@redhat.com
+Date:   Wed, 28 Dec 2022 19:53:08 +0800
+Message-ID: <CACGkMEv=+D+Es4sfde_X7F0zspVdy4Rs1Wi9qfCudsznsUrOTQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] virtio_ring: introduce a per virtqueue waitqueue
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        maxime.coquelin@redhat.com, alvaro.karsz@solid-run.com,
+        eperezma@redhat.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,154 +80,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 28, 2022 at 4:40 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+On Wed, Dec 28, 2022 at 2:34 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> On Tue, 27 Dec 2022 12:33:53 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > On Tue, Dec 27, 2022 at 10:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > >
-> > > On Mon, 26 Dec 2022 15:49:08 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > > > We used to busy waiting on the cvq command this tends to be
-> > > > problematic since:
-> > > >
-> > > > 1) CPU could wait for ever on a buggy/malicous device
-> > > > 2) There's no wait to terminate the process that triggers the cvq
-> > > >    command
-> > > >
-> > > > So this patch switch to use virtqueue_wait_for_used() to sleep with a
-> > > > timeout (1s) instead of busy polling for the cvq command forever. This
-> > >
-> > > I don't think that a fixed 1S is a good choice.
-> >
-> > Well, it could be tweaked to be a little bit longer.
-> >
-> > One way, as discussed, is to let the device advertise a timeout then
-> > the driver can validate if it's valid and use that timeout. But it
-> > needs extension to the spec.
-> >
-> > > Some of the DPUs are very
-> > > lazy for cvq handle.
-> >
-> > Such design needs to be revisited, cvq (control path) should have a
-> > better priority or QOS than datapath.
-> >
-> > > In particular, we will also directly break the device.
-> >
-> > It's kind of hardening for malicious devices.
 >
-> Just based on timeout, it is judged that it is a malicious device. I think it is
-> too arbitrary.
+> =E5=9C=A8 2022/12/27 17:38, Michael S. Tsirkin =E5=86=99=E9=81=93:
+> > On Tue, Dec 27, 2022 at 05:12:58PM +0800, Jason Wang wrote:
+> >> =E5=9C=A8 2022/12/27 15:33, Michael S. Tsirkin =E5=86=99=E9=81=93:
+> >>> On Tue, Dec 27, 2022 at 12:30:35PM +0800, Jason Wang wrote:
+> >>>>> But device is still going and will later use the buffers.
+> >>>>>
+> >>>>> Same for timeout really.
+> >>>> Avoiding infinite wait/poll is one of the goals, another is to sleep=
+.
+> >>>> If we think the timeout is hard, we can start from the wait.
+> >>>>
+> >>>> Thanks
+> >>> If the goal is to avoid disrupting traffic while CVQ is in use,
+> >>> that sounds more reasonable. E.g. someone is turning on promisc,
+> >>> a spike in CPU usage might be unwelcome.
+> >>
+> >> Yes, this would be more obvious is UP is used.
+> >>
+> >>
+> >>> things we should be careful to address then:
+> >>> 1- debugging. Currently it's easy to see a warning if CPU is stuck
+> >>>      in a loop for a while, and we also get a backtrace.
+> >>>      E.g. with this - how do we know who has the RTNL?
+> >>>      We need to integrate with kernel/watchdog.c for good results
+> >>>      and to make sure policy is consistent.
+> >>
+> >> That's fine, will consider this.
 
-Drivers have very little information to make the decision. So it's
-really a balance.
+So after some investigation, it seems the watchdog.c doesn't help. The
+only export helper is touch_softlockup_watchdog() which tries to avoid
+triggering the lockups warning for the known slow path.
 
-We can start with a very long timeout like 10 minutes. Otherwise a
-buggy/malicious device will block a lot of important things (reboot,
-modprobe) even if the scheduler is still functional.
+And before the patch, we end up with a real infinite loop which could
+be caught by RCU stall detector which is not the case of the sleep.
+What we can do is probably do a periodic netdev_err().
 
 Thanks
 
+> >>
+> >>
+> >>> 2- overhead. In a very common scenario when device is in hypervisor,
+> >>>      programming timers etc has a very high overhead, at bootup
+> >>>      lots of CVQ commands are run and slowing boot down is not nice.
+> >>>      let's poll for a bit before waiting?
+> >>
+> >> Then we go back to the question of choosing a good timeout for poll. A=
+nd
+> >> poll seems problematic in the case of UP, scheduler might not have the
+> >> chance to run.
+> > Poll just a bit :) Seriously I don't know, but at least check once
+> > after kick.
 >
-> Thanks.
+>
+> I think it is what the current code did where the condition will be
+> check before trying to sleep in the wait_event().
 >
 >
 > >
-> > >
-> > > I think it is necessary to add a Virtio-Net parameter to allow users to define
-> > > this timeout by themselves. Although I don't think this is a good way.
+> >>> 3- suprise removal. need to wake up thread in some way. what about
+> >>>      other cases of device breakage - is there a chance this
+> >>>      introduces new bugs around that? at least enumerate them please.
+> >>
+> >> The current code did:
+> >>
+> >> 1) check for vq->broken
+> >> 2) wakeup during BAD_RING()
+> >>
+> >> So we won't end up with a never woke up process which should be fine.
+> >>
+> >> Thanks
 > >
-> > Very hard and unfriendly to the end users.
-> >
-> > Thanks
-> >
-> > >
-> > > Thanks.
-> > >
-> > >
-> > > > gives the scheduler a breath and can let the process can respond to
-> > > > asignal. If the device doesn't respond in the timeout, break the
-> > > > device.
-> > > >
-> > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > ---
-> > > > Changes since V1:
-> > > > - break the device when timeout
-> > > > - get buffer manually since the virtio core check more_used() instead
-> > > > ---
-> > > >  drivers/net/virtio_net.c | 24 ++++++++++++++++--------
-> > > >  1 file changed, 16 insertions(+), 8 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index efd9dd55828b..6a2ea64cfcb5 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -405,6 +405,7 @@ static void disable_rx_mode_work(struct virtnet_info *vi)
-> > > >       vi->rx_mode_work_enabled = false;
-> > > >       spin_unlock_bh(&vi->rx_mode_lock);
-> > > >
-> > > > +     virtqueue_wake_up(vi->cvq);
-> > > >       flush_work(&vi->rx_mode_work);
-> > > >  }
-> > > >
-> > > > @@ -1497,6 +1498,11 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
-> > > >       return !oom;
-> > > >  }
-> > > >
-> > > > +static void virtnet_cvq_done(struct virtqueue *cvq)
-> > > > +{
-> > > > +     virtqueue_wake_up(cvq);
-> > > > +}
-> > > > +
-> > > >  static void skb_recv_done(struct virtqueue *rvq)
-> > > >  {
-> > > >       struct virtnet_info *vi = rvq->vdev->priv;
-> > > > @@ -1984,6 +1990,8 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
-> > > >       return err;
-> > > >  }
-> > > >
-> > > > +static int virtnet_close(struct net_device *dev);
-> > > > +
-> > > >  /*
-> > > >   * Send command via the control virtqueue and check status.  Commands
-> > > >   * supported by the hypervisor, as indicated by feature bits, should
-> > > > @@ -2026,14 +2034,14 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
-> > > >       if (unlikely(!virtqueue_kick(vi->cvq)))
-> > > >               return vi->ctrl->status == VIRTIO_NET_OK;
-> > > >
-> > > > -     /* Spin for a response, the kick causes an ioport write, trapping
-> > > > -      * into the hypervisor, so the request should be handled immediately.
-> > > > -      */
-> > > > -     while (!virtqueue_get_buf(vi->cvq, &tmp) &&
-> > > > -            !virtqueue_is_broken(vi->cvq))
-> > > > -             cpu_relax();
-> > > > +     if (virtqueue_wait_for_used(vi->cvq)) {
-> > > > +             virtqueue_get_buf(vi->cvq, &tmp);
-> > > > +             return vi->ctrl->status == VIRTIO_NET_OK;
-> > > > +     }
-> > > >
-> > > > -     return vi->ctrl->status == VIRTIO_NET_OK;
-> > > > +     netdev_err(vi->dev, "CVQ command timeout, break the virtio device.");
-> > > > +     virtio_break_device(vi->vdev);
-> > > > +     return VIRTIO_NET_ERR;
-> > > >  }
-> > > >
-> > > >  static int virtnet_set_mac_address(struct net_device *dev, void *p)
-> > > > @@ -3526,7 +3534,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
-> > > >
-> > > >       /* Parameters for control virtqueue, if any */
-> > > >       if (vi->has_cvq) {
-> > > > -             callbacks[total_vqs - 1] = NULL;
-> > > > +             callbacks[total_vqs - 1] = virtnet_cvq_done;
-> > > >               names[total_vqs - 1] = "control";
-> > > >       }
-> > > >
-> > > > --
-> > > > 2.25.1
-> > > >
-> > > > _______________________________________________
-> > > > Virtualization mailing list
-> > > > Virtualization@lists.linux-foundation.org
-> > > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
-> > >
-> >
+> > BTW BAD_RING on removal will trigger dev_err. Not sure that is a good
+> > idea - can cause crashes if kernel panics on error.
 >
+>
+> Yes, it's better to use __virtqueue_break() instead.
+>
+> But consider we will start from a wait first, I will limit the changes
+> in virtio-net without bothering virtio core.
+>
+> Thanks
+>
+>
+> >
+> >>>
 
