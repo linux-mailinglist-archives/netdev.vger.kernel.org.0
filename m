@@ -2,87 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36671657477
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:11:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6733C657480
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232816AbiL1JLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 04:11:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
+        id S230122AbiL1JPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 04:15:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232081AbiL1JLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:11:49 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F70B1D
-        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 01:11:48 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id g14so15977284ljh.10
-        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 01:11:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0iU0lEEi+NPvnevFz5v/nUd+nt+xlbi55hYpYeF8kv8=;
-        b=ZlHAN2Qm4X+4bssNjlhgXwc8CTx1TnTGHd2REjIfdPyoL9XYLnoO+oTKZ/fYg1pl1z
-         CvAkMwnXhkgNsRxLUHnxqCLoocXFQWx2oRKEKu+BfxTUhSZp9+k30JerybpCYMvryA3v
-         yXSBC5GV9ZPP2pQKZVTkb6ERWgG69R2/C9hOItndq1BwS1E84D7Gm0Kd5Sa2xoGF/boQ
-         98K6ZwvyeR+k5OZgL+E4SOSC+D5k8Ud0IUW7m042LRXXwONQ4b09Ec1MvyChTzf7HkNX
-         QERdR8ekbUkw5pK3TLrJKviunp5SVGom7FGrukWB+F9T/aAKtw/Af/bNk+swft+on4fm
-         KOEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0iU0lEEi+NPvnevFz5v/nUd+nt+xlbi55hYpYeF8kv8=;
-        b=bDBppQk2hrGOYtf5mvzIDKB1Y/0o2R6E758MEQ1qYFiNu3fnngIJ2QnDi7AiNIuQdl
-         xSqUO2nvANlbkY/mFBIc/GZo1rJ5Die3ZhNHDHSJInA/D4WGAat36k1mj7WdE2s5Qz5L
-         Ga+EX7M/Emur3wsUnGKOtL7+zN3IwX0zI3ByqcFxXd3ISdjUwNf2i7B2c80T2A8eJOQA
-         +acaxQVm2oTm+2nFjdoQGTAAW1eX9vfBbkT+rbP3tM7srYTFuCZLHfmOZXZfZ+KtPh5j
-         2mJC6h7eP9aN901wSZVo0WTfxqZd9IMXIQzSArlv+N6U97RhUV40PipbKBQhID2yG/CP
-         Gmbg==
-X-Gm-Message-State: AFqh2kq1Uf8TMBwv2uJ3Ov7DHru/vnFF+4y5HodkEZvmAKjz/bf7tdi6
-        /iLhIwBYOaktr2bd+kYCa5cYhg==
-X-Google-Smtp-Source: AMrXdXsm9YuIsn0AG+RnQD6psOq8x79YYXxCot3n430np+AbdgZ3DeKWY9XoGdQCIRAveXW9tKysUA==
-X-Received: by 2002:a05:651c:b0c:b0:27f:66ec:b57 with SMTP id b12-20020a05651c0b0c00b0027f66ec0b57mr12033879ljr.39.1672218706774;
-        Wed, 28 Dec 2022 01:11:46 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id f2-20020a05651c02c200b0027fc4f018a8sm711703ljo.5.2022.12.28.01.11.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Dec 2022 01:11:46 -0800 (PST)
-Message-ID: <9b098bf9-59d7-e58d-aba3-a8055af053c6@linaro.org>
-Date:   Wed, 28 Dec 2022 10:11:44 +0100
+        with ESMTP id S229470AbiL1JPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:15:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAE6DEF5;
+        Wed, 28 Dec 2022 01:15:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 476BD61356;
+        Wed, 28 Dec 2022 09:15:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD92C433EF;
+        Wed, 28 Dec 2022 09:15:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672218905;
+        bh=xYhr5uhlKdptK0DYghqZVkuxC4UV7CC/gyvUEUOnE2M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nu2xgrCop9EMDeNqUC5PECTIAKfcuC1AF/UlHyrc0n0xJ0EWVvFei003SPk5aZr44
+         Z1lRpEvP3Ap7D6lzRwlgQIbXNVEI91DuCs4jGj/nzXkhVjkk6egSdMkoQizpGqKbTD
+         BUJX5nPkpfSWFmxVKB5pTqRIE3z5u/ukpG/kVtxB8WtmDZjoxoSYJUjVQTbtqF5lWd
+         WzBhpY/eM37lGGicYo/Ecy1gFT8MOmxmEpqYtLEBovphRmwaqkVRcX3oGkqYlryUrE
+         MTHAwHD5Xea5fmxqtf+1blK5JFYQYoy83TJLWUPx/KWxD2j4yXkKXPNX557elYoAyo
+         2AtTt8IL0qecw==
+Date:   Wed, 28 Dec 2022 11:15:01 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Lixue Liang <lianglixuehao@126.com>,
+        anthony.l.nguyen@intel.com, linux-kernel@vger.kernel.org,
+        jesse.brandeburg@intel.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        lianglixue@greatwall.com.cn
+Subject: Re: [PATCH v7] igb: Assign random MAC address instead of fail in
+ case of invalid one
+Message-ID: <Y6wJFYMZVQ7V+ogG@unreal>
+References: <20221213074726.51756-1-lianglixuehao@126.com>
+ <Y5l5pUKBW9DvHJAW@unreal>
+ <20221214085106.42a88df1@kernel.org>
+ <Y5obql8TVeYEsRw8@unreal>
+ <20221214125016.5a23c32a@kernel.org>
+ <Y57SPPmui6cwD5Ma@unreal>
+ <CAKgT0UfZk3=b0q3AQiexaJ=gCz6vW_hnHRnFiYLFSCESYdenOw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 5/9] dt-bindings: net: motorcomm: add support for
- Motorcomm YT8531
-Content-Language: en-US
-To:     yanhong wang <yanhong.wang@starfivetech.com>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
- <20221216070632.11444-6-yanhong.wang@starfivetech.com>
- <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
- <134a2ead-e272-c32e-b14f-a9e98c8924ac@starfivetech.com>
- <c296cf6b-6c50-205d-d5f5-6095c0a6c523@linaro.org>
- <e03fb7bc-b196-bc8a-b396-fab8686d396b@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <e03fb7bc-b196-bc8a-b396-fab8686d396b@starfivetech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UfZk3=b0q3AQiexaJ=gCz6vW_hnHRnFiYLFSCESYdenOw@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,34 +63,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/12/2022 04:23, yanhong wang wrote:
+On Mon, Dec 19, 2022 at 07:30:45AM -0800, Alexander Duyck wrote:
+> On Sun, Dec 18, 2022 at 12:41 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Wed, Dec 14, 2022 at 12:50:16PM -0800, Jakub Kicinski wrote:
+> > > On Wed, 14 Dec 2022 20:53:30 +0200 Leon Romanovsky wrote:
+> > > > On Wed, Dec 14, 2022 at 08:51:06AM -0800, Jakub Kicinski wrote:
+> > > > > On Wed, 14 Dec 2022 09:22:13 +0200 Leon Romanovsky wrote:
+> > > > > > NAK to any module driver parameter. If it is applicable to all drivers,
+> > > > > > please find a way to configure it to more user-friendly. If it is not,
+> > > > > > try to do the same as other drivers do.
+> > > > >
+> > > > > I think this one may be fine. Configuration which has to be set before
+> > > > > device probing can't really be per-device.
+> > > >
+> > > > This configuration can be different between multiple devices
+> > > > which use same igb module. Module parameters doesn't allow such
+> > > > separation.
+> > >
+> > > Configuration of the device, sure, but this module param is more of
+> > > a system policy.
+> >
+> > And system policy should be controlled by userspace and applicable to as
+> > much as possible NICs, without custom module parameters.
+> >
+> > I would imagine global (at the beginning, till someone comes forward and
+> > requests this parameter be per-device) to whole stack parameter with policies:
+> >  * Be strict - fail if mac is not valid
+> >  * Fallback to random
+> >  * Random only ???
+> >
+> > Thanks
 > 
-> 
-> On 2022/12/27 17:52, Krzysztof Kozlowski wrote:
->> On 27/12/2022 10:38, yanhong wang wrote:
->>>>
->>>> This must be false. After referencing ethernet-phy this should be
->>>> unevaluatedProperties: false.
->>>>
->>>>
->>>
->>> Thanks. Parts of this patch exist already, after discussion unanimity was achieved,
->>> i will remove the parts of YT8531 in the next version.
->>
->> I don't understand what does it mean. You sent duplicated patch? If so,
->> please do not... you waste reviewers time.
->>
->> Anyway this entire patch does not meet criteria for submission at all,
->> so please start over from example-schema.
->>
-> 
-> Sorry, maybe I didn't make it clear, which led to misunderstanding. Motorcomm Inc is also 
-> carrying out the upstream of YT8531, and my patch will be duplicated and conflicted 
-> with their submission. By communicating with the developers of Motorcomm Inc, the part 
-> of YT8531 will be submitted by Motorcomm Inc, so my submission about YT8531 will be withdrawn.
+> So are you suggesting you would rather see something like this as a
+> sysctl then? Maybe something like net.core.netdev_mac_behavior where
+> we have some enum with a predetermined set of behaviors available? I
+> would be fine with us making this a global policy if that is the route
+> we want to go. It would just be a matter of adding the sysctl and an
+> accessor so that drivers can determine if it is set or not.
 
-Are they going to apply the feedback received for this series?
+Something like that and maybe convert drivers and/or to honor this policy.
 
-Best regards,
-Krzysztof
-
+Thanks
