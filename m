@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB6FF657636
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 13:00:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DF9657652
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 13:20:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiL1MAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 07:00:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        id S229864AbiL1MUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 07:20:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbiL1MAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 07:00:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CF21180E;
-        Wed, 28 Dec 2022 04:00:17 -0800 (PST)
+        with ESMTP id S232507AbiL1MUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 07:20:21 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4D5654E;
+        Wed, 28 Dec 2022 04:20:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90214614A8;
-        Wed, 28 Dec 2022 12:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EEDD8C433F0;
-        Wed, 28 Dec 2022 12:00:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E01C2CE12CF;
+        Wed, 28 Dec 2022 12:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6E57C433F1;
+        Wed, 28 Dec 2022 12:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672228817;
-        bh=+8P4e/h2rF3oG9WyG4ReZdjLiC3bMlya4yQOx9rG0os=;
+        s=k20201202; t=1672230015;
+        bh=BF8pGi2+TlK5BZ4zCkFeHhTghrWTuL6n7RHTNforA+s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Cdzirmop38QX8gkRsCmG3N8ZqWhy+LaaWUVaePr9UjdiShWN2YJQSr5gwhmgMwHmY
-         o0i+eDik5hBB29rq0GOKCkkrhB5BD/j4bkpRh+T6ue/O6a2lQWjAVKqnVKJefx0zPJ
-         PTnVSU1BIBdXKNkbH8SVVp036P8a1M4HqDi5Q+Xjur43QXKp1fUW1BEV5Icxexx5At
-         A4pekYtEhuCYgx1UnB9A7OvFQElDKnGqZGRTY/UMD1gnKk/lgyQJY7VHceB/c9/K0p
-         vluljdZRbR2yuaY4KgiChD34dtuME6x1c/ZCCfU9Q5pRZLBt7x7fK1VQ7V+IayLj5B
-         cMjPiMJcxWmUQ==
+        b=J0PicxVU03gLawjfOSUaldlJ2VGBNQkt8XnFjEBv7a6Pl5qCAZ36A26wtOCgW75Nm
+         UFpqmCrt6BovwvaNcvMhuZEy/ZScrlLtle4RSqWgxOmZxgLMg9z4LLVs4oBg4fQodB
+         oE85uA+xuLKZQuvvhkC7+1qq/5dAftE/BZjeS0N3MJDP7olkbGjot3NHVB9XcLy/9c
+         yBv2rVjlG2s2CvtUxnqNzk4lJERYwU1C8NKzgNDeEBSED0jVCk+6gGxULkCww7RdNJ
+         UpcSOc/CXXiVqeI3GQJfAkGz7NcgNNfuLuvk289AGL9mso75yjoLzhq9RK0K0W0Wzr
+         BYJCim2x4pyZw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF2ABE50D70;
-        Wed, 28 Dec 2022 12:00:16 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CD6E9E50D70;
+        Wed, 28 Dec 2022 12:20:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/3] net/ethtool/ioctl: split ethtool_get_phy_stats
- into multiple helpers
+Subject: Re: [PATCH] s390/qeth: convert sysfs snprintf to sysfs_emit
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167222881683.20935.9855134928646735585.git-patchwork-notify@kernel.org>
-Date:   Wed, 28 Dec 2022 12:00:16 +0000
-References: <20221226114825.1937189-1-d-tatianin@yandex-team.ru>
-In-Reply-To: <20221226114825.1937189-1-d-tatianin@yandex-team.ru>
-To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, andrew@lunn.ch, sean.anderson@seco.com,
-        jiri@nvidia.com, wsa+renesas@sang-engineering.com,
-        korotkov.maxim.s@gmail.com, gal@nvidia.com,
-        mailhol.vincent@wanadoo.fr, trix@redhat.com, marco@mebeim.net,
+Message-Id: <167223001583.30539.3371420401703338150.git-patchwork-notify@kernel.org>
+Date:   Wed, 28 Dec 2022 12:20:15 +0000
+References: <20221227110352.1436120-1-zhangxuezhi3@gmail.com>
+In-Reply-To: <20221227110352.1436120-1-zhangxuezhi3@gmail.com>
+To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>
+Cc:     zhangxuezhi1@coolpad.com, wintera@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -62,26 +59,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 26 Dec 2022 14:48:22 +0300 you wrote:
-> This series fixes a potential NULL dereference in ethtool_get_phy_stats
-> while also attempting to refactor/split said function into multiple
-> helpers so that it's easier to reason about what's going on.
+On Tue, 27 Dec 2022 19:03:52 +0800 you wrote:
+> From: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 > 
-> I've taken Andrew Lunn's suggestions on the previous version of this
-> patch and added a bit of my own.
+> Follow the advice of the Documentation/filesystems/sysfs.rst
+> and show() should only use sysfs_emit() or sysfs_emit_at()
+> when formatting the value to be returned to user space.
+> 
+> Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2,1/3] net/ethtool/ioctl: return -EOPNOTSUPP if we have no phy stats
-    https://git.kernel.org/netdev/net/c/9deb1e9fb88b
-  - [net,v2,2/3] net/ethtool/ioctl: remove if n_stats checks from ethtool_get_phy_stats
-    https://git.kernel.org/netdev/net/c/fd4778581d61
-  - [net,v2,3/3] net/ethtool/ioctl: split ethtool_get_phy_stats into multiple helpers
-    https://git.kernel.org/netdev/net/c/201ed315f967
+  - s390/qeth: convert sysfs snprintf to sysfs_emit
+    https://git.kernel.org/netdev/net/c/c2052189f19b
 
 You are awesome, thank you!
 -- 
