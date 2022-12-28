@@ -2,116 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEA6C657745
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 14:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA501657D10
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 16:39:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233011AbiL1NhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 08:37:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        id S233924AbiL1PjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 10:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232939AbiL1Ngp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 08:36:45 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157CF1A5;
-        Wed, 28 Dec 2022 05:36:44 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id u9so38550432ejo.0;
-        Wed, 28 Dec 2022 05:36:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7cV9Fdo1DL6GcPAsaixy13a9upftzi/bKQrV6XnSaJE=;
-        b=USJJdxr3Yz8nPXAAgyGOZVykqPmSUXeK/1ry0KFjCY4hRH9aQWpkx9ZKCwUvS584LV
-         3HhqWFaVguLKjkYq8mRugAQ9zk9YkAxiUc9efCumVsgRzEfzQ6EN1065HgROUie4jPPG
-         vAj84V1WGloWB6MzSoW1mJxCuhYjFrup/jdHI+DJ6Us+WV6Qq9i0GBRY+1UtrBvBTCAl
-         +mqO8WOHkzeQz1df6+SckyhA397MA5O99MwtWmyBkXFl7FJQ+1ZuS5s9/C9+WRKagckQ
-         tyIgytef+lt5OPs15rEhdyo7K4egpTm5rnoY6NeVyQVm1XqIF7DVDSOq94jrVjFNMCiz
-         9Xng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7cV9Fdo1DL6GcPAsaixy13a9upftzi/bKQrV6XnSaJE=;
-        b=GaKXG8tpKAsQ8igP5/xpKrq/kAuTTSSmVAg4Chh52TQXqjeI71Z65Z3k2iPzw9Lig4
-         rR4xMgY23WeOt8QVQY7G509sO+W7TuV81N6sc3UCzdZ3yFq79R2oCjGvVUMtZ6OiSnRi
-         WyzNYOxSl4uB4wB7DleuB+u06Acr46IM1v9iBvlrUTTvA0tWVIwFBanS1lCWCGY4159A
-         bncOMSICqiOObL1teCd73v/PE6kGYc/EpiAuJknOF+afnQcFVO3zlDqaqSg3teFqDEHP
-         4zkv+xti5laCJS1gzrHKcSjw+y+5UGRtlIvf9mogmFiMkFMKKEdpULswzf1FO8GR/AEq
-         aaCA==
-X-Gm-Message-State: AFqh2kpuYMMwOAGI0Z4/oB1zsfly6RjWpoEoWgNhLUq27ieHBkmnJuVU
-        3Q/wWI205KfqbCSv5zGSg3hGFUnPJiY=
-X-Google-Smtp-Source: AMrXdXsjhQ2pro9S2msXgEkEhAegxknZw8ooT5nRpSojikoYXWDpEfjoMoGN6JfJAJAae6odJFUHLw==
-X-Received: by 2002:a17:906:6d2:b0:7e7:4dd7:bb88 with SMTP id v18-20020a17090606d200b007e74dd7bb88mr18612063ejb.57.1672234602426;
-        Wed, 28 Dec 2022 05:36:42 -0800 (PST)
-Received: from localhost.localdomain (dynamic-2a01-0c23-b830-5100-f22f-74ff-fe21-0725.c23.pool.telefonica.de. [2a01:c23:b830:5100:f22f:74ff:fe21:725])
-        by smtp.googlemail.com with ESMTPSA id g3-20020a170906538300b0082535e2da13sm7450475ejo.6.2022.12.28.05.36.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Dec 2022 05:36:42 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     tony0620emma@gmail.com, kvalo@kernel.org, pkshih@realtek.com,
-        tehuang@realtek.com, s.hauer@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 4/4] rtw88: Use non-atomic rtw_iterate_stas() in rtw_ra_mask_info_update()
-Date:   Wed, 28 Dec 2022 14:35:47 +0100
-Message-Id: <20221228133547.633797-5-martin.blumenstingl@googlemail.com>
+        with ESMTP id S233520AbiL1PjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 10:39:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC5D165B2;
+        Wed, 28 Dec 2022 07:38:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 359E0B8171C;
+        Wed, 28 Dec 2022 15:38:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D98C433D2;
+        Wed, 28 Dec 2022 15:38:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1672241937;
+        bh=mKY2bpqH2t/H56qSjTYe3tCTu4L1mi/O8q3pnYF6mS4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=js/xV6KPkxkEE1t2UDbdgBuHDG1mJflg+Mzwkubu9Em3UEdVKjMrmX+YNwZVU9PiS
+         TnCuPuTHBwt9qdlPGC4QPGWoIEGBIA4X0x/O6cvvh7dJykzz8bPGcidW/hlIHhsXW9
+         I/txyxD5RG9DxDRq9fSDziuNeicsRWa9eJfyW1ak=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        patches@lists.linux.dev, kernel test robot <lkp@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 6.1 0307/1146] net, proc: Provide PROC_FS=n fallback for proc_create_net_single_write()
+Date:   Wed, 28 Dec 2022 15:30:46 +0100
+Message-Id: <20221228144338.493695497@linuxfoundation.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
-References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20221228144330.180012208@linuxfoundation.org>
+References: <20221228144330.180012208@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-USB and (upcoming) SDIO support may sleep in the read/write handlers.
-Use non-atomic rtw_iterate_stas() in rtw_ra_mask_info_update() because
-the iterator function rtw_ra_mask_info_update_iter() needs to read and
-write registers from within rtw_update_sta_info(). Using the non-atomic
-iterator ensures that we can sleep during USB and SDIO register reads
-and writes. This fixes "scheduling while atomic" or "Voluntary context
-switch within RCU read-side critical section!" warnings as seen by SDIO
-card users (but it also affects USB cards).
+From: David Howells <dhowells@redhat.com>
 
-Fixes: 78d5bf925f30 ("wifi: rtw88: iterate over vif/sta list non-atomically")
-Suggested-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+[ Upstream commit c3d96f690a790074b508fe183a41e36a00cd7ddd ]
+
+Provide a CONFIG_PROC_FS=n fallback for proc_create_net_single_write().
+
+Also provide a fallback for proc_create_net_data_write().
+
+Fixes: 564def71765c ("proc: Add a way to make network proc files writable")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+cc: netdev@vger.kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/mac80211.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/proc_fs.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/mac80211.c b/drivers/net/wireless/realtek/rtw88/mac80211.c
-index 776a9a9884b5..3b92ac611d3f 100644
---- a/drivers/net/wireless/realtek/rtw88/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -737,7 +737,7 @@ static void rtw_ra_mask_info_update(struct rtw_dev *rtwdev,
- 	br_data.rtwdev = rtwdev;
- 	br_data.vif = vif;
- 	br_data.mask = mask;
--	rtw_iterate_stas_atomic(rtwdev, rtw_ra_mask_info_update_iter, &br_data);
-+	rtw_iterate_stas(rtwdev, rtw_ra_mask_info_update_iter, &br_data);
- }
+diff --git a/include/linux/proc_fs.h b/include/linux/proc_fs.h
+index 81d6e4ec2294..0260f5ea98fe 100644
+--- a/include/linux/proc_fs.h
++++ b/include/linux/proc_fs.h
+@@ -208,8 +208,10 @@ static inline void proc_remove(struct proc_dir_entry *de) {}
+ static inline int remove_proc_subtree(const char *name, struct proc_dir_entry *parent) { return 0; }
  
- static int rtw_ops_set_bitrate_mask(struct ieee80211_hw *hw,
-@@ -746,7 +746,9 @@ static int rtw_ops_set_bitrate_mask(struct ieee80211_hw *hw,
+ #define proc_create_net_data(name, mode, parent, ops, state_size, data) ({NULL;})
++#define proc_create_net_data_write(name, mode, parent, ops, write, state_size, data) ({NULL;})
+ #define proc_create_net(name, mode, parent, state_size, ops) ({NULL;})
+ #define proc_create_net_single(name, mode, parent, show, data) ({NULL;})
++#define proc_create_net_single_write(name, mode, parent, show, write, data) ({NULL;})
+ 
+ static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
  {
- 	struct rtw_dev *rtwdev = hw->priv;
- 
-+	mutex_lock(&rtwdev->mutex);
- 	rtw_ra_mask_info_update(rtwdev, vif, mask);
-+	mutex_unlock(&rtwdev->mutex);
- 
- 	return 0;
- }
 -- 
-2.39.0
+2.35.1
+
+
 
