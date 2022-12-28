@@ -2,60 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6733C657480
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1092965749D
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbiL1JPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 04:15:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        id S229668AbiL1JZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 04:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiL1JPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:15:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAE6DEF5;
-        Wed, 28 Dec 2022 01:15:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 476BD61356;
-        Wed, 28 Dec 2022 09:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD92C433EF;
-        Wed, 28 Dec 2022 09:15:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672218905;
-        bh=xYhr5uhlKdptK0DYghqZVkuxC4UV7CC/gyvUEUOnE2M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nu2xgrCop9EMDeNqUC5PECTIAKfcuC1AF/UlHyrc0n0xJ0EWVvFei003SPk5aZr44
-         Z1lRpEvP3Ap7D6lzRwlgQIbXNVEI91DuCs4jGj/nzXkhVjkk6egSdMkoQizpGqKbTD
-         BUJX5nPkpfSWFmxVKB5pTqRIE3z5u/ukpG/kVtxB8WtmDZjoxoSYJUjVQTbtqF5lWd
-         WzBhpY/eM37lGGicYo/Ecy1gFT8MOmxmEpqYtLEBovphRmwaqkVRcX3oGkqYlryUrE
-         MTHAwHD5Xea5fmxqtf+1blK5JFYQYoy83TJLWUPx/KWxD2j4yXkKXPNX557elYoAyo
-         2AtTt8IL0qecw==
-Date:   Wed, 28 Dec 2022 11:15:01 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Lixue Liang <lianglixuehao@126.com>,
-        anthony.l.nguyen@intel.com, linux-kernel@vger.kernel.org,
-        jesse.brandeburg@intel.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        lianglixue@greatwall.com.cn
-Subject: Re: [PATCH v7] igb: Assign random MAC address instead of fail in
- case of invalid one
-Message-ID: <Y6wJFYMZVQ7V+ogG@unreal>
-References: <20221213074726.51756-1-lianglixuehao@126.com>
- <Y5l5pUKBW9DvHJAW@unreal>
- <20221214085106.42a88df1@kernel.org>
- <Y5obql8TVeYEsRw8@unreal>
- <20221214125016.5a23c32a@kernel.org>
- <Y57SPPmui6cwD5Ma@unreal>
- <CAKgT0UfZk3=b0q3AQiexaJ=gCz6vW_hnHRnFiYLFSCESYdenOw@mail.gmail.com>
+        with ESMTP id S229587AbiL1JZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:25:00 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278E411C;
+        Wed, 28 Dec 2022 01:24:55 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 6589624E19A;
+        Wed, 28 Dec 2022 17:24:53 +0800 (CST)
+Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 28 Dec
+ 2022 17:24:53 +0800
+Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
+ (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 28 Dec
+ 2022 17:24:51 +0800
+Message-ID: <dd1a55b7-d05a-0ea8-6042-25b80befec22@starfivetech.com>
+Date:   Wed, 28 Dec 2022 17:24:50 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UfZk3=b0q3AQiexaJ=gCz6vW_hnHRnFiYLFSCESYdenOw@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 5/9] dt-bindings: net: motorcomm: add support for
+ Motorcomm YT8531
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
+ <20221216070632.11444-6-yanhong.wang@starfivetech.com>
+ <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
+ <134a2ead-e272-c32e-b14f-a9e98c8924ac@starfivetech.com>
+ <c296cf6b-6c50-205d-d5f5-6095c0a6c523@linaro.org>
+ <e03fb7bc-b196-bc8a-b396-fab8686d396b@starfivetech.com>
+ <9b098bf9-59d7-e58d-aba3-a8055af053c6@linaro.org>
+From:   yanhong wang <yanhong.wang@starfivetech.com>
+In-Reply-To: <9b098bf9-59d7-e58d-aba3-a8055af053c6@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX173.cuchost.com
+ (172.16.6.93)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,45 +70,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 19, 2022 at 07:30:45AM -0800, Alexander Duyck wrote:
-> On Sun, Dec 18, 2022 at 12:41 AM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Wed, Dec 14, 2022 at 12:50:16PM -0800, Jakub Kicinski wrote:
-> > > On Wed, 14 Dec 2022 20:53:30 +0200 Leon Romanovsky wrote:
-> > > > On Wed, Dec 14, 2022 at 08:51:06AM -0800, Jakub Kicinski wrote:
-> > > > > On Wed, 14 Dec 2022 09:22:13 +0200 Leon Romanovsky wrote:
-> > > > > > NAK to any module driver parameter. If it is applicable to all drivers,
-> > > > > > please find a way to configure it to more user-friendly. If it is not,
-> > > > > > try to do the same as other drivers do.
-> > > > >
-> > > > > I think this one may be fine. Configuration which has to be set before
-> > > > > device probing can't really be per-device.
-> > > >
-> > > > This configuration can be different between multiple devices
-> > > > which use same igb module. Module parameters doesn't allow such
-> > > > separation.
-> > >
-> > > Configuration of the device, sure, but this module param is more of
-> > > a system policy.
-> >
-> > And system policy should be controlled by userspace and applicable to as
-> > much as possible NICs, without custom module parameters.
-> >
-> > I would imagine global (at the beginning, till someone comes forward and
-> > requests this parameter be per-device) to whole stack parameter with policies:
-> >  * Be strict - fail if mac is not valid
-> >  * Fallback to random
-> >  * Random only ???
-> >
-> > Thanks
+
+
+On 2022/12/28 17:11, Krzysztof Kozlowski wrote:
+> On 28/12/2022 04:23, yanhong wang wrote:
+>> 
+>> 
+>> On 2022/12/27 17:52, Krzysztof Kozlowski wrote:
+>>> On 27/12/2022 10:38, yanhong wang wrote:
+>>>>>
+>>>>> This must be false. After referencing ethernet-phy this should be
+>>>>> unevaluatedProperties: false.
+>>>>>
+>>>>>
+>>>>
+>>>> Thanks. Parts of this patch exist already, after discussion unanimity was achieved,
+>>>> i will remove the parts of YT8531 in the next version.
+>>>
+>>> I don't understand what does it mean. You sent duplicated patch? If so,
+>>> please do not... you waste reviewers time.
+>>>
+>>> Anyway this entire patch does not meet criteria for submission at all,
+>>> so please start over from example-schema.
+>>>
+>> 
+>> Sorry, maybe I didn't make it clear, which led to misunderstanding. Motorcomm Inc is also 
+>> carrying out the upstream of YT8531, and my patch will be duplicated and conflicted 
+>> with their submission. By communicating with the developers of Motorcomm Inc, the part 
+>> of YT8531 will be submitted by Motorcomm Inc, so my submission about YT8531 will be withdrawn.
 > 
-> So are you suggesting you would rather see something like this as a
-> sysctl then? Maybe something like net.core.netdev_mac_behavior where
-> we have some enum with a predetermined set of behaviors available? I
-> would be fine with us making this a global policy if that is the route
-> we want to go. It would just be a matter of adding the sysctl and an
-> accessor so that drivers can determine if it is set or not.
+> Are they going to apply the feedback received for this series?
+> 
 
-Something like that and maybe convert drivers and/or to honor this policy.
+Yes, they support not only YT8531, but also other models of their company.
 
-Thanks
+> Best regards,
+> Krzysztof
+> 
