@@ -2,115 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E21B86572F4
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 06:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3EAF65731E
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 07:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbiL1F2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 00:28:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
+        id S230273AbiL1GVw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Dec 2022 01:21:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiL1F2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 00:28:39 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B15AE54
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 21:28:37 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id m4so15127617pls.4
-        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 21:28:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=9cAM4RhmUF/0okz7iGJZyGhb8wvgosg7Pe52G62TzuE=;
-        b=JGTuVx/19KQlpCvCoeEmPy73oDMhAn7fVSSmJgfHEX+2S7PV4Hksc4YduZq9w/truH
-         uJuU7bxjIiESuewVZq8SHZ9CNJylx1p6sYC7LeJqINs+8+geWB6fGwuNQ5FWmvmjFkmo
-         cjJ2NKoqj1SfJhKB+YlzR6M+/EyPs6lR0kUzg6JR1YYEZD/NYVTABQWVr3MRhrcKQeEY
-         RarBkVkfPt4crvf+YmnXF42s+cJ64RA5roSOrtnJKa/vyXnsvt/VEm8iOPkn/4fEyb8m
-         8N8C/+xYegf7pnFB7dh0Ys4ZwhGVnlkvPDvBsmN2Q91KZnOPuhBtjg/DL3KruKZDtF7i
-         BeSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9cAM4RhmUF/0okz7iGJZyGhb8wvgosg7Pe52G62TzuE=;
-        b=sBC6Aafq+2Gef7IvwjjCroJnBukMQ2RxEWvGttb/7nod5BR0csCIjC7w35p0ECiFq3
-         jNpwuNlspciCSNIsjZ+Nk1zHHECJ3mcY7q1QPyZVJvIirCtiypF6mnig7LB11KZPsVtB
-         Cjm2NYt30bV/XKItJWOlhmPVOdnYusZF1+mRun1pz5Iy84e+Flvxp6rw2XiOcxU4eddx
-         i2KnL7v5ZkXwpfCsEytTuBNtcG6uk0+Qe2YbKroFlqLeH1Ub/Qke0py9zs+6kdwtyRqx
-         RhB9qwSzp4f3snEXRaVqLd9niCg2thrkXb/SDot90l4PlitI3bCoTif+m+iPyhXldru7
-         JG+g==
-X-Gm-Message-State: AFqh2koICbzZg4VaeIV0MhwzyUNqZbaF6gLWmsUk3gGybhAIjEsIwX2C
-        jM4PWD+bZJQ8F/8ngBnf12rSQNmAt+pN1DBbSe3q+Q==
-X-Google-Smtp-Source: AMrXdXucD2UuV6eCz/qiNghJ5GxgT3TnOtddAezIMiy5Cbg7XzHb/zmA7oU/ii3ws+/T5IFcS9BIisTXbPI+gj6CLxI=
-X-Received: by 2002:a17:90b:1281:b0:225:be82:ba21 with SMTP id
- fw1-20020a17090b128100b00225be82ba21mr1650901pjb.209.1672205316516; Tue, 27
- Dec 2022 21:28:36 -0800 (PST)
+        with ESMTP id S229526AbiL1GVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 01:21:51 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82162AE6B;
+        Tue, 27 Dec 2022 22:21:48 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BS6KYogC001141, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BS6KYogC001141
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 28 Dec 2022 14:20:34 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Wed, 28 Dec 2022 14:21:28 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 28 Dec 2022 14:21:28 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Wed, 28 Dec 2022 14:21:27 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        "Nitin Gupta" <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [RFC PATCH v1 06/19] rtw88: rtw8821c: Add support for parsing the RTL8821CS (SDIO) efuse
+Thread-Topic: [RFC PATCH v1 06/19] rtw88: rtw8821c: Add support for parsing
+ the RTL8821CS (SDIO) efuse
+Thread-Index: AQHZGks+HXgF0Jfl1UCsDAdyYOhe0q6C099A
+Date:   Wed, 28 Dec 2022 06:21:27 +0000
+Message-ID: <695c976e02ed44a2b2345a3ceb226fc4@realtek.com>
+References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
+ <20221227233020.284266-7-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20221227233020.284266-7-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/28_=3F=3F_01:41:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20221227104837.27208-1-anand@edgeble.ai> <20221227104837.27208-3-anand@edgeble.ai>
- <732352f3-fda0-039e-4fef-ceb6f5348086@gmail.com>
-In-Reply-To: <732352f3-fda0-039e-4fef-ceb6f5348086@gmail.com>
-From:   Anand Moon <anand@edgeble.ai>
-Date:   Wed, 28 Dec 2022 10:58:25 +0530
-Message-ID: <CACF1qnfEjGCQ2e5DQqszc6Ak0XR5+NB-PSBFJtnC1P5O9hNGqA@mail.gmail.com>
-Subject: Re: [PATCHv3 linux-next 3/4] ARM: dts: rockchip: rv1126: Add GMAC node
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jagan Teki <jagan@edgeble.ai>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johan
 
-On Tue, 27 Dec 2022 at 17:25, Johan Jonker <jbx6244@gmail.com> wrote:
->
->
->
-> On 12/27/22 11:48, Anand Moon wrote:
-> > Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
-> > add GMAC node for RV1126 SoC.
-> >
-> > Signed-off-by: Anand Moon <anand@edgeble.ai>
-> > Signed-off-by: Jagan Teki <jagan@edgeble.ai>
-> > ---
-> > v3: drop the gmac_clkin_m0 & gmac_clkin_m1 fix clock node which are not
-> > used, Add SoB of Jagan Teki.
-> > V2: drop SoB of Jagan Teki.
-> > ---
-> >  arch/arm/boot/dts/rv1126.dtsi | 49 +++++++++++++++++++++++++++++++++++
-> >  1 file changed, 49 insertions(+)
-> >
-> > diff --git a/arch/arm/boot/dts/rv1126.dtsi b/arch/arm/boot/dts/rv1126.dtsi
-> > index 1cb43147e90b..e20fdd0d333c 100644
-> > --- a/arch/arm/boot/dts/rv1126.dtsi
-> > +++ b/arch/arm/boot/dts/rv1126.dtsi
-> > @@ -90,6 +90,55 @@ xin24m: oscillator {
-> >               #clock-cells = <0>;
-> >       };
-> >
->
-> > +     gmac: ethernet@ffc40000 {
->
-> Nodes with a reg property are sort on reg address.
-> Heiko can fix that.. ;)
->
->         timer0: timer@ff660000 {
->         gmac: ethernet@ffc40000 {
->         emmc: mmc@ffc50000 {
->
 
-will sort these on reg address. In the future. or the next version.
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Wednesday, December 28, 2022 7:30 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
+> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
+> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [RFC PATCH v1 06/19] rtw88: rtw8821c: Add support for parsing the RTL8821CS (SDIO) efuse
+> 
+> The efuse of the SDIO RTL8821CS chip has only one known member: the mac
+> address is at offset 0x11a. Add a struct rtw8821cs_efuse describing this
+> and use it for copying the mac address when the SDIO bus is used.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/rtw8821c.c | 9 +++++++++
+>  drivers/net/wireless/realtek/rtw88/rtw8821c.h | 6 ++++++
+>  2 files changed, 15 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> index 17f800f6efbd..dd01b22f9770 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+> @@ -26,6 +26,12 @@ static void rtw8821ce_efuse_parsing(struct rtw_efuse *efuse,
+>  	ether_addr_copy(efuse->addr, map->e.mac_addr);
+>  }
+> 
+> +static void rtw8821cs_efuse_parsing(struct rtw_efuse *efuse,
+> +				    struct rtw8821c_efuse *map)
+> +{
+> +	ether_addr_copy(efuse->addr, map->s.mac_addr);
+> +}
+> +
+>  static void rtw8821cu_efuse_parsing(struct rtw_efuse *efuse,
+>  				    struct rtw8821c_efuse *map)
+>  {
+> @@ -74,6 +80,9 @@ static int rtw8821c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+>  	case RTW_HCI_TYPE_PCIE:
+>  		rtw8821ce_efuse_parsing(efuse, map);
+>  		break;
+> +	case RTW_HCI_TYPE_SDIO:
+> +		rtw8821cs_efuse_parsing(efuse, map);
+> +		break;
+>  	case RTW_HCI_TYPE_USB:
+>  		rtw8821cu_efuse_parsing(efuse, map);
+>  		break;
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+> b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+> index 1c81260f3a54..1deea54575b5 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+> @@ -65,6 +65,11 @@ struct rtw8821ce_efuse {
+>  	u8 res7;
+>  };
+> 
+> +struct rtw8821cs_efuse {
+> +	u8 res4[0x4a];			/* 0xd0 */
+> +	u8 mac_addr[ETH_ALEN];		/* 0x11a */
+> +};
+> +
 
-Thanks.
--Anand
+This struct should be __packed, as well as rtw8821c_efuse.
+
+Would you mind to create additional patch to add __packed to these struct of
+efuse layout?
+
+>  struct rtw8821c_efuse {
+>  	__le16 rtl_id;
+>  	u8 res0[0x0e];
+> @@ -93,6 +98,7 @@ struct rtw8821c_efuse {
+>  	u8 res[3];
+>  	union {
+>  		struct rtw8821ce_efuse e;
+> +		struct rtw8821cs_efuse s;
+>  		struct rtw8821cu_efuse u;
+>  	};
+>  };
+> --
+> 2.39.0
+
