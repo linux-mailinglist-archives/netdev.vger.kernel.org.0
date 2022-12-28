@@ -2,67 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1092965749D
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:25:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4FB6574B0
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:35:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbiL1JZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 04:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        id S230451AbiL1Jfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 04:35:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiL1JZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:25:00 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278E411C;
-        Wed, 28 Dec 2022 01:24:55 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 6589624E19A;
-        Wed, 28 Dec 2022 17:24:53 +0800 (CST)
-Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 28 Dec
- 2022 17:24:53 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
- (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 28 Dec
- 2022 17:24:51 +0800
-Message-ID: <dd1a55b7-d05a-0ea8-6042-25b80befec22@starfivetech.com>
-Date:   Wed, 28 Dec 2022 17:24:50 +0800
+        with ESMTP id S230006AbiL1Jfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:35:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D137DD2D2
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 01:35:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A8BC6136F
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 09:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46BECC433EF;
+        Wed, 28 Dec 2022 09:35:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672220134;
+        bh=+sNc/TkmwLtCuF3WdXUxEZNFgs58QUzSnzN5GtPJVfQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gWvaKSvMzqNgHPGYNKYYTD26RNYZg+26+xbce1Ck4DozO6BjV8y0NGM/4bFQZWTlt
+         4BiV/ZviwuyM+yd13FwXa1jyVhfOQ6oqXo+vvHYmOjNEpaIP+CaGwO3bB4rk0yJ6HU
+         EO5GgFkNDEZ3323L9Q4H9VtypC3SsHmgZJuPGfanDeJMhXQ9CIzH5kjNy+Pt4PIv32
+         Q6+EYKrr29hKBnwDO7AHlnZjgHDWDE5YgNJ6jvsOzCyMGTY8BOunaj3DZpt/5hqtq9
+         rgP8JUw/KS95TVcKijBY4N1VEuUhAd8zuCgJ/c3XxGsa+k3YxIYdi35dE9tZNZ9ayI
+         ArmL/BRq2HhrQ==
+Date:   Wed, 28 Dec 2022 11:35:30 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux_oss@crudebyte.com,
+        tom@opengridcomputing.com, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH] 9p/rdma: unmap receive dma buffer in rdma_request()
+Message-ID: <Y6wN4uBZwPV+rKXi@unreal>
+References: <20221220031223.3890143-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 5/9] dt-bindings: net: motorcomm: add support for
- Motorcomm YT8531
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221216070632.11444-1-yanhong.wang@starfivetech.com>
- <20221216070632.11444-6-yanhong.wang@starfivetech.com>
- <994718d8-f3ee-af5e-bda7-f913f66597ce@linaro.org>
- <134a2ead-e272-c32e-b14f-a9e98c8924ac@starfivetech.com>
- <c296cf6b-6c50-205d-d5f5-6095c0a6c523@linaro.org>
- <e03fb7bc-b196-bc8a-b396-fab8686d396b@starfivetech.com>
- <9b098bf9-59d7-e58d-aba3-a8055af053c6@linaro.org>
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <9b098bf9-59d7-e58d-aba3-a8055af053c6@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX173.cuchost.com
- (172.16.6.93)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221220031223.3890143-1-shaozhengchao@huawei.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,40 +56,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/12/28 17:11, Krzysztof Kozlowski wrote:
-> On 28/12/2022 04:23, yanhong wang wrote:
->> 
->> 
->> On 2022/12/27 17:52, Krzysztof Kozlowski wrote:
->>> On 27/12/2022 10:38, yanhong wang wrote:
->>>>>
->>>>> This must be false. After referencing ethernet-phy this should be
->>>>> unevaluatedProperties: false.
->>>>>
->>>>>
->>>>
->>>> Thanks. Parts of this patch exist already, after discussion unanimity was achieved,
->>>> i will remove the parts of YT8531 in the next version.
->>>
->>> I don't understand what does it mean. You sent duplicated patch? If so,
->>> please do not... you waste reviewers time.
->>>
->>> Anyway this entire patch does not meet criteria for submission at all,
->>> so please start over from example-schema.
->>>
->> 
->> Sorry, maybe I didn't make it clear, which led to misunderstanding. Motorcomm Inc is also 
->> carrying out the upstream of YT8531, and my patch will be duplicated and conflicted 
->> with their submission. By communicating with the developers of Motorcomm Inc, the part 
->> of YT8531 will be submitted by Motorcomm Inc, so my submission about YT8531 will be withdrawn.
+On Tue, Dec 20, 2022 at 11:12:23AM +0800, Zhengchao Shao wrote:
+> When down_interruptible() failed in rdma_request(), receive dma buffer
+> is not unmapped. Add unmap action to error path.
 > 
-> Are they going to apply the feedback received for this series?
+> Fixes: fc79d4b104f0 ("9p: rdma: RDMA Transport Support for 9P")
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  net/9p/trans_rdma.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
+> diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
+> index 83f9100d46bf..da83023fecbf 100644
+> --- a/net/9p/trans_rdma.c
+> +++ b/net/9p/trans_rdma.c
+> @@ -499,6 +499,8 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
+>  
+>  	if (down_interruptible(&rdma->sq_sem)) {
+>  		err = -EINTR;
+> +		ib_dma_unmap_single(rdma->cm_id->device, c->busa,
+> +				    c->req->tc.size, DMA_TO_DEVICE);
+>  		goto send_error;
+>  	}
 
-Yes, they support not only YT8531, but also other models of their company.
+It is not the only place where ib_dma_unmap_single() wasn't called.
+Even at the same function if ib_post_send() fails, the unmap is not
+called. Also post_recv() is missing call to ib_dma_unmap_single() too.
 
-> Best regards,
-> Krzysztof
+Thanks
+
+>  
+> -- 
+> 2.34.1
 > 
