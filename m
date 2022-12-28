@@ -2,90 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4FB6574B0
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4658C6574CB
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 10:40:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbiL1Jfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 04:35:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
+        id S229668AbiL1JkM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Dec 2022 04:40:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiL1Jfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:35:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D137DD2D2
-        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 01:35:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A8BC6136F
-        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 09:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46BECC433EF;
-        Wed, 28 Dec 2022 09:35:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672220134;
-        bh=+sNc/TkmwLtCuF3WdXUxEZNFgs58QUzSnzN5GtPJVfQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gWvaKSvMzqNgHPGYNKYYTD26RNYZg+26+xbce1Ck4DozO6BjV8y0NGM/4bFQZWTlt
-         4BiV/ZviwuyM+yd13FwXa1jyVhfOQ6oqXo+vvHYmOjNEpaIP+CaGwO3bB4rk0yJ6HU
-         EO5GgFkNDEZ3323L9Q4H9VtypC3SsHmgZJuPGfanDeJMhXQ9CIzH5kjNy+Pt4PIv32
-         Q6+EYKrr29hKBnwDO7AHlnZjgHDWDE5YgNJ6jvsOzCyMGTY8BOunaj3DZpt/5hqtq9
-         rgP8JUw/KS95TVcKijBY4N1VEuUhAd8zuCgJ/c3XxGsa+k3YxIYdi35dE9tZNZ9ayI
-         ArmL/BRq2HhrQ==
-Date:   Wed, 28 Dec 2022 11:35:30 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux_oss@crudebyte.com,
-        tom@opengridcomputing.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-Subject: Re: [PATCH] 9p/rdma: unmap receive dma buffer in rdma_request()
-Message-ID: <Y6wN4uBZwPV+rKXi@unreal>
-References: <20221220031223.3890143-1-shaozhengchao@huawei.com>
+        with ESMTP id S232841AbiL1JkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 04:40:04 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 940ACE09D;
+        Wed, 28 Dec 2022 01:40:02 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BS9cs5X3020226, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BS9cs5X3020226
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 28 Dec 2022 17:38:54 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Wed, 28 Dec 2022 17:39:47 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 28 Dec 2022 17:39:47 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Wed, 28 Dec 2022 17:39:47 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        "Nitin Gupta" <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [RFC PATCH v1 12/19] rtw88: sdio: Add HCI implementation for SDIO based chipsets
+Thread-Topic: [RFC PATCH v1 12/19] rtw88: sdio: Add HCI implementation for
+ SDIO based chipsets
+Thread-Index: AQHZGktCsajZQIMfG02cvFqSiCFada6C3HLQ
+Date:   Wed, 28 Dec 2022 09:39:47 +0000
+Message-ID: <2a9e671ef17444238fee3e7e6f14484b@realtek.com>
+References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
+ <20221227233020.284266-13-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20221227233020.284266-13-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/28_=3F=3F_06:00:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221220031223.3890143-1-shaozhengchao@huawei.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 20, 2022 at 11:12:23AM +0800, Zhengchao Shao wrote:
-> When down_interruptible() failed in rdma_request(), receive dma buffer
-> is not unmapped. Add unmap action to error path.
+
+
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Wednesday, December 28, 2022 7:30 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
+> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
+> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [RFC PATCH v1 12/19] rtw88: sdio: Add HCI implementation for SDIO based chipsets
 > 
-> Fixes: fc79d4b104f0 ("9p: rdma: RDMA Transport Support for 9P")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Add a sub-driver for SDIO based chipsets which implements the following
+> functionality:
+> - register accessors for 8, 16 and 32 bits for all states of the card
+>   (including usage of 4x 8 bit access for one 32 bit buffer if the card
+>   is not fully powered on yet - or if it's fully powered on then 1x 32
+>   bit access is used)
+> - checking whether there's space in the TX FIFO queue to transmit data
+> - transfers from the host to the device for actual network traffic,
+>   reserved pages (for firmware download) and H2C (host-to-card)
+>   transfers
+> - receiving data from the device
+> - deep power saving state
+> 
+> The transmit path is optimized so DMA-capable SDIO host controllers can
+> directly use the buffers provided because the buffer's physical
+> addresses are 8 byte aligned.
+> 
+> The receive path is prepared to support RX aggregation where the
+> chipset combines multiple MAC frames into one bigger buffer to reduce
+> SDIO transfer overhead.
+> 
+> Co-developed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
->  net/9p/trans_rdma.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/net/wireless/realtek/rtw88/Kconfig  |    3 +
+>  drivers/net/wireless/realtek/rtw88/Makefile |    3 +
+>  drivers/net/wireless/realtek/rtw88/debug.h  |    1 +
+>  drivers/net/wireless/realtek/rtw88/mac.h    |    1 -
+>  drivers/net/wireless/realtek/rtw88/reg.h    |   10 +
+>  drivers/net/wireless/realtek/rtw88/sdio.c   | 1242 +++++++++++++++++++
+>  drivers/net/wireless/realtek/rtw88/sdio.h   |  175 +++
+>  7 files changed, 1434 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/sdio.c
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/sdio.h
 > 
-> diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-> index 83f9100d46bf..da83023fecbf 100644
-> --- a/net/9p/trans_rdma.c
-> +++ b/net/9p/trans_rdma.c
-> @@ -499,6 +499,8 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
->  
->  	if (down_interruptible(&rdma->sq_sem)) {
->  		err = -EINTR;
-> +		ib_dma_unmap_single(rdma->cm_id->device, c->busa,
-> +				    c->req->tc.size, DMA_TO_DEVICE);
->  		goto send_error;
->  	}
 
-It is not the only place where ib_dma_unmap_single() wasn't called.
-Even at the same function if ib_post_send() fails, the unmap is not
-called. Also post_recv() is missing call to ib_dma_unmap_single() too.
+[...]
 
-Thanks
+> +
+> +static void rtw_sdio_writel(struct rtw_sdio *rtwsdio, u32 val,
+> +			    u32 addr, int *ret)
+> +{
+> +	u8 buf[4];
+> +	int i;
+> +
+> +	if (!(addr & 3) && rtwsdio->is_powered_on) {
+> +		sdio_writel(rtwsdio->sdio_func, val, addr, ret);
+> +		return;
+> +	}
+> +
+> +	*(__le32 *)buf = cpu_to_le32(val);
+> +
+> +	for (i = 0; i < 4; i++) {
+> +		sdio_writeb(rtwsdio->sdio_func, buf[i], addr + i, ret);
+> +		if (*ret)
 
->  
-> -- 
-> 2.34.1
-> 
+Do you need some messages to know something wrong?
+
+> +			return;
+> +	}
+> +}
+> +
+> +static u32 rtw_sdio_readl(struct rtw_sdio *rtwsdio, u32 addr, int *ret)
+> +{
+> +	u8 buf[4];
+> +	int i;
+> +
+> +	if (!(addr & 3) && rtwsdio->is_powered_on)
+> +		return sdio_readl(rtwsdio->sdio_func, addr, ret);
+> +
+> +	for (i = 0; i < 4; i++) {
+> +		buf[i] = sdio_readb(rtwsdio->sdio_func, addr + i, ret);
+> +		if (*ret)
+> +			return 0;
+> +	}
+> +
+> +	return le32_to_cpu(*(__le32 *)buf);
+> +}
+> +
+> +static u8 rtw_sdio_read_indirect8(struct rtw_dev *rtwdev, u32 addr, int *ret)
+> +{
+> +	struct rtw_sdio *rtwsdio = (struct rtw_sdio *)rtwdev->priv;
+> +	u32 reg_cfg, reg_data;
+> +	int retry;
+> +	u8 tmp;
+> +
+> +	reg_cfg = rtw_sdio_to_bus_offset(rtwdev, REG_SDIO_INDIRECT_REG_CFG);
+> +	reg_data = rtw_sdio_to_bus_offset(rtwdev, REG_SDIO_INDIRECT_REG_DATA);
+> +
+> +	rtw_sdio_writel(rtwsdio, BIT(19) | addr, reg_cfg, ret);
+> +	if (*ret)
+> +		return 0;
+> +
+> +	for (retry = 0; retry < RTW_SDIO_INDIRECT_RW_RETRIES; retry++) {
+> +		tmp = sdio_readb(rtwsdio->sdio_func, reg_cfg + 2, ret);
+> +		if (!ret && tmp & BIT(4))
+
+'ret' is pointer, do you need '*' ?
+
+if (!*ret && tmp & BIT(4)) 
+
+As I look into sdio_readb(), it use 'int *err_ret' as arugment. 
+Would you like to change ' int *ret' to 'int *err_ret'?
+It could help to misunderstand. 
+
+> +			break;
+> +	}
+> +
+> +	if (*ret)
+> +		return 0;
+> +
+> +	return sdio_readb(rtwsdio->sdio_func, reg_data, ret);
+> +}
+> +
+
+[...]
+
+> +
+> +static void rtw_sdio_rx_aggregation(struct rtw_dev *rtwdev, bool enable)
+> +{
+> +	u8 size, timeout;
+> +
+> +	if (enable) {
+> +		if (rtwdev->chip->id == RTW_CHIP_TYPE_8822C) {
+> +			size = 0xff;
+> +			timeout = 0x20;
+> +		} else {
+> +			size = 0x6;
+> +			timeout = 0x6;
+> +		}
+> +
+> +		/* Make the firmware honor the size limit configured below */
+> +		rtw_write32_set(rtwdev, REG_RXDMA_AGG_PG_TH, BIT_EN_PRE_CALC);
+> +
+> +		rtw_write8_set(rtwdev, REG_TXDMA_PQ_MAP, BIT_RXDMA_AGG_EN);
+> +
+> +		rtw_write16(rtwdev, REG_RXDMA_AGG_PG_TH, size |
+> +			    (timeout << BIT_SHIFT_DMA_AGG_TO_V1));
+
+BIT_RXDMA_AGG_PG_TH GENMASK(7, 0)	// for size
+BIT_DMA_AGG_TO_V1 GENMASK(15, 8)	// for timeout
+
+> +
+> +		rtw_write8_set(rtwdev, REG_RXDMA_MODE, BIT_DMA_MODE);
+> +	} else {
+> +		rtw_write32_clr(rtwdev, REG_RXDMA_AGG_PG_TH, BIT_EN_PRE_CALC);
+> +		rtw_write8_clr(rtwdev, REG_TXDMA_PQ_MAP, BIT_RXDMA_AGG_EN);
+> +		rtw_write8_clr(rtwdev, REG_RXDMA_MODE, BIT_DMA_MODE);
+> +	}
+> +}
+> +
+> +static void rtw_sdio_enable_interrupt(struct rtw_dev *rtwdev)
+> +{
+> +	struct rtw_sdio *rtwsdio = (struct rtw_sdio *)rtwdev->priv;
+> +
+> +	rtw_write32(rtwdev, REG_SDIO_HIMR, rtwsdio->irq_mask);
+> +}
+> +
+> +static void rtw_sdio_disable_interrupt(struct rtw_dev *rtwdev)
+> +{
+> +	rtw_write32(rtwdev, REG_SDIO_HIMR, 0x0);
+> +}
+> +
+> +static u8 rtw_sdio_get_tx_qsel(struct rtw_dev *rtwdev, struct sk_buff *skb,
+> +			       u8 queue)
+> +{
+> +	switch (queue) {
+> +	case RTW_TX_QUEUE_BCN:
+> +		return TX_DESC_QSEL_BEACON;
+> +	case RTW_TX_QUEUE_H2C:
+> +		return TX_DESC_QSEL_H2C;
+> +	case RTW_TX_QUEUE_MGMT:
+> +		if (rtw_chip_wcpu_11n(rtwdev))
+> +			return TX_DESC_QSEL_HIGH;
+> +		else
+> +			return TX_DESC_QSEL_MGMT;
+> +	case RTW_TX_QUEUE_HI0:
+> +		return TX_DESC_QSEL_HIGH;
+> +	default:
+> +		return skb->priority;
+> +	}
+> +};
+
+no need ';'
+
+[...]
+
+> +
+> +static void rtw_sdio_rx_isr(struct rtw_dev *rtwdev)
+> +{
+> +	u32 rx_len;
+> +
+> +	while (true) {
+
+add a limit to prevent infinite loop.
+
+> +		if (rtw_chip_wcpu_11n(rtwdev))
+> +			rx_len = rtw_read16(rtwdev, REG_SDIO_RX0_REQ_LEN);
+> +		else
+> +			rx_len = rtw_read32(rtwdev, REG_SDIO_RX0_REQ_LEN);
+> +
+> +		if (!rx_len)
+> +			break;
+> +
+> +		rtw_sdio_rxfifo_recv(rtwdev, rx_len);
+> +	}
+> +}
+> +
+
+[...]
+
+> +
+> +static void rtw_sdio_process_tx_queue(struct rtw_dev *rtwdev,
+> +				      enum rtw_tx_queue_type queue)
+> +{
+> +	struct rtw_sdio *rtwsdio = (struct rtw_sdio *)rtwdev->priv;
+> +	struct sk_buff *skb;
+> +	int ret;
+> +
+> +	while (true) {
+
+Can we have a limit?
+
+> +		skb = skb_dequeue(&rtwsdio->tx_queue[queue]);
+> +		if (!skb)
+> +			break;
+> +
+> +		ret = rtw_sdio_write_port(rtwdev, skb, queue);
+> +		if (ret) {
+> +			skb_queue_head(&rtwsdio->tx_queue[queue], skb);
+> +			break;
+> +		}
+> +
+> +		if (queue <= RTW_TX_QUEUE_VO)
+> +			rtw_sdio_indicate_tx_status(rtwdev, skb);
+> +		else
+> +			dev_kfree_skb_any(skb);
+> +	}
+> +}
+> +
+
+[...]
+
+
