@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBD76578CF
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 15:54:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C636583E3
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 17:53:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbiL1Oye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 09:54:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        id S234967AbiL1QxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 11:53:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233197AbiL1Oy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 09:54:27 -0500
+        with ESMTP id S234983AbiL1Qwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 11:52:49 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F23629B;
-        Wed, 28 Dec 2022 06:54:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894FEE8C;
+        Wed, 28 Dec 2022 08:47:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9D62B8171C;
-        Wed, 28 Dec 2022 14:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFE5C433D2;
-        Wed, 28 Dec 2022 14:54:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FD82B8172A;
+        Wed, 28 Dec 2022 16:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5482FC433EF;
+        Wed, 28 Dec 2022 16:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1672239263;
-        bh=SCzWZlT7d8fyEv3RmfHSfvPwWwLzMm2gkCVM57ca0MA=;
+        s=korg; t=1672246065;
+        bh=QG4DOtGBvWPfutdY4gutfUHbJvS+CD5uT6XcePVcGuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FsFg1ZMaAwGE86nP96tEAq+DmLrejkC4UQ5uy3ufxyKd2t/WH0Lp3qzjX9e+CZDFt
-         30vrhPZ+QRpEGLdf77d7/8jNoWfV7gwuVTi1o9mTCnGVZc1db/6coEsYO3CRQhmUr8
-         dSSTDteOU1UjvwbvU29zGn+PLOSUGOEPTu4OHVVo=
+        b=NSC3jzwmY8oLYQ297txHXMp6n7QtegWyNqdEpKho0Yee6bb5XgbxnDKHtHHdTLb5Y
+         s8Y2J6Hfo3H03kPxkVF+Gn3ALzLQ/1EKOgjMMs/tmyXH9IVkGixj3oSrOrzclA3ldY
+         7tfxn0ZUsMTYnkxP4pQ2d96WWV6Iy8q8gTSciVWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        patches@lists.linux.dev, kernel test robot <lkp@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        patches@lists.linux.dev, Rasesh Mody <rmody@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 190/731] net, proc: Provide PROC_FS=n fallback for proc_create_net_single_write()
-Date:   Wed, 28 Dec 2022 15:34:57 +0100
-Message-Id: <20221228144302.066590087@linuxfoundation.org>
+Subject: [PATCH 6.1 0975/1146] bnx2: Use kmalloc_size_roundup() to match ksize() usage
+Date:   Wed, 28 Dec 2022 15:41:54 +0100
+Message-Id: <20221228144356.835878357@linuxfoundation.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20221228144256.536395940@linuxfoundation.org>
-References: <20221228144256.536395940@linuxfoundation.org>
+In-Reply-To: <20221228144330.180012208@linuxfoundation.org>
+References: <20221228144330.180012208@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,40 +58,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit c3d96f690a790074b508fe183a41e36a00cd7ddd ]
+[ Upstream commit d6dd508080a3cdc0ab34ebf66c3734f2dff907ad ]
 
-Provide a CONFIG_PROC_FS=n fallback for proc_create_net_single_write().
+Round up allocations with kmalloc_size_roundup() so that build_skb()'s
+use of ksize() is always accurate and no special handling of the memory
+is needed by KASAN, UBSAN_BOUNDS, nor FORTIFY_SOURCE.
 
-Also provide a fallback for proc_create_net_data_write().
-
-Fixes: 564def71765c ("proc: Add a way to make network proc files writable")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-cc: netdev@vger.kernel.org
+Cc: Rasesh Mody <rmody@marvell.com>
+Cc: GR-Linux-NIC-Dev@marvell.com
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20221022021004.gonna.489-kees@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/proc_fs.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/broadcom/bnx2.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/proc_fs.h b/include/linux/proc_fs.h
-index 069c7fd95396..a2f25b26ae1e 100644
---- a/include/linux/proc_fs.h
-+++ b/include/linux/proc_fs.h
-@@ -191,8 +191,10 @@ static inline void proc_remove(struct proc_dir_entry *de) {}
- static inline int remove_proc_subtree(const char *name, struct proc_dir_entry *parent) { return 0; }
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index fec57f1982c8..dbe310144780 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -5415,8 +5415,9 @@ bnx2_set_rx_ring_size(struct bnx2 *bp, u32 size)
  
- #define proc_create_net_data(name, mode, parent, ops, state_size, data) ({NULL;})
-+#define proc_create_net_data_write(name, mode, parent, ops, write, state_size, data) ({NULL;})
- #define proc_create_net(name, mode, parent, state_size, ops) ({NULL;})
- #define proc_create_net_single(name, mode, parent, show, data) ({NULL;})
-+#define proc_create_net_single_write(name, mode, parent, show, write, data) ({NULL;})
- 
- static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
- {
+ 	bp->rx_buf_use_size = rx_size;
+ 	/* hw alignment + build_skb() overhead*/
+-	bp->rx_buf_size = SKB_DATA_ALIGN(bp->rx_buf_use_size + BNX2_RX_ALIGN) +
+-		NET_SKB_PAD + SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++	bp->rx_buf_size = kmalloc_size_roundup(
++		SKB_DATA_ALIGN(bp->rx_buf_use_size + BNX2_RX_ALIGN) +
++		NET_SKB_PAD + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+ 	bp->rx_jumbo_thresh = rx_size - BNX2_RX_OFFSET;
+ 	bp->rx_ring_size = size;
+ 	bp->rx_max_ring = bnx2_find_max_ring(size, BNX2_MAX_RX_RINGS);
 -- 
 2.35.1
 
