@@ -2,73 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3EAF65731E
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 07:21:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71ED6657331
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 07:25:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbiL1GVw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Dec 2022 01:21:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
+        id S229579AbiL1GZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 01:25:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiL1GVv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 01:21:51 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82162AE6B;
-        Tue, 27 Dec 2022 22:21:48 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BS6KYogC001141, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BS6KYogC001141
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 28 Dec 2022 14:20:34 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Wed, 28 Dec 2022 14:21:28 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Wed, 28 Dec 2022 14:21:28 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Wed, 28 Dec 2022 14:21:27 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Chris Morgan <macroalpha82@gmail.com>,
-        "Nitin Gupta" <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: RE: [RFC PATCH v1 06/19] rtw88: rtw8821c: Add support for parsing the RTL8821CS (SDIO) efuse
-Thread-Topic: [RFC PATCH v1 06/19] rtw88: rtw8821c: Add support for parsing
- the RTL8821CS (SDIO) efuse
-Thread-Index: AQHZGks+HXgF0Jfl1UCsDAdyYOhe0q6C099A
-Date:   Wed, 28 Dec 2022 06:21:27 +0000
-Message-ID: <695c976e02ed44a2b2345a3ceb226fc4@realtek.com>
-References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
- <20221227233020.284266-7-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20221227233020.284266-7-martin.blumenstingl@googlemail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/28_=3F=3F_01:41:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229494AbiL1GZV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 01:25:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF359BE0D
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 22:24:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672208670;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EUDH72TbKImXu1q4pMXibpdpASgzGn6M9w4L0s3sKfo=;
+        b=PCI2AYc1Hm5xW/5VCEAbxkfVCLOMHdljN6PE0htTeWbthKSIuihQOLvmmVLycr6hgsvZtG
+        x3soYZJ8doF1ZxBdERuRDFTgS3cdEwWP/PVUskollxXOfQRHNku9bKOycxE1goUvvLEI8U
+        70Mf7C575PW04dtMII/xJJ3EGss+H3E=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-493-n3Kzykx5Nmy-NAHPbF1Afw-1; Wed, 28 Dec 2022 01:24:29 -0500
+X-MC-Unique: n3Kzykx5Nmy-NAHPbF1Afw-1
+Received: by mail-pj1-f72.google.com with SMTP id ep17-20020a17090ae65100b00219702c495cso6364562pjb.2
+        for <netdev@vger.kernel.org>; Tue, 27 Dec 2022 22:24:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EUDH72TbKImXu1q4pMXibpdpASgzGn6M9w4L0s3sKfo=;
+        b=vZ0UMtosajDDRBHMbE1/Ij2aIkoukf3mQ+iK8uyzOUKJHmT/5Z9jYWORZ8KlztNLon
+         473TisULaIMwqRZQfWK8fcXv3s89lz9LYUcU1+0871aa7NtK16QJFCxiUys+8tk2FdON
+         axLpJIEZmPFcII+GdBtHiI0o+NSO17jo+jJfmXV4maJcRqKqkzrkG8E79C6wrCMclYDA
+         867OybcTo7xlZbnmF/qN9VmYzdsldqAFM0waYgZIDZrZlr4YvCnzr3DzdholgNQxm0CA
+         KoNKu0q3k7GXIb+JVbHaKislMEbMVDCvTSQ5lvYv8IvpVvbsZfTpzjEKL2DfR4v5kh17
+         asWw==
+X-Gm-Message-State: AFqh2koqid6lWxGRHOXEEiBDmb+nFa8BGyTELXI2BP6ELETzfZJMt/xq
+        gXv2BrSld6h083tV7wd0T9Dk4wJlhrMjAT2LlL4/eaj60MLn2R18TsOMc41U0p02fhq7kg9K5Y8
+        wU2NyMXBoFWTj7D50
+X-Received: by 2002:aa7:9e81:0:b0:581:73f8:d593 with SMTP id p1-20020aa79e81000000b0058173f8d593mr4192846pfq.31.1672208668273;
+        Tue, 27 Dec 2022 22:24:28 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXt/JNtWpTfxNuYFPgPBSu09JHSdhMBVFCXcI0EpYIaeTvvkzv0JPFpFz8vmo1rFNpyq0HVD0w==
+X-Received: by 2002:aa7:9e81:0:b0:581:73f8:d593 with SMTP id p1-20020aa79e81000000b0058173f8d593mr4192831pfq.31.1672208667943;
+        Tue, 27 Dec 2022 22:24:27 -0800 (PST)
+Received: from [10.72.13.7] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x68-20020a626347000000b0056bc742d21esm9726233pfb.176.2022.12.27.22.24.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Dec 2022 22:24:27 -0800 (PST)
+Message-ID: <bfc3f1d0-b656-8d2b-c85d-f20a23f2e976@redhat.com>
+Date:   Wed, 28 Dec 2022 14:24:22 +0800
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH v2 5/9] virtio_net: construct multi-buffer xdp in
+ mergeable
+Content-Language: en-US
+To:     Heng Qi <hengqi@linux.alibaba.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20221220141449.115918-1-hengqi@linux.alibaba.com>
+ <20221220141449.115918-6-hengqi@linux.alibaba.com>
+ <5a03364e-c09e-63ff-7e73-1efec1ed8ca8@redhat.com>
+ <83dc59b1-99f6-58fe-56b5-de5158bcc3cd@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <83dc59b1-99f6-58fe-56b5-de5158bcc3cd@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -76,87 +93,194 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+在 2022/12/27 17:31, Heng Qi 写道:
+>
+>
+> 在 2022/12/27 下午3:01, Jason Wang 写道:
+>>
+>> 在 2022/12/20 22:14, Heng Qi 写道:
+>>> Build multi-buffer xdp using virtnet_build_xdp_buff_mrg().
+>>>
+>>> For the prefilled buffer before xdp is set, we will probably use
+>>> vq reset in the future. At the same time, virtio net currently
+>>> uses comp pages, and bpf_xdp_frags_increase_tail() needs to calculate
+>>> the tailroom of the last frag, which will involve the offset of the
+>>> corresponding page and cause a negative value, so we disable tail
+>>> increase by not setting xdp_rxq->frag_size.
+>>>
+>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> ---
+>>>   drivers/net/virtio_net.c | 60 
+>>> +++++++++++++++++++++++++++++-----------
+>>>   1 file changed, 44 insertions(+), 16 deletions(-)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 8fc3b1841d92..40bc58fa57f5 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -1018,6 +1018,7 @@ static struct sk_buff 
+>>> *receive_mergeable(struct net_device *dev,
+>>>                        unsigned int *xdp_xmit,
+>>>                        struct virtnet_rq_stats *stats)
+>>>   {
+>>> +    unsigned int tailroom = SKB_DATA_ALIGN(sizeof(struct 
+>>> skb_shared_info));
+>>>       struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
+>>>       u16 num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
+>>>       struct page *page = virt_to_head_page(buf);
+>>> @@ -1048,11 +1049,14 @@ static struct sk_buff 
+>>> *receive_mergeable(struct net_device *dev,
+>>>       rcu_read_lock();
+>>>       xdp_prog = rcu_dereference(rq->xdp_prog);
+>>>       if (xdp_prog) {
+>>> +        unsigned int xdp_frags_truesz = 0;
+>>> +        struct skb_shared_info *shinfo;
+>>>           struct xdp_frame *xdpf;
+>>>           struct page *xdp_page;
+>>>           struct xdp_buff xdp;
+>>>           void *data;
+>>>           u32 act;
+>>> +        int i;
+>>>             /* Transient failure which in theory could occur if
+>>>            * in-flight packets from before XDP was enabled reach
+>>> @@ -1061,19 +1065,23 @@ static struct sk_buff 
+>>> *receive_mergeable(struct net_device *dev,
+>>>           if (unlikely(hdr->hdr.gso_type))
+>>>               goto err_xdp;
+>>>   -        /* Buffers with headroom use PAGE_SIZE as alloc size,
+>>> -         * see add_recvbuf_mergeable() + get_mergeable_buf_len()
+>>> +        /* Now XDP core assumes frag size is PAGE_SIZE, but buffers
+>>> +         * with headroom may add hole in truesize, which
+>>> +         * make their length exceed PAGE_SIZE. So we disabled the
+>>> +         * hole mechanism for xdp. See add_recvbuf_mergeable().
+>>>            */
+>>>           frame_sz = headroom ? PAGE_SIZE : truesize;
+>>>   -        /* This happens when rx buffer size is underestimated
+>>> -         * or headroom is not enough because of the buffer
+>>> -         * was refilled before XDP is set. This should only
+>>> -         * happen for the first several packets, so we don't
+>>> -         * care much about its performance.
+>>> +        /* This happens when headroom is not enough because
+>>> +         * of the buffer was prefilled before XDP is set.
+>>> +         * This should only happen for the first several packets.
+>>> +         * In fact, vq reset can be used here to help us clean up
+>>> +         * the prefilled buffers, but many existing devices do not
+>>> +         * support it, and we don't want to bother users who are
+>>> +         * using xdp normally.
+>>>            */
+>>> -        if (unlikely(num_buf > 1 ||
+>>> -                 headroom < virtnet_get_headroom(vi))) {
+>>> +        if (!xdp_prog->aux->xdp_has_frags &&
+>>> +            (num_buf > 1 || headroom < virtnet_get_headroom(vi))) {
+>>>               /* linearize data for XDP */
+>>>               xdp_page = xdp_linearize_page(rq, &num_buf,
+>>>                                 page, offset,
+>>> @@ -1084,17 +1092,26 @@ static struct sk_buff 
+>>> *receive_mergeable(struct net_device *dev,
+>>>               if (!xdp_page)
+>>>                   goto err_xdp;
+>>>               offset = VIRTIO_XDP_HEADROOM;
+>>> +        } else if (unlikely(headroom < virtnet_get_headroom(vi))) {
+>>
+>>
+>> I believe we need to check xdp_prog->aux->xdp_has_frags at least 
+>> since this may not work if it needs more than one frags?
+>
+> Sorry Jason, I didn't understand you, I'll try to answer. For 
+> multi-buffer xdp programs, if the first buffer is a pre-filled buffer 
+> (no headroom),
+> we need to copy it out and use the subsequent buffers of this packet 
+> as its frags (this is done in virtnet_build_xdp_buff_mrg()), therefore,
+> it seems that there is no need to check 'xdp_prog->aux->xdp_has_frags' 
+> to mark multi-buffer xdp (of course I can add it),
+>
+> + } else if (unlikely(headroom < virtnet_get_headroom(vi))) {
+>
+> Because the linearization of single-buffer xdp has all been done 
+> before, the subsequent situation can only be applied to multi-buffer xdp:
+> + if (!xdp_prog->aux->xdp_has_frags &&
+> + (num_buf > 1 || headroom < virtnet_get_headroom(vi))) {
 
-> -----Original Message-----
-> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Sent: Wednesday, December 28, 2022 7:30 AM
-> To: linux-wireless@vger.kernel.org
-> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
-> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
-> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
-> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
-> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Subject: [RFC PATCH v1 06/19] rtw88: rtw8821c: Add support for parsing the RTL8821CS (SDIO) efuse
-> 
-> The efuse of the SDIO RTL8821CS chip has only one known member: the mac
-> address is at offset 0x11a. Add a struct rtw8821cs_efuse describing this
-> and use it for copying the mac address when the SDIO bus is used.
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/rtw8821c.c | 9 +++++++++
->  drivers/net/wireless/realtek/rtw88/rtw8821c.h | 6 ++++++
->  2 files changed, 15 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-> b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-> index 17f800f6efbd..dd01b22f9770 100644
-> --- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-> @@ -26,6 +26,12 @@ static void rtw8821ce_efuse_parsing(struct rtw_efuse *efuse,
->  	ether_addr_copy(efuse->addr, map->e.mac_addr);
->  }
-> 
-> +static void rtw8821cs_efuse_parsing(struct rtw_efuse *efuse,
-> +				    struct rtw8821c_efuse *map)
-> +{
-> +	ether_addr_copy(efuse->addr, map->s.mac_addr);
-> +}
-> +
->  static void rtw8821cu_efuse_parsing(struct rtw_efuse *efuse,
->  				    struct rtw8821c_efuse *map)
->  {
-> @@ -74,6 +80,9 @@ static int rtw8821c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
->  	case RTW_HCI_TYPE_PCIE:
->  		rtw8821ce_efuse_parsing(efuse, map);
->  		break;
-> +	case RTW_HCI_TYPE_SDIO:
-> +		rtw8821cs_efuse_parsing(efuse, map);
-> +		break;
->  	case RTW_HCI_TYPE_USB:
->  		rtw8821cu_efuse_parsing(efuse, map);
->  		break;
-> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-> b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-> index 1c81260f3a54..1deea54575b5 100644
-> --- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-> @@ -65,6 +65,11 @@ struct rtw8821ce_efuse {
->  	u8 res7;
->  };
-> 
-> +struct rtw8821cs_efuse {
-> +	u8 res4[0x4a];			/* 0xd0 */
-> +	u8 mac_addr[ETH_ALEN];		/* 0x11a */
-> +};
-> +
 
-This struct should be __packed, as well as rtw8821c_efuse.
+I basically meant what happens if
 
-Would you mind to create additional patch to add __packed to these struct of
-efuse layout?
+!xdp_prog->aux->xdp_has_frags && num_buf > 2 && headroom < 
+virtnet_get_headroom(vi)
 
->  struct rtw8821c_efuse {
->  	__le16 rtl_id;
->  	u8 res0[0x0e];
-> @@ -93,6 +98,7 @@ struct rtw8821c_efuse {
->  	u8 res[3];
->  	union {
->  		struct rtw8821ce_efuse e;
-> +		struct rtw8821cs_efuse s;
->  		struct rtw8821cu_efuse u;
->  	};
->  };
-> --
-> 2.39.0
+In this case the current code seems to leave the second buffer in the 
+frags. This is the case of the buffer size underestimation that is 
+mentioned in the comment before (I'd like to keep that).
+
+(And that's why I'm asking to use linearizge_page())
+
+Thanks
+
+
+>
+>>
+>> Btw, I don't see a reason why we can't reuse xdp_linearize_page(), 
+>> (we probably don't need error is the buffer exceeds PAGE_SIZE).
+>
+> For multi-buffer xdp, we only need to copy out the pre-filled first 
+> buffer, and use the remaining buffers of this packet as frags in 
+> virtnet_build_xdp_buff_mrg().
+>
+> Thanks.
+>
+>>
+>> Other looks good.
+>>
+>> Thanks
+>>
+>>
+>>> +            if ((VIRTIO_XDP_HEADROOM + len + tailroom) > PAGE_SIZE)
+>>> +                goto err_xdp;
+>>> +
+>>> +            xdp_page = alloc_page(GFP_ATOMIC);
+>>> +            if (!xdp_page)
+>>> +                goto err_xdp;
+>>> +
+>>> +            memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
+>>> +                   page_address(page) + offset, len);
+>>> +            frame_sz = PAGE_SIZE;
+>>> +            offset = VIRTIO_XDP_HEADROOM;
+>>>           } else {
+>>>               xdp_page = page;
+>>>           }
+>>> -
+>>> -        /* Allow consuming headroom but reserve enough space to push
+>>> -         * the descriptor on if we get an XDP_TX return code.
+>>> -         */
+>>>           data = page_address(xdp_page) + offset;
+>>> -        xdp_init_buff(&xdp, frame_sz - vi->hdr_len, &rq->xdp_rxq);
+>>> -        xdp_prepare_buff(&xdp, data - VIRTIO_XDP_HEADROOM + 
+>>> vi->hdr_len,
+>>> -                 VIRTIO_XDP_HEADROOM, len - vi->hdr_len, true);
+>>> +        err = virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, 
+>>> len, frame_sz,
+>>> +                         &num_buf, &xdp_frags_truesz, stats);
+>>> +        if (unlikely(err))
+>>> +            goto err_xdp_frags;
+>>>             act = bpf_prog_run_xdp(xdp_prog, &xdp);
+>>>           stats->xdp_packets++;
+>>> @@ -1190,6 +1207,17 @@ static struct sk_buff 
+>>> *receive_mergeable(struct net_device *dev,
+>>>                   __free_pages(xdp_page, 0);
+>>>               goto err_xdp;
+>>>           }
+>>> +err_xdp_frags:
+>>> +        shinfo = xdp_get_shared_info_from_buff(&xdp);
+>>> +
+>>> +        if (unlikely(xdp_page != page))
+>>> +            __free_pages(xdp_page, 0);
+>>> +
+>>> +        for (i = 0; i < shinfo->nr_frags; i++) {
+>>> +            xdp_page = skb_frag_page(&shinfo->frags[i]);
+>>> +            put_page(xdp_page);
+>>> +        }
+>>> +        goto err_xdp;
+>>>       }
+>>>       rcu_read_unlock();
+>
 
