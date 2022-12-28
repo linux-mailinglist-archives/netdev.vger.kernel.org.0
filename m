@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E25F6573E1
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 09:24:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C58156573E3
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 09:25:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiL1IYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 03:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
+        id S230444AbiL1IZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 03:25:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbiL1IYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 03:24:50 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA36FDF07;
-        Wed, 28 Dec 2022 00:24:48 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VYGfkNs_1672215885;
-Received: from 30.15.240.205(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VYGfkNs_1672215885)
+        with ESMTP id S229656AbiL1IZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 03:25:22 -0500
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54AFFACE;
+        Wed, 28 Dec 2022 00:25:20 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VYGfkO8_1672215886;
+Received: from 30.15.240.205(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VYGfkO8_1672215886)
           by smtp.aliyun-inc.com;
-          Wed, 28 Dec 2022 16:24:46 +0800
-Message-ID: <fb7b9914-33fb-b752-b421-d30349b44dbc@linux.alibaba.com>
-Date:   Wed, 28 Dec 2022 16:24:44 +0800
+          Wed, 28 Dec 2022 16:25:18 +0800
+Message-ID: <06c28f86-75ae-2297-fc8a-1aa49af323ce@linux.alibaba.com>
+Date:   Wed, 28 Dec 2022 16:25:17 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0)
  Gecko/20100101 Thunderbird/108.0
-Subject: Re: [PATCH v2 1/9] virtio_net: disable the hole mechanism for xdp
+Subject: Re: [PATCH v2 6/9] virtio_net: transmit the multi-buffer xdp
 To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
@@ -36,12 +36,12 @@ Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
         Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <20221220141449.115918-1-hengqi@linux.alibaba.com>
- <20221220141449.115918-2-hengqi@linux.alibaba.com>
- <8d81ab3b-c10b-1a46-3ae1-b87228dbeb4e@redhat.com>
- <318bcc35-9699-ba94-d470-e81d246831a5@linux.alibaba.com>
- <c1b27a21-833c-2f3d-1943-7ab68c73836b@redhat.com>
+ <20221220141449.115918-7-hengqi@linux.alibaba.com>
+ <af506b2f-698f-b3d8-8bc4-f48e2c429ce7@redhat.com>
+ <f8b8e76c-6438-9ea5-18e4-24773fa01cfd@linux.alibaba.com>
+ <d0126685-10ea-eab6-9b05-53cb30103da2@redhat.com>
 From:   Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <c1b27a21-833c-2f3d-1943-7ab68c73836b@redhat.com>
+In-Reply-To: <d0126685-10ea-eab6-9b05-53cb30103da2@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-11.0 required=5.0 tests=BAYES_00,
@@ -56,61 +56,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-在 2022/12/28 下午2:28, Jason Wang 写道:
+在 2022/12/28 下午2:30, Jason Wang 写道:
 >
-> 在 2022/12/27 15:32, Heng Qi 写道:
+> 在 2022/12/27 16:26, Heng Qi 写道:
 >>
 >>
->> 在 2022/12/27 下午2:30, Jason Wang 写道:
+>> 在 2022/12/27 下午3:12, Jason Wang 写道:
 >>>
 >>> 在 2022/12/20 22:14, Heng Qi 写道:
->>>> XDP core assumes that the frame_size of xdp_buff and the length of
->>>> the frag are PAGE_SIZE. The hole may cause the processing of xdp to
->>>> fail, so we disable the hole mechanism when xdp is set.
+>>>> This serves as the basis for XDP_TX and XDP_REDIRECT
+>>>> to send a multi-buffer xdp_frame.
 >>>>
 >>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
 >>>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 >>>> ---
->>>>   drivers/net/virtio_net.c | 5 ++++-
->>>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>>>   drivers/net/virtio_net.c | 27 ++++++++++++++++++++++-----
+>>>>   1 file changed, 22 insertions(+), 5 deletions(-)
 >>>>
 >>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>> index 9cce7dec7366..443aa7b8f0ad 100644
+>>>> index 40bc58fa57f5..9f31bfa7f9a6 100644
 >>>> --- a/drivers/net/virtio_net.c
 >>>> +++ b/drivers/net/virtio_net.c
->>>> @@ -1419,8 +1419,11 @@ static int add_recvbuf_mergeable(struct 
+>>>> @@ -563,22 +563,39 @@ static int __virtnet_xdp_xmit_one(struct 
 >>>> virtnet_info *vi,
->>>>           /* To avoid internal fragmentation, if there is very 
->>>> likely not
->>>>            * enough space for another buffer, add the remaining 
->>>> space to
->>>>            * the current buffer.
->>>> +         * XDP core assumes that frame_size of xdp_buff and the 
->>>> length
->>>> +         * of the frag are PAGE_SIZE, so we disable the hole 
->>>> mechanism.
->>>>            */
->>>> -        len += hole;
->>>> +        if (!headroom)
->>>> +            len += hole;
+>>>>                      struct xdp_frame *xdpf)
+>>>>   {
+>>>>       struct virtio_net_hdr_mrg_rxbuf *hdr;
+>>>> -    int err;
+>>>> +    struct skb_shared_info *shinfo;
+>>>> +    u8 nr_frags = 0;
+>>>> +    int err, i;
+>>>>         if (unlikely(xdpf->headroom < vi->hdr_len))
+>>>>           return -EOVERFLOW;
+>>>>   -    /* Make room for virtqueue hdr (also change xdpf->headroom?) */
+>>>> +    if (unlikely(xdp_frame_has_frags(xdpf))) {
+>>>> +        shinfo = xdp_get_shared_info_from_frame(xdpf);
+>>>> +        nr_frags = shinfo->nr_frags;
+>>>> +    }
+>>>> +
+>>>> +    /* Need to adjust this to calculate the correct postion
+>>>> +     * for shinfo of the xdpf.
+>>>> +     */
+>>>> +    xdpf->headroom -= vi->hdr_len;
 >>>
 >>>
->>> Is this only a requirement of multi-buffer XDP? If not, it need to 
->>> be backported to stable.
+>>> Any reason we need to do this here? (Or if it is, is it only needed 
+>>> for multibuffer XDP?)
 >>
->> It applies to single buffer xdp and multi-buffer xdp, but even if 
->> single buffer xdp has a hole
->> mechanism, there will be no problem (limiting mtu and turning off 
->> GUEST GSO), so there is
->> no need to backport it.
+>> Going back to its wrapping function virtnet_xdp_xmit(), we need to 
+>> free up the pending old buffers.
+>> If the "is_xdp_frame(ptr)" condition is met, then we need to 
+>> calculate the position of skb_shared_info
+>> in xdp_get_frame_len() and xdp_return_frame(), which will involve to 
+>> xdpf->data and xdpf->headroom.
+>> Therefore, we need to update the value of headroom synchronously here.
 >
 >
-> Let's add this in the changelog.
+> Let's tweak the comment above to something like this.
 
 Ok, thanks for your energy.
 
 >
-> With that,
+> With that fixed,
 >
 > Acked-by: Jason Wang <jasowang@redhat.com>
 >
@@ -118,13 +125,36 @@ Ok, thanks for your energy.
 >
 >
 >>
+>> Also, it's not necessary for single-buffer xdp, but we need to keep 
+>> it because it's harmless and as it should be.
+>>
 >> Thanks.
 >>
+>>>
+>>> Other looks good.
 >>>
 >>> Thanks
 >>>
 >>>
->>>>           alloc_frag->offset += hole;
->>>>       }
+>>>>       xdpf->data -= vi->hdr_len;
+>>>>       /* Zero header and leave csum up to XDP layers */
+>>>>       hdr = xdpf->data;
+>>>>       memset(hdr, 0, vi->hdr_len);
+>>>>       xdpf->len   += vi->hdr_len;
+>>>>   -    sg_init_one(sq->sg, xdpf->data, xdpf->len);
+>>>> +    sg_init_table(sq->sg, nr_frags + 1);
+>>>> +    sg_set_buf(sq->sg, xdpf->data, xdpf->len);
+>>>> +    for (i = 0; i < nr_frags; i++) {
+>>>> +        skb_frag_t *frag = &shinfo->frags[i];
+>>>> +
+>>>> +        sg_set_page(&sq->sg[i + 1], skb_frag_page(frag),
+>>>> +                skb_frag_size(frag), skb_frag_off(frag));
+>>>> +    }
+>>>>   -    err = virtqueue_add_outbuf(sq->vq, sq->sg, 1, xdp_to_ptr(xdpf),
+>>>> -                   GFP_ATOMIC);
+>>>> +    err = virtqueue_add_outbuf(sq->vq, sq->sg, nr_frags + 1,
+>>>> +                   xdp_to_ptr(xdpf), GFP_ATOMIC);
+>>>>       if (unlikely(err))
+>>>>           return -ENOSPC; /* Caller handle free/refcnt */
 >>
 
