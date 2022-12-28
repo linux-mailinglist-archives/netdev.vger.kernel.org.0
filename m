@@ -2,217 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03629657542
-	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 11:26:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BB426575F8
+	for <lists+netdev@lfdr.de>; Wed, 28 Dec 2022 12:42:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbiL1K0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Dec 2022 05:26:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        id S232876AbiL1LmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 06:42:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbiL1K0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 05:26:18 -0500
-Received: from out30-1.freemail.mail.aliyun.com (out30-1.freemail.mail.aliyun.com [115.124.30.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33EA4B4C;
-        Wed, 28 Dec 2022 02:26:15 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VYHHvkd_1672223171;
-Received: from 30.221.128.170(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VYHHvkd_1672223171)
-          by smtp.aliyun-inc.com;
-          Wed, 28 Dec 2022 18:26:12 +0800
-Message-ID: <732a4b17-f774-aad9-1803-16cc8c7b43c7@linux.alibaba.com>
-Date:   Wed, 28 Dec 2022 18:26:09 +0800
+        with ESMTP id S232618AbiL1LmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 06:42:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9020EF7F
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 03:41:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672227686;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RWhKYfnf64Zv7HQeQnmjdLab+KD1fBqQOFsBuRTtpew=;
+        b=ZvCYupFoj9iBpkEwaxsD7irMTXZDRAs1mIj4q5qBntwjZdGaIm1CIUQBQihkW6mby9sSuA
+        lf1Tdil7Za79cfXEhvuV752BVdRq8YLDTIKp5uH+2pdn6/w/55v1CGnq1I7SEAkMqvoFNO
+        ztS8qWyKGZg5TWVkQ+1lmWLZPWYQCxU=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-36-oX1KBqOlN6G0a2tQM1NKKg-1; Wed, 28 Dec 2022 06:41:25 -0500
+X-MC-Unique: oX1KBqOlN6G0a2tQM1NKKg-1
+Received: by mail-ot1-f70.google.com with SMTP id e20-20020a9d5614000000b0068401872536so520636oti.3
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 03:41:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RWhKYfnf64Zv7HQeQnmjdLab+KD1fBqQOFsBuRTtpew=;
+        b=l0h2UVXzmpsHW0+kgVS+6Ejlt0ThCIy387xYzlhX8/IbX+su13nAx0Th99U+Z7DPy/
+         rou5GurCPv0eAItnu0JkwoJb4gdgBqc12PePKduAhPCl+HeHpmP+Cwv66L8U+liI401U
+         pck7wkCI53KlbqF5ImF4v0YWWGpWs4zddzrK2L8xhillI0LbzBs9hffcaj9pKxjVYw5l
+         HF4Rr+68kAtyd/kWT5YjFj6l9sy0+QZk30DFbCa5u4m/8sIHazR5xuhJHbrWzY66+snC
+         cIs4NkJ7Z2gz3dH378HZWUR5wmsuEf5wgBa/omOE9HXnrSFwN8TimiaFDar9rjAfbRok
+         T3gw==
+X-Gm-Message-State: AFqh2krdSxdaNIckCAn7oW9YvMTBfpVW9mKtfSKiXhSmiflfocGeN3Fm
+        dkFemDWt1GgWg2CCBEAIT55x6kZapzC8mOWVOrjmlMaGxuiJ871rCKSJrDlYIp4+xvMWw4UMc4J
+        6IaRcYaOPJTI2nUls4v/pEFbUxoI/F8Rk
+X-Received: by 2002:a05:6830:4a3:b0:670:8334:ccf2 with SMTP id l3-20020a05683004a300b006708334ccf2mr1624809otd.201.1672227684716;
+        Wed, 28 Dec 2022 03:41:24 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtM5qJjWq6WYAZpzJMA0p5QXj1FsNUTrSqa1ypuj8K0zeRjnRd5PenrJ4lYAsbH6wUZ+hcwQS7JrifcMolib/4=
+X-Received: by 2002:a05:6830:4a3:b0:670:8334:ccf2 with SMTP id
+ l3-20020a05683004a300b006708334ccf2mr1624801otd.201.1672227684452; Wed, 28
+ Dec 2022 03:41:24 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: [RFC PATCH net-next v2 0/5] net/smc:Introduce SMC-D based
- loopback acceleration
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1671506505-104676-1-git-send-email-guwen@linux.alibaba.com>
-In-Reply-To: <1671506505-104676-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.8 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NUMERIC_HTTP_ADDR,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221226074908.8154-1-jasowang@redhat.com> <20221226074908.8154-5-jasowang@redhat.com>
+ <1672107557.0142956-1-xuanzhuo@linux.alibaba.com> <CACGkMEvzhAFj5HCmP--9DKfCAq_4wPNwsmmg4h0Sbv6ra0+DrQ@mail.gmail.com>
+ <20221227014641-mutt-send-email-mst@kernel.org> <1672216298.4455094-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1672216298.4455094-1-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 28 Dec 2022 19:41:13 +0800
+Message-ID: <CACGkMEuADspVzge5Q8JdEQssjGg911CaT1u_NQ9s7i-7UMwkhg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] virtio-net: sleep instead of busy waiting for cvq command
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, eperezma@redhat.com,
+        edumazet@google.com, maxime.coquelin@redhat.com, kuba@kernel.org,
+        pabeni@redhat.com, davem@davemloft.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Dec 28, 2022 at 4:34 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> On Tue, 27 Dec 2022 01:58:22 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > On Tue, Dec 27, 2022 at 12:33:53PM +0800, Jason Wang wrote:
+> > > On Tue, Dec 27, 2022 at 10:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> > > >
+> > > > On Mon, 26 Dec 2022 15:49:08 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > > > > We used to busy waiting on the cvq command this tends to be
+> > > > > problematic since:
+> > > > >
+> > > > > 1) CPU could wait for ever on a buggy/malicous device
+> > > > > 2) There's no wait to terminate the process that triggers the cvq
+> > > > >    command
+> > > > >
+> > > > > So this patch switch to use virtqueue_wait_for_used() to sleep with a
+> > > > > timeout (1s) instead of busy polling for the cvq command forever. This
+> > > >
+> > > > I don't think that a fixed 1S is a good choice.
+> > >
+> > > Well, it could be tweaked to be a little bit longer.
+> > >
+> > > One way, as discussed, is to let the device advertise a timeout then
+> > > the driver can validate if it's valid and use that timeout. But it
+> > > needs extension to the spec.
+> >
+> > Controlling timeout from device is a good idea, e.g. hardware devices
+> > would benefit from a shorter timeout, hypervisor devices from a longer
+> > timeout or no timeout.
+>
+> Yes. That is good.
+>
+> Before introducing this feature, I personally like to use "wait", rather than
+> define a timeout.
 
+Note that the driver still needs to validate what device advertises to
+avoid infinite wait.
 
-On 2022/12/20 11:21, Wen Gu wrote:
-> Hi, all
-> 
-> # Background
-> 
-> As previously mentioned in [1], we (Alibaba Cloud) are trying to use SMC
-> to accelerate TCP applications in cloud environment, improving inter-host
-> or inter-VM communication.
-> 
-> In addition of these, we also found the value of SMC-D in scenario of local
-> inter-process communication, such as accelerate communication between containers
-> within the same host. So this RFC tries to provide a SMC-D loopback solution
-> in such scenario, to bring a significant improvement in latency and throughput
-> compared to TCP loopback.
-> 
-> # Design
-> 
-> This patch set provides a kind of SMC-D loopback solution.
-> 
-> Patch #1/5 and #2/5 provide an SMC-D based dummy device, preparing for the
-> inter-process communication acceleration. Except for loopback acceleration,
-> the dummy device can also meet the requirements mentioned in [2], which is
-> providing a way to test SMC-D logic for broad community without ISM device.
-> 
->   +------------------------------------------+
->   |  +-----------+           +-----------+   |
->   |  | process A |           | process B |   |
->   |  +-----------+           +-----------+   |
->   |       ^                        ^         |
->   |       |    +---------------+   |         |
->   |       |    |   SMC stack   |   |         |
->   |       +--->| +-----------+ |<--|         |
->   |            | |   dummy   | |             |
->   |            | |   device  | |             |
->   |            +-+-----------+-+             |
->   |                   VM                     |
->   +------------------------------------------+
-> 
-> Patch #3/5, #4/5, #5/5 provides a way to avoid data copy from sndbuf to RMB
-> and improve SMC-D loopback performance. Through extending smcd_ops with two
-> new semantic: attach_dmb and detach_dmb, sender's sndbuf shares the same
-> physical memory region with receiver's RMB. The data copied from userspace
-> to sender's sndbuf directly reaches the receiver's RMB without unnecessary
-> memory copy in the same kernel.
-> 
->   +----------+                     +----------+
->   | socket A |                     | socket B |
->   +----------+                     +----------+
->         |                               ^
->         |         +---------+           |
->    regard as      |         | ----------|
->    local sndbuf   |  B's    |     regard as
->         |         |  RMB    |     local RMB
->         |-------> |         |
->                   +---------+
-> 
-> # Benchmark Test
-> 
->   * Test environments:
->        - VM with Intel Xeon Platinum 8 core 2.50GHz, 16 GiB mem.
->        - SMC sndbuf/RMB size 1MB.
-> 
->   * Test object:
->        - TCP: run on TCP loopback.
->        - domain: run on UNIX domain.
->        - SMC lo: run on SMC loopback device with patch #1/5 ~ #2/5.
->        - SMC lo-nocpy: run on SMC loopback device with patch #1/5 ~ #5/5.
-> 
-> 1. ipc-benchmark (see [3])
-> 
->   - ./<foo> -c 1000000 -s 100
-> 
->                         TCP              domain              SMC-lo             SMC-lo-nocpy
-> Message
-> rate (msg/s)         75140      129548(+72.41)    152266(+102.64%)         151914(+102.17%)
-> 
-> 2. sockperf
-> 
->   - serv: <smc_run> taskset -c <cpu> sockperf sr --tcp
->   - clnt: <smc_run> taskset -c <cpu> sockperf { tp | pp } --tcp --msg-size={ 64000 for tp | 14 for pp } -i 127.0.0.1 -t 30
-> 
->                         TCP                  SMC-lo             SMC-lo-nocpy
-> Bandwidth(MBps)   4943.359        4936.096(-0.15%)        8239.624(+66.68%)
-> Latency(us)          6.372          3.359(-47.28%)            3.25(-49.00%)
-> 
-> 3. iperf3
-> 
->   - serv: <smc_run> taskset -c <cpu> iperf3 -s
->   - clnt: <smc_run> taskset -c <cpu> iperf3 -c 127.0.0.1 -t 15
-> 
->                         TCP                  SMC-lo             SMC-lo-nocpy
-> Bitrate(Gb/s)         40.5            41.4(+2.22%)            76.4(+88.64%)
-> 
-> 4. nginx/wrk
-> 
->   - serv: <smc_run> nginx
->   - clnt: <smc_run> wrk -t 8 -c 500 -d 30 http://127.0.0.1:80
-> 
->                         TCP                  SMC-lo             SMC-lo-nocpy
-> Requests/s       154643.22      220894.03(+42.84%)        226754.3(+46.63%)
-> 
-> 
-> # Discussion
-> 
-> 1. API between SMC-D and ISM device
-> 
-> As Jan mentioned in [2], IBM are working on placing an API between SMC-D
-> and the ISM device for easier use of different "devices" for SMC-D.
-> 
-> So, considering that the introduction of attach_dmb or detach_dmb can
-> effectively avoid data copying from sndbuf to RMB and brings obvious
-> throughput advantages in inter-VM or inter-process scenarios, can the
-> attach/detach semantics be taken into consideration when designing the
-> API to make it a standard ISM device behavior?
-> 
-> Maybe our RFC of SMC-D based inter-process acceleration (this one) and
-> inter-VM acceleration (will coming soon, which is the update of [1])
+Thanks
 
+>
+> Thanks.
+>
+>
+> >
+> > >
+> > > > Some of the DPUs are very
+> > > > lazy for cvq handle.
+> > >
+> > > Such design needs to be revisited, cvq (control path) should have a
+> > > better priority or QOS than datapath.
+> >
+> > Spec says nothing about this, so driver can't assume this either.
+> >
+> > > > In particular, we will also directly break the device.
+> > >
+> > > It's kind of hardening for malicious devices.
+> >
+> > ATM no amount of hardening can prevent a malicious hypervisor from
+> > blocking the guest. Recovering when a hardware device is broken would be
+> > nice but I think if we do bother then we should try harder to recover,
+> > such as by driving device reset.
+> >
+> >
+> > Also, does your patch break surprise removal? There's no callback
+> > in this case ATM.
+> >
+> > > >
+> > > > I think it is necessary to add a Virtio-Net parameter to allow users to define
+> > > > this timeout by themselves. Although I don't think this is a good way.
+> > >
+> > > Very hard and unfriendly to the end users.
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > > Thanks.
+> > > >
+> > > >
+> > > > > gives the scheduler a breath and can let the process can respond to
+> > > > > asignal. If the device doesn't respond in the timeout, break the
+> > > > > device.
+> > > > >
+> > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > ---
+> > > > > Changes since V1:
+> > > > > - break the device when timeout
+> > > > > - get buffer manually since the virtio core check more_used() instead
+> > > > > ---
+> > > > >  drivers/net/virtio_net.c | 24 ++++++++++++++++--------
+> > > > >  1 file changed, 16 insertions(+), 8 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > index efd9dd55828b..6a2ea64cfcb5 100644
+> > > > > --- a/drivers/net/virtio_net.c
+> > > > > +++ b/drivers/net/virtio_net.c
+> > > > > @@ -405,6 +405,7 @@ static void disable_rx_mode_work(struct virtnet_info *vi)
+> > > > >       vi->rx_mode_work_enabled = false;
+> > > > >       spin_unlock_bh(&vi->rx_mode_lock);
+> > > > >
+> > > > > +     virtqueue_wake_up(vi->cvq);
+> > > > >       flush_work(&vi->rx_mode_work);
+> > > > >  }
+> > > > >
+> > > > > @@ -1497,6 +1498,11 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
+> > > > >       return !oom;
+> > > > >  }
+> > > > >
+> > > > > +static void virtnet_cvq_done(struct virtqueue *cvq)
+> > > > > +{
+> > > > > +     virtqueue_wake_up(cvq);
+> > > > > +}
+> > > > > +
+> > > > >  static void skb_recv_done(struct virtqueue *rvq)
+> > > > >  {
+> > > > >       struct virtnet_info *vi = rvq->vdev->priv;
+> > > > > @@ -1984,6 +1990,8 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
+> > > > >       return err;
+> > > > >  }
+> > > > >
+> > > > > +static int virtnet_close(struct net_device *dev);
+> > > > > +
+> > > > >  /*
+> > > > >   * Send command via the control virtqueue and check status.  Commands
+> > > > >   * supported by the hypervisor, as indicated by feature bits, should
+> > > > > @@ -2026,14 +2034,14 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
+> > > > >       if (unlikely(!virtqueue_kick(vi->cvq)))
+> > > > >               return vi->ctrl->status == VIRTIO_NET_OK;
+> > > > >
+> > > > > -     /* Spin for a response, the kick causes an ioport write, trapping
+> > > > > -      * into the hypervisor, so the request should be handled immediately.
+> > > > > -      */
+> > > > > -     while (!virtqueue_get_buf(vi->cvq, &tmp) &&
+> > > > > -            !virtqueue_is_broken(vi->cvq))
+> > > > > -             cpu_relax();
+> > > > > +     if (virtqueue_wait_for_used(vi->cvq)) {
+> > > > > +             virtqueue_get_buf(vi->cvq, &tmp);
+> > > > > +             return vi->ctrl->status == VIRTIO_NET_OK;
+> > > > > +     }
+> > > > >
+> > > > > -     return vi->ctrl->status == VIRTIO_NET_OK;
+> > > > > +     netdev_err(vi->dev, "CVQ command timeout, break the virtio device.");
+> > > > > +     virtio_break_device(vi->vdev);
+> > > > > +     return VIRTIO_NET_ERR;
+> > > > >  }
+> > > > >
+> > > > >  static int virtnet_set_mac_address(struct net_device *dev, void *p)
+> > > > > @@ -3526,7 +3534,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > > >
+> > > > >       /* Parameters for control virtqueue, if any */
+> > > > >       if (vi->has_cvq) {
+> > > > > -             callbacks[total_vqs - 1] = NULL;
+> > > > > +             callbacks[total_vqs - 1] = virtnet_cvq_done;
+> > > > >               names[total_vqs - 1] = "control";
+> > > > >       }
+> > > > >
+> > > > > --
+> > > > > 2.25.1
+> > > > >
+> > > > > _______________________________________________
+> > > > > Virtualization mailing list
+> > > > > Virtualization@lists.linux-foundation.org
+> > > > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> > > >
+> >
+>
 
-The patch of SMC-D + virtio-ism device is now discussed in virtio community:
-
-https://lists.oasis-open.org/archives/virtio-comment/202212/msg00030.html
-
-
-> can provide some examples for new API design. And we are very glad to
-> discuss this on the mail list.
-> 
-> 2. Way to select different ISM-like devices
-> 
-> With the proposal of SMC-D loopback 'device' (this RFC) and incoming
-> device used for inter-VM acceleration as update of [1], SMC-D has more
-> options to choose from. So we need to consider that how to indicate
-> supported devices, how to determine which one to use, and their priority...
-> 
-> IMHO, this may require an update of CLC message and negotiation mechanism.
-> Again, we are very glad to discuss this with you on the mailing list.
-> 
-> [1] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/
-> [2] https://lore.kernel.org/netdev/35d14144-28f7-6129-d6d3-ba16dae7a646@linux.ibm.com/
-> [3] https://github.com/goldsborough/ipc-bench
-> 
-> v1->v2
->   1. Fix some build WARNINGs complained by kernel test rebot
->      Reported-by: kernel test robot <lkp@intel.com>
->   2. Add iperf3 test data.
-> 
-> Wen Gu (5):
->    net/smc: introduce SMC-D loopback device
->    net/smc: choose loopback device in SMC-D communication
->    net/smc: add dmb attach and detach interface
->    net/smc: avoid data copy from sndbuf to peer RMB in SMC-D loopback
->    net/smc: logic of cursors update in SMC-D loopback connections
-> 
->   include/net/smc.h      |   3 +
->   net/smc/Makefile       |   2 +-
->   net/smc/af_smc.c       |  88 +++++++++++-
->   net/smc/smc_cdc.c      |  59 ++++++--
->   net/smc/smc_cdc.h      |   1 +
->   net/smc/smc_clc.c      |   4 +-
->   net/smc/smc_core.c     |  62 +++++++++
->   net/smc/smc_core.h     |   2 +
->   net/smc/smc_ism.c      |  39 +++++-
->   net/smc/smc_ism.h      |   2 +
->   net/smc/smc_loopback.c | 358 +++++++++++++++++++++++++++++++++++++++++++++++++
->   net/smc/smc_loopback.h |  63 +++++++++
->   12 files changed, 662 insertions(+), 21 deletions(-)
->   create mode 100644 net/smc/smc_loopback.c
->   create mode 100644 net/smc/smc_loopback.h
-> 
