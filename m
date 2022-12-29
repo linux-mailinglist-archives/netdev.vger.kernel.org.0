@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC279659270
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 23:26:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C96B65931D
+	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 00:19:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234116AbiL2W0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 17:26:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
+        id S233814AbiL2XTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 18:19:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiL2W0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 17:26:14 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6688FCD;
-        Thu, 29 Dec 2022 14:26:12 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id m18so47804656eji.5;
-        Thu, 29 Dec 2022 14:26:12 -0800 (PST)
+        with ESMTP id S234200AbiL2XSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 18:18:53 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A66C167DC;
+        Thu, 29 Dec 2022 15:18:52 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id fc4so48017535ejc.12;
+        Thu, 29 Dec 2022 15:18:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=googlemail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=bPQ4CG/cVtxFs2x9LIO1J6ozySqDuqSy18Lu83XUFok=;
-        b=dDXj1t1d4H+9520aMzYAjhSu3HpvSWrOw9i3YsG77Ph0uWCmub0yAAHfAtabx16jRF
-         ptW6mlNkLWUwrjmeuupzd7Tolhkx5ULqDTlo771on4bXUw/Y3e9/07YTKZ7WFjvZmWNm
-         7+FbHlKA2mJ59dGzRrwNqZFIXTS/ICLiM/0AN5ELguVSFfQDalVhN/fZi//ZbzceCWf4
-         83ZMVslHmrZpR9tWrco700yfUi23vP9LrRZyebzrJ4FK/36tDYmyM7FPQ967waAjniVW
-         yfDYurl20ChaiTwgE7RSSboBlNNmu1YFK1UUxq8NckyO1Inu7dpLsX+NXO4JtJfbvT1y
-         sQNA==
+        bh=nKD4sJvY8u64R4lrHG7fSPlR5NgK9Ot3QdTgymkFPk4=;
+        b=A1G/xzVKyRmQOfDsg8QC6+flkO9ORVgWYbr+iMzLp4FFAu25Sd940VxIx5IkDevPti
+         ki1vPF9teW/7MhHSyZZaWUjbOPIQ57aAqcCNZ99mBiTmla8maFfzoO5cHuIxQgHXlB4a
+         2ND9wNie4pYbBhYlAiDndGCLedFxWem++Mz06Qadn4kOmfg6ZRkhIk/8FvP17Ue6KDCb
+         iDXA2uz4DlWxAu30tzjl/ONi3DzpoKgbIwijKIYAdlI/5wLNKmjtvtRwSORShHdkJPYa
+         5J9S7wXYLVZvNXNttBp24FzzOiXjKzfcZvtlx/ShMUj2+vYLmlEO7fVWrS6C8dhjzRLP
+         iH2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=bPQ4CG/cVtxFs2x9LIO1J6ozySqDuqSy18Lu83XUFok=;
-        b=hM01SJF2+aQgylN11A8gOO9+YEgTZFL7HeI4XGs8NxbJ7fHLe7sooni9244Lt9oWXF
-         ou8JAm2U/C96eZ0aHOejPv9Fj7f5VUfEKIix14Rw2qVkGkekNQ9/3iywFNnebblrYiVf
-         Dnuuyj/k7xZEsnm8eILWqhXQ0v+OxvDFr4yPyK8RpEB5+cg64USZ394CysWRNxbfbTZG
-         sfVJODFXWWv/HQ10RKKmFNyNwCwDhyhKoDz4XMcdfMR0ZxkpQE7flrW22Z4ZO1cd9ATd
-         eI3MWMuL93UhKBAE9YmxXTu5++vsdybH9F/lIjVEnxG6wgIJSSbjtNEUK/x0Er+768C/
-         Ufug==
-X-Gm-Message-State: AFqh2kpib2RoJPrbGMllOEQltTczKj5P7GmwocVvKrCEAX9Ge8hxSP+I
-        3RCow302PZ7WAva/JbNZllI7Xbg5vWLL86YgkRc=
-X-Google-Smtp-Source: AMrXdXu/EquhD4z9LM92sj8iy7+bh/KYt7nhA0v8xq9TRp4mwb5XHRqKgooe+OGRLhhvtHZZ864MZGMJcx2kKjNXhbI=
-X-Received: by 2002:a17:906:2ccc:b0:7f3:3b2:314f with SMTP id
- r12-20020a1709062ccc00b007f303b2314fmr2336906ejr.115.1672352771512; Thu, 29
- Dec 2022 14:26:11 -0800 (PST)
+        bh=nKD4sJvY8u64R4lrHG7fSPlR5NgK9Ot3QdTgymkFPk4=;
+        b=QoeJvmvSZsD9fS+hDBz5GXG4cOM6VYmv9tkxOC8sbWRRWHquanqrsQD5SUBb3darIS
+         0S6SyWKS4yJ+i0GFu0GR4giZtM3KYmmZD+mYIcqOYDKRnIURKEwZ+jfrsqMQk7xN2hgL
+         8Rs9TjDVy4ZOCoNqlo7TWjTu7R56KR60LkTQmdb9dTPHA2dk5uts7hViv0ajZ9PvHCGa
+         jFE/YN7BJoJDkdNRmgCoaaGTay9vhF2LkDMSGRk/VeptDt1D0pGi8Feg4WL+ktydaF+n
+         XVbsBV2e8CvnRCQ/vEHYvt+ltV0sGA2LOaXh3+8PqrXeIwfD4FPsROa9ZQ+ZTYoPVDsG
+         xZHQ==
+X-Gm-Message-State: AFqh2krcLC282LWndnXZVIUDkVEVyrDpvsAtsLZPNft0PlQSjQEV3mUC
+        cSnNWTblML/Ln3iyDpRAqDDXtkrXQxkoP0h8UMA=
+X-Google-Smtp-Source: AMrXdXubUgI5QrUr9jQhMlRzP8ft2o7xEYt/jx8JmTEK8dKUAm4wI10/ibMcbPMziEtfHpDwzz4ralS47JWHJNcnCcc=
+X-Received: by 2002:a17:906:26d2:b0:7c1:36:8ffe with SMTP id
+ u18-20020a17090626d200b007c100368ffemr2089811ejc.725.1672355930684; Thu, 29
+ Dec 2022 15:18:50 -0800 (PST)
 MIME-Version: 1.0
-References: <20221224071527.2292-1-danieltimlee@gmail.com> <20221224071527.2292-7-danieltimlee@gmail.com>
-In-Reply-To: <20221224071527.2292-7-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 29 Dec 2022 14:25:59 -0800
-Message-ID: <CAEf4BzYiFwFj5tLoi7j0wg1-KtyHTCsNOVtbXaR1JTzoH1LHyA@mail.gmail.com>
-Subject: Re: [bpf-next v3 6/6] libbpf: fix invalid return address register in s390
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
+References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com> <8fe9b10318994be18934ec41e792af56@realtek.com>
+In-Reply-To: <8fe9b10318994be18934ec41e792af56@realtek.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Fri, 30 Dec 2022 00:18:39 +0100
+Message-ID: <CAFBinCBcurqiHJRSyaFpweYmrgaaUhpy632QQNWcrd3UHRtZbQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 00/19] rtw88: Add SDIO support
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        Nitin Gupta <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,38 +75,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 23, 2022 at 11:15 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> There is currently an invalid register mapping in the s390 return
-> address register. As the manual[1] states, the return address can be
-> found at r14. In bpf_tracing.h, the s390 registers were named
-> gprs(general purpose registers). This commit fixes the problem by
-> correcting the mistyped mapping.
->
-> [1]: https://uclibc.org/docs/psABI-s390x.pdf#page=14
->
-> Fixes: 3cc31d794097 ("libbpf: Normalize PT_REGS_xxx() macro definitions")
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  tools/lib/bpf/bpf_tracing.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-> index 2972dc25ff72..9c1b1689068d 100644
-> --- a/tools/lib/bpf/bpf_tracing.h
-> +++ b/tools/lib/bpf/bpf_tracing.h
-> @@ -137,7 +137,7 @@ struct pt_regs___s390 {
->  #define __PT_PARM3_REG gprs[4]
->  #define __PT_PARM4_REG gprs[5]
->  #define __PT_PARM5_REG gprs[6]
-> -#define __PT_RET_REG grps[14]
-> +#define __PT_RET_REG gprs[14]
+Hi Ping-Ke,
 
-oh, wow, what a typo. Thanks for fixing this! Applied patch set to bpf-next.
+thanks again for all your input!
 
->  #define __PT_FP_REG gprs[11]   /* Works only with CONFIG_FRAME_POINTER */
->  #define __PT_RC_REG gprs[2]
->  #define __PT_SP_REG gprs[15]
-> --
-> 2.34.1
+On Thu, Dec 29, 2022 at 5:19 AM Ping-Ke Shih <pkshih@realtek.com> wrote:
+[...]
+> > - RX throughput on a 5GHz network is at 19 Mbit/s
 >
+> I have a suggestion about RX throughput, please check below registers with
+> vendor driver:
+>
+> REG_RXDMA_AGG_PG_TH
+> REG_TXDMA_PQ_MAP(0x10c) BIT_RXDMA_AGG_EN (bit2)
+> REG_RXDMA_MODE(0290)  BIT_DMA_MODE (bit1)
+Unfortunately I didn't manage to get the vendor driver to work with
+mainline Linux.
+The Android installation on my board (which is how it was shipped)
+uses the vendor driver but unlike some Amlogic code the Realtek
+(vendor) wireless driver does not allow reading arbitrary registers
+through sysfs.
+So I can't check the values that the vendor driver uses.
+
+> Try to adjust AGG_PG_TH to see if it can help.
+I tried a few values and I can say that it does change the RX
+throughput, but the result is always lower than 19 Mbit/s, meaning
+that it's worse than RX aggregation disabled (on my RTL8822CS).
+Currently we're disabling RX aggregation in the driver. But Jernej
+mentioned previously that for his RTL8822BS he found that RX
+aggregation seems to improve performance.
+
+Independent of this I did some investigation on my own and found that
+when reducing the TX throughput the RX throughput increases.
+For this I tried using ieee80211_{stop,wake}_queue() in the sdio.c HCI
+sub-driver.
+RX throughput is now at 23.5 Mbit/s (that +25% compared to before) on
+my RTL8822CS (with RX aggregation still disabled, just like in the 19
+Mbit/s test).
+Unfortunately TX throughput is now way below 10 Mbit/s.
+
+Additionally I think that the antenna of my board is worse than my
+access point's antenna. So TX from rtw88 to my AP may be faster
+(because the AP can "hear better") than RX (rtw88 "hearing is worse").
+
+For today I'm tired and will stop here.
+
+
+Best regards,
+Martin
+
+
+[0] https://github.com/xdarklight/linux/commit/3f2e6b9cd40dc785b5c72dbc9c8b471a2e205344
