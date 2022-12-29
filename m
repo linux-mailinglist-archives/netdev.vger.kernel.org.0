@@ -2,128 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 460AA659062
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 19:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 745DD659167
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 21:12:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbiL2Sa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 13:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
+        id S233867AbiL2UL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 15:11:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233763AbiL2SaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 13:30:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67FDE03
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 10:30:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81E5D618BC
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 18:30:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E14C433EF;
-        Thu, 29 Dec 2022 18:29:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672338599;
-        bh=i9ZVtnbECz/RMlhNhjNCYWbsZbG5SHK5LgbaClERw6c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YzWwW+VZg+qKAjwKqwcyqLpkcyGijdSAbEjctWw1WX7X82ilEZU+a4lKwS9L3et4I
-         6JG+XZP6+2SomRdnARTpeYceTWBICp0WcHsUTjqPp0oj0JPWxB4sJS9X4AQicgI2d0
-         /BvHsk3xKw1Rg+KGkHJUNXSBrKHLMswn1Hprcynm/081/eG60gOY1CqvOVznnEmTID
-         Ae7cwe6/BoOGOpaA/xXNN/VeMMoJeqiJpvAk1+yKF6lYbciW9mCIUoGfCGFdo10PfW
-         ueD17nWQzlqob3u+MoIMdc9gy2FaFw+6vu49kmU2e2l/9Rv8il/PYJF5hS19tS0jtI
-         2DDf4jMZG6muA==
-Date:   Thu, 29 Dec 2022 10:29:58 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
-Subject: Re: [net 04/12] net/mlx5: Avoid recovery in probe flows
-Message-ID: <Y63cpg47dpl7c6BM@x130>
-References: <20221228194331.70419-1-saeed@kernel.org>
- <20221228194331.70419-5-saeed@kernel.org>
- <Y600yfAjhObdtaJb@unreal>
+        with ESMTP id S229598AbiL2UL6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 15:11:58 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E772B13D74;
+        Thu, 29 Dec 2022 12:11:56 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id ud5so47306604ejc.4;
+        Thu, 29 Dec 2022 12:11:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=lXs+PETp5F1sLmKlUpnJ7KVN9WjqhwaoNYx00yCpTSY=;
+        b=f2HwiOKmQSTMlha8bpeMVmXGnoKK5540JbD4UUkSvcj93uWC/JkG9HL41f4TJtyQuW
+         WZcgfexiJSTgVV7RFQND06mUatgFWHTL4fpD+/3uhvZkmdDvgURiCpyGs/L+aVDdFdvN
+         Y9Xt7e/Q76wKUD8cCAIcKw3id8vZqqpFA+yxinET+h4OReZtxNa7HNoj9hTQoOfWMrLX
+         QMum5xjXhaIy4tbZ6zHuS7G3ZaN8mF4VVTxf9RxFG8sESEBrsRZvWM4UnB8/SuV2T8MF
+         vLYGuyLK1OELQ5Eu5RZ4pnA5okn2Ltq6g/fU6CMEwTHJqXlvwVRtRYa0rslxfxJc03is
+         nsxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lXs+PETp5F1sLmKlUpnJ7KVN9WjqhwaoNYx00yCpTSY=;
+        b=YHJ/B5DRYmxevrR5bVF2PXbQ/MA1jbYqadvmaDCakswh4yTIOyomig2L7Oq3zWvSsn
+         3dkSQUyJUqIRsiClXUzy0C6KORP/Cl03MV7+z05NGzVEbskhmgajDms0adkdWE/Ll2WW
+         r6ECpYAvUYm98i7cmte7p1tuqh9eZMC/5UoUvWpnR1gqNprVgD2Ody88saq18QSXFz6/
+         7J0vRfu6fUXyPxDP4/I7K4CGnmxDHfv+I7QK1dhKw5RqX3ilEvaY9wzXqjvsAwzb/7YL
+         UKhp1s3hrr55sC8WOQtVFPA/B25MWeIfOxo92OtpqZFuVEhAVsEUNr/daVBGU5YDCGq3
+         n7CQ==
+X-Gm-Message-State: AFqh2koUmPr+b5SuR21/8QQM3Aq5zzrizqa4UBCODxmh+yKmlJM0JeT2
+        p4CSCLC3RRTzKxNaIFICADmdOWMUQHXZDl+03yg=
+X-Google-Smtp-Source: AMrXdXsRFyZO21OsR6MyDEqPE+3QuBmJxj3hiIt8xfTZZTF3BZtZ4kJ3PzB1F5J33iMonRQPeM0Pd2Y/++tDb5LWlgo=
+X-Received: by 2002:a17:906:3989:b0:7c1:1f28:afed with SMTP id
+ h9-20020a170906398900b007c11f28afedmr2446393eje.678.1672344715221; Thu, 29
+ Dec 2022 12:11:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <Y600yfAjhObdtaJb@unreal>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221229124845.1155429-1-martin.blumenstingl@googlemail.com> <d09d2480-a21e-69b3-90e4-5f361947057b@lwfinger.net>
+In-Reply-To: <d09d2480-a21e-69b3-90e4-5f361947057b@lwfinger.net>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Thu, 29 Dec 2022 21:11:43 +0100
+Message-ID: <CAFBinCBYbmrxP7UegAO7n7d1Dd=xo4pG1RE=H5-NVoSRX=Vdvg@mail.gmail.com>
+Subject: Re: [PATCH 0/4] rtw88: Four fixes found while working on SDIO support
+To:     Larry Finger <Larry.Finger@lwfinger.net>
+Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@kernel.org, pkshih@realtek.com, s.hauer@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29 Dec 08:33, Leon Romanovsky wrote:
->On Wed, Dec 28, 2022 at 11:43:23AM -0800, Saeed Mahameed wrote:
->> From: Shay Drory <shayd@nvidia.com>
->>
->> Currently, recovery is done without considering whether the device is
->> still in probe flow.
->> This may lead to recovery before device have finished probed
->> successfully. e.g.: while mlx5_init_one() is running. Recovery flow is
->> using functionality that is loaded only by mlx5_init_one(), and there
->> is no point in running recovery without mlx5_init_one() finished
->> successfully.
->>
->> Fix it by waiting for probe flow to finish and checking whether the
->> device is probed before trying to perform recovery.
->>
->> Fixes: 51d138c2610a ("net/mlx5: Fix health error state handling")
->> Signed-off-by: Shay Drory <shayd@nvidia.com>
->> Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
->> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
->> ---
->>  drivers/net/ethernet/mellanox/mlx5/core/health.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
->> index 86ed87d704f7..96417c5feed7 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
->> @@ -674,6 +674,12 @@ static void mlx5_fw_fatal_reporter_err_work(struct work_struct *work)
->>  	dev = container_of(priv, struct mlx5_core_dev, priv);
->>  	devlink = priv_to_devlink(dev);
->>
->> +	mutex_lock(&dev->intf_state_mutex);
->> +	if (test_bit(MLX5_DROP_NEW_HEALTH_WORK, &health->flags)) {
->> +		mlx5_core_err(dev, "health works are not permitted at this stage\n");
->> +		return;
->> +	}
->
->This bit is already checked when health recovery is queued in mlx5_trigger_health_work().
->
->  764 void mlx5_trigger_health_work(struct mlx5_core_dev *dev)
->  765 {
->  766         struct mlx5_core_health *health = &dev->priv.health;
->  767         unsigned long flags;
->  768
->  769         spin_lock_irqsave(&health->wq_lock, flags);
->  770         if (!test_bit(MLX5_DROP_NEW_HEALTH_WORK, &health->flags))
->  771                 queue_work(health->wq, &health->fatal_report_work);
->  772         else
->  773                 mlx5_core_err(dev, "new health works are not permitted at this stage\n");
->  774         spin_unlock_irqrestore(&health->wq_lock, flags);
->  775 }
->
->You probably need to elevate this check to poll_health() routine and
->change intf_state_mutex to be spinlock.
+Hello Larry,
 
-not possible, big design change to the driver..
-
+On Thu, Dec 29, 2022 at 6:41 PM Larry Finger <Larry.Finger@lwfinger.net> wrote:
+[...]
+> I do not feel qualified to review these contributions, but I have some suggestions.
 >
->Or another solution is to start health polling only when init complete.
->
+> The first is that the subject should start with wifi: rtw88: .... That is a
+> fairly recent change that you likely did not catch.
+Oh, this is something that I missed. I'll wait until tomorrow to see
+if I can get Ping-Ke's Reviewed-by on patch 1 and then re-send the
+whole series with fixed subjects.
 
-Also very complex and very risky to do in rc.
-Health poll should be running on dynamic driver reloads,
-for example devlink reload, but not on first probe.. 
-if we are going to start after probe then we will have to stop (sync) any
-health work before .remove, which is a locking nightmare.. we've been there
-before.
+> My second comment is that changed patches should have a version number to
+> identify that they are new patches.
+This series had four patches from the beginning. So no patches were
+added/removed during the lifecycle of this patchset.
+I think the cover-letter subject is a bit misleading as it contains
+the words "SDIO support". In fact the issues (which are fixed by this
+series) were found while working on SDIO support, but they also apply
+to existing PCIe/USB support.
 
+> [...] Once you have generated the patches, you
+> should then edit them to indicate what change was made to each patch in the
+> various versions. Such explanations should go below the --- following the
+> Signed-off-by line, and end with another ---. With these additions, the
+> community, and more importantly Kalle, can keep track of the various versions,
+> and know what reviewer's comments have been addressed.
+Noted. I will take care of this in v3 along with the updated subjects.
+
+> I know of several people that have asked about SDIO versions of these drivers.
+> They will be pleased to see them become available.
+Thanks for the motivating words :-)
+
+
+Best regards,
+Martin
