@@ -2,201 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0F68658A37
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 09:11:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 014BC658A7C
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 09:25:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbiL2ILi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 03:11:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
+        id S233067AbiL2IYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 03:24:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiL2ILh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 03:11:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D660658B
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 00:10:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672301445;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gI6AlEc7KfZ1avo1jwJKrSQequUz5Q+UUl+tM82CWOM=;
-        b=FwPlf/18Teflo3B/QtesMHoS2Ze/16AaBxtDwT8iWyTBKx/Y05rhIw2KU6UqjkAxKKeC39
-        pvd0UyIDmFSJgN3ZT3EL2qJJgtNQecH6v2S+PJ4galWiSRq+/7r8sNszvQpWvf1Qo2iZy9
-        7AsZHVQpGJCv5wyzPrUp8AYtYa6HGL4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-121-s3uPBefZPsuuMDn1an9KbA-1; Thu, 29 Dec 2022 03:10:44 -0500
-X-MC-Unique: s3uPBefZPsuuMDn1an9KbA-1
-Received: by mail-wm1-f70.google.com with SMTP id m38-20020a05600c3b2600b003d23f8c6ebdso7184610wms.0
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 00:10:43 -0800 (PST)
+        with ESMTP id S230173AbiL2IYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 03:24:15 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A67E11A16
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 00:24:14 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id u12so15050311ljj.11
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 00:24:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gBp65jpO3PEExPdtu3hqOSvpNeK/wify2K2KN3pGtSU=;
+        b=l9By2aTLtiw1kEWkSbP8F4vkIcYOnHs/y++ZUsVV2tJ3MDW7k6vthjXXa+dFkOGXw/
+         7KClNTEWtsZqZ9vOukvaz8GYA6wGf+HICwW8sHN4zC6fiZaCEiN6ROTP/NUnKnHZXJgn
+         kxI6VZE6TB0YTYH1TIxqWKBifCIWloTlAxnJqoFHUK9kLZ5ajol8UWhYXnA/C1JjkIQQ
+         NvKbfEyFbE8WUc+Ntu2ji+pWFeWI8chiJWDu7jZ0TFSEh2xx8r5zzX2azwFpYkQDi3rh
+         CZbcXdp8MqjPA25fNuV1YR3rd8anHIba5bv5psEpBWz51e9DZlVVroW5o8sjwcQlkf+M
+         /wmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gI6AlEc7KfZ1avo1jwJKrSQequUz5Q+UUl+tM82CWOM=;
-        b=cAM4J3IJ0xaS/ylnmhSbA6UhLQGBe7MoBFSFAnlIosKdE99u7MkUWSZuz8mm7wOMqX
-         7uBJeAS0gRSNPE61ddczXztCVIoLwjmym0jSJdFg4RcyXZgzMPWWmHCwcQNWMZy8znyx
-         3zDLcGBtJtrwTXs2qlH3kAS+N2U3lZOPA9CQ3tB1fnaplXd2lxjx3drme9hzlYD0u7V0
-         dVwTqvcCk44aRonTNJNflK9+OQ9MajIiPUH3JaJACsFJnWm/WBmT6VqzcmQ1qcrR4uoQ
-         ynNedDg/cy4J665FBjhtCodVZt4tDGs39RJKVgu9Eb4V19C26jnkNv09g+RnYDuWNWic
-         V7dg==
-X-Gm-Message-State: AFqh2krJQxQ1lmg+Ej1K6LpB5F7AL98hXY63iNdXoBBt9mFns2AUhvuT
-        eI5U/7ojcSBdS1caqhsUR8sFdcDRSHJ3g4oZKIoVstkMlIcfEUTRz1oBxMy3rVfPP62Vo3eJnlA
-        jzIFxuu2CH+ZMzG7h
-X-Received: by 2002:adf:ce0a:0:b0:246:e6df:86e7 with SMTP id p10-20020adfce0a000000b00246e6df86e7mr17498198wrn.5.1672301442772;
-        Thu, 29 Dec 2022 00:10:42 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtCwrO0CDFtRs3sThb9MNmLR5zMGV1PR7/QCvy+zp7ENhYRIgm6RfCU8IAhgG7fUSbme3pHsQ==
-X-Received: by 2002:adf:ce0a:0:b0:246:e6df:86e7 with SMTP id p10-20020adfce0a000000b00246e6df86e7mr17498181wrn.5.1672301442504;
-        Thu, 29 Dec 2022 00:10:42 -0800 (PST)
-Received: from redhat.com ([2.52.151.85])
-        by smtp.gmail.com with ESMTPSA id a6-20020adff7c6000000b002421db5f279sm17347928wrq.78.2022.12.29.00.10.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Dec 2022 00:10:41 -0800 (PST)
-Date:   Thu, 29 Dec 2022 03:10:38 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        maxime.coquelin@redhat.com, alvaro.karsz@solid-run.com,
-        eperezma@redhat.com
-Subject: Re: [PATCH 3/4] virtio_ring: introduce a per virtqueue waitqueue
-Message-ID: <20221229030633-mutt-send-email-mst@kernel.org>
-References: <20221226074908.8154-4-jasowang@redhat.com>
- <20221226183705-mutt-send-email-mst@kernel.org>
- <CACGkMEuNZLJRnWw+XNxJ-to1y8L2GrTrJkk0y0Gwb5H2YhDczQ@mail.gmail.com>
- <20221227022255-mutt-send-email-mst@kernel.org>
- <d77bc1ce-b73f-1ba8-f04f-b3bffeb731c3@redhat.com>
- <20221227043148-mutt-send-email-mst@kernel.org>
- <0d9f1b89-9374-747b-3fb0-b4b28ad0ace1@redhat.com>
- <CACGkMEv=+D+Es4sfde_X7F0zspVdy4Rs1Wi9qfCudsznsUrOTQ@mail.gmail.com>
- <20221229020553-mutt-send-email-mst@kernel.org>
- <CACGkMEs5s3Muo+4OfjaLK_P76rTdPhjQdTwykRNGOecAWnt+8g@mail.gmail.com>
+        bh=gBp65jpO3PEExPdtu3hqOSvpNeK/wify2K2KN3pGtSU=;
+        b=qBMuFYtc1jubPFs2DJSDunoTeNnb19d1awZZ6XL90PFx74gFAxi0D4Qn/3tilto8eP
+         FDo2Af2gfDW4F2tVJp0uFBCH9eTIhuWw4KTblqdxWBNKLf7ts6gESRMCrxXs9yOKrlvb
+         Fx75Gyi6yqi/9xj5VepvxDWDw/z4oWmb1vMXar+eWxwKHFErPg6XRzZwj4Pl7QdF/ucW
+         NGxT6ox4CHTKv7OUejVublcNiDE+7pN6nfNV0IkFmcxQ6rc3JmtHQts7Xmq4cXhmXm9R
+         +fSLtVODpouuM8011sW+Mfwy4XF1uF4IUU2hR2bP0PZutx2kr3BVKGvQBXc5jjSLA/cM
+         dMcQ==
+X-Gm-Message-State: AFqh2kp6mUyS8Wov1xkZpkVVh9t531No1mba6W4hrRSWG7eo1tz0Io/k
+        CWgvCgMAVvLc3WsjZlrZ+FPu/mVMX/X3Rq+K
+X-Google-Smtp-Source: AMrXdXtTG6LcBciIa3S5diQyKKuos8SJpSElOgxGtcLp9TTzRopulJQmQfqiinq1ATDSPVppovwd8w==
+X-Received: by 2002:a2e:a281:0:b0:277:4450:b334 with SMTP id k1-20020a2ea281000000b002774450b334mr7088827lja.3.1672302252603;
+        Thu, 29 Dec 2022 00:24:12 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id u22-20020a2eb816000000b00279f302f652sm2241847ljo.111.2022.12.29.00.24.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Dec 2022 00:24:12 -0800 (PST)
+Message-ID: <86e83233-4dde-04dc-ae05-fb38ab774316@linaro.org>
+Date:   Thu, 29 Dec 2022 09:24:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2] dt-bindings: net: marvell,orion-mdio: Fix examples
+Content-Language: en-US
+To:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>
+Cc:     andrew@lunn.ch, chris.packham@alliedtelesis.co.nz,
+        davem@davemloft.net, devicetree@vger.kernel.org,
+        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        upstream@semihalf.com
+References: <7f6a2072-f26b-e2f0-9c07-d2ea43c8c4bc@linaro.org>
+ <20221228015433.73919-1-mig@semihalf.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221228015433.73919-1-mig@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEs5s3Muo+4OfjaLK_P76rTdPhjQdTwykRNGOecAWnt+8g@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 29, 2022 at 04:04:13PM +0800, Jason Wang wrote:
-> On Thu, Dec 29, 2022 at 3:07 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Wed, Dec 28, 2022 at 07:53:08PM +0800, Jason Wang wrote:
-> > > On Wed, Dec 28, 2022 at 2:34 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > >
-> > > >
-> > > > 在 2022/12/27 17:38, Michael S. Tsirkin 写道:
-> > > > > On Tue, Dec 27, 2022 at 05:12:58PM +0800, Jason Wang wrote:
-> > > > >> 在 2022/12/27 15:33, Michael S. Tsirkin 写道:
-> > > > >>> On Tue, Dec 27, 2022 at 12:30:35PM +0800, Jason Wang wrote:
-> > > > >>>>> But device is still going and will later use the buffers.
-> > > > >>>>>
-> > > > >>>>> Same for timeout really.
-> > > > >>>> Avoiding infinite wait/poll is one of the goals, another is to sleep.
-> > > > >>>> If we think the timeout is hard, we can start from the wait.
-> > > > >>>>
-> > > > >>>> Thanks
-> > > > >>> If the goal is to avoid disrupting traffic while CVQ is in use,
-> > > > >>> that sounds more reasonable. E.g. someone is turning on promisc,
-> > > > >>> a spike in CPU usage might be unwelcome.
-> > > > >>
-> > > > >> Yes, this would be more obvious is UP is used.
-> > > > >>
-> > > > >>
-> > > > >>> things we should be careful to address then:
-> > > > >>> 1- debugging. Currently it's easy to see a warning if CPU is stuck
-> > > > >>>      in a loop for a while, and we also get a backtrace.
-> > > > >>>      E.g. with this - how do we know who has the RTNL?
-> > > > >>>      We need to integrate with kernel/watchdog.c for good results
-> > > > >>>      and to make sure policy is consistent.
-> > > > >>
-> > > > >> That's fine, will consider this.
-> > >
-> > > So after some investigation, it seems the watchdog.c doesn't help. The
-> > > only export helper is touch_softlockup_watchdog() which tries to avoid
-> > > triggering the lockups warning for the known slow path.
-> >
-> > I never said you can just use existing exporting APIs. You'll have to
-> > write new ones :)
+On 28/12/2022 02:54, Michał Grzelak wrote:
+> As stated in marvell-orion-mdio.txt deleted in commit 0781434af811f
+> ("dt-bindings: net: orion-mdio: Convert to JSON schema") if
+> 'interrupts' property is present, width of 'reg' should be 0x84.
+> Otherwise, width of 'reg' should be 0x4. Fix 'examples:' and add
+> constraints checking whether 'interrupts' property is present
+> and validate it against fixed values in reg.
 > 
-> Ok, I thought you wanted to trigger similar warnings as a watchdog.
+> Signed-off-by: Michał Grzelak <mig@semihalf.com>
+> ---
+> Changelog:
+> v1->v2:
+> - remove second example
+> - add 'if:' constraint to 'allOf:'
+> - move 'allOf:' before 'examples:'
 > 
-> Btw, I wonder what kind of logic you want here. If we switch to using
-> sleep, there won't be soft lockup anymore. A simple wait + timeout +
-> warning seems sufficient?
+>  .../bindings/net/marvell,orion-mdio.yaml      | 31 ++++++++++++++++---
+>  1 file changed, 27 insertions(+), 4 deletions(-)
 > 
-> Thanks
+> diff --git a/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml b/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
+> index d2906b4a0f59..381cd8edebed 100644
+> --- a/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
+> +++ b/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
+> @@ -16,9 +16,6 @@ description: |
+>    8k has a second unit which provides an interface with the xMDIO bus. This
+>    driver handles these interfaces.
+>  
+> -allOf:
+> -  - $ref: "mdio.yaml#"
+> -
+>  properties:
+>    compatible:
+>      enum:
+> @@ -39,13 +36,39 @@ required:
+>    - compatible
+>    - reg
+>  
+> +allOf:
+> +
 
-I'd like to avoid need to teach users new APIs. So watchdog setup to apply
-to this driver. The warning can be different.
+Drop blank line.
 
+> +  - $ref: "mdio.yaml#"
 
-> >
-> > > And before the patch, we end up with a real infinite loop which could
-> > > be caught by RCU stall detector which is not the case of the sleep.
-> > > What we can do is probably do a periodic netdev_err().
-> > >
-> > > Thanks
-> >
-> > Only with a bad device.
-> >
-> > > > >>
-> > > > >>
-> > > > >>> 2- overhead. In a very common scenario when device is in hypervisor,
-> > > > >>>      programming timers etc has a very high overhead, at bootup
-> > > > >>>      lots of CVQ commands are run and slowing boot down is not nice.
-> > > > >>>      let's poll for a bit before waiting?
-> > > > >>
-> > > > >> Then we go back to the question of choosing a good timeout for poll. And
-> > > > >> poll seems problematic in the case of UP, scheduler might not have the
-> > > > >> chance to run.
-> > > > > Poll just a bit :) Seriously I don't know, but at least check once
-> > > > > after kick.
-> > > >
-> > > >
-> > > > I think it is what the current code did where the condition will be
-> > > > check before trying to sleep in the wait_event().
-> > > >
-> > > >
-> > > > >
-> > > > >>> 3- suprise removal. need to wake up thread in some way. what about
-> > > > >>>      other cases of device breakage - is there a chance this
-> > > > >>>      introduces new bugs around that? at least enumerate them please.
-> > > > >>
-> > > > >> The current code did:
-> > > > >>
-> > > > >> 1) check for vq->broken
-> > > > >> 2) wakeup during BAD_RING()
-> > > > >>
-> > > > >> So we won't end up with a never woke up process which should be fine.
-> > > > >>
-> > > > >> Thanks
-> > > > >
-> > > > > BTW BAD_RING on removal will trigger dev_err. Not sure that is a good
-> > > > > idea - can cause crashes if kernel panics on error.
-> > > >
-> > > >
-> > > > Yes, it's better to use __virtqueue_break() instead.
-> > > >
-> > > > But consider we will start from a wait first, I will limit the changes
-> > > > in virtio-net without bothering virtio core.
-> > > >
-> > > > Thanks
-> > > >
-> > > >
-> > > > >
-> > > > >>>
-> >
+Drop quotes while moving it.
+
+> +
+> +  - if:
+> +      required:
+> +        - interrupts
+> +
+> +    then:
+> +      properties:
+> +        reg:
+> +          items:
+> +            - items:
+> +                - $ref: /schemas/types.yaml#/definitions/cell
+> +                - const: 0x84
+> +
+> +    else:
+> +      properties:
+> +        reg:
+> +          items:
+> +            - items:
+> +                - $ref: /schemas/types.yaml#/definitions/cell
+> +                - enum:
+> +                    - 0x4
+> +                    - 0x10
+
+Rest looks good.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
 
