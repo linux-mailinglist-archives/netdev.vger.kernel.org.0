@@ -2,103 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA066589AE
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 07:29:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E96E66589BD
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 07:33:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230467AbiL2G3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 01:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
+        id S230078AbiL2Gdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 01:33:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiL2G3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 01:29:42 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185511055C;
-        Wed, 28 Dec 2022 22:29:41 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id u7so18069688plq.11;
-        Wed, 28 Dec 2022 22:29:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zu4t5YxLIzncFUTu3p6dUmcuMC3ijQM333rUPrcRni4=;
-        b=fsuqFhBPdVqQ1s80bGVmxIXvJEuyhkH3GJHP3GvdiMYDyKPFz7cWsA236aEO19xIIg
-         4/56mdOPqV7Me3GGHvdtaRN2FRDrarYk5KyKK+rsx9HpJ4YesoJ0HqBU8R8lqtVVI1A5
-         WOpwF4b3mwpwWBVLD9VkJggoIXD0wzQo+sjuLk9aNvY38WUccSc3uyeofAgRDlelnjFZ
-         kUTM2SfqS2dM/AB4Eq3F1IarU2buHB+ToRLREJajLU+lzh0ELrBPLq/x9DilY5e8Hlmq
-         LhOb+94oxujhlrNiqW20l5oSF7KsNQLDMizDZjakHdSJbBuZeF02Mz2/cfXij5GkwRAl
-         Mi8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Zu4t5YxLIzncFUTu3p6dUmcuMC3ijQM333rUPrcRni4=;
-        b=RdZOaKpnNuXH/OhrVFxI+GW4jVAvyhZsyVmGDQG6BfO5E8ON2ZXIpDWWSC1ozHvSw1
-         gGbAtgeBQcQ2LQJ685qY00yn64/cd/O+fZJcB1o7wE1rnnwtiBg7BYBtzY98v9w1Z/5M
-         dbvxsNJa/qpqdif1F4Q93Eq2UZtQmZvN0+K6x60GUuB7BEmUBOuDwLnHeiqUkdfNlML2
-         NsPe5tXiWXcHMlUGYWK70iOKkILYzXP8cTGRbtjhdFHc0XcjphYORgf7cpZaHFeMK3JW
-         Mt6hWFobIPPTQY05xczdniSdg30Brnthmn0dya2GawllUOU2FS7J/d452IxBPEVgeqFC
-         JK2A==
-X-Gm-Message-State: AFqh2kos+5JxF6vF+3IGiyH4BwxC3KEGjO//KVXj2uVZwAFEKtN7VtGU
-        m4RLTffpygd4uOCFouRCQQs=
-X-Google-Smtp-Source: AMrXdXv5KtxHW3bDO3U5bYo2QYD+/RfzC2B2UULHY8aCfhPXF6dSCf58WTZv3XbLVMbI5TkgrKJmWA==
-X-Received: by 2002:a17:90a:de8e:b0:21e:1282:af42 with SMTP id n14-20020a17090ade8e00b0021e1282af42mr30080723pjv.40.1672295380579;
-        Wed, 28 Dec 2022 22:29:40 -0800 (PST)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id j1-20020a17090a3e0100b00218d894fac3sm13104865pjc.3.2022.12.28.22.29.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Dec 2022 22:29:40 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229644AbiL2Gdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 01:33:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B915927F
+        for <netdev@vger.kernel.org>; Wed, 28 Dec 2022 22:33:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A8476171C
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 06:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65E5C433EF;
+        Thu, 29 Dec 2022 06:33:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672295630;
+        bh=4BnnwzDbEDD29vJLAnaSNNPiYmRLLQ6FRcDo8u2WocQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bt1Jtwyg07mxN9dIVUbMrEk7vHivXYk84fGZl1FljUsL+hENFpM/FI8rTvzWSDXks
+         NqPUeTs1zMtHNwpZi1holW4H0TejGUc7+nRa7byvl3fRWczSx3ulDFNpiBQzIIsjA+
+         exkyPl79UrCHTWBg5F7zIqapPCH7YPX79Z/+sYGUptn0j//bVTrzkMbi8pHkil//h1
+         KF3KHcV9aGMnqSMPj1K3jzCkKbZI5r+8K60y5rT8eDxyVRz9CqzdmBljpO2wc2Fwm1
+         w4Ar8C+4IWA/f0vxYlBOte4oMjywAzEaBS4Q1dEWGree1patl3PuKEutc8MHmRJeEu
+         Gn+/g9U6GJEow==
+Date:   Thu, 29 Dec 2022 08:33:45 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Brandon Maier <brandon.maier@rockwellcollins.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] net: phy: xgmiitorgmii: Fix refcount leak in xgmiitorgmii_probe
-Date:   Thu, 29 Dec 2022 10:29:25 +0400
-Message-Id: <20221229062925.1372931-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+Subject: Re: [net 04/12] net/mlx5: Avoid recovery in probe flows
+Message-ID: <Y600yfAjhObdtaJb@unreal>
+References: <20221228194331.70419-1-saeed@kernel.org>
+ <20221228194331.70419-5-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221228194331.70419-5-saeed@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-of_phy_find_device() return device node with refcount incremented.
-Call put_device() to relese it when not needed anymore.
+On Wed, Dec 28, 2022 at 11:43:23AM -0800, Saeed Mahameed wrote:
+> From: Shay Drory <shayd@nvidia.com>
+> 
+> Currently, recovery is done without considering whether the device is
+> still in probe flow.
+> This may lead to recovery before device have finished probed
+> successfully. e.g.: while mlx5_init_one() is running. Recovery flow is
+> using functionality that is loaded only by mlx5_init_one(), and there
+> is no point in running recovery without mlx5_init_one() finished
+> successfully.
+> 
+> Fix it by waiting for probe flow to finish and checking whether the
+> device is probed before trying to perform recovery.
+> 
+> Fixes: 51d138c2610a ("net/mlx5: Fix health error state handling")
+> Signed-off-by: Shay Drory <shayd@nvidia.com>
+> Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/health.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> index 86ed87d704f7..96417c5feed7 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> @@ -674,6 +674,12 @@ static void mlx5_fw_fatal_reporter_err_work(struct work_struct *work)
+>  	dev = container_of(priv, struct mlx5_core_dev, priv);
+>  	devlink = priv_to_devlink(dev);
+>  
+> +	mutex_lock(&dev->intf_state_mutex);
+> +	if (test_bit(MLX5_DROP_NEW_HEALTH_WORK, &health->flags)) {
+> +		mlx5_core_err(dev, "health works are not permitted at this stage\n");
+> +		return;
+> +	}
 
-Fixes: ab4e6ee578e8 ("net: phy: xgmiitorgmii: Check phy_driver ready before accessing")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/net/phy/xilinx_gmii2rgmii.c | 1 +
- 1 file changed, 1 insertion(+)
+This bit is already checked when health recovery is queued in mlx5_trigger_health_work().
 
-diff --git a/drivers/net/phy/xilinx_gmii2rgmii.c b/drivers/net/phy/xilinx_gmii2rgmii.c
-index 8dcb49ed1f3d..7fd9fe6a602b 100644
---- a/drivers/net/phy/xilinx_gmii2rgmii.c
-+++ b/drivers/net/phy/xilinx_gmii2rgmii.c
-@@ -105,6 +105,7 @@ static int xgmiitorgmii_probe(struct mdio_device *mdiodev)
- 
- 	if (!priv->phy_dev->drv) {
- 		dev_info(dev, "Attached phy not ready\n");
-+		put_device(&priv->phy_dev->mdio.dev);
- 		return -EPROBE_DEFER;
- 	}
- 
--- 
-2.25.1
+  764 void mlx5_trigger_health_work(struct mlx5_core_dev *dev)
+  765 {
+  766         struct mlx5_core_health *health = &dev->priv.health;
+  767         unsigned long flags;
+  768
+  769         spin_lock_irqsave(&health->wq_lock, flags);
+  770         if (!test_bit(MLX5_DROP_NEW_HEALTH_WORK, &health->flags))
+  771                 queue_work(health->wq, &health->fatal_report_work);
+  772         else
+  773                 mlx5_core_err(dev, "new health works are not permitted at this stage\n");
+  774         spin_unlock_irqrestore(&health->wq_lock, flags);
+  775 }
 
+You probably need to elevate this check to poll_health() routine and
+change intf_state_mutex to be spinlock.
+
+Or another solution is to start health polling only when init complete.
+
+Thanks
+
+
+> +	mutex_unlock(&dev->intf_state_mutex);
+>  	enter_error_state(dev, false);
+>  	if (IS_ERR_OR_NULL(health->fw_fatal_reporter)) {
+>  		devl_lock(devlink);
+> -- 
+> 2.38.1
+> 
