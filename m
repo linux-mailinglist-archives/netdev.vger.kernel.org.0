@@ -2,139 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76CCE658EBD
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 17:06:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D83BF658EEA
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 17:23:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbiL2QGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 11:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
+        id S233569AbiL2QWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 11:22:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbiL2QGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 11:06:13 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93CC11A35
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:06:11 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id u19so45909688ejm.8
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:06:11 -0800 (PST)
+        with ESMTP id S233619AbiL2QWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 11:22:24 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4374413DD4
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:22:24 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id m7-20020a17090a730700b00225ebb9cd01so11451697pjk.3
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:22:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:cc:to:subject:from
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+lNKae9t6mWSaeByyy6AHKVDkMguSH2xhzFAmnmHaTw=;
-        b=Cn+Z7Y2aM4mYLw3mze0C/XiUKEwuSMrYtoMVDvh+z3Ek+LtVEBOlsiIF8VJDsvg1IF
-         F5mGH5XbyqQTvXguyKI7eNmcyW2mKBmGf/lboVcn4xnitunVg5ndjCwY1qtpF4rZjTwY
-         IDCD3Y4oz3z7S0iPbQgLJKOT9W7dLTyqOLPuOnKMr0r+e+XxaIRS2OXugpMph5fzvloR
-         4ETmczrDk91qd34YVCB4Zbjej5eb4q6il6DyIQ2FhoIdpNEG5bEjSDLqFzHpIFAhjtzc
-         iq2sX9va/7XyjbUVvsuoEvqylNVxId8RctxrG//81x0BdK+TJ2CKco948SIrSV3Q2AdT
-         5/bw==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ec85AyiKc77bI9XsP5tX5lamemx/Nh18BP3PMc4R5sU=;
+        b=JyJ1HotxL5h5gP0PAUr+bSyy8u1zOFXKWz1ZfgSiQeQvzYRYtdYK5A29TTv7eUyBSq
+         O6WUTpHiy10Kl0hHmRgy/d9fal5bMY/E/lNTQ2LCgCfG8iVu/uN6+Uj5ExC6mHOnsXiu
+         0ohB97kr44YJgmKniWXNLUoVi+8oVMmtdexytQrx6+rzrxhktuoTfzAedL35hCbYbn09
+         5yB5XsMVIjKdTNReT5H6YpQsO7a4nnDDcbUBIjnPH2H4vmdpB5S32Eq6ZsH3EXQnBVqu
+         h/JxK+dWLoxFuxlgdjXCLEO7aHIvjXxyMe2Wjpx0m1kdrzxduQK6w3r0Q8wQ2fW6djA1
+         pXZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:cc:to:subject:from
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=+lNKae9t6mWSaeByyy6AHKVDkMguSH2xhzFAmnmHaTw=;
-        b=vteM81/0bLjRu4F5rEEiEqu0nJ5WoV4aPZq4tL7itKn5Y7ug04V9phMiBaOoKLFpUw
-         ekjy8fSeTF0dnTzkcUvmfTVtwrzS/ye/tRwIglbWcJ2qZo2agNcZ9yo3kbG/0JW2bFZ1
-         eBB7RT4uowiuDBQuq+1biHH2jTPssZDskSnRFxH0NN66dpdcUjB5l9NJI2CizWXv1ACW
-         TzoL1BPOf5b+Ffv5qLjbiUksnF3gD8a1uafOWaKWD/xQ8OAwy2/LfPq5Yr8Kq52ZEgdf
-         QvE+vXRkQkjMlWqejOkaGjYvKGQ84sNbGYYdv1DUoe0K8xW2BDm/pEiK58mAmziean8E
-         ZhTA==
-X-Gm-Message-State: AFqh2kp3i31R2db5Su3JMHlYMsjzE9LyeDcLBfX9wCDrJrtbPQZdN1Xc
-        z7SVoaS1YTN33WBkZvQ0h7U=
-X-Google-Smtp-Source: AMrXdXvQfY7ShXU1LefuSB0D+xe9MBMtnnYhppj/6dQqcoqEHdOK784uxbd9qK9PYXqTJrPwKlDIlA==
-X-Received: by 2002:a17:907:7f24:b0:7c1:6091:e76 with SMTP id qf36-20020a1709077f2400b007c160910e76mr33472788ejc.53.1672329970064;
-        Thu, 29 Dec 2022 08:06:10 -0800 (PST)
-Received: from ?IPV6:2a01:c22:6ef3:b900:a548:5717:959:2430? (dynamic-2a01-0c22-6ef3-b900-a548-5717-0959-2430.c22.pool.telefonica.de. [2a01:c22:6ef3:b900:a548:5717:959:2430])
-        by smtp.googlemail.com with ESMTPSA id t7-20020a1709066bc700b0081bfc79beaesm8616474ejs.75.2022.12.29.08.06.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Dec 2022 08:06:09 -0800 (PST)
-Message-ID: <06bab827-be4a-606e-7a01-52379b1e1a91@gmail.com>
-Date:   Thu, 29 Dec 2022 17:06:04 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next v2] r8169: disable ASPM in case of tx timeout
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ec85AyiKc77bI9XsP5tX5lamemx/Nh18BP3PMc4R5sU=;
+        b=eaVqRxtSSHLAuHK//0Km1kNPKtxxgLRliTRm+s0a4SnXpcVMyOBTMtLavGBI3luFsp
+         8bd8MM6umikaN1kKqT1A9yFdhkIzi4btkczuZTxC8AR6OvP6/z6euLS5LYvZYpcJeU5D
+         Smt0kIyCjTNyOLKYu5odpz8jbUWLNU/Lkn6XenibIwECgn//Tk7B2KzkvUI1dAQUh0T5
+         C0MHDHIzGqWBDVvTj8ovfLsNh7Srp2osbTWdb9EtCz3358cfBu1NHn/XyH0QprVSGQo5
+         ehIIfPnZJLMYg6Nssg8HYswVSLypLcBvnYrw4gTipjU02F3VvPUp2DqvM6OmtaW6O4WC
+         F5gA==
+X-Gm-Message-State: AFqh2kpDcwanzyo6ylxzw3TGbJGGCUxRItMENfUMNsKLKGUJRJQZLaoa
+        deLBahLzoMxY4FKRjZAwBkrR0Q==
+X-Google-Smtp-Source: AMrXdXvdOJhcRsj0KUW218UKcAvJUd1l0xKIGxZQv8spR2kcI0qwBPtGX+cj507spyFm31HkJycFdg==
+X-Received: by 2002:a17:902:a981:b0:187:403c:7a3b with SMTP id bh1-20020a170902a98100b00187403c7a3bmr25977484plb.69.1672330943683;
+        Thu, 29 Dec 2022 08:22:23 -0800 (PST)
+Received: from localhost ([135.180.226.51])
+        by smtp.gmail.com with ESMTPSA id o4-20020a170902bcc400b0019254c19697sm13000824pls.289.2022.12.29.08.22.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Dec 2022 08:22:23 -0800 (PST)
+Date:   Thu, 29 Dec 2022 08:22:23 -0800 (PST)
+X-Google-Original-Date: Thu, 29 Dec 2022 07:51:42 PST (-0800)
+Subject:     Re: [RFC PATCH] mm: remove zap_page_range and change callers to use zap_vma_page_range
+In-Reply-To: <20221216192012.13562-1-mike.kravetz@oracle.com>
+CC:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        david@redhat.com, mhocko@suse.com, peterx@redhat.com,
+        nadav.amit@gmail.com, willy@infradead.org, vbabka@suse.cz,
+        riel@surriel.com, Will Deacon <will@kernel.org>,
+        mpe@ellerman.id.au, borntraeger@linux.ibm.com,
+        dave.hansen@linux.intel.com, brauner@kernel.org,
+        edumazet@google.com, akpm@linux-foundation.org,
+        mike.kravetz@oracle.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     mike.kravetz@oracle.com
+Message-ID: <mhng-3136c2a0-6953-4794-856c-46cacdc2c30a@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are still single reports of systems where ASPM incompatibilities
-cause tx timeouts. It's not clear whom to blame, so let's disable
-ASPM in case of a tx timeout.
+On Fri, 16 Dec 2022 11:20:12 PST (-0800), mike.kravetz@oracle.com wrote:
+> zap_page_range was originally designed to unmap pages within an address
+> range that could span multiple vmas.  While working on [1], it was
+> discovered that all callers of zap_page_range pass a range entirely within
+> a single vma.  In addition, the mmu notification call within zap_page
+> range does not correctly handle ranges that span multiple vmas as calls
+> should be vma specific.
+>
+> Instead of fixing zap_page_range, change all callers to use the new
+> routine zap_vma_page_range.  zap_vma_page_range is just a wrapper around
+> zap_page_range_single passing in NULL zap details.  The name is also
+> more in line with other exported routines that operate within a vma.
+> We can then remove zap_page_range.
+>
+> Also, change madvise_dontneed_single_vma to use this new routine.
+>
+> [1] https://lore.kernel.org/linux-mm/20221114235507.294320-2-mike.kravetz@oracle.com/
+> Suggested-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+> ---
+>  arch/arm64/kernel/vdso.c                |  4 ++--
+>  arch/powerpc/kernel/vdso.c              |  2 +-
+>  arch/powerpc/platforms/book3s/vas-api.c |  2 +-
+>  arch/powerpc/platforms/pseries/vas.c    |  2 +-
+>  arch/riscv/kernel/vdso.c                |  4 ++--
+>  arch/s390/kernel/vdso.c                 |  2 +-
+>  arch/s390/mm/gmap.c                     |  2 +-
+>  arch/x86/entry/vdso/vma.c               |  2 +-
+>  drivers/android/binder_alloc.c          |  2 +-
+>  include/linux/mm.h                      |  7 ++++--
+>  mm/madvise.c                            |  4 ++--
+>  mm/memory.c                             | 30 -------------------------
+>  mm/page-writeback.c                     |  2 +-
+>  net/ipv4/tcp.c                          |  6 ++---
+>  14 files changed, 22 insertions(+), 49 deletions(-)
 
-v2:
-- add one-time warning for informing the user
+[snip]
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+> diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+> index e410275918ac..a405119da2c0 100644
+> --- a/arch/riscv/kernel/vdso.c
+> +++ b/arch/riscv/kernel/vdso.c
+> @@ -127,10 +127,10 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  		unsigned long size = vma->vm_end - vma->vm_start;
+>
+>  		if (vma_is_special_mapping(vma, vdso_info.dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  #ifdef CONFIG_COMPAT
+>  		if (vma_is_special_mapping(vma, compat_vdso_info.dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_page_range(vma, vma->vm_start, size);
+>  #endif
+>  	}
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index a9dcc98b6..49c124d8e 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -576,6 +576,7 @@ struct rtl8169_tc_offsets {
- enum rtl_flag {
- 	RTL_FLAG_TASK_ENABLED = 0,
- 	RTL_FLAG_TASK_RESET_PENDING,
-+	RTL_FLAG_TASK_TX_TIMEOUT,
- 	RTL_FLAG_MAX
- };
- 
-@@ -3931,7 +3932,7 @@ static void rtl8169_tx_timeout(struct net_device *dev, unsigned int txqueue)
- {
- 	struct rtl8169_private *tp = netdev_priv(dev);
- 
--	rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
-+	rtl_schedule_task(tp, RTL_FLAG_TASK_TX_TIMEOUT);
- }
- 
- static int rtl8169_tx_map(struct rtl8169_private *tp, const u32 *opts, u32 len,
-@@ -4525,6 +4526,7 @@ static void rtl_task(struct work_struct *work)
- {
- 	struct rtl8169_private *tp =
- 		container_of(work, struct rtl8169_private, wk.work);
-+	int ret;
- 
- 	rtnl_lock();
- 
-@@ -4532,7 +4534,17 @@ static void rtl_task(struct work_struct *work)
- 	    !test_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags))
- 		goto out_unlock;
- 
-+	if (test_and_clear_bit(RTL_FLAG_TASK_TX_TIMEOUT, tp->wk.flags)) {
-+		/* ASPM compatibility issues are a typical reason for tx timeouts */
-+		ret = pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_L1 |
-+							  PCIE_LINK_STATE_L0S);
-+		if (!ret)
-+			netdev_warn_once(tp->dev, "ASPM disabled on Tx timeout\n");
-+		goto reset;
-+	}
-+
- 	if (test_and_clear_bit(RTL_FLAG_TASK_RESET_PENDING, tp->wk.flags)) {
-+reset:
- 		rtl_reset_work(tp);
- 		netif_wake_queue(tp->dev);
- 	}
--- 
-2.39.0
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com> # RISC-V
 
+Thanks!
