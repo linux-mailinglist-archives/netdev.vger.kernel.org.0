@@ -2,158 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72322658EBB
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 17:02:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76CCE658EBD
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 17:06:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbiL2QCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 11:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
+        id S231240AbiL2QGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 11:06:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbiL2QCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 11:02:41 -0500
-Received: from DM4PR02CU001-vft-obe.outbound.protection.outlook.com (mail-centralusazon11022021.outbound.protection.outlook.com [52.101.63.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BF1105;
-        Thu, 29 Dec 2022 08:02:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g+qYX0T5biM5sdMxqMDMgnZq7C9yaM0wPN0Gtsh9ZX0qst6CYo6KgPO3cP1ubRjGzwDKVMGAG4LfejTGqvr27SSZpDrzhTalYSp42xpmUKR++uMuwZwEFuggzZbm4Ts/laLUHV8IUm2PX0lT2gfi56zoFjpCxJQc73x54CGuaIF0kcjnKn/TzVSaYFvvWGtbOEmZiXHUDrLe0y/4bkW5mKJR8fK7Lq+Xi5YromeJdxOdbyK2SKxjJGGYzaZ0UZgdMOUN1VakwMZfSiv1JOga1A9RT2srxiPzbFNV1NWM5WNvqTWWs6GO0Abfw6y7VVHmPaHbCK6Z03IVkcPVjmhOlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F3xblPf/xPRA4QkhTNhWoPPQH2sdQTsvux/iRz5pmjY=;
- b=Ew9ELRnEs1k/iAiC6lSfm6zVsqqDPzRIrVC6gz40Co9mZB7OJfAmys/nsI3eCnQrnaWHQk6selMPE9+WnVkt7X7U7hUyNj06xjHDqrlnz2ovbje2b5lYBs762QyW45NISNq/wDNMG5jNlK2GL+bmDbdX6yGFcqOoiS/Ql27QesnaDfoXmQP6ELearPJVrnPiS8LLC9f6wwKgXjXFRDEUIJmfQQHLuLIflZyvtTudy+RjYxtQ7puahOl27cwiBI7MeeP2rU42VMwiokrdiCKWr7F0YyPawN0456IUgCiv6+C7Z8032PrYyTOSqLun7j39ux1LzPptPXQBJRTQKmpeCg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F3xblPf/xPRA4QkhTNhWoPPQH2sdQTsvux/iRz5pmjY=;
- b=OWiWyy2pKk8Dxmte6mwxezP6D2BDI0qd/5sFVXQANDEJg+f7ep8o4mXjAF3lledrXuSpOaUCABQ8tlyAHOKNWpBp0ggfoyGMBYWvJSFmAY9D4xNi5/CDUatTbak07sgFMXBO2toalEYe6gOgM/TBa17u3zb0K6sfl3qTlk6zWjQ=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by DS7PR21MB3341.namprd21.prod.outlook.com (2603:10b6:8:80::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.7; Thu, 29 Dec
- 2022 16:02:30 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::db1a:4e71:c688:b7b1]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::db1a:4e71:c688:b7b1%7]) with mapi id 15.20.5986.007; Thu, 29 Dec 2022
- 16:02:29 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Borislav Petkov <bp@alien8.de>
-CC:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: RE: [Patch v4 01/13] x86/ioapic: Gate decrypted mapping on
- cc_platform_has() attribute
-Thread-Topic: [Patch v4 01/13] x86/ioapic: Gate decrypted mapping on
- cc_platform_has() attribute
-Thread-Index: AQHZBf6m1tvwNL7mx0Ck5dxxQ1BDw65hREcAgAAIgaCAI5uKgIAASOVg
-Date:   Thu, 29 Dec 2022 16:02:28 +0000
-Message-ID: <BYAPR21MB16888C40CD4A3E25A897FC51D7F39@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <1669951831-4180-2-git-send-email-mikelley@microsoft.com>
- <Y4+WjB/asSvxXW/t@zn.tnic>
- <BYAPR21MB16882C3F39AB321A53BA4129D71B9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y618Wf6tAVpXo/qm@zn.tnic>
-In-Reply-To: <Y618Wf6tAVpXo/qm@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d4cb4b59-a671-4cca-993c-6b4b82388ad3;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-12-29T15:59:59Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|DS7PR21MB3341:EE_
-x-ms-office365-filtering-correlation-id: 832b6a92-4ba5-4993-ccfe-08dae9b61614
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: voLrYCWuFgmV36YMdtNv/BmVj/dCPzkTq2t1OqaMrZFDol4zsnWNdpawfOOqs1+K9fAu6d0+cbhcKHRu1X6YZqDt4ua0Q1hHVsh/fBEqEGcod0MxtL3rLWmvSvs4kghQPXGzVZQzzLiFGJtZcOVUN4P7CyEHvYfzulNA8rY3trh/F6HdghT4tOWsjLB18HVJBYO7H+8Ne6WM3Exm0AMpVc3hxCHm70eaVMEhjjV3EeZB7m6SZ4azNk9xaXtqU/fT4I+w3OhpjrF/A3Nder8/7qoUnR9LYmMnalRtOe5dn9yvAgu+s1Xinw1PNiitDQGE7Y+xnr27BEakNH39OHm11ip8wYBgZHxu9Bno8Ea2Xr73oZ4Io6xTcFRI7B/TQEJz8GLn+QfH4y/aBIOspAQQcP0Kw/GbnTZaY40epuXIrXQzK6lU/dbIO90l7nIWx6CDbP2VTZ/0TizhggGdbEKTgwR6aVmMXWcWk0ZbIBTC6a/ajQgnbPSTrpPtJ60Gy7kcmRZlo7GNvyysZ6M6894iLzENJF1/5BbeFRXmFk6LwYZOYkX9Gswfh0YjZGg10zxS0OIEwbpXsDuF3Ld+vLIh2/noe8K7pyu5YKxc/0sYpNbneMeV54P98QgTk0jcDo0gyUgw/lOSjaS6zdFvkedC1AjpMgVY0JnaFbyg9/m015osvdNsIQEAiUqNRy7gfywT38lKP1JjXwHYGW6M7TBjgeKwH+kIUCeFBPLYnHqM0ul19uoSEcMnFWYJk8ser7Tf
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(39860400002)(396003)(376002)(366004)(136003)(451199015)(82960400001)(38100700002)(122000001)(82950400001)(33656002)(38070700005)(66556008)(64756008)(86362001)(66476007)(76116006)(66946007)(41300700001)(66446008)(8676002)(4326008)(54906003)(6916009)(10290500003)(55016003)(8990500004)(316002)(2906002)(5660300002)(52536014)(8936002)(7416002)(4744005)(9686003)(83380400001)(7406005)(478600001)(71200400001)(6506007)(26005)(186003)(7696005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PBHdM61V+Yf1AyuR0YeMWELJh64G7KlC3H8U0DEMRp8b/3kW4BSrrlitO+YL?=
- =?us-ascii?Q?x7eUpeHNrsNDrmkNuuYjRa4sDjSmsOQByit6CagZUPby99c7snEYJIsSkuU+?=
- =?us-ascii?Q?qC6rwJRyIC+D8OoqR/urac6qloBo4iIItX1Xc7z78SqfJHskzxdVfIEurRGH?=
- =?us-ascii?Q?MIm6dbF/48h8B778/531UNKpJXRyACubDsk7uVGsWy88R3Hex3k/bANJaAsn?=
- =?us-ascii?Q?oLEXTV+I1Qyun8dfFQwLOK4W+cvVhkxfmKsg8wtXBhfGSfhOlurm4qTNkXSA?=
- =?us-ascii?Q?pkvP5yL8sEY6PcrvnaeZIFItuiwezutB3j1WjiXPYTLaI6wHei4X5ZxCsacE?=
- =?us-ascii?Q?hUkfi4TN64J4952sMNI7DiXtm/kWCH+EPilRd9iZl/eJHSrGmTKjlnRHFAqz?=
- =?us-ascii?Q?t/Isvjws214TjDdrizVuVtuFdaaIbKIUrevgMDuFmWjO9JYvRZ5zDKhZ9Od2?=
- =?us-ascii?Q?bTk6fhiU6vvDXKrxwY/U2V9AbS0SAp2Oo0Le73WVwaT6KCMvnS/0HKBL39xF?=
- =?us-ascii?Q?NBfKf//4gp4jgGxW/vFYvYiamznLT6hJb3Ftf1tcP6algVAzfMMuCCP43XPX?=
- =?us-ascii?Q?RBq97pke5Ai7x/DwKhsw0e8wXK+owz7/+xg4fo3VYmxKKZWfxGN0iBb+R/Qc?=
- =?us-ascii?Q?ARTbTs6C+hPfaj1JZkzvqNs67pqk/nWwGEp41RWiiL47F9OrGwjDYe/6rvzU?=
- =?us-ascii?Q?y3c3vJK28TKK7OqQNKfSgkv5JOTrXJFkF+AOZLrvSiFrVB+fapSwYwza7lJU?=
- =?us-ascii?Q?uWrmOidOW3Xl7HOt5K1i6EuA698Orcis6wVJmcwgZl8IfgOVmJtb86PKQagg?=
- =?us-ascii?Q?zvDZClOqenmZK2u9n0n2T5zgfIi5I9hQX4XtdxvNinHLVyg97jsvS+CoN8v5?=
- =?us-ascii?Q?NndCgsF88quHb5kAOxRH/XHrl70+M4hKzK1u2nvqeF4vLnksfuNnNGUFtlko?=
- =?us-ascii?Q?IqBq0RJ6OGexmumvxYdb81+qZkVsXdDo29BZIepquTEkARWOdfbKHm0gAKWK?=
- =?us-ascii?Q?RAm4/H6afdwmaMmnUUGtiyyxJ02Qf9MUubmi7enr3pNlBrVgG6SPPgzWEP3h?=
- =?us-ascii?Q?AJtX+Wy3WcT3suCG1bgN1vQTtu2uFLy/u6JV/uYOFq5S5khkbAiTtZ0SOpt3?=
- =?us-ascii?Q?Mdb6RASiqW4zcfgyLnzH3HZAZydrQqENxk7b9WqLLdTR0WoFy+weKdjHfqRq?=
- =?us-ascii?Q?YpmPDNLe+UvAItscCj9Mxhq8GGX+XZsESyI1eHYifVj2J229pImvKUFH0506?=
- =?us-ascii?Q?i8aUD4LDOQY+h/SikRhxHgHXJsmn0crZjUP7isVmGcc1dRXLWyoL7ezMVyiX?=
- =?us-ascii?Q?UmpExpz17FdI6tef2yqE29InVPWt7Ha1+rgspYYbtMbRb2m5PMOs+zW14kY3?=
- =?us-ascii?Q?vc4znr/twevts7g79pweuH86VIULBquFbT+pxjcwmh1gFqZj28Fbx0usWO1r?=
- =?us-ascii?Q?ph2gEde3BGXfkIDMa6BMM8brAfIq73NWiWfuPJH/2x6hmiCgwlEZllvDZAzX?=
- =?us-ascii?Q?mZLxC3b/2qYmU4C934OzBZHSISki0VLOOqyk08dQ3zPStq8DnW6U7wD5tgQS?=
- =?us-ascii?Q?yzaCbmxbRUZbyQ88genbKZVhHtVXSvzbJOINwLlrVFO9ThMfW5qd/3s8JgVI?=
- =?us-ascii?Q?8A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229871AbiL2QGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 11:06:13 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93CC11A35
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:06:11 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id u19so45909688ejm.8
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:06:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:cc:to:subject:from
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+lNKae9t6mWSaeByyy6AHKVDkMguSH2xhzFAmnmHaTw=;
+        b=Cn+Z7Y2aM4mYLw3mze0C/XiUKEwuSMrYtoMVDvh+z3Ek+LtVEBOlsiIF8VJDsvg1IF
+         F5mGH5XbyqQTvXguyKI7eNmcyW2mKBmGf/lboVcn4xnitunVg5ndjCwY1qtpF4rZjTwY
+         IDCD3Y4oz3z7S0iPbQgLJKOT9W7dLTyqOLPuOnKMr0r+e+XxaIRS2OXugpMph5fzvloR
+         4ETmczrDk91qd34YVCB4Zbjej5eb4q6il6DyIQ2FhoIdpNEG5bEjSDLqFzHpIFAhjtzc
+         iq2sX9va/7XyjbUVvsuoEvqylNVxId8RctxrG//81x0BdK+TJ2CKco948SIrSV3Q2AdT
+         5/bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:cc:to:subject:from
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+lNKae9t6mWSaeByyy6AHKVDkMguSH2xhzFAmnmHaTw=;
+        b=vteM81/0bLjRu4F5rEEiEqu0nJ5WoV4aPZq4tL7itKn5Y7ug04V9phMiBaOoKLFpUw
+         ekjy8fSeTF0dnTzkcUvmfTVtwrzS/ye/tRwIglbWcJ2qZo2agNcZ9yo3kbG/0JW2bFZ1
+         eBB7RT4uowiuDBQuq+1biHH2jTPssZDskSnRFxH0NN66dpdcUjB5l9NJI2CizWXv1ACW
+         TzoL1BPOf5b+Ffv5qLjbiUksnF3gD8a1uafOWaKWD/xQ8OAwy2/LfPq5Yr8Kq52ZEgdf
+         QvE+vXRkQkjMlWqejOkaGjYvKGQ84sNbGYYdv1DUoe0K8xW2BDm/pEiK58mAmziean8E
+         ZhTA==
+X-Gm-Message-State: AFqh2kp3i31R2db5Su3JMHlYMsjzE9LyeDcLBfX9wCDrJrtbPQZdN1Xc
+        z7SVoaS1YTN33WBkZvQ0h7U=
+X-Google-Smtp-Source: AMrXdXvQfY7ShXU1LefuSB0D+xe9MBMtnnYhppj/6dQqcoqEHdOK784uxbd9qK9PYXqTJrPwKlDIlA==
+X-Received: by 2002:a17:907:7f24:b0:7c1:6091:e76 with SMTP id qf36-20020a1709077f2400b007c160910e76mr33472788ejc.53.1672329970064;
+        Thu, 29 Dec 2022 08:06:10 -0800 (PST)
+Received: from ?IPV6:2a01:c22:6ef3:b900:a548:5717:959:2430? (dynamic-2a01-0c22-6ef3-b900-a548-5717-0959-2430.c22.pool.telefonica.de. [2a01:c22:6ef3:b900:a548:5717:959:2430])
+        by smtp.googlemail.com with ESMTPSA id t7-20020a1709066bc700b0081bfc79beaesm8616474ejs.75.2022.12.29.08.06.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Dec 2022 08:06:09 -0800 (PST)
+Message-ID: <06bab827-be4a-606e-7a01-52379b1e1a91@gmail.com>
+Date:   Thu, 29 Dec 2022 17:06:04 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 832b6a92-4ba5-4993-ccfe-08dae9b61614
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Dec 2022 16:02:28.9659
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RYK0MFx9m8ztT3QRgQ/+4Xct8fNgfoklGmnkmZBqtN6xTOrOGTOJlseOfuGpLIm+d7Um0Ips2t0NbklPt7KF37ynYYM28MpLv2CqTN7beA8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR21MB3341
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next v2] r8169: disable ASPM in case of tx timeout
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -161,35 +76,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de> Sent: Thursday, December 29, 2022 3:39=
- AM
->=20
-> On Tue, Dec 06, 2022 at 07:54:02PM +0000, Michael Kelley (LINUX) wrote:
-> > Exactly correct.
->=20
-> Ok, thanks.
->=20
-> Let's put that in the commit message and get rid of the "subsequent
-> patch" wording as patch order in git is ambiguous.
->=20
-> IOW, something like this:
->=20
->     Current code always maps the IO-APIC as shared (decrypted) in a
->     confidential VM. But Hyper-V guest VMs on AMD SEV-SNP with vTOM enabl=
-ed
->     use a paravisor running in VMPL0 to emulate the IO-APIC.
->=20
->     In such a case, the IO-APIC must be accessed as private (encrypted)
->     because the paravisor emulates the IO-APIC in the lower half of the v=
-TOM
->     where all accesses must be encrypted.
->=20
->     Add a new CC attribute which determines how the IO-APIC MMIO mapping
->     should be established depending on the platform the kernel is running=
- on
->     as a guest.
->
-=20
-Works for me.  I'll adopt this wording in v5.
+There are still single reports of systems where ASPM incompatibilities
+cause tx timeouts. It's not clear whom to blame, so let's disable
+ASPM in case of a tx timeout.
 
-Michael
+v2:
+- add one-time warning for informing the user
+
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a9dcc98b6..49c124d8e 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -576,6 +576,7 @@ struct rtl8169_tc_offsets {
+ enum rtl_flag {
+ 	RTL_FLAG_TASK_ENABLED = 0,
+ 	RTL_FLAG_TASK_RESET_PENDING,
++	RTL_FLAG_TASK_TX_TIMEOUT,
+ 	RTL_FLAG_MAX
+ };
+ 
+@@ -3931,7 +3932,7 @@ static void rtl8169_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ {
+ 	struct rtl8169_private *tp = netdev_priv(dev);
+ 
+-	rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
++	rtl_schedule_task(tp, RTL_FLAG_TASK_TX_TIMEOUT);
+ }
+ 
+ static int rtl8169_tx_map(struct rtl8169_private *tp, const u32 *opts, u32 len,
+@@ -4525,6 +4526,7 @@ static void rtl_task(struct work_struct *work)
+ {
+ 	struct rtl8169_private *tp =
+ 		container_of(work, struct rtl8169_private, wk.work);
++	int ret;
+ 
+ 	rtnl_lock();
+ 
+@@ -4532,7 +4534,17 @@ static void rtl_task(struct work_struct *work)
+ 	    !test_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags))
+ 		goto out_unlock;
+ 
++	if (test_and_clear_bit(RTL_FLAG_TASK_TX_TIMEOUT, tp->wk.flags)) {
++		/* ASPM compatibility issues are a typical reason for tx timeouts */
++		ret = pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_L1 |
++							  PCIE_LINK_STATE_L0S);
++		if (!ret)
++			netdev_warn_once(tp->dev, "ASPM disabled on Tx timeout\n");
++		goto reset;
++	}
++
+ 	if (test_and_clear_bit(RTL_FLAG_TASK_RESET_PENDING, tp->wk.flags)) {
++reset:
+ 		rtl_reset_work(tp);
+ 		netif_wake_queue(tp->dev);
+ 	}
+-- 
+2.39.0
+
