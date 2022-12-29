@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB610658C86
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 13:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5AE658CA1
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 13:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbiL2MGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 07:06:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
+        id S233213AbiL2MSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 07:18:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbiL2MF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 07:05:58 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B67D60DF;
-        Thu, 29 Dec 2022 04:05:57 -0800 (PST)
+        with ESMTP id S229658AbiL2MSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 07:18:00 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F9710B5B;
+        Thu, 29 Dec 2022 04:18:00 -0800 (PST)
 Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9AA9A1EC034B;
-        Thu, 29 Dec 2022 13:05:55 +0100 (CET)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 891F11EC034B;
+        Thu, 29 Dec 2022 13:17:58 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1672315555;
+        t=1672316278;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=cyJkrUGJK+DwfWw8qU0s1ebSQzN3dnFxuLq2Sd4e5ew=;
-        b=U0G0Oh9qxIRX0ofMOwZYFfr9s3742G+u7FePzxCECJfCDTjMTIeTsDexCQgTa/kpIgPSfV
-        RnQ9i1UxSbufAV79d5pQ4wPk1dsxQwJrw6w8Rka5No9REG7IJ9XNJs4C3Fcz8IOsi1JtwG
-        ia4RV5U51LAlUGPF4kt7eh8PqQtC2Cg=
-Date:   Thu, 29 Dec 2022 13:05:55 +0100
+        bh=wSRpswI9u60JfI6sWY2yfCWEP9K0fmolgwn8Wp8wVro=;
+        b=nUijUjCO3f0F3lKDnwUjShJLuzg8Te08KQWeSK1O8CYkaoOv4H1WdTTd60grAJwdH3ybYk
+        7d1+JxrHlDav78/VwKPK5g7hOs5SwfviZ7tTlbVb67rQZCREhd2nfhpmXX/gQBidKGyasA
+        T0pJccZK9EcweKSTC+UPU6YntjU/RDQ=
+Date:   Thu, 29 Dec 2022 13:17:48 +0100
 From:   Borislav Petkov <bp@alien8.de>
 To:     Michael Kelley <mikelley@microsoft.com>
 Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
@@ -47,15 +47,15 @@ Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
         iommu@lists.linux.dev
-Subject: Re: [Patch v4 03/13] Drivers: hv: Explicitly request decrypted in
- vmap_pfn() calls
-Message-ID: <Y62CozIJ/aY2Tr7z@zn.tnic>
+Subject: Re: [Patch v4 04/13] x86/mm: Handle decryption/re-encryption of
+ bss_decrypted consistently
+Message-ID: <Y62FbJ1rZ6TVUgml@zn.tnic>
 References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <1669951831-4180-4-git-send-email-mikelley@microsoft.com>
+ <1669951831-4180-5-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1669951831-4180-4-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <1669951831-4180-5-git-send-email-mikelley@microsoft.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -65,18 +65,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 01, 2022 at 07:30:21PM -0800, Michael Kelley wrote:
-> In preparation for a subsequent patch,
+On Thu, Dec 01, 2022 at 07:30:22PM -0800, Michael Kelley wrote:
+> Current code in sme_postprocess_startup() decrypts the bss_decrypted
+> section when sme_me_mask is non-zero.  But code in
+> mem_encrypt_free_decrypted_mem() re-encrypts the unused portion based
+> on CC_ATTR_MEM_ENCRYPT.  In a Hyper-V guest VM using vTOM, these
+> conditions are not equivalent as sme_me_mask is always zero when
+> using vTOM.  Consequently, mem_encrypt_free_decrypted_mem() attempts
+> to re-encrypt memory that was never decrypted.
+> 
+> Fix this in mem_encrypt_free_decrypted_mem() by conditioning the
+> re-encryption on the same test for non-zero sme_me_mask.  Hyper-V
+> guests using vTOM don't need the bss_decrypted section to be
+> decrypted, so skipping the decryption/re-encryption doesn't cause
+> a problem.
 
-Yeah, once those are all in git, the concept of "subsequent patch"
-becomes ambiguous depending on how you're sorting them. So try to read
-that commit message out of the context of all those "subsequent patches"
-and see if it still makes sense.
+Lemme simplify the formulations a bit:
 
-IOW, you should strive for your commit messages to make sense on their
-own, without referencing other patches. If possible, that is.
+"sme_postprocess_startup() decrypts the bss_decrypted ection when me_mask
+sme_is non-zero.
 
-Thx.
+mem_encrypt_free_decrypted_mem() re-encrypts the unused portion based on
+CC_ATTR_MEM_ENCRYPT.
+
+In a Hyper-V guest VM using vTOM, these conditions are not equivalent
+as sme_me_mask is always zero when using vTOM. Consequently,
+mem_encrypt_free_decrypted_mem() attempts to re-encrypt memory that was
+never decrypted.
+
+So check sme_me_mask in mem_encrypt_free_decrypted_mem() too.
+
+Hyper-V guests using vTOM don't need the bss_decrypted section to be
+decrypted, so skipping the decryption/re-encryption doesn't cause a
+problem."
+
+> Fixes: e9d1d2bb75b2 ("treewide: Replace the use of mem_encrypt_active() with cc_platform_has()")
+
+So when you say Fixes - this is an issue only for vTOM-using VMs and
+before yours, there were none. And yours needs more enablement than just
+this patch.
+
+So does this one really need to be backported to stable@?
+
+I'm asking because there's AI which will pick it up based on this Fixes
+tag up but that AI is still not that smart to replace us all. :-)
 
 -- 
 Regards/Gruss,
