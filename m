@@ -2,49 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24875658F3C
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 17:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D703F658F48
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 17:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbiL2Qu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 11:50:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38882 "EHLO
+        id S233461AbiL2Qyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 11:54:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiL2QuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 11:50:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66630F4B
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 08:50:18 -0800 (PST)
+        with ESMTP id S229831AbiL2Qye (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 11:54:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C11DF45;
+        Thu, 29 Dec 2022 08:54:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0717DB819FE
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 16:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 91C08C433F1;
-        Thu, 29 Dec 2022 16:50:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E617B61849;
+        Thu, 29 Dec 2022 16:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0105CC433D2;
+        Thu, 29 Dec 2022 16:54:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672332615;
-        bh=/XhPsBiHlOdXuRsA2/JETl7Kygk+kcmhJHjBtBN3pKQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=O40l5Z00ATeTTAwa2QVzDj/peiivuzM1CU+GeEv7n3MuXHzZJL89UPN32uyRNihBB
-         YHbmZdh9Yx095/965E1HdwWBFv1iZvHAf6FJFLUDYZH0r5RrosiPn/dZLAy0j3Vit3
-         2p1NmboNG688i+qjz8Ek81EgX0oq6HcsgI1R44vDmSyujkT2yZgexflNM4Uwvbc/x5
-         Txz49uHp9XXNoII+FjJvz4T4mneMcYFAmAHtQ84bciR3pCMRWPh+4YWQneyKwbe7hy
-         3DCzJbzWq1QRzPHjlQ8+JKOUZecFYNkCrvhcA02HTBpal11izFLciQq/Zsn/qSQNHl
-         sZSl0IOrsrsLw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79D18C43159;
-        Thu, 29 Dec 2022 16:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1672332873;
+        bh=ZH9RxnFigQ3RNw39YbUtHTL0S/l1Ahl1+A4wI5byIbY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=R10r7pyB/UbK+tFVrEctWZRBQDwXUu22AT9vlVvp01hWq47xoIDSjFMGjzchZHZyi
+         66/f6Fyce3eiltODaKq7VCqCK7dEcSB+AEG/RiMfCeuFs5aHKOk04bjidHv0VMJg51
+         7WmjXsXWwOfU6OTVz3GNBNxo2UPCzuJ6Lj1MVqG68xavgMqoQqQi8P+hclvXLAxICh
+         6hwmO9NJFRzLbSYZaa7hk/VMuB37tlN/9a+3qfWxOD7PCUhUlXyjN4PN9NKa9zAfRf
+         wyd25rIuT8zy8rhiE4MDUbsOUTJSpXOYH5WV+pUVRp96h/fzUefZQSawaaw4dD90Iy
+         3S049RPbLL/xQ==
+Date:   Thu, 29 Dec 2022 10:54:31 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+        kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
+        kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
+        hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com,
+        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        isaku.yamahata@intel.com, dan.j.williams@intel.com,
+        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+        iommu@lists.linux.dev
+Subject: Re: [Patch v4 04/13] x86/mm: Handle decryption/re-encryption of
+ bss_decrypted consistently
+Message-ID: <20221229165431.GA611286@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2 v2] configure: Remove include <sys/stat.h>
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167233261549.30800.12464946939084546492.git-patchwork-notify@kernel.org>
-Date:   Thu, 29 Dec 2022 16:50:15 +0000
-References: <20221223170345.3785809-1-hauke@hauke-m.de>
-In-Reply-To: <20221223170345.3785809-1-hauke@hauke-m.de>
-To:     Hauke Mehrtens <hauke@hauke-m.de>
-Cc:     netdev@vger.kernel.org, heiko.thiery@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y62FbJ1rZ6TVUgml@zn.tnic>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,39 +67,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
-
-On Fri, 23 Dec 2022 18:03:45 +0100 you wrote:
-> The check_name_to_handle_at() function in the configure script is
-> including sys/stat.h. This include fails with glibc 2.36 like this:
-> ````
-> In file included from /linux-5.15.84/include/uapi/linux/stat.h:5,
->                  from /toolchain-x86_64_gcc-12.2.0_glibc/include/bits/statx.h:31,
->                  from /toolchain-x86_64_gcc-12.2.0_glibc/include/sys/stat.h:465,
->                  from config.YExfMc/name_to_handle_at_test.c:3:
-> /linux-5.15.84/include/uapi/linux/types.h:10:2: warning: #warning "Attempt to use kernel headers from user space, see https://kernelnewbies.org/KernelHeaders" [-Wcpp]
->    10 | #warning "Attempt to use kernel headers from user space, see https://kernelnewbies.org/KernelHeaders"
->       |  ^~~~~~~
-> In file included from /linux-5.15.84/include/uapi/linux/posix_types.h:5,
->                  from /linux-5.15.84/include/uapi/linux/types.h:14:
-> /linux-5.15.84/include/uapi/linux/stddef.h:5:10: fatal error: linux/compiler_types.h: No such file or directory
->     5 | #include <linux/compiler_types.h>
->       |          ^~~~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
-> ````
+On Thu, Dec 29, 2022 at 01:17:48PM +0100, Borislav Petkov wrote:
+> On Thu, Dec 01, 2022 at 07:30:22PM -0800, Michael Kelley wrote:
+> > Current code in sme_postprocess_startup() decrypts the bss_decrypted
+> > section when sme_me_mask is non-zero.  But code in
+> > mem_encrypt_free_decrypted_mem() re-encrypts the unused portion based
+> > on CC_ATTR_MEM_ENCRYPT.  In a Hyper-V guest VM using vTOM, these
+> > conditions are not equivalent as sme_me_mask is always zero when
+> > using vTOM.  Consequently, mem_encrypt_free_decrypted_mem() attempts
+> > to re-encrypt memory that was never decrypted.
+> > 
+> > Fix this in mem_encrypt_free_decrypted_mem() by conditioning the
+> > re-encryption on the same test for non-zero sme_me_mask.  Hyper-V
+> > guests using vTOM don't need the bss_decrypted section to be
+> > decrypted, so skipping the decryption/re-encryption doesn't cause
+> > a problem.
 > 
-> [...]
+> Lemme simplify the formulations a bit:
+> 
+> "sme_postprocess_startup() decrypts the bss_decrypted ection when me_mask
+> sme_is non-zero.
 
-Here is the summary with links:
-  - [iproute2,v2] configure: Remove include <sys/stat.h>
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=22c877d93eed
+s/ection/section/
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+(In case you copy/paste this text without noticing the typo)
 
