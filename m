@@ -2,131 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A47C658869
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 02:40:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AF8B658882
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 03:06:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232636AbiL2Bkd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Dec 2022 20:40:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        id S232749AbiL2CGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Dec 2022 21:06:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiL2Bkb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 20:40:31 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FF681183D;
-        Wed, 28 Dec 2022 17:40:30 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BT1dNdR5006250, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BT1dNdR5006250
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 29 Dec 2022 09:39:23 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Thu, 29 Dec 2022 09:40:17 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 29 Dec 2022 09:40:16 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Thu, 29 Dec 2022 09:40:16 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Chris Morgan <macroalpha82@gmail.com>,
-        "Nitin Gupta" <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: RE: [RFC PATCH v1 18/19] rtw88: Add support for the SDIO based RTL8822CS chipset
-Thread-Topic: [RFC PATCH v1 18/19] rtw88: Add support for the SDIO based
- RTL8822CS chipset
-Thread-Index: AQHZGktEJugCouG9V0Kgbw48Ihs1066EFpog
-Date:   Thu, 29 Dec 2022 01:40:16 +0000
-Message-ID: <59ab30de2c33438ebad948b0a36aad21@realtek.com>
-References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
- <20221227233020.284266-19-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20221227233020.284266-19-martin.blumenstingl@googlemail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/28_=3F=3F_10:54:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230083AbiL2CGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Dec 2022 21:06:16 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43393194;
+        Wed, 28 Dec 2022 18:06:14 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VYJPPK2_1672279570;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VYJPPK2_1672279570)
+          by smtp.aliyun-inc.com;
+          Thu, 29 Dec 2022 10:06:11 +0800
+Message-ID: <1672279315.3435805-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 4/4] virtio-net: sleep instead of busy waiting for cvq command
+Date:   Thu, 29 Dec 2022 10:01:55 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, eperezma@redhat.com,
+        edumazet@google.com, maxime.coquelin@redhat.com, kuba@kernel.org,
+        pabeni@redhat.com, davem@davemloft.net, mst@redhat.com
+References: <20221226074908.8154-1-jasowang@redhat.com>
+ <20221226074908.8154-5-jasowang@redhat.com>
+ <1672107557.0142956-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEvzhAFj5HCmP--9DKfCAq_4wPNwsmmg4h0Sbv6ra0+DrQ@mail.gmail.com>
+ <1672216748.7057884-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEtr7r25s6Tgsj=fcw3MD3ShLmuuVHvx0WVNiQHyV_G=zw@mail.gmail.com>
+In-Reply-To: <CACGkMEtr7r25s6Tgsj=fcw3MD3ShLmuuVHvx0WVNiQHyV_G=zw@mail.gmail.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 28 Dec 2022 19:43:56 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Wed, Dec 28, 2022 at 4:40 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > On Tue, 27 Dec 2022 12:33:53 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > > On Tue, Dec 27, 2022 at 10:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> > > >
+> > > > On Mon, 26 Dec 2022 15:49:08 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > > > > We used to busy waiting on the cvq command this tends to be
+> > > > > problematic since:
+> > > > >
+> > > > > 1) CPU could wait for ever on a buggy/malicous device
+> > > > > 2) There's no wait to terminate the process that triggers the cvq
+> > > > >    command
+> > > > >
+> > > > > So this patch switch to use virtqueue_wait_for_used() to sleep with a
+> > > > > timeout (1s) instead of busy polling for the cvq command forever. This
+> > > >
+> > > > I don't think that a fixed 1S is a good choice.
+> > >
+> > > Well, it could be tweaked to be a little bit longer.
+> > >
+> > > One way, as discussed, is to let the device advertise a timeout then
+> > > the driver can validate if it's valid and use that timeout. But it
+> > > needs extension to the spec.
+> > >
+> > > > Some of the DPUs are very
+> > > > lazy for cvq handle.
+> > >
+> > > Such design needs to be revisited, cvq (control path) should have a
+> > > better priority or QOS than datapath.
+> > >
+> > > > In particular, we will also directly break the device.
+> > >
+> > > It's kind of hardening for malicious devices.
+> >
+> > Just based on timeout, it is judged that it is a malicious device. I think it is
+> > too arbitrary.
+>
+> Drivers have very little information to make the decision. So it's
+> really a balance.
+>
+> We can start with a very long timeout like 10 minutes. Otherwise a
+> buggy/malicious device will block a lot of important things (reboot,
+> modprobe) even if the scheduler is still functional.
+
+Relatively speaking, starting from a 1min+ timeout, I think it is safe.
+
+Thanks.
 
 
-> -----Original Message-----
-> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Sent: Wednesday, December 28, 2022 7:30 AM
-> To: linux-wireless@vger.kernel.org
-> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
-> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
-> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
-> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
-> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Subject: [RFC PATCH v1 18/19] rtw88: Add support for the SDIO based RTL8822CS chipset
-> 
-> Wire up RTL8822CS chipset support using the new rtw88 SDIO HCI code as
-> well as the existing RTL8822C chipset code.
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++++
->  drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
->  .../net/wireless/realtek/rtw88/rtw8822cs.c    | 34 +++++++++++++++++++
->  3 files changed, 48 insertions(+)
->  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cs.c
-> 
 
-[...]
-
-> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822cs.c
-> b/drivers/net/wireless/realtek/rtw88/rtw8822cs.c
-> new file mode 100644
-> index 000000000000..3d7279d70aa9
-> --- /dev/null
-> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822cs.c
-> @@ -0,0 +1,34 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-> +// Copyright(c) Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-
-Normally, we should use '/* ... */' style comment. The exception is 
-'// SPDX-License-Identifier: ...' in *.c
-
-Therefore, here should be:
-
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
-
-As well as other rtw88*s.c
-
---
-Ping-Ke
-
+>
+> Thanks
+>
+> >
+> > Thanks.
+> >
+> >
+> > >
+> > > >
+> > > > I think it is necessary to add a Virtio-Net parameter to allow users to define
+> > > > this timeout by themselves. Although I don't think this is a good way.
+> > >
+> > > Very hard and unfriendly to the end users.
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > > Thanks.
+> > > >
+> > > >
+> > > > > gives the scheduler a breath and can let the process can respond to
+> > > > > asignal. If the device doesn't respond in the timeout, break the
+> > > > > device.
+> > > > >
+> > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > ---
+> > > > > Changes since V1:
+> > > > > - break the device when timeout
+> > > > > - get buffer manually since the virtio core check more_used() instead
+> > > > > ---
+> > > > >  drivers/net/virtio_net.c | 24 ++++++++++++++++--------
+> > > > >  1 file changed, 16 insertions(+), 8 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > index efd9dd55828b..6a2ea64cfcb5 100644
+> > > > > --- a/drivers/net/virtio_net.c
+> > > > > +++ b/drivers/net/virtio_net.c
+> > > > > @@ -405,6 +405,7 @@ static void disable_rx_mode_work(struct virtnet_info *vi)
+> > > > >       vi->rx_mode_work_enabled = false;
+> > > > >       spin_unlock_bh(&vi->rx_mode_lock);
+> > > > >
+> > > > > +     virtqueue_wake_up(vi->cvq);
+> > > > >       flush_work(&vi->rx_mode_work);
+> > > > >  }
+> > > > >
+> > > > > @@ -1497,6 +1498,11 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
+> > > > >       return !oom;
+> > > > >  }
+> > > > >
+> > > > > +static void virtnet_cvq_done(struct virtqueue *cvq)
+> > > > > +{
+> > > > > +     virtqueue_wake_up(cvq);
+> > > > > +}
+> > > > > +
+> > > > >  static void skb_recv_done(struct virtqueue *rvq)
+> > > > >  {
+> > > > >       struct virtnet_info *vi = rvq->vdev->priv;
+> > > > > @@ -1984,6 +1990,8 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
+> > > > >       return err;
+> > > > >  }
+> > > > >
+> > > > > +static int virtnet_close(struct net_device *dev);
+> > > > > +
+> > > > >  /*
+> > > > >   * Send command via the control virtqueue and check status.  Commands
+> > > > >   * supported by the hypervisor, as indicated by feature bits, should
+> > > > > @@ -2026,14 +2034,14 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
+> > > > >       if (unlikely(!virtqueue_kick(vi->cvq)))
+> > > > >               return vi->ctrl->status == VIRTIO_NET_OK;
+> > > > >
+> > > > > -     /* Spin for a response, the kick causes an ioport write, trapping
+> > > > > -      * into the hypervisor, so the request should be handled immediately.
+> > > > > -      */
+> > > > > -     while (!virtqueue_get_buf(vi->cvq, &tmp) &&
+> > > > > -            !virtqueue_is_broken(vi->cvq))
+> > > > > -             cpu_relax();
+> > > > > +     if (virtqueue_wait_for_used(vi->cvq)) {
+> > > > > +             virtqueue_get_buf(vi->cvq, &tmp);
+> > > > > +             return vi->ctrl->status == VIRTIO_NET_OK;
+> > > > > +     }
+> > > > >
+> > > > > -     return vi->ctrl->status == VIRTIO_NET_OK;
+> > > > > +     netdev_err(vi->dev, "CVQ command timeout, break the virtio device.");
+> > > > > +     virtio_break_device(vi->vdev);
+> > > > > +     return VIRTIO_NET_ERR;
+> > > > >  }
+> > > > >
+> > > > >  static int virtnet_set_mac_address(struct net_device *dev, void *p)
+> > > > > @@ -3526,7 +3534,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > > >
+> > > > >       /* Parameters for control virtqueue, if any */
+> > > > >       if (vi->has_cvq) {
+> > > > > -             callbacks[total_vqs - 1] = NULL;
+> > > > > +             callbacks[total_vqs - 1] = virtnet_cvq_done;
+> > > > >               names[total_vqs - 1] = "control";
+> > > > >       }
+> > > > >
+> > > > > --
+> > > > > 2.25.1
+> > > > >
+> > > > > _______________________________________________
+> > > > > Virtualization mailing list
+> > > > > Virtualization@lists.linux-foundation.org
+> > > > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> > > >
+> > >
+> >
+>
