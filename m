@@ -2,154 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D899658DDF
-	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 15:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07206658DE7
+	for <lists+netdev@lfdr.de>; Thu, 29 Dec 2022 15:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233542AbiL2OWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Dec 2022 09:22:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45630 "EHLO
+        id S233365AbiL2Oar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Dec 2022 09:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233521AbiL2OWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 09:22:45 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523A912AE0
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 06:22:44 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id cf42so27705374lfb.1
-        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 06:22:44 -0800 (PST)
+        with ESMTP id S229487AbiL2Oap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Dec 2022 09:30:45 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD7AEAB
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 06:30:44 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id g13so27707051lfv.7
+        for <netdev@vger.kernel.org>; Thu, 29 Dec 2022 06:30:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1BAXkIo3rvrG/ME3mVxzJSzvIaQ3txJwSjcnNOS9ikw=;
-        b=V3imPe76scnNaQO8xSv/lhvcpfaRJYdVYbAJZp0kmaHYOwLoigjHxmoQbTbS64oN9k
-         8IN/xYNg1fWk/42IJMQdIe4lnaLgBaEoRhBs8kDPYiIsCMpCLZ5Zwbin3k07C2ctBqNG
-         an/WAR8NLBfMWscfFIcekwsb1AHF0mKLJNtDu/8p4vF+7rpZh+qrsK5ovE65crEK3JXt
-         PoNU80576lEYsW0MlSdeIvzMuQpghcKms0nPmiANX7GUvpR5v1VOSlRMBxBxrtL53vhU
-         GxH5/orDupZ6KbLejD5DOacisbZvUnaxoV0AfM9N6Y/uqifqBpZ8DR5CNUKUMbxpyigV
-         SXYw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6LYwz1qn2s4qGACWQSbmDxApuR34DufDaU+RI2+KuWw=;
+        b=mj43JvvnNhnzPQWDcjUsze/7KP4my9MvlGNV/5XAq+lZG0jQoEUNa1pA7JHE887LQ6
+         pf/cjAsrruHdJmb8PF429FMp9YVt4537mCMyhs49NjPU5Y3oeOFCNqusuaNe9JK7Di/9
+         iVawCvmIfcTO1jVIzf2bP5ivo5+UqfbXroiuRi8jDlFBNLLQ+N0egPquQWpTKOxhfmUW
+         35quWEA1YohxXpwL8MfLWflaFu2jH2cOGgkzwIikOUf8ZXsG+Hs6+6qbIeGtX15DHB+D
+         DdRbFArJjxEiee6VKt3F8Chjjs2t1OBRMnE5g/3OCDsAvdesjJm4r8nw+bQB2JSf2Amf
+         FZ/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1BAXkIo3rvrG/ME3mVxzJSzvIaQ3txJwSjcnNOS9ikw=;
-        b=hOWuGnjpfGlHl4Qm3n2VQcQQ5IWz2rlilJ7oeDDNz3e/WGiKUJD1hjN7kXRvtLatRJ
-         jRGxJ8FAjEpmpfy07L1W0Tkb1uL4E87otoC8tc2LoruKek4xKsZegPLLW6C3o98FZdLz
-         a8xZIC8zgioJAaFXqLU7Gbllj/CCcZ24g5L9OeWBDSapJjsj9ROVooICjoD8mcEt19vn
-         uCG9RZ803Ef4KFaw8sy2+P6BYuvHFIByIPU8chSG7wdZMPRDKoNgAJXi0455rInsAHih
-         fN1EF6NwQ472ARgHfVfUWUsPTMJUt232XL+MIedoLa0MntQn3E4gcyKVBzfqu7vW/6sj
-         HFpQ==
-X-Gm-Message-State: AFqh2kqj9IEuIrUbLEOganf9Ra2QN8Tdpy24fNWaUacloSx7M90lI/uM
-        vrEYpNipZ/KgJUG56hdpRw9Eog==
-X-Google-Smtp-Source: AMrXdXvcQA0Uzx6rZXAkZMCT24xypP5gE887MmT00+TTqh9OkChuHBg9joE7PirouA/lGZGp69eETA==
-X-Received: by 2002:a19:7114:0:b0:4b6:fddb:8e43 with SMTP id m20-20020a197114000000b004b6fddb8e43mr8605040lfc.26.1672323762648;
-        Thu, 29 Dec 2022 06:22:42 -0800 (PST)
-Received: from michal-H370M-DS3H.office.semihalf.net ([83.142.187.84])
-        by smtp.googlemail.com with ESMTPSA id e13-20020a05651236cd00b004b57a810e09sm3098819lfs.288.2022.12.29.06.22.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Dec 2022 06:22:42 -0800 (PST)
-From:   =?UTF-8?q?Micha=C5=82=20Grzelak?= <mig@semihalf.com>
-To:     linux-kernel@vger.kernel.org
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6LYwz1qn2s4qGACWQSbmDxApuR34DufDaU+RI2+KuWw=;
+        b=NW+9t0u0Zc99CT+K1KSWYYM1edhZvWE6R+aj1DGJ2WHof2uLbDTurogQMngblh/CKw
+         yCHUs+1J5xTMl9OtWCgnt8bx1iVKJpC/92lUPzWjDHt0Ak8DkPzdCVOKU4jOnBUelHAs
+         1KBycN/NOLEH5gW1I2eFidCXyPTEf2GRKgWir/0eieKgUBdpjPs2GKICVD1zm7EisyuT
+         wwmdrLrhimx447opNPBt3Hzs84WZtJsH5lp7pjoRO/57YbhzCzmeK88alPUDwhEHGxnS
+         zpPJuLGoEMntjDcjQdj/0TB0amjN2nSDgL/t9W+DfMK21SbYH+hu837v1dxRVwYINZs4
+         g7sg==
+X-Gm-Message-State: AFqh2koIswqtNfiyqr2xupAkYEdb0HV6l9RyTnYn94CK0fqvy7svaL5p
+        iXQeXOj/j9fgEP+WlLoTy3Yx7w==
+X-Google-Smtp-Source: AMrXdXu2zPB5WYahfzU5Fq/+bVmDyKwKnc/QAR56Pj2pBAq5GrS/LujfLws576bX6jz3LMymtbLfAQ==
+X-Received: by 2002:ac2:430c:0:b0:4cb:10ad:76bd with SMTP id l12-20020ac2430c000000b004cb10ad76bdmr2438382lfh.64.1672324242748;
+        Thu, 29 Dec 2022 06:30:42 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id d16-20020a193850000000b004cb14fa604csm844364lfj.262.2022.12.29.06.30.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Dec 2022 06:30:42 -0800 (PST)
+Message-ID: <8e4ec6b0-63cf-c086-c00e-5b4e8a2b2d25@linaro.org>
+Date:   Thu, 29 Dec 2022 15:30:40 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v3] dt-bindings: net: marvell,orion-mdio: Fix examples
+Content-Language: en-US
+To:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>,
+        linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
         chris.packham@alliedtelesis.co.nz, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, upstream@semihalf.com, mw@semihalf.com,
-        mchl.grzlk@gmail.com,
-        =?UTF-8?q?Micha=C5=82=20Grzelak?= <mig@semihalf.com>
-Subject: [PATCH v3] dt-bindings: net: marvell,orion-mdio: Fix examples
-Date:   Thu, 29 Dec 2022 15:22:19 +0100
-Message-Id: <20221229142219.93427-1-mig@semihalf.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+        mchl.grzlk@gmail.com
+References: <20221229142219.93427-1-mig@semihalf.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221229142219.93427-1-mig@semihalf.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As stated in marvell-orion-mdio.txt deleted in commit 0781434af811f
-("dt-bindings: net: orion-mdio: Convert to JSON schema") if
-'interrupts' property is present, width of 'reg' should be 0x84.
-Otherwise, width of 'reg' should be 0x4. Fix 'examples:' and add
-constraints checking whether 'interrupts' property is present
-and validate it against fixed values in reg.
+On 29/12/2022 15:22, Michał Grzelak wrote:
+> As stated in marvell-orion-mdio.txt deleted in commit 0781434af811f
+> ("dt-bindings: net: orion-mdio: Convert to JSON schema") if
+> 'interrupts' property is present, width of 'reg' should be 0x84.
+> Otherwise, width of 'reg' should be 0x4. Fix 'examples:' and add
+> constraints checking whether 'interrupts' property is present
+> and validate it against fixed values in reg.
+> 
+> Signed-off-by: Michał Grzelak <mig@semihalf.com>
 
-Signed-off-by: Michał Grzelak <mig@semihalf.com>
----
-Changelog:
-v2->v3
-- drop quotes and blank line
+This is a friendly reminder during the review process.
 
-v1->v2
-- remove second example
-- add 'if:' constraint to 'allOf:'
-- move 'allOf:' before 'examples:'
+It looks like you received a tag and forgot to add it.
 
+If you do not know the process, here is a short explanation:
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions. However, there's no need to repost patches *only* to add the
+tags. The upstream maintainer will do that for acks received on the
+version they apply.
 
- .../bindings/net/marvell,orion-mdio.yaml      | 30 ++++++++++++++++---
- 1 file changed, 26 insertions(+), 4 deletions(-)
+https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
 
-diff --git a/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml b/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
-index d2906b4a0f59..e35da8b01dc2 100644
---- a/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
-@@ -16,9 +16,6 @@ description: |
-   8k has a second unit which provides an interface with the xMDIO bus. This
-   driver handles these interfaces.
- 
--allOf:
--  - $ref: "mdio.yaml#"
--
- properties:
-   compatible:
-     enum:
-@@ -39,13 +36,38 @@ required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - $ref: mdio.yaml#
-+
-+  - if:
-+      required:
-+        - interrupts
-+
-+    then:
-+      properties:
-+        reg:
-+          items:
-+            - items:
-+                - $ref: /schemas/types.yaml#/definitions/cell
-+                - const: 0x84
-+
-+    else:
-+      properties:
-+        reg:
-+          items:
-+            - items:
-+                - $ref: /schemas/types.yaml#/definitions/cell
-+                - enum:
-+                    - 0x4
-+                    - 0x10
-+
- unevaluatedProperties: false
- 
- examples:
-   - |
-     mdio@d0072004 {
-       compatible = "marvell,orion-mdio";
--      reg = <0xd0072004 0x4>;
-+      reg = <0xd0072004 0x84>;
-       #address-cells = <1>;
-       #size-cells = <0>;
-       interrupts = <30>;
--- 
-2.34.1
+If a tag was not added on purpose, please state why and what changed.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
 
