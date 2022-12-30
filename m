@@ -2,201 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2221A659986
-	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 15:58:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B9F6599AC
+	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 16:24:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234990AbiL3O6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Dec 2022 09:58:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
+        id S231147AbiL3PYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Dec 2022 10:24:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiL3O6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 09:58:50 -0500
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC1A10B5A;
-        Fri, 30 Dec 2022 06:58:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Vy+HbPipHKDxHKUqBoKOmKIN/UPwbu8pN8QMqI6wdfA=; b=jDJcs4FB6l1HBQ5AGcKbqu1ujZ
-        q3VpfTDC7XsXTrAyfIlMRykDrFcAcLgANZdnwxFUFdx6xASEqPho6OlPqBnpP7kM+uYph+7gdcCwZ
-        QO6WOdO+Ppq4U9N2qfywMrYywFjhZgmdc+6OWi4wmR3IHyMIoXZHB1lDSRjFtUgCsE90=;
-Received: from p200300daa720fc00fd7bb9014adaf597.dip0.t-ipconnect.de ([2003:da:a720:fc00:fd7b:b901:4ada:f597] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pBGq6-00CjfD-Ed; Fri, 30 Dec 2022 15:58:30 +0100
-Message-ID: <fc09b981-282e-26cd-661e-86fdc72bedf9@nbd.name>
-Date:   Fri, 30 Dec 2022 15:58:29 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: Aw: Re: [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop
- generic vlan rx offload, only use DSA untagging
+        with ESMTP id S229489AbiL3PYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 10:24:02 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2046.outbound.protection.outlook.com [40.107.21.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6FE186CF;
+        Fri, 30 Dec 2022 07:24:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XjLnpFAGPWBx4zY9vCOWiSxzuvVho/u+QohiG6/3jRY49LrxJ3F+IOYfqCQbQuBPJuc/j/12CCCBijrvMckRRDBt8AtlCs3Lqs5Pc52J7zWeOeYewnqHI8O/njdcDbRK3obU9YLbDGii5RkMDcOZmxnCRe0x96McVFQxNOuPZvIlam3kGI22zddpy8ESuVijsEN5GFHmrXevwxV0eTgN+bejR8e8p01poz9XfCx5LS2m76yf00brUpujIIFywnQd3e0w5e6QNYESfCAq5KBDVtwxMGYA3jwYKvut6/CHw9osgCfVwiKcTxeCL5ZVIrBNJ5Jh5LhBbG+4NFDgO8uZZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Wx1vP5Qx0RhONjemvtZqCmT5dLJEurDw2iO6qtj8OnU=;
+ b=ifhs8JRDpnKv9gynUU8xeJR2rk83E/cZhl1vHBY5G4NcxrOF1YJCUn273KYK0LI+SOcS5FZyn6U85SxSlcoAwmpKi1oRotkVTPAEhvawzF2s1pFA7z9Ji2K8xO9aMjoB56UZvCpKfXrCXVCtBn2UPLXUFiRpnmSge+lMl3hTCyoG9niRF/8RY2Bf9O2BszAnurluqHnAIyu6YVgFIjxdIAJJwR8al6fAeiMdWCe93gnPjUDV+uJM1mf8MiKpkZ87/YvLkG933y8RQgqUFU57xRBCxiaOn/2i2LKz4vtIJX3kTL/d1TmhK//Ybs8dvPG8gD3RjrOVd53Bo7VcoWOQbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Wx1vP5Qx0RhONjemvtZqCmT5dLJEurDw2iO6qtj8OnU=;
+ b=qFhw9Si1Rd2e1t7j55KDdW7IuF5g1450asE6qp2h9D0Ht9lTN10QRc0wGpzLOFrzQAftBXO3X0iUY25yr5TkOFTJfl8XcJmypnd0O0aXS2nSkgh0BVnuybBtzTQW/weeWu2trzMnc7O/0nOOXv61cVPUh3p/YRJIk93p2bnr8TjjZfq+JCgVceCOeqNWZ+7e7g+cR+HqrDmNaTerfi9AmTJkIgAe2uiQDyJpBgOhCEV4zYgK+skARtvBD3+qLHykM0GARvWvwuE+/wm1Ln60EaDFDrGqmIhW/GwfjuQ3BDLyfddAn2Ux0I01OzedVwarUS0TqINX/nFJYWG3DTxdbw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
+ by GVXPR03MB8308.eurprd03.prod.outlook.com (2603:10a6:150:6e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.16; Fri, 30 Dec
+ 2022 15:23:56 +0000
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::2b95:1fe4:5d8f:22fb]) by DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::2b95:1fe4:5d8f:22fb%8]) with mapi id 15.20.5944.016; Fri, 30 Dec 2022
+ 15:23:56 +0000
+Message-ID: <cf215c60-8019-924f-c4d2-4204bb6a87f3@seco.com>
+Date:   Fri, 30 Dec 2022 10:23:49 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH net] net: dpaa2-mac: Get serdes only for backplane links
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20221227230918.2440351-1-sean.anderson@seco.com>
+ <20221229200925.35443196@kernel.org>
 Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20221230073145.53386-1-nbd@nbd.name>
- <20221230073145.53386-4-nbd@nbd.name>
- <trinity-a07d48f4-11cf-4a24-a797-03ad4b1150d9-1672400818371@3c-app-gmx-bap18>
- <82821d48-9259-9508-cc80-fc07f4d3ba14@nbd.name>
- <trinity-ace28b50-2929-4af3-9dd2-765f848c4d99-1672408565903@3c-app-gmx-bap18>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <trinity-ace28b50-2929-4af3-9dd2-765f848c4d99-1672408565903@3c-app-gmx-bap18>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From:   Sean Anderson <sean.anderson@seco.com>
+In-Reply-To: <20221229200925.35443196@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0076.namprd03.prod.outlook.com
+ (2603:10b6:a03:331::21) To DB9PR03MB8847.eurprd03.prod.outlook.com
+ (2603:10a6:10:3dd::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|GVXPR03MB8308:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed133c9b-446b-4234-7bb7-08daea79de0c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VXaRcuh6KVomHOEchMDQj2zQrpAk55jLOPg9icHoi+AdWcXPsJTgIJdJAEGPhorlw2LSiFnm20mpmc5KZdceu7xGFojXnd3XFOZBITRK88jYDKvwMx8pvSyPAS+2ofqNXvyAVEUBjhOHFgbe/UzWcB7zhlUTop4Kul6Rss+JKQoTbJ+VZEttGwg24rFcTAcNM/u1sgjgLaIG3ntem0iVz1o1aiqgW2rkHTUBlbRFDcBvt4cBsDqTHqmQCue+0gtPoMIKWpvULHeNWnCj5LoVmuH9fttMwYqd1V3lRLk8sF9hITvhLEuuLH+5DjrJwSS+IRoBN/fuOTfwM9HH8N/DfFNQ2H0D66p0Oxn0M2eHpuvDGP3XAeOUWRwACOsNtBuyFr+H5Xcs3DZtPqCovDIjbb8XLwfRxeww77pthqjhmho0kyWX8b7byPGG7HsB7pBW716nvjmwmyxQ+jLxzPOCkmmRNcLxyq4rcBt2eZnjMkpZOfrgYJd9PaeL9LqXd5E0DogR0leGQJVjpIm0hrN3SUgPFYLVhE9mwYq9y/l+b3PdUw31ORZXM6iRc0HCjHQFD1q/pXgF37LZoa5fLOSZ8csG3AoN6KKd+SB41zXdO3Eww/rO0ICKzY80zpx5GZZszGghxBSAbkyA4gzF9/UWY2ePf9Fj53WMZFeZfw55XKaUN1hb74zOKdOui5MCliPVpMoJfGHxSL50J1aKI46ph6O1N9GWSZ60jW2OQy5nJdo1tm88F0kU9P6s+/HON4yaQK6T9APV7WyKQ7TxCrfUaw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39850400004)(136003)(366004)(376002)(396003)(346002)(451199015)(53546011)(6506007)(2616005)(26005)(186003)(6512007)(6486002)(478600001)(558084003)(52116002)(86362001)(31696002)(2906002)(6666004)(6916009)(316002)(54906003)(31686004)(44832011)(36756003)(41300700001)(38350700002)(38100700002)(66556008)(66946007)(5660300002)(66476007)(8676002)(4326008)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V3RZVHZuNFJOdzhPNU9FODE3bWd6YWg1eXRHdGJvRGN0RGNJbm4vWHZ0Mjhh?=
+ =?utf-8?B?OEMzYWRKMlBCbU0weWFqSTY1bXVjRDYzSHVTMHA3WS9MdDV0Y3c0ejV0MlpJ?=
+ =?utf-8?B?N2NyQlBXdmdRZWwwb3ErVjJGWWwvUUVONGkzUExhOTE0Vjk1ZWsxMHFObFhX?=
+ =?utf-8?B?UjV6bDZaNWVOK2hDQXpINUQrYlRVNmZMelZnWGZYZ3ZDSnNBdFp2clNBMjZu?=
+ =?utf-8?B?bTMvbnRKZ25Qd012ck1QNGxLQTJBenlaOVAvUnF6ZnVwNkc2QXFwQk9pQi90?=
+ =?utf-8?B?dWNBWWhmNk42OFozalM5Wk1WOVBZUTRJdzhMWUw1ZFA3cHkraER4N2lWZnFO?=
+ =?utf-8?B?bWhsOEt1R2VDREVERkpEdXhIcHBUbk9NRy9oekxJK2NMbFdKVTlIb3o1NG9h?=
+ =?utf-8?B?by9NTU9LWTVvTGt2MzRkVjYwRXdqTjdSYmljNTNXbXpFMmhDL0d2SUpPNW83?=
+ =?utf-8?B?VUtZaGhGbGQ4SS9wYXFYKzBlZUtpbEhyWkV6cWlKTzJyU25XdC9vQ090dGhL?=
+ =?utf-8?B?N0VuRXZyMng1eGFXbTNPaGJSM2dobUh2VHhxelJiSGd6L1dQNmd4M01leXVZ?=
+ =?utf-8?B?TXRwdGU5MzlnMXZJYnVWSWhZSXFZQUdwUWp4VVFZMGhxMmRORG5HblFKZVlH?=
+ =?utf-8?B?bU5DaHV5MmZ3c2tFZDNuUUt1SG5HMU5IN2RyM2hQTEhUcnczbmZwSkYzT0FT?=
+ =?utf-8?B?MU0yVWgveGhVZ21PUEFtRm9ISmxyb29hdWlWTTdsSEVVNkwwb0xqN2I0UWgw?=
+ =?utf-8?B?SStmeW5pS0RmSEpYSklZalFzbFBObXZGamtZT1R1SDVTWWY1dklibE9rZEEz?=
+ =?utf-8?B?QUZlc0NucnJrY3ZBblRXM0lRUnNic3dIR2pqU2lnSi9lOUVPZDU0SVczUjVY?=
+ =?utf-8?B?ZERMQWdlMGd4LzJCS21aSjUvNzZqNzNyYk8yTVk0TVBUOG1sTHJCekdzZ0NG?=
+ =?utf-8?B?THRaL2VNaWpybVVXTXNlbUljZlUzQkRUMy9abTVRcDBDOGQrYUxLckduMWdM?=
+ =?utf-8?B?VGFyNm81T2M1eDdTQk81S3BxTXNOUTR1ZEk2cU9XZlo5bDgyTklkN2JXaFpI?=
+ =?utf-8?B?cmpPeEI0MC9VczBsSEdWSG54ZVRib1NhWUM0aldHSzN3K09vcHN6b1pVWFcz?=
+ =?utf-8?B?VTNlelE2YnVPUUEwd3FRK1NoM08ydmlnWjhITWVGWnBqR2wvd2RtRDdmRTRU?=
+ =?utf-8?B?MUJpdVJYVWdVSTFsczNubVhKYWg2NmRmOEgxaUVFYTI1VFpJeXZNL0JDZkc4?=
+ =?utf-8?B?TGEzZTlQY2s1K3hYMU5LQzJOaUN5MzJFZ3Qzay9QUk0vczlpZlZXTEoyRmZK?=
+ =?utf-8?B?NTVIc2FVODk5UkNoN3oxNkpkOUlWK1FkYXIyRXRGUndsU2NyUUJWcVY1bmxO?=
+ =?utf-8?B?SWhWbkJWZXFsNmVxMUk0cGl3UWNVR1BKWEwyS0hPNTlBc1Y4R1RucjdSYmZR?=
+ =?utf-8?B?WjR0enFqRFlsNlV5N2FPT3g5dWR4UTNnSE5WZEY2Q1ZCREg0UE5nSFI3R3gy?=
+ =?utf-8?B?VXlIQi8rbHd4Rm5meWY1cnZWaC9RdzN3eXM0ZzNaM05sUWpMUXYyMFUzNE8r?=
+ =?utf-8?B?d1FELzU0T1I1ZUVleDBSZzJUOVNiZGV3eG5wVFF1dktINHNvenB0SVBGTk9V?=
+ =?utf-8?B?L3hmNTRmSXBjVVcyeGFtUWQyNzltS1RMV3ROR1VkL0FvQlNadnFDaU90ZklJ?=
+ =?utf-8?B?eGRlRkFSMEZ2ZXpobFVJSEMvZ1N3ckdNS3BEanZJNldFSFZLRURCSXZOWjVR?=
+ =?utf-8?B?YWJZRGFrbWZqcVhBYmhPRjl4NHAvaCsxakxJWmVpcXdNazVDQmpXeWxVcmQ3?=
+ =?utf-8?B?U0xzSGl6T1RWTmJUMUxZSzQ1MVR1WUJXUkRUbDAvUER6VGpyN2t5UXYwNmVl?=
+ =?utf-8?B?WHpqeFhJVUNIUDlIaCtqR2YrL0IrQldzenFYLzdmTHBWM2hvRWhOS3BGRmh5?=
+ =?utf-8?B?WkhORVFsTjMxVDBneFE2d0lLMmdLM3NOeEUzVjVZUWRzUDBWeW45RWV5eFVK?=
+ =?utf-8?B?QjlQTGFTY0RUNElyUWR4anlEZnZBb2JjMXYvTnNQdW1KNkx0TG1qODdzdStl?=
+ =?utf-8?B?aE1FZ2NTWWNUUkRHZUtUOUs2RDVLTmoySWt2OXF4TVhKSVFiVE4rcmZ3bzN4?=
+ =?utf-8?B?TjhRWmVyelMwRmx0Yjlwc3pjbHZvS3VEcnlEa1dieUVJWmlQS1gyTVJaRjA3?=
+ =?utf-8?B?Znc9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed133c9b-446b-4234-7bb7-08daea79de0c
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR03MB8847.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Dec 2022 15:23:56.6148
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VcdWnl1EgNU7cgOWArWiXQwYZLzRYc6g1TUDNcHFzLpDhanqUlsvHmEs1KsZK5mH8CNVoKWiE0yOHEIZsNjftA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR03MB8308
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.12.22 14:56, Frank Wunderlich wrote:
-> Hi
+On 12/29/22 23:09, Jakub Kicinski wrote:
+> On Tue, 27 Dec 2022 18:09:18 -0500 Sean Anderson wrote:
+>> +	if (!(mac->features & !DPAA2_MAC_FEATURE_PROTOCOL_CHANGE) ||
 > 
-> thanks for fast response
-> 
->> Gesendet: Freitag, 30. Dezember 2022 um 13:56 Uhr
->> Von: "Felix Fietkau" <nbd@nbd.name>
->> An: "Frank Wunderlich" <frank-w@public-files.de>
->> Cc: netdev@vger.kernel.org, "John Crispin" <john@phrozen.org>, "Sean Wang" <sean.wang@mediatek.com>, "Mark Lee" <Mark-MC.Lee@mediatek.com>, "Lorenzo Bianconi" <lorenzo@kernel.org>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Matthias Brugger" <matthias.bgg@gmail.com>, "Russell King" <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
->> Betreff: Re: Aw: [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop generic vlan rx offload, only use DSA untagging
->>
->> On 30.12.22 12:46, Frank Wunderlich wrote:
->> > Hi,
->> >
->> > v2 or v3 seems to break vlan on mt7986 over eth0 (mt7531 switch). v1 was working on next from end of November. But my rebased tree with v1 on 6.2-rc1 has same issue, so something after next 2711 was added which break vlan over mt7531.
->> >
->> > Directly over eth1 it works (was not working before).
->> >
->> > if i made no mistake there is still something wrong.
->> >
->> > btw. mt7622/r64 can also use second gmac (over vlan aware bridge with aux-port of switch to wan-port) it is only not default in mainline. But maybe this should not be used as decision for dropping "dsa-tag" (wrongly vlan-tag).
->> >
->> > regards Frank
->> Thanks for reporting.
->> Please try this patch on top of the series:
->> ---
->> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> @@ -3218,10 +3218,8 @@ static int mtk_open(struct net_device *dev)
->>   	phylink_start(mac->phylink);
->>   	netif_tx_start_all_queues(dev);
->>
->> -	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
->> -		return 0;
->> -
->> -	if (mtk_uses_dsa(dev) && !eth->prog) {
->> +	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2) &&
->> +	    mtk_uses_dsa(dev) && !eth->prog) {
->>   		for (i = 0; i < ARRAY_SIZE(eth->dsa_meta); i++) {
->>   			struct metadata_dst *md_dst = eth->dsa_meta[i];
->>
->> @@ -3244,10 +3242,6 @@ static int mtk_open(struct net_device *dev)
->>   		val &= ~MTK_CDMP_STAG_EN;
->>   		mtk_w32(eth, val, MTK_CDMP_IG_CTRL);
->>
->> -		val = mtk_r32(eth, MTK_CDMQ_IG_CTRL);
->> -		val &= ~MTK_CDMQ_STAG_EN;
->> -		mtk_w32(eth, val, MTK_CDMQ_IG_CTRL);
->> -
->>   		mtk_w32(eth, 0, MTK_CDMP_EG_CTRL);
->>   	}
->>
->>
->>
-> 
-> seems not helping...this is how i test it:
-> 
-> ip link set eth1 up
-> ip link add link eth1 name vlan500 type vlan id 500
-> ip link add link wan name vlan600 type vlan id 600
-> ip addr add 192.168.50.1/24 dev vlan500
-> ip addr add 192.168.60.1/24 dev vlan600
-> ip link set vlan500 up
-> ip link set wan up
-> ip link set vlan600 up
-> 
-> #do this on the other side:
-> #netif=enp3s0
-> #sudo ip link add link $netif name vlan500 type vlan id 500
-> #sudo ip link add link $netif name vlan600 type vlan id 600
-> #sudo ip link set vlan500 up
-> #sudo ip link set vlan600 up
-> #sudo ip addr add 192.168.50.2/24 dev vlan500
-> #sudo ip addr add 192.168.60.2/24 dev vlan600
-> 
-> verified all used ports on my switch are in trunk-mode with vlan-membership of these 2 vlan.
-> 
-> 
-> 
-> booted 6.1 and there is vlan on dsa-port broken too, so either my test-setup is broken or code...but wonder why 6.1 is broken too...
-> 
-> with tcp-dump on my laptop i see that some packets came in for both vlan, but they seem not valid, arp only for vlan 500 (eth1 on r3).
-> 
-> $ sudo tcpdump -i enp3s0 -nn -e  vlan
-> tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
-> listening on enp3s0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-> 14:49:09.548909 e4:b9:7a:f7:c4:8b > 33:33:00:00:83:84, ethertype 802.1Q (0x8100), length 524: vlan 500, p 0, ethertype IPv6 (0x86dd), fe80::e6b9:7aff:fef7:c48b.34177 > ff12::8384.21027: UDP, length 458
-> 14:49:09.548929 e4:b9:7a:f7:c4:8b > 33:33:00:00:83:84, ethertype 802.1Q (0x8100), length 524: vlan 600, p 0, ethertype IPv6 (0x86dd), fe80::e6b9:7aff:fef7:c48b.34177 > ff12::8384.21027: UDP, length 458
-> 14:49:09.549470 e4:b9:7a:f7:c4:8b > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 504: vlan 500, p 0, ethertype IPv4 (0x0800), 192.168.50.2.33050 > 192.168.50.255.21027: UDP, length 458
-> 14:49:09.549522 e4:b9:7a:f7:c4:8b > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 504: vlan 600, p 0, ethertype IPv4 (0x0800), 192.168.60.2.33050 > 192.168.60.255.21027: UDP, length 458
-> 14:49:26.324503 92:65:f3:ec:b0:19 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 60: vlan 500, p 0, ethertype ARP (0x0806), Request who-has 192.168.50.2 tell 192.168.50.1, length 42
-> 14:49:26.324525 e4:b9:7a:f7:c4:8b > 92:65:f3:ec:b0:19, ethertype 802.1Q (0x8100), length 46: vlan 500, p 0, ethertype ARP (0x0806), Reply 192.168.50.2 is-at e4:b9:7a:f7:c4:8b, length 28
-> 14:49:26.325091 92:65:f3:ec:b0:19 > e4:b9:7a:f7:c4:8b, ethertype 802.1Q (0x8100), length 102: vlan 500, p 0, ethertype IPv4 (0x0800), 192.168.50.1 > 192.168.50.2: ICMP echo request, id 44246, seq 1, length 64
-> 14:49:26.325158 e4:b9:7a:f7:c4:8b > 92:65:f3:ec:b0:19, ethertype 802.1Q (0x8100), length 102: vlan 500, p 0, ethertype IPv4 (0x0800), 192.168.50.2 > 192.168.50.1: ICMP echo reply, id 44246, seq 1, length 64
-> 
-> on r3 i see these packets going out (so far it looks good):
-> 
-> root@bpi-r3:~# ping 192.168.60.2
-> PING 192.168.60.2 (192.168.60.2) 56(84) bytes of data.
-> 13:30:29.782003 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
->   Request who-has 192.168.60.2 tell 192.168.60.1, length 28
-> 13:30:30.788175 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
->   Request who-has 192.168.60.2 tell 192.168.60.1, length 28
-> 13:30:31.828181 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
->   Request who-has 192.168.60.2 tell 192.168.60.1, length 28
->  From 192.168.60.1 icmp_seq=1 Destination Host Unreachable
-> 13:30:32.868205 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
->   Request who-has 192.168.60.2 tell 192.168.60.1, length 28
-> 13:30:33.908171 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
->   Request who-has 192.168.60.2 tell 192.168.60.1, length 28
-> 
-> HTH, maybe daniel or anyone other can confirm this
-Does this help?
----
---- a/net/dsa/tag_mtk.c
-+++ b/net/dsa/tag_mtk.c
-@@ -25,6 +25,14 @@ static struct sk_buff *mtk_tag_xmit(stru
-  	u8 xmit_tpid;
-  	u8 *mtk_tag;
-  
-+	/* The Ethernet switch we are interfaced with needs packets to be at
-+	 * least 64 bytes (including FCS) otherwise their padding might be
-+	 * corrupted. With tags enabled, we need to make sure that packets are
-+	 * at least 68 bytes (including FCS and tag).
-+	 */
-+	if (__skb_put_padto(skb, ETH_ZLEN + MTK_HDR_LEN, false))
-+		return NULL;
-+
-  	/* Build the special tag after the MAC Source Address. If VLAN header
-  	 * is present, it's required that VLAN header and special tag is
-  	 * being combined. Only in this way we can allow the switch can parse
+> This line is odd as sparse points out
 
+Ah, you're right.
 
+--Sean
