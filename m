@@ -2,112 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 560D06598BA
-	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 14:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF65A659911
+	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 14:56:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234793AbiL3Nce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Dec 2022 08:32:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38978 "EHLO
+        id S230056AbiL3N4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Dec 2022 08:56:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiL3Ncd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 08:32:33 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2055.outbound.protection.outlook.com [40.107.6.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30471193E5;
-        Fri, 30 Dec 2022 05:32:32 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MJjfTBZigwJQx1ZyCQFIDAoa8Rm3dHPLiqfEkxvhZZOK+1VODfjinXy4VMnP3XCEw+Vak/fLNUOcdQ5D758tDIa5hQBpSp7CmSYMKBhFFXMzxbS33alqZtHYh3RWWvLFOPcwP1Zg94pOKeAVTJ5LW4sPhl5AGYBhUETHaa4GT0jH3YVv+XTyyPf3Mx6DkI4x2uYFVDkRLFFjDgay8BmRTNwGcQu3lpNT+hpr73mTPQ6Yfm+OzX0lM1aBCegHc/2P8qq/fz/SIpqB70KHathYxeJcw0nGh3CLL8QH+mcPdM1K0sv5dLRNcyBA/Js/MwtenkwlSotrfxa7qGirpTsfQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Mg1qbM58YgDsuDsdehYFajKEy2Unq6coY9Q3S5vctv0=;
- b=bZk5WZn2ApXi1Yan2OFo2JsLpZxWS3k9VOVohvjb0y/ldHzDedFXCVIdAyrntQz0QErc6kJoy6Tbwap/I2JMbHqVkVcgGTKklYqgkinUddGXYek5OgEAL+ODUn5c5q0cQH2vUOMp416E3bflO6KETXxNKEqiQ04DhnwcYQ6ZDnv5XPIPuoDFCwRpbuf5iw0XHm0zCZKEBTqGPrrsEXWp03W8aeW5NKSBp9z+rhSAQaRidCjP392kP6amr3wj/cLPng779LydZtZxJEf7mpntCwx3cCREBMQt9eIT7gPk2lWNWns7t6NGYfTfqiWVzu6Zy9JvJgaQUym/CIGUN5DTsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Mg1qbM58YgDsuDsdehYFajKEy2Unq6coY9Q3S5vctv0=;
- b=XQ5xmb7mvU/5VPDbo3BFAe9JuzF1D3mi7V2CC95wziezKAns6KUiiY7mIQM2eFitMAU2KNvZb0OIOLhob8E0N3ZjI0Wf15gMl07P6hdgP8gR5mxcorCP1bbuL/ZrVSD4STb9hC3EzAmvdX7bEJEmULYmM6myAn8CxKAAg9OWgIQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22)
- by AM8PR04MB7473.eurprd04.prod.outlook.com (2603:10a6:20b:1d0::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.16; Fri, 30 Dec
- 2022 13:32:29 +0000
-Received: from GV1PR04MB9055.eurprd04.prod.outlook.com
- ([fe80::5863:1b8c:c11a:ad1b]) by GV1PR04MB9055.eurprd04.prod.outlook.com
- ([fe80::5863:1b8c:c11a:ad1b%6]) with mapi id 15.20.5944.016; Fri, 30 Dec 2022
- 13:32:29 +0000
-Date:   Fri, 30 Dec 2022 15:32:24 +0200
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net] net: dpaa2-mac: Get serdes only for backplane links
-Message-ID: <20221230101710.btdw227v62nnj3le@skbuf>
-References: <20221227230918.2440351-1-sean.anderson@seco.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221227230918.2440351-1-sean.anderson@seco.com>
-X-ClientProxiedBy: VI1PR09CA0083.eurprd09.prod.outlook.com
- (2603:10a6:802:29::27) To GV1PR04MB9055.eurprd04.prod.outlook.com
- (2603:10a6:150:1e::22)
+        with ESMTP id S229505AbiL3N4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 08:56:43 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F99D26CD;
+        Fri, 30 Dec 2022 05:56:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1672408566;
+        bh=aJs5BUPNCDMpSf5qs/KCbFidrml10nfqVwtWIQ1rkgA=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=t7JJNRwE+tvA2uQhm6nQ3NoCh3BMFOa5hSffsqFfwjDmcw1TVzMlq1SK/s+ZzvPN/
+         lau/r8cws10FpD404hAslLQfAE+wmZ09CkKrIX7jb9HHLv3vp9SGHUH6nLDX1yBhY+
+         XkZz1Szojzh6jK4XbC37Z8sf+4v8o7ZSH5MDpDoh83uaGVcbfsW6a1RB3jIAdCT3Uf
+         ArTj0M6xRDv+FTgGGYj2BD3ayWHtrpjtAeQOdiCO/UC5yYPBC31ibpn7+oryrQEHBR
+         a7kb71cRHjBRvZUkOosslfLKo3ciuKuqj/cFfbCOO5qzJqzaLS0umHHqM+6Q+nKOs8
+         QHtc+aM3Kdl/Q==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [217.61.149.221] ([217.61.149.221]) by web-mail.gmx.net
+ (3c-app-gmx-bap18.server.lan [172.19.172.88]) (via HTTP); Fri, 30 Dec 2022
+ 14:56:05 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV1PR04MB9055:EE_|AM8PR04MB7473:EE_
-X-MS-Office365-Filtering-Correlation-Id: 655fd58e-c278-4454-1874-08daea6a4c0c
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T2PcaSk7mqcUBAT4pFesY8nNt/dnEmkI/fLaj0wusamk0Ee1EbJILlY6xw30D7AC9rkf/70QWs/rvQ++b3iJP9rpn2l2i4I22Ebe++RMu4o8kmP2k7Yu5vSwbGVyEKUUcfdno1wtWoX793uHoY6S26bvtq+BFPTYMpxrvZyTRjfUdTUS87ySfMZ0x6qb1RmrEvLqzbMGOkFdovc4vWz/NX6PeIKDDfel9Cu7CoaO3AwQju6DGx6nlPcdu/Q/eyb6rvS6+Bs6gdp3G2NxbztjN1O11Y9iHdLK/59J1woC2Jqb9JPE1WucJRMdb9QyD1lgej4bVMBTDDvJBWVU1MmGu6CGSe3+rzxFzJclCkxJDOO/JbOa4WqgZ0nw7ot4wPtranx2gU9m/i0QR+S2D0sHJqafCDNnagJevZ0FxfIIckjggBSj//g0KP6wtxHDw7W1BhdXU5H+TSEZtfGPD9lKCmQrsurDCvWtK72yvt1ACK+pUNvbfeKrcD5X/SOAhV3TcMkhxJKdUhGZMhtx4qCOuW18kuZzGwX3lqcSYPhwbmEXIVF8F0pV9d/Y4EaPSTDM6L2COo6/7AonywFNs3SJa2DTbpJCUFQoHuArcr8Fhta48vGLVs84d0o0613QEXY+cIvcumOoBHwuUq6HCiQ2UKQE72PdLdA/6gcOgqAHfS0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR04MB9055.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(136003)(346002)(376002)(39860400002)(366004)(396003)(451199015)(6486002)(966005)(478600001)(316002)(186003)(2906002)(54906003)(6916009)(33716001)(6506007)(83380400001)(38100700002)(6666004)(86362001)(1076003)(6512007)(66946007)(9686003)(4326008)(26005)(8936002)(66556008)(66476007)(5660300002)(8676002)(44832011)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2jz7N+b++05iA1PFVhjHb/c4O+vaKTiR/xLNizG4bMiXy9DrXUK6BktCb2Pa?=
- =?us-ascii?Q?v7YIuer0db1z9z2IAbVc0P/TXjGQnScDHDL3BRYhPBoYpgi8r4xI7zCW4c+a?=
- =?us-ascii?Q?qCizALHVBeSvnmSSsvcs6Yik5H5Vd97JWUXHI8qsK+rDv/Ewb0ERDRdmU4+v?=
- =?us-ascii?Q?iAeALLE0IwbrTbmNAsjvzBzIvrk/lXNd8BgcgroY3Oq6eP9/JF2of01TnNCy?=
- =?us-ascii?Q?U1uMAgA8G3fkyUDI3J5W79/KrOhmxdF+aB56IxquJssJVBCRm66UCQLkH6Z8?=
- =?us-ascii?Q?pfhAaKS0VyflGeD7PfNdU2vTmHuZztTcXqSPMfeZLn+JaFS6ZzM0SCUlTK0M?=
- =?us-ascii?Q?b17q8lEyHvA6MI1zY7W8C2XbaeiOaIBcy/gVhVURC80WiA7TU/2lqodCMopH?=
- =?us-ascii?Q?uYUcywAYU0EaO6nvWlOH6AAIbFDbRgAxXpy4zXfNuF6zKbnR0T9siHrHhxEG?=
- =?us-ascii?Q?VBBTDCHb+eQowSv26VWzGYjuuJSH0tK8oFKXgc36X5awjsUlZp82oQlFp/ZW?=
- =?us-ascii?Q?IF4dMNstYrSk2Yllda+5gOiIXz5dY5nqR2NCpGMOXZwiSp/t/TQWhuFvWt5T?=
- =?us-ascii?Q?6TgOLiZlfAtR5l4Z/8Ecc6OJo9EQrbjd86uirUiyGZSN/iCmGkhCaNNIyNgr?=
- =?us-ascii?Q?l8HmUvAm5tVjYA/v/BKDn5USz0ymYI7YaLqfH4Z1B6uJVyvkOouf+2ydAlzR?=
- =?us-ascii?Q?7yjtsz2W8VppU1HNUBMy+fzLiapE9e/7C0Di3r5UsxKwNk1eH5LB6cooIddD?=
- =?us-ascii?Q?ICoYZ9sBP+XnD6caRzCCIQj+/kZVUWmEvVIIJpMaqp4Cr8gbssElHAiq7Je3?=
- =?us-ascii?Q?1y470Yyhmm8nrM4BE2chfGZGwPPXGRj4mYtxOVKBCMqVv3B221UNFEW4MhxP?=
- =?us-ascii?Q?b1awII081HgkLDrqfdeR7v8LPHd1Mu3fSxpxSdDM/NkCz0MAzwSA0VJpfVn7?=
- =?us-ascii?Q?r4Zhn/pZe8mPW9Yc8GN7kDyksPBZA18F92tBBswWiNry810MbvaByxLpxk39?=
- =?us-ascii?Q?Qb+vx5oezxSWH4FXDdYZa4W0QPZCf67yEJ4BlJSDyV+8Rs1CrngeDuXTMwQa?=
- =?us-ascii?Q?F1EdrkpgIVJX1aZUiBWV53SRDBWIO/aalARf55yNfOZ+NfA2Yzu1O7Soxjew?=
- =?us-ascii?Q?MckX3ewfw2vNaI0rJfntUxnIrVkjc/5njZsGLN+mLwFRl4fz1J6JzY1esGL4?=
- =?us-ascii?Q?U3Rdwp4KNsXjEuvmvpAPfjSNqlHcniC2MgohHsFlnFRuu86nYIbIn0sH7ygQ?=
- =?us-ascii?Q?tAyi2WYClvnEnLETHSjiUdLVBzZLdXHi3zbIJRSpy9nZT+7PwmyWuToFJDax?=
- =?us-ascii?Q?dG87/uiusv22J1AWGMMqgHsIAmCf+gu2ds0cZzImz7mhoqAyeNMQ5YNi+2SQ?=
- =?us-ascii?Q?lEiygCcTzVxOl3UpxeQbRLqy7+Wpze3DaY7gNyLiSa4i23TtcC5P6mGPb8Ol?=
- =?us-ascii?Q?3qTJEOwN0D8xQplVMZB0PN1EGGlIygLYC9nVryf3hVB3jv6RM1/HtcbUmu5b?=
- =?us-ascii?Q?SD5KjXKzmmnzZUuubcYvvKymyT2jU77/oK4InRgV8xm90YZirr6MIMba6lD2?=
- =?us-ascii?Q?qf5FjIKR6ZjUllgPChz+eVhHnd6u/bHNC2L4R9gs?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 655fd58e-c278-4454-1874-08daea6a4c0c
-X-MS-Exchange-CrossTenant-AuthSource: GV1PR04MB9055.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Dec 2022 13:32:29.7313
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MchzOg+cJH1fPxcKyHhOPJkeOv5w6kHbgrt1+yADyONVWXrnCDPVRdM23OuT4L93MnHLOVaqFePSsxlbmAH6mA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7473
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Message-ID: <trinity-ace28b50-2929-4af3-9dd2-765f848c4d99-1672408565903@3c-app-gmx-bap18>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Aw: Re:  [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop
+ generic vlan rx offload, only use DSA untagging
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 30 Dec 2022 14:56:05 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <82821d48-9259-9508-cc80-fc07f4d3ba14@nbd.name>
+References: <20221230073145.53386-1-nbd@nbd.name>
+ <20221230073145.53386-4-nbd@nbd.name>
+ <trinity-a07d48f4-11cf-4a24-a797-03ad4b1150d9-1672400818371@3c-app-gmx-bap18>
+ <82821d48-9259-9508-cc80-fc07f4d3ba14@nbd.name>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:VSKB0aOJvZj8WdlVQ/Wv7OV7QRJhYJiAqgbU2cJ8DqrrxhDAC/S0+uOdetEOp3ccvsqxM
+ O1B+0MTl6JL1iPVk/wjn9/MB3Tir1jyVbd+xCIc0jpaEhxPuYfcAovrYl4KOPNC9Yq8ShNocvqgJ
+ 2IxvbA4rjuzYF3JIgIf0AXHvNXIPILqlg9uMUVYxW8InNAXZfjBZ/ikwjVlkOeSm1+LDB8LDmwny
+ /Mo1ZoxAoNiOM1LQhgKlBIrnXEv0lFMMLVOWwaGOT7xTse0CU4i9RFzXeUW+2bcaCR5+RyZSYSES
+ Ik=
+UI-OutboundReport: notjunk:1;M01:P0:1bHAsnDX4ZQ=;d+eI2zwbQuOswYD5KZeTrQQ1AzI
+ lFRKSgoaurWFBry3jR6s1YdA0L9Fa7mCdBRVSBw4iP9MiUu7VHxOYoLplArlXf3aMX0/olaFH
+ KqvGaQ+LIxFUzFJ77HLXQhV1lZV/ZD43m9G10AGPyd+lARxS3IdAC35m7VqWsWErcs+NuOzwq
+ sUEioiVmJ9/eqVzGeMnzCPAn3mQ2CXErPNEpKLPtMZWyVAZ8GA+Qa7gY8C0IskNquHE38ujVz
+ CtOrW5+ZtF7aBpmdeVMlEHvurpUprvVBRP7z2PRHM24k/lHDDgyqZfsAU7wsCtLM/1WFUvSgQ
+ etnwyMKAchYAgHcFPX7nxq+uSYNiX+KR3UGZCmMjjTiRSuWBtsviv/+N+1kNp16534jdsmMAa
+ fEQRaINVFz1Os39shJTy6VLzvnjdSAPX7vXmJrelPjzNSzLkpVr4gG8kc95o1kzhE3Gudzk1C
+ exAjqqLqTA38W04UDwFiH6j96P1etcTdw4RvVO5c+kW8Bh02rhtf1s65WDSpFYe5IkOmwifwC
+ Bec5T47LsofEYSC8xcIeD6YOc8H3F4DbEl+ARmV+zk1DoKErEBj5gIHfsHsT5TbWA2WSI5HlQ
+ 1AoMWb4W5qTUCmr3JPfUezIaVKH6dI2KDx5akRLjq5hTlyCp2JeCQJ9dYBwu2taY+ChQLfD7M
+ XAtkYrH30D6xtl6Qvlf7B85BLkDxSLG/9HQwoQTu2EZwMR4mmbUiSE+lQWkKKBOFPzc20WwII
+ gTWS6kv5doWBCpy+qwFf4lxf43qwdnaroRoDJuczm4RyMSsxBSnNXAdFSsDaQOkFaZnVuU/9/
+ rwcWtEEy7cWt2pJncw2rszMA==
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -115,113 +86,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sean,
+Hi
 
-On Tue, Dec 27, 2022 at 06:09:18PM -0500, Sean Anderson wrote:
-> When commenting on what would become commit 085f1776fa03 ("net: dpaa2-mac:
-> add backplane link mode support"), Ioana Ciornei said [1]:
-> 
-> > ...DPMACs in TYPE_BACKPLANE can have both their PCS and SerDes managed
-> > by Linux (since the firmware is not touching these). That being said,
-> > DPMACs in TYPE_PHY (the type that is already supported in dpaa2-mac) can
-> > also have their PCS managed by Linux (no interraction from the
-> > firmware's part with the PCS, just the SerDes).
-> 
-> This implies that Linux only manages the SerDes when the link type is
-> backplane. From my testing, the link fails to come up when the link type is
-> phy, but does come up when it is backplane. Modify the condition in
-> dpaa2_mac_connect to reflect this, moving the existing conditions to more
-> appropriate places.
-> 
+thanks for fast response
 
-What interface mode, firmware version etc are you testing on LS1088A?
-Are you using the SerDes phy driver?
-
-> [1] https://lore.kernel.org/netdev/20210120221900.i6esmk6uadgqpdtu@skbuf/
-> 
-> Fixes: f978fe85b8d1 ("dpaa2-mac: configure the SerDes phy on a protocol change")
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> Gesendet: Freitag, 30. Dezember 2022 um 13:56 Uhr
+> Von: "Felix Fietkau" <nbd@nbd.name>
+> An: "Frank Wunderlich" <frank-w@public-files.de>
+> Cc: netdev@vger.kernel.org, "John Crispin" <john@phrozen.org>, "Sean Wan=
+g" <sean.wang@mediatek.com>, "Mark Lee" <Mark-MC.Lee@mediatek.com>, "Loren=
+zo Bianconi" <lorenzo@kernel.org>, "David S. Miller" <davem@davemloft.net>=
+, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>=
+, "Paolo Abeni" <pabeni@redhat.com>, "Matthias Brugger" <matthias.bgg@gmai=
+l.com>, "Russell King" <linux@armlinux.org.uk>, linux-arm-kernel@lists.inf=
+radead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.o=
+rg
+> Betreff: Re: Aw: [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop gen=
+eric vlan rx offload, only use DSA untagging
+>
+> On 30.12.22 12:46, Frank Wunderlich wrote:
+> > Hi,
+> >
+> > v2 or v3 seems to break vlan on mt7986 over eth0 (mt7531 switch). v1 w=
+as working on next from end of November. But my rebased tree with v1 on 6.=
+2-rc1 has same issue, so something after next 2711 was added which break v=
+lan over mt7531.
+> >
+> > Directly over eth1 it works (was not working before).
+> >
+> > if i made no mistake there is still something wrong.
+> >
+> > btw. mt7622/r64 can also use second gmac (over vlan aware bridge with =
+aux-port of switch to wan-port) it is only not default in mainline. But ma=
+ybe this should not be used as decision for dropping "dsa-tag" (wrongly vl=
+an-tag).
+> >
+> > regards Frank
+> Thanks for reporting.
+> Please try this patch on top of the series:
 > ---
-> I tested this on an LS1088ARDB. I would appreciate if someone could
-> verify that this doesn't break anything for the LX2160A.
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -3218,10 +3218,8 @@ static int mtk_open(struct net_device *dev)
+>   	phylink_start(mac->phylink);
+>   	netif_tx_start_all_queues(dev);
+>
+> -	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
+> -		return 0;
+> -
+> -	if (mtk_uses_dsa(dev) && !eth->prog) {
+> +	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2) &&
+> +	    mtk_uses_dsa(dev) && !eth->prog) {
+>   		for (i =3D 0; i < ARRAY_SIZE(eth->dsa_meta); i++) {
+>   			struct metadata_dst *md_dst =3D eth->dsa_meta[i];
+>
+> @@ -3244,10 +3242,6 @@ static int mtk_open(struct net_device *dev)
+>   		val &=3D ~MTK_CDMP_STAG_EN;
+>   		mtk_w32(eth, val, MTK_CDMP_IG_CTRL);
+>
+> -		val =3D mtk_r32(eth, MTK_CDMQ_IG_CTRL);
+> -		val &=3D ~MTK_CDMQ_STAG_EN;
+> -		mtk_w32(eth, val, MTK_CDMQ_IG_CTRL);
+> -
+>   		mtk_w32(eth, 0, MTK_CDMP_EG_CTRL);
+>   	}
+>
+>
+>
 
-I will test on a LX2160A but no sooner than next Tuesday. Sorry.
+seems not helping...this is how i test it:
 
-> 
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> index c886f33f8c6f..0693d3623a76 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> @@ -179,9 +179,13 @@ static void dpaa2_mac_config(struct phylink_config *config, unsigned int mode,
->  	if (err)
->  		netdev_err(mac->net_dev,  "dpmac_set_protocol() = %d\n", err);
->  
-> -	err = phy_set_mode_ext(mac->serdes_phy, PHY_MODE_ETHERNET, state->interface);
-> -	if (err)
-> -		netdev_err(mac->net_dev, "phy_set_mode_ext() = %d\n", err);
-> +	if (!phy_interface_mode_is_rgmii(mode)) {
-> +		err = phy_set_mode_ext(mac->serdes_phy, PHY_MODE_ETHERNET,
-> +				       state->interface);
-> +		if (err)
-> +			netdev_err(mac->net_dev, "phy_set_mode_ext() = %d\n",
-> +				   err);
-> +	}
->  }
+ip link set eth1 up
+ip link add link eth1 name vlan500 type vlan id 500
+ip link add link wan name vlan600 type vlan id 600
+ip addr add 192.168.50.1/24 dev vlan500
+ip addr add 192.168.60.1/24 dev vlan600
+ip link set vlan500 up
+ip link set wan up
+ip link set vlan600 up
 
-This check is not necessary. Just above the snippet shown here is:
+#do this on the other side:
+#netif=3Denp3s0
+#sudo ip link add link $netif name vlan500 type vlan id 500
+#sudo ip link add link $netif name vlan600 type vlan id 600
+#sudo ip link set vlan500 up
+#sudo ip link set vlan600 up
+#sudo ip addr add 192.168.50.2/24 dev vlan500
+#sudo ip addr add 192.168.60.2/24 dev vlan600
 
-	if (!mac->serdes_phy)
-		return;
-
-And the 'serdes_phy' is only setup if the interface mode is not a rgmii.
-	if (mac->features & DPAA2_MAC_FEATURE_PROTOCOL_CHANGE &&
-	    !phy_interface_mode_is_rgmii(mac->if_mode) &&
-	    is_of_node(dpmac_node)) {
-		serdes_phy = of_phy_get(to_of_node(dpmac_node), NULL);
-		
-		if (serdes_phy == ERR_PTR(-ENODEV))
-			serdes_phy = NULL;
-		else if (IS_ERR(serdes_phy))
-			return PTR_ERR(serdes_phy);
-		else
-			phy_init(serdes_phy);
-	}
-	mac->serdes_phy = serdes_phy;
-
-
-
->  
->  static void dpaa2_mac_link_up(struct phylink_config *config,
-> @@ -317,7 +321,8 @@ static void dpaa2_mac_set_supported_interfaces(struct dpaa2_mac *mac)
->  		}
->  	}
->  
-> -	if (!mac->serdes_phy)
-> +	if (!(mac->features & !DPAA2_MAC_FEATURE_PROTOCOL_CHANGE) ||
-> +	    !mac->serdes_phy)
->  		return;
->  
->  	/* In case we have access to the SerDes phy/lane, then ask the SerDes
-> @@ -377,8 +382,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
->  		return -EINVAL;
->  	mac->if_mode = err;
->  
-> -	if (mac->features & DPAA2_MAC_FEATURE_PROTOCOL_CHANGE &&
-> -	    !phy_interface_mode_is_rgmii(mac->if_mode) &&
-> +	if (mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE &&
->  	    is_of_node(dpmac_node)) {
->  		serdes_phy = of_phy_get(to_of_node(dpmac_node), NULL);
->  
-
-If the goal is to restrict the serdes_phy setup only if in _BACKPLANE
-mode, then why not just add another restriction here directly?
-
-What I mean is not to remove any checks from this if statement but
-rather add another one. And this would be the only change needed.
+verified all used ports on my switch are in trunk-mode with vlan-membershi=
+p of these 2 vlan.
 
 
-Ioana
+
+booted 6.1 and there is vlan on dsa-port broken too, so either my test-set=
+up is broken or code...but wonder why 6.1 is broken too...
+
+with tcp-dump on my laptop i see that some packets came in for both vlan, =
+but they seem not valid, arp only for vlan 500 (eth1 on r3).
+
+$ sudo tcpdump -i enp3s0 -nn -e  vlan
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on enp3s0, link-type EN10MB (Ethernet), snapshot length 262144 b=
+ytes
+14:49:09.548909 e4:b9:7a:f7:c4:8b > 33:33:00:00:83:84, ethertype 802.1Q (0=
+x8100), length 524: vlan 500, p 0, ethertype IPv6 (0x86dd), fe80::e6b9:7af=
+f:fef7:c48b.34177 > ff12::8384.21027: UDP, length 458
+14:49:09.548929 e4:b9:7a:f7:c4:8b > 33:33:00:00:83:84, ethertype 802.1Q (0=
+x8100), length 524: vlan 600, p 0, ethertype IPv6 (0x86dd), fe80::e6b9:7af=
+f:fef7:c48b.34177 > ff12::8384.21027: UDP, length 458
+14:49:09.549470 e4:b9:7a:f7:c4:8b > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 504: vlan 500, p 0, ethertype IPv4 (0x0800), 192.168.50.2.3=
+3050 > 192.168.50.255.21027: UDP, length 458
+14:49:09.549522 e4:b9:7a:f7:c4:8b > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 504: vlan 600, p 0, ethertype IPv4 (0x0800), 192.168.60.2.3=
+3050 > 192.168.60.255.21027: UDP, length 458
+14:49:26.324503 92:65:f3:ec:b0:19 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 60: vlan 500, p 0, ethertype ARP (0x0806), Request who-has =
+192.168.50.2 tell 192.168.50.1, length 42
+14:49:26.324525 e4:b9:7a:f7:c4:8b > 92:65:f3:ec:b0:19, ethertype 802.1Q (0=
+x8100), length 46: vlan 500, p 0, ethertype ARP (0x0806), Reply 192.168.50=
+.2 is-at e4:b9:7a:f7:c4:8b, length 28
+14:49:26.325091 92:65:f3:ec:b0:19 > e4:b9:7a:f7:c4:8b, ethertype 802.1Q (0=
+x8100), length 102: vlan 500, p 0, ethertype IPv4 (0x0800), 192.168.50.1 >=
+ 192.168.50.2: ICMP echo request, id 44246, seq 1, length 64
+14:49:26.325158 e4:b9:7a:f7:c4:8b > 92:65:f3:ec:b0:19, ethertype 802.1Q (0=
+x8100), length 102: vlan 500, p 0, ethertype IPv4 (0x0800), 192.168.50.2 >=
+ 192.168.50.1: ICMP echo reply, id 44246, seq 1, length 64
+
+on r3 i see these packets going out (so far it looks good):
+
+root@bpi-r3:~# ping 192.168.60.2
+PING 192.168.60.2 (192.168.60.2) 56(84) bytes of data.
+13:30:29.782003 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
+ Request who-has 192.168.60.2 tell 192.168.60.1, length 28
+13:30:30.788175 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
+ Request who-has 192.168.60.2 tell 192.168.60.1, length 28
+13:30:31.828181 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
+ Request who-has 192.168.60.2 tell 192.168.60.1, length 28
+=46rom 192.168.60.1 icmp_seq=3D1 Destination Host Unreachable
+13:30:32.868205 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
+ Request who-has 192.168.60.2 tell 192.168.60.1, length 28
+13:30:33.908171 08:22:33:44:55:77 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0=
+x8100), length 46: vlan 600, p 0, ethertype ARP (0x0806),
+ Request who-has 192.168.60.2 tell 192.168.60.1, length 28
+
+HTH, maybe daniel or anyone other can confirm this
+
+regards Frank
 
