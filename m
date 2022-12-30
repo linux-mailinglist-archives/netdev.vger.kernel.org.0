@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1932659666
-	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 09:44:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8626596AA
+	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 10:19:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234839AbiL3IoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Dec 2022 03:44:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
+        id S234544AbiL3JTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Dec 2022 04:19:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbiL3IoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 03:44:12 -0500
-Received: from forwardcorp1a.mail.yandex.net (forwardcorp1a.mail.yandex.net [178.154.239.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3610E1A040;
-        Fri, 30 Dec 2022 00:44:08 -0800 (PST)
-Received: from vla5-b2806cb321eb.qloud-c.yandex.net (vla5-b2806cb321eb.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3e0d:0:640:b280:6cb3])
-        by forwardcorp1a.mail.yandex.net (Yandex) with ESMTP id CEB065FD5D;
-        Fri, 30 Dec 2022 11:44:03 +0300 (MSK)
-Received: from [IPV6:2a02:6b8:b081:b702::1:2] (unknown [2a02:6b8:b081:b702::1:2])
-        by vla5-b2806cb321eb.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 2iNnBJ0QXqM1-hpii9JF2;
-        Fri, 30 Dec 2022 11:44:03 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1672389843; bh=9HkybAdjC40pqk0L1AvXjL22v1hmp35ak9rgDsXiqnc=;
-        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-        b=moyUQvrtCJavoqdqNpjlgnOYPerhAGlEJzfxu9kmlO72fjeZHujRiUdWSDLCiSkNL
-         rfzEujRryPDC2eebAr1iTn+8u0hukir0Yc36vKuJJCZjNmVMJGuegwVrEVYOueew11
-         FFCKSsQmsZbBFulfDnoT6WHwJBu/1r6AS5BUGaEk=
-Authentication-Results: vla5-b2806cb321eb.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Message-ID: <a09b374f-45e3-9228-4846-80f655cf3caa@yandex-team.ru>
-Date:   Fri, 30 Dec 2022 11:44:02 +0300
+        with ESMTP id S229663AbiL3JTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 04:19:42 -0500
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E031A390;
+        Fri, 30 Dec 2022 01:19:41 -0800 (PST)
+Received: from localhost.localdomain (1.general.phlin.us.vpn [10.172.66.38])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 1BE12423E7;
+        Fri, 30 Dec 2022 09:19:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1672391978;
+        bh=GSCj7zjT5rlcq0rdRinTPgv9Yzo1SARUc7j5oXoZuJ0=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=gADaQm0Z9TpXcW23pm3RykxuziV4j8tsAUNVUNqbFRxcFXnu/mBOXfpMCdUzxJiky
+         WvPhKdVZHJCEbWkbomk8/sX6ovGB25hzcn1bnNMVwyz8XbKeWeRWbAmzK6S0Zshh/U
+         5h9CABsLITxbHW9fN2ZqpvZ3GbsVGcfdc9sKOuhwOzfDetNhHBAMTTcjHOgAuYpBvI
+         tGX0Dcu8m2UPifirmo7Bc/bln28CoO8CroIuCMPc1XTbMwaF0t4cPhRadlNgz5HD8r
+         F5DMxS8TPryCZdrtt7V/7JfTI1/oUqg5VU2KPdW+988rvifPSE8YpgOJhmdQt9WgOc
+         xN6lh34FhMNUA==
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+To:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     po-hsu.lin@canonical.com, dsahern@kernel.org, prestwoj@gmail.com,
+        shuah@kernel.org, pabeni@redhat.com, kuba@kernel.org,
+        edumazet@google.com, davem@davemloft.net
+Subject: [PATCH 0/2] selftests: net: fix for arp_ndisc_evict_nocarrier test
+Date:   Fri, 30 Dec 2022 17:18:27 +0800
+Message-Id: <20221230091829.217007-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RESEND PATCH net v1] drivers/net/bonding/bond_3ad: return when
- there's no aggregator
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20221226084353.1914921-1-d-tatianin@yandex-team.ru>
- <20221229182227.5de48def@kernel.org>
-From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
-In-Reply-To: <20221229182227.5de48def@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30/22 5:22 AM, Jakub Kicinski wrote:
-> On Mon, 26 Dec 2022 11:43:53 +0300 Daniil Tatianin wrote:
->> Otherwise we would dereference a NULL aggregator pointer when calling
->> __set_agg_ports_ready on the line below.
-> 
-> Fixes tag, please?
-Looks like this code was introduced with the initial git import.
-Would that still be useful?
+This patchset will fix a false-positive issue caused by the command in
+cleanup_v6() of the arp_ndisc_evict_nocarrier test.
+
+Also, it will make the test to return a non-zero value for any failure
+reported in the test for us to avoid false-negative results.
+
+Po-Hsu Lin (2):
+  selftests: net: fix cleanup_v6() for arp_ndisc_evict_nocarrier
+  selftests: net: return non-zero for failures reported in
+    arp_ndisc_evict_nocarrier
+
+ tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+-- 
+2.7.4
+
