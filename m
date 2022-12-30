@@ -2,116 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B24659A78
-	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 17:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E2D659AFB
+	for <lists+netdev@lfdr.de>; Fri, 30 Dec 2022 18:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbiL3QRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Dec 2022 11:17:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
+        id S235360AbiL3R2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Dec 2022 12:28:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231150AbiL3QRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 11:17:47 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F163636F;
-        Fri, 30 Dec 2022 08:17:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XsTtrjg75si90dxfNtwbabByETT2NBXCVBmC40eZH04=; b=IZ0KhtNn2y1QLsmjvOkmntLu97
-        IbeYhdPHWUsp0yyWMS9oytIY+1lx1y1oqlUglRtNTiMkqNaGYHa+p4NoQEEoJbRFCtUx6oJ+Umoho
-        BHgk7XDQen41+LoPAmU+XCiLwtQrKUJGHHpsGHXwcCIFKn2Zyn6FwP/7p2sztzXXEIdY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pBI4N-000leV-Mk; Fri, 30 Dec 2022 17:17:19 +0100
-Date:   Fri, 30 Dec 2022 17:17:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lixue Liang <lianglixuehao@126.com>,
-        anthony.l.nguyen@intel.com, linux-kernel@vger.kernel.org,
-        jesse.brandeburg@intel.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        lianglixue@greatwall.com.cn
-Subject: Re: [PATCH v7] igb: Assign random MAC address instead of fail in
- case of invalid one
-Message-ID: <Y68PD9G2tXkb9AZ/@lunn.ch>
-References: <20221213074726.51756-1-lianglixuehao@126.com>
- <Y5l5pUKBW9DvHJAW@unreal>
- <20221214085106.42a88df1@kernel.org>
- <Y5obql8TVeYEsRw8@unreal>
- <20221214125016.5a23c32a@kernel.org>
- <Y57SPPmui6cwD5Ma@unreal>
- <CAKgT0UfZk3=b0q3AQiexaJ=gCz6vW_hnHRnFiYLFSCESYdenOw@mail.gmail.com>
- <Y6wJFYMZVQ7V+ogG@unreal>
+        with ESMTP id S235354AbiL3R2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 12:28:05 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FB21A232
+        for <netdev@vger.kernel.org>; Fri, 30 Dec 2022 09:28:04 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id v2so11413021ioe.4
+        for <netdev@vger.kernel.org>; Fri, 30 Dec 2022 09:28:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=X6dzcadWG965pjXXGhRbOuxD3/hHkIfiEhSRMzTbYQg=;
+        b=kZhoNNlFcLnGllEIgDT/7CXdj2TjQt8Qh+7ARl8Orcp1KeUK+VeotBlpKhLTuVxzXW
+         MQHGfQepe2ok1lpP90gRGcrydNAd4wsF9hWeydamcQHg9JX1pUQEMGdjRtTRai7T8WHu
+         yDISr88HRL6ZXF3btw0DLeXsl/60WWVQuODS+AlCkt6CQ04RH5tBLDhexR6qwwhctXP/
+         VkSI35XZ4cLVlmYOqNW0ofRjtmQ1d+QmlkWXjKLbniw0jNlQXLKov2aKbgmvMd51EHtZ
+         bq2hPCG0AGAlK8ZsOPhH4mQi3FoLlLbQ7N0a647X1UxXCFjladZ58fflDayv4rirmd2e
+         m1TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=X6dzcadWG965pjXXGhRbOuxD3/hHkIfiEhSRMzTbYQg=;
+        b=AVswXZpzcnrjNnn70r8ETwD2YWGLNlqtqhdXL6/96TAVgtyVKALgwTUP/7eDBtZ+nT
+         IPVRzh7BaDML7AC6ZS77jagEmcCNQ+uqZKAQdc2DhHSJr7TheN5pRDR7+/E97lA/SAJw
+         CuuveAyuCaK8qrc7oSSWhL5E9Bit6uyxc3UFWxEoNrtktVFo039ALxbchHVqpOAXMRgK
+         T6kjTaVPJFUsxLB4USUgs/pKuWe6bXBQp1OVPuDjUI+cGqm6NweKectQJZwzrajbkVto
+         4tF8TgfG1UF/c19EqutnRepniKwSbycBt2AlxV51hTbeC0wduCfBg5Xe5KSBnrfyHJLM
+         /SEA==
+X-Gm-Message-State: AFqh2kpIlvm2LQyCSsyT9a95uIaXn9ZeYsNopjCK09OpA4Iy04SXheou
+        dzCw2fNrFBDd8JsMEHElJPKb6Q==
+X-Google-Smtp-Source: AMrXdXuo6HE7NOLaBqIP976Rae9ut1/0OVFHv6OHWbSC8uoDU2l8xUjDGS5VDFDHYWqtHDKbQeDOUA==
+X-Received: by 2002:a5d:8f8f:0:b0:6e5:ef2:8451 with SMTP id l15-20020a5d8f8f000000b006e50ef28451mr21864429iol.20.1672421283282;
+        Fri, 30 Dec 2022 09:28:03 -0800 (PST)
+Received: from [172.22.22.4] ([98.61.227.136])
+        by smtp.googlemail.com with ESMTPSA id q8-20020a0566022f0800b006cecd92164esm7828319iow.34.2022.12.30.09.28.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Dec 2022 09:28:02 -0800 (PST)
+Message-ID: <20b2f7c3-6481-eabf-7c46-f5f38d258c62@linaro.org>
+Date:   Fri, 30 Dec 2022 11:28:01 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y6wJFYMZVQ7V+ogG@unreal>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next 2/2] net: ipa: add IPA v4.7 support
+Content-Language: en-US
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     andersson@kernel.org, agross@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, elder@kernel.org,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Luca Weiss <luca.weiss@fairphone.com>
+References: <20221208211529.757669-1-elder@linaro.org>
+ <20221208211529.757669-3-elder@linaro.org>
+ <47b2fb29-1c2e-db6e-b14f-6dfe90341825@linaro.org>
+ <fa6d342e-0cfe-b870-b044-b0af476e3905@linaro.org>
+ <48bef9dd-b71c-b6aa-e853-1cf821e88b50@linaro.org>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <48bef9dd-b71c-b6aa-e853-1cf821e88b50@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 28, 2022 at 11:15:01AM +0200, Leon Romanovsky wrote:
-> On Mon, Dec 19, 2022 at 07:30:45AM -0800, Alexander Duyck wrote:
-> > On Sun, Dec 18, 2022 at 12:41 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > On Wed, Dec 14, 2022 at 12:50:16PM -0800, Jakub Kicinski wrote:
-> > > > On Wed, 14 Dec 2022 20:53:30 +0200 Leon Romanovsky wrote:
-> > > > > On Wed, Dec 14, 2022 at 08:51:06AM -0800, Jakub Kicinski wrote:
-> > > > > > On Wed, 14 Dec 2022 09:22:13 +0200 Leon Romanovsky wrote:
-> > > > > > > NAK to any module driver parameter. If it is applicable to all drivers,
-> > > > > > > please find a way to configure it to more user-friendly. If it is not,
-> > > > > > > try to do the same as other drivers do.
-> > > > > >
-> > > > > > I think this one may be fine. Configuration which has to be set before
-> > > > > > device probing can't really be per-device.
-> > > > >
-> > > > > This configuration can be different between multiple devices
-> > > > > which use same igb module. Module parameters doesn't allow such
-> > > > > separation.
-> > > >
-> > > > Configuration of the device, sure, but this module param is more of
-> > > > a system policy.
-> > >
-> > > And system policy should be controlled by userspace and applicable to as
-> > > much as possible NICs, without custom module parameters.
-> > >
-> > > I would imagine global (at the beginning, till someone comes forward and
-> > > requests this parameter be per-device) to whole stack parameter with policies:
-> > >  * Be strict - fail if mac is not valid
-> > >  * Fallback to random
-> > >  * Random only ???
-> > >
-> > > Thanks
-> > 
-> > So are you suggesting you would rather see something like this as a
-> > sysctl then? Maybe something like net.core.netdev_mac_behavior where
-> > we have some enum with a predetermined set of behaviors available? I
-> > would be fine with us making this a global policy if that is the route
-> > we want to go. It would just be a matter of adding the sysctl and an
-> > accessor so that drivers can determine if it is set or not.
+On 12/10/22 3:31 AM, Konrad Dybcio wrote:
 > 
-> Something like that and maybe convert drivers and/or to honor this policy.
+> 
+> On 9.12.2022 21:22, Alex Elder wrote:
+>> On 12/8/22 3:22 PM, Konrad Dybcio wrote:
+>>>
+>>>
+>>> On 8.12.2022 22:15, Alex Elder wrote:
+>>>> Add the necessary register and data definitions needed for IPA v4.7,
+>>>> which is found on the SM6350 SoC.
+>>>>
+>>>> Co-developed-by: Luca Weiss <luca.weiss@fairphone.com>
+>>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+>>>> Signed-off-by: Alex Elder <elder@linaro.org>
+>>>> ---
+>>> [...]
 
-Converting drivers is very unlikely to happen. There are over 240
-calls to register_netdev() under drivers/net/ethernet. Who has the
-time to add such code to so many drivers?
+I'm finally getting back to this...  I'm about to send an
+update to net-next to address your comment.  But before
+doing that I'm going to explain my thinking on it.
 
-What many drivers do is called one of platform_get_ethdev_addr(),
-of_get_mac_address(), or device_get_ethdev_address() etc, which will
-look around DT, ACPI and maybe in NVMEM, etc. It is not user space
-controllable policy, but most drivers fall back to a random MAC
-address, and a warning, if no fixed MAC addresses can be found.
+>>>> +
+>>>> +/* Memory configuration data for an SoC having IPA v4.7 */
+>>>> +static const struct ipa_mem_data ipa_mem_data = {
+>>>> +    .local_count    = ARRAY_SIZE(ipa_mem_local_data),
+>>>> +    .local        = ipa_mem_local_data,
+>>>> +    .imem_addr    = 0x146a9000,
+>>>> +    .imem_size    = 0x00002000,
+>>> Should probably be
+>>>
+>>> 0x146a8000
+>>> 0x00003000
 
-So i would recommend doing what most drivers do, if everything else
-fails, us a random address.
+The IMEM memory region is a distinct from main memory, but
+is "local" to certain parts of the SoC and is used for
+specific things for faster access.  The size and location
+of this region differs per-SoC.  Previously I believed this
+to be the same for a given version of IPA, and as such the
+range was defined in the "config data".  But I now know
+that is not the case, and during this release cycle I
+intend to get that fixed.
 
-       Andrew
+Anyway, for a given SoC, the whole IMEM region is used
+by different entities.  For SM7550, for example, it is
+divided into 6 parts of various sizes (100KB, 24KB, 32KB,
+8KB, 8KB, and 4KB).  For IPA on this SoC, the offset is
+0x146a9000, with size 0x2000.  Hence the range defined
+above.
+
+>>> with an appropriate change in dt to reserve that region.
+>>>
+>>> Qualcomm does:
+>>> ipa@... { qcom,additional-mapping = <0x146a8000 0x146a8000 0x2000>; };
+>>>
+>>> which covers 0x146a8000-0x146a9fff
+>>>
+>>> plus
+>>>
+>>> imem@.. { reg = <0x146aa000 0x1000>; };
+>>>
+>>> which in total gives us 0x146a8000-0x146aafff
+>>
+>> Can you tell me where you found this information?
+> [1], [2]
+
+Following the first link, I see that this Sony device (which uses
+IPA v4.7) uses MSM7225 as its SoC.  I am not able to verify the
+values shown in the DTS file elsewhere, so in this case, that DTS
+file is my best source for information.
+
+The first link defines the IPA portion of IMEM at offset
+0x146a8000, size 0x2000.  That's what I'll use here instead.
+
+The other region you mention (in the second link) appears to
+be a distinct part, which follows the part set aside for IPA
+to use.  For SM7550, that part is "shared" and immediately
+follows the IPA part, with size 0x1000.  So I believe that
+is what the qcom,msm-imem@146aa000 is defining in the second
+link you supply.
+
+>>> That would also mean all of your writes are kind of skewed, unless
+>>> you already applied some offsets to them.
+
+Luca tested the code the way I defined it initially and found
+it worked.  It's possible the part of IMEM defined by my patch
+was just not used for it's intended purpose during his testing
+and therefore he saw no obvious problems.
+
+My plan is to patch "ipa_data-v4.7.c" to change the IMEM region
+to have offset 0x146a8000, size 0x2000, as you suggested.  I will
+supply this to Luca for testing (actually I think he already did),
+and we'll go with that as the final location for the IPA portion
+of IMEM for IPA v4.7.
+
+Later (sometime soon) the definition of this IPA IMEM area will
+get done differently--not defined in the "config data" files and
+instead defined in DTS.  There is already an imem node available
+(for example imem@146a5000 in "sc7280.dtsi"), so the fix *might*
+involve using that.
+
+					-Alex
+
+>> This region is used by the modem, but must be set up
+>> by the AP.
+>>
+>>> (IMEM on 6350 starts at 0x14680000 and is 0x2e000 long, as per
+>>> the bootloader memory map)
+>>
+>> On SM7250 (sorry, I don't know about 7225, or 6350 for that matter),
+>> the IMEM starts at 0x14680000 and has length 0x2c000.  However that
+>> memory is used by multiple entities.  The portion set aside for IPA
+>> starts at 0x146a9000 and has size 0x2000.
+>>
+> Not sure how 7250 relates to 6350, but I don't think there's much
+> overlap..
+> 
+> 
+> Konrad
+> 
+> [1] https://github.com/sonyxperiadev/kernel/blob/aosp/LA.UM.9.12.r1/arch/arm64/boot/dts/qcom/lagoon.dtsi#L3698-L3707
+> 
+> [2] https://github.com/sonyxperiadev/kernel/blob/aosp/LA.UM.9.12.r1/arch/arm64/boot/dts/qcom/lagoon.dtsi#L1004-L1045
+>>                      -Alex
+>>
+>>> Konrad
+>>
+
