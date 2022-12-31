@@ -2,73 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01A2A65A4B9
-	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 14:48:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9822165A5D7
+	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 17:57:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbiLaNsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Dec 2022 08:48:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
+        id S232004AbiLaQ5V convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 31 Dec 2022 11:57:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiLaNsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Dec 2022 08:48:19 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA601142
-        for <netdev@vger.kernel.org>; Sat, 31 Dec 2022 05:48:18 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id v126so26119236ybv.2
-        for <netdev@vger.kernel.org>; Sat, 31 Dec 2022 05:48:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=M0gxGo5FKSspdJgFZkMBTdJlwn5nvz9+Wm7JP5MsIP4=;
-        b=dTZnuK6HzXpDAtzjkHzIDNdtexNhUFytsA8NmxWTzpPkPoFchDfcxoz7u0G8dVXvtz
-         rTDjp8H0g4Uy558HxVzCy5vzFznONp7C+/zVL13iU1ZpUw1Lx4BikEE0RqJ3BXAVI2tT
-         nkFqRAKJ0uv1M21mccxjk+ukyCSTN/ojCxCx3vl8RwnnkXtHjwJK3frhzdcwlNXkS13C
-         9yUYkpmMNUZ2dNPo/J8ylsL/YVO7MvbfdvTXgUen6ldvQnMy/f7YEU1qQ/AWl8j1Re/7
-         q1Z5S72/EFcKThEES5IgOHZr3yY151BTsgK099KOIo2oaQ3HCSTglhEOhQXaAcpc5lEp
-         HAeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=M0gxGo5FKSspdJgFZkMBTdJlwn5nvz9+Wm7JP5MsIP4=;
-        b=ubFVJYQcee/cS6Ywz8nlcIF/eQXzLaJZOix/snXoq2t/35zrFb25TauTgtKm8qinso
-         zC8rDOwY/ZIMU7mmxd9cy3hVh2SnKU4gt8jA4p/mjuwDj7PmTPgQl0gFAWMVGbEcdxVB
-         RtO+RbSVzuHhmj1IVX4EvxXffXFLrErXU+in1yD3dDUrfPMabrSoNNlyJjDOA1AL6FHS
-         1r+2vdQA4D1MF+BRZgwBSwQTiY6PCRx8s5ojJiOOYo4VznKd29BmHCXomsSFOjw8Z7/J
-         3xCRzAP9UNnpCDZ5miHx6+bJ4rYvgk2iFox8h8SmWfhUBDw2xEMy+YgkRFAHaYo1Dvw9
-         bMAg==
-X-Gm-Message-State: AFqh2kpzs7Ep0fRrR74gblDp3TG/joi+JUqNsECIbmVTm0L9Nhru4BfW
-        j/EN+AlwGCfPYLkadcUPgB2WqYdogq3CUwpua4xCpw==
-X-Google-Smtp-Source: AMrXdXuid8UHX6m9tYBU8D9aePwjTLEhYmPLdwpbhNup/Ohuqvp61ZUUMQqI/7fE+cbqqDUr3lwrkCHKC/SyzwUU5Jk=
-X-Received: by 2002:a25:7910:0:b0:6f6:e111:a9ec with SMTP id
- u16-20020a257910000000b006f6e111a9ecmr2582928ybc.259.1672494497665; Sat, 31
- Dec 2022 05:48:17 -0800 (PST)
+        with ESMTP id S231643AbiLaQ5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Dec 2022 11:57:20 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3C7A47B
+        for <netdev@vger.kernel.org>; Sat, 31 Dec 2022 08:57:19 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-318-x11UyM5QMUuLS9qRDumgGA-1; Sat, 31 Dec 2022 16:57:15 +0000
+X-MC-Unique: x11UyM5QMUuLS9qRDumgGA-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sat, 31 Dec
+ 2022 16:57:14 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.044; Sat, 31 Dec 2022 16:57:14 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Ping-Ke Shih' <pkshih@realtek.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tehuang@realtek.com" <tehuang@realtek.com>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
+Thread-Topic: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
+Thread-Index: AQHZGsFtJHlbRNsmYUOpTa0F4ufSPq6EmMnggAOg+qA=
+Date:   Sat, 31 Dec 2022 16:57:14 +0000
+Message-ID: <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
+References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
+ <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
+ <92eb7dfa8b7d447e966a2751e174b642@realtek.com>
+In-Reply-To: <92eb7dfa8b7d447e966a2751e174b642@realtek.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <20221221093940.2086025-1-liuhangbin@gmail.com>
- <20221221172817.0da16ffa@kernel.org> <Y6QLz7pCnle0048z@Laptop-X1>
- <de4920b8-366b-0336-ddc2-46cb40e00dbb@kernel.org> <Y6UUBJQI6tIwn9tH@Laptop-X1>
- <CAM0EoMndCfTkTBhG4VJKCmZG3c58eLRai71KzHG-FfzyzSwbew@mail.gmail.com>
- <Y6ptX6Sq+F+tE+Ru@Laptop-X1> <CAM0EoM=rMPpXEs6xdRvfJtXFo8OjtGiOOMViFuWR7QiRQfx7DA@mail.gmail.com>
- <Y6wBLyUfRT2p/6UJ@Laptop-X1>
-In-Reply-To: <Y6wBLyUfRT2p/6UJ@Laptop-X1>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Sat, 31 Dec 2022 08:48:06 -0500
-Message-ID: <CAM0EoMmeD=D7rVLnmvyyuAzvS6cL5ep+K29=EzwxcrwpJToMcQ@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next] sched: multicast sched extack messages
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,46 +63,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sounds good to me.
-
-cheers,
-jamal
-
-On Wed, Dec 28, 2022 at 3:41 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> On Tue, Dec 27, 2022 at 11:23:23AM -0500, Jamal Hadi Salim wrote:
-> > Hi Hangbin,
+From: Ping-Ke Shih
+> Sent: 29 December 2022 09:25
+> 
+> > -----Original Message-----
+> > From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > Sent: Wednesday, December 28, 2022 9:36 PM
+> > To: linux-wireless@vger.kernel.org
+> > Cc: tony0620emma@gmail.com; kvalo@kernel.org; Ping-Ke Shih <pkshih@realtek.com>;
+> tehuang@realtek.com;
+> > s.hauer@pengutronix.de; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Martin Blumenstingl
+> > <martin.blumenstingl@googlemail.com>
+> > Subject: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
 > >
-> > On Mon, Dec 26, 2022 at 10:58 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
-> > >
-> > > Hi Jamal,
-> > > On Mon, Dec 26, 2022 at 11:31:24AM -0500, Jamal Hadi Salim wrote:
-> > > > My only concern is this is not generic enough i.e can other objects
-> > > > outside of filters do this?
-> > > > You are still doing it only for the filter (in tfilter_set_nl_ext() -
-> > > > sitting in cls_api)
-> > > > As i mentioned earlier, actions can also be offloaded independently;
-> > > > would this work with actions extack?
-> > > > If it wont work then perhaps we should go the avenue of using
-> > > > per-object(in this case filter) specific attributes
-> > > > to carry the extack as suggested by Jakub earlier.
-> > >
-> > > Yes, I think we can do it on action objects, e.g. call tfilter_set_nl_ext()
-> > > in tca_get_fill:
-> > >
-> > > tcf_add_notify() - tca_get_fill()
-> > >
-> > > I will rename tfilter_set_nl_ext() to tc_set_nl_ext(). BTW, should we also
-> > > do it in qdisc/ class?
-> > >
-> > > tclass_notify() - tc_fill_tclass()
-> > > qdisc_notify() - tc_fill_qdisc()
-> > >
+> > The eFuse definitions in the rtw88 are using structs to describe the
+> > eFuse contents. Add the packed attribute to all structs used for the
+> > eFuse description so the compiler doesn't add gaps or re-order
+> > attributes.
 > >
-> > The only useful cases imo are the ones that do h/w offload. So those two seem
-> > reasonable. Not sure where you place that tc_set_nl_ext() so it is
-> > visible for all.
->
-> How about put tc_set_nl_ext() to net/sched/sch_generic.c?
->
-> Hangbin
+> > Also change the type of the res2..res3 eFuse fields to u16 to avoid the
+> > following warning, now that their surrounding struct has the packed
+> > attribute:
+> >   note: offset of packed bit-field 'res2' has changed in GCC 4.4
+> >
+> > Fixes: e3037485c68e ("rtw88: new Realtek 802.11ac driver")
+> > Fixes: ab0a031ecf29 ("rtw88: 8723d: Add read_efuse to recognize efuse info from map")
+> > Fixes: 769a29ce2af4 ("rtw88: 8821c: add basic functions")
+> > Fixes: 87caeef032fc ("wifi: rtw88: Add rtw8723du chipset support")
+> > Fixes: aff5ffd718de ("wifi: rtw88: Add rtw8821cu chipset support")
+> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > ---
+> >  drivers/net/wireless/realtek/rtw88/main.h     |  6 +++---
+> >  drivers/net/wireless/realtek/rtw88/rtw8723d.h |  6 +++---
+> >  drivers/net/wireless/realtek/rtw88/rtw8821c.h | 20 +++++++++----------
+> >  drivers/net/wireless/realtek/rtw88/rtw8822b.h | 20 +++++++++----------
+> >  drivers/net/wireless/realtek/rtw88/rtw8822c.h | 20 +++++++++----------
+> >  5 files changed, 36 insertions(+), 36 deletions(-)
+> >
+> 
+> [...]
+> 
+> > @@ -43,13 +43,13 @@ struct rtw8821ce_efuse {
+> >  	u8 link_cap[4];
+> >  	u8 link_control[2];
+> >  	u8 serial_number[8];
+> > -	u8 res0:2;			/* 0xf4 */
+> > -	u8 ltr_en:1;
+> > -	u8 res1:2;
+> > -	u8 obff:2;
+> > -	u8 res2:3;
+> > -	u8 obff_cap:2;
+> > -	u8 res3:4;
+> > +	u16 res0:2;			/* 0xf4 */
+> > +	u16 ltr_en:1;
+> > +	u16 res1:2;
+> > +	u16 obff:2;
+> > +	u16 res2:3;
+> > +	u16 obff_cap:2;
+> > +	u16 res3:4;
+> 
+> These should be __le16. Though bit fields are suitable to efuse layout,
+> we don't access these fields for now. It would be well.
+
+IIRC the assignment of actual bits to bit-fields is (at best)
+architecturally defined - so isn't really suitable for anything
+where the bits have to match a portable memory buffer.
+The bit allocation isn't tied to the byte endianness.
+
+To get an explicit layout you have to do explicit masking.
+
+You also don't need __packed unless the 'natural' alignment
+of fields would need gaps or the actual structure itself might
+be misaligned in memory.
+While C compilers are allowed to add arbitrary padding the Linux kernel
+requires that they don't.
+I'm also pretty sure that compilers are not allowed to reorder fields.
+
+Specifying __packed can add considerable run-time (and code size)
+overhead on some architectures - it should only be used if actually
+needed.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
