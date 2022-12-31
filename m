@@ -2,123 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A34D265A4B4
-	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 14:44:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01A2A65A4B9
+	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 14:48:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235484AbiLaNoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Dec 2022 08:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
+        id S231878AbiLaNsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Dec 2022 08:48:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiLaNoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Dec 2022 08:44:21 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4445FFF;
-        Sat, 31 Dec 2022 05:44:21 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id ge16so21400593pjb.5;
-        Sat, 31 Dec 2022 05:44:21 -0800 (PST)
+        with ESMTP id S229842AbiLaNsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Dec 2022 08:48:19 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA601142
+        for <netdev@vger.kernel.org>; Sat, 31 Dec 2022 05:48:18 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id v126so26119236ybv.2
+        for <netdev@vger.kernel.org>; Sat, 31 Dec 2022 05:48:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WbkuGmDcRQ6q49+hrj+g863+SldsRWquZ8uo6XW4rW8=;
-        b=YsxJpyPOhrO+dvIWEYCHWn5nMYXkpBHEQlya7071C5AryRCjimG92wklmfHivauTp+
-         h2ydeoZ1ZPm6VA/vfkh0h/PdPNKkU6ZUl9iQyMTa3VfRuHDKkrIjlGakwTeVkk2F/iGE
-         d8ylEFXySuECaKpLKPG9N+wSHxGV9q0r1C14VDFOxkVLfC21mZisDz6ybS/Jjy7FlMRH
-         tJEiKjVNBpGj+YMX0dKd4PZg1E2B1jbNw9D6UIQ4urpe4dKiTql7lZnssArdMjp3jfBk
-         7RKZow2iRLKTbTUOKXAqvAkJ586N4Fks3sOLeKeHMLjshxDF5sifV1m6NosU02cazn8e
-         jiCQ==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=M0gxGo5FKSspdJgFZkMBTdJlwn5nvz9+Wm7JP5MsIP4=;
+        b=dTZnuK6HzXpDAtzjkHzIDNdtexNhUFytsA8NmxWTzpPkPoFchDfcxoz7u0G8dVXvtz
+         rTDjp8H0g4Uy558HxVzCy5vzFznONp7C+/zVL13iU1ZpUw1Lx4BikEE0RqJ3BXAVI2tT
+         nkFqRAKJ0uv1M21mccxjk+ukyCSTN/ojCxCx3vl8RwnnkXtHjwJK3frhzdcwlNXkS13C
+         9yUYkpmMNUZ2dNPo/J8ylsL/YVO7MvbfdvTXgUen6ldvQnMy/f7YEU1qQ/AWl8j1Re/7
+         q1Z5S72/EFcKThEES5IgOHZr3yY151BTsgK099KOIo2oaQ3HCSTglhEOhQXaAcpc5lEp
+         HAeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WbkuGmDcRQ6q49+hrj+g863+SldsRWquZ8uo6XW4rW8=;
-        b=C7H2vtxJ4UbubEE82vp7zoDa+1qrJ+XIpnxRgDSKyNERwLyL6V1M3NIr7ze5MfER0w
-         Y4I22w4elWl5ZP6ISmll8cto8bsTQKAZMfmO1Gq8uwclqsKi65cFDeCqB4wysyUtfZZF
-         xdGpe3BXsLKT8FG/SGT3vr4wIYSTylhlJZJS4MBdfUGdc9N5q2epkhjCDLMyIBAVDu0/
-         +o4fgxQuU7g8N1+L/hURFK8jbtdPxd1p4Rwuhkdcs6nxXahf7qlBPOS+0lWe6h9RGyeT
-         JdDBoY0WBEaOx23QH2fQH2KXLDMUCnUtLSHK3Wx+PhU78xL57ojkoeMyk3IrEfH/kooE
-         MWlQ==
-X-Gm-Message-State: AFqh2krTrUor3wtf3DXU502GIBq2ADKz9g33vRo0powgq6mcK0tCKJWe
-        TZUjGs9quf4CXcpNPFbsPag=
-X-Google-Smtp-Source: AMrXdXuqrD2kqE4ZsvEhs3GhVDCnSPlgz9F8TloFclEA9nK80bYQWfw/+Sv6eTXzolcrcYI022a6nA==
-X-Received: by 2002:a17:90a:c795:b0:225:bd44:cf0e with SMTP id gn21-20020a17090ac79500b00225bd44cf0emr32789373pjb.32.1672494260594;
-        Sat, 31 Dec 2022 05:44:20 -0800 (PST)
-Received: from debian.me (subs02-180-214-232-18.three.co.id. [180.214.232.18])
-        by smtp.gmail.com with ESMTPSA id h10-20020a63120a000000b0046fe244ed6esm14282393pgl.23.2022.12.31.05.44.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Dec 2022 05:44:19 -0800 (PST)
-Received: by debian.me (Postfix, from userid 1000)
-        id CC3451017FB; Sat, 31 Dec 2022 20:44:15 +0700 (WIB)
-Date:   Sat, 31 Dec 2022 20:44:15 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     syzbot <syzbot+4ca3ba1e3ae6ff5ae0f8@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] net build error (6)
-Message-ID: <Y7A8r4Yo07BnDxYv@debian.me>
-References: <0000000000000ad94305f116ba53@google.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=M0gxGo5FKSspdJgFZkMBTdJlwn5nvz9+Wm7JP5MsIP4=;
+        b=ubFVJYQcee/cS6Ywz8nlcIF/eQXzLaJZOix/snXoq2t/35zrFb25TauTgtKm8qinso
+         zC8rDOwY/ZIMU7mmxd9cy3hVh2SnKU4gt8jA4p/mjuwDj7PmTPgQl0gFAWMVGbEcdxVB
+         RtO+RbSVzuHhmj1IVX4EvxXffXFLrErXU+in1yD3dDUrfPMabrSoNNlyJjDOA1AL6FHS
+         1r+2vdQA4D1MF+BRZgwBSwQTiY6PCRx8s5ojJiOOYo4VznKd29BmHCXomsSFOjw8Z7/J
+         3xCRzAP9UNnpCDZ5miHx6+bJ4rYvgk2iFox8h8SmWfhUBDw2xEMy+YgkRFAHaYo1Dvw9
+         bMAg==
+X-Gm-Message-State: AFqh2kpzs7Ep0fRrR74gblDp3TG/joi+JUqNsECIbmVTm0L9Nhru4BfW
+        j/EN+AlwGCfPYLkadcUPgB2WqYdogq3CUwpua4xCpw==
+X-Google-Smtp-Source: AMrXdXuid8UHX6m9tYBU8D9aePwjTLEhYmPLdwpbhNup/Ohuqvp61ZUUMQqI/7fE+cbqqDUr3lwrkCHKC/SyzwUU5Jk=
+X-Received: by 2002:a25:7910:0:b0:6f6:e111:a9ec with SMTP id
+ u16-20020a257910000000b006f6e111a9ecmr2582928ybc.259.1672494497665; Sat, 31
+ Dec 2022 05:48:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6lDnvxkT2UOro6nM"
-Content-Disposition: inline
-In-Reply-To: <0000000000000ad94305f116ba53@google.com>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20221221093940.2086025-1-liuhangbin@gmail.com>
+ <20221221172817.0da16ffa@kernel.org> <Y6QLz7pCnle0048z@Laptop-X1>
+ <de4920b8-366b-0336-ddc2-46cb40e00dbb@kernel.org> <Y6UUBJQI6tIwn9tH@Laptop-X1>
+ <CAM0EoMndCfTkTBhG4VJKCmZG3c58eLRai71KzHG-FfzyzSwbew@mail.gmail.com>
+ <Y6ptX6Sq+F+tE+Ru@Laptop-X1> <CAM0EoM=rMPpXEs6xdRvfJtXFo8OjtGiOOMViFuWR7QiRQfx7DA@mail.gmail.com>
+ <Y6wBLyUfRT2p/6UJ@Laptop-X1>
+In-Reply-To: <Y6wBLyUfRT2p/6UJ@Laptop-X1>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Sat, 31 Dec 2022 08:48:06 -0500
+Message-ID: <CAM0EoMmeD=D7rVLnmvyyuAzvS6cL5ep+K29=EzwxcrwpJToMcQ@mail.gmail.com>
+Subject: Re: [PATCHv2 net-next] sched: multicast sched extack messages
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sounds good to me.
 
---6lDnvxkT2UOro6nM
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+cheers,
+jamal
 
-On Fri, Dec 30, 2022 at 06:46:36PM -0800, syzbot wrote:
-> Hello,
->=20
-> syzbot found the following issue on:
->=20
-> HEAD commit:    d3805695fe1e net: ethernet: marvell: octeontx2: Fix unini=
-t..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D14f43b54480000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D8ca07260bb631=
-fb4
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D4ca3ba1e3ae6ff5=
-ae0f8
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
-ls for Debian) 2.35.2
->=20
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+4ca3ba1e3ae6ff5ae0f8@syzkaller.appspotmail.com
->=20
-> failed to run ["make" "-j" "64" "ARCH=3Dx86_64" "bzImage"]: exit status 2
->=20
-
-I think the actual build warnings/errors should be listed here instead
-of only dumping exit status and then having to click the log output.
-
-Thanks.
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---6lDnvxkT2UOro6nM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCY7A8qwAKCRD2uYlJVVFO
-o92SAP9+iLNZ0ZMBLfg6ILr1XCPo08d675mDWAtVI1eakPeiNQD/bh899J260SvF
-dRZhNO7tf/i8K0/nerqHfAf5xB8vogw=
-=izVW
------END PGP SIGNATURE-----
-
---6lDnvxkT2UOro6nM--
+On Wed, Dec 28, 2022 at 3:41 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> On Tue, Dec 27, 2022 at 11:23:23AM -0500, Jamal Hadi Salim wrote:
+> > Hi Hangbin,
+> >
+> > On Mon, Dec 26, 2022 at 10:58 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> > >
+> > > Hi Jamal,
+> > > On Mon, Dec 26, 2022 at 11:31:24AM -0500, Jamal Hadi Salim wrote:
+> > > > My only concern is this is not generic enough i.e can other objects
+> > > > outside of filters do this?
+> > > > You are still doing it only for the filter (in tfilter_set_nl_ext() -
+> > > > sitting in cls_api)
+> > > > As i mentioned earlier, actions can also be offloaded independently;
+> > > > would this work with actions extack?
+> > > > If it wont work then perhaps we should go the avenue of using
+> > > > per-object(in this case filter) specific attributes
+> > > > to carry the extack as suggested by Jakub earlier.
+> > >
+> > > Yes, I think we can do it on action objects, e.g. call tfilter_set_nl_ext()
+> > > in tca_get_fill:
+> > >
+> > > tcf_add_notify() - tca_get_fill()
+> > >
+> > > I will rename tfilter_set_nl_ext() to tc_set_nl_ext(). BTW, should we also
+> > > do it in qdisc/ class?
+> > >
+> > > tclass_notify() - tc_fill_tclass()
+> > > qdisc_notify() - tc_fill_qdisc()
+> > >
+> >
+> > The only useful cases imo are the ones that do h/w offload. So those two seem
+> > reasonable. Not sure where you place that tc_set_nl_ext() so it is
+> > visible for all.
+>
+> How about put tc_set_nl_ext() to net/sched/sch_generic.c?
+>
+> Hangbin
