@@ -2,304 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 904BD65A6AD
-	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 21:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2961F65A75B
+	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 23:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235940AbiLaUFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Dec 2022 15:05:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34050 "EHLO
+        id S232117AbiLaWFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Dec 2022 17:05:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiLaUFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Dec 2022 15:05:32 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E24595AD;
-        Sat, 31 Dec 2022 12:05:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D2A71CE090A;
-        Sat, 31 Dec 2022 20:05:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73251C433EF;
-        Sat, 31 Dec 2022 20:05:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672517127;
-        bh=Oj1EzYPUxyFQYEQCQ/phFjRTaNJ8SQLrGDQmo7lNRo0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdxhXwmpmnLvk2q6pZLedf9EC5gnx/XIunbQSyNl41ooUMXb5dCh9NdC3FHbXdV0q
-         uazg7DbBp+fH5IZVf9/LhQdwAf/1DCHFPDaCygRRjJUvUe/kFtjgaAx3Wj6MsqO9/w
-         ZoHnUKe2I8cav+HrkJnrijGMxDeFJlMpdEhYUk9/GTxZv7Km2ZbstZF3HIx0R09jzB
-         96P9veHkRrFKOhP0TFCAwdhdSXS3WexXKSZRTFYmt8gLJrzNqoILKEFisHx6vdogSX
-         3pjvOm2XzQdoyWStGF5BuVp2VAoGIU+tteINGfoyYaQgVGhXQxrXvR6GS8f7e4R/Ah
-         FzWRDE46CvXVw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dominique Martinet <asmadeus@codewreck.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Marco Elver <elver@google.com>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Sasha Levin <sashal@kernel.org>, ericvh@gmail.com,
-        lucho@ionkov.net, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 2/7] 9p/client: fix data race on req->status
-Date:   Sat, 31 Dec 2022 15:04:57 -0500
-Message-Id: <20221231200502.1748784-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221231200502.1748784-1-sashal@kernel.org>
-References: <20221231200502.1748784-1-sashal@kernel.org>
+        with ESMTP id S229628AbiLaWFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Dec 2022 17:05:50 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4122DFB;
+        Sat, 31 Dec 2022 14:05:49 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9BEDF5C00AB;
+        Sat, 31 Dec 2022 17:05:48 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sat, 31 Dec 2022 17:05:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1672524348; x=1672610748; bh=LoY9Qc1RJY42iNhRIwKRgBqok
+        CfDwWxod+ozHmfkbdU=; b=yRMbEphJ7Rd2u5M98NWIk9FsQSYx8O593jxWmzSnc
+        nTTa+w1X2GYGLW52SrBX9rPlJgJN5JE2upOZ6/HRueX6oBsyHQPpf5vtOqXx0vZO
+        UMiuwVVq3H5lg/JiBNizhO76V+hlSDZAwKoaTxjn1uz4qtAoqfC4Es5FVm3SoCvx
+        8zmVt8ZJ71RBult4GEWknqrmgHRLxlBWJOJ35ytqpjfH2EXuZ0+u8S6JGiIkHIk2
+        qOAg4awjdHD315s7dAlm5u2PFdHtoD6MIgWmbodeScS2x0+v7lJ4mSibFKh/oAyQ
+        5muEkyKgiC2PLdXYGuxt9oJ2Rp+Db7bWfUxCZsle6/deQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1672524348; x=1672610748; bh=LoY9Qc1RJY42iNhRIwKRgBqokCfDwWxod+o
+        zHmfkbdU=; b=q9gtJ7S41rjwqMuxT5sLT0D72JXB1h5O04VLea6mKOrkom746D2
+        9uNqdqwto5wqH0aB9rHP648utOacDVJTLVm2Ou7PXR39n8fjCS13Zrq+2xgveyL/
+        xlP8Qnp1sZCHVVrtx2/zVX4j7o+6slVd1aGXmsjAiiCs0WWzrAuukkkIiA9YqWiq
+        ARjQ7HLe16jeJSDt5Wzb8YTxOtbgThMa2k6UbLmfQkiBuvMWi0oWBcyyjRFCtIAX
+        mS1VpJPO8/oNIY/IL6KSNiBkSM2sTnH1DxlYrmcmZnpkCSRCv72MbR5v6fB6zgJf
+        P3RrpCgvKhn5ODFk49qeEGl6UQu1EHY95zg==
+X-ME-Sender: <xms:PLKwY_sBG_hIWF9XdXQDvr6zdlJ_aW8ImqWFRYXufc-ZH8mxyUCyLQ>
+    <xme:PLKwYwd2oaw9GiE-Ka5Of8Nd1asepuz_Ul2SFp6EJmnyEJ3Wx0-RMu7vf8ULHI1Jw
+    A8KgIgv7xhpghfRbg>
+X-ME-Received: <xmr:PLKwYyzjnWi_9cAoql0sb4LlgR0-cMNmuc2cQBE2h5mh8rMgqbDEOSvaC5QnJgNPVMVbtRgC7A9oO37DzKyhXAFkcMzz2l0l6cgtFbO7cw4BY7mUD2CcVvOed-Hi_BAk3cAmiQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrieekgdduheejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
+    ucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecuggftrf
+    grthhtvghrnhepkeevlefhjeeuleeltedvjedvfeefteegleehueejffehgffffeekhefh
+    hfekkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:PLKwY-Otxj5ndpVF5B0IQIZmjzRJryT3JbNLr5HTlT7rSkLWoJ8D_A>
+    <xmx:PLKwY_-_WZ5lZlrFH6gFuJ9bqfTu_1MPvCCi7nQrJyEgo5vfIESIfA>
+    <xmx:PLKwY-V1sLC-vPS1TuV7ZhA54rfPDnUikxT-lDOP0aeNAowPq03gdg>
+    <xmx:PLKwY3P75Yl3lkpznuJAt2vouDuMAr7pBhfOIqzhIju9WqjxuiHs5A>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 31 Dec 2022 17:05:47 -0500 (EST)
+From:   Samuel Holland <samuel@sholland.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Rob Herring <robh@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        LABBE Corentin <clabbe.montjoie@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
+Subject: [RESEND PATCH net v2] dt-bindings: net: sun8i-emac: Add phy-supply property
+Date:   Sat, 31 Dec 2022 16:05:46 -0600
+Message-Id: <20221231220546.1188-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.37.4
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dominique Martinet <asmadeus@codewreck.org>
+This property has always been supported by the Linux driver; see
+commit 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i"). In fact, the
+original driver submission includes the phy-supply code but no mention
+of it in the binding, so the omission appears to be accidental. In
+addition, the property is documented in the binding for the previous
+hardware generation, allwinner,sun7i-a20-gmac.
 
-[ Upstream commit 1a4f69ef15ec29b213e2b086b2502644e8ef76ee ]
+Document phy-supply in the binding to fix devicetree validation for the
+25+ boards that already use this property.
 
-KCSAN reported a race between writing req->status in p9_client_cb and
-accessing it in p9_client_rpc's wait_event.
-
-Accesses to req itself is protected by the data barrier (writing req
-fields, write barrier, writing status // reading status, read barrier,
-reading other req fields), but status accesses themselves apparently
-also must be annotated properly with WRITE_ONCE/READ_ONCE when we
-access it without locks.
-
-Follows:
- - error paths writing status in various threads all can notify
-p9_client_rpc, so these all also need WRITE_ONCE
- - there's a similar read loop in trans_virtio for zc case that also
-needs READ_ONCE
- - other reads in trans_fd should be protected by the trans_fd lock and
-lists state machine, as corresponding writers all are within trans_fd
-and should be under the same lock. If KCSAN complains on them we likely
-will have something else to fix as well, so it's better to leave them
-unmarked and look again if required.
-
-Link: https://lkml.kernel.org/r/20221205124756.426350-1-asmadeus@codewreck.org
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Suggested-by: Marco Elver <elver@google.com>
-Acked-by: Marco Elver <elver@google.com>
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0441bde003be ("dt-bindings: net-next: Add DT bindings documentation for Allwinner dwmac-sun8i")
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
- net/9p/client.c       | 15 ++++++++-------
- net/9p/trans_fd.c     | 12 ++++++------
- net/9p/trans_rdma.c   |  4 ++--
- net/9p/trans_virtio.c |  9 +++++----
- net/9p/trans_xen.c    |  4 ++--
- 5 files changed, 23 insertions(+), 21 deletions(-)
+Resending with "net" explicitly in the subject.
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 0a6110e15d0f..937571193179 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -420,7 +420,7 @@ void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status)
- 	 * the status change is visible to another thread
- 	 */
- 	smp_wmb();
--	req->status = status;
-+	WRITE_ONCE(req->status, status);
+Changes in v2:
+ - Drop the rest of the series, which was obsoleted by the dt-schema fix
+ - Add Acked-by/Reviewed-by tags
+
+ .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml     | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+index 1432fda3b603..47bc2057e629 100644
+--- a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
++++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+@@ -40,6 +40,9 @@ properties:
+   clock-names:
+     const: stmmaceth
  
- 	wake_up(&req->wq);
- 	p9_debug(P9_DEBUG_MUX, "wakeup: %d\n", req->tc.tag);
-@@ -582,7 +582,7 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
- 	/* if we haven't received a response for oldreq,
- 	 * remove it from the list
- 	 */
--	if (oldreq->status == REQ_STATUS_SENT) {
-+	if (READ_ONCE(oldreq->status) == REQ_STATUS_SENT) {
- 		if (c->trans_mod->cancelled)
- 			c->trans_mod->cancelled(c, oldreq);
- 	}
-@@ -667,7 +667,8 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	}
- again:
- 	/* Wait for the response */
--	err = wait_event_killable(req->wq, req->status >= REQ_STATUS_RCVD);
-+	err = wait_event_killable(req->wq,
-+				  READ_ONCE(req->status) >= REQ_STATUS_RCVD);
- 
- 	/* Make sure our req is coherent with regard to updates in other
- 	 * threads - echoes to wmb() in the callback
-@@ -681,7 +682,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 		goto again;
- 	}
- 
--	if (req->status == REQ_STATUS_ERROR) {
-+	if (READ_ONCE(req->status) == REQ_STATUS_ERROR) {
- 		p9_debug(P9_DEBUG_ERROR, "req_status error %d\n", req->t_err);
- 		err = req->t_err;
- 	}
-@@ -694,7 +695,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 			p9_client_flush(c, req);
- 
- 		/* if we received the response anyway, don't signal error */
--		if (req->status == REQ_STATUS_RCVD)
-+		if (READ_ONCE(req->status) == REQ_STATUS_RCVD)
- 			err = 0;
- 	}
- recalc_sigpending:
-@@ -763,7 +764,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 		if (err != -ERESTARTSYS)
- 			goto recalc_sigpending;
- 	}
--	if (req->status == REQ_STATUS_ERROR) {
-+	if (READ_ONCE(req->status) == REQ_STATUS_ERROR) {
- 		p9_debug(P9_DEBUG_ERROR, "req_status error %d\n", req->t_err);
- 		err = req->t_err;
- 	}
-@@ -776,7 +777,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 			p9_client_flush(c, req);
- 
- 		/* if we received the response anyway, don't signal error */
--		if (req->status == REQ_STATUS_RCVD)
-+		if (READ_ONCE(req->status) == REQ_STATUS_RCVD)
- 			err = 0;
- 	}
- recalc_sigpending:
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 080b5de3e1ed..a2eb1363d293 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -202,11 +202,11 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
- 
- 	list_for_each_entry_safe(req, rtmp, &m->req_list, req_list) {
- 		list_move(&req->req_list, &cancel_list);
--		req->status = REQ_STATUS_ERROR;
-+		WRITE_ONCE(req->status, REQ_STATUS_ERROR);
- 	}
- 	list_for_each_entry_safe(req, rtmp, &m->unsent_req_list, req_list) {
- 		list_move(&req->req_list, &cancel_list);
--		req->status = REQ_STATUS_ERROR;
-+		WRITE_ONCE(req->status, REQ_STATUS_ERROR);
- 	}
- 
- 	spin_unlock(&m->req_lock);
-@@ -467,7 +467,7 @@ static void p9_write_work(struct work_struct *work)
- 
- 		req = list_entry(m->unsent_req_list.next, struct p9_req_t,
- 			       req_list);
--		req->status = REQ_STATUS_SENT;
-+		WRITE_ONCE(req->status, REQ_STATUS_SENT);
- 		p9_debug(P9_DEBUG_TRANS, "move req %p\n", req);
- 		list_move_tail(&req->req_list, &m->req_list);
- 
-@@ -676,7 +676,7 @@ static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
- 		return m->err;
- 
- 	spin_lock(&m->req_lock);
--	req->status = REQ_STATUS_UNSENT;
-+	WRITE_ONCE(req->status, REQ_STATUS_UNSENT);
- 	list_add_tail(&req->req_list, &m->unsent_req_list);
- 	spin_unlock(&m->req_lock);
- 
-@@ -703,7 +703,7 @@ static int p9_fd_cancel(struct p9_client *client, struct p9_req_t *req)
- 
- 	if (req->status == REQ_STATUS_UNSENT) {
- 		list_del(&req->req_list);
--		req->status = REQ_STATUS_FLSHD;
-+		WRITE_ONCE(req->status, REQ_STATUS_FLSHD);
- 		p9_req_put(client, req);
- 		ret = 0;
- 	}
-@@ -732,7 +732,7 @@ static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
- 	 * remove it from the list.
- 	 */
- 	list_del(&req->req_list);
--	req->status = REQ_STATUS_FLSHD;
-+	WRITE_ONCE(req->status, REQ_STATUS_FLSHD);
- 	spin_unlock(&m->req_lock);
- 
- 	p9_req_put(client, req);
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index d817d3745238..d8b0a6f3b15e 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -507,7 +507,7 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
- 	 * because doing if after could erase the REQ_STATUS_RCVD
- 	 * status in case of a very fast reply.
- 	 */
--	req->status = REQ_STATUS_SENT;
-+	WRITE_ONCE(req->status, REQ_STATUS_SENT);
- 	err = ib_post_send(rdma->qp, &wr, NULL);
- 	if (err)
- 		goto send_error;
-@@ -517,7 +517,7 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
- 
-  /* Handle errors that happened during or while preparing the send: */
-  send_error:
--	req->status = REQ_STATUS_ERROR;
-+	WRITE_ONCE(req->status, REQ_STATUS_ERROR);
- 	kfree(c);
- 	p9_debug(P9_DEBUG_ERROR, "Error %d in rdma_request()\n", err);
- 
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index b84d35cf6899..947c038a0470 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -263,7 +263,7 @@ p9_virtio_request(struct p9_client *client, struct p9_req_t *req)
- 
- 	p9_debug(P9_DEBUG_TRANS, "9p debug: virtio request\n");
- 
--	req->status = REQ_STATUS_SENT;
-+	WRITE_ONCE(req->status, REQ_STATUS_SENT);
- req_retry:
- 	spin_lock_irqsave(&chan->lock, flags);
- 
-@@ -469,7 +469,7 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
- 			inlen = n;
- 		}
- 	}
--	req->status = REQ_STATUS_SENT;
-+	WRITE_ONCE(req->status, REQ_STATUS_SENT);
- req_retry_pinned:
- 	spin_lock_irqsave(&chan->lock, flags);
- 
-@@ -532,9 +532,10 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
- 	spin_unlock_irqrestore(&chan->lock, flags);
- 	kicked = 1;
- 	p9_debug(P9_DEBUG_TRANS, "virtio request kicked\n");
--	err = wait_event_killable(req->wq, req->status >= REQ_STATUS_RCVD);
-+	err = wait_event_killable(req->wq,
-+			          READ_ONCE(req->status) >= REQ_STATUS_RCVD);
- 	// RERROR needs reply (== error string) in static data
--	if (req->status == REQ_STATUS_RCVD &&
-+	if (READ_ONCE(req->status) == REQ_STATUS_RCVD &&
- 	    unlikely(req->rc.sdata[4] == P9_RERROR))
- 		handle_rerror(req, in_hdr_len, offs, in_pages);
- 
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index 0f862d5a5960..a103aed85465 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -157,7 +157,7 @@ static int p9_xen_request(struct p9_client *client, struct p9_req_t *p9_req)
- 			      &masked_prod, masked_cons,
- 			      XEN_9PFS_RING_SIZE(ring));
- 
--	p9_req->status = REQ_STATUS_SENT;
-+	WRITE_ONCE(p9_req->status, REQ_STATUS_SENT);
- 	virt_wmb();			/* write ring before updating pointer */
- 	prod += size;
- 	ring->intf->out_prod = prod;
-@@ -212,7 +212,7 @@ static void p9_xen_response(struct work_struct *work)
- 			dev_warn(&priv->dev->dev,
- 				 "requested packet size too big: %d for tag %d with capacity %zd\n",
- 				 h.size, h.tag, req->rc.capacity);
--			req->status = REQ_STATUS_ERROR;
-+			WRITE_ONCE(req->status, REQ_STATUS_ERROR);
- 			goto recv_error;
- 		}
- 
++  phy-supply:
++    description: PHY regulator
++
+   syscon:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description:
 -- 
-2.35.1
+2.37.4
 
