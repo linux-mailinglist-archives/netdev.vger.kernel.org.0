@@ -2,76 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12C0E65A1D7
-	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 03:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 750D565A29F
+	for <lists+netdev@lfdr.de>; Sat, 31 Dec 2022 04:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236226AbiLaCqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Dec 2022 21:46:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
+        id S229938AbiLaDwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Dec 2022 22:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236092AbiLaCqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 21:46:37 -0500
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106C0BE2D
-        for <netdev@vger.kernel.org>; Fri, 30 Dec 2022 18:46:37 -0800 (PST)
-Received: by mail-il1-f199.google.com with SMTP id g3-20020a056e021a2300b00305e3da9585so14307136ile.16
-        for <netdev@vger.kernel.org>; Fri, 30 Dec 2022 18:46:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qAQCnJmhlKdLXhVkjncsmVReDU/4U0gMjs9VQ7+roDE=;
-        b=RgJTxRPe5c/mODboFbeGu5gUGcmbCWl6ekhd/1HMOgkil2dA3jHTdJbaKtAAW/VqAS
-         czvcsDQY8M580tfiBY34BYmqUH2guOoIhHqrm1iVNwJvHpxlS95cn/AEHuu5n74077/B
-         bbTXM/piiCuLRqS+1FK0hajkm/YAnmkrOGzqLsYVoOKZiNA8R2qua5qQi7a44Ysfis4a
-         bqmtMQg70O6mtuLVfgS3eXhZOOJwjgDNt5uTfsrHUmU9jtDKA7sq5FoXRhqR9i9W1euY
-         jTTXdU8TlvKDV0b7h8xa66q7fE66EfSIRFO3Th2gWKq4i+AT0WSmVp1gB+3oq3BMwmS3
-         WiRw==
-X-Gm-Message-State: AFqh2kqf1EAsHEPS3ha5PaJ2nurW6t75SPW2xo3H2fyF70fQpHjM3Fj7
-        nBr6BHwOjmNoPDpBBahy+ThD6YTM9I4AG+qpoeWmVkDhQBP/
-X-Google-Smtp-Source: AMrXdXuIF+pGmNsExdXzgLoJPghRkEmbR2ZyFzxA1Q1E3JuJJj2oueIIXt2REimhQy1oB9KvMR3cdcCn6v53E85eicEs4nkEDUzd
+        with ESMTP id S229514AbiLaDwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Dec 2022 22:52:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC498BC25;
+        Fri, 30 Dec 2022 19:52:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62C31B8162C;
+        Sat, 31 Dec 2022 03:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BFBDC433EF;
+        Sat, 31 Dec 2022 03:52:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672458740;
+        bh=Tj4N3caOmABWnzFQQNKb1QdIGP3DpXnPK+bgNni6jqg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DBdlTjVx4dFrA9t6sMHjq30Td2Agb3wDFSKebwjTdjZzU612mq0Ep6XCak7Y8t8yt
+         cmBXx+aJaWmN/9mXUM03uhr1g+VaR1hAs63CoN4q4NUANMzd2ysjHl7fMTgP0oJUcJ
+         IJ2wO7AkDLevVTjw4piR8hN5++ikV3G+gkxNemx8EH8ZTPLztQQA1vw+iG9eaF5MjF
+         FmjowkBh1n3o/GShuLJjkhzoGy3JHtLOCWmtJdZSQe9rVLgLJrAV41SdfCXUbNsje7
+         5GyccI6bOkmoSf6kPYyGyDeR2Ry2LfNw9p8kNGbKVLCNkZ59ktk32qp6oMZfWeKAZD
+         cpZ1ZgCIZS5wA==
+Date:   Fri, 30 Dec 2022 19:52:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/6] net: ipa: simplify IPA interrupt handling
+Message-ID: <20221230195218.65eaaf92@kernel.org>
+In-Reply-To: <20221230232230.2348757-1-elder@linaro.org>
+References: <20221230232230.2348757-1-elder@linaro.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:a488:0:b0:374:e77e:d3d8 with SMTP id
- d8-20020a02a488000000b00374e77ed3d8mr2717811jam.103.1672454796399; Fri, 30
- Dec 2022 18:46:36 -0800 (PST)
-Date:   Fri, 30 Dec 2022 18:46:36 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000ad94305f116ba53@google.com>
-Subject: [syzbot] net build error (6)
-From:   syzbot <syzbot+4ca3ba1e3ae6ff5ae0f8@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, 30 Dec 2022 17:22:24 -0600 Alex Elder wrote:
+> [PATCH net-next 0/6] net: ipa: simplify IPA interrupt handling
 
-syzbot found the following issue on:
-
-HEAD commit:    d3805695fe1e net: ethernet: marvell: octeontx2: Fix uninit..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=14f43b54480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8ca07260bb631fb4
-dashboard link: https://syzkaller.appspot.com/bug?extid=4ca3ba1e3ae6ff5ae0f8
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4ca3ba1e3ae6ff5ae0f8@syzkaller.appspotmail.com
-
-failed to run ["make" "-j" "64" "ARCH=x86_64" "bzImage"]: exit status 2
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+We kept net-next closed for an extra week due to end-of-the-year
+festivities, back in business next week, sorry.
