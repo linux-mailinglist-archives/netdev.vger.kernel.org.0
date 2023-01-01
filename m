@@ -2,191 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F6E65AA10
-	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 14:09:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FE5065AA1D
+	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 14:29:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbjAANJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 08:09:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        id S231440AbjAAN3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Jan 2023 08:29:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjAANJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 08:09:25 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01F6B1088;
-        Sun,  1 Jan 2023 05:09:19 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 301D7sitE025943, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 301D7sitE025943
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Sun, 1 Jan 2023 21:07:54 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Sun, 1 Jan 2023 21:08:49 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Sun, 1 Jan 2023 21:08:49 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Sun, 1 Jan 2023 21:08:48 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "David.Laight@ACULAB.COM" <David.Laight@ACULAB.COM>
-CC:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tehuang@realtek.com" <tehuang@realtek.com>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-Thread-Topic: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-Thread-Index: AQHZGsFtJHlbRNsmYUOpTa0F4ufSPq6EmMnggAOg+qCAALbHgIAAiEwg//+P14A=
-Date:   Sun, 1 Jan 2023 13:08:48 +0000
-Message-ID: <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
-References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
-         <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
-         <92eb7dfa8b7d447e966a2751e174b642@realtek.com>
-         <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
-         <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
-         <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com>
-In-Reply-To: <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [111.252.181.16]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIzLzEvMSDkuIrljYggMDk6MDE6MDA=?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <89194A346201C548A306FA16203AA520@realtek.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S231414AbjAAN3s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 08:29:48 -0500
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C548838A1
+        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 05:29:45 -0800 (PST)
+Received: by mail-il1-f197.google.com with SMTP id x8-20020a056e021ca800b0030c075dc55dso10066124ill.7
+        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 05:29:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GJrTYtXkrhxe9xTeCysUakAqqFTIJN+FsVKxmA+OWM4=;
+        b=sbmWxOHbVTsZ22D0IU7DcgYjHMGjzR7vf3bBDLrT5gj/iYryNd2oyZhleQhv0ie0wG
+         f4FQYBejwi15j+DGz9RTkRjS9Rza6MR+jVcWmmQ9T5S5u/0xrge0LaH0c+FGjAve25c3
+         UpeqsR71hqOrWpMFumHGz9c4ZtAnBPOiPfc4ClFGhO6JEwxm2Y+dv3Qdoboe85J/AiRh
+         2Zz0M2aJmVhOSEHbxLocVB+0QD7+O8pbXX3oXmiQt2VsIB6amKbPfOQUOr0riwQLSTMV
+         FerYc6vxY237+SDmLrldhNVUDH1khZbxZEncJZ1pED7z8gd+DmyGv7HooDiP9JxwpV2K
+         0ORw==
+X-Gm-Message-State: AFqh2kpFGcmOtGOlPAAWu7c77ab6A1cVOx+jDXLfajERTFYrNK8UFdZf
+        ac2cevMg8ng3Ku+/ZhGWJvjU02vhpGASScEE3ab8c+Ol4DrV
+X-Google-Smtp-Source: AMrXdXv2Jri5CVaxogWE649lcSUg9xCzPks/6o+gBH0oIn0IiDMWBc/CZ4bRvZddpzd1bRtiir8l1u9hOsItbPJGMh+dq8cLHulj
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:9448:0:b0:39d:3dda:5d26 with SMTP id
+ a66-20020a029448000000b0039d3dda5d26mr2796516jai.30.1672579785153; Sun, 01
+ Jan 2023 05:29:45 -0800 (PST)
+Date:   Sun, 01 Jan 2023 05:29:45 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f3e5f805f133d3f7@google.com>
+Subject: [syzbot] memory leak in __build_skb (3)
+From:   syzbot <syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        kvalo@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com, toke@toke.dk
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU3VuLCAyMDIzLTAxLTAxIGF0IDExOjU0ICswMDAwLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+
-IEZyb206IFBpbmctS2UgU2hpaA0KPiA+IFNlbnQ6IDAxIEphbnVhcnkgMjAyMyAxMTo0Mg0KPiA+
-IA0KPiA+IE9uIFNhdCwgMjAyMi0xMi0zMSBhdCAxNjo1NyArMDAwMCwgRGF2aWQgTGFpZ2h0IHdy
-b3RlOg0KPiA+ID4gRnJvbTogUGluZy1LZSBTaGloDQo+ID4gPiA+IFNlbnQ6IDI5IERlY2VtYmVy
-IDIwMjIgMDk6MjUNCj4gPiA+ID4gDQo+ID4gPiA+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0t
-LS0NCj4gPiA+ID4gPiBGcm9tOiBNYXJ0aW4gQmx1bWVuc3RpbmdsIDxtYXJ0aW4uYmx1bWVuc3Rp
-bmdsQGdvb2dsZW1haWwuY29tPg0KPiA+ID4gPiA+IFNlbnQ6IFdlZG5lc2RheSwgRGVjZW1iZXIg
-MjgsIDIwMjIgOTozNiBQTQ0KPiA+ID4gPiA+IFRvOiBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5l
-bC5vcmcNCj4gPiA+ID4gPiBDYzogdG9ueTA2MjBlbW1hQGdtYWlsLmNvbTsga3ZhbG9Aa2VybmVs
-Lm9yZzsgUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+Ow0KPiA+ID4gPiB0ZWh1YW5n
-QHJlYWx0ZWsuY29tOw0KPiA+ID4gPiA+IHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU7IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IE1hcnRpbg0KPiA+
-ID4gPiA+IEJsdW1lbnN0aW5nbA0KPiA+ID4gPiA+IDxtYXJ0aW4uYmx1bWVuc3RpbmdsQGdvb2ds
-ZW1haWwuY29tPg0KPiA+ID4gPiA+IFN1YmplY3Q6IFtQQVRDSCAxLzRdIHJ0dzg4OiBBZGQgcGFj
-a2VkIGF0dHJpYnV0ZSB0byB0aGUgZUZ1c2Ugc3RydWN0cw0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+
-IFRoZSBlRnVzZSBkZWZpbml0aW9ucyBpbiB0aGUgcnR3ODggYXJlIHVzaW5nIHN0cnVjdHMgdG8g
-ZGVzY3JpYmUgdGhlDQo+ID4gPiA+ID4gZUZ1c2UgY29udGVudHMuIEFkZCB0aGUgcGFja2VkIGF0
-dHJpYnV0ZSB0byBhbGwgc3RydWN0cyB1c2VkIGZvciB0aGUNCj4gPiA+ID4gPiBlRnVzZSBkZXNj
-cmlwdGlvbiBzbyB0aGUgY29tcGlsZXIgZG9lc24ndCBhZGQgZ2FwcyBvciByZS1vcmRlcg0KPiA+
-ID4gPiA+IGF0dHJpYnV0ZXMuDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gQWxzbyBjaGFuZ2UgdGhl
-IHR5cGUgb2YgdGhlIHJlczIuLnJlczMgZUZ1c2UgZmllbGRzIHRvIHUxNiB0byBhdm9pZCB0aGUN
-Cj4gPiA+ID4gPiBmb2xsb3dpbmcgd2FybmluZywgbm93IHRoYXQgdGhlaXIgc3Vycm91bmRpbmcg
-c3RydWN0IGhhcyB0aGUgcGFja2VkDQo+ID4gPiA+ID4gYXR0cmlidXRlOg0KPiA+ID4gPiA+ICAg
-bm90ZTogb2Zmc2V0IG9mIHBhY2tlZCBiaXQtZmllbGQgJ3JlczInIGhhcyBjaGFuZ2VkIGluIEdD
-QyA0LjQNCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBGaXhlczogZTMwMzc0ODVjNjhlICgicnR3ODg6
-IG5ldyBSZWFsdGVrIDgwMi4xMWFjIGRyaXZlciIpDQo+ID4gPiA+ID4gRml4ZXM6IGFiMGEwMzFl
-Y2YyOSAoInJ0dzg4OiA4NzIzZDogQWRkIHJlYWRfZWZ1c2UgdG8gcmVjb2duaXplIGVmdXNlIGlu
-Zm8gZnJvbSBtYXAiKQ0KPiA+ID4gPiA+IEZpeGVzOiA3NjlhMjljZTJhZjQgKCJydHc4ODogODgy
-MWM6IGFkZCBiYXNpYyBmdW5jdGlvbnMiKQ0KPiA+ID4gPiA+IEZpeGVzOiA4N2NhZWVmMDMyZmMg
-KCJ3aWZpOiBydHc4ODogQWRkIHJ0dzg3MjNkdSBjaGlwc2V0IHN1cHBvcnQiKQ0KPiA+ID4gPiA+
-IEZpeGVzOiBhZmY1ZmZkNzE4ZGUgKCJ3aWZpOiBydHc4ODogQWRkIHJ0dzg4MjFjdSBjaGlwc2V0
-IHN1cHBvcnQiKQ0KPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IE1hcnRpbiBCbHVtZW5zdGluZ2wg
-PG1hcnRpbi5ibHVtZW5zdGluZ2xAZ29vZ2xlbWFpbC5jb20+DQo+ID4gPiA+ID4gLS0tDQo+ID4g
-PiA+ID4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvbWFpbi5oICAgICB8ICA2
-ICsrKy0tLQ0KPiA+ID4gPiA+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0
-dzg3MjNkLmggfCAgNiArKystLS0NCj4gPiA+ID4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVh
-bHRlay9ydHc4OC9ydHc4ODIxYy5oIHwgMjAgKysrKysrKysrLS0tLS0tLS0tLQ0KPiA+ID4gPiA+
-ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJiLmggfCAyMCArKysr
-KysrKystLS0tLS0tLS0tDQo+ID4gPiA+ID4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsv
-cnR3ODgvcnR3ODgyMmMuaCB8IDIwICsrKysrKysrKy0tLS0tLS0tLS0NCj4gPiA+ID4gPiAgNSBm
-aWxlcyBjaGFuZ2VkLCAzNiBpbnNlcnRpb25zKCspLCAzNiBkZWxldGlvbnMoLSkNCj4gPiA+ID4g
-PiANCj4gPiA+ID4gDQo+ID4gPiA+IFsuLi5dDQo+ID4gPiA+IA0KPiA+ID4gPiA+IEBAIC00Mywx
-MyArNDMsMTMgQEAgc3RydWN0IHJ0dzg4MjFjZV9lZnVzZSB7DQo+ID4gPiA+ID4gIAl1OCBsaW5r
-X2NhcFs0XTsNCj4gPiA+ID4gPiAgCXU4IGxpbmtfY29udHJvbFsyXTsNCj4gPiA+ID4gPiAgCXU4
-IHNlcmlhbF9udW1iZXJbOF07DQo+ID4gPiA+ID4gLQl1OCByZXMwOjI7CQkJLyogMHhmNCAqLw0K
-PiA+ID4gPiA+IC0JdTggbHRyX2VuOjE7DQo+ID4gPiA+ID4gLQl1OCByZXMxOjI7DQo+ID4gPiA+
-ID4gLQl1OCBvYmZmOjI7DQo+ID4gPiA+ID4gLQl1OCByZXMyOjM7DQo+ID4gPiA+ID4gLQl1OCBv
-YmZmX2NhcDoyOw0KPiA+ID4gPiA+IC0JdTggcmVzMzo0Ow0KPiA+ID4gPiA+ICsJdTE2IHJlczA6
-MjsJCQkvKiAweGY0ICovDQo+ID4gPiA+ID4gKwl1MTYgbHRyX2VuOjE7DQo+ID4gPiA+ID4gKwl1
-MTYgcmVzMToyOw0KPiA+ID4gPiA+ICsJdTE2IG9iZmY6MjsNCj4gPiA+ID4gPiArCXUxNiByZXMy
-OjM7DQo+ID4gPiA+ID4gKwl1MTYgb2JmZl9jYXA6MjsNCj4gPiA+ID4gPiArCXUxNiByZXMzOjQ7
-DQo+ID4gPiA+IA0KPiA+ID4gPiBUaGVzZSBzaG91bGQgYmUgX19sZTE2LiBUaG91Z2ggYml0IGZp
-ZWxkcyBhcmUgc3VpdGFibGUgdG8gZWZ1c2UgbGF5b3V0LA0KPiA+ID4gPiB3ZSBkb24ndCBhY2Nl
-c3MgdGhlc2UgZmllbGRzIGZvciBub3cuIEl0IHdvdWxkIGJlIHdlbGwuDQo+ID4gDQo+ID4gVWgu
-IEkgdHlwbyB0aGUgc2VudGVuY2UuIE9yaWdpbmFsbHksIEkgd291bGQgbGlrZSB0byB0eXBlDQo+
-ID4gIi4uLmJpdCBmaWVsZHMgYXJlIE5PVCBzdWl0YWJsZS4uLiIuDQo+ID4gDQo+ID4gSW4gdGhp
-cyBkcml2ZXIsIGVmdXNlIGlzIHJlYWQgaW50byBhIHU4IGFycmF5LCBhbmQgY2FzdCB0byB0aGlz
-IHN0cnVjdA0KPiA+IHBvaW50ZXIgdG8gYWNjZXNzIHRoZSBmaWVsZC4NCj4gDQo+IFRoZW4gZGVm
-aW5lIGl0IGFzIHN1Y2guDQo+IFRoZSAxNmJpdCBlbmRpYW5uZXNzIGFuZCBiaXQtb3JkZXIgZGVw
-ZW5kYW50IGJpdGZpZWxkcyBzZXJ2ZQ0KPiBubyBwdXJwb3NlLiANCj4gDQo+ID4gPiBJSVJDIHRo
-ZSBhc3NpZ25tZW50IG9mIGFjdHVhbCBiaXRzIHRvIGJpdC1maWVsZHMgaXMgKGF0IGJlc3QpDQo+
-ID4gPiBhcmNoaXRlY3R1cmFsbHkgZGVmaW5lZCAtIHNvIGlzbid0IHJlYWxseSBzdWl0YWJsZSBm
-b3IgYW55dGhpbmcNCj4gPiA+IHdoZXJlIHRoZSBiaXRzIGhhdmUgdG8gbWF0Y2ggYSBwb3J0YWJs
-ZSBtZW1vcnkgYnVmZmVyLg0KPiA+ID4gVGhlIGJpdCBhbGxvY2F0aW9uIGlzbid0IHRpZWQgdG8g
-dGhlIGJ5dGUgZW5kaWFubmVzcy4NCj4gPiANCj4gPiBZZXMsIHRoaXMga2luZCBvZiBzdHJ1Y3Qg
-aGFzIGVuZGlhbiBwcm9ibGVtLiBGb3J0dW5hdGVseSwgd2UgZG9uJ3QNCj4gPiBhY3R1YWxseSBh
-Y2Nlc3MgdmFsdWVzIHZpYSBiaXQgZmllbGRzLg0KPiA+IA0KPiA+ID4gVG8gZ2V0IGFuIGV4cGxp
-Y2l0IGxheW91dCB5b3UgaGF2ZSB0byBkbyBleHBsaWNpdCBtYXNraW5nLg0KPiA+IA0KPiA+IElm
-IHdlIGFjdHVhbGx5IHdhbnQgdG8gYWNjZXNzIHRoZXNlIHZhbHVlcywgd2Ugd2lsbCBkZWZpbmUg
-bWFza3MNCj4gPiBhbmQgdXNlIHt1OCxfbGUxNixsZTMyfV9nZXRfYml0cygpIG9yIGJhcmUgJyYn
-IGJpdCBvcGVyYXRpb24gdG8gYWNjZXNzDQo+ID4gdGhlbS4NCj4gDQo+IEJ1dCB5b3UgY2FuJ3Qg
-dGFrZSB0aGUgYWRkcmVzcyBvZiBiaXRmaWVsZCBtZW1iZXJzLg0KPiBEZWZpbmUgdGhlIGRhdGEg
-cHJvcGVybHkuDQoNClllcywgaXQgc2hvdWxkIG5vdCB1c2UgYml0IGZpbGVkLiBJbnN0ZWFkLCB1
-c2UgYSBfX2xlMTYgZm9yIGFsbCBmaWVsZHMsIHN1Y2ggYXMNCg0Kc3RydWN0IHJ0dzg4MjFjZV9l
-ZnVzZSB7DQogICAgLi4uDQogICAgX19sZTE2IGNhcHM7DQogICAgLi4uDQp9DQoNCg0KI2RlZmlu
-ZSBDQVBTX1JFUzAgR0VOTUFTSygxLCAwKQ0KI2RlZmluZSBDQVBTX0xUUl9FTiBCSVQoMikNCiNk
-ZWZpbmUgQ0FQU19SRVMxIEdFTk1BU0soNCwgMykNCiNkZWZpbmUgQ0FQU19PQkZGIEdFTk1BU0so
-NiwgNSkNCi4uLg0KDQoNCkFzc3VtZSB0aGUgcG9pbnRlciBvZiBlZnVzZSBjb250ZW50IGlzICdj
-b25zdCB1OCAqZWZ1c2VfcmF3OycNCg0KICAgY29uc3Qgc3RydWN0IHJ0dzg4MjFjZV9lZnVzZSAq
-ZWZ1c2UgPSAoY29uc3Qgc3RydWN0IHJ0dzg4MjFjZV9lZnVzZSAqKWVmdXNlX3JhdzsNCg0KVGhl
-biwgZ2V0IGx0cl9lbg0KDQogICBsdHJfZW4gPSBsZTE2X2dldF9iaXRzKGVmdXNlLT5jYXBzLCBD
-QVBTX0xUUl9FTik7DQoNCg0KPiANCj4gPiA+IFlvdSBhbHNvIGRvbid0IG5lZWQgX19wYWNrZWQg
-dW5sZXNzIHRoZSAnbmF0dXJhbCcgYWxpZ25tZW50DQo+ID4gPiBvZiBmaWVsZHMgd291bGQgbmVl
-ZCBnYXBzIG9yIHRoZSBhY3R1YWwgc3RydWN0dXJlIGl0c2VsZiBtaWdodA0KPiA+ID4gYmUgbWlz
-YWxpZ25lZCBpbiBtZW1vcnkuDQo+ID4gPiBXaGlsZSBDIGNvbXBpbGVycyBhcmUgYWxsb3dlZCB0
-byBhZGQgYXJiaXRyYXJ5IHBhZGRpbmcgdGhlIExpbnV4IGtlcm5lbA0KPiA+ID4gcmVxdWlyZXMg
-dGhhdCB0aGV5IGRvbid0Lg0KPiA+ID4gSSdtIGFsc28gcHJldHR5IHN1cmUgdGhhdCBjb21waWxl
-cnMgYXJlIG5vdCBhbGxvd2VkIHRvIHJlb3JkZXIgZmllbGRzLg0KPiA+ID4gDQo+ID4gPiBTcGVj
-aWZ5aW5nIF9fcGFja2VkIGNhbiBhZGQgY29uc2lkZXJhYmxlIHJ1bi10aW1lIChhbmQgY29kZSBz
-aXplKQ0KPiA+ID4gb3ZlcmhlYWQgb24gc29tZSBhcmNoaXRlY3R1cmVzIC0gaXQgc2hvdWxkIG9u
-bHkgYmUgdXNlZCBpZiBhY3R1YWxseQ0KPiA+ID4gbmVlZGVkLg0KPiA+ID4gDQo+ID4gDQo+ID4g
-VW5kZXJzdG9vZC4gV2Ugb25seSBhZGQgX19wYWNrZWQgdG8gdGhlIHN0cnVjdCB3aGljaCBpcyB1
-c2VkIHRvDQo+ID4gYWNjZXNzIHByZWRlZmluZWQgZm9ybWF0LCBsaWtlIGVmdXNlIGNvbnRlbnQg
-ZGVmaW5lZCBieSB2ZW5kb3IuDQo+IA0KPiBObyAtIHRoYXQgZG9lc24ndCBtZWFuIHlvdSBuZWVk
-IHRvIHVzZSBfX3BhY2tlZC4NCj4gSXQgZG9lcyBtZWFuIHRoYXQgeW91IHNob3VsZG4ndCB1c2Ug
-Yml0ZmllbGRzLg0KPiBMb29rIGF0IGFsbCB0aGUgaGFyZHdhcmUgZHJpdmVycywgdGhleSB1c2Ug
-c3RydWN0cyB0byBtYXAgZGV2aWNlDQo+IHJlZ2lzdGVycyBhbmQgYWJzb2x1dGVseSByZXF1aXJl
-IHRoZSBjb21waWxlIG5vdCBhZGQgcGFkZGluZy4NCj4gDQoNCkkgdGhpbmsgdGhlIG9yaWdpbmFs
-IHN0cnVjdCBoYXMgdHdvIHByb2JsZW0gLS0gZW5kaWFuIGFuZCBfX3BhY2tlZC4NCg0KSSBtZW50
-aW9uZWQgZW5kaWFuIHBhcnQgYWJvdmUuIA0KDQpUYWtpbmcgYmVsb3cgYXMgZXhhbXBsZSB0byBl
-eHBsYWluIHdoeSBJIG5lZWQgX19wYWNrZWQsIA0KDQpzdHJ1Y3QgcnR3ODgyMWNlX2VmdXNlIHsN
-CiAgIC4uLg0KICAgdTggZGF0YTE7ICAgICAgIC8vIG9mZnNldCAweDEwMA0KICAgX19sZTE2IGRh
-dGEyOyAgIC8vIG9mZnNldCAweDEwMS0weDEwMg0KICAgLi4uDQp9IF9fcGFja2VkOw0KDQpXaXRo
-b3V0IF9fcGFja2VkLCBjb21waWxlciBjb3VsZCBoYXMgcGFkIGJldHdlZW4gZGF0YTEgYW5kIGRh
-dGEyLA0KYW5kIHRoZW4gZ2V0IHdyb25nIHJlc3VsdC4NCg0KSW4gdGhpcyBwYXRjaCwgc3RydWN0
-IGlzbid0IHRvIG1hcCByZWdpc3RlcnMuIEluc3RlYWQgaXQgaXMgdXNlZCB0bw0KYWNjZXNzIGVm
-dXNlIGNvbnRlbnQgb2YgYSB1OCBhcnJheSBleGlzdGluZyBpbiBtZW1vcnkuDQoNClBpbmctS2UN
-Cg0KDQo=
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    1b929c02afd3 Linux 6.2-rc1
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17b7126c480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a4fb7ad9185f1501
+dashboard link: https://syzkaller.appspot.com/bug?extid=e008dccab31bd3647609
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15ee522f880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d6e73c480000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/800650ebc0df/disk-1b929c02.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/b1f1852b762a/vmlinux-1b929c02.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/15ebd3d96567/bzImage-1b929c02.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff88810535b500 (size 240):
+  comm "softirq", pid 0, jiffies 4294946605 (age 8.190s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff83b0df31>] __build_skb+0x21/0x60 net/core/skbuff.c:377
+    [<ffffffff83b0e23e>] __netdev_alloc_skb+0x14e/0x220 net/core/skbuff.c:657
+    [<ffffffff82e49530>] __dev_alloc_skb include/linux/skbuff.h:3165 [inline]
+    [<ffffffff82e49530>] ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:635 [inline]
+    [<ffffffff82e49530>] ath9k_hif_usb_rx_cb+0x1d0/0x660 drivers/net/wireless/ath/ath9k/hif_usb.c:686
+    [<ffffffff8302c52c>] __usb_hcd_giveback_urb+0xfc/0x230 drivers/usb/core/hcd.c:1671
+    [<ffffffff8302c80b>] usb_hcd_giveback_urb+0x1ab/0x1c0 drivers/usb/core/hcd.c:1754
+    [<ffffffff831d5874>] dummy_timer+0x8e4/0x14c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+    [<ffffffff8132a8b3>] call_timer_fn+0x33/0x1f0 kernel/time/timer.c:1700
+    [<ffffffff8132ab6f>] expire_timers+0xff/0x1d0 kernel/time/timer.c:1751
+    [<ffffffff8132ad69>] __run_timers kernel/time/timer.c:2022 [inline]
+    [<ffffffff8132ad69>] __run_timers kernel/time/timer.c:1995 [inline]
+    [<ffffffff8132ad69>] run_timer_softirq+0x129/0x2f0 kernel/time/timer.c:2035
+    [<ffffffff84908afb>] __do_softirq+0xeb/0x2ef kernel/softirq.c:571
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
