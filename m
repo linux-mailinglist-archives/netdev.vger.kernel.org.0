@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C0165AB1E
-	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 20:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B20A65AB90
+	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 21:33:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230197AbjAATJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 14:09:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
+        id S229726AbjAAUdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Jan 2023 15:33:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjAATJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 14:09:50 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64A3D9E;
-        Sun,  1 Jan 2023 11:09:47 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id qb7so3606499qvb.5;
-        Sun, 01 Jan 2023 11:09:47 -0800 (PST)
+        with ESMTP id S229496AbjAAUdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 15:33:08 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBE12709
+        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 12:33:07 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id kw15so62593023ejc.10
+        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 12:33:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Nh1q6xtrBgKc1fDe5/d8D5jFIgt5LSbfJ1iE1tY4NY0=;
-        b=UwnH9hRCSaQXMD1ekBRj4n3jdugn6p5ha+kj9QMceWZP0PAzvDMSmcio2VlXTquVF/
-         6BRBS7KRqzFq4u1ymXaetY42vnR/h/VUewl41NzcwBzQXsc7CpxR47vXsClj5Fm4wAkh
-         T3awI2+sJTn6bFCvwm0K+GDxNW2l2VmI+Ea5W9ASfOVEwW7XpPMyIxyLGnEJnf7ONsF4
-         YMV9b1otZKL/jxE9pnEEFRge+Uh3wwh4ZyXXqKBE8+LtlP0uU+iHMu0HrhSl06mS5ekt
-         w+jfvwtfh6VGcX4EGVkaVBTtwnW3bgYOYlVy5Y8hxCwRZ0FIx2g75vOqkZdE3A+YL7kf
-         iTrg==
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y7XukgsAlfYiKI+yuvdwyFpb/FGCy9p+ybfvm0wRi4Y=;
+        b=VRrmPjpyHQCwig/iNN3RA6+57q5mOqXTVfZokrXzI76t8mG4Dlj2G9vEIoR72Hl/29
+         o458SMjQhqUQBn+snBmWuEKLLWk9TEV11XX5Y4qs13S+C5jWrvoWEfNOKVtznYcKniF3
+         oRR9q6VZPQa1nshNbMshrRNqFjx/qEkQ3cZDJJqB0ZJWd7S7h1kzZZVFjl1ELLTThAWc
+         QKZZ0u8Cvv9Ke/g1gYD12H+WmfkRxn0PDNGTw66HmwdmwRMN8ZEgbPrRN876YKOEzfDY
+         piqyQHBp/NFCg9V29sGITNN9SJzxf64qISEm5HYheCE1D3CXLPblpIkP0gJWTSMwnhGx
+         BwFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Nh1q6xtrBgKc1fDe5/d8D5jFIgt5LSbfJ1iE1tY4NY0=;
-        b=FfszfJVKGHDvEsFDGxHdY9x70C6lWugbxyAOoQ1rmnGwUPqrpXMLYIr79IbRrNrWxC
-         5g+GDkT40pxB26yMXNOSleCXHFLbQLsOu2P7jeJStb8JtbuEsyAqE0BRXdOxgfZDoia7
-         lY5glvMm/lA/w1y7vtYyWotfQBNfzaIwd3WYFHyJ6+QpxvSDiljvb9jJEQE1t/aGFfJs
-         aiGCP02T9gcp90hHZ3kBUm5hBWtAvH7PdIP1upI2SvskSdkrNiWieiZcIsW4z+GgyouW
-         /DEA7rh7fGXs6oue60bfbHhd7K554f6b4eC9y7TsSlir0/pXd6DDjzdCfLqIv2fue/9X
-         dQHg==
-X-Gm-Message-State: AFqh2kpB+a+TYtdqB1eIwkwy+cOtfv1AKJn9B6QwP7W7f5VPSGa5eT8q
-        XgtUp2+pr8lLx+qda5q7l3U=
-X-Google-Smtp-Source: AMrXdXuRwZ8m1kj+aK33hY6Z1Z1I7ASwAwEcox5pdWzF+iOPu8vspUPvseIArGH7bK8IissbSDrhsg==
-X-Received: by 2002:a05:6214:3713:b0:531:bb5a:3418 with SMTP id np19-20020a056214371300b00531bb5a3418mr9262906qvb.13.1672600187088;
-        Sun, 01 Jan 2023 11:09:47 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:bccc:52d4:da14:f94d])
-        by smtp.gmail.com with ESMTPSA id p18-20020ac87412000000b003a4c3c4d2d4sm16459391qtq.49.2023.01.01.11.09.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Jan 2023 11:09:46 -0800 (PST)
-Date:   Sun, 1 Jan 2023 11:09:45 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Yunhui Cui <cuiyunhui@bytedance.com>
-Cc:     edumazet@google.com, rostedt@goodmis.org, mhiramat@kernel.org,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, duanxiongchun@bytedance.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-kernel@vger.kernel.org
-Subject: Re: [PATCH] tcp/udp: add tracepoint for send recv length
-Message-ID: <Y7HaeTkNtfb3oIP4@pop-os.localdomain>
-References: <20221229080207.1029-1-cuiyunhui@bytedance.com>
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Y7XukgsAlfYiKI+yuvdwyFpb/FGCy9p+ybfvm0wRi4Y=;
+        b=7vAwd25VYixLdD6MHj/v7hWwL2wVMgEYKCSxTrTU2QlExC6emafLVgjHJFE+UOK+pi
+         OWJ8APGXe8wnXToylq8q5rlkK4LFKT+6s1arjkYOQvFhvfkrXEhK+ZWbL9pErYDj+1QH
+         9hQmKLjE/+Yl+0fQ4UAEt40oPLRGLiCx7qZ2dc+8sfOEi67IiR+C9rQKR46d7o10UzZp
+         B1uwiaumq59g50lTEH3V96BPjxtp8V3RjW4LeALnpaJciQG8PbVnFGhzcRN1dJxKJGxI
+         ttEVCLq0UsnKi8aHrIwSWystkOXUxhUSVZ4LY51vFtPFkaEIAPtgf7ENXoQN0v/nuvV0
+         xGQw==
+X-Gm-Message-State: AFqh2kreK2i5fakRo/oZv3z4t8KaZlHcX/xThbBCcSo9RW2mzwQ/fwcR
+        /OjLfRVcqty9cTdh0r5O26ojWvTJTe4gBh0HBg4=
+X-Google-Smtp-Source: AMrXdXswWT00ymoKbYP0hvMXny6EqJ2I8PbLbBAG3+H1d3zECAJnR39h2N6b0Kj+I1Ig+Xq2nt3rp4fKsHeo94uuw4U=
+X-Received: by 2002:a17:907:7697:b0:79b:413b:d64 with SMTP id
+ jv23-20020a170907769700b0079b413b0d64mr2992459ejc.538.1672605185564; Sun, 01
+ Jan 2023 12:33:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221229080207.1029-1-cuiyunhui@bytedance.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a05:640c:94c:b0:191:9203:76b4 with HTTP; Sun, 1 Jan 2023
+ 12:33:05 -0800 (PST)
+Reply-To: ab8111977@gmail.com
+From:   MS NADAGE LASSOU <oyomdemian@gmail.com>
+Date:   Sun, 1 Jan 2023 21:33:05 +0100
+Message-ID: <CAHqmVpbSd7Xx1nsuz79a1pBkc1qXvAX+gsBdXkXFRNjFkf8=SQ@mail.gmail.com>
+Subject: YOUR ATTENTON PLS.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        SUBJ_ALL_CAPS,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:629 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4999]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [oyomdemian[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [ab8111977[at]gmail.com]
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 29, 2022 at 04:02:07PM +0800, Yunhui Cui wrote:
-> From: Xiongchun Duan <duanxiongchun@bytedance.com>
-> 
-> Add a tracepoint for capturing TCP segments with
-> a send or receive length. This makes it easy to obtain
-> the packet sending and receiving information of each process
-> in the user mode, such as the netatop tool.
+Greetings.
 
-You can obtain the same information with kretprobe:
-https://www.gcardone.net/2020-07-31-per-process-bandwidth-monitoring-on-Linux-with-bpftrace/
-
-Thanks.
+I am Ms Nadage Lassou,I have important business discussIon with you
+for our benefit.
+Thanks for your time and =C2=A0Attention.
+Regards.
+Ms Nadage Lassou
