@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E97365ABD6
-	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 22:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 284B065ABDA
+	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 22:59:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbjAAV57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 16:57:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
+        id S230268AbjAAV7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Jan 2023 16:59:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjAAV55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 16:57:57 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D3AE9B
-        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 13:57:56 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id g7so21288512qts.1
-        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 13:57:56 -0800 (PST)
+        with ESMTP id S230020AbjAAV7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 16:59:04 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AEB110E0
+        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 13:59:03 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id j9so12237752qvt.0
+        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 13:59:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4RIE6xZebAYoDU1dyrt2ZO4yBxRnUWAzeqPFFXukTlA=;
-        b=fIijv1Z83vKPBg8cWgvVZAOJH/5BMBXFcsmGWPIK2otBXI5O79T2kp+DtJazmJfFmO
-         TJdHzMWmEmCrzsV96GftCIPCDIjx72fKHzstGjw+7buzoIB5fZ4ClCCKZVapzWu94QmP
-         oTmx+TmmQ4blBOFC2FND0j11wv18tx6x+26eZoUc6r+Uqt2+nOKcOOQ+faE5/rXKJMkP
-         svvYua+1z2Xn5VaPu8WC/6zmpeRwyjLKY3hx1eZvuoxCFvkL2LfyjXpYh/y2+72wlDYM
-         CSnZPBboYNbjX21rT64GIY9YzwK9X6LQvOxNKC+jYHquUrGnZ7p5WvkBF/Gpf0kxS5pC
-         jasg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Pd91SZ8ZY7SZMOzUe+Mhtx+sOoHRZXx4CyoNoudccHM=;
+        b=T0whX5/V5TmQwFY42hiF4ezDAWfesxk4LbxOjyDNoTLR76/5487b3+DyKZcSQq06nd
+         9qcg8wwC7qdqKq4j6uu3MTyyNK0CZqIaYa/c/aOMILShgWyyBySR1Omsj5U84LmOmeva
+         y8VYNIYwUFGFz+bFQdrO6CxJYmP7aInzqi84uPZJQt3PsfeYYtlv8DMyzLv7UZ3P/pY9
+         nhLS7d0XjstXEZTYbXOjg0MxiC/lzPPnILz3AyJR43OM9XWc+702F7eMdWCamjYmCuty
+         1jT9Z1F8BNVcfQG09AzNjksqLwplHfGSjqPq2mqkEO80ImhXZV4Lh4Gk3WZSWuNo1nF9
+         Zycw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4RIE6xZebAYoDU1dyrt2ZO4yBxRnUWAzeqPFFXukTlA=;
-        b=4/h9X4yC/oR+tIBBR3xZNiq9zl0s3QPM5pMygvm2x/w0rOz5IaZqg9nnmvBOgd2J0S
-         noImNHhpDGMYkCvapEVhnlgjcWiL8iYGGLXoSsRhl71Zz4Ut3d20u9yR4mbekPe5UPpn
-         3uR+GMvc2f5PizUS2XZRgpBzDs6+KBNHelTvqptk53x3omRIP4an1s1PC+/c5iZS534m
-         dpVDY7ll7OQZX22zPtIu0em265h3tu8MM47tK2mMkICZEuNE9LBbpY0XneL20/EBDWwZ
-         vHYnVPC+9dAp22q787gPpWRnPO+e2QZv0UBKdN2kyxR4mwvdvGKtiFjcX6GMEPSqBGkv
-         UTwA==
-X-Gm-Message-State: AFqh2krXIRR5mv46IuTLR4IypLVG17uw8CoyJOowq2552Cp0aHtdu6ak
-        TK2V3eBjHvCBAGuy5jePOl0xOQ==
-X-Google-Smtp-Source: AMrXdXs/cnqlaX3HrFuZvFvfjX/7+FmnntoMlAS5QCjvRu794xhBDPgLK1PoHyd4trXHDUbUt2NHoQ==
-X-Received: by 2002:ac8:4b76:0:b0:3a8:1447:d10b with SMTP id g22-20020ac84b76000000b003a81447d10bmr48850533qts.46.1672610275576;
-        Sun, 01 Jan 2023 13:57:55 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Pd91SZ8ZY7SZMOzUe+Mhtx+sOoHRZXx4CyoNoudccHM=;
+        b=h9cq+Uq8Y3shuut4zK5AyAtL+76jwqzYUYLGpfst5T4q8vDavdXBSRuGfbKV785xJh
+         MpC/IHEIGnqjNLaDUPcFRZPCNPKwoOxqip8GUHWhbG+9V+slU8Akbu6sgESFnB9zIKuX
+         TCZVqQM/JPStHMobEmwCof+yse+AdjyGlAZwMrxdXApPmmx9h9FCHi+UkZN3oSnhrtzD
+         BZJ/+Rh0XCCTCWDwC89yRLgS1Atjhh2idjsuFCl1ua2/KgQNFMY0gL3aB1hoV8OvsUt1
+         wSeLazSIdJ/+0MMRnp98lPg7kaWDdS0wIkjRqVYx4+cOxey2K8UvcIrFQ9mFrk0JwicG
+         QYDA==
+X-Gm-Message-State: AFqh2kpBziN8ot3YyYyRVi1U2h3Us/pcu/jkA6dBUcsEVB+vxfn5Y+CS
+        W8uQownjgbATolpUTEiiU/VmTw==
+X-Google-Smtp-Source: AMrXdXuvc3HE+HzQtZPNyCCwzKoR9GNijnZsunXSuh39GYBtlInK7cwC9i6ql/U6E6jOoe6te1RGEA==
+X-Received: by 2002:ad4:5c44:0:b0:4c6:5a5f:306b with SMTP id a4-20020ad45c44000000b004c65a5f306bmr85370210qva.29.1672610342206;
+        Sun, 01 Jan 2023 13:59:02 -0800 (PST)
 Received: from mbili.. (bras-base-kntaon1618w-grc-10-184-145-9-33.dsl.bell.ca. [184.145.9.33])
-        by smtp.gmail.com with ESMTPSA id m14-20020ae9e70e000000b006e42a8e9f9bsm19233073qka.121.2023.01.01.13.57.54
+        by smtp.gmail.com with ESMTPSA id m14-20020ae9e70e000000b006e42a8e9f9bsm19233073qka.121.2023.01.01.13.59.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Jan 2023 13:57:54 -0800 (PST)
+        Sun, 01 Jan 2023 13:59:01 -0800 (PST)
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
 To:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com
 Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, netdev@vger.kernel.org,
         zengyhkyle@gmail.com, Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net 0/2] dont intepret cls results when asked to drop
-Date:   Sun,  1 Jan 2023 16:57:42 -0500
-Message-Id: <20230101215744.709178-1-jhs@mojatatu.com>
+Subject: [PATCH net 1/2] net: sched: atm: dont intepret cls results when asked to drop
+Date:   Sun,  1 Jan 2023 16:57:43 -0500
+Message-Id: <20230101215744.709178-2-jhs@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230101215744.709178-1-jhs@mojatatu.com>
+References: <20230101215744.709178-1-jhs@mojatatu.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -68,24 +71,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible that an error in processing may occur in tcf_classify() which
-will result in res.classid being some garbage value. Example of such a code path
-is when the classifier goes into a loop due to bad policy. See patch 1/2
-for a sample splat.
-While the core code reacts correctly and asks the caller to drop the packet
-(by returning TC_ACT_SHOT) some callers first intepret the res.class as
-a pointer to memory and end up dropping the packet only after some activity with
-the pointer. There is likelihood of this resulting in an exploit. So lets fix
-all the known qdiscs that behave this way.
+If asked to drop a packet via TC_ACT_SHOT it is unsafe to assume
+res.class contains a valid pointer
+Fixes: b0188d4dbe5f ("[NET_SCHED]: sch_atm: Lindent")
 
-Jamal Hadi Salim (2):
-  net: sched: atm: dont intepret cls results when asked to drop
-  net: sched: cbq: dont intepret cls results when asked to drop
-
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+---
  net/sched/sch_atm.c | 5 ++++-
- net/sched/sch_cbq.c | 4 ++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index f52255fea652..4a981ca90b0b 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -393,10 +393,13 @@ static int atm_tc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 				result = tcf_classify(skb, NULL, fl, &res, true);
+ 				if (result < 0)
+ 					continue;
++				if (result == TC_ACT_SHOT)
++					goto done;
++
+ 				flow = (struct atm_flow_data *)res.class;
+ 				if (!flow)
+ 					flow = lookup_flow(sch, res.classid);
+-				goto done;
++				goto drop;
+ 			}
+ 		}
+ 		flow = NULL;
 -- 
 2.34.1
 
