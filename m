@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57BB365AC06
-	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 23:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5689D65AC10
+	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 23:28:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbjAAWRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 17:17:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
+        id S230424AbjAAW2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Jan 2023 17:28:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjAAWRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 17:17:48 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD1A10CD
-        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 14:17:46 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id i7-20020a056e021b0700b003033a763270so17022768ilv.19
-        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 14:17:46 -0800 (PST)
+        with ESMTP id S229503AbjAAW2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 17:28:36 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BED2B70
+        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 14:28:35 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id s2-20020a056e02216200b0030bc3be69e5so17133009ilv.20
+        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 14:28:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HIIqpw3PJ+E2dCsRE0BpwX9XSze9XYpq0GQwZPVdP28=;
-        b=JaQJIfoxVhuNbr6XwZQ5vHYw37RKP20LgJ2bS64uLiwpPlo3U/+METcxMdbi2V40Nx
-         zdmr3ggIwaiF4xmWHaoteIByZY27vFGcWiWTjH04otyohBIAsYQNW0r8D3FH9RvWKPi3
-         LoVY0Fm+OvITcLvZVRXK3nJHq7+6A1wtlqRrBu3hXil/ziqeeGaWOQAkIuHujwNf8Azv
-         v+F8wafDhTTcS4JD29J4tAUOvlK05Ck3wXWbxz6mrKT8wia5mKacNJypviCzwJ5kr4B0
-         SNnSwlvi9r98D1ECwUqQe2oaRnHejE8m1WsNwiTF3LUE5vz/54EdmFk+3JlYQpdv50Wf
-         bUAg==
-X-Gm-Message-State: AFqh2koRQtbWleXqnKXRzxVgY9maBWsiX+EO3kfcsb8p3nWTv2dadEK+
-        KwCneLAFsS2sbhMNPSGjxRAP+JHRwHUJ7LMxQ/F4j990cwuV
-X-Google-Smtp-Source: AMrXdXuQiG6eCXhC4h4Kfa1c9X/83i4G83EoMWl/2vgv9uYpjmgn1lIQpHM8y5V+0LAe7FJAOGZlH+xS0bqowcNmUUqovxtc+hjJ
+        bh=NzXoGRNXiCRuamX9tCo8Tl0xkN8+BazcxOMPlU5aEdI=;
+        b=2rMZugc2ulB587qTpMwJ7ijKCHXjIkHhHTOhHHhi6OptMBa37325iJNjLyQuz9m7cf
+         Khw5X6oiRYNrUzFprmWULNeiqoTMQzdETWkr3je4/hPtM2A+P3sbLuHQbGbmdyOPVuRZ
+         3nwdeVJv2yuBh5iffs6iOYOzJdxe6G+ce8GbeOaAX0KB/SJpuvPrki8JO1WqhlVypIom
+         qywVuSyEBKA1Abg/R+JLSvopK4iTyiKmF8MTPgaWl7pxl8kOnB8jQDWLlHjfWFMPq4HS
+         cEpwH1w6Kd+w1tEw38qM6eLs6aHOIwDgzGZJoIhRtPGpsoR99MLO+hyybf9HukY/LWNg
+         fcJg==
+X-Gm-Message-State: AFqh2kpQ4aEtGePAKWRQRlEtTUzmj7jd7czFK7lr7fnHa0eK3XQLsdkb
+        MVyqp8oLUT8c1vb0DE/KYuDEld6HroHikG2IuRMLu9ClLMMq
+X-Google-Smtp-Source: AMrXdXsq/MoZdz+RrWCh2FeqhRA3f2NJfAESSum8zzyd3dnsW1E9i5XEg95OPhdghnXvDOb8Pp1WQp26fIyV4cRbWk5NpvOmnZur
 MIME-Version: 1.0
-X-Received: by 2002:a02:a049:0:b0:38a:bd03:c56d with SMTP id
- f9-20020a02a049000000b0038abd03c56dmr3205729jah.309.1672611465950; Sun, 01
- Jan 2023 14:17:45 -0800 (PST)
-Date:   Sun, 01 Jan 2023 14:17:45 -0800
+X-Received: by 2002:a02:cd06:0:b0:376:21c3:23fe with SMTP id
+ g6-20020a02cd06000000b0037621c323femr3039101jaq.192.1672612114793; Sun, 01
+ Jan 2023 14:28:34 -0800 (PST)
+Date:   Sun, 01 Jan 2023 14:28:34 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000467b4905f13b3404@google.com>
-Subject: [syzbot] bpf build error (4)
-From:   syzbot <syzbot+f6aec82e3b1bbe0993c7@syzkaller.appspotmail.com>
+Message-ID: <000000000000f30d5305f13b5a9b@google.com>
+Subject: [syzbot] bpf-next build error (5)
+From:   syzbot <syzbot+cb02a28d8c55b86bb096@syzkaller.appspotmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
@@ -56,15 +56,15 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    f90dd663c492 Merge branch 'bpf: fix the crash caused by ta..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=16fcb698480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8ca07260bb631fb4
-dashboard link: https://syzkaller.appspot.com/bug?extid=f6aec82e3b1bbe0993c7
+HEAD commit:    07453245620c libbpf: fix errno is overwritten after being ..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=109a2568480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b0e91ad4b5f69c47
+dashboard link: https://syzkaller.appspot.com/bug?extid=cb02a28d8c55b86bb096
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f6aec82e3b1bbe0993c7@syzkaller.appspotmail.com
+Reported-by: syzbot+cb02a28d8c55b86bb096@syzkaller.appspotmail.com
 
 failed to run ["make" "-j" "64" "ARCH=x86_64" "bzImage"]: exit status 2
 
