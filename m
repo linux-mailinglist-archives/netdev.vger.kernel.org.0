@@ -2,228 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F260365AAFA
-	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 19:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C0165AB1E
+	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 20:09:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbjAAScj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 13:32:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
+        id S230197AbjAATJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Jan 2023 14:09:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbjAASch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 13:32:37 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D139126E4
-        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 10:32:31 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id m15so14853724ilq.2
-        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 10:32:31 -0800 (PST)
+        with ESMTP id S229496AbjAATJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 14:09:50 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64A3D9E;
+        Sun,  1 Jan 2023 11:09:47 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id qb7so3606499qvb.5;
+        Sun, 01 Jan 2023 11:09:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zV+r8U+uyILbJMrsnc8nz4otj7n7TRZfcA159F36ua8=;
-        b=aiOdnmjLVqsJa494JxM/Z8J/2spEVF+y1wt2A6OzAuUccZOkKsyAAwpqxxAxNReF8F
-         PpLvjst6s5Hu5V6DloGawRphoxOKOeMeEftlJKALLfENcUsLNTzv1HBNMoDou+WKbP8r
-         d0dStqr7e6BwVcKgMDQ7PR32V3/wly+iAWkF07eKcEtKSEfNJ/av5fVyU/7qlLHMw55d
-         dwgQo34Ur9NRAzPgJ5Gj2InhtxI37NA6/DVgZY0rcWZMts8WtBG3Yk3OcUhHWTIMqUF2
-         aLISP92WT8/+hFmxk/rNdvTSN4wM3rFlp9/S48d7/4Rz/zFpZPDcr4am0tvnfBEK4qCt
-         DOzQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Nh1q6xtrBgKc1fDe5/d8D5jFIgt5LSbfJ1iE1tY4NY0=;
+        b=UwnH9hRCSaQXMD1ekBRj4n3jdugn6p5ha+kj9QMceWZP0PAzvDMSmcio2VlXTquVF/
+         6BRBS7KRqzFq4u1ymXaetY42vnR/h/VUewl41NzcwBzQXsc7CpxR47vXsClj5Fm4wAkh
+         T3awI2+sJTn6bFCvwm0K+GDxNW2l2VmI+Ea5W9ASfOVEwW7XpPMyIxyLGnEJnf7ONsF4
+         YMV9b1otZKL/jxE9pnEEFRge+Uh3wwh4ZyXXqKBE8+LtlP0uU+iHMu0HrhSl06mS5ekt
+         w+jfvwtfh6VGcX4EGVkaVBTtwnW3bgYOYlVy5Y8hxCwRZ0FIx2g75vOqkZdE3A+YL7kf
+         iTrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zV+r8U+uyILbJMrsnc8nz4otj7n7TRZfcA159F36ua8=;
-        b=KmCuFXF2rR5BAGvsod/y462Egnuai2NuZFC8WaHyiSFnKYYA9Dzymo/1IfRdq/PwpY
-         h4tz9J1YkoSX4SWsZdGx77jP4cQE4XlEvALk1gtXqzzJ6rShJQ7RNOYLShrPUgPkztig
-         KmdaJXRUxESj2EdVjxcWUj75icc5nXUzuWUlUebviXgLyF98/iEr5mqFyuWG1VxM9BdX
-         FKZsoFteLuryw4iogtYq0bWVHvXdwgaThUmjj6/3Pv71QFI2SH+U279IwlUFwfM1F7J8
-         EOfibanTG4x/5vQj6DwRozWtvqGEsdXI7Ig6oN1cVJwdAGfrJEnf1RHfLfh51X9ozjeW
-         BOcA==
-X-Gm-Message-State: AFqh2kpSQDUKapEYsUkjcMWCQMroi4aYxv7BNKXlMLpVQ6mRGOjpSv0n
-        YBMrJfDcE1TAsTgr8zeolb58Gg==
-X-Google-Smtp-Source: AMrXdXu3PUHcbQ8d34A3Ed8p9psE9dXPNA/g4KLrkXYa48KE1al5SdgEZcdJFfcxboCozxbiYrW4eg==
-X-Received: by 2002:a05:6e02:525:b0:30c:2bb4:a2ea with SMTP id h5-20020a056e02052500b0030c2bb4a2eamr7454639ils.13.1672597950897;
-        Sun, 01 Jan 2023 10:32:30 -0800 (PST)
-Received: from [10.211.55.3] ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id x2-20020a92d642000000b0030c053fb7ccsm5797894ilp.47.2023.01.01.10.32.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Jan 2023 10:32:30 -0800 (PST)
-Message-ID: <c0e789a5-4573-1487-f279-4e2a447e3937@linaro.org>
-Date:   Sun, 1 Jan 2023 12:32:28 -0600
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Nh1q6xtrBgKc1fDe5/d8D5jFIgt5LSbfJ1iE1tY4NY0=;
+        b=FfszfJVKGHDvEsFDGxHdY9x70C6lWugbxyAOoQ1rmnGwUPqrpXMLYIr79IbRrNrWxC
+         5g+GDkT40pxB26yMXNOSleCXHFLbQLsOu2P7jeJStb8JtbuEsyAqE0BRXdOxgfZDoia7
+         lY5glvMm/lA/w1y7vtYyWotfQBNfzaIwd3WYFHyJ6+QpxvSDiljvb9jJEQE1t/aGFfJs
+         aiGCP02T9gcp90hHZ3kBUm5hBWtAvH7PdIP1upI2SvskSdkrNiWieiZcIsW4z+GgyouW
+         /DEA7rh7fGXs6oue60bfbHhd7K554f6b4eC9y7TsSlir0/pXd6DDjzdCfLqIv2fue/9X
+         dQHg==
+X-Gm-Message-State: AFqh2kpB+a+TYtdqB1eIwkwy+cOtfv1AKJn9B6QwP7W7f5VPSGa5eT8q
+        XgtUp2+pr8lLx+qda5q7l3U=
+X-Google-Smtp-Source: AMrXdXuRwZ8m1kj+aK33hY6Z1Z1I7ASwAwEcox5pdWzF+iOPu8vspUPvseIArGH7bK8IissbSDrhsg==
+X-Received: by 2002:a05:6214:3713:b0:531:bb5a:3418 with SMTP id np19-20020a056214371300b00531bb5a3418mr9262906qvb.13.1672600187088;
+        Sun, 01 Jan 2023 11:09:47 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:bccc:52d4:da14:f94d])
+        by smtp.gmail.com with ESMTPSA id p18-20020ac87412000000b003a4c3c4d2d4sm16459391qtq.49.2023.01.01.11.09.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Jan 2023 11:09:46 -0800 (PST)
+Date:   Sun, 1 Jan 2023 11:09:45 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Yunhui Cui <cuiyunhui@bytedance.com>
+Cc:     edumazet@google.com, rostedt@goodmis.org, mhiramat@kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, duanxiongchun@bytedance.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-kernel@vger.kernel.org
+Subject: Re: [PATCH] tcp/udp: add tracepoint for send recv length
+Message-ID: <Y7HaeTkNtfb3oIP4@pop-os.localdomain>
+References: <20221229080207.1029-1-cuiyunhui@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next 3/6] net: ipa: enable IPA interrupt handlers
- separate from registration
-To:     Caleb Connolly <caleb.connolly@linaro.org>,
-        Alex Elder <elder@linaro.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221230232230.2348757-1-elder@linaro.org>
- <20221230232230.2348757-4-elder@linaro.org>
- <de723e81-f3ba-19f3-827f-28134e904c97@linaro.org>
-Content-Language: en-US
-From:   Alex Elder <alex.elder@linaro.org>
-In-Reply-To: <de723e81-f3ba-19f3-827f-28134e904c97@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221229080207.1029-1-cuiyunhui@bytedance.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/31/22 11:56 AM, Caleb Connolly wrote:
+On Thu, Dec 29, 2022 at 04:02:07PM +0800, Yunhui Cui wrote:
+> From: Xiongchun Duan <duanxiongchun@bytedance.com>
 > 
-> 
-> On 30/12/2022 23:22, Alex Elder wrote:
->> Expose ipa_interrupt_enable() and have functions that register
->> IPA interrupt handlers enable them directly, rather than having the
->> registration process do that.  Do the same for disabling IPA
->> interrupt handlers.
-> 
-> Hi,
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->>   drivers/net/ipa/ipa_interrupt.c |  8 ++------
->>   drivers/net/ipa/ipa_interrupt.h | 14 ++++++++++++++
->>   drivers/net/ipa/ipa_power.c     |  6 +++++-
->>   drivers/net/ipa/ipa_uc.c        |  4 ++++
->>   4 files changed, 25 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/net/ipa/ipa_interrupt.c 
->> b/drivers/net/ipa/ipa_interrupt.c
->> index 7b7388c14806f..87f4b94d02a3f 100644
->> --- a/drivers/net/ipa/ipa_interrupt.c
->> +++ b/drivers/net/ipa/ipa_interrupt.c
->> @@ -135,7 +135,7 @@ static void ipa_interrupt_enabled_update(struct 
->> ipa *ipa)
->>   }
->>   /* Enable an IPA interrupt type */
->> -static void ipa_interrupt_enable(struct ipa *ipa, enum ipa_irq_id 
->> ipa_irq)
->> +void ipa_interrupt_enable(struct ipa *ipa, enum ipa_irq_id ipa_irq)
->>   {
->>       /* Update the IPA interrupt mask to enable it */
->>       ipa->interrupt->enabled |= BIT(ipa_irq);
->> @@ -143,7 +143,7 @@ static void ipa_interrupt_enable(struct ipa *ipa, 
->> enum ipa_irq_id ipa_irq)
->>   }
->>   /* Disable an IPA interrupt type */
->> -static void ipa_interrupt_disable(struct ipa *ipa, enum ipa_irq_id 
->> ipa_irq)
->> +void ipa_interrupt_disable(struct ipa *ipa, enum ipa_irq_id ipa_irq)
->>   {
->>       /* Update the IPA interrupt mask to disable it */
->>       ipa->interrupt->enabled &= ~BIT(ipa_irq);
->> @@ -232,8 +232,6 @@ void ipa_interrupt_add(struct ipa_interrupt 
->> *interrupt,
->>           return;
->>       interrupt->handler[ipa_irq] = handler;
->> -
->> -    ipa_interrupt_enable(interrupt->ipa, ipa_irq);
->>   }
->>   /* Remove the handler for an IPA interrupt type */
->> @@ -243,8 +241,6 @@ ipa_interrupt_remove(struct ipa_interrupt 
->> *interrupt, enum ipa_irq_id ipa_irq)
->>       if (WARN_ON(ipa_irq >= IPA_IRQ_COUNT))
->>           return;
->> -    ipa_interrupt_disable(interrupt->ipa, ipa_irq);
->> -
->>       interrupt->handler[ipa_irq] = NULL;
->>   }
->> diff --git a/drivers/net/ipa/ipa_interrupt.h 
->> b/drivers/net/ipa/ipa_interrupt.h
->> index f31fd9965fdc6..5f7d2e90ea337 100644
->> --- a/drivers/net/ipa/ipa_interrupt.h
->> +++ b/drivers/net/ipa/ipa_interrupt.h
->> @@ -85,6 +85,20 @@ void ipa_interrupt_suspend_clear_all(struct 
->> ipa_interrupt *interrupt);
->>    */
->>   void ipa_interrupt_simulate_suspend(struct ipa_interrupt *interrupt);
->> +/**
->> + * ipa_interrupt_enable() - Enable an IPA interrupt type
->> + * @ipa:    IPA pointer
->> + * @ipa_irq:    IPA interrupt ID
->> + */
->> +void ipa_interrupt_enable(struct ipa *ipa, enum ipa_irq_id ipa_irq);
-> 
-> I think you forgot a forward declaration for enum ipa_irq_id
+> Add a tracepoint for capturing TCP segments with
+> a send or receive length. This makes it easy to obtain
+> the packet sending and receiving information of each process
+> in the user mode, such as the netatop tool.
 
-Thanks, I'll verify this and will send v2 with a fix once
-net-next is open for business again.
+You can obtain the same information with kretprobe:
+https://www.gcardone.net/2020-07-31-per-process-bandwidth-monitoring-on-Linux-with-bpftrace/
 
-					-Alex
-
-> 
-> Kind Regards,
-> Caleb
->> +
->> +/**
->> + * ipa_interrupt_disable() - Disable an IPA interrupt type
->> + * @ipa:    IPA pointer
->> + * @ipa_irq:    IPA interrupt ID
->> + */
->> +void ipa_interrupt_disable(struct ipa *ipa, enum ipa_irq_id ipa_irq);
->> +
->>   /**
->>    * ipa_interrupt_config() - Configure the IPA interrupt framework
->>    * @ipa:    IPA pointer
->> diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
->> index 8420f93128a26..9148d606d5fc2 100644
->> --- a/drivers/net/ipa/ipa_power.c
->> +++ b/drivers/net/ipa/ipa_power.c
->> @@ -337,10 +337,13 @@ int ipa_power_setup(struct ipa *ipa)
->>       ipa_interrupt_add(ipa->interrupt, IPA_IRQ_TX_SUSPEND,
->>                 ipa_suspend_handler);
->> +    ipa_interrupt_enable(ipa, IPA_IRQ_TX_SUSPEND);
->>       ret = device_init_wakeup(&ipa->pdev->dev, true);
->> -    if (ret)
->> +    if (ret) {
->> +        ipa_interrupt_disable(ipa, IPA_IRQ_TX_SUSPEND);
->>           ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_TX_SUSPEND);
->> +    }
->>       return ret;
->>   }
->> @@ -348,6 +351,7 @@ int ipa_power_setup(struct ipa *ipa)
->>   void ipa_power_teardown(struct ipa *ipa)
->>   {
->>       (void)device_init_wakeup(&ipa->pdev->dev, false);
->> +    ipa_interrupt_disable(ipa, IPA_IRQ_TX_SUSPEND);
->>       ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_TX_SUSPEND);
->>   }
->> diff --git a/drivers/net/ipa/ipa_uc.c b/drivers/net/ipa/ipa_uc.c
->> index 0a890b44c09e1..af541758d047f 100644
->> --- a/drivers/net/ipa/ipa_uc.c
->> +++ b/drivers/net/ipa/ipa_uc.c
->> @@ -187,7 +187,9 @@ void ipa_uc_config(struct ipa *ipa)
->>       ipa->uc_powered = false;
->>       ipa->uc_loaded = false;
->>       ipa_interrupt_add(interrupt, IPA_IRQ_UC_0, 
->> ipa_uc_interrupt_handler);
->> +    ipa_interrupt_enable(ipa, IPA_IRQ_UC_0);
->>       ipa_interrupt_add(interrupt, IPA_IRQ_UC_1, 
->> ipa_uc_interrupt_handler);
->> +    ipa_interrupt_enable(ipa, IPA_IRQ_UC_1);
->>   }
->>   /* Inverse of ipa_uc_config() */
->> @@ -195,7 +197,9 @@ void ipa_uc_deconfig(struct ipa *ipa)
->>   {
->>       struct device *dev = &ipa->pdev->dev;
->> +    ipa_interrupt_disable(ipa, IPA_IRQ_UC_1);
->>       ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_1);
->> +    ipa_interrupt_disable(ipa, IPA_IRQ_UC_0);
->>       ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_0);
->>       if (ipa->uc_loaded)
->>           ipa_power_retention(ipa, false);
-
+Thanks.
