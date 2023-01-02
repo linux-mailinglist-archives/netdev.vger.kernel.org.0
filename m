@@ -2,76 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5689D65AC10
-	for <lists+netdev@lfdr.de>; Sun,  1 Jan 2023 23:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F5065ACFA
+	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 04:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbjAAW2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 17:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37910 "EHLO
+        id S229901AbjABDf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Jan 2023 22:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbjAAW2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 17:28:36 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BED2B70
-        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 14:28:35 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id s2-20020a056e02216200b0030bc3be69e5so17133009ilv.20
-        for <netdev@vger.kernel.org>; Sun, 01 Jan 2023 14:28:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NzXoGRNXiCRuamX9tCo8Tl0xkN8+BazcxOMPlU5aEdI=;
-        b=2rMZugc2ulB587qTpMwJ7ijKCHXjIkHhHTOhHHhi6OptMBa37325iJNjLyQuz9m7cf
-         Khw5X6oiRYNrUzFprmWULNeiqoTMQzdETWkr3je4/hPtM2A+P3sbLuHQbGbmdyOPVuRZ
-         3nwdeVJv2yuBh5iffs6iOYOzJdxe6G+ce8GbeOaAX0KB/SJpuvPrki8JO1WqhlVypIom
-         qywVuSyEBKA1Abg/R+JLSvopK4iTyiKmF8MTPgaWl7pxl8kOnB8jQDWLlHjfWFMPq4HS
-         cEpwH1w6Kd+w1tEw38qM6eLs6aHOIwDgzGZJoIhRtPGpsoR99MLO+hyybf9HukY/LWNg
-         fcJg==
-X-Gm-Message-State: AFqh2kpQ4aEtGePAKWRQRlEtTUzmj7jd7czFK7lr7fnHa0eK3XQLsdkb
-        MVyqp8oLUT8c1vb0DE/KYuDEld6HroHikG2IuRMLu9ClLMMq
-X-Google-Smtp-Source: AMrXdXsq/MoZdz+RrWCh2FeqhRA3f2NJfAESSum8zzyd3dnsW1E9i5XEg95OPhdghnXvDOb8Pp1WQp26fIyV4cRbWk5NpvOmnZur
+        with ESMTP id S229674AbjABDfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 22:35:55 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94632D84
+        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 19:35:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1672630364;
+    s=strato-dkim-0002; d=xenosoft.de;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=wH6ZUO7J0AcIxk2tWtudQmGG68BDM/GwIGysI7jFImo=;
+    b=cuyVOCGQmhucqHo2nu4OSy99epbVxEov/5GuYvP8X7D6eWyz6ESBcG9FoDJQXo0SJj
+    OB8gk1QueDdrgPkOmOCe2hNwBGNrvTqevFKl1f8todOs8fiLaStLvpnf4PY+hlRDsQhT
+    E4saWVErlqi3pKDoYX9rRW3a+4hJQfq9PbKrqWLF53plBtluYeJ0emWFFNfYIdO0mX9c
+    7aXUeeM2dji9yI9lqEm4b4Y6AIh7JUXfb8FC6rr+/3doT/IHydDVbk0b2BBTGld37xN0
+    +C4ck51Gwu6ZOMPz0BBwQv4npNYW1KOinJ1tFKx37Dii2QvmqKbmVOsGah6yhGxW2DvI
+    onDQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBfio0GngadwjX4M5RB1pvK++FgVycZqCWMJGghA=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a02:8109:8980:4474:29da:718a:6882:44e8]
+    by smtp.strato.de (RZmta 48.2.1 AUTH)
+    with ESMTPSA id e28afdz023WgFTc
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 2 Jan 2023 04:32:42 +0100 (CET)
+Message-ID: <8be26a07-3f48-cd61-1b74-1605827bfae3@xenosoft.de>
+Date:   Mon, 2 Jan 2023 04:32:42 +0100
 MIME-Version: 1.0
-X-Received: by 2002:a02:cd06:0:b0:376:21c3:23fe with SMTP id
- g6-20020a02cd06000000b0037621c323femr3039101jaq.192.1672612114793; Sun, 01
- Jan 2023 14:28:34 -0800 (PST)
-Date:   Sun, 01 Jan 2023 14:28:34 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f30d5305f13b5a9b@google.com>
-Subject: [syzbot] bpf-next build error (5)
-From:   syzbot <syzbot+cb02a28d8c55b86bb096@syzkaller.appspotmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [FSL P50x0] DPAA Ethernet issue
+To:     Sean Anderson <seanga2@gmail.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     darren@stevens-zone.net, info@xenosoft.de,
+        linuxppc-dev@lists.ozlabs.org, madskateman@gmail.com,
+        matthew@a-eon.biz, rtd2@xtra.co.nz, sean.anderson@seco.com,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <0bfc8f3d-cb62-25f4-2590-ff424adbe48a@xenosoft.de>
+ <a40020bd-c190-4283-1977-9e4d9627b888@gmail.com>
+From:   Christian Zigotzky <chzigotzky@xenosoft.de>
+In-Reply-To: <a40020bd-c190-4283-1977-9e4d9627b888@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 01 January 2023 at 07:11 pm, Sean Anderson wrote:
 
-syzbot found the following issue on:
+Thank you for testing this. Unfortunately, I have no P-series hardware,
+so I was unable to test the 10gec/dtsec parts of this conversion. I had
+hoped that this would get tested by someone with the hardware (at NXP)
+before now, but it seems you get to be the "lucky" first user.
 
-HEAD commit:    07453245620c libbpf: fix errno is overwritten after being ..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=109a2568480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b0e91ad4b5f69c47
-dashboard link: https://syzkaller.appspot.com/bug?extid=cb02a28d8c55b86bb096
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+I see you have labeled one of your kernels as supporting QEMU.  Do you
+happen to have instructions for running Linux on QEMU?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cb02a28d8c55b86bb096@syzkaller.appspotmail.com
+Can you try the following patch. I think my mail client will mangle it,  
+so I have also attached it to this email.
 
-failed to run ["make" "-j" "64" "ARCH=x86_64" "bzImage"]: exit status 2
+------------
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Hi Sean,
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks a lot for your answer.
+
+I use the virtio-net device in a virtual e5500 QEMU/KVM HV machine. [1] [2]
+
+I will test your patch as soon as possible.
+
+Thanks,
+Christian
+
+[1] QEMU command: qemu-system-ppc64 -M ppce500 -cpu e5500 -m 1024 
+-kernel uImage-6.2 -drive 
+format=raw,file=void-live-powerpc-20220129.img,index=0,if=virtio -netdev 
+user,id=mynet0 -device virtio-net,netdev=mynet0 -append "rw 
+root=/dev/vda2" -device virtio-gpu -device virtio-mouse-pci -device 
+virtio-keyboard-pci -device pci-ohci,id=newusb -audiodev 
+id=sndbe,driver=pa,server=/run/user/1000/pulse/native -device 
+usb-audio,bus=newusb.0 -enable-kvm -smp 4 -fsdev 
+local,security_model=passthrough,id=fsdev0,path=/home/amigaone/Music 
+-device virtio-9p-pci,id=fs0,fsdev=fsdev0,mount_tag=hostshare
+
+[2] https://forum.hyperion-entertainment.com/viewtopic.php?p=46749
