@@ -2,105 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F5065ACFA
-	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 04:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC5665AD11
+	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 06:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbjABDf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Jan 2023 22:35:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
+        id S229529AbjABFFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 00:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbjABDfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Jan 2023 22:35:55 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94632D84
-        for <netdev@vger.kernel.org>; Sun,  1 Jan 2023 19:35:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1672630364;
-    s=strato-dkim-0002; d=xenosoft.de;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=wH6ZUO7J0AcIxk2tWtudQmGG68BDM/GwIGysI7jFImo=;
-    b=cuyVOCGQmhucqHo2nu4OSy99epbVxEov/5GuYvP8X7D6eWyz6ESBcG9FoDJQXo0SJj
-    OB8gk1QueDdrgPkOmOCe2hNwBGNrvTqevFKl1f8todOs8fiLaStLvpnf4PY+hlRDsQhT
-    E4saWVErlqi3pKDoYX9rRW3a+4hJQfq9PbKrqWLF53plBtluYeJ0emWFFNfYIdO0mX9c
-    7aXUeeM2dji9yI9lqEm4b4Y6AIh7JUXfb8FC6rr+/3doT/IHydDVbk0b2BBTGld37xN0
-    +C4ck51Gwu6ZOMPz0BBwQv4npNYW1KOinJ1tFKx37Dii2QvmqKbmVOsGah6yhGxW2DvI
-    onDQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBfio0GngadwjX4M5RB1pvK++FgVycZqCWMJGghA=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a02:8109:8980:4474:29da:718a:6882:44e8]
-    by smtp.strato.de (RZmta 48.2.1 AUTH)
-    with ESMTPSA id e28afdz023WgFTc
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 2 Jan 2023 04:32:42 +0100 (CET)
-Message-ID: <8be26a07-3f48-cd61-1b74-1605827bfae3@xenosoft.de>
-Date:   Mon, 2 Jan 2023 04:32:42 +0100
+        with ESMTP id S229447AbjABFFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 00:05:17 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D6610BE;
+        Sun,  1 Jan 2023 21:05:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1672635916; x=1704171916;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jjlAa5M79d0piFAU0LsxQkG64HUyuB/bfXBIDLtDCDo=;
+  b=aEFiHdJSaRfFztW5oKy49Oo/GPW/e11QFZ1hoKqKKd3sP4uF+E0x3eZA
+   MdB7Uh0w4Keg8unttdMkBx6GOx8I0z9Nw/wOtKk9n1lgnmuAxANlGP9+r
+   PxMeGDMHTpfuGj4P5Yq76/NbgQ3e+UMXrLD6OeZERorE7C3ZkxSpQsqWN
+   p+4t9EQl1CHBetYU/KjjIgio/w1IYRgDJRL4i1eQaJJAYjbtUEZSIkQyd
+   1Pk6D431HCgbTYQmoyCmDGkXcbUJ+TLBUk0jC0A/sQ4asXAmRU08pmbGM
+   9/Xy7mcIxHcxWitF26RPSupUHZ6de2I35SIXel0AYnb19eblk8HA0xWRn
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,293,1665471600"; 
+   d="scan'208";a="195057225"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jan 2023 22:05:15 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Sun, 1 Jan 2023 22:05:14 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Sun, 1 Jan 2023 22:05:08 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
+        <richardcochran@gmail.com>, <ceggers@arri.de>,
+        <jacob.e.keller@intel.com>
+Subject: [Patch net-next v6 00/13] net: dsa: microchip: add PTP support for KSZ9563/KSZ8563 and LAN937x
+Date:   Mon, 2 Jan 2023 10:34:46 +0530
+Message-ID: <20230102050459.31023-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [FSL P50x0] DPAA Ethernet issue
-To:     Sean Anderson <seanga2@gmail.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     darren@stevens-zone.net, info@xenosoft.de,
-        linuxppc-dev@lists.ozlabs.org, madskateman@gmail.com,
-        matthew@a-eon.biz, rtd2@xtra.co.nz, sean.anderson@seco.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <0bfc8f3d-cb62-25f4-2590-ff424adbe48a@xenosoft.de>
- <a40020bd-c190-4283-1977-9e4d9627b888@gmail.com>
-From:   Christian Zigotzky <chzigotzky@xenosoft.de>
-In-Reply-To: <a40020bd-c190-4283-1977-9e4d9627b888@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01 January 2023 at 07:11 pm, Sean Anderson wrote:
+KSZ9563/KSZ8563 and  LAN937x switch are capable for supporting IEEE 1588 PTP
+protocol.  LAN937x has the same PTP register set similar to KSZ9563, hence the
+implementation has been made common for the KSZ switches.  KSZ9563 does not
+support two step timestamping but LAN937x supports both.  Tested the 1step &
+2step p2p timestamping in LAN937x and p2p1step timestamping in KSZ9563.
 
-Thank you for testing this. Unfortunately, I have no P-series hardware,
-so I was unable to test the 10gec/dtsec parts of this conversion. I had
-hoped that this would get tested by someone with the hardware (at NXP)
-before now, but it seems you get to be the "lucky" first user.
+This patch series is based on the Christian Eggers PTP support for KSZ9563.
+Applied the Christian patch and updated as per the latest refactoring of KSZ
+series code. The features added on top are PTP packet Interrupt
+implementation based on nested handler, LAN937x two step timestamping and
+programmable per_out pins.
 
-I see you have labeled one of your kernels as supporting QEMU.  Do you
-happen to have instructions for running Linux on QEMU?
+Link: https://www.spinics.net/lists/netdev/msg705531.html
 
-Can you try the following patch. I think my mail client will mangle it,  
-so I have also attached it to this email.
+Patch v5 -> v6
+- Rebased to latest net-next and renamed from RFC to patch net-next.
 
-------------
+Patch v4 -> v5
+- Replaced irq_domain_add_simple with irq_doamin_add_linear
+- Used the helper diff_by_scaled_ppm() for adjfine.
 
-Hi Sean,
+Patch v3 -> v4
+- removed IRQF_TRIGGER_FALLING from the request_threaded_irq of ptp msg
+- addressed review comments on patch 10 periodic output
+- added sign off in patch 6 & 9
+- reverted to set PTP_1STEP bit for lan937x which is missed during v3 regression
 
-Thanks a lot for your answer.
+Patch v2-> v3
+- used port_rxtstamp for reconstructing the absolute timestamp instead of
+tagger function pointer.
+- Reverted to setting of 802.1As bit.
 
-I use the virtio-net device in a virtual e5500 QEMU/KVM HV machine. [1] [2]
+Patch v1 -> v2
+- GPIO perout enable bit is different for LAN937x and KSZ9x. Added new patch
+for configuring LAN937x programmable pins.
+- PTP enabled in hardware based on both tx and rx timestamping of all the user
+ports.
+- Replaced setting of 802.1AS bit with P2P bit in PTP_MSG_CONF1 register.
 
-I will test your patch as soon as possible.
+RFC v2 -> Patch v1
+- Changed the patch author based on past patch submission
+- Changed the commit message prefix as net: dsa: microchip: ptp
+Individual patch changes are listed in correspondig commits.
 
-Thanks,
-Christian
+RFC v1 -> v2
+- Added the p2p1step timestamping and conditional execution of 2 step for
+  LAN937x only.
+- Added the periodic output support
 
-[1] QEMU command: qemu-system-ppc64 -M ppce500 -cpu e5500 -m 1024 
--kernel uImage-6.2 -drive 
-format=raw,file=void-live-powerpc-20220129.img,index=0,if=virtio -netdev 
-user,id=mynet0 -device virtio-net,netdev=mynet0 -append "rw 
-root=/dev/vda2" -device virtio-gpu -device virtio-mouse-pci -device 
-virtio-keyboard-pci -device pci-ohci,id=newusb -audiodev 
-id=sndbe,driver=pa,server=/run/user/1000/pulse/native -device 
-usb-audio,bus=newusb.0 -enable-kvm -smp 4 -fsdev 
-local,security_model=passthrough,id=fsdev0,path=/home/amigaone/Music 
--device virtio-9p-pci,id=fs0,fsdev=fsdev0,mount_tag=hostshare
+Arun Ramadoss (5):
+  net: dsa: microchip: ptp: add 4 bytes in tail tag when ptp enabled
+  net: dsa: microchip: ptp: enable interrupt for timestamping
+  net: dsa: microchip: ptp: add support for perout programmable pins
+  net: dsa: microchip: ptp: lan937x: add 2 step timestamping
+  net: dsa: microchip: ptp: lan937x: Enable periodic output in LED pins
 
-[2] https://forum.hyperion-entertainment.com/viewtopic.php?p=46749
+Christian Eggers (8):
+  net: dsa: microchip: ptp: add the posix clock support
+  net: dsa: microchip: ptp: Initial hardware time stamping support
+  net: dsa: microchip: ptp: manipulating absolute time using ptp hw
+    clock
+  net: ptp: add helper for one-step P2P clocks
+  net: dsa: microchip: ptp: add packet reception timestamping
+  net: dsa: microchip: ptp: add packet transmission timestamping
+  net: dsa: microchip: ptp: move pdelay_rsp correction field to tail tag
+  net: dsa: microchip: ptp: add periodic output signal
+
+ MAINTAINERS                             |    1 +
+ drivers/net/dsa/microchip/Kconfig       |   11 +
+ drivers/net/dsa/microchip/Makefile      |    5 +
+ drivers/net/dsa/microchip/ksz_common.c  |   44 +-
+ drivers/net/dsa/microchip/ksz_common.h  |   48 +
+ drivers/net/dsa/microchip/ksz_ptp.c     | 1191 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ptp.h     |   86 ++
+ drivers/net/dsa/microchip/ksz_ptp_reg.h |  142 +++
+ include/linux/dsa/ksz_common.h          |   53 +
+ include/linux/ptp_classify.h            |   71 ++
+ net/dsa/tag_ksz.c                       |  213 +++-
+ 11 files changed, 1847 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz_ptp.c
+ create mode 100644 drivers/net/dsa/microchip/ksz_ptp.h
+ create mode 100644 drivers/net/dsa/microchip/ksz_ptp_reg.h
+ create mode 100644 include/linux/dsa/ksz_common.h
+
+
+base-commit: c183e6c3ec342624c43269c099050d01eeb67e63
+-- 
+2.36.1
+
