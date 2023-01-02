@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E077A65B827
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 00:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F6A665B832
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 00:33:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbjABXZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 18:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        id S236077AbjABXdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 18:33:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbjABXZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 18:25:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5026DC60
-        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 15:25:49 -0800 (PST)
+        with ESMTP id S230389AbjABXc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 18:32:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9482FBC8C
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 15:32:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E001561077
-        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 23:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 139CCC433EF;
-        Mon,  2 Jan 2023 23:25:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 570D1B80D84
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 23:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C81ACC433EF;
+        Mon,  2 Jan 2023 23:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672701948;
-        bh=9/Z4kIF8l8TTVhLWlWW1DQh6EBD3saXupljXHUf16FI=;
+        s=k20201202; t=1672702376;
+        bh=98ACekL+YzYWx5j8867ZE8SzuoOKlyXRqSxMHfM7SmI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GZ/BPK0rPI0oilI6lumf8HowvEib8XCQasNZmSfRhGZI9I5hLB9dDYqgCL0N8SW7Q
-         zDeoZBqE8c75VTVowwYTNA2VrAoIhYcChQx7xVOLfqDcTTr/l+6F2RmtvZuU9Fzz79
-         aspaJNoVXjzuDfvXRjsUfD0QO+oWiPPoJoWic7CaXmFvMIAZ1DeYbo6071/NWAMpd3
-         BTGHV54xStqoD9Hm5g9X2MdRlM4DXHpYgoc+sRYcRXlMSDM3WvVOQW4otl+Hj8FJsm
-         aiyjZlF2suUbj6tcqYg5VPj7O4eeT6SsLLkRCEel3IqXe4s/2dwQIQmpRQw39sNApT
-         Bnau+kLiS5w3w==
-Date:   Mon, 2 Jan 2023 15:25:46 -0800
+        b=qVdW1+cyCc0eC9mZ8akPwWZj8NN7MYBgblKnHwHXv7IbIZU0HJ+mq1d++cM+nXHqj
+         sGq8pvD7TGasrOKID7+tfnEE6TWqUcj9rWMCJ9QX+29cANSP8/gBlebwAqJC7vlesr
+         ewmSN34E7jg5rKxRCIS6iNg17sbvFu8gC5PnFDfh2ytFEcJirY24pL1NeU8XPVfLp1
+         S+wmRy1gpxfpdp5qOyfghFrxEpc9d6oCzoes4tOh1mzTo8H8ahpCjtS0YAq1rKHkYR
+         bf17K016dZ/ARz9ssbH7MAD+1npUEiJA/FNqUfmMONUiXCF9aeS9lnN3FN0urbuQAk
+         Lo63TLeOU5Jvg==
+Date:   Mon, 2 Jan 2023 15:32:54 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     jacob.e.keller@intel.com, leon@kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC net-next 10/10] netdevsim: register devlink instance
- before sub-objects
-Message-ID: <20230102152546.1797b0e9@kernel.org>
-In-Reply-To: <Y7Ldciiq9wX+xUqM@nanopsycho>
+Subject: Re: [RFC net-next 06/10] devlink: don't require setting features
+ before registration
+Message-ID: <20230102153254.22dea2be@kernel.org>
+In-Reply-To: <20230102152447.05a86e28@kernel.org>
 References: <20221217011953.152487-1-kuba@kernel.org>
-        <20221217011953.152487-11-kuba@kernel.org>
-        <Y7Ldciiq9wX+xUqM@nanopsycho>
+        <20221217011953.152487-7-kuba@kernel.org>
+        <Y7L3Xrh7V33Ijr4M@nanopsycho>
+        <20230102152447.05a86e28@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,12 +55,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 Jan 2023 14:34:42 +0100 Jiri Pirko wrote:
-> Sat, Dec 17, 2022 at 02:19:53AM CET, kuba@kernel.org wrote:
-> >Move the devlink instance registration up so that all the sub-object
-> >manipulation happens on a valid instance.  
+On Mon, 2 Jan 2023 15:24:47 -0800 Jakub Kicinski wrote:
+> On Mon, 2 Jan 2023 16:25:18 +0100 Jiri Pirko wrote:
+> > Sat, Dec 17, 2022 at 02:19:49AM CET, kuba@kernel.org wrote:  
+> > >Requiring devlink_set_features() to be run before devlink is
+> > >registered is overzealous. devlink_set_features() itself is
+> > >a leftover from old workarounds which were trying to prevent
+> > >initiating reload before probe was complete.    
+> > 
+> > Wouldn't it be better to remove this entirely? I don't think it is
+> > needed anymore.  
 > 
-> I wonder, why don't you squash patch 8 to this one and make 1 move, to
-> the fina destination?
+> I think you're right. Since users don't have access to the instance
+> before it's registered - this flag can have no impact.
 
-I found the squashed version a lot harder to review.
+Let's leave this for a separate follow up, mlx5 needs a bit more work.
+It sets the feature conditionally.
