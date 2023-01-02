@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE9E65AD1B
-	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 06:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D0B65AD1C
+	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 06:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbjABFG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 00:06:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
+        id S230385AbjABFG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 00:06:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbjABFGe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 00:06:34 -0500
+        with ESMTP id S230271AbjABFGt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 00:06:49 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF761CF;
-        Sun,  1 Jan 2023 21:06:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9736F1CF;
+        Sun,  1 Jan 2023 21:06:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1672635993; x=1704171993;
+  t=1672636005; x=1704172005;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bL4zyzFpraW7P7Y8sfCGZx1SbDSNxCMrqM9BrEtb9nQ=;
-  b=DXz+CK4I0+zG1UcXSu2K5ok8lNr70aQ+02VORxMVirzFdVoch8K1SXni
-   TZGKhhAK0eN6W+A9fLMd9QA3+CpC7/04t7tt1/eM+a/fXUQXE9ZY0fzet
-   6nolxKWqnPQaT+VCScjorNpjr1T/j23JYOWh9l66zhhcOxRoSE110Q5XW
-   5QNds8xm4C7l8yzJ8nQ5Y6HxDX+ECh4moCgGmO3MqtklgbswF6y4XLieU
-   PrtE1d2dqbfdATRGZNex8PksCDXVjMfeYgl4RlJOoUGIHf1B97mLcyQFt
-   f6N9czir3w4oEujSmOjV8aR43SxwHzW61vws5BHeVuSoHTV0mYaPc6zfE
-   A==;
+  bh=TBiocUlMd4lgD3UieKC9lMwBVyukIc3JWqKRD/9Iuek=;
+  b=IR9ZrirLIW/yOOFhEi6ve/hPu+7OrdJ2eU8YG7g6+hOhhNHvovQMbGlP
+   UeCQQXqJzSc36jN8aj7gZnK+NIOZnXIUUwqDlYLq1TnmhFOsTtRTYlqrU
+   tD6gYxAKCmpqeblPd3qfwhaIuu1IDrR7d0PX4724gTH/V8I3yfzigIxbW
+   TlkUNe0pwGa04p55OmoqrsZOWGBIhMmjmyPw0DLOAyzGHNoSQ0hDkkbUI
+   lTuZo0Y7IOiJgZhYrlIH3jknZ6xW1+LzewuiEErQAbkJujrAdL/S59+DZ
+   gbnvY831gQq0OwiXoLqTHLaZjof1mbzqKqlFfqMI00+xCW9Jg1kLKLY16
+   w==;
 X-IronPort-AV: E=Sophos;i="5.96,293,1665471600"; 
-   d="scan'208";a="190347459"
+   d="scan'208";a="190347482"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jan 2023 22:06:32 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jan 2023 22:06:45 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sun, 1 Jan 2023 22:06:30 -0700
+ 15.1.2507.16; Sun, 1 Jan 2023 22:06:44 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Sun, 1 Jan 2023 22:06:24 -0700
+ 15.1.2507.16 via Frontend Transport; Sun, 1 Jan 2023 22:06:38 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -47,9 +47,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>, <ceggers@arri.de>,
         <jacob.e.keller@intel.com>
-Subject: [Patch net-next v6 05/13] net: dsa: microchip: ptp: enable interrupt for timestamping
-Date:   Mon, 2 Jan 2023 10:34:51 +0530
-Message-ID: <20230102050459.31023-6-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v6 06/13] net: ptp: add helper for one-step P2P clocks
+Date:   Mon, 2 Jan 2023 10:34:52 +0530
+Message-ID: <20230102050459.31023-7-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20230102050459.31023-1-arun.ramadoss@microchip.com>
 References: <20230102050459.31023-1-arun.ramadoss@microchip.com>
@@ -66,412 +66,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP Interrupt mask and status register differ from the global and port
-interrupt mechanism by two methods. One is that for global/port
-interrupt enabling we have to clear the bit but for ptp interrupt we
-have to set the bit. And other is bit12:0 is reserved in ptp interrupt
-registers. This forced to not use the generic implementation of
-global/port interrupt method routine. This patch implement the ptp
-interrupt mechanism to read the timestamp register for sync, pdelay_req
-and pdelay_resp.
+From: Christian Eggers <ceggers@arri.de>
 
+For P2P delay measurement, the ingress time stamp of the PDelay_Req is
+required for the correction field of the PDelay_Resp. The application
+echoes back the correction field of the PDelay_Req when sending the
+PDelay_Resp.
+
+Some hardware (like the ZHAW InES PTP time stamping IP core) subtracts
+the ingress timestamp autonomously from the correction field, so that
+the hardware only needs to add the egress timestamp on tx. Other
+hardware (like the Microchip KSZ9563) reports the ingress time stamp via
+an interrupt and requires that the software provides this time stamp via
+tail-tag on tx.
+
+In order to avoid introducing a further application interface for this,
+the driver can simply emulate the behavior of the InES device and
+subtract the ingress time stamp in software from the correction field.
+
+On egress, the correction field can either be kept as it is (and the
+time stamp field in the tail-tag is set to zero) or move the value from
+the correction field back to the tail-tag.
+
+Changing the correction field requires updating the UDP checksum (if UDP
+is used as transport).
+
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
-v4 -> v5
-- Replaced the irq_domain_add_simple with  irq_domain_add_linear
-- Updated the error path to free_irq
-
-v3 -> v4
-- Removed IRQF_TRIGGER_FALLING flag in the request_threaded_irq
-
-RFC v2 -> Patch v1
-- Moved the acking of interrupts before calling the handle_nested_irq to
-  avoid race condition between deferred xmit and Irq threads
+v1 -> v2
+- Fixed compilation issue when PTP_CLASSIFY not selected in menuconfig
+as reported by kernel test robot <lkp@intel.com>
 ---
- drivers/net/dsa/microchip/ksz_common.c  |  15 +-
- drivers/net/dsa/microchip/ksz_common.h  |  11 ++
- drivers/net/dsa/microchip/ksz_ptp.c     | 207 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp.h     |   9 ++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  19 +++
- 5 files changed, 259 insertions(+), 2 deletions(-)
+ include/linux/ptp_classify.h | 71 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 1819f75eb007..30f40619f9a3 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2100,13 +2100,17 @@ static int ksz_setup(struct dsa_switch *ds)
- 			ret = ksz_pirq_setup(dev, dp->index);
- 			if (ret)
- 				goto out_girq;
-+
-+			ret = ksz_ptp_irq_setup(ds, dp->index);
-+			if (ret)
-+				goto out_pirq;
- 		}
- 	}
+diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+index 2b6ea36ad162..6e5869c2504c 100644
+--- a/include/linux/ptp_classify.h
++++ b/include/linux/ptp_classify.h
+@@ -10,8 +10,12 @@
+ #ifndef _PTP_CLASSIFY_H_
+ #define _PTP_CLASSIFY_H_
  
- 	ret = ksz_ptp_clock_register(ds);
- 	if (ret) {
- 		dev_err(dev->dev, "Failed to register PTP clock: %d\n", ret);
--		goto out_pirq;
-+		goto out_ptpirq;
- 	}
++#include <asm/unaligned.h>
+ #include <linux/ip.h>
++#include <linux/ktime.h>
+ #include <linux/skbuff.h>
++#include <linux/udp.h>
++#include <net/checksum.h>
  
- 	ret = ksz_mdio_register(dev);
-@@ -2123,6 +2127,10 @@ static int ksz_setup(struct dsa_switch *ds)
- 
- out_ptp_clock_unregister:
- 	ksz_ptp_clock_unregister(ds);
-+out_ptpirq:
-+	if (dev->irq > 0)
-+		dsa_switch_for_each_user_port(dp, dev->ds)
-+			ksz_ptp_irq_free(ds, dp->index);
- out_pirq:
- 	if (dev->irq > 0)
- 		dsa_switch_for_each_user_port(dp, dev->ds)
-@@ -2142,8 +2150,11 @@ static void ksz_teardown(struct dsa_switch *ds)
- 	ksz_ptp_clock_unregister(ds);
- 
- 	if (dev->irq > 0) {
--		dsa_switch_for_each_user_port(dp, dev->ds)
-+		dsa_switch_for_each_user_port(dp, dev->ds) {
-+			ksz_ptp_irq_free(ds, dp->index);
-+
- 			ksz_irq_free(&dev->ports[dp->index].pirq);
-+		}
- 
- 		ksz_irq_free(&dev->girq);
- 	}
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 641aca78ef05..ec1bceb4efcc 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -20,6 +20,7 @@
- #define KSZ_MAX_NUM_PORTS 8
- 
- struct ksz_device;
-+struct ksz_port;
- 
- struct vlan_table {
- 	u32 table[3];
-@@ -83,6 +84,13 @@ struct ksz_irq {
- 	struct ksz_device *dev;
- };
- 
-+struct ksz_ptp_irq {
-+	struct ksz_port *port;
-+	u16 ts_reg;
-+	char name[16];
-+	int num;
-+};
-+
- struct ksz_port {
- 	bool remove_tag;		/* Remove Tag flag set, for ksz8795 only */
- 	bool learning;
-@@ -106,6 +114,8 @@ struct ksz_port {
- 	struct hwtstamp_config tstamp_config;
- 	bool hwts_tx_en;
- 	bool hwts_rx_en;
-+	struct ksz_irq ptpirq;
-+	struct ksz_ptp_irq ptpmsg_irq[3];
- #endif
- };
- 
-@@ -612,6 +622,7 @@ static inline int is_lan937x(struct ksz_device *dev)
- #define REG_PORT_INT_MASK		0x001F
- 
- #define PORT_SRC_PHY_INT		1
-+#define PORT_SRC_PTP_INT		2
- 
- #define KSZ8795_HUGE_PACKET_SIZE	2000
- #define KSZ8863_HUGE_PACKET_SIZE	1916
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index 16f172c1f5c2..03127b46abea 100644
---- a/drivers/net/dsa/microchip/ksz_ptp.c
-+++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -6,6 +6,8 @@
-  */
- 
- #include <linux/dsa/ksz_common.h>
-+#include <linux/irq.h>
-+#include <linux/irqdomain.h>
- #include <linux/kernel.h>
- #include <linux/ptp_classify.h>
- #include <linux/ptp_clock_kernel.h>
-@@ -25,6 +27,8 @@
- #define KSZ_PTP_INC_NS 40ULL  /* HW clock is incremented every 40 ns (by 40) */
- #define KSZ_PTP_SUBNS_BITS 32
- 
-+#define KSZ_PTP_INT_START 13
-+
- static int ksz_ptp_enable_mode(struct ksz_device *dev)
- {
- 	struct ksz_tagger_data *tagger_data = ksz_tagger_data(dev->ds);
-@@ -411,6 +415,209 @@ void ksz_ptp_clock_unregister(struct dsa_switch *ds)
- 		ptp_clock_unregister(ptp_data->clock);
+ #define PTP_CLASS_NONE  0x00 /* not a PTP event message */
+ #define PTP_CLASS_V1    0x01 /* protocol version 1 */
+@@ -129,6 +133,67 @@ static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
+ 	return msgtype;
  }
  
-+static irqreturn_t ksz_ptp_msg_thread_fn(int irq, void *dev_id)
++/**
++ * ptp_check_diff8 - Computes new checksum (when altering a 64-bit field)
++ * @old: old field value
++ * @new: new field value
++ * @oldsum: previous checksum
++ *
++ * This function can be used to calculate a new checksum when only a single
++ * field is changed. Similar as ip_vs_check_diff*() in ip_vs.h.
++ *
++ * Return: Updated checksum
++ */
++static inline __wsum ptp_check_diff8(__be64 old, __be64 new, __wsum oldsum)
 +{
-+	return IRQ_NONE;
++	__be64 diff[2] = { ~old, new };
++
++	return csum_partial(diff, sizeof(diff), oldsum);
 +}
 +
-+static irqreturn_t ksz_ptp_irq_thread_fn(int irq, void *dev_id)
++/**
++ * ptp_header_update_correction - Update PTP header's correction field
++ * @skb: packet buffer
++ * @type: type of the packet (see ptp_classify_raw())
++ * @hdr: ptp header
++ * @correction: new correction value
++ *
++ * This updates the correction field of a PTP header and updates the UDP
++ * checksum (if UDP is used as transport). It is needed for hardware capable of
++ * one-step P2P that does not already modify the correction field of Pdelay_Req
++ * event messages on ingress.
++ */
++static inline
++void ptp_header_update_correction(struct sk_buff *skb, unsigned int type,
++				  struct ptp_header *hdr, s64 correction)
 +{
-+	struct ksz_irq *ptpirq = dev_id;
-+	unsigned int nhandled = 0;
-+	struct ksz_device *dev;
-+	unsigned int sub_irq;
-+	u16 data;
-+	int ret;
-+	u8 n;
++	__be64 correction_old;
++	struct udphdr *uhdr;
 +
-+	dev = ptpirq->dev;
++	/* previous correction value is required for checksum update. */
++	memcpy(&correction_old,  &hdr->correction, sizeof(correction_old));
 +
-+	ret = ksz_read16(dev, ptpirq->reg_status, &data);
-+	if (ret)
-+		goto out;
++	/* write new correction value */
++	put_unaligned_be64((u64)correction, &hdr->correction);
 +
-+	/* Clear the interrupts W1C */
-+	ret = ksz_write16(dev, ptpirq->reg_status, data);
-+	if (ret)
-+		return IRQ_NONE;
-+
-+	for (n = 0; n < ptpirq->nirqs; ++n) {
-+		if (data & BIT(n + KSZ_PTP_INT_START)) {
-+			sub_irq = irq_find_mapping(ptpirq->domain, n);
-+			handle_nested_irq(sub_irq);
-+			++nhandled;
-+		}
++	switch (type & PTP_CLASS_PMASK) {
++	case PTP_CLASS_IPV4:
++	case PTP_CLASS_IPV6:
++		/* locate udp header */
++		uhdr = (struct udphdr *)((char *)hdr - sizeof(struct udphdr));
++		break;
++	default:
++		return;
 +	}
 +
-+out:
-+	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
++	/* update checksum */
++	uhdr->check = csum_fold(ptp_check_diff8(correction_old,
++						hdr->correction,
++						~csum_unfold(uhdr->check)));
++	if (!uhdr->check)
++		uhdr->check = CSUM_MANGLED_0;
 +}
 +
-+static void ksz_ptp_irq_mask(struct irq_data *d)
+ /**
+  * ptp_msg_is_sync - Evaluates whether the given skb is a PTP Sync message
+  * @skb: packet buffer
+@@ -166,5 +231,11 @@ static inline bool ptp_msg_is_sync(struct sk_buff *skb, unsigned int type)
+ {
+ 	return false;
+ }
++
++static inline
++void ptp_header_update_correction(struct sk_buff *skb, unsigned int type,
++				  struct ptp_header *hdr, s64 correction)
 +{
-+	struct ksz_irq *kirq = irq_data_get_irq_chip_data(d);
-+
-+	kirq->masked &= ~BIT(d->hwirq + KSZ_PTP_INT_START);
 +}
-+
-+static void ksz_ptp_irq_unmask(struct irq_data *d)
-+{
-+	struct ksz_irq *kirq = irq_data_get_irq_chip_data(d);
-+
-+	kirq->masked |= BIT(d->hwirq + KSZ_PTP_INT_START);
-+}
-+
-+static void ksz_ptp_irq_bus_lock(struct irq_data *d)
-+{
-+	struct ksz_irq *kirq  = irq_data_get_irq_chip_data(d);
-+
-+	mutex_lock(&kirq->dev->lock_irq);
-+}
-+
-+static void ksz_ptp_irq_bus_sync_unlock(struct irq_data *d)
-+{
-+	struct ksz_irq *kirq  = irq_data_get_irq_chip_data(d);
-+	struct ksz_device *dev = kirq->dev;
-+	int ret;
-+
-+	ret = ksz_write16(dev, kirq->reg_mask, kirq->masked);
-+	if (ret)
-+		dev_err(dev->dev, "failed to change IRQ mask\n");
-+
-+	mutex_unlock(&dev->lock_irq);
-+}
-+
-+static const struct irq_chip ksz_ptp_irq_chip = {
-+	.name			= "ksz-irq",
-+	.irq_mask		= ksz_ptp_irq_mask,
-+	.irq_unmask		= ksz_ptp_irq_unmask,
-+	.irq_bus_lock		= ksz_ptp_irq_bus_lock,
-+	.irq_bus_sync_unlock	= ksz_ptp_irq_bus_sync_unlock,
-+};
-+
-+static int ksz_ptp_irq_domain_map(struct irq_domain *d,
-+				  unsigned int irq, irq_hw_number_t hwirq)
-+{
-+	irq_set_chip_data(irq, d->host_data);
-+	irq_set_chip_and_handler(irq, &ksz_ptp_irq_chip, handle_level_irq);
-+	irq_set_noprobe(irq);
-+
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops ksz_ptp_irq_domain_ops = {
-+	.map	= ksz_ptp_irq_domain_map,
-+	.xlate	= irq_domain_xlate_twocell,
-+};
-+
-+static void ksz_ptp_msg_irq_free(struct ksz_port *port, u8 n)
-+{
-+	struct ksz_ptp_irq *ptpmsg_irq;
-+
-+	ptpmsg_irq = &port->ptpmsg_irq[n];
-+
-+	free_irq(ptpmsg_irq->num, ptpmsg_irq);
-+	irq_dispose_mapping(ptpmsg_irq->num);
-+}
-+
-+static int ksz_ptp_msg_irq_setup(struct ksz_port *port, u8 n)
-+{
-+	u16 ts_reg[] = {REG_PTP_PORT_PDRESP_TS, REG_PTP_PORT_XDELAY_TS,
-+			REG_PTP_PORT_SYNC_TS};
-+	static const char * const name[] = {"pdresp-msg", "xdreq-msg",
-+					    "sync-msg"};
-+	const struct ksz_dev_ops *ops = port->ksz_dev->dev_ops;
-+	struct ksz_ptp_irq *ptpmsg_irq;
-+
-+	ptpmsg_irq = &port->ptpmsg_irq[n];
-+
-+	ptpmsg_irq->port = port;
-+	ptpmsg_irq->ts_reg = ops->get_port_addr(port->num, ts_reg[n]);
-+
-+	snprintf(ptpmsg_irq->name, sizeof(ptpmsg_irq->name), name[n]);
-+
-+	ptpmsg_irq->num = irq_find_mapping(port->ptpirq.domain, n);
-+	if (ptpmsg_irq->num < 0)
-+		return ptpmsg_irq->num;
-+
-+	return request_threaded_irq(ptpmsg_irq->num, NULL,
-+				    ksz_ptp_msg_thread_fn, IRQF_ONESHOT,
-+				    ptpmsg_irq->name, ptpmsg_irq);
-+}
-+
-+int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	const struct ksz_dev_ops *ops = dev->dev_ops;
-+	struct ksz_port *port = &dev->ports[p];
-+	struct ksz_irq *ptpirq = &port->ptpirq;
-+	int irq;
-+	int ret;
-+
-+	ptpirq->dev = dev;
-+	ptpirq->masked = 0;
-+	ptpirq->nirqs = 3;
-+	ptpirq->reg_mask = ops->get_port_addr(p, REG_PTP_PORT_TX_INT_ENABLE__2);
-+	ptpirq->reg_status = ops->get_port_addr(p,
-+						REG_PTP_PORT_TX_INT_STATUS__2);
-+	snprintf(ptpirq->name, sizeof(ptpirq->name), "ptp-irq-%d", p);
-+
-+	ptpirq->domain = irq_domain_add_linear(dev->dev->of_node, ptpirq->nirqs,
-+					       &ksz_ptp_irq_domain_ops, ptpirq);
-+	if (!ptpirq->domain)
-+		return -ENOMEM;
-+
-+	for (irq = 0; irq < ptpirq->nirqs; irq++)
-+		irq_create_mapping(ptpirq->domain, irq);
-+
-+	ptpirq->irq_num = irq_find_mapping(port->pirq.domain, PORT_SRC_PTP_INT);
-+	if (ptpirq->irq_num < 0) {
-+		ret = ptpirq->irq_num;
-+		goto out;
-+	}
-+
-+	ret = request_threaded_irq(ptpirq->irq_num, NULL, ksz_ptp_irq_thread_fn,
-+				   IRQF_ONESHOT, ptpirq->name, ptpirq);
-+	if (ret)
-+		goto out;
-+
-+	for (irq = 0; irq < ptpirq->nirqs; irq++) {
-+		ret = ksz_ptp_msg_irq_setup(port, irq);
-+		if (ret)
-+			goto out_ptp_msg;
-+	}
-+
-+	return 0;
-+
-+out_ptp_msg:
-+	free_irq(ptpirq->irq_num, ptpirq);
-+	while (irq--)
-+		free_irq(port->ptpmsg_irq[irq].num, &port->ptpmsg_irq[irq]);
-+out:
-+	for (irq = 0; irq < ptpirq->nirqs; irq++)
-+		irq_dispose_mapping(port->ptpmsg_irq[irq].num);
-+
-+	irq_domain_remove(ptpirq->domain);
-+
-+	return ret;
-+}
-+
-+void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port *port = &dev->ports[p];
-+	struct ksz_irq *ptpirq = &port->ptpirq;
-+	u8 n;
-+
-+	for (n = 0; n < ptpirq->nirqs; n++)
-+		ksz_ptp_msg_irq_free(port, n);
-+
-+	free_irq(ptpirq->irq_num, ptpirq);
-+	irq_dispose_mapping(ptpirq->irq_num);
-+
-+	irq_domain_remove(ptpirq->domain);
-+}
-+
- MODULE_AUTHOR("Christian Eggers <ceggers@arri.de>");
- MODULE_AUTHOR("Arun Ramadoss <arun.ramadoss@microchip.com>");
- MODULE_DESCRIPTION("PTP support for KSZ switch");
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
-index 2c29a0b604bb..7c5679372705 100644
---- a/drivers/net/dsa/microchip/ksz_ptp.h
-+++ b/drivers/net/dsa/microchip/ksz_ptp.h
-@@ -30,6 +30,8 @@ int ksz_get_ts_info(struct dsa_switch *ds, int port,
- 		    struct ethtool_ts_info *ts);
- int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
- int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
-+int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p);
-+void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
- 
- #else
- 
-@@ -45,6 +47,13 @@ static inline int ksz_ptp_clock_register(struct dsa_switch *ds)
- 
- static inline void ksz_ptp_clock_unregister(struct dsa_switch *ds) { }
- 
-+static inline int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p)
-+{
-+	return 0;
-+}
-+
-+static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
-+
- #define ksz_get_ts_info NULL
- 
- #define ksz_hwtstamp_get NULL
-diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-index 4ca4ad4bba7e..abe95bbefc12 100644
---- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
-+++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-@@ -49,4 +49,23 @@
- #define PTP_MASTER			BIT(1)
- #define PTP_1STEP			BIT(0)
- 
-+/* Port PTP Register */
-+#define REG_PTP_PORT_RX_DELAY__2	0x0C00
-+#define REG_PTP_PORT_TX_DELAY__2	0x0C02
-+#define REG_PTP_PORT_ASYM_DELAY__2	0x0C04
-+
-+#define REG_PTP_PORT_XDELAY_TS		0x0C08
-+#define REG_PTP_PORT_SYNC_TS		0x0C0C
-+#define REG_PTP_PORT_PDRESP_TS		0x0C10
-+
-+#define REG_PTP_PORT_TX_INT_STATUS__2	0x0C14
-+#define REG_PTP_PORT_TX_INT_ENABLE__2	0x0C16
-+
-+#define PTP_PORT_SYNC_INT		BIT(15)
-+#define PTP_PORT_XDELAY_REQ_INT		BIT(14)
-+#define PTP_PORT_PDELAY_RESP_INT	BIT(13)
-+#define KSZ_SYNC_MSG			2
-+#define KSZ_XDREQ_MSG			1
-+#define KSZ_PDRES_MSG			0
-+
  #endif
+ #endif /* _PTP_CLASSIFY_H_ */
 -- 
 2.36.1
 
