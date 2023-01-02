@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12AC265B536
-	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 17:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2E965B539
+	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 17:40:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236506AbjABQkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 11:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
+        id S236407AbjABQkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 11:40:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236440AbjABQkj (ORCPT
+        with ESMTP id S236361AbjABQkj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 11:40:39 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7847114A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A77871139;
         Mon,  2 Jan 2023 08:40:38 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 5/7] netfilter: nf_tables: honor set timeout and garbage collection updates
-Date:   Mon,  2 Jan 2023 17:40:23 +0100
-Message-Id: <20230102164025.125995-6-pablo@netfilter.org>
+Subject: [PATCH net 6/7] netfilter: ipset: fix hash:net,port,net hang with /0 subnet
+Date:   Mon,  2 Jan 2023 17:40:24 +0100
+Message-Id: <20230102164025.125995-7-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230102164025.125995-1-pablo@netfilter.org>
 References: <20230102164025.125995-1-pablo@netfilter.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -34,201 +35,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set timeout and garbage collection interval updates are ignored on
-updates. Add transaction to update global set element timeout and
-garbage collection interval.
+From: Jozsef Kadlecsik <kadlec@netfilter.org>
 
-Fixes: 96518518cc41 ("netfilter: add nftables")
-Suggested-by: Florian Westphal <fw@strlen.de>
+The hash:net,port,net set type supports /0 subnets. However, the patch
+commit 5f7b51bf09baca8e titled "netfilter: ipset: Limit the maximal range
+of consecutive elements to add/delete" did not take into account it and
+resulted in an endless loop. The bug is actually older but the patch
+5f7b51bf09baca8e brings it out earlier.
+
+Handle /0 subnets properly in hash:net,port,net set types.
+
+Fixes: 5f7b51bf09ba ("netfilter: ipset: Limit the maximal range of consecutive elements to add/delete")
+Reported-by: Марк Коренберг <socketpair@gmail.com>
+Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_tables.h | 13 ++++++-
- net/netfilter/nf_tables_api.c     | 63 ++++++++++++++++++++++---------
- 2 files changed, 57 insertions(+), 19 deletions(-)
+ net/netfilter/ipset/ip_set_hash_netportnet.c | 40 ++++++++++----------
+ 1 file changed, 21 insertions(+), 19 deletions(-)
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 4957b4775757..9430128aae99 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -597,7 +597,9 @@ void *nft_set_catchall_gc(const struct nft_set *set);
- 
- static inline unsigned long nft_set_gc_interval(const struct nft_set *set)
- {
--	return set->gc_int ? msecs_to_jiffies(set->gc_int) : HZ;
-+	u32 gc_int = READ_ONCE(set->gc_int);
-+
-+	return gc_int ? msecs_to_jiffies(gc_int) : HZ;
+diff --git a/net/netfilter/ipset/ip_set_hash_netportnet.c b/net/netfilter/ipset/ip_set_hash_netportnet.c
+index 19bcdb3141f6..005a7ce87217 100644
+--- a/net/netfilter/ipset/ip_set_hash_netportnet.c
++++ b/net/netfilter/ipset/ip_set_hash_netportnet.c
+@@ -173,17 +173,26 @@ hash_netportnet4_kadt(struct ip_set *set, const struct sk_buff *skb,
+ 	return adtfn(set, &e, &ext, &opt->ext, opt->cmdflags);
  }
  
- /**
-@@ -1570,6 +1572,9 @@ struct nft_trans_rule {
- struct nft_trans_set {
- 	struct nft_set			*set;
- 	u32				set_id;
-+	u32				gc_int;
-+	u64				timeout;
-+	bool				update;
- 	bool				bound;
- };
- 
-@@ -1579,6 +1584,12 @@ struct nft_trans_set {
- 	(((struct nft_trans_set *)trans->data)->set_id)
- #define nft_trans_set_bound(trans)	\
- 	(((struct nft_trans_set *)trans->data)->bound)
-+#define nft_trans_set_update(trans)	\
-+	(((struct nft_trans_set *)trans->data)->update)
-+#define nft_trans_set_timeout(trans)	\
-+	(((struct nft_trans_set *)trans->data)->timeout)
-+#define nft_trans_set_gc_int(trans)	\
-+	(((struct nft_trans_set *)trans->data)->gc_int)
- 
- struct nft_trans_chain {
- 	bool				update;
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 319887f4d3ef..8c09e4d12ac1 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -465,8 +465,9 @@ static int nft_delrule_by_chain(struct nft_ctx *ctx)
- 	return 0;
- }
- 
--static int nft_trans_set_add(const struct nft_ctx *ctx, int msg_type,
--			     struct nft_set *set)
-+static int __nft_trans_set_add(const struct nft_ctx *ctx, int msg_type,
-+			       struct nft_set *set,
-+			       const struct nft_set_desc *desc)
- {
- 	struct nft_trans *trans;
- 
-@@ -474,17 +475,28 @@ static int nft_trans_set_add(const struct nft_ctx *ctx, int msg_type,
- 	if (trans == NULL)
- 		return -ENOMEM;
- 
--	if (msg_type == NFT_MSG_NEWSET && ctx->nla[NFTA_SET_ID] != NULL) {
-+	if (msg_type == NFT_MSG_NEWSET && ctx->nla[NFTA_SET_ID] && !desc) {
- 		nft_trans_set_id(trans) =
- 			ntohl(nla_get_be32(ctx->nla[NFTA_SET_ID]));
- 		nft_activate_next(ctx->net, set);
- 	}
- 	nft_trans_set(trans) = set;
-+	if (desc) {
-+		nft_trans_set_update(trans) = true;
-+		nft_trans_set_gc_int(trans) = desc->gc_int;
-+		nft_trans_set_timeout(trans) = desc->timeout;
-+	}
- 	nft_trans_commit_list_add_tail(ctx->net, trans);
- 
- 	return 0;
- }
- 
-+static int nft_trans_set_add(const struct nft_ctx *ctx, int msg_type,
-+			     struct nft_set *set)
++static u32
++hash_netportnet4_range_to_cidr(u32 from, u32 to, u8 *cidr)
 +{
-+	return __nft_trans_set_add(ctx, msg_type, set, NULL);
++	if (from == 0 && to == UINT_MAX) {
++		*cidr = 0;
++		return to;
++	}
++	return ip_set_range_to_cidr(from, to, cidr);
 +}
 +
- static int nft_delset(const struct nft_ctx *ctx, struct nft_set *set)
+ static int
+ hash_netportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
+ 		      enum ipset_adt adt, u32 *lineno, u32 flags, bool retried)
  {
- 	int err;
-@@ -4044,8 +4056,10 @@ static int nf_tables_fill_set_concat(struct sk_buff *skb,
- static int nf_tables_fill_set(struct sk_buff *skb, const struct nft_ctx *ctx,
- 			      const struct nft_set *set, u16 event, u16 flags)
- {
--	struct nlmsghdr *nlh;
-+	u64 timeout = READ_ONCE(set->timeout);
-+	u32 gc_int = READ_ONCE(set->gc_int);
- 	u32 portid = ctx->portid;
-+	struct nlmsghdr *nlh;
- 	struct nlattr *nest;
- 	u32 seq = ctx->seq;
- 	int i;
-@@ -4081,13 +4095,13 @@ static int nf_tables_fill_set(struct sk_buff *skb, const struct nft_ctx *ctx,
- 	    nla_put_be32(skb, NFTA_SET_OBJ_TYPE, htonl(set->objtype)))
- 		goto nla_put_failure;
+-	const struct hash_netportnet4 *h = set->data;
++	struct hash_netportnet4 *h = set->data;
+ 	ipset_adtfn adtfn = set->variant->adt[adt];
+ 	struct hash_netportnet4_elem e = { };
+ 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
+ 	u32 ip = 0, ip_to = 0, p = 0, port, port_to;
+-	u32 ip2_from = 0, ip2_to = 0, ip2, ipn;
+-	u64 n = 0, m = 0;
++	u32 ip2_from = 0, ip2_to = 0, ip2, i = 0;
+ 	bool with_ports = false;
+ 	int ret;
  
--	if (set->timeout &&
-+	if (timeout &&
- 	    nla_put_be64(skb, NFTA_SET_TIMEOUT,
--			 nf_jiffies64_to_msecs(set->timeout),
-+			 nf_jiffies64_to_msecs(timeout),
- 			 NFTA_SET_PAD))
- 		goto nla_put_failure;
--	if (set->gc_int &&
--	    nla_put_be32(skb, NFTA_SET_GC_INTERVAL, htonl(set->gc_int)))
-+	if (gc_int &&
-+	    nla_put_be32(skb, NFTA_SET_GC_INTERVAL, htonl(gc_int)))
- 		goto nla_put_failure;
- 
- 	if (set->policy != NFT_SET_POL_PERFORMANCE) {
-@@ -4632,7 +4646,10 @@ static int nf_tables_newset(struct sk_buff *skb, const struct nfnl_info *info,
- 		for (i = 0; i < num_exprs; i++)
- 			nft_expr_destroy(&ctx, exprs[i]);
- 
--		return err;
-+		if (err < 0)
-+			return err;
-+
-+		return __nft_trans_set_add(&ctx, NFT_MSG_NEWSET, set, &desc);
+@@ -285,19 +294,6 @@ hash_netportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
+ 	} else {
+ 		ip_set_mask_from_to(ip2_from, ip2_to, e.cidr[1]);
  	}
+-	ipn = ip;
+-	do {
+-		ipn = ip_set_range_to_cidr(ipn, ip_to, &e.cidr[0]);
+-		n++;
+-	} while (ipn++ < ip_to);
+-	ipn = ip2_from;
+-	do {
+-		ipn = ip_set_range_to_cidr(ipn, ip2_to, &e.cidr[1]);
+-		m++;
+-	} while (ipn++ < ip2_to);
+-
+-	if (n*m*(port_to - port + 1) > IPSET_MAX_RANGE)
+-		return -ERANGE;
  
- 	if (!(info->nlh->nlmsg_flags & NLM_F_CREATE))
-@@ -6070,7 +6087,7 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 			return err;
- 	} else if (set->flags & NFT_SET_TIMEOUT &&
- 		   !(flags & NFT_SET_ELEM_INTERVAL_END)) {
--		timeout = set->timeout;
-+		timeout = READ_ONCE(set->timeout);
- 	}
+ 	if (retried) {
+ 		ip = ntohl(h->next.ip[0]);
+@@ -310,13 +306,19 @@ hash_netportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
  
- 	expiration = 0;
-@@ -6171,7 +6188,7 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 		if (err < 0)
- 			goto err_parse_key_end;
- 
--		if (timeout != set->timeout) {
-+		if (timeout != READ_ONCE(set->timeout)) {
- 			err = nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
- 			if (err < 0)
- 				goto err_parse_key_end;
-@@ -9093,14 +9110,20 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 				nft_flow_rule_destroy(nft_trans_flow_rule(trans));
- 			break;
- 		case NFT_MSG_NEWSET:
--			nft_clear(net, nft_trans_set(trans));
--			/* This avoids hitting -EBUSY when deleting the table
--			 * from the transaction.
--			 */
--			if (nft_set_is_anonymous(nft_trans_set(trans)) &&
--			    !list_empty(&nft_trans_set(trans)->bindings))
--				trans->ctx.table->use--;
-+			if (nft_trans_set_update(trans)) {
-+				struct nft_set *set = nft_trans_set(trans);
- 
-+				WRITE_ONCE(set->timeout, nft_trans_set_timeout(trans));
-+				WRITE_ONCE(set->gc_int, nft_trans_set_gc_int(trans));
-+			} else {
-+				nft_clear(net, nft_trans_set(trans));
-+				/* This avoids hitting -EBUSY when deleting the table
-+				 * from the transaction.
-+				 */
-+				if (nft_set_is_anonymous(nft_trans_set(trans)) &&
-+				    !list_empty(&nft_trans_set(trans)->bindings))
-+					trans->ctx.table->use--;
-+			}
- 			nf_tables_set_notify(&trans->ctx, nft_trans_set(trans),
- 					     NFT_MSG_NEWSET, GFP_KERNEL);
- 			nft_trans_destroy(trans);
-@@ -9322,6 +9345,10 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
- 			nft_trans_destroy(trans);
- 			break;
- 		case NFT_MSG_NEWSET:
-+			if (nft_trans_set_update(trans)) {
-+				nft_trans_destroy(trans);
-+				break;
-+			}
- 			trans->ctx.table->use--;
- 			if (nft_trans_set_bound(trans)) {
- 				nft_trans_destroy(trans);
+ 	do {
+ 		e.ip[0] = htonl(ip);
+-		ip = ip_set_range_to_cidr(ip, ip_to, &e.cidr[0]);
++		ip = hash_netportnet4_range_to_cidr(ip, ip_to, &e.cidr[0]);
+ 		for (; p <= port_to; p++) {
+ 			e.port = htons(p);
+ 			do {
++				i++;
+ 				e.ip[1] = htonl(ip2);
+-				ip2 = ip_set_range_to_cidr(ip2, ip2_to,
+-							   &e.cidr[1]);
++				if (i > IPSET_MAX_RANGE) {
++					hash_netportnet4_data_next(&h->next,
++								   &e);
++					return -ERANGE;
++				}
++				ip2 = hash_netportnet4_range_to_cidr(ip2,
++							ip2_to, &e.cidr[1]);
+ 				ret = adtfn(set, &e, &ext, &ext, flags);
+ 				if (ret && !ip_set_eexist(ret, flags))
+ 					return ret;
 -- 
 2.30.2
 
