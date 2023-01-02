@@ -2,80 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F4365B71B
-	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 21:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B190465B7B3
+	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 23:48:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbjABU31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 15:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        id S232905AbjABWsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 17:48:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233748AbjABU3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 15:29:24 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006A5B849;
-        Mon,  2 Jan 2023 12:29:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PWRzFQWdbpw1ppNYNgN2Z1c44x9u7d1L1LKdszgoE0k=; b=FdNORceAXTzDaFWqRrkQfw3xOf
-        Bjeqxlx7CBg5IRpdsealjYQYcvxcCQH24eh07JXy9Tcg2aM+xs7k2r3E2RMow9oheTHm4CTa1ZGmN
-        OnJHWjW6qLB7UFcNE9xnS6YFEMfuToV2GFVsnViy9G2lhkdQoKjM77fIC4sSOPRkIjTw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pCRQn-000xgm-Ur; Mon, 02 Jan 2023 21:29:13 +0100
-Date:   Mon, 2 Jan 2023 21:29:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <Y7M+mWMU+DJPYubp@lunn.ch>
-References: <20230102150209.985419-1-lukma@denx.de>
+        with ESMTP id S229603AbjABWsS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 17:48:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933CF9FE5
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 14:48:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 430B6B80DEB
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 22:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7113C433D2;
+        Mon,  2 Jan 2023 22:48:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672699694;
+        bh=9wCRWCQzyDAsQ5VS6pCBfQAyX9QvJY1pzFVTnWZIMpc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nz2RzJQGUOIsQ8/w2V+Qjktv+vji0zmvHt4+h2dj059XujUc4Lxi4Pq+8xD4RqH1p
+         ZjQUpnHPA/OeyHKgXrL4gSwi4pRt4Tgra777Pp2waa8aDtIB9AhLNaWUbuaV01fk8S
+         6q9Fm5quG6m7IaPRIwjAvR1+19yMfOiCtXa34BuarWG+XM3PrUCnhO2mDSyK/qBHY8
+         /VjvDt49fa29TbrWPJQUDYiNJQn7L4tY5khOysQKt7+bOp5QKuwjRm7KbdD9k/GXCs
+         jiJi8JOiOrz0T/pZI5eMZfI5GecKLERehjVRz0+E04HU0EcoB461yrgn2FfkFNSfi0
+         zc4CBc/xTksqA==
+Date:   Mon, 2 Jan 2023 14:48:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     jacob.e.keller@intel.com, leon@kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC net-next 01/10] devlink: bump the instance index directly
+ when iterating
+Message-ID: <20230102144813.1363cb38@kernel.org>
+In-Reply-To: <Y7LbF0+aRjT6AkZ+@nanopsycho>
+References: <20221217011953.152487-1-kuba@kernel.org>
+        <20221217011953.152487-2-kuba@kernel.org>
+        <Y7LbF0+aRjT6AkZ+@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230102150209.985419-1-lukma@denx.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -3548,7 +3548,9 @@ static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
->  	if (chip->info->ops->port_set_jumbo_size)
->  		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
->  	else if (chip->info->ops->set_max_frame_size)
-> -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> +		return (max_t(int, chip->info->max_frame_size, 1632)
-> +			- VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN);
-> +
->  	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+On Mon, 2 Jan 2023 14:24:39 +0100 Jiri Pirko wrote:
+> Sat, Dec 17, 2022 at 02:19:44AM CET, kuba@kernel.org wrote:
+> >We use a clever find_first() / find_after() scheme currently,
+> >which works nicely as xarray will write the "current" index
+> >into the variable we pass.
+> >
+> >We can't do the same thing during the "dump walk" because
+> >there we must not increment the index until we're sure
+> >that the instance has been fully dumped.  
+> 
+> To be honest, this "we something" desctiption style makes things quite
+> hard to understand. Could you please rephrase it to actually talk
+> about the entities in code?
 
-I would also prefer if all this if/else logic is removed, and the code
-simply returned chip->info->max_frame_size - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+Could you be more specific? I'm probably misunderstanding but it sounds
+to me like you're asking me to describe what I'm doing rather than
+the background and motivation.
 
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-> @@ -132,6 +132,7 @@ struct mv88e6xxx_info {
->  	unsigned int num_gpio;
->  	unsigned int max_vid;
->  	unsigned int max_sid;
-> +	unsigned int max_frame_size;
+> >diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+> >index 1d7ab11f2f7e..ef0369449592 100644
+> >--- a/net/devlink/devl_internal.h
+> >+++ b/net/devlink/devl_internal.h
+> >@@ -82,18 +82,9 @@ extern struct genl_family devlink_nl_family;
+> >  * in loop body in order to release the reference.
+> >  */
+> > #define devlinks_xa_for_each_registered_get(net, index, devlink)	\
+> >-	for (index = 0,							\
+> >-	     devlink = devlinks_xa_find_get_first(net, &index);	\
+> >-	     devlink; devlink = devlinks_xa_find_get_next(net, &index))
+> >-
+> >-struct devlink *
+> >-devlinks_xa_find_get(struct net *net, unsigned long *indexp,
+> >-		     void * (*xa_find_fn)(struct xarray *, unsigned long *,
+> >-					  unsigned long, xa_mark_t));
+> >-struct devlink *
+> >-devlinks_xa_find_get_first(struct net *net, unsigned long *indexp);
+> >-struct devlink *
+> >-devlinks_xa_find_get_next(struct net *net, unsigned long *indexp);
+> >+	for (index = 0; (devlink = devlinks_xa_find_get(net, &index)); index++)  
+> 
+> You don't need ()' in the 2nd for arg.
 
-It might be worth adding a comment here what this value actually
-represents. We don't want any mixups where the value already has the
-frame checksum removed for example.
-
-      Andrew
+Pretty sure I was getting a compiler warning for assignment in 
+a condition....
