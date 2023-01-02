@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3C5A65B443
+	by mail.lfdr.de (Postfix) with ESMTP id A82CD65B442
 	for <lists+netdev@lfdr.de>; Mon,  2 Jan 2023 16:33:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236155AbjABPc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 10:32:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38466 "EHLO
+        id S236404AbjABPc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 10:32:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236404AbjABPco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 10:32:44 -0500
+        with ESMTP id S236407AbjABPcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 10:32:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072D1A1A2
-        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 07:32:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3509FF2
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 07:32:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A640FB80D85
-        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 15:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 069E7C433D2;
-        Mon,  2 Jan 2023 15:32:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F79AB80D85
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 15:32:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0510C433D2;
+        Mon,  2 Jan 2023 15:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672673560;
-        bh=/sRFg6SqmVPO/qpLKPE3qyTl/CBHUjVYNZNwPNnVhZk=;
+        s=k20201202; t=1672673564;
+        bh=gTRQqnkoUWGQ65tvhWsJIqWS860SI2FNauc8bhtMbdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5XxGIJ7tMzzS7rtnA8nXQcAq/zM7Fm+Njc9F5IUPyXlKelDd8PJAteAAgspsj9H3
-         LJlH1RAhpRd6pcVqcB8gxYhn0mr7sN35Yvn3BBV10+iWkSju3Bq7F+KAvEhYkqaaXP
-         QmZBh6M8/wIe5NcY2xTtby0ylRvgz0y6/eteulmP5ulvJvKRzKPcJ3E7FIrmQ11jhy
-         b+mkwq2eMdtl7E/n5s0lpC0DltyOV3QP6xl/C82gxPpb2HEvB3eQTJqVkIUArOE1gH
-         2L2dLAOuGVi7xHqY4dBLWpuwgVtNTzL0438qTTVZxgBZ9227PfWNKFohPOuDZcB55f
-         2LtWiK35l/y7Q==
+        b=EneK5Mt4E6yDd9cIgdOOXQe6yg59DpxVelgeQCy8RwfwFiQJLZOsERl83hZTOBian
+         4Tx2SF8EcWF54AwzvtfoQcfUcycFozY11mnkc0Ve4YiEKwcwVJsW1l9qfHhxE/cYbj
+         +3GdtLzIFQlFq7kKvrOR2SrwqVVaYFKAnLatplNWPET6HJ438XQ2HGQgulXayFJqyC
+         7QstxwUipGOHScYR0MdSvVqmrizJGzjMwKhqEeLAfb/Z2xPmt4UMhqDF697J2PPRHk
+         uFtDfI1/Grp4xtEt7NSxaD0JH40Vln0zc6THYBLj/RnyhngnrESzUWADMvbiEOs1wN
+         1XFxe0/6B+/kw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, lorenzo.bianconi@redhat.com, nbd@nbd.name,
         john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
         sujuan.chen@mediatek.com, daniel@makrotopia.org
-Subject: [PATCH net-next 3/5] net: ethernet: mtk_eth_soc: align reset procedure to vendor sdk
-Date:   Mon,  2 Jan 2023 16:32:17 +0100
-Message-Id: <e40e80cf8214c20578afdf27330a0a9a9547e7a6.1672672965.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 4/5] net: ethernet: mtk_eth_soc: add dma checks to mtk_hw_reset_check
+Date:   Mon,  2 Jan 2023 16:32:18 +0100
+Message-Id: <1d0996eef866c99ebafd34284f2edba995859356.1672672965.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1672672965.git.lorenzo@kernel.org>
 References: <cover.1672672965.git.lorenzo@kernel.org>
@@ -54,270 +54,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid to power-down the ethernet chip during hw reset and align reset
-procedure to vendor sdk.
+Introduce mtk_hw_check_dma_hang routine to monitor possible dma hangs.
 
 Tested-by: Daniel Golle <daniel@makrotopia.org>
 Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c  | 86 ++++++++++++++------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h  | 12 +++
- drivers/net/ethernet/mediatek/mtk_ppe.c      | 27 ++++++
- drivers/net/ethernet/mediatek/mtk_ppe.h      |  1 +
- drivers/net/ethernet/mediatek/mtk_ppe_regs.h |  6 ++
- 5 files changed, 108 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 103 ++++++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  26 +++++
+ 2 files changed, 129 insertions(+)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index ffd4dbee0488..ba924ceb6c94 100644
+index ba924ceb6c94..bafae4f0312e 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2984,14 +2984,29 @@ static void mtk_dma_free(struct mtk_eth *eth)
- 	kfree(eth->scratch_head);
+@@ -51,6 +51,7 @@ static const struct mtk_reg_map mtk_reg_map = {
+ 		.delay_irq	= 0x0a0c,
+ 		.irq_status	= 0x0a20,
+ 		.irq_mask	= 0x0a28,
++		.adma_rx_dbg0	= 0x0a38,
+ 		.int_grp	= 0x0a50,
+ 	},
+ 	.qdma = {
+@@ -82,6 +83,8 @@ static const struct mtk_reg_map mtk_reg_map = {
+ 		[0]		= 0x2800,
+ 		[1]		= 0x2c00,
+ 	},
++	.pse_iq_sta		= 0x0110,
++	.pse_oq_sta		= 0x0118,
+ };
+ 
+ static const struct mtk_reg_map mt7628_reg_map = {
+@@ -112,6 +115,7 @@ static const struct mtk_reg_map mt7986_reg_map = {
+ 		.delay_irq	= 0x620c,
+ 		.irq_status	= 0x6220,
+ 		.irq_mask	= 0x6228,
++		.adma_rx_dbg0	= 0x6238,
+ 		.int_grp	= 0x6250,
+ 	},
+ 	.qdma = {
+@@ -143,6 +147,8 @@ static const struct mtk_reg_map mt7986_reg_map = {
+ 		[0]		= 0x4800,
+ 		[1]		= 0x4c00,
+ 	},
++	.pse_iq_sta		= 0x0180,
++	.pse_oq_sta		= 0x01a0,
+ };
+ 
+ /* strings used by ethtool */
+@@ -3554,6 +3560,99 @@ static void mtk_hw_warm_reset(struct mtk_eth *eth)
+ 			val, rst_mask);
  }
  
-+static bool mtk_hw_reset_check(struct mtk_eth *eth)
++static bool mtk_hw_check_dma_hang(struct mtk_eth *eth)
 +{
-+	u32 val = mtk_r32(eth, MTK_INT_STATUS2);
++	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
++	bool gmac1_tx, gmac2_tx, gdm1_tx, gdm2_tx;
++	bool oq_hang, cdm1_busy, adma_busy;
++	bool wtx_busy, cdm_full, oq_free;
++	u32 wdidx, val, gdm1_fc, gdm2_fc;
++	bool qfsm_hang, qfwd_hang;
++	bool ret = false;
 +
-+	return (val & MTK_FE_INT_FQ_EMPTY) || (val & MTK_FE_INT_RFIFO_UF) ||
-+	       (val & MTK_FE_INT_RFIFO_OV) || (val & MTK_FE_INT_TSO_FAIL) ||
-+	       (val & MTK_FE_INT_TSO_ALIGN) || (val & MTK_FE_INT_TSO_ILLEGAL);
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
++		return false;
++
++	/* WDMA sanity checks */
++	wdidx = mtk_r32(eth, reg_map->wdma_base[0] + 0xc);
++
++	val = mtk_r32(eth, reg_map->wdma_base[0] + 0x204);
++	wtx_busy = FIELD_GET(MTK_TX_DMA_BUSY, val);
++
++	val = mtk_r32(eth, reg_map->wdma_base[0] + 0x230);
++	cdm_full = !FIELD_GET(MTK_CDM_TXFIFO_RDY, val);
++
++	oq_free  = (!(mtk_r32(eth, reg_map->pse_oq_sta) & GENMASK(24, 16)) &&
++		    !(mtk_r32(eth, reg_map->pse_oq_sta + 0x4) & GENMASK(8, 0)) &&
++		    !(mtk_r32(eth, reg_map->pse_oq_sta + 0x10) & GENMASK(24, 16)));
++
++	if (wdidx == eth->reset.wdidx && wtx_busy && cdm_full && oq_free) {
++		if (++eth->reset.wdma_hang_count > 2) {
++			eth->reset.wdma_hang_count = 0;
++			ret = true;
++		}
++		goto out;
++	}
++
++	/* QDMA sanity checks */
++	qfsm_hang = !!mtk_r32(eth, reg_map->qdma.qtx_cfg + 0x234);
++	qfwd_hang = !mtk_r32(eth, reg_map->qdma.qtx_cfg + 0x308);
++
++	gdm1_tx = FIELD_GET(GENMASK(31, 16), mtk_r32(eth, MTK_FE_GDM1_FSM)) > 0;
++	gdm2_tx = FIELD_GET(GENMASK(31, 16), mtk_r32(eth, MTK_FE_GDM2_FSM)) > 0;
++	gmac1_tx = FIELD_GET(GENMASK(31, 24), mtk_r32(eth, MTK_MAC_FSM(0))) != 1;
++	gmac2_tx = FIELD_GET(GENMASK(31, 24), mtk_r32(eth, MTK_MAC_FSM(1))) != 1;
++	gdm1_fc = mtk_r32(eth, reg_map->gdm1_cnt + 0x24);
++	gdm2_fc = mtk_r32(eth, reg_map->gdm1_cnt + 0x64);
++
++	if (qfsm_hang && qfwd_hang &&
++	    ((gdm1_tx && gmac1_tx && gdm1_fc < 1) ||
++	     (gdm2_tx && gmac2_tx && gdm2_fc < 1))) {
++		if (++eth->reset.qdma_hang_count > 2) {
++			eth->reset.qdma_hang_count = 0;
++			ret = true;
++		}
++		goto out;
++	}
++
++	/* ADMA sanity checks */
++	oq_hang = !!(mtk_r32(eth, reg_map->pse_oq_sta) & GENMASK(8, 0));
++	cdm1_busy = !!(mtk_r32(eth, MTK_FE_CDM1_FSM) & GENMASK(31, 16));
++	adma_busy = !(mtk_r32(eth, reg_map->pdma.adma_rx_dbg0) & GENMASK(4, 0)) &&
++		    !(mtk_r32(eth, reg_map->pdma.adma_rx_dbg0) & BIT(6));
++
++	if (oq_hang && cdm1_busy && adma_busy) {
++		if (++eth->reset.adma_hang_count > 2) {
++			eth->reset.adma_hang_count = 0;
++			ret = true;
++		}
++		goto out;
++	}
++
++	eth->reset.wdma_hang_count = 0;
++	eth->reset.qdma_hang_count = 0;
++	eth->reset.adma_hang_count = 0;
++out:
++	eth->reset.wdidx = wdidx;
++
++	return ret;
 +}
 +
- static void mtk_tx_timeout(struct net_device *dev, unsigned int txqueue)
++static void mtk_hw_reset_monitor_work(struct work_struct *work)
++{
++	struct delayed_work *del_work = to_delayed_work(work);
++	struct mtk_eth *eth = container_of(del_work, struct mtk_eth,
++					   reset.monitor_work);
++
++	/* DMA stuck checks */
++	if (!test_bit(MTK_RESETTING, &eth->state) &&
++	    mtk_hw_check_dma_hang(eth))
++		schedule_work(&eth->pending_work);
++
++	schedule_delayed_work(&eth->reset.monitor_work,
++			      MTK_DMA_MONITOR_TIMEOUT);
++}
++
+ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
  {
- 	struct mtk_mac *mac = netdev_priv(dev);
- 	struct mtk_eth *eth = mac->hw;
+ 	u32 dma_mask = ETHSYS_DMA_AG_MAP_PDMA | ETHSYS_DMA_AG_MAP_QDMA |
+@@ -3894,6 +3993,7 @@ static int mtk_cleanup(struct mtk_eth *eth)
+ 	mtk_unreg_dev(eth);
+ 	mtk_free_dev(eth);
+ 	cancel_work_sync(&eth->pending_work);
++	cancel_delayed_work_sync(&eth->reset.monitor_work);
  
-+	if (!mtk_hw_reset_check(eth))
-+		return;
-+
- 	eth->netdev[mac->id]->stats.tx_errors++;
--	netif_err(eth, tx_err, dev,
--		  "transmit timed out\n");
-+	netif_err(eth, tx_err, dev, "transmit timed out\n");
-+
-+	if (test_bit(MTK_RESETTING, &eth->state))
-+		return;
-+
- 	schedule_work(&eth->pending_work);
+ 	return 0;
  }
+@@ -4348,6 +4448,7 @@ static int mtk_probe(struct platform_device *pdev)
  
-@@ -3546,15 +3561,17 @@ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
- 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
- 	int i, val, ret;
+ 	eth->rx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
+ 	INIT_WORK(&eth->rx_dim.work, mtk_dim_rx);
++	INIT_DELAYED_WORK(&eth->reset.monitor_work, mtk_hw_reset_monitor_work);
  
--	if (test_and_set_bit(MTK_HW_INIT, &eth->state))
-+	if (!reset && test_and_set_bit(MTK_HW_INIT, &eth->state))
- 		return 0;
+ 	eth->tx_dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
+ 	INIT_WORK(&eth->tx_dim.work, mtk_dim_tx);
+@@ -4550,6 +4651,8 @@ static int mtk_probe(struct platform_device *pdev)
+ 	netif_napi_add(&eth->dummy_dev, &eth->rx_napi, mtk_napi_rx);
  
--	pm_runtime_enable(eth->dev);
--	pm_runtime_get_sync(eth->dev);
-+	if (!reset) {
-+		pm_runtime_enable(eth->dev);
-+		pm_runtime_get_sync(eth->dev);
+ 	platform_set_drvdata(pdev, eth);
++	schedule_delayed_work(&eth->reset.monitor_work,
++			      MTK_DMA_MONITOR_TIMEOUT);
  
--	ret = mtk_clk_enable(eth);
--	if (ret)
--		goto err_disable_pm;
-+		ret = mtk_clk_enable(eth);
-+		if (ret)
-+			goto err_disable_pm;
-+	}
- 
- 	if (eth->ethsys)
- 		regmap_update_bits(eth->ethsys, ETHSYS_DMA_AG_MAP, dma_mask,
-@@ -3686,8 +3703,10 @@ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
  	return 0;
  
- err_disable_pm:
--	pm_runtime_put_sync(eth->dev);
--	pm_runtime_disable(eth->dev);
-+	if (!reset) {
-+		pm_runtime_put_sync(eth->dev);
-+		pm_runtime_disable(eth->dev);
-+	}
- 
- 	return ret;
- }
-@@ -3769,46 +3788,65 @@ static int mtk_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- static void mtk_pending_work(struct work_struct *work)
- {
- 	struct mtk_eth *eth = container_of(work, struct mtk_eth, pending_work);
--	int err, i;
- 	unsigned long restart = 0;
-+	u32 val;
-+	int i;
- 
- 	rtnl_lock();
--
--	dev_dbg(eth->dev, "[%s][%d] reset\n", __func__, __LINE__);
- 	set_bit(MTK_RESETTING, &eth->state);
- 
-+	/* disabe FE P3 and P4 */
-+	val = mtk_r32(eth, MTK_FE_GLO_CFG) | MTK_FE_LINK_DOWN_P3;
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
-+		val |= MTK_FE_LINK_DOWN_P4;
-+	mtk_w32(eth, val, MTK_FE_GLO_CFG);
-+
-+	/* adjust PPE configurations to prepare for reset */
-+	for (i = 0; i < ARRAY_SIZE(eth->ppe); i++)
-+		mtk_ppe_prepare_reset(eth->ppe[i]);
-+
-+	/* disable NETSYS interrupts */
-+	mtk_w32(eth, 0, MTK_FE_INT_ENABLE);
-+
-+	/* force link down GMAC */
-+	for (i = 0; i < 2; i++) {
-+		val = mtk_r32(eth, MTK_MAC_MCR(i)) & ~MAC_MCR_FORCE_LINK;
-+		mtk_w32(eth, val, MTK_MAC_MCR(i));
-+	}
-+
- 	/* stop all devices to make sure that dma is properly shut down */
- 	for (i = 0; i < MTK_MAC_COUNT; i++) {
--		if (!eth->netdev[i])
-+		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
- 			continue;
-+
- 		mtk_stop(eth->netdev[i]);
- 		__set_bit(i, &restart);
- 	}
--	dev_dbg(eth->dev, "[%s][%d] mtk_stop ends\n", __func__, __LINE__);
--
--	/* restart underlying hardware such as power, clock, pin mux
--	 * and the connected phy
--	 */
--	mtk_hw_deinit(eth);
-+	mdelay(15);
- 
- 	if (eth->dev->pins)
- 		pinctrl_select_state(eth->dev->pins->p,
- 				     eth->dev->pins->default_state);
-+
- 	mtk_hw_init(eth, true);
- 
- 	/* restart DMA and enable IRQs */
- 	for (i = 0; i < MTK_MAC_COUNT; i++) {
- 		if (!test_bit(i, &restart))
- 			continue;
--		err = mtk_open(eth->netdev[i]);
--		if (err) {
-+
-+		if (mtk_open(eth->netdev[i])) {
- 			netif_alert(eth, ifup, eth->netdev[i],
--			      "Driver up/down cycle failed, closing device.\n");
-+				    "Driver up/down cycle failed\n");
- 			dev_close(eth->netdev[i]);
- 		}
- 	}
- 
--	dev_dbg(eth->dev, "[%s][%d] reset done\n", __func__, __LINE__);
-+	/* enabe FE P3 and P4 */
-+	val = mtk_r32(eth, MTK_FE_GLO_CFG) & ~MTK_FE_LINK_DOWN_P3;
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
-+		val &= ~MTK_FE_LINK_DOWN_P4;
-+	mtk_w32(eth, val, MTK_FE_GLO_CFG);
- 
- 	clear_bit(MTK_RESETTING, &eth->state);
- 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 18a50529ce7b..a8066b3ee3ed 100644
+index a8066b3ee3ed..dff0e3ad2de6 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -77,12 +77,24 @@
- #define	MTK_HW_LRO_REPLACE_DELTA	1000
- #define	MTK_HW_LRO_SDL_REMAIN_ROOM	1522
+@@ -284,6 +284,8 @@
  
-+/* Frame Engine Global Configuration */
-+#define MTK_FE_GLO_CFG		0x00
-+#define MTK_FE_LINK_DOWN_P3	BIT(11)
-+#define MTK_FE_LINK_DOWN_P4	BIT(12)
-+
- /* Frame Engine Global Reset Register */
- #define MTK_RST_GL		0x04
- #define RST_GL_PSE		BIT(0)
+ #define MTK_RX_DONE_INT_V2	BIT(14)
  
- /* Frame Engine Interrupt Status Register */
- #define MTK_INT_STATUS2		0x08
-+#define MTK_FE_INT_ENABLE	0x0c
-+#define MTK_FE_INT_FQ_EMPTY	BIT(8)
-+#define MTK_FE_INT_TSO_FAIL	BIT(12)
-+#define MTK_FE_INT_TSO_ILLEGAL	BIT(13)
-+#define MTK_FE_INT_TSO_ALIGN	BIT(14)
-+#define MTK_FE_INT_RFIFO_OV	BIT(18)
-+#define MTK_FE_INT_RFIFO_UF	BIT(19)
- #define MTK_GDM1_AF		BIT(28)
- #define MTK_GDM2_AF		BIT(29)
++#define MTK_CDM_TXFIFO_RDY	BIT(7)
++
+ /* QDMA Interrupt grouping registers */
+ #define MTK_RLS_DONE_INT	BIT(0)
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 269208a841c7..994408d8f416 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -730,6 +730,33 @@ int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- 	return __mtk_foe_entry_idle_time(ppe, entry->data.ib1);
- }
+@@ -574,6 +576,17 @@
+ #define MT7628_SDM_RBCNT	(MT7628_SDM_OFFSET + 0x10c)
+ #define MT7628_SDM_CS_ERR	(MT7628_SDM_OFFSET + 0x110)
  
-+int mtk_ppe_prepare_reset(struct mtk_ppe *ppe)
-+{
-+	if (!ppe)
-+		return -EINVAL;
++#define MTK_FE_CDM1_FSM		0x220
++#define MTK_FE_CDM2_FSM		0x224
++#define MTK_FE_CDM3_FSM		0x238
++#define MTK_FE_CDM4_FSM		0x298
++#define MTK_FE_CDM5_FSM		0x318
++#define MTK_FE_CDM6_FSM		0x328
++#define MTK_FE_GDM1_FSM		0x228
++#define MTK_FE_GDM2_FSM		0x22C
 +
-+	/* disable KA */
-+	ppe_clear(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_KEEPALIVE);
-+	ppe_clear(ppe, MTK_PPE_BIND_LMT1, MTK_PPE_NTU_KEEPALIVE);
-+	ppe_w32(ppe, MTK_PPE_KEEPALIVE, 0);
-+	mdelay(10);
++#define MTK_MAC_FSM(x)		(0x1010C + ((x) * 0x100))
 +
-+	/* set KA timer to maximum */
-+	ppe_set(ppe, MTK_PPE_BIND_LMT1, MTK_PPE_NTU_KEEPALIVE);
-+	ppe_w32(ppe, MTK_PPE_KEEPALIVE, 0xffffffff);
-+
-+	/* set KA tick select */
-+	ppe_set(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_TICK_SEL);
-+	ppe_set(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_KEEPALIVE);
-+	mdelay(10);
-+
-+	/* disable scan mode */
-+	ppe_clear(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_SCAN_MODE);
-+	mdelay(10);
-+
-+	return mtk_ppe_wait_busy(ppe);
-+}
-+
- struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 			     int version, int index)
- {
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index ea64fac1d425..16b02e1d4649 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -309,6 +309,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- void mtk_ppe_deinit(struct mtk_eth *eth);
- void mtk_ppe_start(struct mtk_ppe *ppe);
- int mtk_ppe_stop(struct mtk_ppe *ppe);
-+int mtk_ppe_prepare_reset(struct mtk_ppe *ppe);
+ struct mtk_rx_dma {
+ 	unsigned int rxd1;
+ 	unsigned int rxd2;
+@@ -970,6 +983,7 @@ struct mtk_reg_map {
+ 		u32	delay_irq;	/* delay interrupt */
+ 		u32	irq_status;	/* interrupt status */
+ 		u32	irq_mask;	/* interrupt mask */
++		u32	adma_rx_dbg0;
+ 		u32	int_grp;
+ 	} pdma;
+ 	struct {
+@@ -998,6 +1012,8 @@ struct mtk_reg_map {
+ 	u32	gdma_to_ppe;
+ 	u32	ppe_base;
+ 	u32	wdma_base[2];
++	u32	pse_iq_sta;
++	u32	pse_oq_sta;
+ };
  
- void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash);
+ /* struct mtk_eth_data -	This is the structure holding all differences
+@@ -1040,6 +1056,8 @@ struct mtk_soc_data {
+ 	} txrx;
+ };
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-index 59596d823d8b..0fdb983b0a88 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-@@ -58,6 +58,12 @@
- #define MTK_PPE_TB_CFG_SCAN_MODE		GENMASK(17, 16)
- #define MTK_PPE_TB_CFG_HASH_DEBUG		GENMASK(19, 18)
- #define MTK_PPE_TB_CFG_INFO_SEL			BIT(20)
-+#define MTK_PPE_TB_TICK_SEL			BIT(24)
++#define MTK_DMA_MONITOR_TIMEOUT		msecs_to_jiffies(1000)
 +
-+#define MTK_PPE_BIND_LMT1			0x230
-+#define MTK_PPE_NTU_KEEPALIVE			GENMASK(23, 16)
-+
-+#define MTK_PPE_KEEPALIVE			0x234
+ /* currently no SoC has more than 2 macs */
+ #define MTK_MAX_DEVS			2
  
- enum {
- 	MTK_PPE_SCAN_MODE_DISABLED,
+@@ -1164,6 +1182,14 @@ struct mtk_eth {
+ 	struct rhashtable		flow_table;
+ 
+ 	struct bpf_prog			__rcu *prog;
++
++	struct {
++		struct delayed_work monitor_work;
++		u32 wdidx;
++		u8 wdma_hang_count;
++		u8 qdma_hang_count;
++		u8 adma_hang_count;
++	} reset;
+ };
+ 
+ /* struct mtk_mac -	the structure that holds the info about the MACs of the
 -- 
 2.39.0
 
