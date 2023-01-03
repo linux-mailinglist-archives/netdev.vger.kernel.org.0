@@ -2,86 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0771465BF3A
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 12:46:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF05765BF67
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 12:55:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbjACLqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 06:46:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
+        id S233102AbjACLyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 06:54:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233312AbjACLpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 06:45:54 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE659A441;
-        Tue,  3 Jan 2023 03:45:53 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1pCfjg-0003WK-LK; Tue, 03 Jan 2023 12:45:40 +0100
-Date:   Tue, 3 Jan 2023 12:45:40 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Quentin Deslandes <qde@naccy.de>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Dmitrii Banshchikov <me@ubique.spb.ru>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        Kernel Team <kernel-team@meta.com>
-Subject: Re: [PATCH bpf-next v3 00/16] bpfilter
-Message-ID: <20230103114540.GB13151@breakpoint.cc>
-References: <20221224000402.476079-1-qde@naccy.de>
+        with ESMTP id S233082AbjACLyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 06:54:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0606572;
+        Tue,  3 Jan 2023 03:54:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A0A06124F;
+        Tue,  3 Jan 2023 11:54:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B01D8C433EF;
+        Tue,  3 Jan 2023 11:54:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672746843;
+        bh=/4mB6P2Bm4GaYOrK2xAGD+BWjqC6TeZT/BUcGYXroUI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=oE+HpvffB1aMuaiplglU2hipGASxDz6CXaHX58XITEWtm9XbLkBkqUL/2ddB3w9Qc
+         yqaSl7oN3jI0k+TusgLQuxWxR9Baq3ZFwy+QeiQAl2+C8tMOjHNLrRfyKVvtzsQRnv
+         3fFEIOR9vhRIUQbKzplX/+Doj2XWeTQ2yE0wg99Enz/YTnsr1EKYIO0dE8VefTvGhf
+         WtxDR2/yg4MwgPyLshBuG1ADxN9QdUQxp/goi6i8qJRfVSdKVenX+gF0iM6bU/HNj8
+         yzODfjeG3Wqez6T/O5HEwwZFsVXlPzjCn87NAwv0VZ8ukrGY08hj1RxcPsv067J6O7
+         5igxLQPwt/tgg==
+Date:   Tue, 3 Jan 2023 05:54:02 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Rajat Khandelwal <rajat.khandelwal@linux.intel.com>,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        rajat.khandelwal@intel.com, jesse.brandeburg@intel.com,
+        linux-kernel@vger.kernel.org, edumazet@google.com,
+        intel-wired-lan@lists.osuosl.org, kuba@kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        anthony.l.nguyen@intel.com, pabeni@redhat.com, davem@davemloft.net
+Subject: Re: [Intel-wired-lan] [PATCH] igc: Mask replay rollover/timeout
+ errors in I225_LMVP
+Message-ID: <20230103115402.GA848993@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221224000402.476079-1-qde@naccy.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y7P7UKpmE8/LsmOn@unreal>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quentin Deslandes <qde@naccy.de> wrote:
-> The patchset is based on the patches from David S. Miller [1],
-> Daniel Borkmann [2], and Dmitrii Banshchikov [3].
-> 
-> Note: I've partially sent this patchset earlier due to a
-> mistake on my side, sorry for then noise.
-> 
-> The main goal of the patchset is to prepare bpfilter for
-> iptables' configuration blob parsing and code generation.
-> 
-> The patchset introduces data structures and code for matches,
-> targets, rules and tables. Beside that the code generation
-> is introduced.
-> 
-> The first version of the code generation supports only "inline"
-> mode - all chains and their rules emit instructions in linear
-> approach.
-> 
-> Things that are not implemented yet:
->   1) The process of switching from the previous BPF programs to the
->      new set isn't atomic.
+On Tue, Jan 03, 2023 at 11:54:24AM +0200, Leon Romanovsky wrote:
+> On Sun, Jan 01, 2023 at 11:34:21AM +0100, Paul Menzel wrote:
+> > Am 01.01.23 um 09:32 schrieb Leon Romanovsky:
+> > > On Thu, Dec 29, 2022 at 05:56:40PM +0530, Rajat Khandelwal wrote:
+> > > > The CPU logs get flooded with replay rollover/timeout AER errors in
+> > > > the system with i225_lmvp connected, usually inside thunderbolt devices.
+> > > > 
+> > > > One of the prominent TBT4 docks we use is HP G4 Hook2, which incorporates
+> > > > an Intel Foxville chipset, which uses the igc driver.
+> > > > On connecting ethernet, CPU logs get inundated with these errors. The point
+> > > > is we shouldn't be spamming the logs with such correctible errors as it
+> > > > confuses other kernel developers less familiar with PCI errors, support
+> > > > staff, and users who happen to look at the logs.
 
-You can't make this atomic from userspace perspective, the
-get/setsockopt API of iptables uses a read-modify-write model.
+> > > > --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> > > > +++ b/drivers/net/ethernet/intel/igc/igc_main.c
 
-Tentatively I'd try to extend libnftnl and generate bpf code there,
-since its used by both iptables(-nft) and nftables we'd automatically
-get support for both.
+> > > > +static void igc_mask_aer_replay_correctible(struct igc_adapter *adapter)
 
-I was planning to look into "attach bpf progs to raw netfilter hooks"
-in Q1 2023, once the initial nf-bpf-codegen is merged.
+> > > Shouldn't this igc_mask_aer_replay_correctible function be implemented
+> > > in drivers/pci/quirks.c and not in igc_probe()?
+> > 
+> > Probably. Though I think, the PCI quirk file, is getting too big.
+> 
+> As long as that file is right location, we should use it.
+> One can refactor quirk file later.
+
+If a quirk like this is only needed when the driver is loaded, I think
+the driver is a better place than drivers/pci/quirks.c.  If it's in
+quirks.c, either we have to replicate driver Kconfig via #ifdefs, or
+the kernel contains the quirk for systems that don't need it.
+
+I'm generally not a fan of simply masking errors because they're
+annoying.  I'd prefer to figure out the root cause and fix it if
+possible.  Or maybe we can tone down or rate-limit the logging so it's
+not so alarming.
+
+Bjorn
