@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F38AD65C93B
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 23:12:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E75E865C97F
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 23:20:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230441AbjACWMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 17:12:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
+        id S233774AbjACWUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 17:20:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbjACWMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 17:12:35 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214CB14003
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 14:12:34 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id t15so34655070ybq.4
-        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 14:12:34 -0800 (PST)
+        with ESMTP id S238189AbjACWUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 17:20:06 -0500
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2403164B5;
+        Tue,  3 Jan 2023 14:19:47 -0800 (PST)
+Received: by mail-qt1-x832.google.com with SMTP id j16so25737237qtv.4;
+        Tue, 03 Jan 2023 14:19:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=qL2EYp3pqOLQtvgMhIKXgxCRVXJwycFM/gvyiXFULq0=;
-        b=eOqnKSiB2G5NNhowZtcPeoX3tvJlJV2ajnSXyp4qizMYWknadhAcU0SCImfKuJXp3Y
-         8tFBp5M/K7Z+MPL5rMw25zS5vgHj3SNLlhdARZ8m2Nl+zEXt5is/ETzMET+aABfF50pR
-         2qBNG+oHGMbMi/uY/3Ir/C89xal+Gm0YhunamEe8yo5xmtBdg6b93xrmbq6R6FqQfcBE
-         YTsTgm9g778OzvayqLUXeQxKw8uSkTxU1JvF6aGICtkcWUHMlftF+/BTFmgNcLM2j9iu
-         7ppOhYd354Ktp6PhWAMqPMybbAhW+AcAxOidcUoSVSqXXTqx1gn6Sden+zJCSX5t3aq2
-         lGtg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vlsqXR9Z8ZTnyT8kW7sPZRNV6TNSbNbBGDYLhcwR+Qk=;
+        b=dmdkMDc/YHWm0TNz0eIBJ/XGILOClmyM/tKG7ExtcmNQVXs/fIKkIPoNN5GAj+kfHM
+         amZwwRfkXdlsCIe4MPIDUmxAgI79d4WRp1CfFsubKd+Xglfwgh0S8uWHwXVjyxaPwon6
+         1H431Uw0nZWzBFhryBLFsWWmNtxz65F3TuT3sB3d03FlNLXaPspLhHX6gGwRIPhuPM7x
+         iu4OWcuzeybA/bwM+UuVl3chiPPK4x76zRQm/7udJiJnjUhMeU7w3WQ4ukT7/nVPj4NJ
+         PcxhPF8amBlnTFHlbeeJgHZ4TRzQM7hshDcGyf7N1fZhoOaNAlUHlfTPdYKYKG7FISsE
+         eP5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qL2EYp3pqOLQtvgMhIKXgxCRVXJwycFM/gvyiXFULq0=;
-        b=ULIJsRkI5UTLFmN11Tf5Z1CSG0XYX7v7LX9gS5wMofTFYkeQG2pFmkaREZeHxwg1Is
-         tkXOzuLNu47pCTLHdUfjxXKbEFwzaEZkFv/z/ZCQTDSg74RW4G9WahGLefrEZvcgAVgU
-         SU2Tt0pgXxLTMyGjpEPkwCbeu8+CEYaa6j41EltLx/CC8z1vJobSZL6z31j3grOFNDn8
-         PTPdaBxJgeXIxwJhWmUY0qkSnyiKrLHRPOQP1Wu0eGkcRk13MIm0Vjaj+16GdNukMDcN
-         5pmw9one7iEt3Pf3OM2EoFz5uFRbfpsY7cDTRfWvwVcQhvjJdV7M6Jz/FMSWD4dS81TE
-         Xnuw==
-X-Gm-Message-State: AFqh2koRjo3xdL32vf9itoapoIjKr9zw76czHnFeHFF0F5tdDCQPdbv6
-        z6Z5vvyJNfPsoSEXccRJabQN/j33v6u4YM3HZ4Sjiw==
-X-Google-Smtp-Source: AMrXdXtpK4SZR8Fc1bPVhq7V6mXB4uGAlSGvpMsVQP2C05CuDZOF3vtzGgdVeYAwAQRfVYvmtaYvngQq1XZ8suTypYA=
-X-Received: by 2002:a25:3f06:0:b0:769:e5aa:4ac9 with SMTP id
- m6-20020a253f06000000b00769e5aa4ac9mr3909818yba.598.1672783953040; Tue, 03
- Jan 2023 14:12:33 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vlsqXR9Z8ZTnyT8kW7sPZRNV6TNSbNbBGDYLhcwR+Qk=;
+        b=t1cgF+Ne8qrJqmNxGqsQtkmFkXATmrDtXRXBLOo3ru82pI5E6PhdVDI8PTE0M4nGoi
+         1JordJ7S2YTbKowcAtZYWpfsHHmsstdak0hli4CfSu7A+0d1pHj2PfzjwNwcVgdZymDv
+         O47lTwy+Qi+RyFF/iChT4dlen5Df0I1fGU+xSUVDumCkNSlW1N1yDuvBiOowj1T/Ennp
+         /lNZrWl50YFSqhcRetBhupCqdyb1GjwpxuTNfUvB4DkH45d+ZV180zZzK/gizN0B4ZxD
+         v+Oq6WUpmYEO61ALDNo2rJBBNH0MD+EsRjPrsUMvRpxMmdPd/CO+51F5ZgkioFWD0+vP
+         kZPA==
+X-Gm-Message-State: AFqh2kpkNMzS0k55FoaLBNECBzsRLVOkdhOlj9N3q0F/B1qArkqOxsXe
+        mL0e+flwtRK3KPNimzUvidA=
+X-Google-Smtp-Source: AMrXdXsGsjsrB9AcKzMCzEqklUI9nm2c3uPSa70otNvz7vExtyhtj7gtbzCz9MgPJaULLoodG5H59g==
+X-Received: by 2002:ac8:5211:0:b0:3a7:e384:92b6 with SMTP id r17-20020ac85211000000b003a7e38492b6mr64414936qtn.19.1672784386769;
+        Tue, 03 Jan 2023 14:19:46 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m5-20020ac807c5000000b003a530a32f67sm19430531qth.65.2023.01.03.14.19.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Jan 2023 14:19:45 -0800 (PST)
+Message-ID: <d42ecd28-9fe8-9376-8c42-4245120cab9f@gmail.com>
+Date:   Tue, 3 Jan 2023 14:19:40 -0800
 MIME-Version: 1.0
-References: <0000000000002ae67f05f0f191aa@google.com> <ea9c2977-f05f-3acd-ee3e-2443229b7b55@amd.com>
- <3e531d65-72a7-a82a-3d18-004aeab9144b@redhat.com> <a47b840f-b2b8-95d7-ddc0-c9d5dde3c28c@amd.com>
- <2b35515e-5ad0-ee84-c90f-cb61428be4e4@I-love.SAKURA.ne.jp>
-In-Reply-To: <2b35515e-5ad0-ee84-c90f-cb61428be4e4@I-love.SAKURA.ne.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 3 Jan 2023 23:12:21 +0100
-Message-ID: <CANn89iL+mEJv_tq6TAFgR86QUmRXJ0CKe=auuQeGOmE2QV2PZw@mail.gmail.com>
-Subject: Re: [syzbot] WARNING: locking bug in inet_autobind
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Felix Kuehling <felix.kuehling@amd.com>,
-        Waiman Long <longman@redhat.com>, jakub@cloudflare.com,
-        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
-        syzbot <syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com>,
-        Alexander.Deucher@amd.com, Christian.Koenig@amd.com,
-        David1.Zhou@amd.com, Evan.Quan@amd.com, Harry.Wentland@amd.com,
-        Oak.Zeng@amd.com, Ray.Huang@amd.com, Yong.Zhao@amd.com,
-        airlied@linux.ie, ast@kernel.org, boqun.feng@gmail.com,
-        daniel@ffwll.ch, daniel@iogearbox.net, davem@davemloft.net,
-        dsahern@kernel.org, gautammenghani201@gmail.com, kafai@fb.com,
-        kuba@kernel.org, kuznet@ms2.inr.ac.ru, mingo@redhat.com,
-        ozeng@amd.com, pabeni@redhat.com, peterz@infradead.org,
-        rex.zhu@amd.com, songliubraving@fb.com, will@kernel.org,
-        yhs@fb.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v6 net-next 01/10] dt-bindings: dsa: sync with maintainers
+Content-Language: en-US
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        =?UTF-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>
+References: <20230103051401.2265961-1-colin.foster@in-advantage.com>
+ <20230103051401.2265961-2-colin.foster@in-advantage.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230103051401.2265961-2-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,43 +101,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 3, 2023 at 11:08 PM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> On 2023/01/04 1:20, Felix Kuehling wrote:
-> >
-> > Am 2023-01-03 um 11:05 schrieb Waiman Long:
-> >> On 1/3/23 10:39, Felix Kuehling wrote:
-> >>> The regression point doesn't make sense. The kernel config doesn't enable CONFIG_DRM_AMDGPU, so there is no way that a change in AMDGPU could have caused this regression.
-> >>>
-> >> I agree. It is likely a pre-existing problem or caused by another commit that got triggered because of the change in cacheline alignment caused by commit c0d9271ecbd ("drm/amdgpu: Delete user queue doorbell variable").
-> > I don't think the change can affect cache line alignment. The entire amdgpu driver doesn't even get compiled in the kernel config that was used, and the change doesn't touch any files outside drivers/gpu/drm/amd/amdgpu:
-> >
-> > # CONFIG_DRM_AMDGPU is not set
-> >
-> > My guess would be that it's an intermittent bug that is confusing bisect.
-> >
-> > Regards,
-> >   Felix
->
-> This was already explained in https://groups.google.com/g/syzkaller-bugs/c/1rmGDmbXWIw/m/nIQm0EmxBAAJ .
->
-> Jakub Sitnicki suggested
->
->   What if we revisit Eric's lockdep splat fix in 37159ef2c1ae ("l2tp: fix
->   a lockdep splat") and:
->
->   1. remove the lockdep_set_class_and_name(...) call in l2tp; it looks
->      like an odd case within the network stack, and
->
->   2. switch to bh_lock_sock_nested in l2tp_xmit_core so that we don't
->      break what has been fixed in 37159ef2c1ae.
->
-> and we are waiting for response from Eric Dumazet.
->
+On 1/2/23 21:13, Colin Foster wrote:
+> The MAINTAINERS file has Andrew Lunn, Florian Fainelli, and Vladimir Oltean
+> listed as the maintainers for generic dsa bindings. Update dsa.yaml and
+> dsa-port.yaml accordingly.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 
-Eric Dumazet has been very busy.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
 
-Send a patch, instead of an idea/description.
-
-Thanks.
