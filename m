@@ -2,154 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D59C65BD20
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9E165BD2B
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbjACJ0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 04:26:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
+        id S237091AbjACJaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 04:30:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbjACJ0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:26:18 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41DC25FD
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 01:26:16 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id j17so23446103wrr.7
-        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 01:26:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VlrZIWiKPKU8EIa8obi0s4xu7XouDrgxHg+8ro+SG3k=;
-        b=4KFQHsXarwcjk4U6fF6ZfoPAPWb/KRSyDGnIL4vza7YZjDs6AebbuPpha/izJSuqGN
-         UWTVwV5h0a3cEQweCnD0uV2V8Sx3631c0DfhGd4cQo7g/WG7ydqa0+aZkV7vkRcxP548
-         K7VpYBQ/b7zC42yTEbezLBdCFB7Djl7FVwwjd9AObARPOfA470uEms+9G6GDEfFJi4P3
-         NrF0jRW6OkNZz1GVhy/sMmzwYaKsOiFmSqaktcIbzPsUxjGGt8zqC5EdOw2U4zXtQice
-         jvtob9LK50IT2AJqJRlOpr3JkXrZpXc4P4AVpHhM6w4OMwNhKA5YahQ39kuVzzYzYqjq
-         Y+0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VlrZIWiKPKU8EIa8obi0s4xu7XouDrgxHg+8ro+SG3k=;
-        b=fVa5aMqabaC1/6/pbV0HqGAjJmpzX0cowy6zlecBOLcL4O2/N5LPxuEwFeQ/U71K4M
-         cyIezLWQOaPOWEiLv8qX1Obhsn7XnODLRVRXfXtTbclRxje3/7ZGreDxdsSgi1pAS/sV
-         DXiqMeXZ3we3Qqi7USZfFdQxy2Omh3HIMZGUQsVpsOhAG0bGInfDMpQTz1iZ25JOXCux
-         oax92oJlaGs5CsRz5kn2mM5Dsdek4CPeq0FtFygzG+gGC3PJ2OJKmjLULfq+18wUk3MM
-         YWI9SSNDpzq7P7D4kl1ky3j+aIrJ6NJXQ8+XiWikSma9PD/Ey8MGaeJ8ksNU70gjfy6T
-         hUgw==
-X-Gm-Message-State: AFqh2kqTq0JoxgSuiKoJJmjGDnJnmuXiiV4iLh1yqa6yjvv9vHu1yr7+
-        A43d3uoqMUwwhP1YyfzvNY/SsQ==
-X-Google-Smtp-Source: AMrXdXuxHCgQeNrXBd7kyLDkOz/J5qZaYukQpLyfAwbQDCHwG0atVU5aMJersboEYdx4xLXvtj1vHw==
-X-Received: by 2002:a5d:408c:0:b0:298:5b78:9e0a with SMTP id o12-20020a5d408c000000b002985b789e0amr4011952wrp.34.1672737975106;
-        Tue, 03 Jan 2023 01:26:15 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id j1-20020adfff81000000b0024cb961b6aesm30034691wrr.104.2023.01.03.01.26.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 01:26:14 -0800 (PST)
-Date:   Tue, 3 Jan 2023 10:26:12 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jacob.e.keller@intel.com, leon@kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC net-next 04/10] devlink: always check if the devlink
- instance is registered
-Message-ID: <Y7P0tE3+PyJSwaUC@nanopsycho>
-References: <20221217011953.152487-1-kuba@kernel.org>
- <20221217011953.152487-5-kuba@kernel.org>
- <Y7Li+GMB6BU+D/6W@nanopsycho>
- <20230102150514.6321d2ae@kernel.org>
+        with ESMTP id S230380AbjACJaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:30:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DAC5FB0;
+        Tue,  3 Jan 2023 01:30:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99A8F61225;
+        Tue,  3 Jan 2023 09:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EE160C433F1;
+        Tue,  3 Jan 2023 09:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672738216;
+        bh=Lrad1MM4W/2a1P4k2fvv9I/bnFCeaUnPA0mFcKiYI5I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uIAKQKYRzBIIQXcLRDcaSIXohu6uhjJoiNhZTWc9mBVIC6zZz+1fdr5nMH7aWlCEK
+         somFb44aaNkzT6wo1/LREtx2jI9ND7u2X9lxOZwtrq3MgDSeWuoQ9mp84OZ0fsCpwH
+         EHz0Gmmy3GG7zflcH2dz/j5joUrdtPJe0fEc5QD6+swnWrJbcpP8B0dboTMfH0ca6v
+         2nwiIj/iPL8CBjTyL9YtQNw199oeX9NnI8vX8442RVX9TgISmqtGCrDqL9PBly+ptC
+         rtjY6I82Cp6yeVYbk3drPWDd/gGSljQMriRP03JvVSIMhhDo4x0Y5jD9HSj2p8evlC
+         MuSOIuIUaa0IA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5DC5E5724B;
+        Tue,  3 Jan 2023 09:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230102150514.6321d2ae@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] usb: rndis_host: Secure rndis_query check against int
+ overflow
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167273821587.22243.5603167276916404325.git-patchwork-notify@kernel.org>
+Date:   Tue, 03 Jan 2023 09:30:15 +0000
+References: <20230103091710.81530-1-szymon.heidrich@gmail.com>
+In-Reply-To: <20230103091710.81530-1-szymon.heidrich@gmail.com>
+To:     Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc:     davem@davemloft.ne, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jan 03, 2023 at 12:05:14AM CET, kuba@kernel.org wrote:
->On Mon, 2 Jan 2023 14:58:16 +0100 Jiri Pirko wrote:
->> Sat, Dec 17, 2022 at 02:19:47AM CET, kuba@kernel.org wrote:
->> >Always check under the instance lock whether the devlink instance
->> >is still / already registered.
->> >
->> >This is a no-op for the most part, as the unregistration path currently
->> >waits for all references. On the init path, however, we may temporarily
->> >open up a race with netdev code, if netdevs are registered before the
->> >devlink instance. This is temporary, the next change fixes it, and this
->> >commit has been split out for the ease of review.
->> >
->> >Note that in case of iterating over sub-objects which have their
->> >own lock (regions and line cards) we assume an implicit dependency
->> >between those objects existing and devlink unregistration.  
->> 
->> This would be probably very valuable to add as a comment inside the code
->> for the future reader mind sake.
->
->Where, tho?
->
->I'm strongly against the pointlessly fine-grained locking going forward
->so hopefully there won't be any more per-subobject locks added anyway.
+Hello:
 
-Agreed. That is what I suggested in the other thread too.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
+On Tue,  3 Jan 2023 10:17:09 +0100 you wrote:
+> Variables off and len typed as uint32 in rndis_query function
+> are controlled by incoming RNDIS response message thus their
+> value may be manipulated. Setting off to a unexpectetly large
+> value will cause the sum with len and 8 to overflow and pass
+> the implemented validation step. Consequently the response
+> pointer will be referring to a location past the expected
+> buffer boundaries allowing information leakage e.g. via
+> RNDIS_OID_802_3_PERMANENT_ADDRESS OID.
+> 
+> [...]
 
->
->> >+bool devl_is_alive(struct devlink *devlink)  
->> 
->> Why "alive"? To be consistent with the existing terminology, how about
->> to name it devl_is_registered()?
->
->I dislike the similarity to device_is_registered() which has very
->different semantics. I prefer alive.
+Here is the summary with links:
+  - usb: rndis_host: Secure rndis_query check against int overflow
+    https://git.kernel.org/netdev/net/c/c7dd13805f8b
 
-Interesting. Didn't occur to me to look into device.h when reading
-devlink.c code. I mean, is device_register() behaviour in sync with
-devlink_register?
-
-Your alive() helper is checking "register mark". It's an odd and unneded
-inconsistency in newly added code :/
-
-
->
->> Also, "devl_" implicates that it should be called with devlink instance
->> lock held, so probably devlink_is_registered() would be better.
->
->I'm guessing you realized this isn't correct later on.
-
-From what I see, no need to hold instance mutex for xa mark checking,
-alhough I understand why you want the helper to be called with the lock.
-Perhaps assert and a little comment would make this clear?
-
-
->
->> >+{
->> >+	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
->> >+}
->> >+EXPORT_SYMBOL_GPL(devl_is_alive);
->> >+
->> >+/**
->> >+ * devlink_try_get() - try to obtain a reference on a devlink instance
->> >+ * @devlink: instance to reference
->> >+ *
->> >+ * Obtain a reference on a devlink instance. A reference on a devlink instance
->> >+ * only implies that it's safe to take the instance lock. It does not imply
->> >+ * that the instance is registered, use devl_is_alive() after taking
->> >+ * the instance lock to check registration status.
->> >+ */  
->> 
->> This comment is not related to the patch, should be added in a separate
->> one.
->
->The point of adding this comment is to say that one has to use
->devl_is_alive() after accessing an instance by reference.
->It is very much in the right patch.
-
-Gotha! My mistake, sorry.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
