@@ -2,169 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7CB65BD30
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:30:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF2B65BD3E
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:35:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237094AbjACJa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 04:30:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        id S236960AbjACJfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 04:35:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbjACJaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:30:22 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F281F5FB0
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 01:30:20 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id h16so28789902wrz.12
-        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 01:30:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=g2x3xMxrcdbpRrToss2gqh2VZIlpmlWJMJDIo05fHp8=;
-        b=VDtSNftmpX8CCvAEQGnpk9lRISu3QAyI5uvN7HKxAZSAHYHm92DIsIZnWWe04VsPwS
-         JOv+AbKNRdGlvFQ3SJ5fUNbReZE2hwO+wZcj0/H+eBgTMmXCm9shmteIV5F1rdulkppp
-         75JbwQZCr7ooxfEHr/sByT2y3ISvRZ+ajAHfOpKt5eQSx8HoST0ZPDRPUTHuCGi7bCee
-         S8J2sk3WqdaAQ9iq9SDG8LXfyxhZvWqAzKWPlnNo+u9c21rZHPY4nYDBMaTM5bhmEtoN
-         NkFgDbowm4ZnHl60kvX0JQqTW1IXmv5kkELcYOpo9F1k2y7PQtDdp8hgDsNoxYV8sL1Z
-         Rb8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g2x3xMxrcdbpRrToss2gqh2VZIlpmlWJMJDIo05fHp8=;
-        b=HYtouuM4x0c65MyQQlzewTULwvq8Erl6khkMxNfCPVjbagV6rZK9SXyur4A96e33jd
-         5/SjFAGQi//wUGQ6KSO034H17QIQ09P6ZsuNP3tbUCaqlfrfitOXeo9nc9nHqh9kwwzS
-         xv0g9crSfBHT4/E60Ua+BlrUggbgIRYvcr89+zJdZlNQ+WKSBgBkgIl2ik4UJafJJA+S
-         Q/0h6JCFIwhVxS+3sUv98F6f0uw8QP7ewqOzwGJ3+fcJwCnSnTexDImnyZVbxiqD09C6
-         L2qBjW2FevbTHhUzAztBE/yp1R80W6H7WR9FoArl58UfoDJoZ95axouvZDwbNZVPOjEg
-         yA2A==
-X-Gm-Message-State: AFqh2kq/68tAKlwDWCxJiEIHNkSorQ1VMNgIcWzkUYJk4ZZQfiOyDG7h
-        cF21fWzX+A5YR+El9y8soDavh0ZmfHozNZxjwo8=
-X-Google-Smtp-Source: AMrXdXvFWbfaSZuqZVdUjMzFo+Yztl5XniGiZ5F1jQj1U5jew1G6CjA/r7WguaYIjVQk0vkIS1mzfw==
-X-Received: by 2002:adf:f351:0:b0:291:3f93:b7be with SMTP id e17-20020adff351000000b002913f93b7bemr7788484wrp.54.1672738219588;
-        Tue, 03 Jan 2023 01:30:19 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id l25-20020adfa399000000b002421ed1d8c8sm31068474wrb.103.2023.01.03.01.30.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 01:30:18 -0800 (PST)
-Date:   Tue, 3 Jan 2023 10:30:17 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jacob.e.keller@intel.com, leon@kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC net-next 04/10] devlink: always check if the devlink
- instance is registered
-Message-ID: <Y7P1qY8RV2TMOOa+@nanopsycho>
-References: <20221217011953.152487-1-kuba@kernel.org>
- <20221217011953.152487-5-kuba@kernel.org>
- <Y7Lw1GSGml1E8SXw@nanopsycho>
- <20230102151630.4aeaef00@kernel.org>
+        with ESMTP id S233155AbjACJfL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:35:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D30FE094;
+        Tue,  3 Jan 2023 01:35:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFE0661228;
+        Tue,  3 Jan 2023 09:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A44C433D2;
+        Tue,  3 Jan 2023 09:35:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672738509;
+        bh=JUA2lT1qfrNXleMDtLF82i4F/TDM47rJDAehK4IRzWE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iXpIJf3tpbeiVTecgwdjxbmVlDfR8sXNFxkplivk1BDVRtIGCWc8cFgb1WqzCPrmh
+         pSv97G0VpNR8j3hHwc/jaVkUc/Y5Ewv8yamA/s61oXZC2s3cV6OXAeMi52NIzQ/O9l
+         fyfzwUhhmn6dF1vX5A6/KiiJC9Pf6QEno960d6JEOfCsG9YS7fleQpCMeAeeNG6XIV
+         JXUXBALPMV4N3kkIqtEG7XlNQzPjWkj7D5Tc7l/h3eWH7JKBCI+Y6AOL9f6m9pR37s
+         PJseOduPM1nwO7SPbb1SYAjTF8/MmXpjqBVNM3LbBO1e5bqBEWxbF3umaLN7Ogovv4
+         DzYePuKtc2bbw==
+Date:   Tue, 3 Jan 2023 11:35:04 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Petr Pavlu <petr.pavlu@suse.com>
+Cc:     tariqt@nvidia.com, yishaih@nvidia.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Part of devices not initialized with mlx4
+Message-ID: <Y7P2yECHeKvyqQqo@unreal>
+References: <0a361ac2-c6bd-2b18-4841-b1b991f0635e@suse.com>
+ <Y57jE03Rmr7wphlj@unreal>
+ <e939dbde-8905-fc98-5717-c555e05b708d@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230102151630.4aeaef00@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <e939dbde-8905-fc98-5717-c555e05b708d@suse.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jan 03, 2023 at 12:16:30AM CET, kuba@kernel.org wrote:
->On Mon, 2 Jan 2023 15:57:24 +0100 Jiri Pirko wrote:
->> Sat, Dec 17, 2022 at 02:19:47AM CET, kuba@kernel.org wrote:
->> >Always check under the instance lock whether the devlink instance
->> >is still / already registered.
->> >
->> >This is a no-op for the most part, as the unregistration path currently
->> >waits for all references. On the init path, however, we may temporarily
->> >open up a race with netdev code, if netdevs are registered before the
->> >devlink instance. This is temporary, the next change fixes it, and this
->> >commit has been split out for the ease of review.
->> >
->> >Note that in case of iterating over sub-objects which have their
->> >own lock (regions and line cards) we assume an implicit dependency
->> >between those objects existing and devlink unregistration.
->
->> >diff --git a/net/devlink/basic.c b/net/devlink/basic.c
->> >index 5f33d74eef83..6b18e70a39fd 100644
->> >--- a/net/devlink/basic.c
->> >+++ b/net/devlink/basic.c
->> >@@ -2130,6 +2130,9 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
->> > 		int idx = 0;
->> > 
->> > 		mutex_lock(&devlink->linecards_lock);
->> >+		if (!devl_is_alive(devlink))
->> >+			goto next_devlink;  
->> 
->> Thinking about this a bit more, things would be cleaner if reporters and
->> linecards are converted to rely on instance lock as well. I don't see a
->> good reason for a separate lock in both cases, really.
->
->We had discussion before, I'm pretty sure.
->IIRC you said that mlx4's locking prevents us from using the instance
->lock for regions.
+On Mon, Jan 02, 2023 at 11:33:15AM +0100, Petr Pavlu wrote:
+> On 12/18/22 10:53, Leon Romanovsky wrote:
+> > On Thu, Dec 15, 2022 at 10:51:15AM +0100, Petr Pavlu wrote:
+> >> Hello,
+> >>
+> >> We have seen an issue when some of ConnectX-3 devices are not initialized
+> >> when mlx4 drivers are a part of initrd.
+> > 
+> > <...>
+> > 
+> >> * Systemd stops running services and then sends SIGTERM to "unmanaged" tasks
+> >>   on the system to terminate them too. This includes the modprobe task.
+> >> * Initialization of mlx4_en is interrupted in the middle of its init function.
+> > 
+> > And why do you think that this systemd behaviour is correct one?
+> 
+> My view is that this is an issue between the kernel and initrd/systemd.
+> Switching the root is a delicate operation and both parts need to carefully
+> cooperate for it to work correctly.
+> 
+> I think it is generally sensible that systemd tries to terminate any remaining
+> processes started from the initrd. They would have troubles when the root is
+> switched under their hands anyway, unless they are specifically prepared for
+> it. Systemd only skips terminating kthreads and allows to exclude root storage
+> daemons. A modprobe helper could be excluded from being terminated too but the
+> problem with the root switch remains.
+> 
+> It looks to me that a good approach is to complete all running module loads
+> before switching the root and continue with any further loads after the
+> operation is done. Leaving module loads to udevd assures this, hence the idea
+> to use an auxiliary bus.
 
-Yeah, let me check it out again. For the linecards, that could be done.
-Let me take care of these.
+I'm not sure about it. Everything above are user-space troubles which
+are invited once systemd does root switch. Anyway, if you want to do
+aux bus for mlx4, go for it.
 
+Feel free to send me patches off-list and I will add them to our
+regression, but be aware that you are stepping on landmine field
+here.
 
->
->> Also, we could introduce devlinks_xa_for_each_registered_get_lock()
->> iterator that would lock the instance as well right away to avoid
->> this devl_is_alive() dance on multiple places when you iterate devlinks.
->
->That's what I started with, but the ability to factor our the
->unlock/put on error paths made the callback approach much cleaner.
->And after using the callback for all the dumps there's only a couple
->places which would use devlinks_xa_for_each_registered_get_lock().
-
-I see. Okay.
-
-
->
->> >@@ -12218,7 +12232,8 @@ void devlink_compat_running_version(struct devlink *devlink,
->> > 		return;
->> > 
->> > 	devl_lock(devlink);  
->> 
->> How about to have a helper, something like devl_lock_alive() (or
->> devl_lock_registered() with the naming scheme I suggest in the other
->> thread)? Then you can do:
->> 
->> 	if (!devl_lock_alive(devlink))
->> 		return;
->> 	__devlink_compat_running_version(devlink, buf, len);
->> 	devl_unlock(devlink);
->
->I guess aesthetic preference.
->
->If I had the cycles I'd make devlink_try_get() return a wrapped type
->
->struct devlink_ref {
->	struct devlink *devlink;
->};
->
->which one would have to pass to devl_lock_from_ref() or some such:
->
->struct devlink *devl_lock_from_ref(struct devlink_ref dref)
->{
->	if (!dref.devlink)
->		return NULL;
->	devl_lock(dref.devlink);
->	if (devl_lock_alive(dref.devlink))
->		return dref.devlink;
->	devl_unlock(dref.devlink);
->	return NULL;
->}
->
->But the number of calls to devl_is_alive() is quite small after all
->the cleanup, so I don't think the extra helpers are justified at this
->point. "Normal coders" should not be exposed to any of the lifetime
->details, not when coding the drivers, not when adding typical devlink
->features/subobjects.
-
-Fair point.
-
+Thanks
