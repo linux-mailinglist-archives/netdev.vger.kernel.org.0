@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2615A65C08A
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 14:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C5865C098
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 14:16:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237734AbjACNNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 08:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
+        id S237682AbjACNNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 08:13:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237714AbjACNMn (ORCPT
+        with ESMTP id S237676AbjACNMn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 08:12:43 -0500
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD0110B75;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DACD10B70;
         Tue,  3 Jan 2023 05:12:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1672751560; x=1704287560;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=aeuQDv8IZ9zZxqvE4KXWp0tWzJlo3lpo6FSE4G48zc0=;
-  b=lgTpR+DI1OObEwgOSMAcdLqjnYhm9oEJsBoB+kbi0mtRvPtmy4fUWDSX
-   3ICagxFiyE/iAXtuMeJJPVfwKJxe+6wKLmquV4Aik28JrlTWG2wHwgVWy
-   PFBXda83fzC6x6gSu1Oxz/fVaKtia/zuz6E0NbQSsN3R3N5Rvl4vt7r8t
-   ItSR/I8L3sF+PFUZg6IXWO6zKwWw7vKV3xQr+6yM/gEaR7OiyzjsRgMgN
-   16GNrd1GIwCmUkuiuHh/EF3JcnQRZveGEhasHmThjo2B8iQMKnn9KOL8D
-   u2YKRIPiDK4CX2lfMAqmp5I46OiBFmNL2NyDksvOMw7vp4h1o1KsrvwqA
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320367289"
+  bh=hvI26OhQ+1E3Y1b+RrDqvUOiyVnslqAALa2RhHdwGbY=;
+  b=m2K9HbaXlAohLwUKkPBF8jj3ww+UpveJ7AB21Q5apwPCGrvhNPPqL5FV
+   Zq2lES0nJIYwFPlnNCfoJYoGTzyZnYCwUJxqt3ObNKBy/cDnOvYpVXr5t
+   xUplS96h3LU07X5+gGnSEB8P/fTuy3v0oh36zCFf9B4CDXjprJTe+v79V
+   Nzn+K2eSa6bEI9gA3grxxE9vN7p37GGmGPcLLpdCSWe/hcHu/ZXALoawE
+   06a+PXvtCOhfaR+y/E68aRdEMvWxWNwBXAIXuhNXIuccP0tMvk+1ibkWU
+   KDRHgCYYXBa4kkrTavlHe8fUnYc5RO9XrofVjuH9bIoxpFVQWCMx2OyIk
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320367274"
 X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
-   d="scan'208";a="320367289"
+   d="scan'208";a="320367274"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 05:12:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="654781149"
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="654781148"
 X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
-   d="scan'208";a="654781149"
+   d="scan'208";a="654781148"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orsmga002.jf.intel.com with ESMTP; 03 Jan 2023 05:12:34 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id C7B4719E; Tue,  3 Jan 2023 15:13:00 +0200 (EET)
+        id D30BE3FD; Tue,  3 Jan 2023 15:13:00 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Gene Chen <gene_chen@richtek.com>, linux-leds@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v4 08/11] leds: pca955x: Get rid of custom led_init_default_state_get()
-Date:   Tue,  3 Jan 2023 15:12:53 +0200
-Message-Id: <20230103131256.33894-9-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 09/11] leds: pm8058: Get rid of custom led_init_default_state_get()
+Date:   Tue,  3 Jan 2023 15:12:54 +0200
+Message-Id: <20230103131256.33894-10-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230103131256.33894-1-andriy.shevchenko@linux.intel.com>
 References: <20230103131256.33894-1-andriy.shevchenko@linux.intel.com>
@@ -79,78 +79,63 @@ Use it instead of custom implementation.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/leds/leds-pca955x.c | 26 ++++++--------------------
- 1 file changed, 6 insertions(+), 20 deletions(-)
+ drivers/leds/leds-pm8058.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/leds/leds-pca955x.c b/drivers/leds/leds-pca955x.c
-index 33ec4543fb4f..1edd092e7894 100644
---- a/drivers/leds/leds-pca955x.c
-+++ b/drivers/leds/leds-pca955x.c
-@@ -130,7 +130,7 @@ struct pca955x_led {
- 	struct led_classdev	led_cdev;
- 	int			led_num;	/* 0 .. 15 potentially */
- 	u32			type;
--	int			default_state;
-+	enum led_default_state	default_state;
- 	struct fwnode_handle	*fwnode;
- };
+diff --git a/drivers/leds/leds-pm8058.c b/drivers/leds/leds-pm8058.c
+index fb2ab72c0c40..b9233f14b646 100644
+--- a/drivers/leds/leds-pm8058.c
++++ b/drivers/leds/leds-pm8058.c
+@@ -93,8 +93,8 @@ static int pm8058_led_probe(struct platform_device *pdev)
+ 	struct device_node *np;
+ 	int ret;
+ 	struct regmap *map;
+-	const char *state;
+ 	enum led_brightness maxbright;
++	enum led_default_state state;
  
-@@ -437,7 +437,6 @@ pca955x_get_pdata(struct i2c_client *client, struct pca955x_chipdef *chip)
- 		return ERR_PTR(-ENOMEM);
+ 	led = devm_kzalloc(dev, sizeof(*led), GFP_KERNEL);
+ 	if (!led)
+@@ -125,25 +125,26 @@ static int pm8058_led_probe(struct platform_device *pdev)
+ 		maxbright = 15; /* 4 bits */
+ 	led->cdev.max_brightness = maxbright;
  
- 	device_for_each_child_node(&client->dev, child) {
--		const char *state;
- 		u32 reg;
- 		int res;
- 
-@@ -448,19 +447,9 @@ pca955x_get_pdata(struct i2c_client *client, struct pca955x_chipdef *chip)
- 		led = &pdata->leds[reg];
- 		led->type = PCA955X_TYPE_LED;
- 		led->fwnode = child;
--		fwnode_property_read_u32(child, "type", &led->type);
-+		led->default_state = led_init_default_state_get(child);
- 
--		if (!fwnode_property_read_string(child, "default-state",
--						 &state)) {
--			if (!strcmp(state, "keep"))
--				led->default_state = LEDS_GPIO_DEFSTATE_KEEP;
--			else if (!strcmp(state, "on"))
--				led->default_state = LEDS_GPIO_DEFSTATE_ON;
--			else
--				led->default_state = LEDS_GPIO_DEFSTATE_OFF;
+-	state = of_get_property(np, "default-state", NULL);
+-	if (state) {
+-		if (!strcmp(state, "keep")) {
+-			led->cdev.brightness = pm8058_led_get(&led->cdev);
+-		} else if (!strcmp(state, "on")) {
+-			led->cdev.brightness = maxbright;
+-			pm8058_led_set(&led->cdev, maxbright);
 -		} else {
--			led->default_state = LEDS_GPIO_DEFSTATE_OFF;
+-			led->cdev.brightness = LED_OFF;
+-			pm8058_led_set(&led->cdev, LED_OFF);
 -		}
-+		fwnode_property_read_u32(child, "type", &led->type);
++	init_data.fwnode = of_fwnode_handle(np);
++
++	state = led_init_default_state_get(init_data.fwnode);
++	switch (state) {
++	case LEDS_DEFSTATE_ON:
++		led->cdev.brightness = maxbright;
++		pm8058_led_set(&led->cdev, maxbright);
++		break;
++	case LEDS_DEFSTATE_KEEP:
++		led->cdev.brightness = pm8058_led_get(&led->cdev);
++		break;
++	default:
++		led->cdev.brightness = LED_OFF;
++		pm8058_led_set(&led->cdev, LED_OFF);
  	}
  
- 	pdata->num_leds = chip->bits;
-@@ -572,13 +561,11 @@ static int pca955x_probe(struct i2c_client *client)
- 			led->brightness_set_blocking = pca955x_led_set;
- 			led->brightness_get = pca955x_led_get;
+ 	if (led->ledtype == PM8058_LED_TYPE_KEYPAD ||
+ 	    led->ledtype == PM8058_LED_TYPE_FLASH)
+ 		led->cdev.flags	= LED_CORE_SUSPENDRESUME;
  
--			if (pdata->leds[i].default_state ==
--			    LEDS_GPIO_DEFSTATE_OFF) {
-+			if (pdata->leds[i].default_state == LEDS_DEFSTATE_OFF) {
- 				err = pca955x_led_set(led, LED_OFF);
- 				if (err)
- 					return err;
--			} else if (pdata->leds[i].default_state ==
--				   LEDS_GPIO_DEFSTATE_ON) {
-+			} else if (pdata->leds[i].default_state == LEDS_DEFSTATE_ON) {
- 				err = pca955x_led_set(led, LED_FULL);
- 				if (err)
- 					return err;
-@@ -617,8 +604,7 @@ static int pca955x_probe(struct i2c_client *client)
- 			 * brightness to see if it's using PWM1. If so, PWM1
- 			 * should not be written below.
- 			 */
--			if (pdata->leds[i].default_state ==
--			    LEDS_GPIO_DEFSTATE_KEEP) {
-+			if (pdata->leds[i].default_state == LEDS_DEFSTATE_KEEP) {
- 				if (led->brightness != LED_FULL &&
- 				    led->brightness != LED_OFF &&
- 				    led->brightness != LED_HALF)
+-	init_data.fwnode = of_fwnode_handle(np);
+-
+ 	ret = devm_led_classdev_register_ext(dev, &led->cdev, &init_data);
+ 	if (ret)
+ 		dev_err(dev, "Failed to register LED for %pOF\n", np);
 -- 
 2.35.1
 
