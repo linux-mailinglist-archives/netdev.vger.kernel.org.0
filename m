@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9C765BD73
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EAA65BD7E
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:54:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237269AbjACJvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 04:51:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
+        id S237031AbjACJy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 04:54:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237108AbjACJvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:51:18 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A99B3E
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 01:51:17 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id m3so13343539wmq.0
-        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 01:51:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mr582/0ctobwMhGCTpGPKnO8nE6NIMfwPvKICxhJLyI=;
-        b=Zmmcru2GTlYLdRsB4aGd+zf33y5n3li+y7N9kXSVKo1aOWH3Q84c1bPpUcKa1f/2lX
-         +AWiSXUfJO1TLKqbHYChShKhQVJoHyNA2bYukvJChk2uuORNJEhcwzNmpeUycPrbFyF1
-         D6X6tgMd9dvHNS0R/VB0kEsauG8RkM273CY9JX2CrAyO0gmp9sxZ5g4MvK2lRpZ+xvCM
-         VTD6q9VpC5uY1wsYAHiOOjLLgf3qD9lcuoaZj4sAP38QgJtpNI/B91zoFiBd+p9Irk7y
-         0Slj8wO5K0lewOFW+yIXr9fpnxZKfg54pyHEHrecBEG+6ZnId2YagVP5Fo/LOoodyLIF
-         W+eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mr582/0ctobwMhGCTpGPKnO8nE6NIMfwPvKICxhJLyI=;
-        b=pbZcwwYgIwRtIvKupelIzHfO5uthQShp/NNCleRZ18xV6HSc+Vvq0tDgT9W3mRxA3+
-         hnIvukpOlY3kp+7xg0MJ0BDVL/LUypVO78Q22QQ/nmxykO/nVbsCxsjb4uZz8Ro45WOJ
-         EHlC0KIr7AJGAmvQKDTy+BLjFm/TUMvmHpP/PJMeurLHLUGvSc0b7+CFTPW3FaNHVnWp
-         A3el8dfGEpBEXDmD+UEdO6R2D367VyMogCZxZS7DWFDgEmgOvpr6eMWlYmqxwDkRPXeM
-         RzZeRQl5OZ/NEiEGQYoNvzIDXLxE4K+Iu7MPI6tn+G+BrzOK2tM/i0vLqnBctyjxjOJx
-         HIKw==
-X-Gm-Message-State: AFqh2krn0zHi7FAW9SUt48CifhvbuQeTuzRZU4Ztb/gqHp0/bqsG4qP+
-        o4DT20AYlPFPDAnbOM2OcjanTQ==
-X-Google-Smtp-Source: AMrXdXuKIkQAGBQMSEWzGn/+34AqQzN08anGx3n5XIlqmhX2xejZ89sAy5k5ZTy8/tq+dYjzkt8MIw==
-X-Received: by 2002:a05:600c:1d89:b0:3d3:5cd6:781 with SMTP id p9-20020a05600c1d8900b003d35cd60781mr30119988wms.37.1672739476192;
-        Tue, 03 Jan 2023 01:51:16 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id m22-20020a05600c161600b003cfa622a18asm43878615wmn.3.2023.01.03.01.51.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 01:51:15 -0800 (PST)
-Date:   Tue, 3 Jan 2023 10:51:14 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jacob.e.keller@intel.com, leon@kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC net-next 10/10] netdevsim: register devlink instance before
- sub-objects
-Message-ID: <Y7P6kieBDjB/K/30@nanopsycho>
-References: <20221217011953.152487-1-kuba@kernel.org>
- <20221217011953.152487-11-kuba@kernel.org>
- <Y7Ldciiq9wX+xUqM@nanopsycho>
- <20230102152546.1797b0e9@kernel.org>
+        with ESMTP id S233082AbjACJy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:54:27 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72615FEF;
+        Tue,  3 Jan 2023 01:54:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5QBwvdsaQ/rMsxBVhPGmbcWGtUN1VPHgFMR/l0i34XI=; b=uDe3nczbxGdgEhh9ch2BmOX0Jc
+        WLJibEAUnu06vPA8iXrhDW/Ly7EXSZfh919sG09oIlLXG8qTQOZecQz8imnws6KEPkXfeOILJLB/w
+        gNjEgL5F6A7xAlIZyU+P0sDKOPv3HB2vdH+KwGucoba3k74fs1MtAZQDOxruBa7cn8yQ5Wv8rWy5y
+        QytHI/2ew3vaLw+tK+eQJsNe5yG8Iq6cUgSNcC/Pzc9gMpHpbry9wRRVpjszJ+0Kl/l0WOVEaQS/X
+        5xAIXYiQpg1UrHu8I/MeIdaarXbfRcLRcNyEvq+mMTQo4cpk6G3toSqijYUC1XF80EGiayRK8EeaU
+        XhA6wPlw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35902)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pCdzw-0005B0-CT; Tue, 03 Jan 2023 09:54:20 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pCdzu-0001xN-MD; Tue, 03 Jan 2023 09:54:18 +0000
+Date:   Tue, 3 Jan 2023 09:54:18 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] net: phylink: Set host_interfaces for a
+ non-sfp PHY
+Message-ID: <Y7P7Sj/ZJ8V/9Pkq@shell.armlinux.org.uk>
+References: <20221226071425.3895915-1-yoshihiro.shimoda.uh@renesas.com>
+ <20221226071425.3895915-2-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230102152546.1797b0e9@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221226071425.3895915-2-yoshihiro.shimoda.uh@renesas.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jan 03, 2023 at 12:25:46AM CET, kuba@kernel.org wrote:
->On Mon, 2 Jan 2023 14:34:42 +0100 Jiri Pirko wrote:
->> Sat, Dec 17, 2022 at 02:19:53AM CET, kuba@kernel.org wrote:
->> >Move the devlink instance registration up so that all the sub-object
->> >manipulation happens on a valid instance.  
->> 
->> I wonder, why don't you squash patch 8 to this one and make 1 move, to
->> the fina destination?
->
->I found the squashed version a lot harder to review.
+On Mon, Dec 26, 2022 at 04:14:23PM +0900, Yoshihiro Shimoda wrote:
+> Set phy_dev->host_interfaces by pl->link_interface in
+> phylink_fwnode_phy_connect() for a non-sfp PHY.
+> 
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> ---
+>  drivers/net/phy/phylink.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 09cc65c0da93..1958d6cc9ef9 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -1809,6 +1809,7 @@ int phylink_fwnode_phy_connect(struct phylink *pl,
+>  		pl->link_interface = phy_dev->interface;
+>  		pl->link_config.interface = pl->link_interface;
+>  	}
+> +	__set_bit(pl->link_interface, phy_dev->host_interfaces);
 
-I'm puzzled. Both patches move calls to devl_register/unregister().
-The first one moves it, the second one moves it a bit more. What's
-making the squashed patch hard to review?
+This is probably going to break Macchiatobin platforms, since we
+declare that the link mode there is 10GBASE-R, we'll end up with
+host_interfaces containing just this mode. This will cause the
+88x3310 driver to select a rate matching interface mode, which the
+mvpp2 MAC can't support.
+
+If we want to fill host_interfaces in, then it needs to be filled in
+properly - and by that I mean with all the host interface modes that
+can be electrically supported - otherwise platforms will break.
+
+So, sorry, but NAK on this change.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
