@@ -2,99 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F7265C155
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 14:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A160265C1CC
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 15:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237624AbjACN5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 08:57:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
+        id S237899AbjACOW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 09:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237560AbjACN5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 08:57:38 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE4310B5C;
-        Tue,  3 Jan 2023 05:57:37 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id jo4so73797226ejb.7;
-        Tue, 03 Jan 2023 05:57:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wiBka+STdfWqXEYEF1M8oLHBS2PSmzps9GRArvQ0wNQ=;
-        b=f/XvfUxi6Y0rsfgiOoq/mD7Rx41wdk8aKmk/uWT++mY+WIDwkDdOK6GnzV6Ai6643i
-         uhSwNjlL3L3Nt4mjJc1iZFlYPVw9WD5YTI/C2o6JCc9xFbHnlpp+4JU9nIhxQ+hiWXBd
-         B5sNy/sPbatnJT9qWxxrteRXbaw+nlmoS8zXKR9wMaI9ZsXHlLo+5xLPOpQIYKrlzQpE
-         5+O9mrtWCwpvo03dielomObAafVznn40dbmQT0Gvbtaulxf/VoiOreOskgBPq82gf6q+
-         GdbtCO1E8JIw6IAO5wfaUdH5WhvO6zS70Ss6C6UePL6TNcu9g3j1I0mEq9uZrFYP0rIH
-         qzAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wiBka+STdfWqXEYEF1M8oLHBS2PSmzps9GRArvQ0wNQ=;
-        b=cYKMBKpbl7jqQ6eVSYO2LDh6+xYWJ5qJtpejdBs71BAsAIUMkRSftP+9y8+HDX3oSK
-         xpOakw8xWO+Uxq2DKxH8rqaVEvZoSnLtYLeTuY9audz9z/E2Y6uOsj+gs67cCV130Qet
-         4G8p3BlCHQQVCZnuNl/aSSp48ZTWjwAeeaWjf7QVMJVaWRuWuMT4/dlzNFU/NQHAaiHE
-         TgRpQzHGPzBo7smdoKBtaQ+fyCOpKMk4PAlyt4MQzPFc2haVN8cPtaTFDS0QpfPuYv1j
-         lcVlDqdPP7+mYlrUK5lkpsdbzmQP1VB8G7edYOu3mZ6D6uM1C877jmbUqC4IF1W+Tudb
-         Bzkg==
-X-Gm-Message-State: AFqh2krLhfFeSu0XBbE891BpLwS8oW34XI6DsDlrLjqY4WejDoG6AjHk
-        UqLLbPLdZkiM3oAq8GJ2Plk=
-X-Google-Smtp-Source: AMrXdXvHEPEUBS/O7zaaU5DAH5vatKPRD27MbUHcClggxuFQNb+o/DXxJXkEQA3LieO19gw+yFwtrg==
-X-Received: by 2002:a17:906:8447:b0:7c8:9f04:ae7e with SMTP id e7-20020a170906844700b007c89f04ae7emr38712372ejy.22.1672754255330;
-        Tue, 03 Jan 2023 05:57:35 -0800 (PST)
-Received: from skbuf ([188.26.185.118])
-        by smtp.gmail.com with ESMTPSA id k10-20020a170906158a00b007ba9c181202sm14095026ejd.56.2023.01.03.05.57.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 05:57:34 -0800 (PST)
-Date:   Tue, 3 Jan 2023 15:57:32 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S238011AbjACOOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 09:14:54 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870B611445;
+        Tue,  3 Jan 2023 06:14:51 -0800 (PST)
+Received: from [IPV6:2003:e9:d713:1514:accc:688a:efc9:2199] (p200300e9d7131514accc688aefc92199.dip0.t-ipconnect.de [IPv6:2003:e9:d713:1514:accc:688a:efc9:2199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 8160BC03A4;
+        Tue,  3 Jan 2023 15:14:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1672755288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vvZwNHE5dRkWjxoSZ1IH7ISFZfsS1G+0GFlUsVX0Nbs=;
+        b=Nwc2URL0cBo7O4h8jcxqU8A0z5Pb2lWgMMPBGAXYk9yUDvhKzc7ZP1W25ioU+W8JCvVWtx
+        lZsjAGUcWuB2XoArhgNCHxKZW8WJ6+8LcqPX3EGc7QTZCqgFKbVsUfpFzpxE6UDCfH91RQ
+        Q8o2OWzM1gPvp/p6InznCPOaFSpQPWZFf4/jzH/RirvhhssmjP0tSMgLUcUhfLy+XKs4YL
+        ccW0PbwURMMBNXS4WEP2yYT656FmJiXPNiM34arU6Qk2stSbSNBXmWWPfQHH3Mxjf7/OOf
+        ORS4lYqDBX7EBbBL6R/keycxDh4xU3066o8P2XZ87RCgmQf2Z53aQPvRD81vFg==
+Message-ID: <b1c095d1-6dee-b49d-52d4-a5ea84f36cfd@datenfreihafen.org>
+Date:   Tue, 3 Jan 2023 15:14:46 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH wpan-next v2 3/6] ieee802154: Introduce a helper to
+ validate a channel
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH RFC net-next v2 09/12] net: ethernet: freescale: fec:
- Separate C22 and C45 transactions for xgmac
-Message-ID: <20230103135732.saku5om5hgyw3ygk@skbuf>
-References: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
- <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
- <20221227-v6-2-rc1-c45-seperation-v2-9-ddb37710e5a7@walle.cc>
- <20221227-v6-2-rc1-c45-seperation-v2-9-ddb37710e5a7@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v2-9-ddb37710e5a7@walle.cc>
- <20221227-v6-2-rc1-c45-seperation-v2-9-ddb37710e5a7@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+References: <20221217000226.646767-1-miquel.raynal@bootlin.com>
+ <20221217000226.646767-4-miquel.raynal@bootlin.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20221217000226.646767-4-miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Regarding the commit title, there's no xgmac block in the FEC. "XG"
-means 10 Gbps, surely there's no such thing on imx/Vybrid. Can just say:
-"net: fec: Separate C22 and C45 MDIO transactions".
+Hello Miquel.
+
+On 17.12.22 01:02, Miquel Raynal wrote:
+> This helper for now only checks if the page member and channel member
+> are valid (in the specification range) and supported (by checking the
+> device capabilities). Soon two new parameters will be introduced and
+> having this helper will let us only modify its content rather than
+> modifying the logic everywhere else in the subsystem.
+> 
+> There is not functional change.
+> 
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>   include/net/cfg802154.h   | 11 +++++++++++
+>   net/ieee802154/nl802154.c |  3 +--
+>   2 files changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> index 76d4f95e9974..11bedfa96371 100644
+> --- a/include/net/cfg802154.h
+> +++ b/include/net/cfg802154.h
+> @@ -246,6 +246,17 @@ static inline void wpan_phy_net_set(struct wpan_phy *wpan_phy, struct net *net)
+>   	write_pnet(&wpan_phy->_net, net);
+>   }
+>   
+> +static inline bool ieee802154_chan_is_valid(struct wpan_phy *phy,
+> +                                            u8 page, u8 channel)
+> +{
+> +        if (page > IEEE802154_MAX_PAGE ||
+> +            channel > IEEE802154_MAX_CHANNEL ||
+> +            !(phy->supported.channels[page] & BIT(channel)))
+> +                return false;
+> +
+> +	return true;
+> +}
+> +
+
+This patch has some indent problems.
+
+Commit 6bbb25ee282b ("ieee802154: Introduce a helper to validate a channel")
+----------------------------------------------------------------------------
+ERROR: code indent should use tabs where possible
+#31: FILE: include/net/cfg802154.h:250:
++                                            u8 page, u8 channel)$
+
+WARNING: please, no spaces at the start of a line
+#31: FILE: include/net/cfg802154.h:250:
++                                            u8 page, u8 channel)$
+
+ERROR: code indent should use tabs where possible
+#33: FILE: include/net/cfg802154.h:252:
++        if (page > IEEE802154_MAX_PAGE ||$
+
+WARNING: please, no spaces at the start of a line
+#33: FILE: include/net/cfg802154.h:252:
++        if (page > IEEE802154_MAX_PAGE ||$
+
+ERROR: code indent should use tabs where possible
+#34: FILE: include/net/cfg802154.h:253:
++            channel > IEEE802154_MAX_CHANNEL ||$
+
+WARNING: please, no spaces at the start of a line
+#34: FILE: include/net/cfg802154.h:253:
++            channel > IEEE802154_MAX_CHANNEL ||$
+
+ERROR: code indent should use tabs where possible
+#35: FILE: include/net/cfg802154.h:254:
++            !(phy->supported.channels[page] & BIT(channel)))$
+
+WARNING: please, no spaces at the start of a line
+#35: FILE: include/net/cfg802154.h:254:
++            !(phy->supported.channels[page] & BIT(channel)))$
+
+ERROR: code indent should use tabs where possible
+#36: FILE: include/net/cfg802154.h:255:
++                return false;$
+
+WARNING: please, no spaces at the start of a line
+#36: FILE: include/net/cfg802154.h:255:
++                return false;$
+
+total: 5 errors, 5 warnings, 0 checks, 26 lines checked
+
+regards
+Stefan Schmidt
