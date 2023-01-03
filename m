@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 206A165C1FA
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 15:32:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE9E65C1F8
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 15:32:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237780AbjACOa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 09:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
+        id S237819AbjACObX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 09:31:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbjACOaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 09:30:21 -0500
+        with ESMTP id S237409AbjACObW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 09:31:22 -0500
 Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15996B02;
-        Tue,  3 Jan 2023 06:30:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CF1B87A;
+        Tue,  3 Jan 2023 06:31:21 -0800 (PST)
 Received: from fedcomp.. (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id A1B4340D403D;
-        Tue,  3 Jan 2023 14:30:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru A1B4340D403D
+        by mail.ispras.ru (Postfix) with ESMTPSA id 2B784419E9E3;
+        Tue,  3 Jan 2023 14:31:20 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 2B784419E9E3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1672756213;
-        bh=N59c1duLzzGpv+jk8LWJbX3Ft6CM71tskdCAVOE7edE=;
+        s=default; t=1672756280;
+        bh=igzujiJxzrmRT5zmMdtGoH+qe02y/3twFq2INbwL4h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eS0hPc30V0YuMmrRNlRwKoGEpyCa0ZY7MbDMh2NU3Ak2xFoXmz0kU2Dhj/k4K/VW4
-         GVthZ4vkyX8fk0OBQ4Ha/ekvV9JMVcNJRysi2Sb5abzq18GgcUU6Zyq4ZFPIgmhfof
-         jgoJRKZ3MRZ2T1HfBwlf/eX0YThM3gqdz/X/GPFs=
+        b=ITfH/+rqflwuC03BhiWDxdUMPX6ESkwKjPijne4ATq8eqQuqepB2RjquarfcVUjvp
+         H7oIO0Wf/ccbSpDxAGi0BFalbzoxaMO1sY0DzIm97TH5pAp3vEfeD5jTtQetJr6AUr
+         w1AwnLs1+hJ22KBXqFhBYsYVeiuWy+vRfpiLYpIM=
 From:   Fedor Pchelkin <pchelkin@ispras.ru>
 To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
         Kalle Valo <kvalo@kernel.org>
@@ -39,10 +39,11 @@ Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH] wifi: ath9k: hif_usb: clean up skbs if ath9k_hif_usb_rx_stream() fails
-Date:   Tue,  3 Jan 2023 17:29:40 +0300
-Message-Id: <20230103142940.273578-1-pchelkin@ispras.ru>
+        lvc-project@linuxtesting.org,
+        syzbot+e9632e3eb038d93d6bc6@syzkaller.appspotmail.com
+Subject: [PATCH v2] wifi: ath9k: hif_usb: clean up skbs if ath9k_hif_usb_rx_stream() fails
+Date:   Tue,  3 Jan 2023 17:30:29 +0300
+Message-Id: <20230103143029.273695-1-pchelkin@ispras.ru>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <87h6x95huy.fsf@toke.dk>
 References: 
@@ -57,12 +58,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Is this the same issue reported in
-> https://lore.kernel.org/r/000000000000f3e5f805f133d3f7@google.com ?
+Syzkaller detected a memory leak of skbs in ath9k_hif_usb_rx_stream().
+While processing skbs in ath9k_hif_usb_rx_stream(), the already allocated
+skbs in skb_pool are not freed if ath9k_hif_usb_rx_stream() fails. If we
+have an incorrect pkt_len or pkt_tag, the skb is dropped and all the
+associated skb_pool buffers should be cleaned, too.
 
-Actually, this issue is fixed by another patch I've sent you recently:
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
-> [PATCH] wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg() if there is
-> no callback function
+Fixes: 6ce708f54cc8 ("ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream")
+Fixes: 44b23b488d44 ("ath9k: hif_usb: Reduce indent 1 column")
+Reported-by: syzbot+e9632e3eb038d93d6bc6@syzkaller.appspotmail.com
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+v1->v2: added Reported-by tag
 
-I've added the relevant Reported-by tags to both patches and resent them.
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 1a2e0c7eeb02..d02cec114280 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -586,14 +586,14 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 
+ 		if (pkt_tag != ATH_USB_RX_STREAM_MODE_TAG) {
+ 			RX_STAT_INC(hif_dev, skb_dropped);
+-			return;
++			goto invalid_pkt;
+ 		}
+ 
+ 		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
+ 			dev_err(&hif_dev->udev->dev,
+ 				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
+ 			RX_STAT_INC(hif_dev, skb_dropped);
+-			return;
++			goto invalid_pkt;
+ 		}
+ 
+ 		pad_len = 4 - (pkt_len & 0x3);
+@@ -654,6 +654,11 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 				 skb_pool[i]->len, USB_WLAN_RX_PIPE);
+ 		RX_STAT_INC(hif_dev, skb_completed);
+ 	}
++	return;
++invalid_pkt:
++	for (i = 0; i < pool_index; i++)
++		kfree_skb(skb_pool[i]);
++	return;
+ }
+ 
+ static void ath9k_hif_usb_rx_cb(struct urb *urb)
+-- 
+2.34.1
+
