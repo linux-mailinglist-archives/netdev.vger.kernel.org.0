@@ -2,133 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F9165BE06
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 11:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EA965BE0F
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 11:31:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbjACK1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 05:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
+        id S236949AbjACK2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 05:28:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233310AbjACK13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 05:27:29 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A951510AA;
-        Tue,  3 Jan 2023 02:27:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5kukGlDFMSVA3hFPcBY5jEpdLjtGj3Dwb3Kj2ab+XKA=; b=ie5QquIbDqicHFURbmXb6WUsmw
-        NZvGSKX0/By0EFHDK5VxPEqe3mzTrHLKxLfdSrh5PF1oLA7jBHlrSySJW/gIm650pUZr7VjWueQpm
-        /sExjorFqiPboDwQOB9tZ+O52KwBTgR4BLg5t8AmwFOG3SL6ydWkEJgf51xA2Mc4gCF+hJ4fKNsT7
-        sgDcHaOyg9KJmG5O4J1TzcT+kHnZ5uP//nt712trd5IM1DtmYisnkPaH20knWxZ9+UGjI/cHVel0S
-        /CRU305Sbox5JIxnw/Qq+5PQ2vHoG46wGZXDYqZGhKsnUq0PzUsdmMtJ6zNdlIE9vy4TxehQJWVnF
-        NUzaLjlg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35914)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pCeVu-0005DT-GP; Tue, 03 Jan 2023 10:27:22 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pCeVs-0001z2-QU; Tue, 03 Jan 2023 10:27:20 +0000
-Date:   Tue, 3 Jan 2023 10:27:20 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Michael Walle <michael@walle.cc>, Xu Liang <lxu@maxlinear.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S237294AbjACK2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 05:28:34 -0500
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28256FADB;
+        Tue,  3 Jan 2023 02:28:27 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 5643F604F0;
+        Tue,  3 Jan 2023 11:28:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1672741705; bh=mcsm3HVgNlvKRe0tp2pfP9pVcQV/6pvNR2zOemEzmzM=;
+        h=Date:To:Cc:From:Subject:From;
+        b=Sl0ubp0FW2YpNZlfOu0MvHin+EEJTNsAelAKq6/IO03P37Ybf1UuMkfmXm9kvJ2PX
+         Wj7fKgphHKmDDyy8XBakWNXECSmfk9g7v7YQDiJWDkdVqfSBWci6PV8mFpuY6y1s6S
+         lYXsSgi0a+gI60aM5B3LkUiR1gpXJXHY3DECPUlnwdqoHBybxk45folaWadpNOmFUo
+         zfXLgnYlIjOMucCXImNFcxOB540dl6yn38eMA3nRAq1T1ZRWYwCYdLbXvWUVKhxlLK
+         bwYqAlqh7yuxZe8FQrontKJwmNLDUPC1AJoduvTHTx4sp2OZLjQ/umakn7wgLIWKAc
+         8dqBFa6MWudWQ==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id J8G14a8dvJs9; Tue,  3 Jan 2023 11:28:23 +0100 (CET)
+Received: from [192.168.0.12] (unknown [188.252.196.35])
+        by domac.alu.hr (Postfix) with ESMTPSA id 75940604EE;
+        Tue,  3 Jan 2023 11:28:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1672741703; bh=mcsm3HVgNlvKRe0tp2pfP9pVcQV/6pvNR2zOemEzmzM=;
+        h=Date:To:Cc:From:Subject:From;
+        b=XQEX8JF41e8VN7dxnZuIFYEZRCjg3A3/V4fFW6sb6/9O1tPmkk+ZSRvecjZe87FFB
+         tFRN6A3qu2cl9VXXhsZ5ZA4irbylZD418ihvM2c56QGIoSiG2BbXvmRr4ObkRsrb/X
+         Tt5zfBYifg411Bm63IcyWCRTI0wRDLq0zLC/eCNB5q2VzZoByOtW9num6qptC3iwsk
+         V6gWwrybolD7fl1XZ4Y7Vj+4SdDZOzM4qKkb6V8d9K2PbL9UFOLIMqbGS4mzMhWv8r
+         ZsjR/9C+RnrZMcstHxs3j5joaJZ2UfoiyqAJgXsso1Tx0eBH/1gwKnMlvYwPcJLmql
+         JuXhhWDd/3YCQ==
+Message-ID: <9e809447-bde6-7376-5431-ea200064f957@alu.unizg.hr>
+Date:   Tue, 3 Jan 2023 11:28:19 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Content-Language: en-US
+To:     linux-kselftest@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next v2 1/2] net: phy: allow a phy to opt-out of
- interrupt handling
-Message-ID: <Y7QDCJyyJQBoaGl4@shell.armlinux.org.uk>
-References: <20221228164008.1653348-1-michael@walle.cc>
- <20221228164008.1653348-2-michael@walle.cc>
- <f547b3b9-4c8f-b370-471a-0a7b5f025e50@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f547b3b9-4c8f-b370-471a-0a7b5f025e50@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Subject: PATCH [1/1]: Bug with sockaddr size in net/af_unix/test_unix_oob.c
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 28, 2022 at 08:49:35AM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 12/28/2022 8:40 AM, Michael Walle wrote:
-> > Until now, it is not possible for a PHY driver to disable interrupts
-> > during runtime. If a driver offers the .config_intr() as well as the
-> > .handle_interrupt() ops, it is eligible for interrupt handling.
-> > Introduce a new flag for the dev_flags property of struct phy_device, which
-> > can be set by PHY driver to skip interrupt setup and fall back to polling
-> > mode.
-> > 
-> > At the moment, this is used for the MaxLinear PHY which has broken
-> > interrupt handling and there is a need to disable interrupts in some
-> > cases.
-> > 
-> > Signed-off-by: Michael Walle <michael@walle.cc>
-> > ---
-> >   drivers/net/phy/phy_device.c | 7 +++++++
-> >   include/linux/phy.h          | 2 ++
-> >   2 files changed, 9 insertions(+)
-> > 
-> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > index 716870a4499c..e4562859ac00 100644
-> > --- a/drivers/net/phy/phy_device.c
-> > +++ b/drivers/net/phy/phy_device.c
-> > @@ -1487,6 +1487,13 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
-> >   	phydev->interrupts = PHY_INTERRUPT_DISABLED;
-> > +	/* PHYs can request to use poll mode even though they have an
-> > +	 * associated interrupt line. This could be the case if they
-> > +	 * detect a broken interrupt handling.
-> > +	 */
-> > +	if (phydev->dev_flags & PHY_F_NO_IRQ)
-> > +		phydev->irq = PHY_POLL;
-> 
-> Cannot you achieve the same thing with the PHY driver mangling phydev->irq
-> to a negative value, or is that too later already by the time your phy
-> driver's probe function is running?
-> 
-> > +
-> >   	/* Port is set to PORT_TP by default and the actual PHY driver will set
-> >   	 * it to different value depending on the PHY configuration. If we have
-> >   	 * the generic PHY driver we can't figure it out, thus set the old
-> > diff --git a/include/linux/phy.h b/include/linux/phy.h
-> > index 71eeb4e3b1fd..f1566c7e47a8 100644
-> > --- a/include/linux/phy.h
-> > +++ b/include/linux/phy.h
-> > @@ -82,6 +82,8 @@ extern const int phy_10gbit_features_array[1];
-> >   #define PHY_POLL_CABLE_TEST	0x00000004
-> >   #define MDIO_DEVICE_IS_PHY	0x80000000
-> > +#define PHY_F_NO_IRQ		0x80000000
-> 
-> Kudos for using the appropriate namespace for dev_flags :)
+Hi all,
 
-But eww for placement.
+There is a minor issue that prevents self test net/af_unix to run on my platform:
 
-PHY_IS_INTERNAL, PHY_RST_AFTER_CLK_EN, PHY_POLL_CABLE_TEST and
-MDIO_DEVICE_IS_PHY are all used for the MDIO driver's flags
-member.
+# ./test_unix_oob
+Connect failed: No such file or directory
+Terminated
 
-This new flag is used for the .dev_flags of phy_device - I feel
-that it should be separated from the above definitions. I also
-think it could do with a comment, because it's not obvious for
-future changes that PHY_F_NO_IRQ is used with .dev_flags.
+Tracing reveals that bind tried to open a shorter AF_UNIX socket address:
 
+# strace -f ./test_unix_oob
+.
+.
+.
+socket(AF_UNIX, SOCK_STREAM, 0)         = 3
+getpid()                                = 453059
+unlink("unix_oob_453059")               = -1 ENOENT (No such file or directory)
+bind(3, {sa_family=AF_UNIX, sun_path="unix_oob_453059"}, 110) = 0
+pipe2([4, 5], 0)                        = 0
+listen(3, 1)                            = 0
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fa6a6577a10) = 453060
+rt_sigaction(SIGURG, {sa_handler=0x5601e2d014c9, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART|SA_SIGINFO, 
+sa_restorer=0x7fa6a623bcf0}, NULL, 8) = 0
+write(5, "S", 1)                        = 1
+accept(3, strace: Process 453060 attached
+  <unfinished ...>
+[pid 453060] set_robust_list(0x7fa6a6577a20, 24) = 0
+[pid 453060] socket(AF_UNIX, SOCK_STREAM, 0) = 6
+[pid 453060] read(4, "S", 5)            = 1
+[pid 453060] connect(6, {sa_family=AF_UNIX, sun_path="unix_oob_45305"}, 16) = -1 ENOENT (No such file or directory)
+.
+.
+.
+
+NOTE: bind used UNIX_AF addr "unix_oob_453059", while producer tries to connect to "unix_oob_45305".
+
+When pids were up to 5 digits it probably did not manifest, but logically the size of the
+consumer_addr is sizeof(struct sockaddr_un).
+
+Please find the patch attached:
+
+Thanks,
+Mirsad
+
+------------------------------------------------------------------------------------------------
+diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+index b57e91e1c3f2..7ea733239cd9 100644
+--- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
++++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+@@ -124,7 +124,7 @@ void producer(struct sockaddr_un *consumer_addr)
+
+  	wait_for_signal(pipefd[0]);
+  	if (connect(cfd, (struct sockaddr *)consumer_addr,
+-		     sizeof(struct sockaddr)) != 0) {
++		     sizeof(struct sockaddr_un)) != 0) {
+  		perror("Connect failed");
+  		kill(0, SIGTERM);
+  		exit(1);
+
+--
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
