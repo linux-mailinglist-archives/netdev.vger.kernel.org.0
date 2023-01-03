@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D589665BDCE
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 11:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F5A65BDEE
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 11:22:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237317AbjACKO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 05:14:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
+        id S233093AbjACKWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 05:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237352AbjACKOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 05:14:20 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D148E81;
-        Tue,  3 Jan 2023 02:14:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4Q1GrCJ59du2h0puSmV0cg1ql+FbTrfyCDAcQA8w9QY=; b=vcyJR7ch1WQslr9S1ETk+Lpgk2
-        kdH2Ur811zj51/MrfKpQ+TMRNOAX2myEKZZRg8lbVH6GTtmqOuzjxduFr1/ufIFA2oAwyDavDk82n
-        XxzaeZWOeqpEu6fhFWNm11QUrOTJ6ivXB5+0PQ29ana4QgltlEdX0YHCJPalKWGFtt6tC1SPJuDMf
-        uqHfjQK3oi3HKlQnt2DHPALizEL2ujd/4Ui8I5dL/q6Z3Kjbtbme9kyEvIXUVTvULO+7ilVLXcOKM
-        NuGl5jh7yLr2HV6vg9VP/QIEd4fn+noMAhKNBu/LQnvuwde58x0Kz7HvMw+v8JTAtY015ShiBcz06
-        nqFSZ4qg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35910)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pCeIz-0005CD-IB; Tue, 03 Jan 2023 10:14:01 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pCeIt-0001yf-7j; Tue, 03 Jan 2023 10:13:55 +0000
-Date:   Tue, 3 Jan 2023 10:13:55 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Michael Walle <michael@walle.cc>
+        with ESMTP id S237419AbjACKVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 05:21:17 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B90DF28;
+        Tue,  3 Jan 2023 02:21:10 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 7021D126D;
+        Tue,  3 Jan 2023 11:21:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1672741268;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0NIrlOvbk7vZkei/UjaLevKnqZdjT8W2kPPgWX5gcEM=;
+        b=RIvoOPSAjkHkWRfLX6Q0K/aek6FQU3XreYN5YNfAte2T/48X3VC8QQcEpd8jPJCFiyZzWo
+        YiNwIusJEscDbzhm+hLbf6HNICx53SmA+YBP6AkQJq43zwVjNQZv+E9+UWk/k+GVe5vHsB
+        PpYh33/dKsFzSAcgjfwdUsLd5q72TbERdzSx/SCAm4zwGljRFXGGLdVqfy4IcIf2W5lAZO
+        XjMLUaTiUPYAyq3PtzHwPIZ0R9tR/KsXvd4mja00tvj0OPMSluRJXfI+WgaY/465OcIWYl
+        25I7JQyqJw8aSZmYLqPK7a2CXyNMEgcEPOPRNCX0T6YnECO/Wo1QlrI2Qv3cuQ==
+MIME-Version: 1.0
+Date:   Tue, 03 Jan 2023 11:21:08 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -59,18 +58,20 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH RFC net-next v2 03/12] net: mdio: mdiobus_register:
- update validation test
-Message-ID: <Y7P/45Owf2IezIpO@shell.armlinux.org.uk>
+Subject: Re: [PATCH RFC net-next v2 03/12] net: mdio: mdiobus_register: update
+ validation test
+In-Reply-To: <Y7P/45Owf2IezIpO@shell.armlinux.org.uk>
 References: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
  <20221227-v6-2-rc1-c45-seperation-v2-3-ddb37710e5a7@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v2-3-ddb37710e5a7@walle.cc>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+ <Y7P/45Owf2IezIpO@shell.armlinux.org.uk>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <37247c17e5e555dddbc37c3c63a2cadb@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,27 +79,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+Hi Russell,
 
-Thanks for picking this up!
+Am 2023-01-03 11:13, schrieb Russell King (Oracle):
+> On Wed, Dec 28, 2022 at 12:07:19AM +0100, Michael Walle wrote:
+>> +	if (!bus || !bus->name)
+>> +		return -EINVAL;
+>> +
+>> +	/* An access method always needs both read and write operations */
+>> +	if ((bus->read && !bus->write) ||
+>> +	    (!bus->read && bus->write) ||
+>> +	    (bus->read_c45 && !bus->write_c45) ||
+>> +	    (!bus->read_c45 && bus->write_c45))
+> 
+> I wonder whether the following would be even more readable:
+> 
+> 	if (!bus->read != !bus->write || !bus->read_c45 != !bus->write_c45)
 
-On Wed, Dec 28, 2022 at 12:07:19AM +0100, Michael Walle wrote:
-> +	if (!bus || !bus->name)
-> +		return -EINVAL;
-> +
-> +	/* An access method always needs both read and write operations */
-> +	if ((bus->read && !bus->write) ||
-> +	    (!bus->read && bus->write) ||
-> +	    (bus->read_c45 && !bus->write_c45) ||
-> +	    (!bus->read_c45 && bus->write_c45))
+That's what Andrew had originally. But there was a comment from Sergey 
+[1]
+which I agree with. I had a hard time wrapping my head around that, so I
+just listed all the possible bad cases.
 
-I wonder whether the following would be even more readable:
+I don't have a strong opinion, though.
 
-	if (!bus->read != !bus->write || !bus->read_c45 != !bus->write_c45)
+> which essentially asserts that the boolean of !method for the read and
+> write methods must match.
 
-which essentially asserts that the boolean of !method for the read and
-write methods must match.
+Maybe with that as a comment?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+-michael
+
+[1] 
+https://lore.kernel.org/netdev/ae79823f-3697-feee-32e6-645c6f4b4e93@omp.ru/
