@@ -2,100 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2977865C21D
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 15:40:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C3EE65C227
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 15:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238074AbjACOig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 09:38:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
+        id S233618AbjACOnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 09:43:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238071AbjACOiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 09:38:19 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CF711C27;
-        Tue,  3 Jan 2023 06:37:43 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id i32so8744058vkr.12;
-        Tue, 03 Jan 2023 06:37:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6zcaKdjHs/IOE4tOfaWhbeLsQns1sQhgnZYCw2R1ym8=;
-        b=nZC5hpyefkKqFPCxNLXj4xdfqCcCUHARhke5VosBxauXt5iQGrV7rJJo8Pp4nUad/N
-         ROye3eKw3XJXHhTWgbfjAJJmNnC9o0nWnnECJjTPWmMW4tMOl1oweto4c8UGihHmVAJ1
-         Mtebvgup+p1fn39ILtMdqQACp9bydidNVDGeO+51iP1gYKi7dZPws+DPLWyEg2t1g8wT
-         Gy0EPP5PXh6FT7mrHfTMuC2FjUMI9I5N2n24tnzByHTxSD4yCtcR+vjI0jPCLbnteq7/
-         z4NWja17EZxTOuFsUQMohRlMur16Vihv8e3R9Z7gQDuh7P8c+hnYlzRYCv0tPb5YaukG
-         g9cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6zcaKdjHs/IOE4tOfaWhbeLsQns1sQhgnZYCw2R1ym8=;
-        b=4snmtWzTs+lqV5YFI3KqYmbwj/rMpV1pwsfIyinpTg9AiOzHXOQyPvtFC7DrgCdKlf
-         GEy/mRuwURea4zDhHbkX5M2sqr0U2iFq6zJ1K0F95fedPp0dTfYGUoQvnZcWzEDeXpyy
-         bhvpmqiSjAMEXuMZBhbDmpTcUJeIhwMxP4LOkVScs0GjjU0hFaK2Fzp0lm/Uyovmy/Zg
-         rfyzJr9vEqyOeNyFl8bYr3rJ1jAV8GvhuUo6EHM0bVv+bPVRCS3mszf/E1HEX1opfwze
-         7/KLzv4CbicX17eaANUggwswVn7TXYEwmNDKfkIY1UUWzC+mrJXjB6reJ0NDWfrtPGs8
-         ZrBw==
-X-Gm-Message-State: AFqh2kp29n6MPJJtqeWikGK9te8PqyBrMARNdMo1KRUmysln6PZ6+i1n
-        rptGJkK0u0RKrEr+BzyggUQ=
-X-Google-Smtp-Source: AMrXdXtZ+q7I7eiLP1KVRUe7C6iyesDHh/yaAx2btFMioOsT+Gkz1SvjJVmR+M6wXfduWSVwlGOaoQ==
-X-Received: by 2002:ac5:c5d6:0:b0:3d5:8601:dac with SMTP id g22-20020ac5c5d6000000b003d586010dacmr10142535vkl.3.1672756662777;
-        Tue, 03 Jan 2023 06:37:42 -0800 (PST)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id s13-20020a05620a0bcd00b006e16dcf99c8sm22532454qki.71.2023.01.03.06.37.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Jan 2023 06:37:42 -0800 (PST)
-Message-ID: <04c0adce-3850-aa73-6bad-a10973d83df3@gmail.com>
-Date:   Tue, 3 Jan 2023 09:37:41 -0500
+        with ESMTP id S237763AbjACOnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 09:43:01 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E170BEE15;
+        Tue,  3 Jan 2023 06:42:59 -0800 (PST)
+Received: from [IPV6:2003:e9:d713:1514:accc:688a:efc9:2199] (p200300e9d7131514accc688aefc92199.dip0.t-ipconnect.de [IPv6:2003:e9:d713:1514:accc:688a:efc9:2199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id A632EC016C;
+        Tue,  3 Jan 2023 15:42:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1672756978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iycX61ZLgijIWaaHytHXbcnm9MJgdCBTIoH1EwQ5jl0=;
+        b=j4XqF/WGuAk8suTGHrR6LeoTw8iN44Qt5WxuxO3MvxMaPxKOFjUJl+HOhaBp7YCrKQy0fU
+        +bVEZdTWiI9KwBsO7u6OrCag8tlQb3BDdZbLi+oLgH99GDGd2KmIPG2YNa8vO8meHeupL8
+        r10WVn6dUJcS6JyceiCRFnRSWRH8vAZJLLPhqBkj/utRsREKUMDWUjMXbO6HhIcm14MbpC
+        X3AwZ94XP3uhoUGsBCFdVDRGfKL8Oxhtb2/SwdecTuBR0kXmp84XKVwN3iQULhtuQtN2GA
+        4zShsxP6qJs+rSxWwK+p0SuXY/zr7af7uelXNh7IAMhfwRfrc17tl6h2w8NI+w==
+Message-ID: <71a95ec1-a7c9-fc92-ddb2-4ada4df4ec01@datenfreihafen.org>
+Date:   Tue, 3 Jan 2023 15:42:57 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] net: dpaa: Fix dtsec check for PCS availability
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH wpan-next v2 6/6] mac802154: Handle passive scanning
 Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Christian Zigotzky <info@xenosoft.de>,
-        linux-kernel@vger.kernel.org
-References: <20230103065038.2174637-1-seanga2@gmail.com>
- <Y7PyStu4s79FAHWH@nanopsycho>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <Y7PyStu4s79FAHWH@nanopsycho>
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+References: <20221217000226.646767-1-miquel.raynal@bootlin.com>
+ <20221217000226.646767-7-miquel.raynal@bootlin.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20221217000226.646767-7-miquel.raynal@bootlin.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/3/23 04:15, Jiri Pirko wrote:
-> Tue, Jan 03, 2023 at 07:50:38AM CET, seanga2@gmail.com wrote:
->> We want to fail if the PCS is not available, not if it is available. Fix
+Hello Miquel
+
+On 17.12.22 01:02, Miquel Raynal wrote:
+> Implement the core hooks in order to provide the softMAC layer support
+> for passive scans. Scans are requested by the user and can be aborted.
 > 
-> It is odd to read plural maiestaticus in patch desctiption :) Better to
-> stick with describing what code does wrong and then telling the codebase
-> what to do.
-
-Writing a kernel is a collaborative effort :)
-
->> this condition.
->>
->> Fixes: 5d93cfcf7360 ("net: dpaa: Convert to phylink")
->> Reported-by: Christian Zigotzky <info@xenosoft.de>
->> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+> Changing channels manually is prohibited during scans.
 > 
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> The implementation uses a workqueue triggered at a certain interval
+> depending on the symbol duration for the current channel and the
+> duration order provided. More advanced drivers with internal scheduling
+> capabilities might require additional care but there is none mainline
+> yet.
+> 
+> Received beacons during a passive scan are processed in a work queue and
+> their result forwarded to the upper layer.
+> 
+> Active scanning is not supported yet.
+> 
+> Co-developed-by: David Girault <david.girault@qorvo.com>
+> Signed-off-by: David Girault <david.girault@qorvo.com>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>   include/linux/ieee802154.h   |   4 +
+>   include/net/cfg802154.h      |  16 ++
+>   net/mac802154/Makefile       |   2 +-
+>   net/mac802154/cfg.c          |  31 ++++
+>   net/mac802154/ieee802154_i.h |  37 ++++-
+>   net/mac802154/iface.c        |   3 +
+>   net/mac802154/main.c         |  16 +-
+>   net/mac802154/rx.c           |  36 ++++-
+>   net/mac802154/scan.c         | 289 +++++++++++++++++++++++++++++++++++
+>   9 files changed, 428 insertions(+), 6 deletions(-)
+>   create mode 100644 net/mac802154/scan.c
 
+Checkpatch found another set of problematic indents in this one:
+
+Commit 216e51c90975 ("mac802154: Handle passive scanning")
+----------------------------------------------------------
+WARNING: added, moved or deleted file(s), does MAINTAINERS need updating?
+#361:
+new file mode 100644
+
+WARNING: networking block comments don't use an empty /* line, use /* 
+Comment...
+#385: FILE: net/mac802154/scan.c:20:
++/*
++ * mac802154_scan_cleanup_locked() must be called upon scan completion 
+or abort.
+
+ERROR: code indent should use tabs where possible
+#475: FILE: net/mac802154/scan.c:110:
++                                struct cfg802154_scan_request *scan_req,$
+
+WARNING: please, no spaces at the start of a line
+#475: FILE: net/mac802154/scan.c:110:
++                                struct cfg802154_scan_request *scan_req,$
+
+ERROR: code indent should use tabs where possible
+#479: FILE: net/mac802154/scan.c:114:
++        *channel = find_next_bit((const unsigned long 
+*)&scan_req->channels,$
+
+WARNING: please, no spaces at the start of a line
+#479: FILE: net/mac802154/scan.c:114:
++        *channel = find_next_bit((const unsigned long 
+*)&scan_req->channels,$
+
+ERROR: code indent should use tabs where possible
+#485: FILE: net/mac802154/scan.c:120:
++                                         struct cfg802154_scan_request 
+*scan_req,$
+
+WARNING: please, no spaces at the start of a line
+#485: FILE: net/mac802154/scan.c:120:
++                                         struct cfg802154_scan_request 
+*scan_req,$
+
+ERROR: code indent should use tabs where possible
+#486: FILE: net/mac802154/scan.c:121:
++                                         u8 page, u8 *channel)$
+
+WARNING: please, no spaces at the start of a line
+#486: FILE: net/mac802154/scan.c:121:
++                                         u8 page, u8 *channel)$
+
+ERROR: "foo* bar" should be "foo *bar"
+#502: FILE: net/mac802154/scan.c:137:
++	struct wpan_phy* wpan_phy;
+
+ERROR: code indent should use tabs where possible
+#539: FILE: net/mac802154/scan.c:174:
++                ret = mac802154_scan_find_next_chan(local, scan_req, 
+page, &channel);$
+
+WARNING: please, no spaces at the start of a line
+#539: FILE: net/mac802154/scan.c:174:
++                ret = mac802154_scan_find_next_chan(local, scan_req, 
+page, &channel);$
+
+ERROR: code indent should use tabs where possible
+#540: FILE: net/mac802154/scan.c:175:
++                if (ret) {$
+
+WARNING: please, no spaces at the start of a line
+#540: FILE: net/mac802154/scan.c:175:
++                if (ret) {$
+
+ERROR: code indent should use tabs where possible
+#542: FILE: net/mac802154/scan.c:177:
++                        goto end_scan;$
+
+WARNING: please, no spaces at the start of a line
+#542: FILE: net/mac802154/scan.c:177:
++                        goto end_scan;$
+
+ERROR: code indent should use tabs where possible
+#543: FILE: net/mac802154/scan.c:178:
++                }$
+
+WARNING: please, no spaces at the start of a line
+#543: FILE: net/mac802154/scan.c:178:
++                }$
+
+ERROR: code indent should use tabs where possible
+#544: FILE: net/mac802154/scan.c:179:
++        } while (!ieee802154_chan_is_valid(scan_req->wpan_phy, page, 
+channel));$
+
+WARNING: please, no spaces at the start of a line
+#544: FILE: net/mac802154/scan.c:179:
++        } while (!ieee802154_chan_is_valid(scan_req->wpan_phy, page, 
+channel));$
+
+ERROR: code indent should use tabs where possible
+#546: FILE: net/mac802154/scan.c:181:
++        rcu_read_unlock();$
+
+WARNING: please, no spaces at the start of a line
+#546: FILE: net/mac802154/scan.c:181:
++        rcu_read_unlock();$
+
+ERROR: code indent should use tabs where possible
+#553: FILE: net/mac802154/scan.c:188:
++                dev_err(&sdata->dev->dev,$
+
+WARNING: please, no spaces at the start of a line
+#553: FILE: net/mac802154/scan.c:188:
++                dev_err(&sdata->dev->dev,$
+
+ERROR: code indent should use tabs where possible
+#554: FILE: net/mac802154/scan.c:189:
++                        "Channel change failure during scan, aborting 
+(%d)\n", ret);$
+
+WARNING: please, no spaces at the start of a line
+#554: FILE: net/mac802154/scan.c:189:
++                        "Channel change failure during scan, aborting 
+(%d)\n", ret);$
+
+ERROR: code indent should use tabs where possible
+#565: FILE: net/mac802154/scan.c:200:
++                dev_err(&sdata->dev->dev,$
+
+WARNING: please, no spaces at the start of a line
+#565: FILE: net/mac802154/scan.c:200:
++                dev_err(&sdata->dev->dev,$
+
+ERROR: code indent should use tabs where possible
+#566: FILE: net/mac802154/scan.c:201:
++                        "Restarting failure after channel change, 
+aborting (%d)\n", ret);$
+
+WARNING: please, no spaces at the start of a line
+#566: FILE: net/mac802154/scan.c:201:
++                        "Restarting failure after channel change, 
+aborting (%d)\n", ret);$
+
+total: 15 errors, 16 warnings, 0 checks, 558 lines checked
+
+regards
+Stefan Schmidt
