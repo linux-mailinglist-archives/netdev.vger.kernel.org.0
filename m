@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 217C265C458
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 17:57:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA7165C45E
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 17:58:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238224AbjACQ5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 11:57:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        id S238182AbjACQ5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 11:57:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238182AbjACQ46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 11:56:58 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D10DC2A;
-        Tue,  3 Jan 2023 08:56:57 -0800 (PST)
+        with ESMTP id S238223AbjACQ5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 11:57:03 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8521B30;
+        Tue,  3 Jan 2023 08:57:01 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0C03B240005;
-        Tue,  3 Jan 2023 16:56:53 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 59C8424000B;
+        Tue,  3 Jan 2023 16:56:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1672765016;
+        t=1672765020;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=X0Uy/MP4Rf07/bWow3N4te/h/ESe9WohOkqsFLCQ/Yw=;
-        b=GcmKQ7aaa4DqDhKd2oPQZ3mRDZ0YOF+31nMYOZkCHg/pm4omYJx1QRx6EOGup+1kfFAAGj
-        j+SnUOTpkTAYcaTxluVCFMvmYfLNj9JfYQfNrXanSw7SCqnUPjdWlzFImbAD9A/CWbaClP
-        R7uEzIX2Wh/qRJYbBVmcIf5Gnsb4cjZyCSTu/fMHSOOBiarneZWOt242Eyphk2JSooLAdN
-        KYLYSrz13ly1Nf6PhU7O5mExhm3SX1joDZnFjEdmUBD8EeQfXrp05AuCpcNSTNRSnYB0DZ
-        clBKgLTKwfAn69FyjQE4KsSBA1OvLlj9pHPcRYqIPgb85cKK8yb94Zlyr5mRjA==
+        bh=Ly66Aod8zDFkKwFVaTikPf0rC1hyQl40+VrA99NRkNo=;
+        b=aoYqpLfxGJgU6YgAAOCeKcA4xa6Ipbe1ogOnWTXfaz3eE0yW3SDoR8OK24PmrzVzHwT8r1
+        jkTcTlIp3XLKC6onGbaCvRWlMMmjZpdpbrfWldSeFmPup2WbxfcDgtIUN7ggybDG6z6C3u
+        4INQPuhRuDEDOmqvleqjNekI4pTyB/Wdbhz/i1LJh351c4kLoMjrcRrItUABemKC8bFGXQ
+        6sIa9GwXyC1Jt1hGIwQl7bvd4RIqdkFdlRSePn3hmwrogipFLfbKumJZCAoUlb4wWetRKi
+        +ywCidJrJhkEDN6Waa+5iuWudtab3MmMqvlBSck9G2ApkE3B3keVQMAl++oqYQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -45,75 +45,123 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Alexander Aring <aahringo@redhat.com>
-Subject: [PATCH wpan-next v3 3/6] ieee802154: Introduce a helper to validate a channel
-Date:   Tue,  3 Jan 2023 17:56:41 +0100
-Message-Id: <20230103165644.432209-4-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v3 4/6] mac802154: Prepare forcing specific symbol duration
+Date:   Tue,  3 Jan 2023 17:56:42 +0100
+Message-Id: <20230103165644.432209-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230103165644.432209-1-miquel.raynal@bootlin.com>
 References: <20230103165644.432209-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This helper for now only checks if the page member and channel member
-are valid (in the specification range) and supported (by checking the
-device capabilities). Soon two new parameters will be introduced and
-having this helper will let us only modify its content rather than
-modifying the logic everywhere else in the subsystem.
+The scan logic will bypass the whole ->set_channel() logic from the top
+by calling the driver hook to just switch between channels when
+required.
 
-There is not functional change.
+We can no longer rely on the "current" page/channel settings to set the
+right symbol duration. Let's add these as new parameters to allow
+providing the page/channel couple that we want.
+
+There is no functional change.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 Acked-by: Alexander Aring <aahringo@redhat.com>
 ---
- include/net/cfg802154.h   | 11 +++++++++++
- net/ieee802154/nl802154.c |  3 +--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ include/net/cfg802154.h |  3 ++-
+ net/mac802154/cfg.c     |  2 +-
+ net/mac802154/main.c    | 20 +++++++++++---------
+ 3 files changed, 14 insertions(+), 11 deletions(-)
 
 diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 76d4f95e9974..1184b543fba7 100644
+index 1184b543fba7..c16ae5d2dc86 100644
 --- a/include/net/cfg802154.h
 +++ b/include/net/cfg802154.h
-@@ -246,6 +246,17 @@ static inline void wpan_phy_net_set(struct wpan_phy *wpan_phy, struct net *net)
- 	write_pnet(&wpan_phy->_net, net);
+@@ -483,6 +483,7 @@ static inline const char *wpan_phy_name(struct wpan_phy *phy)
+ 	return dev_name(&phy->dev);
  }
  
-+static inline bool ieee802154_chan_is_valid(struct wpan_phy *phy,
-+					    u8 page, u8 channel)
-+{
-+	if (page > IEEE802154_MAX_PAGE ||
-+	    channel > IEEE802154_MAX_CHANNEL ||
-+	    !(phy->supported.channels[page] & BIT(channel)))
-+		return false;
-+
-+	return true;
-+}
-+
- /**
-  * struct ieee802154_addr - IEEE802.15.4 device address
-  * @mode: Address mode from frame header. Can be one of:
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 64c6c33b28a9..1d703251f74a 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -976,8 +976,7 @@ static int nl802154_set_channel(struct sk_buff *skb, struct genl_info *info)
- 	channel = nla_get_u8(info->attrs[NL802154_ATTR_CHANNEL]);
+-void ieee802154_configure_durations(struct wpan_phy *phy);
++void ieee802154_configure_durations(struct wpan_phy *phy,
++				    unsigned int page, unsigned int channel);
  
- 	/* check 802.15.4 constraints */
--	if (page > IEEE802154_MAX_PAGE || channel > IEEE802154_MAX_CHANNEL ||
--	    !(rdev->wpan_phy.supported.channels[page] & BIT(channel)))
-+	if (!ieee802154_chan_is_valid(&rdev->wpan_phy, page, channel))
- 		return -EINVAL;
+ #endif /* __NET_CFG802154_H */
+diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
+index dc2d918fac68..469d6e8dd2dd 100644
+--- a/net/mac802154/cfg.c
++++ b/net/mac802154/cfg.c
+@@ -118,7 +118,7 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
+ 	if (!ret) {
+ 		wpan_phy->current_page = page;
+ 		wpan_phy->current_channel = channel;
+-		ieee802154_configure_durations(wpan_phy);
++		ieee802154_configure_durations(wpan_phy, page, channel);
+ 	}
  
- 	return rdev_set_channel(rdev, page, channel);
+ 	return ret;
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 3ed31daf7b9c..12a13a850fdf 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -113,32 +113,33 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
+ }
+ EXPORT_SYMBOL(ieee802154_alloc_hw);
+ 
+-void ieee802154_configure_durations(struct wpan_phy *phy)
++void ieee802154_configure_durations(struct wpan_phy *phy,
++				    unsigned int page, unsigned int channel)
+ {
+ 	u32 duration = 0;
+ 
+-	switch (phy->current_page) {
++	switch (page) {
+ 	case 0:
+-		if (BIT(phy->current_channel) & 0x1)
++		if (BIT(channel) & 0x1)
+ 			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
+ 			duration = 50 * NSEC_PER_USEC;
+-		else if (BIT(phy->current_channel) & 0x7FE)
++		else if (BIT(channel) & 0x7FE)
+ 			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
+ 			duration = 25 * NSEC_PER_USEC;
+-		else if (BIT(phy->current_channel) & 0x7FFF800)
++		else if (BIT(channel) & 0x7FFF800)
+ 			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+ 			duration = 16 * NSEC_PER_USEC;
+ 		break;
+ 	case 2:
+-		if (BIT(phy->current_channel) & 0x1)
++		if (BIT(channel) & 0x1)
+ 			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
+ 			duration = 40 * NSEC_PER_USEC;
+-		else if (BIT(phy->current_channel) & 0x7FE)
++		else if (BIT(channel) & 0x7FE)
+ 			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+ 			duration = 16 * NSEC_PER_USEC;
+ 		break;
+ 	case 3:
+-		if (BIT(phy->current_channel) & 0x3FFF)
++		if (BIT(channel) & 0x3FFF)
+ 			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
+ 			duration = 6 * NSEC_PER_USEC;
+ 		break;
+@@ -201,7 +202,8 @@ int ieee802154_register_hw(struct ieee802154_hw *hw)
+ 
+ 	ieee802154_setup_wpan_phy_pib(local->phy);
+ 
+-	ieee802154_configure_durations(local->phy);
++	ieee802154_configure_durations(local->phy, local->phy->current_page,
++				       local->phy->current_channel);
+ 
+ 	if (!(hw->flags & IEEE802154_HW_CSMA_PARAMS)) {
+ 		local->phy->supported.min_csma_backoffs = 4;
 -- 
 2.34.1
 
