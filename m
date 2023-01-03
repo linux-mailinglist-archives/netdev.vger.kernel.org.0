@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 955BA65B8BB
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 02:16:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31ED965B8BE
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 02:18:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236475AbjACBQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 20:16:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
+        id S236411AbjACBSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 20:18:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236454AbjACBQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 20:16:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A172108
-        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 17:15:40 -0800 (PST)
+        with ESMTP id S229959AbjACBS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 20:18:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF4B95AA
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 17:17:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672708539;
+        s=mimecast20190719; t=1672708662;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=TVPzk5o7igQTGpKeVYQ3N+jhV1xQAhqlOB2+IYBNkrg=;
-        b=Njrkiv/2H+9nvZ2uqo8S9eJZkESS3GszryPKWHtFWdM29D13YlZCcUpAZUFjVGjQHIqog/
-        Rb+4A0qcuJ+/UOrJe2H7oPVcwqpzKTub20tgbn27Ay28PJaij8PqvtsL3GBDl53SXk15Hw
-        WGfB97YHzeVRy9O1Av09lXpf8VHUTPY=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=3vh6hg6ay+xuwkY2tbG9YHBc76gPmVbwDOLCD/YBLlw=;
+        b=jWt7U/t6ZCf/Jux4o58Hfb8zkP0dqPD4ncoyr/qE/T09Mkr69ZjnqGdnSh95Kv1a6NPkZe
+        nhZSSkVmMqM0XrYGohAMY/8Zw6V0S6GEPAGiMqFgTtbyXf5ZdUi5cqw3el6+DNqH5+nzWf
+        x+ScH4JrNcmBCTEsvSc0MyftggLM2Do=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-628-zsihtkaiNaCRPMVbCc75JA-1; Mon, 02 Jan 2023 20:15:38 -0500
-X-MC-Unique: zsihtkaiNaCRPMVbCc75JA-1
-Received: by mail-ej1-f71.google.com with SMTP id hs18-20020a1709073e9200b007c0f9ac75f9so17894855ejc.9
-        for <netdev@vger.kernel.org>; Mon, 02 Jan 2023 17:15:38 -0800 (PST)
+ us-mta-595-lNsDUCZCP4SDOVdg9NfXnw-1; Mon, 02 Jan 2023 20:17:41 -0500
+X-MC-Unique: lNsDUCZCP4SDOVdg9NfXnw-1
+Received: by mail-ej1-f69.google.com with SMTP id gn28-20020a1709070d1c00b007c177fee5faso18263421ejc.23
+        for <netdev@vger.kernel.org>; Mon, 02 Jan 2023 17:17:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=TVPzk5o7igQTGpKeVYQ3N+jhV1xQAhqlOB2+IYBNkrg=;
-        b=LaFPUnl+PoFvKpWLqCP6gwAb2TAph7lmpSmLBr19PCqL3Qq1OX8mYPnN3hAZsfpZZc
-         V/dyqB9U0IuWIx68Uy+Dw2RmdcAjSikgp/LYNliyGExZ07QpkbMsfEu/qs9IW7lEd/wo
-         sBtgX6qmbiJc7Eumx2lwi+0swFRd/ptdu5C3vtA31J//eAGDO/PligEK7CHTSe42io3U
-         S13oPWMCr6CwrNXinFcQ6wdRT2zNH51inFQlHhvlwxPs2gWm1yUZy3kKWvdMWWVZMvH0
-         JU4owcqPlp6ERcJlCvDimr1XTyTclXNduZRne/bpw1f2fL+SXdEchintIS5mvtYIJ45C
-         A3wQ==
-X-Gm-Message-State: AFqh2krb5GbfeAspR5f2OWPIa2/bVaMOf9rbJYsqKhjqkudzKO1fNlIB
-        Sae24MLfxT6XG1w1CmffDkZyl0tKYn0EvlVItMtOLwu1Tk+vysTB4iv8QfKYPF8GAV9f0xyYwee
-        b7WURh+/c6thKTC68guKcusHk8GhAXge7
-X-Received: by 2002:a17:907:3a52:b0:7c0:e23f:17cd with SMTP id fc18-20020a1709073a5200b007c0e23f17cdmr2418551ejc.491.1672708537449;
-        Mon, 02 Jan 2023 17:15:37 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXteZAesA4qZFLpE6BVuBQWONnaun6dqv2r41kHwVwYftYROWzRaXXqCpu+eRY8AE1t34DS+y77wm++FEdG2dOg=
+        bh=3vh6hg6ay+xuwkY2tbG9YHBc76gPmVbwDOLCD/YBLlw=;
+        b=Rcw02MziWjCvnA21BlCImqRXofpkwhGCv8RHlm3EAWh4LNGhDfBnzru84HgLE4HLt7
+         5XcfEYKzNb8e6Qm2BvI6xvKNdCXF/QqSyG7J5AQ/wqjLeSdF3KkZbRzIDKMGkmWrllSO
+         7jQ0R4NmHKdS0ncci3pfjMnJV/HKdYXetnEeHwRwtU3Qa3AS15iIUqOA/tfu8wMBvmWd
+         anJsF7OwiSqo83qOljWu69HRn6TmbH0CZ7sp1brTfNZtla1c31ShaTW5PQLCoNPusnk1
+         qHI6pmA4nkugHTWlVB54n03g9kiaLORDuSQdfUm94zCTRdlpKn9qfz6X445Nl93B4DK9
+         kp3Q==
+X-Gm-Message-State: AFqh2kpUaTqAY45WOprVZGO0lVm3dAmZ1kViQImGRM2QsXL16OHV9j9b
+        VpLZzColfzhvWy9HiVJmTM/S7DngeXyfSInRwyBVj2jfizhu9bYG7DY8MnCrjihNSBdpCvzqEbC
+        Jh2vMamMgvtrVEhpsLG0r/mIc1IwSBp6e
+X-Received: by 2002:a17:907:3a52:b0:7c0:e23f:17cd with SMTP id fc18-20020a1709073a5200b007c0e23f17cdmr2418817ejc.491.1672708660049;
+        Mon, 02 Jan 2023 17:17:40 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtF6GamvP/lFKPyjn6QWJuTd2kHJglmsUYVMCEebkqfOlklwNbbXGyj5g6iQ8IvsiYmVSS2SmoUk5O7ndBgfoQ=
 X-Received: by 2002:a17:907:3a52:b0:7c0:e23f:17cd with SMTP id
- fc18-20020a1709073a5200b007c0e23f17cdmr2418538ejc.491.1672708537107; Mon, 02
- Jan 2023 17:15:37 -0800 (PST)
+ fc18-20020a1709073a5200b007c0e23f17cdmr2418807ejc.491.1672708659928; Mon, 02
+ Jan 2023 17:17:39 -0800 (PST)
 MIME-Version: 1.0
 References: <20221217000226.646767-1-miquel.raynal@bootlin.com>
- <20221217000226.646767-7-miquel.raynal@bootlin.com> <CAK-6q+hJb-py2sNBGYBQeHLbyM_OWzi78-gOf0LcdTukFDO4MQ@mail.gmail.com>
-In-Reply-To: <CAK-6q+hJb-py2sNBGYBQeHLbyM_OWzi78-gOf0LcdTukFDO4MQ@mail.gmail.com>
+In-Reply-To: <20221217000226.646767-1-miquel.raynal@bootlin.com>
 From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 2 Jan 2023 20:15:25 -0500
-Message-ID: <CAK-6q+gTQwS5n+YVFDeGTqEnSREt9KjC58zq9r2c8T456zXagQ@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 6/6] mac802154: Handle passive scanning
+Date:   Mon, 2 Jan 2023 20:17:28 -0500
+Message-ID: <CAK-6q+gnLOu2qfXSLcAb3YR7pHJXRS95rtcUF47D2hfHQ9gA-g@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 0/6] IEEE 802.15.4 passive scan support
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -76,7 +75,7 @@ Cc:     Alexander Aring <alex.aring@gmail.com>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,74 +85,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Mon, Jan 2, 2023 at 8:04 PM Alexander Aring <aahringo@redhat.com> wrote:
+On Fri, Dec 16, 2022 at 7:04 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Hi,
+> Hello,
 >
-> On Fri, Dec 16, 2022 at 7:04 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> ...
-> > +void mac802154_scan_worker(struct work_struct *work)
-> > +{
-> > +       struct ieee802154_local *local =
-> > +               container_of(work, struct ieee802154_local, scan_work.work);
-> > +       struct cfg802154_scan_request *scan_req;
-> > +       struct ieee802154_sub_if_data *sdata;
-> > +       unsigned int scan_duration = 0;
-> > +       struct wpan_phy* wpan_phy;
-> > +       u8 scan_req_duration;
-> > +       u8 page, channel;
-> > +       int ret;
-> > +
-> > +       /* Ensure the device receiver is turned off when changing channels
-> > +        * because there is no atomic way to change the channel and know on
-> > +        * which one a beacon might have been received.
-> > +        */
-> > +       drv_stop(local);
-> > +       synchronize_net();
+> We now have the infrastructure to report beacons/PANs, we also have the
+> capability to transmit MLME commands synchronously. It is time to use
+> these to implement a proper scan implementation.
 >
-> Do we do that for every channel switch? I think this is not necessary.
-> It is necessary for bringing the transceiver into scan filtering mode,
-> but we don't need to do that for switching the channel.
+> There are a few side-changes which are necessary for the soft MAC scan
+> implementation to compile/work, but nothing big. The two main changes
+> are:
+> * The introduction of a user API for managing scans.
+> * The soft MAC implementation of a scan.
 >
-> And there is a difference why we need to do that for filtering. In my
-> mind I had the following reason that the MAC layer is handled in Linux
-> (softMAC) and by offloaded parts on the transceiver, this needs to be
-> synchronized. The PHY layer is completely on the transceiver side,
-> that's why you can switch channels during interface running. There
-> exist some MAC parameters which are offloaded to the hardware and are
-> currently not possible to synchronize while an interface is up,
-> however this could change in future because the new helpers to
-> synchronize softmac/transceiver mac handling.
+> In all the past, current and future submissions, David and Romuald from
+> Qorvo are credited in various ways (main author, co-author,
+> suggested-by) depending of the amount of rework that was involved on
+> each patch, reflecting as much as possible the open-source guidelines we
+> follow in the kernel. All this effort is made possible thanks to Qorvo
+> Inc which is pushing towards a featureful upstream WPAN support.
 >
-> There is maybe a need here to be sure everything is transmitted on the
-> hardware before switching the channel, but this should be done by the
-> new mlme functionality which does a synchronized transmit. However we
-> don't transmit anything here, so there is no need for that yet. We
-> should never stop the transceiver being into receive mode and during
-> scan we should always be into receive mode in
-> IEEE802154_FILTERING_3_SCAN level without never leaving it.
+> Example of output:
 >
-> ... and happy new year.
+>         # iwpan monitor
+>         coord1 (phy #1): scan started
+>         coord1 (phy #1): beacon received: PAN 0xabcd, addr 0xb2bcc36ac5570abe
+>         coord1 (phy #1): scan finished
+>         coord1 (phy #1): scan started
+>         coord1 (phy #1): scan aborted
 >
-> I wanted to ack this series but this came into my mind. I also wanted
-> to check what exactly happens when a mlme op returns an error like
-> channel access failure? Do we ignore it? Do we do cond_resched() and
-> retry again later? I guess these are questions only if we get into
-> active scanning with more exciting sending of frames, because here we
-> don't transmit anything.
 
-Ignore that above about stopping the transceiver being in receive
-mode, you are right... you cannot know on which channel/page
-combination the beacon was received because as the comment says, it is
-not atomic to switch it... sadly the transceiver does not tell us that
-on a per frame basis.
+Acked-by: Alexander Aring <aahringo@redhat.com>
 
-Sorry for the noise. Still with my previous comments why it's still
-valid to switch channels while phy is in receive mode but not in scan
-mode, I would say if a user does that... then we don't care. Some
-offloaded parts and softMAC handling still need indeed to be
-synchronized because we don't know how a transceiver reacts on it to
-change registers there while transmitting.
+Thanks, good work.
 
 - Alex
 
