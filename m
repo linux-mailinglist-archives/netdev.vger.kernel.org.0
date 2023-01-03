@@ -2,74 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72D6665C40F
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 17:36:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8576465C43F
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 17:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237908AbjACQgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 11:36:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56008 "EHLO
+        id S233180AbjACQxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 11:53:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbjACQgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 11:36:02 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97EA2736;
-        Tue,  3 Jan 2023 08:36:01 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id b88so37301662edf.6;
-        Tue, 03 Jan 2023 08:36:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=k6KnM2AexIx/moXR1h+Z1J/pTrV7N0AyxhFGGeTojpA=;
-        b=CdUn3S0lAp+gxS1ISifnARQJVAbyTwyrWCVcKYraU0Y03WviR8JpYNaHS/BGjQBXEM
-         v6i+kLvc1a+NjaMV251TWTC5LUfBVlYliJOckoW1+li1+p12sGcaW3g3V5Lvgz/54B1I
-         /BgtededRcCdeVvtBSGzx4s3V839aXPfMkawkZlpk8hGDv0IGygNlscWigFhAFHn9RqW
-         DcUFDULq3VZ4pNV+tg/lKl6UyIonmhToL8q3KA1QRogikWqgxA1+X5jncpTtwnxWhYHJ
-         xlaWo/iPeBmZ0jA6xJ4wNI7MzaQn39t8eQcspW/7EMIQNl9BibuYyr+dnyrmfEc8TbVO
-         BYNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k6KnM2AexIx/moXR1h+Z1J/pTrV7N0AyxhFGGeTojpA=;
-        b=5P6J3SPZjJ/N6atp/t0rX6UGKx5S9sMMZBxCHijsWM1Kps43gyxVnH/s0Iok1uD8vm
-         Xj24/YGZNlB94D/EwG/NIplWu8ncie/Fovwt2C1lQIZiz2Fg4w9SENgWSM2sol0druRW
-         bKUPgL4TK5KxTcDOnbUGsRc3l6qv4a7VO88VYnhmmLawjJf8EjdjWoPdjD5p5m5ZPshH
-         CasaXs0RRV25veHlOSeTEr/kzBQLbxVX7UMC++5NRxUQqS2bXGYyVUWDMyDAEJHC5v83
-         +303lM4QgOtha/pqGVNnX9fQPWkTK7bnHGBRD7VS5p4q5yrgj0EQv/SokpEky1DsXf8I
-         bKDQ==
-X-Gm-Message-State: AFqh2krAE6cDVSSlUCDI97JNlwmqpiyjOJJ19HIP6stCr30XCG9Sd4ph
-        mlp6uKIqpVr/XajW7yIs9Fc=
-X-Google-Smtp-Source: AMrXdXsZqyEEfUlW0v6MQa9suRQfWk49/GY6SyxDHb7ufCBZNcfOKUx8LcnBYXg4MQcXfWbhrZFfNw==
-X-Received: by 2002:a05:6402:e0f:b0:468:58d4:a0f2 with SMTP id h15-20020a0564020e0f00b0046858d4a0f2mr42883513edh.23.1672763760135;
-        Tue, 03 Jan 2023 08:36:00 -0800 (PST)
-Received: from skbuf ([188.26.185.118])
-        by smtp.gmail.com with ESMTPSA id bo6-20020a0564020b2600b0048ca2b6c370sm3774717edb.29.2023.01.03.08.35.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 08:35:59 -0800 (PST)
-Date:   Tue, 3 Jan 2023 18:35:57 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de, jacob.e.keller@intel.com
-Subject: Re: [Patch net-next v6 02/13] net: dsa: microchip: ptp: Initial
- hardware time stamping support
-Message-ID: <20230103163557.ggwdy3ung6bmtbwd@skbuf>
-References: <20230102050459.31023-1-arun.ramadoss@microchip.com>
- <20230102050459.31023-3-arun.ramadoss@microchip.com>
+        with ESMTP id S238293AbjACQwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 11:52:09 -0500
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2058.outbound.protection.outlook.com [40.107.101.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEF412D3A;
+        Tue,  3 Jan 2023 08:51:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RmUz6niUoKJOOxaK/cV2acnEoheslGX1KIYcD0ZeLMamWx/3OhWYBC1n8GC4EID7U7fpfOqD/copu8oUqeczExP16s6W1G1V4avhp+1RxnNXtO83lURU/FxILKjq+HepcCcCPQw1Iu9JRfAxWOJcSUj/7CditL5WXq0RovcsyKDGLJLCHGqhZtIuCDE141X+CL24X8U+q77WE3aTEx3U/sEqtsNXp95twHNKeBqKAZx1cnxMRMz9ItCxp7uVI6tBhI0iwZgWXbHZihnpNs8o6EVPz7GvgX2iibm2SuejjHMSKObMyuQK1EIc+Z4muUFi8m9RawOFv3nihQD3hueEIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L6RCz9oLBdpVNPGBdTs9FvQ5P+wqNEIrvtYzLy7XGc8=;
+ b=BkgNkxHIj14HZCK6tiLWGHQsCnePUzb0sCcuI3XHRIlf/iVpI8IAj0236j4YdwrznHLY306SyEsWWokSgg2bZobH+uL9CowQgokAkttDML3MZBvEz/4h70Yx25BuqnQ0TUKoknCR1mSEgB1njMFWuWIOiWL/VY+6Q8iM4Zm3CjIEIwTktW+p6BMf8BoCsLTHjOcTaE9kfJAI0ZdYfE7lXkGFbTmkiWwgNoSjR8QBTS+ARTS6SkWl25i3Cb2NS6+IEonf6OvvgYLHMJFZiQt576AQu/l4+b/1kZ49kA64wPB73MxeqAKh1i48R9+bZzvq0HmdviIRLdCjBskBm7XETA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L6RCz9oLBdpVNPGBdTs9FvQ5P+wqNEIrvtYzLy7XGc8=;
+ b=zPPq862xJq2qXzm/82Am8lXTHz0NKJeO7N4AaFj+98JBWAPKRYnPyfFMUn0nJorltlL5wo1p2N0FPhMXAcVn2+X8OV29w1Vhuvh67YfqUTJK45f/SvN1CwIE0QnxM4Xrp9U2vR6thfcdPupxHeQFLAD7O/FWS65Pk2tII4RRVwU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by CH3PR12MB7571.namprd12.prod.outlook.com (2603:10b6:610:147::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Tue, 3 Jan
+ 2023 16:51:20 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::8200:4042:8db4:63d7]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::8200:4042:8db4:63d7%3]) with mapi id 15.20.5944.019; Tue, 3 Jan 2023
+ 16:51:20 +0000
+Message-ID: <1efe8317-ef7c-f636-71bc-02ceb28cf0fd@amd.com>
+Date:   Tue, 3 Jan 2023 10:51:17 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] net: amd-xgbe: add missed tasklet_kill
+Content-Language: en-US
+To:     jiguang.xiao@windriver.com, Shyam-sundar.S-k@amd.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Prashant.Chikhalkar@windriver.com,
+        zhaolong.zhang@windriver.com, Rick.Ilowite@windriver.com
+References: <20221228081447.3400369-1-jiguang.xiao@windriver.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <20221228081447.3400369-1-jiguang.xiao@windriver.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH0PR03CA0032.namprd03.prod.outlook.com
+ (2603:10b6:610:b3::7) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230102050459.31023-3-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|CH3PR12MB7571:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66b4caee-b2f3-4df2-fa4e-08daedaabd1d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XB2yxyM8ObAkPcXzsKxFKCnb0J4eJxELYelM0AHOWc8Mju/8mnQQNESdFQuAz+RbgzxbbMg9Cj7NCCv2SKIt8oBWYTMQwUF55oPnGtlFYHTj0UyCRtN7eC0uaM9pujPkG+BmA+qmloCzDWJ6553dmAOrQYi+T1xNsWes01fVUFsJS8j495lLeZViKWUxSkHz5k8RF7V8eSOXBv9j/IGo8Dt3f/gWtAkC6noO8khkh7DMTzVxCa6s92F5xw597hwAlbd90CmA4qBYDpduCMMiiCmPm2zj1lb6brByxH+vN1LZvLud4au+Nago1y4S7gj9lorVF966b50RapG2/1ai2rAtQCwP/tGZAZ5CgWQs8u10SF4EgbGOS0jZS1bXKd1domFdAOMbwNkmbHM1Vu3S6stlKx/Cm5c46XOm2+BOw8PiEW2NosnPSfAxYga7anFl94LzmKFSSxkRxtzFUa9Ne5pU8+q4ugWVC/xiPcgBrDK+NZgDK/DOggm6Rx6YtPQ4ztvcLNMlPIy3rK5LQYPnAjnJIQVP4doeufTzKSd75aSih1QQXutGcWIhW782XR1b1CGoUumbaLAjUdn74v9Z/pOpGm2xksJx/IAIikh+Zx/MwVtyVSC6y/CaRANbKWbQw7h0byVSt2Hya9KUN+ZQAM+QT4puT6TEAlArI1RunHhAZNmPLcoeKD0/Mmh1wO8/Fm9ZzUG7ygqF74SxMIxGMtciK71Qpe1+sHEv2GAAY7RvntIbcejGvv1+wQR1XQjTQ2QyBo4XIgW1bQF2xliVnw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(396003)(136003)(376002)(346002)(451199015)(83380400001)(2616005)(86362001)(31696002)(38100700002)(36756003)(316002)(5660300002)(2906002)(6636002)(8936002)(4326008)(41300700001)(7416002)(31686004)(66556008)(8676002)(66946007)(66476007)(53546011)(186003)(26005)(6512007)(6486002)(478600001)(6666004)(6506007)(22166006)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NkM4TWZzM3o5TEdCNzVLZnJjQmtTREJWZHVPM1EyL1AvSTgrZFNpZUw5K1ps?=
+ =?utf-8?B?TzdiSlUrUzhvemFMdms0eU03d1dkZ2t1d2hVVGp1SW9sZGUxQkFGMUg2S2cr?=
+ =?utf-8?B?TDN3VEMzTG1rMjNpaUIyWHdmb0xNbmxqY2xVU3NzdXFoSVFTa01QNEFVYWhE?=
+ =?utf-8?B?bnJ3R2N4cDFjZ1BXV1RiZWpKcVVHUE15Z0R6OEdONlZQVnJ1M2o0d1hDK1dU?=
+ =?utf-8?B?ZDNTdEhjOVQwSCtPMERUR2lqZDV3ZFFCSmdjd0JjTDBmdEg5TmpudTJCQUt6?=
+ =?utf-8?B?RHJDVHBGQWhOT3ZNNFJZay9obXd1VkJ5bTl6ejZ6Q2RsZDFEb3F5YnhMSzNZ?=
+ =?utf-8?B?R2FYU2lsYkVHQU0xcm8yMmxlSFFIdHU4TTZ0aTNldnBFcklUdFZmNm9VQmRC?=
+ =?utf-8?B?aFlmUUlMd0NyNHFvOE1jU3N6b21FSkVRZTlpQWRUd2dLWVRzMGlYK3FFcE9Y?=
+ =?utf-8?B?SnVrcHB1RnNPcVgwMVlJRnZ5TlFWT0xGUmU2ZkdJZjk4dWlRNmk0c3hvbUxh?=
+ =?utf-8?B?cHZrOHdLZ2YvK0h4OS83bEVSZkIybTdZL05kUDRtQW9NaDdKU1QySEt5b3B2?=
+ =?utf-8?B?QmNNNTdGYUIxZ3JQcEQvZ1JUazlGNUN1cjRHbHdtTURwaGU0RDN0dzFxbldI?=
+ =?utf-8?B?RUFkTmRpenNSZXZmL2I5WGtKWGkzdmlTbzdsaGEvVkNWMHNCQVBaYnpLYnFW?=
+ =?utf-8?B?c1grQjZFYlRhS08yajlEakRjTlpuTXZoVzRrNGdiS001OEdod3lFajdmeWhZ?=
+ =?utf-8?B?WEJqR3RibXJqZFdGM3pxRndUMTdWd1I5bHg5RitlY1V0KzBIUEdocEhVNmQy?=
+ =?utf-8?B?d2wzMjQwOWtyZXhpT25jcjdKWlRwc2JKVFRQdzE2dzR5RGZYWnJES2Z4Q1dv?=
+ =?utf-8?B?bHRWSUtHM0pwaU81UHg2TmF3YS9yWGd5aThyN21LdFpPTTRtT3F3M2hoZWQ2?=
+ =?utf-8?B?dFdodUJlelgwYi9hMVVibGxCVUJIbk5sSDhjNlF1dnlrYU9vQ1hocnNvdDJs?=
+ =?utf-8?B?NS9NbnBPNllDZXlHTDA3eVdhdklvY3N3dXMvT0laQzR4OFpWcFFSMzAvWFhN?=
+ =?utf-8?B?RUEvSnlyanZ6ellPYXFpUGtTRndXYUVNbWxGL3dyQkZRWCtmSHRGTTYwVVZz?=
+ =?utf-8?B?cFAxc0Z2VnZxeEFQeDhJV3VrNk9KQnh4MDdOeDhwTTZ5SVpyM1BRWVA1ZUJD?=
+ =?utf-8?B?dVdoTjNhZi9vYjQ1QThnSFpFMElOK2pjeXhWaGx1TnAzdCtGaUVJTGdQVTRC?=
+ =?utf-8?B?UzVqN2lNVHJOV0dvOHdCRUdLdzFqY2Rna3Y5ZkNZMklNRkhFNzVXRWt0NnEw?=
+ =?utf-8?B?enFSQlp0dGJrTXNZTGJLbDFwcUhjL3ZpaUM4c25aWHJHZi9YRWpvdXN0OU1m?=
+ =?utf-8?B?V1NOd01pdUxVUzN0akQwd0kwOFFqY2Y5R0d5UlUzVXlwQSthOEdRTThNZ3Zy?=
+ =?utf-8?B?cFRWMlA1TEdGNEJFU1l2QTlRSjNtNlFKWDY0MTNyVzhxbU9BemFlNFBjVEhW?=
+ =?utf-8?B?L0htM09IalZmemFzVUdXVlJqdUNvS3dxT3RUMWZwaVJyRU8xU1BtZ1FMM1Fk?=
+ =?utf-8?B?Rm5vbVhyeUM3TzhkSjQxc2NBWmJkeTZCcE5zb2dubFB0a2ZLL1J0d3p0S0Js?=
+ =?utf-8?B?NWcyUlJnYVNyQmUvZHVMeG5PNG55VDg2bDFoS1hsOEpDVTlOanlyUDV3elBs?=
+ =?utf-8?B?UVVRR2ZoYVhMa3VKNHNWbWRLUFhOYUJ1Yzc2QzdiZytJRzJNQVp4OXZzZ1Iz?=
+ =?utf-8?B?OHFKRlZNVit2d0wrM2JKalhjTVpyNTN3c1d5bW9DSmtxRDZETitvMTN4TU9v?=
+ =?utf-8?B?UnhtajQ4a0dvdXNCUzI2Y1h6Zm91eG16dWFBZWtjTjdwRE9lV2lqTzZXNDF2?=
+ =?utf-8?B?MU9pSFVXMCtVbTZETTVwcGN6bEc1WVNmV2cvOWtEZDhoM1hkbWVZWTB4emZr?=
+ =?utf-8?B?cDhsbGw5WDRYUUdyRzltZUR6aGMrWU1SeHZrRDFHRytiQWMwTmNDZVlmY1Fr?=
+ =?utf-8?B?bkt0emRsOWNMYVNjeGVTMUkrQ3ZKVGpRM0sxdVA2bjV2U1ROdDlwaDQ4SGtL?=
+ =?utf-8?B?VGFYc051Ylo1ZHl4bUdCc1g2U3pQWC91WmlaMkc3TlI0ZHNmQU1ubjlob0Iy?=
+ =?utf-8?Q?/AwbI7pHjpdZqeQjGZ+G35bnO?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66b4caee-b2f3-4df2-fa4e-08daedaabd1d
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jan 2023 16:51:20.1146
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PhLL6Q+MFkrELhkHsIH+oILPyW8EQFcEaGiBOujkDtX5qxoxbE0LSRQyT1Rn6eAdpzjKwRpnX6lEHr8FXPFHlQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7571
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,207 +125,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 02, 2023 at 10:34:48AM +0530, Arun Ramadoss wrote:
-> From: Christian Eggers <ceggers@arri.de>
+On 12/28/22 02:14, jiguang.xiao@windriver.com wrote:
+> From: Jiguang Xiao <jiguang.xiao@windriver.com>
 > 
-> This patch adds the routine for get_ts_info, hwstamp_get, set. This enables
-> the PTP support towards userspace applications such as linuxptp.
+> The driver does not call tasklet_kill in several places.
+> Add the calls to fix it.
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> Fixes: 85b85c853401 (amd-xgbe: Re-issue interrupt if interrupt status
+> not cleared)
+> Signed-off-by: Jiguang Xiao <jiguang.xiao@windriver.com>
 > ---
-> v1 -> v2
-> - Declared the ksz_hwtstamp_get/set to NULL as macro if ptp is not
-> enabled
-> - Removed mutex lock in hwtstamp_set()
+>   drivers/net/ethernet/amd/xgbe/xgbe-drv.c  | 3 +++
+>   drivers/net/ethernet/amd/xgbe/xgbe-i2c.c  | 4 +++-
+>   drivers/net/ethernet/amd/xgbe/xgbe-mdio.c | 4 +++-
+>   3 files changed, 9 insertions(+), 2 deletions(-)
 > 
-> RFC v2 -> Patch v1
-> - moved tagger set and get function to separate patch
-> - Removed unnecessary comments
-> ---
->  drivers/net/dsa/microchip/ksz_common.c |   3 +
->  drivers/net/dsa/microchip/ksz_common.h |   3 +
->  drivers/net/dsa/microchip/ksz_ptp.c    | 101 +++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_ptp.h    |  11 +++
->  4 files changed, 118 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 3e2ebadeade9..1819f75eb007 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -2977,6 +2977,9 @@ static const struct dsa_switch_ops ksz_switch_ops = {
->  	.get_pause_stats	= ksz_get_pause_stats,
->  	.port_change_mtu	= ksz_change_mtu,
->  	.port_max_mtu		= ksz_max_mtu,
-> +	.get_ts_info            = ksz_get_ts_info,
-> +	.port_hwtstamp_get      = ksz_hwtstamp_get,
-> +	.port_hwtstamp_set      = ksz_hwtstamp_set,
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+> index 7b666106feee..614c0278419b 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+> @@ -1064,6 +1064,9 @@ static void xgbe_free_irqs(struct xgbe_prv_data *pdata)
+>   
+>   	devm_free_irq(pdata->dev, pdata->dev_irq, pdata);
+>   
+> +	tasklet_kill(&pdata->tasklet_dev);
+> +	tasklet_kill(&pdata->tasklet_ecc);
 
-Most of ksz_switch_ops are aligned using tabs, you are introducing these
-using spaces.
+Should this tasklet_kill() have been put after the devm_free_irq() for the 
+ecc_irq?
 
->  };
->  
->  struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index 23ed7fa72a3c..a5ce7ec30ba2 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -102,6 +102,9 @@ struct ksz_port {
->  	struct ksz_device *ksz_dev;
->  	struct ksz_irq pirq;
->  	u8 num;
-> +#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ_PTP)
-> +	struct hwtstamp_config tstamp_config;
-> +#endif
->  };
->  
->  struct ksz_device {
-> diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-> index fb1efb60ef71..280200b37012 100644
-> --- a/drivers/net/dsa/microchip/ksz_ptp.c
-> +++ b/drivers/net/dsa/microchip/ksz_ptp.c
-> @@ -24,6 +24,107 @@
->  #define KSZ_PTP_INC_NS 40ULL  /* HW clock is incremented every 40 ns (by 40) */
->  #define KSZ_PTP_SUBNS_BITS 32
->  
-> +/* The function is return back the capability of timestamping feature when
-> + * requested through ethtool -T <interface> utility
-> + */
-> +int ksz_get_ts_info(struct dsa_switch *ds, int port, struct ethtool_ts_info *ts)
-> +{
-> +	struct ksz_device *dev	= ds->priv;
+Maybe both tasklet_kill() calls could have been moved down a few lines.
 
-There is a tab here between *dev and = which is probably unintended.
+Thanks,
+Tom
 
-> +	struct ksz_ptp_data *ptp_data;
 > +
-> +	ptp_data = &dev->ptp_data;
-> +
-> +	if (!ptp_data->clock)
-> +		return -ENODEV;
-> +
-> +	ts->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
-> +			      SOF_TIMESTAMPING_RX_HARDWARE |
-> +			      SOF_TIMESTAMPING_RAW_HARDWARE;
-> +
-> +	ts->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ONESTEP_P2P);
-> +
-> +	ts->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
-> +			 BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
-> +			 BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
-> +			 BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
-> +
-> +	ts->phc_index = ptp_clock_index(ptp_data->clock);
-> +
-> +	return 0;
-> +}
-> +
-> +int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	struct hwtstamp_config *config;
-> +	struct ksz_port *prt;
-> +
-> +	prt = &dev->ports[port];
-> +	config = &prt->tstamp_config;
-> +
-> +	return copy_to_user(ifr->ifr_data, config, sizeof(*config)) ?
-> +		-EFAULT : 0;
-> +}
-> +
-> +static int ksz_set_hwtstamp_config(struct ksz_device *dev,
-> +				   struct hwtstamp_config *config)
-> +{
-> +	if (config->flags)
-> +		return -EINVAL;
-> +
-> +	switch (config->tx_type) {
-> +	case HWTSTAMP_TX_OFF:
-> +	case HWTSTAMP_TX_ONESTEP_P2P:
-> +		break;
-> +	default:
-> +		return -ERANGE;
+>   	if (pdata->vdata->ecc_support && (pdata->dev_irq != pdata->ecc_irq))
+>   		devm_free_irq(pdata->dev, pdata->ecc_irq, pdata);
+>   
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c b/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c
+> index 22d4fc547a0a..a9ccc4258ee5 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c
+> @@ -447,8 +447,10 @@ static void xgbe_i2c_stop(struct xgbe_prv_data *pdata)
+>   	xgbe_i2c_disable(pdata);
+>   	xgbe_i2c_clear_all_interrupts(pdata);
+>   
+> -	if (pdata->dev_irq != pdata->i2c_irq)
+> +	if (pdata->dev_irq != pdata->i2c_irq) {
+>   		devm_free_irq(pdata->dev, pdata->i2c_irq, pdata);
+> +		tasklet_kill(&pdata->tasklet_i2c);
 > +	}
-> +
-> +	switch (config->rx_filter) {
-> +	case HWTSTAMP_FILTER_NONE:
-> +		break;
-> +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
-> +		break;
-> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
-> +		break;
-> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-> +		break;
-> +	default:
-> +		config->rx_filter = HWTSTAMP_FILTER_NONE;
-> +		return -ERANGE;
+>   }
+>   
+>   static int xgbe_i2c_start(struct xgbe_prv_data *pdata)
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
+> index 4e97b4869522..0c5c1b155683 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
+> @@ -1390,8 +1390,10 @@ static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
+>   	/* Disable auto-negotiation */
+>   	xgbe_an_disable_all(pdata);
+>   
+> -	if (pdata->dev_irq != pdata->an_irq)
+> +	if (pdata->dev_irq != pdata->an_irq) {
+>   		devm_free_irq(pdata->dev, pdata->an_irq, pdata);
+> +		tasklet_kill(&pdata->tasklet_an);
 > +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	struct hwtstamp_config config;
-> +	struct ksz_port *prt;
-> +	int ret;
-> +
-> +	prt = &dev->ports[port];
-> +
-> +	ret = copy_from_user(&config, ifr->ifr_data, sizeof(config));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_set_hwtstamp_config(dev, &config);
-> +	if (ret)
-> +		return ret;
-> +
-> +	memcpy(&prt->tstamp_config, &config, sizeof(config));
-> +
-> +	return copy_to_user(ifr->ifr_data, &config, sizeof(config));
-> +}
-> +
->  static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts)
->  {
->  	u32 nanoseconds;
-> diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
-> index 8930047da764..7bb3fde2dd14 100644
-> --- a/drivers/net/dsa/microchip/ksz_ptp.h
-> +++ b/drivers/net/dsa/microchip/ksz_ptp.h
-> @@ -23,6 +23,11 @@ int ksz_ptp_clock_register(struct dsa_switch *ds);
->  
->  void ksz_ptp_clock_unregister(struct dsa_switch *ds);
->  
-> +int ksz_get_ts_info(struct dsa_switch *ds, int port,
-> +		    struct ethtool_ts_info *ts);
-> +int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
-> +int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
-> +
->  #else
->  
->  struct ksz_ptp_data {
-> @@ -37,6 +42,12 @@ static inline int ksz_ptp_clock_register(struct dsa_switch *ds)
->  
->  static inline void ksz_ptp_clock_unregister(struct dsa_switch *ds) { }
->  
-> +#define ksz_get_ts_info NULL
-> +
-> +#define ksz_hwtstamp_get NULL
-> +
-> +#define ksz_hwtstamp_set NULL
-> +
->  #endif	/* End of CONFIG_NET_DSA_MICROCHIP_KSZ_PTP */
->  
->  #endif
-> -- 
-> 2.36.1
-> 
+>   
+>   	pdata->phy_if.phy_impl.stop(pdata);
+>   
