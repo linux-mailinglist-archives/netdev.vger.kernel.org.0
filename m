@@ -2,113 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E75E865C97F
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 23:20:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DDDC65C99D
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 23:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbjACWUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 17:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        id S238730AbjACWXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 17:23:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238189AbjACWUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 17:20:06 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2403164B5;
-        Tue,  3 Jan 2023 14:19:47 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id j16so25737237qtv.4;
-        Tue, 03 Jan 2023 14:19:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vlsqXR9Z8ZTnyT8kW7sPZRNV6TNSbNbBGDYLhcwR+Qk=;
-        b=dmdkMDc/YHWm0TNz0eIBJ/XGILOClmyM/tKG7ExtcmNQVXs/fIKkIPoNN5GAj+kfHM
-         amZwwRfkXdlsCIe4MPIDUmxAgI79d4WRp1CfFsubKd+Xglfwgh0S8uWHwXVjyxaPwon6
-         1H431Uw0nZWzBFhryBLFsWWmNtxz65F3TuT3sB3d03FlNLXaPspLhHX6gGwRIPhuPM7x
-         iu4OWcuzeybA/bwM+UuVl3chiPPK4x76zRQm/7udJiJnjUhMeU7w3WQ4ukT7/nVPj4NJ
-         PcxhPF8amBlnTFHlbeeJgHZ4TRzQM7hshDcGyf7N1fZhoOaNAlUHlfTPdYKYKG7FISsE
-         eP5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vlsqXR9Z8ZTnyT8kW7sPZRNV6TNSbNbBGDYLhcwR+Qk=;
-        b=t1cgF+Ne8qrJqmNxGqsQtkmFkXATmrDtXRXBLOo3ru82pI5E6PhdVDI8PTE0M4nGoi
-         1JordJ7S2YTbKowcAtZYWpfsHHmsstdak0hli4CfSu7A+0d1pHj2PfzjwNwcVgdZymDv
-         O47lTwy+Qi+RyFF/iChT4dlen5Df0I1fGU+xSUVDumCkNSlW1N1yDuvBiOowj1T/Ennp
-         /lNZrWl50YFSqhcRetBhupCqdyb1GjwpxuTNfUvB4DkH45d+ZV180zZzK/gizN0B4ZxD
-         v+Oq6WUpmYEO61ALDNo2rJBBNH0MD+EsRjPrsUMvRpxMmdPd/CO+51F5ZgkioFWD0+vP
-         kZPA==
-X-Gm-Message-State: AFqh2kpkNMzS0k55FoaLBNECBzsRLVOkdhOlj9N3q0F/B1qArkqOxsXe
-        mL0e+flwtRK3KPNimzUvidA=
-X-Google-Smtp-Source: AMrXdXsGsjsrB9AcKzMCzEqklUI9nm2c3uPSa70otNvz7vExtyhtj7gtbzCz9MgPJaULLoodG5H59g==
-X-Received: by 2002:ac8:5211:0:b0:3a7:e384:92b6 with SMTP id r17-20020ac85211000000b003a7e38492b6mr64414936qtn.19.1672784386769;
-        Tue, 03 Jan 2023 14:19:46 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m5-20020ac807c5000000b003a530a32f67sm19430531qth.65.2023.01.03.14.19.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Jan 2023 14:19:45 -0800 (PST)
-Message-ID: <d42ecd28-9fe8-9376-8c42-4245120cab9f@gmail.com>
-Date:   Tue, 3 Jan 2023 14:19:40 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v6 net-next 01/10] dt-bindings: dsa: sync with maintainers
-Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?UTF-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S238729AbjACWVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 17:21:43 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3350417409;
+        Tue,  3 Jan 2023 14:20:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ezBxF58/iYt4ytGREKmk4EHJi+NewNz9aFNzcPhEcYw=; b=Un/ZBjj4THLRJFaI3jBbBXkucy
+        xUI45WocO2gEO94eHnU3fsLtEM94vFQJoIlVZX/9HlebD8cYZ7AqzkZbTzQyfpm0busc46Zl6wGIt
+        orx2qJbtdDR/A1TDXLQ7OuLpdyKD1cZGfboGkfGZTaIqpEBt9qpW3+rKCOOc0Vaow2HK5bdhWWEC8
+        r5gDwaYGw4UWlrG6yIp6FVO6QyJLujP2p0BqvDTT/bJOW+4aVLyerujnJl7TQK2UWv/0/aekLlGsV
+        YmDgPgPWpRE2fqy4vb9DmQJznADN+64HklkJ1Lop1Ji3UZM0WuswEq/SYcVpdud1/JF7ssBuVDZhL
+        lBF6XAkQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35956)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pCpdY-0005wc-Hc; Tue, 03 Jan 2023 22:20:00 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pCpdR-0002SM-O6; Tue, 03 Jan 2023 22:19:53 +0000
+Date:   Tue, 3 Jan 2023 22:19:53 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Wei Fang <wei.fang@nxp.com>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>
-References: <20230103051401.2265961-1-colin.foster@in-advantage.com>
- <20230103051401.2265961-2-colin.foster@in-advantage.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230103051401.2265961-2-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH RFC net-next v2 03/12] net: mdio: mdiobus_register:
+ update validation test
+Message-ID: <Y7SqCRkYkhQCLs8z@shell.armlinux.org.uk>
+References: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
+ <20221227-v6-2-rc1-c45-seperation-v2-3-ddb37710e5a7@walle.cc>
+ <Y7P/45Owf2IezIpO@shell.armlinux.org.uk>
+ <37247c17e5e555dddbc37c3c63a2cadb@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37247c17e5e555dddbc37c3c63a2cadb@walle.cc>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/2/23 21:13, Colin Foster wrote:
-> The MAINTAINERS file has Andrew Lunn, Florian Fainelli, and Vladimir Oltean
-> listed as the maintainers for generic dsa bindings. Update dsa.yaml and
-> dsa-port.yaml accordingly.
+Hi Michael,
+
+On Tue, Jan 03, 2023 at 11:21:08AM +0100, Michael Walle wrote:
+> Hi Russell,
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Am 2023-01-03 11:13, schrieb Russell King (Oracle):
+> > On Wed, Dec 28, 2022 at 12:07:19AM +0100, Michael Walle wrote:
+> > > +	if (!bus || !bus->name)
+> > > +		return -EINVAL;
+> > > +
+> > > +	/* An access method always needs both read and write operations */
+> > > +	if ((bus->read && !bus->write) ||
+> > > +	    (!bus->read && bus->write) ||
+> > > +	    (bus->read_c45 && !bus->write_c45) ||
+> > > +	    (!bus->read_c45 && bus->write_c45))
+> > 
+> > I wonder whether the following would be even more readable:
+> > 
+> > 	if (!bus->read != !bus->write || !bus->read_c45 != !bus->write_c45)
+> 
+> That's what Andrew had originally. But there was a comment from Sergey [1]
+> which I agree with. I had a hard time wrapping my head around that, so I
+> just listed all the possible bad cases.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+The only reason I suggested it was because when looked at your code,
+it also took several reads to work out what it was trying to do!
+
+Would using !!bus->read != !!bus->write would help or make it worse,
+!!ptr being the more normal way to convert something to a boolean?
+
 -- 
-Florian
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
