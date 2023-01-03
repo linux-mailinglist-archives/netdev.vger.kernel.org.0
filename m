@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30D3465C534
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 18:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E01165C556
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 18:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238439AbjACRk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 12:40:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        id S238013AbjACRsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 12:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238300AbjACRkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 12:40:14 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC531263B;
-        Tue,  3 Jan 2023 09:40:07 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id c17so44823622edj.13;
-        Tue, 03 Jan 2023 09:40:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=M7/u/+NO1/u6xtGW0HGp1uN31lHD185Kfc1YVT6fktU=;
-        b=ltpHUQ+4guxNvt6/0CnhPaDbWdW1ukGhY+rOeWF60K03bzWNS5uY2PdgF3lhKalEQK
-         NaI1Vgfsr8ntVqlLQ9iSMOwdratCYBxWOX5uJMTdQ/ACy+gJNZmXtcyaJz42050PXXko
-         3/jjaBkND7vX5cZXq+klkfqt0yPPS9e0A/6gAx+w8WH60zJReTsEfLEQqx1WGIBSWnKP
-         kPx/UgBWi3fKMfANbEZjKyKjVWmqeRFuxZV5ZgIBMAtmmnBWtiub7Z68rk4i+lunIEAF
-         JAEAqjeG7P7LaLAdcvVMncoiKa5FvUxDAwHqrNQyECmLTpg0HL5nOrF2OhYg4VAl0MRq
-         D6RA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=M7/u/+NO1/u6xtGW0HGp1uN31lHD185Kfc1YVT6fktU=;
-        b=qnTU/n3n6C5Zmn480Dx3BErETIYdk0sGQA09hbKgg/Mj7oz5AOpJupt63yEeWCLkIE
-         K3mDoNnFMByog5H2uq4cs0SqoiJ3iTZfi47MgQyRnaDxNK71SIpIiEE/Chm6tFjU59Gv
-         Sr5r/MgMKnJMcx249wyYwe+uVagDi4YbCGEb3ZaHZMraO7NHT5Y1zfhWrbN5Jn8bCeRn
-         CCc7jjOX5hawStZwekuBPGoGxmvENPYHFnRyLgn6XplPzlK+TX9T1N2d7n+SJ8dcZhsQ
-         293QBHfxR7Na3Hz9Y0gsEWKQbwHbej75C44BEsI6pH7ZHVWjOg+jt+SA6TL463YO6ryX
-         FxUg==
-X-Gm-Message-State: AFqh2kpABhwpS8cHau/ZXKEQsc13PXu2guIQX42M2TE6AKiSjE3qOvkl
-        FRhXsM8K+H/fssGQEMAhgGU=
-X-Google-Smtp-Source: AMrXdXts9S3Rn+7Va7dRsPXFdpIGlugAHTLT5uwwdJqPT1e2FDsmYRsg2uYWiw1XvfZL89s95KQd9g==
-X-Received: by 2002:aa7:c704:0:b0:47e:22ac:625c with SMTP id i4-20020aa7c704000000b0047e22ac625cmr34898903edq.41.1672767606027;
-        Tue, 03 Jan 2023 09:40:06 -0800 (PST)
-Received: from skbuf ([188.26.185.118])
-        by smtp.gmail.com with ESMTPSA id r17-20020aa7d591000000b004847513929csm11074269edq.72.2023.01.03.09.40.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 09:40:05 -0800 (PST)
-Date:   Tue, 3 Jan 2023 19:40:03 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de, jacob.e.keller@intel.com
-Subject: Re: [Patch net-next v6 09/13] net: dsa: microchip: ptp: move
- pdelay_rsp correction field to tail tag
-Message-ID: <20230103174003.ip7suairhetlru6z@skbuf>
-References: <20230102050459.31023-1-arun.ramadoss@microchip.com>
- <20230102050459.31023-1-arun.ramadoss@microchip.com>
- <20230102050459.31023-10-arun.ramadoss@microchip.com>
- <20230102050459.31023-10-arun.ramadoss@microchip.com>
+        with ESMTP id S233872AbjACRsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 12:48:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E4FDFF2
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 09:47:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672768034;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JcDL45STgo7kPl7hgic4aRnVFa75JoH1GQIrzXPMHcU=;
+        b=X+OoRHIHm2LXoKSlTO9SBvnK6AU48rQhx+VyBjjb7ZZ1rLxQuDh56FDa7e5nRkKAMLfL0C
+        /4OhxO9EOQi7S6eB6SUWqZUdClbmpWzUPa5+Xvj4aGX57JkmOLsZF46XsQqvWZGi838WxE
+        CohSqjBMF7/A+RFnanhDgtK5TUHnP0g=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-1d32DzAvNc2sEMUKMsyGeg-1; Tue, 03 Jan 2023 12:47:12 -0500
+X-MC-Unique: 1d32DzAvNc2sEMUKMsyGeg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 81BA7101B44E;
+        Tue,  3 Jan 2023 17:47:11 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.22.50.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C6BF140EBF4;
+        Tue,  3 Jan 2023 17:47:10 +0000 (UTC)
+Message-ID: <657adc8e514d4486853ef90cdf97bd75f55b44fa.camel@redhat.com>
+Subject: Re: [PATCH] wifi: libertas: return consistent length in
+ lbs_add_wpa_tlv()
+From:   Dan Williams <dcbw@redhat.com>
+To:     Doug Brown <doug@schmorgal.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Date:   Tue, 03 Jan 2023 11:47:09 -0600
+In-Reply-To: <20230102234714.169831-1-doug@schmorgal.com>
+References: <20230102234714.169831-1-doug@schmorgal.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.2 (3.46.2-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230102050459.31023-10-arun.ramadoss@microchip.com>
- <20230102050459.31023-10-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,159 +66,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 02, 2023 at 10:34:55AM +0530, Arun Ramadoss wrote:
-> From: Christian Eggers <ceggers@arri.de>
-> 
-> For PDelay_Resp messages we will likely have a negative value in the
-> correction field. The switch hardware cannot correctly update such
-> values (produces an off by one error in the UDP checksum), so it must be
-> moved to the time stamp field in the tail tag. Format of the correction
-> field is 48 bit ns + 16 bit fractional ns.  After updating the
-> correction field, clone is no longer required hence it is freed.
-> 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+On Mon, 2023-01-02 at 15:47 -0800, Doug Brown wrote:
+> The existing code only converts the first IE to a TLV, but it returns
+> a
+> value that takes the length of all IEs into account. When there is
+> more
+> than one IE (which happens with modern wpa_supplicant versions for
+> example), the returned length is too long and extra junk TLVs get
+> sent
+> to the firmware, resulting in an association failure.
+>=20
+> Fix this by returning a length that only factors in the single IE
+> that
+> was converted. The firmware doesn't seem to support the additional
+> IEs,
+> so there is no value in trying to convert them to additional TLVs.
+>=20
+> Fixes: e86dc1ca4676 ("Libertas: cfg80211 support")
+> Signed-off-by: Doug Brown <doug@schmorgal.com>
 > ---
-> v2 -> v3
-> - used update_correction variable in skb->cb instead of ptp_msg_type
-> 
-> v1 -> v2
-> - added fallthrough keyword in switch case to suppress checkpatch
-> warning
+> =C2=A0drivers/net/wireless/marvell/libertas/cfg.c | 7 +++----
+> =C2=A01 file changed, 3 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/net/wireless/marvell/libertas/cfg.c
+> b/drivers/net/wireless/marvell/libertas/cfg.c
+> index 3e065cbb0af9..fcc5420ec7ea 100644
+> --- a/drivers/net/wireless/marvell/libertas/cfg.c
+> +++ b/drivers/net/wireless/marvell/libertas/cfg.c
+> @@ -432,10 +432,9 @@ static int lbs_add_wpa_tlv(u8 *tlv, const u8
+> *ie, u8 ie_len)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*tlv++ =3D 0;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tlv_len =3D *tlv++ =3D *i=
+e++;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*tlv++ =3D 0;
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0while (tlv_len--)
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0*tlv++ =3D *ie++;
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* the TLV is two bytes larger=
+ than the IE */
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return ie_len + 2;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0memcpy(tlv, ie, tlv_len);
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* the TLV has a four-byte hea=
+der */
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return tlv_len + 4;
 
-I don't think checkpatch asks for fallthrough keyword if there is no
-code in between the cases. That would be silly, because it's obvious
-that the code falls through. It's most likely that the fallthrough is
-needed, but not _here_.
+Since you're removing ie_len usage in the function, you might as well
+remove it from the function's arguments.
 
-> 
-> RFC v3 -> Patch v1
-> - Patch is separated from transmission logic patch
-> ---
->  drivers/net/dsa/microchip/ksz_ptp.c |  5 ++++
->  include/linux/dsa/ksz_common.h      |  2 ++
->  net/dsa/tag_ksz.c                   | 41 ++++++++++++++++++++++++++++-
->  3 files changed, 47 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-> index 8f5e099b1b99..5d5b8d4ed17b 100644
-> --- a/drivers/net/dsa/microchip/ksz_ptp.c
-> +++ b/drivers/net/dsa/microchip/ksz_ptp.c
-> @@ -267,6 +267,8 @@ void ksz_port_txtstamp(struct dsa_switch *ds, int port,
->  
->  	switch (ptp_msg_type) {
->  	case PTP_MSGTYPE_PDELAY_REQ:
-> +		 fallthrough;
+Can you also update the comments to say something like "only copy the
+first IE into the command buffer".
 
-On the other hand, I would expect checkpatch to warn about the
-superfluous space. There should be just 2 leading tabs here, not 2 tabs
-and 1 space.
+Lastly, should you check the IE to make sure you're copying the WPA or
+WMM IE that the firmware expects? What other IEs does
+wpa_supplicant/cfg80211 add these days?
 
-> +	case PTP_MSGTYPE_PDELAY_RESP:
->  		break;
->  
->  	default:
-> @@ -279,6 +281,9 @@ void ksz_port_txtstamp(struct dsa_switch *ds, int port,
->  
->  	/* caching the value to be used in tag_ksz.c */
->  	KSZ_SKB_CB(skb)->clone = clone;
-> +	KSZ_SKB_CB(clone)->ptp_type = type;
-> +	if (ptp_msg_type == PTP_MSGTYPE_PDELAY_RESP)
-> +		KSZ_SKB_CB(clone)->update_correction = true;
->  }
->  
->  static void ksz_ptp_txtstamp_skb(struct ksz_device *dev,
-> diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
-> index b91beab5e138..576a99ca698d 100644
-> --- a/include/linux/dsa/ksz_common.h
-> +++ b/include/linux/dsa/ksz_common.h
-> @@ -36,6 +36,8 @@ struct ksz_tagger_data {
->  
->  struct ksz_skb_cb {
->  	struct sk_buff *clone;
-> +	unsigned int ptp_type;
-> +	bool update_correction;
->  	u32 tstamp;
->  };
->  
-> diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
-> index e14ee26bf6a0..7dd2133b0820 100644
-> --- a/net/dsa/tag_ksz.c
-> +++ b/net/dsa/tag_ksz.c
-> @@ -7,6 +7,7 @@
->  #include <linux/dsa/ksz_common.h>
->  #include <linux/etherdevice.h>
->  #include <linux/list.h>
-> +#include <linux/ptp_classify.h>
->  #include <net/dsa.h>
->  
->  #include "tag.h"
-> @@ -194,14 +195,52 @@ static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag)
->   */
->  static void ksz_xmit_timestamp(struct dsa_port *dp, struct sk_buff *skb)
->  {
-> +	struct sk_buff *clone = KSZ_SKB_CB(skb)->clone;
->  	struct ksz_tagger_private *priv;
-> +	struct ptp_header *ptp_hdr;
-> +	bool update_correction;
-> +	unsigned int ptp_type;
-> +	u32 tstamp_raw = 0;
-> +	s64 correction;
->  
->  	priv = ksz_tagger_private(dp->ds);
->  
->  	if (!test_bit(KSZ_HWTS_EN, &priv->state))
->  		return;
->  
-> -	put_unaligned_be32(0, skb_put(skb, KSZ_PTP_TAG_LEN));
-> +	if (!clone)
-> +		goto output_tag;
-> +
-> +	update_correction = KSZ_SKB_CB(clone)->update_correction;
-> +	if (!update_correction)
+Dan
 
-I don't think the on-stack variable "update_correction" really serves a
-purpose here, since it's used only once; it would be simpler if you just
-used "if (KSZ_SKB_CB()->update...)".
-
-> +		goto output_tag;
-> +
-> +	ptp_type = KSZ_SKB_CB(clone)->ptp_type;
-> +
-> +	ptp_hdr = ptp_parse_header(skb, ptp_type);
-> +	if (!ptp_hdr)
-> +		goto output_tag;
-> +
-> +	correction = (s64)get_unaligned_be64(&ptp_hdr->correction);
-> +
-> +	if (correction < 0) {
-> +		struct timespec64 ts;
-> +
-> +		ts = ns_to_timespec64(-correction >> 16);
-> +		tstamp_raw = ((ts.tv_sec & 3) << 30) | ts.tv_nsec;
-> +
-> +		/* Set correction field to 0 and update UDP checksum.  */
-> +		ptp_header_update_correction(skb, ptp_type, ptp_hdr, 0);
-> +	}
-> +
-> +	/* For PDelay_Resp messages, the clone is not required in
-> +	 * skb_complete_tx_timestamp() and should be freed here.
-> +	 */
-> +	kfree_skb(clone);
-> +	KSZ_SKB_CB(skb)->clone = NULL;
-
-Why do you clone the skb in the first place, then?
-Just extend KSZ_SKB_CB() with some other flag to denote that this skb
-needs processing here, and replace the "if (!clone)" test with that.
-
-> +
-> +output_tag:
-> +	put_unaligned_be32(tstamp_raw, skb_put(skb, KSZ_PTP_TAG_LEN));
->  }
->  
->  /* Defer transmit if waiting for egress time stamp is required.  */
-> -- 
-> 2.36.1
-> 
+> =C2=A0}
+> =C2=A0
+> =C2=A0/*
 
