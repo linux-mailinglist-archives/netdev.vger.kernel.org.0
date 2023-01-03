@@ -2,241 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9A165B864
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 01:33:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9198765B87D
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 02:05:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbjACAdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Jan 2023 19:33:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34238 "EHLO
+        id S232147AbjACBFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Jan 2023 20:05:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbjACAda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 19:33:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D316378
-        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 16:33:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ACE661123
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 00:33:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 854BFC433D2;
-        Tue,  3 Jan 2023 00:33:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672706007;
-        bh=gKNB+eHYFrlHuh6xprr6dFu7Pzzx/u81rK7YToU/RpU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E3FpuJBI9IDpw/T7kfGD33WUhatSsdyMF6IgShBtXz3BIfS9KeCqdfL9AuElTw+wh
-         aSs8SgJLeQkGxKbFt7XSVMjBu+pXronPRR7TKc0lQDUWjYbU4bUYy8H7up+4MTJAn1
-         O+gSwPrchWfKDCfKoFXuGVBnt2AWPgrAk3dVLky4CJug+aXL3xkCIHgZ4e0nToVOQH
-         7oUqFpbpn6dyZwqrILwBGKiYJd2+zH9U29NB2q16UIC2OYRv14rcmgARiFHqUf1kFI
-         rvJxPblDWRSvG3P/3Rk5qxn9sYxaAlPUlzZ2Z/pdRue2Gql5gbV4mVfcVe8xr4VuJp
-         6ne4t8KaMRfeg==
-Date:   Mon, 2 Jan 2023 16:33:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-Cc:     netdev@vger.kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
-        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
-Subject: Re: [PATCH ethtool-next v4 2/2] netlink: add netlink handler for
- get rss (-x)
-Message-ID: <20230102163326.4b982650@kernel.org>
-In-Reply-To: <20221229011243.1527945-3-sudheer.mogilappagari@intel.com>
-References: <20221229011243.1527945-1-sudheer.mogilappagari@intel.com>
-        <20221229011243.1527945-3-sudheer.mogilappagari@intel.com>
+        with ESMTP id S229745AbjACBFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Jan 2023 20:05:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DADB6147
+        for <netdev@vger.kernel.org>; Mon,  2 Jan 2023 17:04:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672707872;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=833D69flNGoAhTElO37GsAV9tlud8Fu/bVYJk2LoT2w=;
+        b=WBDtSfhWBYgio8JnnAPqoBHQBea8Ph7G7gjCws7iPKISTmwJ71J7yBlGdzt8uFyrLtcGPN
+        sMyuT3S3GHMns4RliJdqYH8NcBwi6zn9jnLJvz4ztYRynbjCWWjqc+4TGfSz/+QqOXLJCb
+        rnr7ryU8H3tsUx+/tr9NqTd3wC/id8g=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-508-PlYu8blcOWSEC8VRfst8Ig-1; Mon, 02 Jan 2023 20:04:31 -0500
+X-MC-Unique: PlYu8blcOWSEC8VRfst8Ig-1
+Received: by mail-ed1-f71.google.com with SMTP id h18-20020a05640250d200b004758e655ebeso18686154edb.11
+        for <netdev@vger.kernel.org>; Mon, 02 Jan 2023 17:04:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=833D69flNGoAhTElO37GsAV9tlud8Fu/bVYJk2LoT2w=;
+        b=BUBh/7p5ATJEUUoR7kFadod86S1URYmggIMnYqp+ZVghXKkjvM+chQpe+QU7BM+Y2M
+         VX5BujKfq2JJ9GKn99OS2UxbwZyNwUJmOcxajo2utKpb84scIFD0U4/WGPsJRJPQRd0Z
+         Ln+RoqE4hOlwHflMOuwqmPXUAKj/gQKTvO8uEfdedoeKVKvnNXkKe2yACR13xzcfatuI
+         +PZTYcojLQjZtkR0TDc6R0EwcMSUs8z4X69Jl4YCh5bVwIFfgYIQVdgFlsnlJxd+nFSc
+         5MF9rSx5SCmqbCorFvjs22L0dXX2oGPr+TmIPqEY3PqMxoqHrulPmy6CxGthLBLFmy4T
+         hOIg==
+X-Gm-Message-State: AFqh2kqeZNdNq4Y1Z8AFNY7UFwo2oCi3LcpqzNezsMS2dyS2jJTlDiSc
+        v2QnvorEpt1vvBFvnQMIYgvCbRt2nWjSytHrwG9S79XwvnEVsVJH2XLv8K/8yJ+DgqCUKoLDOh3
+        ykGdd5OHVsFFcEBAx/7FsJZkJ0n47hF8f
+X-Received: by 2002:a17:906:340c:b0:7c0:fe68:9c2e with SMTP id c12-20020a170906340c00b007c0fe689c2emr2650951ejb.278.1672707869940;
+        Mon, 02 Jan 2023 17:04:29 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsLJSyUgBSOGCF6PmMszSZr7X8B+YXodDNQCg7PaXocuGdsb1DH23N9iDoZiQEjH6I005AxKcry5AehhYt9Ni4=
+X-Received: by 2002:a17:906:340c:b0:7c0:fe68:9c2e with SMTP id
+ c12-20020a170906340c00b007c0fe689c2emr2650938ejb.278.1672707869682; Mon, 02
+ Jan 2023 17:04:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221217000226.646767-1-miquel.raynal@bootlin.com> <20221217000226.646767-7-miquel.raynal@bootlin.com>
+In-Reply-To: <20221217000226.646767-7-miquel.raynal@bootlin.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 2 Jan 2023 20:04:18 -0500
+Message-ID: <CAK-6q+hJb-py2sNBGYBQeHLbyM_OWzi78-gOf0LcdTukFDO4MQ@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 6/6] mac802154: Handle passive scanning
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Dec 2022 17:12:43 -0800 Sudheer Mogilappagari wrote:
-> Add support for netlink based "ethtool -x <dev>" command using
-> ETHTOOL_MSG_RSS_GET netlink message. It implements same functionality
-> provided by traditional ETHTOOL_GRSSH subcommand. This displays RSS
-> table, hash key and hash function along with JSON support.
+Hi,
 
-> +void dump_json_rss_info(struct cmd_context *ctx, struct ethtool_rxfh *rss,
-> +			const struct stringset *hash_funcs)
+On Fri, Dec 16, 2022 at 7:04 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+...
+> +void mac802154_scan_worker(struct work_struct *work)
 > +{
-> +	unsigned int indir_bytes = rss->indir_size * sizeof(rss->rss_config[0]);
-> +	unsigned int i;
+> +       struct ieee802154_local *local =
+> +               container_of(work, struct ieee802154_local, scan_work.work);
+> +       struct cfg802154_scan_request *scan_req;
+> +       struct ieee802154_sub_if_data *sdata;
+> +       unsigned int scan_duration = 0;
+> +       struct wpan_phy* wpan_phy;
+> +       u8 scan_req_duration;
+> +       u8 page, channel;
+> +       int ret;
 > +
-> +	open_json_object(NULL);
-> +	print_string(PRINT_JSON, "ifname", NULL, ctx->devname);
-> +	if (rss->indir_size) {
-> +		open_json_array("rss-indirection-table", NULL);
-> +		for (i = 0; i < rss->indir_size; i++)
-> +			print_uint(PRINT_JSON, NULL, NULL, rss->rss_config[i]);
-> +		close_json_array("\n");
-> +	}
-> +
-> +	if (rss->key_size) {
-> +		const char *hkey = ((char *)rss->rss_config + indir_bytes);
-> +
-> +		open_json_array("rss-hash-key", NULL);
-> +		for (i = 0; i < rss->key_size; i++)
-> +			print_uint(PRINT_JSON, NULL, NULL, (u8)hkey[i]);
-> +		close_json_array("\n");
-> +	}
-> +
-> +	if (rss->hfunc) {
-> +		open_json_object("rss-hash-function");
-> +		for (i = 0; i < get_count(hash_funcs); i++)
-> +			print_bool(PRINT_JSON, get_string(hash_funcs, i), NULL,
-> +				   (rss->hfunc & (1 << i)));
-> +		close_json_object();
-> +	}
+> +       /* Ensure the device receiver is turned off when changing channels
+> +        * because there is no atomic way to change the channel and know on
+> +        * which one a beacon might have been received.
+> +        */
+> +       drv_stop(local);
+> +       synchronize_net();
 
-I believe there can only be a single bit set here, so why not print:
+Do we do that for every channel switch? I think this is not necessary.
+It is necessary for bringing the transceiver into scan filtering mode,
+but we don't need to do that for switching the channel.
 
-	 "rss-hash-function": "toeplitz"
+And there is a difference why we need to do that for filtering. In my
+mind I had the following reason that the MAC layer is handled in Linux
+(softMAC) and by offloaded parts on the transceiver, this needs to be
+synchronized. The PHY layer is completely on the transceiver side,
+that's why you can switch channels during interface running. There
+exist some MAC parameters which are offloaded to the hardware and are
+currently not possible to synchronize while an interface is up,
+however this could change in future because the new helpers to
+synchronize softmac/transceiver mac handling.
 
-rather than:
+There is maybe a need here to be sure everything is transmitted on the
+hardware before switching the channel, but this should be done by the
+new mlme functionality which does a synchronized transmit. However we
+don't transmit anything here, so there is no need for that yet. We
+should never stop the transceiver being into receive mode and during
+scan we should always be into receive mode in
+IEEE802154_FILTERING_3_SCAN level without never leaving it.
 
-	  "rss-hash-function": {
-            "toeplitz": true,
-            "xor": false,
-            "crc32": false
-          }
+... and happy new year.
 
-We can make the kernel ensure only one bit is set by checking 
-hweight() == 1 on the value returned by the driver.
+I wanted to ack this series but this came into my mind. I also wanted
+to check what exactly happens when a mlme op returns an error like
+channel access failure? Do we ignore it? Do we do cond_resched() and
+retry again later? I guess these are questions only if we get into
+active scanning with more exciting sending of frames, because here we
+don't transmit anything.
 
-> +	close_json_object();
-> +}
-> +
-> +int rss_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_RSS_MAX + 1] = {};
-> +	unsigned int indir_bytes = 0, hkey_bytes = 0;
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	struct cb_args *args = data;
-> +	struct nl_context *nlctx =  args->nlctx;
+- Alex
 
-double space
-
-> +	const struct stringset *hash_funcs;
-> +	u32 rss_config_size, rss_hfunc;
-> +	const char *indir_table, *hkey;
-> +
-> +	struct ethtool_rxfh *rss;
-> +	bool silent;
-> +	int err_ret;
-> +	int ret;
-> +
-> +	silent = nlctx->is_dump || nlctx->is_monitor;
-> +	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-> +	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return err_ret;
-> +	nlctx->devname = get_dev_name(tb[ETHTOOL_A_RSS_HEADER]);
-> +	if (!dev_ok(nlctx))
-> +		return err_ret;
-> +
-> +	if (silent)
-> +		putchar('\n');
-
-show_cr()
-
-> +	rss_hfunc = mnl_attr_get_u32(tb[ETHTOOL_A_RSS_HFUNC]);
-> +
-> +	indir_bytes = mnl_attr_get_payload_len(tb[ETHTOOL_A_RSS_INDIR]);
-> +	indir_table = mnl_attr_get_str(tb[ETHTOOL_A_RSS_INDIR]);
-> +
-> +	hkey_bytes = mnl_attr_get_payload_len(tb[ETHTOOL_A_RSS_HKEY]);
-> +	hkey = mnl_attr_get_str(tb[ETHTOOL_A_RSS_HKEY]);
-
-All elements of tb can be NULL, AFAIU.
-
-> +	rss_config_size = indir_bytes + hkey_bytes;
-> +
-> +	rss = calloc(1, sizeof(*rss) + rss_config_size);
-> +	if (!rss) {
-> +		perror("Cannot allocate memory for RX flow hash config");
-> +		return 1;
-> +	}
-> +
-> +	rss->indir_size = indir_bytes / sizeof(rss->rss_config[0]);
-> +	rss->key_size = hkey_bytes;
-> +	rss->hfunc = rss_hfunc;
-> +
-> +	memcpy(rss->rss_config, indir_table, indir_bytes);
-> +	memcpy(rss->rss_config + rss->indir_size, hkey, hkey_bytes);
-
-Do you only perform this coalescing to reuse the existing print
-helpers? With a bit of extra refactoring this seems avoidable...
-
-> +	/* Fetch RSS hash functions and their status and print */
-> +
-> +	if (!nlctx->is_monitor) {
-> +		ret = netlink_init_ethnl2_socket(nlctx);
-> +		if (ret < 0)
-> +			return MNL_CB_ERROR;
-> +	}
-> +	hash_funcs = global_stringset(ETH_SS_RSS_HASH_FUNCS,
-> +				      nlctx->ethnl2_socket);
-> +
-> +	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return silent ? MNL_CB_OK : MNL_CB_ERROR;
-> +	nlctx->devname = get_dev_name(tb[ETHTOOL_A_RSS_HEADER]);
-> +	if (!dev_ok(nlctx))
-> +		return MNL_CB_OK;
-> +
-> +	if (is_json_context()) {
-> +		dump_json_rss_info(nlctx->ctx, rss, hash_funcs);
-> +	} else {
-> +		print_rss_info(nlctx->ctx, args->num_rings, rss);
-> +		printf("RSS hash function:\n");
-> +		if (!rss_hfunc) {
-> +			printf("    Operation not supported\n");
-> +			return 0;
-> +		}
-> +		for (unsigned int i = 0; i < get_count(hash_funcs); i++) {
-> +			printf("    %s: %s\n", get_string(hash_funcs, i),
-> +			       (rss_hfunc & (1 << i)) ? "on" : "off");
-> +		}
-> +	}
-> +
-> +	free(rss);
-> +	return MNL_CB_OK;
-> +}
-
-> +int get_channels_cb(const struct nlmsghdr *nlhdr, void *data)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_CHANNELS_MAX + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	struct cb_args *args = data;
-> +	struct nl_context *nlctx =  args->nlctx;
-> +	bool silent;
-> +	int err_ret;
-> +	int ret;
-> +
-> +	silent = nlctx->is_dump || nlctx->is_monitor;
-> +	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-> +	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return err_ret;
-> +	nlctx->devname = get_dev_name(tb[ETHTOOL_A_CHANNELS_HEADER]);
-
-We need to check that the kernel has filled in the attrs before accessing them, no?
-
-> +	if (!dev_ok(nlctx))
-> +		return err_ret;
-> +
-> +	args->num_rings = mnl_attr_get_u8(tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT]);
-
-u32, not u8
-
-The correct value is combined + rx, I think I mentioned this before.
-
-> +	return MNL_CB_OK;
-
-I'm also not sure if fetching the channel info shouldn't be done over
-the nl2 socket, like the string set. If we are in monitor mode we may
-confuse ourselves trying to parse the wrong messages.
