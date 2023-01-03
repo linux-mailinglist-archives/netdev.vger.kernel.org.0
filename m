@@ -2,161 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB47865BCAF
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A60965BCD1
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 10:09:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237120AbjACJDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 04:03:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36530 "EHLO
+        id S233041AbjACJJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 04:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbjACJDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:03:03 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAB863EA;
-        Tue,  3 Jan 2023 01:03:01 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 1C6FB8521D;
-        Tue,  3 Jan 2023 10:02:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1672736579;
-        bh=W/cY0QMddmvfRRo7ab3mBCHH052GYIDTeJD+3SgNfWM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U/Cd6VIlx9Z7XB8qrSqof6k0LKyOmnMHQyOnWRXPOhZg4BrJ8jeBefOj4tZ5vkUYu
-         n9DfO6w/6+r1H/UkVUYQpDEwI/GRyzDRwoCHR1Q0HajSaNnA0TcjA30A8nY2izf0rU
-         GBDVn+FvZpdInffHr0nSTsgnEYnX3QuYDSSaW8XdZBzYPwQh7giyuqgTFrdBpiRlAt
-         SICYRXDHX93+JKEd0TvV2Xzvq1aIzGV+dlY2kHB8nNfaG0TINnI55Aop340hVcW1Hq
-         OuSE8M99f9tqWlCCmSdh08pq3uYdAl9lcDmT0est9vjkh33wYA6rOUolKFBKdHreal
-         YWBJ54LH5RXXA==
-Date:   Tue, 3 Jan 2023 10:02:51 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S231172AbjACJJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 04:09:13 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BD6D10D
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 01:09:11 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id m8-20020a05600c3b0800b003d96f801c48so20276399wms.0
+        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 01:09:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=q4VpH6JpHYPTb5N2QEbasH2uVz/byLh3cdPoaV+heNg=;
+        b=7mDgAIHeRGltGKdfPnbQWDWxMdgrISNNEmr8ZEWWLq07C+IEHgsYbgcR6k0zBYc/aO
+         H+7ZJ3ns8QTYMtH6GPC73xLC46L5SM21YFcSSi/WxokMkmUvkozmDpn5iVGQcqZOVaSe
+         PUAI/uJBK/8kkTOICrCLiHDyZ28Oi3SFFXFAhmfM6rPAHT6BsUsrj9L7wq+mfRDJyQBc
+         64qOneJttg7RjbsCl7R2yBGuCDPTdEbWfkOah9jk9qv8flepwSdUDbmBd8MfTv6nc8WV
+         dlD2o5/Uo8Nwo/9pLLNpLrvbEMvZc1N964hBMzHP1gDQdMuc1Cjj4RBx3SQlq+ktbGAR
+         JGkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=q4VpH6JpHYPTb5N2QEbasH2uVz/byLh3cdPoaV+heNg=;
+        b=PqIL2NCYzU6Z7ek3mDitqI7YSaLwc1qnCCOx84JH2HY9h1OmEvK5HqmBzC/rolomtq
+         5JUauCH1O/tnatCYKO+SVDKhMc8zRc1vrwCZsBrtK3QCvEow0mDVjLebTH/hWvP8vVaO
+         wqMgHWLGNjpwe8OJ1pV9vOJej4sgn+OpQx+wDzCJEasfZdKZIJ+hb8H55wRRu1H6Rynh
+         xmvDVwoRFlCMche1tDxBkcYzfuvGFfEbQMkosSf/q3LLVXh66NiIlVbAQRoqxoqBJz/U
+         HcOaltXaNBLMDCefyAqJS59GmaTW7rCCZl6ysW4FbZfzDSTmGpssYVtwhGWwrtVaELGC
+         IY6w==
+X-Gm-Message-State: AFqh2koLIYCyXekFuniKRhuqBEtUHUBaI3SjoP2JX521JlMhRwfmcWql
+        QjYWEXtixs9fm3fJnGFGTgAWIw==
+X-Google-Smtp-Source: AMrXdXthod9gNBtDKzM2/ooc897BFsfcfFr9DFrnqllE4RM8cMaiskR8rtfsDxEbCRXDVt3ZdpqNjw==
+X-Received: by 2002:a05:600c:18a1:b0:3d2:3ec4:7eed with SMTP id x33-20020a05600c18a100b003d23ec47eedmr33796593wmp.10.1672736950329;
+        Tue, 03 Jan 2023 01:09:10 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id z13-20020adff74d000000b002366f9bd717sm35847028wrp.45.2023.01.03.01.09.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Jan 2023 01:09:09 -0800 (PST)
+Date:   Tue, 3 Jan 2023 10:09:07 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Christoph Heiss <christoph@c8h4.io>
+Cc:     Chris Snook <chris.snook@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230103100251.08a5db46@wsk>
-In-Reply-To: <Y7M+mWMU+DJPYubp@lunn.ch>
-References: <20230102150209.985419-1-lukma@denx.de>
-        <Y7M+mWMU+DJPYubp@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Subject: Re: [PATCH net-next] net: alx: Switch to DEFINE_SIMPLE_DEV_PM_OPS()
+ and pm_sleep_ptr()
+Message-ID: <Y7PwsyuZKiQqIp9Z@nanopsycho>
+References: <20230102195118.1164280-1-christoph@c8h4.io>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/9.BKqFsmyEdbBXSEI.kZdf6";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230102195118.1164280-1-christoph@c8h4.io>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/9.BKqFsmyEdbBXSEI.kZdf6
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Mon, Jan 02, 2023 at 08:51:18PM CET, christoph@c8h4.io wrote:
+>Using these macros allows to remove an #ifdef-guard on CONFIG_PM_SLEEP.
+>No functional changes.
 
-Hi Andrew,
-
-> > @@ -3548,7 +3548,9 @@ static int mv88e6xxx_get_max_mtu(struct
-> > dsa_switch *ds, int port) if (chip->info->ops->port_set_jumbo_size)
-> >  		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN -
-> > ETH_FCS_LEN; else if (chip->info->ops->set_max_frame_size)
-> > -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN -
-> > ETH_FCS_LEN;
-> > +		return (max_t(int, chip->info->max_frame_size,
-> > 1632)
-> > +			- VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN);
-> > +
-> >  	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; =20
->=20
-> I would also prefer if all this if/else logic is removed, and the code
-> simply returned chip->info->max_frame_size - VLAN_ETH_HLEN -
-> EDSA_HLEN - ETH_FCS_LEN;
->=20
-
-So then the mv88e6xxx_get_max_mtu shall look like:
-
-WARN_ON_ONCE(!chip->info->max_frame_size)
-
-if (chip->info->ops->port_set_jumbo_size)
-...
-else=20
-    return chip->info->max_frame_size - VLAN_ETH_HLEN -
-	EDSA_HLEN - ETH_FCS_LEN;
-
-
-Or shall I put WARN_ON_ONCE to the mv88e6xxx_probe() function?
-
-
-The above approach is contrary to one proposed by Alexander, who wanted
-to improve the defensive approach in this driver (to avoid situation
-where the max_frame_size callback is not defined and max_frame_size
-member of *_info struct is not added by developer).
-
-Which approach is the recommended one for this driver?
-
-> > +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-> > @@ -132,6 +132,7 @@ struct mv88e6xxx_info {
-> >  	unsigned int num_gpio;
-> >  	unsigned int max_vid;
-> >  	unsigned int max_sid;
-> > +	unsigned int max_frame_size; =20
->=20
-> It might be worth adding a comment here what this value actually
-> represents.
-
-Ok. I will add proper comment.
-
-> We don't want any mixups where the value already has the
-> frame checksum removed for example.
-
-Could you be more specific here about this use case?
-
-The max_frame_size is the maximal size of the ethernet frame for which
-the IC designer provided specified amount of RAM (it is a different
-value for different SoCs in the Link Street family).
-
->=20
->       Andrew
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/9.BKqFsmyEdbBXSEI.kZdf6
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmOz7zsACgkQAR8vZIA0
-zr2lowgAss/SWaBTUUuUWNlYNG1/D6Y7eyGx+iKzOkejIVZ+ssV5J5ojMm3qIE5p
-PSF3+NXnUbb+H1fJGPGP3OhnWVYc6QSq4VOgSclTYxadKS11K9RpjiWtAbEVJOAs
-6FrY2RRNGOf/iz5OgXgWhV6BqWczgyCbL6FBkHvaXZv6dym80ROlRpkcT4LbABVI
-3ZZbz4BKBcxoKu+XfwVk/E7yYlefQ71i6n/tfTIK+x4iedQg2rLMlGaYPEkFhB3j
-OtCZWcJkKvCFfPq6+tHPKZNGCgNdI2dUk9hyS1StYXUVUEYfo67kkBKwBnZV0AGx
-3xG+vZFVNyFbiQKXKL8opPwv343KhQ==
-=bXsa
------END PGP SIGNATURE-----
-
---Sig_/9.BKqFsmyEdbBXSEI.kZdf6--
+Net-next is still closed. Please re-submit when it opens.
