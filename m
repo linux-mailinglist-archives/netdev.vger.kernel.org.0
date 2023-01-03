@@ -2,201 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D125A65C388
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 17:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB03765C38B
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 17:08:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237756AbjACQHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 11:07:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S238158AbjACQIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 11:08:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238048AbjACQGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 11:06:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A91C7
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 08:06:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672761959;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+        with ESMTP id S237750AbjACQH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 11:07:58 -0500
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4498A1274B;
+        Tue,  3 Jan 2023 08:07:55 -0800 (PST)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 303G7FEw010683;
+        Tue, 3 Jan 2023 17:07:20 +0100
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 2171E120CE0;
+        Tue,  3 Jan 2023 17:07:11 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1672762031; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/ZZuD56MEBx1Uz4wsJ7mk8SY27ZT7sFQ6kli2wOYT18=;
-        b=i8jxxJ/mRlF2utFt0GOLdhtfwYZor6voFDUmOGZIXoKfxrDfWXUVBUlMS+cDfiZIVCyXnV
-        aIz0hAKUXC3WUj5vs/RlY18fhUMMS9XCoT4W0RHafMNTnemNMSjekSVlkGOK4uQaND+Hzn
-        S5ItTFgBM8Uygh6pMt/k9BGCwmXjAaU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-657-88FOvGZZMFSoFQwVWZ_PGQ-1; Tue, 03 Jan 2023 11:05:56 -0500
-X-MC-Unique: 88FOvGZZMFSoFQwVWZ_PGQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8BCDF18F0244;
-        Tue,  3 Jan 2023 16:05:53 +0000 (UTC)
-Received: from [10.22.34.65] (unknown [10.22.34.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 02E5F4014EBE;
-        Tue,  3 Jan 2023 16:05:50 +0000 (UTC)
-Message-ID: <3e531d65-72a7-a82a-3d18-004aeab9144b@redhat.com>
-Date:   Tue, 3 Jan 2023 11:05:50 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [syzbot] WARNING: locking bug in inet_autobind
-Content-Language: en-US
-To:     Felix Kuehling <felix.kuehling@amd.com>,
-        syzbot <syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com>,
-        Alexander.Deucher@amd.com, Christian.Koenig@amd.com,
-        David1.Zhou@amd.com, Evan.Quan@amd.com, Harry.Wentland@amd.com,
-        Oak.Zeng@amd.com, Ray.Huang@amd.com, Yong.Zhao@amd.com,
-        airlied@linux.ie, amd-gfx@lists.freedesktop.org, ast@kernel.org,
-        boqun.feng@gmail.com, bpf@vger.kernel.org, daniel@ffwll.ch,
-        daniel@iogearbox.net, davem@davemloft.net,
-        dri-devel@lists.freedesktop.org, dsahern@kernel.org,
-        edumazet@google.com, gautammenghani201@gmail.com,
-        jakub@cloudflare.com, kafai@fb.com, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, ozeng@amd.com,
-        pabeni@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp,
-        peterz@infradead.org, rex.zhu@amd.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, will@kernel.org, yhs@fb.com,
-        yoshfuji@linux-ipv6.org
-References: <0000000000002ae67f05f0f191aa@google.com>
- <ea9c2977-f05f-3acd-ee3e-2443229b7b55@amd.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <ea9c2977-f05f-3acd-ee3e-2443229b7b55@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        bh=ponzqwujCMdHaLQwY9lHikWod3tMARwfE8YEJshdl/A=;
+        b=qe46ieEpr3ROhDlOWcethB2L4QKgD5B+j/cdgOtd1HkxKKqN7OnRFkAc3BJM/G2BKDf+5/
+        nq0mpAnLe+WlInDw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1672762031; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ponzqwujCMdHaLQwY9lHikWod3tMARwfE8YEJshdl/A=;
+        b=Q8qKGxOdwppg7R3buoVuurgB4AQtrrEJYjFDdsE5YW5hE46nOFNEEQqmyd/+7PlHC8I1Wk
+        q9lS70ffpliwc0xdOjpEfkcYujEdQ/N6WRQmoJ2kikdBLO5s/NtonVoDvF5vMT17peMKGs
+        9bxpXzB9N/W2CqnpzB/O5iWdVJChQkbDh2yJ5QZBAgDHL8pLpZrDSYsvKFV3kYbe6Prpki
+        VkU4V/HhdPVfqUl7WTgTq8pw2pa5a0zEgVnw63zzcEvzTCBaM5XLI0iuXqbm0Tw1FlYhD9
+        oklZxf0U67GEFQ5WKPDGKBg/QIBEygOEK4tfCBTlAir5ijl+RZLuQqPoclg45A==
+Date:   Tue, 3 Jan 2023 17:07:11 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Jonathan Maxwell <jmaxwell37@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
+Message-Id: <20230103170711.819921d40132494b4bfd6a0d@uniroma2.it>
+In-Reply-To: <CAGHK07Crj8s0wOivw62Q_N4Km6r1qsH-y-8YgfYhX-JJF6kZSA@mail.gmail.com>
+References: <20221218234801.579114-1-jmaxwell37@gmail.com>
+        <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+        <CAGHK07ALtLTjRP-XOepqoc8xzWcT8=0v5ccL-98f4+SU9vwfsg@mail.gmail.com>
+        <20221223212835.eb9d03f3f7db22360e34341d@uniroma2.it>
+        <CAGHK07APOwLvhs73WKkQfZuEy2FoKEWJusSyejKVcth4D47g=w@mail.gmail.com>
+        <CAGHK07Crj8s0wOivw62Q_N4Km6r1qsH-y-8YgfYhX-JJF6kZSA@mail.gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/3/23 10:39, Felix Kuehling wrote:
-> The regression point doesn't make sense. The kernel config doesn't 
-> enable CONFIG_DRM_AMDGPU, so there is no way that a change in AMDGPU 
-> could have caused this regression.
->
-I agree. It is likely a pre-existing problem or caused by another commit 
-that got triggered because of the change in cacheline alignment caused 
-by commit c0d9271ecbd ("drm/amdgpu: Delete user queue doorbell variable").
+Hi Jon,
+please see below, thanks.
 
-Cheers,
-Longman
+On Tue, 3 Jan 2023 10:59:50 +1100
+Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+
+> Hi Andrea,
+> 
+> Happy New Year.
+> 
+
+Thank you, Happy New Year to you too and everybody on the mailing list as well.
+
+> Any chance you could test this patch based on the latest net-next
+> kernel and let me know the result?
+> 
+> diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+> index 88ff7bb2bb9b..632086b2f644 100644
+> --- a/include/net/dst_ops.h
+> +++ b/include/net/dst_ops.h
+> @@ -16,7 +16,7 @@ struct dst_ops {
+>         unsigned short          family;
+>         unsigned int            gc_thresh;
+> 
+> -       int                     (*gc)(struct dst_ops *ops);
+> +       void                    (*gc)(struct dst_ops *ops);
+>         struct dst_entry *      (*check)(struct dst_entry *, __u32 cookie);
+>         unsigned int            (*default_advmss)(const struct dst_entry *);
+>         unsigned int            (*mtu)(const struct dst_entry *);
+> diff --git a/net/core/dst.c b/net/core/dst.c
+> index 6d2dd03dafa8..31c08a3386d3 100644
+> --- a/net/core/dst.c
+> +++ b/net/core/dst.c
+> @@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+> 
+>         if (ops->gc &&
+>             !(flags & DST_NOCOUNT) &&
+> -           dst_entries_get_fast(ops) > ops->gc_thresh) {
+> -               if (ops->gc(ops)) {
+> -                       pr_notice_ratelimited("Route cache is full:
+> consider increasing sysctl net.ipv6.route.max_size.\n");
+> -                       return NULL;
+> -               }
+> -       }
+> +           dst_entries_get_fast(ops) > ops->gc_thresh)
+> +               ops->gc(ops);
+> 
+>         dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+>         if (!dst)
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index e74e0361fd92..b643dda68d31 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct
+> dst_entry *);
+>  static void            ip6_dst_destroy(struct dst_entry *);
+>  static void            ip6_dst_ifdown(struct dst_entry *,
+>                                        struct net_device *dev, int how);
+> -static int              ip6_dst_gc(struct dst_ops *ops);
+> +static void             ip6_dst_gc(struct dst_ops *ops);
+> 
+>  static int             ip6_pkt_discard(struct sk_buff *skb);
+>  static int             ip6_pkt_discard_out(struct net *net, struct
+> sock *sk, struct sk_buff *skb);
+> @@ -3284,11 +3284,10 @@ struct dst_entry *icmp6_dst_alloc(struct
+> net_device *dev,
+>         return dst;
+>  }
+> 
+> -static int ip6_dst_gc(struct dst_ops *ops)
+> +static void ip6_dst_gc(struct dst_ops *ops)
+>  {
+>         struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
+>         int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
+> -       int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
+>         int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+>         int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+>         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+> @@ -3296,11 +3295,10 @@ static int ip6_dst_gc(struct dst_ops *ops)
+>         int entries;
+> 
+>         entries = dst_entries_get_fast(ops);
+> -       if (entries > rt_max_size)
+> +       if (entries > ops->gc_thresh)
+>                 entries = dst_entries_get_slow(ops);
+> 
+> -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> -           entries <= rt_max_size)
+> +       if (time_after(rt_last_gc + rt_min_interval, jiffies))
+>                 goto out;
+> 
+>         fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
+> @@ -3310,7 +3308,6 @@ static int ip6_dst_gc(struct dst_ops *ops)
+>  out:
+>         val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
+>         atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
+> -       return entries > rt_max_size;
+>  }
+> 
+>  static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
+> @@ -6512,7 +6509,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+>  #endif
+> 
+>         net->ipv6.sysctl.flush_delay = 0;
+> -       net->ipv6.sysctl.ip6_rt_max_size = 4096;
+> +       net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
+>         net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
+>         net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
+>         net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
+> 
+
+Yes, I will apply this patch in the next days and check how it deals with the
+seg6 subsystem. I will keep you posted.
+
+Ciao,
+Andrea
+
+> On Sat, Dec 24, 2022 at 6:38 PM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+> >
+> > On Sat, Dec 24, 2022 at 7:28 AM Andrea Mayer <andrea.mayer@uniroma2.it> wrote:
+> > >
+> > > Hi Jon,
+> > > please see below, thanks.
+> > >
+> > > On Wed, 21 Dec 2022 08:48:11 +1100
+> > > Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+> > >
+> > > > On Tue, Dec 20, 2022 at 11:35 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > >
+> > > > > On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
+> > > > > > Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
+> > > > > > route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
+> > > > > > consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
+> > > > > > these warnings:
+> > > > > >
+> > > > > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > > > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > > > > .
+> > > > > > .
+> > > > > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > > >
+> > > > > If I read correctly, the maximum number of dst that the raw socket can
+> > > > > use this way is limited by the number of packets it allows via the
+> > > > > sndbuf limit, right?
+> > > > >
+> > > >
+> > > > Yes, but in my test sndbuf limit is never hit so it clones a route for
+> > > > every packet.
+> > > >
+> > > > e.g:
+> > > >
+> > > > output from C program sending 5000000 packets via a raw socket.
+> > > >
+> > > > ip raw: total num pkts 5000000
+> > > >
+> > > > # bpftrace -e 'kprobe:dst_alloc {@count[comm] = count()}'
+> > > > Attaching 1 probe...
+> > > >
+> > > > @count[a.out]: 5000009
+> > > >
+> > > > > Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
+> > > > > ipvs, seg6?
+> > > > >
+> > > >
+> > > > Any call to ip6_pol_route(s) where no res.nh->fib_nh_gw_family is 0 can do it.
+> > > > But we have only seen this for raw sockets so far.
+> > > >
+> > >
+> > > In the SRv6 subsystem, the seg6_lookup_nexthop() is used by some
+> > > cross-connecting behaviors such as End.X and End.DX6 to forward traffic to a
+> > > specified nexthop. SRv6 End.X/DX6 can specify an IPv6 DA (i.e., a nexthop)
+> > > different from the one carried by the IPv6 header. For this purpose,
+> > > seg6_lookup_nexthop() sets the FLOWI_FLAG_KNOWN_NH.
+> > >
+> > Hi Andrea,
+> >
+> > Thanks for pointing that datapath out. The more generic approach we are
+> > taking bringing Ipv6 closer to Ipv4 in this regard should fix all instances
+> > of this.
+> >
+> > > > > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > > > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > > > > .
+> > > > > > .
+> > > > > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > >
+> > > I can reproduce the same warning messages reported by you, by instantiating an
+> > > End.X behavior whose nexthop is handled by a route for which there is no "via".
+> > > In this configuration, the ip6_pol_route() (called by seg6_lookup_nexthop())
+> > > triggers ip6_rt_cache_alloc() because i) the FLOWI_FLAG_KNOWN_NH is present ii)
+> > > and the res.nh->fib_nh_gw_family is 0 (as already pointed out).
+> > >
+> >
+> > Nice, when I get back after the holiday break I'll submit the next patch. It
+> > would be great if you could test the new patch and let me know how it works in
+> > your tests at that juncture. I'll keep you posted.
+> >
+> > Regards
+> >
+> > Jon
+> >
+> > > > Regards
+> > > >
+> > > > Jon
+> > >
+> > > Ciao,
+> > > Andrea
 
 
-> Regards,
->   Felix
->
->
-> Am 2022-12-29 um 01:26 schrieb syzbot:
->> syzbot has found a reproducer for the following issue on:
->>
->> HEAD commit:    1b929c02afd3 Linux 6.2-rc1
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=145c6a68480000
->> kernel config: 
->> https://syzkaller.appspot.com/x/.config?x=2651619a26b4d687
->> dashboard link: 
->> https://syzkaller.appspot.com/bug?extid=94cc2a66fc228b23f360
->> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU 
->> Binutils for Debian) 2.35.2
->> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=13e13e32480000
->> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=13790f08480000
->>
->> Downloadable assets:
->> disk image: 
->> https://storage.googleapis.com/syzbot-assets/d1849f1ca322/disk-1b929c02.raw.xz
->> vmlinux: 
->> https://storage.googleapis.com/syzbot-assets/924cb8aa4ada/vmlinux-1b929c02.xz
->> kernel image: 
->> https://storage.googleapis.com/syzbot-assets/8c7330dae0a0/bzImage-1b929c02.xz
->>
->> The issue was bisected to:
->>
->> commit c0d9271ecbd891cdeb0fad1edcdd99ee717a655f
->> Author: Yong Zhao <Yong.Zhao@amd.com>
->> Date:   Fri Feb 1 23:36:21 2019 +0000
->>
->>      drm/amdgpu: Delete user queue doorbell variables
->>
->> bisection log: 
->> https://syzkaller.appspot.com/x/bisect.txt?x=1433ece4a00000
->> final oops: https://syzkaller.appspot.com/x/report.txt?x=1633ece4a00000
->> console output: https://syzkaller.appspot.com/x/log.txt?x=1233ece4a00000
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the 
->> commit:
->> Reported-by: syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com
->> Fixes: c0d9271ecbd8 ("drm/amdgpu: Delete user queue doorbell variables")
->>
->> ------------[ cut here ]------------
->> Looking for class "l2tp_sock" with key l2tp_socket_class, but found a 
->> different class "slock-AF_INET6" with the same key
->> WARNING: CPU: 0 PID: 7280 at kernel/locking/lockdep.c:937 
->> look_up_lock_class+0x97/0x110 kernel/locking/lockdep.c:937
->> Modules linked in:
->> CPU: 0 PID: 7280 Comm: syz-executor835 Not tainted 
->> 6.2.0-rc1-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, 
->> BIOS Google 10/26/2022
->> RIP: 0010:look_up_lock_class+0x97/0x110 kernel/locking/lockdep.c:937
->> Code: 17 48 81 fa e0 e5 f6 8f 74 59 80 3d 5d bc 57 04 00 75 50 48 c7 
->> c7 00 4d 4c 8a 48 89 04 24 c6 05 49 bc 57 04 01 e8 a9 42 b9 ff <0f> 
->> 0b 48 8b 04 24 eb 31 9c 5a 80 e6 02 74 95 e8 45 38 02 fa 85 c0
->> RSP: 0018:ffffc9000b5378b8 EFLAGS: 00010082
->> RAX: 0000000000000000 RBX: ffffffff91c06a00 RCX: 0000000000000000
->> RDX: ffff8880292d0000 RSI: ffffffff8166721c RDI: fffff520016a6f09
->> RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
->> R10: 0000000080000201 R11: 20676e696b6f6f4c R12: 0000000000000000
->> R13: ffff88802a5820b0 R14: 0000000000000000 R15: 0000000000000000
->> FS:  00007f1fd7a97700(0000) GS:ffff8880b9800000(0000) 
->> knlGS:0000000000000000
->> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> CR2: 0000000020000100 CR3: 0000000078ab4000 CR4: 00000000003506f0
->> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> Call Trace:
->>   <TASK>
->>   register_lock_class+0xbe/0x1120 kernel/locking/lockdep.c:1289
->>   __lock_acquire+0x109/0x56d0 kernel/locking/lockdep.c:4934
->>   lock_acquire kernel/locking/lockdep.c:5668 [inline]
->>   lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
->>   __raw_spin_lock_bh include/linux/spinlock_api_smp.h:126 [inline]
->>   _raw_spin_lock_bh+0x33/0x40 kernel/locking/spinlock.c:178
->>   spin_lock_bh include/linux/spinlock.h:355 [inline]
->>   lock_sock_nested+0x5f/0xf0 net/core/sock.c:3473
->>   lock_sock include/net/sock.h:1725 [inline]
->>   inet_autobind+0x1a/0x190 net/ipv4/af_inet.c:177
->>   inet_send_prepare net/ipv4/af_inet.c:813 [inline]
->>   inet_send_prepare+0x325/0x4e0 net/ipv4/af_inet.c:807
->>   inet6_sendmsg+0x43/0xe0 net/ipv6/af_inet6.c:655
->>   sock_sendmsg_nosec net/socket.c:714 [inline]
->>   sock_sendmsg+0xd3/0x120 net/socket.c:734
->>   __sys_sendto+0x23a/0x340 net/socket.c:2117
->>   __do_sys_sendto net/socket.c:2129 [inline]
->>   __se_sys_sendto net/socket.c:2125 [inline]
->>   __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2125
->>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>   do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->>   entry_SYSCALL_64_after_hwframe+0x63/0xcd
->> RIP: 0033:0x7f1fd78538b9
->> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 15 00 00 90 48 89 f8 48 
->> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 
->> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
->> RSP: 002b:00007f1fd7a971f8 EFLAGS: 00000212 ORIG_RAX: 000000000000002c
->> RAX: ffffffffffffffda RBX: 00007f1fd78f0038 RCX: 00007f1fd78538b9
->> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
->> RBP: 00007f1fd78f0030 R08: 0000000020000100 R09: 000000000000001c
->> R10: 0000000004008000 R11: 0000000000000212 R12: 00007f1fd78f003c
->> R13: 00007f1fd79ffc8f R14: 00007f1fd7a97300 R15: 0000000000022000
->>   </TASK>
->>
->
-
+-- 
+Andrea Mayer <andrea.mayer@uniroma2.it>
