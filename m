@@ -2,198 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D18F65C058
-	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 13:56:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC49E65C07A
+	for <lists+netdev@lfdr.de>; Tue,  3 Jan 2023 14:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbjACMzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 07:55:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S237630AbjACNMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 08:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237508AbjACMzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 07:55:43 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BD110FFC;
-        Tue,  3 Jan 2023 04:55:28 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id r26so38439656edc.5;
-        Tue, 03 Jan 2023 04:55:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tZhfrGshmrL2XjyGozj/L+y57B2HE5giBujkZ+UBatQ=;
-        b=EHLVSHUXZje52gcBgeyRJJomOk68pUKnrJyutjXq6GglFWBol39uXidiqqvvqKqLVy
-         HTsVgcJg6ixKOQ9TJQrNDrfeIyNbPgTCNY9ZIHFnNrYdLDPirCZAMZ37rZM3IBVvPw0A
-         VAsoqy41SE6d2jhNMmdFIhqtYKKrM7E4szHzUudBRQLTrylYnGuS1tv0ZkqZf6hHwxUe
-         HFfDi2OuL16h4Y3dWDIcp1eLpZs2j0ywEhRhCCzyFJ/Loxl4SOT4GxJmMG9BXy5eP+lf
-         5/QRKX/+519Q/OclVK7vIu60lc8Ma9Y99g9Wrhe2KctQ+pZ4KWDfEbxSckWOqmnxTjQq
-         xkgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tZhfrGshmrL2XjyGozj/L+y57B2HE5giBujkZ+UBatQ=;
-        b=jITfVrFN9FEsYa7W4ygftI2z3dpCCe0ePzv0qtiAVCxZPIaeHkIe+PDgzkzOZum70f
-         3Bbls/lEE1A+T/JnRoA7M5WDaDlz/HVjNZhCG0WhAC/TettUYkKao15fWvFSRaGYWini
-         whBsixo/QUIuNySmUQZGCo8Rqay63ksf5LaVqNheXiZLWAvHOnOMRMU6Tm68fLoYDoRg
-         h73IS7m9V6/0Q9g2hfJUH6V6BH3gi+lGFNgYGFZ+9bSHrkAnEPWR3Nd6BNpxBK5qHrnz
-         K8QZi8ahXwHeIcHeEG9yhuHvM77wG7smlW7YqocvAL5EzImq5UK91jX8SSUijJHs62BW
-         mr2w==
-X-Gm-Message-State: AFqh2kohD0CBVcjvf+0RIlJsoshYjbXkt85olCs/6WcvxiVJIUxKr2Ao
-        XBYG9gcgRlN6dUFhieB2ugs=
-X-Google-Smtp-Source: AMrXdXti5XLFJjMZEMjQdQPbnWJWr8YLpqEFcuIcGyNRs9GtVvpKpc7evg9537XQJjCk7EbDB1if1Q==
-X-Received: by 2002:aa7:dd13:0:b0:461:e85e:39c7 with SMTP id i19-20020aa7dd13000000b00461e85e39c7mr34497789edv.1.1672750526787;
-        Tue, 03 Jan 2023 04:55:26 -0800 (PST)
-Received: from [10.158.37.55] ([193.47.165.251])
-        by smtp.gmail.com with ESMTPSA id lc14-20020a170906f90e00b0084cd6343a1dsm1583570ejb.40.2023.01.03.04.55.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Jan 2023 04:55:26 -0800 (PST)
-Message-ID: <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
-Date:   Tue, 3 Jan 2023 14:55:22 +0200
+        with ESMTP id S230459AbjACNMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 08:12:34 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F0FF5B4;
+        Tue,  3 Jan 2023 05:12:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672751553; x=1704287553;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=apcGmjYq/qVMK/WjGsO3bG5bvbvbn9MDx/JXtx/ypL0=;
+  b=U2fEygDPK5x4NNFMF3D9QNJIFtw+D6co/3p2bLe5WRitJR5kvR2sBAbj
+   3cm6uh3XNXyX7m9bv4gkeVErjIOrlg73CbzvxfGk1siOgIb8ab4PKWoSM
+   yG9AJoSmlre/PV0Ca/s2nfvm7QRfs4n7asNsnrpeT2KIwmlPtJYcb1nJO
+   1xXOEqj42PP1W4J8BtyaWh1asMSp7PBsFbIIB5bNDD+XW+KuhfuBYSedS
+   uEWlG1Iu8tXlaAxZStvaUL8j5tue0YGH8MEfemv5Qopw8bI9USDWAM//8
+   Myqr5z3ex4CQpDP6fpImzek8uQ4A+KtuHXPTWICrMIjw3p0dLypS8hu6M
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320367231"
+X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
+   d="scan'208";a="320367231"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 05:12:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="654781130"
+X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
+   d="scan'208";a="654781130"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 03 Jan 2023 05:12:28 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 70377162; Tue,  3 Jan 2023 15:13:00 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gene Chen <gene_chen@richtek.com>, linux-leds@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH v4 00/11] leds: deduplicate led_init_default_state_get()
+Date:   Tue,  3 Jan 2023 15:12:45 +0200
+Message-Id: <20230103131256.33894-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
- support xdp multibuffer
-Content-Language: en-US
-To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>, ast@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, toke@redhat.com, lorenzo.bianconi@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Andy Gospodarek <gospo@broadcom.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, gal@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
-References: <20220621175402.35327-1-gospo@broadcom.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220621175402.35327-1-gospo@broadcom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are several users of LED framework that reimplement the
+functionality of led_init_default_state_get(). In order to
+deduplicate them move the declaration to the global header
+(patch 2) and convert users (patche 3-11).
 
+Changelog v4:
+- added tags to patches 4, 5, 6, and 7 (Florian, AngeloGioacchino)
+- resent with Lee included in the Cc list (Lee)
 
-On 21/06/2022 20:54, Andy Gospodarek wrote:
-> This changes the section name for the bpf program embedded in these
-> files to "xdp.frags" to allow the programs to be loaded on drivers that
-> are using an MTU greater than PAGE_SIZE.  Rather than directly accessing
-> the buffers, the packet data is now accessed via xdp helper functions to
-> provide an example for those who may need to write more complex
-> programs.
-> 
-> v2: remove new unnecessary variable
-> 
+Changelog v3:
+- added tag to patch 11 (Kurt)
+- Cc'ed to Lee, who might help with LED subsystem maintenance
 
-Hi,
+Changelog v2:
+- added missed patch 2 and hence make it the series
+- appended tag to patch 7
+- new patch 1
 
-I'm trying to understand if there are any assumptions/requirements on 
-the length of the xdp_buf linear part when passed to XDP multi-buf programs?
-Can the linear part be empty, with all data residing in the fragments? 
-Is it valid?
+Andy Shevchenko (11):
+  leds: add missing includes and forward declarations in leds.h
+  leds: Move led_init_default_state_get() to the global header
+  leds: an30259a: Get rid of custom led_init_default_state_get()
+  leds: bcm6328: Get rid of custom led_init_default_state_get()
+  leds: bcm6358: Get rid of custom led_init_default_state_get()
+  leds: mt6323: Get rid of custom led_init_default_state_get()
+  leds: mt6360: Get rid of custom led_init_default_state_get()
+  leds: pca955x: Get rid of custom led_init_default_state_get()
+  leds: pm8058: Get rid of custom led_init_default_state_get()
+  leds: syscon: Get rid of custom led_init_default_state_get()
+  net: dsa: hellcreek: Get rid of custom led_init_default_state_get()
 
-Per the proposed pattern below (calling bpf_xdp_load_bytes() to memcpy 
-packet data into a local buffer), no such assumption is required, and an 
-xdp_buf created by the driver with an empty linear part is valid.
+ drivers/leds/flash/leds-mt6360.c           | 38 +++--------------
+ drivers/leds/leds-an30259a.c               | 21 ++--------
+ drivers/leds/leds-bcm6328.c                | 49 +++++++++++-----------
+ drivers/leds/leds-bcm6358.c                | 32 +++++++-------
+ drivers/leds/leds-mt6323.c                 | 30 ++++++-------
+ drivers/leds/leds-pca955x.c                | 26 +++---------
+ drivers/leds/leds-pm8058.c                 | 29 ++++++-------
+ drivers/leds/leds-syscon.c                 | 49 ++++++++++------------
+ drivers/leds/leds.h                        |  1 -
+ drivers/net/dsa/hirschmann/hellcreek_ptp.c | 45 ++++++++++----------
+ include/linux/leds.h                       | 15 ++++---
+ 11 files changed, 143 insertions(+), 192 deletions(-)
 
-However, in the _xdp_tx_iptunnel example program, it fails (returns 
-XDP_DROP) in case the headers are not in the linear part.
+-- 
+2.35.1
 
-Regards,
-Tariq
-
-> Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->   samples/bpf/xdp1_kern.c            | 11 ++++++++---
->   samples/bpf/xdp2_kern.c            | 11 ++++++++---
->   samples/bpf/xdp_tx_iptunnel_kern.c |  2 +-
->   3 files changed, 17 insertions(+), 7 deletions(-)
-> 
-> diff --git a/samples/bpf/xdp1_kern.c b/samples/bpf/xdp1_kern.c
-> index f0c5d95084de..0a5c704badd0 100644
-> --- a/samples/bpf/xdp1_kern.c
-> +++ b/samples/bpf/xdp1_kern.c
-> @@ -39,11 +39,13 @@ static int parse_ipv6(void *data, u64 nh_off, void *data_end)
->   	return ip6h->nexthdr;
->   }
->   
-> -SEC("xdp1")
-> +#define XDPBUFSIZE	64
-> +SEC("xdp.frags")
->   int xdp_prog1(struct xdp_md *ctx)
->   {
-> -	void *data_end = (void *)(long)ctx->data_end;
-> -	void *data = (void *)(long)ctx->data;
-> +	__u8 pkt[XDPBUFSIZE] = {};
-> +	void *data_end = &pkt[XDPBUFSIZE-1];
-> +	void *data = pkt;
->   	struct ethhdr *eth = data;
->   	int rc = XDP_DROP;
->   	long *value;
-> @@ -51,6 +53,9 @@ int xdp_prog1(struct xdp_md *ctx)
->   	u64 nh_off;
->   	u32 ipproto;
->   
-> +	if (bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt)))
-> +		return rc;
-> +
->   	nh_off = sizeof(*eth);
->   	if (data + nh_off > data_end)
->   		return rc;
-> diff --git a/samples/bpf/xdp2_kern.c b/samples/bpf/xdp2_kern.c
-> index d8a64ab077b0..3332ba6bb95f 100644
-> --- a/samples/bpf/xdp2_kern.c
-> +++ b/samples/bpf/xdp2_kern.c
-> @@ -55,11 +55,13 @@ static int parse_ipv6(void *data, u64 nh_off, void *data_end)
->   	return ip6h->nexthdr;
->   }
->   
-> -SEC("xdp1")
-> +#define XDPBUFSIZE	64
-> +SEC("xdp.frags")
->   int xdp_prog1(struct xdp_md *ctx)
->   {
-> -	void *data_end = (void *)(long)ctx->data_end;
-> -	void *data = (void *)(long)ctx->data;
-> +	__u8 pkt[XDPBUFSIZE] = {};
-> +	void *data_end = &pkt[XDPBUFSIZE-1];
-> +	void *data = pkt;
->   	struct ethhdr *eth = data;
->   	int rc = XDP_DROP;
->   	long *value;
-> @@ -67,6 +69,9 @@ int xdp_prog1(struct xdp_md *ctx)
->   	u64 nh_off;
->   	u32 ipproto;
->   
-> +	if (bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt)))
-> +		return rc;
-> +
->   	nh_off = sizeof(*eth);
->   	if (data + nh_off > data_end)
->   		return rc;
-> diff --git a/samples/bpf/xdp_tx_iptunnel_kern.c b/samples/bpf/xdp_tx_iptunnel_kern.c
-> index 575d57e4b8d6..0e2bca3a3fff 100644
-> --- a/samples/bpf/xdp_tx_iptunnel_kern.c
-> +++ b/samples/bpf/xdp_tx_iptunnel_kern.c
-> @@ -212,7 +212,7 @@ static __always_inline int handle_ipv6(struct xdp_md *xdp)
->   	return XDP_TX;
->   }
->   
-> -SEC("xdp_tx_iptunnel")
-> +SEC("xdp.frags")
->   int _xdp_tx_iptunnel(struct xdp_md *xdp)
->   {
->   	void *data_end = (void *)(long)xdp->data_end;
