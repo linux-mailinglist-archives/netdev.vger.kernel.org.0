@@ -2,194 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D4865D7CB
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 17:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C84965D7E3
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 17:08:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbjADQCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 11:02:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
+        id S235387AbjADQH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 11:07:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbjADQCv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 11:02:51 -0500
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6792CB01;
-        Wed,  4 Jan 2023 08:02:50 -0800 (PST)
-Received: by mail-qt1-f172.google.com with SMTP id z12so27529950qtv.5;
-        Wed, 04 Jan 2023 08:02:50 -0800 (PST)
+        with ESMTP id S235269AbjADQHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 11:07:54 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E072818E20;
+        Wed,  4 Jan 2023 08:07:52 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id kw15so83620183ejc.10;
+        Wed, 04 Jan 2023 08:07:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=2ejNWmUVKzv6qd8rLkoL3Pzd4W2kPQ/FppYN+juVc8Q=;
+        b=J/Rj73/PMMXzGDA1AflmrcliuQUFXdrSsVsCzOeGfL4B0v7eO8LTGTZCNnr6lfNrSZ
+         LtJi4U+zhiGXTC868O0SZO2EgLuHOCNXKKzuypUikmB1RuLq6hpRpo7LVWVjuOumvh0Z
+         AGFEXBq7mZYK8vxYJH0d/1T73DVbWeuCSh+dzMYmFjWRoKAvbGxFFBIHFp3Xlr8uXRgV
+         P23FJV7QxaSQkXE45EhTsAl5qvEkojIZBNSbV1dMoYflNuyKwo2BlIsf+4ZD9efJvjKJ
+         TMtk/gu/zXDWJe49/KQVx+nL3ByIGr3T+3QWNJqqO3A7noqxylSsCtn2NF9Bgt2nwoPj
+         +f8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qwSsj6dKaBLyzBS+oljx3z67n7iA+If7j6wt5yj7OGk=;
-        b=fgrZ6ee2emsMmV5mzuKTPj+vr4xNyvDPDSRQc4vaHvZ7pFPfOG3KbV08DVpoXMbNSR
-         bjvGkQGMLQ3flRB6dmt75TpznlwgwcgkdnN1Qmin0LNxUDH/8bncGZINoNr8r3K4F2lf
-         8FlSaG/hEjzMaQDEKN4RJ5ctDhACqEvHyb3YmONivmsisdJ2zerx3bIn3JkoTlbXFhYl
-         zAJr3QfK9WQiSUmhrahxcvv4wAqDRo+gZte21fPcE+Z1HYmPoblaBvN6EfUFeM4XoWDX
-         3gSvfVNWO2yb8q1ghMwqrNxPpvtqAoiai2Ss6VvQBuvVNo8GulPo22WYf3XjR1W7iHEQ
-         XvWw==
-X-Gm-Message-State: AFqh2kpdwWyetDEvW87cFrUwUGuXtjKQ6nCpup5Yo3IJdAk1QEHY95//
-        YJDdZ9Q9KAJqrMz7BemjzVs=
-X-Google-Smtp-Source: AMrXdXuMglJVXwPAb6rs5TQsBK2qJgPizgdczySE1YEsATFGWEriPNwr0oOzc96UlJ9LEqSbLw7X3w==
-X-Received: by 2002:ac8:4a07:0:b0:3a5:8084:9f60 with SMTP id x7-20020ac84a07000000b003a580849f60mr67619083qtq.64.1672848169338;
-        Wed, 04 Jan 2023 08:02:49 -0800 (PST)
-Received: from maniforge.lan ([2620:10d:c091:480::1:7c6c])
-        by smtp.gmail.com with ESMTPSA id t1-20020ac865c1000000b003a7e4129f83sm19996524qto.85.2023.01.04.08.02.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 08:02:48 -0800 (PST)
-Date:   Wed, 4 Jan 2023 10:02:48 -0600
-From:   David Vernet <void@manifault.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 01/17] bpf: Document XDP RX metadata
-Message-ID: <Y7WjKNv10wt0GZ6y@maniforge.lan>
-References: <20221220222043.3348718-1-sdf@google.com>
- <20221220222043.3348718-2-sdf@google.com>
- <Y6x7+BL7eWERwpGy@maniforge.lan>
- <CAKH8qBs8+gUekdNDRKnU1hg8gCB4Q29eMBhF2NeTT7Y1pyitQQ@mail.gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2ejNWmUVKzv6qd8rLkoL3Pzd4W2kPQ/FppYN+juVc8Q=;
+        b=o/EGvYG67VB+lZt0ILpOkCV7M8J4n4HNOjZXTR1UQA7pZrIU30TiMnyCrbBWdvkI8C
+         yH+j28beKTytEQEhzZya8Yz2UIqlqoqs3we5LQLTjKyG70kiwqcyNb0cfJH4jt1Up46r
+         odQG6DjwS8OQS8+kBdppkxiCWvnV0cDxSxdWm3F/DJ/U7hJwqWmUkcta5dzrRfgN2vnD
+         cu8Sp6Bp4ewaf3NE1qaznEVSVi5+EWnHvya13H+e9bLZzr5A7DFX0bxchBCpMgPmkyzv
+         38E7GW/UU885U8NAzZ04d5+DegWxMPK2s3qt0hHlxu0mB+8zvg96A5YBkqzujk7jA0ML
+         Fihw==
+X-Gm-Message-State: AFqh2kr5NAelW7w0kn/xEA7OmS4NP1WHjE5GeL4aAL2uzrxgi4PkQelr
+        vQpgzAcZjH8iYIRPDzTLWdS+tzF+/FJhV6Dc10o=
+X-Google-Smtp-Source: AMrXdXuQRmCSfRaOEdJCZIrCcUOnz+Xb8K4QYSu4moaSSdC2g9go8yZV9lt4/XJDzHYAz7yGF5eUJncC4Oz8wY6aS9w=
+X-Received: by 2002:a17:906:26d2:b0:7c1:36:8ffe with SMTP id
+ u18-20020a17090626d200b007c100368ffemr3304851ejc.725.1672848471417; Wed, 04
+ Jan 2023 08:07:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKH8qBs8+gUekdNDRKnU1hg8gCB4Q29eMBhF2NeTT7Y1pyitQQ@mail.gmail.com>
-User-Agent: Mutt/2.2.9 (2022-11-12)
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
+ <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
+ <92eb7dfa8b7d447e966a2751e174b642@realtek.com> <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
+ <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
+ <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com> <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
+ <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com> <ec6a0988f3f943128e0122d50959185a@AcuMS.aculab.com>
+In-Reply-To: <ec6a0988f3f943128e0122d50959185a@AcuMS.aculab.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Wed, 4 Jan 2023 17:07:40 +0100
+Message-ID: <CAFBinCC9sNvQJcu-SOSrFmo4sCx29K6KwXnc-O6MX9TJEHtXYg@mail.gmail.com>
+Subject: Re: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tehuang@realtek.com" <tehuang@realtek.com>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 03, 2023 at 02:23:03PM -0800, Stanislav Fomichev wrote:
-> On Wed, Dec 28, 2022 at 9:25 AM David Vernet <void@manifault.com> wrote:
+On Wed, Jan 4, 2023 at 4:53 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Martin Blumenstingl
+> > Sent: 04 January 2023 15:30
 > >
-> > On Tue, Dec 20, 2022 at 02:20:27PM -0800, Stanislav Fomichev wrote:
-> > > Document all current use-cases and assumptions.
+> > Hi Ping-Ke, Hi David,
+> >
+> > On Sun, Jan 1, 2023 at 2:09 PM Ping-Ke Shih <pkshih@realtek.com> wrote:
+> > [...]
+> > > Yes, it should not use bit filed. Instead, use a __le16 for all fields, such as
+> > I think this can be done in a separate patch.
+> > My v2 of this patch has reduced these changes to a minimum, see [0]
+> >
+> > [...]
+> > > struct rtw8821ce_efuse {
+> > >    ...
+> > >    u8 data1;       // offset 0x100
+> > >    __le16 data2;   // offset 0x101-0x102
+> > >    ...
+> > > } __packed;
 > > >
-> > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > Cc: David Ahern <dsahern@gmail.com>
-> > > Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > Cc: Willem de Bruijn <willemb@google.com>
-> > > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> > > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> > > Cc: Maryam Tahhan <mtahhan@redhat.com>
-> > > Cc: xdp-hints@xdp-project.net
-> > > Cc: netdev@vger.kernel.org
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  Documentation/networking/index.rst           |   1 +
-> > >  Documentation/networking/xdp-rx-metadata.rst | 107 +++++++++++++++++++
-> > >  2 files changed, 108 insertions(+)
-> > >  create mode 100644 Documentation/networking/xdp-rx-metadata.rst
-> > >
-> > > diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-> > > index 4f2d1f682a18..4ddcae33c336 100644
-> > > --- a/Documentation/networking/index.rst
-> > > +++ b/Documentation/networking/index.rst
-> > > @@ -120,6 +120,7 @@ Refer to :ref:`netdev-FAQ` for a guide on netdev development process specifics.
-> > >     xfrm_proc
-> > >     xfrm_sync
-> > >     xfrm_sysctl
-> > > +   xdp-rx-metadata
-> > >
-> > >  .. only::  subproject and html
-> > >
-> > > diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
-> > > new file mode 100644
-> > > index 000000000000..37e8192d9b60
-> > > --- /dev/null
-> > > +++ b/Documentation/networking/xdp-rx-metadata.rst
-> >
-> > Hey Stanislav,
-> >
-> > This is looking excellent. Left a few more minor comments and
-> > suggestions.
-> >
-> > > @@ -0,0 +1,107 @@
-> > > +===============
-> > > +XDP RX Metadata
-> > > +===============
-> > > +
-> > > +This document describes how an XDP program can access hardware metadata
-> >
-> > In similar fashion to LWN articles, can we spell out what XDP means the
-> > first time it's used, e.g.:
-> >
-> > ...describes how an eXpress Data Path (XDP) program...
-> >
-> > In general this applies to other acronyms unless they're super obvious,
-> > like "CPU" (thanks for already having done it for XSK).
-> 
-> Sure. Hopefully no need to explain RX below? Don't see anything else..
-> LMK if I missed something
+> > > Without __packed, compiler could has pad between data1 and data2,
+> > > and then get wrong result.
+> > My understanding is that this is the reason why we need __packed.
+>
+> True, but does it really have to look like that?
+> I can't find that version (I don't have a net_next tree).
+My understanding is that there's one actual and one potential use-case.
+Let's start with the actual one in
+drivers/net/wireless/realtek/rtw88/rtw8821c.h:
+  struct rtw8821c_efuse {
+      __le16 rtl_id;
+      u8 res0[0x0e];
+      ...
 
-Yeah, I think we can forego RX.
+The second one is a potential one, also in
+drivers/net/wireless/realtek/rtw88/rtw8821c.h if we replace the
+bitfields by an __le16 (which is my understanding how the data is
+modeled in the eFuse):
+  struct rtw8821ce_efuse {
+      ...
+      u8 serial_number[8];
+      __le16 cap_data; /* 0xf4 */
+      ...
+(I'm not sure about the "cap_data" name, but I think you get the point)
 
-> 
-> > > +related to a packet using a set of helper functions, and how it can pass
-> > > +that metadata on to other consumers.
-> > > +
-> > > +General Design
-> > > +==============
-> > > +
-> > > +XDP has access to a set of kfuncs to manipulate the metadata in an XDP frame.
-> > > +Every device driver that wishes to expose additional packet metadata can
-> > > +implement these kfuncs. The set of kfuncs is declared in ``include/net/xdp.h``
-> > > +via ``XDP_METADATA_KFUNC_xxx``.
-> > > +
-> > > +Currently, the following kfuncs are supported. In the future, as more
-> > > +metadata is supported, this set will grow:
-> > > +
-> > > +- ``bpf_xdp_metadata_rx_timestamp`` returns a packet's RX timestamp
-> > > +- ``bpf_xdp_metadata_rx_hash`` returns a packet's RX hash
-> >
-> > So, I leave this up to you as to whether or not you want to do this, but
-> > there is a built-in mechanism in sphinx that converts doxygen comments
-> > to rendered documentation for a function, struct, etc, and also
-> > automatically links other places in documentation where the function is
-> > referenced. See [0] for an example of this in code, and [1] for an
-> > example of how it's rendered.
-> >
-> > [0]: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/Documentation/bpf/kfuncs.rst#n239
-> > [1]: https://docs.kernel.org/bpf/kfuncs.html#c.bpf_task_acquire
-> >
-> > So you would do something like add function headers to the kfuncs, and
-> > then do:
-> >
-> > .. kernel-doc:: net/core/xdp.c
-> >    :identifiers: bpf_xdp_metadata_rx_timestamp bpf_xdp_metadata_rx_hash
-> >
-> > At some point we will need a consistent story for how we document
-> > kfuncs. That's not set in stone yet, which is why I'm saying it's up to
-> > you whether or not you want to do this or just leave it as teletype with
-> > a written description next to it.  Later on when we settle on a
-> > documentation story for kfuncs, we can update all of them to be
-> > documented in the same way.
-> 
-> Let me try and see how it looks in the html doc. I like the idea of
-> referencing the code directly, hopefully less chance it goes stale.
+> Possibly it should be 'u8 data2[2];'
+So you're saying we should replace the __le16 with u8 some_name[2];
+instead, then we don't need the __packed attribute.
 
-Sounds good!
+> What you may want to do is add compile-time asserts for the
+> sizes of the structures.
+Do I get you right that something like:
+  BUILD_BUG_ON(sizeof(rtw8821c_efuse) != 256);
+is what you have in mind?
 
-[...]
 
-Thanks for making all these changes.
 
-- David
+Best regards,
+Martin
