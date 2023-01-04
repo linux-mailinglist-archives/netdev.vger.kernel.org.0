@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2096E65CC47
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 05:17:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02C2A65CC53
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 05:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238688AbjADERF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 23:17:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
+        id S238779AbjADERP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 23:17:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238441AbjADEQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 23:16:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96E6167FD
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 20:16:50 -0800 (PST)
+        with ESMTP id S238547AbjADEQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 23:16:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636781705D
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 20:16:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74FEC60B7F
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02709C43396;
-        Wed,  4 Jan 2023 04:16:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 116B9B811E0
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F93BC43392;
+        Wed,  4 Jan 2023 04:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1672805810;
-        bh=kBNSh+yuNVz7m0ROmk4xpu5N5L4yNDxCauR/AkasrbI=;
+        bh=Djq7oIZ+dFtDZ+4xbGlNyLLkBZO6yAI76Jz7mcHncRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FUKxANcXe84eNwaKMEvN00HJR4len3+gg6bUMqF97DI853RXrhTSOvT1WsZzoN0YN
-         N4+yvBTwDH0CuE+HRsFICfvlo0VVd2dS9kmkW92p7Bt3wvWW8wI/Gk34nR+ZQzKMob
-         yN4WgiZTgpzOhjOhzEziMfL0MBp0Ui/ItvH2S1NA4vjJqX0OeSr1dOvnzfxGzpVA7v
-         gEGg9yR+QLMF1X83oCM4TyP5fXKE7GL3KgRMNjmurtlVO9GMGGS6fOdvKIpiy+6Oj3
-         C/fMelBHFWXF4/698Q6ya6dUnYdWySrR49rxzjAhv1hS6ppmXWHm2JiqhQL7mukBie
-         WtA0UbT9ix7DA==
+        b=m4O94YP/uyeThXCukBASd8Kpquz7c0uQofZOWnZGDEFh78EMLGp8KNZz1tV4Zu262
+         8H4gJ+66UTxYk6A3qqjyrXA+EXIKuaFhvDpt1S883ttuAwEd5EsBf5IM+Sy89cEtxB
+         RNjBW5wjzC58liccMrzO1jruYkDHljfpxkxsiauHKKy/p9fBcU9k9W8ZFWi47+w54O
+         xOpuVdRz4QynI5l18yCBkJR9YQYx1oTbkb6/20htikCkg+FszcY9o5lXJMQxtqq3Hy
+         pq4E3gK0K3ZvlQXwyL8wGL5TKn6K9xTobk9iOo4TSCKO+7+ZyZToqsGRK8XAHHH4YE
+         RcxuNRgR2aOLg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jacob.e.keller@intel.com, jiri@resnulli.us,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 11/14] devlink: restart dump based on devlink instance ids (function)
-Date:   Tue,  3 Jan 2023 20:16:33 -0800
-Message-Id: <20230104041636.226398-12-kuba@kernel.org>
+Subject: [PATCH net-next 12/14] devlink: uniformly take the devlink instance lock in the dump loop
+Date:   Tue,  3 Jan 2023 20:16:34 -0800
+Message-Id: <20230104041636.226398-13-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230104041636.226398-1-kuba@kernel.org>
 References: <20230104041636.226398-1-kuba@kernel.org>
@@ -53,144 +53,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use xarray id for cases of sub-objects which are iterated in
-a function.
+Move the lock taking out of devlink_nl_cmd_region_get_devlink_dumpit().
+This way all dumps will take the instance lock in the main iteration
+loop directly, making refactoring and reading the code easier.
 
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/devlink/leftover.c | 41 +++++++++++++++++++++--------------------
- 1 file changed, 21 insertions(+), 20 deletions(-)
+ net/devlink/leftover.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 028a763feb50..d01089b65ddc 100644
+index d01089b65ddc..c6ad8133fc23 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -2547,12 +2547,12 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
- 	struct devlink *devlink;
--	struct devlink_sb *devlink_sb;
--	unsigned long index;
--	int idx = 0;
- 	int err = 0;
+@@ -6050,9 +6050,8 @@ static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
+ 	struct devlink_region *region;
+ 	struct devlink_port *port;
+ 	unsigned long port_index;
+-	int err = 0;
++	int err;
  
--	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
-+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-+		struct devlink_sb *devlink_sb;
-+		int idx = 0;
-+
- 		if (!devlink->ops->sb_pool_get)
- 			goto retry;
+-	devl_lock(devlink);
+ 	list_for_each_entry(region, &devlink->region_list, list) {
+ 		if (*idx < start) {
+ 			(*idx)++;
+@@ -6064,7 +6063,7 @@ static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
+ 					     cb->nlh->nlmsg_seq,
+ 					     NLM_F_MULTI, region);
+ 		if (err)
+-			goto out;
++			return err;
+ 		(*idx)++;
+ 	}
  
-@@ -2567,6 +2567,7 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
- 			} else if (err) {
- 				devl_unlock(devlink);
- 				devlink_put(devlink);
-+				dump->idx = idx;
- 				goto out;
- 			}
- 		}
-@@ -2578,7 +2579,6 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
- 	if (err != -EMSGSIZE)
- 		return err;
+@@ -6072,12 +6071,10 @@ static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
+ 		err = devlink_nl_cmd_region_get_port_dumpit(msg, cb, port, idx,
+ 							    start);
+ 		if (err)
+-			goto out;
++			return err;
+ 	}
  
--	dump->idx = idx;
- 	return msg->len;
+-out:
+-	devl_unlock(devlink);
+-	return err;
++	return 0;
  }
  
-@@ -2762,12 +2762,12 @@ static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
- 	struct devlink *devlink;
--	struct devlink_sb *devlink_sb;
--	unsigned long index;
--	int idx = 0;
- 	int err = 0;
+ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
+@@ -6090,8 +6087,10 @@ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
+ 	devlink_dump_for_each_instance_get(msg, dump, devlink) {
+ 		int idx = 0;
  
--	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
-+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-+		struct devlink_sb *devlink_sb;
-+		int idx = 0;
-+
- 		if (!devlink->ops->sb_port_pool_get)
- 			goto retry;
- 
-@@ -2782,6 +2782,7 @@ static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
- 			} else if (err) {
- 				devl_unlock(devlink);
- 				devlink_put(devlink);
-+				dump->idx = idx;
- 				goto out;
- 			}
- 		}
-@@ -2793,7 +2794,6 @@ static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
- 	if (err != -EMSGSIZE)
- 		return err;
- 
--	dump->idx = idx;
- 	return msg->len;
- }
- 
-@@ -3005,12 +3005,12 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
- 	struct devlink *devlink;
--	struct devlink_sb *devlink_sb;
--	unsigned long index;
--	int idx = 0;
- 	int err = 0;
- 
--	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
-+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-+		struct devlink_sb *devlink_sb;
-+		int idx = 0;
-+
- 		if (!devlink->ops->sb_tc_pool_bind_get)
- 			goto retry;
- 
-@@ -3025,6 +3025,7 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- 			} else if (err) {
- 				devl_unlock(devlink);
- 				devlink_put(devlink);
-+				dump->idx = idx;
- 				goto out;
- 			}
- 		}
-@@ -3036,7 +3037,6 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- 	if (err != -EMSGSIZE)
- 		return err;
- 
--	dump->idx = idx;
- 	return msg->len;
- }
- 
-@@ -6085,19 +6085,20 @@ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
- 	struct devlink *devlink;
--	unsigned long index;
--	int idx = 0;
- 	int err = 0;
- 
--	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
-+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-+		int idx = 0;
-+
++		devl_lock(devlink);
  		err = devlink_nl_cmd_region_get_devlink_dumpit(msg, cb, devlink,
  							       &idx, dump->idx);
++		devl_unlock(devlink);
  		devlink_put(devlink);
--		if (err)
-+		if (err) {
-+			dump->idx = idx;
- 			goto out;
-+		}
- 	}
- out:
--	dump->idx = idx;
- 	return msg->len;
- }
- 
+ 		if (err) {
+ 			dump->idx = idx;
 -- 
 2.38.1
 
