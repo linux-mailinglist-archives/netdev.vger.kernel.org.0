@@ -2,334 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B95C865D3DC
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 14:10:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7B565D3C8
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 14:08:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239391AbjADNJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 08:09:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
+        id S233825AbjADNHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 08:07:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239399AbjADNIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 08:08:43 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BAF3FA34;
-        Wed,  4 Jan 2023 05:07:40 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 675C0188451F;
-        Wed,  4 Jan 2023 13:07:38 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 5487E250007B;
-        Wed,  4 Jan 2023 13:07:38 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 4A3F291201E4; Wed,  4 Jan 2023 13:07:38 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id EF2999EC000D;
-        Wed,  4 Jan 2023 13:07:37 +0000 (UTC)
-From:   "Hans J. Schultz" <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB implementation
-Date:   Wed,  4 Jan 2023 14:06:03 +0100
-Message-Id: <20230104130603.1624945-4-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230104130603.1624945-1-netdev@kapio-technology.com>
-References: <20230104130603.1624945-1-netdev@kapio-technology.com>
+        with ESMTP id S239292AbjADNGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 08:06:50 -0500
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070AA395C3;
+        Wed,  4 Jan 2023 05:06:23 -0800 (PST)
+Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 304BjZfF013293;
+        Wed, 4 Jan 2023 05:06:16 -0800
+Received: from ala-exchng02.corp.ad.wrs.com (unknown-82-254.windriver.com [147.11.82.254])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3mth87tbv9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 04 Jan 2023 05:06:16 -0800
+Received: from ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) by
+ ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 4 Jan 2023 05:06:15 -0800
+Received: from pek-lpd-ccm6.wrs.com (147.11.136.210) by
+ ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Wed, 4 Jan 2023 05:06:13 -0800
+From:   Dongyang <dongyang626@gmail.com>
+To:     <eric.dumazet@gmail.com>, <sargun@sargun.me>
+CC:     <brucec@netflix.com>, <ghartmann@netflix.com>,
+        <hannes@stressinduktion.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <penguin-kernel@i-love.sakura.ne.jp>,
+        <rgulewich@netflix.com>, <dongyang626@gmail.com>
+Subject: Re: Deadlock in cleanup_net and addrconf_verify_work locks up workqueue
+Date:   Wed, 4 Jan 2023 21:06:12 +0800
+Message-ID: <20230104130612.1361350-1-dongyang626@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <75e34850-54f5-6d08-e4f9-dd6e1e9ee09d@gmail.com>
+References: <75e34850-54f5-6d08-e4f9-dd6e1e9ee09d@gmail.com>
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-ORIG-GUID: gxFvnkUrMpq_PVicKZoRuvvxea8O_0Z4
+X-Proofpoint-GUID: gxFvnkUrMpq_PVicKZoRuvvxea8O_0Z4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-04_07,2023-01-04_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ priorityscore=1501 clxscore=1034 mlxscore=0 suspectscore=0 phishscore=0
+ mlxlogscore=816 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301040111
+X-Spam-Status: No, score=-0.0 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implementation for the Marvell mv88e6xxx chip series, is based on
-handling ATU miss violations occurring when packets ingress on a port
-that is locked with learning on. This will trigger a
-SWITCHDEV_FDB_ADD_TO_BRIDGE event, which will result in the bridge module
-adding a locked FDB entry. This bridge FDB entry will not age out as
-it has the extern_learn flag set.
+Hello guys,
 
-Userspace daemons can listen to these events and either accept or deny
-access for the host, by either replacing the locked FDB entry with a
-simple entry or leave the locked entry.
+At the beginning of the New Year, I also encountered this issue.  
 
-If the host MAC address is already present on another port, a ATU
-member violation will occur, but to no real effect, and the packet will
-be dropped in hardware. Statistics on these violations can be shown with
-the command and example output of interest:
+Hi Sargun, 
+Did you finally resolve this issue?  As it was passed ~3 years, hope you still remember something about this case, thanks. 
 
-ethtool -S ethX
-NIC statistics:
-...
-     atu_member_violation: 5
-     atu_miss_violation: 23
-...
+Hi Eric,
+Below is my log, please let me give some feedback about your previous comments. Thanks.
 
-Where ethX is the interface of the MAB enabled port.
+Jan  1 00:06:30 kernel: [109121.968881] 000: perf: interrupt took too long (3914 > 3912), lowering kernel.perf_event_max_sample_rate to 51000
+Jan  2 00:00:06 kernel: [195138.235171] 026: audit: type=1400 audit(1672588806.418:41): apparmor="DENIED" operation="capable" profile="/usr/sbin/cups-browsed" pid=6221 comm="cups-browsed" capability=23  capname="sys_nice"
+Jan  2 00:04:08 kernel: [195380.604772] 027: INFO: task kworker/u56:2:6079 blocked for more than 122 seconds.
+Jan  2 00:04:08 kernel: [195380.604776] 027:       Tainted: G           OE     5.4.161-rt67-rc1 #1
+Jan  2 00:04:08 kernel: [195380.604777] 027: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jan  2 00:04:08 kernel: [195380.604779] 027: kworker/u56:2   D    0  6079      2 0x80084000
+Jan  2 00:04:08 kernel: [195380.604789] 027: Workqueue: netns cleanup_net
+Jan  2 00:04:08 kernel: [195380.604790] 027: Call Trace:
+Jan  2 00:04:08 kernel: [195380.604793] 027:  __schedule+0x3d4/0x8a0
+Jan  2 00:04:08 kernel: [195380.604799] 027:  ? __switch_to_asm+0x34/0x70
+Jan  2 00:04:08 kernel: [195380.604801] 027:  schedule+0x49/0x100
+Jan  2 00:04:08 kernel: [195380.604804] 027:  schedule_timeout+0x1ed/0x3b0
+Jan  2 00:04:08 kernel: [195380.604807] 027:  wait_for_completion+0x86/0xe0
+Jan  2 00:04:08 kernel: [195380.604810] 027:  __flush_work+0x121/0x1d0
+Jan  2 00:04:08 kernel: [195380.604814] 027:  ? flush_workqueue_prep_pwqs+0x140/0x140
+Jan  2 00:04:08 kernel: [195380.604817] 027:  flush_work+0x10/0x20
+Jan  2 00:04:08 kernel: [195380.604819] 027:  rollback_registered_many+0x1b2/0x530
+Jan  2 00:04:08 kernel: [195380.604824] 027:  unregister_netdevice_many.part.0+0x12/0x90
+Jan  2 00:04:08 kernel: [195380.604826] 027:  default_device_exit_batch+0x15c/0x190
+Jan  2 00:04:08 kernel: [195380.604828] 027:  ? do_wait_intr_irq+0x90/0x90
+Jan  2 00:04:08 kernel: [195380.604832] 027:  ops_exit_list.isra.0+0x61/0x70
+Jan  2 00:04:08 kernel: [195380.604835] 027:  cleanup_net+0x269/0x3a0
+Jan  2 00:04:08 kernel: [195380.604837] 027:  process_one_work+0x1c8/0x470
+Jan  2 00:04:08 kernel: [195380.604840] 027:  worker_thread+0x4a/0x3d0
+Jan  2 00:04:08 kernel: [195380.604843] 027:  kthread+0x133/0x180
+Jan  2 00:04:08 kernel: [195380.604846] 027:  ? process_one_work+0x470/0x470
+Jan  2 00:04:08 kernel: [195380.604848] 027:  ? kthread_park+0x90/0x90
+Jan  2 00:04:08 kernel: [195380.604850] 027:  ret_from_fork+0x35/0x40
+Jan  2 00:06:11 kernel: [195503.484781] 000: INFO: task kworker/u56:2:6079 blocked for more than 245 seconds.
+Jan  2 00:06:11 kernel: [195503.484784] 000:       Tainted: G           OE     5.4.161-rt67-rc1 #1
+Jan  2 00:06:11 kernel: [195503.484786] 000: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jan  2 00:06:11 kernel: [195503.484788] 000: kworker/u56:2   D    0  6079      2 0x80084000
+Jan  2 00:06:11 kernel: [195503.484797] 000: Workqueue: netns cleanup_net
+Jan  2 00:06:11 kernel: [195503.484798] 000: Call Trace:
+Jan  2 00:06:11 kernel: [195503.484802] 000:  __schedule+0x3d4/0x8a0
+Jan  2 00:06:11 kernel: [195503.484806] 000:  ? __switch_to_asm+0x34/0x70
+Jan  2 00:06:11 kernel: [195503.484809] 000:  schedule+0x49/0x100
+Jan  2 00:06:11 kernel: [195503.484811] 000:  schedule_timeout+0x1ed/0x3b0
+Jan  2 00:06:11 kernel: [195503.484815] 000:  wait_for_completion+0x86/0xe0
+Jan  2 00:06:11 kernel: [195503.484818] 000:  __flush_work+0x121/0x1d0
+Jan  2 00:06:11 kernel: [195503.484822] 000:  ? flush_workqueue_prep_pwqs+0x140/0x140
+Jan  2 00:06:11 kernel: [195503.484825] 000:  flush_work+0x10/0x20
+Jan  2 00:06:11 kernel: [195503.484827] 000:  rollback_registered_many+0x1b2/0x530
+Jan  2 00:06:11 kernel: [195503.484832] 000:  unregister_netdevice_many.part.0+0x12/0x90
+Jan  2 00:06:11 kernel: [195503.484834] 000:  default_device_exit_batch+0x15c/0x190
+Jan  2 00:06:11 kernel: [195503.484837] 000:  ? do_wait_intr_irq+0x90/0x90
+Jan  2 00:06:11 kernel: [195503.484840] 000:  ops_exit_list.isra.0+0x61/0x70
+Jan  2 00:06:11 kernel: [195503.484843] 000:  cleanup_net+0x269/0x3a0
+Jan  2 00:06:11 kernel: [195503.484846] 000:  process_one_work+0x1c8/0x470
+Jan  2 00:06:11 kernel: [195503.484849] 000:  worker_thread+0x4a/0x3d0
+Jan  2 00:06:11 kernel: [195503.484852] 000:  kthread+0x133/0x180
+Jan  2 00:06:11 kernel: [195503.484854] 000:  ? process_one_work+0x470/0x470
+Jan  2 00:06:11 kernel: [195503.484856] 000:  ? kthread_park+0x90/0x90
+Jan  2 00:06:11 kernel: [195503.484858] 000:  ret_from_fork+0x35/0x40
+Jan  2 00:06:11 kernel: [195503.484863] 000: INFO: task kworker/26:0:6200 blocked for more than 122 seconds.
+Jan  2 00:06:11 kernel: [195503.484864] 000:       Tainted: G           OE     5.4.161-rt67-rc1 #1
+Jan  2 00:06:11 kernel: [195503.484865] 000: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jan  2 00:06:11 kernel: [195503.484866] 000: kworker/26:0    D    0  6200      2 0x80084000
+Jan  2 00:06:11 kernel: [195503.484873] 000: Workqueue: ipv6_addrconf addrconf_verify_work
+Jan  2 00:06:11 kernel: [195503.484874] 000: Call Trace:
+Jan  2 00:06:11 kernel: [195503.484875] 000:  __schedule+0x3d4/0x8a0
+Jan  2 00:06:11 kernel: [195503.484877] 000:  schedule+0x49/0x100
+Jan  2 00:06:11 kernel: [195503.484879] 000:  __rt_mutex_slowlock+0x8a/0x150
+Jan  2 00:06:11 kernel: [195503.484882] 000:  rt_mutex_slowlock_locked+0xbb/0x280
+Jan  2 00:06:11 kernel: [195503.484884] 000:  ? __switch_to_asm+0x40/0x70
+Jan  2 00:06:11 kernel: [195503.484886] 000:  rt_mutex_slowlock+0x76/0xc0
+Jan  2 00:06:11 kernel: [195503.484889] 000:  __rt_mutex_lock_state+0x75/0x90
+Jan  2 00:06:11 kernel: [195503.484891] 000:  _mutex_lock+0x13/0x20
+Jan  2 00:06:11 kernel: [195503.484894] 000:  rtnl_lock+0x15/0x20
+Jan  2 00:06:11 kernel: [195503.484897] 000:  addrconf_verify_work+0xe/0x20
+Jan  2 00:06:11 kernel: [195503.484899] 000:  process_one_work+0x1c8/0x470
+Jan  2 00:06:11 kernel: [195503.484902] 000:  worker_thread+0x4a/0x3d0
+Jan  2 00:06:11 kernel: [195503.484905] 000:  kthread+0x133/0x180
+Jan  2 00:06:11 kernel: [195503.484906] 000:  ? process_one_work+0x470/0x470
+Jan  2 00:06:11 kernel: [195503.484908] 000:  ? kthread_park+0x90/0x90
+Jan  2 00:06:11 kernel: [195503.484910] 000:  ret_from_fork+0x35/0x40
+Jan  2 00:08:14 kernel: [195626.364781] 027: INFO: task kworker/u56:2:6079 blocked for more than 368 seconds.
+Jan  2 00:08:14 kernel: [195626.364785] 027:       Tainted: G           OE     5.4.161-rt67-rc1 #1
+Jan  2 00:08:14 kernel: [195626.364786] 027: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jan  2 00:08:14 kernel: [195626.364788] 027: kworker/u56:2   D    0  6079      2 0x80084000
+Jan  2 00:08:14 kernel: [195626.364797] 027: Workqueue: netns cleanup_net
+Jan  2 00:08:14 kernel: [195626.364798] 027: Call Trace:
+Jan  2 00:08:14 kernel: [195626.364802] 027:  __schedule+0x3d4/0x8a0
+Jan  2 00:08:14 kernel: [195626.364807] 027:  ? __switch_to_asm+0x34/0x70
+Jan  2 00:08:14 kernel: [195626.364810] 027:  schedule+0x49/0x100
+Jan  2 00:08:14 kernel: [195626.364812] 027:  schedule_timeout+0x1ed/0x3b0
+Jan  2 00:08:14 kernel: [195626.364816] 027:  wait_for_completion+0x86/0xe0
+Jan  2 00:08:14 kernel: [195626.364818] 027:  __flush_work+0x121/0x1d0
+Jan  2 00:08:14 kernel: [195626.364822] 027:  ? flush_workqueue_prep_pwqs+0x140/0x140
+Jan  2 00:08:14 kernel: [195626.364825] 027:  flush_work+0x10/0x20
+Jan  2 00:08:14 kernel: [195626.364827] 027:  rollback_registered_many+0x1b2/0x530
+Jan  2 00:08:14 kernel: [195626.364832] 027:  unregister_netdevice_many.part.0+0x12/0x90
+Jan  2 00:08:14 kernel: [195626.364835] 027:  default_device_exit_batch+0x15c/0x190
+Jan  2 00:08:14 kernel: [195626.364837] 027:  ? do_wait_intr_irq+0x90/0x90
+Jan  2 00:08:14 kernel: [195626.364841] 027:  ops_exit_list.isra.0+0x61/0x70
+Jan  2 00:08:14 kernel: [195626.364843] 027:  cleanup_net+0x269/0x3a0
+Jan  2 00:08:14 kernel: [195626.364846] 027:  process_one_work+0x1c8/0x470
+Jan  2 00:08:14 kernel: [195626.364849] 027:  worker_thread+0x4a/0x3d0
+Jan  2 00:08:14 kernel: [195626.364852] 027:  kthread+0x133/0x180
+Jan  2 00:08:14 kernel: [195626.364855] 027:  ? process_one_work+0x470/0x470
+Jan  2 00:08:14 kernel: [195626.364857] 027:  ? kthread_park+0x90/0x90
+Jan  2 00:08:14 kernel: [195626.364859] 027:  ret_from_fork+0x35/0x40
+Jan  2 00:08:14 kernel: [195626.364863] 027: INFO: task kworker/26:0:6200 blocked for more than 245 seconds.
+Jan  2 00:08:14 kernel: [195626.364865] 027:       Tainted: G           OE     5.4.161-rt67-rc1 #1
+Jan  2 00:08:14 kernel: [195626.364866] 027: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jan  2 00:08:14 kernel: [195626.364867] 027: kworker/26:0    D    0  6200      2 0x80084000
+Jan  2 00:08:14 kernel: [195626.364873] 027: Workqueue: ipv6_addrconf addrconf_verify_work
+Jan  2 00:08:14 kernel: [195626.364874] 027: Call Trace:
+Jan  2 00:08:14 kernel: [195626.364875] 027:  __schedule+0x3d4/0x8a0
+Jan  2 00:08:14 kernel: [195626.364878] 027:  schedule+0x49/0x100
+Jan  2 00:08:14 kernel: [195626.364880] 027:  __rt_mutex_slowlock+0x8a/0x150
+Jan  2 00:08:14 kernel: [195626.364882] 027:  rt_mutex_slowlock_locked+0xbb/0x280
+Jan  2 00:08:14 kernel: [195626.364885] 027:  ? __switch_to_asm+0x40/0x70
+Jan  2 00:08:14 kernel: [195626.364886] 027:  rt_mutex_slowlock+0x76/0xc0
+Jan  2 00:08:14 kernel: [195626.364889] 027:  __rt_mutex_lock_state+0x75/0x90
+Jan  2 00:08:14 kernel: [195626.364892] 027:  _mutex_lock+0x13/0x20
+Jan  2 00:08:14 kernel: [195626.364894] 027:  rtnl_lock+0x15/0x20
+Jan  2 00:08:14 kernel: [195626.364898] 027:  addrconf_verify_work+0xe/0x20
+Jan  2 00:08:14 kernel: [195626.364900] 027:  process_one_work+0x1c8/0x470
+Jan  2 00:08:14 kernel: [195626.364902] 027:  worker_thread+0x4a/0x3d0
+Jan  2 00:08:14 kernel: [195626.364905] 027:  kthread+0x133/0x180
+Jan  2 00:08:14 kernel: [195626.364907] 027:  ? process_one_work+0x470/0x470
+Jan  2 00:08:14 kernel: [195626.364909] 027:  ? kthread_park+0x90/0x90
+Jan  2 00:08:14 kernel: [195626.364911] 027:  ret_from_fork+0x35/0x40
+................
+Jan  2 00:14:23 kernel: [195995.004768] 000: INFO: task kworker/u56:2:6079 blocked for more than 737 seconds.
+Jan  2 00:14:23 kernel: [195995.004771] 000:       Tainted: G           OE     5.4.161-rt67-rc1 #1
+Jan  2 00:14:23 kernel: [195995.004772] 000: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Jan  2 00:14:23 kernel: [195995.004774] 000: kworker/u56:2   D    0  6079      2 0x80084000
+Jan  2 00:14:23 kernel: [195995.004783] 000: Workqueue: netns cleanup_net
+Jan  2 00:14:23 kernel: [195995.004784] 000: Call Trace:
+Jan  2 00:14:23 kernel: [195995.004788] 000:  __schedule+0x3d4/0x8a0
+Jan  2 00:14:23 kernel: [195995.004793] 000:  ? __switch_to_asm+0x34/0x70
+Jan  2 00:14:23 kernel: [195995.004795] 000:  schedule+0x49/0x100
+Jan  2 00:14:23 kernel: [195995.004797] 000:  schedule_timeout+0x1ed/0x3b0
+Jan  2 00:14:23 kernel: [195995.004801] 000:  wait_for_completion+0x86/0xe0
+Jan  2 00:14:23 kernel: [195995.004804] 000:  __flush_work+0x121/0x1d0
+Jan  2 00:14:23 kernel: [195995.004807] 000:  ? flush_workqueue_prep_pwqs+0x140/0x140
+Jan  2 00:14:23 kernel: [195995.004810] 000:  flush_work+0x10/0x20
+Jan  2 00:14:23 kernel: [195995.004813] 000:  rollback_registered_many+0x1b2/0x530
+Jan  2 00:14:23 kernel: [195995.004817] 000:  unregister_netdevice_many.part.0+0x12/0x90
+Jan  2 00:14:23 kernel: [195995.004819] 000:  default_device_exit_batch+0x15c/0x190
+Jan  2 00:14:23 kernel: [195995.004822] 000:  ? do_wait_intr_irq+0x90/0x90
+Jan  2 00:14:23 kernel: [195995.004825] 000:  ops_exit_list.isra.0+0x61/0x70
+Jan  2 00:14:23 kernel: [195995.004828] 000:  cleanup_net+0x269/0x3a0
+Jan  2 00:14:23 kernel: [195995.004831] 000:  process_one_work+0x1c8/0x470
+Jan  2 00:14:23 kernel: [195995.004834] 000:  worker_thread+0x4a/0x3d0
+Jan  2 00:14:23 kernel: [195995.004837] 000:  kthread+0x133/0x180
+Jan  2 00:14:23 kernel: [195995.004839] 000:  ? process_one_work+0x470/0x470
+Jan  2 00:14:23 kernel: [195995.004841] 000:  ? kthread_park+0x90/0x90
+Jan  2 00:14:23 kernel: [195995.004843] 000:  ret_from_fork+0x35/0x40
 
-Furthermore, as added vlan interfaces where the vid is not added to the
-VTU will cause ATU miss violations reporting the FID as
-MV88E6XXX_FID_STANDALONE, we need to check and skip the miss violations
-handling in this case.
+After "task kworker/u56:2:6079 blocked for more than 737 seconds.", 
+the network seems down, both ssh, ifconfig can't work.
 
-Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
----
- drivers/net/dsa/mv88e6xxx/Makefile      |  1 +
- drivers/net/dsa/mv88e6xxx/chip.c        | 18 ++++--
- drivers/net/dsa/mv88e6xxx/chip.h        | 15 +++++
- drivers/net/dsa/mv88e6xxx/global1_atu.c |  8 +++
- drivers/net/dsa/mv88e6xxx/switchdev.c   | 83 +++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/switchdev.h   | 19 ++++++
- 6 files changed, 138 insertions(+), 6 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.h
 
-diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
-index 49bf358b9c4f..1409e691ab77 100644
---- a/drivers/net/dsa/mv88e6xxx/Makefile
-+++ b/drivers/net/dsa/mv88e6xxx/Makefile
-@@ -15,6 +15,7 @@ mv88e6xxx-objs += port_hidden.o
- mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
- mv88e6xxx-objs += serdes.o
- mv88e6xxx-objs += smi.o
-+mv88e6xxx-objs += switchdev.o
- mv88e6xxx-objs += trace.o
- 
- # for tracing framework to find trace.h
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index d5930b287db4..2682c2b29346 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1729,11 +1729,11 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
- 	return err;
- }
- 
--static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
--			      int (*cb)(struct mv88e6xxx_chip *chip,
--					const struct mv88e6xxx_vtu_entry *entry,
--					void *priv),
--			      void *priv)
-+int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+		       int (*cb)(struct mv88e6xxx_chip *chip,
-+				 const struct mv88e6xxx_vtu_entry *entry,
-+				 void *priv),
-+		       void *priv)
- {
- 	struct mv88e6xxx_vtu_entry entry = {
- 		.vid = mv88e6xxx_max_vid(chip),
-@@ -6527,7 +6527,7 @@ static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 	const struct mv88e6xxx_ops *ops;
- 
- 	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--			   BR_BCAST_FLOOD | BR_PORT_LOCKED))
-+			   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB))
- 		return -EINVAL;
- 
- 	ops = chip->info->ops;
-@@ -6585,6 +6585,12 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 			goto out;
- 	}
- 
-+	if (flags.mask & BR_PORT_MAB) {
-+		bool mab = !!(flags.val & BR_PORT_MAB);
-+
-+		mv88e6xxx_port_set_mab(chip, port, mab);
-+	}
-+
- 	if (flags.mask & BR_PORT_LOCKED) {
- 		bool locked = !!(flags.val & BR_PORT_LOCKED);
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index e693154cf803..f635a5bb47ce 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -280,6 +280,9 @@ struct mv88e6xxx_port {
- 	unsigned int serdes_irq;
- 	char serdes_irq_name[64];
- 	struct devlink_region *region;
-+
-+	/* MacAuth Bypass control flag */
-+	bool mab;
- };
- 
- enum mv88e6xxx_region_id {
-@@ -784,6 +787,12 @@ static inline bool mv88e6xxx_is_invalid_port(struct mv88e6xxx_chip *chip, int po
- 	return (chip->info->invalid_port_mask & BIT(port)) != 0;
- }
- 
-+static inline void mv88e6xxx_port_set_mab(struct mv88e6xxx_chip *chip,
-+					  int port, bool mab)
-+{
-+	chip->ports[port].mab = mab;
-+}
-+
- int mv88e6xxx_read(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val);
- int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val);
- int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
-@@ -802,6 +811,12 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
- 	mutex_unlock(&chip->reg_lock);
- }
- 
-+int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+		       int (*cb)(struct mv88e6xxx_chip *chip,
-+				 const struct mv88e6xxx_vtu_entry *entry,
-+				 void *priv),
-+		       void *priv);
-+
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
- 
- #endif /* _MV88E6XXX_CHIP_H */
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-index 34203e112eef..fc020161b7cf 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-@@ -12,6 +12,7 @@
- 
- #include "chip.h"
- #include "global1.h"
-+#include "switchdev.h"
- #include "trace.h"
- 
- /* Offset 0x01: ATU FID Register */
-@@ -443,6 +444,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
- 						   entry.portvec, entry.mac,
- 						   fid);
- 		chip->ports[spid].atu_miss_violation++;
-+
-+		if (fid != MV88E6XXX_FID_STANDALONE && chip->ports[spid].mab) {
-+			err = mv88e6xxx_handle_miss_violation(chip, spid,
-+							      &entry, fid);
-+			if (err)
-+				goto out;
-+		}
- 	}
- 
- 	if (val & MV88E6XXX_G1_ATU_OP_FULL_VIOLATION) {
-diff --git a/drivers/net/dsa/mv88e6xxx/switchdev.c b/drivers/net/dsa/mv88e6xxx/switchdev.c
-new file mode 100644
-index 000000000000..4c346a884fb2
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/switchdev.c
-@@ -0,0 +1,83 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * switchdev.c
-+ *
-+ *	Authors:
-+ *	Hans J. Schultz		<netdev@kapio-technology.com>
-+ *
-+ */
-+
-+#include <net/switchdev.h>
-+#include "chip.h"
-+#include "global1.h"
-+#include "switchdev.h"
-+
-+struct mv88e6xxx_fid_search_ctx {
-+	u16 fid_search;
-+	u16 vid_found;
-+};
-+
-+static int __mv88e6xxx_find_vid(struct mv88e6xxx_chip *chip,
-+				const struct mv88e6xxx_vtu_entry *entry,
-+				void *priv)
-+{
-+	struct mv88e6xxx_fid_search_ctx *ctx = priv;
-+
-+	if (ctx->fid_search == entry->fid) {
-+		ctx->vid_found = entry->vid;
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mv88e6xxx_find_vid(struct mv88e6xxx_chip *chip, u16 fid, u16 *vid)
-+{
-+	struct mv88e6xxx_fid_search_ctx ctx;
-+	int err;
-+
-+	ctx.fid_search = fid;
-+	mv88e6xxx_reg_lock(chip);
-+	err = mv88e6xxx_vtu_walk(chip, __mv88e6xxx_find_vid, &ctx);
-+	mv88e6xxx_reg_unlock(chip);
-+	if (err < 0)
-+		return err;
-+	if (err == 1)
-+		*vid = ctx.vid_found;
-+	else
-+		return -ENOENT;
-+
-+	return 0;
-+}
-+
-+int mv88e6xxx_handle_miss_violation(struct mv88e6xxx_chip *chip, int port,
-+				    struct mv88e6xxx_atu_entry *entry, u16 fid)
-+{
-+	struct switchdev_notifier_fdb_info info = {
-+		.addr = entry->mac,
-+		.locked = true,
-+	};
-+	struct net_device *brport;
-+	struct dsa_port *dp;
-+	u16 vid;
-+	int err;
-+
-+	err = mv88e6xxx_find_vid(chip, fid, &vid);
-+	if (err)
-+		return err;
-+
-+	info.vid = vid;
-+	dp = dsa_to_port(chip->ds, port);
-+
-+	rtnl_lock();
-+	brport = dsa_port_to_bridge_port(dp);
-+	if (!brport) {
-+		rtnl_unlock();
-+		return -ENODEV;
-+	}
-+	err = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
-+				       brport, &info.info, NULL);
-+	rtnl_unlock();
-+
-+	return err;
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/switchdev.h b/drivers/net/dsa/mv88e6xxx/switchdev.h
-new file mode 100644
-index 000000000000..62214f9d62b0
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/switchdev.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later
-+ *
-+ * switchdev.h
-+ *
-+ *	Authors:
-+ *	Hans J. Schultz		<netdev@kapio-technology.com>
-+ *
-+ */
-+
-+#ifndef _MV88E6XXX_SWITCHDEV_H_
-+#define _MV88E6XXX_SWITCHDEV_H_
-+
-+#include "chip.h"
-+
-+int mv88e6xxx_handle_miss_violation(struct mv88e6xxx_chip *chip, int port,
-+				    struct mv88e6xxx_atu_entry *entry,
-+				    u16 fid);
-+
-+#endif /* _MV88E6XXX_SWITCHDEV_H_ */
--- 
-2.34.1
+>> Sure, PID 1369493 addrconf_verify_work() is waiting for RTNL.
+>> 
+>> But PID 8  ?
+>> 
+>> __flush_work() is being called.
+>> 
+>> But from where ? Stacks seem not complete.
 
+__flush_work is just from the work queue, so, Yes, 
+we don't know who put it into the queue.  And don't know whether the clean netns work is reasonable. 
+Maybe I need to add a trace at the put_net. 
+
+ put_net
+     __put_net  queue_work(netns_wq, &net_cleanup_work);
+         DECLARE_WORK(net_cleanup_work, cleanup_net);
+         cleanup_net
+             ops_exit_list
+                 default_device_exit_batch
+                     unregister_netdevice_many
+                         rollback_registered_many
+                             flush_work
+                                 __flush_work
+								 
+
+>> But PID 1369493 is waiting on a mutex, thus properly yielding the cpu.
+>> (schedule() is clearly shown)
+>> 
+>> This should not prevent other threads
+>> from making progress so that flush_all_backlogs() completes eventually.
+>> 
+>> flush_all_backlogs() does not care of how many threads are currently blocked
+>> because they can not grab rtnl while flush_all_backlogs() is running.
+
+In my log, we can see even the schedule is shown but the task is still in the D status. 
+
+It seems the "addrconf_verify_work" is blocked by "cleanup_net". 
+But why the "cleanup_net" is blocked?  
+Currently, my plan is trying to add trace/print at the "__flush_work" to see: what work is blocked,
+then research this work is owned by who. 
+
+As an expert, if you can give some advice, it will be very grateful.
+
+BTW, this is a RT kernel, I'm also checking the system workload.
+
+BR,
+Dongyang
