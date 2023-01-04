@@ -2,124 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 104CA65CD86
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 08:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B520B65CD9E
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 08:31:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233657AbjADHPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 02:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35846 "EHLO
+        id S233635AbjADHbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 02:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233635AbjADHPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 02:15:45 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61657178AA
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 23:15:44 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id 7so21674316pga.1
-        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 23:15:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dlc-ui-edu-ng.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Nh8EDekJmhMLShCyWmCdcD6wys81NqC9ot9tSgw4w5o=;
-        b=IRz3Cj5OAAupp8dEpn2rKhSM1BpwouMmYDywnfUHdoNfKmqAxnmVZqAbftXs24eq1W
-         nVNk1B77PWdmOMiQpxSbARhYndqW3BxZG3EWCoE/Aq0R91J/AX0fh1Bpw+ripwiDKQxM
-         /cYBradDORsIyQM1OeBd9/4T6QnzAeKohkt10TbckqEotwUkEdfOS4CixZcceWVhkpM2
-         2+lqD8M9WCGKe21aG82pyuAcPjhaSDzmgwNBT0tRnQHyaDWSgLiszm+DRyf2a/aAw4YK
-         2lbScR5PeCuk5t0et1p6XawPxgz80eMPoPCNUiz+0oZ2wP6KZ4YbttFErwSMGzMa6B+8
-         EboQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Nh8EDekJmhMLShCyWmCdcD6wys81NqC9ot9tSgw4w5o=;
-        b=lbSrYFDuQOAAQDCexhD9Hov9Si2Mwg6d6JpDpcjia0rYY70nLLzMaTEeg3A8DHCvur
-         dj6SsyIu46tjTjYNk9iRRNq86WTk5ojVF9kL/N3nUNwr2i8r6VJAVPgMebYHpxtFW9di
-         hor5t+2z+/OVmo8eUH5Dp6VDYE/BLAiOhYs9BXlrpNFJwYHxzn0B8hs96lvhp2cD6PVL
-         miKYCO5dbGcC/VgllAUwnpOzXUPQnQlvyPdY/KnJFO8EmD+2U8X3NABO2Fa3wXz39w1Q
-         AQ1eN3E8ifubs74cRJ79H+sFjYbM5O0MBS+wj8wT7XI+ON13WgPmlCeQ36jT/OGzedhq
-         C4Gg==
-X-Gm-Message-State: AFqh2kq5keZN39U07nmD9I3wMqSQgGPsVPpyKk2PXnbxx8tmwvZLqnEy
-        3lmiiptUFioWQEREETFuGvMDqYJbEj0heHfWYnkO26O4sgdHcii/XAyh+Q6ZQmF6MbkWWdkjc15
-        xnLfjaEnrgDna2HHsy4iLZTDvhw==
-X-Google-Smtp-Source: AMrXdXuhXIUyqMeTVBZ20TtY+O2w05lrcgmhUmlgKkQbKuM/QJLwq3QGZwFT4gRTYCYH4K3l11HiBy6b6C1achmZZf0=
-X-Received: by 2002:a63:fe06:0:b0:492:23d5:1e3a with SMTP id
- p6-20020a63fe06000000b0049223d51e3amr2655520pgh.386.1672816543679; Tue, 03
- Jan 2023 23:15:43 -0800 (PST)
+        with ESMTP id S230387AbjADHbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 02:31:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8678A450
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 23:30:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0D9DDCE129C
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 07:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEFCC433D2;
+        Wed,  4 Jan 2023 07:30:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672817453;
+        bh=lFYoUVqHj6tlGcNUOZEuJpGGwp7meS6IQuw4OMoNHc8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XverRD4Q3nIWRS9tIxBmggPaCTZ4TaLFZhygCkywQEKOY8xqnqRm4ABWSQHTO9YWl
+         nk/wU3CrY202mYQCUJT9okdv8je8NlnV5w2D9CWMxFSnglG+S6P+uHWvDhrB1ItkUx
+         Ao3DwHa8SNelOFrXdrrSgkTeTYN0uoJ1Q9mx9O4mWd+T20ni+2TBp3KLc61wy0Tokg
+         BAvNN7y2/oAULVO2nrOEWxZKSjvIRgGME9vn63CE+WS/5G5BeWrz0LM0yi/KhjBpAZ
+         7rszhIaz/itIHHtUM2l/ElXEjrPSfmBTR1CAnzs1rJw9pWvnaSwp6omuImwqo4AbE1
+         EWO/I80DX5S2w==
+Date:   Wed, 4 Jan 2023 09:30:48 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com,
+        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: Re: [PATCH net-next 1/3] igc: remove I226 Qbv BaseTime restriction
+Message-ID: <Y7UrKJn54RQPaxJu@unreal>
+References: <20230103230503.1102426-1-anthony.l.nguyen@intel.com>
+ <20230103230503.1102426-2-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:e212:b0:381:f7c0:aa2 with HTTP; Tue, 3 Jan 2023
- 23:15:42 -0800 (PST)
-Reply-To: cilimajeannette8@gmail.com
-From:   Jeannette Chilima <e019361.aizojie@dlc.ui.edu.ng>
-Date:   Wed, 4 Jan 2023 07:15:42 +0000
-Message-ID: <CAJAErSpnEKLZFeBhOSdE42-FoJM4yW_bu5ntjg3=dUGTXd2Kxw@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=3.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230103230503.1102426-2-anthony.l.nguyen@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+On Tue, Jan 03, 2023 at 03:05:01PM -0800, Tony Nguyen wrote:
+> From: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+> 
+> Remove the Qbv BaseTime restriction for I226 so that the BaseTime can be
+> scheduled to the future time. A new register bit of Tx Qav Control
+> (Bit-7: FutScdDis) was introduced to allow I226 scheduling future time as
+> Qbv BaseTime and not having the Tx hang timeout issue.
+> 
+> Besides, according to datasheet section 7.5.2.9.3.3, FutScdDis bit has to
+> be configured first before the cycle time and base time.
+> 
+> Indeed the FutScdDis bit is only active on re-configuration, thus we have
+> to set the BASET_L to zero and then only set it to the desired value.
+> 
+> Please also note that the Qbv configuration flow is moved around based on
+> the Qbv programming guideline that is documented in the latest datasheet.
+> 
+> Co-developed-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+> Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+> Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+> Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> ---
+>  drivers/net/ethernet/intel/igc/igc_base.c    | 29 +++++++++++++
+>  drivers/net/ethernet/intel/igc/igc_base.h    |  2 +
+>  drivers/net/ethernet/intel/igc/igc_defines.h |  1 +
+>  drivers/net/ethernet/intel/igc/igc_main.c    |  5 ++-
+>  drivers/net/ethernet/intel/igc/igc_tsn.c     | 44 +++++++++++++-------
+>  5 files changed, 65 insertions(+), 16 deletions(-)
+> 
 
-How are you,I hope you are doing well,My name is Jeannette Chilima a
-lovely girl and i believe we can get acquainted, so if it interests
-you, please reach me back here for further communications. I stop here
-awaiting your respond.
-
-Regards
-Jeannette Chilima
-
-Please contact me direct to my email address for me to send you my
-pictures and further communications.
-
---=20
-
-
-
-UNIVERSITY OF IBADAN COMMENCES ADMISSION INTO ITS OPEN DISTANCE LEARNING=20
-PROGRAMME FOR THE 2021/2022 ACADEMIC SESSION
-
-In a bid to increase access=20
-to the UI , the General Public should be informed that suitably qualified=
-=20
-candidates can now apply for admission into University of Ibadan through=20
-the Open Distance Learning mode for the 2021/2022 Academic Session at:
-
-**=20
-<https://modeofstudy.ui.edu.ng>*https://modeofstudy.ui.edu.ng
-*
-For=20
-enquires and support, WhatsApp/Call: Nike: +234 810 481 2619, Kehinde: +234=
-=20
-816 204 3939
-
-
---=20
-This email and any attachments are confidential and may also be privileged.=
-=20
-If you are not the addressee, do not disclose, copy, circulate or in any=20
-other way use or rely on the information contained in this email or any=20
-attachments. If received in error, notify the sender immediately and delete=
-=20
-this email and any attachments from your system. Emails cannot be=20
-guaranteed to be secure or error free as the message and any attachments=20
-could be intercepted, corrupted, lost, delayed, incomplete or amended.=C2=
-=A0*The=20
-University of Ibadan, Distance Learning Centre* <http://dlc.ui.edu.ng/>=C2=
-=A0and=20
-its subsidiaries do not accept liability for any damage caused by this=20
-email or any attachments.Any view(s) or opinion(s) expressed in this e-mail=
-=20
-are those of the sender and do not necessarily coincide with those of the=
-=20
-organisation.
-Please consider the environment before printing this e-mail!
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
