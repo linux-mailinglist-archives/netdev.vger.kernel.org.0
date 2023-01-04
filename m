@@ -2,198 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2807465D0C3
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 11:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 792F265D157
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 12:24:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234965AbjADKf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 05:35:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
+        id S234245AbjADLYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 06:24:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238920AbjADKfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 05:35:11 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5C01EEC4;
-        Wed,  4 Jan 2023 02:35:10 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 304AYrFP089567;
-        Wed, 4 Jan 2023 04:34:53 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1672828493;
-        bh=JLolzC2M77GixtbG7tlUDAuwCMA/10WstQ7R0WzKE6s=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=YoFgnoXMHUAFFUocgtUH6MstSHkSx75OH1zdICGA8Q+0ke5jjaP62INzKDje8CkPi
-         YcAJNRLwTsCvGVkHzmd+j3s5hcLX8Fa7ghg8w5aT09j4AJvFX1AvJXZG8ivxfEPlWJ
-         J0V6FDXu38j7VhwlVgFRYub+zMxfmXDjeR6z9uQk=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 304AYrUX121139
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 4 Jan 2023 04:34:53 -0600
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 4
- Jan 2023 04:34:53 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Wed, 4 Jan 2023 04:34:53 -0600
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 304AYWFZ018054;
-        Wed, 4 Jan 2023 04:34:48 -0600
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
-        <vladimir.oltean@nxp.com>, <vigneshr@ti.com>, <nsekhar@ti.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: [PATCH net-next v6 3/3] net: ethernet: ti: am65-cpsw: Add support for SERDES configuration
-Date:   Wed, 4 Jan 2023 16:04:32 +0530
-Message-ID: <20230104103432.1126403-4-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230104103432.1126403-1-s-vadapalli@ti.com>
-References: <20230104103432.1126403-1-s-vadapalli@ti.com>
+        with ESMTP id S230423AbjADLYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 06:24:39 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484A81A839;
+        Wed,  4 Jan 2023 03:24:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672831478; x=1704367478;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=e3dnwHcZnNjJi9JOEYjRBlsq3Z+daJrut682oSaz7Oo=;
+  b=JAJQ/5vbLhKx6q7wP937T4miOT9SLEUJ5gVPxoDmqsOFRqUY3oQHSNBU
+   7AWbbGY6KzQw2ZPKnQXcn/YgCQQBv2E4abysPysFxht94nqR/lk4zXesw
+   wuO/M1X0UCAWJg6afiAXxQ5RKZ5hAQ/7EPNlMU60cagTCEkdAdLmcbbJS
+   iZIo5bNbUWgIrVu303CJJI6NB+EavgmXX9HLw530YYQrxjkNy0msvZsto
+   2vQYAS3O/u+nkDVidpYVh+Tv5/+8ihk3ZrBx47Bx/RKNo43T/tkjYCTGS
+   hPRQWkGBE+FylpgfBwoHMhjPHfAU7aaL4hUNQKEe25ua309bG7rsnI7b+
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="305419650"
+X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
+   d="scan'208";a="305419650"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 03:24:37 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="900526406"
+X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
+   d="scan'208";a="900526406"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 03:24:35 -0800
+Date:   Wed, 4 Jan 2023 12:24:31 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Taku Izumi <izumi.taku@jp.fujitsu.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] fjes: Fix an error handling path in fjes_probe()
+Message-ID: <Y7Vh73c74R9xhjWZ@localhost.localdomain>
+References: <fde673f106d2b264ad76759195901aae94691b5c.1671569785.git.christophe.jaillet@wanadoo.fr>
+ <Y6LZEVU7tKPzjHQ8@localhost.localdomain>
+ <437145bf-d925-e91e-affd-835d272c55a0@wanadoo.fr>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <437145bf-d925-e91e-affd-835d272c55a0@wanadoo.fr>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use PHY framework APIs to initialize the SERDES PHY connected to CPSW MAC.
+On Thu, Dec 29, 2022 at 05:34:22PM +0100, Christophe JAILLET wrote:
+> Le 21/12/2022 à 10:59, Michal Swiatkowski a écrit :
+> > On Tue, Dec 20, 2022 at 09:57:06PM +0100, Christophe JAILLET wrote:
+> > > A netif_napi_add() call is hidden in fjes_sw_init(). It should be undone
+> > > by a corresponding netif_napi_del() call in the error handling path of the
+> > > probe, as already done inthe remove function.
+> > > 
+> > > Fixes: 265859309a76 ("fjes: NAPI polling function")
+> > > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> > > ---
+> > >   drivers/net/fjes/fjes_main.c | 4 +++-
+> > >   1 file changed, 3 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
+> > > index 2513be6d4e11..01b4c9c6adbd 100644
+> > > --- a/drivers/net/fjes/fjes_main.c
+> > > +++ b/drivers/net/fjes/fjes_main.c
+> > > @@ -1370,7 +1370,7 @@ static int fjes_probe(struct platform_device *plat_dev)
+> > >   	adapter->txrx_wq = alloc_workqueue(DRV_NAME "/txrx", WQ_MEM_RECLAIM, 0);
+> > >   	if (unlikely(!adapter->txrx_wq)) {
+> > >   		err = -ENOMEM;
+> > > -		goto err_free_netdev;
+> > > +		goto err_del_napi;
+> > >   	}
+> > >   	adapter->control_wq = alloc_workqueue(DRV_NAME "/control",
+> > > @@ -1431,6 +1431,8 @@ static int fjes_probe(struct platform_device *plat_dev)
+> > >   	destroy_workqueue(adapter->control_wq);
+> > >   err_free_txrx_wq:
+> > >   	destroy_workqueue(adapter->txrx_wq);
+> > > +err_del_napi:
+> > > +	netif_napi_del(&adapter->napi);
+> > >   err_free_netdev:
+> > >   	free_netdev(netdev);
+> > >   err_out:
+> > 
+> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > 
+> > I wonder if it won't be better to have fjes_sw_deinit() instead or
+> > change fjes_sw_init to only netif_napi_add(). You know, to avoid another
+> > bug here when someone add sth to the fjes_sw_deinit(). This is only
+> > suggestion, patch looks fine.
+> 
+> hi,
+> 
+> based on Jakub's comment [1], free_netdev() already cleans up NAPIs (see
+> [2]).
+> 
+> So would it make more sense to remove netif_napi_del() from the .remove()
+> function instead?
+> The call looks useless to me now.
+> 
+> CJ
+> 
+> [1]: https://lore.kernel.org/all/20221221174043.1191996a@kernel.org/
+> [2]: https://elixir.bootlin.com/linux/v6.2-rc1/source/net/core/dev.c#L10710
+> 
 
-Define the functions am65_cpsw_disable_phy(), am65_cpsw_enable_phy(),
-am65_cpsw_disable_serdes_phy() and am65_cpsw_enable_serdes_phy().
+Yeah, it make more sense.
 
-Add new member "serdes_phy" to struct "am65_cpsw_slave_data" to store the
-SERDES PHY for each port, if it exists. Use it later while disabling the
-SERDES PHY for each port.
-
-Power on and initialize the SerDes PHY in am65_cpsw_nuss_init_slave_ports()
-by invoking am65_cpsw_enable_serdes_phy().
-
-Power off the SerDes PHY in am65_cpsw_nuss_remove() by invoking
-am65_cpsw_disable_serdes_phy().
-
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 68 ++++++++++++++++++++++++
- drivers/net/ethernet/ti/am65-cpsw-nuss.h |  1 +
- 2 files changed, 69 insertions(+)
-
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 06912363d5d5..1bd11166dc28 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1416,6 +1416,68 @@ static const struct net_device_ops am65_cpsw_nuss_netdev_ops = {
- 	.ndo_setup_tc           = am65_cpsw_qos_ndo_setup_tc,
- };
- 
-+static void am65_cpsw_disable_phy(struct phy *phy)
-+{
-+	phy_power_off(phy);
-+	phy_exit(phy);
-+}
-+
-+static int am65_cpsw_enable_phy(struct phy *phy)
-+{
-+	int ret;
-+
-+	ret = phy_init(phy);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_power_on(phy);
-+	if (ret < 0) {
-+		phy_exit(phy);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void am65_cpsw_disable_serdes_phy(struct am65_cpsw_common *common)
-+{
-+	struct am65_cpsw_port *port;
-+	struct phy *phy;
-+	int i;
-+
-+	for (i = 0; i < common->port_num; i++) {
-+		port = &common->ports[i];
-+		phy = port->slave.serdes_phy;
-+		if (phy)
-+			am65_cpsw_disable_phy(phy);
-+	}
-+}
-+
-+static int am65_cpsw_init_serdes_phy(struct device *dev, struct device_node *port_np,
-+				     struct am65_cpsw_port *port)
-+{
-+	const char *name = "serdes-phy";
-+	struct phy *phy;
-+	int ret;
-+
-+	phy = devm_of_phy_get(dev, port_np, name);
-+	if (PTR_ERR(phy) == -ENODEV)
-+		return 0;
-+
-+	/* Serdes PHY exists. Store it. */
-+	port->slave.serdes_phy = phy;
-+
-+	ret =  am65_cpsw_enable_phy(phy);
-+	if (ret < 0)
-+		goto err_phy;
-+
-+	return 0;
-+
-+err_phy:
-+	devm_phy_put(dev, phy);
-+	return ret;
-+}
-+
- static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned int mode,
- 				      const struct phylink_link_state *state)
- {
-@@ -1959,6 +2021,11 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
- 			goto of_node_put;
- 		}
- 
-+		/* Initialize the Serdes PHY for the port */
-+		ret = am65_cpsw_init_serdes_phy(dev, port_np, port);
-+		if (ret)
-+			return ret;
-+
- 		port->slave.mac_only =
- 				of_property_read_bool(port_np, "ti,mac-only");
- 
-@@ -2878,6 +2945,7 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
- 	 */
- 	am65_cpsw_nuss_cleanup_ndev(common);
- 	am65_cpsw_nuss_phylink_cleanup(common);
-+	am65_cpsw_disable_serdes_phy(common);
- 
- 	of_platform_device_destroy(common->mdio_dev, NULL);
- 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-index 4b75620f8d28..ed26768a6e51 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-@@ -32,6 +32,7 @@ struct am65_cpsw_slave_data {
- 	struct device_node		*phy_node;
- 	phy_interface_t			phy_if;
- 	struct phy			*ifphy;
-+	struct phy			*serdes_phy;
- 	bool				rx_pause;
- 	bool				tx_pause;
- 	u8				mac_addr[ETH_ALEN];
--- 
-2.25.1
-
+Thanks, Michal
+> > 
+> > > -- 
+> > > 2.34.1
+> > > 
+> > 
+> 
