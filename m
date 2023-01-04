@@ -2,147 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAAF65DBEC
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 19:12:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A30AA65DBE6
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 19:10:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235462AbjADSMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 13:12:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
+        id S239976AbjADSKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 13:10:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235180AbjADSMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 13:12:45 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8A91868E;
-        Wed,  4 Jan 2023 10:12:42 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 304HUcG8032586;
-        Wed, 4 Jan 2023 18:09:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=7GBPF88wzdVZ7ar1F+eZ3hgfidY5D8srQT8J/QpDwvc=;
- b=fyiW6W2UUN8LX92+pUjeVSnvz51f7TnyzFENkpC9v/GweDqnRwuxyoh215RVbC/DJ/AQ
- 2wbVM+EzRWCEAmzmwiojm3CpchC0Y8ZmWUr1x10H5LHQra4UxToTRms7RUKFtnV9AOT/
- Nb1EvDzNT8pngUWXgk/d80u62D8s23dr5qfuFmBlayG9GXKDrOZVg3URBzBXPtLQBjAm
- POr66aqy4XecphxqgSsuXd3HzdYxrH1T1/If1l4gIJ0mkfKSF51Yi2sMMITiJbHYqDg/
- mUP2q/DTQrLrpbJM2eyJGE7hMsZNxNfDs5JzW+bUeZyXPTic79NtgHeaIb5XEvYJuVWR 2A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mwdwy0xas-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Jan 2023 18:09:53 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 304I7i4V017758;
-        Wed, 4 Jan 2023 18:09:53 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mwdwy0x9d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Jan 2023 18:09:52 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30486XjM001864;
-        Wed, 4 Jan 2023 18:09:50 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3mtcbfdpdt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Jan 2023 18:09:50 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-        by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 304I9l4M48759224
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 4 Jan 2023 18:09:47 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B830520043;
-        Wed,  4 Jan 2023 18:09:47 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6E85E20040;
-        Wed,  4 Jan 2023 18:09:46 +0000 (GMT)
-Received: from osiris (unknown [9.179.28.126])
-        by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-        Wed,  4 Jan 2023 18:09:46 +0000 (GMT)
-Date:   Wed, 4 Jan 2023 19:09:44 +0100
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Rik van Riel <riel@surriel.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] mm: remove zap_page_range and create zap_vma_pages
-Message-ID: <Y7XA6JEUOgOkz988@osiris>
-References: <20230104002732.232573-1-mike.kravetz@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230104002732.232573-1-mike.kravetz@oracle.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: k9qXecJ4RRKrWMjkiEzD557REdxr7RO2
-X-Proofpoint-GUID: QiYQILsN1_8J76fc1D6yWsOXcnh_ZlS9
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S239587AbjADSKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 13:10:22 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2B3395DC
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 10:10:20 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id u8so19839373ilq.13
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 10:10:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8FAYOoZlV85IsIHNRYn6JbF3crw7qgzdxYaheW3nilA=;
+        b=urwDLjqo6Ai8B7JnKOiLTbBm5ymoqcBrHSbzmF0Hr7Y99Y6jEcPwNJi9PQtbSow7BN
+         Dx2jl/ooHqN4ybnadVwEyk4FM+lHQ0/xHLPmDoTuBbPCffv8a3aFx97uTg6mTzYrjo9c
+         uyxGcR8Amk7RiXp3Kk9cAYxZsDK5QjUlFW2gJvAU3dmiNiH7u6wSs58kW+srX8MsMeK8
+         Xz4NdTr74rvmxjUBfKUvKItmzheRgjTyzhMYS2sHfwtF3bRiXFcmN0Rv+4nGgm/VBsQA
+         6dQ0AwFMiVGvQ0j0QGTWjpIH2d1yXMl+08sHQP+ljYyEEHI21XjMDfAraLi0ONA89hkB
+         5QMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8FAYOoZlV85IsIHNRYn6JbF3crw7qgzdxYaheW3nilA=;
+        b=wvEj3eDN6eb7pPlnfThTZJjdY/eZoRFsNmqfPgWG3I7jBhs10lyOSc5R81SoIQ5Iwz
+         t4fcUnmUKhXb0eNBdPiyJqQcZdjiw7qpmgwyAA5kyZhnT6aaM107mY6wBXBsLA+VbRHm
+         JR1VZI+9VxKCdZ/Di0Xx3LuyaM7ibM/UcMv1Xb22A0krX8BFZV/3x4v+0vsJ0zaPZhXt
+         UkMPZQFs2fAzAlueywFIClj96z3cxaII6V+bOUGVER0Kpg0JpAJXVBlGHuqbHRFLdjS3
+         DW25uLV8+p+klvEy6aCP7hlwFGba/qligZ+jqrk+/dgsqMv6K3SAfVSQLhWLM4lpezBN
+         Y83A==
+X-Gm-Message-State: AFqh2krf37oL3JKMmPqQG5RO4RB/0xQPYS/wXc76Lmctw9pMv70ZRYSm
+        QpwrG8tMxTMYhQUPK6fECFcjjQ==
+X-Google-Smtp-Source: AMrXdXvYXHTT4J8rdsO8OHxvmzKWVWoqYGkz56LHThn+EgM64BjPB9/dMBdn8kX0uEpgjcu+HeSLpw==
+X-Received: by 2002:a05:6e02:96b:b0:30d:7aaf:894d with SMTP id q11-20020a056e02096b00b0030d7aaf894dmr635268ilt.22.1672855820283;
+        Wed, 04 Jan 2023 10:10:20 -0800 (PST)
+Received: from presto.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id e14-20020a02860e000000b003712c881d67sm11113553jai.164.2023.01.04.10.10.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Jan 2023 10:10:19 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     luca.weiss@fairphone.com, konrad.dybcio@linaro.org,
+        caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: ipa: correct IPA v4.7 IMEM offset
+Date:   Wed,  4 Jan 2023 12:10:17 -0600
+Message-Id: <20230104181017.2880916-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-04_07,2023-01-04_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 malwarescore=0 impostorscore=0 spamscore=0 adultscore=0
- bulkscore=0 suspectscore=0 mlxlogscore=999 phishscore=0 lowpriorityscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301040151
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 03, 2023 at 04:27:32PM -0800, Mike Kravetz wrote:
-> zap_page_range was originally designed to unmap pages within an address
-> range that could span multiple vmas.  While working on [1], it was
-> discovered that all callers of zap_page_range pass a range entirely within
-> a single vma.  In addition, the mmu notification call within zap_page
-> range does not correctly handle ranges that span multiple vmas.  When
-> crossing a vma boundary, a new mmu_notifier_range_init/end call pair
-> with the new vma should be made.
-> 
-> Instead of fixing zap_page_range, do the following:
-> - Create a new routine zap_vma_pages() that will remove all pages within
->   the passed vma.  Most users of zap_page_range pass the entire vma and
->   can use this new routine.
-> - For callers of zap_page_range not passing the entire vma, instead call
->   zap_page_range_single().
-> - Remove zap_page_range.
-> 
-> [1] https://lore.kernel.org/linux-mm/20221114235507.294320-2-mike.kravetz@oracle.com/
-> Suggested-by: Peter Xu <peterx@redhat.com>
-> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-> ---
-> RFC->v1 Created zap_vma_pages to zap entire vma (Christoph Hellwig)
->         Did not add Acked-by's as routine was changed.
-> 
->  arch/arm64/kernel/vdso.c                |  6 ++---
->  arch/powerpc/kernel/vdso.c              |  4 +---
->  arch/powerpc/platforms/book3s/vas-api.c |  2 +-
->  arch/powerpc/platforms/pseries/vas.c    |  3 +--
->  arch/riscv/kernel/vdso.c                |  6 ++---
->  arch/s390/kernel/vdso.c                 |  4 +---
->  arch/s390/mm/gmap.c                     |  2 +-
->  arch/x86/entry/vdso/vma.c               |  4 +---
->  drivers/android/binder_alloc.c          |  2 +-
->  include/linux/mm.h                      |  7 ++++--
->  mm/memory.c                             | 30 -------------------------
->  mm/page-writeback.c                     |  2 +-
->  net/ipv4/tcp.c                          |  7 +++---
->  13 files changed, 21 insertions(+), 58 deletions(-)
+Commit b310de784bacd ("net: ipa: add IPA v4.7 support") was merged
+despite an unresolved comment made by Konrad Dybcio.  Konrad
+observed that the IMEM region specified for IPA v4.7 did not match
+that used downstream for the SM7225 SoC.  In "lagoon.dtsi" present
+in a Sony Xperia source tree, a ipa_smmu_ap node was defined with a
+"qcom,additional-mapping" property that defined the IPA IMEM area
+starting at offset 0x146a8000 (not 0x146a9000 that was committed).
 
-For s390:
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
+The IPA v4.7 target system used for testing uses the SM7225 SoC, so
+we'll adhere what the downstream code specifies is the address of
+the IMEM region used for IPA.
+
+Link: https://lore.kernel.org/linux-arm-msm/20221208211529.757669-1-elder@linaro.org
+Tested-by: Luca Weiss <luca.weiss@fairphone.com>
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+Note:  This fixes a commit that first landed in v6.2-rc1.
+
+ drivers/net/ipa/data/ipa_data-v4.7.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ipa/data/ipa_data-v4.7.c b/drivers/net/ipa/data/ipa_data-v4.7.c
+index 7552c400961eb..b83390c486158 100644
+--- a/drivers/net/ipa/data/ipa_data-v4.7.c
++++ b/drivers/net/ipa/data/ipa_data-v4.7.c
+@@ -357,7 +357,7 @@ static const struct ipa_mem ipa_mem_local_data[] = {
+ static const struct ipa_mem_data ipa_mem_data = {
+ 	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
+ 	.local		= ipa_mem_local_data,
+-	.imem_addr	= 0x146a9000,
++	.imem_addr	= 0x146a8000,
+ 	.imem_size	= 0x00002000,
+ 	.smem_id	= 497,
+ 	.smem_size	= 0x00009000,
+-- 
+2.34.1
+
