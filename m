@@ -2,64 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3915865D37F
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:59:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8659065D386
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233232AbjADM5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 07:57:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38476 "EHLO
+        id S238977AbjADM6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 07:58:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbjADM5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:57:44 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8CE1007B
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:57:42 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id c6so2574779pls.4
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 04:57:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4nA7JdkDynSfrXRqChmo/xJPtdzs7lWUFIe7MiCyGXQ=;
-        b=n8j8RJmIpYukKO8dyHd24phTm6E3zL1GXcWyrsT4xGRq9y+tx8r7tRU/hTyGpMyJav
-         uiSO6w/BZg9GiBlx9i6ugGpTcK4Rx8DvemqUdEBCZVduIpyZfpJo5Oza2jmPbstZsBfV
-         cXxNK+Jkg+5g9aW1bQzTFnA30TFEFboHAEv8Bbk3aaGBlQBeajkBD8X30RFGtwLPZ/xx
-         Fy/+zJVRj7vrHq/6ayCN/DO4OXKlaCPsT+/bulLlOFJKntIZPbL9hUbxanS9k/22My+W
-         XrEKm+mdhXL9eVOJnxpR66S7eS6MSGaBlMnTjr0lzrmNYZgLErjErodvidtgMbkKPMlJ
-         9Rgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4nA7JdkDynSfrXRqChmo/xJPtdzs7lWUFIe7MiCyGXQ=;
-        b=Nuc8ts3jxlrC32cfwCX22wCBp2P1XIWlNli+eydgwVHJoIAAJe0QbR8gSAGRdgFOwm
-         1wpT3kxZxv9L/lXVA3Yyjhn8GKHPMnItHyoLR7EbnqlgM6ievQWFi3WsG4uAKphEu8CP
-         D6EuaTPEwjMHXK5a0KwQYWFxaihvNjD+cQLXRseMTRzeZjBixvY1RujW3ZElweai0tUD
-         e7oLBDDDvqyQUF54lbOoMjiWdWPWoTTLO71DRLboaFPTItObDDlJLyB5ch3cIyvfqfR4
-         9i9k7wuxRawIIBXy1l+x5zj2c2FWvVZN+x/2xCaAdRFILslhLAy4FpqdT/yJTGDDz48w
-         kubQ==
-X-Gm-Message-State: AFqh2kpr/USLlk2NFQdi5MWCxqmdsxS3v4B1ciAjBAJxKtBhfi9hvgWE
-        bri3ssW1hGpRV8+3B+PnOxCG
-X-Google-Smtp-Source: AMrXdXviA7zPIZWZbcN+c2wTRezg+qzL25X7uEdva57D0yaO6+INO0ljIjnf0Ym1MDR0K2+YS9TCXA==
-X-Received: by 2002:a17:902:fe0c:b0:192:5c3e:8939 with SMTP id g12-20020a170902fe0c00b001925c3e8939mr41002679plj.0.1672837062447;
-        Wed, 04 Jan 2023 04:57:42 -0800 (PST)
-Received: from localhost.localdomain ([165.132.118.55])
-        by smtp.gmail.com with ESMTPSA id u7-20020a17090341c700b00189988a1a9esm24230728ple.135.2023.01.04.04.57.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 04:57:42 -0800 (PST)
-From:   Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-To:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        dokyungs@yonsei.ac.kr, linuxlovemin@yonsei.ac.kr
-Subject: [PATCH] net: nfc: Fix use-after-free in local_cleanup()
-Date:   Wed,  4 Jan 2023 21:57:38 +0900
-Message-Id: <20230104125738.418427-1-jisoo.jang@yonsei.ac.kr>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S233916AbjADM6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:58:06 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920E31CFD2
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:58:02 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Nn8k42G4czRqpx;
+        Wed,  4 Jan 2023 20:56:28 +0800 (CST)
+Received: from [10.67.102.37] (10.67.102.37) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 4 Jan
+ 2023 20:58:00 +0800
+Subject: Re: [PATCH net-next 1/2] net: hns3: support wake on lan configuration
+ and query
+To:     Andrew Lunn <andrew@lunn.ch>
+References: <20230104013405.65433-1-lanhao@huawei.com>
+ <20230104013405.65433-2-lanhao@huawei.com> <Y7TgHS8oGbE656v0@lunn.ch>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <richardcochran@gmail.com>, <shenjian15@huawei.com>,
+        <netdev@vger.kernel.org>
+From:   Hao Lan <lanhao@huawei.com>
+Message-ID: <0087bf43-a78c-7d3c-4ab2-de246afe25f8@huawei.com>
+Date:   Wed, 4 Jan 2023 20:57:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <Y7TgHS8oGbE656v0@lunn.ch>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.37]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,93 +53,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a use-after-free that occurs in kfree_skb() called from
-local_cleanup(). When detaching an nfc device, local_cleanup()
-called from nfc_llcp_unregister_device() frees local->rx_pending
-and cancels local->rx_work. So the socket allocated before
-unregister is not set null by nfc_llcp_rx_work().
-local_cleanup() called from local_release() frees local->rx_pending
-again, which leads to the bug.
+Hi Andrew,
+Thank you for reviewing our code. Thank you very much.
+You're right, such as WAKE_PHY, WAKE_CAST, these are implemented
+in the kernel, they are ABI, they will never change, we use it
+will directly simplify our code, your advice is very useful, thank
+you very much for your advice.
+However, these interfaces serve as a buffer between our firmware
+and the linux community. Considering our interface expansion and
+evolution, we may add some private modes in the future.
+If the Linux community does not accept our private modes,
+we will not be able to carry out these work.
+So please let us keep enum HCLGE_WOL_MODE, thank you.
 
-Ensure kfree_skb() is called once when unregistering the device.
+Best regards,
+Hao Lan
 
-Found by a modified version of syzkaller.
+On 2023/1/4 10:10, Andrew Lunn wrote:
+>> +enum HCLGE_WOL_MODE {
+>> +	HCLGE_WOL_PHY		= BIT(0),
+>> +	HCLGE_WOL_UNICAST	= BIT(1),
+>> +	HCLGE_WOL_MULTICAST	= BIT(2),
+>> +	HCLGE_WOL_BROADCAST	= BIT(3),
+>> +	HCLGE_WOL_ARP		= BIT(4),
+>> +	HCLGE_WOL_MAGIC		= BIT(5),
+>> +	HCLGE_WOL_MAGICSECURED	= BIT(6),
+>> +	HCLGE_WOL_FILTER	= BIT(7),
+>> +	HCLGE_WOL_DISABLE	= 0,
+>> +};
+> 
+> These are the exact same values as WAKE_PHY, WAKE_CAST etc. Since they
+> are ABI, they will never change. So you may as well throw these away
+> and just use the Linux values.
+> 
 
-BUG: KASAN: use-after-free in kfree_skb
-Call Trace:
- kfree_skb
- local_cleanup
- nfc_llcp_local_put
- llcp_sock_destruct
- __sk_destruct
- sk_destruct
- __sk_free
- sk_free
- llcp_sock_release
- __sock_release
- sock_close
- __fput
- task_work_run
- exit_to_user_mode_prepare
- syscall_exit_to_user_mode
- do_syscall_64
- entry_SYSCALL_64_after_hwframe
-
-Allocate by:
- __alloc_skb
- pn533_recv_response
- __usb_hcd_giveback_urb
- usb_hcd_giveback_urb
- dummy_timer
- call_timer_fn
- run_timer_softirq
- __do_softirq
-
-Freed by:
- kfree_skbmem
- kfree_skb
- local_cleanup
- nfc_llcp_unregister_device
- nfc_unregister_device
- pn53x_unregister_nfc
- pn533_usb_disconnect
- usb_unbind_interface
- device_release_driver_internal
- bus_remove_device
- device_del
- usb_disable_device
- usb_disconnect
- hub_event
- process_one_work
- worker_thread
- kthread
- ret_from_fork
-
-Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
----
- net/nfc/llcp_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
-index 3364caabef8b..cbf2ef0af57b 100644
---- a/net/nfc/llcp_core.c
-+++ b/net/nfc/llcp_core.c
-@@ -156,7 +156,6 @@ static void local_cleanup(struct nfc_llcp_local *local)
- 	cancel_work_sync(&local->tx_work);
- 	cancel_work_sync(&local->rx_work);
- 	cancel_work_sync(&local->timeout_work);
--	kfree_skb(local->rx_pending);
- 	del_timer_sync(&local->sdreq_timer);
- 	cancel_work_sync(&local->sdreq_timeout_work);
- 	nfc_llcp_free_sdp_tlv_list(&local->pending_sdreqs);
-@@ -170,6 +169,7 @@ static void local_release(struct kref *ref)
- 
- 	list_del(&local->list);
- 	local_cleanup(local);
-+	kfree_skb(local->rx_pending);
- 	kfree(local);
- }
- 
--- 
-2.25.1
-
+>>  struct hclge_hw;
+>>  int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num);
+>>  enum hclge_comm_cmd_status hclge_cmd_mdio_write(struct hclge_hw *hw,
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> index 4e54f91f7a6c..88cb5c05bc43 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> @@ -11500,6 +11500,201 @@ static void hclge_uninit_rxd_adv_layout(struct hclge_dev *hdev)
+>>  		hclge_write_dev(&hdev->hw, HCLGE_RXD_ADV_LAYOUT_EN_REG, 0);
+>>  }
+>>  
+>> +static __u32 hclge_wol_mode_to_ethtool(u32 mode)
+>> +{
+>> +	__u32 ret = 0;
+>> +
+>> +	if (mode & HCLGE_WOL_PHY)
+>> +		ret |= WAKE_PHY;
+>> +
+>> +	if (mode & HCLGE_WOL_UNICAST)
+>> +		ret |= WAKE_UCAST;
+>> +
+>> +	if (mode & HCLGE_WOL_MULTICAST)
+>> +		ret |= WAKE_MCAST;
+>> +
+>> +	if (mode & HCLGE_WOL_BROADCAST)
+>> +		ret |= WAKE_BCAST;
+>> +
+>> +	if (mode & HCLGE_WOL_ARP)
+>> +		ret |= WAKE_ARP;
+>> +
+>> +	if (mode & HCLGE_WOL_MAGIC)
+>> +		ret |= WAKE_MAGIC;
+>> +
+>> +	if (mode & HCLGE_WOL_MAGICSECURED)
+>> +		ret |= WAKE_MAGICSECURE;
+>> +
+>> +	if (mode & HCLGE_WOL_FILTER)
+>> +		ret |= WAKE_FILTER;
+> 
+> Once you throw away HCLGE_WOL_*, this function becomes much simpler.
+> 
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static u32 hclge_wol_mode_from_ethtool(__u32 mode)
+>> +{
+>> +	u32 ret = HCLGE_WOL_DISABLE;
+>> +
+>> +	if (mode & WAKE_PHY)
+>> +		ret |= HCLGE_WOL_PHY;
+>> +
+>> +	if (mode & WAKE_UCAST)
+>> +		ret |= HCLGE_WOL_UNICAST;
+> 
+> This one two.
+> 
+>> @@ -12075,6 +12275,8 @@ static int hclge_reset_ae_dev(struct hnae3_ae_dev *ae_dev)
+>>  
+>>  	hclge_init_rxd_adv_layout(hdev);
+>>  
+>> +	(void)hclge_update_wol(hdev);
+> 
+> Please avoid casts like this. If there is an error, you should not
+> ignore it. If it cannot fail, make it a void function.	
+> 
+>        Andrew
+> .
+> 
