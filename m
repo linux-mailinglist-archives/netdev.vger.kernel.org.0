@@ -2,89 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A4665DF06
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 22:28:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C251265DE02
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 22:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240436AbjADV20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 16:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42452 "EHLO
+        id S240191AbjADVGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 16:06:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235379AbjADV2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 16:28:06 -0500
-X-Greylist: delayed 4499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 Jan 2023 13:21:44 PST
-Received: from mail.schwarz.eu (eight.schwarz.eu [IPv6:2a01:4f8:c17:2a56::8:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C066F4103F;
-        Wed,  4 Jan 2023 13:21:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=oss.schwarz.eu; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2stL7la/beV9vnoj3SG39DjOHPT+hbqJVKK5Y2G6Ges=; b=q6HFpblNkfVMedDg16XKDDIBW0
-        vLDQp3IgtN1rA311usT6MI8j1e3EQix1PMCHgh6ze+ttuzvnhtJoXRv2n2UiriYZQq9bZVo/iwOu5
-        5t7t5JasM0r8ZsvLz3lEKA8GjpjQUTNKLcSE61hh1NSxbs3bepmeww1CVqusrta1tLWDbHf+yeVef
-        u7uVxpxASbOBdYOIbG5E/PdK+Xg+wlhz8VtIaDQOohLVd4E6V9O9POFQxf8NHahvQU5d+iRL4IjVh
-        ig6xq6yVwXUOUs0MENbywUGdgGljUQ7pMfjfuM4d5XRdsrZzXg2qb8yymsRzDZi6ywAxqJ5S8vOdP
-        txCYWyzg==;
-Message-ID: <37a19225-7f34-e1f1-666f-5d08e6c1ec15@oss.schwarz.eu>
-Date:   Wed, 4 Jan 2023 21:06:41 +0100
+        with ESMTP id S240257AbjADVGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 16:06:12 -0500
+Received: from smtp.smtpout.orange.fr (smtp-13.smtpout.orange.fr [80.12.242.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28F81CB2B
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 13:06:10 -0800 (PST)
+Received: from pop-os.home ([86.243.100.34])
+        by smtp.orange.fr with ESMTPA
+        id DAxcpwWwVxN58DAxcpFlIl; Wed, 04 Jan 2023 22:06:09 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Wed, 04 Jan 2023 22:06:09 +0100
+X-ME-IP: 86.243.100.34
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH net-next 0/3] ezchip: Simplify some code
+Date:   Wed,  4 Jan 2023 22:05:31 +0100
+Message-Id: <cover.1672865629.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [RFC PATCH v1 19/19] rtw88: Add support for the SDIO based
- RTL8821CS chipset
-To:     Bitterblue Smith <rtl8821cerfe2@gmail.com>,
-        Chris Morgan <macroalpha82@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
- <20221227233020.284266-20-martin.blumenstingl@googlemail.com>
- <63b4b3e1.050a0220.791fb.767c@mx.google.com>
- <0acf173d-a425-dcca-ad2f-f0f0f13a9f5e@gmail.com>
-Content-Language: en-US
-From:   Felix Schwarz <felix.schwarz@oss.schwarz.eu>
-In-Reply-To: <0acf173d-a425-dcca-ad2f-f0f0f13a9f5e@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Received: by mail.schwarz.eu with esmtpsa (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.96)
-        (envelope-from <felix.schwarz@oss.schwarz.eu>)
-        id 1pDA25-0007qQ-2z; Wed, 04 Jan 2023 22:21:42 +0100
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Theses patches (at least 1 and 2) can be seen as an RFC for net MAINTAINERS
+get see if they see any interest in:
+  - axing useless netif_napi_del() calls, when free_netdev() is called just
+    after. (patch 1)
+  - simplifying code with axing the error handling path of the probe and the
+    remove function in favor of using devm_ functions (patch 2)
 
-Am 04.01.23 um 20:59 schrieb Bitterblue Smith:
-> The USB-based RTL8811CU also doesn't work, with suspiciously similar
-> errors:
-> 
-> Dec 25 21:43:37 home kernel: rtw_8821cu 1-2:1.0: Firmware version 24.11.0, H2C version 12
-> Dec 25 21:43:37 home kernel: rtw_8821cu 1-2:1.0 wlp0s20f0u2: renamed from wlan0
-> Dec 25 21:43:40 home kernel: rtw_8821cu 1-2:1.0: read register 0x5 failed with -110
-> Dec 25 21:43:41 home kernel: rtw_8821cu 1-2:1.0: read register 0x20 failed with -110
-> Dec 25 21:44:11 home kernel: rtw_8821cu 1-2:1.0: write register 0x20 failed with -110
-> Dec 25 21:44:12 home kernel: rtw_8821cu 1-2:1.0: read register 0x7c failed with -110
-> Dec 25 21:44:43 home kernel: rtw_8821cu 1-2:1.0: write register 0x7c failed with -110
-> Dec 25 21:44:44 home kernel: rtw_8821cu 1-2:1.0: read register 0x1080 failed with -110
-> Dec 25 21:45:16 home kernel: rtw_8821cu 1-2:1.0: write register 0x1080 failed with -110
+  or
 
-Same for me: I saw very similar read/write failures with my "Realtek 
-Semiconductor Corp. 802.11ac NIC" (ID 0bda:c811) after applying Ping-Ke's patch 
-for rfe 38 (see my message to linux-wireless on Dec 29).
+if it doesn't not worth it and MAINTAINERS' time can be focused on more
+interesting topics than checking what is in fact only code clean-ups.
 
-Felix
+
+The rational for patch 1 is based on Jakub's comment [1].
+free_netdev() already cleans up NAPIs (see [2]).
+
+CJ
+
+[1]: https://lore.kernel.org/all/20221221174043.1191996a@kernel.org/
+[2]: https://elixir.bootlin.com/linux/v6.2-rc1/source/net/core/dev.c#L10710
+
+
+Christophe JAILLET (3):
+  ezchip: Remove some redundant clean-up functions
+  ezchip: Switch to some devm_ function to simplify code
+  ezchip: Further clean-up
+
+ drivers/net/ethernet/ezchip/nps_enet.c | 47 ++++++--------------------
+ 1 file changed, 10 insertions(+), 37 deletions(-)
+
+-- 
+2.34.1
 
