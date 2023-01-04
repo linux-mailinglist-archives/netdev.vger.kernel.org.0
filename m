@@ -2,81 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57AC365CF94
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:34:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A6D165CFD5
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:43:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234618AbjADJeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 04:34:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
+        id S233862AbjADJnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 04:43:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234245AbjADJeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 04:34:13 -0500
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E079D7B;
-        Wed,  4 Jan 2023 01:34:11 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-        by APP-03 (Coremail) with SMTP id rQCowACHj5cDSLVjCH9tCg--.33466S2;
-        Wed, 04 Jan 2023 17:33:56 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] wifi: rtw89: Add missing check for alloc_workqueue
-Date:   Wed,  4 Jan 2023 17:33:53 +0800
-Message-Id: <20230104093353.48239-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230376AbjADJnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 04:43:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD60AE7A;
+        Wed,  4 Jan 2023 01:43:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5869EB811A2;
+        Wed,  4 Jan 2023 09:43:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55DE1C433EF;
+        Wed,  4 Jan 2023 09:43:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672825423;
+        bh=GFCkxrwWNgg3EDS4bs73kYo8VaU7YWYv528Dyhkwodg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cBRdYwaF9rvneXWWpfBfXtC04WI/HLROvyAyCiBqFH9E6SHUI9oVJUnccX4MIYCJQ
+         RE7Eea0nyS/BgIkiRGu3cTAmxEESMDcd1jaivPbSP78mAnFh2oowRnuAO8JDDGHEbi
+         hgREYjjJ6ivL79VC0TsQLKnuOuE4g1FIVRik5fQ6C3tudtDDGv2IlAOizFxoZU1skD
+         eus5Rb+3ImcV0O4WeRE5Dd4KaqexD6UoMxEkBf3REOOIP9yzpYpDfSSh9obuVQREcP
+         VfG+nerm/fW1lCD6KzMtArHCVl96S24h12ThhEO3s1GxjsVR8FRc99s7y/Gm5yacZb
+         Q745KtNOJCh3w==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Patrisious Haddad <phaddad@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH rdma-next v1 0/3] Provide more error details when a QP moves to error state
+Date:   Wed,  4 Jan 2023 11:43:33 +0200
+Message-Id: <cover.1672821186.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowACHj5cDSLVjCH9tCg--.33466S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XrW5Gry7uF4Utr43Ar45GFg_yoWDurbEgr
-        y2qFy2kry8Gw1akrs09FyfAryFyrykCrnaqa93trW3trWaq3yfAr95ZrZxJwn3Gwnxury7
-        W3yYqFy8A34rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbVxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_GFWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfU0xhLUUUUU
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add check for the return value of alloc_workqueue since it may return
-NULL pointer.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/wireless/realtek/rtw89/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+Changelog:
+v1: 
+ * Reworked mlx4 to allow non-atomic IB QP event handler.
+v0: https://lore.kernel.org/linux-rdma/20220907113800.22182-1-phaddad@nvidia.com/
 
-diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-index 931aff8b5dc9..006fe0499f81 100644
---- a/drivers/net/wireless/realtek/rtw89/core.c
-+++ b/drivers/net/wireless/realtek/rtw89/core.c
-@@ -3124,6 +3124,8 @@ int rtw89_core_init(struct rtw89_dev *rtwdev)
- 	INIT_DELAYED_WORK(&rtwdev->cfo_track_work, rtw89_phy_cfo_track_work);
- 	INIT_DELAYED_WORK(&rtwdev->forbid_ba_work, rtw89_forbid_ba_work);
- 	rtwdev->txq_wq = alloc_workqueue("rtw89_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
-+	if (!rtwdev->txq_wq)
-+		return -ENOMEM;
- 	spin_lock_init(&rtwdev->ba_lock);
- 	spin_lock_init(&rtwdev->rpwm_lock);
- 	mutex_init(&rtwdev->mutex);
+------------------------------------------
+The following series adds ability to get information about fatal QP events.
+
+This functionality is extremely useful for the following reasons:
+ * Provides an information about the reason why QP moved to error state,
+   in cases where CQE isn't generated.
+ * Allows to provide vendor specfic error codes and information that
+   could be very useful to users who know them.
+
+An example of a case without CQE is a remote write with RKEY violation.
+In this flow, on remote side no CQEs are generated and such error without
+indication is hard to debug.
+
+Thanks.
+
+Mark Zhang (1):
+  RDMA/mlx: Calling qp event handler in workqueue context
+
+Patrisious Haddad (2):
+  net/mlx5: Introduce CQE error syndrome
+  RDMA/mlx5: Print error syndrome in case of fatal QP errors
+
+ drivers/infiniband/hw/mlx4/main.c       |   8 ++
+ drivers/infiniband/hw/mlx4/mlx4_ib.h    |   3 +
+ drivers/infiniband/hw/mlx4/qp.c         | 121 +++++++++++------
+ drivers/infiniband/hw/mlx5/main.c       |   7 +
+ drivers/infiniband/hw/mlx5/qp.c         | 164 ++++++++++++++++++------
+ drivers/infiniband/hw/mlx5/qp.h         |   4 +-
+ drivers/infiniband/hw/mlx5/qpc.c        |   7 +-
+ drivers/net/ethernet/mellanox/mlx4/qp.c |  14 +-
+ include/linux/mlx4/qp.h                 |   1 +
+ include/linux/mlx5/mlx5_ifc.h           |  47 ++++++-
+ include/rdma/ib_verbs.h                 |   2 +-
+ 11 files changed, 292 insertions(+), 86 deletions(-)
+
 -- 
-2.25.1
+2.38.1
 
