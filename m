@@ -2,81 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3699B65D794
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:52:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92CB165D798
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:53:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234955AbjADPwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 10:52:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
+        id S234743AbjADPx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 10:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235235AbjADPwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:52:50 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F003C388
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 07:52:49 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id bs20so31332444wrb.3
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 07:52:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=j7qQ8dWribkTapYzoAZFdp9yAFJiQW9f4naN0OZZGi4=;
-        b=ZKhwlpVOTo73pAo0wdMM0xLsmC1boVTq/oeIUPCP6SSoTvbibJ4tOq41/02g2wqToO
-         fXpXzxCVw6DU4tdND9VPUbLXNFHUjl7EDJLxy+CHyHYnUmaYoadxL+6IF69eHjWWKj8x
-         ascwKUZdWN1f4AWLVzSa7kh8coit2pGYOWmocGUw+tMF78b9H4+EL2PK3q8WfGDRhrS1
-         2P2UaS42fAFyXXamT/UJC6kT9x19Q41ASTXo78TM6FfopLMUr74NfZoUM4uL2TSMnPGj
-         KBWSV07VV9U3HabUycaKY9jNdGEmXMrRH+AoJzrM3Zz+JEymrRbOQGnA6wa2d0DWCoAY
-         clwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j7qQ8dWribkTapYzoAZFdp9yAFJiQW9f4naN0OZZGi4=;
-        b=mb92FKoDsAlDLey/cHlY0jxzJM7RAxzIiAwVkQYbPoOBBLLkpA8JumfQHPd0fPGX42
-         QoQmpscpOtYpofrMdxhHuKs1CWefOX00oJFvF47PU3pLeQ7Tak9mZyz5R1BMzJ4TyiOu
-         vAy8xDiSSSGSFw1vHgQysDKeWHPEAb44LibVpibfRsra10BskTuqDh7zd1+ZE9Gob3/h
-         /x+cN5ZLzjUlg7LRUqQXH04Z45zpoO2LPxJrb/P09Lk3mi/whYpHPpvuCdWXKl0IHkNu
-         B80kc7NX9HxUXVFjfIgN+D/sPbVfsMV/XzB+yV7RV/+Mp2R+cnzbyUNSBxJq0dRBVp7Y
-         AlGg==
-X-Gm-Message-State: AFqh2kqqiJxpnYbZQGmTxcotmYt+LO3Du6oS5nELvskwD2RKHNmnE/Fs
-        FROFIJPSJ/gQVoV44mj6KxgREBXS9KMX8tVeIsA=
-X-Google-Smtp-Source: AMrXdXvmGIlLgmxh5PwxGDyh4QWGgBo1FBvNJI1gjS2Tslh6/Udidl60JuO5sed67CJiI+fEdqAPkA==
-X-Received: by 2002:a5d:5887:0:b0:292:f57f:366f with SMTP id n7-20020a5d5887000000b00292f57f366fmr13866253wrf.18.1672847567707;
-        Wed, 04 Jan 2023 07:52:47 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id bo19-20020a056000069300b00294176c2c01sm12484556wrb.86.2023.01.04.07.52.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 07:52:46 -0800 (PST)
-Date:   Wed, 4 Jan 2023 16:52:45 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 12/14] devlink: uniformly take the devlink
- instance lock in the dump loop
-Message-ID: <Y7WgzeJh54U9VGPu@nanopsycho>
-References: <20230104041636.226398-1-kuba@kernel.org>
- <20230104041636.226398-13-kuba@kernel.org>
+        with ESMTP id S239740AbjADPxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:53:24 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869FE1B9FA
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 07:53:22 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-214-KAuNDI3RMASqYXJv9H9bbQ-1; Wed, 04 Jan 2023 15:53:19 +0000
+X-MC-Unique: KAuNDI3RMASqYXJv9H9bbQ-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 4 Jan
+ 2023 15:53:17 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.044; Wed, 4 Jan 2023 15:53:17 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Martin Blumenstingl' <martin.blumenstingl@googlemail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tehuang@realtek.com" <tehuang@realtek.com>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
+Thread-Topic: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
+Thread-Index: AQHZGsFtJHlbRNsmYUOpTa0F4ufSPq6EmMnggAOg+qCAALbHgIAAiEwggAT0j0eAAALd0A==
+Date:   Wed, 4 Jan 2023 15:53:17 +0000
+Message-ID: <ec6a0988f3f943128e0122d50959185a@AcuMS.aculab.com>
+References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
+ <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
+ <92eb7dfa8b7d447e966a2751e174b642@realtek.com>
+ <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
+ <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
+ <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com>
+ <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
+ <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com>
+In-Reply-To: <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230104041636.226398-13-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 04, 2023 at 05:16:34AM CET, kuba@kernel.org wrote:
->Move the lock taking out of devlink_nl_cmd_region_get_devlink_dumpit().
->This way all dumps will take the instance lock in the main iteration
->loop directly, making refactoring and reading the code easier.
->
->Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+RnJvbTogTWFydGluIEJsdW1lbnN0aW5nbA0KPiBTZW50OiAwNCBKYW51YXJ5IDIwMjMgMTU6MzAN
+Cj4gDQo+IEhpIFBpbmctS2UsIEhpIERhdmlkLA0KPiANCj4gT24gU3VuLCBKYW4gMSwgMjAyMyBh
+dCAyOjA5IFBNIFBpbmctS2UgU2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPiB3cm90ZToNCj4gWy4u
+Ll0NCj4gPiBZZXMsIGl0IHNob3VsZCBub3QgdXNlIGJpdCBmaWxlZC4gSW5zdGVhZCwgdXNlIGEg
+X19sZTE2IGZvciBhbGwgZmllbGRzLCBzdWNoIGFzDQo+IEkgdGhpbmsgdGhpcyBjYW4gYmUgZG9u
+ZSBpbiBhIHNlcGFyYXRlIHBhdGNoLg0KPiBNeSB2MiBvZiB0aGlzIHBhdGNoIGhhcyByZWR1Y2Vk
+IHRoZXNlIGNoYW5nZXMgdG8gYSBtaW5pbXVtLCBzZWUgWzBdDQo+IA0KPiBbLi4uXQ0KPiA+IHN0
+cnVjdCBydHc4ODIxY2VfZWZ1c2Ugew0KPiA+ICAgIC4uLg0KPiA+ICAgIHU4IGRhdGExOyAgICAg
+ICAvLyBvZmZzZXQgMHgxMDANCj4gPiAgICBfX2xlMTYgZGF0YTI7ICAgLy8gb2Zmc2V0IDB4MTAx
+LTB4MTAyDQo+ID4gICAgLi4uDQo+ID4gfSBfX3BhY2tlZDsNCj4gPg0KPiA+IFdpdGhvdXQgX19w
+YWNrZWQsIGNvbXBpbGVyIGNvdWxkIGhhcyBwYWQgYmV0d2VlbiBkYXRhMSBhbmQgZGF0YTIsDQo+
+ID4gYW5kIHRoZW4gZ2V0IHdyb25nIHJlc3VsdC4NCj4gTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0
+IHRoaXMgaXMgdGhlIHJlYXNvbiB3aHkgd2UgbmVlZCBfX3BhY2tlZC4NCg0KVHJ1ZSwgYnV0IGRv
+ZXMgaXQgcmVhbGx5IGhhdmUgdG8gbG9vayBsaWtlIHRoYXQ/DQpJIGNhbid0IGZpbmQgdGhhdCB2
+ZXJzaW9uIChJIGRvbid0IGhhdmUgYSBuZXRfbmV4dCB0cmVlKS4NClBvc3NpYmx5IGl0IHNob3Vs
+ZCBiZSAndTggZGF0YTJbMl07Jw0KDQpNb3N0IGhhcmR3YXJlIGRlZmluaXRpb25zIGFsaWduIGV2
+ZXJ5dGhpbmcuDQoNCldoYXQgeW91IG1heSB3YW50IHRvIGRvIGlzIGFkZCBjb21waWxlLXRpbWUg
+YXNzZXJ0cyBmb3IgdGhlDQpzaXplcyBvZiB0aGUgc3RydWN0dXJlcy4NCg0KUmVtZW1iZXIgdGhh
+dCBpZiB5b3UgaGF2ZSAxNi8zMiBiaXQgZmllbGRzIGluIHBhY2tlZCBzdHJ1Y3R1cmVzDQpvbiBz
+b21lIGFyY2hpdGVjdHVyZXMgdGhlIGNvbXBpbGUgaGFzIHRvIGdlbmVyYXRlIGNvZGUgdGhhdCBk
+b2VzDQpieXRlIGxvYWRzIGFuZCBzaGlmdHMuDQoNClRoZSAnbWlzYWxpZ25lZCcgcHJvcGVydHkg
+aXMgbG9zdCB3aGVuIHlvdSB0YWtlIHRoZSBhZGRyZXNzIC0gc28NCnlvdSBjYW4gZWFzaWx5IGdl
+bmVyYXRlIGEgZmF1bHQuDQoNCkFkZGluZyBfX3BhY2tlZCB0byBhIHN0cnVjdCBpcyBhIHNsZWRn
+ZWhhbW1lciB5b3UgcmVhbGx5IHNob3VsZG4ndCBuZWVkLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0
+ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBL
+ZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
