@@ -2,66 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EBF965DF5C
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 22:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 480AD65DF65
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 22:59:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240373AbjADVzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 16:55:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
+        id S240299AbjADV7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 16:59:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbjADVzF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 16:55:05 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD651EAC5;
-        Wed,  4 Jan 2023 13:55:04 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id jn22so37293465plb.13;
-        Wed, 04 Jan 2023 13:55:04 -0800 (PST)
+        with ESMTP id S235098AbjADV7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 16:59:52 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AD813D67
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 13:59:51 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id bx21-20020a056a00429500b00582d85bb03bso2515795pfb.16
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 13:59:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+4XcGOA8JPfi4O46hWv8UShHUmr3QGV4uMMWD5MmT8A=;
-        b=XcFVhv1gAH3JdjPX7gDGD9q4GzbmjwOdkiRLSo3gywgJjKuIIUc+/f7NOFPJqEVygI
-         dPb0ORknjrvejVoKo76y6Htr+6D+N2B8kYtRgIjSgReL/GMWvXv7yTMpAVuH+57BrATf
-         jA2hIHNXfTx6mrOBL8FOU4fOlVOj2cfTxJGPhvWDaM8mcB0OUcSnXiAreBfcvqD5xPv8
-         SA5e82oEKzNYUjaerksLDfHcSDGODTbyqr/EcouGhLyd361R6glQtIuh1BtfLg4alv+G
-         JjHqP9SQubQsRoUscsZVAy3OouesCShZloc6zave9cucCaI+4zc9RsacepV+hz04jo9X
-         bOtw==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=l9z1LqEz7Fh64pPbqNasXJtSoPwx+819o+O2qTJvWLQ=;
+        b=ROIwmn5LQGrBQ7apF7mQlA5rR2DQ5z1bMmxIsTsshe6kKeD63tkSnmEQVVwLtGbxzJ
+         q8AG7nb8qdxf3nyiR4Kp+3XMZmFl95i+/wTx5wWFupVjGSo8iQHta08vX4CvGSTZX5+O
+         WLTDVsQhiju+CmggZMgS77gi95hydZrq9wxdiBqLAfXf8foqu+Tg1NeeYg29FF57vI2N
+         WTf6GXKEKJ3JAFtEOSsi6oCoeLc9sfgp1V7lUiDNboEoaD3qSfKQne6xAEG7hr72icJJ
+         CJ8OVz+ggTW3P2tw1TgxL0jaO2RCyAgAimV3YNUoWVCEMJ1rFm2bypGYiWH1soNa9aDZ
+         LHvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+4XcGOA8JPfi4O46hWv8UShHUmr3QGV4uMMWD5MmT8A=;
-        b=jAWk3mi75tfGU+pFhhDf2SBEdvqlHbwTVP9YOTGmpaOHmI9huOd+3yEy6bVkwVQeA+
-         3Cy7d6e/zXmEIbe+Xlh/hpbOJARs0mC9V+tl+XwbEg1TIAoKfrHAk2TT2qDdvYbMLLnO
-         adt5GEibEwFdYpNfQ21yKxuzRKYWQklxbw6Jz+p6vDgX/RMbVV2jKTL2l+bMrPQnh7dN
-         +AsdvbIyFJHyoFw9E44I9SI+bhXZOhvxygbnF7HSoOI5+e1iiHj6H20H3o5t/ExYTAIL
-         nuym01qiUioLLCtGXZe7gAmxv9wBAWl3LH+HXn8b9LabggQOeRTIV5TLoQ7sAIvJNYw/
-         gWJw==
-X-Gm-Message-State: AFqh2kqx+7LXJUBhoSOkBIjuoaBxK/7hf6PCULjq5X/mRJyewhfzGOJC
-        h5Gq2Vmd1mk3s0dYT9xw8CiAstB7VnY=
-X-Google-Smtp-Source: AMrXdXs/pnFTks8n7T0pMDbs7LVUlMpVN+ilLbCKFvGBYyH2EumnNoT5/TBAr4b1UfjBpxV30RCw1g==
-X-Received: by 2002:a17:90a:7283:b0:225:be73:312 with SMTP id e3-20020a17090a728300b00225be730312mr45237818pjg.49.1672869304092;
-        Wed, 04 Jan 2023 13:55:04 -0800 (PST)
-Received: from macbook-pro-6.dhcp.thefacebook.com ([2620:10d:c090:400::5:1385])
-        by smtp.gmail.com with ESMTPSA id y11-20020a17090a1f4b00b00225d1756f60sm25118pjy.33.2023.01.04.13.55.02
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 04 Jan 2023 13:55:03 -0800 (PST)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, kuba@kernel.org, andrii@kernel.org,
-        martin.lau@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: pull-request: bpf 2023-01-04
-Date:   Wed,  4 Jan 2023 13:55:00 -0800
-Message-Id: <20230104215500.79435-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=l9z1LqEz7Fh64pPbqNasXJtSoPwx+819o+O2qTJvWLQ=;
+        b=0hcc/K9ThIc5Nhoxdkk4k0EukegRSTbtvzxPhGHr/5fIM07ulCoFB8U/kx5OX8jKUU
+         H4mybsKvNAcP+6F5/YgaDmIJYzqv6+v/VU4jpU+sttLj1NJgheCRxNkNwEKS1mZO3a/w
+         3QsetJCONDfaSBXytJnZibYTE+xrjqHh9C7qyAyb6Qp0Fg5RxuyzOvFOJ7R3BYxkcs9I
+         uzGFGk5slgY6ClioIYjxe5Cv0tq6gLAg0/HoWrWmzkxaXHbXQBXZ7JE9sURDIkvWa+yS
+         M/02/XdGuh0ORhJaeItyzfD43orVPSDbUc489i6Ux+UpTvkhw7HdyxVt4Pr0eRZOgcph
+         Hq5g==
+X-Gm-Message-State: AFqh2kqT22mzT0FpKUjw+z2Wuzi18bVq+Sm6cn8YT1rCIgXfvXtFq0Na
+        qTSZN2NAcmj08qS0yxT5mih+kYo=
+X-Google-Smtp-Source: AMrXdXs/NTbP5gwSmyjFKqbz0g6d4XJkrtjUD6tGOvIbbcpR532t5mqn2L8VOCesAaX4C6iEIObgv9Q=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a62:19cf:0:b0:582:5779:3876 with SMTP id
+ 198-20020a6219cf000000b0058257793876mr849919pfz.40.1672869591058; Wed, 04 Jan
+ 2023 13:59:51 -0800 (PST)
+Date:   Wed,  4 Jan 2023 13:59:32 -0800
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
+Message-ID: <20230104215949.529093-1-sdf@google.com>
+Subject: [PATCH bpf-next v6 00/17] xdp: hints via kfuncs
+From:   Stanislav Fomichev <sdf@google.com>
+To:     bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,63 +78,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+Please see the first patch in the series for the overall
+design and use-cases.
 
-The following pull-request contains BPF updates for your *net* tree.
+See the following email from Toke for the per-packet metadata overhead:
+https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com/T/#m49d=
+48ea08d525ec88360c7d14c4d34fb0e45e798
 
-We've added 5 non-merge commits during the last 8 day(s) which contain
-a total of 5 files changed, 112 insertions(+), 18 deletions(-).
+Recent changes:
 
-The main changes are:
+- Reject dev-bound progs at tc (Martin)
 
-1) Always use maximal size for copy_array in the verifier to fix KASAN tracking, from Kees.
+- Reuse __bpf_prog_offload_destroy instead of adding
+  __bpf_prog_dev_bound_destroy (Marin)
 
-2) Fix bpf task iterator walking through dead tasks, from Kui-Feng.
+- Drop a bunch of unnecessary NULL checks (Martin)
 
-3) Make sure livepatch and bpf fexit can coexist, from Chuang.
+- Fix compilation of xdp_hw_metadata (Martin and thank you David for the hi=
+nts)
 
-Please consider pulling these changes from:
+- Move bpf_dev_bound_kfunc_check into offload.c (Martin)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
+- Swap "ip netns del" and close_netns in the selftest (Martin)
 
-Thanks a lot!
+- Move some code out of bpf_devs_lock (Martin)
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
+- Remove some excessive gotos (Martin)
 
-Hyunwoo Kim, Jiri Olsa, Nathan Slingerland, Song Liu, Yonghong Song
+- Trigger bpf_prog_dev_bound_inherit for BPF_PROG_TYPE_EXT only when
+  the destination program is dev-bound (Martin)
 
-----------------------------------------------------------------
+- Document @xdp_metadata_ops (David)
 
-The following changes since commit 40cab44b9089a41f71bbd0eff753eb91d5dafd68:
+- Use :identifiers: when referencing metadata kfuns in the doc (David)
 
-  net/sched: fix retpoline wrapper compilation on configs without tc filters (2022-12-28 12:11:32 +0000)
+- Spelling and teletyping fixes for the doc (David)
 
-are available in the Git repository at:
+- Add a note about xsk_umem__get_data and METADATA_SIZE (David)
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
+Prior art (to record pros/cons for different approaches):
 
-for you to fetch changes up to 45435d8da71f9f3e6860e6e6ea9667b6ec17ec64:
+- Stable UAPI approach:
+  https://lore.kernel.org/bpf/20220628194812.1453059-1-alexandr.lobakin@int=
+el.com/
+- Metadata+BTF_ID appoach:
+  https://lore.kernel.org/bpf/166256538687.1434226.15760041133601409770.stg=
+it@firesoul/
+- v5:
+  https://lore.kernel.org/bpf/20221220222043.3348718-1-sdf@google.com/
+- v4:
+  https://lore.kernel.org/bpf/20221213023605.737383-1-sdf@google.com/
+- v3:
+  https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com/
+- v2:
+  https://lore.kernel.org/bpf/20221121182552.2152891-1-sdf@google.com/
+- v1:
+  https://lore.kernel.org/bpf/20221115030210.3159213-1-sdf@google.com/
+- kfuncs v2 RFC:
+  https://lore.kernel.org/bpf/20221027200019.4106375-1-sdf@google.com/
+- kfuncs v1 RFC:
+  https://lore.kernel.org/bpf/20221104032532.1615099-1-sdf@google.com/
 
-  bpf: Always use maximal size for copy_array() (2022-12-28 14:54:53 -0800)
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Martin KaFai Lau <martin.lau@linux.dev>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc: Maryam Tahhan <mtahhan@redhat.com>
+Cc: xdp-hints@xdp-project.net
+Cc: netdev@vger.kernel.org
 
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      selftests/bpf: Temporarily disable part of btf_dump:var_data test.
-      Merge branch 'bpf: fix the crash caused by task iterators over vma'
+Stanislav Fomichev (13):
+  bpf: Document XDP RX metadata
+  bpf: Rename bpf_{prog,map}_is_dev_bound to is_offloaded
+  bpf: Move offload initialization into late_initcall
+  bpf: Reshuffle some parts of bpf/offload.c
+  bpf: Introduce device-bound XDP programs
+  selftests/bpf: Update expected test_offload.py messages
+  bpf: XDP metadata RX kfuncs
+  veth: Introduce veth_xdp_buff wrapper for xdp_buff
+  veth: Support RX XDP metadata
+  selftests/bpf: Verify xdp_metadata xdp->af_xdp path
+  net/mlx4_en: Introduce wrapper for xdp_buff
+  net/mlx4_en: Support RX XDP metadata
+  selftests/bpf: Simple program to dump XDP RX metadata
 
-Chuang Wang (1):
-      bpf: Fix panic due to wrong pageattr of im->image
+Toke H=C3=B8iland-J=C3=B8rgensen (4):
+  bpf: Support consuming XDP HW metadata from fext programs
+  xsk: Add cb area to struct xdp_buff_xsk
+  net/mlx5e: Introduce wrapper for xdp_buff
+  net/mlx5e: Support RX XDP metadata
 
-Kees Cook (1):
-      bpf: Always use maximal size for copy_array()
+ Documentation/networking/index.rst            |   1 +
+ Documentation/networking/xdp-rx-metadata.rst  | 108 +++++
+ drivers/net/ethernet/mellanox/mlx4/en_clock.c |  13 +-
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |   6 +
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  63 ++-
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  11 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  26 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  11 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |  35 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   6 +
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  99 ++--
+ drivers/net/netdevsim/bpf.c                   |   4 -
+ drivers/net/veth.c                            |  87 +++-
+ include/linux/bpf.h                           |  61 ++-
+ include/linux/netdevice.h                     |   8 +
+ include/net/xdp.h                             |  21 +
+ include/net/xsk_buff_pool.h                   |   5 +
+ include/uapi/linux/bpf.h                      |   5 +
+ kernel/bpf/core.c                             |  12 +-
+ kernel/bpf/offload.c                          | 426 ++++++++++++------
+ kernel/bpf/syscall.c                          |  40 +-
+ kernel/bpf/verifier.c                         |  38 +-
+ net/bpf/test_run.c                            |   3 +
+ net/core/dev.c                                |   9 +-
+ net/core/filter.c                             |   2 +-
+ net/core/xdp.c                                |  64 +++
+ tools/include/uapi/linux/bpf.h                |   5 +
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |   9 +-
+ .../selftests/bpf/prog_tests/xdp_metadata.c   | 410 +++++++++++++++++
+ .../selftests/bpf/progs/xdp_hw_metadata.c     |  81 ++++
+ .../selftests/bpf/progs/xdp_metadata.c        |  64 +++
+ .../selftests/bpf/progs/xdp_metadata2.c       |  23 +
+ tools/testing/selftests/bpf/test_offload.py   |  10 +-
+ tools/testing/selftests/bpf/xdp_hw_metadata.c | 405 +++++++++++++++++
+ tools/testing/selftests/bpf/xdp_metadata.h    |  15 +
+ 38 files changed, 1902 insertions(+), 292 deletions(-)
+ create mode 100644 Documentation/networking/xdp-rx-metadata.rst
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_metadata.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_metadata2.c
+ create mode 100644 tools/testing/selftests/bpf/xdp_hw_metadata.c
+ create mode 100644 tools/testing/selftests/bpf/xdp_metadata.h
 
-Kui-Feng Lee (2):
-      bpf: keep a reference to the mm, in case the task is dead.
-      selftests/bpf: add a test for iter/task_vma for short-lived processes
+--=20
+2.39.0.314.g84b9a713c41-goog
 
- kernel/bpf/task_iter.c                            | 39 ++++++++----
- kernel/bpf/trampoline.c                           |  4 ++
- kernel/bpf/verifier.c                             | 12 ++--
- tools/testing/selftests/bpf/prog_tests/bpf_iter.c | 73 +++++++++++++++++++++++
- tools/testing/selftests/bpf/prog_tests/btf_dump.c |  2 +-
- 5 files changed, 112 insertions(+), 18 deletions(-)
