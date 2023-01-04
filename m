@@ -2,82 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A4B65CD22
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 07:35:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7766065CD57
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 07:48:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233321AbjADGfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 01:35:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
+        id S233718AbjADGs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 01:48:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230411AbjADGfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 01:35:15 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA8714017;
-        Tue,  3 Jan 2023 22:35:14 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id c9so17276002pfj.5;
-        Tue, 03 Jan 2023 22:35:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5i2PAsadZxre+fZA40ApSOO4k6rDBMhHG9OHUSd1jK0=;
-        b=gAU5b++TyEBAGOOaOjV+IHnXy9gGfUTiYm9Ah5+13Veoa4PyVgvxtlUrJbzk1V5sa8
-         AcmbmoM63BK7EcMazLZ+5+ksoUUBV4oKeYdzfMi/cjQJlqjA+Ozr1k/UUT0bugDyccfv
-         Ws5ridHBCE+02PZxSg8qgC+RdpMVR7YW8LaNn4UAUqkUlTRVO426XC2NlSmJ0QoDZWbG
-         UbtWr4etQF+jokXd1g4um6O/bTDPKAK2WoE1WcQ7lxR2KB1+gyC3PkD5y7vkWifaubjb
-         jtvlU7Uq0JfA4iU1+NqoukvI0jAXDKOszVV7xPRs4BDXNHp6N9caWLIzFyo86ylzz7dn
-         P9JQ==
+        with ESMTP id S233804AbjADGre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 01:47:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E449A186F8
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 22:46:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672814776;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dZlFWtxiRkDtk+thRF9nVuLB+b4oL2TYgzK5e9wk6bs=;
+        b=SOOS8aI83cGhGdG2ckdETkO+AvAKw6/I1mzXh0cWm2ObnR3Oc0hTOR6dvkiwyxLtu+/KY0
+        McwH5kTcpX/O1e8umacApWemFGXdRoSTCzhogLjB9kgQ6N07DCtDesJ4tqaFQNCcxYXS91
+        RQCE/C7oLa5zLszqrNRdjFIItVgsKoo=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-528-zobgy0YdN12E8epQ5PYeNg-1; Wed, 04 Jan 2023 01:46:14 -0500
+X-MC-Unique: zobgy0YdN12E8epQ5PYeNg-1
+Received: by mail-wm1-f71.google.com with SMTP id r15-20020a05600c35cf00b003d9a14517b2so8230607wmq.2
+        for <netdev@vger.kernel.org>; Tue, 03 Jan 2023 22:46:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5i2PAsadZxre+fZA40ApSOO4k6rDBMhHG9OHUSd1jK0=;
-        b=w1lqCgewXT7EUqUNCW1bHjtvArWbrdRxQP696NhRtUHIhS7dAjjgm/93BvW58qKXls
-         WO5l2dsuYfi6Hz87Zvwi1uTumgDdtr8JV3QbeC1BVNy2ta1/4p4Y0Qhsa/H7oaGn4uiI
-         vS/cuG22SclnHQdx400jS2pAIfC67WijgPvmoRwsAe5WdLC/fu3JZmLFt3CbzKntoJSF
-         jgTj1HeUdVwU5RdV30SOqUwCfexcU2KfX2d7Z1ohg3GIh7+arAWU5vsaBowjFpcIDOX3
-         s5alXgg7ywNnh25jr5bSYUjVfsDRps7QsFxzHT0fZX/9Wqk8F+Zy24OvrUJvltXRR0Ll
-         /7/A==
-X-Gm-Message-State: AFqh2kqTp/GDGhKotQqrdAMioV0LD/lmZ4WJRfCB0y9mnE1DrCJQxsAM
-        kq+STjhhfyiOIRPGORJAaKnS2nVIdHAYirpU
-X-Google-Smtp-Source: AMrXdXvi6Dj8Q8jPRtltXyZIDqYzpi3IkyqsCHG995ldQ2iwyBQ2irb4AHPBwcV/AwV9CgE0Jc2w3A==
-X-Received: by 2002:a05:6a00:21ce:b0:581:26c2:aa0a with SMTP id t14-20020a056a0021ce00b0058126c2aa0amr43392435pfj.30.1672814112856;
-        Tue, 03 Jan 2023 22:35:12 -0800 (PST)
-Received: from guoguo-thinkbook.lan ([240e:379:964:5365:9621:efdc:4c9e:b465])
-        by smtp.gmail.com with ESMTPSA id 67-20020a621446000000b0056d98e359a5sm20378439pfu.165.2023.01.03.22.35.06
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dZlFWtxiRkDtk+thRF9nVuLB+b4oL2TYgzK5e9wk6bs=;
+        b=BF16GiDHv05hwy0SWhmtlodiujBmbmNDh+BzTWC9IvGFU2nHxKp1Yp0nziu7tuKz+N
+         YYz6vIcVOEhFj0O0dfpPm2NvrBomKHeWILKP9RrSmCTIh180TjjDDCQOU2n7vysn7nYJ
+         TNm4FiMX/pyNaq8dNyY4bYRwVsgkVDVezqktkUzMBv1sfM0xgZRIU8GbdfxlcYQQxzOA
+         mRV+wfgZk9fkefUWId4VbGOv6Vy4OAFZDHaZyca2/5S/9Sk+JlkMqCl/PUzDOYW1fTd0
+         iSlx1tAhb6+DRGOU6SgncV9PP4H4pulK2Sx5bCbA+0vufY129eJw5RKF3fmIFTxAmYLm
+         74qA==
+X-Gm-Message-State: AFqh2kpqZkaZOmCH+UZ9Pb4ooKV/5LimW32UXWSaXO6F8XeM0zu/e77h
+        AzDS0IMbe4XMk88UxXxoA3/oFXoQCvdU99VyPD/6sMOOQpFKgmUYLDnod+GdpW1erD2TU+CpMaO
+        efsdgHTiXziCkpEdC
+X-Received: by 2002:a05:600c:3ba7:b0:3d3:4dac:aa69 with SMTP id n39-20020a05600c3ba700b003d34dacaa69mr32523075wms.36.1672814773590;
+        Tue, 03 Jan 2023 22:46:13 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtsmKlEtrhGwFJV/isqLZ83QMfqezcC6GQt8r/1BBQD+my1HQhflP0L+uExmpASFxDlO1tKIg==
+X-Received: by 2002:a05:600c:3ba7:b0:3d3:4dac:aa69 with SMTP id n39-20020a05600c3ba700b003d34dacaa69mr32523066wms.36.1672814773307;
+        Tue, 03 Jan 2023 22:46:13 -0800 (PST)
+Received: from redhat.com ([2.52.151.85])
+        by smtp.gmail.com with ESMTPSA id x7-20020a05600c188700b003d9aa76dc6asm17424241wmp.0.2023.01.03.22.46.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Jan 2023 22:35:11 -0800 (PST)
-From:   Chuanhong Guo <gch981213@gmail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Deren Wu <deren.wu@mediatek.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        Ben Greear <greearb@candelatech.com>,
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] wifi: mt76: mt7921u: add support for Comfast CF-952AX
-Date:   Wed,  4 Jan 2023 14:33:38 +0800
-Message-Id: <20230104063341.18863-1-gch981213@gmail.com>
-X-Mailer: git-send-email 2.39.0
+        Tue, 03 Jan 2023 22:46:12 -0800 (PST)
+Date:   Wed, 4 Jan 2023 01:46:09 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH net V2] virtio-net: correctly enable callback during
+ start_xmit
+Message-ID: <20230104014256-mutt-send-email-mst@kernel.org>
+References: <20221215032719.72294-1-jasowang@redhat.com>
+ <20221215034740-mutt-send-email-mst@kernel.org>
+ <CACGkMEsLeCRDqyuyGzWw+kjYrTVDjUjOw6+xHESPT2D1p03=sQ@mail.gmail.com>
+ <20221215042918-mutt-send-email-mst@kernel.org>
+ <CACGkMEsbvTQrEp5dmQRHp58Mu=E7f433Xrvsbs4nZMA5R3B6mQ@mail.gmail.com>
+ <CACGkMEsu_OFFs15d2dzNbfSjzAZfYXLn9CNcO3ELPbDqZsndzg@mail.gmail.com>
+ <50eb0df0-89fe-a5df-f89f-07bf69bd00ae@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <50eb0df0-89fe-a5df-f89f-07bf69bd00ae@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,28 +87,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Comfast CF-952AX is a MT7921 based USB WiFi dongle with custom
-VID/PID. Add an entry for it.
+On Wed, Jan 04, 2023 at 12:23:07PM +0800, Jason Wang wrote:
+> 
+> 在 2022/12/23 14:29, Jason Wang 写道:
+> > On Fri, Dec 16, 2022 at 11:43 AM Jason Wang <jasowang@redhat.com> wrote:
+> > > On Thu, Dec 15, 2022 at 5:35 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > On Thu, Dec 15, 2022 at 05:15:43PM +0800, Jason Wang wrote:
+> > > > > On Thu, Dec 15, 2022 at 5:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > > On Thu, Dec 15, 2022 at 11:27:19AM +0800, Jason Wang wrote:
+> > > > > > > Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
+> > > > > > > virtqueue callback via the following statement:
+> > > > > > > 
+> > > > > > >          do {
+> > > > > > >             ......
+> > > > > > >        } while (use_napi && kick &&
+> > > > > > >                 unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+> > > > > > > 
+> > > > > > > When NAPI is used and kick is false, the callback won't be enabled
+> > > > > > > here. And when the virtqueue is about to be full, the tx will be
+> > > > > > > disabled, but we still don't enable tx interrupt which will cause a TX
+> > > > > > > hang. This could be observed when using pktgen with burst enabled.
+> > > > > > > 
+> > > > > > > Fixing this by trying to enable tx interrupt after we disable TX when
+> > > > > > > we're not using napi or kick is false.
+> > > > > > > 
+> > > > > > > Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
+> > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > > > ---
+> > > > > > > The patch is needed for -stable.
+> > > > > > > Changes since V1:
+> > > > > > > - enable tx interrupt after we disable tx
+> > > > > > > ---
+> > > > > > >   drivers/net/virtio_net.c | 2 +-
+> > > > > > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > > > 
+> > > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > > > index 86e52454b5b5..dcf3a536d78a 100644
+> > > > > > > --- a/drivers/net/virtio_net.c
+> > > > > > > +++ b/drivers/net/virtio_net.c
+> > > > > > > @@ -1873,7 +1873,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> > > > > > >         */
+> > > > > > >        if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
+> > > > > > >                netif_stop_subqueue(dev, qnum);
+> > > > > > > -             if (!use_napi &&
+> > > > > > > +             if ((!use_napi || !kick) &&
+> > > > > > >                    unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
+> > > > > > >                        /* More just got used, free them then recheck. */
+> > > > > > >                        free_old_xmit_skbs(sq, false);
+> > > > > > This will work but the following lines are:
+> > > > > > 
+> > > > > >                         if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
+> > > > > >                                  netif_start_subqueue(dev, qnum);
+> > > > > >                                  virtqueue_disable_cb(sq->vq);
+> > > > > >                          }
+> > > > > > 
+> > > > > > 
+> > > > > > and I thought we are supposed to keep callbacks enabled with napi?
+> > > > > This seems to be the opposite logic of commit a7766ef18b33 that
+> > > > > disables callbacks for NAPI.
+> > > > > 
+> > > > > It said:
+> > > > > 
+> > > > >      There are currently two cases where we poll TX vq not in response to a
+> > > > >      callback: start xmit and rx napi.  We currently do this with callbacks
+> > > > >      enabled which can cause extra interrupts from the card.  Used not to be
+> > > > >      a big issue as we run with interrupts disabled but that is no longer the
+> > > > >      case, and in some cases the rate of spurious interrupts is so high
+> > > > >      linux detects this and actually kills the interrupt.
+> > > > > 
+> > > > > My undersatnding is that it tries to disable callbacks on TX.
+> > > > I think we want to disable callbacks while polling, yes. here we are not
+> > > > polling, and I think we want a callback because otherwise nothing will
+> > > > orphan skbs and a socket can be blocked, not transmitting anything - a
+> > > > deadlock.
+> > > I'm not sure how I got here, did you mean a partial revert of
+> > > a7766ef18b33 (the part that disables TX callbacks on start_xmit)?
+> > Michael, any idea on this?
+> > 
+> > Thanks
+> 
+> 
+> Michael, any comment?
+> 
+> Thanks
 
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
----
- drivers/net/wireless/mediatek/mt76/mt7921/usb.c | 3 +++
- 1 file changed, 3 insertions(+)
+Sorry I don't understand the question. What does "how I got here" mean?
+To repeat my suggestion:
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
-index 5321d20dcdcb..a0778ecdb995 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
-@@ -15,6 +15,9 @@
- static const struct usb_device_id mt7921u_device_table[] = {
- 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7961, 0xff, 0xff, 0xff),
- 		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
-+	/* Comfast CF-952AX */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x3574, 0x6211, 0xff, 0xff, 0xff),
-+		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
- 	{ },
- };
- 
+	I think it is easier to just do a separate branch here. Along the
+	lines of:
+
+			if (use_napi) {
+				if (unlikely(!virtqueue_enable_cb_delayed(sq->vq)))
+					virtqueue_napi_schedule(napi, vq);
+			} else {
+				... old code ...
+			}
+
+we can also backport this minimal safe fix, any refactorings can be done on
+top.
+
+
 -- 
-2.39.0
+MST
 
