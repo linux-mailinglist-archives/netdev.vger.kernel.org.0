@@ -2,500 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E040965D1A7
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 12:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F17165D1AC
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 12:42:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbjADLlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 06:41:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
+        id S234886AbjADLln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 06:41:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbjADLlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 06:41:24 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A64E217;
-        Wed,  4 Jan 2023 03:41:22 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Nn6xw3fcFz6HJcm;
-        Wed,  4 Jan 2023 19:36:36 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Wed, 4 Jan 2023 11:41:18 +0000
-Message-ID: <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
-Date:   Wed, 4 Jan 2023 14:41:17 +0300
+        with ESMTP id S234789AbjADLlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 06:41:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD90C33;
+        Wed,  4 Jan 2023 03:41:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1425A613F8;
+        Wed,  4 Jan 2023 11:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2CDCC433F2;
+        Wed,  4 Jan 2023 11:41:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672832500;
+        bh=UOkLJ8/shdFIUGOHuDtn1pstz2A0lwIELqP5/G4QGxg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IUvMkekXwUhgXkcFN6GX8/l6d2AIgq5hX80C4CNjR7HrY78UcWjMUwemItN56TNWh
+         eqDojVtBvTEMX3KErRmtOerTa/L//2fIoG4NXZSLqqWLncwRljPP/FVZLJrOf0811h
+         1SHP8SIZI5UrjHBKZZAqUIi+iccyIQHfJ7ZCyd4NlgNWDpdDpo5vSwMmyW9TaHIaD7
+         zDF6l39V99cM/4vpKVkdG2n7HJBTFdYY5KzFtG2hr+yu5enbRLNXg2M9rjbNZZ1CwO
+         kmbS1QzG+m9gq4+5YeKxyWP217Ugt70A69jBcHiYQE/ErghSMjGblretA6q7oBa+sY
+         rN/ciz4yMoEVg==
+Date:   Wed, 4 Jan 2023 13:41:36 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wifi: rtw89: Add missing check for alloc_workqueue
+Message-ID: <Y7Vl8CHL935On/7o@unreal>
+References: <20230104093353.48239-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <artem.kuzin@huawei.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
- <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml500001.china.huawei.com (7.191.163.213) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230104093353.48239-1-jiasheng@iscas.ac.cn>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 04, 2023 at 05:33:53PM +0800, Jiasheng Jiang wrote:
+> Add check for the return value of alloc_workqueue since it may return
+> NULL pointer.
+> 
+> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  drivers/net/wireless/realtek/rtw89/core.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+> index 931aff8b5dc9..006fe0499f81 100644
+> --- a/drivers/net/wireless/realtek/rtw89/core.c
+> +++ b/drivers/net/wireless/realtek/rtw89/core.c
+> @@ -3124,6 +3124,8 @@ int rtw89_core_init(struct rtw89_dev *rtwdev)
+>  	INIT_DELAYED_WORK(&rtwdev->cfo_track_work, rtw89_phy_cfo_track_work);
+>  	INIT_DELAYED_WORK(&rtwdev->forbid_ba_work, rtw89_forbid_ba_work);
+>  	rtwdev->txq_wq = alloc_workqueue("rtw89_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
+> +	if (!rtwdev->txq_wq)
+> +		return -ENOMEM;
 
+While the change is fixing one issue, you are adding another one.
+There is no destroy of this workqueue if rtw89_load_firmware fails.
 
-11/17/2022 9:43 PM, Mickaël Salaün пишет:
-> 
-> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
->> This commit adds network rules support in internal landlock functions
->> (presented in ruleset.c) and landlock_create_ruleset syscall.
-> 
-> …in the ruleset management helpers and the landlock_create_ruleset syscall.
-> 
-> 
->> Refactors user space API to support network actions. Adds new network
-> 
-> Refactor…
-> 
->> access flags, network rule and network attributes. Increments Landlock
-> 
-> Increment…
-> 
->> ABI version.
->> 
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->> 
->> Changes since v7:
->> * Squashes commits.
->> * Increments ABI version to 4.
->> * Refactors commit message.
->> * Minor fixes.
->> 
->> Changes since v6:
->> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
->>    because it OR values.
->> * Makes landlock_add_net_access_mask() more resilient incorrect values.
->> * Refactors landlock_get_net_access_mask().
->> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
->>    LANDLOCK_NUM_ACCESS_FS as value.
->> * Updates access_masks_t to u32 to support network access actions.
->> * Refactors landlock internal functions to support network actions with
->>    landlock_key/key_type/id types.
->> 
->> Changes since v5:
->> * Gets rid of partial revert from landlock_add_rule
->> syscall.
->> * Formats code with clang-format-14.
->> 
->> Changes since v4:
->> * Refactors landlock_create_ruleset() - splits ruleset and
->> masks checks.
->> * Refactors landlock_create_ruleset() and landlock mask
->> setters/getters to support two rule types.
->> * Refactors landlock_add_rule syscall add_rule_path_beneath
->> function by factoring out get_ruleset_from_fd() and
->> landlock_put_ruleset().
->> 
->> Changes since v3:
->> * Splits commit.
->> * Adds network rule support for internal landlock functions.
->> * Adds set_mask and get_mask for network.
->> * Adds rb_root root_net_port.
->> 
->> ---
->>   include/uapi/linux/landlock.h                | 49 ++++++++++++++
->>   security/landlock/limits.h                   |  6 +-
->>   security/landlock/ruleset.c                  | 55 ++++++++++++++--
->>   security/landlock/ruleset.h                  | 68 ++++++++++++++++----
->>   security/landlock/syscalls.c                 | 13 +++-
->>   tools/testing/selftests/landlock/base_test.c |  2 +-
->>   6 files changed, 170 insertions(+), 23 deletions(-)
->> 
->> diff --git a/include/uapi/linux/landlock.h b/include/uapi/linux/landlock.h
->> index f3223f964691..096b683c6ff3 100644
->> --- a/include/uapi/linux/landlock.h
->> +++ b/include/uapi/linux/landlock.h
->> @@ -31,6 +31,13 @@ struct landlock_ruleset_attr {
->>   	 * this access right.
->>   	 */
->>   	__u64 handled_access_fs;
->> +
->> +	/**
->> +	 * @handled_access_net: Bitmask of actions (cf. `Network flags`_)
->> +	 * that is handled by this ruleset and should then be forbidden if no
->> +	 * rule explicitly allow them.
->> +	 */
->> +	__u64 handled_access_net;
->>   };
->> 
->>   /*
->> @@ -54,6 +61,11 @@ enum landlock_rule_type {
->>   	 * landlock_path_beneath_attr .
->>   	 */
->>   	LANDLOCK_RULE_PATH_BENEATH = 1,
->> +	/**
->> +	 * @LANDLOCK_RULE_NET_SERVICE: Type of a &struct
->> +	 * landlock_net_service_attr .
->> +	 */
->> +	LANDLOCK_RULE_NET_SERVICE = 2,
->>   };
->> 
->>   /**
->> @@ -79,6 +91,24 @@ struct landlock_path_beneath_attr {
->>   	 */
->>   } __attribute__((packed));
->> 
->> +/**
->> + * struct landlock_net_service_attr - TCP subnet definition
->> + *
->> + * Argument of sys_landlock_add_rule().
->> + */
->> +struct landlock_net_service_attr {
->> +	/**
->> +	 * @allowed_access: Bitmask of allowed access network for services
->> +	 * (cf. `Network flags`_).
->> +	 */
->> +	__u64 allowed_access;
->> +	/**
->> +	 * @port: Network port.
->> +	 */
->> +	__u16 port;
-> 
->   From an UAPI point of view, I think the port field should be __be16, as
-> for sockaddr_in->port and other network-related APIs. This will require
-> some kernel changes to please sparse: make C=2 security/landlock/ must
-> not print any warning.
+Thanks
 
-   I have this errors trying to launch sparse checking:
-
-   DESCEND objtool
-   DESCEND bpf/resolve_btfids
-   CALL    scripts/checksyscalls.sh
-   CHK     kernel/kheaders_data.tar.xz
-   CC      security/landlock/setup.o
-   CHECK   security/landlock/setup.c
-./include/asm-generic/rwonce.h:67:16: error: typename in expression
-./include/asm-generic/rwonce.h:67:16: error: Expected ) in function call
-./include/asm-generic/rwonce.h:67:16: error: got :
-./include/linux/list.h:292:16: error: typename in expression
-./include/linux/list.h:292:16: error: Expected ) in function call
-./include/linux/list.h:292:16: error: got :
-
-....
-
-./include/linux/seqlock.h:682:16: error: Expected ) in function call
-./include/linux/seqlock.h:682:16: error: got :
-./include/linux/seqlock.h:695:16: error: typename in expression
-./include/linux/seqlock.h:695:16: error: Expected ) in function call
-./include/linux/seqlock.h:695:16: error: too many errors
-Segmentation fault (core dumped)
-make[3]: *** [scripts/Makefile.build:250: security/landlock/setup.o] 
-Error 139
-make[3]: *** Deleting file 'security/landlock/setup.o'
-make[3]: *** Waiting for unfinished jobs....
-Segmentation fault (core dumped)
-make[3]: *** [scripts/Makefile.build:250: security/landlock/syscalls.o] 
-Error 139
-make[3]: *** Deleting file 'security/landlock/syscalls.o'
-make[2]: *** [scripts/Makefile.build:502: security/landlock] Error 2
-make[1]: *** [scripts/Makefile.build:502: security] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1994: .] Error 2
-
-
-
+>  	spin_lock_init(&rtwdev->ba_lock);
+>  	spin_lock_init(&rtwdev->rpwm_lock);
+>  	mutex_init(&rtwdev->mutex);
+> -- 
+> 2.25.1
 > 
-> Using big-endian values as keys (casted to uintptr_t, not strictly
-> __be16) in the rb-tree should not be an issue because there is no port
-> range ordering (for now).
-> 
-> A dedicated test should check that endianness is correct, e.g. by using
-> different port encoding. This should include passing and failing tests,
-> but they should work on all architectures (i.e. big or little endian).
-> 
-> 
->> +
->> +} __attribute__((packed));
->> +
->>   /**
->>    * DOC: fs_access
->>    *
->> @@ -173,4 +203,23 @@ struct landlock_path_beneath_attr {
->>   #define LANDLOCK_ACCESS_FS_TRUNCATE			(1ULL << 14)
->>   /* clang-format on */
->> 
->> +/**
->> + * DOC: net_access
->> + *
->> + * Network flags
->> + * ~~~~~~~~~~~~~~~~
->> + *
->> + * These flags enable to restrict a sandboxed process to a set of network
->> + * actions.
->> + *
->> + * TCP sockets with allowed actions:
->> + *
->> + * - %LANDLOCK_ACCESS_NET_BIND_TCP: Bind a TCP socket to a local port.
->> + * - %LANDLOCK_ACCESS_NET_CONNECT_TCP: Connect an active TCP socket to
->> + *   a remote port.
->> + */
->> +/* clang-format off */
->> +#define LANDLOCK_ACCESS_NET_BIND_TCP			(1ULL << 0)
->> +#define LANDLOCK_ACCESS_NET_CONNECT_TCP			(1ULL << 1)
->> +/* clang-format on */
->>   #endif /* _UAPI_LINUX_LANDLOCK_H */
->> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
->> index bafb3b8dc677..8a1a6463c64e 100644
->> --- a/security/landlock/limits.h
->> +++ b/security/landlock/limits.h
->> @@ -23,6 +23,10 @@
->>   #define LANDLOCK_NUM_ACCESS_FS		__const_hweight64(LANDLOCK_MASK_ACCESS_FS)
->>   #define LANDLOCK_SHIFT_ACCESS_FS	0
->> 
->> -/* clang-format on */
->> +#define LANDLOCK_LAST_ACCESS_NET	LANDLOCK_ACCESS_NET_CONNECT_TCP
->> +#define LANDLOCK_MASK_ACCESS_NET	((LANDLOCK_LAST_ACCESS_NET << 1) - 1)
->> +#define LANDLOCK_NUM_ACCESS_NET		__const_hweight64(LANDLOCK_MASK_ACCESS_NET)
->> +#define LANDLOCK_SHIFT_ACCESS_NET	LANDLOCK_NUM_ACCESS_FS
->> 
->> +/* clang-format on */
->>   #endif /* _SECURITY_LANDLOCK_LIMITS_H */
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index c7cf54ba4f6d..9277c1295114 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
->> @@ -36,6 +36,9 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->>   	refcount_set(&new_ruleset->usage, 1);
->>   	mutex_init(&new_ruleset->lock);
->>   	new_ruleset->root_inode = RB_ROOT;
->> +#if IS_ENABLED(CONFIG_INET)
->> +	new_ruleset->root_net_port = RB_ROOT;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	new_ruleset->num_layers = num_layers;
->>   	/*
->>   	 * hierarchy = NULL
->> @@ -46,16 +49,21 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->>   }
->> 
->>   struct landlock_ruleset *
->> -landlock_create_ruleset(const access_mask_t fs_access_mask)
->> +landlock_create_ruleset(const access_mask_t fs_access_mask,
->> +			const access_mask_t net_access_mask)
->>   {
->>   	struct landlock_ruleset *new_ruleset;
->> 
->>   	/* Informs about useless ruleset. */
->> -	if (!fs_access_mask)
->> +	if (!fs_access_mask && !net_access_mask)
->>   		return ERR_PTR(-ENOMSG);
->>   	new_ruleset = create_ruleset(1);
->> -	if (!IS_ERR(new_ruleset))
->> +	if (IS_ERR(new_ruleset))
->> +		return new_ruleset;
->> +	if (fs_access_mask)
->>   		landlock_add_fs_access_mask(new_ruleset, fs_access_mask, 0);
->> +	if (net_access_mask)
->> +		landlock_add_net_access_mask(new_ruleset, net_access_mask, 0);
->>   	return new_ruleset;
->>   }
->> 
->> @@ -73,6 +81,10 @@ static inline bool is_object_pointer(const enum landlock_key_type key_type)
->>   	switch (key_type) {
->>   	case LANDLOCK_KEY_INODE:
->>   		return true;
->> +#if IS_ENABLED(CONFIG_INET)
->> +	case LANDLOCK_KEY_NET_PORT:
->> +		return false;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	}
->>   	WARN_ON_ONCE(1);
->>   	return false;
->> @@ -126,6 +138,11 @@ static inline struct rb_root *get_root(struct landlock_ruleset *const ruleset,
->>   	case LANDLOCK_KEY_INODE:
->>   		root = &ruleset->root_inode;
->>   		break;
->> +#if IS_ENABLED(CONFIG_INET)
->> +	case LANDLOCK_KEY_NET_PORT:
->> +		root = &ruleset->root_net_port;
->> +		break;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	}
->>   	if (WARN_ON_ONCE(!root))
->>   		return ERR_PTR(-EINVAL);
->> @@ -154,7 +171,9 @@ static void build_check_ruleset(void)
->>   	BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
->>   	BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
->>   	BUILD_BUG_ON(access_masks <
->> -		     (LANDLOCK_MASK_ACCESS_FS << LANDLOCK_SHIFT_ACCESS_FS));
->> +		     (LANDLOCK_MASK_ACCESS_FS << LANDLOCK_SHIFT_ACCESS_FS) +
-> 
-> This is correct but because we are dealing with bitmasks I would prefer
-> to use "|" instead of "+".
-> 
-> 
->> +			     (LANDLOCK_MASK_ACCESS_NET
->> +			      << LANDLOCK_SHIFT_ACCESS_NET));
->>   }
->> 
->>   /**
->> @@ -370,7 +389,12 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->>   	err = merge_tree(dst, src, LANDLOCK_KEY_INODE);
->>   	if (err)
->>   		goto out_unlock;
->> -
-> 
-> Please keep this newline.
-> 
->> +#if IS_ENABLED(CONFIG_INET)
->> +	/* Merges the @src network port tree. */
->> +	err = merge_tree(dst, src, LANDLOCK_KEY_NET_PORT);
->> +	if (err)
->> +		goto out_unlock;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   out_unlock:
->>   	mutex_unlock(&src->lock);
->>   	mutex_unlock(&dst->lock);
->> @@ -426,7 +450,12 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
->>   	err = inherit_tree(parent, child, LANDLOCK_KEY_INODE);
->>   	if (err)
->>   		goto out_unlock;
->> -
-> 
-> newline
-> 
->> +#if IS_ENABLED(CONFIG_INET)
->> +	/* Copies the @parent network port tree. */
->> +	err = inherit_tree(parent, child, LANDLOCK_KEY_NET_PORT);
->> +	if (err)
->> +		goto out_unlock;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	if (WARN_ON_ONCE(child->num_layers <= parent->num_layers)) {
->>   		err = -EINVAL;
->>   		goto out_unlock;
->> @@ -459,6 +488,11 @@ static void free_ruleset(struct landlock_ruleset *const ruleset)
->>   	rbtree_postorder_for_each_entry_safe(freeme, next, &ruleset->root_inode,
->>   					     node)
->>   		free_rule(freeme, LANDLOCK_KEY_INODE);
->> +#if IS_ENABLED(CONFIG_INET)
->> +	rbtree_postorder_for_each_entry_safe(freeme, next,
->> +					     &ruleset->root_net_port, node)
->> +		free_rule(freeme, LANDLOCK_KEY_NET_PORT);
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	put_hierarchy(ruleset->hierarchy);
->>   	kfree(ruleset);
->>   }
->> @@ -637,6 +671,9 @@ get_access_mask_t(const struct landlock_ruleset *const ruleset,
->>    * Populates @layer_masks such that for each access right in @access_request,
->>    * the bits for all the layers are set where this access right is handled.
->>    *
->> + * @layer_masks must contain LANDLOCK_NUM_ACCESS_FS or LANDLOCK_NUM_ACCESS_NET
->> + * elements according to @key_type.
-> 
-> Please include this sentence in the @layer_masks description below.
-> 
->> + *
->>    * @domain: The domain that defines the current restrictions.
->>    * @access_request: The requested access rights to check.
->>    * @layer_masks: The layer masks to populate.
-> 
-> "It must contain…"
-> 
-> 
->> @@ -659,6 +696,12 @@ access_mask_t init_layer_masks(const struct landlock_ruleset *const domain,
->>   		get_access_mask = landlock_get_fs_access_mask;
->>   		num_access = LANDLOCK_NUM_ACCESS_FS;
->>   		break;
->> +#if IS_ENABLED(CONFIG_INET)
->> +	case LANDLOCK_KEY_NET_PORT:
->> +		get_access_mask = landlock_get_net_access_mask;
->> +		num_access = LANDLOCK_NUM_ACCESS_NET;
->> +		break;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	default:
->>   		WARN_ON_ONCE(1);
->>   		return 0;
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index d9eb79ea9a89..f272d2cd518c 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -19,16 +19,20 @@
->>   #include "limits.h"
->>   #include "object.h"
->> 
->> +/* Rule access mask. */
->>   typedef u16 access_mask_t;
->>   /* Makes sure all filesystem access rights can be stored. */
->>   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
->> +/* Makes sure all network access rights can be stored. */
->> +static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_NET);
->>   /* Makes sure for_each_set_bit() and for_each_clear_bit() calls are OK. */
->>   static_assert(sizeof(unsigned long) >= sizeof(access_mask_t));
->> 
->>   /* Ruleset access masks. */
->> -typedef u16 access_masks_t;
->> +typedef u32 access_masks_t;
-> 
-> This type change need to be explained in the commit message.
-> 
-> 
->>   /* Makes sure all ruleset access rights can be stored. */
->> -static_assert(BITS_PER_TYPE(access_masks_t) >= LANDLOCK_NUM_ACCESS_FS);
->> +static_assert(BITS_PER_TYPE(access_masks_t) >=
->> +	      LANDLOCK_NUM_ACCESS_FS + LANDLOCK_NUM_ACCESS_NET);
->> 
->>   typedef u16 layer_mask_t;
->>   /* Makes sure all layers can be checked. */
->> @@ -82,6 +86,13 @@ enum landlock_key_type {
->>   	 * keys.
->>   	 */
->>   	LANDLOCK_KEY_INODE = 1,
->> +#if IS_ENABLED(CONFIG_INET)
->> +	/**
->> +	 * @LANDLOCK_KEY_NET_PORT: Type of &landlock_ruleset.root_net_port's
->> +	 * node keys.
->> +	 */
->> +	LANDLOCK_KEY_NET_PORT = 2,
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   };
->> 
->>   /**
->> @@ -156,6 +167,15 @@ struct landlock_ruleset {
->>   	 * reaches zero.
->>   	 */
->>   	struct rb_root root_inode;
->> +#if IS_ENABLED(CONFIG_INET)
->> +	/**
->> +	 * @root_net_port: Root of a red-black tree containing &struct
->> +	 * landlock_rule nodes with network port. Once a ruleset is tied to a
->> +	 * process (i.e. as a domain), this tree is immutable until @usage
->> +	 * reaches zero.
->> +	 */
->> +	struct rb_root root_net_port;
->> +#endif /* IS_ENABLED(CONFIG_INET) */
->>   	/**
->>   	 * @hierarchy: Enables hierarchy identification even when a parent
->>   	 * domain vanishes.  This is needed for the ptrace protection.
->> @@ -166,8 +186,8 @@ struct landlock_ruleset {
->>   		 * @work_free: Enables to free a ruleset within a lockless
->>   		 * section.  This is only used by
->>   		 * landlock_put_ruleset_deferred() when @usage reaches zero.
->> -		 * The fields @lock, @usage, @num_rules, @num_layers and
->> -		 * @access_masks are then unused.
->> +		 * The fields @lock, @usage, @num_rules, @num_layers,
->> +		 * @net_access_mask and @access_masks are then unused.
-> 
-> There is no net_access_mask anymore.
-> .
