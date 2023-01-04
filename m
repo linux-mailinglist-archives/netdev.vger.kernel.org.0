@@ -2,92 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B539A65D537
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:14:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9175265D55C
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239509AbjADON2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 09:13:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
+        id S231180AbjADORz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 09:17:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239636AbjADOMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:12:39 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6493C1D0C6;
-        Wed,  4 Jan 2023 06:12:38 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id ud5so82977598ejc.4;
-        Wed, 04 Jan 2023 06:12:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tg9g76SwEQ03nnPlXSR+de3Y9ReWrRYeaDvRIoSCF7U=;
-        b=LbqgVt1i/G/e5VGblt8eTNeGBoZhrKLBzcJQ54RevnYpe6ESzdpmgOdZQyTVfu0WwJ
-         DzlydqkjwbtKy/NwYvCc1KXQxTAs6FFkMaFnoZaYEXS75lIl4g8xIEcuPDG1j3l2OSBk
-         /fFAc/YOkVr5mSL+5kqVF6foWe7pUxOaLk/58DN8SM1ivOIt6PazWIHJjrPnsrAZa9o8
-         ymUjcvI/7jU8KCCA5mLyOe+U/GnWnsSJfNWybQFypcSc/VJQmFHWgqjLmHXo2dIyQCIH
-         TnbZ+2mMwm/RwwqhXlrz4s3yOOPPcJa5nx3NMiwjDQ8cJ7dKlqsYXc5js2UQ9fkYWeNt
-         thnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tg9g76SwEQ03nnPlXSR+de3Y9ReWrRYeaDvRIoSCF7U=;
-        b=Fd7pfvwo/mVIwRT6RkWngxdjP/jaCKGze/UgxZG0CpB7k+nm83gJ5+iaukizMx1UX1
-         B2nAF4NqghSYV4gWAQPaKyJihK9ms/lkj6tKOsn1tQqWaikmJA6P0vxAQcjtRl0uGIi2
-         DTg7iejV0ReDdc5gDRA4bysSEE+Ruu0VPLpOw76MVg2RFnRZwJVyILBGrV9OtnnCzWeG
-         MHJ2v3Z6URXjc01KOo/epG+VIHiuTLf/mlDm05VlzLHT14VOG4L9uTAsAxdkD5y4IndL
-         HJbM5ytBMLiJq862j+zv02yYnJ7URq3nPWi20tOlYgCD6Qz7WSvhugqdLD6vOe+Ia17T
-         qi0w==
-X-Gm-Message-State: AFqh2kqdZ5lRjd+lYoinhq2KQs8TBLW77RRimLpwFc95n81ladhcvbCF
-        rVhDmV5wLZMWJwdBXSiZgwY=
-X-Google-Smtp-Source: AMrXdXtXQ0ALq3KiEPUKTv21ShKFEupnZPx4oOAlgODEyOVWekZ+XWvHLHXJ8N2OrlzazchgGI4iPw==
-X-Received: by 2002:a17:906:8e91:b0:7c1:5248:4f3a with SMTP id ru17-20020a1709068e9100b007c152484f3amr37459694ejc.56.1672841556990;
-        Wed, 04 Jan 2023 06:12:36 -0800 (PST)
-Received: from gvm01 (net-5-89-66-224.cust.vodafonedsl.it. [5.89.66.224])
-        by smtp.gmail.com with ESMTPSA id t7-20020a1709066bc700b0081bfc79beaesm15199181ejs.75.2023.01.04.06.12.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 06:12:36 -0800 (PST)
-Date:   Wed, 4 Jan 2023 15:12:44 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH v7 net-next 2/5] drivers/net/phy: add the link modes for
- the 10BASE-T1S Ethernet PHY
-Message-ID: <Y7WJXFx9Fz1oQiDY@gvm01>
-References: <cover.1671234284.git.piergiorgio.beruto@gmail.com>
- <fb30ee5dae667a5dfb398171263be7edca6b6b87.1671234284.git.piergiorgio.beruto@gmail.com>
- <20221216204808.4299a21e@kernel.org>
+        with ESMTP id S229461AbjADOR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:17:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF646BCA0
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 06:17:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FB9FB8166B
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 14:17:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D5EC433D2;
+        Wed,  4 Jan 2023 14:17:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672841846;
+        bh=70yVVqBiABhbGaYgz+MXDYJqrHHcVKlfShZRj/7ZA8w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HEYmMatNBFlqAkKxcujIwMf7hvSxK05sbig6D5oAeEZ2cL5JJy6c3u+wfJdp118uJ
+         I4D5JlbLdCIShM5SDYADJakbN0+fzU/L3exZHXxZXyrSIMjpGyq1/mjo6O2KwZmfk4
+         3LS8GtlqxPMweFtTB7i7z5sqpLVDMs86o+lRv+OxVw+eFd1wD5HTtcQNKpnggquRFG
+         TMdpwK0Hzq4VMkWFu1Yr7uKExf4H6JCyd63EpYc+DGnIAS9gtCP4iR4vH/GSE9SWcb
+         EqiTbjZDtixxmau1eNyeOynJbhfPovxSf/wLqd3VPmJsyInk/7FJU+mSY9qfoN5aUI
+         RoY4kMlK7R4Gw==
+Date:   Wed, 4 Jan 2023 16:17:21 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lorenzo.bianconi@redhat.com,
+        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, sujuan.chen@mediatek.com,
+        daniel@makrotopia.org
+Subject: Re: [PATCH v2 net-next 5/5] net: ethernet: mtk_wed: add
+ reset/reset_complete callbacks
+Message-ID: <Y7WKcdWap3SrLAp3@unreal>
+References: <cover.1672840858.git.lorenzo@kernel.org>
+ <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221216204808.4299a21e@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 16, 2022 at 08:48:08PM -0800, Jakub Kicinski wrote:
-> On Sat, 17 Dec 2022 01:48:33 +0100 Piergiorgio Beruto wrote:
-> > +const int phy_basic_t1s_p2mp_features_array[2] = {
-> > +	ETHTOOL_LINK_MODE_TP_BIT,
-> > +	ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
-> > +};
-> > +EXPORT_SYMBOL_GPL(phy_basic_t1s_p2mp_features_array);
+On Wed, Jan 04, 2023 at 03:03:14PM +0100, Lorenzo Bianconi wrote:
+> Introduce reset and reset_complete wlan callback to schedule WLAN driver
+> reset when ethernet/wed driver is resetting.
 > 
-> Should this be exported? It's not listed in the header.
-I've added the export in phy.h
+> Tested-by: Daniel Golle <daniel@makrotopia.org>
+> Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+> Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  6 ++++
+>  drivers/net/ethernet/mediatek/mtk_wed.c     | 40 +++++++++++++++++++++
+>  drivers/net/ethernet/mediatek/mtk_wed.h     |  8 +++++
+>  include/linux/soc/mediatek/mtk_wed.h        |  2 ++
+>  4 files changed, 56 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index bafae4f0312e..2d74e26f45c9 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -3913,6 +3913,10 @@ static void mtk_pending_work(struct work_struct *work)
+>  		mtk_w32(eth, val, MTK_MAC_MCR(i));
+>  	}
+>  
+> +	rtnl_unlock();
+> +	mtk_wed_fe_reset();
+> +	rtnl_lock();
 
-Thanks!
-Piergiorgio
+Is it safe to call rtnl_unlock(), perform some work and lock again?
+
+> +
+>  	/* stop all devices to make sure that dma is properly shut down */
+>  	for (i = 0; i < MTK_MAC_COUNT; i++) {
+>  		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
+> @@ -3949,6 +3953,8 @@ static void mtk_pending_work(struct work_struct *work)
+>  
+>  	clear_bit(MTK_RESETTING, &eth->state);
+>  
+> +	mtk_wed_fe_reset_complete();
+> +
+>  	rtnl_unlock();
+>  }
+>  
+> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+> index a6271449617f..4854993f2941 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_wed.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+> @@ -206,6 +206,46 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
+>  	iounmap(reg);
+>  }
+>  
+> +void mtk_wed_fe_reset(void)
+> +{
+> +	int i;
+> +
+> +	mutex_lock(&hw_lock);
+> +
+> +	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
+> +		struct mtk_wed_hw *hw = hw_list[i];
+> +		struct mtk_wed_device *dev = hw->wed_dev;
+> +
+> +		if (!dev || !dev->wlan.reset)
+> +			continue;
+> +
+> +		/* reset callback blocks until WLAN reset is completed */
+> +		if (dev->wlan.reset(dev))
+> +			dev_err(dev->dev, "wlan reset failed\n");
+> +	}
+> +
+> +	mutex_unlock(&hw_lock);
+> +}
+> +
+> +void mtk_wed_fe_reset_complete(void)
+> +{
+> +	int i;
+> +
+> +	mutex_lock(&hw_lock);
+> +
+> +	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
+> +		struct mtk_wed_hw *hw = hw_list[i];
+> +		struct mtk_wed_device *dev = hw->wed_dev;
+> +
+> +		if (!dev || !dev->wlan.reset_complete)
+> +			continue;
+> +
+> +		dev->wlan.reset_complete(dev);
+> +	}
+> +
+> +	mutex_unlock(&hw_lock);
+> +}
+> +
+>  static struct mtk_wed_hw *
+>  mtk_wed_assign(struct mtk_wed_device *dev)
+>  {
+> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.h b/drivers/net/ethernet/mediatek/mtk_wed.h
+> index e012b8a82133..6108a7e69a80 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_wed.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_wed.h
+> @@ -128,6 +128,8 @@ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
+>  void mtk_wed_exit(void);
+>  int mtk_wed_flow_add(int index);
+>  void mtk_wed_flow_remove(int index);
+> +void mtk_wed_fe_reset(void);
+> +void mtk_wed_fe_reset_complete(void);
+>  #else
+>  static inline void
+>  mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
+> @@ -146,6 +148,12 @@ static inline int mtk_wed_flow_add(int index)
+>  static inline void mtk_wed_flow_remove(int index)
+>  {
+>  }
+> +static inline void mtk_wed_fe_reset(void)
+> +{
+> +}
+> +static inline void mtk_wed_fe_reset_complete(void)
+> +{
+> +}
+>  
+>  #endif
+>  
+> diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
+> index db637a13888d..ddff54fc9717 100644
+> --- a/include/linux/soc/mediatek/mtk_wed.h
+> +++ b/include/linux/soc/mediatek/mtk_wed.h
+> @@ -150,6 +150,8 @@ struct mtk_wed_device {
+>  		void (*release_rx_buf)(struct mtk_wed_device *wed);
+>  		void (*update_wo_rx_stats)(struct mtk_wed_device *wed,
+>  					   struct mtk_wed_wo_rx_stats *stats);
+> +		int (*reset)(struct mtk_wed_device *wed);
+> +		int (*reset_complete)(struct mtk_wed_device *wed);
+
+I don't see any driver implementation of these callbacks in this series.
+Did I miss it?
+
+Thanks
+
+>  	} wlan;
+>  #endif
+>  };
+> -- 
+> 2.39.0
+> 
