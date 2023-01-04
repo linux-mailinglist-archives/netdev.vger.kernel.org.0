@@ -2,77 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B872965CB9C
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 02:43:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA3EC65CB6B
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 02:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbjADBm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 20:42:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
+        id S234142AbjADBaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 20:30:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238499AbjADBV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 20:21:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA911183F;
-        Tue,  3 Jan 2023 17:21:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42F36B810FA;
-        Wed,  4 Jan 2023 01:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0516CC433EF;
-        Wed,  4 Jan 2023 01:21:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672795314;
-        bh=4jvBnvJNc2zXSp5yDCLu6zSZSHzp7k6AICwL7KNa7I4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eRkv/TIC9c3lDFQEJn3S3cK+Fm5HrBjAvoqP88qHiy+9hMFCo1EMrkZ+iYOOrRy6q
-         sS3z89kuXZ+Fh/dYrE5rZbm6+iGwqKOWLgyJ1/DEGfbbtxuGKL+Fsbtnrlr4gD9hhn
-         /1K2i8Qtmi95yOs0DbQB4KRJaEugKspD5QaIqz/jGqgCFwrwE+4ZtYAgMD2gu1aPL7
-         h16WRIz9DhEpKHpPaOXl5v5rH1z9ozEs/EHmVTOEcNPF31FS0jkYgSj6e0ap5bHZOk
-         R40Lur5+aIkTOzZZwIAsDHZruYWZAqapOqhWcr6kH41I5CLD/DVRVZW+QTr6mtTZqY
-         UwnlYDPmafANA==
-Date:   Tue, 3 Jan 2023 17:21:53 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, lorenzo.bianconi@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andy Gospodarek <gospo@broadcom.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, gal@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
-Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
- support xdp multibuffer
-Message-ID: <20230103172153.58f231ba@kernel.org>
-In-Reply-To: <87k0234pd6.fsf@toke.dk>
-References: <20220621175402.35327-1-gospo@broadcom.com>
-        <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
-        <87k0234pd6.fsf@toke.dk>
+        with ESMTP id S233577AbjADBah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 20:30:37 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8852B13F24
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 17:30:36 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NmsQ254bGzJppd;
+        Wed,  4 Jan 2023 09:26:34 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 4 Jan 2023 09:30:33 +0800
+Message-ID: <d245e68f-7105-6c12-b732-90d9fef8fb77@huawei.com>
+Date:   Wed, 4 Jan 2023 09:30:33 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH] 9p/rdma: unmap receive dma buffer in rdma_request()
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <v9fs-developer@lists.sourceforge.net>, <netdev@vger.kernel.org>,
+        <ericvh@gmail.com>, <lucho@ionkov.net>, <asmadeus@codewreck.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux_oss@crudebyte.com>,
+        <tom@opengridcomputing.com>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>
+References: <20221220031223.3890143-1-shaozhengchao@huawei.com>
+ <Y6wN4uBZwPV+rKXi@unreal>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <Y6wN4uBZwPV+rKXi@unreal>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 03 Jan 2023 16:19:49 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Hmm, good question! I don't think we've ever explicitly documented any
-> assumptions one way or the other. My own mental model has certainly
-> always assumed the first frag would continue to be the same size as in
-> non-multi-buf packets.
 
-Interesting! :) My mental model was closer to GRO by frags=20
-so the linear part would have no data, just headers.
 
-A random datapoint is that bpf_xdp_adjust_head() seems=20
-to enforce that there is at least ETH_HLEN.
+On 2022/12/28 17:35, Leon Romanovsky wrote:
+> On Tue, Dec 20, 2022 at 11:12:23AM +0800, Zhengchao Shao wrote:
+>> When down_interruptible() failed in rdma_request(), receive dma buffer
+>> is not unmapped. Add unmap action to error path.
+>>
+>> Fixes: fc79d4b104f0 ("9p: rdma: RDMA Transport Support for 9P")
+>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+>> ---
+>>   net/9p/trans_rdma.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
+>> index 83f9100d46bf..da83023fecbf 100644
+>> --- a/net/9p/trans_rdma.c
+>> +++ b/net/9p/trans_rdma.c
+>> @@ -499,6 +499,8 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
+>>   
+>>   	if (down_interruptible(&rdma->sq_sem)) {
+>>   		err = -EINTR;
+>> +		ib_dma_unmap_single(rdma->cm_id->device, c->busa,
+>> +				    c->req->tc.size, DMA_TO_DEVICE);
+>>   		goto send_error;
+>>   	}
+> 
+> It is not the only place where ib_dma_unmap_single() wasn't called.
+> Even at the same function if ib_post_send() fails, the unmap is not
+> called. Also post_recv() is missing call to ib_dma_unmap_single() too.
+> 
+> Thanks
+> 
+Hi Leon：
+	Thank you for your review. I'm sorry I haven't answered your
+message for so long, I've got Coronavirus and it's a terrible feeling.
+I will send v2 soon.
+
+Zhengchao Shao
+>>   
+>> -- 
+>> 2.34.1
+>>
