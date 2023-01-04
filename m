@@ -2,149 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEAFC65CEB8
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 09:49:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC64F65CE87
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 09:44:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbjADIs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 03:48:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        id S234248AbjADIod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 03:44:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238403AbjADIsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:48:32 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7473E1DF20;
-        Wed,  4 Jan 2023 00:46:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1672822005; x=1704358005;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=W2X6hd2YoYJaGLzxWhc78FUyCit417xk/t76AdZRdTM=;
-  b=I0DcaLzsFcJuumP0GjvCwzqpyU8p8qEDXm/KGC7torrg7j+XB9jEYZa+
-   DdHrb7RXTbliLcYsOUJMRSPiAPhaShP31Ugw8h3I+RprnlgtEx6fWYTNe
-   n1uQVYvgIDiE3XbyHnaS52Le/G43afd4vShdcK5Izie4SqdhdyGpzFWqp
-   d+qay9LOU7RRx5RGN3EU/5uzxEqdTDjl8Gm89QaSfutkFGRs3drjlxG0v
-   ge9ZPeOOw+awSSaCkySwTCgkf5O/C7pgxG7gPQahRoe8Ii8A7UVagXG7C
-   ccmDEHBSb6gWDasUryqhRWZwCj3Cl+k7mPTjZeQvmneYwPR4lx41Ukz+T
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
-   d="scan'208";a="194178463"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2023 01:46:40 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 4 Jan 2023 01:46:38 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Wed, 4 Jan 2023 01:46:32 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
-        <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: [Patch net-next v7 13/13] net: dsa: microchip: ptp: lan937x: Enable periodic output in LED pins
-Date:   Wed, 4 Jan 2023 14:13:16 +0530
-Message-ID: <20230104084316.4281-14-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20230104084316.4281-1-arun.ramadoss@microchip.com>
-References: <20230104084316.4281-1-arun.ramadoss@microchip.com>
+        with ESMTP id S234206AbjADIob (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:44:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C812B1A058;
+        Wed,  4 Jan 2023 00:44:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AFF1B815C2;
+        Wed,  4 Jan 2023 08:44:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842B9C433D2;
+        Wed,  4 Jan 2023 08:44:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672821868;
+        bh=dhU/nCpwMIeJj3XRgwHtRg9MAK6LNzONvI7prwCy/ig=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U8QF2kd66RpNSVoDCopZ1nryaoJTBepMn9LFLZtBnvNQWxoyo0Zzd8IKfGwn/ygcd
+         bHeMTDUXcxeuGd9yQMUOmDDvWNon8Xyxrns4j0hL9lhoQ8VNYCVUHAa4tXFfTJR5UI
+         KRGpurmyhzJvx2LoSltExr2diTEha6oY++G+fO/Zb//ugWWWV0dzIUhfG6n+uRrjqD
+         d+fhCy3qLg3FA3UQGqY0EH5bkh9dXI/yn+h6c1wzv1NjN6X4YggU15jn/JOaxJzO3W
+         k7qHyxXxRAB3H+yXBGkJ0Y96hmFB/Zo6bd202Zfe/g10K0Yfz6JWd48jnSmuTjXm2Z
+         dbF/4YSBsYW7g==
+Date:   Wed, 4 Jan 2023 09:44:24 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, lorenzo.bianconi@redhat.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Andy Gospodarek <gospo@broadcom.com>, gal@nvidia.com,
+        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
+Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
+ support xdp multibuffer
+Message-ID: <Y7U8aAhdE3TuhtxH@lore-desk>
+References: <20220621175402.35327-1-gospo@broadcom.com>
+ <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
+ <87k0234pd6.fsf@toke.dk>
+ <20230103172153.58f231ba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="e1TbLDOmNoNp9c+g"
+Content-Disposition: inline
+In-Reply-To: <20230103172153.58f231ba@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is difference in implementation of per_out pins between KSZ9563
-and LAN937x. In KSZ9563, Timestamping control register (0x052C) bit 6,
-if 1 - timestamp input and 0 - trigger output. But it is opposite for
-LAN937x 1 - trigger output and 0 - timestamp input.
-As per per_out gpio pins, KSZ9563 has four Led pins and two dedicated
-gpio pins. But in LAN937x dedicated gpio pins are removed instead there
-are up to 10 LED pins out of which LED_0 and LED_1 can be mapped to PTP
-tou 0, 1 or 2. This patch sets the bit 6 in 0x052C register and
-configure the LED override and source register for LAN937x series of
-switches alone.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_ptp.c     | 26 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  8 ++++++++
- 2 files changed, 34 insertions(+)
+--e1TbLDOmNoNp9c+g
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index 3ba36d33e830..a66a256f8814 100644
---- a/drivers/net/dsa/microchip/ksz_ptp.c
-+++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -32,6 +32,28 @@
- 
- #define KSZ_PTP_INT_START 13
- 
-+static int ksz_ptp_tou_gpio(struct ksz_device *dev)
-+{
-+	int ret;
-+
-+	if (!is_lan937x(dev))
-+		return 0;
-+
-+	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, GPIO_OUT,
-+			GPIO_OUT);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz_rmw32(dev, REG_SW_GLOBAL_LED_OVR__4, LED_OVR_1 | LED_OVR_2,
-+			LED_OVR_1 | LED_OVR_2);
-+	if (ret)
-+		return ret;
-+
-+	return ksz_rmw32(dev, REG_SW_GLOBAL_LED_SRC__4,
-+			 LED_SRC_PTP_GPIO_1 | LED_SRC_PTP_GPIO_2,
-+			 LED_SRC_PTP_GPIO_1 | LED_SRC_PTP_GPIO_2);
-+}
-+
- static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
- {
- 	u32 data;
-@@ -224,6 +246,10 @@ static int ksz_ptp_enable_perout(struct ksz_device *dev,
- 	if (ret)
- 		return ret;
- 
-+	ret = ksz_ptp_tou_gpio(dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = ksz_ptp_tou_start(dev, request->index);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-index c5c76b9a4329..d71e85510cda 100644
---- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
-+++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-@@ -6,6 +6,14 @@
- #ifndef __KSZ_PTP_REGS_H
- #define __KSZ_PTP_REGS_H
- 
-+#define REG_SW_GLOBAL_LED_OVR__4	0x0120
-+#define LED_OVR_2			BIT(1)
-+#define LED_OVR_1			BIT(0)
-+
-+#define REG_SW_GLOBAL_LED_SRC__4	0x0128
-+#define LED_SRC_PTP_GPIO_1		BIT(3)
-+#define LED_SRC_PTP_GPIO_2		BIT(2)
-+
- /* 5 - PTP Clock */
- #define REG_PTP_CLK_CTRL		0x0500
- 
--- 
-2.36.1
+> On Tue, 03 Jan 2023 16:19:49 +0100 Toke H=F8iland-J=F8rgensen wrote:
+> > Hmm, good question! I don't think we've ever explicitly documented any
+> > assumptions one way or the other. My own mental model has certainly
+> > always assumed the first frag would continue to be the same size as in
+> > non-multi-buf packets.
+>=20
+> Interesting! :) My mental model was closer to GRO by frags=20
+> so the linear part would have no data, just headers.
 
+That is assumption as well.
+
+Regards,
+Lorenzo
+
+>=20
+> A random datapoint is that bpf_xdp_adjust_head() seems=20
+> to enforce that there is at least ETH_HLEN.
+
+--e1TbLDOmNoNp9c+g
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY7U8aAAKCRA6cBh0uS2t
+rC0sAP9Wj8TbwcYxrX2MfzTIpike7c8ukxeJjGrDXdn85FrJiwD+Oz3kURLL7uMq
+7r4VDGFRDSVANSTQNKfV73cWZrP49AU=
+=AJ4V
+-----END PGP SIGNATURE-----
+
+--e1TbLDOmNoNp9c+g--
