@@ -2,199 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9175265D55C
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C2165D56B
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbjADORz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 09:17:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
+        id S235117AbjADOTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 09:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjADOR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:17:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF646BCA0
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 06:17:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FB9FB8166B
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 14:17:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D5EC433D2;
-        Wed,  4 Jan 2023 14:17:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672841846;
-        bh=70yVVqBiABhbGaYgz+MXDYJqrHHcVKlfShZRj/7ZA8w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HEYmMatNBFlqAkKxcujIwMf7hvSxK05sbig6D5oAeEZ2cL5JJy6c3u+wfJdp118uJ
-         I4D5JlbLdCIShM5SDYADJakbN0+fzU/L3exZHXxZXyrSIMjpGyq1/mjo6O2KwZmfk4
-         3LS8GtlqxPMweFtTB7i7z5sqpLVDMs86o+lRv+OxVw+eFd1wD5HTtcQNKpnggquRFG
-         TMdpwK0Hzq4VMkWFu1Yr7uKExf4H6JCyd63EpYc+DGnIAS9gtCP4iR4vH/GSE9SWcb
-         EqiTbjZDtixxmau1eNyeOynJbhfPovxSf/wLqd3VPmJsyInk/7FJU+mSY9qfoN5aUI
-         RoY4kMlK7R4Gw==
-Date:   Wed, 4 Jan 2023 16:17:21 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, lorenzo.bianconi@redhat.com,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, sujuan.chen@mediatek.com,
-        daniel@makrotopia.org
-Subject: Re: [PATCH v2 net-next 5/5] net: ethernet: mtk_wed: add
- reset/reset_complete callbacks
-Message-ID: <Y7WKcdWap3SrLAp3@unreal>
-References: <cover.1672840858.git.lorenzo@kernel.org>
- <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
+        with ESMTP id S238920AbjADOTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:19:00 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDDE17434
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 06:18:58 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id m26-20020a05600c3b1a00b003d9811fcaafso20016013wms.5
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 06:18:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aBC+vzMix1vwzgMala+1EFIy7Z/TD/5lo9mag2BqUo8=;
+        b=ljkWTKIuu7aD9RVdV0HooIWjQMakPXWxeIVk7T9Oq4iXF7keGxTpRZhKVSMV/UldXI
+         lJpyCw/rE3c0BgvRsgrEy8JsAnrrC+rE2mz27v4wqhI4zyyD1Kr8c5cZtrae2DM9/3tc
+         T+vp3uhgya7ipPZUSOWBsRBx4+QQWJx66IHuOfHPFVS6akhEHnhMjXvKJd4vzUiZtiSw
+         2A1sfEtGUTva6DOhzy8aM4vvQZmnBRYWu7Pt40lsWFFv96Bfi3vUibzdBMDMgPOAHdjn
+         2i4dkYMe7Xu0+hDlRWIZtjn9hb8LLNdsy09xykTdWlZIUwRLpmKwzKYx+O0JXp3atVnF
+         lnQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aBC+vzMix1vwzgMala+1EFIy7Z/TD/5lo9mag2BqUo8=;
+        b=XdDEQdFhG7h/ZXQ1MYdP3faigU/yJmuEEZ5P1BirRN+eQ8HGTykJprI8gDudjUklk7
+         MMqzqtHRdtCxvrQetaOdx3mfch1/aAVbM9mL4bfKMXwNAjftjVaHLtv5irdxMi84hmr/
+         MWWFC4MjznYGgnCf70DfP3JUxdrq9mTF1krvLWgDwaw7SybGgztJhwOms6wvpAd9g3pN
+         6xqk1LaCEgM0nbefl9YtYp+C6OOw864H9lPvvFjVVcK5wr/7h61K1SMhpprBDuk5C3M8
+         z424DuNuLDOPW7Me1yYd/HH2hxwRAWQD9szvXNC2tlLl4IGMSy4aBVgZ8YFwfAQy8bTx
+         HXQA==
+X-Gm-Message-State: AFqh2krk9hlBctApPnEVDgFUwF3lNz0kjtWln88+GazTzgGwe14Bl51p
+        vPxtImnQDIIHNE+WX0WPKjynbg==
+X-Google-Smtp-Source: AMrXdXvNAkBby7YLw6WlrFLxUhNnjYhH4LZeU9r5aZjCMlpIg75j9G2BamNODryJLbCtmxAW8yBKLA==
+X-Received: by 2002:a05:600c:246:b0:3d3:3deb:d91f with SMTP id 6-20020a05600c024600b003d33debd91fmr36180422wmj.5.1672841936991;
+        Wed, 04 Jan 2023 06:18:56 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id g7-20020a05600c4ec700b003d978f8f255sm49663029wmq.27.2023.01.04.06.18.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Jan 2023 06:18:55 -0800 (PST)
+Date:   Wed, 4 Jan 2023 15:18:54 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jacob.e.keller@intel.com
+Subject: Re: [PATCH net-next 09/14] devlink: restart dump based on devlink
+ instance ids (simple)
+Message-ID: <Y7WKzkKe69TDfKEM@nanopsycho>
+References: <20230104041636.226398-1-kuba@kernel.org>
+ <20230104041636.226398-10-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230104041636.226398-10-kuba@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 03:03:14PM +0100, Lorenzo Bianconi wrote:
-> Introduce reset and reset_complete wlan callback to schedule WLAN driver
-> reset when ethernet/wed driver is resetting.
+Wed, Jan 04, 2023 at 05:16:31AM CET, kuba@kernel.org wrote:
+>xarray gives each devlink instance an id and allows us to restart
+>walk based on that id quite neatly. This is nice both from the
+>perspective of code brevity and from the stability of the dump
+>(devlink instances disappearing from before the resumption point
+>will not cause inconsistent dumps).
+>
+>This patch takes care of simple cases where dump->idx counts
+>devlink instances only.
+>
+>Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+>Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>---
+> net/devlink/core.c          |  2 +-
+> net/devlink/devl_internal.h | 14 ++++++++++++++
+> net/devlink/leftover.c      | 36 ++++++++----------------------------
+> 3 files changed, 23 insertions(+), 29 deletions(-)
+>
+>diff --git a/net/devlink/core.c b/net/devlink/core.c
+>index 3a99bf84632e..371d6821315d 100644
+>--- a/net/devlink/core.c
+>+++ b/net/devlink/core.c
+>@@ -91,7 +91,7 @@ void devlink_put(struct devlink *devlink)
+> 		call_rcu(&devlink->rcu, __devlink_put_rcu);
+> }
 > 
-> Tested-by: Daniel Golle <daniel@makrotopia.org>
-> Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  6 ++++
->  drivers/net/ethernet/mediatek/mtk_wed.c     | 40 +++++++++++++++++++++
->  drivers/net/ethernet/mediatek/mtk_wed.h     |  8 +++++
->  include/linux/soc/mediatek/mtk_wed.h        |  2 ++
->  4 files changed, 56 insertions(+)
+>-static struct devlink *
+>+struct devlink *
+> devlinks_xa_find_get(struct net *net, unsigned long *indexp,
+> 		     void * (*xa_find_fn)(struct xarray *, unsigned long *,
+> 					  unsigned long, xa_mark_t))
+>diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+>index ee98f3bdcd33..a567ff77601d 100644
+>--- a/net/devlink/devl_internal.h
+>+++ b/net/devlink/devl_internal.h
+>@@ -87,6 +87,10 @@ extern struct genl_family devlink_nl_family;
+> 	     devlink; devlink = devlinks_xa_find_get_next(net, &index))
 > 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index bafae4f0312e..2d74e26f45c9 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -3913,6 +3913,10 @@ static void mtk_pending_work(struct work_struct *work)
->  		mtk_w32(eth, val, MTK_MAC_MCR(i));
->  	}
->  
-> +	rtnl_unlock();
-> +	mtk_wed_fe_reset();
-> +	rtnl_lock();
-
-Is it safe to call rtnl_unlock(), perform some work and lock again?
-
-> +
->  	/* stop all devices to make sure that dma is properly shut down */
->  	for (i = 0; i < MTK_MAC_COUNT; i++) {
->  		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
-> @@ -3949,6 +3953,8 @@ static void mtk_pending_work(struct work_struct *work)
->  
->  	clear_bit(MTK_RESETTING, &eth->state);
->  
-> +	mtk_wed_fe_reset_complete();
-> +
->  	rtnl_unlock();
->  }
->  
-> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-> index a6271449617f..4854993f2941 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_wed.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-> @@ -206,6 +206,46 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
->  	iounmap(reg);
->  }
->  
-> +void mtk_wed_fe_reset(void)
-> +{
-> +	int i;
-> +
-> +	mutex_lock(&hw_lock);
-> +
-> +	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
-> +		struct mtk_wed_hw *hw = hw_list[i];
-> +		struct mtk_wed_device *dev = hw->wed_dev;
-> +
-> +		if (!dev || !dev->wlan.reset)
-> +			continue;
-> +
-> +		/* reset callback blocks until WLAN reset is completed */
-> +		if (dev->wlan.reset(dev))
-> +			dev_err(dev->dev, "wlan reset failed\n");
-> +	}
-> +
-> +	mutex_unlock(&hw_lock);
-> +}
-> +
-> +void mtk_wed_fe_reset_complete(void)
-> +{
-> +	int i;
-> +
-> +	mutex_lock(&hw_lock);
-> +
-> +	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
-> +		struct mtk_wed_hw *hw = hw_list[i];
-> +		struct mtk_wed_device *dev = hw->wed_dev;
-> +
-> +		if (!dev || !dev->wlan.reset_complete)
-> +			continue;
-> +
-> +		dev->wlan.reset_complete(dev);
-> +	}
-> +
-> +	mutex_unlock(&hw_lock);
-> +}
-> +
->  static struct mtk_wed_hw *
->  mtk_wed_assign(struct mtk_wed_device *dev)
->  {
-> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.h b/drivers/net/ethernet/mediatek/mtk_wed.h
-> index e012b8a82133..6108a7e69a80 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_wed.h
-> +++ b/drivers/net/ethernet/mediatek/mtk_wed.h
-> @@ -128,6 +128,8 @@ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
->  void mtk_wed_exit(void);
->  int mtk_wed_flow_add(int index);
->  void mtk_wed_flow_remove(int index);
-> +void mtk_wed_fe_reset(void);
-> +void mtk_wed_fe_reset_complete(void);
->  #else
->  static inline void
->  mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
-> @@ -146,6 +148,12 @@ static inline int mtk_wed_flow_add(int index)
->  static inline void mtk_wed_flow_remove(int index)
->  {
->  }
-> +static inline void mtk_wed_fe_reset(void)
-> +{
-> +}
-> +static inline void mtk_wed_fe_reset_complete(void)
-> +{
-> +}
->  
->  #endif
->  
-> diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
-> index db637a13888d..ddff54fc9717 100644
-> --- a/include/linux/soc/mediatek/mtk_wed.h
-> +++ b/include/linux/soc/mediatek/mtk_wed.h
-> @@ -150,6 +150,8 @@ struct mtk_wed_device {
->  		void (*release_rx_buf)(struct mtk_wed_device *wed);
->  		void (*update_wo_rx_stats)(struct mtk_wed_device *wed,
->  					   struct mtk_wed_wo_rx_stats *stats);
-> +		int (*reset)(struct mtk_wed_device *wed);
-> +		int (*reset_complete)(struct mtk_wed_device *wed);
-
-I don't see any driver implementation of these callbacks in this series.
-Did I miss it?
-
-Thanks
-
->  	} wlan;
->  #endif
->  };
-> -- 
-> 2.39.0
+> struct devlink *
+>+devlinks_xa_find_get(struct net *net, unsigned long *indexp,
+>+		     void * (*xa_find_fn)(struct xarray *, unsigned long *,
+>+					  unsigned long, xa_mark_t));
+>+struct devlink *
+> devlinks_xa_find_get_first(struct net *net, unsigned long *indexp);
+> struct devlink *
+> devlinks_xa_find_get_next(struct net *net, unsigned long *indexp);
+>@@ -104,6 +108,7 @@ enum devlink_multicast_groups {
 > 
+> /* state held across netlink dumps */
+> struct devlink_nl_dump_state {
+>+	unsigned long instance;
+> 	int idx;
+> 	union {
+> 		/* DEVLINK_CMD_REGION_READ */
+>@@ -117,6 +122,15 @@ struct devlink_nl_dump_state {
+> 	};
+> };
+> 
+>+/* Iterate over devlink pointers which were possible to get reference to.
+>+ * devlink_put() needs to be called for each iterated devlink pointer
+>+ * in loop body in order to release the reference.
+>+ */
+>+#define devlink_dump_for_each_instance_get(msg, dump, devlink)		\
+>+	for (; (devlink = devlinks_xa_find_get(sock_net(msg->sk),	\
+
+I undestand that the "dump" is zeroed at the beginning of dumpit call,
+however, if you call this helper multiple times, the second iteration
+would't not work.
+
+Perhaps better to initialize instance=0 at the beginning of the loop to
+make this helper calls behaviour independent on context.
+
+
+>+					       &dump->instance, xa_find)); \
+>+	     dump->instance++)
+>+
+> extern const struct genl_small_ops devlink_nl_ops[56];
+> 
+> struct devlink *devlink_get_from_attrs(struct net *net, struct nlattr **attrs);
+>diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+>index e3cfb64990b4..0f24b321b0bb 100644
+>--- a/net/devlink/leftover.c
+>+++ b/net/devlink/leftover.c
+>@@ -1319,17 +1319,9 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
+> {
+> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
+> 	struct devlink *devlink;
+>-	unsigned long index;
+>-	int idx = 0;
+> 	int err;
+> 
+>-	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
+>-		if (idx < dump->idx) {
+>-			idx++;
+>-			devlink_put(devlink);
+>-			continue;
+>-		}
+>-
+>+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
+
+The name suggests on the first sight that you are iterating some dump,
+which is slightly confusing. Perhaps better to have
+"devlinks_xa_for_each_" in the prefix somehow?
+
+	devlinks_xa_for_each_registered_get_dumping()
+
+I know it is long :)
+
+
+> 		devl_lock(devlink);
+> 		err = devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
+> 				      NETLINK_CB(cb->skb).portid,
+>@@ -1339,10 +1331,8 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
+> 
+> 		if (err)
+> 			goto out;
+>-		idx++;
+> 	}
+> out:
+>-	dump->idx = idx;
+> 	return msg->len;
+> }
+> 
+>@@ -4872,13 +4862,13 @@ static int devlink_nl_cmd_selftests_get_dumpit(struct sk_buff *msg,
+> {
+> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
+> 	struct devlink *devlink;
+>-	unsigned long index;
+>-	int idx = 0;
+> 	int err = 0;
+> 
+>-	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
+>-		if (idx < dump->idx || !devlink->ops->selftest_check)
+>-			goto inc;
+>+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
+>+		if (!devlink->ops->selftest_check) {
+>+			devlink_put(devlink);
+>+			continue;
+>+		}
+> 
+> 		devl_lock(devlink);
+> 		err = devlink_nl_selftests_fill(msg, devlink,
+>@@ -4890,15 +4880,13 @@ static int devlink_nl_cmd_selftests_get_dumpit(struct sk_buff *msg,
+> 			devlink_put(devlink);
+> 			break;
+> 		}
+>-inc:
+>-		idx++;
+>+
+> 		devlink_put(devlink);
+> 	}
+> 
+> 	if (err != -EMSGSIZE)
+> 		return err;
+> 
+>-	dump->idx = idx;
+> 	return msg->len;
+> }
+> 
+>@@ -6747,14 +6735,9 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
+> {
+> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
+> 	struct devlink *devlink;
+>-	unsigned long index;
+>-	int idx = 0;
+> 	int err = 0;
+> 
+>-	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
+>-		if (idx < dump->idx)
+>-			goto inc;
+>-
+>+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
+> 		devl_lock(devlink);
+> 		err = devlink_nl_info_fill(msg, devlink, DEVLINK_CMD_INFO_GET,
+> 					   NETLINK_CB(cb->skb).portid,
+>@@ -6767,15 +6750,12 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
+> 			devlink_put(devlink);
+> 			break;
+> 		}
+>-inc:
+>-		idx++;
+> 		devlink_put(devlink);
+> 	}
+> 
+> 	if (err != -EMSGSIZE)
+> 		return err;
+> 
+>-	dump->idx = idx;
+> 	return msg->len;
+> }
+> 
+>-- 
+>2.38.1
+>
