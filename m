@@ -2,170 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFB465D2DC
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 808C565D2F5
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:43:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239192AbjADMhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 07:37:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
+        id S239248AbjADMnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 07:43:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbjADMgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:36:36 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D235813CDF;
-        Wed,  4 Jan 2023 04:36:35 -0800 (PST)
-Received: from fedcomp.. (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 466DD419E9F5;
-        Wed,  4 Jan 2023 12:36:34 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 466DD419E9F5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1672835794;
-        bh=dc0S1ZC+JXp9Z/sCIUJ7rKnBqUvmEKO7DJxlv7hastk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PB7Z2vnPjVQVqjLXOkVkz0W94WO0xFb1hYlDUFOdlbFTlSr+3TAyaLfo5acwMgkeo
-         IMlbDPynh//gP+nQSxqYj6CdAt3l6kho4vO2i62xBesNW+DHA0HnlWijvWj/OnQRn1
-         LISAdoTGbvZDemANeyr1p/uPXul7+CDHEKUnRa10=
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Joe Perches <joe@perches.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+e9632e3eb038d93d6bc6@syzkaller.appspotmail.com
-Subject: [PATCH v3] wifi: ath9k: hif_usb: clean up skbs if ath9k_hif_usb_rx_stream() fails
-Date:   Wed,  4 Jan 2023 15:36:15 +0300
-Message-Id: <20230104123615.51511-1-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <87tu172np9.fsf@toke.dk>
-References: 
+        with ESMTP id S234944AbjADMnu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:43:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16623186CE;
+        Wed,  4 Jan 2023 04:43:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B64D1B8162F;
+        Wed,  4 Jan 2023 12:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CEAC433EF;
+        Wed,  4 Jan 2023 12:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1672836226;
+        bh=gKK35ke75uzbLNdiFo+ZUF6+OSLS2q0DB62aiLXqFus=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R/7nfHYE0649pnd56Dza8eBumthC+1bmiU/8A0efpKWDA9tLXbh+bR/ew+v+6yt7S
+         r98T4XdbtBoNszBgq6/jjGeVS955ekatwSuOgQ1l1gBR4yVM8M/H57jlug9U8wYQrd
+         rhqBIzXzaf6LhifUtNuy4PDCFiCNOYwIwU6c2XNs=
+Date:   Wed, 4 Jan 2023 13:43:43 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc:     stable@vger.kernel.org, willemdebruijn.kernel@gmail.com,
+        mst@redhat.com, jasowang@redhat.com, edumazet@google.com,
+        virtualization@lists.linux-foundation.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        willemb@google.com, syzkaller@googlegroups.com,
+        liuhangbin@gmail.com, linux-kernel@vger.kernel.org,
+        joneslee@google.com
+Subject: Re: [PATCH 0/2] net/af_packet: Fix kernel BUG in __skb_gso_segment
+Message-ID: <Y7V0f77yhwYplQQz@kroah.com>
+References: <20221222083545.1972489-1-tudor.ambarus@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221222083545.1972489-1-tudor.ambarus@linaro.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller detected a memory leak of skbs in ath9k_hif_usb_rx_stream().
-While processing skbs in ath9k_hif_usb_rx_stream(), the already allocated
-skbs in skb_pool are not freed if ath9k_hif_usb_rx_stream() fails. If we
-have an incorrect pkt_len or pkt_tag, the input skb is considered invalid
-and dropped. All the associated packets already in skb_pool should be
-dropped and freed. Added a comment describing this issue.
+On Thu, Dec 22, 2022 at 10:35:43AM +0200, Tudor Ambarus wrote:
+> The series is intended for stable@vger.kernel.org # 5.4+
+> 
+> Syzkaller reported the following bug on linux-5.{4, 10, 15}.y:
+> https://syzkaller.appspot.com/bug?id=ce5575575f074c33ff80d104f5baee26f22e95f5
+> 
+> The upstream commit that introduces this bug is:
+> 1ed1d5921139 ("net: skip virtio_net_hdr_set_proto if protocol already set")
+> 
+> Upstream fixes the bug with the following commits, one of which introduces
+> new support:
+> e9d3f80935b6 ("net/af_packet: make sure to pull mac header")
+> dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO") 
+> 
+> The additional logic and risk backported seems manageable.
+> 
+> The blammed commit introduces a kernel BUG in __skb_gso_segment for
+> AF_PACKET SOCK_RAW GSO VLAN tagged packets. What happens is that
+> virtio_net_hdr_set_proto() exists early as skb->protocol is already set to
+> ETH_P_ALL. Then in packet_parse_headers() skb->protocol is set to
+> ETH_P_8021AD, but neither the network header position is adjusted, nor the
+> mac header is pulled. Thus when we get to validate the xmit skb and enter
+> skb_mac_gso_segment(), skb->mac_len has value 14, but vlan_depth gets
+> updated to 18 after skb_network_protocol() is called. This causes the
+> BUG_ON from __skb_pull(skb, vlan_depth) to be hit, as the mac header has
+> not been pulled yet.
+> 
+> The fixes from upstream backported cleanly without conflicts. I updated
+> the commit message of the first patch to describe the problem encountered,
+> and added Cc, Fixes, Reported-by and Tested-by tags. For the second patch
+> I just added Cc to stable indicating the versions to be fixed, and added
+> my Tested and Signed-off-by tags.
+> 
+> I tested the patches on linux-5.{4, 10, 15}.y.
+> 
+> Eric Dumazet (1):
+>   net/af_packet: make sure to pull mac header
+> 
+> Hangbin Liu (1):
+>   net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO
+> 
+>  net/packet/af_packet.c | 20 +++++++++++++++-----
+>  1 file changed, 15 insertions(+), 5 deletions(-)
 
-The patch also makes remain_skb NULL after being processed so that it
-cannot be referenced after potential free. The initialization of hif_dev
-fields which are associated with remain_skb (rx_remain_len,
-rx_transfer_len and rx_pad_len) is moved after a new remain_skb is
-allocated. 
+Now queued up, thanks.
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 6ce708f54cc8 ("ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream")
-Fixes: 44b23b488d44 ("ath9k: hif_usb: Reduce indent 1 column")
-Reported-by: syzbot+e9632e3eb038d93d6bc6@syzkaller.appspotmail.com
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
-v1->v2: added Reported-by tag
-v2->v3: added proper remain_skb processing, stat macro, comment 
-
- drivers/net/wireless/ath/ath9k/hif_usb.c | 31 +++++++++++++++++-------
- 1 file changed, 22 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 1a2e0c7eeb02..de6c0824c9ca 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -561,11 +561,11 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 			memcpy(ptr, skb->data, rx_remain_len);
- 
- 			rx_pkt_len += rx_remain_len;
--			hif_dev->rx_remain_len = 0;
- 			skb_put(remain_skb, rx_pkt_len);
- 
- 			skb_pool[pool_index++] = remain_skb;
--
-+			hif_dev->remain_skb = NULL;
-+			hif_dev->rx_remain_len = 0;
- 		} else {
- 			index = rx_remain_len;
- 		}
-@@ -584,16 +584,21 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 		pkt_len = get_unaligned_le16(ptr + index);
- 		pkt_tag = get_unaligned_le16(ptr + index + 2);
- 
-+		/* It is supposed that if we have an invalid pkt_tag or
-+		 * pkt_len then the whole input SKB is considered invalid
-+		 * and dropped; the associated packets already in skb_pool
-+		 * are dropped, too.
-+		 */
- 		if (pkt_tag != ATH_USB_RX_STREAM_MODE_TAG) {
- 			RX_STAT_INC(hif_dev, skb_dropped);
--			return;
-+			goto invalid_pkt;
- 		}
- 
- 		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
- 			dev_err(&hif_dev->udev->dev,
- 				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
- 			RX_STAT_INC(hif_dev, skb_dropped);
--			return;
-+			goto invalid_pkt;
- 		}
- 
- 		pad_len = 4 - (pkt_len & 0x3);
-@@ -605,11 +610,6 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 
- 		if (index > MAX_RX_BUF_SIZE) {
- 			spin_lock(&hif_dev->rx_lock);
--			hif_dev->rx_remain_len = index - MAX_RX_BUF_SIZE;
--			hif_dev->rx_transfer_len =
--				MAX_RX_BUF_SIZE - chk_idx - 4;
--			hif_dev->rx_pad_len = pad_len;
--
- 			nskb = __dev_alloc_skb(pkt_len + 32, GFP_ATOMIC);
- 			if (!nskb) {
- 				dev_err(&hif_dev->udev->dev,
-@@ -617,6 +617,12 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 				spin_unlock(&hif_dev->rx_lock);
- 				goto err;
- 			}
-+
-+			hif_dev->rx_remain_len = index - MAX_RX_BUF_SIZE;
-+			hif_dev->rx_transfer_len =
-+				MAX_RX_BUF_SIZE - chk_idx - 4;
-+			hif_dev->rx_pad_len = pad_len;
-+
- 			skb_reserve(nskb, 32);
- 			RX_STAT_INC(hif_dev, skb_allocated);
- 
-@@ -654,6 +660,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 				 skb_pool[i]->len, USB_WLAN_RX_PIPE);
- 		RX_STAT_INC(hif_dev, skb_completed);
- 	}
-+	return;
-+invalid_pkt:
-+	for (i = 0; i < pool_index; i++) {
-+		dev_kfree_skb_any(skb_pool[i]);
-+		RX_STAT_INC(hif_dev, skb_dropped);
-+	}
-+	return;
- }
- 
- static void ath9k_hif_usb_rx_cb(struct urb *urb)
--- 
-2.34.1
-
+greg k-h
