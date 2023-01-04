@@ -2,186 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B92265D4E6
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E49F965D4F2
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239340AbjADOEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 09:04:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
+        id S239436AbjADOFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 09:05:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239375AbjADODx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:03:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728925FAC
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 06:03:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB7461749
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 14:03:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 206E9C433F1;
-        Wed,  4 Jan 2023 14:03:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672841030;
-        bh=XC4J8hAgdNklYVa7nljI9pyGv0CWFdpTsv6N9HM514c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W5Invqhh1VwdiVFlQJYihLRl2yHZiiLPIMqWzKN3AP5SHePUr4BWnrM0bAlN40uol
-         nhabvqLbpY3SEQudLhJbJNSaX9ZP+oN9hW7rzlZn0KhvVD7NRVKwOfcJVS51Yty/8w
-         cCxwfMKPk1UKfeNr7obi58oA/f0t5QSt4IuOUNOooc1JQNjTr6g2FI9yAx3LcGCbG8
-         fcMo5xV6y1yVi972MtaFOLtsvVMnAswkyGuDX9fHgIIXEYlioagJdwdKnFYj9P3+HP
-         0Yqw7zekB4jwr8VR40wKgsmP8ZlZV0yqGNoXvSgKmgzM0gH9HBY6eU84+dWLb2YYc5
-         3Xh9j1+rVtgyA==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, lorenzo.bianconi@redhat.com, nbd@nbd.name,
-        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        sujuan.chen@mediatek.com, daniel@makrotopia.org
-Subject: [PATCH v2 net-next 5/5] net: ethernet: mtk_wed: add reset/reset_complete callbacks
-Date:   Wed,  4 Jan 2023 15:03:14 +0100
-Message-Id: <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <cover.1672840858.git.lorenzo@kernel.org>
-References: <cover.1672840858.git.lorenzo@kernel.org>
+        with ESMTP id S239430AbjADOFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:05:19 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F81B1ADBB;
+        Wed,  4 Jan 2023 06:05:18 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id tz12so82836302ejc.9;
+        Wed, 04 Jan 2023 06:05:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=omjjaDP/LgtiwtMeTshwHRcoEfKVz88lQXr6vhpQX7U=;
+        b=NRxTkCEHs+jUaIEdhc1YbJId89SvZp9B6wbB1x4tXPdqhkccLYlcFKe2MLxWTOfQ+R
+         pLm+ZuOi4eqS3EuNZERb7uHMYVO/Pxkpv1kvPxNPelypMD0GQX3GjIYJ3wgkChDbrzP8
+         cGVoHfIOg3VOVHuOQCgEvWkPA+8n2xy2WhSes+g8EETQ/x21MKst82sdk/h8E5qSIM5V
+         PSMegNYP0V62Z/7k4R0lN+tFb0QCW5PmsFpHG8hHpkfmURToZ1zKL3TCk5sLnwluKA67
+         ZOPaMYMSGAkCu+HsNY5tQVhhKQuDkK+MYIxEAKqW3TlPkrt1JxdO+MMaXqDNwUxqDoPa
+         VcrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=omjjaDP/LgtiwtMeTshwHRcoEfKVz88lQXr6vhpQX7U=;
+        b=esulOfsiHq/w8coXmSYmpRiMX9mbMwHfutRaV2kD/1qe6zDC30wSVihYvExZqkZSgS
+         rlmFLnM5+3CitNCHhG9Nge0l73By96QkIZBNTyVNp8udQ4VjXfnXJPXH/pSrLtxWgvMI
+         XGD49Vhb2vse4gUeokZrnbPmNZQPl0/qVMouotGvxPfQf6OijIoOhi5nc3Ff3C4sDEiC
+         QspcCvsd0FcEq+8ry/JeJ48Ljcd5WHiLGJIFW5H1wn05veyr691Vjt9qzKAM3OesSpDl
+         Xks+aE9nxv+wzo+KAxK26xRUg6dvdLprpkq6jwFiJ0mrrL7HtvAJAp9BsovZnC+phnTo
+         3zaw==
+X-Gm-Message-State: AFqh2kpSeb71s9KT0MsI9aLMiRTWSD3B40v+H4TlVQr3mttoqbA7eXSP
+        82cDL+jTn32t/Eeoepl36KQ=
+X-Google-Smtp-Source: AMrXdXtzaZH0hKIHcFwkAOS0sIhsKaCOQ9xnQkuxnjepURuUQIMIU2bCyeHJl8Y7yqiLRFXWLC7wzw==
+X-Received: by 2002:a17:906:30c2:b0:7ae:c0b:a25c with SMTP id b2-20020a17090630c200b007ae0c0ba25cmr37612280ejb.13.1672841116699;
+        Wed, 04 Jan 2023 06:05:16 -0800 (PST)
+Received: from gvm01 (net-5-89-66-224.cust.vodafonedsl.it. [5.89.66.224])
+        by smtp.gmail.com with ESMTPSA id l18-20020a1709060cd200b0084c70c187e8sm9838522ejh.165.2023.01.04.06.05.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Jan 2023 06:05:16 -0800 (PST)
+Date:   Wed, 4 Jan 2023 15:05:24 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH net-next 0/5] add PLCA RS support and onsemi NCN26000
+Message-ID: <cover.1672840325.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce reset and reset_complete wlan callback to schedule WLAN driver
-reset when ethernet/wed driver is resetting.
+This patchset adds support for getting/setting the Physical Layer 
+Collision Avoidace (PLCA) Reconciliation Sublayer (RS) configuration and
+status on Ethernet PHYs that supports it.
 
-Tested-by: Daniel Golle <daniel@makrotopia.org>
-Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |  6 ++++
- drivers/net/ethernet/mediatek/mtk_wed.c     | 40 +++++++++++++++++++++
- drivers/net/ethernet/mediatek/mtk_wed.h     |  8 +++++
- include/linux/soc/mediatek/mtk_wed.h        |  2 ++
- 4 files changed, 56 insertions(+)
+PLCA is a feature that provides improved media-access performance in terms
+of throughput, latency and fairness for multi-drop (P2MP) half-duplex PHYs.
+PLCA is defined in Clause 148 of the IEEE802.3 specifications as amended
+by 802.3cg-2019. Currently, PLCA is supported by the 10BASE-T1S single-pair
+Ethernet PHY defined in the same standard and related amendments. The OPEN
+Alliance SIG TC14 defines additional specifications for the 10BASE-T1S PHY,
+including a standard register map for PHYs that embeds the PLCA RS (see
+PLCA management registers at https://www.opensig.org/about/specifications/).
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index bafae4f0312e..2d74e26f45c9 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -3913,6 +3913,10 @@ static void mtk_pending_work(struct work_struct *work)
- 		mtk_w32(eth, val, MTK_MAC_MCR(i));
- 	}
- 
-+	rtnl_unlock();
-+	mtk_wed_fe_reset();
-+	rtnl_lock();
-+
- 	/* stop all devices to make sure that dma is properly shut down */
- 	for (i = 0; i < MTK_MAC_COUNT; i++) {
- 		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
-@@ -3949,6 +3953,8 @@ static void mtk_pending_work(struct work_struct *work)
- 
- 	clear_bit(MTK_RESETTING, &eth->state);
- 
-+	mtk_wed_fe_reset_complete();
-+
- 	rtnl_unlock();
- }
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-index a6271449617f..4854993f2941 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-@@ -206,6 +206,46 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
- 	iounmap(reg);
- }
- 
-+void mtk_wed_fe_reset(void)
-+{
-+	int i;
-+
-+	mutex_lock(&hw_lock);
-+
-+	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
-+		struct mtk_wed_hw *hw = hw_list[i];
-+		struct mtk_wed_device *dev = hw->wed_dev;
-+
-+		if (!dev || !dev->wlan.reset)
-+			continue;
-+
-+		/* reset callback blocks until WLAN reset is completed */
-+		if (dev->wlan.reset(dev))
-+			dev_err(dev->dev, "wlan reset failed\n");
-+	}
-+
-+	mutex_unlock(&hw_lock);
-+}
-+
-+void mtk_wed_fe_reset_complete(void)
-+{
-+	int i;
-+
-+	mutex_lock(&hw_lock);
-+
-+	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
-+		struct mtk_wed_hw *hw = hw_list[i];
-+		struct mtk_wed_device *dev = hw->wed_dev;
-+
-+		if (!dev || !dev->wlan.reset_complete)
-+			continue;
-+
-+		dev->wlan.reset_complete(dev);
-+	}
-+
-+	mutex_unlock(&hw_lock);
-+}
-+
- static struct mtk_wed_hw *
- mtk_wed_assign(struct mtk_wed_device *dev)
- {
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed.h b/drivers/net/ethernet/mediatek/mtk_wed.h
-index e012b8a82133..6108a7e69a80 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed.h
-+++ b/drivers/net/ethernet/mediatek/mtk_wed.h
-@@ -128,6 +128,8 @@ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
- void mtk_wed_exit(void);
- int mtk_wed_flow_add(int index);
- void mtk_wed_flow_remove(int index);
-+void mtk_wed_fe_reset(void);
-+void mtk_wed_fe_reset_complete(void);
- #else
- static inline void
- mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
-@@ -146,6 +148,12 @@ static inline int mtk_wed_flow_add(int index)
- static inline void mtk_wed_flow_remove(int index)
- {
- }
-+static inline void mtk_wed_fe_reset(void)
-+{
-+}
-+static inline void mtk_wed_fe_reset_complete(void)
-+{
-+}
- 
- #endif
- 
-diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
-index db637a13888d..ddff54fc9717 100644
---- a/include/linux/soc/mediatek/mtk_wed.h
-+++ b/include/linux/soc/mediatek/mtk_wed.h
-@@ -150,6 +150,8 @@ struct mtk_wed_device {
- 		void (*release_rx_buf)(struct mtk_wed_device *wed);
- 		void (*update_wo_rx_stats)(struct mtk_wed_device *wed,
- 					   struct mtk_wed_wo_rx_stats *stats);
-+		int (*reset)(struct mtk_wed_device *wed);
-+		int (*reset_complete)(struct mtk_wed_device *wed);
- 	} wlan;
- #endif
- };
+The changes proposed herein add the appropriate ethtool netlink interface
+for configuring the PLCA RS on PHYs that supports it. A separate patchset
+further modifies the ethtool userspace program to show and modify the
+configuration/status of the PLCA RS.
+
+Additionally, this patchset adds support for the onsemi NCN26000
+Industrial Ethernet 10BASE-T1S PHY that uses the newly added PLCA
+infrastructure.
+
+Piergiorgio Beruto (5):
+  net/ethtool: add netlink interface for the PLCA RS
+  drivers/net/phy: add the link modes for the 10BASE-T1S Ethernet PHY
+  drivers/net/phy: add connection between ethtool and phylib for PLCA
+  drivers/net/phy: add helpers to get/set PLCA configuration
+  drivers/net/phy: add driver for the onsemi NCN26000 10BASE-T1S PHY
+
+ Documentation/networking/ethtool-netlink.rst | 138 ++++++++++
+ MAINTAINERS                                  |  14 +
+ drivers/net/phy/Kconfig                      |   7 +
+ drivers/net/phy/Makefile                     |   1 +
+ drivers/net/phy/mdio-open-alliance.h         |  46 ++++
+ drivers/net/phy/ncn26000.c                   | 171 ++++++++++++
+ drivers/net/phy/phy-c45.c                    | 183 ++++++++++++
+ drivers/net/phy/phy-core.c                   |   5 +-
+ drivers/net/phy/phy.c                        | 172 ++++++++++++
+ drivers/net/phy/phy_device.c                 |  17 ++
+ drivers/net/phy/phylink.c                    |   6 +-
+ include/linux/ethtool.h                      |  12 +
+ include/linux/phy.h                          |  84 ++++++
+ include/uapi/linux/ethtool.h                 |   3 +
+ include/uapi/linux/ethtool_netlink.h         |  25 ++
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/common.c                         |   8 +
+ net/ethtool/netlink.c                        |  29 ++
+ net/ethtool/netlink.h                        |   6 +
+ net/ethtool/plca.c                           | 276 +++++++++++++++++++
+ 20 files changed, 1202 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/phy/mdio-open-alliance.h
+ create mode 100644 drivers/net/phy/ncn26000.c
+ create mode 100644 net/ethtool/plca.c
+
 -- 
-2.39.0
+2.37.4
 
