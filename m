@@ -2,69 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A92B965D1C0
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 12:48:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBAE565D233
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239091AbjADLsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 06:48:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
+        id S235004AbjADMQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 07:16:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234726AbjADLsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 06:48:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7BB1EAFD;
-        Wed,  4 Jan 2023 03:48:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94024613EA;
-        Wed,  4 Jan 2023 11:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B7DAC433D2;
-        Wed,  4 Jan 2023 11:47:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672832880;
-        bh=tVKRtnWaZZzqrPq8yrMjFtLHPJFEtdjwVzN5HPz6PNo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZtdG5nNtzC4Qg4uKG4pKE1cjLnujfr11dKH4dcnGqbvdi4a63JcgSsCpcIolbLqvp
-         nuE/yaN6zxt8gd27w1S0kdPYXv5sPHMMPawNOCuuIac4nGCNYSOfExWstXfTSfON2y
-         z69JsG2uLaKs2Pz/gbf0p0dzPeFbrO90QW/7BwXgomngxCkpqb8sr77kriK0NYuhrz
-         Bmcpe0tIa5KphOKZV3S/EC/TpQ7joEw0wte8zpgcRZ31HJGk3Tyfk++daz3FuPNHdI
-         DlXszGvUQ/aoOxmjdxUe5qAcqVZqYLdze4wmMs8+P9bn7HcGT+c78ubPaOj+qAistf
-         ksln38PZ5v5nQ==
-Date:   Wed, 4 Jan 2023 13:47:55 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     gregory.greenman@intel.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        luciano.coelho@intel.com, johannes.berg@intel.com,
-        shaul.triebitz@intel.com, linux-wireless@vger.kernel.or,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iwlwifi: Add missing check for alloc_ordered_workqueue
-Message-ID: <Y7Vna3q8DxXSgpBp@unreal>
-References: <20230104100059.24987-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S234726AbjADMQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:16:17 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A719F016;
+        Wed,  4 Jan 2023 04:16:16 -0800 (PST)
+Received: from fedcomp.. (unknown [46.242.14.200])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 4DF7D419E9CB;
+        Wed,  4 Jan 2023 12:16:10 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 4DF7D419E9CB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1672834570;
+        bh=Z6aS5qwzvrT0EpnS1M75E2ZCaAMxUHd9r+HBXrqbyEI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NGRgfg+jgxe1kSHwci/iiw6fMSJJpkpM1F9rNjloL3XOiDp9BcJ1WsRyqJsIadf/r
+         4koYwwmC1SkBuRFq7fxtghx588QHzzzkJl6muwt/7OYdkWrVesYIScCQizYx+Cyueo
+         cevtkGepSizm2VSYlYfHjKaGQHCbnA14P2TJn5J4=
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com,
+        syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
+Subject: [PATCH v3] wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg() if there is no callback function
+Date:   Wed,  4 Jan 2023 15:15:58 +0300
+Message-Id: <20230104121558.38969-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230103224815.304147-1-pchelkin@ispras.ru>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230104100059.24987-1-jiasheng@iscas.ac.cn>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 06:00:59PM +0800, Jiasheng Jiang wrote:
-> Add check for the return value of alloc_ordered_workqueue since it may
-> return NULL pointer.
-> 
-> Fixes: b481de9ca074 ("[IWLWIFI]: add iwlwifi wireless drivers")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/net/wireless/intel/iwlwifi/dvm/main.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
+It is stated that ath9k_htc_rx_msg() either frees the provided skb or
+passes its management to another callback function. However, the skb is
+not freed in case there is no another callback function, and Syzkaller was
+able to cause a memory leak. Also minor comment fix.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-by: syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com
+Reported-by: syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+v1->v2: added Reported-by tag
+v2->v3: use 'goto invalid' instead of freeing skb in place
+
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index ca05b07a45e6..0c95f6b145ff 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -478,6 +478,8 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 		if (endpoint->ep_callbacks.rx)
+ 			endpoint->ep_callbacks.rx(endpoint->ep_callbacks.priv,
+ 						  skb, epid);
++		else
++			goto invalid;
+ 	}
+ }
+ 
+-- 
+2.34.1
+
