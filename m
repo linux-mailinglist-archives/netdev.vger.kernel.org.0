@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC64F65CE87
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 09:44:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3B6665CEE4
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:00:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbjADIod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 03:44:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42600 "EHLO
+        id S234281AbjADI7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 03:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234206AbjADIob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:44:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C812B1A058;
-        Wed,  4 Jan 2023 00:44:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AFF1B815C2;
-        Wed,  4 Jan 2023 08:44:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842B9C433D2;
-        Wed,  4 Jan 2023 08:44:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672821868;
-        bh=dhU/nCpwMIeJj3XRgwHtRg9MAK6LNzONvI7prwCy/ig=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U8QF2kd66RpNSVoDCopZ1nryaoJTBepMn9LFLZtBnvNQWxoyo0Zzd8IKfGwn/ygcd
-         bHeMTDUXcxeuGd9yQMUOmDDvWNon8Xyxrns4j0hL9lhoQ8VNYCVUHAa4tXFfTJR5UI
-         KRGpurmyhzJvx2LoSltExr2diTEha6oY++G+fO/Zb//ugWWWV0dzIUhfG6n+uRrjqD
-         d+fhCy3qLg3FA3UQGqY0EH5bkh9dXI/yn+h6c1wzv1NjN6X4YggU15jn/JOaxJzO3W
-         k7qHyxXxRAB3H+yXBGkJ0Y96hmFB/Zo6bd202Zfe/g10K0Yfz6JWd48jnSmuTjXm2Z
-         dbF/4YSBsYW7g==
-Date:   Wed, 4 Jan 2023 09:44:24 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, lorenzo.bianconi@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andy Gospodarek <gospo@broadcom.com>, gal@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
-Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
- support xdp multibuffer
-Message-ID: <Y7U8aAhdE3TuhtxH@lore-desk>
-References: <20220621175402.35327-1-gospo@broadcom.com>
- <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
- <87k0234pd6.fsf@toke.dk>
- <20230103172153.58f231ba@kernel.org>
+        with ESMTP id S234051AbjADI7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:59:18 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC35222;
+        Wed,  4 Jan 2023 00:59:13 -0800 (PST)
+X-UUID: d498b7d652c2461d9add940560a0d76f-20230104
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=VkE+9Be2IZo1wTEmkjQlAica3O0qe2SLkKytbv3x8GQ=;
+        b=Ae830jSL6ytkRP7GkDoR/7DK7kT51c1AsQ4kSARGMoIu0lBlWXDJHTXgVgykchLkqy11wBhmOsBsAr/8b/C1hzpIOEh4EIZA+bA2ZRKvSEvRt3XEZbd2VWOWsdk8sC7oEkrL+A4zirEojKV7kaZiTP3DQrtQajMOt6+oDY1q4PQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.16,REQID:e5abeeb3-4e17-45e1-8358-3deee29bb035,IP:0,U
+        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+        N:release,TS:90
+X-CID-INFO: VERSION:1.1.16,REQID:e5abeeb3-4e17-45e1-8358-3deee29bb035,IP:0,URL
+        :0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTIO
+        N:quarantine,TS:90
+X-CID-META: VersionHash:09771b1,CLOUDID:89189b53-dd49-462e-a4be-2143a3ddc739,B
+        ulkID:230104165906DAX5D3VZ,BulkQuantity:1,Recheck:0,SF:38|28|17|19|48,TC:n
+        il,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:40,QS:nil,BEC:nil,COL:0,OSI
+        :0,OSA:0
+X-CID-BVR: 0,NGT
+X-UUID: d498b7d652c2461d9add940560a0d76f-20230104
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1887014069; Wed, 04 Jan 2023 16:59:03 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 4 Jan 2023 16:59:02 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Wed, 4 Jan 2023 16:59:00 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Biao Huang" <biao.huang@mediatek.com>, <macpaul.lin@mediatek.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v7 0/2] arm64: dts: mt8195: Add Ethernet controller
+Date:   Wed, 4 Jan 2023 16:58:55 +0800
+Message-ID: <20230104085857.2410-1-biao.huang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="e1TbLDOmNoNp9c+g"
-Content-Disposition: inline
-In-Reply-To: <20230103172153.58f231ba@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,RDNS_NONE,
+        SPF_HELO_PASS,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Changes in v7:
+1. move mdio node to .dtsi, and remove the compatible
+property in ethernet-phy node as Andrew's comments.
+2. add netdev@ to cc list as Jakub's reminder.
 
---e1TbLDOmNoNp9c+g
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Changes in v6:
+1. add reviewed-by as Angelo's comments
+2. remove fix_mac_speed in driver as Andrew's comments.
 
-> On Tue, 03 Jan 2023 16:19:49 +0100 Toke H=F8iland-J=F8rgensen wrote:
-> > Hmm, good question! I don't think we've ever explicitly documented any
-> > assumptions one way or the other. My own mental model has certainly
-> > always assumed the first frag would continue to be the same size as in
-> > non-multi-buf packets.
->=20
-> Interesting! :) My mental model was closer to GRO by frags=20
-> so the linear part would have no data, just headers.
+Changes in v5:
+1. reorder the clocks as Angelo's comments
+2. add a driver patch to fix rgmii-id issue, then we can
+use a ususal way rgmii/rgmii-id as Andrew's comments.
 
-That is assumption as well.
+Changes in v4:
+1. remove {address,size}-cells = <0> to avoid warning as Angelo's feedback.
+2. Add reviewd-by as Angelo's comments.
 
-Regards,
-Lorenzo
+Changes in v3:
+1. move stmmac-axi-config, rx-queues-config, tx-queues-configs inside ethernet
+node as Angelo's comments.
+2. add {address,size}-cells = <0> in ethernet node as Angelo's comments.
 
->=20
-> A random datapoint is that bpf_xdp_adjust_head() seems=20
-> to enforce that there is at least ETH_HLEN.
+Changes in v2:
+1. modify pinctrl node used by ethernet to match rules in pinctrl-mt8195.yaml,
+which is pointed by Krzysztof.
+2. remove "mac-address" property in ethernet node as comments of Krzysztof.
 
---e1TbLDOmNoNp9c+g
-Content-Type: application/pgp-signature; name="signature.asc"
+Changes in v1:
+add dts node for MT8195 Ethernet controller
 
------BEGIN PGP SIGNATURE-----
+Biao Huang (2):
+  stmmac: dwmac-mediatek: remove the dwmac_fix_mac_speed
+  arm64: dts: mt8195: Add Ethernet controller
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY7U8aAAKCRA6cBh0uS2t
-rC0sAP9Wj8TbwcYxrX2MfzTIpike7c8ukxeJjGrDXdn85FrJiwD+Oz3kURLL7uMq
-7r4VDGFRDSVANSTQNKfV73cWZrP49AU=
-=AJ4V
------END PGP SIGNATURE-----
+ arch/arm64/boot/dts/mediatek/mt8195-demo.dts  | 77 ++++++++++++++++
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi      | 92 +++++++++++++++++++
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 26 ------
+ 3 files changed, 169 insertions(+), 26 deletions(-)
 
---e1TbLDOmNoNp9c+g--
+-- 
+2.18.0
+
+
