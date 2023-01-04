@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D12A965D479
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 14:39:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A68E665D48A
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 14:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239578AbjADNjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 08:39:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
+        id S239525AbjADNl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 08:41:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239589AbjADNiy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 08:38:54 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A3C39FA7
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 05:38:35 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-4b6255ce5baso31055237b3.11
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 05:38:35 -0800 (PST)
+        with ESMTP id S234103AbjADNlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 08:41:22 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9DD18B35
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 05:41:13 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id 79so22206921pgf.11
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 05:41:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=qclToVi/BQC5Pv8Xj25q6AN94oxIkuXGa2fVo7L7JUI=;
-        b=dE2lBT2+vIFXg0i03A9B8byoB9/rVa3nF6kwRrk+KKEAbtt4BEO3nTfny05Kxmpeyc
-         U9s8r+GMx25xYTEKuEQijsuP0QPq7rkjz8DvCMGRSHOaDHQN2ILGQfXb7OCtPbYdXhUM
-         6x0OxSII0t7qA8d4F0cuVineWoLiGgYMR1Uzk=
+        bh=eyhYXJRRCyXkVYKo2Rsu+h4Y6Zu3iE05XbUBgqA5ago=;
+        b=G3GO7wCPi/R1c3LZOVoOzB3jVteAQpUgDouR1xu9ynu6SafUxtU3BRSlUaYIxWYvUJ
+         qX1I8qy8a2qPAUolcBc1rBLT2+l9rQEGT9yp9emj6v+bFKHKkw5u0fj1848yBSukSybJ
+         EWIZsCQoBo2liiHkG8fid+jcIr+Radu+S6E0o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qclToVi/BQC5Pv8Xj25q6AN94oxIkuXGa2fVo7L7JUI=;
-        b=oBPwClKQ1xLt4CJKgpkYEywSB+fNe/jfPuPTTDe8PekiWVJNM6HLKrx/rKR5ZXiape
-         fcC4GfHOVTuI8jMPwQ/1B5y6/IQfnRhyE1Y4Hm4aWBm3w0jRiE1FSbP6HSSj48Y02TrC
-         VIrUzIlV26laCXngH0Wf2051F6K8WkBpqvdknT8K8aenEL5awYXfnFGd+cNX/Td6MyzY
-         y8SZECKlUfkzTOPMXb+YSwU+N4RNg8HOBJNVjGrRyXhsAUg+5sRV6WlW5aAT28c8BTRc
-         L2ieS9Wnf/u9Luw2nfg1mnr330ysS6l9wwTkAxanS2Bhlc5imP7ETr7/pkqk/Vyoru0W
-         3NUQ==
-X-Gm-Message-State: AFqh2koz+Y0vHm7mzD+qpgX7UNd2N953GVXHbhvGGVwoFlfsdLX6CQen
-        dL5z8W60XPWhtR3Us2dLSP6iWA==
-X-Google-Smtp-Source: AMrXdXszRsGgRshZtDm9CyuWm1/YVyw4ue5vacQYap0BVIi39wYOMC6W885xh03hdiLWZWBB16gKpg==
-X-Received: by 2002:a81:d58:0:b0:45f:ab6c:3d01 with SMTP id 85-20020a810d58000000b0045fab6c3d01mr42088403ywn.51.1672839514787;
-        Wed, 04 Jan 2023 05:38:34 -0800 (PST)
+        bh=eyhYXJRRCyXkVYKo2Rsu+h4Y6Zu3iE05XbUBgqA5ago=;
+        b=flAWcEC56PBqIpAI/1cfOZFz3Le9+XoIB+uPIqAusSRmxgtDeMrNLvw4USmVNz/k6c
+         Wy8m8VPtG7YjqX/asNHKZ+32pIBYKO9ehW7gLXXNyZCSpOIOpFljYIAwmQmSlKNmZG4L
+         m38NwiG969jMui5Wa3/x1Mh7w+gZy+bMLjXD7vM4A0tEJ4h7o2vthZjs4l9UreuXG3VZ
+         gJ/d8QlIkJzPQ4BfNvDj27/3XicQg4NdqsTf78l+nudLRtfIPqs8MlG8zqz/FHq+EUp2
+         /596bQY9Om/rkJ6Mo2ZOmQpgc6ChuBVUMPhvwupVKJ1OplcvAUNHUs+j1ClkscPtAD4j
+         VEig==
+X-Gm-Message-State: AFqh2kq1nM4INBYcjyKLlYU66x2sbcXrlk+q17uSCREw+sezmjMOT8w4
+        iFUUxLY97XfyDhw/yr2923jD8A==
+X-Google-Smtp-Source: AMrXdXuuPiUCnLLxpke3KC2E4FkpdrhQWTdsJ5gzfdkHdnHudpMkj7KpV9O3Ndm3VWkOdeeyvUk5yg==
+X-Received: by 2002:a62:e317:0:b0:581:4297:362f with SMTP id g23-20020a62e317000000b005814297362fmr33750377pfh.13.1672839673160;
+        Wed, 04 Jan 2023 05:41:13 -0800 (PST)
 Received: from [192.168.178.136] (f215227.upc-f.chello.nl. [80.56.215.227])
-        by smtp.gmail.com with ESMTPSA id v7-20020a05620a0f0700b006fbb4b98a25sm23949252qkl.109.2023.01.04.05.38.29
+        by smtp.gmail.com with ESMTPSA id 199-20020a6216d0000000b00580f224cdf6sm19043327pfw.203.2023.01.04.05.41.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Jan 2023 05:38:34 -0800 (PST)
-Message-ID: <e50b9ec5-342f-399a-5bac-5cb0843a5bc7@broadcom.com>
-Date:   Wed, 4 Jan 2023 14:38:28 +0100
+        Wed, 04 Jan 2023 05:41:12 -0800 (PST)
+Message-ID: <9b385a20-39bd-e064-e0b3-e7f6273d3161@broadcom.com>
+Date:   Wed, 4 Jan 2023 14:41:04 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH v1 3/4] brcmfmac: pcie: Add IDs/properties for BCM4377
+Subject: Re: [PATCH v1 4/4] brcmfmac: pcie: Perform correct BCM4364 firmware
+ selection
 To:     Hector Martin <marcan@marcan.st>,
         Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
@@ -74,11 +75,11 @@ Cc:     Alexander Prutskov <alep@cypress.com>,
         linux-kernel@vger.kernel.org,
         Linus Walleij <linus.walleij@linaro.org>
 References: <20230104100116.729-1-marcan@marcan.st>
- <20230104100116.729-4-marcan@marcan.st>
+ <20230104100116.729-5-marcan@marcan.st>
 From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-In-Reply-To: <20230104100116.729-4-marcan@marcan.st>
+In-Reply-To: <20230104100116.729-5-marcan@marcan.st>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000f935305f1704d2b"
+        boundary="00000000000081c56405f170563f"
 X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -89,28 +90,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000f935305f1704d2b
+--00000000000081c56405f170563f
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 1/4/2023 11:01 AM, 'Hector Martin' via BRCM80211-DEV-LIST,PDL wrote:
-> This chip is present on at least these Apple T2 Macs:
+> This chip exists in two revisions (B2=r3 and B3=r4) on different
+> platforms, and was added without regard to doing proper firmware
+> selection or differentiating between them. Fix this to have proper
+> per-revision firmwares and support Apple NVRAM selection.
 > 
-> * tahiti:  MacBook Pro 13" (2020, 2 TB3)
-> * formosa: MacBook Pro 13" (Touch/2019)
-> * fiji:    MacBook Air 13" (Scissor, 2020)
+> Revision B2 is present on at least these Apple T2 Macs:
 > 
+> kauai:    MacBook Pro 15" (Touch/2018-2019)
+> maui:     MacBook Pro 13" (Touch/2018-2019)
+> lanai:    Mac mini (Late 2018)
+> ekans:    iMac Pro 27" (5K, Late 2017)
+> 
+> And these non-T2 Macs:
+> 
+> nihau:    iMac 27" (5K, 2019)
+> 
+> Revision B3 is present on at least these Apple T2 Macs:
+> 
+> bali:     MacBook Pro 16" (2019)
+> trinidad: MacBook Pro 13" (2020, 4 TB3)
+> borneo:   MacBook Pro 16" (2019, 5600M)
+> kahana:   Mac Pro (2019)
+> kahana:   Mac Pro (2019, Rack)
+> hanauma:  iMac 27" (5K, 2020)
+> kure:     iMac 27" (5K, 2020, 5700/XT)
+> 
+> Fixes: 24f0bd136264 ("brcmfmac: add the BRCM 4364 found in MacBook Pro 15,2")
 > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c      | 1 +
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c      | 5 +++++
->   .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h    | 2 ++
->   3 files changed, 8 insertions(+)
+>   .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 11 +++++++++--
+>   1 file changed, 9 insertions(+), 2 deletions(-)
 
---0000000000000f935305f1704d2b
+--00000000000081c56405f170563f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,14 +201,14 @@ BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
 N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
 p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
 YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
-bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCHPieXu8o5vEbeM2VG
-PMaDt6rDdowQ4g5xBhEYAKk8VjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMzAxMDQxMzM4MzVaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCDOgbrb3yzGU4TeLjue
+BZ0d6rSV/tfPcSWTYLIUR7aAYjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMzAxMDQxMzQxMTNaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
 AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAWJgnHESOvOYQhsCKNBXBx9vKUC+tSUELxP5Y
-D0CMnU1rtNL942NWrdZAGEfmczMxH5d/B9vzkCzaJPSQtE6oapBLxrg3mDHmvWl2hF0CkDatvxIx
-UK/ZecYVKsN7fAc1oa4WxCo3oWvNrL4MIfNDgY2KXxA1WAbLCSEa66bWdbz9hZLvfsTBATNaB75S
-nulvVW7RyTRxhY/f7hCMuTST/yQ2/hq9dB9P0Smkaefq+1Yk94RngBCbz/GgJ2ImaMw4nMCbN7UO
-zCgHbimIOtmu5H7o0f08RrvZl8ynIBoQBjCW8AsOjNMXo6v0oy2z4jS8WoRjhIezzZa3qxKlD2gi
-gA==
---0000000000000f935305f1704d2b--
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAUP7tKn5fX64Jben4ucQactdTcWsY5TUzF7Jw
+TGfrem4hpvifMgiEaGVcV1jPk0VCC8WadtbfPYRc8vZQcmTb/tO2F5bkM6ezYgiIJFAaL7IbxrmZ
+i5puVlIJtl3rUBlPjD05D8epcMt+YmpdggFBOaO1ijnRQlaSyWwfpH7ahZk0Uwx9B1rs34HtywYQ
+baUe17xiPhvdOhOAVO0iAt1pTDkxlJTvMAfbk3INCbvpgV0Y1iyqGVi39+bEM10yNjFQChFKx2CM
+IPWIfPGw+nB732RHoxav74ruktCc88p+910GV5lUCxOoiZ8uZ+N4YkvN6USihfNKPrT8PHflh7Sm
+og==
+--00000000000081c56405f170563f--
