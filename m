@@ -2,125 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89AC165D9DD
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 17:32:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F7865D9E2
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 17:32:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239758AbjADQcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 11:32:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57104 "EHLO
+        id S233916AbjADQc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 11:32:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbjADQbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 11:31:50 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0F411833
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 08:31:49 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-115-OKgX2QelNL2C9KzZNLhdvQ-1; Wed, 04 Jan 2023 16:31:47 +0000
-X-MC-Unique: OKgX2QelNL2C9KzZNLhdvQ-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 4 Jan
- 2023 16:31:45 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.044; Wed, 4 Jan 2023 16:31:45 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Martin Blumenstingl' <martin.blumenstingl@googlemail.com>
-CC:     Ping-Ke Shih <pkshih@realtek.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tehuang@realtek.com" <tehuang@realtek.com>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-Thread-Topic: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-Thread-Index: AQHZGsFtJHlbRNsmYUOpTa0F4ufSPq6EmMnggAOg+qCAALbHgIAAiEwggAT0j0eAAALd0IAAB5IAgAADjxA=
-Date:   Wed, 4 Jan 2023 16:31:45 +0000
-Message-ID: <662e2f820e7a478096dd6e09725c093a@AcuMS.aculab.com>
-References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
- <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
- <92eb7dfa8b7d447e966a2751e174b642@realtek.com>
- <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
- <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
- <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com>
- <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
- <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com>
- <ec6a0988f3f943128e0122d50959185a@AcuMS.aculab.com>
- <CAFBinCC9sNvQJcu-SOSrFmo4sCx29K6KwXnc-O6MX9TJEHtXYg@mail.gmail.com>
-In-Reply-To: <CAFBinCC9sNvQJcu-SOSrFmo4sCx29K6KwXnc-O6MX9TJEHtXYg@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S239864AbjADQco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 11:32:44 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3481ADB7;
+        Wed,  4 Jan 2023 08:32:43 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3044wxe8031488;
+        Wed, 4 Jan 2023 08:32:30 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=XvAZtcDafs9da5L8+27SQ+lEJe4BO27QZTE7M0uYv58=;
+ b=MuWKP8kvKZkBPO12s8LzLk1ECrfYQ1oynMoi85JAUtX4AoBS57YfsqHE4fC0OsR+9Q2M
+ xHMLD8Z4QpPhhMaplSxEz8M+rohRJEXuv2YRAdxPYHUcEk5vu1brypIhLaBfSv/Eqs+V
+ 2Bp3MMOGt2wjFzml67WqRLc71qdLpAu1nPcLzJ/+N3FwoaWconTHVN0ZMaPxqqG2+C/T
+ vk9MVZppq52RFpPhqG6HElDSb5OxnGy5tF7fVluvfa8t1zQiu99gADIyGP5SQFn3Avvq
+ oxmSHrnAjz9MHOHAOrthLDNMcS2f2QTAsQOOeX6BT/wSDwo5K6x1R0PY4WUV1OWaoQLV /Q== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3mtnftm9qk-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 04 Jan 2023 08:32:30 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 4 Jan
+ 2023 08:32:28 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Wed, 4 Jan 2023 08:32:28 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 620BB3F7076;
+        Wed,  4 Jan 2023 08:32:24 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, "Angela Czubak" <aczubak@marvell.com>,
+        Hariprasad Kelam <hkelam@marvell.com>
+Subject: [net PATCH] octeontx2-af: Fix LMAC config in cgx_lmac_rx_tx_enable
+Date:   Wed, 4 Jan 2023 22:02:20 +0530
+Message-ID: <20230104163220.954-1-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-GUID: K6V-07CX3uGrjWPa79dfhtZu5kgBOOMy
+X-Proofpoint-ORIG-GUID: K6V-07CX3uGrjWPa79dfhtZu5kgBOOMy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-04_07,2023-01-04_02,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogTWFydGluIEJsdW1lbnN0aW5nbA0KPiBTZW50OiAwNCBKYW51YXJ5IDIwMjMgMTY6MDgN
-Cj4gDQo+IE9uIFdlZCwgSmFuIDQsIDIwMjMgYXQgNDo1MyBQTSBEYXZpZCBMYWlnaHQgPERhdmlk
-LkxhaWdodEBhY3VsYWIuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IE1hcnRpbiBCbHVtZW5z
-dGluZ2wNCj4gPiA+IFNlbnQ6IDA0IEphbnVhcnkgMjAyMyAxNTozMA0KPiA+ID4NCj4gPiA+IEhp
-IFBpbmctS2UsIEhpIERhdmlkLA0KPiA+ID4NCj4gPiA+IE9uIFN1biwgSmFuIDEsIDIwMjMgYXQg
-MjowOSBQTSBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4gd3JvdGU6DQo+ID4gPiBb
-Li4uXQ0KPiA+ID4gPiBZZXMsIGl0IHNob3VsZCBub3QgdXNlIGJpdCBmaWxlZC4gSW5zdGVhZCwg
-dXNlIGEgX19sZTE2IGZvciBhbGwgZmllbGRzLCBzdWNoIGFzDQo+ID4gPiBJIHRoaW5rIHRoaXMg
-Y2FuIGJlIGRvbmUgaW4gYSBzZXBhcmF0ZSBwYXRjaC4NCj4gPiA+IE15IHYyIG9mIHRoaXMgcGF0
-Y2ggaGFzIHJlZHVjZWQgdGhlc2UgY2hhbmdlcyB0byBhIG1pbmltdW0sIHNlZSBbMF0NCj4gPiA+
-DQo+ID4gPiBbLi4uXQ0KPiA+ID4gPiBzdHJ1Y3QgcnR3ODgyMWNlX2VmdXNlIHsNCj4gPiA+ID4g
-ICAgLi4uDQo+ID4gPiA+ICAgIHU4IGRhdGExOyAgICAgICAvLyBvZmZzZXQgMHgxMDANCj4gPiA+
-ID4gICAgX19sZTE2IGRhdGEyOyAgIC8vIG9mZnNldCAweDEwMS0weDEwMg0KPiA+ID4gPiAgICAu
-Li4NCj4gPiA+ID4gfSBfX3BhY2tlZDsNCj4gPiA+ID4NCj4gPiA+ID4gV2l0aG91dCBfX3BhY2tl
-ZCwgY29tcGlsZXIgY291bGQgaGFzIHBhZCBiZXR3ZWVuIGRhdGExIGFuZCBkYXRhMiwNCj4gPiA+
-ID4gYW5kIHRoZW4gZ2V0IHdyb25nIHJlc3VsdC4NCj4gPiA+IE15IHVuZGVyc3RhbmRpbmcgaXMg
-dGhhdCB0aGlzIGlzIHRoZSByZWFzb24gd2h5IHdlIG5lZWQgX19wYWNrZWQuDQo+ID4NCj4gPiBU
-cnVlLCBidXQgZG9lcyBpdCByZWFsbHkgaGF2ZSB0byBsb29rIGxpa2UgdGhhdD8NCj4gPiBJIGNh
-bid0IGZpbmQgdGhhdCB2ZXJzaW9uIChJIGRvbid0IGhhdmUgYSBuZXRfbmV4dCB0cmVlKS4NCj4g
-TXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0IHRoZXJlJ3Mgb25lIGFjdHVhbCBhbmQgb25lIHBvdGVu
-dGlhbCB1c2UtY2FzZS4NCj4gTGV0J3Mgc3RhcnQgd2l0aCB0aGUgYWN0dWFsIG9uZSBpbg0KPiBk
-cml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjFjLmg6DQo+ICAgc3RydWN0
-IHJ0dzg4MjFjX2VmdXNlIHsNCj4gICAgICAgX19sZTE2IHJ0bF9pZDsNCj4gICAgICAgdTggcmVz
-MFsweDBlXTsNCj4gICAgICAgLi4uDQo+IA0KPiBUaGUgc2Vjb25kIG9uZSBpcyBhIHBvdGVudGlh
-bCBvbmUsIGFsc28gaW4NCj4gZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4
-ODIxYy5oIGlmIHdlIHJlcGxhY2UgdGhlDQo+IGJpdGZpZWxkcyBieSBhbiBfX2xlMTYgKHdoaWNo
-IGlzIG15IHVuZGVyc3RhbmRpbmcgaG93IHRoZSBkYXRhIGlzDQo+IG1vZGVsZWQgaW4gdGhlIGVG
-dXNlKToNCj4gICBzdHJ1Y3QgcnR3ODgyMWNlX2VmdXNlIHsNCj4gICAgICAgLi4uDQo+ICAgICAg
-IHU4IHNlcmlhbF9udW1iZXJbOF07DQo+ICAgICAgIF9fbGUxNiBjYXBfZGF0YTsgLyogMHhmNCAq
-Lw0KPiAgICAgICAuLi4NCj4gKEknbSBub3Qgc3VyZSBhYm91dCB0aGUgImNhcF9kYXRhIiBuYW1l
-LCBidXQgSSB0aGluayB5b3UgZ2V0IHRoZSBwb2ludCkNCg0KQm90aCB0aG9zZSBzZWVtIHRvIGJl
-IGFsaWduZWQgLSBwcm92aWRlZCB0aGUgc3RydWN0dXJlIGlzIGFsaWduZWQuDQoNCj4gPiBQb3Nz
-aWJseSBpdCBzaG91bGQgYmUgJ3U4IGRhdGEyWzJdOycNCj4gU28geW91J3JlIHNheWluZyB3ZSBz
-aG91bGQgcmVwbGFjZSB0aGUgX19sZTE2IHdpdGggdTggc29tZV9uYW1lWzJdOw0KPiBpbnN0ZWFk
-LCB0aGVuIHdlIGRvbid0IG5lZWQgdGhlIF9fcGFja2VkIGF0dHJpYnV0ZS4NCg0KQnV0IG1heWJl
-IHlvdSBzaG91bGQgbG9vayBhdCBkZWZpbmluZyB0aGUgYml0ZmllbGRzIGRpZmZlcmVudGx5Lg0K
-Q2hhbmdlIHRvIF9fbGUxNiBpcyBwcm9iYWJseSBtYWtpbmcgaXQgaGFyZCBmb3IgeW91cnNlbGYu
-DQpQZXJoYXBzIHlvdSBjb3VsZCAjZGVmaW5lIGEgY29uc3RhbnQgZm9yIGVhY2ggYml0ZmllbGQN
-CnNvIHlvdSBjYW4gd3JpdGUgYW4gYWNjZXNzIGZ1bmN0aW9uIGxpa2U6DQoJI2RlZmluZSBiaXR2
-YWwoZmllbGQsIG4pIChmaWVsZFtuID4+IDE2XSA+PiAoKG4gPj4gOCkgJiA3KSkgJiAobiAmIDB4
-ZmYpKQ0KSWYgJ24nIGlzIGFsd2F5cyBhIGNvbXBpbGUgdGltZSBjb25zdGFudCB0aGUgY29kZSB3
-aWxsIGJlIGZpbmUuDQpUaGVuIGFkZCBhbm90aGVyIGRlZmluZSB0byBjcmVhdGUgdGhlICduJyBi
-YXNlZCBvbiB2YWx1ZXMgZnJvbSB0aGUgc3BlYy4NCihXaGljaCBjb3VsZCBiZSBvZmZzZXRzIG9u
-dG8gMTZiaXQgaXRlbXMgb24gb2RkIGJvdW5kYXJpZXMuKQ0KUHJvdmlkZWQgbm90aGluZyBjcm9z
-c2VzIGJ5dGUgYm91bmRhcmllcyBpdCBzaG91bGQgYmUgZmluZSBhbmQgdGhlDQpzb3VyY2UgY29k
-ZSB3aWxsIGJlIHJlYXNvbmFibHkgcmVhZGFibGUuDQoNCj4gPiBXaGF0IHlvdSBtYXkgd2FudCB0
-byBkbyBpcyBhZGQgY29tcGlsZS10aW1lIGFzc2VydHMgZm9yIHRoZQ0KPiA+IHNpemVzIG9mIHRo
-ZSBzdHJ1Y3R1cmVzLg0KPiBEbyBJIGdldCB5b3UgcmlnaHQgdGhhdCBzb21ldGhpbmcgbGlrZToN
-Cj4gICBCVUlMRF9CVUdfT04oc2l6ZW9mKHJ0dzg4MjFjX2VmdXNlKSAhPSAyNTYpOw0KPiBpcyB3
-aGF0IHlvdSBoYXZlIGluIG1pbmQ/DQoNClRoYXQgbG9va3MgbGlrZSB0aGUgb25lLi4uDQoNCglE
-YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
-bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
-NzM4NiAoV2FsZXMpDQo=
+From: Angela Czubak <aczubak@marvell.com>
+
+PF netdev can request AF to enable or disable reception and transmission
+on assigned CGX::LMAC. The current code instead of disabling or enabling
+'reception and transmission' also disables/enable the LMAC. This patch
+fixes this issue.
+
+Fixes: 1435f66a28b4 ("octeontx2-af: CGX Rx/Tx enable/disable mbox handlers")
+Signed-off-by: Angela Czubak <aczubak@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index b2b71fe80d61..724df6398bbe 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -774,9 +774,9 @@ int cgx_lmac_rx_tx_enable(void *cgxd, int lmac_id, bool enable)
+ 
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_CFG);
+ 	if (enable)
+-		cfg |= CMR_EN | DATA_PKT_RX_EN | DATA_PKT_TX_EN;
++		cfg |= DATA_PKT_RX_EN | DATA_PKT_TX_EN;
+ 	else
+-		cfg &= ~(CMR_EN | DATA_PKT_RX_EN | DATA_PKT_TX_EN);
++		cfg &= ~(DATA_PKT_RX_EN | DATA_PKT_TX_EN);
+ 	cgx_write(cgx, lmac_id, CGXX_CMRX_CFG, cfg);
+ 	return 0;
+ }
+-- 
+2.17.1
 
