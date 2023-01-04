@@ -2,113 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1268E65D73F
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C9165D74D
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239317AbjADPaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 10:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        id S230192AbjADPec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 10:34:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239213AbjADPaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:30:20 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6AB1B9C9;
-        Wed,  4 Jan 2023 07:30:19 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id fy8so19443836ejc.13;
-        Wed, 04 Jan 2023 07:30:19 -0800 (PST)
+        with ESMTP id S239014AbjADPeb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:34:31 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D961B9C9
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 07:34:30 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id c124so36869200ybb.13
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 07:34:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=RlY5zc887o4HmnQmxYxtgGa5YwnXO1c9ubHXsFfKj/w=;
-        b=pbOa1icFKE3DphJvUEUO+QlWK5zCVsP0PI5DQcHnCWNZFfhX1W51ohvn228RBtGQzu
-         CFWAf5bsoM4x61CUXF3bk1PK1zNi59wXfnNlxOoEbVSahX7bfi1XgI9EL3HN29snyqjQ
-         cuitpahioxFArY6+AXzoHjUhicXXHkBUz3Kn9TfDwWkEAKXCI954h17Ie1imYZmE7pFX
-         z0aP9Qh9rnHChXD2awC47/YH9tf/e1BkFxDRs9LEqzPcaiLb59ODEnJR9nhVVYXeeoNV
-         a3ChPIrSrG3LXZ5gRtflQjRu12W2Ia7koQZSA74vSsVqpd82ariTScUNvxj+DQJc7fep
-         Woog==
+        bh=eitTHaXGAas6RiUhUstkoB1912ls1ebaROraxJ/kDps=;
+        b=d+3o4pCcQwkKdv7NZGal7VlMiVL1TPGphYZ+boA/JfSQQbQKfsYHLwCfWrFYPVxDv4
+         7asehRP5kAm4Qv58het3xmDqjubfYmJ5tPRgR+OToMYru/QvIW97LpbLEjf8nRpa/1Lq
+         HmGpnmudHksuhcm77jKMq1+ySKiJEphpGEbVNG7OLbtmzETpUUxApEriUHvm03AaZpFM
+         P6Gll4jzb8ovE0X0FOZk9ZlLTDh5jfLuthyCyFKWu2mpQEJ37DhStEti+jiUHeoo5STb
+         sjPACtXLd0IyejeZZjEIhYoEkL/FeavdfXBwThhDLvbwHNoZ+evF/GVXvLW99/p/AMHU
+         TPAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=RlY5zc887o4HmnQmxYxtgGa5YwnXO1c9ubHXsFfKj/w=;
-        b=2QHFw4asUWE2AcleTv19MWlQWOTi4Zqvh5T9HDyKAzSuQa90JlASvmPLrb+6jJ2gnK
-         Ruysfo5FqqgCBm8gt9hyqeqq6X3GoJp1BTFK3po2xiECZa/MkuSSb/4HgeJfujGurmoD
-         GWdDPVN4FSLQ0RKjaeb4wclYkk+e70jMTNmEf23bjmeIRBrR5VHW+wKmPuS6DB4hoGWT
-         4Mm3O692wT4ezKOkD38W3twZXLeFuN8GclTE3F+789Ucbkt/LWjUOwa+40WnfkHAfDva
-         YIjRK1kjH8p91B6lGwopeT5duw86ByKpJr0prlC9PNxVXVBzFIN4pIYJXi/mwihuU7+W
-         RkVQ==
-X-Gm-Message-State: AFqh2kpkpdQjLDwb6GFTXZSlJp1SSGq2mS8V1x75hhbZZl1lLM5mKd52
-        CEc8CWPfPwDCuCAxgWT7zLNt4wGLpmmQ32TBdKY=
-X-Google-Smtp-Source: AMrXdXvJmnd3SsJYqbXkYBdYE92lok/9FJfVlIXR0snMPyAbpSQeVOltv/RKbd6e3C34bh6SgwpTS1YG31jJ8fMzjQ4=
-X-Received: by 2002:a17:906:81cf:b0:7c1:6b9e:6f5d with SMTP id
- e15-20020a17090681cf00b007c16b9e6f5dmr4136083ejx.339.1672846218347; Wed, 04
- Jan 2023 07:30:18 -0800 (PST)
+        bh=eitTHaXGAas6RiUhUstkoB1912ls1ebaROraxJ/kDps=;
+        b=ukFl8QxJ+v9SG38tl95s9EiWOYo725Uz0Wknt/6a3R0UFRoUW+jUlBrUTSdFJWQ6TN
+         bqsTmAk+I5AV707ok/FHE2j/Yj6E0QMTYMaR7EF5NAQvV1TnnxcvCGLO0EFnxR135IF2
+         QXuIHSVxg/4/UkYIbnyVm01odv9UCOUl52Zzc1ZK0qzKRs+9yBvbjEhMRhldLlQ4W4Z6
+         2KPg+bnqFroRKnR/MyAYcIXeGUsbdZkjbLCyk9jzF8dx/+eGbraPWQIhDfI+SfORU0Q5
+         f3UUUR338MMihelA3jfKEvulZUpqxiCUHWYzlNGH1iaCnQiN56PbwOsuasUw4B8KjYnD
+         DzMw==
+X-Gm-Message-State: AFqh2kpJO1AlKkDSDO1b152I0Xm/avmU5F8GG4rphB8vYpyEfn68jWZp
+        u0YwTJ3sTtI8r66jBl0s+oWlZxBmp3U6DgCL9pY=
+X-Google-Smtp-Source: AMrXdXtg9K/JlJH06t3Aw7pgBh33gg9J941hWl/dntotJdzQBdO56L3BkVvLyMbZ5rYiEfPgv0R+4m9qeKpnuhu9tMo=
+X-Received: by 2002:a25:ba89:0:b0:70d:a0d0:4649 with SMTP id
+ s9-20020a25ba89000000b0070da0d04649mr5548954ybg.488.1672846469462; Wed, 04
+ Jan 2023 07:34:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
- <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
- <92eb7dfa8b7d447e966a2751e174b642@realtek.com> <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
- <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
- <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com> <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
-In-Reply-To: <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 4 Jan 2023 16:30:07 +0100
-Message-ID: <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com>
-Subject: Re: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David.Laight@ACULAB.COM" <david.laight@aculab.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tehuang@realtek.com" <tehuang@realtek.com>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Received: by 2002:a05:7010:6309:b0:319:8b9b:d228 with HTTP; Wed, 4 Jan 2023
+ 07:34:29 -0800 (PST)
+Reply-To: abrahammorrison443@gmail.com
+From:   Abraham Morrison <akavioffice@gmail.com>
+Date:   Wed, 4 Jan 2023 07:34:29 -0800
+Message-ID: <CAJ0TFYCD=uCPCmvHaxbnn95ebBYMSeWduse6gts=JjN0Ty-y9g@mail.gmail.com>
+Subject: Good day!
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM,UNDISC_MONEY
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:b2a listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [abrahammorrison443[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [akavioffice[at]gmail.com]
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.4 MONEY_FREEMAIL_REPTO Lots of money from someone using free
+        *      email?
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  1.7 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ping-Ke, Hi David,
+Aufmerksamkeit bitte,
 
-On Sun, Jan 1, 2023 at 2:09 PM Ping-Ke Shih <pkshih@realtek.com> wrote:
-[...]
-> Yes, it should not use bit filed. Instead, use a __le16 for all fields, such as
-I think this can be done in a separate patch.
-My v2 of this patch has reduced these changes to a minimum, see [0]
+Ich bin Mr. Abraham Morrison, wie geht es Ihnen, ich hoffe, Sie sind
+wohlauf und gesund? Hiermit m=C3=B6chte ich Sie dar=C3=BCber informieren, d=
+ass
+ich die Transaktion mit Hilfe eines neuen Partners aus Indien
+erfolgreich abgeschlossen habe und nun der Fonds nach Indien auf das
+Bankkonto des neuen Partners =C3=BCberwiesen wurde.
 
-[...]
-> struct rtw8821ce_efuse {
->    ...
->    u8 data1;       // offset 0x100
->    __le16 data2;   // offset 0x101-0x102
->    ...
-> } __packed;
->
-> Without __packed, compiler could has pad between data1 and data2,
-> and then get wrong result.
-My understanding is that this is the reason why we need __packed.
+In der Zwischenzeit habe ich beschlossen, Sie aufgrund Ihrer fr=C3=BCheren
+Bem=C3=BChungen mit der Summe von 500.000,00 $ (nur f=C3=BCnfhunderttausend
+US-Dollar) zu entsch=C3=A4digen, obwohl Sie mich auf der ganzen Linie
+entt=C3=A4uscht haben. Aber trotzdem freue ich mich sehr =C3=BCber den
+reibungslosen und erfolgreichen Abschluss der Transaktion und habe
+mich daher entschieden, Sie mit der Summe von $500.000,00 zu
+entsch=C3=A4digen, damit Sie die Freude mit mir teilen.
 
-So my idea for the next steps is:
-- I will send a v3 of my series but change the wording in the commit
-description so it only mentions padding (but dropping the re-ordering
-part)
-- maybe Ping-Ke or his team can send a patch to fix the endian/bit
-field problem in the PCIe eFuse structs
-- (I'll keep working on SDIO support)
+Ich rate Ihnen, sich an meine Sekret=C3=A4rin zu wenden, um eine
+Geldautomatenkarte =C3=BCber 500.000,00 $ zu erhalten, die ich f=C3=BCr Sie
+aufbewahrt habe. Kontaktieren Sie sie jetzt ohne Verz=C3=B6gerung.
 
-Does this make sense to both of you?
+Name: Linda Kofi
+E-Mail: koffilinda785@gmail.com
 
+Bitte best=C3=A4tigen Sie ihr die folgenden Informationen:
 
-Best regards,
-Martin
+Ihren vollst=C3=A4ndigen Namen:........
+Deine Adresse:..........
+Dein Land:..........
+Ihr Alter: .........
+Ihr Beruf:..........
+Ihre Handynummer: ...........
+Ihr Reisepass oder F=C3=BChrerschein:.........
 
+Beachten Sie, dass, wenn Sie ihr die oben genannten Informationen
+nicht vollst=C3=A4ndig gesendet haben, sie die Bankomatkarte nicht an Sie
+herausgeben wird, da sie sicher sein muss, dass Sie es sind. Bitten
+Sie sie, Ihnen die Gesamtsumme von ($ 500.000,00) Geldautomatenkarte
+zu schicken, die ich f=C3=BCr Sie aufbewahrt habe.
 
-[0] https://lore.kernel.org/linux-wireless/20221229124845.1155429-2-martin.blumenstingl@googlemail.com/
+Mit freundlichen Gr=C3=BC=C3=9Fen,
+
+Herr Abraham Morrison
