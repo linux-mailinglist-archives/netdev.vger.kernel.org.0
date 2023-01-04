@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B12E65CC4D
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 05:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CD865CC45
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 05:17:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238242AbjADEQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 23:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
+        id S238474AbjADEQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 23:16:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233384AbjADEQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 23:16:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD336167F8
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 20:16:44 -0800 (PST)
+        with ESMTP id S234424AbjADEQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 23:16:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFDF167FB
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 20:16:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48EDB60B7F
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:16:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ECBAC433D2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86186B811DC
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4193C433EF;
         Wed,  4 Jan 2023 04:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672805803;
-        bh=vw7Kz/Vc482PL0C+rArhGDkhpyPXG+Gik68omp7J3UI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZG3ZcUT4v3IGcDFFJNm9iUjdNapD+yBjmZXg8CDpsJfywFW5nBbDDQ/yN2xXw7at3
-         ZEV1xc+BQNlNL1mjr1ru9sLReQAzU/rMZpcOXt4Uo7Yz+1PSl8vdinr0bV5H5q5btP
-         7lqeCqnq9mmGOzrF7N8iHJ8xHgvouoR0wT/u5lJq6h5TG0OFA6YdKDroz9vcFcI0Nw
-         rzq7H3kPWWnuROC8H6eooqKbdYQDBouaLSHBXHwIzMaPw+bxRgtD/zoCVzUTmToO+e
-         VfMMLFXbPZ6PTNzp8lhs40W0CEIChATpCnhqVg0y7QyjLnH7bKjkR5iZapc942Tz04
-         93hU0odx9xAkw==
+        s=k20201202; t=1672805804;
+        bh=yB67eUQu4zQNlY24rNK7bJOcMXPsgawBVUB0zgz3K04=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a8wK2myHh86lNOohibMZ8dvosSP7dwM45IjehCJHfXTCjNZmUuTMR0CyHkq12jlYd
+         R9RAE9TffLO8smX/Ia8LfWwgCbwC4XqWKE2UHhlDbcNIbU0QuiY0MHJHX4bUvW0Qcf
+         pF/rsk+Rdc8N6ORcF3R+rVvJkhlso6twgbVDtT0OtXpIW2lw54vFkmrLPFwY5T6Xxg
+         P9uGdUf271XEA9fHDuccpew3C4/nfvb+jrWqr8oh4baLsyxiLqbRlfFxIMCcSNxKjp
+         ZebfRHuYOLLfIpxuH3Z+ETNIVebMWVzzUudp54l73eakJYMQDhWsLaQy2uKDAXRQNa
+         ZZcCQ1+/NgJaA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jacob.e.keller@intel.com, jiri@resnulli.us,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 00/14] devlink: code split and structured instance walk
-Date:   Tue,  3 Jan 2023 20:16:22 -0800
-Message-Id: <20230104041636.226398-1-kuba@kernel.org>
+Subject: [PATCH net-next 01/14] devlink: move code to a dedicated directory
+Date:   Tue,  3 Jan 2023 20:16:23 -0800
+Message-Id: <20230104041636.226398-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20230104041636.226398-1-kuba@kernel.org>
+References: <20230104041636.226398-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -51,63 +53,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split devlink.c into a handful of files, trying to keep the "core"
-code away from all the command-specific implementations.
-The core code has been quite scattered until now. Going forward we can
-consider using a source file per-subobject, I think that it's quite
-beneficial to newcomers (based on relative ease with which folks
-contribute to ethtool vs devlink). But this series doesn't split
-everything out, yet - partially due to backporting concerns,
-but mostly due to lack of time. Bulk of the netlink command
-handling is left in a leftover.c file.
+The devlink code is hard to navigate with 13kLoC in one file.
+I really like the way Michal split the ethtool into per-command
+files and core. It'd probably be too much to split it all up,
+but we can at least separate the core parts out of the per-cmd
+implementations and put it in a directory so that new commands
+can be separate files.
 
-Introduce a context structure for dumps, and use it to store
-the devlink instance ID of the last dumped devlink instance.
-This means we don't have to restart the walk from 0 each time.
+Move the code, subsequent commit will do a partial split.
 
-Finally - introduce a "structured walk". A centralized dump handler
-in devlink/netlink.c which walks the devlink instances, deals with
-refcounting/locking, simplifying the per-object implementations quite
-a bit. Inspired by the ethtool code.
-
-RFC: https://lore.kernel.org/all/20221215020155.1619839-1-kuba@kernel.org/
-
-v1:
- - re-route the locking fix via net
- - rename basic.c -> leftover.c
-
-Jakub Kicinski (14):
-  devlink: move code to a dedicated directory
-  devlink: split out core code
-  devlink: split out netlink code
-  netlink: add macro for checking dump ctx size
-  devlink: use an explicit structure for dump context
-  devlink: remove start variables from dumps
-  devlink: drop the filter argument from devlinks_xa_find_get
-  devlink: health: combine loops in dump
-  devlink: restart dump based on devlink instance ids (simple)
-  devlink: restart dump based on devlink instance ids (nested)
-  devlink: restart dump based on devlink instance ids (function)
-  devlink: uniformly take the devlink instance lock in the dump loop
-  devlink: add by-instance dump infra
-  devlink: convert remaining dumps to the by-instance scheme
-
- include/linux/netlink.h                    |    4 +
- net/Makefile                               |    1 +
- net/core/Makefile                          |    1 -
- net/devlink/Makefile                       |    3 +
- net/devlink/core.c                         |  345 +++++
- net/devlink/devl_internal.h                |  205 +++
- net/{core/devlink.c => devlink/leftover.c} | 1460 +++++---------------
- net/devlink/netlink.c                      |  241 ++++
- net/netfilter/nf_conntrack_netlink.c       |    2 +-
- 9 files changed, 1157 insertions(+), 1105 deletions(-)
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v1: rename basic.c -> leftover.c
+---
+ net/Makefile                               | 1 +
+ net/core/Makefile                          | 1 -
+ net/devlink/Makefile                       | 3 +++
+ net/{core/devlink.c => devlink/leftover.c} | 0
+ 4 files changed, 4 insertions(+), 1 deletion(-)
  create mode 100644 net/devlink/Makefile
- create mode 100644 net/devlink/core.c
- create mode 100644 net/devlink/devl_internal.h
- rename net/{core/devlink.c => devlink/leftover.c} (90%)
- create mode 100644 net/devlink/netlink.c
+ rename net/{core/devlink.c => devlink/leftover.c} (100%)
 
+diff --git a/net/Makefile b/net/Makefile
+index 6a62e5b27378..0914bea9c335 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -23,6 +23,7 @@ obj-$(CONFIG_BPFILTER)		+= bpfilter/
+ obj-$(CONFIG_PACKET)		+= packet/
+ obj-$(CONFIG_NET_KEY)		+= key/
+ obj-$(CONFIG_BRIDGE)		+= bridge/
++obj-$(CONFIG_NET_DEVLINK)	+= devlink/
+ obj-$(CONFIG_NET_DSA)		+= dsa/
+ obj-$(CONFIG_ATALK)		+= appletalk/
+ obj-$(CONFIG_X25)		+= x25/
+diff --git a/net/core/Makefile b/net/core/Makefile
+index 5857cec87b83..10edd66a8a37 100644
+--- a/net/core/Makefile
++++ b/net/core/Makefile
+@@ -33,7 +33,6 @@ obj-$(CONFIG_LWTUNNEL) += lwtunnel.o
+ obj-$(CONFIG_LWTUNNEL_BPF) += lwt_bpf.o
+ obj-$(CONFIG_DST_CACHE) += dst_cache.o
+ obj-$(CONFIG_HWBM) += hwbm.o
+-obj-$(CONFIG_NET_DEVLINK) += devlink.o
+ obj-$(CONFIG_GRO_CELLS) += gro_cells.o
+ obj-$(CONFIG_FAILOVER) += failover.o
+ obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
+diff --git a/net/devlink/Makefile b/net/devlink/Makefile
+new file mode 100644
+index 000000000000..3a60959f71ee
+--- /dev/null
++++ b/net/devlink/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0
++
++obj-y := leftover.o
+diff --git a/net/core/devlink.c b/net/devlink/leftover.c
+similarity index 100%
+rename from net/core/devlink.c
+rename to net/devlink/leftover.c
 -- 
 2.38.1
 
