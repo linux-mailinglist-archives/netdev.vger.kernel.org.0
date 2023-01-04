@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 480AD65DF65
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 22:59:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F92C65DF67
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 22:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240299AbjADV7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 16:59:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
+        id S240352AbjADV74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 16:59:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235098AbjADV7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 16:59:52 -0500
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AD813D67
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 13:59:51 -0800 (PST)
-Received: by mail-pf1-x44a.google.com with SMTP id bx21-20020a056a00429500b00582d85bb03bso2515795pfb.16
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 13:59:51 -0800 (PST)
+        with ESMTP id S235494AbjADV7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 16:59:55 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B0D37520
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 13:59:53 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id s76-20020a632c4f000000b0049ceb0f185eso8751233pgs.7
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 13:59:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=l9z1LqEz7Fh64pPbqNasXJtSoPwx+819o+O2qTJvWLQ=;
-        b=ROIwmn5LQGrBQ7apF7mQlA5rR2DQ5z1bMmxIsTsshe6kKeD63tkSnmEQVVwLtGbxzJ
-         q8AG7nb8qdxf3nyiR4Kp+3XMZmFl95i+/wTx5wWFupVjGSo8iQHta08vX4CvGSTZX5+O
-         WLTDVsQhiju+CmggZMgS77gi95hydZrq9wxdiBqLAfXf8foqu+Tg1NeeYg29FF57vI2N
-         WTf6GXKEKJ3JAFtEOSsi6oCoeLc9sfgp1V7lUiDNboEoaD3qSfKQne6xAEG7hr72icJJ
-         CJ8OVz+ggTW3P2tw1TgxL0jaO2RCyAgAimV3YNUoWVCEMJ1rFm2bypGYiWH1soNa9aDZ
-         LHvg==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SBZcX/CX+6eg2RmM1fPvz94TRxZRqhIIj1d7A/c3p4w=;
+        b=SgkQBSkjYYRRIcl7qCyErs8dmZOIlnt7Ei7sTd8glgPSydLryhe9W06vV3BIleneag
+         wgj8+QIEBk+e2CdZpN+drx5IPE3YjFaoqu19n4mZV8v5sPC9JUFV4NfLRy48oSknKOMI
+         kVpxhzAX41YjA59Dac1W9t8Cy2E64nprfNSgyAB9vPqi5juj2OFTM9tYQT0rtwijn72i
+         j2pTiGONSST6cv5Gu68T15XOV7PY4UOejrmdtDFa+dHInF2cDxRP/7LZt5XlqOrF1e2b
+         fq2pLFslP08zG1bFTlualfnGecC33pGBXHlWkiIPaNaY51YB2LrN5daZJIbSTx84to/s
+         71aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=l9z1LqEz7Fh64pPbqNasXJtSoPwx+819o+O2qTJvWLQ=;
-        b=0hcc/K9ThIc5Nhoxdkk4k0EukegRSTbtvzxPhGHr/5fIM07ulCoFB8U/kx5OX8jKUU
-         H4mybsKvNAcP+6F5/YgaDmIJYzqv6+v/VU4jpU+sttLj1NJgheCRxNkNwEKS1mZO3a/w
-         3QsetJCONDfaSBXytJnZibYTE+xrjqHh9C7qyAyb6Qp0Fg5RxuyzOvFOJ7R3BYxkcs9I
-         uzGFGk5slgY6ClioIYjxe5Cv0tq6gLAg0/HoWrWmzkxaXHbXQBXZ7JE9sURDIkvWa+yS
-         M/02/XdGuh0ORhJaeItyzfD43orVPSDbUc489i6Ux+UpTvkhw7HdyxVt4Pr0eRZOgcph
-         Hq5g==
-X-Gm-Message-State: AFqh2kqT22mzT0FpKUjw+z2Wuzi18bVq+Sm6cn8YT1rCIgXfvXtFq0Na
-        qTSZN2NAcmj08qS0yxT5mih+kYo=
-X-Google-Smtp-Source: AMrXdXs/NTbP5gwSmyjFKqbz0g6d4XJkrtjUD6tGOvIbbcpR532t5mqn2L8VOCesAaX4C6iEIObgv9Q=
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SBZcX/CX+6eg2RmM1fPvz94TRxZRqhIIj1d7A/c3p4w=;
+        b=OysshNccdw6FQJzj+ISxMEd/xPSicWPbShmDwoOtI82ff+N0ne0VQqQ3eiKtB/5ecT
+         8asCEOdK4CCV0kWIqr2ultSTjUxKDqLkqd5d0n9hkl0eaJA6OJexc8UC7Ln3cqX794MG
+         wxbsjYhe4QmECs4sgbkWm4ZI0IhIlQojguQ+UuCoszlL0EyQunP2yDdP+Jnh9wcqkjKQ
+         Uzi/k1jyJ8N4QHPY2gGYHintGsT5SAl1rr6VVoKe7UCmttan0OrA11ojYm3FHGXieDbP
+         KTD9o6E7o+YByHSj7J9QIajAPnvHUrDyj6C//ZPr3bvXbSzpGhIvwd48HBmgUXXrCqgJ
+         33mQ==
+X-Gm-Message-State: AFqh2krMi4jxT6exh63QTHYG2I/DtXKEBWuUd5fdzh781sHZQySf1Pbk
+        2sVl4KGq866F/4rgkRQyVi4NT+8=
+X-Google-Smtp-Source: AMrXdXttFN/zSiMfS0ERJ11SVxibZ5mMJytWoRSdkxUxQJdajgFwK8IK2RFlx8zlU9TNawl9XZuoppQ=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a62:19cf:0:b0:582:5779:3876 with SMTP id
- 198-20020a6219cf000000b0058257793876mr849919pfz.40.1672869591058; Wed, 04 Jan
- 2023 13:59:51 -0800 (PST)
-Date:   Wed,  4 Jan 2023 13:59:32 -0800
+ (user=sdf job=sendgmr) by 2002:a62:e418:0:b0:581:b93c:bb66 with SMTP id
+ r24-20020a62e418000000b00581b93cbb66mr1573518pfh.50.1672869592778; Wed, 04
+ Jan 2023 13:59:52 -0800 (PST)
+Date:   Wed,  4 Jan 2023 13:59:33 -0800
+In-Reply-To: <20230104215949.529093-1-sdf@google.com>
 Mime-Version: 1.0
+References: <20230104215949.529093-1-sdf@google.com>
 X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
-Message-ID: <20230104215949.529093-1-sdf@google.com>
-Subject: [PATCH bpf-next v6 00/17] xdp: hints via kfuncs
+Message-ID: <20230104215949.529093-2-sdf@google.com>
+Subject: [PATCH bpf-next v6 01/17] bpf: Document XDP RX metadata
 From:   Stanislav Fomichev <sdf@google.com>
 To:     bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -67,10 +68,9 @@ Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
         netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,66 +78,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please see the first patch in the series for the overall
-design and use-cases.
-
-See the following email from Toke for the per-packet metadata overhead:
-https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com/T/#m49d=
-48ea08d525ec88360c7d14c4d34fb0e45e798
-
-Recent changes:
-
-- Reject dev-bound progs at tc (Martin)
-
-- Reuse __bpf_prog_offload_destroy instead of adding
-  __bpf_prog_dev_bound_destroy (Marin)
-
-- Drop a bunch of unnecessary NULL checks (Martin)
-
-- Fix compilation of xdp_hw_metadata (Martin and thank you David for the hi=
-nts)
-
-- Move bpf_dev_bound_kfunc_check into offload.c (Martin)
-
-- Swap "ip netns del" and close_netns in the selftest (Martin)
-
-- Move some code out of bpf_devs_lock (Martin)
-
-- Remove some excessive gotos (Martin)
-
-- Trigger bpf_prog_dev_bound_inherit for BPF_PROG_TYPE_EXT only when
-  the destination program is dev-bound (Martin)
-
-- Document @xdp_metadata_ops (David)
-
-- Use :identifiers: when referencing metadata kfuns in the doc (David)
-
-- Spelling and teletyping fixes for the doc (David)
-
-- Add a note about xsk_umem__get_data and METADATA_SIZE (David)
-
-Prior art (to record pros/cons for different approaches):
-
-- Stable UAPI approach:
-  https://lore.kernel.org/bpf/20220628194812.1453059-1-alexandr.lobakin@int=
-el.com/
-- Metadata+BTF_ID appoach:
-  https://lore.kernel.org/bpf/166256538687.1434226.15760041133601409770.stg=
-it@firesoul/
-- v5:
-  https://lore.kernel.org/bpf/20221220222043.3348718-1-sdf@google.com/
-- v4:
-  https://lore.kernel.org/bpf/20221213023605.737383-1-sdf@google.com/
-- v3:
-  https://lore.kernel.org/bpf/20221206024554.3826186-1-sdf@google.com/
-- v2:
-  https://lore.kernel.org/bpf/20221121182552.2152891-1-sdf@google.com/
-- v1:
-  https://lore.kernel.org/bpf/20221115030210.3159213-1-sdf@google.com/
-- kfuncs v2 RFC:
-  https://lore.kernel.org/bpf/20221027200019.4106375-1-sdf@google.com/
-- kfuncs v1 RFC:
-  https://lore.kernel.org/bpf/20221104032532.1615099-1-sdf@google.com/
+Document all current use-cases and assumptions.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: David Ahern <dsahern@gmail.com>
@@ -151,75 +92,139 @@ Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
 Cc: Maryam Tahhan <mtahhan@redhat.com>
 Cc: xdp-hints@xdp-project.net
 Cc: netdev@vger.kernel.org
-
-Stanislav Fomichev (13):
-  bpf: Document XDP RX metadata
-  bpf: Rename bpf_{prog,map}_is_dev_bound to is_offloaded
-  bpf: Move offload initialization into late_initcall
-  bpf: Reshuffle some parts of bpf/offload.c
-  bpf: Introduce device-bound XDP programs
-  selftests/bpf: Update expected test_offload.py messages
-  bpf: XDP metadata RX kfuncs
-  veth: Introduce veth_xdp_buff wrapper for xdp_buff
-  veth: Support RX XDP metadata
-  selftests/bpf: Verify xdp_metadata xdp->af_xdp path
-  net/mlx4_en: Introduce wrapper for xdp_buff
-  net/mlx4_en: Support RX XDP metadata
-  selftests/bpf: Simple program to dump XDP RX metadata
-
-Toke H=C3=B8iland-J=C3=B8rgensen (4):
-  bpf: Support consuming XDP HW metadata from fext programs
-  xsk: Add cb area to struct xdp_buff_xsk
-  net/mlx5e: Introduce wrapper for xdp_buff
-  net/mlx5e: Support RX XDP metadata
-
- Documentation/networking/index.rst            |   1 +
- Documentation/networking/xdp-rx-metadata.rst  | 108 +++++
- drivers/net/ethernet/mellanox/mlx4/en_clock.c |  13 +-
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |   6 +
- drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  63 ++-
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   5 +
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  11 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  26 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  11 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |  35 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |   2 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   6 +
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  99 ++--
- drivers/net/netdevsim/bpf.c                   |   4 -
- drivers/net/veth.c                            |  87 +++-
- include/linux/bpf.h                           |  61 ++-
- include/linux/netdevice.h                     |   8 +
- include/net/xdp.h                             |  21 +
- include/net/xsk_buff_pool.h                   |   5 +
- include/uapi/linux/bpf.h                      |   5 +
- kernel/bpf/core.c                             |  12 +-
- kernel/bpf/offload.c                          | 426 ++++++++++++------
- kernel/bpf/syscall.c                          |  40 +-
- kernel/bpf/verifier.c                         |  38 +-
- net/bpf/test_run.c                            |   3 +
- net/core/dev.c                                |   9 +-
- net/core/filter.c                             |   2 +-
- net/core/xdp.c                                |  64 +++
- tools/include/uapi/linux/bpf.h                |   5 +
- tools/testing/selftests/bpf/.gitignore        |   1 +
- tools/testing/selftests/bpf/Makefile          |   9 +-
- .../selftests/bpf/prog_tests/xdp_metadata.c   | 410 +++++++++++++++++
- .../selftests/bpf/progs/xdp_hw_metadata.c     |  81 ++++
- .../selftests/bpf/progs/xdp_metadata.c        |  64 +++
- .../selftests/bpf/progs/xdp_metadata2.c       |  23 +
- tools/testing/selftests/bpf/test_offload.py   |  10 +-
- tools/testing/selftests/bpf/xdp_hw_metadata.c | 405 +++++++++++++++++
- tools/testing/selftests/bpf/xdp_metadata.h    |  15 +
- 38 files changed, 1902 insertions(+), 292 deletions(-)
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ Documentation/networking/index.rst           |   1 +
+ Documentation/networking/xdp-rx-metadata.rst | 108 +++++++++++++++++++
+ 2 files changed, 109 insertions(+)
  create mode 100644 Documentation/networking/xdp-rx-metadata.rst
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_metadata2.c
- create mode 100644 tools/testing/selftests/bpf/xdp_hw_metadata.c
- create mode 100644 tools/testing/selftests/bpf/xdp_metadata.h
 
---=20
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index 4f2d1f682a18..4ddcae33c336 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -120,6 +120,7 @@ Refer to :ref:`netdev-FAQ` for a guide on netdev development process specifics.
+    xfrm_proc
+    xfrm_sync
+    xfrm_sysctl
++   xdp-rx-metadata
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
+new file mode 100644
+index 000000000000..b6c8c77937c4
+--- /dev/null
++++ b/Documentation/networking/xdp-rx-metadata.rst
+@@ -0,0 +1,108 @@
++===============
++XDP RX Metadata
++===============
++
++This document describes how an eXpress Data Path (XDP) program can access
++hardware metadata related to a packet using a set of helper functions,
++and how it can pass that metadata on to other consumers.
++
++General Design
++==============
++
++XDP has access to a set of kfuncs to manipulate the metadata in an XDP frame.
++Every device driver that wishes to expose additional packet metadata can
++implement these kfuncs. The set of kfuncs is declared in ``include/net/xdp.h``
++via ``XDP_METADATA_KFUNC_xxx``.
++
++Currently, the following kfuncs are supported. In the future, as more
++metadata is supported, this set will grow:
++
++.. kernel-doc:: net/core/xdp.c
++   :identifiers: bpf_xdp_metadata_rx_timestamp bpf_xdp_metadata_rx_hash
++
++An XDP program can use these kfuncs to read the metadata into stack
++variables for its own consumption. Or, to pass the metadata on to other
++consumers, an XDP program can store it into the metadata area carried
++ahead of the packet.
++
++Not all kfuncs have to be implemented by the device driver; when not
++implemented, the default ones that return ``-EOPNOTSUPP`` will be used.
++
++Within an XDP frame, the metadata layout is as follows::
++
++  +----------+-----------------+------+
++  | headroom | custom metadata | data |
++  +----------+-----------------+------+
++             ^                 ^
++             |                 |
++   xdp_buff->data_meta   xdp_buff->data
++
++An XDP program can store individual metadata items into this ``data_meta``
++area in whichever format it chooses. Later consumers of the metadata
++will have to agree on the format by some out of band contract (like for
++the AF_XDP use case, see below).
++
++AF_XDP
++======
++
++:doc:`af_xdp` use-case implies that there is a contract between the BPF
++program that redirects XDP frames into the ``AF_XDP`` socket (``XSK``) and
++the final consumer. Thus the BPF program manually allocates a fixed number of
++bytes out of metadata via ``bpf_xdp_adjust_meta`` and calls a subset
++of kfuncs to populate it. The userspace ``XSK`` consumer computes
++``xsk_umem__get_data() - METADATA_SIZE`` to locate that metadata.
++Note, ``xsk_umem__get_data`` is defined in ``libxdp`` and
++``METADATA_SIZE`` is an application-specific constant.
++
++Here is the ``AF_XDP`` consumer layout (note missing ``data_meta`` pointer)::
++
++  +----------+-----------------+------+
++  | headroom | custom metadata | data |
++  +----------+-----------------+------+
++                               ^
++                               |
++                        rx_desc->address
++
++XDP_PASS
++========
++
++This is the path where the packets processed by the XDP program are passed
++into the kernel. The kernel creates the ``skb`` out of the ``xdp_buff``
++contents. Currently, every driver has custom kernel code to parse
++the descriptors and populate ``skb`` metadata when doing this ``xdp_buff->skb``
++conversion, and the XDP metadata is not used by the kernel when building
++``skbs``. However, TC-BPF programs can access the XDP metadata area using
++the ``data_meta`` pointer.
++
++In the future, we'd like to support a case where an XDP program
++can override some of the metadata used for building ``skbs``.
++
++bpf_redirect_map
++================
++
++``bpf_redirect_map`` can redirect the frame to a different device.
++Some devices (like virtual ethernet links) support running a second XDP
++program after the redirect. However, the final consumer doesn't have
++access to the original hardware descriptor and can't access any of
++the original metadata. The same applies to XDP programs installed
++into devmaps and cpumaps.
++
++This means that for redirected packets only custom metadata is
++currently supported, which has to be prepared by the initial XDP program
++before redirect. If the frame is eventually passed to the kernel, the
++``skb`` created from such a frame won't have any hardware metadata populated
++in its ``skb``. If such a packet is later redirected into an ``XSK``,
++that will also only have access to the custom metadata.
++
++bpf_tail_call
++=============
++
++Adding programs that access metadata kfuncs to the ``BPF_MAP_TYPE_PROG_ARRAY``
++is currently not supported.
++
++Example
++=======
++
++See ``tools/testing/selftests/bpf/progs/xdp_metadata.c`` and
++``tools/testing/selftests/bpf/prog_tests/xdp_metadata.c`` for an example of
++BPF program that handles XDP metadata.
+-- 
 2.39.0.314.g84b9a713c41-goog
 
