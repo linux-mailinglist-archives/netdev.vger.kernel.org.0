@@ -2,70 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A38BB65D3BC
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 14:06:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6977665D3D8
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 14:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233120AbjADNGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 08:06:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
+        id S239406AbjADNJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 08:09:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239369AbjADNF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 08:05:57 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB7F165BA
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 05:05:51 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id pa22so16220479qkn.9
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 05:05:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=g2m/uNsCm/OsAUZxAnJOSdXXDa9Gh4wg88n4VPL2lMU=;
-        b=CvL+ep+/rtWoqemfxI7wMRAa6l5m75uCs0NkeX9c/LvgwQeBe2yteZ282qet7LqK3e
-         HxG/Im0ZM/D1WODWOklWQLf7OSL2rnEYePbCC3kd5S7iXTIHk2TS9m4HXqg7X35SFalO
-         la5iGs7bIa3/kTqN6sAmkNh0hoDLXQ/We3MdB2P1weN7ux+DF08kDg/6A/Y6YfgRBxcY
-         KtDFS1uPETmKgl0qf8DjC302y7mP/AVrTIbIo86apj+J47m+1pZNy3GOJxen9dicVXiY
-         BsuY33L2i2P2qgBdsZW4+/Yf2ArRdKBESHT+mFor1aYszrVEnphp0wzk59LkTEnCXMpY
-         DxAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=g2m/uNsCm/OsAUZxAnJOSdXXDa9Gh4wg88n4VPL2lMU=;
-        b=fTKRhbFIgMP12todyjx9+vUzV9ptk9lkG8rs7oJ1OVT9Hf8zroc5MMB/oggSoMfSFt
-         flM+RtfljlVGfE5fkWA7S5oEjRs+PCX35s/iIRI5vVeJ8uouFu3cBkJBkPTVBPNk8Voh
-         BB3QBhJYIazFNRqbPtWgOeLVSo/4bGhnbzFZKuS8PpCRaHlbJGEbV2nt5ngOFcFy7hnf
-         n9UwsaYCO96RhjffR2zQtCaUzlyCE7xhK79I9/zbwn8w5RChWhAGtlAx12191TH8sckX
-         +DxSSTEnO56Wq1phMPOi2OtT5phvr55mTT5qwgwck0deDMU4JXB/5c2AsPLykXuF2H0E
-         MPjg==
-X-Gm-Message-State: AFqh2koEeZBq7TpqDL0C3nrpqsiF7u5ycEqpeB8qMTkdj6jg+4BPWlPa
-        U92Ah39nC8iqPg2IFQtJUo0bDtZW4Tp6w2bSH0k=
-X-Google-Smtp-Source: AMrXdXu2OgEBObdRdbMNu97JgXKPUIU/iPSgjknWbpkI9oHVVplu/0eITEKHSfy21FjM4TZO7YYYJ2NT+qIkDRPzmNA=
-X-Received: by 2002:a05:620a:1327:b0:6ff:df2:2936 with SMTP id
- p7-20020a05620a132700b006ff0df22936mr1594016qkj.138.1672837550090; Wed, 04
- Jan 2023 05:05:50 -0800 (PST)
+        with ESMTP id S239480AbjADNIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 08:08:46 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137AB34773;
+        Wed,  4 Jan 2023 05:07:41 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 8913818838C8;
+        Wed,  4 Jan 2023 13:07:37 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 67F59250007B;
+        Wed,  4 Jan 2023 13:07:37 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 5B4689EC000D; Wed,  4 Jan 2023 13:07:37 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 1508791201E3;
+        Wed,  4 Jan 2023 13:07:37 +0000 (UTC)
+From:   "Hans J. Schultz" <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        "Hans J. Schultz" <netdev@kapio-technology.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2 net-next 0/3] mv88e6xxx: Add MAB offload support
+Date:   Wed,  4 Jan 2023 14:06:00 +0100
+Message-Id: <20230104130603.1624945-1-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Received: by 2002:ad4:574b:0:b0:531:bf92:424d with HTTP; Wed, 4 Jan 2023
- 05:05:49 -0800 (PST)
-Reply-To: Gregdenzell9@gmail.com
-From:   Greg Denzell <ketiaxbusux@gmail.com>
-Date:   Wed, 4 Jan 2023 13:05:49 +0000
-Message-ID: <CAMG0K-Sr6UEGeS3F8yMsn1s0JW0MpyFf3Mbwf-181tMy0XDkMg@mail.gmail.com>
-Subject: Seasons Greetings!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Seasons Greetings!
+This patchset adds MAB [1] offload support in mv88e6xxx.
 
-This will remind you again that I have not yet received your reply to
-my last message to you.
+Patch #1: Correct default return value for mv88e6xxx_port_bridge_flags.
+
+Patch #2: Change chip lock handling in ATU interrupt handler.
+
+Patch #3: The MAB implementation for mv88e6xxx.
+
+LOG:
+        V2:     -FID reading patch already applied, so dropped here. [1]
+                -Patch #2 here as separate patch instead of part of MAB
+                 implementation patch.
+                -Check if fid is MV88E6XXX_FID_STANDALONE, and not if
+                 fid is zero, as that is the correct check. Do not
+                 report an error.
+
+[1] https://git.kernel.org/netdev/net-next/c/4bf24ad09bc0
+
+Hans J. Schultz (3):
+  net: dsa: mv88e6xxx: change default return of
+    mv88e6xxx_port_bridge_flags
+  net: dsa: mv88e6xxx: disable hold of chip lock for handling
+  net: dsa: mv88e6xxx: mac-auth/MAB implementation
+
+ drivers/net/dsa/mv88e6xxx/Makefile      |  1 +
+ drivers/net/dsa/mv88e6xxx/chip.c        | 20 +++---
+ drivers/net/dsa/mv88e6xxx/chip.h        | 15 +++++
+ drivers/net/dsa/mv88e6xxx/global1_atu.c | 22 +++++--
+ drivers/net/dsa/mv88e6xxx/switchdev.c   | 83 +++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/switchdev.h   | 19 ++++++
+ 6 files changed, 147 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.h
+
+-- 
+2.34.1
+
