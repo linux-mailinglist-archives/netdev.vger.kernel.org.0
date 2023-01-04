@@ -2,115 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 271B665D013
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 11:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF0465D019
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 11:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbjADKBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 05:01:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37370 "EHLO
+        id S234112AbjADKDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 05:03:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbjADKBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 05:01:14 -0500
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4DCABCAA;
-        Wed,  4 Jan 2023 02:01:12 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-        by APP-03 (Coremail) with SMTP id rQCowABXX5dcTrVjC5xuCg--.34318S2;
-        Wed, 04 Jan 2023 18:01:01 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregory.greenman@intel.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        luciano.coelho@intel.com, johannes.berg@intel.com,
-        shaul.triebitz@intel.com
-Cc:     linux-wireless@vger.kernel.or, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] iwlwifi: Add missing check for alloc_ordered_workqueue
-Date:   Wed,  4 Jan 2023 18:00:59 +0800
-Message-Id: <20230104100059.24987-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S233067AbjADKDj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 05:03:39 -0500
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF3F1B1D4;
+        Wed,  4 Jan 2023 02:03:38 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sendonly@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id C9E433FB17;
+        Wed,  4 Jan 2023 10:03:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1672826616; bh=uvTIZXmlp9F4KsvUKwHHPKv5C7NMYiaYAHYUkqRYJ5A=;
+        h=From:To:Cc:Subject:Date;
+        b=QmV3K0wjhKqdCpGRzPEdPCjHTcInnR3KEHeQVpafGtpHjEYXNSlfwgAGHBDeageT3
+         VMuN/bmKq3cwmS1TrODh85GyF/eBnZ6CZVudCRosUVMHZq0BBUVQiVp+CCUUVzcH3g
+         eP+z8h06VvXl0sEucungsxWAcEpiAaTuK2k0ENo/mUnTOpAq8niUzlW73T6iXGxR7R
+         dShRfylXECekCR/p3fZ4kxcSepJnNwWu8Lh/Zoz7b5rD8gU0r6jVhrABo+hP39BGAs
+         CTH2XpUSpdAC+4P7UF2Va9RHmXHSL0D+DxqTzOPTifvkctWppIklFv+gWWufys5PNB
+         ja4bEOsB/mIhA==
+From:   Hector Martin <marcan@marcan.st>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Prutskov <alep@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Ian Lin <ian.lin@infineon.com>,
+        Soontak Lee <soontak.lee@cypress.com>,
+        Joseph chuang <jiac@cypress.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [PATCH v1 0/4] BCM4355/4364/4377 support & identification fixes
+Date:   Wed,  4 Jan 2023 19:01:12 +0900
+Message-Id: <20230104100116.729-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABXX5dcTrVjC5xuCg--.34318S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7trW5try7Xw4kZFW7ZF17Awb_yoW8uFyDpa
-        nxuryjqFW5tw1jqFyrGFWkZas8Ww1UJr1DGFZ2gw45urn7Aw1rJa10gryYqFykGry0gr15
-        CrWjyF15Wr4DXrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvj14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4
-        xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43
-        MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I
-        0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWU
-        JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5s
-        jjDUUUU
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add check for the return value of alloc_ordered_workqueue since it may
-return NULL pointer.
+Hi all,
 
-Fixes: b481de9ca074 ("[IWLWIFI]: add iwlwifi wireless drivers")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/wireless/intel/iwlwifi/dvm/main.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+This series adds support for the BCM4355, BCM4364, and BCM4377 variants
+found on Intel Apple Macs of the T2 era (and a few pre-T2 ones).
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/main.c b/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-index a873be109f43..b490a88b97ca 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-@@ -1048,9 +1048,11 @@ static void iwl_bg_restart(struct work_struct *data)
-  *
-  *****************************************************************************/
- 
--static void iwl_setup_deferred_work(struct iwl_priv *priv)
-+static int iwl_setup_deferred_work(struct iwl_priv *priv)
- {
- 	priv->workqueue = alloc_ordered_workqueue(DRV_NAME, 0);
-+	if (!priv->workqueue)
-+		return -ENOMEM;
- 
- 	INIT_WORK(&priv->restart, iwl_bg_restart);
- 	INIT_WORK(&priv->beacon_update, iwl_bg_beacon_update);
-@@ -1067,6 +1069,8 @@ static void iwl_setup_deferred_work(struct iwl_priv *priv)
- 	timer_setup(&priv->statistics_periodic, iwl_bg_statistics_periodic, 0);
- 
- 	timer_setup(&priv->ucode_trace, iwl_bg_ucode_trace, 0);
-+
-+	return 0;
- }
- 
- void iwl_cancel_deferred_work(struct iwl_priv *priv)
-@@ -1456,7 +1460,9 @@ static struct iwl_op_mode *iwl_op_mode_dvm_start(struct iwl_trans *trans,
- 	/********************
- 	 * 6. Setup services
- 	 ********************/
--	iwl_setup_deferred_work(priv);
-+	if (iwl_setup_deferred_work(priv))
-+		goto out_uninit_drv;
-+
- 	iwl_setup_rx_handlers(priv);
- 
- 	iwl_power_initialize(priv);
-@@ -1494,6 +1500,7 @@ static struct iwl_op_mode *iwl_op_mode_dvm_start(struct iwl_trans *trans,
- 	iwl_cancel_deferred_work(priv);
- 	destroy_workqueue(priv->workqueue);
- 	priv->workqueue = NULL;
-+out_uninit_drv:
- 	iwl_uninit_drv(priv);
- out_free_eeprom_blob:
- 	kfree(priv->eeprom_blob);
+The first patch fixes a bunch of confusion introduced when adding
+support for the Cypress 89459 chip, which is, as far as I can tell,
+just a BCM4355.
+
+The subsequent patches add the firmware names and remaining missing
+device IDs, including splitting the BCM4364 firmware name by revision
+(since it was previously added without giving thought to the existence
+of more than one revision in the wild with different firmwares,
+resulting in different users manually copying different incompatible
+firmwares as the same firmware name).
+
+None of these devices have firmware in linux-firmware, so we should
+still be able to tweak firmware filenames without breaking anyone that
+matters. Apple T2 users these days are mostly using downstream trees
+with the Asahi Linux WLAN patches merged anyway, so they already know
+about this.
+
+Note that these devices aren't fully usable as far as firmware
+selection on these platforms without some extra patches to add support
+for fetching the required info from ACPI, but I want to get the device
+ID stuff out of the way first to move forward.
+
+Hector Martin (4):
+  wifi: brcmfmac: Rename Cypress 89459 to BCM4355
+  brcmfmac: pcie: Add IDs/properties for BCM4355
+  brcmfmac: pcie: Add IDs/properties for BCM4377
+  brcmfmac: pcie: Perform correct BCM4364 firmware selection
+
+ .../broadcom/brcm80211/brcmfmac/chip.c        |  6 ++--
+ .../broadcom/brcm80211/brcmfmac/pcie.c        | 32 +++++++++++++++----
+ .../broadcom/brcm80211/include/brcm_hw_ids.h  |  9 ++++--
+ 3 files changed, 35 insertions(+), 12 deletions(-)
+
 -- 
-2.25.1
+2.35.1
 
