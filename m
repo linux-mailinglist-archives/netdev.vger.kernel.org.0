@@ -2,112 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A30AA65DBE6
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 19:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ABD365DBF5
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 19:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239976AbjADSKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 13:10:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S235171AbjADSOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 13:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239587AbjADSKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 13:10:22 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2B3395DC
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 10:10:20 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id u8so19839373ilq.13
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 10:10:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8FAYOoZlV85IsIHNRYn6JbF3crw7qgzdxYaheW3nilA=;
-        b=urwDLjqo6Ai8B7JnKOiLTbBm5ymoqcBrHSbzmF0Hr7Y99Y6jEcPwNJi9PQtbSow7BN
-         Dx2jl/ooHqN4ybnadVwEyk4FM+lHQ0/xHLPmDoTuBbPCffv8a3aFx97uTg6mTzYrjo9c
-         uyxGcR8Amk7RiXp3Kk9cAYxZsDK5QjUlFW2gJvAU3dmiNiH7u6wSs58kW+srX8MsMeK8
-         Xz4NdTr74rvmxjUBfKUvKItmzheRgjTyzhMYS2sHfwtF3bRiXFcmN0Rv+4nGgm/VBsQA
-         6dQ0AwFMiVGvQ0j0QGTWjpIH2d1yXMl+08sHQP+ljYyEEHI21XjMDfAraLi0ONA89hkB
-         5QMQ==
+        with ESMTP id S233421AbjADSOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 13:14:43 -0500
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C82D17E2B;
+        Wed,  4 Jan 2023 10:14:42 -0800 (PST)
+Received: by mail-qt1-f169.google.com with SMTP id c11so27832196qtn.11;
+        Wed, 04 Jan 2023 10:14:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8FAYOoZlV85IsIHNRYn6JbF3crw7qgzdxYaheW3nilA=;
-        b=wvEj3eDN6eb7pPlnfThTZJjdY/eZoRFsNmqfPgWG3I7jBhs10lyOSc5R81SoIQ5Iwz
-         t4fcUnmUKhXb0eNBdPiyJqQcZdjiw7qpmgwyAA5kyZhnT6aaM107mY6wBXBsLA+VbRHm
-         JR1VZI+9VxKCdZ/Di0Xx3LuyaM7ibM/UcMv1Xb22A0krX8BFZV/3x4v+0vsJ0zaPZhXt
-         UkMPZQFs2fAzAlueywFIClj96z3cxaII6V+bOUGVER0Kpg0JpAJXVBlGHuqbHRFLdjS3
-         DW25uLV8+p+klvEy6aCP7hlwFGba/qligZ+jqrk+/dgsqMv6K3SAfVSQLhWLM4lpezBN
-         Y83A==
-X-Gm-Message-State: AFqh2krf37oL3JKMmPqQG5RO4RB/0xQPYS/wXc76Lmctw9pMv70ZRYSm
-        QpwrG8tMxTMYhQUPK6fECFcjjQ==
-X-Google-Smtp-Source: AMrXdXvYXHTT4J8rdsO8OHxvmzKWVWoqYGkz56LHThn+EgM64BjPB9/dMBdn8kX0uEpgjcu+HeSLpw==
-X-Received: by 2002:a05:6e02:96b:b0:30d:7aaf:894d with SMTP id q11-20020a056e02096b00b0030d7aaf894dmr635268ilt.22.1672855820283;
-        Wed, 04 Jan 2023 10:10:20 -0800 (PST)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id e14-20020a02860e000000b003712c881d67sm11113553jai.164.2023.01.04.10.10.19
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FVsRxQjJfhqUCKD22B/7QWal+i1XgIailtIcRsdWfsY=;
+        b=XxmmyVscUy+zn331tzO0ml+KEjn0QcHP5FYm7VSWOwdM8ZERUmw0s2s1xu8VNCXMme
+         iI37cwkmBKJpUSv4+raQPHhfr/a6e51WAR6P04KwMXlOZxLWu9jhBrbXwq1XAVfT6cIy
+         cRg3oK7tdPsxSnPutpQs0DEzX11VSmYatR6ZEEBSvjmkqKA8HlHR0itD5J9fn1kUDsUf
+         409U7qU//9ArK69gNEQ5Yuln76FsoMbl55ekbL71F3Y/ugE2EFFhSI02hJyvNziMLZTK
+         5puk6Xx/+uBD8Sil1+wzTKO8jJL33qTvbRWIPRjCxWQfp3kvK0Bb23QIHS3ATx55y7li
+         GQAg==
+X-Gm-Message-State: AFqh2koB9l6qt6XRMQl75C0edFnra2LnvqwGkIrBjThnwoLPotuF+wCt
+        lRgbMHdmmtXqoLWdHiBWJBo=
+X-Google-Smtp-Source: AMrXdXskLaQ0HIlCQH3C+H14WSAUUbA44sT4P8AyxSWWi8mfco/KN1+K8H/HqDnRx6WV/hRx+BTLTw==
+X-Received: by 2002:ac8:4705:0:b0:3ab:5a62:453b with SMTP id f5-20020ac84705000000b003ab5a62453bmr62073525qtp.53.1672856081393;
+        Wed, 04 Jan 2023 10:14:41 -0800 (PST)
+Received: from maniforge.lan ([2620:10d:c091:480::1:7c6c])
+        by smtp.gmail.com with ESMTPSA id bp20-20020a05622a1b9400b003a591194221sm20334266qtb.7.2023.01.04.10.14.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 10:10:19 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     luca.weiss@fairphone.com, konrad.dybcio@linaro.org,
-        caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: ipa: correct IPA v4.7 IMEM offset
-Date:   Wed,  4 Jan 2023 12:10:17 -0600
-Message-Id: <20230104181017.2880916-1-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 04 Jan 2023 10:14:40 -0800 (PST)
+Date:   Wed, 4 Jan 2023 12:14:40 -0600
+From:   David Vernet <void@manifault.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, bpf@vger.kernel.org, yhs@fb.com,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com,
+        jonathan.lemon@gmail.com
+Subject: Re: [PATCH bpf-next v2 11/15] selftests/xsk: get rid of built-in XDP
+ program
+Message-ID: <Y7XCEPFUCUNZqtAY@maniforge.lan>
+References: <20230104121744.2820-1-magnus.karlsson@gmail.com>
+ <20230104121744.2820-12-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230104121744.2820-12-magnus.karlsson@gmail.com>
+User-Agent: Mutt/2.2.9 (2022-11-12)
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit b310de784bacd ("net: ipa: add IPA v4.7 support") was merged
-despite an unresolved comment made by Konrad Dybcio.  Konrad
-observed that the IMEM region specified for IPA v4.7 did not match
-that used downstream for the SM7225 SoC.  In "lagoon.dtsi" present
-in a Sony Xperia source tree, a ipa_smmu_ap node was defined with a
-"qcom,additional-mapping" property that defined the IPA IMEM area
-starting at offset 0x146a8000 (not 0x146a9000 that was committed).
+On Wed, Jan 04, 2023 at 01:17:40PM +0100, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Get rid of the built-in XDP program that was part of the old libbpf
+> code in xsk.c and replace it with an eBPF program build using the
+> framework by all the other bpf selftests. This will form the base for
+> adding more programs in later commits.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  tools/testing/selftests/bpf/Makefile          |  2 +-
+>  .../selftests/bpf/progs/xsk_xdp_progs.c       | 19 ++++
+>  tools/testing/selftests/bpf/xsk.c             | 88 ++++---------------
+>  tools/testing/selftests/bpf/xsk.h             |  6 +-
+>  tools/testing/selftests/bpf/xskxceiver.c      | 72 ++++++++-------
+>  tools/testing/selftests/bpf/xskxceiver.h      |  7 +-
+>  6 files changed, 88 insertions(+), 106 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/xsk_xdp_progs.c
+> 
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 205e8c3c346a..a0193a8f9da6 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -240,7 +240,7 @@ $(OUTPUT)/flow_dissector_load: $(TESTING_HELPERS)
+>  $(OUTPUT)/test_maps: $(TESTING_HELPERS)
+>  $(OUTPUT)/test_verifier: $(TESTING_HELPERS) $(CAP_HELPERS)
+>  $(OUTPUT)/xsk.o: $(BPFOBJ)
+> -$(OUTPUT)/xskxceiver: $(OUTPUT)/xsk.o
+> +$(OUTPUT)/xskxceiver: $(OUTPUT)/xsk.o $(OUTPUT)/xsk_xdp_progs.skel.h
 
-The IPA v4.7 target system used for testing uses the SM7225 SoC, so
-we'll adhere what the downstream code specifies is the address of
-the IMEM region used for IPA.
+Hi Magnus,
 
-Link: https://lore.kernel.org/linux-arm-msm/20221208211529.757669-1-elder@linaro.org
-Tested-by: Luca Weiss <luca.weiss@fairphone.com>
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-Note:  This fixes a commit that first landed in v6.2-rc1.
+This seems to break the selftests build for clang:
 
- drivers/net/ipa/data/ipa_data-v4.7.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+$ pwd
+<redacted>/bpf-next/tools/testing/selftests/bpf
 
-diff --git a/drivers/net/ipa/data/ipa_data-v4.7.c b/drivers/net/ipa/data/ipa_data-v4.7.c
-index 7552c400961eb..b83390c486158 100644
---- a/drivers/net/ipa/data/ipa_data-v4.7.c
-+++ b/drivers/net/ipa/data/ipa_data-v4.7.c
-@@ -357,7 +357,7 @@ static const struct ipa_mem ipa_mem_local_data[] = {
- static const struct ipa_mem_data ipa_mem_data = {
- 	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
- 	.local		= ipa_mem_local_data,
--	.imem_addr	= 0x146a9000,
-+	.imem_addr	= 0x146a8000,
- 	.imem_size	= 0x00002000,
- 	.smem_id	= 497,
- 	.smem_size	= 0x00009000,
--- 
-2.34.1
+$ make LLVM=1 CC=clang
+  MKDIR    libbpf
+  HOSTCC  /home/void/upstream/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/fixdep.o
+  HOSTLD  /home/void/upstream/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/fixdep-in.o
+  LINK    /home/void/upstream/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/fixdep
 
+...
+
+  GEN-SKEL [test_progs-no_alu32] test_static_linked.skel.h
+  LINK-BPF [test_progs-no_alu32] test_usdt.bpf.o
+  GEN-SKEL [test_progs-no_alu32] linked_vars.skel.h
+  GEN-SKEL [test_progs-no_alu32] linked_funcs.skel.h
+  EXT-COPY [test_progs-no_alu32] urandom_read bpf_testmod.ko liburandom_read.so xdp_synproxy sign-file ima_setup.sh verify_sig_setup.sh btf_dump_test_case_bitfields.c btf_dump_test_case_multidim.c btf_dump_test_case_namespacing.c btf_dump_test_case_ordering.c btf_dump_test_case_packing.c btf_dump_test_case_padding.c btf_dump_test_case_syntax.c
+  GEN-SKEL [test_progs-no_alu32] linked_maps.skel.h
+  GEN-SKEL [test_progs-no_alu32] test_subskeleton.skel.h
+  BINARY   xskxceiver
+  BINARY   bench
+  GEN-SKEL [test_progs-no_alu32] test_subskeleton_lib.skel.h
+  GEN-SKEL [test_progs-no_alu32] test_usdt.skel.h
+clang-15: error: cannot specify -o when generating multiple output files
+make: *** [Makefile:171: /home/void/upstream/bpf-next/tools/testing/selftests/bpf/xskxceiver] Error 1
+make: *** Waiting for unfinished jobs....
+make[1]: Nothing to be done for 'docs'.
+$
+
+It's also broken on CI: https://github.com/kernel-patches/bpf/actions/runs/3837984934/jobs/6533917001
+
+Could you please look into this?
+
+Thanks,
+David
