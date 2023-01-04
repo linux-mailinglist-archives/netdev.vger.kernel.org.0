@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9313665DF7E
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 23:01:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DEA65DF80
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 23:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240554AbjADWBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 17:01:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
+        id S240456AbjADWBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 17:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240453AbjADWAj (ORCPT
+        with ESMTP id S240508AbjADWAj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 17:00:39 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4993741D69
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 14:00:13 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id f8-20020a170902ce8800b00190c6518e21so24556608plg.1
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 14:00:13 -0800 (PST)
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DDD41D77
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 14:00:14 -0800 (PST)
+Received: by mail-pf1-x449.google.com with SMTP id 24-20020aa79118000000b00580476432deso16573250pfh.23
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 14:00:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SZD7d/ZFHMYivTnjWbSLJTGE8VEiskoYNU48VWuqPnU=;
-        b=C/qyolk/hP/4iFAOWCrMyOMj22s7o+xl+EUGjL9CGjUc+gLPdWxV7DZNfFAibUKghL
-         26L/OovYDkxYsjldg/pHIbCYFG8NO90FdDkco/bBc7CH3PAA82jwBigqBXwwukymGNrF
-         73D3ev3TwMY9HN2ZRvfdfquePSZEUIwJ6tIYh8gE9Frwqw74Y8mq6RVNwqbYZNqCodaw
-         sqAgjhziqKmM/BulxjZGeP0lDyxgmHfDfkbw35zXbcxGhp0aQLa8z+uFfQL8GFy7HytQ
-         Y1n1oFwaStpZ+VRTxoH4Ql1joD21Hp2b1R8CqUptXbN+i0gAKxQBRpWr4VTbo1iz+kB3
-         8VHg==
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rfJO+GQYze9TOg5vw18ss4rmZmF2LBjdqaB1j+Nx9Ls=;
+        b=UgN+5U7AwdFy3wokiMPqJj/3rNQgM6rvQldU9Tt3xkUhVJtG9QQSI/KXwWNUZQhsUh
+         p2ReVJKVGsvUbq9CY076DBiojhMMBzlGzc/dKnpStfAKWsZpDUZq6IvevSxzjjKpflq3
+         qptZ+jCRCpZQUtYPiWSiLrwSLksWamrIIuQv4x0XN3nD5AqR1B/w1JieR023nUH/EsvG
+         Y19AJkmB0bGeJiOqrVceZvUwMx/MP89Np1kCP2+rIK82be9+FGW3+1qXBBJ7wv+bv6xf
+         EodrnF5G0ybZAyYmtS/ueMSCVd9NWThnMpDiA7UBYekYT3LK6vY0JiXmLmkjbJmjn+p/
+         oP7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SZD7d/ZFHMYivTnjWbSLJTGE8VEiskoYNU48VWuqPnU=;
-        b=hgi/pNxjKnPm56N4r6Q8CIIH7w+N3HTBknqAcopg6lUOBWxLM2g8f3yb3vQgqx8itc
-         KPklrff3378UgPsf7TebSs40iG0w7yQox5gVkWr8WVasSI15EJgyNdIoGZhZyZLuMxQl
-         Hk0T5ZKU4UC18Mj/IgDJZ6zVexiogsjFn/niYzYZKprSIeQXOyQ23zZYWYlNpPXd6tVJ
-         S22Ddv9LmplBg+okNG9uoJsheLUiSz8/woDhJ1ZZglErUVBUonnRdOjVtbwuBAFSr2oh
-         Ff54fgcyOBK1l/fIpKAvL/SW7nTi7nly+pK8NKw4iPKn32MNvh8mmtO/llbWW1efer+s
-         Y20w==
-X-Gm-Message-State: AFqh2kpaOh8XP+4IDNiqLcurUXrne3Uoav9YRTUJcwI99rIkorInK9Ff
-        yfwAXcQu+lswt7s8rECPeIQNoaA=
-X-Google-Smtp-Source: AMrXdXscGLC4YLqnnBUsDUD6P5R8U9V7trSrurv3rH+VlFWzVC/YmPYV1HwT4QWazZTEG5twhE6KM74=
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=rfJO+GQYze9TOg5vw18ss4rmZmF2LBjdqaB1j+Nx9Ls=;
+        b=RdRGZa8P2yijZLdBRgeafvEETq/IY43dwwvMDUz+hKq9+NaLaKgGKUpMFxeSWbh9zn
+         SO63nWY6Ny65Ea9ps9arhHj8tgbCpRPuokB2NsbYiLihSJwn3NX4GtHmY1AXAvAVR1r4
+         u7CR1B6wDU3CjNgbZ6syfgEQdAJuglwXY/gSFN+2spp14j/OaWaOm3BfL0mtoFd/t6Pa
+         zkmBP3vT9wtCuSo4ZQzgLV+i1BfhEek9rxXhkdo9/FGz3mDHWGOiaFzc3ysRmtKjRZgh
+         ieubDCyc6bWUoNWcihf1Q0qmIoxepCcN39HI3uQUjzTo4TVS5nuSYb85yN5+QgRzH8I5
+         hiXg==
+X-Gm-Message-State: AFqh2koa6qmDtJ+ZfPDlnUf67xbRVkHJamYDtXSnGa4aIwPaceoCWHO4
+        wRUU7wAwvQ0M0C4c1myxly42Ms8=
+X-Google-Smtp-Source: AMrXdXsNC3IVgkpL/uKDWGz/ihEARird1EJTq8ulZNnDQhJD9yhVjeTzP3t4jP0aU+IWL/EwWYE+MQs=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a05:6a00:1485:b0:578:e35:17e5 with SMTP id
- v5-20020a056a00148500b005780e3517e5mr3035068pfu.33.1672869612621; Wed, 04 Jan
- 2023 14:00:12 -0800 (PST)
-Date:   Wed,  4 Jan 2023 13:59:45 -0800
+ (user=sdf job=sendgmr) by 2002:a17:902:d585:b0:189:af2b:ebb1 with SMTP id
+ k5-20020a170902d58500b00189af2bebb1mr2847509plh.35.1672869614304; Wed, 04 Jan
+ 2023 14:00:14 -0800 (PST)
+Date:   Wed,  4 Jan 2023 13:59:46 -0800
 In-Reply-To: <20230104215949.529093-1-sdf@google.com>
 Mime-Version: 1.0
 References: <20230104215949.529093-1-sdf@google.com>
 X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
-Message-ID: <20230104215949.529093-14-sdf@google.com>
-Subject: [PATCH bpf-next v6 13/17] net/mlx4_en: Support RX XDP metadata
+Message-ID: <20230104215949.529093-15-sdf@google.com>
+Subject: [PATCH bpf-next v6 14/17] xsk: Add cb area to struct xdp_buff_xsk
 From:   Stanislav Fomichev <sdf@google.com>
 To:     bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
         haoluo@google.com, jolsa@kernel.org,
+        "=?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?=" <toke@redhat.com>,
         David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
@@ -66,8 +69,9 @@ Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
@@ -78,11 +82,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RX timestamp and hash for now. Tested using the prog from the next
-patch.
+From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-Also enabling xdp metadata support; don't see why it's disabled,
-there is enough headroom..
+Add an area after the xdp_buff in struct xdp_buff_xsk that drivers can use
+to stash extra information to use in metadata kfuncs. The maximum size of
+24 bytes means the full xdp_buff_xsk structure will take up exactly two
+cache lines (with the cb field spanning both). Also add a macro drivers can
+use to check their own wrapping structs against the available size.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: David Ahern <dsahern@gmail.com>
@@ -96,145 +102,39 @@ Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
 Cc: Maryam Tahhan <mtahhan@redhat.com>
 Cc: xdp-hints@xdp-project.net
 Cc: netdev@vger.kernel.org
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/en_clock.c | 13 +++++---
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |  6 ++++
- drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 33 ++++++++++++++++++-
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  5 +++
- 4 files changed, 52 insertions(+), 5 deletions(-)
+ include/net/xsk_buff_pool.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_clock.c b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-index 98b5ffb4d729..9e3b76182088 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-@@ -58,9 +58,7 @@ u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe)
- 	return hi | lo;
- }
- 
--void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
--			    struct skb_shared_hwtstamps *hwts,
--			    u64 timestamp)
-+u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp)
- {
- 	unsigned int seq;
- 	u64 nsec;
-@@ -70,8 +68,15 @@ void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
- 		nsec = timecounter_cyc2time(&mdev->clock, timestamp);
- 	} while (read_seqretry(&mdev->clock_lock, seq));
- 
-+	return ns_to_ktime(nsec);
-+}
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index f787c3f524b0..3e952e569418 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -19,8 +19,11 @@ struct xdp_sock;
+ struct device;
+ struct page;
+=20
++#define XSK_PRIV_MAX 24
 +
-+void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
-+			    struct skb_shared_hwtstamps *hwts,
-+			    u64 timestamp)
-+{
- 	memset(hwts, 0, sizeof(struct skb_shared_hwtstamps));
--	hwts->hwtstamp = ns_to_ktime(nsec);
-+	hwts->hwtstamp = mlx4_en_get_hwtstamp(mdev, timestamp);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index 8800d3f1f55c..af4c4858f397 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -2889,6 +2889,11 @@ static const struct net_device_ops mlx4_netdev_ops_master = {
- 	.ndo_bpf		= mlx4_xdp,
- };
- 
-+static const struct xdp_metadata_ops mlx4_xdp_metadata_ops = {
-+	.xmo_rx_timestamp		= mlx4_en_xdp_rx_timestamp,
-+	.xmo_rx_hash			= mlx4_en_xdp_rx_hash,
-+};
-+
- struct mlx4_en_bond {
- 	struct work_struct work;
- 	struct mlx4_en_priv *priv;
-@@ -3310,6 +3315,7 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
- 		dev->netdev_ops = &mlx4_netdev_ops_master;
- 	else
- 		dev->netdev_ops = &mlx4_netdev_ops;
-+	dev->xdp_metadata_ops = &mlx4_xdp_metadata_ops;
- 	dev->watchdog_timeo = MLX4_EN_WATCHDOG_TIMEOUT;
- 	netif_set_real_num_tx_queues(dev, priv->tx_ring_num[TX]);
- 	netif_set_real_num_rx_queues(dev, priv->rx_ring_num);
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 014a80af2813..0869d4fff17b 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -663,8 +663,35 @@ static int check_csum(struct mlx4_cqe *cqe, struct sk_buff *skb, void *va,
- 
- struct mlx4_en_xdp_buff {
+ struct xdp_buff_xsk {
  	struct xdp_buff xdp;
-+	struct mlx4_cqe *cqe;
-+	struct mlx4_en_dev *mdev;
-+	struct mlx4_en_rx_ring *ring;
-+	struct net_device *dev;
++	u8 cb[XSK_PRIV_MAX];
+ 	dma_addr_t dma;
+ 	dma_addr_t frame_dma;
+ 	struct xsk_buff_pool *pool;
+@@ -28,6 +31,8 @@ struct xdp_buff_xsk {
+ 	struct list_head free_list_node;
  };
- 
-+int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
-+{
-+	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
+=20
++#define XSK_CHECK_PRIV_TYPE(t) BUILD_BUG_ON(sizeof(t) > offsetofend(struct=
+ xdp_buff_xsk, cb))
 +
-+	if (unlikely(_ctx->ring->hwtstamp_rx_filter != HWTSTAMP_FILTER_ALL))
-+		return -EOPNOTSUPP;
-+
-+	*timestamp = mlx4_en_get_hwtstamp(_ctx->mdev,
-+					  mlx4_en_get_cqe_ts(_ctx->cqe));
-+	return 0;
-+}
-+
-+int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
-+{
-+	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
-+
-+	if (unlikely(!(_ctx->dev->features & NETIF_F_RXHASH)))
-+		return -EOPNOTSUPP;
-+
-+	*hash = be32_to_cpu(_ctx->cqe->immed_rss_invalid);
-+	return 0;
-+}
-+
- int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int budget)
- {
- 	struct mlx4_en_priv *priv = netdev_priv(dev);
-@@ -781,8 +808,12 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 						DMA_FROM_DEVICE);
- 
- 			xdp_prepare_buff(&mxbuf.xdp, va - frags[0].page_offset,
--					 frags[0].page_offset, length, false);
-+					 frags[0].page_offset, length, true);
- 			orig_data = mxbuf.xdp.data;
-+			mxbuf.cqe = cqe;
-+			mxbuf.mdev = priv->mdev;
-+			mxbuf.ring = ring;
-+			mxbuf.dev = dev;
- 
- 			act = bpf_prog_run_xdp(xdp_prog, &mxbuf.xdp);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index 3d4226ddba5e..544e09b97483 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -796,10 +796,15 @@ void mlx4_en_update_pfc_stats_bitmap(struct mlx4_dev *dev,
- int mlx4_en_netdev_event(struct notifier_block *this,
- 			 unsigned long event, void *ptr);
- 
-+struct xdp_md;
-+int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp);
-+int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash);
-+
- /*
-  * Functions for time stamping
-  */
- u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe);
-+u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp);
- void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
- 			    struct skb_shared_hwtstamps *hwts,
- 			    u64 timestamp);
--- 
+ struct xsk_dma_map {
+ 	dma_addr_t *dma_pages;
+ 	struct device *dev;
+--=20
 2.39.0.314.g84b9a713c41-goog
 
