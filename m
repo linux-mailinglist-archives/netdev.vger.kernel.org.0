@@ -2,266 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C2165D56B
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6827F65D5A4
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 15:30:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235117AbjADOTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 09:19:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        id S239381AbjADOaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 09:30:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238920AbjADOTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:19:00 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDDE17434
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 06:18:58 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id m26-20020a05600c3b1a00b003d9811fcaafso20016013wms.5
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 06:18:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aBC+vzMix1vwzgMala+1EFIy7Z/TD/5lo9mag2BqUo8=;
-        b=ljkWTKIuu7aD9RVdV0HooIWjQMakPXWxeIVk7T9Oq4iXF7keGxTpRZhKVSMV/UldXI
-         lJpyCw/rE3c0BgvRsgrEy8JsAnrrC+rE2mz27v4wqhI4zyyD1Kr8c5cZtrae2DM9/3tc
-         T+vp3uhgya7ipPZUSOWBsRBx4+QQWJx66IHuOfHPFVS6akhEHnhMjXvKJd4vzUiZtiSw
-         2A1sfEtGUTva6DOhzy8aM4vvQZmnBRYWu7Pt40lsWFFv96Bfi3vUibzdBMDMgPOAHdjn
-         2i4dkYMe7Xu0+hDlRWIZtjn9hb8LLNdsy09xykTdWlZIUwRLpmKwzKYx+O0JXp3atVnF
-         lnQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aBC+vzMix1vwzgMala+1EFIy7Z/TD/5lo9mag2BqUo8=;
-        b=XdDEQdFhG7h/ZXQ1MYdP3faigU/yJmuEEZ5P1BirRN+eQ8HGTykJprI8gDudjUklk7
-         MMqzqtHRdtCxvrQetaOdx3mfch1/aAVbM9mL4bfKMXwNAjftjVaHLtv5irdxMi84hmr/
-         MWWFC4MjznYGgnCf70DfP3JUxdrq9mTF1krvLWgDwaw7SybGgztJhwOms6wvpAd9g3pN
-         6xqk1LaCEgM0nbefl9YtYp+C6OOw864H9lPvvFjVVcK5wr/7h61K1SMhpprBDuk5C3M8
-         z424DuNuLDOPW7Me1yYd/HH2hxwRAWQD9szvXNC2tlLl4IGMSy4aBVgZ8YFwfAQy8bTx
-         HXQA==
-X-Gm-Message-State: AFqh2krk9hlBctApPnEVDgFUwF3lNz0kjtWln88+GazTzgGwe14Bl51p
-        vPxtImnQDIIHNE+WX0WPKjynbg==
-X-Google-Smtp-Source: AMrXdXvNAkBby7YLw6WlrFLxUhNnjYhH4LZeU9r5aZjCMlpIg75j9G2BamNODryJLbCtmxAW8yBKLA==
-X-Received: by 2002:a05:600c:246:b0:3d3:3deb:d91f with SMTP id 6-20020a05600c024600b003d33debd91fmr36180422wmj.5.1672841936991;
-        Wed, 04 Jan 2023 06:18:56 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id g7-20020a05600c4ec700b003d978f8f255sm49663029wmq.27.2023.01.04.06.18.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 06:18:55 -0800 (PST)
-Date:   Wed, 4 Jan 2023 15:18:54 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 09/14] devlink: restart dump based on devlink
- instance ids (simple)
-Message-ID: <Y7WKzkKe69TDfKEM@nanopsycho>
-References: <20230104041636.226398-1-kuba@kernel.org>
- <20230104041636.226398-10-kuba@kernel.org>
+        with ESMTP id S239405AbjADOaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 09:30:01 -0500
+Received: from cstnet.cn (smtp80.cstnet.cn [159.226.251.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A93E33D9C8;
+        Wed,  4 Jan 2023 06:29:40 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-01 (Coremail) with SMTP id qwCowAD3_3P7i7VjaEnrCg--.12743S2;
+        Wed, 04 Jan 2023 22:23:55 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     leon@kernel.org
+Cc:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] wifi: rtw89: Add missing check for alloc_workqueue
+Date:   Wed,  4 Jan 2023 22:23:53 +0800
+Message-Id: <20230104142353.25093-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230104041636.226398-10-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowAD3_3P7i7VjaEnrCg--.12743S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cry8Aw4UCw45Wr1DGw1DGFg_yoW8Xr4fp3
+        yrAw1UAa15Jr1DCa92vw43CF15Wa1rtFW8u3s2gw1rXw15X34rGa4jga4Yvrn09FWvqFyY
+        yFZ5XasxGrn5ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6ry5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUjuWlDUUUUU==
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 04, 2023 at 05:16:31AM CET, kuba@kernel.org wrote:
->xarray gives each devlink instance an id and allows us to restart
->walk based on that id quite neatly. This is nice both from the
->perspective of code brevity and from the stability of the dump
->(devlink instances disappearing from before the resumption point
->will not cause inconsistent dumps).
->
->This patch takes care of simple cases where dump->idx counts
->devlink instances only.
->
->Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->---
-> net/devlink/core.c          |  2 +-
-> net/devlink/devl_internal.h | 14 ++++++++++++++
-> net/devlink/leftover.c      | 36 ++++++++----------------------------
-> 3 files changed, 23 insertions(+), 29 deletions(-)
->
->diff --git a/net/devlink/core.c b/net/devlink/core.c
->index 3a99bf84632e..371d6821315d 100644
->--- a/net/devlink/core.c
->+++ b/net/devlink/core.c
->@@ -91,7 +91,7 @@ void devlink_put(struct devlink *devlink)
-> 		call_rcu(&devlink->rcu, __devlink_put_rcu);
-> }
+On Wed, Jan 04, 2023 at 07:41:36PM +0800, Leon Romanovsky wrote:
+> On Wed, Jan 04, 2023 at 05:33:53PM +0800, Jiasheng Jiang wrote:
+>> Add check for the return value of alloc_workqueue since it may return
+>> NULL pointer.
+>> 
+>> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
+>> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+>> ---
+>>  drivers/net/wireless/realtek/rtw89/core.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>> 
+>> diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+>> index 931aff8b5dc9..006fe0499f81 100644
+>> --- a/drivers/net/wireless/realtek/rtw89/core.c
+>> +++ b/drivers/net/wireless/realtek/rtw89/core.c
+>> @@ -3124,6 +3124,8 @@ int rtw89_core_init(struct rtw89_dev *rtwdev)
+>>  	INIT_DELAYED_WORK(&rtwdev->cfo_track_work, rtw89_phy_cfo_track_work);
+>>  	INIT_DELAYED_WORK(&rtwdev->forbid_ba_work, rtw89_forbid_ba_work);
+>>  	rtwdev->txq_wq = alloc_workqueue("rtw89_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
+>> +	if (!rtwdev->txq_wq)
+>> +		return -ENOMEM;
 > 
->-static struct devlink *
->+struct devlink *
-> devlinks_xa_find_get(struct net *net, unsigned long *indexp,
-> 		     void * (*xa_find_fn)(struct xarray *, unsigned long *,
-> 					  unsigned long, xa_mark_t))
->diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
->index ee98f3bdcd33..a567ff77601d 100644
->--- a/net/devlink/devl_internal.h
->+++ b/net/devlink/devl_internal.h
->@@ -87,6 +87,10 @@ extern struct genl_family devlink_nl_family;
-> 	     devlink; devlink = devlinks_xa_find_get_next(net, &index))
-> 
-> struct devlink *
->+devlinks_xa_find_get(struct net *net, unsigned long *indexp,
->+		     void * (*xa_find_fn)(struct xarray *, unsigned long *,
->+					  unsigned long, xa_mark_t));
->+struct devlink *
-> devlinks_xa_find_get_first(struct net *net, unsigned long *indexp);
-> struct devlink *
-> devlinks_xa_find_get_next(struct net *net, unsigned long *indexp);
->@@ -104,6 +108,7 @@ enum devlink_multicast_groups {
-> 
-> /* state held across netlink dumps */
-> struct devlink_nl_dump_state {
->+	unsigned long instance;
-> 	int idx;
-> 	union {
-> 		/* DEVLINK_CMD_REGION_READ */
->@@ -117,6 +122,15 @@ struct devlink_nl_dump_state {
-> 	};
-> };
-> 
->+/* Iterate over devlink pointers which were possible to get reference to.
->+ * devlink_put() needs to be called for each iterated devlink pointer
->+ * in loop body in order to release the reference.
->+ */
->+#define devlink_dump_for_each_instance_get(msg, dump, devlink)		\
->+	for (; (devlink = devlinks_xa_find_get(sock_net(msg->sk),	\
+> While the change is fixing one issue, you are adding another one.
+> There is no destroy of this workqueue if rtw89_load_firmware fails.
 
-I undestand that the "dump" is zeroed at the beginning of dumpit call,
-however, if you call this helper multiple times, the second iteration
-would't not work.
+Actually, I do not think the missing of destroy_workqueue is introduced by me.
+Even without my patch, the destroy_workqueue is still missing.
+Anyway, I will submit a v2 that adds the missing destroy_workqueue.
 
-Perhaps better to initialize instance=0 at the beginning of the loop to
-make this helper calls behaviour independent on context.
+Thanks,
+Jiang
 
-
->+					       &dump->instance, xa_find)); \
->+	     dump->instance++)
->+
-> extern const struct genl_small_ops devlink_nl_ops[56];
-> 
-> struct devlink *devlink_get_from_attrs(struct net *net, struct nlattr **attrs);
->diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
->index e3cfb64990b4..0f24b321b0bb 100644
->--- a/net/devlink/leftover.c
->+++ b/net/devlink/leftover.c
->@@ -1319,17 +1319,9 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
-> {
-> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
-> 	struct devlink *devlink;
->-	unsigned long index;
->-	int idx = 0;
-> 	int err;
-> 
->-	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
->-		if (idx < dump->idx) {
->-			idx++;
->-			devlink_put(devlink);
->-			continue;
->-		}
->-
->+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-
-The name suggests on the first sight that you are iterating some dump,
-which is slightly confusing. Perhaps better to have
-"devlinks_xa_for_each_" in the prefix somehow?
-
-	devlinks_xa_for_each_registered_get_dumping()
-
-I know it is long :)
-
-
-> 		devl_lock(devlink);
-> 		err = devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
-> 				      NETLINK_CB(cb->skb).portid,
->@@ -1339,10 +1331,8 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
-> 
-> 		if (err)
-> 			goto out;
->-		idx++;
-> 	}
-> out:
->-	dump->idx = idx;
-> 	return msg->len;
-> }
-> 
->@@ -4872,13 +4862,13 @@ static int devlink_nl_cmd_selftests_get_dumpit(struct sk_buff *msg,
-> {
-> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
-> 	struct devlink *devlink;
->-	unsigned long index;
->-	int idx = 0;
-> 	int err = 0;
-> 
->-	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
->-		if (idx < dump->idx || !devlink->ops->selftest_check)
->-			goto inc;
->+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
->+		if (!devlink->ops->selftest_check) {
->+			devlink_put(devlink);
->+			continue;
->+		}
-> 
-> 		devl_lock(devlink);
-> 		err = devlink_nl_selftests_fill(msg, devlink,
->@@ -4890,15 +4880,13 @@ static int devlink_nl_cmd_selftests_get_dumpit(struct sk_buff *msg,
-> 			devlink_put(devlink);
-> 			break;
-> 		}
->-inc:
->-		idx++;
->+
-> 		devlink_put(devlink);
-> 	}
-> 
-> 	if (err != -EMSGSIZE)
-> 		return err;
-> 
->-	dump->idx = idx;
-> 	return msg->len;
-> }
-> 
->@@ -6747,14 +6735,9 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
-> {
-> 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
-> 	struct devlink *devlink;
->-	unsigned long index;
->-	int idx = 0;
-> 	int err = 0;
-> 
->-	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
->-		if (idx < dump->idx)
->-			goto inc;
->-
->+	devlink_dump_for_each_instance_get(msg, dump, devlink) {
-> 		devl_lock(devlink);
-> 		err = devlink_nl_info_fill(msg, devlink, DEVLINK_CMD_INFO_GET,
-> 					   NETLINK_CB(cb->skb).portid,
->@@ -6767,15 +6750,12 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
-> 			devlink_put(devlink);
-> 			break;
-> 		}
->-inc:
->-		idx++;
-> 		devlink_put(devlink);
-> 	}
-> 
-> 	if (err != -EMSGSIZE)
-> 		return err;
-> 
->-	dump->idx = idx;
-> 	return msg->len;
-> }
-> 
->-- 
->2.38.1
->
