@@ -2,167 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E9B065D7A7
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:56:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D4865D7CB
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 17:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239639AbjADP40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 10:56:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        id S234944AbjADQCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 11:02:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbjADP4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:56:24 -0500
-Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2061.outbound.protection.outlook.com [40.92.103.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA722AE9;
-        Wed,  4 Jan 2023 07:56:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JmSKv0BsP+ekqBs3bcCKHd0is60UbcpErYNkAZQE7L/3sU3t433er+bU9okjmRX49tTH7PRZ+AxKQ+hipW27g86Naen9f8a66xPX9KcNeCjBOfackhI2jAVvsDpLLcLJPfoOOe/q40sczx0fWNFVVRMnOs0ttgww4oKf0wlY7ue1yeVwHiJWZy6/dLsagU6JckrwZtCv69Bqc308irFRf1jr2s1Yyic+bQyc9bsKqKG8hm7GEzprMLosskiodiFVLxmefkL0udcPALTkTLJ0nPGTSPsd5RI+VbAg/7ycAXUEXJjv1VVF1oPylX7sEpFzxmlKgkrhzsXC1FJKrsC7Zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TBVQyhFdC0YHBfbxjaL/VnhW3r6c0ZcCJ1EGGYYzsrc=;
- b=d0tli+bxNdy1zUm10oQcG9qZUnrDeYB0XOpppHTIUMJnSZXqJ1KsuqFJCK04Htd1Ls6jKhtZlDaYEyzeI2zTeKVAy1/jgoHuNqi37A04VYKOz3uoAkjtzh3StsZUJnLwmto8OSzqLfOEAP9Ec15tLUml7GhLmDzvkQm3leZ69Md0uKXCqN8ziVI/lD0eEfW/BrfparI7djpFchB2XoTJmdbfN0xhMbEgyEuaOtGbNk/T+WLJ4jfmvyORPoEEtcGZhVzYjUKkpQg5rYJUYLrOjRzUgmXiNljhLdf5ZL0PuFq8i4BaRFtVFU0MRyJ6h18wNPzknp+iqPA5EaR82zJ8TA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TBVQyhFdC0YHBfbxjaL/VnhW3r6c0ZcCJ1EGGYYzsrc=;
- b=gjpzU3TJrDakPM0UfUxZ9Dq2jPvhrlw0FtTfrBe1OPydzeY/JOCWtWpmk16sCmnzPlB8jRxGY/JYqCIN8he2X0+pG2pWZtQIXsynQSxIR0Su6wh8ZdgMaDxcmpYfGNtPp/NW+79PUx03Ttf4sXg15khWjvoEbNHqUAamz9xN1zIapiORO4flmhkztuRaowM3DIquJruIksbtiEmnBRGAYHMiOpK2C4RKIINdvBh/TdYFo9BJcP/ytG7PP29rCB2HlAvPomnuSYYDr9mh3tuh2KW8kBVFubQt2CH/3oNXqhCS9XQ9RgoUUaIr70dlXgyLP69L1G/sxWxO3Lg5ZyjGTw==
-Received: from BM1PR01MB0931.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:2::9) by
- MAZPR01MB5695.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a01:63::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5944.19; Wed, 4 Jan 2023 15:56:14 +0000
-Received: from BM1PR01MB0931.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::f90e:46bc:7a0f:23bc]) by BM1PR01MB0931.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::f90e:46bc:7a0f:23bc%7]) with mapi id 15.20.5944.019; Wed, 4 Jan 2023
- 15:56:14 +0000
-From:   Aditya Garg <gargaditya08@live.com>
-To:     Hector Martin <marcan@marcan.st>
-CC:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229739AbjADQCv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 11:02:51 -0500
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6792CB01;
+        Wed,  4 Jan 2023 08:02:50 -0800 (PST)
+Received: by mail-qt1-f172.google.com with SMTP id z12so27529950qtv.5;
+        Wed, 04 Jan 2023 08:02:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qwSsj6dKaBLyzBS+oljx3z67n7iA+If7j6wt5yj7OGk=;
+        b=fgrZ6ee2emsMmV5mzuKTPj+vr4xNyvDPDSRQc4vaHvZ7pFPfOG3KbV08DVpoXMbNSR
+         bjvGkQGMLQ3flRB6dmt75TpznlwgwcgkdnN1Qmin0LNxUDH/8bncGZINoNr8r3K4F2lf
+         8FlSaG/hEjzMaQDEKN4RJ5ctDhACqEvHyb3YmONivmsisdJ2zerx3bIn3JkoTlbXFhYl
+         zAJr3QfK9WQiSUmhrahxcvv4wAqDRo+gZte21fPcE+Z1HYmPoblaBvN6EfUFeM4XoWDX
+         3gSvfVNWO2yb8q1ghMwqrNxPpvtqAoiai2Ss6VvQBuvVNo8GulPo22WYf3XjR1W7iHEQ
+         XvWw==
+X-Gm-Message-State: AFqh2kpdwWyetDEvW87cFrUwUGuXtjKQ6nCpup5Yo3IJdAk1QEHY95//
+        YJDdZ9Q9KAJqrMz7BemjzVs=
+X-Google-Smtp-Source: AMrXdXuMglJVXwPAb6rs5TQsBK2qJgPizgdczySE1YEsATFGWEriPNwr0oOzc96UlJ9LEqSbLw7X3w==
+X-Received: by 2002:ac8:4a07:0:b0:3a5:8084:9f60 with SMTP id x7-20020ac84a07000000b003a580849f60mr67619083qtq.64.1672848169338;
+        Wed, 04 Jan 2023 08:02:49 -0800 (PST)
+Received: from maniforge.lan ([2620:10d:c091:480::1:7c6c])
+        by smtp.gmail.com with ESMTPSA id t1-20020ac865c1000000b003a7e4129f83sm19996524qto.85.2023.01.04.08.02.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Jan 2023 08:02:48 -0800 (PST)
+Date:   Wed, 4 Jan 2023 10:02:48 -0600
+From:   David Vernet <void@manifault.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Prutskov <alep@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Ian Lin <ian.lin@infineon.com>,
-        Soontak Lee <soontak.lee@cypress.com>,
-        Joseph chuang <jiac@cypress.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        "asahi@lists.linux.dev" <asahi@lists.linux.dev>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v1 4/4] brcmfmac: pcie: Perform correct BCM4364 firmware
- selection
-Thread-Topic: [PATCH v1 4/4] brcmfmac: pcie: Perform correct BCM4364 firmware
- selection
-Thread-Index: AQHZIFUSEFBryofprUeqp4fURzKUtg==
-Date:   Wed, 4 Jan 2023 15:56:14 +0000
-Message-ID: <4AC571A3-D90C-4BE6-A413-74C9142FF604@live.com>
-References: <20230104100116.729-1-marcan@marcan.st>
- <20230104100116.729-5-marcan@marcan.st>
-In-Reply-To: <20230104100116.729-5-marcan@marcan.st>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-tmn:  [vgmokLZvB0LodnavtZtyJai6lGdk3tQ7jGk27G0mW7YXfLHV2fyBEsjvNO8LTKez]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BM1PR01MB0931:EE_|MAZPR01MB5695:EE_
-x-ms-office365-filtering-correlation-id: 64c7e031-7011-49a7-f67f-08daee6c3511
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: L+S/I8uhzqvfxI587aQDAx8l5gEbTMUFIWeG2J4Z7N/mKKN5wPeOuRmJRmUjX7SS180+D4W2O2If4m8+zv9WzCqYNvDSu6waINZ/MobpfolKKPrsJ8LLoqtuSY4Rlwpi3iWZ9yKCeDXXp+PlNuNgHMbvJ4acgTJBZIv6em1Krf2CV6PRUcPvDbzCGR8nsg2UmNjyXD2Y+OSrP8twJqvPcfzCxqX+Nh4EBpxDXoy1sYuea+H9A3YTueaSFZvs+gQ5xXQys4qpn5y81yfp7Vk23tAb90ik9ZT3x69thTtFYP52XF6jBviUgmQ2KYDCkcMHjf1hVY9mOz5QU7RoOWt0trnjrjW0l87shj21PTun+ZNjMOzsarYI4st8U8H6RCEBraEIIXVsHBrS/SbpNFgl8v6dHSU661Y4lxIU3LeCbqwkOHtR6Nkevlk2LzuGkB5RsjJ//1MRmN3RdoYT9IZeKUdsyTyx+G2tNRGWmUsROhbus/eRkZQ/90JcS7kSSNUIuKtlsS/C82pUtF1zS2G4ftWGADRx43DXAlECon3SEMmVQAmCMDsyo5WhnyW8Ia/i3zN4DC59Fw0/wRSeMM6kTH2WMI3MxVd0l+77/f2OY//ZD2FTgVNKbwCDfXYU3Ay9wnm/IO1ew3n+6jv1DBle6w==
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SHE0Uk9yenMzYndObU12UEhQY00wcUNYb0tJdGhlVlZiWjNZcVZJUUZXVExo?=
- =?utf-8?B?WHpZRzBRQ1h6SHNXMVM0TXo5UzBBbVR2SWVmdCt6dkJ4cWlyMEJhanBLWHJh?=
- =?utf-8?B?bEN0ZUNIczl3QWN2VHBxeDRRUUN2akMxSWxaRTEzL1U1Y25tem1veU5RSWZM?=
- =?utf-8?B?WU1WcVFXVDJLdGNoSWsrd3l4M3JBQ3VEbi8rTWxYWjU2ZHMwZkNmdWQzbkF4?=
- =?utf-8?B?R2Rwcm1rYzErMTFSQ0N6SEFKUmVBOG1PTXNJUmlJWURnVjgydGxSbmI5M2Nm?=
- =?utf-8?B?V2FacnVidGd3NHRnWXhxR3J0UndhcVhvTm5IU3U3TXBWT05iNU91Sy9DWHhm?=
- =?utf-8?B?NjZtTGVQYTV2eHJ3S1BJRHBxQWJTZlRSbjFzVGhPTzZiZDZ4UmRqdXZ0eEEw?=
- =?utf-8?B?STVyN0hrdDhuS1FlMCtLWXVBTExjTHFRNlRqVi9mYUZWSktwWVA0dk9Ob3Uv?=
- =?utf-8?B?bm1vYUo3QytVNENTbUpxQzdhSUxSbldlbEpZMCtkMm1IdVN2NU9VTENTdXFC?=
- =?utf-8?B?dXJwK0ZybktCSmEyV3A2ZE1kV3p2ODZWaFdUQjc0OElQQVdSU0xpaTVMV2tM?=
- =?utf-8?B?L3hNT0VQY2VHWUJib2JScjRNSnNQdWdiK01pcW5XTy94bkgzU2t5d083WDhO?=
- =?utf-8?B?aEpnY2RSTy92cUlQL2dTRnp1RXBvcFdmR3BCbEt3Zm1PSTYydWRiZk9JRTJT?=
- =?utf-8?B?Uk1ZRnFqRjc4R3NhZE5CNVhzN3J4RkVremQ4emhBbXR5T3lmMXFFbWM4S0N3?=
- =?utf-8?B?NU5FdTJVZnU2NDFkb3FFc1RTQUJIbWlVOWxxMG0rSndDa1dHZW9saWw5Mmpr?=
- =?utf-8?B?NEQ3OGpjWVF0a0NYUkJ2bDdicjk3U0piblNtaGp6SU90eEJ0Zk9WLzkyVmVk?=
- =?utf-8?B?T3NIWjlxWDZIVC9Ic1Y2ak9oYjUxbllMbjJWY3Fvb1JTTEdiRU91bHJiVHJZ?=
- =?utf-8?B?RnZ6aE5GWDlVMXAySE1qSWh5ZlUzY1JsYklTVy9ubVJlc0VSTUVZNDVkSGdv?=
- =?utf-8?B?V2E4SVdibmRrQVdoRHhkdnJJdFdwd3E1TDdUL2hhWDI2ZTFDY283RmRDeDZn?=
- =?utf-8?B?T0ZLSWh0dzNpZzBtWG92SDRVV2dBKzF4QU5LbDdWQlB4ZElwL3RCS21yVkhC?=
- =?utf-8?B?RnptS29yM0pqbnhiYmh5MExMeW13eE95V0VaUVVYTk14WkJYeHRvVU5VQXZy?=
- =?utf-8?B?U25YYlZIdWkyNlhEYVV2Qnlnb3JBUENyczI2SC9jZ3AybTkvM091SVZPeEE1?=
- =?utf-8?B?Z3IzSFJnZWdadERJdmFzNk0reDdBcXhVd1lGaHpsQzlMNnEvV29VaEpxWjcw?=
- =?utf-8?B?V0dQT2N6MnBUaGxjRkpaZndmVlZsOVhyK0FwWEJOblF0eEd5REc1RHVlVlB4?=
- =?utf-8?B?b3hORUpkZDM0ei9WTDU1WUhucGRQRFhiMHNTK1IzMUM5L3FHbDllbVFzdFJM?=
- =?utf-8?B?TUZ5TDJyT3FiU0VQc095TFJvai9kMXlQWU9hazZlY0ZaQTF0MTlEaG9LMVc5?=
- =?utf-8?B?TTErb0RPdkczRVZJRXlGaDRCSmxsMmI2TjZUUGxVNUtkN0xnQWdKVG52SDdL?=
- =?utf-8?B?c3hhcHcrWldVQ3ExYmtUK3RYSDFXWVhvT3gvTXFWYkQzSWJEdFh1cHdjMXRo?=
- =?utf-8?B?K0QzL2JhWVRHUWlKaUl6Wk1pVHNyaUFuR0J3WGphbmlndy9zK21QNVU3YS93?=
- =?utf-8?B?NitIV1g1Z0pvQTB0M1VZSlNZNTR6L3BQSHdqMzNaOXNwMHpYUjJRUHNzQ2hJ?=
- =?utf-8?B?S2VJbmVXMXBhZFNlWTZvVVVzSUU2eUZXamtTMENSZGlhRHdTT0VqdW0zZnlo?=
- =?utf-8?B?NVdZZ1BxbmJtQkxMSUFtdz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <AFE96DB990481144A500A93CCE00873A@INDPRD01.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v5 01/17] bpf: Document XDP RX metadata
+Message-ID: <Y7WjKNv10wt0GZ6y@maniforge.lan>
+References: <20221220222043.3348718-1-sdf@google.com>
+ <20221220222043.3348718-2-sdf@google.com>
+ <Y6x7+BL7eWERwpGy@maniforge.lan>
+ <CAKH8qBs8+gUekdNDRKnU1hg8gCB4Q29eMBhF2NeTT7Y1pyitQQ@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BM1PR01MB0931.INDPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64c7e031-7011-49a7-f67f-08daee6c3511
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jan 2023 15:56:14.0282
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MAZPR01MB5695
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKH8qBs8+gUekdNDRKnU1hg8gCB4Q29eMBhF2NeTT7Y1pyitQQ@mail.gmail.com>
+User-Agent: Mutt/2.2.9 (2022-11-12)
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IE9uIDA0LUphbi0yMDIzLCBhdCAzOjMxIFBNLCBIZWN0b3IgTWFydGluIDxtYXJjYW5AbWFy
-Y2FuLnN0PiB3cm90ZToNCj4gDQo+IFRoaXMgY2hpcCBleGlzdHMgaW4gdHdvIHJldmlzaW9ucyAo
-QjI9cjMgYW5kIEIzPXI0KSBvbiBkaWZmZXJlbnQNCj4gcGxhdGZvcm1zLCBhbmQgd2FzIGFkZGVk
-IHdpdGhvdXQgcmVnYXJkIHRvIGRvaW5nIHByb3BlciBmaXJtd2FyZQ0KPiBzZWxlY3Rpb24gb3Ig
-ZGlmZmVyZW50aWF0aW5nIGJldHdlZW4gdGhlbS4gRml4IHRoaXMgdG8gaGF2ZSBwcm9wZXINCj4g
-cGVyLXJldmlzaW9uIGZpcm13YXJlcyBhbmQgc3VwcG9ydCBBcHBsZSBOVlJBTSBzZWxlY3Rpb24u
-DQo+IA0KPiBSZXZpc2lvbiBCMiBpcyBwcmVzZW50IG9uIGF0IGxlYXN0IHRoZXNlIEFwcGxlIFQy
-IE1hY3M6DQo+IA0KPiBrYXVhaTogICAgTWFjQm9vayBQcm8gMTUiIChUb3VjaC8yMDE4LTIwMTkp
-DQo+IG1hdWk6ICAgICBNYWNCb29rIFBybyAxMyIgKFRvdWNoLzIwMTgtMjAxOSkNCj4gbGFuYWk6
-ICAgIE1hYyBtaW5pIChMYXRlIDIwMTgpDQo+IGVrYW5zOiAgICBpTWFjIFBybyAyNyIgKDVLLCBM
-YXRlIDIwMTcpDQo+IA0KPiBBbmQgdGhlc2Ugbm9uLVQyIE1hY3M6DQo+IA0KPiBuaWhhdTogICAg
-aU1hYyAyNyIgKDVLLCAyMDE5KQ0KPiANCj4gUmV2aXNpb24gQjMgaXMgcHJlc2VudCBvbiBhdCBs
-ZWFzdCB0aGVzZSBBcHBsZSBUMiBNYWNzOg0KPiANCj4gYmFsaTogICAgIE1hY0Jvb2sgUHJvIDE2
-IiAoMjAxOSkNCj4gdHJpbmlkYWQ6IE1hY0Jvb2sgUHJvIDEzIiAoMjAyMCwgNCBUQjMpDQo+IGJv
-cm5lbzogICBNYWNCb29rIFBybyAxNiIgKDIwMTksIDU2MDBNKQ0KPiBrYWhhbmE6ICAgTWFjIFBy
-byAoMjAxOSkNCj4ga2FoYW5hOiAgIE1hYyBQcm8gKDIwMTksIFJhY2spDQo+IGhhbmF1bWE6ICBp
-TWFjIDI3IiAoNUssIDIwMjApDQo+IGt1cmU6ICAgICBpTWFjIDI3IiAoNUssIDIwMjAsIDU3MDAv
-WFQpDQo+IA0KPiBGaXhlczogMjRmMGJkMTM2MjY0ICgiYnJjbWZtYWM6IGFkZCB0aGUgQlJDTSA0
-MzY0IGZvdW5kIGluIE1hY0Jvb2sgUHJvIDE1LDIiKQ0KPiBSZXZpZXdlZC1ieTogTGludXMgV2Fs
-bGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8ub3JnPg0KPiBTaWduZWQtb2ZmLWJ5OiBIZWN0b3Ig
-TWFydGluIDxtYXJjYW5AbWFyY2FuLnN0Pg0KPiAtLS0NCj4gLi4uL25ldC93aXJlbGVzcy9icm9h
-ZGNvbS9icmNtODAyMTEvYnJjbWZtYWMvcGNpZS5jICAgfCAxMSArKysrKysrKystLQ0KPiAxIGZp
-bGUgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCg0KSGkgSGVj
-dG9yDQoNClNob3VsZG7igJl0IHRoZXJlIGJlIGEgV0NDIGluc3RlYWQgb2YgQkNBIGhlcmUgOg0K
-DQpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90b3J2YWxk
-cy9saW51eC5naXQvdHJlZS9kcml2ZXJzL25ldC93aXJlbGVzcy9icm9hZGNvbS9icmNtODAyMTEv
-YnJjbWZtYWMvcGNpZS5jP2g9djYuMi1yYzIjbjI2MDM=
+On Tue, Jan 03, 2023 at 02:23:03PM -0800, Stanislav Fomichev wrote:
+> On Wed, Dec 28, 2022 at 9:25 AM David Vernet <void@manifault.com> wrote:
+> >
+> > On Tue, Dec 20, 2022 at 02:20:27PM -0800, Stanislav Fomichev wrote:
+> > > Document all current use-cases and assumptions.
+> > >
+> > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > Cc: David Ahern <dsahern@gmail.com>
+> > > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > Cc: Willem de Bruijn <willemb@google.com>
+> > > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> > > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> > > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> > > Cc: Maryam Tahhan <mtahhan@redhat.com>
+> > > Cc: xdp-hints@xdp-project.net
+> > > Cc: netdev@vger.kernel.org
+> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > ---
+> > >  Documentation/networking/index.rst           |   1 +
+> > >  Documentation/networking/xdp-rx-metadata.rst | 107 +++++++++++++++++++
+> > >  2 files changed, 108 insertions(+)
+> > >  create mode 100644 Documentation/networking/xdp-rx-metadata.rst
+> > >
+> > > diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+> > > index 4f2d1f682a18..4ddcae33c336 100644
+> > > --- a/Documentation/networking/index.rst
+> > > +++ b/Documentation/networking/index.rst
+> > > @@ -120,6 +120,7 @@ Refer to :ref:`netdev-FAQ` for a guide on netdev development process specifics.
+> > >     xfrm_proc
+> > >     xfrm_sync
+> > >     xfrm_sysctl
+> > > +   xdp-rx-metadata
+> > >
+> > >  .. only::  subproject and html
+> > >
+> > > diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
+> > > new file mode 100644
+> > > index 000000000000..37e8192d9b60
+> > > --- /dev/null
+> > > +++ b/Documentation/networking/xdp-rx-metadata.rst
+> >
+> > Hey Stanislav,
+> >
+> > This is looking excellent. Left a few more minor comments and
+> > suggestions.
+> >
+> > > @@ -0,0 +1,107 @@
+> > > +===============
+> > > +XDP RX Metadata
+> > > +===============
+> > > +
+> > > +This document describes how an XDP program can access hardware metadata
+> >
+> > In similar fashion to LWN articles, can we spell out what XDP means the
+> > first time it's used, e.g.:
+> >
+> > ...describes how an eXpress Data Path (XDP) program...
+> >
+> > In general this applies to other acronyms unless they're super obvious,
+> > like "CPU" (thanks for already having done it for XSK).
+> 
+> Sure. Hopefully no need to explain RX below? Don't see anything else..
+> LMK if I missed something
+
+Yeah, I think we can forego RX.
+
+> 
+> > > +related to a packet using a set of helper functions, and how it can pass
+> > > +that metadata on to other consumers.
+> > > +
+> > > +General Design
+> > > +==============
+> > > +
+> > > +XDP has access to a set of kfuncs to manipulate the metadata in an XDP frame.
+> > > +Every device driver that wishes to expose additional packet metadata can
+> > > +implement these kfuncs. The set of kfuncs is declared in ``include/net/xdp.h``
+> > > +via ``XDP_METADATA_KFUNC_xxx``.
+> > > +
+> > > +Currently, the following kfuncs are supported. In the future, as more
+> > > +metadata is supported, this set will grow:
+> > > +
+> > > +- ``bpf_xdp_metadata_rx_timestamp`` returns a packet's RX timestamp
+> > > +- ``bpf_xdp_metadata_rx_hash`` returns a packet's RX hash
+> >
+> > So, I leave this up to you as to whether or not you want to do this, but
+> > there is a built-in mechanism in sphinx that converts doxygen comments
+> > to rendered documentation for a function, struct, etc, and also
+> > automatically links other places in documentation where the function is
+> > referenced. See [0] for an example of this in code, and [1] for an
+> > example of how it's rendered.
+> >
+> > [0]: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/Documentation/bpf/kfuncs.rst#n239
+> > [1]: https://docs.kernel.org/bpf/kfuncs.html#c.bpf_task_acquire
+> >
+> > So you would do something like add function headers to the kfuncs, and
+> > then do:
+> >
+> > .. kernel-doc:: net/core/xdp.c
+> >    :identifiers: bpf_xdp_metadata_rx_timestamp bpf_xdp_metadata_rx_hash
+> >
+> > At some point we will need a consistent story for how we document
+> > kfuncs. That's not set in stone yet, which is why I'm saying it's up to
+> > you whether or not you want to do this or just leave it as teletype with
+> > a written description next to it.  Later on when we settle on a
+> > documentation story for kfuncs, we can update all of them to be
+> > documented in the same way.
+> 
+> Let me try and see how it looks in the html doc. I like the idea of
+> referencing the code directly, hopefully less chance it goes stale.
+
+Sounds good!
+
+[...]
+
+Thanks for making all these changes.
+
+- David
