@@ -2,120 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C3E865CEEE
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B34EC65CEF1
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233699AbjADJAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 04:00:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        id S238930AbjADJBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 04:01:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234753AbjADI7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:59:41 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F9D1BE9B
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 00:59:39 -0800 (PST)
-Received: from gmx.fr ([181.118.46.223]) by mail.gmx.net (mrgmx005
- [212.227.17.184]) with ESMTPSA (Nemesis) id 1MaJ3n-1pG1re0fmn-00WEgS; Wed, 04
- Jan 2023 09:59:19 +0100
-Date:   Wed, 4 Jan 2023 04:59:13 -0400
-From:   Jamie Gloudon <jamie.gloudon@gmx.fr>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        Naama Meir <naamax.meir@linux.intel.com>
-Subject: Re: [PATCH net-next 1/1] e1000e: Enable Link Partner Advertised
- Support
-Message-ID: <Y7U/4Q0QKtkuexLu@gmx.fr>
-References: <20230103230653.1102544-1-anthony.l.nguyen@intel.com>
- <Y7TMhVy5CdqqysRb@lunn.ch>
+        with ESMTP id S233583AbjADJAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 04:00:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83751CB39
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 01:00:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 194E8615B3
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 09:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 79FBAC433F1;
+        Wed,  4 Jan 2023 09:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672822817;
+        bh=FAY8MSQKqmlLkB9CaFxDUGxbZnU+D61GEKD4jMq66oc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Q+WOiHp2u+q7xFBsqrrIFghaeRQbuRr88lpg2/0FOClHlOrgBV2ldVXNcts1VP/uG
+         c2Q86ZSjHG03a+c7Vy3qL3vkTEIA5+ZfOuac3+bLjYsG4zKdT9Ivc26R0iy/YT79Xz
+         Ot9k/kHCcJoQwt0a+jjiAlJ3QjVb0miONKk+Y/9Vq3XRKSQrXMM6HYlXsUc6zFWznd
+         R6vIdDZlQ68DnaZPtmlgUZ0u6kAMkvAnWKWEXMnuTZ4u+Qz0bsNdpbXOTjDuJJ8qOQ
+         RYxNhnXw6m4jSkMbp9czt8ujDb1Q97DJ3KZNnX4RprMGCQDDS5+s9ngjym5TbwfafQ
+         AYg6v2+SurHGQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 63D96C395DF;
+        Wed,  4 Jan 2023 09:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7TMhVy5CdqqysRb@lunn.ch>
-X-Provags-ID: V03:K1:6WNqWKw2kwnR1UmxHD4vfvjhdO/PE0my1UXNva0jtWpbbY4ULhi
- b377OlRPFRmcoMi9AuR5NUmFOD/pOcsIdCGEholvjr1wJDvaT+uHgaUrQTy1rx/Hy48sbNa
- 7Ge4+t2TkpYDccbV9YkWqSqVzXYR38w4Al2oY2bsKr42ZdqTd4Z3UlN9zdB3YYAE5auUHsB
- Ivx0FMAmTl3iCrlGCEluQ==
-UI-OutboundReport: notjunk:1;M01:P0:ORF0tw4u8o4=;3j+xvhauWJI647Wz5watA9qAgrz
- CggYVnqq4VSaGo8bFgomiovI5DZOkls5h5jhMiDQxLO0Zwh/jz9DzvN73raX1SsZNYnHT9yba
- rJN3HA26rFmlGYCdGPK4Gg5hv2nprGTkrw/DbB3ETNCQDDEGg0/SrbyYTPq1/GvnJs2fXebRY
- MgoO1P2VF6az1oZABchfOEps0oxfWNiLgnPEfbSttbwM+X6Kwgn9nFFBhQaF0ZxoCdY3iEAaC
- 3BfAW1xNLMONGDyib/WwjU4j6looAi6RLYmPnNQ0JctlTLuL4dJFVAAALRIN+vMB8wOjh382h
- qG5EIydOcxKFVMNVZ6aAsGPD+m5dWfxa6hF8hWe50dmwZg+nhIRJeae+9a2BZQHe43tl+Vau1
- xIiKyo60tSFYLW0NZv2xmgu7/9SKVf2VqxfWl3t1gq/c7TCx9TyFBKbSPeCFyxRii4v/zk/XK
- kMpYs7xEnGAl3a51m3V2v1Zq31xqCELif69lYPaAg0DQD9Kkcu/4kNIUpnIlQOkNamxlFrCpj
- Yu5e/huEVafucgl5Lo/npDjie3v/e2G2uUWt0OeyrjJh42iOa8aFSL3q/sIhTbpUV/beOpv+P
- PQxL6bH2OSlh7/XpNMjkucWjC74zvnSSL5ivyeNwE6EAhgUE+yIF4XDSO258bcYBHPrBffMRr
- BWuxK6D/ggA5dU0ApQ0S7yE/4qSmXLtEvE+JzzxGxqTXEaXGbw2BNgPHWnRSlvoF1t0Z17EGe
- j4A8SL/m3IzE4Cye0TH3eQdEHd6ythybF/frYwcNJdALrJPbIJyX0zKN6eQoZFTUIDZ0K8q5X
- baXbMPNYa2h248ygc7wvBkzIgrUH6OlaJigJNqydDU5ahJ20YkGXrey+IiHsaXO4/lmXnXaPM
- bCNDTI58jJerXT/xePl9w/JRXXCp9EFejIlJu+FwkSns+7ddJC+1x8cKqvYgOFHAML1V0wsug
- rx50dMGtiLBc7pH37dC8t4tqzoM=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3][pull request] Intel Wired LAN Driver Updates
+ 2023-01-03 (igc)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167282281740.15758.215696871696602852.git-patchwork-notify@kernel.org>
+Date:   Wed, 04 Jan 2023 09:00:17 +0000
+References: <20230103230503.1102426-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20230103230503.1102426-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        muhammad.husaini.zulkifli@intel.com, sasha.neftin@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 01:47:01AM +0100, Andrew Lunn wrote:
-> > --- a/drivers/net/ethernet/intel/e1000e/phy.c
-> > +++ b/drivers/net/ethernet/intel/e1000e/phy.c
-> > @@ -2,6 +2,7 @@
-> >  /* Copyright(c) 1999 - 2018 Intel Corporation. */
-> >  
-> >  #include "e1000.h"
-> > +#include <linux/ethtool.h>
-> >  
-> >  static s32 e1000_wait_autoneg(struct e1000_hw *hw);
-> >  static s32 e1000_access_phy_wakeup_reg_bm(struct e1000_hw *hw, u32 offset,
-> > @@ -1011,6 +1012,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
-> >  		 */
-> >  		mii_autoneg_adv_reg &=
-> >  		    ~(ADVERTISE_PAUSE_ASYM | ADVERTISE_PAUSE_CAP);
-> > +		phy->autoneg_advertised &=
-> > +		    ~(ADVERTISED_Pause | ADVERTISED_Asym_Pause);
-> >  		break;
-> >  	case e1000_fc_rx_pause:
-> >  		/* Rx Flow control is enabled, and Tx Flow control is
-> > @@ -1024,6 +1027,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
-> >  		 */
-> >  		mii_autoneg_adv_reg |=
-> >  		    (ADVERTISE_PAUSE_ASYM | ADVERTISE_PAUSE_CAP);
-> > +		phy->autoneg_advertised |=
-> > +		    (ADVERTISED_Pause | ADVERTISED_Asym_Pause);
-> >  		break;
-> >  	case e1000_fc_tx_pause:
-> >  		/* Tx Flow control is enabled, and Rx Flow control is
-> > @@ -1031,6 +1036,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
-> >  		 */
-> >  		mii_autoneg_adv_reg |= ADVERTISE_PAUSE_ASYM;
-> >  		mii_autoneg_adv_reg &= ~ADVERTISE_PAUSE_CAP;
-> > +		phy->autoneg_advertised |= ADVERTISED_Asym_Pause;
-> > +		phy->autoneg_advertised &= ~ADVERTISED_Pause;
-> >  		break;
-> >  	case e1000_fc_full:
-> >  		/* Flow control (both Rx and Tx) is enabled by a software
-> > @@ -1038,6 +1045,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
-> >  		 */
-> >  		mii_autoneg_adv_reg |=
-> >  		    (ADVERTISE_PAUSE_ASYM | ADVERTISE_PAUSE_CAP);
-> > +		phy->autoneg_advertised |=
-> > +		    (ADVERTISED_Pause | ADVERTISED_Asym_Pause);
-> >  		break;
-> >  	default:
-> >  		e_dbg("Flow control param set incorrectly\n");
-> > -- 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
+
+On Tue,  3 Jan 2023 15:05:00 -0800 you wrote:
+> Muhammad Husaini Zulkifli says:
 > 
-> I don't know this driver at all. What i don't see anywhere here is
-> using the results of the pause auto-neg. Is there some code somewhere
-> that looks at the local and link peer advertising values and runs a
-> resolve algorithm to determine what pause should be used, and program
-> it into the MAC?
+> Improvements to the Time-Sensitive Networking (TSN) Qbv Scheduling
+> capabilities were included in this patch series for I226 SKU.
 > 
->     Andrew
-This is a old patch i had laying around, If i remember correctly, phy->autoneg_advertised plugs in "Link partner
-advertised pause frame use link" line in ethtool everytime the nic renegotiate.
+> An overview of each patch series is given below:
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/3] igc: remove I226 Qbv BaseTime restriction
+    https://git.kernel.org/netdev/net-next/c/b8897dc54e3b
+  - [net-next,2/3] igc: enable Qbv configuration for 2nd GCL
+    https://git.kernel.org/netdev/net-next/c/5ac1231ac14d
+  - [net-next,3/3] igc: Remove reset adapter task for i226 during disable tsn config
+    https://git.kernel.org/netdev/net-next/c/1d1b4c63ba73
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
