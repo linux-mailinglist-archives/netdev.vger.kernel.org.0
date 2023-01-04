@@ -2,1118 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABE0C65CC52
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 05:18:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A95C565CC56
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 05:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238801AbjADERY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 23:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
+        id S233987AbjADEVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 23:21:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238568AbjADEQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 23:16:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C6517065
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 20:16:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA8D561597
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:16:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87926C433F0;
-        Wed,  4 Jan 2023 04:16:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672805812;
-        bh=Dq4LVHfyy0t6+Z2REJb+6u7DwyeXLhZvLLlV03rytUc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ouZVJQMbNG5p8lnvdexTTZzaw0FN7EdRYCz7AxL9/XLWRdMLLhOlnGGRhznOnN1LB
-         8PaiEJg6f6Dm+ZbRhzM7OpX04RHTEQ6w/KK0jLbkCb8JgDmUERuof6HTdZVO0Jxhg6
-         Tr/XSWTbgsFO2sgyDmgT7cH6h3Zy03w1mOScDrVzr8WHysR5f3YKVz4djgwJ+7zxC9
-         IDnZdv5CKt+7n24A+m55wNEHBhF3+65odTIU01wJRWDv7jx7eysi67jr5ZUuDhGTLh
-         sYAWd/Y/boCgAANnavWl7VPRDWH+ReiN0m83pGlhyAlOdizBhouOYYzeNBOs8AmCIU
-         rldDGYPYdVqEA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        jacob.e.keller@intel.com, jiri@resnulli.us,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 14/14] devlink: convert remaining dumps to the by-instance scheme
-Date:   Tue,  3 Jan 2023 20:16:36 -0800
-Message-Id: <20230104041636.226398-15-kuba@kernel.org>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230104041636.226398-1-kuba@kernel.org>
-References: <20230104041636.226398-1-kuba@kernel.org>
+        with ESMTP id S229537AbjADEVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 23:21:30 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01495FF0;
+        Tue,  3 Jan 2023 20:21:28 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id h21so26388635qta.12;
+        Tue, 03 Jan 2023 20:21:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fwgv2eicuwo/NGVPBJiv4KyGrUQY0NMr/gc3eEOFYIc=;
+        b=buKztwR68+nlAxNnQppQAnx3I0XDPTQzEetS1MYmv2Fh++uFmvDkPKwdkdURxSqDDo
+         MxVybYk0KPbgjF8Jgxsd5RMzrsFsmHMLlM6aiEtFWLrE8GYKWRpPcvm5vm//FmgKtG3y
+         SRxHtwx08+l3OORzX35LIxl78JBr7iOoQDo9su26stJN0BpjiMS93KD23iPxoQUAD5G0
+         wtphCQWztsW6vpDVZHHz6K8ymtrSgwwIzaBkWVU30BxdAxKWe9o0vKvxoUJ+bXBtxWdC
+         /yo3oicseBQWj4OlWJgzFfnLqBdnQoffK7HRkL1RgjH9sfQU5bdW1QlxMiCpSNRqYjBV
+         9Sbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fwgv2eicuwo/NGVPBJiv4KyGrUQY0NMr/gc3eEOFYIc=;
+        b=7FH/LiTe3wHS6XYxTUukrYqxADs3XnmG+6MGNzLgYiEMXrislBFY5K48PK/XvE4zUy
+         1fUEpGz7MNK3R5KVJAwRalLOLE1z1osjnCSujmuaelb+V6GXwoyvdaVSWfJ1ptn7RK2Q
+         ZpJFSVC8OL5XPW8pfzUalIqstmX2LEC15+Xw+f/7BL30M6O6x+Hg/YdU2jWPMP7bfvwz
+         MYaPLtTotuVqtWachVwX8K2bInBLwOZr8UrVMEI2VlN7jpMIdIjyMXSomfTGveViHJiS
+         34vA2Gzh8ZaKMB4cNQULevtxYWJThHIgFrGtTW9L9eeishyKI9eS4bHLReRC66klVFDB
+         N23w==
+X-Gm-Message-State: AFqh2krZ438XNrLggS6fpg2TN7DmTNqqSImP9EkJ6nPkkhFm2vmfPYI2
+        hHYJNQ9R2BvsyHjRYCb3bQw=
+X-Google-Smtp-Source: AMrXdXtm7CfDJFGVc6riV93VYawxzBcTnj2M3gc8P35nYo3mk4p6sCzZ3BMERo30gsmJ6a9LT2moZg==
+X-Received: by 2002:a05:622a:4188:b0:3a7:e4ae:7937 with SMTP id cd8-20020a05622a418800b003a7e4ae7937mr67109409qtb.6.1672806088047;
+        Tue, 03 Jan 2023 20:21:28 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:6d6a:6e9c:6668:39d5])
+        by smtp.gmail.com with ESMTPSA id 133-20020a37088b000000b006bb2cd2f6d1sm22954069qki.127.2023.01.03.20.21.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Jan 2023 20:21:27 -0800 (PST)
+Date:   Tue, 3 Jan 2023 20:21:25 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     syzbot <syzbot+30b72abaa17c07fe39dd@syzkaller.appspotmail.com>
+Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, sgarzare@redhat.com, stefanha@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org, bobby.eshleman@gmail.com
+Subject: Re: [syzbot] kernel BUG in vhost_vsock_handle_tx_kick
+Message-ID: <Y7T+xTIq2izSlHHE@pop-os.localdomain>
+References: <0000000000003a68dc05f164fd69@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000003a68dc05f164fd69@google.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Soon we'll have to check if a devlink instance is alive after
-locking it. Convert to the by-instance dumping scheme to make
-refactoring easier.
+On Tue, Jan 03, 2023 at 04:08:51PM -0800, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    c76083fac3ba Add linux-next specific files for 20221226
+> git tree:       linux-next
+> console+strace: https://syzkaller.appspot.com/x/log.txt?x=1723da42480000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=c217c755f1884ab6
+> dashboard link: https://syzkaller.appspot.com/bug?extid=30b72abaa17c07fe39dd
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14fc414c480000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1604b20a480000
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/e388f26357fd/disk-c76083fa.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/e24f0bae36d5/vmlinux-c76083fa.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/a5a69a059716/bzImage-c76083fa.xz
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+30b72abaa17c07fe39dd@syzkaller.appspotmail.com
 
-Most of the subobject code no longer has to worry about any devlink
-locking / lifetime rules (the only ones that still do are the two subject
-types which stubbornly use their own locking). Both dump and do callbacks
-are given a devlink instance which is already locked and good-to-access
-(do from the .pre_doit handler, dump from the new dump indirection).
++bobby.eshleman@gmail.com
 
-Note that we'll now check presence of an op (e.g. for sb_pool_get)
-under the devlink instance lock, that will soon be necessary anyway,
-because we don't hold refs on the driver modules so the memory
-in which ops live may be gone for a dead instance, after upcoming
-locking changes.
+Bobby, please take a look.
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/devlink/devl_internal.h |  15 +
- net/devlink/leftover.c      | 686 +++++++++++++++---------------------
- net/devlink/netlink.c       |  13 +
- 3 files changed, 320 insertions(+), 394 deletions(-)
+Thanks.
 
-diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-index e49b82dd77cd..1d7ab11f2f7e 100644
---- a/net/devlink/devl_internal.h
-+++ b/net/devlink/devl_internal.h
-@@ -154,6 +154,21 @@ devl_dump_state(struct netlink_callback *cb)
- 	return (struct devlink_nl_dump_state *)cb->ctx;
- }
- 
-+/* gen cmds */
-+extern const struct devlink_gen_cmd devl_gen_inst;
-+extern const struct devlink_gen_cmd devl_gen_port;
-+extern const struct devlink_gen_cmd devl_gen_sb;
-+extern const struct devlink_gen_cmd devl_gen_sb_pool;
-+extern const struct devlink_gen_cmd devl_gen_sb_port_pool;
-+extern const struct devlink_gen_cmd devl_gen_sb_tc_pool_bind;
-+extern const struct devlink_gen_cmd devl_gen_selftests;
-+extern const struct devlink_gen_cmd devl_gen_param;
-+extern const struct devlink_gen_cmd devl_gen_region;
-+extern const struct devlink_gen_cmd devl_gen_info;
-+extern const struct devlink_gen_cmd devl_gen_trap;
-+extern const struct devlink_gen_cmd devl_gen_trap_group;
-+extern const struct devlink_gen_cmd devl_gen_trap_policer;
-+
- /* Ports */
- int devlink_port_netdevice_event(struct notifier_block *nb,
- 				 unsigned long event, void *ptr);
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index f18d8dcf9751..ceac4343698b 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -1307,28 +1307,19 @@ static int devlink_nl_cmd_get_doit(struct sk_buff *skb, struct genl_info *info)
- 	return genlmsg_reply(msg, info);
- }
- 
--static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
--				     struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+			    struct netlink_callback *cb)
- {
--	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		devl_lock(devlink);
--		err = devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
--				      NETLINK_CB(cb->skb).portid,
--				      cb->nlh->nlmsg_seq, NLM_F_MULTI);
--		devl_unlock(devlink);
--		devlink_put(devlink);
--
--		if (err)
--			goto out;
--	}
--out:
--	return msg->len;
-+	return devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
-+			       NETLINK_CB(cb->skb).portid,
-+			       cb->nlh->nlmsg_seq, NLM_F_MULTI);
- }
- 
-+const struct devlink_gen_cmd devl_gen_inst = {
-+	.dump_one		= devlink_nl_cmd_get_dumpinst,
-+};
-+
- static int devlink_nl_cmd_port_get_doit(struct sk_buff *skb,
- 					struct genl_info *info)
- {
-@@ -1351,44 +1342,40 @@ static int devlink_nl_cmd_port_get_doit(struct sk_buff *skb,
- 	return genlmsg_reply(msg, info);
- }
- 
--static int devlink_nl_cmd_port_get_dumpit(struct sk_buff *msg,
--					  struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_port_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+				 struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_port *devlink_port;
--		unsigned long port_index;
--		int idx = 0;
-+	struct devlink_port *devlink_port;
-+	unsigned long port_index;
-+	int idx = 0;
-+	int err = 0;
- 
--		devl_lock(devlink);
--		xa_for_each(&devlink->ports, port_index, devlink_port) {
--			if (idx < dump->idx) {
--				idx++;
--				continue;
--			}
--			err = devlink_nl_port_fill(msg, devlink_port,
--						   DEVLINK_CMD_NEW,
--						   NETLINK_CB(cb->skb).portid,
--						   cb->nlh->nlmsg_seq,
--						   NLM_F_MULTI, cb->extack);
--			if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	xa_for_each(&devlink->ports, port_index, devlink_port) {
-+		if (idx < dump->idx) {
- 			idx++;
-+			continue;
- 		}
--		devl_unlock(devlink);
--		devlink_put(devlink);
-+		err = devlink_nl_port_fill(msg, devlink_port,
-+					   DEVLINK_CMD_NEW,
-+					   NETLINK_CB(cb->skb).portid,
-+					   cb->nlh->nlmsg_seq,
-+					   NLM_F_MULTI, cb->extack);
-+		if (err) {
-+			dump->idx = idx;
-+			break;
-+		}
-+		idx++;
- 	}
--out:
--	return msg->len;
-+
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_port = {
-+	.dump_one		= devlink_nl_cmd_port_get_dumpinst,
-+};
-+
- static int devlink_port_type_set(struct devlink_port *devlink_port,
- 				 enum devlink_port_type port_type)
- 
-@@ -2393,43 +2380,39 @@ static int devlink_nl_cmd_sb_get_doit(struct sk_buff *skb,
- 	return genlmsg_reply(msg, info);
- }
- 
--static int devlink_nl_cmd_sb_get_dumpit(struct sk_buff *msg,
--					struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_sb_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+			       struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_sb *devlink_sb;
--		int idx = 0;
-+	struct devlink_sb *devlink_sb;
-+	int idx = 0;
-+	int err = 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
--			if (idx < dump->idx) {
--				idx++;
--				continue;
--			}
--			err = devlink_nl_sb_fill(msg, devlink, devlink_sb,
--						 DEVLINK_CMD_SB_NEW,
--						 NETLINK_CB(cb->skb).portid,
--						 cb->nlh->nlmsg_seq,
--						 NLM_F_MULTI);
--			if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
-+		if (idx < dump->idx) {
- 			idx++;
-+			continue;
- 		}
--		devl_unlock(devlink);
--		devlink_put(devlink);
-+		err = devlink_nl_sb_fill(msg, devlink, devlink_sb,
-+					 DEVLINK_CMD_SB_NEW,
-+					 NETLINK_CB(cb->skb).portid,
-+					 cb->nlh->nlmsg_seq,
-+					 NLM_F_MULTI);
-+		if (err) {
-+			dump->idx = idx;
-+			break;
-+		}
-+		idx++;
- 	}
--out:
--	return msg->len;
-+
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_sb = {
-+	.dump_one		= devlink_nl_cmd_sb_get_dumpinst,
-+};
-+
- static int devlink_nl_sb_pool_fill(struct sk_buff *msg, struct devlink *devlink,
- 				   struct devlink_sb *devlink_sb,
- 				   u16 pool_index, enum devlink_command cmd,
-@@ -2535,46 +2518,39 @@ static int __sb_pool_get_dumpit(struct sk_buff *msg, int start, int *p_idx,
- 	return 0;
- }
- 
--static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
--					     struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_sb_pool_get_dumpinst(struct sk_buff *msg,
-+				    struct devlink *devlink,
-+				    struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
-+	struct devlink_sb *devlink_sb;
- 	int err = 0;
-+	int idx = 0;
- 
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_sb *devlink_sb;
--		int idx = 0;
--
--		if (!devlink->ops->sb_pool_get)
--			goto retry;
-+	if (!devlink->ops->sb_pool_get)
-+		return 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
--			err = __sb_pool_get_dumpit(msg, dump->idx, &idx,
--						   devlink, devlink_sb,
--						   NETLINK_CB(cb->skb).portid,
--						   cb->nlh->nlmsg_seq);
--			if (err == -EOPNOTSUPP) {
--				err = 0;
--			} else if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
-+		err = __sb_pool_get_dumpit(msg, dump->idx, &idx,
-+					   devlink, devlink_sb,
-+					   NETLINK_CB(cb->skb).portid,
-+					   cb->nlh->nlmsg_seq);
-+		if (err == -EOPNOTSUPP) {
-+			err = 0;
-+		} else if (err) {
-+			dump->idx = idx;
-+			break;
- 		}
--		devl_unlock(devlink);
--retry:
--		devlink_put(devlink);
- 	}
--out:
--	if (err != -EMSGSIZE)
--		return err;
- 
--	return msg->len;
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_sb_pool = {
-+	.dump_one		= devlink_nl_cmd_sb_pool_get_dumpinst,
-+};
-+
- static int devlink_sb_pool_set(struct devlink *devlink, unsigned int sb_index,
- 			       u16 pool_index, u32 size,
- 			       enum devlink_sb_threshold_type threshold_type,
-@@ -2750,46 +2726,39 @@ static int __sb_port_pool_get_dumpit(struct sk_buff *msg, int start, int *p_idx,
- 	return 0;
- }
- 
--static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
--						  struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_sb_port_pool_get_dumpinst(struct sk_buff *msg,
-+					 struct devlink *devlink,
-+					 struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
-+	struct devlink_sb *devlink_sb;
-+	int idx = 0;
- 	int err = 0;
- 
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_sb *devlink_sb;
--		int idx = 0;
--
--		if (!devlink->ops->sb_port_pool_get)
--			goto retry;
-+	if (!devlink->ops->sb_port_pool_get)
-+		return 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
--			err = __sb_port_pool_get_dumpit(msg, dump->idx, &idx,
--							devlink, devlink_sb,
--							NETLINK_CB(cb->skb).portid,
--							cb->nlh->nlmsg_seq);
--			if (err == -EOPNOTSUPP) {
--				err = 0;
--			} else if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
-+		err = __sb_port_pool_get_dumpit(msg, dump->idx, &idx,
-+						devlink, devlink_sb,
-+						NETLINK_CB(cb->skb).portid,
-+						cb->nlh->nlmsg_seq);
-+		if (err == -EOPNOTSUPP) {
-+			err = 0;
-+		} else if (err) {
-+			dump->idx = idx;
-+			break;
- 		}
--		devl_unlock(devlink);
--retry:
--		devlink_put(devlink);
- 	}
--out:
--	if (err != -EMSGSIZE)
--		return err;
- 
--	return msg->len;
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_sb_port_pool = {
-+	.dump_one		= devlink_nl_cmd_sb_port_pool_get_dumpinst,
-+};
-+
- static int devlink_sb_port_pool_set(struct devlink_port *devlink_port,
- 				    unsigned int sb_index, u16 pool_index,
- 				    u32 threshold,
-@@ -2993,46 +2962,38 @@ static int __sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- }
- 
- static int
--devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
--					  struct netlink_callback *cb)
-+devlink_nl_cmd_sb_tc_pool_bind_get_dumpinst(struct sk_buff *msg,
-+					    struct devlink *devlink,
-+					    struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
-+	struct devlink_sb *devlink_sb;
-+	int idx = 0;
- 	int err = 0;
- 
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_sb *devlink_sb;
--		int idx = 0;
--
--		if (!devlink->ops->sb_tc_pool_bind_get)
--			goto retry;
-+	if (!devlink->ops->sb_tc_pool_bind_get)
-+		return 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
--			err = __sb_tc_pool_bind_get_dumpit(msg, dump->idx, &idx,
--							   devlink, devlink_sb,
--							   NETLINK_CB(cb->skb).portid,
--							   cb->nlh->nlmsg_seq);
--			if (err == -EOPNOTSUPP) {
--				err = 0;
--			} else if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
-+		err = __sb_tc_pool_bind_get_dumpit(msg, dump->idx, &idx,
-+						   devlink, devlink_sb,
-+						   NETLINK_CB(cb->skb).portid,
-+						   cb->nlh->nlmsg_seq);
-+		if (err == -EOPNOTSUPP) {
-+			err = 0;
-+		} else if (err) {
-+			dump->idx = idx;
-+			break;
- 		}
--		devl_unlock(devlink);
--retry:
--		devlink_put(devlink);
- 	}
--out:
--	if (err != -EMSGSIZE)
--		return err;
- 
--	return msg->len;
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_sb_tc_pool_bind = {
-+	.dump_one		= devlink_nl_cmd_sb_tc_pool_bind_get_dumpinst,
-+};
-+
- static int devlink_sb_tc_pool_bind_set(struct devlink_port *devlink_port,
- 				       unsigned int sb_index, u16 tc_index,
- 				       enum devlink_sb_pool_type pool_type,
-@@ -4851,39 +4812,24 @@ static int devlink_nl_cmd_selftests_get_doit(struct sk_buff *skb,
- 	return genlmsg_reply(msg, info);
- }
- 
--static int devlink_nl_cmd_selftests_get_dumpit(struct sk_buff *msg,
--					       struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_selftests_get_dumpinst(struct sk_buff *msg,
-+				      struct devlink *devlink,
-+				      struct netlink_callback *cb)
- {
--	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err = 0;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		if (!devlink->ops->selftest_check) {
--			devlink_put(devlink);
--			continue;
--		}
--
--		devl_lock(devlink);
--		err = devlink_nl_selftests_fill(msg, devlink,
--						NETLINK_CB(cb->skb).portid,
--						cb->nlh->nlmsg_seq, NLM_F_MULTI,
--						cb->extack);
--		devl_unlock(devlink);
--		if (err) {
--			devlink_put(devlink);
--			break;
--		}
--
--		devlink_put(devlink);
--	}
--
--	if (err != -EMSGSIZE)
--		return err;
-+	if (!devlink->ops->selftest_check)
-+		return 0;
- 
--	return msg->len;
-+	return devlink_nl_selftests_fill(msg, devlink,
-+					 NETLINK_CB(cb->skb).portid,
-+					 cb->nlh->nlmsg_seq, NLM_F_MULTI,
-+					 cb->extack);
- }
- 
-+const struct devlink_gen_cmd devl_gen_selftests = {
-+	.dump_one		= devlink_nl_cmd_selftests_get_dumpinst,
-+};
-+
- static int devlink_selftest_result_put(struct sk_buff *skb, unsigned int id,
- 				       enum devlink_selftest_status test_status)
- {
-@@ -5329,48 +5275,41 @@ static void devlink_param_notify(struct devlink *devlink,
- 				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
- }
- 
--static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
--					   struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_param_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+				  struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
-+	struct devlink_param_item *param_item;
-+	int idx = 0;
- 	int err = 0;
- 
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_param_item *param_item;
--		int idx = 0;
--
--		devl_lock(devlink);
--		list_for_each_entry(param_item, &devlink->param_list, list) {
--			if (idx < dump->idx) {
--				idx++;
--				continue;
--			}
--			err = devlink_nl_param_fill(msg, devlink, 0, param_item,
--						    DEVLINK_CMD_PARAM_GET,
--						    NETLINK_CB(cb->skb).portid,
--						    cb->nlh->nlmsg_seq,
--						    NLM_F_MULTI);
--			if (err == -EOPNOTSUPP) {
--				err = 0;
--			} else if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(param_item, &devlink->param_list, list) {
-+		if (idx < dump->idx) {
- 			idx++;
-+			continue;
- 		}
--		devl_unlock(devlink);
--		devlink_put(devlink);
-+		err = devlink_nl_param_fill(msg, devlink, 0, param_item,
-+					    DEVLINK_CMD_PARAM_GET,
-+					    NETLINK_CB(cb->skb).portid,
-+					    cb->nlh->nlmsg_seq,
-+					    NLM_F_MULTI);
-+		if (err == -EOPNOTSUPP) {
-+			err = 0;
-+		} else if (err) {
-+			dump->idx = idx;
-+			break;
-+		}
-+		idx++;
- 	}
--out:
--	if (err != -EMSGSIZE)
--		return err;
- 
--	return msg->len;
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_param = {
-+	.dump_one		= devlink_nl_cmd_param_get_dumpinst,
-+};
-+
- static int
- devlink_param_type_get_from_info(struct genl_info *info,
- 				 enum devlink_param_type *param_type)
-@@ -6034,20 +5973,20 @@ static int devlink_nl_cmd_region_get_port_dumpit(struct sk_buff *msg,
- 	return err;
- }
- 
--static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
--						    struct netlink_callback *cb,
--						    struct devlink *devlink,
--						    int *idx,
--						    int start)
-+static int
-+devlink_nl_cmd_region_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+				   struct netlink_callback *cb)
- {
-+	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
- 	struct devlink_region *region;
- 	struct devlink_port *port;
- 	unsigned long port_index;
-+	int idx = 0;
- 	int err;
- 
- 	list_for_each_entry(region, &devlink->region_list, list) {
--		if (*idx < start) {
--			(*idx)++;
-+		if (idx < dump->idx) {
-+			idx++;
- 			continue;
- 		}
- 		err = devlink_nl_region_fill(msg, devlink,
-@@ -6055,44 +5994,28 @@ static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
- 					     NETLINK_CB(cb->skb).portid,
- 					     cb->nlh->nlmsg_seq,
- 					     NLM_F_MULTI, region);
--		if (err)
-+		if (err) {
-+			dump->idx = idx;
- 			return err;
--		(*idx)++;
-+		}
-+		idx++;
- 	}
- 
- 	xa_for_each(&devlink->ports, port_index, port) {
--		err = devlink_nl_cmd_region_get_port_dumpit(msg, cb, port, idx,
--							    start);
--		if (err)
-+		err = devlink_nl_cmd_region_get_port_dumpit(msg, cb, port, &idx,
-+							    dump->idx);
-+		if (err) {
-+			dump->idx = idx;
- 			return err;
-+		}
- 	}
- 
- 	return 0;
- }
- 
--static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
--					    struct netlink_callback *cb)
--{
--	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err = 0;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		int idx = 0;
--
--		devl_lock(devlink);
--		err = devlink_nl_cmd_region_get_devlink_dumpit(msg, cb, devlink,
--							       &idx, dump->idx);
--		devl_unlock(devlink);
--		devlink_put(devlink);
--		if (err) {
--			dump->idx = idx;
--			goto out;
--		}
--	}
--out:
--	return msg->len;
--}
-+const struct devlink_gen_cmd devl_gen_region = {
-+	.dump_one		= devlink_nl_cmd_region_get_dumpinst,
-+};
- 
- static int devlink_nl_cmd_region_del(struct sk_buff *skb,
- 				     struct genl_info *info)
-@@ -6724,35 +6647,25 @@ static int devlink_nl_cmd_info_get_doit(struct sk_buff *skb,
- 	return genlmsg_reply(msg, info);
- }
- 
--static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
--					  struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_info_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+				 struct netlink_callback *cb)
- {
--	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err = 0;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		devl_lock(devlink);
--		err = devlink_nl_info_fill(msg, devlink, DEVLINK_CMD_INFO_GET,
--					   NETLINK_CB(cb->skb).portid,
--					   cb->nlh->nlmsg_seq, NLM_F_MULTI,
--					   cb->extack);
--		devl_unlock(devlink);
--		if (err == -EOPNOTSUPP)
--			err = 0;
--		else if (err) {
--			devlink_put(devlink);
--			break;
--		}
--		devlink_put(devlink);
--	}
--
--	if (err != -EMSGSIZE)
--		return err;
-+	int err;
- 
--	return msg->len;
-+	err = devlink_nl_info_fill(msg, devlink, DEVLINK_CMD_INFO_GET,
-+				   NETLINK_CB(cb->skb).portid,
-+				   cb->nlh->nlmsg_seq, NLM_F_MULTI,
-+				   cb->extack);
-+	if (err == -EOPNOTSUPP)
-+		err = 0;
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_info = {
-+	.dump_one		= devlink_nl_cmd_info_get_dumpinst,
-+};
-+
- struct devlink_fmsg_item {
- 	struct list_head list;
- 	int attrtype;
-@@ -8466,43 +8379,39 @@ static int devlink_nl_cmd_trap_get_doit(struct sk_buff *skb,
- 	return err;
- }
- 
--static int devlink_nl_cmd_trap_get_dumpit(struct sk_buff *msg,
--					  struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_trap_get_dumpinst(struct sk_buff *msg, struct devlink *devlink,
-+				 struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	struct devlink *devlink;
--	int err;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_trap_item *trap_item;
--		int idx = 0;
-+	struct devlink_trap_item *trap_item;
-+	int idx = 0;
-+	int err = 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(trap_item, &devlink->trap_list, list) {
--			if (idx < dump->idx) {
--				idx++;
--				continue;
--			}
--			err = devlink_nl_trap_fill(msg, devlink, trap_item,
--						   DEVLINK_CMD_TRAP_NEW,
--						   NETLINK_CB(cb->skb).portid,
--						   cb->nlh->nlmsg_seq,
--						   NLM_F_MULTI);
--			if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(trap_item, &devlink->trap_list, list) {
-+		if (idx < dump->idx) {
- 			idx++;
-+			continue;
- 		}
--		devl_unlock(devlink);
--		devlink_put(devlink);
-+		err = devlink_nl_trap_fill(msg, devlink, trap_item,
-+					   DEVLINK_CMD_TRAP_NEW,
-+					   NETLINK_CB(cb->skb).portid,
-+					   cb->nlh->nlmsg_seq,
-+					   NLM_F_MULTI);
-+		if (err) {
-+			dump->idx = idx;
-+			break;
-+		}
-+		idx++;
- 	}
--out:
--	return msg->len;
-+
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_trap = {
-+	.dump_one		= devlink_nl_cmd_trap_get_dumpinst,
-+};
-+
- static int __devlink_trap_action_set(struct devlink *devlink,
- 				     struct devlink_trap_item *trap_item,
- 				     enum devlink_trap_action trap_action,
-@@ -8681,46 +8590,41 @@ static int devlink_nl_cmd_trap_group_get_doit(struct sk_buff *skb,
- 	return err;
- }
- 
--static int devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
--						struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_trap_group_get_dumpinst(struct sk_buff *msg,
-+				       struct devlink *devlink,
-+				       struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	enum devlink_command cmd = DEVLINK_CMD_TRAP_GROUP_NEW;
--	u32 portid = NETLINK_CB(cb->skb).portid;
--	struct devlink *devlink;
--	int err;
-+	struct devlink_trap_group_item *group_item;
-+	int idx = 0;
-+	int err = 0;
- 
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_trap_group_item *group_item;
--		int idx = 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(group_item, &devlink->trap_group_list,
--				    list) {
--			if (idx < dump->idx) {
--				idx++;
--				continue;
--			}
--			err = devlink_nl_trap_group_fill(msg, devlink,
--							 group_item, cmd,
--							 portid,
--							 cb->nlh->nlmsg_seq,
--							 NLM_F_MULTI);
--			if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(group_item, &devlink->trap_group_list, list) {
-+		if (idx < dump->idx) {
- 			idx++;
-+			continue;
- 		}
--		devl_unlock(devlink);
--		devlink_put(devlink);
-+		err = devlink_nl_trap_group_fill(msg, devlink, group_item,
-+						 DEVLINK_CMD_TRAP_GROUP_NEW,
-+						 NETLINK_CB(cb->skb).portid,
-+						 cb->nlh->nlmsg_seq,
-+						 NLM_F_MULTI);
-+		if (err) {
-+			dump->idx = idx;
-+			break;
-+		}
-+		idx++;
- 	}
--out:
--	return msg->len;
-+
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_trap_group = {
-+	.dump_one		= devlink_nl_cmd_trap_group_get_dumpinst,
-+};
-+
- static int
- __devlink_trap_group_action_set(struct devlink *devlink,
- 				struct devlink_trap_group_item *group_item,
-@@ -8985,46 +8889,40 @@ static int devlink_nl_cmd_trap_policer_get_doit(struct sk_buff *skb,
- 	return err;
- }
- 
--static int devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
--						  struct netlink_callback *cb)
-+static int
-+devlink_nl_cmd_trap_policer_get_dumpinst(struct sk_buff *msg,
-+					 struct devlink *devlink,
-+					 struct netlink_callback *cb)
- {
- 	struct devlink_nl_dump_state *dump = devl_dump_state(cb);
--	enum devlink_command cmd = DEVLINK_CMD_TRAP_POLICER_NEW;
--	u32 portid = NETLINK_CB(cb->skb).portid;
--	struct devlink *devlink;
--	int err;
--
--	devlink_dump_for_each_instance_get(msg, dump, devlink) {
--		struct devlink_trap_policer_item *policer_item;
--		int idx = 0;
-+	struct devlink_trap_policer_item *policer_item;
-+	int idx = 0;
-+	int err = 0;
- 
--		devl_lock(devlink);
--		list_for_each_entry(policer_item, &devlink->trap_policer_list,
--				    list) {
--			if (idx < dump->idx) {
--				idx++;
--				continue;
--			}
--			err = devlink_nl_trap_policer_fill(msg, devlink,
--							   policer_item, cmd,
--							   portid,
--							   cb->nlh->nlmsg_seq,
--							   NLM_F_MULTI);
--			if (err) {
--				devl_unlock(devlink);
--				devlink_put(devlink);
--				dump->idx = idx;
--				goto out;
--			}
-+	list_for_each_entry(policer_item, &devlink->trap_policer_list, list) {
-+		if (idx < dump->idx) {
- 			idx++;
-+			continue;
- 		}
--		devl_unlock(devlink);
--		devlink_put(devlink);
-+		err = devlink_nl_trap_policer_fill(msg, devlink, policer_item,
-+						   DEVLINK_CMD_TRAP_POLICER_NEW,
-+						   NETLINK_CB(cb->skb).portid,
-+						   cb->nlh->nlmsg_seq,
-+						   NLM_F_MULTI);
-+		if (err) {
-+			dump->idx = idx;
-+			break;
-+		}
-+		idx++;
- 	}
--out:
--	return msg->len;
-+
-+	return err;
- }
- 
-+const struct devlink_gen_cmd devl_gen_trap_policer = {
-+	.dump_one		= devlink_nl_cmd_trap_policer_get_dumpinst,
-+};
-+
- static int
- devlink_trap_policer_set(struct devlink *devlink,
- 			 struct devlink_trap_policer_item *policer_item,
-@@ -9102,14 +9000,14 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_get_doit,
--		.dumpit = devlink_nl_cmd_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_PORT_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_port_get_doit,
--		.dumpit = devlink_nl_cmd_port_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
- 		/* can be retrieved by unprivileged users */
- 	},
-@@ -9185,14 +9083,14 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_SB_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_sb_get_doit,
--		.dumpit = devlink_nl_cmd_sb_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_SB_POOL_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_sb_pool_get_doit,
--		.dumpit = devlink_nl_cmd_sb_pool_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-@@ -9205,7 +9103,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_SB_PORT_POOL_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_sb_port_pool_get_doit,
--		.dumpit = devlink_nl_cmd_sb_port_pool_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
- 		/* can be retrieved by unprivileged users */
- 	},
-@@ -9220,7 +9118,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_SB_TC_POOL_BIND_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_sb_tc_pool_bind_get_doit,
--		.dumpit = devlink_nl_cmd_sb_tc_pool_bind_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
- 		/* can be retrieved by unprivileged users */
- 	},
-@@ -9301,7 +9199,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_PARAM_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_param_get_doit,
--		.dumpit = devlink_nl_cmd_param_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-@@ -9329,7 +9227,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_REGION_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_region_get_doit,
--		.dumpit = devlink_nl_cmd_region_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		.flags = GENL_ADMIN_PERM,
- 	},
- 	{
-@@ -9355,7 +9253,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 		.cmd = DEVLINK_CMD_INFO_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_info_get_doit,
--		.dumpit = devlink_nl_cmd_info_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-@@ -9417,7 +9315,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 	{
- 		.cmd = DEVLINK_CMD_TRAP_GET,
- 		.doit = devlink_nl_cmd_trap_get_doit,
--		.dumpit = devlink_nl_cmd_trap_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-@@ -9428,7 +9326,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 	{
- 		.cmd = DEVLINK_CMD_TRAP_GROUP_GET,
- 		.doit = devlink_nl_cmd_trap_group_get_doit,
--		.dumpit = devlink_nl_cmd_trap_group_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-@@ -9439,7 +9337,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 	{
- 		.cmd = DEVLINK_CMD_TRAP_POLICER_GET,
- 		.doit = devlink_nl_cmd_trap_policer_get_doit,
--		.dumpit = devlink_nl_cmd_trap_policer_get_dumpit,
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-@@ -9450,7 +9348,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
- 	{
- 		.cmd = DEVLINK_CMD_SELFTESTS_GET,
- 		.doit = devlink_nl_cmd_selftests_get_doit,
--		.dumpit = devlink_nl_cmd_selftests_get_dumpit
-+		.dumpit = devlink_instance_iter_dump,
- 		/* can be retrieved by unprivileged users */
- 	},
- 	{
-diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
-index fcf10c288480..7eb39ccb2ae7 100644
---- a/net/devlink/netlink.c
-+++ b/net/devlink/netlink.c
-@@ -179,7 +179,20 @@ static void devlink_nl_post_doit(const struct genl_split_ops *ops,
- }
- 
- static const struct devlink_gen_cmd *devl_gen_cmds[] = {
-+	[DEVLINK_CMD_GET]		= &devl_gen_inst,
-+	[DEVLINK_CMD_PORT_GET]		= &devl_gen_port,
-+	[DEVLINK_CMD_SB_GET]		= &devl_gen_sb,
-+	[DEVLINK_CMD_SB_POOL_GET]	= &devl_gen_sb_pool,
-+	[DEVLINK_CMD_SB_PORT_POOL_GET]	= &devl_gen_sb_port_pool,
-+	[DEVLINK_CMD_SB_TC_POOL_BIND_GET] = &devl_gen_sb_tc_pool_bind,
-+	[DEVLINK_CMD_PARAM_GET]		= &devl_gen_param,
-+	[DEVLINK_CMD_REGION_GET]	= &devl_gen_region,
-+	[DEVLINK_CMD_INFO_GET]		= &devl_gen_info,
- 	[DEVLINK_CMD_RATE_GET]		= &devl_gen_rate_get,
-+	[DEVLINK_CMD_TRAP_GET]		= &devl_gen_trap,
-+	[DEVLINK_CMD_TRAP_GROUP_GET]	= &devl_gen_trap_group,
-+	[DEVLINK_CMD_TRAP_POLICER_GET]	= &devl_gen_trap_policer,
-+	[DEVLINK_CMD_SELFTESTS_GET]	= &devl_gen_selftests,
- };
- 
- int devlink_instance_iter_dump(struct sk_buff *msg, struct netlink_callback *cb)
--- 
-2.38.1
-
+> 
+> skbuff: skb_over_panic: text:ffffffff8768d6f1 len:25109 put:25109 head:ffff88802b5ac000 data:ffff88802b5ac02c tail:0x6241 end:0xc0 dev:<NULL>
+> ------------[ cut here ]------------
+> kernel BUG at net/core/skbuff.c:121!
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 0 PID: 5072 Comm: vhost-5071 Not tainted 6.2.0-rc1-next-20221226-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+> RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:121
+> Code: f7 4c 8b 4c 24 10 8b 4b 70 41 56 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 40 04 5b 8b ff 74 24 10 ff 74 24 20 e8 09 8e bf ff <0f> 0b e8 1a 67 82 f7 4c 8b 64 24 18 e8 80 3d d0 f7 48 c7 c1 40 12
+> RSP: 0018:ffffc90003cefca0 EFLAGS: 00010282
+> RAX: 000000000000008d RBX: ffff88802b674500 RCX: 0000000000000000
+> RDX: ffff8880236bba80 RSI: ffffffff81663b9c RDI: fffff5200079df86
+> RBP: ffffffff8b5b1280 R08: 000000000000008d R09: 0000000000000000
+> R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff8768d6f1
+> R13: 0000000000006215 R14: ffffffff8b5b0400 R15: 00000000000000c0
+> FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000020000380 CR3: 000000002985f000 CR4: 00000000003506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  skb_over_panic net/core/skbuff.c:126 [inline]
+>  skb_put.cold+0x24/0x24 net/core/skbuff.c:2218
+>  virtio_vsock_skb_rx_put include/linux/virtio_vsock.h:56 [inline]
+>  vhost_vsock_alloc_skb drivers/vhost/vsock.c:374 [inline]
+>  vhost_vsock_handle_tx_kick+0xad1/0xd00 drivers/vhost/vsock.c:509
+>  vhost_worker+0x241/0x3e0 drivers/vhost/vhost.c:364
+>  kthread+0x2e8/0x3a0 kernel/kthread.c:376
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+>  </TASK>
+> Modules linked in:
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:121
+> Code: f7 4c 8b 4c 24 10 8b 4b 70 41 56 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 40 04 5b 8b ff 74 24 10 ff 74 24 20 e8 09 8e bf ff <0f> 0b e8 1a 67 82 f7 4c 8b 64 24 18 e8 80 3d d0 f7 48 c7 c1 40 12
+> RSP: 0018:ffffc90003cefca0 EFLAGS: 00010282
+> RAX: 000000000000008d RBX: ffff88802b674500 RCX: 0000000000000000
+> RDX: ffff8880236bba80 RSI: ffffffff81663b9c RDI: fffff5200079df86
+> RBP: ffffffff8b5b1280 R08: 000000000000008d R09: 0000000000000000
+> R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff8768d6f1
+> R13: 0000000000006215 R14: ffffffff8b5b0400 R15: 00000000000000c0
+> FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fdc6f4a4298 CR3: 000000002985f000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
