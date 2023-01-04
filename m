@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D4965D257
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2954E65D25F
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:20:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239228AbjADMTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 07:19:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
+        id S239109AbjADMTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 07:19:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239147AbjADMSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:18:51 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D42812AAD;
-        Wed,  4 Jan 2023 04:18:50 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id m3so16510712wmq.0;
-        Wed, 04 Jan 2023 04:18:50 -0800 (PST)
+        with ESMTP id S239197AbjADMSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:18:53 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478C218E25;
+        Wed,  4 Jan 2023 04:18:52 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id g10so11615232wmo.1;
+        Wed, 04 Jan 2023 04:18:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qonjO6fwHai+1vqnkGhP0g8VfUs0/wqGy9OAw4kIqb4=;
-        b=RS07iq+61/f4WB2RJ/IP907ghaHVhjSJTN9NhLTv7M4ddgnJWsiiFTs3sUlkcM2nkh
-         IDXfDue2wcHv7F3QQccwekQ85uK9Fu0lqwTc3wrTf+5iblki73ecJHQy/ffMx5bI70CW
-         14vsAQ7YGKpdGrT6KF6fuzVDA3VyDYpalm65GwF/K2FcKlX9cqbcFS+kaBeYO51eFCLR
-         a4YsqqCmIOH7cltFWKs6n15WgN4R0XwY1kfqUzMqVPBF4GfpkSbTY6QPJ1F6hU0Zk7dH
-         Rwg7Tj0IYLTv2tc5Z1WqPK8W+cY2RatAuw6mrA/mmnWlKozAMY23WIeHyxeo3oLjcrDb
-         nQFw==
+        bh=K2Hhp8XXPwYUVFWAl9eTJ/uoEMdBr1GQD3ytaxh/CFg=;
+        b=MmrIVgPyCIFMnqdTfYSQwh3oGLVfxKXk8QtQLFpNb4Qp3NAh5w+9illMad46XyenHg
+         xFnbKgoGqNLmutg+2jl4/26cf+09KPTHfOi5VFCkmKI2cgHudkNgyitD4m0CA1AHv3sN
+         FWH5F8w0QjQjZ7iT12DvOljA/quhtFM20vBaeOed/bpMOHBhCfD+PKq61zOHowm616gU
+         bcKBnfVZmI+IQmRYkJaXh0eOBmjcELJw06O+6+11uDwTEtTeOdFuupaIvgDZLYtfA0xy
+         WgkitffiecEcv13gJrP1XXGeer6UvdfJ2B1EyDDadwMiW+sSzhd6UfJT5HrLMFChGmsj
+         avJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=qonjO6fwHai+1vqnkGhP0g8VfUs0/wqGy9OAw4kIqb4=;
-        b=2mhv4Y3n3PdDGUK/RK/yQ7PztZck1QtIx/Q5ZidxIul2SlabCmkTihVtH4NDGFG+LR
-         bcBqjx38QfReU6wFvblstt4oJk2JPxbrNL45fJKRzPiFhnGbnARaH/tDJP8cSi5xtQE/
-         PqwH3KtSmqXODihcWmegIXlnpkxcBdwoFpNXm4/zkJU2FrUyT/mx8IIYHXpJN1fLj9Ti
-         efhCsaO9pFFqSnlcct7uESQbI3wrRJPtmMd4z7AOfHPb2Vk1+hnQ8zz3TiObc5jPryzg
-         L7p2tSBFUhjqEvTrb8vt8lbicFwvOkKonew6sGrZxNSe2145HgtUasNwhdnMFCx1wRaP
-         2uxA==
-X-Gm-Message-State: AFqh2kqxumOCBU6RF252UF5hMXh8iYNLdFq+Cp1mJ1GP1KFxeEeB6m22
-        rxrOlFWGNPdf0ndFWpHYm7uD9fGQrlkNRqueJA8=
-X-Google-Smtp-Source: AMrXdXuCOqsws+Vin9Izo/qDzalbWW1yvPBVvc7+OZ+C8VEablE/CQFdGAl4GFvFs6NOduBFYIYYgQ==
-X-Received: by 2002:a05:600c:224b:b0:3cf:ae53:b1e0 with SMTP id a11-20020a05600c224b00b003cfae53b1e0mr34280782wmm.9.1672834728713;
-        Wed, 04 Jan 2023 04:18:48 -0800 (PST)
+        bh=K2Hhp8XXPwYUVFWAl9eTJ/uoEMdBr1GQD3ytaxh/CFg=;
+        b=3Fkgbfs7SNJPn3SXIJlVdGUPzfYYUCZd5VRl4EsRalAGPco8SIE+K1t0M2t/T/akWj
+         4d0tvouqNd6MZM+TZtqyOBKr7uVatAmgl45FpDm3lpCYEDNoy07YGuH4gKcI/QAPcnzI
+         jjsGJyEfwMLfb6ZCCPdTZ2SdTkup9WOnhgpNbLQFgGojO1yEuqhjycaIQUaGsWGaMEWQ
+         YOs+E7jjpQRIOQiibNxg0wVuALidhH0xQ1QU1M3FPWvExSpnctcGNwfTc6zW8+hYsY4c
+         YbCTk6zSEjCkNz2wsgO01DPnMpCE7B+elJo+rXe5F/7rljpmGvlZdCvEhvGV1fv7fal2
+         zhuQ==
+X-Gm-Message-State: AFqh2kpaTsRtyfenWV9S/SSyVUHl8tKWR8Hh8nOWXvfI9CDcH2+hQ7X5
+        FMUei0y49DzdSm3c7A67Az4=
+X-Google-Smtp-Source: AMrXdXudd9pyLO8ZEn7hD0T/DSP7drv7eStLHL3iZzCGl1lWcUDk3ZrEnsp4Li3oGjarsjfF1zHi3A==
+X-Received: by 2002:a05:600c:3b90:b0:3d1:f0f1:ceb4 with SMTP id n16-20020a05600c3b9000b003d1f0f1ceb4mr33904985wms.19.1672834730630;
+        Wed, 04 Jan 2023 04:18:50 -0800 (PST)
 Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
-        by smtp.gmail.com with ESMTPSA id w12-20020a05600c474c00b003d04e4ed873sm35013749wmo.22.2023.01.04.04.18.47
+        by smtp.gmail.com with ESMTPSA id w12-20020a05600c474c00b003d04e4ed873sm35013749wmo.22.2023.01.04.04.18.48
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Jan 2023 04:18:48 -0800 (PST)
+        Wed, 04 Jan 2023 04:18:50 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -57,9 +57,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
         haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com
 Cc:     jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next v2 06/15] selftests/xsk: add debug option for creating netdevs
-Date:   Wed,  4 Jan 2023 13:17:35 +0100
-Message-Id: <20230104121744.2820-7-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v2 07/15] selftests/xsk: replace asm acquire/release implementations
+Date:   Wed,  4 Jan 2023 13:17:36 +0100
+Message-Id: <20230104121744.2820-8-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230104121744.2820-1-magnus.karlsson@gmail.com>
 References: <20230104121744.2820-1-magnus.karlsson@gmail.com>
@@ -77,76 +77,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Add a new option to the test_xsk.sh script that only creates the two
-veth netdevs and the extra namespace, then exits without running any
-tests. The failed test can then be executed in the debugger without
-having to create the netdevs and namespace manually. For ease-of-use,
-the veth netdevs to use are printed so they can be copied into the
-debugger.
+Replace our own homegrown assembly store/release and load/acquire
+implementations with the HW agnositic atomic APIs C11 offers. This to
+make the code more portable, easier to read, and reduce the
+maintenance burden.
 
-Here is an example how to use it:
-
-> sudo ./test_xsk.sh -d
-
-veth10 veth11
-
-> gdb xskxceiver
-
-In gdb:
-
-run -i veth10 -i veth11
-
-And now the test cases can be debugged with gdb.
-
-If you want to debug the test suite on a real NIC in loopback mode,
-there is no need to use this feature as you already know the netdev of
-your NIC.
+The original code used load-acquire and store-release barriers
+hand-coded in assembly. Since C11, these kind of operations are
+offered as built-ins in gcc and llvm. The load-acquire operation
+prevents hoisting of non-atomic memory operations to before this
+operation and it corresponds to the __ATOMIC_ACQUIRE operation in the
+built-in atomics. The store-release operation prevents hoisting of
+non-atomic memory operations to after this operation and it
+corresponds to the __ATOMIC_RELEASE operation in the built-in atomics.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/test_xsk.sh | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/xsk.h | 80 ++-----------------------------
+ 1 file changed, 4 insertions(+), 76 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index d821fd098504..cb315d85148b 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -74,6 +74,9 @@
- # Run and dump packet contents:
- #   sudo ./test_xsk.sh -D
- #
-+# Set up veth interfaces and leave them up so xskxceiver can be launched in a debugger:
-+#   sudo ./test_xsk.sh -d
-+#
- # Run test suite for physical device in loopback mode
- #   sudo ./test_xsk.sh -i IFACE
+diff --git a/tools/testing/selftests/bpf/xsk.h b/tools/testing/selftests/bpf/xsk.h
+index 997723b0bfb2..24ee765aded3 100644
+--- a/tools/testing/selftests/bpf/xsk.h
++++ b/tools/testing/selftests/bpf/xsk.h
+@@ -23,77 +23,6 @@
+ extern "C" {
+ #endif
  
-@@ -81,11 +84,12 @@
+-/* This whole API has been deprecated and moved to libxdp that can be found at
+- * https://github.com/xdp-project/xdp-tools. The APIs are exactly the same so
+- * it should just be linking with libxdp instead of libbpf for this set of
+- * functionality. If not, please submit a bug report on the aforementioned page.
+- */
+-
+-/* Load-Acquire Store-Release barriers used by the XDP socket
+- * library. The following macros should *NOT* be considered part of
+- * the xsk.h API, and is subject to change anytime.
+- *
+- * LIBRARY INTERNAL
+- */
+-
+-#define __XSK_READ_ONCE(x) (*(volatile typeof(x) *)&x)
+-#define __XSK_WRITE_ONCE(x, v) (*(volatile typeof(x) *)&x) = (v)
+-
+-#if defined(__i386__) || defined(__x86_64__)
+-# define libbpf_smp_store_release(p, v)					\
+-	do {								\
+-		asm volatile("" : : : "memory");			\
+-		__XSK_WRITE_ONCE(*p, v);				\
+-	} while (0)
+-# define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+-		asm volatile("" : : : "memory");			\
+-		___p1;							\
+-	})
+-#elif defined(__aarch64__)
+-# define libbpf_smp_store_release(p, v)					\
+-		asm volatile ("stlr %w1, %0" : "=Q" (*p) : "r" (v) : "memory")
+-# define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1;					\
+-		asm volatile ("ldar %w0, %1"				\
+-			      : "=r" (___p1) : "Q" (*p) : "memory");	\
+-		___p1;							\
+-	})
+-#elif defined(__riscv)
+-# define libbpf_smp_store_release(p, v)					\
+-	do {								\
+-		asm volatile ("fence rw,w" : : : "memory");		\
+-		__XSK_WRITE_ONCE(*p, v);				\
+-	} while (0)
+-# define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+-		asm volatile ("fence r,rw" : : : "memory");		\
+-		___p1;							\
+-	})
+-#endif
+-
+-#ifndef libbpf_smp_store_release
+-#define libbpf_smp_store_release(p, v)					\
+-	do {								\
+-		__sync_synchronize();					\
+-		__XSK_WRITE_ONCE(*p, v);				\
+-	} while (0)
+-#endif
+-
+-#ifndef libbpf_smp_load_acquire
+-#define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+-		__sync_synchronize();					\
+-		___p1;							\
+-	})
+-#endif
+-
+-/* LIBRARY INTERNAL -- END */
+-
+ /* Do not access these members directly. Use the functions below. */
+ #define DEFINE_XSK_RING(name) \
+ struct name { \
+@@ -168,7 +97,7 @@ static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
+ 	 * this function. Without this optimization it whould have been
+ 	 * free_entries = r->cached_prod - r->cached_cons + r->size.
+ 	 */
+-	r->cached_cons = libbpf_smp_load_acquire(r->consumer);
++	r->cached_cons = __atomic_load_n(r->consumer, __ATOMIC_ACQUIRE);
+ 	r->cached_cons += r->size;
  
- ETH=""
+ 	return r->cached_cons - r->cached_prod;
+@@ -179,7 +108,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+ 	__u32 entries = r->cached_prod - r->cached_cons;
  
--while getopts "vDi:" flag
-+while getopts "vDi:d" flag
- do
- 	case "${flag}" in
- 		v) verbose=1;;
- 		D) dump_pkts=1;;
-+		d) debug=1;;
- 		i) ETH=${OPTARG};;
- 	esac
- done
-@@ -174,6 +178,11 @@ statusList=()
+ 	if (entries == 0) {
+-		r->cached_prod = libbpf_smp_load_acquire(r->producer);
++		r->cached_prod = __atomic_load_n(r->producer, __ATOMIC_ACQUIRE);
+ 		entries = r->cached_prod - r->cached_cons;
+ 	}
  
- TEST_NAME="XSK_SELFTESTS_${VETH0}_SOFTIRQ"
+@@ -202,7 +131,7 @@ static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, __u32 nb)
+ 	/* Make sure everything has been written to the ring before indicating
+ 	 * this to the kernel by writing the producer pointer.
+ 	 */
+-	libbpf_smp_store_release(prod->producer, *prod->producer + nb);
++	__atomic_store_n(prod->producer, *prod->producer + nb, __ATOMIC_RELEASE);
+ }
  
-+if [[ $debug -eq 1 ]]; then
-+    echo "-i" ${VETH0} "-i" ${VETH1},${NS1}
-+    exit
-+fi
-+
- exec_xskxceiver
+ static inline __u32 xsk_ring_cons__peek(struct xsk_ring_cons *cons, __u32 nb, __u32 *idx)
+@@ -227,8 +156,7 @@ static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, __u32 nb)
+ 	/* Make sure data has been read before indicating we are done
+ 	 * with the entries by updating the consumer pointer.
+ 	 */
+-	libbpf_smp_store_release(cons->consumer, *cons->consumer + nb);
+-
++	__atomic_store_n(cons->consumer, *cons->consumer + nb, __ATOMIC_RELEASE);
+ }
  
- if [ -z $ETH ]; then
+ static inline void *xsk_umem__get_data(void *umem_area, __u64 addr)
 -- 
 2.34.1
 
