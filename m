@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5489C65D790
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3699B65D794
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 16:52:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239804AbjADPwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 10:52:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
+        id S234955AbjADPwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 10:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239736AbjADPvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:51:53 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5476839F9B
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 07:51:52 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id m26-20020a05600c3b1a00b003d9811fcaafso20273788wms.5
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 07:51:52 -0800 (PST)
+        with ESMTP id S235235AbjADPwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 10:52:50 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F003C388
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 07:52:49 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id bs20so31332444wrb.3
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 07:52:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iOQvPN3AgcSsJra29UfwC3UQqSq5j/hI+8vzua/k4pc=;
-        b=gJ+bLXbuGEWq9AGSHSJkyBQLrT040HbLOCc7DlhnsXj3A+mKSPEohb9KazTGH2BSO3
-         qBQvd7qZgYWuhxzgsrLg+7grU4v+dYRnyULZdLlhS5SL3DVh0yMS4A/Bre0Eakc0abTs
-         ch1soH0SIuDbJbBZ+41MAMmJzbXh7v2eGPvbZNHDXgPCv53z30SXWL5uP5ITgnJH+JSr
-         mJtrwtPzGp0gDS47yoKn+Qbh5rN3twVhc+xIY9Q+ALOGkOG97erbwDXHPjiRQ90tNO0v
-         6m3MLEWoM2If0B91iQ3vhhzxhuJFAAHymu/RwW9EnfKqgmbuHjqvmgB7wkvzCZgDZ2jW
-         OvuQ==
+        bh=j7qQ8dWribkTapYzoAZFdp9yAFJiQW9f4naN0OZZGi4=;
+        b=ZKhwlpVOTo73pAo0wdMM0xLsmC1boVTq/oeIUPCP6SSoTvbibJ4tOq41/02g2wqToO
+         fXpXzxCVw6DU4tdND9VPUbLXNFHUjl7EDJLxy+CHyHYnUmaYoadxL+6IF69eHjWWKj8x
+         ascwKUZdWN1f4AWLVzSa7kh8coit2pGYOWmocGUw+tMF78b9H4+EL2PK3q8WfGDRhrS1
+         2P2UaS42fAFyXXamT/UJC6kT9x19Q41ASTXo78TM6FfopLMUr74NfZoUM4uL2TSMnPGj
+         KBWSV07VV9U3HabUycaKY9jNdGEmXMrRH+AoJzrM3Zz+JEymrRbOQGnA6wa2d0DWCoAY
+         clwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iOQvPN3AgcSsJra29UfwC3UQqSq5j/hI+8vzua/k4pc=;
-        b=eE2dmILx7u79F6k6ebakeLRi+eX9ijyp866LaWagH8IpqGPQd2tCLdL4EoQ7VRrXSc
-         827MJJdqZHJmZnaWAvn0loEeBaWAN2LwHqBmvMkB/B2Ap1ZIPATXjb1Jh6pDcDg9AUix
-         yPocY6QrmONSNgSLLWF4Urpm/CYAqYncUD7sBFcAOcA+Q4Mde3yQSLnuFrgbTiJxytso
-         n2U4BBUfCesLNEEFwTdAdgW5p6kyy1P3h60iroepssHnYZLOLbDd9bZR+wMKzanEUpfL
-         fo7Sfw9TMwVc+Jq0euh38VPq9a4n0fhkQES0ifXeJjkO6EZlVlVFbS8mHLvGJUHpgYpq
-         4SfA==
-X-Gm-Message-State: AFqh2kq9cN2+C8blp141ToLaV54pux00vpLYnQSgMB4y+vM5fJUw7Kk7
-        FY8Tsb62Rd742f3in4hwoaMYHw==
-X-Google-Smtp-Source: AMrXdXviWI8DCxn/mCO0Y9v9PQ/ILiJTo7WK1Xz+Mf8ESfH+crHBSa2aC1E2BU9ClnUpAMQ/flVqVQ==
-X-Received: by 2002:a05:600c:34d0:b0:3d6:b691:b80d with SMTP id d16-20020a05600c34d000b003d6b691b80dmr33771609wmq.21.1672847510805;
-        Wed, 04 Jan 2023 07:51:50 -0800 (PST)
+        bh=j7qQ8dWribkTapYzoAZFdp9yAFJiQW9f4naN0OZZGi4=;
+        b=mb92FKoDsAlDLey/cHlY0jxzJM7RAxzIiAwVkQYbPoOBBLLkpA8JumfQHPd0fPGX42
+         QoQmpscpOtYpofrMdxhHuKs1CWefOX00oJFvF47PU3pLeQ7Tak9mZyz5R1BMzJ4TyiOu
+         vAy8xDiSSSGSFw1vHgQysDKeWHPEAb44LibVpibfRsra10BskTuqDh7zd1+ZE9Gob3/h
+         /x+cN5ZLzjUlg7LRUqQXH04Z45zpoO2LPxJrb/P09Lk3mi/whYpHPpvuCdWXKl0IHkNu
+         B80kc7NX9HxUXVFjfIgN+D/sPbVfsMV/XzB+yV7RV/+Mp2R+cnzbyUNSBxJq0dRBVp7Y
+         AlGg==
+X-Gm-Message-State: AFqh2kqqiJxpnYbZQGmTxcotmYt+LO3Du6oS5nELvskwD2RKHNmnE/Fs
+        FROFIJPSJ/gQVoV44mj6KxgREBXS9KMX8tVeIsA=
+X-Google-Smtp-Source: AMrXdXvmGIlLgmxh5PwxGDyh4QWGgBo1FBvNJI1gjS2Tslh6/Udidl60JuO5sed67CJiI+fEdqAPkA==
+X-Received: by 2002:a5d:5887:0:b0:292:f57f:366f with SMTP id n7-20020a5d5887000000b00292f57f366fmr13866253wrf.18.1672847567707;
+        Wed, 04 Jan 2023 07:52:47 -0800 (PST)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id q16-20020a05600c46d000b003d1f3e9df3csm56537607wmo.7.2023.01.04.07.51.49
+        by smtp.gmail.com with ESMTPSA id bo19-20020a056000069300b00294176c2c01sm12484556wrb.86.2023.01.04.07.52.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 07:51:50 -0800 (PST)
-Date:   Wed, 4 Jan 2023 16:51:49 +0100
+        Wed, 04 Jan 2023 07:52:46 -0800 (PST)
+Date:   Wed, 4 Jan 2023 16:52:45 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
         pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 11/14] devlink: restart dump based on devlink
- instance ids (function)
-Message-ID: <Y7WglQeJi8p9pgr1@nanopsycho>
+Subject: Re: [PATCH net-next 12/14] devlink: uniformly take the devlink
+ instance lock in the dump loop
+Message-ID: <Y7WgzeJh54U9VGPu@nanopsycho>
 References: <20230104041636.226398-1-kuba@kernel.org>
- <20230104041636.226398-12-kuba@kernel.org>
+ <20230104041636.226398-13-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230104041636.226398-12-kuba@kernel.org>
+In-Reply-To: <20230104041636.226398-13-kuba@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -71,9 +71,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 04, 2023 at 05:16:33AM CET, kuba@kernel.org wrote:
->Use xarray id for cases of sub-objects which are iterated in
->a function.
+Wed, Jan 04, 2023 at 05:16:34AM CET, kuba@kernel.org wrote:
+>Move the lock taking out of devlink_nl_cmd_region_get_devlink_dumpit().
+>This way all dumps will take the instance lock in the main iteration
+>loop directly, making refactoring and reading the code easier.
 >
 >Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 >Signed-off-by: Jakub Kicinski <kuba@kernel.org>
