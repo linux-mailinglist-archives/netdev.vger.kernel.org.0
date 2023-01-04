@@ -2,78 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE3B65DAEC
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 18:05:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4D365DB1D
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 18:18:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239808AbjADRFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 12:05:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
+        id S239722AbjADRSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 12:18:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbjADRFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 12:05:07 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D434186E3;
-        Wed,  4 Jan 2023 09:05:06 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id y18-20020a0568301d9200b0067082cd4679so21117558oti.4;
-        Wed, 04 Jan 2023 09:05:06 -0800 (PST)
+        with ESMTP id S239761AbjADRSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 12:18:03 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D1E186E2;
+        Wed,  4 Jan 2023 09:18:01 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id z11so33672340ede.1;
+        Wed, 04 Jan 2023 09:18:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zfchq3z9RqrMHrMAPr0oOfboNargOdRcSf8XQTWDpFg=;
-        b=aqAoCHfZVbCfPwNUxAOSiiAUaDbAKlvAy+hptOI8dUL4ZJkNVfDTTujvDQ5ClVtVc2
-         PhAPMareQPJBuoLExdRAzYrWFZh4tR8c9YpSQnIOAnvL372EKcXMGZjJNW4csIoMK6d5
-         52PyQ2Dinxhh1LSaMnqfNHikPn1qOz6tuWyNnHat68Cc3ABW5iL1wJ7RXFgQI5XTsOF5
-         5QXfYyzLfnLoYcv/SgVyEQIVOWAeqsCYKFO5/Hy6WldWHkp599ivh8ZctxHRryl3tl8f
-         aJ3Gdox5KGwVYbw2CBCGtKE0sOkGdPbHpvMTBrKEgSR0vKyH8K+tOAhr4VO+4HO6XMW5
-         37kA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YqJCrFKJuvTL4FCowkMWwLaEVKycE71RXNEurs/DUyA=;
+        b=KIJK6N+wh4FeiFBZL/t/TvwZbDfvFv7pSngmv9F1VjlRV3UBRM8Exmd/CwQJzyBrMq
+         YDaOxTSwZdx9OL0CcQmCyOOidP7fM8Dquc/E+kCrxaRgJetYUWoLeqppsXPNpTBIYQ6o
+         T46x0JxVCf3gUB6T0AM35b78vu6sWAZzLKLTEHpQO07UfA1P8U3U4AnLFCj3lP8h7iI7
+         TKyq+nBSsPuUHNAG2Y8+hiy/UBLPO44KpKoXEuwb+gbbB7JdTyCJchKibYHcMqiYAm1B
+         RITpYmKuhD5YwAvkrN2N3Qb2eeUW38nkbtvr43MVexgF8Ze9jmNWcuebRs0KxkJGifE5
+         5Qng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Zfchq3z9RqrMHrMAPr0oOfboNargOdRcSf8XQTWDpFg=;
-        b=d1/3VJS3zKAmvAVrih/oDpZFM0Y5jsH1i9Gr+8KG9OLJkfnMIvtfNFoZ21Em/ytY1i
-         AYk1sMH8yEFB37eXC2irJ0llLPH0EnIzJOFbrC2dDHILrZuFivDuvAwOfYUfdz44j1/N
-         8rJ/a+8WHwgrjy5yThmZ930U47MAhJgYhoUzIQgR4KxYNu6eCBPmZu0Swi2MoWtAyEIp
-         w934Tl24fptIp4+zaojLYAfCWTVOn6ZCyHJzxLaw3Xq2xqKSTp3PXDgnKuwAB40bIbFr
-         LmJW/B5nXTJfhoW5GJ6ND0+KDHzKMR4+kiw2KorJvNpOE3j0f6EptdvwLHoWHbhZKKME
-         Jl3w==
-X-Gm-Message-State: AFqh2kp3cztQDelpepGmwcAixyhlZXz2SsvUBhfr+Ef/NV2p0Hy3rpjx
-        2UjBBJg+i2x/0dTJnAnHXpJVwKJjToo=
-X-Google-Smtp-Source: AMrXdXutUK/CGUtPMUYPBOpL8lgY0hDUYoKQ3k11Pv3IPl7yVFonRq+Ao9i+cRgPlXouTWnmtQlsoQ==
-X-Received: by 2002:a9d:12e4:0:b0:66e:b906:c1b9 with SMTP id g91-20020a9d12e4000000b0066eb906c1b9mr28527675otg.8.1672851905073;
-        Wed, 04 Jan 2023 09:05:05 -0800 (PST)
-Received: from neuromancer. (76-244-6-13.lightspeed.rcsntx.sbcglobal.net. [76.244.6.13])
-        by smtp.gmail.com with ESMTPSA id k25-20020a056830151900b0066e873e4c2csm16693927otp.45.2023.01.04.09.05.04
+        bh=YqJCrFKJuvTL4FCowkMWwLaEVKycE71RXNEurs/DUyA=;
+        b=u855aYLW+aseJ8i/xi2Dijyt4lYSqygkT2nJCW/6kU2YlxPuLM3XuNOTFyE4RRNFHo
+         sko5AEmHrOXB8sNQRPrMapim/Fav1oItwXfXntW4tioqvbh8fd8w2WBpRQRqbbWSgyTa
+         +8DObAxdMJWGHqgiwTLAzbuAxGGPj5zEPLP86eg/T+2gMGVtxB/L3R5vgA44syACLv9N
+         a0BIpOmU9rVwXv7i6Ai1nqBI0kgMxSP8Q7JsghXUkhQaKEDla7vJ9m26i99EzNgNpvcI
+         1apWfzLhxjvwSqJdoChyxrWu2ILtcT8ZGscRPmfCqjqiODO2r9D9Xe+Hlk19qyjmURQK
+         QmUw==
+X-Gm-Message-State: AFqh2kpAtmPtCTpn1lx77lkTd/zGuFpTfig+rL1L+1JwHVI1CKBP1AJR
+        RoEJGHW8B16WcwPYpjW12dg=
+X-Google-Smtp-Source: AMrXdXv0M6Jnr6NKagOqeH5m/coY6G3M6PBcYS/au7F9jvY0xIjLaBJWYCmfN6nm2c3vYKsbMXULHA==
+X-Received: by 2002:a05:6402:380b:b0:480:f01b:a385 with SMTP id es11-20020a056402380b00b00480f01ba385mr41762257edb.4.1672852679531;
+        Wed, 04 Jan 2023 09:17:59 -0800 (PST)
+Received: from skbuf ([188.26.184.223])
+        by smtp.gmail.com with ESMTPSA id i6-20020a056402054600b0045ce419ecffsm15056246edx.58.2023.01.04.09.17.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 09:05:04 -0800 (PST)
-Message-ID: <63b5b1c0.050a0220.a0efc.de06@mx.google.com>
-X-Google-Original-Message-ID: <Y7WxvXO+xAAzmsFX@neuromancer.>
-Date:   Wed, 4 Jan 2023 11:05:01 -0600
-From:   Chris Morgan <macroalpha82@gmail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: Re: [RFC PATCH v1 19/19] rtw88: Add support for the SDIO based
- RTL8821CS chipset
-References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
- <20221227233020.284266-20-martin.blumenstingl@googlemail.com>
- <63b4b3e1.050a0220.791fb.767c@mx.google.com>
- <CAFBinCDpMjHPZ4CA-YdyAu=k1F_7DxxYEMSjnBEX2aMWfSCCeA@mail.gmail.com>
+        Wed, 04 Jan 2023 09:17:59 -0800 (PST)
+Date:   Wed, 4 Jan 2023 19:17:57 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Hans J. Schultz" <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 1/3] net: dsa: mv88e6xxx: change default
+ return of mv88e6xxx_port_bridge_flags
+Message-ID: <20230104171757.2k4hwdpxqe5x5pi4@skbuf>
+References: <20230104130603.1624945-1-netdev@kapio-technology.com>
+ <20230104130603.1624945-2-netdev@kapio-technology.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFBinCDpMjHPZ4CA-YdyAu=k1F_7DxxYEMSjnBEX2aMWfSCCeA@mail.gmail.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20230104130603.1624945-2-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,48 +76,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 04:40:51PM +0100, Martin Blumenstingl wrote:
-> Hi Chris,
+On Wed, Jan 04, 2023 at 02:06:01PM +0100, Hans J. Schultz wrote:
+> The default return value -EOPNOTSUPP of mv88e6xxx_port_bridge_flags()
+> came from the return value of the DSA method port_egress_floods() in
+> commit 4f85901f0063 ("net: dsa: mv88e6xxx: add support for bridge flags"),
+> but the DSA API was changed in commit a8b659e7ff75 ("net: dsa: act as
+> passthrough for bridge port flags"), resulting in the return value
+> -EOPNOTSUPP not being valid anymore, and sections for new flags will not
+> need to set the return value to zero on success, as with the new mab flag
+> added in a following patch.
 > 
-> On Wed, Jan 4, 2023 at 12:01 AM Chris Morgan <macroalpha82@gmail.com> wrote:
-> >
-> > On Wed, Dec 28, 2022 at 12:30:20AM +0100, Martin Blumenstingl wrote:
-> > > Wire up RTL8821CS chipset support using the new rtw88 SDIO HCI code as
-> > > well as the existing RTL8821C chipset code.
-> > >
-> >
-> > Unfortunately, this doesn't work for me. I applied it on top of 6.2-rc2
-> > master and I get errors during probe (it appears the firmware never
-> > loads).
-> That's unfortunate.
-> 
-> > Relevant dmesg logs are as follows:
-> >
-> > [    0.989545] mmc2: new high speed SDIO card at address 0001
-> > [    0.989993] rtw_8821cs mmc2:0001:1: Firmware version 24.8.0, H2C version 12
-> > [    1.005684] rtw_8821cs mmc2:0001:1: sdio write32 failed (0x14): -110
-> > [    1.005737] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x1080): -110
-> > [    1.005789] rtw_8821cs mmc2:0001:1: sdio write32 failed (0x11080): -110
-> > [    1.005840] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x3): -110
-> > [    1.005920] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x1103): -110
-> > [    1.005998] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x80): -110
-> > [    1.006078] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x1700): -110
-> The error starts with a write to register 0x14 (REG_SDIO_HIMR), which
-> happens right after configuring RX aggregation.
-> Can you please try two modifications inside
-> drivers/net/wireless/realtek/rtw88/sdio.c:
-> 1. inside the rtw_sdio_start() function: change
-> "rtw_sdio_rx_aggregation(rtwdev, false);" to
-> "rtw_sdio_rx_aggregation(rtwdev, true);"
+> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+> ---
 
-No change, still receive identical issue.
-
-> 2. if 1) does not work: remove the call to rtw_sdio_rx_aggregation()
-> from rtw_sdio_start()
-> 
-
-Same here, still receive identical issue.
-
-> 
-> Best regards,
-> Martin
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
