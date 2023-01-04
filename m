@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33B6E65CC03
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 03:50:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E1AD65CC04
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 03:52:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234265AbjADCur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Jan 2023 21:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
+        id S234122AbjADCwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Jan 2023 21:52:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbjADCur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 21:50:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940CD165A9
-        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 18:50:46 -0800 (PST)
+        with ESMTP id S230352AbjADCwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Jan 2023 21:52:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A091740B
+        for <netdev@vger.kernel.org>; Tue,  3 Jan 2023 18:52:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1ACC6B811D6
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 02:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3381C433D2;
-        Wed,  4 Jan 2023 02:50:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EEE8B614C9
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 02:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20BAFC433EF;
+        Wed,  4 Jan 2023 02:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672800643;
-        bh=lYfK4VLlonwl4OBlK647SSiMTxKScQiHiaIpOBer6Ts=;
+        s=k20201202; t=1672800737;
+        bh=dLtbJvXABcOGHtIevOR2RbVentyTdadp3QYfAqcy0/4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kmRKY3rXPAKrX2CBSj2r1AJXEErKL7ehgxQD4S4K/SqIb8GsoczraEhEf97HG0nne
-         Dz8x9Ar8eG7VxFU3qZLCeCNQnIpCdIdofNtfoDt+LDIF1DtOohgH56g78aOCMSUkqc
-         0BfBFwscTT5L9PlfL00OlfUXrnp1U7HIRrvxKeUfEWx81ZZIZs4BRkGjRuMYNg/BIr
-         aCa2dRpthDZgSQySx6qDj36BXv4SQD9XLMBGOZaS59NVX6dFtxARzBd2mTqy6LkWli
-         Loh7XyVUCUPdk0JXTdjLHlqZdYT4tFc3GhUkyHRKytcw67Kannu/JLzOcT0K9nobKJ
-         0SGMURV9hT4PQ==
-Date:   Tue, 3 Jan 2023 18:50:42 -0800
+        b=Oy+7WCMynXUsDjlfhQDiLO+upsjj7xiGtHDqblVSeSUUkvdfb5LxRd8wPTrQ79ng8
+         h4BUtMsd+DL3oi8oyRJWClNoZNqUCQpnHFF+bmWs8x5zYrrxAP2HQK9ZK7FqmGwlcy
+         klR6MyX1SjeSlTeEam1gWRwhS3HUjGv8+HxEK2GdpgpgDGWUSteHdXwX8JTnmyV60U
+         1Rsc4VQE8JpYiti2yY5/W/euieO2WLR795byiRyt6KIFtq3+7OefoYw6oO63UmjhZ4
+         p2TI+gQ4LRZG0lZhUbV0P4ZBHyyrTdvl9foAQv/aMeYVN3TzzLUj++OmMtd+l/tP1+
+         Dw4ObA8doVyxA==
+Date:   Tue, 3 Jan 2023 18:52:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     jacob.e.keller@intel.com, leon@kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC net-next 04/10] devlink: always check if the devlink
- instance is registered
-Message-ID: <20230103185042.7931b8da@kernel.org>
-In-Reply-To: <Y7Qe9qHUVuqr2Wgd@nanopsycho>
+Subject: Re: [RFC net-next 10/10] netdevsim: register devlink instance
+ before sub-objects
+Message-ID: <20230103185216.378279d7@kernel.org>
+In-Reply-To: <Y7P6kieBDjB/K/30@nanopsycho>
 References: <20221217011953.152487-1-kuba@kernel.org>
-        <20221217011953.152487-5-kuba@kernel.org>
-        <Y7Qe9qHUVuqr2Wgd@nanopsycho>
+        <20221217011953.152487-11-kuba@kernel.org>
+        <Y7Ldciiq9wX+xUqM@nanopsycho>
+        <20230102152546.1797b0e9@kernel.org>
+        <Y7P6kieBDjB/K/30@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,13 +56,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Jan 2023 13:26:30 +0100 Jiri Pirko wrote:
-> >+bool devl_is_alive(struct devlink *devlink)
-> >+{
-> >+	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
-> >+}
-> >+EXPORT_SYMBOL_GPL(devl_is_alive);  
+On Tue, 3 Jan 2023 10:51:14 +0100 Jiri Pirko wrote:
+> >> I wonder, why don't you squash patch 8 to this one and make 1 move, to
+> >> the fina destination?  
+> >
+> >I found the squashed version a lot harder to review.  
 > 
-> Why is this exported? Drivers should not use this, as you said.
+> I'm puzzled. Both patches move calls to devl_register/unregister().
+> The first one moves it, the second one moves it a bit more. What's
+> making the squashed patch hard to review?
 
-I'll make it a static inline in the internal header.
+Ah, I thought you meant patch 7, sorry.
+This one matters less, I'll squash.
