@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4388265D240
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:18:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 532D065D242
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233067AbjADMSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 07:18:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
+        id S234984AbjADMSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 07:18:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbjADMS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:18:29 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA0111805
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:18:26 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id b145so18605536pfb.2
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 04:18:26 -0800 (PST)
+        with ESMTP id S239146AbjADMSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:18:43 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE1434773;
+        Wed,  4 Jan 2023 04:18:39 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id g10so11614900wmo.1;
+        Wed, 04 Jan 2023 04:18:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=CfjGbj2lhgNb15cBHMqIlY+4XQ8hcmxd6tQTjrz+Asg=;
-        b=jB66rVeWuYbTaFuQsw5CGk64zF0jb58okMQxYCcxYd9P+S2yLWbxybislnesORXHDH
-         P+XAJvCXzzutu4DRCvReuYeZq4cnTI7fk/iHzSc/pNHrtNWc+BNrQKuAuNAaa42bxcYc
-         s3dT5oSKGoSjLfZagYuoTEgumtcGcT8yHrT8hb/FcyHwfT/GLr0HLRUZn8OrQYYAinO3
-         h+MuyOIUAa237uilAGwBpWFpWXbf6U4JiX+IgK6i8efAJv++caT3525Rj+5cmHfPJNYC
-         7hcEInIrq22sUdXbx1ki19abaxCGQO/KMPdaAFE0GjvPrtUYP7Nnyndnbh6P++bTDHdk
-         W1QQ==
+        bh=2YgCNa798Y3VIjbywLXHXW9LQqnWg0J7rGSAleAUdGg=;
+        b=XDNrh+IA2Ln7BXFQ+jh8N4Yn5KnMqAgxQjUgs3qIj6S+aliRZknmtEv5DKiJsAZ2J5
+         y+rkvhK4i8gNBhiXa7ZCRlgb/h3v0Qkq972QY1FVOZrLglqC5KWuZuyTR2TMOFugLywT
+         xOB/+/+9i3m4UoFeGeQ/ROT3L8Vu3uOaTodzwQNOTI10ZK4pYn7hjqUc7bUCaE58g7Fw
+         cFf/oh56jYh7SS8RAONCDXJ/r/ASsKjddDsTWaMlO7jGo9bISzcbZCQluFNahhJfGBkI
+         qFFGZdtRMLSQxwTIlPmLcVF+COgcgpOVSyJuMq/XoP7dtswKsvt9GnC3xXOfDSIsufHD
+         lYMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=CfjGbj2lhgNb15cBHMqIlY+4XQ8hcmxd6tQTjrz+Asg=;
-        b=FVb+R5UgaWfQECO5ep3NqR5xQRUFKc1SA7KyrVaHJi3XSJRgUQ5lHBj9WcgUSvm3OP
-         2mALyRFyDGPU4CR2PHBE2sqlOHobJokET+E0U3sDx4YszgPdjmW2V2Y+2F6V4peDG3L9
-         dHeyVs1XDKgTDsWcGtPg96x3lapItslBIw29C2sRIEoxq7e54mqsFM6POQHzggJlvyZF
-         P31dnYSwJ77Wq/RsjoQRCpzj7pD4yzOloCG4PW9zuNxy2a9d/wk6W86yuSGbJncb/acg
-         kFP/EVFE8uCyeeP6ehrXQcx1/gJ9BPrznWxySNJm79UEH5JeT93S3mLYARC0rJS38wDv
-         lXog==
-X-Gm-Message-State: AFqh2kp41wG+NSWEiDZSGRtFWaAdsobSobXekFgwSXNXA4JFKhJKBvAT
-        9kB1e4dMXG3Ttf5KYly3Pdvm/g==
-X-Google-Smtp-Source: AMrXdXshs8BAcFi+lFpQ/Fy/MCLYOSnZanE+X8vWl3gghlM5TaEsHFtxa5yJZksKGlcShbjNJWT/Cw==
-X-Received: by 2002:a62:e911:0:b0:581:579d:5c44 with SMTP id j17-20020a62e911000000b00581579d5c44mr29162595pfh.5.1672834705427;
-        Wed, 04 Jan 2023 04:18:25 -0800 (PST)
-Received: from localhost.localdomain ([165.132.118.52])
-        by smtp.gmail.com with ESMTPSA id z28-20020aa79e5c000000b0058215708d57sm9327461pfq.141.2023.01.04.04.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 04:18:25 -0800 (PST)
-From:   Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-To:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
-Cc:     aloisio.almeida@openbossa.org, sameo@linux.intel.com,
-        lauro.venancio@openbossa.org, linville@tuxdriver.com,
-        dokyungs@yonsei.ac.kr, jisoo.jang@yonsei.ac.kr,
-        Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Subject: [PATCH net] nfc: pn533: Wait for out_urb's completion in pn533_usb_send_frame()
-Date:   Wed,  4 Jan 2023 21:17:11 +0900
-Message-Id: <20230104121711.7809-1-linuxlovemin@yonsei.ac.kr>
-X-Mailer: git-send-email 2.25.1
+        bh=2YgCNa798Y3VIjbywLXHXW9LQqnWg0J7rGSAleAUdGg=;
+        b=vMAw6KBdGUrA/bib0zSPGJUY9IRgktdqBky0OqEKrNpvtpTe1jZlKmby1abIiU+XcV
+         snNdK31S/+7OCgV1Im2MZGERVREFiS2EQ5yPIqW6q69SdByJROdan3TI15wIghZWZ13a
+         7oxSplN8HNFgGXBEogZVa5t41wBZ+2HHmkpL9cwdvSa4bsssaoxaJfTbBdxHeRtUh8fZ
+         cWfN7dq7ZzLR6snwh+NR7LRE7E5UKyJ3pruC8Xgw/Gg3kBSYllKXIRUypABA+XILhBYf
+         6jwa+6Ii+jx/be+GbMoGx1LQRHAJ36nc+oMd4sVRg2/QIMjrlumxirU9EFFVZGbeApmt
+         MNBg==
+X-Gm-Message-State: AFqh2kqx7nUGmbaOKE4UqZKhodoLv+3/4cqGpKwU6OKsSJYIdYumhuSg
+        U9yp07LKiW0V968Z5w1rM28=
+X-Google-Smtp-Source: AMrXdXsTftAWH3w/1n/02NgZtSLe+zhaocSNx4aKzBrs9Jg9wWbI3Er0lysJLQlndBN1AIz8+XAm7Q==
+X-Received: by 2002:a05:600c:3b26:b0:3d7:fa4a:681b with SMTP id m38-20020a05600c3b2600b003d7fa4a681bmr35782813wms.0.1672834717866;
+        Wed, 04 Jan 2023 04:18:37 -0800 (PST)
+Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
+        by smtp.gmail.com with ESMTPSA id w12-20020a05600c474c00b003d04e4ed873sm35013749wmo.22.2023.01.04.04.18.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Jan 2023 04:18:37 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, bpf@vger.kernel.org, yhs@fb.com,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        jonathan.lemon@gmail.com
+Subject: [PATCH bpf-next v2 00/15] selftests/xsk: speed-ups, fixes, and new XDP programs
+Date:   Wed,  4 Jan 2023 13:17:29 +0100
+Message-Id: <20230104121744.2820-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,113 +74,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a use-after-free that occurs in hcd when in_urb sent from
-pn533_usb_send_frame() is completed earlier than out_urb. Its callback
-frees the skb data in pn533_send_async_complete() that is used as a
-transfer buffer of out_urb. Wait before sending in_urb until the
-callback of out_urb is called. To modify the callback of out_urb alone,
-separate the complete function of out_urb and ack_urb.
+This is a patch set of various performance improvements, fixes and the
+introduction of more than one XDP program to the xsk selftests
+framework so we can test more things in the future such as upcoming
+multi-buffer and metadata support for AF_XDP. The new programs just
+reuses the framework that all the other eBPF selftests use. The new
+feature is used to implement one new test that does XDP_DROP on every
+other packet. More tests using this will be added in future commits.
 
-Found by a modified version of syzkaller.
+Contents:
 
-BUG: KASAN: use-after-free in dummy_timer
-Call Trace:
- memcpy
- dummy_timer
- call_timer_fn
- run_timer_softirq
- __do_softirq
- irq_exit_rcu
- sysvec_apic_timer_interrupt
+* The run-time of the test suite is cut by 10x when executing the
+  tests on a real NIC, by only attaching the XDP program once per mode
+  tested, instead of once per test program.
 
-Fixes: c46ee38620a2 ("NFC: pn533: add NXP pn533 nfc device driver")
-Signed-off-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
----
- drivers/nfc/pn533/usb.c | 37 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 34 insertions(+), 3 deletions(-)
+* Over 700 lines of code have been removed. The xsk.c control file was
+  moved straight over from libbpf when the xsk support was deprecated
+  there. As it is now not used as library code that has to work with
+  all kinds of versions of Linux, a lot of code could be dropped or
+  simplified.
 
-diff --git a/drivers/nfc/pn533/usb.c b/drivers/nfc/pn533/usb.c
-index 6f71ac72012e..325818fbaf3b 100644
---- a/drivers/nfc/pn533/usb.c
-+++ b/drivers/nfc/pn533/usb.c
-@@ -48,6 +48,8 @@ struct pn533_usb_phy {
- 	struct usb_interface *interface;
- 
- 	struct urb *out_urb;
-+	struct completion *out_done;
-+
- 	struct urb *in_urb;
- 
- 	struct urb *ack_urb;
-@@ -157,6 +159,7 @@ static int pn533_usb_send_frame(struct pn533 *dev,
- 				struct sk_buff *out)
- {
- 	struct pn533_usb_phy *phy = dev->phy;
-+	struct completion out_done;
- 	int rc;
- 
- 	if (phy->priv == NULL)
-@@ -168,10 +171,15 @@ static int pn533_usb_send_frame(struct pn533 *dev,
- 	print_hex_dump_debug("PN533 TX: ", DUMP_PREFIX_NONE, 16, 1,
- 			     out->data, out->len, false);
- 
-+	phy->out_done = &out_done;
-+	init_completion(&out_done);
-+
- 	rc = usb_submit_urb(phy->out_urb, GFP_KERNEL);
- 	if (rc)
- 		return rc;
- 
-+	wait_for_completion(&out_done);
-+
- 	if (dev->protocol_type == PN533_PROTO_REQ_RESP) {
- 		/* request for response for sent packet directly */
- 		rc = pn533_submit_urb_for_response(phy, GFP_KERNEL);
-@@ -408,7 +416,30 @@ static int pn533_acr122_poweron_rdr(struct pn533_usb_phy *phy)
- 	return arg.rc;
- }
- 
--static void pn533_send_complete(struct urb *urb)
-+static void pn533_out_complete(struct urb *urb)
-+{
-+	struct pn533_usb_phy *phy = urb->context;
-+
-+	complete(phy->out_done);
-+
-+	switch (urb->status) {
-+	case 0:
-+		break; /* success */
-+	case -ECONNRESET:
-+	case -ENOENT:
-+		dev_dbg(&phy->udev->dev,
-+			"The urb has been stopped (status %d)\n",
-+			urb->status);
-+		break;
-+	case -ESHUTDOWN:
-+	default:
-+		nfc_err(&phy->udev->dev,
-+			"Urb failure (status %d)\n",
-+			urb->status);
-+	}
-+}
-+
-+static void pn533_ack_complete(struct urb *urb)
- {
- 	struct pn533_usb_phy *phy = urb->context;
- 
-@@ -496,10 +527,10 @@ static int pn533_usb_probe(struct usb_interface *interface,
- 
- 	usb_fill_bulk_urb(phy->out_urb, phy->udev,
- 			  usb_sndbulkpipe(phy->udev, out_endpoint),
--			  NULL, 0, pn533_send_complete, phy);
-+			  NULL, 0, pn533_out_complete, phy);
- 	usb_fill_bulk_urb(phy->ack_urb, phy->udev,
- 			  usb_sndbulkpipe(phy->udev, out_endpoint),
--			  NULL, 0, pn533_send_complete, phy);
-+			  NULL, 0, pn533_ack_complete, phy);
- 
- 	switch (id->driver_info) {
- 	case PN533_DEVICE_STD:
--- 
-2.25.1
+* Add a new command line option "-d" that can be used when a test
+  fails and you want to debug it with gdb or some other debugger. The
+  option creates the two veth netdevs and prints them to the screen
+  without deleting them afterwards. This way these veth netdevs can be
+  used when running xskxceiver in a debugger.
 
+* Implemented the possibility to load external XDP programs so we can
+  have more than the default one. This feature is used to implement a
+  test where every other packet is dropped. Good exercise for the
+  recycling mechanism of the xsk buffer pool used in zero-copy mode.
+
+* Various clean-ups and small fixes in patches 1 to 5. None of these
+  fixes has any impact on the correct execution of the tests when they
+  pass, though they can be irritating when a test fails. IMHO, they do
+  not need to go to bpf as they will not fix anything there. The first
+  version of patches 1, 2, and 4 where previously sent to bpf, but has
+  now been included here.
+
+v1 -> v2:
+* Fixed spelling error in commit message of patch #6 [Björn]
+* Added explanation on why it is safe to use C11 atomics in patch #7
+  [Daniel]
+* Put all XDP programs in the same file so that adding more XDP
+  programs to xskxceiver.c becomes more scalable in patches #11 and
+  #12 [Maciej]
+* Removed more dead code in patch #8 [Maciej]
+* Removed stale %s specifier in error print, patch #9 [Maciej]
+* Changed name of XDP_CONSUMES_SOME_PACKETS to XDP_DROP_HALF to
+  hopefully make it clearer [Maciej]
+* ifobj_rx and ifobj_tx name changes in patch #13 [Maciej]
+* Simplified XDP attachment code in patch #15 [Maciej]
+
+Patches:
+1-5:   Small fixes and clean-ups
+6:     New convenient debug option when using a debugger such as gdb
+7-8:   Removal of unnecessary code
+9:     Add the ability to load external XDP programs
+10-11: Removal of more unnecessary code
+12:    Implement a new test where every other packet is XDP_DROP:ed
+13:    Unify the thread dispatching code
+14-15: Simplify the way tests are written when using custom packet_streams
+       or custom XDP programs
+
+Thanks: Magnus
+
+Magnus Karlsson (15):
+  selftests/xsk: print correct payload for packet dump
+  selftests/xsk: do not close unused file descriptors
+  selftests/xsk: submit correct number of frames in populate_fill_ring
+  selftests/xsk: print correct error codes when exiting
+  selftests/xsk: remove unused variable outstanding_tx
+  selftests/xsk: add debug option for creating netdevs
+  selftests/xsk: replace asm acquire/release implementations
+  selftests/xsk: remove namespaces
+  selftests/xsk: load and attach XDP program only once per mode
+  selftests/xsk: remove unnecessary code in control path
+  selftests/xsk: get rid of built-in XDP program
+  selftests/xsk: add test when some packets are XDP_DROPed
+  selftests/xsk: merge dual and single thread dispatchers
+  selftests/xsk: automatically restore packet stream
+  selftests/xsk: automatically switch XDP programs
+
+ tools/testing/selftests/bpf/Makefile          |   2 +-
+ .../selftests/bpf/progs/xsk_xdp_progs.c       |  30 +
+ tools/testing/selftests/bpf/test_xsk.sh       |  42 +-
+ tools/testing/selftests/bpf/xsk.c             | 674 +-----------------
+ tools/testing/selftests/bpf/xsk.h             |  97 +--
+ tools/testing/selftests/bpf/xsk_prereqs.sh    |  12 +-
+ tools/testing/selftests/bpf/xskxceiver.c      | 382 +++++-----
+ tools/testing/selftests/bpf/xskxceiver.h      |  17 +-
+ 8 files changed, 308 insertions(+), 948 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/xsk_xdp_progs.c
+
+
+base-commit: bb5747cfbc4b7fe29621ca6cd4a695d2723bf2e8
+--
+2.34.1
