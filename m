@@ -2,291 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2CB65CEE7
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3E865CEEE
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 10:00:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234428AbjADI7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 03:59:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        id S233699AbjADJAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 04:00:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234130AbjADI7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:59:21 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D60025F0;
-        Wed,  4 Jan 2023 00:59:14 -0800 (PST)
-X-UUID: c487feb19b044d0499e26207d4c88856-20230104
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=8bcTs4wUnxUrFZNkyYsuLbZSyZPERU+1aI5MeMfmJKI=;
-        b=cyof6qqdtMobVNVv1ddCKbEYmDm8hKLtxAvvAR0/ECUcQ/7rPEbzwkBuAdL4NlPWmY2/plV9CpCYfARfSUyApYAAu4B0wSzuvCLE12Q9mqjSxJ5vMBUqjA+b3i5BZqVqEmZ2n/zRfUD0vtoK8yAgabgK660sKXCcRBZMunatjqs=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.16,REQID:39f7d794-877b-406b-98e0-01d9daa6ee7b,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-        release,TS:0
-X-CID-META: VersionHash:09771b1,CLOUDID:2a0f368b-8530-4eff-9f77-222cf6e2895b,B
-        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
-X-CID-BVR: 0
-X-UUID: c487feb19b044d0499e26207d4c88856-20230104
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2069833535; Wed, 04 Jan 2023 16:59:06 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 4 Jan 2023 16:59:05 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Wed, 4 Jan 2023 16:59:04 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Biao Huang" <biao.huang@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v7 2/2] arm64: dts: mt8195: Add Ethernet controller
-Date:   Wed, 4 Jan 2023 16:58:57 +0800
-Message-ID: <20230104085857.2410-3-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230104085857.2410-1-biao.huang@mediatek.com>
-References: <20230104085857.2410-1-biao.huang@mediatek.com>
+        with ESMTP id S234753AbjADI7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 03:59:41 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F9D1BE9B
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 00:59:39 -0800 (PST)
+Received: from gmx.fr ([181.118.46.223]) by mail.gmx.net (mrgmx005
+ [212.227.17.184]) with ESMTPSA (Nemesis) id 1MaJ3n-1pG1re0fmn-00WEgS; Wed, 04
+ Jan 2023 09:59:19 +0100
+Date:   Wed, 4 Jan 2023 04:59:13 -0400
+From:   Jamie Gloudon <jamie.gloudon@gmx.fr>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: Re: [PATCH net-next 1/1] e1000e: Enable Link Partner Advertised
+ Support
+Message-ID: <Y7U/4Q0QKtkuexLu@gmx.fr>
+References: <20230103230653.1102544-1-anthony.l.nguyen@intel.com>
+ <Y7TMhVy5CdqqysRb@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,RDNS_NONE,
-        SPF_HELO_PASS,SPF_PASS,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y7TMhVy5CdqqysRb@lunn.ch>
+X-Provags-ID: V03:K1:6WNqWKw2kwnR1UmxHD4vfvjhdO/PE0my1UXNva0jtWpbbY4ULhi
+ b377OlRPFRmcoMi9AuR5NUmFOD/pOcsIdCGEholvjr1wJDvaT+uHgaUrQTy1rx/Hy48sbNa
+ 7Ge4+t2TkpYDccbV9YkWqSqVzXYR38w4Al2oY2bsKr42ZdqTd4Z3UlN9zdB3YYAE5auUHsB
+ Ivx0FMAmTl3iCrlGCEluQ==
+UI-OutboundReport: notjunk:1;M01:P0:ORF0tw4u8o4=;3j+xvhauWJI647Wz5watA9qAgrz
+ CggYVnqq4VSaGo8bFgomiovI5DZOkls5h5jhMiDQxLO0Zwh/jz9DzvN73raX1SsZNYnHT9yba
+ rJN3HA26rFmlGYCdGPK4Gg5hv2nprGTkrw/DbB3ETNCQDDEGg0/SrbyYTPq1/GvnJs2fXebRY
+ MgoO1P2VF6az1oZABchfOEps0oxfWNiLgnPEfbSttbwM+X6Kwgn9nFFBhQaF0ZxoCdY3iEAaC
+ 3BfAW1xNLMONGDyib/WwjU4j6looAi6RLYmPnNQ0JctlTLuL4dJFVAAALRIN+vMB8wOjh382h
+ qG5EIydOcxKFVMNVZ6aAsGPD+m5dWfxa6hF8hWe50dmwZg+nhIRJeae+9a2BZQHe43tl+Vau1
+ xIiKyo60tSFYLW0NZv2xmgu7/9SKVf2VqxfWl3t1gq/c7TCx9TyFBKbSPeCFyxRii4v/zk/XK
+ kMpYs7xEnGAl3a51m3V2v1Zq31xqCELif69lYPaAg0DQD9Kkcu/4kNIUpnIlQOkNamxlFrCpj
+ Yu5e/huEVafucgl5Lo/npDjie3v/e2G2uUWt0OeyrjJh42iOa8aFSL3q/sIhTbpUV/beOpv+P
+ PQxL6bH2OSlh7/XpNMjkucWjC74zvnSSL5ivyeNwE6EAhgUE+yIF4XDSO258bcYBHPrBffMRr
+ BWuxK6D/ggA5dU0ApQ0S7yE/4qSmXLtEvE+JzzxGxqTXEaXGbw2BNgPHWnRSlvoF1t0Z17EGe
+ j4A8SL/m3IzE4Cye0TH3eQdEHd6ythybF/frYwcNJdALrJPbIJyX0zKN6eQoZFTUIDZ0K8q5X
+ baXbMPNYa2h248ygc7wvBkzIgrUH6OlaJigJNqydDU5ahJ20YkGXrey+IiHsaXO4/lmXnXaPM
+ bCNDTI58jJerXT/xePl9w/JRXXCp9EFejIlJu+FwkSns+7ddJC+1x8cKqvYgOFHAML1V0wsug
+ rx50dMGtiLBc7pH37dC8t4tqzoM=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Ethernet controller node for mt8195.
-
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8195-demo.dts | 77 ++++++++++++++++
- arch/arm64/boot/dts/mediatek/mt8195.dtsi     | 92 ++++++++++++++++++++
- 2 files changed, 169 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
-index 4fbd99eb496a..6a48c135f0da 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
-@@ -78,6 +78,23 @@ optee_reserved: optee@43200000 {
- 	};
- };
- 
-+&eth {
-+	phy-mode ="rgmii-id";
-+	phy-handle = <&ethernet_phy0>;
-+	snps,reset-gpio = <&pio 93 GPIO_ACTIVE_HIGH>;
-+	snps,reset-delays-us = <0 10000 80000>;
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&eth_default_pins>;
-+	pinctrl-1 = <&eth_sleep_pins>;
-+	status = "okay";
-+
-+	mdio {
-+		ethernet_phy0: ethernet-phy@1 {
-+			reg = <0x1>;
-+		};
-+	};
-+};
-+
- &i2c6 {
- 	clock-frequency = <400000>;
- 	pinctrl-0 = <&i2c6_pins>;
-@@ -258,6 +275,66 @@ &mt6359_vsram_others_ldo_reg {
- };
- 
- &pio {
-+	eth_default_pins: eth-default-pins {
-+		pins-txd {
-+			pinmux = <PINMUX_GPIO77__FUNC_GBE_TXD3>,
-+				 <PINMUX_GPIO78__FUNC_GBE_TXD2>,
-+				 <PINMUX_GPIO79__FUNC_GBE_TXD1>,
-+				 <PINMUX_GPIO80__FUNC_GBE_TXD0>;
-+			drive-strength = <MTK_DRIVE_8mA>;
-+		};
-+		pins-cc {
-+			pinmux = <PINMUX_GPIO85__FUNC_GBE_TXC>,
-+				 <PINMUX_GPIO88__FUNC_GBE_TXEN>,
-+				 <PINMUX_GPIO87__FUNC_GBE_RXDV>,
-+				 <PINMUX_GPIO86__FUNC_GBE_RXC>;
-+			drive-strength = <MTK_DRIVE_8mA>;
-+		};
-+		pins-rxd {
-+			pinmux = <PINMUX_GPIO81__FUNC_GBE_RXD3>,
-+				 <PINMUX_GPIO82__FUNC_GBE_RXD2>,
-+				 <PINMUX_GPIO83__FUNC_GBE_RXD1>,
-+				 <PINMUX_GPIO84__FUNC_GBE_RXD0>;
-+		};
-+		pins-mdio {
-+			pinmux = <PINMUX_GPIO89__FUNC_GBE_MDC>,
-+				 <PINMUX_GPIO90__FUNC_GBE_MDIO>;
-+			input-enable;
-+		};
-+		pins-power {
-+			pinmux = <PINMUX_GPIO91__FUNC_GPIO91>,
-+				 <PINMUX_GPIO92__FUNC_GPIO92>;
-+			output-high;
-+		};
-+	};
-+
-+	eth_sleep_pins: eth-sleep-pins {
-+		pins-txd {
-+			pinmux = <PINMUX_GPIO77__FUNC_GPIO77>,
-+				 <PINMUX_GPIO78__FUNC_GPIO78>,
-+				 <PINMUX_GPIO79__FUNC_GPIO79>,
-+				 <PINMUX_GPIO80__FUNC_GPIO80>;
-+		};
-+		pins-cc {
-+			pinmux = <PINMUX_GPIO85__FUNC_GPIO85>,
-+				 <PINMUX_GPIO88__FUNC_GPIO88>,
-+				 <PINMUX_GPIO87__FUNC_GPIO87>,
-+				 <PINMUX_GPIO86__FUNC_GPIO86>;
-+		};
-+		pins-rxd {
-+			pinmux = <PINMUX_GPIO81__FUNC_GPIO81>,
-+				 <PINMUX_GPIO82__FUNC_GPIO82>,
-+				 <PINMUX_GPIO83__FUNC_GPIO83>,
-+				 <PINMUX_GPIO84__FUNC_GPIO84>;
-+		};
-+		pins-mdio {
-+			pinmux = <PINMUX_GPIO89__FUNC_GPIO89>,
-+				 <PINMUX_GPIO90__FUNC_GPIO90>;
-+			input-disable;
-+			bias-disable;
-+		};
-+	};
-+
- 	gpio_keys_pins: gpio-keys-pins {
- 		pins {
- 			pinmux = <PINMUX_GPIO106__FUNC_GPIO106>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 5d31536f4c48..28b3ebd145bf 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -1046,6 +1046,98 @@ spis1: spi@1101e000 {
- 			status = "disabled";
- 		};
- 
-+		eth: ethernet@11021000 {
-+			compatible = "mediatek,mt8195-gmac", "snps,dwmac-5.10a";
-+			reg = <0 0x11021000 0 0x4000>;
-+			interrupts = <GIC_SPI 716 IRQ_TYPE_LEVEL_HIGH 0>;
-+			interrupt-names = "macirq";
-+			clock-names = "axi",
-+				      "apb",
-+				      "mac_main",
-+				      "ptp_ref",
-+				      "rmii_internal",
-+				      "mac_cg";
-+			clocks = <&pericfg_ao CLK_PERI_AO_ETHERNET>,
-+				 <&pericfg_ao CLK_PERI_AO_ETHERNET_BUS>,
-+				 <&topckgen CLK_TOP_SNPS_ETH_250M>,
-+				 <&topckgen CLK_TOP_SNPS_ETH_62P4M_PTP>,
-+				 <&topckgen CLK_TOP_SNPS_ETH_50M_RMII>,
-+				 <&pericfg_ao CLK_PERI_AO_ETHERNET_MAC>;
-+			assigned-clocks = <&topckgen CLK_TOP_SNPS_ETH_250M>,
-+					  <&topckgen CLK_TOP_SNPS_ETH_62P4M_PTP>,
-+					  <&topckgen CLK_TOP_SNPS_ETH_50M_RMII>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_ETHPLL_D2>,
-+						 <&topckgen CLK_TOP_ETHPLL_D8>,
-+						 <&topckgen CLK_TOP_ETHPLL_D10>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_ETHER>;
-+			mediatek,pericfg = <&infracfg_ao>;
-+			snps,axi-config = <&stmmac_axi_setup>;
-+			snps,mtl-rx-config = <&mtl_rx_setup>;
-+			snps,mtl-tx-config = <&mtl_tx_setup>;
-+			snps,txpbl = <16>;
-+			snps,rxpbl = <16>;
-+			snps,clk-csr = <0>;
-+			status = "disabled";
-+
-+			mdio {
-+				compatible = "snps,dwmac-mdio";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
-+
-+			stmmac_axi_setup: stmmac-axi-config {
-+				snps,wr_osr_lmt = <0x7>;
-+				snps,rd_osr_lmt = <0x7>;
-+				snps,blen = <0 0 0 0 16 8 4>;
-+			};
-+
-+			mtl_rx_setup: rx-queues-config {
-+				snps,rx-queues-to-use = <4>;
-+				snps,rx-sched-sp;
-+				queue0 {
-+					snps,dcb-algorithm;
-+					snps,map-to-dma-channel = <0x0>;
-+				};
-+				queue1 {
-+					snps,dcb-algorithm;
-+					snps,map-to-dma-channel = <0x0>;
-+				};
-+				queue2 {
-+					snps,dcb-algorithm;
-+					snps,map-to-dma-channel = <0x0>;
-+				};
-+				queue3 {
-+					snps,dcb-algorithm;
-+					snps,map-to-dma-channel = <0x0>;
-+				};
-+			};
-+
-+			mtl_tx_setup: tx-queues-config {
-+				snps,tx-queues-to-use = <4>;
-+				snps,tx-sched-wrr;
-+				queue0 {
-+					snps,weight = <0x10>;
-+					snps,dcb-algorithm;
-+					snps,priority = <0x0>;
-+				};
-+				queue1 {
-+					snps,weight = <0x11>;
-+					snps,dcb-algorithm;
-+					snps,priority = <0x1>;
-+				};
-+				queue2 {
-+					snps,weight = <0x12>;
-+					snps,dcb-algorithm;
-+					snps,priority = <0x2>;
-+				};
-+				queue3 {
-+					snps,weight = <0x13>;
-+					snps,dcb-algorithm;
-+					snps,priority = <0x3>;
-+				};
-+			};
-+		};
-+
- 		xhci0: usb@11200000 {
- 			compatible = "mediatek,mt8195-xhci",
- 				     "mediatek,mtk-xhci";
--- 
-2.25.1
-
+On Wed, Jan 04, 2023 at 01:47:01AM +0100, Andrew Lunn wrote:
+> > --- a/drivers/net/ethernet/intel/e1000e/phy.c
+> > +++ b/drivers/net/ethernet/intel/e1000e/phy.c
+> > @@ -2,6 +2,7 @@
+> >  /* Copyright(c) 1999 - 2018 Intel Corporation. */
+> >  
+> >  #include "e1000.h"
+> > +#include <linux/ethtool.h>
+> >  
+> >  static s32 e1000_wait_autoneg(struct e1000_hw *hw);
+> >  static s32 e1000_access_phy_wakeup_reg_bm(struct e1000_hw *hw, u32 offset,
+> > @@ -1011,6 +1012,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
+> >  		 */
+> >  		mii_autoneg_adv_reg &=
+> >  		    ~(ADVERTISE_PAUSE_ASYM | ADVERTISE_PAUSE_CAP);
+> > +		phy->autoneg_advertised &=
+> > +		    ~(ADVERTISED_Pause | ADVERTISED_Asym_Pause);
+> >  		break;
+> >  	case e1000_fc_rx_pause:
+> >  		/* Rx Flow control is enabled, and Tx Flow control is
+> > @@ -1024,6 +1027,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
+> >  		 */
+> >  		mii_autoneg_adv_reg |=
+> >  		    (ADVERTISE_PAUSE_ASYM | ADVERTISE_PAUSE_CAP);
+> > +		phy->autoneg_advertised |=
+> > +		    (ADVERTISED_Pause | ADVERTISED_Asym_Pause);
+> >  		break;
+> >  	case e1000_fc_tx_pause:
+> >  		/* Tx Flow control is enabled, and Rx Flow control is
+> > @@ -1031,6 +1036,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
+> >  		 */
+> >  		mii_autoneg_adv_reg |= ADVERTISE_PAUSE_ASYM;
+> >  		mii_autoneg_adv_reg &= ~ADVERTISE_PAUSE_CAP;
+> > +		phy->autoneg_advertised |= ADVERTISED_Asym_Pause;
+> > +		phy->autoneg_advertised &= ~ADVERTISED_Pause;
+> >  		break;
+> >  	case e1000_fc_full:
+> >  		/* Flow control (both Rx and Tx) is enabled by a software
+> > @@ -1038,6 +1045,8 @@ static s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
+> >  		 */
+> >  		mii_autoneg_adv_reg |=
+> >  		    (ADVERTISE_PAUSE_ASYM | ADVERTISE_PAUSE_CAP);
+> > +		phy->autoneg_advertised |=
+> > +		    (ADVERTISED_Pause | ADVERTISED_Asym_Pause);
+> >  		break;
+> >  	default:
+> >  		e_dbg("Flow control param set incorrectly\n");
+> > -- 
+> 
+> I don't know this driver at all. What i don't see anywhere here is
+> using the results of the pause auto-neg. Is there some code somewhere
+> that looks at the local and link peer advertising values and runs a
+> resolve algorithm to determine what pause should be used, and program
+> it into the MAC?
+> 
+>     Andrew
+This is a old patch i had laying around, If i remember correctly, phy->autoneg_advertised plugs in "Link partner
+advertised pause frame use link" line in ethtool everytime the nic renegotiate.
