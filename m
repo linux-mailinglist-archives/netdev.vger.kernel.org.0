@@ -2,118 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FBD465D2AC
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:29:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2641465D2D8
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 13:37:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239185AbjADM3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 07:29:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
+        id S234961AbjADMgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 07:36:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239095AbjADM3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:29:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F621A22F
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 04:29:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672835341;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D83ggwJK4ngkFfN/2WNdiEe8asazEJXPWDhn2wflgWs=;
-        b=Tn+Pea4WtSYxCpTwYtgysdPwDVBK0BZViHVpk/Ar6PJVGpx3494WR/RLl4idoWBnJ38yLZ
-        RUUfUq7308iTQBKRbbU70yvRys5DkeflKMZKtjSWdaBBvuSDciPHT0mDc9gfrPbMXeRhFr
-        zmZexxpXbncip0dBzcP1s9S4BOFsrAM=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-393-MyBLeOjWNaC8POIkVeeJKQ-1; Wed, 04 Jan 2023 07:29:00 -0500
-X-MC-Unique: MyBLeOjWNaC8POIkVeeJKQ-1
-Received: by mail-ed1-f70.google.com with SMTP id s13-20020a056402520d00b0046c78433b54so21603538edd.16
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 04:29:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=D83ggwJK4ngkFfN/2WNdiEe8asazEJXPWDhn2wflgWs=;
-        b=nJ1fpY0dTyx6a5T/YChNHCvMw1+y7rBu6m+IoqaKxMNEJr9ThoemLtsRKSNbDuh37v
-         qxrv8Hs9j+IxXW8VnaqaX6SUvSil8AQzOhfm5q8RpOoVRl7jbZVGRjEQ8+TCSZjU8Xuc
-         TWEBKFpUbHpfsC9SJBpciytHRINTCIjKN6oXhdTV8enr/thoUD4Y2l4JIyvBDtBpz/Dn
-         FskTbhdDQquvr1gxwEKNaQ+Xpdsu5g0H2Pvvx/XGvkg/c8OZ4xG/niGzNL7WQ2UH6Jbc
-         EJSL7PDSKzjXuK9bHzismW0tCxbINQUUdhCKxoey2tsncJvL3uMlLeiJpGV8W/EsPTsE
-         jNNA==
-X-Gm-Message-State: AFqh2koNqc6rejQ8aEcMWqKdUjIwoboM6sBRtNcMU/Vu69XzJGjIR8cX
-        1+G3A0bii+MZUEtPjRjqCR9tFsnvUfMwo7FcGMI8yP8TQIvj1cFPdOi4CH320PHBmxcsD+luH3i
-        GgFbKWgxoLPzs93mj
-X-Received: by 2002:aa7:c659:0:b0:48c:7e42:844c with SMTP id z25-20020aa7c659000000b0048c7e42844cmr11649465edr.10.1672835339058;
-        Wed, 04 Jan 2023 04:28:59 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXv3D10jrlC5WnU/hlTFXGNbMH9aBiPcxBGaYmUhTGAyAXaetE2FdzSJ7TbI2gYyDdewD6T+ng==
-X-Received: by 2002:aa7:c659:0:b0:48c:7e42:844c with SMTP id z25-20020aa7c659000000b0048c7e42844cmr11649443edr.10.1672835338765;
-        Wed, 04 Jan 2023 04:28:58 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s22-20020aa7cb16000000b00457b5ba968csm14644608edt.27.2023.01.04.04.28.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 04:28:58 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7A4388A2934; Wed,  4 Jan 2023 13:28:57 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, lorenzo.bianconi@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andy Gospodarek <gospo@broadcom.com>, gal@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
-Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
- support xdp multibuffer
-In-Reply-To: <Y7U8aAhdE3TuhtxH@lore-desk>
-References: <20220621175402.35327-1-gospo@broadcom.com>
- <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com> <87k0234pd6.fsf@toke.dk>
- <20230103172153.58f231ba@kernel.org> <Y7U8aAhdE3TuhtxH@lore-desk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 04 Jan 2023 13:28:57 +0100
-Message-ID: <87bkne32ly.fsf@toke.dk>
+        with ESMTP id S239184AbjADMgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 07:36:06 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D1A121;
+        Wed,  4 Jan 2023 04:36:02 -0800 (PST)
+Received: from fedcomp.. (unknown [46.242.14.200])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 3D9CD419E9F2;
+        Wed,  4 Jan 2023 12:36:00 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 3D9CD419E9F2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1672835760;
+        bh=c8/iV3m2yGN3qQpe5hfIWuQeZ/mvresc+PA7yEvfDgQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LQtkeGG+e0ADJ67wH+wfscc70YA0wnhYkVct07efADziPPFDYpFKSrBFvZV1U+i9w
+         1keHUD7aSUju+Og9o4ShlCypODiainL6ReQZ76Q0SNqiCJTrwEH/rQpOR/4jIDsJHj
+         +3FNMUCnH9cRhsIBE47vrGrRk9xcHsabyAuYuXJM=
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com,
+        syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
+Subject: [PATCH v4] wifi: ath9k: htc_hst: free skb in ath9k_htc_rx_msg() if there is no callback function
+Date:   Wed,  4 Jan 2023 15:35:46 +0300
+Message-Id: <20230104123546.51427-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <87edsa32s6.fsf@toke.dk>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
+It is stated that ath9k_htc_rx_msg() either frees the provided skb or
+passes its management to another callback function. However, the skb is
+not freed in case there is no another callback function, and Syzkaller was
+able to cause a memory leak. Also minor comment fix.
 
->> On Tue, 03 Jan 2023 16:19:49 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrot=
-e:
->> > Hmm, good question! I don't think we've ever explicitly documented any
->> > assumptions one way or the other. My own mental model has certainly
->> > always assumed the first frag would continue to be the same size as in
->> > non-multi-buf packets.
->>=20
->> Interesting! :) My mental model was closer to GRO by frags=20
->> so the linear part would have no data, just headers.
->
-> That is assumption as well.
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
-Right, okay, so how many headers? Only Ethernet, or all the way up to
-L4 (TCP/UDP)?
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-by: syzbot+e008dccab31bd3647609@syzkaller.appspotmail.com
+Reported-by: syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+v1->v2: added Reported-by tag
+v2->v3: use 'goto invalid' instead of freeing skb in place
+v3->v4: fix lost comment
 
-I do seem to recall a discussion around the header/data split for TCP
-specifically, but I think I mentally put that down as "something people
-may way to do at some point in the future", which is why it hasn't made
-it into my own mental model (yet?) :)
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
--Toke
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index ca05b07a45e6..fe62ff668f75 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -391,7 +391,7 @@ static void ath9k_htc_fw_panic_report(struct htc_target *htc_handle,
+  * HTC Messages are handled directly here and the obtained SKB
+  * is freed.
+  *
+- * Service messages (Data, WMI) passed to the corresponding
++ * Service messages (Data, WMI) are passed to the corresponding
+  * endpoint RX handlers, which have to free the SKB.
+  */
+ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+@@ -478,6 +478,8 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 		if (endpoint->ep_callbacks.rx)
+ 			endpoint->ep_callbacks.rx(endpoint->ep_callbacks.priv,
+ 						  skb, epid);
++		else
++			goto invalid;
+ 	}
+ }
+ 
+-- 
+2.34.1
 
