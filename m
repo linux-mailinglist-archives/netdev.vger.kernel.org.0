@@ -2,150 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A98365DB86
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 18:49:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEED865DB91
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 18:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239850AbjADRtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 12:49:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
+        id S239996AbjADRwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 12:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239803AbjADRtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 12:49:14 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B35FD08;
-        Wed,  4 Jan 2023 09:49:14 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id qk9so84271669ejc.3;
-        Wed, 04 Jan 2023 09:49:14 -0800 (PST)
+        with ESMTP id S239605AbjADRwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 12:52:42 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307F734774
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 09:52:38 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id 3so18383285iou.12
+        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 09:52:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Bq5T3H7ajPyPQ9vioDE0tfMvtiYQIDdq9hBdspYl9j0=;
-        b=CsPmMx+Q8xRhbNWd8KXeVRAKH0EU5k3rTIdnWRqva1tIJPxI1RBQGAz6rUO4ieDl2j
-         D/equzfgg+UmrQVjuz1hEl3E03Xc7L6ITI2RtG0vwVboO9oSbcuKtaAVP3cZyqlkCHJ1
-         2x97dl5O9lwKK3bUIysfz4OJDOn4OTobQd+bvFagZB/BRKhcEoiBRJ5+9ZAXz6B9FHMw
-         289gs0mdZB40AKhClGPTmmG3aSE0MLyuo1nHqSNO/wY5estDyMW0AoB60nKMLfgM6KnJ
-         FYI857FWXYCkbICNc4XI0j4agRAAVsiae7BuiQYtCFmlbELjHsNmGY2D3gNf8FCERPav
-         wZhA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fg/enfb4RCctdkewRQV7tDb9j91n7CjfohPG/ug4xNA=;
+        b=UJ/LrgnN4pcaz198G+5P7BM0ISpetZ/ZOmv/tKYGHv49MGNMuNjbcTvgQhYh/TLb88
+         sO/rvZOiWLxuI4oZx9bDghFf/Br/1GqbVVks/ONde/4HhZpXT6LcTfS53bY7tOYCgnYK
+         tUpw/6Ki9kcq90w7Q6Sb11fvO0csYO/Nyqkt+qWgW3uctLqb3J9cDAUBHB7K4arOj4eD
+         CzhlyNjJaEr2HjWwCIaIfenzkZMn0cRuJYw0HN9SuPnpMhgYZPEUHIztE2d3duFb8W9x
+         IarZy11oiY+Nhu5XoxTt9qRsSS5bneT2xUki/Yeo5LwRBK9wINrffHKFNs5CAyj2EO8+
+         xqmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Bq5T3H7ajPyPQ9vioDE0tfMvtiYQIDdq9hBdspYl9j0=;
-        b=j9xj2Kq+zDyAndNUdgboRb1Erlr0/X4Xi59//tco6pFv98mvYiiUgV06Jl09p+DNmB
-         w8HoWTV4xOqiaEgVHb0za7znP9tZmk+a+GyGxxl5SK2HQT8rAKlZVwWFsgkw4dzC7Ji2
-         vR1oDZD46rj162yvrvTg4X0pKFmVRYX67tM3txfKReQBA4z/OxdCCZANSxzbEIGSYql9
-         T95GgIYHepZ5lL3GcAZ9F1LGgG6fZqlhpBlEwE9/eUqlwXVCJCpDSIz6+ugbnJWlWvNX
-         PS4Y9fL7Xf9JS3J5Uz/FyDvWpeg9FUKDZf84RG/GRd3w4GQfJ33qysOZZK+GoPAXpAvc
-         i6vA==
-X-Gm-Message-State: AFqh2kqro2ehjjZDh8Y+kiczGTXHEKBcQwmS8RXb1UxPyEQkJV4P4/FG
-        890D7N/Q4vwJYs6ACehYaKocanIViucpvrxEo/A=
-X-Google-Smtp-Source: AMrXdXuToPpAs4ZdULVqHtWdd9HVfH4ODJ/5O6IJKp3PSiQVG35IqVIlPTl9GLLWstbDdszTCZHL1e0p2R8lvdEbcqU=
-X-Received: by 2002:a17:907:7e9b:b0:7ad:a2e9:a48c with SMTP id
- qb27-20020a1709077e9b00b007ada2e9a48cmr3541600ejc.77.1672854552640; Wed, 04
- Jan 2023 09:49:12 -0800 (PST)
+        bh=fg/enfb4RCctdkewRQV7tDb9j91n7CjfohPG/ug4xNA=;
+        b=Ypnreb0MGWc9XghsxlUS+d9jJHSSaYSxqiSmglgXMRXNHKnSU+/7dD2de+hyCgVpZ/
+         sfLY5s8FrDpg0bTER+Re5aaZt22rThR43vAmeKSFoVewVbXGBB6+31Modqw9pk2grIWH
+         yyKUZoiG9ck3hHttzlgn1aYSSmAOk2CLRVdwmfTYh4JT8p/Uma1tlg4t+PEpU5A3tUeD
+         hMpdboQK2XRyNpvkiOV0D67gJjOafUDdUT5rzxqRS3p9VirNTDsny40ngGx3Dif7z638
+         x0IokDnf53k530I6+Q7d1NHrCczwo78hAFs1JS8UYuNlCsuKX0jDeZQXy2u1YwVx+up2
+         pb0Q==
+X-Gm-Message-State: AFqh2kr5qrVOkErAn5KulRLWI0A/opI4gbEQnsIWpGz2GHDt+6vq50gE
+        ksxlEAzvMPdUa+u4CDdVPq0b+w==
+X-Google-Smtp-Source: AMrXdXty1V+JnpVbB5CWeA7DSYM9WrOT7Gkb1e1k1yRFY+fmuPV2xxjTe19RHszSEcB6o6rrr2954w==
+X-Received: by 2002:a6b:5010:0:b0:6bc:d70f:8b2f with SMTP id e16-20020a6b5010000000b006bcd70f8b2fmr33993243iob.9.1672854757450;
+        Wed, 04 Jan 2023 09:52:37 -0800 (PST)
+Received: from presto.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id u3-20020a02cbc3000000b00375783003fcsm10872304jaq.136.2023.01.04.09.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Jan 2023 09:52:36 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] net: ipa: simplify IPA interrupt handling
+Date:   Wed,  4 Jan 2023 11:52:27 -0600
+Message-Id: <20230104175233.2862874-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
- <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
- <92eb7dfa8b7d447e966a2751e174b642@realtek.com> <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
- <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
- <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com> <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
- <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com>
- <ec6a0988f3f943128e0122d50959185a@AcuMS.aculab.com> <CAFBinCC9sNvQJcu-SOSrFmo4sCx29K6KwXnc-O6MX9TJEHtXYg@mail.gmail.com>
- <662e2f820e7a478096dd6e09725c093a@AcuMS.aculab.com>
-In-Reply-To: <662e2f820e7a478096dd6e09725c093a@AcuMS.aculab.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 4 Jan 2023 18:49:01 +0100
-Message-ID: <CAFBinCCTa47SRjNHbMB3t2zjiE5Vh1ZQrgT3G38g9g_-mzvh6w@mail.gmail.com>
-Subject: Re: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tehuang@realtek.com" <tehuang@realtek.com>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="0000000000005f1bc105f173cdb2"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000005f1bc105f173cdb2
-Content-Type: text/plain; charset="UTF-8"
+One of the IPA's two IRQs fires when data on a suspended channel is
+available (to request that the channel--or system--be resumed to
+recieve the pending data).  This interrupt also handles a few
+conditions signaled by the embedded microcontroller.
 
-On Wed, Jan 4, 2023 at 5:31 PM David Laight <David.Laight@aculab.com> wrote:
-[...]
-> > > What you may want to do is add compile-time asserts for the
-> > > sizes of the structures.
-> > Do I get you right that something like:
-> >   BUILD_BUG_ON(sizeof(rtw8821c_efuse) != 256);
-> > is what you have in mind?
->
-> That looks like the one...
-I tried this (see the attached patch - it's just meant to show what I
-did, it's not meant to be applied upstream).
-With the attached patch but no other patches this makes the rtw88
-driver compile fine on 6.2-rc2.
+For this "IPA interrupt", the current code requires a handler to be
+dynamically registered for each interrupt condition.  Any condition
+that has no registered handler is quietly ignored.  This design is
+derived from the downstream IPA driver implementation.
 
-Adding __packed to struct rtw8723d_efuse changes the size of that
-struct for me (I'm compiling for AArch64 / ARM64).
-With the packed attribute it has 267 bytes, without 268 bytes.
+There isn't any need for this complexity.  Even in the downstream
+code, only four of the available 30 or so IPA interrupt conditions
+are ever handled.  So these handlers can pretty easily just be
+called directly in the main IRQ handler function.
 
-Do you have any ideas as to why that is?
+This series simplifies the interrupt handling code by having the
+small number of IPA interrupt handlers be called directly, rather
+than having them be registered dynamically.
 
+Version 2 just adds a missing forward-reference, as suggested by
+Caleb.
 
-Best regards,
-Martin
+					-Alex
 
---0000000000005f1bc105f173cdb2
-Content-Type: text/x-patch; charset="US-ASCII"; name="add-build-bug-on.patch"
-Content-Disposition: attachment; filename="add-build-bug-on.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_lchy60110>
-X-Attachment-Id: f_lchy60110
+Alex Elder (6):
+  net: ipa: introduce a common microcontroller interrupt handler
+  net: ipa: introduce ipa_interrupt_enable()
+  net: ipa: enable IPA interrupt handlers separate from registration
+  net: ipa: register IPA interrupt handlers directly
+  net: ipa: kill ipa_interrupt_add()
+  net: ipa: don't maintain IPA interrupt handler array
 
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODcyM2Qu
-YyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODcyM2QuYwppbmRleCAy
-ZDJmNzY4YmFlMmUuLjQ3MzkyZDcyMmY4ZCAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxl
-c3MvcmVhbHRlay9ydHc4OC9ydHc4NzIzZC5jCisrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3Jl
-YWx0ZWsvcnR3ODgvcnR3ODcyM2QuYwpAQCAtMjIyLDYgKzIyMiw4IEBAIHN0YXRpYyBpbnQgcnR3
-ODcyM2RfcmVhZF9lZnVzZShzdHJ1Y3QgcnR3X2RldiAqcnR3ZGV2LCB1OCAqbG9nX21hcCkKIAlz
-dHJ1Y3QgcnR3ODcyM2RfZWZ1c2UgKm1hcDsKIAlpbnQgaTsKIAorCUJVSUxEX0JVR19PTihzaXpl
-b2YoKm1hcCkgIT0gMjY4KTsKKwogCW1hcCA9IChzdHJ1Y3QgcnR3ODcyM2RfZWZ1c2UgKilsb2df
-bWFwOwogCiAJZWZ1c2UtPnJmZV9vcHRpb24gPSAwOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
-d2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIxYy5jIGIvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
-cmVhbHRlay9ydHc4OC9ydHc4ODIxYy5jCmluZGV4IDE3ZjgwMGY2ZWZiZC4uZWUwZjRhMDg1NmQ1
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjFj
-LmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIxYy5jCkBA
-IC00NSw2ICs0NSw4IEBAIHN0YXRpYyBpbnQgcnR3ODgyMWNfcmVhZF9lZnVzZShzdHJ1Y3QgcnR3
-X2RldiAqcnR3ZGV2LCB1OCAqbG9nX21hcCkKIAlzdHJ1Y3QgcnR3ODgyMWNfZWZ1c2UgKm1hcDsK
-IAlpbnQgaTsKIAorCUJVSUxEX0JVR19PTihzaXplb2YoKm1hcCkgIT0gNTEyKTsKKwogCW1hcCA9
-IChzdHJ1Y3QgcnR3ODgyMWNfZWZ1c2UgKilsb2dfbWFwOwogCiAJZWZ1c2UtPnJmZV9vcHRpb24g
-PSBtYXAtPnJmZV9vcHRpb247CmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFs
-dGVrL3J0dzg4L3J0dzg4MjJiLmMgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4
-L3J0dzg4MjJiLmMKaW5kZXggNzRkZmI4OWIyYzk0Li4wZGViMDI5MjQxMTQgMTAwNjQ0Ci0tLSBh
-L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmIuYworKysgYi9kcml2
-ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJiLmMKQEAgLTM4LDYgKzM4LDgg
-QEAgc3RhdGljIGludCBydHc4ODIyYl9yZWFkX2VmdXNlKHN0cnVjdCBydHdfZGV2ICpydHdkZXYs
-IHU4ICpsb2dfbWFwKQogCXN0cnVjdCBydHc4ODIyYl9lZnVzZSAqbWFwOwogCWludCBpOwogCisJ
-QlVJTERfQlVHX09OKHNpemVvZigqbWFwKSAhPSA1MTIpOworCiAJbWFwID0gKHN0cnVjdCBydHc4
-ODIyYl9lZnVzZSAqKWxvZ19tYXA7CiAKIAllZnVzZS0+cmZlX29wdGlvbiA9IG1hcC0+cmZlX29w
-dGlvbjsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3
-ODgyMmMuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmMuYwpp
-bmRleCA5NjRlMjc4ODdmZTIuLjk4MGM1MDIwNmMyMSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQv
-d2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYy5jCisrKyBiL2RyaXZlcnMvbmV0L3dpcmVs
-ZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmMuYwpAQCAtNDEsNiArNDEsOCBAQCBzdGF0aWMgaW50
-IHJ0dzg4MjJjX3JlYWRfZWZ1c2Uoc3RydWN0IHJ0d19kZXYgKnJ0d2RldiwgdTggKmxvZ19tYXAp
-CiAJc3RydWN0IHJ0dzg4MjJjX2VmdXNlICptYXA7CiAJaW50IGk7CiAKKwlCVUlMRF9CVUdfT04o
-c2l6ZW9mKCptYXApICE9IDQxMCk7CisKIAltYXAgPSAoc3RydWN0IHJ0dzg4MjJjX2VmdXNlICop
-bG9nX21hcDsKIAogCWVmdXNlLT5yZmVfb3B0aW9uID0gbWFwLT5yZmVfb3B0aW9uOwo=
---0000000000005f1bc105f173cdb2--
+ drivers/net/ipa/ipa_interrupt.c | 103 ++++++++++++++------------------
+ drivers/net/ipa/ipa_interrupt.h |  48 +++++----------
+ drivers/net/ipa/ipa_power.c     |  19 ++----
+ drivers/net/ipa/ipa_power.h     |  12 ++++
+ drivers/net/ipa/ipa_uc.c        |  21 +++++--
+ drivers/net/ipa/ipa_uc.h        |   8 +++
+ 6 files changed, 99 insertions(+), 112 deletions(-)
+
+-- 
+2.34.1
+
