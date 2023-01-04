@@ -2,48 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A6D65DD07
-	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 20:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B82C65DCE2
+	for <lists+netdev@lfdr.de>; Wed,  4 Jan 2023 20:37:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240221AbjADTmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 14:42:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        id S240142AbjADThf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 14:37:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240212AbjADTlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 14:41:46 -0500
-Received: from mx14lb.world4you.com (mx14lb.world4you.com [81.19.149.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443A3184
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 11:41:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lJ2ZlxJGyZmUhOteasDY9uOq610soQL5WVsSTT9mtUM=; b=aAijDuyk4UZzqsgedNPgpuleep
-        K03rTLlE7vKzPIje7UuF0C0eARU4MQs6ZjzgHLi7GKeU2vc9Buow4qaO0uwSjtccOHdWc3TEz0d4v
-        JedRnyX/jTjefOgEpgIg+0aE+9eAYwMcMswBm2liA7v4mSlbTQ+7wixXgtNMf73LvXw0=;
-Received: from 88-117-53-17.adsl.highway.telekom.at ([88.117.53.17] helo=hornet.engleder.at)
-        by mx14lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pD9dv-0003c2-LD; Wed, 04 Jan 2023 20:41:43 +0100
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v3 9/9] tsnep: Add XDP RX support
-Date:   Wed,  4 Jan 2023 20:41:32 +0100
-Message-Id: <20230104194132.24637-10-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230104194132.24637-1-gerhard@engleder-embedded.com>
-References: <20230104194132.24637-1-gerhard@engleder-embedded.com>
+        with ESMTP id S235173AbjADThe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 14:37:34 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC53F6;
+        Wed,  4 Jan 2023 11:37:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1672861052; x=1704397052;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FdK1P59eiaaPYotGf2Hn1FrUkMeoO0z3NBfLunufFTw=;
+  b=AJz8jZBz/Wo1n73Ko4w75TTx7sDvuXb5NiYqUE5AXxtjP6OtRFoQGZHH
+   17J+0kGBxtARuWJcdy9YSz1GmDUL1bo4p2FeK8KhQZ++CFDj3mIM7YXPO
+   OF/MzG4Lau6Fd/0l2LA/Erv3lE3xSZsd/zT/i3Ow1Cx0dy5dV9YTvlyCJ
+   c7c2bPpqq5KRxzBrQA26dozuzaPrJcWoSkQcuDMPnwq+05ifsggy2wSXJ
+   ZdjRP5kZO36jG467z/3Za/jYQ+I3jG+yp8YhT9ID5fh5dRwQDmVY2PFn3
+   BjYZV2q8V9pVYIsJvflUKn30ZJSqCorBMWKhsAXd5eldnVJehEXcfsKdK
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,300,1665471600"; 
+   d="scan'208";a="194266433"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2023 12:37:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 4 Jan 2023 12:37:28 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Wed, 4 Jan 2023 12:37:26 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        "Horatiu Vultur" <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: phy: micrel: Change handler interrupt for lan8814
+Date:   Wed, 4 Jan 2023 20:42:18 +0100
+Message-ID: <20230104194218.3785229-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,227 +62,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If BPF program is set up, then run BPF program for every received frame
-and execute the selected action.
+The lan8814 represents a package of 4 PHYs. All of them are sharing the
+same interrupt line. So when a link was going down/up or a frame was
+timestamped, then the interrupt handler of all the PHYs was called.
+Which is all fine and expected but the problem is the way the handler
+interrupt works.
+Basically if one of the PHYs timestamp a frame, then all the other 3
+PHYs were polling the status of the interrupt until that PHY actually
+cleared the interrupt by reading the timestamp.
+The reason of polling was in case another PHY was also timestamping a
+frame at the same time, it could miss this interrupt. But this is not
+the right approach, because it is the interrupt controller who needs to
+call the interrupt handlers again if the interrupt line is still
+active.
+Therefore change this such when the interrupt handler is called check
+only if the interrupt is for itself, otherwise just exit. In this way
+save CPU usage.
 
-Test results with A53 1.2GHz:
-
-XDP_DROP (samples/bpf/xdp1)
-proto 17:     883878 pkt/s
-
-XDP_TX (samples/bpf/xdp2)
-proto 17:     255693 pkt/s
-
-XDP_REDIRECT (samples/bpf/xdpsock)
- sock0@eth2:0 rxdrop xdp-drv
-                   pps            pkts           1.00
-rx                 855,582        5,404,523
-tx                 0              0
-
-XDP_REDIRECT (samples/bpf/xdp_redirect)
-eth2->eth1         613,267 rx/s   0 err,drop/s   613,272 xmit/s
-
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/engleder/tsnep_main.c | 129 ++++++++++++++++++++-
- 1 file changed, 127 insertions(+), 2 deletions(-)
+ drivers/net/phy/micrel.c | 25 ++++++++-----------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 6a30f3bf73a6..beafaa60a35d 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -27,6 +27,7 @@
- #include <linux/phy.h>
- #include <linux/iopoll.h>
- #include <linux/bpf.h>
-+#include <linux/bpf_trace.h>
- 
- #define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
- #define TSNEP_HEADROOM ALIGN(max(TSNEP_SKB_PAD, XDP_PACKET_HEADROOM), 4)
-@@ -44,6 +45,9 @@
- #define TSNEP_COALESCE_USECS_MAX     ((ECM_INT_DELAY_MASK >> ECM_INT_DELAY_SHIFT) * \
- 				      ECM_INT_DELAY_BASE_US + ECM_INT_DELAY_BASE_US - 1)
- 
-+#define TSNEP_XDP_TX		BIT(0)
-+#define TSNEP_XDP_REDIRECT	BIT(1)
-+
- enum {
- 	__TSNEP_DOWN,
- };
-@@ -624,6 +628,34 @@ static void tsnep_xdp_xmit_flush(struct tsnep_tx *tx)
- 	iowrite32(TSNEP_CONTROL_TX_ENABLE, tx->addr + TSNEP_CONTROL);
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 26ce0c5defcdd..2243ad1b88e70 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2794,13 +2794,11 @@ static void lan8814_get_rx_ts(struct kszphy_ptp_priv *ptp_priv)
+ 	} while (PTP_CAP_INFO_RX_TS_CNT_GET_(reg) > 0);
  }
  
-+static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
-+				struct xdp_buff *xdp)
-+{
-+	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	int queue;
-+	bool xmit;
-+
-+	if (unlikely(!xdpf))
-+		return -EFAULT;
-+
-+	queue = cpu % adapter->num_tx_queues;
-+	nq = netdev_get_tx_queue(adapter->netdev, queue);
-+
-+	__netif_tx_lock(nq, cpu);
-+
-+	/* Avoid transmit queue timeout since we share it with the slow path */
-+	txq_trans_cond_update(nq);
-+
-+	xmit = tsnep_xdp_xmit_frame_ring(xdpf, &adapter->tx[queue],
-+					 TSNEP_TX_TYPE_XDP_TX);
-+
-+	__netif_tx_unlock(nq);
-+
-+	return xmit;
-+}
-+
- static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+-static void lan8814_handle_ptp_interrupt(struct phy_device *phydev)
++static void lan8814_handle_ptp_interrupt(struct phy_device *phydev, u16 status)
  {
- 	struct tsnep_tx_entry *entry;
-@@ -788,6 +820,11 @@ static unsigned int tsnep_rx_offset(struct tsnep_rx *rx)
- 	return TSNEP_SKB_PAD;
- }
+ 	struct kszphy_priv *priv = phydev->priv;
+ 	struct kszphy_ptp_priv *ptp_priv = &priv->ptp_priv;
+-	u16 status;
  
-+static unsigned int tsnep_rx_offset_xdp(void)
-+{
-+	return XDP_PACKET_HEADROOM;
-+}
-+
- static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+-	status = lanphy_read_page_reg(phydev, 5, PTP_TSU_INT_STS);
+ 	if (status & PTP_TSU_INT_STS_PTP_TX_TS_EN_)
+ 		lan8814_get_tx_ts(ptp_priv);
+ 
+@@ -2899,8 +2897,8 @@ static int lan8804_config_intr(struct phy_device *phydev)
+ 
+ static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
  {
- 	struct device *dmadev = rx->adapter->dmadev;
-@@ -993,6 +1030,67 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
- 	return i;
- }
+-	int irq_status, tsu_irq_status;
+ 	int ret = IRQ_NONE;
++	int irq_status;
  
-+static bool tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *prog,
-+			       struct xdp_buff *xdp, int *status)
-+{
-+	unsigned int length;
-+	unsigned int sync;
-+	u32 act;
-+
-+	length = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
-+
-+	act = bpf_prog_run_xdp(prog, xdp);
-+
-+	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
-+	sync = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
-+	sync = max(sync, length);
-+
-+	switch (act) {
-+	case XDP_PASS:
-+		return false;
-+	case XDP_TX:
-+		if (!tsnep_xdp_xmit_back(rx->adapter, xdp))
-+			goto out_failure;
-+		*status |= TSNEP_XDP_TX;
-+		return true;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(rx->adapter->netdev, xdp, prog) < 0)
-+			goto out_failure;
-+		*status |= TSNEP_XDP_REDIRECT;
-+		return true;
-+	default:
-+		bpf_warn_invalid_xdp_action(rx->adapter->netdev, prog, act);
-+		fallthrough;
-+	case XDP_ABORTED:
-+out_failure:
-+		trace_xdp_exception(rx->adapter->netdev, prog, act);
-+		fallthrough;
-+	case XDP_DROP:
-+		page_pool_put_page(rx->page_pool, virt_to_head_page(xdp->data),
-+				   sync, true);
-+		return true;
-+	}
-+}
-+
-+static void tsnep_finalize_xdp(struct tsnep_adapter *adapter, int status)
-+{
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	int queue;
-+
-+	if (status & TSNEP_XDP_TX) {
-+		queue = cpu % adapter->num_tx_queues;
-+		nq = netdev_get_tx_queue(adapter->netdev, queue);
-+
-+		__netif_tx_lock(nq, cpu);
-+		tsnep_xdp_xmit_flush(&adapter->tx[queue]);
-+		__netif_tx_unlock(nq);
-+	}
-+
-+	if (status & TSNEP_XDP_REDIRECT)
-+		xdp_do_flush();
-+}
-+
- static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
- 				       int length)
- {
-@@ -1028,15 +1126,19 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 			 int budget)
- {
- 	struct device *dmadev = rx->adapter->dmadev;
--	int desc_available;
--	int done = 0;
- 	enum dma_data_direction dma_dir;
- 	struct tsnep_rx_entry *entry;
-+	struct bpf_prog *prog;
-+	struct xdp_buff xdp;
- 	struct sk_buff *skb;
-+	int desc_available;
-+	int xdp_status = 0;
-+	int done = 0;
- 	int length;
- 
- 	desc_available = tsnep_rx_desc_available(rx);
- 	dma_dir = page_pool_get_dma_dir(rx->page_pool);
-+	prog = READ_ONCE(rx->adapter->xdp_prog);
- 
- 	while (likely(done < budget) && (rx->read != rx->write)) {
- 		entry = &rx->entry[rx->read];
-@@ -1087,6 +1189,26 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
- 		desc_available++;
- 
-+		if (prog) {
-+			bool consume;
-+
-+			xdp_init_buff(&xdp, PAGE_SIZE, &rx->xdp_rxq);
-+			xdp_prepare_buff(&xdp, page_address(entry->page),
-+					 tsnep_rx_offset_xdp() + TSNEP_RX_INLINE_METADATA_SIZE,
-+					 length, false);
-+
-+			consume = tsnep_xdp_run_prog(rx, prog, &xdp,
-+						     &xdp_status);
-+			if (consume) {
-+				rx->packets++;
-+				rx->bytes += length;
-+
-+				entry->page = NULL;
-+
-+				continue;
-+			}
-+		}
-+
- 		skb = tsnep_build_skb(rx, entry->page, length);
- 		if (skb) {
- 			page_pool_release_page(rx->page_pool, entry->page);
-@@ -1105,6 +1227,9 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 		entry->page = NULL;
+ 	irq_status = phy_read(phydev, LAN8814_INTS);
+ 	if (irq_status < 0) {
+@@ -2913,20 +2911,13 @@ static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
+ 		ret = IRQ_HANDLED;
  	}
  
-+	if (xdp_status)
-+		tsnep_finalize_xdp(rx->adapter, xdp_status);
+-	while (1) {
+-		tsu_irq_status = lanphy_read_page_reg(phydev, 4,
+-						      LAN8814_INTR_STS_REG);
+-
+-		if (tsu_irq_status > 0 &&
+-		    (tsu_irq_status & (LAN8814_INTR_STS_REG_1588_TSU0_ |
+-				       LAN8814_INTR_STS_REG_1588_TSU1_ |
+-				       LAN8814_INTR_STS_REG_1588_TSU2_ |
+-				       LAN8814_INTR_STS_REG_1588_TSU3_))) {
+-			lan8814_handle_ptp_interrupt(phydev);
+-			ret = IRQ_HANDLED;
+-		} else {
++	while (true) {
++		irq_status = lanphy_read_page_reg(phydev, 5, PTP_TSU_INT_STS);
++		if (!irq_status)
+ 			break;
+-		}
 +
- 	if (desc_available)
- 		tsnep_rx_refill(rx, desc_available, false);
++		lan8814_handle_ptp_interrupt(phydev, irq_status);
++		ret = IRQ_HANDLED;
+ 	}
  
+ 	return ret;
 -- 
-2.30.2
+2.38.0
 
