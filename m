@@ -2,262 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC1F65E61D
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 08:31:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09DC065E64D
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 08:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbjAEHao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 02:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        id S230320AbjAEH5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 02:57:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230407AbjAEHaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 02:30:12 -0500
-Received: from out29-126.mail.aliyun.com (out29-126.mail.aliyun.com [115.124.29.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455D14BD59;
-        Wed,  4 Jan 2023 23:30:10 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07440397|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00960953-0.221312-0.769078;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047198;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=17;RT=17;SR=0;TI=SMTPD_---.QktmAx9_1672903805;
-Received: from sun-VirtualBox..(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.QktmAx9_1672903805)
-          by smtp.aliyun-inc.com;
-          Thu, 05 Jan 2023 15:30:06 +0800
-From:   Frank <Frank.Sae@motor-comm.com>
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>,
-        devicetree@vger.kernel.org
-Subject: [PATCH net-next v1 3/3] net: phy: Add driver for Motorcomm yt8531 gigabit ethernet phy
-Date:   Thu,  5 Jan 2023 15:30:24 +0800
-Message-Id: <20230105073024.8390-4-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
-References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
+        with ESMTP id S229527AbjAEH5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 02:57:51 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF2752776
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 23:57:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BpXLN7NYtVEq9cbnSSwohup9B9t6FTgi0v8hzkCkg2khA5PghGS0LYPN4f9zDM5tHIl59ykAnw2Slv+JdH59x1+dQAvAkN0t/8nlcumL6hD+s9n67wElf0izHpre4rmf3NbxXGHV8ft6jsY8VsC3OC4+FXdK510ovDDnen/ogAixRWj0Lqazskl9ilFyVEpkNtsfm5YV42N7Q641iurCF1lidWHrbN6PcBK4SPdHKRoGfVxlRCQ59eSCrQ2ua7K+IXbPCIsoPDeIXNlQttxtu2uUyVtpBPh1dbAfTrh8NVcPUTLRi1lSGDyygZlULPux8JZb2COtNbW/hoKakM1f8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=68t5NsV4p6KwyYpZdzovIb9BYzqQtqSd8KhSr1wLA8I=;
+ b=dAnEQo5jiVDw0vqqAZJeOmsKTiN015pJCuXzX5jGUinHElC68yIgD3Gy99TbAQXRcDeWQgh1cZhf0KKYh9SCOGmA7tr7wpK5h0addJPV6FKXKjpSoMcsGolKlBDiug0u5XoAshnDf84kAu8Uf0C9DlKdSXVbaK/nqjT2e/yyUc4NZp4pbBJjQj8MbboIKUVC0NrpM2Id21OQndjktJ1zNCovYukdYBrYcVRaWY+EBn8K4qde++OGPJ1tzQgm5b65mTAzIJpS7a/9r66GtQUEcT10Wec16dhnF0HO9N7NVQZTxqLmElE+lTY96K0Zl7xwd1ZYebkEdHUvw+gmUM77qg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=68t5NsV4p6KwyYpZdzovIb9BYzqQtqSd8KhSr1wLA8I=;
+ b=iFM4sbexOyjxyLVOIAvTAhZYYrLGj6BPgmZ7vM4wX/EB+U6XJXJSKnr4cKRqNvle+O0+nVvdmw4TkqyF/s2RDaAM/1+UCW8q6G2kbdcizB4dSMBl4TV62t2Y01ChuTCpMRvIDaGlhuoyw+wDrZIFXVZaDbot53+q3hS8x62v+EtpOV40iLhYx+C+w6+5pfQJtrLQE+MVpKczvb+bT4exyUA6OsMN6Dvpl1p77xfoXZSEXm703tShwj5QM8LnT83gPHULIIuO7sk5WB2DWy+GkgJwXg6/9XAeJhdXp6GPJdBqH80POw4+MAIGm7UN/gy1WGz2TETHde09A8DNbTd0Sg==
+Received: from BN9PR03CA0235.namprd03.prod.outlook.com (2603:10b6:408:f8::30)
+ by SJ0PR12MB6943.namprd12.prod.outlook.com (2603:10b6:a03:44b::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
+ 2023 07:57:48 +0000
+Received: from BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f8:cafe::44) by BN9PR03CA0235.outlook.office365.com
+ (2603:10b6:408:f8::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.14 via Frontend
+ Transport; Thu, 5 Jan 2023 07:57:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN8NAM11FT034.mail.protection.outlook.com (10.13.176.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5986.14 via Frontend Transport; Thu, 5 Jan 2023 07:57:47 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 4 Jan 2023
+ 23:57:39 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Wed, 4 Jan 2023 23:57:39 -0800
+Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.182)
+ with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Wed, 4 Jan
+ 2023 23:57:37 -0800
+From:   <ehakim@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <raeds@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <sd@queasysnail.net>,
+        <atenart@kernel.org>, Emeel Hakim <ehakim@nvidia.com>
+Subject: [PATCH net-next v6 0/2] Add support to offload macsec using netlink update
+Date:   Thu, 5 Jan 2023 09:57:19 +0200
+Message-ID: <20230105075721.17603-1-ehakim@nvidia.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT034:EE_|SJ0PR12MB6943:EE_
+X-MS-Office365-Filtering-Correlation-Id: d1d53f5c-be65-4b58-ec45-08daeef28969
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5m26Cekkz9GHP5W09OQv8w4C5TnDzTKjArWqoVoTw0syNj6WDTwiDSJKDuonzIQv0uUQ0Pipv5+L7CVYv7h7F0mklgJguWMVoVX7zWAzZWC58aNSbycRMT9vQEshIMjWDOeIbTXBmElAyNwqjcVFyx29sL2C9YSmtZ7GM628dpb3FMrT7IuHJvnH1Dt0d/ys5t5Sfm1UBZwKEs4vsTU3fTbMF/u07kgxShnrI/sfhDrhXX26dPrkKsrNIw1/k5DInU7IbYf76YSUHu6NZ0Z+V7OId8AqH5fTm+Ca9S8QXwWbZfYbrG+C/1mBMZATjsXe3tqsRxvDn61bfzKn0CaTl5vWJMoajsgsFyfjRsOCNxiMkjicCVcgWjvhyxOyC5Q8AwSzD7VBBDq5hJJch0yytXZyx3akqRPRzSbPHVyA6VQAwg9T++JBgPGlzVlibm+vCufH5bynv9BNNE3s/c+gw4YYqm26vOvEFauLNXfhAInXZF6Y2VGVCWHW0Kd7mZeRbuzXquZhlLGxy5O5tBNFR4XAx0dc7yuyx6xVIP280LSOaaA8heRAMVgcJj5U/wUE5cdO+shwPtP1QSizReZ6eAa1yJ3UsgM6kXYQlEcwQDaS2jDYTeply8X1u206OS5kHQf8p9jr/hYBMhuTVUSv7IOrod2UeKjDnUqUjp/PoX7J9dX6ZYfRuZG7XAOMU88tnGuCT0iONeOoZddLZJgxGg==
+X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(39860400002)(136003)(396003)(451199015)(46966006)(36840700001)(40470700004)(186003)(26005)(2616005)(83380400001)(336012)(47076005)(86362001)(426003)(40460700003)(82310400005)(36756003)(36860700001)(356005)(7636003)(40480700001)(1076003)(82740400003)(316002)(54906003)(2906002)(6916009)(15650500001)(4326008)(4744005)(8936002)(41300700001)(8676002)(70586007)(5660300002)(107886003)(70206006)(6666004)(478600001)(2876002)(7696005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 07:57:47.9232
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1d53f5c-be65-4b58-ec45-08daeef28969
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6943
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver for Motorcomm yt8531 gigabit ethernet phy. This patch has
-been tested on AM335x platform which has one YT8531 interface
-card and passed all test cases.
+From: Emeel Hakim <ehakim@nvidia.com>
 
-Signed-off-by: Frank <Frank.Sae@motor-comm.com>
----
- drivers/net/phy/Kconfig     |   2 +-
- drivers/net/phy/motorcomm.c | 127 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 126 insertions(+), 3 deletions(-)
+This series adds support for offloading macsec as part of the netlink
+update routine , command example:
+ip link set link eth2 macsec0 type macsec offload mac
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 1327290decab..e25c061e619a 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -257,7 +257,7 @@ config MOTORCOMM_PHY
- 	tristate "Motorcomm PHYs"
- 	help
- 	  Enables support for Motorcomm network PHYs.
--	  Currently supports the YT8511, YT8521, YT8531S Gigabit Ethernet PHYs.
-+	  Currently supports the YT8511, YT8521, YT8531, YT8531S Gigabit Ethernet PHYs.
- 
- config NATIONAL_PHY
- 	tristate "National Semiconductor PHYs"
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index 7ebcca374a67..23d7e48587cf 100644
---- a/drivers/net/phy/motorcomm.c
-+++ b/drivers/net/phy/motorcomm.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * Motorcomm 8511/8521/8531S PHY driver.
-+ * Motorcomm 8511/8521/8531/8531S PHY driver.
-  *
-  * Author: Peter Geis <pgwipeout@gmail.com>
-  * Author: Frank <Frank.Sae@motor-comm.com>
-@@ -14,6 +14,7 @@
- 
- #define PHY_ID_YT8511		0x0000010a
- #define PHY_ID_YT8521		0x0000011a
-+#define PHY_ID_YT8531		0x4f51e91b
- #define PHY_ID_YT8531S		0x4f51e91a
- 
- /* YT8521/YT8531S Register Overview
-@@ -542,6 +543,69 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
- 	return phy_restore_page(phydev, old_page, ret);
- }
- 
-+static int yt8531_set_wol(struct phy_device *phydev,
-+			  struct ethtool_wolinfo *wol)
-+{
-+	struct net_device *p_attached_dev;
-+	const u16 mac_addr_reg[] = {
-+		YTPHY_WOL_MACADDR2_REG,
-+		YTPHY_WOL_MACADDR1_REG,
-+		YTPHY_WOL_MACADDR0_REG,
-+	};
-+	const u8 *mac_addr;
-+	u16 mask;
-+	u16 val;
-+	int ret;
-+	u8 i;
-+
-+	if (wol->wolopts & WAKE_MAGIC) {
-+		p_attached_dev = phydev->attached_dev;
-+		if (!p_attached_dev)
-+			return -ENODEV;
-+
-+		mac_addr = (const u8 *)p_attached_dev->dev_addr;
-+		if (!is_valid_ether_addr(mac_addr))
-+			return -EINVAL;
-+
-+		/* Store the device address for the magic packet */
-+		for (i = 0; i < 3; i++) {
-+			ret = ytphy_write_ext_with_lock(phydev, mac_addr_reg[i],
-+							((mac_addr[i * 2] << 8)) |
-+							(mac_addr[i * 2 + 1]));
-+			if (ret < 0)
-+				return ret;
-+		}
-+
-+		/* Enable WOL feature */
-+		mask = YTPHY_WCR_PULSE_WIDTH_MASK | YTPHY_WCR_INTR_SEL;
-+		val = YTPHY_WCR_ENABLE | YTPHY_WCR_INTR_SEL;
-+		val |= YTPHY_WCR_TYPE_PULSE | YTPHY_WCR_PULSE_WIDTH_672MS;
-+		ret = ytphy_modify_ext_with_lock(phydev, YTPHY_WOL_CONFIG_REG,
-+						 mask, val);
-+		if (ret < 0)
-+			return ret;
-+
-+		/* Enable WOL interrupt */
-+		ret = phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG, 0,
-+				 YTPHY_IER_WOL);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		/* Disable WOL feature */
-+		mask = YTPHY_WCR_ENABLE | YTPHY_WCR_INTR_SEL;
-+		ret = ytphy_modify_ext_with_lock(phydev, YTPHY_WOL_CONFIG_REG,
-+						 mask, 0);
-+
-+		/* Disable WOL interrupt */
-+		ret = phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG,
-+				 YTPHY_IER_WOL, 0);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int yt8511_read_page(struct phy_device *phydev)
- {
- 	return __phy_read(phydev, YT8511_PAGE_SELECT);
-@@ -1032,6 +1096,11 @@ static int yt8521_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int yt8531_probe(struct phy_device *phydev)
-+{
-+	return ytphy_probe_helper(phydev);
-+}
-+
- /**
-  * ytphy_utp_read_lpa() - read LPA then setup lp_advertising for utp
-  * @phydev: a pointer to a &struct phy_device
-@@ -1543,6 +1612,48 @@ static int yt8521_config_init(struct phy_device *phydev)
- 	return phy_restore_page(phydev, old_page, ret);
- }
- 
-+static int yt8531_config_init(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	phy_lock_mdio_bus(phydev);
-+	ret = ytphy_config_init_helper(phydev);
-+	phy_unlock_mdio_bus(phydev);
-+
-+	return ret;
-+}
-+
-+static void yt8531_link_change_notify(struct phy_device *phydev)
-+{
-+	struct yt8521_priv *priv = phydev->priv;
-+	u16 val = 0;
-+
-+	if (!(priv->tx_clk_adj_enabled))
-+		return;
-+
-+	if (phydev->speed < 0)
-+		return;
-+
-+	switch (phydev->speed) {
-+	case SPEED_1000:
-+		if (priv->tx_clk_1000_inverted)
-+			val = YT8521_RC1R_TX_CLK_SEL_INVERTED;
-+		break;
-+	case SPEED_100:
-+		if (priv->tx_clk_100_inverted)
-+			val = YT8521_RC1R_TX_CLK_SEL_INVERTED;
-+		break;
-+	case SPEED_10:
-+		if (priv->tx_clk_10_inverted)
-+			val = YT8521_RC1R_TX_CLK_SEL_INVERTED;
-+		break;
-+	default:
-+		return;
-+	}
-+	ytphy_modify_ext_with_lock(phydev, YT8521_RGMII_CONFIG1_REG,
-+				   YT8521_RC1R_TX_CLK_SEL_MASK, val);
-+}
-+
- /**
-  * yt8521_prepare_fiber_features() -  A small helper function that setup
-  * fiber's features.
-@@ -2125,6 +2236,17 @@ static struct phy_driver motorcomm_phy_drvs[] = {
- 		.suspend	= yt8521_suspend,
- 		.resume		= yt8521_resume,
- 	},
-+	{
-+		PHY_ID_MATCH_EXACT(PHY_ID_YT8531),
-+		.name		= "YT8531 Gigabit Ethernet",
-+		.probe		= yt8531_probe,
-+		.config_init	= yt8531_config_init,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.get_wol	= ytphy_get_wol,
-+		.set_wol	= yt8531_set_wol,
-+		.link_change_notify = yt8531_link_change_notify,
-+	},
- 	{
- 		PHY_ID_MATCH_EXACT(PHY_ID_YT8531S),
- 		.name		= "YT8531S Gigabit Ethernet",
-@@ -2146,7 +2268,7 @@ static struct phy_driver motorcomm_phy_drvs[] = {
- 
- module_phy_driver(motorcomm_phy_drvs);
- 
--MODULE_DESCRIPTION("Motorcomm 8511/8521/8531S PHY driver");
-+MODULE_DESCRIPTION("Motorcomm 8511/8521/8531/8531S PHY driver");
- MODULE_AUTHOR("Peter Geis");
- MODULE_AUTHOR("Frank");
- MODULE_LICENSE("GPL");
-@@ -2154,6 +2276,7 @@ MODULE_LICENSE("GPL");
- static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8521) },
-+	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531) },
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531S) },
- 	{ /* sentinel */ }
- };
+The above is done using the IFLA_MACSEC_OFFLOAD attribute hence
+the second patch of dumping this attribute as part of the macsec
+dump.
+
+Emeel Hakim (2):
+  macsec: add support for IFLA_MACSEC_OFFLOAD in macsec_changelink
+  macsec: dump IFLA_MACSEC_OFFLOAD attribute as part of macsec dump
+
+ drivers/net/macsec.c | 127 ++++++++++++++++++++++---------------------
+ 1 file changed, 66 insertions(+), 61 deletions(-)
+
 -- 
-2.34.1
+2.21.3
 
