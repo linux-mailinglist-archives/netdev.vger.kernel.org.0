@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D3965F623
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 22:47:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B38A165F625
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 22:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236002AbjAEVrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 16:47:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
+        id S236024AbjAEVrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 16:47:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235998AbjAEVqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 16:46:36 -0500
+        with ESMTP id S236012AbjAEVqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 16:46:42 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE01676F6
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 13:46:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD27DBFD
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 13:46:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=W4vmcDs403XfI6fIMo3T6IvLzSI+XWgXJovz62XtHH4=; b=n/jZKMKK3aiij1j6pwIiyMsZPm
-        T0LjJu2/hgZfcGGpORq5I3fkh6vjf2ZKIx0yDWVk8CTcXUTGPUYQ9qnemDEcqsErYirn5x9Xl9B4y
-        cqHpI5wfN0H8tp6hqSvs4TKCHnOp59S59dziMWbcx0P9dExsK85AS5+rsPL5SJ76B7f8WMQAvMi5u
-        aXfld+Pha+MGc5RD9BgmOfvMgFJ3KmAyX1lO0PrY/Hgu+nKUEunqtWbe+OEj8g9vfBHpmbIBWHpHQ
-        TscltBITtNKX7ER8xSJ2WOJ4odicjBxlP/k2jhN+wor/+3/wDTQ6hZBalby9WbVcCBMfqpqq73dY3
-        7mhXMXwQ==;
+        bh=7pOd+F4bhq+GgOKnYySLHgXmJTZdV4zj7peeoX7pjwQ=; b=vqD9NYXNeNF42OPqrhYAju/r5f
+        BABiEyLZr+FBEWCk7/zAGOP1F/JnEZ4lLFKrEXHOWDYGECGjo2+RFyJ0l+HS2yaX3FPTKkduHazE0
+        8IrW7ZS/F82q/0mvbq1asbBW0r5p/cxa4erJAh+xXW1HpYqhDTzvQLUc5cHKs7zJrH7KQsXqckm2s
+        nCQGaHz6UCFS5tq96QetM7qF2FGMskqKqmhUYvO5F5PhaU828VpPgc9k0wzO/WcN7eO93M/T1HHS0
+        ygXGY9qYEjcJeEKQDQ8UxBhdm2EsiT3oJDz9A5j6Sx1xMfLrWaycvX6z93L+9RaMl3tNgXxPA5att
+        0trI3KFQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pDY4H-00GWmz-FE; Thu, 05 Jan 2023 21:46:33 +0000
+        id 1pDY4H-00GWn1-Hv; Thu, 05 Jan 2023 21:46:33 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     Jesper Dangaard Brouer <hawk@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         netdev@vger.kernel.org, linux-mm@kvack.org,
         Shakeel Butt <shakeelb@google.com>
-Subject: [PATCH v2 03/24] page_pool: Add netmem_set_dma_addr() and netmem_get_dma_addr()
-Date:   Thu,  5 Jan 2023 21:46:10 +0000
-Message-Id: <20230105214631.3939268-4-willy@infradead.org>
+Subject: [PATCH v2 04/24] page_pool: Convert page_pool_release_page() to page_pool_release_netmem()
+Date:   Thu,  5 Jan 2023 21:46:11 +0000
+Message-Id: <20230105214631.3939268-5-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230105214631.3939268-1-willy@infradead.org>
 References: <20230105214631.3939268-1-willy@infradead.org>
@@ -49,56 +49,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Turn page_pool_set_dma_addr() and page_pool_get_dma_addr() into
-wrappers.
+Also convert page_pool_clear_pp_info() and trace_page_pool_state_release()
+to take a netmem.  Include a wrapper for page_pool_release_page() to
+avoid converting all callers.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/net/page_pool.h | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ include/net/page_pool.h          | 14 ++++++++++----
+ include/trace/events/page_pool.h | 14 +++++++-------
+ net/core/page_pool.c             | 18 +++++++++---------
+ 3 files changed, 26 insertions(+), 20 deletions(-)
 
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 84b4ea8af015..196b585763d9 100644
+index 196b585763d9..480baa22bc50 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -449,21 +449,31 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
- #define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
- 		(sizeof(dma_addr_t) > sizeof(unsigned long))
- 
--static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
-+static inline dma_addr_t netmem_get_dma_addr(struct netmem *nmem)
+@@ -18,7 +18,7 @@
+  *
+  * API keeps track of in-flight pages, in-order to let API user know
+  * when it is safe to dealloactor page_pool object.  Thus, API users
+- * must make sure to call page_pool_release_page() when a page is
++ * must make sure to call page_pool_release_netmem() when a page is
+  * "leaving" the page_pool.  Or call page_pool_put_page() where
+  * appropiate.  For maintaining correct accounting.
+  *
+@@ -354,7 +354,7 @@ struct xdp_mem_info;
+ void page_pool_destroy(struct page_pool *pool);
+ void page_pool_use_xdp_mem(struct page_pool *pool, void (*disconnect)(void *),
+ 			   struct xdp_mem_info *mem);
+-void page_pool_release_page(struct page_pool *pool, struct page *page);
++void page_pool_release_netmem(struct page_pool *pool, struct netmem *nmem);
+ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ 			     int count);
+ #else
+@@ -367,8 +367,8 @@ static inline void page_pool_use_xdp_mem(struct page_pool *pool,
+ 					 struct xdp_mem_info *mem)
  {
--	dma_addr_t ret = page->dma_addr;
-+	dma_addr_t ret = nmem->dma_addr;
- 
- 	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
--		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
-+		ret |= (dma_addr_t)nmem->dma_addr_upper << 16 << 16;
- 
- 	return ret;
+ }
+-static inline void page_pool_release_page(struct page_pool *pool,
+-					  struct page *page)
++static inline void page_pool_release_netmem(struct page_pool *pool,
++					  struct netmem *nmem)
+ {
  }
  
--static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
-+static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
+@@ -378,6 +378,12 @@ static inline void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ }
+ #endif
+ 
++static inline void page_pool_release_page(struct page_pool *pool,
++					struct page *page)
 +{
-+	return netmem_get_dma_addr(page_netmem(page));
++	page_pool_release_netmem(pool, page_netmem(page));
 +}
 +
-+static inline void netmem_set_dma_addr(struct netmem *nmem, dma_addr_t addr)
- {
--	page->dma_addr = addr;
-+	nmem->dma_addr = addr;
- 	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
--		page->dma_addr_upper = upper_32_bits(addr);
-+		nmem->dma_addr_upper = upper_32_bits(addr);
-+}
-+
-+static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
-+{
-+	netmem_set_dma_addr(page_netmem(page), addr);
+ void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
+ 				  unsigned int dma_sync_size,
+ 				  bool allow_direct);
+diff --git a/include/trace/events/page_pool.h b/include/trace/events/page_pool.h
+index ca534501158b..113aad0c9e5b 100644
+--- a/include/trace/events/page_pool.h
++++ b/include/trace/events/page_pool.h
+@@ -42,26 +42,26 @@ TRACE_EVENT(page_pool_release,
+ TRACE_EVENT(page_pool_state_release,
+ 
+ 	TP_PROTO(const struct page_pool *pool,
+-		 const struct page *page, u32 release),
++		 const struct netmem *nmem, u32 release),
+ 
+-	TP_ARGS(pool, page, release),
++	TP_ARGS(pool, nmem, release),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(const struct page_pool *,	pool)
+-		__field(const struct page *,		page)
++		__field(const struct netmem *,		nmem)
+ 		__field(u32,				release)
+ 		__field(unsigned long,			pfn)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->pool		= pool;
+-		__entry->page		= page;
++		__entry->nmem		= nmem;
+ 		__entry->release	= release;
+-		__entry->pfn		= page_to_pfn(page);
++		__entry->pfn		= netmem_pfn(nmem);
+ 	),
+ 
+-	TP_printk("page_pool=%p page=%p pfn=0x%lx release=%u",
+-		  __entry->pool, __entry->page, __entry->pfn, __entry->release)
++	TP_printk("page_pool=%p nmem=%p pfn=0x%lx release=%u",
++		  __entry->pool, __entry->nmem, __entry->pfn, __entry->release)
+ );
+ 
+ TRACE_EVENT(page_pool_state_hold,
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 9b203d8660e4..437241aba5a7 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -336,10 +336,10 @@ static void page_pool_set_pp_info(struct page_pool *pool,
+ 		pool->p.init_callback(page, pool->p.init_arg);
  }
  
- static inline bool is_page_pool_compiled_in(void)
+-static void page_pool_clear_pp_info(struct page *page)
++static void page_pool_clear_pp_info(struct netmem *nmem)
+ {
+-	page->pp_magic = 0;
+-	page->pp = NULL;
++	nmem->pp_magic = 0;
++	nmem->pp = NULL;
+ }
+ 
+ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+@@ -467,7 +467,7 @@ static s32 page_pool_inflight(struct page_pool *pool)
+  * a regular page (that will eventually be returned to the normal
+  * page-allocator via put_page).
+  */
+-void page_pool_release_page(struct page_pool *pool, struct page *page)
++void page_pool_release_netmem(struct page_pool *pool, struct netmem *nmem)
+ {
+ 	dma_addr_t dma;
+ 	int count;
+@@ -478,23 +478,23 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+ 		 */
+ 		goto skip_dma_unmap;
+ 
+-	dma = page_pool_get_dma_addr(page);
++	dma = netmem_get_dma_addr(nmem);
+ 
+ 	/* When page is unmapped, it cannot be returned to our pool */
+ 	dma_unmap_page_attrs(pool->p.dev, dma,
+ 			     PAGE_SIZE << pool->p.order, pool->p.dma_dir,
+ 			     DMA_ATTR_SKIP_CPU_SYNC);
+-	page_pool_set_dma_addr(page, 0);
++	netmem_set_dma_addr(nmem, 0);
+ skip_dma_unmap:
+-	page_pool_clear_pp_info(page);
++	page_pool_clear_pp_info(nmem);
+ 
+ 	/* This may be the last page returned, releasing the pool, so
+ 	 * it is not safe to reference pool afterwards.
+ 	 */
+ 	count = atomic_inc_return_relaxed(&pool->pages_state_release_cnt);
+-	trace_page_pool_state_release(pool, page, count);
++	trace_page_pool_state_release(pool, nmem, count);
+ }
+-EXPORT_SYMBOL(page_pool_release_page);
++EXPORT_SYMBOL(page_pool_release_netmem);
+ 
+ /* Return a page to the page allocator, cleaning up our state */
+ static void page_pool_return_page(struct page_pool *pool, struct page *page)
 -- 
 2.35.1
 
