@@ -2,180 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA23F65EA13
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:42:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6634765EA1D
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbjAELm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 06:42:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
+        id S232482AbjAELoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 06:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbjAELmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 06:42:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4CD44C71
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 03:41:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672918896;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D6yFSsu1+uJ+W8DhHQe6JdN2idAkDqdvuQjxWUZWOw0=;
-        b=CX4I4piz5arNTsU7v8c9dXkF68LgsrhKnE4YFelr6M31QemcRZMOMXWAbZsgcNXA3WIMye
-        Q77/maAA4a68rm4Th1LOne/GA7/iY7J2JfD5LQf916I/HnRbMr57uYK7LOnzszfqbuv99I
-        CQsjklIJW54bQwZYAqaxyWIhgp4iXaI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-141-4VeVaU2ROqWDLoRb0NzD8w-1; Thu, 05 Jan 2023 06:41:35 -0500
-X-MC-Unique: 4VeVaU2ROqWDLoRb0NzD8w-1
-Received: by mail-wm1-f71.google.com with SMTP id m38-20020a05600c3b2600b003d1fc5f1f80so890756wms.1
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 03:41:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D6yFSsu1+uJ+W8DhHQe6JdN2idAkDqdvuQjxWUZWOw0=;
-        b=47Rj9kUY5i1/H5UkKCOFkKyoATqNx05MZTcgvdur9E6vFjxIYI8KAxyrApDA4Dx8K6
-         rKaID6LqapRodhqMdc5PZdcGLhLzC5VuC76bQfGr+xtCoUe5rXaGiq85m5zExBPTkwFB
-         oxbE5K9Wmes+lJv6jCOjQ3NJtifaobOyMfJzQyOpPaS/b3bqU8xguwAEn174cIvmTWlw
-         hKpPnWUwf2BnMOvHr9WADtARlKjwvV2lt74IzzxXmRcIuON6PTPNiDddVTZp/097xUa6
-         RzdhOWj64gIhZMoEUCy77VsTYtz6sRFF2ZLAhF2fZqCvK8zx9ei430pAojpBLDAi5RS6
-         0yJQ==
-X-Gm-Message-State: AFqh2kpfakx5kGZN9k8yhURnTnahTfrjmb89kaOkNgKNIPM5uWqc5XMW
-        a9VXARjYfaAkJo+VDwHLwPtxIlvTpUBF3g+fIG/uGXe9OzQvejPKfP7bQYrap5RM2hEsL6zm8hr
-        bYYNehVz4/WVSHUQT
-X-Received: by 2002:a05:600c:3b26:b0:3d7:fa4a:681b with SMTP id m38-20020a05600c3b2600b003d7fa4a681bmr38507683wms.0.1672918893929;
-        Thu, 05 Jan 2023 03:41:33 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXubjqYBX+KIYBx9px3snM++K14YlGTcGtyBKFq2fkNxXv2vpxHhyUuVs1GsekH/my2lo7mGlg==
-X-Received: by 2002:a05:600c:3b26:b0:3d7:fa4a:681b with SMTP id m38-20020a05600c3b2600b003d7fa4a681bmr38507675wms.0.1672918893695;
-        Thu, 05 Jan 2023 03:41:33 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-105-31.dyn.eolo.it. [146.241.105.31])
-        by smtp.gmail.com with ESMTPSA id fm14-20020a05600c0c0e00b003d208eb17ecsm2150451wmb.26.2023.01.05.03.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 03:41:33 -0800 (PST)
-Message-ID: <0a0932848b04b844d94561c3dc4186b6ae9dbe31.camel@redhat.com>
-Subject: Re: [PATCH] net: nfc: Fix use-after-free in local_cleanup()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
-        krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
-Cc:     edumazet@google.com, kuba@kernel.org, dokyungs@yonsei.ac.kr,
-        linuxlovemin@yonsei.ac.kr
-Date:   Thu, 05 Jan 2023 12:41:31 +0100
-In-Reply-To: <20230104125738.418427-1-jisoo.jang@yonsei.ac.kr>
-References: <20230104125738.418427-1-jisoo.jang@yonsei.ac.kr>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S231710AbjAELoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 06:44:22 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2093.outbound.protection.outlook.com [40.107.244.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7343356887;
+        Thu,  5 Jan 2023 03:44:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lvbDacmqfNSE81vMgGq7Nq2Th4jIcf795igCGbDEja7tA6AB8DcjdIg7E4zaeqQhoHv29OWdVVIkCgiFf0meA+A9DSd0xmg4PrxO5X7h32eXSmTzOZCYPy5/ELdG2UjeH0QUC5jzePdQ/NIdPc6JIxoqkQLT/ZtW5xqgPr1AVIcaAGYSkl0IdUl54pJEVSIaYs/2eOHvbZ0IsrmZvP4Ig3sibsyzCpFKFlv3CNqIXtCZbw4BnQkYBd9AjQ2LyP2Ke6zah79EZIeEmBbpN9v43IcePgHlLWOhotfQVG82QB7qwG23ww1hrzRLJpAuSzlP8lILXzpDgpo8fINL8kfAIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f6ZyqmhPsKybnCA/44UNjOAu2BB1zPzPITaY4dfNdng=;
+ b=iqRx31+AutREpYC1IVGJJ+W3Deq9pXTzSitx7PzzhrZ98SaRIbdESEpqgiohr/MjRFR4yh+AsKgjxUIVuaudV0ZBzs8Nwoz5nK1ZhGdWKaRtLxJSbIcq3YHUli91EjY/M53Z1ry/jh2UrfFratzxRAp5mLxU6CPI6po/u+rdfWBsn3yPXf55U3mNqYLdgCNdrrYAtXiu6lZSYPnTeIPAtCFCWq/iG4ca7ziwflbXCDXmyJ5TCxzhKi+A327ve+olj0Ije2GtU/u7xWm+bdigxeepDkVajnhUqoq37h0KLi2aCaXt6DPuAGdz+jTWtMonne2cap6Apooiexq4A1TjWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f6ZyqmhPsKybnCA/44UNjOAu2BB1zPzPITaY4dfNdng=;
+ b=E412ILdFstpUwWTkovfaGkBEDllQ1/rFASYjfELEztQo03rm/sGD/dRY6svFcQFHksJGr2qEgGvtSWBe3ruR8KskCxmKe+hEZa22VEOnYphmX5ky9NfxSpM6E5dVvqc/wSS/h6tYECXSL/91Bx5X8kmLbLn1YLDR3Fa5kGtBvHs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB4086.namprd13.prod.outlook.com (2603:10b6:208:26f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
+ 2023 11:44:16 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
+ 11:44:16 +0000
+Date:   Thu, 5 Jan 2023 12:44:09 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     yang.yang29@zte.com.cn
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xu.panda@zte.com.cn
+Subject: Re: [PATCH wireless-next v2] wl18xx: use strscpy() to instead of
+ strncpy()
+Message-ID: <Y7a4CTV+RNhoI/S7@corigine.com>
+References: <202212261914060599112@zte.com.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202212261914060599112@zte.com.cn>
+X-ClientProxiedBy: AM0PR01CA0129.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:168::34) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB4086:EE_
+X-MS-Office365-Filtering-Correlation-Id: 910e77fb-6758-43e0-5569-08daef122c65
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1PxTfwHSlsjPxFO0w2ye8Mo+8EfYLOd7n1onWCos7tUwOE5w5wAbATn08J4L/2QczQ8R8AwGFOWCEyFQIG30q59bcfRFeWGVFaUu1PXWFXCdMsGP4xUy0FsMB/KytNjJ9kAhqdgydNV1CBaFVzTdlwR5ggabJRK9+24vQOkwwBex1gK66z0Um7hgkOgZoKfnNpoitaNAv/mLgf0HOuRkrqcAWvSdcfIOQbJDuQIPd6yg/Y9tbvVpzmSLyWzkZgklAUlF2v8nWhJKudjfBY0KUwYOWqSG9JTTZ19JAsjqr32m3fX4oKLqO9RB6nygfggQoFrCZ7iY3QPpJsgNg0QpodtIc6UYiVnHjLmL2J0HAUrLhD/O7uA0mN6N/fQWJlA5S4B6L/vWKtE8IQHqehVnIG4xncLsCLwb/TdBAzKmdGMQTIURPdZl6GoscnMvgpzztGXfCk5pG05B1bFlvP+iZvQGJOfm87N6ER3EyN3KhWzjzof8kNtwPokFdZoZGzPcxIrVBiIyUWSJp3AyU/B1jHKqKwSyDoh2TDZwnO2OM/V6D1NsCRDiJyAQU5hL+NvUJs5fPThjhvX5QHNsif0n3dLkInoHN6KQP/jd2KrvIBS5f7vWO+jxb5OH1dPw2kvuyDpUWzw/ABxVM3+5qLSBjMoAwjDuje/6M5hECAoXwzipWslzrkr04fL0lK2C9dQK
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(39840400004)(136003)(366004)(396003)(376002)(451199015)(186003)(6666004)(478600001)(66476007)(66556008)(2616005)(6486002)(66946007)(6512007)(44832011)(8676002)(8936002)(5660300002)(7416002)(4744005)(41300700001)(4326008)(2906002)(316002)(86362001)(38100700002)(6916009)(6506007)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JBuViVc6xjo7kHxZ5QHUk6dDoIeK3pWXPzwk6CYz3YROr/CfG0q2yJaoU2nc?=
+ =?us-ascii?Q?P7yR+lB/OTQMGJf05C5LmWxWYuROIC3Quxlgb5rqOfr/dyryftMloZWBtkeG?=
+ =?us-ascii?Q?97IB6A+Dlf19Fw8tUTL/iLEbAONRCnCVL4KCrOltwFTT2zLYB2QsItSdnH/q?=
+ =?us-ascii?Q?rDsD9fRtcd24ynYLt8rcLJFUDOsjpTIb9oxqAkUPsFGvIsXu1JNuL6SV31sg?=
+ =?us-ascii?Q?U0lizAcGhpADY/E+uZXfnlsNIHA/O03rDI69KinPik5Za1mJRubktKsMvHGg?=
+ =?us-ascii?Q?G4zuyFfii0Zab9BRH4GJiwFsvFjM+ef1h/n5N3KOwmsfKHbx304OvZ1bmwll?=
+ =?us-ascii?Q?hFoWUCseGCj7QFjA2yF/SWx6sO1X/I3wURVBAKg+y9XmiRp1p0VOAzVw6zRd?=
+ =?us-ascii?Q?1oOMM12xOHzHAVsvbRCqavaEsxBcBbu/fFzh9CnI0LQi6fp4Sc5NgNVUduUy?=
+ =?us-ascii?Q?kaishdafSh5dgpHYz9fCCCvahR9AFn6+0OcHdLeE26AXR9LTkOl+MqOPvM9V?=
+ =?us-ascii?Q?DHUFnqJRaV3D8UOIDhZSHINBvoKaEXUWlttDu73KII5exS/Ekacc79m40ETq?=
+ =?us-ascii?Q?reEwvDhwb5UGnFbazQ9gZ0yBAGAp1FYS5DRezgNQJpifx1eGbemXc7Gys05m?=
+ =?us-ascii?Q?VjvNdlaZcVm8UvIqQboDHV7e2rSyfwf0lq1i/R+zjsMttIPg7PI/JiEHfuVS?=
+ =?us-ascii?Q?14UZGdza8wStlOeyxxE97kWoAQh9oyWhSlfldNFTbGV83WZ4yWKDmlXmx4su?=
+ =?us-ascii?Q?onWili+Y9fxefuAeF9jdItrMULq1WW1z4emI+r/e4I7V8nL3SDyy6x9qTHlR?=
+ =?us-ascii?Q?azneCwdtr0yp/U769PkPRryOK7hO1rPWuQwFoDyFIM93IeU3LmPyH2cZZbY+?=
+ =?us-ascii?Q?bOEQzZjAZw/cFGtCKJ8IdP2M/s9iJX/ECSA79eWKDFZjQyBM0yEWqns7Rtnn?=
+ =?us-ascii?Q?mXzT/sKnl0gE+OJ8w974FKhtOix+Bxzi5CWF5KcKfRdzU7/hN39N1Knr1MUh?=
+ =?us-ascii?Q?SA+D7YfpU056MFGEqTGpfUtit4+v2anJRXDzmHyu8NqkAvsSxJndsLU6yjY5?=
+ =?us-ascii?Q?RNhdfszJCqBRAgU+/VhkI95ndFexxG82Sseg3srCSLJUdVrSDl3m68vI0I0E?=
+ =?us-ascii?Q?YhrhIRtWIMR6+JW/gsiXt54cLCbYa127mywF1vejN8qX/5q6Hz5k1c53B5Bb?=
+ =?us-ascii?Q?bsgP2rE7IqIHbwn/+CkqYLj1dehY2D8DJOGVLkavhfvVxUCsgIjotkpMtn+9?=
+ =?us-ascii?Q?LP3vzcI5iBoAVUc0BVXAOARzLPLmjXmH1BJEv5y7poiwXqVR9ApR+DsKu9By?=
+ =?us-ascii?Q?xOlYknRrkDJGtniCV6+fo9HFkqwJ5auOHhznRGw5HYbxpXDMZPkgfaSVyXMz?=
+ =?us-ascii?Q?uY/OgUUK79F4gLNp+1ADXmfFtJnGSoZSW1RsBKsnIlIl820RoChX8ZDiQCrH?=
+ =?us-ascii?Q?hVIvGKvW9OYbGL0Rgpg9r9+K9cHJKXdr+UwDg5nwH668JuckkWwxReaYy85H?=
+ =?us-ascii?Q?ogxYVagPUG/HnNGPoTjuPFGqoJvly4Hx+BYPYOmpV42R0YkmcplVQyhfC+G9?=
+ =?us-ascii?Q?u5GS1MozPqkzVm0cy78TL/JOl6dElhE1OjIlrCuMjDV48ZTBb6cDiihuQsCc?=
+ =?us-ascii?Q?CDHGPQHQR2g96zrGrQ81eyafYhpOn4ZWdhzovnUGWEwDwaOQUp6xpgfIQDNw?=
+ =?us-ascii?Q?qdBOVw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 910e77fb-6758-43e0-5569-08daef122c65
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 11:44:16.2447
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i14c3lXchRrQspgbSnXVYrlH+UCitG89CdmfjszKs/cmTwLCqQrLhfzTj0cvLwJc5pi0bvC7a9E7XpZ6uUctaYdQpnfKU12g38HSmYWVsyg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB4086
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-01-04 at 21:57 +0900, Jisoo Jang wrote:
-> Fix a use-after-free that occurs in kfree_skb() called from
-> local_cleanup(). When detaching an nfc device, local_cleanup()
-> called from nfc_llcp_unregister_device() frees local->rx_pending
-> and cancels local->rx_work. So the socket allocated before
-> unregister is not set null by nfc_llcp_rx_work().
-> local_cleanup() called from local_release() frees local->rx_pending
-> again, which leads to the bug.
+On Mon, Dec 26, 2022 at 07:14:06PM +0800, yang.yang29@zte.com.cn wrote:
+> From: Xu Panda <xu.panda@zte.com.cn>
 > 
-> Ensure kfree_skb() is called once when unregistering the device.
+> The implementation of strscpy() is more robust and safer.
+> That's now the recommended way to copy NUL-terminated strings.
 > 
-> Found by a modified version of syzkaller.
-> 
-> BUG: KASAN: use-after-free in kfree_skb
-> Call Trace:
->  kfree_skb
->  local_cleanup
->  nfc_llcp_local_put
->  llcp_sock_destruct
->  __sk_destruct
->  sk_destruct
->  __sk_free
->  sk_free
->  llcp_sock_release
->  __sock_release
->  sock_close
->  __fput
->  task_work_run
->  exit_to_user_mode_prepare
->  syscall_exit_to_user_mode
->  do_syscall_64
->  entry_SYSCALL_64_after_hwframe
-> 
-> Allocate by:
->  __alloc_skb
->  pn533_recv_response
->  __usb_hcd_giveback_urb
->  usb_hcd_giveback_urb
->  dummy_timer
->  call_timer_fn
->  run_timer_softirq
->  __do_softirq
-> 
-> Freed by:
->  kfree_skbmem
->  kfree_skb
->  local_cleanup
->  nfc_llcp_unregister_device
->  nfc_unregister_device
->  pn53x_unregister_nfc
->  pn533_usb_disconnect
->  usb_unbind_interface
->  device_release_driver_internal
->  bus_remove_device
->  device_del
->  usb_disable_device
->  usb_disconnect
->  hub_event
->  process_one_work
->  worker_thread
->  kthread
->  ret_from_fork
-> 
-> Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
+> Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
+> Signed-off-by: Yang Yang <yang.yang29@zte.com>
 > ---
->  net/nfc/llcp_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
-> index 3364caabef8b..cbf2ef0af57b 100644
-> --- a/net/nfc/llcp_core.c
-> +++ b/net/nfc/llcp_core.c
-> @@ -156,7 +156,6 @@ static void local_cleanup(struct nfc_llcp_local *local)
->  	cancel_work_sync(&local->tx_work);
->  	cancel_work_sync(&local->rx_work);
->  	cancel_work_sync(&local->timeout_work);
-> -	kfree_skb(local->rx_pending);
->  	del_timer_sync(&local->sdreq_timer);
->  	cancel_work_sync(&local->sdreq_timeout_work);
->  	nfc_llcp_free_sdp_tlv_list(&local->pending_sdreqs);
-> @@ -170,6 +169,7 @@ static void local_release(struct kref *ref)
->  
->  	list_del(&local->list);
->  	local_cleanup(local);
-> +	kfree_skb(local->rx_pending);
->  	kfree(local);
->  }
-> 
+> change for v2
+>  - use the right tag of wireless-next. 
 
-With this change, local->tx_work/nfc_llcp_tx_work can be invoked after
-nfc_unregister_device(). nfc_llcp_tx_work assumnes the nfc device is
-alive, so I guess we need (part of) local_cleanup() being in place at
-nfc de-registration time.
-
-What about simply setting local->rx_pending to NULL in local_cleanup()?
-
-Thanks!
-
-Paolo
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
