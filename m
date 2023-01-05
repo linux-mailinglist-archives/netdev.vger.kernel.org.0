@@ -2,335 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43BAF65EF41
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 15:50:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F90B65EF96
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 16:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231686AbjAEOuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 09:50:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        id S231802AbjAEPCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 10:02:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234223AbjAEOtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 09:49:55 -0500
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8A25D414
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 06:49:41 -0800 (PST)
-Received: by mail-vs1-xe29.google.com with SMTP id o63so33496385vsc.10
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 06:49:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Fqp0IL0vPx+WyxKibSi8EubINlKC1unlnZNjm/c7cRM=;
-        b=F+siEV4aLITsQCjiU1Qs8wQrFy2AWdBhhk11oAPKnAhxB8fm43lmnsAlhC4gNM0h4I
-         7EOHIdW4NtTIc7DSJJsXFmMRPE0j14mfzk4RfBu9M65hVcPCeGGaidqEtg0BktKxMEkL
-         iLRloSDCLDK56HkE/8dxWyj2UIyfSmYp3W+O4+5oHaBfGKUPc6GwMGgeclo0j3J9gzJg
-         BzlszB9X7kf5lczUBpDWvp/S/kNgRAjZzkXLPw2q2wgRY6MN8E5MIYjIyayWLXIybKtE
-         vwHqSyEiFV0u/IJf8mCKiV64+FukZ6XsARvcfhqNJxAkHdhLruTCVPye6NvqdHglKcKk
-         qw1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Fqp0IL0vPx+WyxKibSi8EubINlKC1unlnZNjm/c7cRM=;
-        b=af3nh/CRVfm2XPC08ww32xg2lWGloVF6JewKCdM+WZOEpz0T7rU8TuQpgYcbuM5Tdd
-         hv0D1az+tBbR1f0Rpw3FnoUR8gd7vEUdezsc2HjaSXrPFSUtINfvpqRIegSaVjiWWh+a
-         uf/F7p7z63TmAaXLjfApah3ZItk9vt5W6iWsVuqQH08BoFU7NW/MhYeFSG2ZMNhNDzoQ
-         r9WCC3qQ2oOWsE1ArhocHlqIHKPcPiUVDo/4pbAD6t4bF2mnCI6PKBBRJBqx1teyZDQW
-         o+3OQt3l4XJR06j+8mxclsejyYM1A2Z6JbDKjMhSUF5DSmQXYSydEpkYUhcesX8FZif2
-         riGA==
-X-Gm-Message-State: AFqh2krwddUiaKh8VG1abkPhr7lx8fx+CBNqD5vn3IwhaesYuqxBMQ+l
-        gIudvpykJzFcIVVOszoI2FivbsyDKdfxQGlc/Q/5jg==
-X-Google-Smtp-Source: AMrXdXtEJw3EZH9EpXnc2Ogay85hUvGleLv1XAj0mDfcwC4642b3IoOsluGjf7d3z/jsZ0SLsWNk3meUmpY5w6WKJUY=
-X-Received: by 2002:a05:6102:b0a:b0:3c7:dfdb:a6a2 with SMTP id
- b10-20020a0561020b0a00b003c7dfdba6a2mr4136444vst.34.1672930178753; Thu, 05
- Jan 2023 06:49:38 -0800 (PST)
+        with ESMTP id S234394AbjAEPCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 10:02:10 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229FBAE70
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 07:02:09 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tk57PNEoeM1tyWEsnT9Q60ZNUJhrIwGSJDkvmvHjXOthe7gHt158suMwzDQdB+nC9J/G6sV456ishlOa01h84JymeoB8buWiMg1+SSWtdWuxj4TCXFI2/ptyoellBtT3bpONoodW/J1Hf2/AJMFmHsabVzdTqsEv8yBdsSNTsX/RCIxmcNM7e4jQFJtdmuNV2Y6NyiPdPAn+JJPQt/v9Z9n6mqXKCQvNbMSLZbgoJQEKPYF8Qga/Yk+I2aVJOabT3ENsvto1JOBhpg9ZOGRwsyGvmvqyxu1bP8zKTX8gjslwvdPkXSaCTA/0+jiygfZOrWbbCxsgPj6KryWyheDFWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ex0NCiRfJfdnxCcpPhlmUj20Af54a6afdrneJXmVo0M=;
+ b=liqzONZ0fcUQ7JISnEdXwAfCo3oiBLiyrZSw256OH9h0THND2vsH/r6XLH8U/JFkGzPdwbJD/XGuxwEj854fN6hGH2DkxNz6DCdg2X2705QMcJ3oAV1xqLR9cD7e0coAIY4TA06CRhUoyeUFIpY/rXLEF7nAS9gwzdqPNeaipJ1nkyxzZ37jxfD9mZLaI30oiE3u97UAE+HzaTgT1fBVVqPqbI13DNUH4H47JQ/YXIAFkizXxFwe73qDSC08OOOfHnfgHy0uPh5bwYWgAss5UWUlHBE4Xv/zPImfEzzDu4YECxV2qzXKAy5OU2hqbjSkUB04YOOzAXvUiH5zY1GOqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ex0NCiRfJfdnxCcpPhlmUj20Af54a6afdrneJXmVo0M=;
+ b=kHDC+WKs0Y07jp4YK7LjG7b5roqABNOfaKkS+WkoipRRNex5Lm9Xh+zPegAEbKwr8iWdQHQNueFPT9ChHNNoib1mM2x80ibQmixZbSDBMNlknf6IYXUerhGECwVhusu8lmMun+fGFhQQrQ4TKl0LbzdQ4I2PT2qfkIMMb4S9hrF69tYtAy4bWcheqpjGEKjGVPVx3aBmi6oWwnTaMO9aJLD4AQuuVpvugkqxc/z1e9hkZnZUcNW0LT5OT5osMUw4IzoiCbsWjfrdcxydlv2juWor9UEQL7KIbDV8Rf8odERAZ+RYcroyLQhqm8ABTZeI26khfDpuIfm+r+PPXma1Hg==
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com (2603:10b6:208:3e3::9)
+ by SA1PR12MB5639.namprd12.prod.outlook.com (2603:10b6:806:22a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
+ 2023 15:02:07 +0000
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::349c:7f4b:b5a3:fc19]) by IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::349c:7f4b:b5a3:fc19%7]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
+ 15:02:07 +0000
+From:   Emeel Hakim <ehakim@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "atenart@kernel.org" <atenart@kernel.org>
+Subject: RE: [PATCH net-next 0/2] Add support to offload macsec using netlink
+ update
+Thread-Topic: [PATCH net-next 0/2] Add support to offload macsec using netlink
+ update
+Thread-Index: AQHZINxpgD0SLzUGf0uz64GBgtaDj66P25cAgAAPaFA=
+Date:   Thu, 5 Jan 2023 15:02:06 +0000
+Message-ID: <IA1PR12MB6353778987E1DBFA4B3489D2ABFA9@IA1PR12MB6353.namprd12.prod.outlook.com>
+References: <20230105080442.17873-1-ehakim@nvidia.com>
+ <Y7bY+oYkMojpMCJU@nanopsycho>
+In-Reply-To: <Y7bY+oYkMojpMCJU@nanopsycho>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR12MB6353:EE_|SA1PR12MB5639:EE_
+x-ms-office365-filtering-correlation-id: f88ba1e8-bf7e-4d17-09a3-08daef2dd020
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IwJGCCGN6ah/E7vXBNCSO+ZAuGo16BI1RfKgFWvrUgHJfZwesy1404XKMusMoWn8X+vGCFuRL+ae9zFwFPxcr2NJqbGNakI2bXjaiGPoLcYNgJ3CuQsDFNOSUO83twgBxh1Mp6+Y+EeJsqjjgf6yCv3ZI5uQsVEA+K0b+neSdCHRYyTUWaoQqZQWJgAWoJN74SmV10wVPd0nrd1lKxxPBShGIzA3DxcR0+yHJCPv53c4JYnTDSXtSCKnuLZfCMoPT1R/0cUpMXul2kLPXmqH7d1xfLOTEg36ZGc3XBq1qFFOosG1sm4JRrDrWjo6Y4sA2a+pOydXdd6ni8tnvgM4TFmqFVf9+K8Hi2+173Dt66bCBbxam8pZ02vPfCL7algAhYm5wWKxv99Yq8P+GwFPgsc5BViUB0tHorOQMedR1/WCu6+5d44+Zxbq02koobMgRGTrftve9Jf3cpPKGShbvSmnVusk8CAHFXNzvJCDxJZ4DPnbqxHTgLP41VKM7bMTZp5/1pbPswePIh9EWFo+p9B4T1UDWmJctthu2Wp/EGgXZa1652nDvPpPSOR/2LyPs0Pupwegti757CR8MUDSPLvwC99OhR+MtYFVzRGs0D1GwvEm52fWnrhsTWRiOGrE4yN0Abc6D9CLkDe7yHWQ+FyVLVJ8HWBzk8xnd8X+zpPeAhNXyJuiM+ZM5z5OM+8ze472YFBpPIaR2DOjCrhCLg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6353.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(136003)(366004)(376002)(396003)(39860400002)(451199015)(38100700002)(33656002)(2906002)(5660300002)(15650500001)(8936002)(52536014)(41300700001)(83380400001)(122000001)(6916009)(54906003)(71200400001)(66556008)(76116006)(66946007)(38070700005)(86362001)(7696005)(53546011)(66476007)(4326008)(6506007)(26005)(66446008)(64756008)(9686003)(478600001)(55016003)(316002)(186003)(8676002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NWswT2NSeGhtRHhYRmRJWER1RElOVi94dTdZWXk3bEswNlQxSFVOWkl2ZU5W?=
+ =?utf-8?B?UW5kQTA1dkdQRVhoQno3VkNwVmNlMnV4Vk9OTVNtU1hqQ09rSGdIVkZ0dmhh?=
+ =?utf-8?B?WEZxM2ZhQ0c5YnRWM055aU93ZWplQmt4OE9NV1ZVTXluNklWanV6SmR3NnB3?=
+ =?utf-8?B?K3llQzc3cmJGcjI0TVFSaW5PT3Uxb2Z4QzVPR044UzlnbHRmYUI1bmo2elAy?=
+ =?utf-8?B?VzJLN0FuVmhKcUpkVThBVUpSN00yR052cHFhSzFENzVXcW9EYmg5OWVmNnht?=
+ =?utf-8?B?dmxrSjdiR0JpSVNKWEZiSktNRjBLWWh2R0YrMkJTM1pDUElwSSt5OU5BU2Q3?=
+ =?utf-8?B?TzZlYVpLdjVuc2JwOXZ0c0RjSnhCdlQzcVRIcHE0TWFHOGxpc090dEVJbTFj?=
+ =?utf-8?B?eXorUUVzbE5CUm9XZGVPNnBVN2QwdUwwZVBEMUdvZnRzZjdHNlExa2VUbHc1?=
+ =?utf-8?B?a2xDcFczS2JSYUxWU21CY1lEYlNOV2ZNaFdrL2hHOXFxMHVwMGVUQk84R1VG?=
+ =?utf-8?B?cndyalVEazBzMXdlY1JwS0c3bkZySFdwZDBWOU1qUUJVY2RzR2tVcnFMcTJM?=
+ =?utf-8?B?OGNZN1FUWCtveUlQNVQrWVpnMFd0NjNpaTFrT2JrZnhjTFhIK0dBNjE3SmhE?=
+ =?utf-8?B?VTJzZ3lDNVBERHlubVNtL3hvbnM5Q3FXc2FvY1Q2RXgwNnRrWVdwZEZhWHlQ?=
+ =?utf-8?B?QmgwWlZLWFcvS3pDd25nbjRNQzJxNytWd3FkeU9WOXZPZkY2STZDQXBMUXpZ?=
+ =?utf-8?B?eFNaa0JZL2szNjVlWnFPWTYxcGZPSFlzc2ZlSnluV0RwRHljZ3VyWGUyVWhN?=
+ =?utf-8?B?MzJyUS9KaHF4MUNkMjljWVgxRGZzSmN0cVRDTCtJUWQ3SURXT0VDelVrajNO?=
+ =?utf-8?B?c1c4UGtkWlVKQ2lnTVlqWGRmcnNIbVc4VzBSUjV2ZEpNNVVrUXE4V1VYdnl4?=
+ =?utf-8?B?ZHBYWTVGdE91TythZHZZdXFUN2JveGY1eURtOGhENDMwN29HZUlYTTA2Qm1G?=
+ =?utf-8?B?VWw2aGY1L0ZyUEdMVXFLemhIUGVOV3JVWVB0dDVlYkdpRFFXQ3JGeFNudEs4?=
+ =?utf-8?B?bGJHUGE5SXpnR0pUN0lKZ21uM2hhMG90MGc1VTdWazRBWDZsK016cXEwRTI1?=
+ =?utf-8?B?eUZQM3B1ZGdhM2svc1RjVDdTbTNLODR6YlBqSTdRZ2NyZmtBMUNFT2tkalZG?=
+ =?utf-8?B?WjhCNkw5TmpYZ0czUDhEbTgyV3VZSWRqU2tzaysrVnpTRmlWRGNRN0lhVCt5?=
+ =?utf-8?B?RXdBQk5nM05WVXB3YUp1RFB1eHJVeVFiWng1L0xVRXpaV2dIb2RrQjM0bVJz?=
+ =?utf-8?B?b2ZXSEluckltZWZyKzBhanhGd09TYm16bXFhdlplajlPWjY3RjFzNlRkZDRJ?=
+ =?utf-8?B?VEh4b1FIRHZqS2o2aXVvZGl5SGM1MlIrVTRVYUxBTndFRkl4M2VPSEN0WUhI?=
+ =?utf-8?B?cmhNVmJjeW5DSko4VTBJSEE4YkhsT2FnVGUvOFM5WU5SZHc4bVlEOC91dDlB?=
+ =?utf-8?B?V1ZFTW5ndW5sZzJaWXNCakJLanhLUWQrV1UyaS9qM0RleXlzbktsbjJheFkz?=
+ =?utf-8?B?VG80UHZYc3RLaXQ1QnQxNzVkZVhVQjhkTWFyVXJVY1haaWN6Ujd0ajQzNWw2?=
+ =?utf-8?B?V0VWQkg5c3lIVEpReXY4NitPaFl3ZEJEa2sxeldldVRkWEhXODllalFONVlj?=
+ =?utf-8?B?bWg4NHM3RFMrQlJKOFYxUlJTekRPSGZYc1F6K21WaW5LcVk3SkNlVXJjc3RX?=
+ =?utf-8?B?K0RQb1BtTE0wZktSR2QrQXdHZ0dyeTNDeDVMRWdHTnVnWXRwNSt5c2gzV1pV?=
+ =?utf-8?B?RC9FL2xMRStPS2tiK0gwUUlxVmc5MjJoeHp5ek9kZUl0aU4zOWcvaTg1UFpL?=
+ =?utf-8?B?QnRJZVFqVjBhUkZ1MlQrNGduOWcvYUNlWHFKc1NlTEtxU1BUb2o5SERmSTJo?=
+ =?utf-8?B?N0FuREVLTUt1STk5Znh4cXo4bE5DNjl1bm5pU0I1ak5xZlQ2L1JCY2ZER1d6?=
+ =?utf-8?B?ZUZ0elR4OGRFK0x1Vm4yQ3I1VGFPYXNnRVV2b0VDeDNOaDlvak9OTGRvNURq?=
+ =?utf-8?B?UlhsV1JPNURZdks0NFVWd0swMlpXcVNNYThhVzduTWM2TXdvcVdZRDJQN0M5?=
+ =?utf-8?Q?1Usj6R9T4X61+FxaA+yMKfVGX?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 5 Jan 2023 20:19:27 +0530
-Message-ID: <CA+G9fYsTr9_r893+62u6UGD3dVaCE-kN9C-Apmb2m=hxjc1Cqg@mail.gmail.com>
-Subject: selftests: tc-testing: tdc.sh - WARNING: inconsistent lock state on
- arm x15
-To:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-stable <stable@vger.kernel.org>,
-        lkft-triage@lists.linaro.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Briana Oursler <briana.oursler@gmail.com>,
-        Lucas Bates <lucasb@mojatatu.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6353.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f88ba1e8-bf7e-4d17-09a3-08daef2dd020
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jan 2023 15:02:07.0048
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: blJgyHEjUSGazojXj8WA8gJu2jL7yHshpNhN+/oYoqj0uIIP/eZc/h4FZN3GI3PFELv0O/B61e1w4XGCbiA8eQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5639
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following kernel warnings noticed on arm beagleboard X15 device while running
-selftests: tc-testing: tdc.sh with stable-rc 6.1.
-
-This is always reproducible with kselftest merge configs.
-The build, config, vmlinux and test details links provided [1].
-
-[  228.686798] WARNING: inconsistent lock state
-[  228.193450] WARNING: CPU: 1 PID: 2386 at
-include/linux/u64_stats_sync.h:145
-__u64_stats_update_begin+0x180/0x1a4 [sch_gred]
-[  228.439208] WARNING: CPU: 1 PID: 2386 at
-include/linux/seqlock.h:269 __u64_stats_update_begin+0x1a0/0x1a4
-[sch_gred
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-[  204.305236] kselftest: Running tests in tc-testing
-TAP version 13
-1..1
-# selftests: tc-testing: tdc.sh
-# considering category actions
-#  -- buildebpf/SubPlugin.__init__
-# Unable to import the scapy python module.
-#
-# If not already installed, you may do so with:
-# pip3 install scapy==2.4.2
-[  207.264129] IPv6: ADDRCONF(NETDEV_CHANGE): v0p1: link becomes ready
-[  207.271331] IPv6: ADDRCONF(NETDEV_CHANGE): v0p0: link becomes ready
-[  228.188781] ------------[ cut here ]------------
-[  228.193450] WARNING: CPU: 1 PID: 2386 at
-include/linux/u64_stats_sync.h:145
-__u64_stats_update_begin+0x180/0x1a4 [sch_gred]
-[  228.204803] Modules linked in: sch_gred sch_multiq sch_cake
-netdevsim psample iptable_raw ip6_tables vrf iptable_filter xt_state
-ip_tables x_tables nft_masq nft_nat nft_chain_nat nf_nat nf_conntrack
-nf_defrag_ipv6 nf_defrag_ipv4 veth nf_tables libcrc32c nfnetlink
-cfg80211 bluetooth snd_soc_simple_card snd_soc_simple_card_utils
-etnaviv gpu_sched onboard_usb_hub snd_soc_davinci_mcasp
-snd_soc_ti_udma snd_soc_ti_edma snd_soc_ti_sdma snd_soc_core ac97_bus
-snd_pcm_dmaengine snd_pcm snd_timer snd soundcore display_connector
-sch_fq_codel fuse
-[  228.252777] CPU: 1 PID: 2386 Comm: tc Not tainted 6.1.4-rc1 #1
-[  228.258666] Hardware name: Generic DRA74X (Flattened Device Tree)
-[  228.264770]  unwind_backtrace from show_stack+0x18/0x1c
-[  228.270050]  show_stack from dump_stack_lvl+0x58/0x70
-[  228.275146]  dump_stack_lvl from __warn+0xd0/0x1f0
-[  228.279968]  __warn from warn_slowpath_fmt+0x64/0xc8
-[  228.284973]  warn_slowpath_fmt from
-__u64_stats_update_begin+0x180/0x1a4 [sch_gred]
-[  228.292694]  __u64_stats_update_begin [sch_gred] from
-gred_dump+0x1c0/0x790 [sch_gred]
-[  228.300689]  gred_dump [sch_gred] from tc_fill_qdisc+0x154/0x44c
-[  228.306732]  tc_fill_qdisc from qdisc_notify+0x11c/0x130
-[  228.312072]  qdisc_notify from qdisc_graft+0x440/0x624
-[  228.317260]  qdisc_graft from tc_modify_qdisc+0x558/0x850
-[  228.322692]  tc_modify_qdisc from rtnetlink_rcv_msg+0x180/0x56c
-[  228.328674]  rtnetlink_rcv_msg from netlink_rcv_skb+0xc0/0x118
-[  228.334533]  netlink_rcv_skb from netlink_unicast+0x19c/0x268
-[  228.340301]  netlink_unicast from netlink_sendmsg+0x1f8/0x484
-[  228.346099]  netlink_sendmsg from ____sys_sendmsg+0x224/0x2bc
-[  228.351898]  ____sys_sendmsg from ___sys_sendmsg+0x70/0x9c
-[  228.357421]  ___sys_sendmsg from sys_sendmsg+0x54/0x90
-[  228.362579]  sys_sendmsg from ret_fast_syscall+0x0/0x1c
-[  228.367858] Exception stack(0xf03f9fa8 to 0xf03f9ff0)
-[  228.372955] 9fa0:                   00000000 00000001 00000003
-bee09bdc 00000000 00000000
-[  228.381164] 9fc0: 00000000 00000001 b6f78800 00000128 626ad2dc
-00000000 00000000 00076000
-[  228.389373] 9fe0: 00000128 bee09b78 b6dff253 b6d71ae6
-[  228.394561] irq event stamp: 25529
-[  228.398040] hardirqs last  enabled at (25551): [<c03da980>]
-__up_console_sem+0x58/0x68
-[  228.406005] hardirqs last disabled at (25558): [<c03da96c>]
-__up_console_sem+0x44/0x68
-[  228.414001] softirqs last  enabled at (25548): [<c0301fc8>]
-__do_softirq+0x300/0x538
-[  228.421844] softirqs last disabled at (25537): [<c035a224>]
-__irq_exit_rcu+0x14c/0x170
-[  228.429870] ---[ end trace 0000000000000000 ]---
-[  228.434509] ------------[ cut here ]------------
-[  228.439208] WARNING: CPU: 1 PID: 2386 at
-include/linux/seqlock.h:269 __u64_stats_update_begin+0x1a0/0x1a4
-[sch_gred]
-[  228.449829] Modules linked in: sch_gred sch_multiq sch_cake
-netdevsim psample iptable_raw ip6_tables vrf iptable_filter xt_state
-ip_tables x_tables nft_masq nft_nat nft_chain_nat nf_nat nf_conntrack
-nf_defrag_ipv6 nf_defrag_ipv4 veth nf_tables libcrc32c nfnetlink
-cfg80211 bluetooth snd_soc_simple_card snd_soc_simple_card_utils
-etnaviv gpu_sched onboard_usb_hub snd_soc_davinci_mcasp
-snd_soc_ti_udma snd_soc_ti_edma snd_soc_ti_sdma snd_soc_core ac97_bus
-snd_pcm_dmaengine snd_pcm snd_timer snd soundcore display_connector
-sch_fq_codel fuse
-[  228.497802] CPU: 1 PID: 2386 Comm: tc Tainted: G        W
-6.1.4-rc1 #1
-[  228.505157] Hardware name: Generic DRA74X (Flattened Device Tree)
-[  228.511291]  unwind_backtrace from show_stack+0x18/0x1c
-[  228.516571]  show_stack from dump_stack_lvl+0x58/0x70
-[  228.521636]  dump_stack_lvl from __warn+0xd0/0x1f0
-[  228.526458]  __warn from warn_slowpath_fmt+0x64/0xc8
-[  228.531494]  warn_slowpath_fmt from
-__u64_stats_update_begin+0x1a0/0x1a4 [sch_gred]
-[  228.539184]  __u64_stats_update_begin [sch_gred] from
-gred_dump+0x1c0/0x790 [sch_gred]
-[  228.547180]  gred_dump [sch_gred] from tc_fill_qdisc+0x154/0x44c
-[  228.553222]  tc_fill_qdisc from qdisc_notify+0x11c/0x130
-[  228.558593]  qdisc_notify from qdisc_graft+0x440/0x624
-[  228.563751]  qdisc_graft from tc_modify_qdisc+0x558/0x850
-[  228.569183]  tc_modify_qdisc from rtnetlink_rcv_msg+0x180/0x56c
-[  228.575164]  rtnetlink_rcv_msg from netlink_rcv_skb+0xc0/0x118
-[  228.581024]  netlink_rcv_skb from netlink_unicast+0x19c/0x268
-[  228.586822]  netlink_unicast from netlink_sendmsg+0x1f8/0x484
-[  228.592590]  netlink_sendmsg from ____sys_sendmsg+0x224/0x2bc
-[  228.598388]  ____sys_sendmsg from ___sys_sendmsg+0x70/0x9c
-[  228.603912]  ___sys_sendmsg from sys_sendmsg+0x54/0x90
-[  228.609100]  sys_sendmsg from ret_fast_syscall+0x0/0x1c
-[  228.614349] Exception stack(0xf03f9fa8 to 0xf03f9ff0)
-[  228.619415] 9fa0:                   00000000 00000001 00000003
-bee09bdc 00000000 00000000
-[  228.627655] 9fc0: 00000000 00000001 b6f78800 00000128 626ad2dc
-00000000 00000000 00076000
-[  228.635864] 9fe0: 00000128 bee09b78 b6dff253 b6d71ae6
-[  228.641052] irq event stamp: 25921
-[  228.644470] hardirqs last  enabled at (25929): [<c03da980>]
-__up_console_sem+0x58/0x68
-[  228.652465] hardirqs last disabled at (25938): [<c03da96c>]
-__up_console_sem+0x44/0x68
-[  228.660491] softirqs last  enabled at (25920): [<c0301fc8>]
-__do_softirq+0x300/0x538
-[  228.668334] softirqs last disabled at (25957): [<c035a224>]
-__irq_exit_rcu+0x14c/0x170
-[  228.676300] ---[ end trace 0000000000000000 ]---
-[  228.680999]
-[  228.682495] ================================
-[  228.686798] WARNING: inconsistent lock state
-[  228.691070] 6.1.4-rc1 #1 Tainted: G        W
-[  228.696136] --------------------------------
-[  228.700439] inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
-[  228.706481] tc/2386 [HC0[0]:SC0[0]:HE1:SE1] takes:
-[  228.711303] c96870b4 (&syncp->seq#14){+.?.}-{0:0}, at:
-gred_dump+0x1c0/0x790 [sch_gred]
-[  228.719360] {IN-SOFTIRQ-W} state was registered at:
-[  228.724273]   __u64_stats_update_begin+0x10c/0x1a4
-[  228.729095]   __dev_queue_xmit+0xcac/0x1288
-[  228.733306]   arp_process+0x8cc/0x95c
-[  228.736999]   __netif_receive_skb_one_core+0x58/0x74
-[  228.741973]   netif_receive_skb+0xe4/0x474
-[  228.746093]   cpsw_rx_handler+0x1a0/0x42c
-[  228.750122]   __cpdma_chan_process+0xf4/0x188
-[  228.754516]   cpdma_chan_process+0x44/0x5c
-[  228.758636]   cpsw_rx_mq_poll+0x4c/0x9c
-[  228.762512]   __napi_poll+0x3c/0x28c
-[  228.766113]   net_rx_action+0x160/0x350
-[  228.769958]   __do_softirq+0x130/0x538
-[  228.773712]   call_with_stack+0x18/0x20
-[  228.777587]   do_softirq+0xb0/0xb4
-[  228.781005]   __local_bh_enable_ip+0x180/0x1b8
-[  228.785461]   ip_finish_output2+0x21c/0xb74
-[  228.789672]   ip_send_skb+0x58/0x120
-[  228.793273]   udp_send_skb+0x13c/0x38c
-[  228.797027]   udp_sendmsg+0x920/0xe28
-[  228.800720]   ____sys_sendmsg+0x224/0x2bc
-[  228.804748]   ___sys_sendmsg+0x70/0x9c
-[  228.808502]   sys_sendmsg+0x54/0x90
-[  228.812011]   __sys_trace_return+0x0/0x10
-[  228.816040] irq event stamp: 25991
-[  228.819458] hardirqs last  enabled at (25991): [<c03da980>]
-__up_console_sem+0x58/0x68
-[  228.827423] hardirqs last disabled at (25990): [<c03da96c>]
-__up_console_sem+0x44/0x68
-[  228.835388] softirqs last  enabled at (25970): [<c0301fc8>]
-__do_softirq+0x300/0x538
-[  228.843170] softirqs last disabled at (25957): [<c035a224>]
-__irq_exit_rcu+0x14c/0x170
-[  228.851135]
-[  228.851135] other info that might help us debug this:
-[  228.857666]  Possible unsafe locking scenario:
-[  228.857666]
-[  228.863616]        CPU0
-[  228.866088]        ----
-[  228.868530]   lock(&syncp->seq#14);
-[  228.872039]   <Interrupt>
-[  228.874694]     lock(&syncp->seq#14);
-[  228.878387]
-[  228.878387]  *** DEADLOCK ***
-[  228.878387]
-[  228.884307] 1 lock held by tc/2386:
-[  228.887817]  #0: c25b0760 (rtnl_mutex){+.+.}-{3:3}, at:
-qdisc_create+0x3cc/0x5bc
-[  228.895294]
-[  228.895294] stack backtrace:
-[  228.899658] CPU: 1 PID: 2386 Comm: tc Tainted: G        W
-6.1.4-rc1 #1
-[  228.907012] Hardware name: Generic DRA74X (Flattened Device Tree)
-[  228.913146]  unwind_backtrace from show_stack+0x18/0x1c
-[  228.918395]  show_stack from dump_stack_lvl+0x58/0x70
-[  228.923492]  dump_stack_lvl from mark_lock.part.0+0xb74/0x128c
-[  228.929351]  mark_lock.part.0 from __lock_acquire+0x984/0x2a8c
-[  228.935211]  __lock_acquire from lock_acquire+0x110/0x364
-[  228.940643]  lock_acquire from __u64_stats_update_begin+0x10c/0x1a4
-[sch_gred]
-[  228.947906]  __u64_stats_update_begin [sch_gred] from
-gred_dump+0x1c0/0x790 [sch_gred]
-[  228.955871]  gred_dump [sch_gred] from tc_fill_qdisc+0x154/0x44c
-[  228.961914]  tc_fill_qdisc from qdisc_notify+0x11c/0x130
-[  228.967254]  qdisc_notify from qdisc_graft+0x440/0x624
-[  228.972442]  qdisc_graft from tc_modify_qdisc+0x558/0x850
-[  228.977874]  tc_modify_qdisc from rtnetlink_rcv_msg+0x180/0x56c
-[  228.983825]  rtnetlink_rcv_msg from netlink_rcv_skb+0xc0/0x118
-[  228.989685]  netlink_rcv_skb from netlink_unicast+0x19c/0x268
-[  228.995452]  netlink_unicast from netlink_sendmsg+0x1f8/0x484
-[  229.001220]  netlink_sendmsg from ____sys_sendmsg+0x224/0x2bc
-[  229.007019]  ____sys_sendmsg from ___sys_sendmsg+0x70/0x9c
-[  229.012542]  ___sys_sendmsg from sys_sendmsg+0x54/0x90
-[  229.017700]  sys_sendmsg from ret_fast_syscall+0x0/0x1c
-[  229.022979] Exception stack(0xf03f9fa8 to 0xf03f9ff0)
-[  229.028045] 9fa0:                   00000000 00000001 00000003
-bee09bdc 00000000 00000000
-[  229.036285] 9fc0: 00000000 00000001 b6f78800 00000128 626ad2dc
-00000000 00000000 00076000
-[  229.044494] 9fe0: 00000128 bee09b78 b6dff253 b6d71ae6
-[  232.169219] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  232.528900] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  232.913879] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  233.339508] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  233.720397] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  234.080047] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  234.460174] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  234.540374] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  234.950683] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-[  235.029327] sch_tbf: burst 1500 is lower than device dummy1 mtu (1514) !
-#
-# -----> teardown stage *** Could not execute: \"$TC qdisc del dev
-$DUMMY handle 1: root\"
-#
-# -----> teardown stage *** Error message: \"Error: Invalid handle.
-# \"
-#
-# -----> teardown stage *** Aborting test run.
-#
-
-[1]
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-6.1.y/build/v6.1.3-208-ga31425cbf493/testrun/13974102/suite/log-parser-test/tests/
-https://lkft.validation.linaro.org/scheduler/job/6022394#L4509
-
-
-metadata:
-  git_ref: linux-6.1.y
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-  git_sha: a31425cbf493ef8bc7f7ce775a1028b1e0612f32
-  git_describe: v6.1.3-208-ga31425cbf493
-  kernel_version: 6.1.4-rc1
-  kernel-config:
-https://storage.tuxsuite.com/public/linaro/lkft/builds/2JrzrHzfFQKu8CwO4A3HTPI51of/config
-  build-url: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc/-/pipelines/738268273
-  artifact-location:
-https://storage.tuxsuite.com/public/linaro/lkft/builds/2JrzrHzfFQKu8CwO4A3HTPI51of
-  toolchain: gcc-10
-  vmlinux.xz: https://storage.tuxsuite.com/public/linaro/lkft/builds/2JrzrHzfFQKu8CwO4A3HTPI51of/vmlinux.xz
-  System.map: https://storage.tuxsuite.com/public/linaro/lkft/builds/2JrzrHzfFQKu8CwO4A3HTPI51of/System.map
-
---
-Linaro LKFT
-https://lkft.linaro.org
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmlyaSBQaXJrbyA8amly
+aUByZXNudWxsaS51cz4NCj4gU2VudDogVGh1cnNkYXksIDUgSmFudWFyeSAyMDIzIDE2OjA1DQo+
+IFRvOiBFbWVlbCBIYWtpbSA8ZWhha2ltQG52aWRpYS5jb20+DQo+IENjOiBuZXRkZXZAdmdlci5r
+ZXJuZWwub3JnOyBSYWVkIFNhbGVtIDxyYWVkc0BudmlkaWEuY29tPjsNCj4gZGF2ZW1AZGF2ZW1s
+b2Z0Lm5ldDsgZWR1bWF6ZXRAZ29vZ2xlLmNvbTsga3ViYUBrZXJuZWwub3JnOw0KPiBwYWJlbmlA
+cmVkaGF0LmNvbTsgc2RAcXVlYXN5c25haWwubmV0OyBhdGVuYXJ0QGtlcm5lbC5vcmcNCj4gU3Vi
+amVjdDogUmU6IFtQQVRDSCBuZXQtbmV4dCAwLzJdIEFkZCBzdXBwb3J0IHRvIG9mZmxvYWQgbWFj
+c2VjIHVzaW5nIG5ldGxpbmsNCj4gdXBkYXRlDQo+IA0KPiBFeHRlcm5hbCBlbWFpbDogVXNlIGNh
+dXRpb24gb3BlbmluZyBsaW5rcyBvciBhdHRhY2htZW50cw0KPiANCj4gDQo+IFRoZSB3aG9sZSBw
+YXRjaHNldCBlbWFpbHMsIGluY2x1ZGluZyBhbGwgcGF0Y2hlcyBhbmQgY292ZXJsZXR0ZXIgc2hv
+dWxkIGJlIG1hcmtlZA0KPiB3aXRoIHRoZSBzYW1lIHZlcnNpb24gbnVtYmVyLg0KDQpBY2ssIHdh
+bnRlZCB0byBtYWtlIGl0IGNsZWFyIHRoYXQgdGhpcyBpcyBiZWluZyBzZW50IGZvciB0aGUgZmly
+c3QgdGltZSwgYWxzbyANCmRvIEkgbGVhdmUgdGhlIGNoYW5nZSBsb2cgb2Ygbm9uLWNoYW5nZWQg
+cGF0Y2hlcyBlbXB0eT8NCnNob3VsZCBJIHJlc2VuZCB0aGUgcGF0Y2hlcz8NCiANCj4NCj4gVGh1
+LCBKYW4gMDUsIDIwMjMgYXQgMDk6MDQ6NDBBTSBDRVQsIGVoYWtpbUBudmlkaWEuY29tIHdyb3Rl
+Og0KPiA+RnJvbTogRW1lZWwgSGFraW0gPGVoYWtpbUBudmlkaWEuY29tPg0KPiA+DQo+ID5UaGlz
+IHNlcmllcyBhZGRzIHN1cHBvcnQgZm9yIG9mZmxvYWRpbmcgbWFjc2VjIGFzIHBhcnQgb2YgdGhl
+IG5ldGxpbmsNCj4gPnVwZGF0ZSByb3V0aW5lICwgY29tbWFuZCBleGFtcGxlOg0KPiA+aXAgbGlu
+ayBzZXQgbGluayBldGgyIG1hY3NlYzAgdHlwZSBtYWNzZWMgb2ZmbG9hZCBtYWMNCj4gPg0KPiA+
+VGhlIGFib3ZlIGlzIGRvbmUgdXNpbmcgdGhlIElGTEFfTUFDU0VDX09GRkxPQUQgYXR0cmlidXRl
+IGhlbmNlIHRoZQ0KPiA+c2Vjb25kIHBhdGNoIG9mIGR1bXBpbmcgdGhpcyBhdHRyaWJ1dGUgYXMg
+cGFydCBvZiB0aGUgbWFjc2VjIGR1bXAuDQo+ID4NCj4gPkVtZWVsIEhha2ltICgyKToNCj4gPiAg
+bWFjc2VjOiBhZGQgc3VwcG9ydCBmb3IgSUZMQV9NQUNTRUNfT0ZGTE9BRCBpbiBtYWNzZWNfY2hh
+bmdlbGluaw0KPiA+ICBtYWNzZWM6IGR1bXAgSUZMQV9NQUNTRUNfT0ZGTE9BRCBhdHRyaWJ1dGUg
+YXMgcGFydCBvZiBtYWNzZWMgZHVtcA0KPiA+DQo+ID4gZHJpdmVycy9uZXQvbWFjc2VjLmMgfCAx
+MjcgKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+IDEgZmls
+ZSBjaGFuZ2VkLCA2NiBpbnNlcnRpb25zKCspLCA2MSBkZWxldGlvbnMoLSkNCj4gPg0KPiA+LS0N
+Cj4gPjIuMjEuMw0KPiA+DQo=
