@@ -2,209 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6D465ECCE
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 14:19:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6864365ED16
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 14:31:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbjAENSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 08:18:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
+        id S230010AbjAENa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 08:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234385AbjAENRo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 08:17:44 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A565AC64;
-        Thu,  5 Jan 2023 05:17:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=KMLqgdiGpsgveS+d9Haf3IhQ0Gi2pqpU6Hr1FOq0nFo=; b=0q
-        PZfQX1Abg7bndIQjbrZuL1JGANzX3z+0NgHP3Du+YyiFaKAG7jolPcN9YeONXB0iru+VdVTybuMLv
-        YFodXcwA9i0o7JRMXg/X0He/uNZtj25HqnkaO48Wi6mW00ye9xMwt+7h9lWnku5QE5sTg3Yr9abVi
-        CsZKfiGsK07zfxI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pDQ7W-001DMp-6K; Thu, 05 Jan 2023 14:17:22 +0100
-Date:   Thu, 5 Jan 2023 14:17:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Frank <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
- ethernet phy Driver bindings
-Message-ID: <Y7bN4vJXMi66FF6v@lunn.ch>
-References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
- <20230105073024.8390-2-Frank.Sae@motor-comm.com>
+        with ESMTP id S233545AbjAENaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 08:30:09 -0500
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAB624C
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 05:30:07 -0800 (PST)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1pDQJo-00CauE-Pp; Thu, 05 Jan 2023 14:30:04 +0100
+Received: from laforge by localhost.localdomain with local (Exim 4.96)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1pDQ92-00FPC6-1N;
+        Thu, 05 Jan 2023 14:18:56 +0100
+Date:   Thu, 5 Jan 2023 14:18:56 +0100
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: hdlc: Increase maximum HDLC MTU
+Message-ID: <Y7bOQDKrUrEC9S/t@nataraja>
+References: <20230104125724.3587015-1-laforge@osmocom.org>
+ <m3wn614g0k.fsf@t19.piap.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230105073024.8390-2-Frank.Sae@motor-comm.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <m3wn614g0k.fsf@t19.piap.pl>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +  motorcomm,rx-delay-basic:
-> +    description: |
-> +      Tristate, setup the basic RGMII RX Clock delay of PHY.
-> +      This basic delay is fixed at 2ns (1000Mbps) or 8ns (100Mbps、10Mbps).
-> +      This basic delay usually auto set by hardware according to the voltage
-> +      of RXD0 pin (low = 0, turn off;   high = 1, turn on).
-> +      If not exist, this delay is controlled by hardware.
-> +      0: turn off;   1: turn on.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1]
+Hi Krzysztof,
 
-Why is this needed? When the MAC driver connects to the PHY, it passes
-phy-mode. For RGMII, this is one of:
+thanks for your detailed analyiss.
 
-linux/phy.h:	PHY_INTERFACE_MODE_RGMII,
-linux/phy.h:	PHY_INTERFACE_MODE_RGMII_ID,
-linux/phy.h:	PHY_INTERFACE_MODE_RGMII_RXID,
-linux/phy.h:	PHY_INTERFACE_MODE_RGMII_TXID,
+On Thu, Jan 05, 2023 at 08:06:19AM +0100, Krzysztof Hałasa wrote:
 
-This tells you if you need to add a delay for the RX clock line, the
-TX clock line, or both. That is all you need to know for basic RGMII
-delays.
+> Andrew is right. The default setting makes sure the packets fit into
+> regular Ethernet on the other side of the link (which is, or was, the
+> most common situation). I guess the mtu could be set trivially to 1500
+> with the max being 1600 or 16k or whatever.
 
-> +  motorcomm,rx-delay-additional-ps:
+great.
 
-ethernet-phy.yaml defines rx-internal-delay-ps. Please use that.
+> Now there is a second thing, the HDLC_MAX_MRU (which is set to 1600).
+> This is the (fixed) size of RX (and TX) memory buffers on certain old
+> cards (some of whom are ISA and maybe even use 8-bit XT-BUS transfer
+> mode). I guess it doesn't concern you directly, but the MTU on those
+> cards must be kept at most at HDLC_MAX_MRU - max size of the headers
+> (= 10 + 14 + 4 or so, maybe more) or the packets generated by the IP
+> stack won't go out correctly.
 
-> +    description: |
-> +      Setup the additional RGMII RX Clock delay of PHY defined in pico seconds.
-> +      RGMII RX Clock Delay = rx-delay-basic + rx-delay-additional-ps.
-> +    enum:
-> +      - 0
-> +      - 150
-> +      - 300
-> +      - 450
-> +      - 600
-> +      - 750
-> +      - 900
-> +      - 1050
-> +      - 1200
-> +      - 1350
-> +      - 1500
-> +      - 1650
-> +      - 1800
-> +      - 1950
-> +      - 2100
-> +      - 2250
+Understood. Indeed it is not my immediate concern, as I don't have any of
+those old ISA or even 8-bit XT-bus cards.  If anyone had some spares of
+such retronetworking hardware, I'd be very interested.  In the 
+actual "present day" production deployments we're using either the
+Osmocom icE1usb (2-port E1 USB) or Digium TE820 (8-port E1 PCIe) with
+DAHDI as and CONFIG_DAHDI_NET, which then uses the kernel HDLC.
 
-Is this property mandatory? If not, please document what value is used
-if it is not present.
+> > +/* FRF 1.2 states the information field should be 1600 bytes. So in case of
+> > + * a 4-byte header of Q.922, this results in a MTU of 1604 bytes */
+> > +#define HDLC_MAX_MTU 1604	/* as required for FR network (e.g.
+> > carrying GPRS-NS) */
+> 
+> I think the "FR information field" is the data portion, without 2-byte
+> Q.922 address, and without the 2-byte frame check sequence, but
+> including e.g. UI and NLPID. 
 
-> +
-> +  motorcomm,tx-delay-ge-ps:
+In my understanding of Q.922/Q.921, the information field does not include
+the control field or the address field.  So in your example, the UI would
+be the control field.  So we have a FR frame consisting of:
 
-tx-internal-delay-ps
+* flag
+* address field: typically 2 octets, in theory also 3 or 4-octet formats
+* control field: 2 octets for I/S format, 1 octet for U format
+* FCS: 2 octets
+* flag
 
-And please define the default.
+> This means, in the simplest case of IPv4/v6,
+> max MTU of 1598 bytes (by default), and less than that with 802.1q
+> (8-byte "snap" DLCI header format + 14-byte bridged Ethernet header +
+> 4 byte .1q header). This was never very straightforward.
 
-> +  motorcomm,tx-delay-fe-ps:
+As indicated, I unfortunately lack any in-depth experience with
+deployments of Ethernet or IP over Frame Relay or HDLC.
 
-So you can only set the TX delay? What is RX delay set to? Same as 1G?
-I would suggest you call this motorcomm,tx-internal-delay-fe-ps, so
-that it is similar to the standard tx-internal-delay-ps.
+> I think maybe we change HDLC_MAX_MRU from 1600 to 1602 (2 bytes for the
+> Q.922 address and 1600 for the "FR information field"), this shouldn't
+> break anything and would IMHO make the code compliant with the FRF 1.2.
 
-> +    description: |
-> +      Setup PHY's RGMII TX Clock delay  defined in pico seconds when the speed
-> +      is 100Mbps or 10Mbps.
-> +    enum:
-> +      - 0
-> +      - 150
-> +      - 300
-> +      - 450
-> +      - 600
-> +      - 750
-> +      - 900
-> +      - 1050
-> +      - 1200
-> +      - 1350
-> +      - 1500
-> +      - 1650
-> +      - 1800
-> +      - 1950
-> +      - 2100
-> +      - 2250
-> +
-> +  motorcomm,keep-pll-enabled:
-> +    description: |
-> +      If set, keep the PLL enabled even if there is no link. Useful if you
-> +      want to use the clock output without an ethernet link.
-> +    type: boolean
-> +
-> +  motorcomm,auto-sleep-disabled:
-> +    description: |
-> +      If set, PHY will not enter sleep mode and close AFE after unplug cable
-> +      for a timer.
-> +    type: boolean
+I would argue it should be at least 1604 (2 bytes address and 2 bytes
+control + 1600 byte information field.
 
-These two i can see being useful. But everything afterwards seems like
-just copy/paste from vendor SDK for things which the hardware can do,
-but probably nobody ever uses. Do you have a board using any of the
-following properties?
+> Then we drop the HDLC_MAX_MTU completely and use ETH_MAX_MTU (which is
+> 0xFFFF) for dev->max_mtu instead. Devices using fixed buffer sizes
+> should override this to, I guess, the limit - 10 - 14 - 4.
+> For dev->mtu we could, by default, use ETH_DATA_LEN which is 1500 bytes.
+> Also the assignments in fr_add_pvc() should be changed to account for
+> the hdlcX master device parameters.
+> 
+> What do you think?
 
-> +
-> +  motorcomm,tx-clk-adj-enabled:
-> +    description: |
-> +      Useful if you want to use tx-clk-xxxx-inverted to adj the delay of tx clk.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-10-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 10Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-100-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 100Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,tx-clk-1000-inverted:
-> +    description: |
-> +      Use original or inverted RGMII Transmit PHY Clock to drive the RGMII
-> +      Transmit PHY Clock delay train configuration when speed is 1000Mbps.
-> +    type: boolean
-> +
-> +  motorcomm,sds-tx-amplitude:
-> +    description: |
-> +      Setup the tx driver amplitude control of SerDes. Higher amplitude is
-> +      helpful for long distance.
-> +      0: low;   1: middle;   2: high.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1, 2]
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    ethernet {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        ethernet-phy@5 {
-> +            reg = <5>;
+Sounds all good to me, though as stated I cannot really say much on the
+IP/Eth encapsuiation formats due to lack of experience with those.
 
-PHYs are on MDIO busses, so i would expect to see an MDIO bus here,
-not Ethernet.
+btw: In case you're wondering why in osmocom we are using "raw" hdlc
+netdev and implementing FR in userspace: That's because we typically
+need to implement the network side of FR towards an external user,  and
+we in general need more control over the Q.933 layer.  It's easier to do
+this in userspace, given that all of the PVC are handled by a single
+application anyway.
 
-    Andrew
+Regards,
+	Harald
+
+-- 
+- Harald Welte <laforge@gnumonks.org>          https://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
