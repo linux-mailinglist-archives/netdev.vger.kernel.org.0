@@ -2,132 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6864365ED16
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 14:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF86865ECD4
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 14:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbjAENa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 08:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S229696AbjAENUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 08:20:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233545AbjAENaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 08:30:09 -0500
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAB624C
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 05:30:07 -0800 (PST)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1pDQJo-00CauE-Pp; Thu, 05 Jan 2023 14:30:04 +0100
-Received: from laforge by localhost.localdomain with local (Exim 4.96)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1pDQ92-00FPC6-1N;
-        Thu, 05 Jan 2023 14:18:56 +0100
-Date:   Thu, 5 Jan 2023 14:18:56 +0100
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: hdlc: Increase maximum HDLC MTU
-Message-ID: <Y7bOQDKrUrEC9S/t@nataraja>
-References: <20230104125724.3587015-1-laforge@osmocom.org>
- <m3wn614g0k.fsf@t19.piap.pl>
+        with ESMTP id S233893AbjAENU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 08:20:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC9F63D06
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 05:19:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F9F0B81ABD
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 13:19:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AFB7C433EF;
+        Thu,  5 Jan 2023 13:19:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672924743;
+        bh=oeiqTX+YktoVuCEksUYADqphwlZpszjcAzOZO0MUgZU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a6mlhy57XL4NNdsfanSq8y9rXhWOQTlnSPehyeCmIZ+/cmcDmQliInZEyi2t7syr1
+         qan+Kt132Hwei+/NPSla1LoVHJSAEWi9zXfQd+x9KLqrwC4Pip+0XBStSdgu3/VdAJ
+         kBElWcf4WFdaISl8v6Xo3FxS/OCwTAHIAJ9xSQ1jB43hB6mEvNdVH7yflG108qTyxG
+         C7jLnzNJyn0dNZ3pY9ZaUdcwkIIPabzzE1U7+HMid1pkMRO5plNpTJrXmrHvPKHuzf
+         WlSAv1qIgwZlJl+S1RZPSd497E0hmODfbijcjD0/LiYWiXoljpbhr5LTPPsVggeTIn
+         r3A96+7j7V+6Q==
+Date:   Thu, 5 Jan 2023 15:18:58 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Mateusz Palczewski <mateusz.palczewski@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2] ice: Fix deadlock on the rtnl_mutex
+Message-ID: <Y7bOQoFJQUhsB1kC@unreal>
+References: <20230105120518.29776-1-mateusz.palczewski@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <m3wn614g0k.fsf@t19.piap.pl>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230105120518.29776-1-mateusz.palczewski@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
-
-thanks for your detailed analyiss.
-
-On Thu, Jan 05, 2023 at 08:06:19AM +0100, Krzysztof Hałasa wrote:
-
-> Andrew is right. The default setting makes sure the packets fit into
-> regular Ethernet on the other side of the link (which is, or was, the
-> most common situation). I guess the mtu could be set trivially to 1500
-> with the max being 1600 or 16k or whatever.
-
-great.
-
-> Now there is a second thing, the HDLC_MAX_MRU (which is set to 1600).
-> This is the (fixed) size of RX (and TX) memory buffers on certain old
-> cards (some of whom are ISA and maybe even use 8-bit XT-BUS transfer
-> mode). I guess it doesn't concern you directly, but the MTU on those
-> cards must be kept at most at HDLC_MAX_MRU - max size of the headers
-> (= 10 + 14 + 4 or so, maybe more) or the packets generated by the IP
-> stack won't go out correctly.
-
-Understood. Indeed it is not my immediate concern, as I don't have any of
-those old ISA or even 8-bit XT-bus cards.  If anyone had some spares of
-such retronetworking hardware, I'd be very interested.  In the 
-actual "present day" production deployments we're using either the
-Osmocom icE1usb (2-port E1 USB) or Digium TE820 (8-port E1 PCIe) with
-DAHDI as and CONFIG_DAHDI_NET, which then uses the kernel HDLC.
-
-> > +/* FRF 1.2 states the information field should be 1600 bytes. So in case of
-> > + * a 4-byte header of Q.922, this results in a MTU of 1604 bytes */
-> > +#define HDLC_MAX_MTU 1604	/* as required for FR network (e.g.
-> > carrying GPRS-NS) */
+On Thu, Jan 05, 2023 at 07:05:18AM -0500, Mateusz Palczewski wrote:
+> There is a deadlock on rtnl_mutex when attempting to take the lock
+> in unregister_netdev() after it has already been taken by
+> ethnl_set_channels(). This happened when unregister_netdev() was
+> called inside of ice_vsi_rebuild().
+> Fix that by removing the unregister_netdev() usage and replace it with
+> ice_vsi_clear_rings() that deallocates the tx and rx rings for the VSI.
 > 
-> I think the "FR information field" is the data portion, without 2-byte
-> Q.922 address, and without the 2-byte frame check sequence, but
-> including e.g. UI and NLPID. 
-
-In my understanding of Q.922/Q.921, the information field does not include
-the control field or the address field.  So in your example, the UI would
-be the control field.  So we have a FR frame consisting of:
-
-* flag
-* address field: typically 2 octets, in theory also 3 or 4-octet formats
-* control field: 2 octets for I/S format, 1 octet for U format
-* FCS: 2 octets
-* flag
-
-> This means, in the simplest case of IPv4/v6,
-> max MTU of 1598 bytes (by default), and less than that with 802.1q
-> (8-byte "snap" DLCI header format + 14-byte bridged Ethernet header +
-> 4 byte .1q header). This was never very straightforward.
-
-As indicated, I unfortunately lack any in-depth experience with
-deployments of Ethernet or IP over Frame Relay or HDLC.
-
-> I think maybe we change HDLC_MAX_MRU from 1600 to 1602 (2 bytes for the
-> Q.922 address and 1600 for the "FR information field"), this shouldn't
-> break anything and would IMHO make the code compliant with the FRF 1.2.
-
-I would argue it should be at least 1604 (2 bytes address and 2 bytes
-control + 1600 byte information field.
-
-> Then we drop the HDLC_MAX_MTU completely and use ETH_MAX_MTU (which is
-> 0xFFFF) for dev->max_mtu instead. Devices using fixed buffer sizes
-> should override this to, I guess, the limit - 10 - 14 - 4.
-> For dev->mtu we could, by default, use ETH_DATA_LEN which is 1500 bytes.
-> Also the assignments in fr_add_pvc() should be changed to account for
-> the hdlcX master device parameters.
+> Fixes: df0f847915b4 ("ice: Move common functions out of ice_main.c part 6/7")
+> Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+> ---
+>  v2: Fixed goto unwind to remove code redundancy
+> ---
+>  drivers/net/ethernet/intel/ice/ice_lib.c | 35 ++++++++++++------------
+>  1 file changed, 17 insertions(+), 18 deletions(-)
 > 
-> What do you think?
 
-Sounds all good to me, though as stated I cannot really say much on the
-IP/Eth encapsuiation formats due to lack of experience with those.
+I think that it will be beneficial to have lockdep trace in commit message too.
 
-btw: In case you're wondering why in osmocom we are using "raw" hdlc
-netdev and implementing FR in userspace: That's because we typically
-need to implement the network side of FR towards an external user,  and
-we in general need more control over the Q.933 layer.  It's easier to do
-this in userspace, given that all of the PVC are handled by a single
-application anyway.
-
-Regards,
-	Harald
-
--- 
-- Harald Welte <laforge@gnumonks.org>          https://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
