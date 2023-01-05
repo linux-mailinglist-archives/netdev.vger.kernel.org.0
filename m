@@ -2,392 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFACC65F243
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 18:09:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9463C65F25D
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 18:16:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235073AbjAERJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 12:09:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
+        id S234948AbjAERPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 12:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235496AbjAERHv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 12:07:51 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C35C67195;
-        Thu,  5 Jan 2023 09:04:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1FDgYSKQhd3giVPz5gfCHhUbEd6bTlcL5Xxaq2PRvag=; b=xwtamS40OnsNMZA49FFVpZj8/b
-        gHCwzgAmDYqqpzDUI0IRT0Yd69gUkO/u8XgzpNv9sLpXy2ssfK5+rphQPcgdJU+zLYThCP71Au3fr
-        9uaGGY76dmRDP2xsA2tGLzFGBG0isVlNtUTegfQq6id7iDPwL4NteD7gUvZWHtAC1+C8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pDTeC-001EwT-AA; Thu, 05 Jan 2023 18:03:20 +0100
-Date:   Thu, 5 Jan 2023 18:03:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Frank <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 2/3] net: phy: Add dts support for Motorcomm
- yt8521/yt8531s gigabit ethernet phy
-Message-ID: <Y7cC2MKYK4omdZKg@lunn.ch>
-References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
- <20230105073024.8390-3-Frank.Sae@motor-comm.com>
+        with ESMTP id S235535AbjAERPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 12:15:04 -0500
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF83D703D3
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 09:09:13 -0800 (PST)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-15027746720so28522109fac.13
+        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 09:09:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Swe7L4/LzuU45yCDYBGjzzDB0ltxjWnOJePJjru7Yj8=;
+        b=IrzTU1fZdkreVyY/21K5hYnW4B+q2jofbbAR30XokRSqk4C2Cj5Meno1iEKVvdn/OV
+         wlwhj/s9MPYGX0XT8OA8EotC98OZXJFywIpXWpfn3aX7/OXV5IswrKf9AlrUG4z8+o37
+         Dvu8huO/iB00ybedYdqqIE1+YnmLFOvUHePRhyS+DOVDjOmxbP1Cg+vbqwbJU8Jej2K2
+         6bfXMfpaGGZRMUfA3//LJiE0UFD8ULNXARKoD9ALH5WcfLHj1vgzbnwKdQ3Sgt8xn4BJ
+         THVVdVO0+cMccjDAH3OWQItayRO0l/REhOcDzjJe+5atC4G3r3d0qpIDkOS+wMuTwizN
+         zX6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Swe7L4/LzuU45yCDYBGjzzDB0ltxjWnOJePJjru7Yj8=;
+        b=gGiAOS/bVDCKJ33K7ktoY2qC2Bu2BhKyCAN/lhViPcjAHPfVfUbpxUIYM6cLojOC9L
+         0lCCMRGy+XsE3ivcj0SgOzEI2+40u+sw2k4K+mvh6PuH+0u/KkGQ0ym8C3sSZZwFt8y8
+         9D1y72kPFUDucgAui3ZhhGkww8FGG/2jdRisZDyjljuukfxhES+c4kxeOFvlTjwlUJ+z
+         YqzS7WQWOtqYDvn3Rk0TbWD/x/sgmL8WqCcMWpvAJKkJNTucN7JrP56YDBXzhuv6Wiwq
+         NvZR8rStxAfjrzjb3uuuOX81J5UQ8Zd8udkkRrE8XKPndYSRABbs1pd0YpBXirOKu5DO
+         b91w==
+X-Gm-Message-State: AFqh2kpH8e1yme6A8kcyVsnci6NAxhhi94wayntcoTNyDUkWVA4J47Cv
+        ykFQQPL5cLWfvgBqTKEaGmU=
+X-Google-Smtp-Source: AMrXdXtrnArW4vrI/y8OkBvnKjXCNRrayte+K/n8hNEBmzZ+kKDJtVE5emyTYDD7KwXEOnYzr2zRJw==
+X-Received: by 2002:a05:6871:4316:b0:144:4bf1:a6f3 with SMTP id lu22-20020a056871431600b001444bf1a6f3mr22018910oab.8.1672938502122;
+        Thu, 05 Jan 2023 09:08:22 -0800 (PST)
+Received: from t14s.localdomain ([45.160.111.192])
+        by smtp.gmail.com with ESMTPSA id a11-20020a056870b14b00b0013d6d924995sm17146233oal.19.2023.01.05.09.08.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Jan 2023 09:08:21 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 1CC144AAF91; Thu,  5 Jan 2023 14:08:12 -0300 (-03)
+Date:   Thu, 5 Jan 2023 14:08:12 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
+        jiri@resnulli.us, pabeni@redhat.com, wizhao@redhat.com,
+        xiyou.wangcong@gmail.com, lucien.xin@gmail.com
+Subject: Re: [RFC net-next 2/2] act_mirred: use the backlog for nested calls
+ to mirred ingress
+Message-ID: <20230105170812.zeq6fd2t2iwwr3fj@t14s.localdomain>
+References: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
+ <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
+ <CAM0EoMnJeb3QsfxgsggEMjTACdu0hq6mb3O+uGOfVzG2RZ-hkw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230105073024.8390-3-Frank.Sae@motor-comm.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAM0EoMnJeb3QsfxgsggEMjTACdu0hq6mb3O+uGOfVzG2RZ-hkw@mail.gmail.com>
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 03:30:23PM +0800, Frank wrote:
-> Add dts support for yt8521 and yt8531s. This patch has
-> been tested on AM335x platform which has one YT8531S interface
-> card and passed all test cases.
+Hi Jamal,
+
+On Mon, Dec 26, 2022 at 11:03:34AM -0500, Jamal Hadi Salim wrote:
+> Davide,
+
+He's on PTO, so please let me try to answer it here.
+
+> So this would fix the false positive you are seeing i believe;
+> however, will it fix a real loop?
+> In particular I am not sure if the next packet grabbed from the
+> backlog will end up in the
+> same CPU.
+
+This series is not changing, functionally speaking, any about that.
+As explained on the first patch, this "loop protection" already
+doesn't work when RFS or skb timestamps are used. The idea on that
+protection was different from the beginning already - to actually
+protect from stack growth, and not packet loop. So the first patch
+here amends the wording on it to something closer to reality.
+
+Makes sense?
+
+Cheers,
+Marcelo
+
 > 
-> Signed-off-by: Frank <Frank.Sae@motor-comm.com>
-> ---
->  drivers/net/phy/motorcomm.c | 517 ++++++++++++++++++++++++++++++------
->  1 file changed, 434 insertions(+), 83 deletions(-)
+> cheers,
+> jamal
 > 
-> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-> index 685190db72de..7ebcca374a67 100644
-> --- a/drivers/net/phy/motorcomm.c
-> +++ b/drivers/net/phy/motorcomm.c
-> @@ -10,10 +10,11 @@
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/phy.h>
-> +#include <linux/of.h>
->  
->  #define PHY_ID_YT8511		0x0000010a
-> -#define PHY_ID_YT8521		0x0000011A
-> -#define PHY_ID_YT8531S		0x4F51E91A
-> +#define PHY_ID_YT8521		0x0000011a
-> +#define PHY_ID_YT8531S		0x4f51e91a
-
-Please do the lower case conversion as a separate patch.
-
->  
->  /* YT8521/YT8531S Register Overview
->   *	UTP Register space	|	FIBER Register space
-> @@ -144,6 +145,16 @@
->  #define YT8521_ESC1R_SLEEP_SW			BIT(15)
->  #define YT8521_ESC1R_PLLON_SLP			BIT(14)
->  
-> +/* Phy Serdes analog cfg2 Register */
-> +#define YTPHY_SERDES_ANALOG_CFG2_REG		0xA1
-> +#define YTPHY_SAC2R_TX_AMPLITUDE_MASK		((0x7 << 13) | (0x7 << 1))
-> +#define YT8521_SAC2R_TX_AMPLITUDE_LOW		((0x7 << 13) | (0x0 << 1))
-> +#define YT8521_SAC2R_TX_AMPLITUDE_MIDDLE	((0x5 << 13) | (0x5 << 1))
-> +#define YT8521_SAC2R_TX_AMPLITUDE_HIGH		((0x3 << 13) | (0x6 << 1))
-
-So there are two values which control the amplitude? Buts 1-3, and bit
-7-9?  Can they be used independently?  Also, 7, 5, 3 is also add. Does
-bit 0 of this value have some special meaning? Please document this
-fully.
-
-> +#define YT8531S_SAC2R_TX_AMPLITUDE_LOW		((0x0 << 13) | (0x0 << 1))
-> +#define YT8531S_SAC2R_TX_AMPLITUDE_MIDDLE	((0x0 << 13) | (0x1 << 1))
-> +#define YT8531S_SAC2R_TX_AMPLITUDE_HIGH		((0x0 << 13) | (0x2 << 1))
-
-This more sense, but why the 0 << 13? What do the bits 13-? mean?
-
-> +
->  /* Phy fiber Link timer cfg2 Register */
->  #define YT8521_LINK_TIMER_CFG2_REG		0xA5
->  #define YT8521_LTCR_EN_AUTOSEN			BIT(15)
-> @@ -161,6 +172,7 @@
->  
->  #define YT8521_CHIP_CONFIG_REG			0xA001
->  #define YT8521_CCR_SW_RST			BIT(15)
-> +#define YT8521_CCR_RXC_DLY_EN			BIT(8)
->  
->  #define YT8521_CCR_MODE_SEL_MASK		(BIT(2) | BIT(1) | BIT(0))
->  #define YT8521_CCR_MODE_UTP_TO_RGMII		0
-> @@ -178,22 +190,27 @@
->  #define YT8521_MODE_POLL			0x3
->  
->  #define YT8521_RGMII_CONFIG1_REG		0xA003
-> -
-> +#define YT8521_RC1R_TX_CLK_SEL_MASK		BIT(14)
-> +#define YT8521_RC1R_TX_CLK_SEL_ORIGINAL		(0x0 << 14)
-> +#define YT8521_RC1R_TX_CLK_SEL_INVERTED		(0x1 << 14)
-
-Please use the BIT macro.
-
-
->  /* TX Gig-E Delay is bits 3:0, default 0x1
->   * TX Fast-E Delay is bits 7:4, default 0xf
->   * RX Delay is bits 13:10, default 0x0
->   * Delay = 150ps * N
->   * On = 2250ps, off = 0ps
->   */
-> -#define YT8521_RC1R_RX_DELAY_MASK		(0xF << 10)
-> -#define YT8521_RC1R_RX_DELAY_EN			(0xF << 10)
-> -#define YT8521_RC1R_RX_DELAY_DIS		(0x0 << 10)
-> -#define YT8521_RC1R_FE_TX_DELAY_MASK		(0xF << 4)
-> -#define YT8521_RC1R_FE_TX_DELAY_EN		(0xF << 4)
-> -#define YT8521_RC1R_FE_TX_DELAY_DIS		(0x0 << 4)
-> -#define YT8521_RC1R_GE_TX_DELAY_MASK		(0xF << 0)
-> -#define YT8521_RC1R_GE_TX_DELAY_EN		(0xF << 0)
-> -#define YT8521_RC1R_GE_TX_DELAY_DIS		(0x0 << 0)
-> +#define YT8521_RC1R_GE_TX_DELAY_BIT		(0)
-> +#define YT8521_RC1R_FE_TX_DELAY_BIT		(4)
-> +#define YT8521_RC1R_RX_DELAY_BIT		(10)
-> +#define YT8521_RC1R_RX_DELAY_MASK		(0xF << YT8521_RC1R_RX_DELAY_BIT)
-> +#define YT8521_RC1R_RX_DELAY_EN			(0xF << YT8521_RC1R_RX_DELAY_BIT)
-> +#define YT8521_RC1R_RX_DELAY_DIS		(0x0 << YT8521_RC1R_RX_DELAY_BIT)
-> +#define YT8521_RC1R_FE_TX_DELAY_MASK		(0xF << YT8521_RC1R_FE_TX_DELAY_BIT)
-> +#define YT8521_RC1R_FE_TX_DELAY_EN		(0xF << YT8521_RC1R_FE_TX_DELAY_BIT)
-> +#define YT8521_RC1R_FE_TX_DELAY_DIS		(0x0 << YT8521_RC1R_FE_TX_DELAY_BIT)
-> +#define YT8521_RC1R_GE_TX_DELAY_MASK		(0xF << YT8521_RC1R_GE_TX_DELAY_BIT)
-> +#define YT8521_RC1R_GE_TX_DELAY_EN		(0xF << YT8521_RC1R_GE_TX_DELAY_BIT)
-> +#define YT8521_RC1R_GE_TX_DELAY_DIS		(0x0 << YT8521_RC1R_GE_TX_DELAY_BIT)
->  
->  #define YTPHY_MISC_CONFIG_REG			0xA006
->  #define YTPHY_MCR_FIBER_SPEED_MASK		BIT(0)
-> @@ -222,11 +239,33 @@
->   */
->  #define YTPHY_WCR_TYPE_PULSE			BIT(0)
->  
-> -#define YT8531S_SYNCE_CFG_REG			0xA012
-> -#define YT8531S_SCR_SYNCE_ENABLE		BIT(6)
-> +#define YTPHY_SYNCE_CFG_REG			0xA012
-> +#define YT8521_SCR_CLK_SRC_MASK			(BIT(2) | BIT(1))
-> +#define YT8521_SCR_CLK_SRC_PLL_125M		(0x0 << 1)
-> +#define YT8521_SCR_CLK_SRC_REF_25M		(0x3 << 1)
-> +#define YT8521_SCR_SYNCE_ENABLE			BIT(5)
-> +#define YT8521_SCR_CLK_FRE_SEL_MASK		BIT(3)
-> +#define YT8521_SCR_CLK_FRE_SEL_125M		(0x1 << 3)
-> +#define YT8521_SCR_CLK_FRE_SEL_25M		(0x0 << 3)
-
-Whenever it is a single bit, please use the BIT macro.
-
-> +#define YT8531_SCR_CLK_SRC_MASK			(BIT(3) | BIT(2) | BIT(1))
-> +#define YT8531_SCR_CLK_SRC_PLL_125M		(0x0 << 1)
-> +#define YT8531_SCR_CLK_SRC_REF_25M		(0x4 << 1)
-> +#define YT8531_SCR_SYNCE_ENABLE			BIT(6)
-> +#define YT8531_SCR_CLK_FRE_SEL_MASK		BIT(4)
-> +#define YT8531_SCR_CLK_FRE_SEL_125M		(0x1 << 4)
-> +#define YT8531_SCR_CLK_FRE_SEL_25M		(0x0 << 4)
->  
->  /* Extended Register  end */
->  
-> +#define YTPHY_DTS_MAX_TX_AMPLITUDE		0x2
-> +#define YTPHY_DTS_MAX_DELAY_VAL			2250
-> +#define YTPHY_DTS_STEP_DELAY_VAL		150
-> +#define YTPHY_DTS_INVAL_VAL			0xFF
-> +
-> +#define YTPHY_DTS_OUTPUT_CLK_DIS		0
-> +#define YTPHY_DTS_OUTPUT_CLK_25M		25000000
-> +#define YTPHY_DTS_OUTPUT_CLK_125M		125000000
-> +
->  struct yt8521_priv {
->  	/* combo_advertising is used for case of YT8521 in combo mode,
->  	 * this means that yt8521 may work in utp or fiber mode which depends
-> @@ -243,6 +282,30 @@ struct yt8521_priv {
->  	 * YT8521_RSSR_TO_BE_ARBITRATED
->  	 */
->  	u8 reg_page;
-> +
-> +	/* The following parameters are from dts */
-> +	/* rx delay = rx_delay_basic + rx_delay_additional
-> +	 * basic delay is ~2ns, 0 = off, 1 = on
-> +	 * rx_delay_additional,delay time = 150ps * val
-> +	 */
-> +	u8 rx_delay_basic;
-> +	u8 rx_delay_additional;
-> +
-> +	/* tx_delay_ge is tx_delay for 1000Mbps
-> +	 * tx_delay_fe is tx_delay for 100Mbps or 10Mbps
-> +	 * delay time = 150ps * val
-> +	 */
-> +	u8 tx_delay_ge;
-> +	u8 tx_delay_fe;
-> +	u8 sds_tx_amplitude;
-> +	bool keep_pll_enabled;
-> +	bool auto_sleep_disabled;
-> +	bool clock_ouput;	/* output clock ctl: 0=off, 1=on */
-> +	bool clock_freq_125M;	/* output clock freq selcect: 0=25M, 1=125M */
-> +	bool tx_clk_adj_enabled;/* tx clk adj ctl: 0=off, 1=on */
-> +	bool tx_clk_10_inverted;
-> +	bool tx_clk_100_inverted;
-> +	bool tx_clk_1000_inverted;
-
-Do you need to store all these values? In general, PHY drivers parse
-DT, and program the hardware directly. If these values are lost on
-reset, and you need to perform a reset for normal operation, then yes,
-it makes sense to store them. But in general, that is not how hardware
-works.
-
-> +static int ytphy_parse_dt(struct phy_device *phydev)
-> +{
-> +	struct device_node *node = phydev->mdio.dev.of_node;
-> +	struct yt8521_priv *priv = phydev->priv;
-> +	u32 freq, val;
-> +	int ret;
-> +
-> +	priv->rx_delay_additional = YTPHY_DTS_INVAL_VAL;
-> +	priv->sds_tx_amplitude = YTPHY_DTS_INVAL_VAL;
-> +	priv->rx_delay_basic = YTPHY_DTS_INVAL_VAL;
-> +	priv->tx_delay_ge = YTPHY_DTS_INVAL_VAL;
-> +	priv->tx_delay_fe = YTPHY_DTS_INVAL_VAL;
-> +
-> +	if (!IS_ENABLED(CONFIG_OF_MDIO)) {
-
-No other PHY driver does this. Why is this here?
-
-As a general rule, if you do something which no other driver does, you
-are doing something wrong. All PHY drivers should basically look the
-same, follow the same structure, etc. So it is a good idea to review 5
-other drivers, and make your driver look similar.
-
-> +		priv->auto_sleep_disabled = true;
-> +		priv->keep_pll_enabled = true;
-> +		return 0;
-> +	}
-> +
-> +	ret = of_property_read_u32(node, "motorcomm,clk-out-frequency", &freq);
-> +	if (ret < 0)
-> +		freq = YTPHY_DTS_OUTPUT_CLK_DIS;/* default value as dts*/
-> +
-> +	switch (freq) {
-> +	case YTPHY_DTS_OUTPUT_CLK_DIS:
-> +		priv->clock_ouput = false;
-> +		break;
-> +	case YTPHY_DTS_OUTPUT_CLK_25M:
-> +		priv->clock_freq_125M = false;
-> +		priv->clock_ouput = true;
-> +		break;
-> +	case YTPHY_DTS_OUTPUT_CLK_125M:
-> +		priv->clock_freq_125M = true;
-> +		priv->clock_ouput = true;
-> +		break;
-> +	default:
-> +		phydev_err(phydev, "invalid motorcomm,clk-out-frequency\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!of_property_read_u32(node, "motorcomm,rx-delay-basic", &val)) {
-> +		if (val > 1) {
-> +			phydev_err(phydev,
-> +				   "invalid motorcomm,rx-delay-basic\n");
-> +			return -EINVAL;
-> +		}
-> +		priv->rx_delay_basic = val;
-> +	}
-> +
-> +	if (!of_property_read_u32(node, "motorcomm,rx-delay-additional-ps", &val)) {
-> +		if (val > YTPHY_DTS_MAX_DELAY_VAL) {
-> +			phydev_err(phydev, "invalid motorcomm,rx-delay-additional-ps\n");
-> +			return -EINVAL;
-> +		}
-
-Please check the value is also one of the supported values. Please do
-that for all your delays.
-
-> +	if (of_property_read_bool(node, "motorcomm,keep-pll-enabled"))
-> +		priv->keep_pll_enabled = true;
-
-I think this only makes sense when priv->clock_output is true? Please
-test for that.
-
-
-> +static int ytphy_rgmii_clk_delay_config(struct phy_device *phydev)
-> +{
-> +	struct yt8521_priv *priv = phydev->priv;
-> +	u16 mask = 0;
-> +	u16 val = 0;
-> +	int ret;
-> +
-> +	/* rx delay basic controlled by dts.*/
-> +	if (priv->rx_delay_basic != YTPHY_DTS_INVAL_VAL) {
-> +		if (priv->rx_delay_basic)
-> +			val = YT8521_CCR_RXC_DLY_EN;
-> +		ret = ytphy_modify_ext(phydev, YT8521_CHIP_CONFIG_REG,
-> +				       YT8521_CCR_RXC_DLY_EN, val);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	val = 0;
-> +	/* If rx_delay_additional and tx_delay_* are all not be seted in dts,
-> +	 * then used the fixed *_DELAY_DIS or *_DELAY_EN. Otherwise, use the
-> +	 * value set by rx_delay_additional, tx_delay_ge and tx_delay_fe.
-> +	 */
-
-So what you should be doing here is always respecting
-phydev->interface. You can then fine tune the delays using
-rx-internal-delay-ps and tx-internal-delay-ps.
-
-> +static int ytphy_probe_helper(struct phy_device *phydev)
-> +{
-> +	struct device *dev = &phydev->mdio.dev;
-> +	struct yt8521_priv *priv;
-> +	int ret;
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	phydev->priv = priv;
-> +
-> +	ret = ytphy_parse_dt(phydev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	phy_lock_mdio_bus(phydev);
-> +	ret = ytphy_clk_out_config(phydev);
-> +	phy_unlock_mdio_bus(phydev);
-> +	return ret;
-> +}
-> +
->  /**
->   * yt8521_probe() - read chip config then set suitable polling_mode
->   * @phydev: a pointer to a &struct phy_device
-> @@ -601,16 +983,15 @@ static int yt8521_write_page(struct phy_device *phydev, int page)
->   */
->  static int yt8521_probe(struct phy_device *phydev)
->  {
-> -	struct device *dev = &phydev->mdio.dev;
->  	struct yt8521_priv *priv;
->  	int chip_config;
->  	int ret;
->  
-> -	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> -	if (!priv)
-> -		return -ENOMEM;
-> +	ret = ytphy_probe_helper(phydev);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	phydev->priv = priv;
-> +	priv = phydev->priv;
-
-I don't see why you added this probe helper.
-
-Is this to make the driver look more like the vendor driver? Please
-seperate refactoring patches from new functionality. We want to see
-lots of simple, obviously correct patches which are easy to review.
-
-     Andrew
-  
+> On Tue, Dec 20, 2022 at 1:25 PM Davide Caratti <dcaratti@redhat.com> wrote:
+> >
+> > William reports kernel soft-lockups on some OVS topologies when TC mirred
+> > egress->ingress action is hit by local TCP traffic [1].
+> > The same can also be reproduced with SCTP (thanks Xin for verifying), when
+> > client and server reach themselves through mirred egress to ingress, and
+> > one of the two peers sends a "heartbeat" packet (from within a timer).
+> >
+> > Enqueueing to backlog proved to fix this soft lockup; however, as Cong
+> > noticed [2], we should preserve - when possible - the current mirred
+> > behavior that counts as "overlimits" any eventual packet drop subsequent to
+> > the mirred forwarding action [3]. A compromise solution might use the
+> > backlog only when tcf_mirred_act() has a nest level greater than one:
+> > change tcf_mirred_forward() accordingly.
+> >
+> > Also, add a kselftest that can reproduce the lockup and verifies TC mirred
+> > ability to account for further packet drops after TC mirred egress->ingress
+> > (when the nest level is 1).
+> >
+> >  [1] https://lore.kernel.org/netdev/33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com/
+> >  [2] https://lore.kernel.org/netdev/Y0w%2FWWY60gqrtGLp@pop-os.localdomain/
+> >  [3] such behavior is not guaranteed: for example, if RPS or skb RX
+> >      timestamping is enabled on the mirred target device, the kernel
+> >      can defer receiving the skb and return NET_RX_SUCCESS inside
+> >      tcf_mirred_forward().
+> >
+> > Reported-by: William Zhao <wizhao@redhat.com>
+> > CC: Xin Long <lucien.xin@gmail.com>
+> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> > ---
+> >  net/sched/act_mirred.c                        |  7 +++
+> >  .../selftests/net/forwarding/tc_actions.sh    | 49 ++++++++++++++++++-
+> >  2 files changed, 55 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+> > index c8abb5136491..8037ec9b1d31 100644
+> > --- a/net/sched/act_mirred.c
+> > +++ b/net/sched/act_mirred.c
+> > @@ -206,12 +206,19 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
+> >         return err;
+> >  }
+> >
+> > +static bool is_mirred_nested(void)
+> > +{
+> > +       return unlikely(__this_cpu_read(mirred_nest_level) > 1);
+> > +}
+> > +
+> >  static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
+> >  {
+> >         int err;
+> >
+> >         if (!want_ingress)
+> >                 err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
+> > +       else if (is_mirred_nested())
+> > +               err = netif_rx(skb);
+> >         else
+> >                 err = netif_receive_skb(skb);
+> >
+> > diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
+> > index 1e0a62f638fe..919c0dd9fe4b 100755
+> > --- a/tools/testing/selftests/net/forwarding/tc_actions.sh
+> > +++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
+> > @@ -3,7 +3,8 @@
+> >
+> >  ALL_TESTS="gact_drop_and_ok_test mirred_egress_redirect_test \
+> >         mirred_egress_mirror_test matchall_mirred_egress_mirror_test \
+> > -       gact_trap_test mirred_egress_to_ingress_test"
+> > +       gact_trap_test mirred_egress_to_ingress_test \
+> > +       mirred_egress_to_ingress_tcp_test"
+> >  NUM_NETIFS=4
+> >  source tc_common.sh
+> >  source lib.sh
+> > @@ -198,6 +199,52 @@ mirred_egress_to_ingress_test()
+> >         log_test "mirred_egress_to_ingress ($tcflags)"
+> >  }
+> >
+> > +mirred_egress_to_ingress_tcp_test()
+> > +{
+> > +       local tmpfile=$(mktemp) tmpfile1=$(mktemp)
+> > +
+> > +       RET=0
+> > +       dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$tmpfile
+> > +       tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
+> > +               $tcflags ip_proto tcp src_ip 192.0.2.1 dst_ip 192.0.2.2 \
+> > +                       action ct commit nat src addr 192.0.2.2 pipe \
+> > +                       action ct clear pipe \
+> > +                       action ct commit nat dst addr 192.0.2.1 pipe \
+> > +                       action ct clear pipe \
+> > +                       action skbedit ptype host pipe \
+> > +                       action mirred ingress redirect dev $h1
+> > +       tc filter add dev $h1 protocol ip pref 101 handle 101 egress flower \
+> > +               $tcflags ip_proto icmp \
+> > +                       action mirred ingress redirect dev $h1
+> > +       tc filter add dev $h1 protocol ip pref 102 handle 102 ingress flower \
+> > +               ip_proto icmp \
+> > +                       action drop
+> > +
+> > +       ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $tmpfile1  &
+> > +       local rpid=$!
+> > +       ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$tmpfile
+> > +       wait -n $rpid
+> > +       cmp -s $tmpfile $tmpfile1
+> > +       check_err $? "server output check failed"
+> > +
+> > +       $MZ $h1 -c 10 -p 64 -a $h1mac -b $h1mac -A 192.0.2.1 -B 192.0.2.1 \
+> > +               -t icmp "ping,id=42,seq=5" -q
+> > +       tc_check_packets "dev $h1 egress" 101 10
+> > +       check_err $? "didn't mirred redirect ICMP"
+> > +       tc_check_packets "dev $h1 ingress" 102 10
+> > +       check_err $? "didn't drop mirred ICMP"
+> > +       local overlimits=$(tc_rule_stats_get ${h1} 101 egress .overlimits)
+> > +       test ${overlimits} = 10
+> > +       check_err $? "wrong overlimits, expected 10 got ${overlimits}"
+> > +
+> > +       tc filter del dev $h1 egress protocol ip pref 100 handle 100 flower
+> > +       tc filter del dev $h1 egress protocol ip pref 101 handle 101 flower
+> > +       tc filter del dev $h1 ingress protocol ip pref 102 handle 102 flower
+> > +
+> > +       rm -f $tmpfile $tmpfile1
+> > +       log_test "mirred_egress_to_ingress_tcp ($tcflags)"
+> > +}
+> > +
+> >  setup_prepare()
+> >  {
+> >         h1=${NETIFS[p1]}
+> > --
+> > 2.38.1
+> >
+> 
