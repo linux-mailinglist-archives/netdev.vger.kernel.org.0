@@ -2,86 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CD1F65F4D7
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 20:54:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7D365F4DA
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 20:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234591AbjAETy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 14:54:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
+        id S235140AbjAET4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 14:56:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234650AbjAETyI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 14:54:08 -0500
-Received: from mx07lb.world4you.com (mx07lb.world4you.com [81.19.149.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA6C1658B
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 11:54:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=k/p0yLK6D6TGPkzIUMcM6wiLlUR8nXm2NmHlsljmjpQ=; b=S+x4jLVnKie5kKbfHbmuWa7bas
-        sWTW0NcpcFuAMcdG3yxaFTIr4UbeqiG6o79j56C13Pc7v+qzBK5/l+GNs5o4hHdyjWEsa90pfXvl9
-        dXCeqPU5XTV4plwp7NFrKIPscvxtkEBrk8SHVEx25j5xmkgALEF4Pg58DLKXqYnUstHI=;
-Received: from [88.117.53.17] (helo=[10.0.0.160])
-        by mx07lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pDWJN-0006hq-45; Thu, 05 Jan 2023 20:54:01 +0100
-Message-ID: <c360e1b2-5ea0-44b5-1e66-cf8101744ac8@engleder-embedded.com>
-Date:   Thu, 5 Jan 2023 20:54:00 +0100
+        with ESMTP id S232270AbjAET4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 14:56:35 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7179F00C
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 11:56:34 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id p188so5954847yba.5
+        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 11:56:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gooddata.com; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Pb4JzoqwO6Y7xcnirhQ6av4NijRSytITGxbvvvwNLyk=;
+        b=HYEbK6iYzsRavkIoiY9kI2B8zpjbMzzXT3Yb5Y2nJBfgxN/Q9+t4mwnVQD6HC6Lrfs
+         vm/DJ4sUpjLePsmHmn/LLBI4WY9WXTwu4zRaxUrO2T9AFJVKzdsQuYUXNh7q13je5g3K
+         3GdJsHpeaKKfXe77LXtgpDuY4lp949pTVTzV0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Pb4JzoqwO6Y7xcnirhQ6av4NijRSytITGxbvvvwNLyk=;
+        b=8I7tAMlLrlayZS8fdyWpMfa52fhLxUk4bnvKZB4mvfdwA0ruAvVuZJo+Ft7scJ6eMZ
+         Mg4D8LMXn8eIoDx5EyvyMKgsPYpjopsxun4n9mu1EKFHy0u73yxhYAF0QexAdIfAVyh6
+         F88xpIcc6AOChEi7KLgnECq5tF3yjM+QVUjwDj2J/0+tyE6Ip1ng5joeO8oL9wavkDh9
+         JJCHxG3/tBszfJkncTN02lkQgkSlI76U1zV58tLDHKA4C6Wq38vR2Y2Kg+knu1vm7ZMp
+         5TKuE8hD5NvWJ2esCl2sRV3hbcMOoCXJySO49iHG9+qBZS1nKOKIra6wASXH5C/0HwuO
+         5v+Q==
+X-Gm-Message-State: AFqh2krzxFYt47JFsOwJcx+Co0Eu41yR0d0yv4Pc8K7xa2104wVp2fkD
+        XQFnnoyHtWFJIM/OzbwEWyaB2xyZI3iuZnEwVZe2Kg==
+X-Google-Smtp-Source: AMrXdXv7aIMY3mYffkOneZWpGuT7EpAPBbHhrTEm/5MmoCWyicdgGvLU60gEKU27fAzrZBKY9oGj4C35bq3unjWsS88=
+X-Received: by 2002:a25:73d3:0:b0:700:1dd4:bbfa with SMTP id
+ o202-20020a2573d3000000b007001dd4bbfamr7139222ybc.455.1672948593905; Thu, 05
+ Jan 2023 11:56:33 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v3 3/9] tsnep: Add adapter down state
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-References: <20230104194132.24637-1-gerhard@engleder-embedded.com>
- <20230104194132.24637-4-gerhard@engleder-embedded.com>
- <3747ac7a-2901-4d2c-8227-3e3bf34633ed@intel.com>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <3747ac7a-2901-4d2c-8227-3e3bf34633ed@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com>
+ <CANn89iJFmfv569Mu7REiP5OBMscuv8EBSGJqi_7c4pxcJymrKw@mail.gmail.com>
+ <CAK8fFZ7cyhnUsFiCE-mpQF9P_Q7M70RiDbXGNvjA+2Y_PyuQYQ@mail.gmail.com> <CANn89iKeNj4uUAVW2GJUiD5COqvUJjey-4-gpuUTp-er=2hAWg@mail.gmail.com>
+In-Reply-To: <CANn89iKeNj4uUAVW2GJUiD5COqvUJjey-4-gpuUTp-er=2hAWg@mail.gmail.com>
+From:   Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Date:   Thu, 5 Jan 2023 20:56:08 +0100
+Message-ID: <CAK8fFZ7cYRkGjUJD2D86G6Jh9YRmP_L+7Ke6CLFSyFmRkoe-Hg@mail.gmail.com>
+Subject: Re: Network performance regression with linux 6.1.y. Issue bisected
+ to "5eddb24901ee49eee23c0bfce6af2e83fd5679bd" (gro: add support of (hw)gro
+ packets to gro stack)
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, lixiaoyan@google.com, pabeni@redhat.com,
+        davem@davemloft.net, Igor Raits <igor.raits@gooddata.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.01.23 13:44, Alexander Lobakin wrote:
-> From: Gerhard Engleder <gerhard@engleder-embedded.com>
-> Date: Wed Jan 04 2023 20:41:26 GMT+0100
-> 
->> Add adapter state with flag for down state. This flag will be used by
->> the XDP TX path to deny TX if adapter is down.
->>
->> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
->> ---
->>   drivers/net/ethernet/engleder/tsnep.h      |  1 +
->>   drivers/net/ethernet/engleder/tsnep_main.c | 11 +++++++++++
->>   2 files changed, 12 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
->> index f93ba48bac3f..f72c0c4da1a9 100644
->> --- a/drivers/net/ethernet/engleder/tsnep.h
->> +++ b/drivers/net/ethernet/engleder/tsnep.h
->> @@ -148,6 +148,7 @@ struct tsnep_adapter {
->>   	phy_interface_t phy_mode;
->>   	struct phy_device *phydev;
->>   	int msg_enable;
->> +	unsigned long state;
-> 
-> Now there will be a 4-byte hole in between ::msg_enable and ::state,
-> maybe add ::state right after ::phydev?
+I can and I did. Your "Random guess" patch fix the problem and speed
+is like with 6.0.y:
 
-I will do that.
+  # git clone ...
+  ...
+  Receiving objects: 100% (571306/571306), 350.58 MiB | 67.51 MiB/s, done.
 
-Gerhard
+Thanks,
+JP
+
+=C4=8Dt 5. 1. 2023 v 19:49 odes=C3=ADlatel Eric Dumazet <edumazet@google.co=
+m> napsal:
+>
+> On Thu, Jan 5, 2023 at 6:54 PM Jaroslav Pulchart
+> <jaroslav.pulchart@gooddata.com> wrote:
+> >
+> > It is at KVM based VMs "CentOS 9 Stream" and "CentOS 8 Stream" using
+> > upstream kernel 6.1.y. Hosted on Dell PowerEdge 7525 servers (2x AMD
+> > 74F3) and OS CentOS 9 Stream again with upstream kernel 6.1.y or
+> > 6.0.y.
+> >
+> > # ethtool -k eth0
+> > Features for eth0:
+> > rx-checksumming: on [fixed]
+> > tx-checksumming: on
+> > tx-checksum-ipv4: off [fixed]
+> > tx-checksum-ip-generic: on
+> > tx-checksum-ipv6: off [fixed]
+> > tx-checksum-fcoe-crc: off [fixed]
+> > tx-checksum-sctp: off [fixed]
+> > scatter-gather: on
+> > tx-scatter-gather: on
+> > tx-scatter-gather-fraglist: off [fixed]
+> > tcp-segmentation-offload: on
+> > tx-tcp-segmentation: on
+> > tx-tcp-ecn-segmentation: on
+> > tx-tcp-mangleid-segmentation: off
+> > tx-tcp6-segmentation: on
+> > generic-segmentation-offload: on
+> > generic-receive-offload: on
+> > large-receive-offload: off [fixed]
+> > rx-vlan-offload: off [fixed]
+> > tx-vlan-offload: off [fixed]
+> > ntuple-filters: off [fixed]
+> > receive-hashing: off [fixed]
+> > highdma: on [fixed]
+> > rx-vlan-filter: on [fixed]
+> > vlan-challenged: off [fixed]
+> > tx-lockless: off [fixed]
+> > netns-local: off [fixed]
+> > tx-gso-robust: on [fixed]
+> > tx-fcoe-segmentation: off [fixed]
+> > tx-gre-segmentation: off [fixed]
+> > tx-gre-csum-segmentation: off [fixed]
+> > tx-ipxip4-segmentation: off [fixed]
+> > tx-ipxip6-segmentation: off [fixed]
+> > tx-udp_tnl-segmentation: off [fixed]
+> > tx-udp_tnl-csum-segmentation: off [fixed]
+> > tx-gso-partial: off [fixed]
+> > tx-tunnel-remcsum-segmentation: off [fixed]
+> > tx-sctp-segmentation: off [fixed]
+> > tx-esp-segmentation: off [fixed]
+> > tx-udp-segmentation: off [fixed]
+> > tx-gso-list: off [fixed]
+> > fcoe-mtu: off [fixed]
+> > tx-nocache-copy: off
+> > loopback: off [fixed]
+> > rx-fcs: off [fixed]
+> > rx-all: off [fixed]
+> > tx-vlan-stag-hw-insert: off [fixed]
+> > rx-vlan-stag-hw-parse: off [fixed]
+> > rx-vlan-stag-filter: off [fixed]
+> > l2-fwd-offload: off [fixed]
+> > hw-tc-offload: off [fixed]
+> > esp-hw-offload: off [fixed]
+> > esp-tx-csum-hw-offload: off [fixed]
+> > rx-udp_tunnel-port-offload: off [fixed]
+> > tls-hw-tx-offload: off [fixed]
+> > tls-hw-rx-offload: off [fixed]
+> > rx-gro-hw: on
+> > tls-hw-record: off [fixed]
+> > rx-gro-list: off
+> > macsec-hw-offload: off [fixed]
+> > rx-udp-gro-forwarding: off
+> > hsr-tag-ins-offload: off [fixed]
+> > hsr-tag-rm-offload: off [fixed]
+> > hsr-fwd-offload: off [fixed]
+> > hsr-dup-offload: off [fixed]
+> >
+> > # ethtool -i eth0
+> > driver: virtio_net
+> > version: 1.0.0
+> > firmware-version:
+> > expansion-rom-version:
+> > bus-info: 0000:03:00.0
+> > supports-statistics: yes
+> > supports-test: no
+> > supports-eeprom-access: no
+> > supports-register-dump: no
+> > supports-priv-flags: no
+>
+> Random guess, can you try:
+>
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index fd8c6a7e8d3e2e6b439109d0089f44a547c7347e..f162674e7ae1bdf96bcbf7e1e=
+d7326729d862f9a
+> 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -500,7 +500,8 @@ static enum gro_result dev_gro_receive(struct
+> napi_struct *napi, struct sk_buff
+>         BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed),
+>                                         sizeof(u32))); /* Avoid slow
+> unaligned acc */
+>         *(u32 *)&NAPI_GRO_CB(skb)->zeroed =3D 0;
+> -       NAPI_GRO_CB(skb)->flush =3D skb_has_frag_list(skb);
+> +       NAPI_GRO_CB(skb)->flush =3D skb_has_frag_list(skb) ||
+> +                                 (skb_shinfo(skb)->gso_type & SKB_GSO_DO=
+DGY);
+>         NAPI_GRO_CB(skb)->is_atomic =3D 1;
+>         NAPI_GRO_CB(skb)->count =3D 1;
+>         if (unlikely(skb_is_gso(skb))) {
+>
+>
+>
+> >
+> > =C4=8Dt 5. 1. 2023 v 18:43 odes=C3=ADlatel Eric Dumazet <edumazet@googl=
+e.com> napsal:
+> > >
+> > > On Thu, Jan 5, 2023 at 6:37 PM Jaroslav Pulchart
+> > > <jaroslav.pulchart@gooddata.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > I would like to report a 6.1,y regression in a network performance
+> > > > observed when using "git clone".
+> > > >
+> > > > BAD: "git clone" speed with kernel 6.1,y:
+> > > >    # git clone git@github.com:..../.....git
+> > > >    ...
+> > > >    Receiving objects:   8% (47797/571306), 20.69 MiB | 3.27 MiB/s
+> > > >
+> > > > GOOD: "git clone" speed with kernel 6.0,y:
+> > > >    # git clone git@github.com:..../.....git
+> > > >    ...
+> > > >    Receiving objects:  72% (411341/571306), 181.05 MiB | 60.27 MiB/=
+s
+> > > >
+> > > > I bisected the issue to a commit
+> > > > 5eddb24901ee49eee23c0bfce6af2e83fd5679bd "gro: add support of (hw)g=
+ro
+> > > > packets to gro stack". Reverting it from 6.1.y branch makes the git
+> > > > clone fast like with 6.0.y.
+> > > >
+> > >
+> > > Hmm, please provide more information.
+> > >
+> > > NIC used ? (ethtool -i eth0)
+> > >
+> > > ethtool -k eth0  # replace by your netdev name
+> > >
+> > > And packet captures would be nice (with and without the patch)
+> > >
+> > > Thanks.
+> >
+> >
+> >
+> > --
+> > Jaroslav Pulchart
+> > Sr. Principal SW Engineer
+> > GoodData
+
+
+
+--=20
+Jaroslav Pulchart
+Sr. Principal SW Engineer
+GoodData
