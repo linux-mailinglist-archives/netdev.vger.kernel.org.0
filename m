@@ -2,94 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB70F65E760
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 10:10:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E4B765E764
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 10:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231674AbjAEJJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 04:09:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
+        id S231783AbjAEJKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 04:10:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbjAEJJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 04:09:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6997C5017D;
-        Thu,  5 Jan 2023 01:09:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0905E61929;
-        Thu,  5 Jan 2023 09:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F44C433D2;
-        Thu,  5 Jan 2023 09:09:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672909760;
-        bh=Br5C/uDEZK1Yfd+HJpl97NIZZHEqGbxQ5YfknJjVjAU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Txu4a/n2IHl5nt5WRP3pqB7IP4KyrZNf0l0ncRjbTsjYiQkIFxjMcPK4wNOXch7L3
-         yb6QtPrpGTg8QyWHDg2p2MGW+1dyxXejtSCJ0wKCGV09mHXSzLQeuBPF2m/FEoYBWf
-         MUwYMLp7EuLk+C7cE+ikg8VWLytjHOTHWVtVB2LozF5cN/oEevADVB+2jEOP+LLEAN
-         vz2uZ1shdVpSazzRSv+CCunu4VqzwKekxQjclZQuuMOhfmWngiN/yJ0lHL0m/BMNe7
-         sTb0R8VhZWNsO9ZnFzSdPGRX9ohZ8zR2H/i4Zg3EM43BMeB/279TKc1mxYrHiQ6m83
-         bd2sX4vJXW3kg==
-Date:   Thu, 5 Jan 2023 11:09:16 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wifi: rtw89: Add missing check for alloc_workqueue
-Message-ID: <Y7aTvDWQnHQfN3su@unreal>
-References: <20230104142353.25093-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S232107AbjAEJKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 04:10:17 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9306A33D64;
+        Thu,  5 Jan 2023 01:10:16 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id z16so18974779wrw.1;
+        Thu, 05 Jan 2023 01:10:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hJHxOQO4N1hVQlNWLaYS7uiORL25B97K1+y7ilH6tPU=;
+        b=n9S9mo7pTHK6PFhYNyqFdfYI/hxcvdrzmCyv2sR4gGv/AnFmiMJss9H3ptXwDDgyDB
+         Zncv6CusCIlB5ujjFfPsxHRp/fKZlGt2ek6DUED2fEIgvJGvJuaZcq9B5QigGYruQ3eq
+         gGqqd3yY9IkQugrAr0QvNdg/kg286thMXHOIx80mTxA89EqgpsIOHnmqkKGzqdmUZveI
+         s9rA1FnBCNQM+kPUpui7AEXKnQCkbtv7BgIL974Z66cHg64jzv7xOqhMj15QB/7han48
+         W84qR9jZOWjenZvhWS2Xiaw5BIWXgJrIcab3r8z7M0Ylp04xDmdUihs8TPthSKntx80T
+         xarg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hJHxOQO4N1hVQlNWLaYS7uiORL25B97K1+y7ilH6tPU=;
+        b=EcDpjosry5GXNFFmnPxlVnafsxeE79Ws6uFOcciDtii4wQ+7qktSNVfzKRe99z+QGD
+         iYV5X/334Vm4ZxfX35yiuL3JJq1PZMLY6gfeEa93x4gmqpijyA3hW5eoWHl4jDdlQYMU
+         E5Twqm7uz6bQYB7j7nlpTZ0qzL20Qab146Cxm3xXMSC7wlkBk6I6fdeK2aE9DoNpfPL3
+         C8wmtjZIhq09MlOnIM7ZRvQnGP0ulw575jaod42qH+/aL9VZxm7rDdUZOsMo28PmPGU9
+         LTq1Y6rzTgHymyOP1vekF4lBQ3Xrr85gIteU0oBoKt8sXUP4j36wM120ch2SvPe5QBP0
+         XvEA==
+X-Gm-Message-State: AFqh2koU33ZiJTcbKPW1KFBCqbU9zQ9wR2c0rClaHIFFycFmpDQEN7+v
+        Fizll2nzXTiIgK4qcWvwL54=
+X-Google-Smtp-Source: AMrXdXtoohBaSHmotbz3uUa0FhQA5zbqAVQQxrdH/tcyN1e8HeYQ6144fHvEno7hcOoG0xG80IaglQ==
+X-Received: by 2002:a5d:45d2:0:b0:27a:d81:112e with SMTP id b18-20020a5d45d2000000b0027a0d81112emr24370123wrs.15.1672909815083;
+        Thu, 05 Jan 2023 01:10:15 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id i13-20020a5d438d000000b0029e1aa67fd2sm7373174wrq.115.2023.01.05.01.10.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Jan 2023 01:10:14 -0800 (PST)
+Date:   Thu, 5 Jan 2023 12:10:11 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: Re: [PATCH net-next 2/8] net: microchip: sparx5: Reset VCAP counter
+ for new rules
+Message-ID: <Y7aT8xGOCfvC/U0a@kadam>
+References: <20230105081335.1261636-1-steen.hegelund@microchip.com>
+ <20230105081335.1261636-3-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230104142353.25093-1-jiasheng@iscas.ac.cn>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230105081335.1261636-3-steen.hegelund@microchip.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 10:23:53PM +0800, Jiasheng Jiang wrote:
-> On Wed, Jan 04, 2023 at 07:41:36PM +0800, Leon Romanovsky wrote:
-> > On Wed, Jan 04, 2023 at 05:33:53PM +0800, Jiasheng Jiang wrote:
-> >> Add check for the return value of alloc_workqueue since it may return
-> >> NULL pointer.
-> >> 
-> >> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
-> >> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> >> ---
-> >>  drivers/net/wireless/realtek/rtw89/core.c | 2 ++
-> >>  1 file changed, 2 insertions(+)
-> >> 
-> >> diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-> >> index 931aff8b5dc9..006fe0499f81 100644
-> >> --- a/drivers/net/wireless/realtek/rtw89/core.c
-> >> +++ b/drivers/net/wireless/realtek/rtw89/core.c
-> >> @@ -3124,6 +3124,8 @@ int rtw89_core_init(struct rtw89_dev *rtwdev)
-> >>  	INIT_DELAYED_WORK(&rtwdev->cfo_track_work, rtw89_phy_cfo_track_work);
-> >>  	INIT_DELAYED_WORK(&rtwdev->forbid_ba_work, rtw89_forbid_ba_work);
-> >>  	rtwdev->txq_wq = alloc_workqueue("rtw89_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
-> >> +	if (!rtwdev->txq_wq)
-> >> +		return -ENOMEM;
-> > 
-> > While the change is fixing one issue, you are adding another one.
-> > There is no destroy of this workqueue if rtw89_load_firmware fails.
+On Thu, Jan 05, 2023 at 09:13:29AM +0100, Steen Hegelund wrote:
+> When a rule counter is external to the VCAP such as the Sparx5 IS2 counters
+> are, then this counter must be reset when a new rule is created.
 > 
-> Actually, I do not think the missing of destroy_workqueue is introduced by me.
-> Even without my patch, the destroy_workqueue is still missing.
-
-Not really, without your change, rtw89_core_init() never failed.
-
-> Anyway, I will submit a v2 that adds the missing destroy_workqueue.
-
-Thanks
-
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/vcap/vcap_api.c       | 3 +++
+>  drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c | 4 ++--
+>  2 files changed, 5 insertions(+), 2 deletions(-)
 > 
-> Thanks,
-> Jiang
-> 
+> diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> index b9b6432f4094..67e0a3d9103a 100644
+> --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> @@ -1808,6 +1808,7 @@ int vcap_add_rule(struct vcap_rule *rule)
+>  {
+>  	struct vcap_rule_internal *ri = to_intrule(rule);
+>  	struct vcap_rule_move move = {0};
+> +	struct vcap_counter ctr = {0};
+>  	int ret;
+>  
+>  	ret = vcap_api_check(ri->vctrl);
+> @@ -1833,6 +1834,8 @@ int vcap_add_rule(struct vcap_rule *rule)
+>  	ret = vcap_write_rule(ri);
+>  	if (ret)
+>  		pr_err("%s:%d: rule write error: %d\n", __func__, __LINE__, ret);
+> +	/* Set the counter to zero */
+> +	ret = vcap_write_counter(ri, &ctr);
+>  out:
+>  	mutex_unlock(&ri->admin->lock);
+>  	return ret;
+
+I feel like you intended to send a v2 series but accidentally resent
+the v1 series.  Otherwise I guess I have the same question as before.
+
+regards,
+dan carpenter
+
