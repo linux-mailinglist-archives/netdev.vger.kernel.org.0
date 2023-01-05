@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4461565F624
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 22:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCBF65F628
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 22:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236023AbjAEVrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 16:47:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
+        id S236048AbjAEVrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 16:47:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235717AbjAEVqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 16:46:37 -0500
+        with ESMTP id S235981AbjAEVrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 16:47:10 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A2C676C6
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 13:46:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FC3676D9
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 13:46:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=m2s/8OmWFp4OOxmIx+VnG8M6Dr4CWRucDCtkklQeocI=; b=YDs+Z/ZMgVKmuPMKqkqEJsty1B
-        A1FgDypFwF+s8OqORQz2gfE0byyC6ttEJOSy/A3Brovfffu+CCpHUC2z9ntVMzE1kI2kv4kqlRrTh
-        Y1l0H6sdJzcxuY+NldXWw/oOkzkIrS2qHdRDbK6UORmUKiAmDCCHJcrO+qvQ0eDjZqBaBBll20qea
-        eCv0L+rQKZt3bLtTztxVMECB6tO55V4mWnQDPLzwsGevmrTXaBNBH4rYFtYtlEimLEQgTTnrh0jw1
-        rFEQL5ZTwGzcOSa3O+IVFSOuR2tow2xdkB9HuW17LZaslvuFrzB/qVMqTBmSy8VYYFuYq6QUUUzaE
-        BfaV415A==;
+        bh=PdoQKhJ3LtOgA1Y51KMPKfFIcW0uZc7eBAEFhZ/WWAE=; b=DIPsPoas28aIXNv1jols4g81YO
+        Z9VmoAsDNbFfHhpE8STvqmcx6Wnz2FY8d2Wab+eI2Zo8SSmNDh29Trf2wxQ273Q9OsGcW99diVYyh
+        7z9pTa6dk4qHnP32YGwVSAn8D3WriPCTIVPIMHyAiB9ETD7/aGkpkj3zTUHfsk5xbY3du6kzYLa6m
+        u8uHMPFKZknCmkCk1NL5UzqlueHRX005EzOgJDzfuMNipSLPvULIS6BA4QvRg0H9Xtkcc1cK9M3tp
+        sGP3XahwIQJTLN069G8PTsS/scpstQ5oMNazYNhdNgGJZwh1YN9xe+ni/WP+Tk8alsjMtZIYhMpXu
+        KJI/lEow==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pDY4H-00GWnB-Vh; Thu, 05 Jan 2023 21:46:34 +0000
+        id 1pDY4I-00GWnD-2C; Thu, 05 Jan 2023 21:46:34 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     Jesper Dangaard Brouer <hawk@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         netdev@vger.kernel.org, linux-mm@kvack.org,
         Shakeel Butt <shakeelb@google.com>
-Subject: [PATCH v2 09/24] page_pool: Convert page_pool_defrag_page() to page_pool_defrag_netmem()
-Date:   Thu,  5 Jan 2023 21:46:16 +0000
-Message-Id: <20230105214631.3939268-10-willy@infradead.org>
+Subject: [PATCH v2 10/24] page_pool: Convert page_pool_put_defragged_page() to netmem
+Date:   Thu,  5 Jan 2023 21:46:17 +0000
+Message-Id: <20230105214631.3939268-11-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230105214631.3939268-1-willy@infradead.org>
 References: <20230105214631.3939268-1-willy@infradead.org>
@@ -49,48 +49,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a page_pool_defrag_page() wrapper.
+Also convert page_pool_is_last_frag(), page_pool_put_page(),
+page_pool_recycle_in_ring() and use netmem in page_pool_put_page_bulk().
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/net/page_pool.h | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ include/net/page_pool.h | 23 ++++++++++++++++-------
+ net/core/page_pool.c    | 29 +++++++++++++++--------------
+ 2 files changed, 31 insertions(+), 21 deletions(-)
 
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 63aa530922de..8fe494166427 100644
+index 8fe494166427..8b826da3b8b0 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -393,7 +393,7 @@ static inline void page_pool_fragment_page(struct page *page, long nr)
- 	atomic_long_set(&page->pp_frag_count, nr);
+@@ -384,7 +384,7 @@ static inline void page_pool_release_page(struct page_pool *pool,
+ 	page_pool_release_netmem(pool, page_netmem(page));
  }
  
--static inline long page_pool_defrag_page(struct page *page, long nr)
-+static inline long page_pool_defrag_netmem(struct netmem *nmem, long nr)
+-void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
++void page_pool_put_defragged_netmem(struct page_pool *pool, struct netmem *nmem,
+ 				  unsigned int dma_sync_size,
+ 				  bool allow_direct);
+ 
+@@ -420,15 +420,15 @@ static inline long page_pool_defrag_page(struct page *page, long nr)
+ }
+ 
+ static inline bool page_pool_is_last_frag(struct page_pool *pool,
+-					  struct page *page)
++					  struct netmem *nmem)
  {
- 	long ret;
- 
-@@ -406,14 +406,19 @@ static inline long page_pool_defrag_page(struct page *page, long nr)
- 	 * especially when dealing with a page that may be partitioned
- 	 * into only 2 or 3 pieces.
- 	 */
--	if (atomic_long_read(&page->pp_frag_count) == nr)
-+	if (atomic_long_read(&nmem->pp_frag_count) == nr)
- 		return 0;
- 
--	ret = atomic_long_sub_return(nr, &page->pp_frag_count);
-+	ret = atomic_long_sub_return(nr, &nmem->pp_frag_count);
- 	WARN_ON(ret < 0);
- 	return ret;
+ 	/* If fragments aren't enabled or count is 0 we were the last user */
+ 	return !(pool->p.flags & PP_FLAG_PAGE_FRAG) ||
+-	       (page_pool_defrag_page(page, 1) == 0);
++	       (page_pool_defrag_netmem(nmem, 1) == 0);
  }
  
-+static inline long page_pool_defrag_page(struct page *page, long nr)
+-static inline void page_pool_put_page(struct page_pool *pool,
+-				      struct page *page,
++static inline void page_pool_put_netmem(struct page_pool *pool,
++				      struct netmem *nmem,
+ 				      unsigned int dma_sync_size,
+ 				      bool allow_direct)
+ {
+@@ -436,13 +436,22 @@ static inline void page_pool_put_page(struct page_pool *pool,
+ 	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+ 	 */
+ #ifdef CONFIG_PAGE_POOL
+-	if (!page_pool_is_last_frag(pool, page))
++	if (!page_pool_is_last_frag(pool, nmem))
+ 		return;
+ 
+-	page_pool_put_defragged_page(pool, page, dma_sync_size, allow_direct);
++	page_pool_put_defragged_netmem(pool, nmem, dma_sync_size, allow_direct);
+ #endif
+ }
+ 
++static inline void page_pool_put_page(struct page_pool *pool,
++				      struct page *page,
++				      unsigned int dma_sync_size,
++				      bool allow_direct)
 +{
-+	return page_pool_defrag_netmem(page_netmem(page), nr);
++	page_pool_put_netmem(pool, page_netmem(page), dma_sync_size,
++				allow_direct);
 +}
 +
- static inline bool page_pool_is_last_frag(struct page_pool *pool,
- 					  struct page *page)
+ /* Same as above but will try to sync the entire area pool->max_len */
+ static inline void page_pool_put_full_page(struct page_pool *pool,
+ 					   struct page *page, bool allow_direct)
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index c54217ce6b77..e727a74504c2 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -516,14 +516,15 @@ static void page_pool_return_netmem(struct page_pool *pool, struct netmem *nmem)
+ 	 */
+ }
+ 
+-static bool page_pool_recycle_in_ring(struct page_pool *pool, struct page *page)
++static bool page_pool_recycle_in_ring(struct page_pool *pool,
++					struct netmem *nmem)
  {
+ 	int ret;
+ 	/* BH protection not needed if current is serving softirq */
+ 	if (in_serving_softirq())
+-		ret = ptr_ring_produce(&pool->ring, page);
++		ret = ptr_ring_produce(&pool->ring, nmem);
+ 	else
+-		ret = ptr_ring_produce_bh(&pool->ring, page);
++		ret = ptr_ring_produce_bh(&pool->ring, nmem);
+ 
+ 	if (!ret) {
+ 		recycle_stat_inc(pool, ring);
+@@ -615,17 +616,17 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+ 						dma_sync_size, allow_direct));
+ }
+ 
+-void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
++void page_pool_put_defragged_netmem(struct page_pool *pool, struct netmem *nmem,
+ 				  unsigned int dma_sync_size, bool allow_direct)
+ {
+-	page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
+-	if (page && !page_pool_recycle_in_ring(pool, page)) {
++	nmem = __page_pool_put_netmem(pool, nmem, dma_sync_size, allow_direct);
++	if (nmem && !page_pool_recycle_in_ring(pool, nmem)) {
+ 		/* Cache full, fallback to free pages */
+ 		recycle_stat_inc(pool, ring_full);
+-		page_pool_return_page(pool, page);
++		page_pool_return_netmem(pool, nmem);
+ 	}
+ }
+-EXPORT_SYMBOL(page_pool_put_defragged_page);
++EXPORT_SYMBOL(page_pool_put_defragged_netmem);
+ 
+ /* Caller must not use data area after call, as this function overwrites it */
+ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+@@ -634,16 +635,16 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ 	int i, bulk_len = 0;
+ 
+ 	for (i = 0; i < count; i++) {
+-		struct page *page = virt_to_head_page(data[i]);
++		struct netmem *nmem = virt_to_netmem(data[i]);
+ 
+ 		/* It is not the last user for the page frag case */
+-		if (!page_pool_is_last_frag(pool, page))
++		if (!page_pool_is_last_frag(pool, nmem))
+ 			continue;
+ 
+-		page = __page_pool_put_page(pool, page, -1, false);
++		nmem = __page_pool_put_netmem(pool, nmem, -1, false);
+ 		/* Approved for bulk recycling in ptr_ring cache */
+-		if (page)
+-			data[bulk_len++] = page;
++		if (nmem)
++			data[bulk_len++] = nmem;
+ 	}
+ 
+ 	if (unlikely(!bulk_len))
+@@ -669,7 +670,7 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ 	 * since put_page() with refcnt == 1 can be an expensive operation
+ 	 */
+ 	for (; i < bulk_len; i++)
+-		page_pool_return_page(pool, data[i]);
++		page_pool_return_netmem(pool, data[i]);
+ }
+ EXPORT_SYMBOL(page_pool_put_page_bulk);
+ 
 -- 
 2.35.1
 
