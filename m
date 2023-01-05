@@ -2,229 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B54965F3F8
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 19:49:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8AA865F3FB
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 19:51:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235187AbjAESts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 13:49:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
+        id S235162AbjAESvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 13:51:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbjAEStq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 13:49:46 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1345B14E
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 10:49:45 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id e76so4665377ybh.11
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 10:49:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lK0zkJ8c1Q8dCJA4B3jTfL84ruSHo/CLLhGDyIyLdGU=;
-        b=OdnVw3/JmR19/BLn7L6BweU6YuRQ4VTPl+1VpFH/ZKZxwjr+cOazS0BwI7JcbXBZI1
-         IcJnYlj91gLVIVFWGaOkMUEUJcnaloYbDFOjzLy2SG4KwVKVogn+hVZx8hoHH7qTGxFC
-         U0ZlWQYm0s7TTbFqtdWvTxViqRIAfjWs5+XU1QdUG/ooH8ufdfzlsgZekVPNEHyTcCuB
-         1uqaLayjVP10sLQfuRPj/j10++4G77Z44uCl6Z1cChhJFEwLX4+xjWQAv5LPkkMHywK7
-         7P4IAZnQqwjbu/SFkS5LuLw8imNqEDLhsY5wCpw/XQ2d4UrsicuBIvGzdwDQQLn5hdj4
-         FMSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lK0zkJ8c1Q8dCJA4B3jTfL84ruSHo/CLLhGDyIyLdGU=;
-        b=dOYj8/wOrgg+YTuGv+LNYUKRaWYknRqo9ZtuR0A7Yj6sSj3n1lMzXYKBd92/ews3IN
-         /3rL9NV6csxtlohdeyQTq1BC437BDuLR6z8/tpAo/7ve5HXTvxC3Ig3bSOrOxFYhtnBP
-         2O616EoMdPxSMCSHZIGST0ZBjLSeO7CNJzLA9U1jkWI9SjQ+tmq2t77gjtxnTWvKLLwu
-         mxypa3/HKN6rwnhw2QwPcCuG1Vll0hRsINwgWJBfcZQlux8X3reCtjQakHyz+zZKRvly
-         AIGyMy4jqYbGrWSAwElFHW+euWf2N/xXt5xXcm5Wb4VP+U4e3mWyRZjO+Dw3rIjoIheQ
-         /rWA==
-X-Gm-Message-State: AFqh2komT0wrVZm3BMYkPBV63HKpWXBXP4wBI6aYOrI8Z+CjwDypcyt9
-        YhsrfCaOUArI77Ynk0yTjvOvI1txN71cUAzeiSD74A2gkgr1xi/P
-X-Google-Smtp-Source: AMrXdXuumbNmNEeoHtX/YDoy7gbOlrI6bbWM/hgM6j3X9k7vIXDCqsBGH17jKb1b/gJDDD8shOKHWR36J5u/rWxDGGs=
-X-Received: by 2002:a25:3f06:0:b0:769:e5aa:4ac9 with SMTP id
- m6-20020a253f06000000b00769e5aa4ac9mr4666525yba.598.1672944584809; Thu, 05
- Jan 2023 10:49:44 -0800 (PST)
+        with ESMTP id S229842AbjAESvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 13:51:42 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DC24F129;
+        Thu,  5 Jan 2023 10:51:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xZoCPWL4G58XUyUrPypVA5l0VufKdxJ9uwEK4mQPjx0=; b=MsQi/fZGIv3l1/HXCxnc14X1Am
+        Y4UfYiFAd71fKtWVKaxmErVhwJTjxV7ZG4tRLn6WFckwjPzjnOwspK6ZZuj8lqUzn0ffzeviZY6fA
+        aLYTt1SbLXk3vwZkVnQieOk/9FuwK3oEQXT3boJTV7nwJp7y40/fgspxekEDF6Iy8ZysTaOUBUDA4
+        a8U7tuqg4cacIn74hPkadity60CUdAu76+GNs4cLLJBGveEORl80ji2h+2noPO8D2iSIm9wBEWoFC
+        gT0cwcyB50ewjQD/4nzbU9DKa169AFUPcJ3xqzS6lK/ZA9O2Jl8tt/yOWgTVGhbBHqzSbgQcrg6Hv
+        coFef62g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35984)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pDVKy-0007R3-Ci; Thu, 05 Jan 2023 18:51:36 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pDVKv-0004Co-F8; Thu, 05 Jan 2023 18:51:33 +0000
+Date:   Thu, 5 Jan 2023 18:51:33 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Tim Harvey <tharvey@gateworks.com>
+Subject: Re: [PATCH net-next v5 4/4] phy: aquantia: Determine rate adaptation
+ support from registers
+Message-ID: <Y7ccNSSnPxTR2AQs@shell.armlinux.org.uk>
+References: <20230103220511.3378316-1-sean.anderson@seco.com>
+ <20230103220511.3378316-5-sean.anderson@seco.com>
+ <20230105140421.bqd2aed6du5mtxn4@skbuf>
+ <Y7bhctPZoyNnw1ay@shell.armlinux.org.uk>
+ <20230105174342.jldjjisgzs6dmcpd@skbuf>
 MIME-Version: 1.0
-References: <CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com>
- <CANn89iJFmfv569Mu7REiP5OBMscuv8EBSGJqi_7c4pxcJymrKw@mail.gmail.com> <CAK8fFZ7cyhnUsFiCE-mpQF9P_Q7M70RiDbXGNvjA+2Y_PyuQYQ@mail.gmail.com>
-In-Reply-To: <CAK8fFZ7cyhnUsFiCE-mpQF9P_Q7M70RiDbXGNvjA+2Y_PyuQYQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 5 Jan 2023 19:49:33 +0100
-Message-ID: <CANn89iKeNj4uUAVW2GJUiD5COqvUJjey-4-gpuUTp-er=2hAWg@mail.gmail.com>
-Subject: Re: Network performance regression with linux 6.1.y. Issue bisected
- to "5eddb24901ee49eee23c0bfce6af2e83fd5679bd" (gro: add support of (hw)gro
- packets to gro stack)
-To:     Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
-Cc:     netdev@vger.kernel.org, lixiaoyan@google.com, pabeni@redhat.com,
-        davem@davemloft.net, Igor Raits <igor.raits@gooddata.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230105174342.jldjjisgzs6dmcpd@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 5, 2023 at 6:54 PM Jaroslav Pulchart
-<jaroslav.pulchart@gooddata.com> wrote:
->
-> It is at KVM based VMs "CentOS 9 Stream" and "CentOS 8 Stream" using
-> upstream kernel 6.1.y. Hosted on Dell PowerEdge 7525 servers (2x AMD
-> 74F3) and OS CentOS 9 Stream again with upstream kernel 6.1.y or
-> 6.0.y.
->
-> # ethtool -k eth0
-> Features for eth0:
-> rx-checksumming: on [fixed]
-> tx-checksumming: on
-> tx-checksum-ipv4: off [fixed]
-> tx-checksum-ip-generic: on
-> tx-checksum-ipv6: off [fixed]
-> tx-checksum-fcoe-crc: off [fixed]
-> tx-checksum-sctp: off [fixed]
-> scatter-gather: on
-> tx-scatter-gather: on
-> tx-scatter-gather-fraglist: off [fixed]
-> tcp-segmentation-offload: on
-> tx-tcp-segmentation: on
-> tx-tcp-ecn-segmentation: on
-> tx-tcp-mangleid-segmentation: off
-> tx-tcp6-segmentation: on
-> generic-segmentation-offload: on
-> generic-receive-offload: on
-> large-receive-offload: off [fixed]
-> rx-vlan-offload: off [fixed]
-> tx-vlan-offload: off [fixed]
-> ntuple-filters: off [fixed]
-> receive-hashing: off [fixed]
-> highdma: on [fixed]
-> rx-vlan-filter: on [fixed]
-> vlan-challenged: off [fixed]
-> tx-lockless: off [fixed]
-> netns-local: off [fixed]
-> tx-gso-robust: on [fixed]
-> tx-fcoe-segmentation: off [fixed]
-> tx-gre-segmentation: off [fixed]
-> tx-gre-csum-segmentation: off [fixed]
-> tx-ipxip4-segmentation: off [fixed]
-> tx-ipxip6-segmentation: off [fixed]
-> tx-udp_tnl-segmentation: off [fixed]
-> tx-udp_tnl-csum-segmentation: off [fixed]
-> tx-gso-partial: off [fixed]
-> tx-tunnel-remcsum-segmentation: off [fixed]
-> tx-sctp-segmentation: off [fixed]
-> tx-esp-segmentation: off [fixed]
-> tx-udp-segmentation: off [fixed]
-> tx-gso-list: off [fixed]
-> fcoe-mtu: off [fixed]
-> tx-nocache-copy: off
-> loopback: off [fixed]
-> rx-fcs: off [fixed]
-> rx-all: off [fixed]
-> tx-vlan-stag-hw-insert: off [fixed]
-> rx-vlan-stag-hw-parse: off [fixed]
-> rx-vlan-stag-filter: off [fixed]
-> l2-fwd-offload: off [fixed]
-> hw-tc-offload: off [fixed]
-> esp-hw-offload: off [fixed]
-> esp-tx-csum-hw-offload: off [fixed]
-> rx-udp_tunnel-port-offload: off [fixed]
-> tls-hw-tx-offload: off [fixed]
-> tls-hw-rx-offload: off [fixed]
-> rx-gro-hw: on
-> tls-hw-record: off [fixed]
-> rx-gro-list: off
-> macsec-hw-offload: off [fixed]
-> rx-udp-gro-forwarding: off
-> hsr-tag-ins-offload: off [fixed]
-> hsr-tag-rm-offload: off [fixed]
-> hsr-fwd-offload: off [fixed]
-> hsr-dup-offload: off [fixed]
->
-> # ethtool -i eth0
-> driver: virtio_net
-> version: 1.0.0
-> firmware-version:
-> expansion-rom-version:
-> bus-info: 0000:03:00.0
-> supports-statistics: yes
-> supports-test: no
-> supports-eeprom-access: no
-> supports-register-dump: no
-> supports-priv-flags: no
+On Thu, Jan 05, 2023 at 07:43:42PM +0200, Vladimir Oltean wrote:
+> On Thu, Jan 05, 2023 at 02:40:50PM +0000, Russell King (Oracle) wrote:
+> > > If the PHY firmware uses a combination like this: 10GBASE-R/XFI for
+> > > media speeds of 10G, 5G, 2.5G (rate adapted), and SGMII for 1G, 100M
+> > > and 10M, a call to your implementation of
+> > > aqr107_get_rate_matching(PHY_INTERFACE_MODE_10GBASER) would return
+> > > RATE_MATCH_NONE, right? So only ETHTOOL_LINK_MODE_10000baseT_Full_BIT
+> > > would be advertised on the media side?
+> > 
+> > No, beause of the special condition in phylink that if it's a clause 45
+> > PHY and we use something like 10GBASE-R, we don't limit to just 10G
+> > speed, but try all interface modes - on the assumption that the PHY
+> > will switch its host interface.
+> > 
+> > RATE_MATCH_NONE doesn't state anything about whether the PHY operates
+> > in a single interface mode or not - with 10G PHYs (and thus clause 45
+> > PHYs) it seems very common from current observations for
+> > implementations to do this kind of host-interface switching.
+> 
+> So you mention commits
+> 7642cc28fd37 ("net: phylink: fix PHY validation with rate adaption") and
+> df3f57ac9605 ("net: phylink: extend clause 45 PHY validation workaround").
+> 
+> IIUC, these allow the advertised capabilities to be more than 10G (based
+> on supported_interfaces), on the premise that it's possible for the PHY
+> to switch SERDES protocol to achieve lower speeds.
 
-Random guess, can you try:
+I didn't mention any commits, but yes, it's ever since the second commit
+you list above, which was necessary to get PHYs which switch their
+interface mode to work sanely. It essentially allows everything that
+the combination of host and PHY supports, because we couldn't do much
+better at the time that commit was written.
 
-diff --git a/net/core/gro.c b/net/core/gro.c
-index fd8c6a7e8d3e2e6b439109d0089f44a547c7347e..f162674e7ae1bdf96bcbf7e1ed7=
-326729d862f9a
-100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -500,7 +500,8 @@ static enum gro_result dev_gro_receive(struct
-napi_struct *napi, struct sk_buff
-        BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed),
-                                        sizeof(u32))); /* Avoid slow
-unaligned acc */
-        *(u32 *)&NAPI_GRO_CB(skb)->zeroed =3D 0;
--       NAPI_GRO_CB(skb)->flush =3D skb_has_frag_list(skb);
-+       NAPI_GRO_CB(skb)->flush =3D skb_has_frag_list(skb) ||
-+                                 (skb_shinfo(skb)->gso_type & SKB_GSO_DODG=
-Y);
-        NAPI_GRO_CB(skb)->is_atomic =3D 1;
-        NAPI_GRO_CB(skb)->count =3D 1;
-        if (unlikely(skb_is_gso(skb))) {
+> This does partly correct the last part of my question, but I believe
+> that the essence of it still remains. We won't make use of PAUSE rate
+> adaptation to support the speeds which aren't directly covered by the
+> supported_interfaces. Aren't we interpreting the PHY provisioning somewhat
+> too conservatively in this case, or do you believe that this is just an
+> academic concern?
 
+Do you have a better idea how to come up with a list of link modes that
+the PHY should advertise to its link partner and also report as
+supported given the combination of:
 
+- PHYs that switch their host interface
+- PHYs that may support some kind of rate adaption
+- PCS/MACs that may support half-duplex at some speeds
+- PCS/MACs that might support pause modes, and might support them only
+  with certain interface modes
 
->
-> =C4=8Dt 5. 1. 2023 v 18:43 odes=C3=ADlatel Eric Dumazet <edumazet@google.=
-com> napsal:
-> >
-> > On Thu, Jan 5, 2023 at 6:37 PM Jaroslav Pulchart
-> > <jaroslav.pulchart@gooddata.com> wrote:
-> > >
-> > > Hello,
-> > >
-> > > I would like to report a 6.1,y regression in a network performance
-> > > observed when using "git clone".
-> > >
-> > > BAD: "git clone" speed with kernel 6.1,y:
-> > >    # git clone git@github.com:..../.....git
-> > >    ...
-> > >    Receiving objects:   8% (47797/571306), 20.69 MiB | 3.27 MiB/s
-> > >
-> > > GOOD: "git clone" speed with kernel 6.0,y:
-> > >    # git clone git@github.com:..../.....git
-> > >    ...
-> > >    Receiving objects:  72% (411341/571306), 181.05 MiB | 60.27 MiB/s
-> > >
-> > > I bisected the issue to a commit
-> > > 5eddb24901ee49eee23c0bfce6af2e83fd5679bd "gro: add support of (hw)gro
-> > > packets to gro stack". Reverting it from 6.1.y branch makes the git
-> > > clone fast like with 6.0.y.
-> > >
-> >
-> > Hmm, please provide more information.
-> >
-> > NIC used ? (ethtool -i eth0)
-> >
-> > ethtool -k eth0  # replace by your netdev name
-> >
-> > And packet captures would be nice (with and without the patch)
-> >
-> > Thanks.
->
->
->
-> --
-> Jaroslav Pulchart
-> Sr. Principal SW Engineer
-> GoodData
+Layered on top of that is being able to determine which interface a PHY/
+PCS/MAC should be using when e.g. a 10G copper PHY is inserted (which
+could be inserted into a host which only supports up to 1G.)
+
+I've spent considerable time trying to work out a solution to this, and
+even before we had rate adaption, it isn't easy to solve. I've
+experimented with several different solutions, and it's from numerous
+trials that led to this host_interfaces/mac_capabilities structure -
+but that still doesn't let us solve the problems I mention above since
+we have no idea what the PHY itself is capable of, or how it's going to
+behave, or really which interface modes it might switch between if it's
+a clause 45 PHY.
+
+I've experimented with adding phy->supported_interfaces so a phylib
+driver can advertise what interfaces it supports. I've also
+experimented with phy->possible_interfaces which reports the interface
+modes that the PHY _is_ going to switch between having selected its
+operating mode. I've not submitted them because even with this, it all
+still seems rather inadequate - and there is a huge amount of work to
+update all the phylib drivers to provide even that basic information,
+let alone have much confidence that it is correct.
+
+You can find these experiments, as normal, in my net-queue branch in
+my git tree. These date from before we had rate adaption, so they take
+no account of the recent addition of this extra variable.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
