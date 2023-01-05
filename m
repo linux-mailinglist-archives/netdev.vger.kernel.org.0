@@ -2,157 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C180B65E6EF
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 09:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 616A565E71D
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 09:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbjAEIii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 03:38:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41658 "EHLO
+        id S231480AbjAEIza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 03:55:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231138AbjAEIih (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 03:38:37 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F184C717;
-        Thu,  5 Jan 2023 00:38:36 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id u19so88449021ejm.8;
-        Thu, 05 Jan 2023 00:38:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+8xeEYZVKn58+C4NC2Fr2u9sUd2mC0FIQGRQdKj9Ibw=;
-        b=nMGzSrcRFdfnY6Wa4lHpmmUbWBWVyucYIygEhW26gK9M2qhCQ5WBv98dp5HkvgQWDs
-         xhim5FZDT0BNRF0xgu9kCt5hFvCo4Q1CsI5GD7OGuwttWspeWBtUGNsuBcVFNQEbJ2qs
-         9QZuAVAqeCJ/dSY8lF19Rdhjt+TGfKTX5I9c1PAIVWTJHRbVzG8zE2uauFK+7FQ0G2TR
-         sexUKc2+Q/A3ipGxdbcmPaiQkyKOmjUEpCeuYOS92QetS+Pxpr92m72lSsLWCkUBIlUo
-         1YASHYJCox3T/22yVb5JfVhDyjS5laemv5/8VJEUlu7I7xFPKK4PV103BgjyRAjyZnuB
-         iKmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+8xeEYZVKn58+C4NC2Fr2u9sUd2mC0FIQGRQdKj9Ibw=;
-        b=yGLJT8DxRkw1jUXydWzXzlX2kOAsssXXOnr3xiXbJFgOA81u4wzr6ha9Lh6lUhgUcZ
-         pB0u9P4KVEum7bd5eZTb/CvHudjvP/fdjy1CGH72z2ygEP6/7UZVFiG+M4JVzJwiO84Q
-         TfbqHUIAHpsvY02PD9iJ2M2vhyKQLaXLBZ2msh3cgvGETJO7rP/pABBBi6SvviYQrisD
-         BXk33EqsohYgLzduG4w7iixE+pCVuL+PwhwRT9f8Kr6bJUXGobd7aEXxN+4KO3czJsqj
-         X7Tg1vLyHBX+EIS+cwRpBgvLi2jFDQX+gV84xm2pkyqDWSLBsLNAHVUOPJrhGoTOsUK6
-         fPUw==
-X-Gm-Message-State: AFqh2kpXqgGPsb1sgWhlJYlvMTWSYxeDkQwdQfBvRsRkM7R8yqOqFg4M
-        50CotU1tSCn11u3BEA41PWMKcV9awWHFiFq9eDc=
-X-Google-Smtp-Source: AMrXdXsId2nApFSWCct5D1Spcy7auVmjlo+cMEKsVKFUQPTxYMz4lQLukSnZn8gb7SaLV0OgQ11nt3LXf3RR+GKuCos=
-X-Received: by 2002:a17:906:71d0:b0:7ad:b45c:dbca with SMTP id
- i16-20020a17090671d000b007adb45cdbcamr5718963ejk.388.1672907914707; Thu, 05
- Jan 2023 00:38:34 -0800 (PST)
+        with ESMTP id S231680AbjAEIzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 03:55:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844DC395EB;
+        Thu,  5 Jan 2023 00:55:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7646561912;
+        Thu,  5 Jan 2023 08:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5001CC433EF;
+        Thu,  5 Jan 2023 08:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672908918;
+        bh=qFhnm17Gb688TaduxHaHJISkIUd0KIcIGpXe2ATD8ys=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TchCyc1KrjVfN4RqhAaAo5PE2RtHafbaWMP0Abcfht9ZvhERBLFydm5aCn8ssDfCz
+         8hmKxxSl7Pci66dNfgXNjg5ATm1Ro1JB1l/ava/Vr10YESaCbMHiioF4vBuvYBt4QG
+         w2417kIjV3BkmX2h6lSqeXd8KbPwm5vk6ZFvkxXlAg0p4CchTw0kY8v2NiMdsBCbEq
+         DI99lqwn+SXzLr8+ld+AVkeLnvfixyAQt3nQmx3t6aCVhggZHhXiL3LCJ4QgFgj68b
+         58mfzOxBaJG9rCPLydsJ5s8/6IQihT+snwetyF+fR1n6SFmd0UNxV1oG32pB108q+J
+         HOuGuBiBRLBTg==
+Date:   Thu, 5 Jan 2023 10:55:14 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next 1/5] net/ethtool: add netlink interface for the
+ PLCA RS
+Message-ID: <Y7aQcgR4C9Lg/+yK@unreal>
+References: <cover.1672840325.git.piergiorgio.beruto@gmail.com>
+ <76d0a77273e4b4e7c1d22a897c4af9109a8edc51.1672840325.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
-References: <20230104121744.2820-1-magnus.karlsson@gmail.com>
- <20230104121744.2820-12-magnus.karlsson@gmail.com> <Y7XCEPFUCUNZqtAY@maniforge.lan>
-In-Reply-To: <Y7XCEPFUCUNZqtAY@maniforge.lan>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 5 Jan 2023 09:38:22 +0100
-Message-ID: <CAJ8uoz03bLb7Xc29bRjD+QNy73XtjA2XEszZ8xnzqS2Y7QCsTg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 11/15] selftests/xsk: get rid of built-in XDP program
-To:     David Vernet <void@manifault.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, bpf@vger.kernel.org, yhs@fb.com,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com,
-        jonathan.lemon@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <76d0a77273e4b4e7c1d22a897c4af9109a8edc51.1672840325.git.piergiorgio.beruto@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 4, 2023 at 7:14 PM David Vernet <void@manifault.com> wrote:
->
-> On Wed, Jan 04, 2023 at 01:17:40PM +0100, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Get rid of the built-in XDP program that was part of the old libbpf
-> > code in xsk.c and replace it with an eBPF program build using the
-> > framework by all the other bpf selftests. This will form the base for
-> > adding more programs in later commits.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/Makefile          |  2 +-
-> >  .../selftests/bpf/progs/xsk_xdp_progs.c       | 19 ++++
-> >  tools/testing/selftests/bpf/xsk.c             | 88 ++++---------------
-> >  tools/testing/selftests/bpf/xsk.h             |  6 +-
-> >  tools/testing/selftests/bpf/xskxceiver.c      | 72 ++++++++-------
-> >  tools/testing/selftests/bpf/xskxceiver.h      |  7 +-
-> >  6 files changed, 88 insertions(+), 106 deletions(-)
-> >  create mode 100644 tools/testing/selftests/bpf/progs/xsk_xdp_progs.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selft=
-ests/bpf/Makefile
-> > index 205e8c3c346a..a0193a8f9da6 100644
-> > --- a/tools/testing/selftests/bpf/Makefile
-> > +++ b/tools/testing/selftests/bpf/Makefile
-> > @@ -240,7 +240,7 @@ $(OUTPUT)/flow_dissector_load: $(TESTING_HELPERS)
-> >  $(OUTPUT)/test_maps: $(TESTING_HELPERS)
-> >  $(OUTPUT)/test_verifier: $(TESTING_HELPERS) $(CAP_HELPERS)
-> >  $(OUTPUT)/xsk.o: $(BPFOBJ)
-> > -$(OUTPUT)/xskxceiver: $(OUTPUT)/xsk.o
-> > +$(OUTPUT)/xskxceiver: $(OUTPUT)/xsk.o $(OUTPUT)/xsk_xdp_progs.skel.h
->
-> Hi Magnus,
->
-> This seems to break the selftests build for clang:
->
-> $ pwd
-> <redacted>/bpf-next/tools/testing/selftests/bpf
->
-> $ make LLVM=3D1 CC=3Dclang
->   MKDIR    libbpf
->   HOSTCC  /home/void/upstream/bpf-next/tools/testing/selftests/bpf/tools/=
-build/libbpf/fixdep.o
->   HOSTLD  /home/void/upstream/bpf-next/tools/testing/selftests/bpf/tools/=
-build/libbpf/fixdep-in.o
->   LINK    /home/void/upstream/bpf-next/tools/testing/selftests/bpf/tools/=
-build/libbpf/fixdep
->
-> ...
->
->   GEN-SKEL [test_progs-no_alu32] test_static_linked.skel.h
->   LINK-BPF [test_progs-no_alu32] test_usdt.bpf.o
->   GEN-SKEL [test_progs-no_alu32] linked_vars.skel.h
->   GEN-SKEL [test_progs-no_alu32] linked_funcs.skel.h
->   EXT-COPY [test_progs-no_alu32] urandom_read bpf_testmod.ko liburandom_r=
-ead.so xdp_synproxy sign-file ima_setup.sh verify_sig_setup.sh btf_dump_tes=
-t_case_bitfields.c btf_dump_test_case_multidim.c btf_dump_test_case_namespa=
-cing.c btf_dump_test_case_ordering.c btf_dump_test_case_packing.c btf_dump_=
-test_case_padding.c btf_dump_test_case_syntax.c
->   GEN-SKEL [test_progs-no_alu32] linked_maps.skel.h
->   GEN-SKEL [test_progs-no_alu32] test_subskeleton.skel.h
->   BINARY   xskxceiver
->   BINARY   bench
->   GEN-SKEL [test_progs-no_alu32] test_subskeleton_lib.skel.h
->   GEN-SKEL [test_progs-no_alu32] test_usdt.skel.h
-> clang-15: error: cannot specify -o when generating multiple output files
-> make: *** [Makefile:171: /home/void/upstream/bpf-next/tools/testing/selft=
-ests/bpf/xskxceiver] Error 1
-> make: *** Waiting for unfinished jobs....
-> make[1]: Nothing to be done for 'docs'.
-> $
->
-> It's also broken on CI: https://github.com/kernel-patches/bpf/actions/run=
-s/3837984934/jobs/6533917001
->
-> Could you please look into this?
+On Wed, Jan 04, 2023 at 03:05:44PM +0100, Piergiorgio Beruto wrote:
+> Add support for configuring the PLCA Reconciliation Sublayer on
+> multi-drop PHYs that support IEEE802.3cg-2019 Clause 148 (e.g.,
+> 10BASE-T1S). This patch adds the appropriate netlink interface
+> to ethtool.
+> 
+> Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+> ---
+>  Documentation/networking/ethtool-netlink.rst | 138 ++++++++++
+>  MAINTAINERS                                  |   6 +
+>  include/linux/ethtool.h                      |  12 +
+>  include/linux/phy.h                          |  57 ++++
+>  include/uapi/linux/ethtool_netlink.h         |  25 ++
+>  net/ethtool/Makefile                         |   2 +-
+>  net/ethtool/netlink.c                        |  29 ++
+>  net/ethtool/netlink.h                        |   6 +
+>  net/ethtool/plca.c                           | 276 +++++++++++++++++++
+>  9 files changed, 550 insertions(+), 1 deletion(-)
+>  create mode 100644 net/ethtool/plca.c
 
-Thanks for spotting this David. Will fix it in the v3.
+<...>
 
-> Thanks,
-> David
+> --- /dev/null
+> +++ b/net/ethtool/plca.c
+> @@ -0,0 +1,276 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include <linux/phy.h>
+> +#include <linux/ethtool_netlink.h>
+> +
+> +#include "netlink.h"
+> +#include "common.h"
+> +
+> +struct plca_req_info {
+> +	struct ethnl_req_info		base;
+> +};
+> +
+> +struct plca_reply_data {
+> +	struct ethnl_reply_data		base;
+> +	struct phy_plca_cfg		plca_cfg;
+> +	struct phy_plca_status		plca_st;
+> +};
+> +
+> +// Helpers ------------------------------------------------------------------ //
+> +
+> +#define PLCA_REPDATA(__reply_base) \
+> +	container_of(__reply_base, struct plca_reply_data, base)
+> +
+> +static inline void plca_update_sint(int *dst, const struct nlattr *attr,
+> +				    bool *mod)
+
+No inline function in *.c files.
+
+> +{
+> +	if (attr) {
+> +		*dst = nla_get_u32(attr);
+> +		*mod = true;
+> +	}
+
+Success oriented approach, please
+if (!attr)
+  return;
+
+> +}
+> +
+> +// PLCA get configuration message ------------------------------------------- //
+> +
+> +const struct nla_policy ethnl_plca_get_cfg_policy[] = {
+> +	[ETHTOOL_A_PLCA_HEADER]		=
+> +		NLA_POLICY_NESTED(ethnl_header_policy),
+> +};
+> +
+> +static int plca_get_cfg_prepare_data(const struct ethnl_req_info *req_base,
+> +				     struct ethnl_reply_data *reply_base,
+> +				     struct genl_info *info)
+> +{
+> +	struct plca_reply_data *data = PLCA_REPDATA(reply_base);
+> +	struct net_device *dev = reply_base->dev;
+> +	const struct ethtool_phy_ops *ops;
+> +	int ret;
+> +
+> +	// check that the PHY device is available and connected
+> +	if (!dev->phydev) {
+> +		ret = -EOPNOTSUPP;
+> +		goto out;
+> +	}
+> +
+> +	// note: rtnl_lock is held already by ethnl_default_doit
+> +	ops = ethtool_phy_ops;
+> +	if (!ops || !ops->get_plca_cfg) {
+> +		ret = -EOPNOTSUPP;
+> +		goto out;
+> +	}
+> +
+> +	ret = ethnl_ops_begin(dev);
+> +	if (ret < 0)
+> +		goto out;
+
+I see that many places in the code used this ret > 0 check, but it looks
+like the right check is if (ret).
+
+Thanks
