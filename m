@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F309465E9C4
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:24:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAFE865E9C7
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:24:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232853AbjAELYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 06:24:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
+        id S232558AbjAELYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 06:24:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232891AbjAELXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 06:23:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C154650E7E;
-        Thu,  5 Jan 2023 03:23:54 -0800 (PST)
+        with ESMTP id S232676AbjAELYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 06:24:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D5150066;
+        Thu,  5 Jan 2023 03:23:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E16D619D6;
-        Thu,  5 Jan 2023 11:23:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42D48C433D2;
-        Thu,  5 Jan 2023 11:23:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C18FE619CC;
+        Thu,  5 Jan 2023 11:23:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A57CBC433EF;
+        Thu,  5 Jan 2023 11:23:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672917833;
-        bh=J4IQeUKege6YLmfEJkNgDqcK7NVwWSrt7mDfKFJWrOk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=U5HdJ9+PgEYpcIJXa9q9IbRIQHO9pM0JKO4mTvyfopF4V6JPt4zHAv9xgct3uYBnp
-         ixLvd4YPGMTt6EzcZnHvFlnIXeu+2jUFrrPVo5ul6wLXZGQiTURbDuVGSm3lobAnER
-         bIeRLICX9vhharsodTJdx+ftV2oTyTrZTMNCDI/mtC8/pGPZArwT9q6T3xVO1EiPRu
-         ks3oGzA+iDcB/zNozgIFAIlX3DR/OE4hC/zhOu4Lv03MKSh2nTPlXuDZZ63XwswuaA
-         hAZDqpljEaddyWj0fwmtyNUUSsu3fEvsfND21b8uMWYucoDGqLyj4wTJ0UXaP7SRix
-         jN3V9bsgDLpFA==
+        s=k20201202; t=1672917838;
+        bh=gbAB2Gn23E8leswuTQLuvlYJsRqaa3JIwQbl5Qfzczs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MCz2Jmk9jYpCfI2BdZ8WKLHBrIDc9QaD604pK/P4L+8PktuIFK4xTFELVIeA06956
+         vItkrzPHPaJ7str6KmW4oG19nPWWDpDQW+oxOZI+7HMR+VXbJfppQiwE6AVaNybtx6
+         mBLdG9VvahJt2UJiHwGr//ogVC3tlSh/XKWekZ6P6dGoE02vGB2xJCjdOjv2iS62o1
+         Brnht5bfsigccihJSrb31OU1BseqVzGLRZ0sqStuQT7NAhkmc4UCowy6rn/bJzQzfo
+         abYv8j+DVCUCLv9iacCKbYyAYDbGaysVp7cSU5ihnJ41fi88KjON411yMufPWU5398
+         BqDtw68NejeQQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
+Cc:     Or Har-Toov <ohartoov@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
         Michael Guralnik <michaelgur@nvidia.com>,
-        netdev@vger.kernel.org, Or Har-Toov <ohartoov@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH rdma-next v1 0/4] Rely on firmware to get special mkeys
-Date:   Thu,  5 Jan 2023 13:23:44 +0200
-Message-Id: <cover.1672917578.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next v1 1/4] net/mlx5: Expose bits for querying special mkeys
+Date:   Thu,  5 Jan 2023 13:23:45 +0200
+Message-Id: <3c7243648f72aaed7953bf976110e41068e22dc1.1672917578.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <cover.1672917578.git.leonro@nvidia.com>
+References: <cover.1672917578.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -56,39 +56,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Or Har-Toov <ohartoov@nvidia.com>
 
-Changelog:
-v1:
- * Use already stored mkeys.terminate_scatter_list_mkey.
-v0: https://lore.kernel.org/all/cover.1672819469.git.leonro@nvidia.com
+Add needed HW bits to query the values of all special mkeys.
 
------------------------------------------------------------------------
-This series from Or extends mlx5 driver to rely on firmware to get
-special mkey values.
+Signed-off-by: Or Har-Toov <ohartoov@nvidia.com>
+Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Thanks
-
-Or Har-Toov (4):
-  net/mlx5: Expose bits for querying special mkeys
-  net/mlx5: Change define name for 0x100 lkey value
-  net/mlx5: Use query_special_contexts for mkeys
-  RDMA/mlx5: Use query_special_contexts for mkeys
-
- drivers/infiniband/hw/mlx5/cmd.c              | 30 +++++++------------
- drivers/infiniband/hw/mlx5/cmd.h              |  3 +-
- drivers/infiniband/hw/mlx5/main.c             | 10 +++----
- drivers/infiniband/hw/mlx5/mlx5_ib.h          |  8 ++++-
- drivers/infiniband/hw/mlx5/odp.c              | 29 +++++++-----------
- drivers/infiniband/hw/mlx5/srq.c              |  2 +-
- drivers/infiniband/hw/mlx5/wr.c               |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  3 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    | 27 +++++++++++++++++
- include/linux/mlx5/driver.h                   |  1 +
- include/linux/mlx5/mlx5_ifc.h                 | 10 +++++--
- include/linux/mlx5/qp.h                       |  2 +-
- 12 files changed, 75 insertions(+), 52 deletions(-)
-
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index f3d1c62c98dd..a2ed927c8f9f 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1479,7 +1479,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         relaxed_ordering_write[0x1];
+ 	u8         relaxed_ordering_read[0x1];
+ 	u8         log_max_mkey[0x6];
+-	u8         reserved_at_f0[0x8];
++	u8         reserved_at_f0[0x6];
++	u8	   terminate_scatter_list_mkey[0x1];
++	u8	   repeated_mkey[0x1];
+ 	u8         dump_fill_mkey[0x1];
+ 	u8         reserved_at_f9[0x2];
+ 	u8         fast_teardown[0x1];
+@@ -5197,7 +5199,11 @@ struct mlx5_ifc_query_special_contexts_out_bits {
+ 
+ 	u8         null_mkey[0x20];
+ 
+-	u8         reserved_at_a0[0x60];
++	u8	   terminate_scatter_list_mkey[0x20];
++
++	u8	   repeated_mkey[0x20];
++
++	u8         reserved_at_a0[0x20];
+ };
+ 
+ struct mlx5_ifc_query_special_contexts_in_bits {
 -- 
 2.38.1
 
