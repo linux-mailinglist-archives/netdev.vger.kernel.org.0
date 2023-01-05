@@ -2,215 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C26E65E55C
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 07:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 119E765E562
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 07:04:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230336AbjAEGDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 01:03:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40532 "EHLO
+        id S230510AbjAEGEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 01:04:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbjAEGDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 01:03:14 -0500
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2109.outbound.protection.outlook.com [40.107.247.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430C85132E
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 22:03:08 -0800 (PST)
+        with ESMTP id S230489AbjAEGDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 01:03:54 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2060.outbound.protection.outlook.com [40.107.96.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E2E5276F
+        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 22:03:48 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZmVXgw1DYPPbr8pq9EWnBAJ+bhBtp+6Vvv41W53N5jxYlIItiVQCE8WYRq19Bb03yhDorBUDm5Nhs0OR6dR7ZRraAnS7TfYH8t9GlSM9f93zkp+XY58enF/lL923kAT/JnvOtzEdLrAYFiSDU9gixOXyfHR+29aEzQ6Ulw/GRFS6hzZlGkojSbiJwq7/36Hd75XagIDux2R6usUBr7cAeDsOpPGNqjKcB00xeap9IJYJYSSQ5b+zxtQXjFml7DZDaWsg46HAgs2FOKtPIAxq5WSopP+RQIrK5AqNNY3HmcS4W3cY6kgGPx0o8n8AbJi0tVhzKkzybcu+B10ykbwO+g==
+ b=XtQGf8J8t6DQvsG1m/m5c2/F2MdttNBKYfp1kOhX3aQPyRUqnC5AU9xrN5ulofTc33DvPydc9wdLe3XD7r3U5DfXm41gcuIztJMz5FHBNXymein+Q7lnSH53L9rvjkIMKI34iyQJQJwXJ4hcItBoezrUPEzHQY/4YsdISAyrVhaRXjzz8IeHSp4BtIfpSqpo77CjGPcYMIDVQkLcDVldfgWVdEryHWouHhuSbUqXNqE4oEanH0vBSLFsRj6HeM40TN3UoAea4eBVqufuyLp30s5VT33N9iWN39a/lGQW2qHhTAy46mpSwQZeKc7kcebbJtHUgKeeDZkSglACklnhew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tocTYB2BUQkwxopEEK9wBgoYMsTFF6MbW8AqbPvCk24=;
- b=HwBXY7r0/Y52EXkRSixmXq+Yq0e2e4f6RKw9wESpygedYqjZYNDxQGJOAQHGpdORYeZevoeraaxKFbZcsHgQN3zwxbmuXmepKmvpZXpHpSuGHoN5vUe7JS/4NEApM+VKYec/ipRzfUOlTu5XNJmagkHNe6GQZuwaWFg7p27Lsu4EMpoyyFAGPbZDEE5P9FwPgcLGGuhC8HIVl31pggNa99/7ClumdfbZ5BxbRPzApcU2b/VXPiIiB+30EA00ZQL9cR3btySFXdIlHYEwmVns+OGYhOn1m3I6nrif/wcnqlNfYE81EZ0c5ffOdPiJDKNSt9TkclaoxC9VWsSaIbx4cg==
+ bh=WBKZp4ZTNvLX+R3eMsIXe4actPS/uhtJmktqZAgllKU=;
+ b=Y4YMJsgLz8EBf0v4q5PVyTxL175TIdLiQQkXmbQUhtUcDc6Lcmay6YX2tJAT5vK1KBudKaAKDiq1lb/ipktJtQSMJyvFvJ02fxdijfV5cP2BeyNbsldygoz88VJs7XzZ4T5MqW5ZKkZhShu8RwP1Ig3PZv8seefuHJR+O8aMUeJtNolgPe3Wsh2bH6fbiAzgf/fIlPMZGyM16h2xMseS6i9P7YC9pdzfgVM57f65qu1Be5hqldGB3eveTEVSYv83Ebv8A/bqASoGEeiUSeM/Bb3SgylchcLOZuXLQbudwJ9o5JL9uQf3OTOiRi6t7u15kS6n1Y32cshcP1P6U9LjkQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tocTYB2BUQkwxopEEK9wBgoYMsTFF6MbW8AqbPvCk24=;
- b=s3BG4rG1pamDyVvz7BSuutMH3tHJxNhGuSTL/GXysc9X0FkquuGWHGT/icdj9iWhB+pAZ966UrSNgwJhlSFRKcYn0SvuAHKT0gWYU8wNjAQJeWH1yOjC3Rsc8vhBNUwgYmoVUkLxGDDUOjTrmb8LGme3Ljb4Yjw5OQ2LeDonJms=
+ bh=WBKZp4ZTNvLX+R3eMsIXe4actPS/uhtJmktqZAgllKU=;
+ b=BYupQ/nD+Q8NTHU3dt6ukzf+NcfigbMthAW4+m74b5BWLnQsTZmniV28BEA1SBDZqfYHsXXshzBHibIdiUDFaHhsPKMQHPo8rpK2VVnQ6T3d9SfR+GU/MgMy9ZvFZH1W+2cBnhcNJQi0++aZskHwr95RE4d8Uq1eHP2U9ci8AhOAYaFK1ghAcLX1rlGA6MPPQQ0nQw7MZ4ZUawTW6BEh7bGu1emTJRR6NtRKvqmr4LZ198Be1x0rgVwfgxlI/BRWnCpOUHovZC0eCPIHBRzbED+GSfF3XF3ev6f6reFSB8REAO3Yt6KrXsIHky5KzxG8LuK4Pj7zOM1a1mg78Eylgg==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
-Received: from DB9PR05MB9078.eurprd05.prod.outlook.com (2603:10a6:10:36a::7)
- by DB3PR0502MB9923.eurprd05.prod.outlook.com (2603:10a6:10:42a::10) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
+ by SJ0PR12MB8166.namprd12.prod.outlook.com (2603:10b6:a03:4e2::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
- 2023 06:03:04 +0000
-Received: from DB9PR05MB9078.eurprd05.prod.outlook.com
- ([fe80::6540:d504:91f2:af4]) by DB9PR05MB9078.eurprd05.prod.outlook.com
- ([fe80::6540:d504:91f2:af4%6]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
- 06:03:04 +0000
-From:   Tung Nguyen <tung.q.nguyen@dektech.com.au>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jmaloy@redhat.com, ying.xue@windriver.com
-Subject: [PATCH v2 net 1/1] tipc: fix unexpected link reset due to discovery messages
-Date:   Thu,  5 Jan 2023 06:02:51 +0000
-Message-Id: <20230105060251.144515-1-tung.q.nguyen@dektech.com.au>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
+ 2023 06:03:46 +0000
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::f051:6bd:a5b2:175]) by BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::f051:6bd:a5b2:175%5]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
+ 06:03:46 +0000
+From:   Rahul Rameshbabu <rrameshbabu@nvidia.com>
+To:     Maxim Mikityanskiy <maxtram95@gmail.com>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net] sch_htb: Fix prematurely activating netdev during
+ htb_destroy_class_offload
+References: <20230104174744.22280-1-rrameshbabu@nvidia.com>
+        <CAKErNvojEx1jeWfqoo+CA3iSJpc2URVbUvmdc=QtVEuif4_YNQ@mail.gmail.com>
+Date:   Wed, 04 Jan 2023 22:03:29 -0800
+In-Reply-To: <CAKErNvojEx1jeWfqoo+CA3iSJpc2URVbUvmdc=QtVEuif4_YNQ@mail.gmail.com>
+ (Maxim
+        Mikityanskiy's message of "Wed, 4 Jan 2023 22:12:11 +0200")
+Message-ID: <878rihplfy.fsf@nvidia.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
 Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0031.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::11) To DB9PR05MB9078.eurprd05.prod.outlook.com
- (2603:10a6:10:36a::7)
+X-ClientProxiedBy: SJ0PR13CA0127.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c6::12) To BYAPR12MB2743.namprd12.prod.outlook.com
+ (2603:10b6:a03:61::28)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR05MB9078:EE_|DB3PR0502MB9923:EE_
-X-MS-Office365-Filtering-Correlation-Id: 97d08bf3-b1b1-4dd4-578b-08daeee28236
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|SJ0PR12MB8166:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e550ae3-6cf7-4a6c-8d45-08daeee29b74
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4/j4zrrWhocAFj2G2+hdouMemh+Ekku7czuSxCBl8GY8h/nC+uwDd8IREhldO/MN2Rc5WrT56a3/u6ci0SxxlTkjM1dcXqF0nNn/3PD8UrDrdXHMCyOZQkVU3mtucaZjfBm6Pp7/aIvnmI2qCMdAs85jPn3uM8k5T0v19li7vp7pBPsgKHdNjMR61CDlp8UqcPKEc60W9ErVXcRwUpLV3cW+Tve2FdzRoseI2M/8kY9/qlNuEOAjZ8PFLlZHYHlaBDEgpfDb5jVS/KbjI39CuS1UqWDQUMAEt4G8FHyIIm70MwIN4oEyL0u+LMXPwUuXX4mLYOVwPvZJbqnVRkhT2uUccmGZkE/FmVWlS4QewvAqhLlQCjX0Kjwq2upF92nSdNOepNlnXT/BwVZ+cfB9lY6UAR4Qxi1nUymLAJwt12c/4J1uax+wmpfkMVqou+ocz7va3pWfFCrEeE/jznGvNYsIf9WstpHBoy20jHDKMoazrSTHYuhXHgeVbfsp9XFFtDmt8ZgB+htZYqvIZr9UX9Y+zrSY0eddqLnopW8xN0kLJBKLl1dZNazDahfyGiI8EZGR9lenqH+3yukU1vtYM5POyr636jf+4oUl8EbsTXeqr6v3M5U77LigMyw6DB0Eo6G3nCWF9kR8BF4nhYcHjC44igHfhZXfv1bzmG3btRESOI6oWzkhI+LJ9G1P1AlF
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB9078.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(346002)(366004)(396003)(39840400004)(451199015)(103116003)(36756003)(38350700002)(38100700002)(2906002)(8936002)(15650500001)(5660300002)(41300700001)(83380400001)(86362001)(66946007)(6916009)(52116002)(6486002)(66556008)(478600001)(6666004)(4326008)(66476007)(316002)(1076003)(26005)(6512007)(8676002)(186003)(6506007)(2616005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: Nq14CkDAAJINVQ+rLKLfSW/PHfxh6wipaEFuvSTd3t2tbQEHT+6t2u0hFrhjT6sA7J7RjRyZj0NGwTfC5Tl5kIPAsRpqfpC3QUCeL+tRnkXz6x92p2D0wle/nDc982rTRVE88+qqr0oP8GIxcY3AS75EAAvCjxYtlIMChvqYXhKik9GRbvGR39qnrgVQb9ICPCEA1lmeYXJ6YL6s/5EAm393IS0pPxbY2VaxekZS98DJjO1STvRaVo362+98haM8AB1YwyV6wl+nel2zuzyyRtYC/xwx0tC5osGrW5GAD5arMA2DlTt2oHk5+GW1GADzFSXmXjNFHbLWc9Dfper+CuCoWqYQDRt6rl/x9yP49zFnEI4cggGPByKUAVivwmzvHoyTnwtTMSf6w4dpLsr33UU9vnv76N1GJ3Cw1yFFKfv8/tl6V9PQs+iIEpTrgV3x+4IibO8bqzTG4ztc+c9kybitL9R0067NtKgRhLQg/WjpLoYQx7zL3CPizL1YtXpwo7x2TEc4/+lMy1aRlVxIrSCcJeJOViIQb7clB3V1YPNAg2FyG6bP/FJMKlkV/gehsgdcAZOVkbntTAAI1qbJ5iK0LGCTfdqB9SDIzVgdP5ldHKIGzmE2qZg2B4wPEQu+P2K9XghSXjor5hArqw8/aA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(136003)(346002)(39860400002)(396003)(451199015)(2906002)(5660300002)(8936002)(8676002)(4326008)(41300700001)(54906003)(316002)(66946007)(6916009)(66556008)(6486002)(478600001)(66476007)(45080400002)(2616005)(6506007)(186003)(6666004)(83380400001)(6512007)(38100700002)(86362001)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+UB9LRPu/9Imq+1s1S7/AzSkSzKNT6VjhG8Q2K4vwjD8dkU6XlfVCEno3i/N?=
- =?us-ascii?Q?4G98WPrIZVHZItWzhiUZOhDROGXHdHQZi3nFKBQQ32s3TJNf5qeL/Rlrkf+K?=
- =?us-ascii?Q?bxwoOilVHD6E+VcT4Og6bd03wnLR2S1iD/JmH+qpXkHAO7FcwtPv4pg1WDG7?=
- =?us-ascii?Q?pJloZbvgSbf4igzyljtrDvVjP9gCZQBVjdt81E4+ONWV3butfdCxzXnbaYbo?=
- =?us-ascii?Q?u7s2QQpAUBwLI89AiABL3qJTsIhehLTTUf7LFequ8XBzddhlPc+jRKzpKjDs?=
- =?us-ascii?Q?cMDwN4FA4UWtuhZzV7bCisK8/JQKxFjIBgtWzK3ToiaiA9fe8ASACuKJzWCO?=
- =?us-ascii?Q?RMQjDpppBq6Sxz2lL8qB2k73613DKB+SpRDr0mj1aXhZtY9YG+SDhXZ2N9op?=
- =?us-ascii?Q?TsNKjH+CPeY2JsGlU/d41QPqDadGKNW21xVDciVhESrg+RC1JEI/XYXK2T9M?=
- =?us-ascii?Q?GaBcQpMB11NdLGgsDGfxU0+8fb/RooXIdrKmfZaYam8UAtMiHswT2vIZZ6V/?=
- =?us-ascii?Q?/aZrnWhtLdTHn/CK33x5S0AE5Y82XwNjKslkRS6rtK34pTdbFu+1NjR3CKN1?=
- =?us-ascii?Q?dJ7q+q6NYisEk73/jwlSihxlwxfpJDqsbyOfw8GqjI2EdixLccKB7dzNj1NB?=
- =?us-ascii?Q?VVZQD95UGf5cU5I4aDSyP2S3F8UFTT5/Zw6/i4RarPbB9isMSvR/x4GjOgC5?=
- =?us-ascii?Q?eeRRpD6ARlJYKskLCiuYPgt7XXexbh388oYeE17YRMUfjPnjPsPRV2J81Q3o?=
- =?us-ascii?Q?N8+eliCgN6NAoEs43d7YTVUk/8tKK5MkfGSjWAL/LUJpNFdUuVw0lBzU+8dH?=
- =?us-ascii?Q?KkGZVtmMEILgLQ73FXgGk5SGY/yNOUfODsVYsKEqgfiKGCn28ldHBoWqByRE?=
- =?us-ascii?Q?ReXrkcwkMQrU49zavoaRwY4071C0m0DOMekIDT0aV57ejuos2qCKwSiiK9gh?=
- =?us-ascii?Q?hEEeekrzc1EZVkxS+mP1e5yEdXA0cUvVI7cuZ2TIj3Cegs/+QODj87dBovVT?=
- =?us-ascii?Q?oP2f0qLUCQcfKbvT1/wm401WmgcNSCe1HiY79mJKq2zHmCOBw7CMGyq9Vz3J?=
- =?us-ascii?Q?uT+oZ984AX+2CxKLHLiWiHXvigqsLYeP2dSgP1ZWS7mVxjsmYw6QfHFWndof?=
- =?us-ascii?Q?5fxljBdyASNAntkhx3+BzO5oYq/BukZZv6oAXoqJ2cylBY+VhmjOzZWDH4xu?=
- =?us-ascii?Q?LAsH4aU0tS43NYjo+fYsMG8TTg38RthQTk9drYoA1dqhCEE8OBOoM6/qIg3m?=
- =?us-ascii?Q?4C5/GhvmhSdBostQhxTLb6tPOqE5FHYh8ww3S5kjI6Mw4ymLyFlem2qcPlpB?=
- =?us-ascii?Q?ye+X0XU88EsUabELXmsSHn4EzzOXKKrIB+Rwqpeh+UiyglbOm536nDXu5WRT?=
- =?us-ascii?Q?aTMJp8/TDM7ihdq7pfFvsaoW2N3WiaOaBtE0bGqRwH7Cj1/CG4BtsHXGXk0Q?=
- =?us-ascii?Q?3YY5SaeSMWcMZOGJGqv/PAWNvfRkEwItKQd397h6pPOF/XmaJm1n3R7TZIf9?=
- =?us-ascii?Q?+9Wp4b87X4Mylbj7hBDMbTgffEvICXhvB8sy5XCCWy0DOnz12xExQQclc8wA?=
- =?us-ascii?Q?Tcs0cPPxH6ki1ZhLFf5++sWQsYT/YTTjy/1bwSQAe+EIWmN3TMXc2jDoJBlF?=
- =?us-ascii?Q?xA=3D=3D?=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97d08bf3-b1b1-4dd4-578b-08daeee28236
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB9078.eurprd05.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ya/P8Bttvn93BAERDDoj1vLgtjoRuSX5mkBSzQ7g9L6W1bMeYbchx5Tq3gVa?=
+ =?us-ascii?Q?sUrQoVv98aFdZEBbKO6duuGAU8wUiVfHKRK1Zf9elkvJkihZiyGSOJ2BT2FN?=
+ =?us-ascii?Q?3s3erNmoAwts30EP+WnZQexAiltfZGwl9asy+1OH1u0z3SzDKbVc8NRBWpS5?=
+ =?us-ascii?Q?8utqvVrRlIq7oQ+cDiH6X96wStRK+nFrgV0NJKfBA+Ll6AGuWMFKkEfNQiuh?=
+ =?us-ascii?Q?4wcZIpXmSNAmXLv70/lUcUvBTCmV0uhBTqMmF8SVIw9i40v6YrTCQ+ZfO/3Q?=
+ =?us-ascii?Q?Sqq7IeS6RyzNE44sEpZoTM06CWW08S5DfHH6GJe7OJsAr844GoqANKTPZGtJ?=
+ =?us-ascii?Q?HM2L8YObUTjTDkQJziu7KPRnb7gf6UghReAdafsoxzgbrggJfb0PVOC9pq0o?=
+ =?us-ascii?Q?Z0rp9uI1/Cq9jQuGv1nI9NS+8GqTg3JPqigFOIlMzqvS6KJaZlhSlWdX4VWC?=
+ =?us-ascii?Q?lTwGjKVtt9mexiUT9EtyyX3tcZs0GIxGKSWR1DE1kCeX0YR8PY6YFR32RkI+?=
+ =?us-ascii?Q?xcM73sUWfs37uwoVFx0LO/2+cJv24hQzbEzuGUw7EW/ODGPd3VL34h+sq/yI?=
+ =?us-ascii?Q?72yGNlTvNGSHHTqAK1Q2GFns31BrbQZXx8UN1hnAVzapdlfwEhXrIvtPmIRJ?=
+ =?us-ascii?Q?5nYqDHEQ27/+TGnx9zhcml9MikAq8XkwaNAfcOXf3FJfYD6MMiGnA9tk0EbG?=
+ =?us-ascii?Q?j49Fxxt+9UpfUa4LmqeVrg3ZEA0eRcqpSZVlrNYKV5/H5UirjoKIuvjt+GIq?=
+ =?us-ascii?Q?uWmmNXryQyBK+bn8zUz3Mxes15MQ90vh6vGStZ7Q5VyYXyPtDWVY7Bx/65D6?=
+ =?us-ascii?Q?zrqbMkLwU2eXatKlGLCq/HDi/f7aa8RCYGG/zByQuZLteGX9He/tOywWCktD?=
+ =?us-ascii?Q?QsXUmvidadD7UiIS2cm5Kx2Q8QRm/IQIlHsRrA7ccOEc1BhP/uv57P2ZTDGK?=
+ =?us-ascii?Q?haqxOBf04I0q+DDurMqMtlfuEny2dwCNKQFIkGrpjB60BKbAj0zf8idfyI/z?=
+ =?us-ascii?Q?+eORVR8ZtRUk0rh6/7AM5YvSaXBldzfnp/0gTrxu4hBfs50S44WNScrpwIwH?=
+ =?us-ascii?Q?sD8LFnzjKMAVqCJcBChZ54LD/LKh07y1qGCQgUEeNDMCuam80cwr8GFIZpxQ?=
+ =?us-ascii?Q?P7PwKH662v+IeBIjvmrUWIsS14fMiag5UVe8YPqIqNQ9d26IohyjDM2jDq1v?=
+ =?us-ascii?Q?8qk4DQeCj7kcJy4X47CdVEQJxxcBSgkXrBV896Tmdqhtg1rTfHXizoLO+opV?=
+ =?us-ascii?Q?zxcv8n97UmjnqwYsR2eSJSQ8++dMeBX+7I9GISM2UdPBwYFrdihaWJr2Q2/U?=
+ =?us-ascii?Q?bXzEJ/xYN1uO9ap+AVALSBm5hoQaXvJ5GWE5vrkuyyxW7F+SBnihUDguQOBY?=
+ =?us-ascii?Q?IQnrq5xGIZTzOgiDCkjKSK4LW/y7KOYnXVvOK4qdlAPnE3OKvds7wIqOYrPm?=
+ =?us-ascii?Q?jKJcHh9sujkRuAKAAz9PtdjJJPDJZABUgsbbXJ7d9xQwC/BAodYIuWc7/Pmv?=
+ =?us-ascii?Q?NCGGM2HAlsSX2oxUJtmziie7tuQYMCAkXn0k4AxJeoZ3HF7mYWqQ4zJ43sBr?=
+ =?us-ascii?Q?SpPNE/LZAj8WlkS47eefdkDTF9FMDo7UZzGaHyz0QKNdtO5KtfVijuMeG8+r?=
+ =?us-ascii?Q?nYfwh4mqQq1E0RhMYC/UqOUyd6SzEGRmFPwZ90Fi3MKtCwKl664qGJQPB4Vm?=
+ =?us-ascii?Q?G1SSLA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e550ae3-6cf7-4a6c-8d45-08daeee29b74
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 06:03:04.5040
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 06:03:46.6504
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rg2Dd+zKT8Vj8pCxDvSRnSCD/YS0MG/QOwUXmdwnYWPlefq11IGBieR+63qx+uaKxxUm+WXEk3yIojp87iImffsLkXLpirPMeKchuJm8Ez8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0502MB9923
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: z6z3emfBz2eM9hn6HQTB/5HkThqy3gkPhY2bWCyRY0iwBbdSMeyEBcsL1t/+l/nz5i+UZ52y4ie7VyWoj5oYYA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8166
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This unexpected behavior is observed:
+Maxim Mikityanskiy <maxtram95@gmail.com> writes:
 
-node 1                    | node 2
-------                    | ------
-link is established       | link is established
-reboot                    | link is reset
-up                        | send discovery message
-receive discovery message |
-link is established       | link is established
-send discovery message    |
-                          | receive discovery message
-                          | link is reset (unexpected)
-                          | send reset message
-link is reset             |
+> On Wed, 4 Jan 2023 at 19:53, Rahul Rameshbabu <rrameshbabu@nvidia.com> wrote:
+>>
+>> When the netdev qdisc is updated correctly with the new qdisc before
+>> destroying the old qdisc, the netdev should not be activated till cleanup
+>> is completed. When htb_destroy_class_offload called htb_graft_helper, the
+>> netdev may be activated before cleanup is completed.
+>
+> Oh, so that's what was happening! Now I get the full picture:
+>
+> 1. The user does RTM_DELQDISC.
+> 2. qdisc_graft calls dev_deactivate, which sets dev_queue->qdisc to
+> NULL, but keeps dev_queue->qdisc_sleeping.
+> 3. The loop in qdisc_graft calls dev_graft_qdisc(dev_queue, new),
+> where new is NULL, for each queue.
+> 4. Then we get into htb_destroy_class_offload, and it's important
+> whether dev->qdisc is still HTB (before Eric's patch) or noop_qdisc
+> (after Eric's patch).
+> 5. If dev->qdisc is noop_qdisc, and htb_graft_helper accidentally
+> activates the netdev, attach_default_qdiscs will be called, and
+> dev_queue->qdisc will no longer be NULL for the rest of the queues,
+> hence the WARN_ON triggering.
+>
+> Nice catch indeed, premature activation of the netdev wasn't intended.
+>
+>> The new netdev qdisc
+>> may be used prematurely by queues before cleanup is done. Call
+>> dev_graft_qdisc in place of htb_graft_helper when destroying the htb to
+>> prevent premature netdev activation.
+>>
+>> Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+>> Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+>> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+>> Cc: Eric Dumazet <edumazet@google.com>
+>> Cc: Maxim Mikityanskiy <maxtram95@gmail.com>
+>> ---
+>>  net/sched/sch_htb.c | 8 +++++---
+>>  1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+>> index 2238edece1a4..f62334ef016a 100644
+>> --- a/net/sched/sch_htb.c
+>> +++ b/net/sched/sch_htb.c
+>> @@ -1557,14 +1557,16 @@ static int htb_destroy_class_offload(struct Qdisc *sch, struct htb_class *cl,
+>>
+>>         WARN_ON(!q);
+>>         dev_queue = htb_offload_get_queue(cl);
+>> -       old = htb_graft_helper(dev_queue, NULL);
+>> -       if (destroying)
+>> +       if (destroying) {
+>> +               old = dev_graft_qdisc(dev_queue, NULL);
+>>                 /* Before HTB is destroyed, the kernel grafts noop_qdisc to
+>>                  * all queues.
+>>                  */
+>>                 WARN_ON(!(old->flags & TCQ_F_BUILTIN));
+>
+> Now regarding this WARN_ON, I have concerns about its correctness.
+>
+> Can the user replace the root qdisc from HTB to something else with a
+> single command? I.e. instead of `tc qdisc del dev eth2 root handle 1:`
+> do `tc qdisc replace ...` or whatever that causes qdisc_graft to be
+> called with new != NULL? If that is possible, then:
+>
+> 1. `old` won't be noop_qdisc, but rather the new qdisc (if it doesn't
+> support the attach callback) or the old one left from HTB (old == q,
+> if the new qdisc supports the attach callback). WARN_ON should
+> trigger.
+>
+> 2. We shouldn't even call dev_graft_qdisc in this case (if destroying
+> is true). Likewise, we shouldn't try to revert it on errors or call
+> qdisc_put on it.
+>
+> Could you please try to reproduce this scenario of triggering WARN_ON?
+> I remember testing it, and something actually prevented me from doing
+> a replacement, but maybe I just missed something back then.
+>
 
-It is due to delayed re-discovery as described in function
-tipc_node_check_dest(): "this link endpoint has already reset
-and re-established contact with the peer, before receiving a
-discovery message from that node."
+Reproduction steps
 
-However, commit 598411d70f85 has changed the condition for calling
-tipc_node_link_down() which was the acceptance of new media address.
+  ip link set dev eth2 up
+  ip link set dev eth2 up
+  ip addr add 194.237.173.123/16 dev eth2
+  tc qdisc add dev eth2 clsact
+  tc qdisc add dev eth2 root handle 1: htb default 1 offload
+  tc class add dev eth2 classid 1: parent root htb rate 18000mbit ceil 22500.0mbit burst 450000kbit cburst 450000kbit
+  tc class add dev eth2 classid 1:3 parent 1: htb rate 3596mbit burst 89900kbit cburst 89900kbit 
+  tc qdisc replace dev eth2 root pfifo
 
-This commit fixes this by restoring the old and correct behavior.
+The warning is indeed triggered because the new root is pfifo rather
+than noop_qdisc. I agree with both points you brought up in the patch.
+When I saw the ternary in qdisc_graft for the rcu_assign_pointer call, I
+was worried about the case when new was defined as a new qdisc rather
+than defaulting to noop_qdisc but assumed there were some guaratees for
+htb.
 
-Fixes: 598411d70f85 ("tipc: make resetting of links non-atomic")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
----
-v2: Correct mismatching Fixes tag
+I believe the correct fix for a robust implementation of
+htb_destroy_class_offload would be to not depend on functions that
+retrieve the top level qdisc. However, I see a number of functions, not
+just offload related ones, in the htb implementation that seem to depend
+on the assumption that the old qdisc can safely be accessed with helpers
+such as htb_graft_helper. One such example is htb_change_class. The
+trivial solution I see is to change qdisc_graft to first do a
+rcu_assign_pointer with noop_qdisc, call notify_and_destroy, and only
+afterwards call rcu_assign_pointer with the new qdisc if defined. Let me
+know your thoughts on this.
 
- net/tipc/node.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+  [  384.474535] ------------[ cut here ]------------
+  [  384.476685] WARNING: CPU: 2 PID: 1038 at net/sched/sch_htb.c:1561 htb_destroy_class_offload+0x179/0x430 [sch_htb]
+  [  384.481217] Modules linked in: sch_htb sch_ingress xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_umad ib_ipoib ib_cm mlx5_ib ib_uverbs ib_core fuse mlx5_core
+  [  384.487081] CPU: 2 PID: 1038 Comm: tc Not tainted 6.1.0-rc2_for_upstream_min_debug_2022_10_24_15_44 #1
+  [  384.488414] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+  [  384.489987] RIP: 0010:htb_destroy_class_offload+0x179/0x430 [sch_htb]
+  [  384.490937] Code: 2b 04 25 28 00 00 00 0f 85 cb 02 00 00 48 83 c4 48 44 89 f0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 41 f6 45 10 01 0f 85 26 ff ff ff <0f> 0b e9 1f ff ff ff 4d 3b 7e 40 0f 84 d9 fe ff ff 0f 0b e9 d2 fe
+  [  384.493495] RSP: 0018:ffff88815162b840 EFLAGS: 00010246
+  [  384.494358] RAX: 000000000000002a RBX: ffff88810e040000 RCX: 0000000021800002
+  [  384.495461] RDX: 0000000021800000 RSI: 0000000000000246 RDI: ffff88810e0404c0
+  [  384.496581] RBP: ffff888151ea0c00 R08: 0000000100006174 R09: ffffffff82897070
+  [  384.497684] R10: 0000000000000000 R11: 0000000000000002 R12: 0000000000000001
+  [  384.498923] R13: ffff88810b189200 R14: ffff88810b189a00 R15: ffff888110060a00
+  [  384.500044] FS:  00007f7a2e7a3800(0000) GS:ffff88852cc80000(0000) knlGS:0000000000000000
+  [  384.501390] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [  384.502339] CR2: 0000000000487598 CR3: 0000000151f41003 CR4: 0000000000370ea0
+  [  384.503458] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  [  384.504581] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  [  384.505699] Call Trace:
+  [  384.506231]  <TASK>
+  [  384.506691]  ? tcf_block_put+0x74/0xa0
+  [  384.507365]  htb_destroy+0x142/0x3c0 [sch_htb]
+  [  384.508131]  ? hrtimer_cancel+0x11/0x40
+  [  384.508832]  ? rtnl_is_locked+0x11/0x20
+  [  384.509522]  ? htb_reset+0xe3/0x1a0 [sch_htb]
+  [  384.510293]  qdisc_destroy+0x3b/0xd0
+  [  384.510943]  qdisc_graft+0x40b/0x590
+  [  384.511600]  tc_modify_qdisc+0x577/0x870
+  [  384.512309]  rtnetlink_rcv_msg+0x2a2/0x390
+  [  384.513031]  ? rtnl_calcit.isra.0+0x120/0x120
+  [  384.513806]  netlink_rcv_skb+0x54/0x100
+  [  384.514495]  netlink_unicast+0x1f6/0x2c0
+  [  384.515190]  netlink_sendmsg+0x237/0x490
+  [  384.515890]  sock_sendmsg+0x33/0x40
+  [  384.516556]  ____sys_sendmsg+0x1d1/0x1f0
+  [  384.517265]  ___sys_sendmsg+0x72/0xb0
+  [  384.517942]  ? ___sys_recvmsg+0x7c/0xb0
+  [  384.518631]  __sys_sendmsg+0x51/0x90
+  [  384.519289]  do_syscall_64+0x3d/0x90
+  [  384.519943]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+  [  384.520794] RIP: 0033:0x7f7a2eaccc17
+  [  384.521449] Code: 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
+  [  384.524306] RSP: 002b:00007ffd8c62fe78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+  [  384.525568] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f7a2eaccc17
+  [  384.526703] RDX: 0000000000000000 RSI: 00007ffd8c62fee0 RDI: 0000000000000003
+  [  384.527828] RBP: 0000000063b66264 R08: 0000000000000001 R09: 00007f7a2eb8da40
+  [  384.528962] R10: 0000000000405aeb R11: 0000000000000246 R12: 0000000000000001
+  [  384.530097] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000485400
+  [  384.531221]  </TASK>
+  [  384.531689] ---[ end trace 0000000000000000 ]---
 
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 49ddc484c4fe..5e000fde8067 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1179,8 +1179,9 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 	bool addr_match = false;
- 	bool sign_match = false;
- 	bool link_up = false;
-+	bool link_is_reset = false;
- 	bool accept_addr = false;
--	bool reset = true;
-+	bool reset = false;
- 	char *if_name;
- 	unsigned long intv;
- 	u16 session;
-@@ -1200,14 +1201,14 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 	/* Prepare to validate requesting node's signature and media address */
- 	l = le->link;
- 	link_up = l && tipc_link_is_up(l);
-+	link_is_reset = l && tipc_link_is_reset(l);
- 	addr_match = l && !memcmp(&le->maddr, maddr, sizeof(*maddr));
- 	sign_match = (signature == n->signature);
- 
- 	/* These three flags give us eight permutations: */
- 
- 	if (sign_match && addr_match && link_up) {
--		/* All is fine. Do nothing. */
--		reset = false;
-+		/* All is fine. Ignore requests. */
- 		/* Peer node is not a container/local namespace */
- 		if (!n->peer_hash_mix)
- 			n->peer_hash_mix = hash_mixes;
-@@ -1232,6 +1233,7 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 		 */
- 		accept_addr = true;
- 		*respond = true;
-+		reset = true;
- 	} else if (!sign_match && addr_match && link_up) {
- 		/* Peer node rebooted. Two possibilities:
- 		 *  - Delayed re-discovery; this link endpoint has already
-@@ -1263,6 +1265,7 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 		n->signature = signature;
- 		accept_addr = true;
- 		*respond = true;
-+		reset = true;
- 	}
- 
- 	if (!accept_addr)
-@@ -1291,6 +1294,7 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 		tipc_link_fsm_evt(l, LINK_RESET_EVT);
- 		if (n->state == NODE_FAILINGOVER)
- 			tipc_link_fsm_evt(l, LINK_FAILOVER_BEGIN_EVT);
-+		link_is_reset = tipc_link_is_reset(l);
- 		le->link = l;
- 		n->link_cnt++;
- 		tipc_node_calculate_timer(n, l);
-@@ -1303,7 +1307,7 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 	memcpy(&le->maddr, maddr, sizeof(*maddr));
- exit:
- 	tipc_node_write_unlock(n);
--	if (reset && l && !tipc_link_is_reset(l))
-+	if (reset && !link_is_reset)
- 		tipc_node_link_down(n, b->identity, false);
- 	tipc_node_put(n);
- }
--- 
-2.34.1
-
+>> -       else
+>> +       } else {
+>> +               old = htb_graft_helper(dev_queue, NULL);
+>>                 WARN_ON(old != q);
+>> +       }
+>>
+>>         if (cl->parent) {
+>>                 _bstats_update(&cl->parent->bstats_bias,
+>> --
+>> 2.36.2
+>>
