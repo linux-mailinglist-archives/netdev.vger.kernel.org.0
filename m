@@ -2,110 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E26565EFBA
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 16:12:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E9965F040
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 16:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233310AbjAEPMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 10:12:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37874 "EHLO
+        id S234402AbjAEPif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 10:38:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232489AbjAEPMU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 10:12:20 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D905BA16
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 07:12:19 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id 203so40390012yby.10
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 07:12:19 -0800 (PST)
+        with ESMTP id S232803AbjAEPiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 10:38:13 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992724D70C;
+        Thu,  5 Jan 2023 07:38:12 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id l26so26711128wme.5;
+        Thu, 05 Jan 2023 07:38:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=u7IsthnA0BZiEpL+4ZShFyxP/+LeLk7pMcIBQfprQig=;
-        b=OoT1F75ncTQ+AAeDL/AMbOLyds0pyudTGn0gzdn8KgT1ahU7ikL0Dt/SIQZcPEahyh
-         js55nIcyArqPEBEiK59c/lETHxqHqVLw/mmD+c8i/l3BMgx2TTq0OwDUCLOGP4nAjXbv
-         a6kQu6ufZ18ndRfjo9AYpKexLIsVUyBitZl6VtbrcaL4IJh+7wtpaw0QdSRUHEh5hOcG
-         BjNtu1nyEh2eSwIQrd22v07YhhmA5oT3RjyYE5xi8CWYQCsV5RmxdH1g0hB/NvwJ1hVk
-         pltmNGY+yBg4H08KMptUHfPp6MZCmd/VO6DLjMaCb0uMB3WP0MoLXnoT22472N1Cwi2U
-         XJIA==
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=JonkN/5yYHnucf2q3jhmBsrrdYdJsV4jujR0sLg/+OQ=;
+        b=lRWu5J2E6bTiOO97Xz7WyLNGbXxJXrHQpicJ5WYrI9O6zTbgogee3hF7N6/AQ7UeQj
+         c3mTqFK5DBYelb6mMNy4EhH/Qxa2sekzj5giEceLkjCrSJhOwZsF1D+dLgVvbnIcmZP2
+         Njy3iGUmW1fxm3+W2PYGsN/2Q5ZP7Jwioy25ZYrg1/+aAIyaK6NAsdr8eJ5SnZJwWdQ4
+         /8ciPe1FMvsN3j1thtnrvKfC0k8Dtpl1M0yOk49DZx/ma758j1XwR5FmJHl9bo4c4HkB
+         olyWtfD9p5hdhbNhJD/InlNXUFhkuMehtmPppzEyrepUV3J565x0be5uxDJkSts0IOxv
+         3P/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=u7IsthnA0BZiEpL+4ZShFyxP/+LeLk7pMcIBQfprQig=;
-        b=xW0pbmNYbPSsLONrQhQoFJ1gxExIFacBPfJO6py+YF5eL+z4qZ8EDHNnWbv9vvIuPp
-         KL4oG7PUEp03xievEEToINpSN6+cYfFI9HbSxwXJwOBUew3rz72B0wy8Fb8XYgmC+c4v
-         mJxbrRPbLyq6RM8mTdCm5mkG3GseJb8Z8Vp2xX7MOxU2DsCxsjXQu8kWCpTx8ygmd+0H
-         QJ+XIskITJ9TJ9TZjTMAs0oOypgWXHfe1+xiBOOmCTZU1z0khWayr1LV7Rf+3xeiJr9f
-         hX2kThTG3DLPeFa6RINI6Jid/Ht9BRCqXYvwmN1tcLREdq91ZH+YomKLP6RJVAwt0aFn
-         uJQw==
-X-Gm-Message-State: AFqh2krzDzMnOuo5uyQaX2mjAWFP3gbpL6g2cyYPApVIaXQ/IDulAEa+
-        6DYnKz9zoubSHvO0MZm6ynTUF8PWNvJBnfk9CD0=
-X-Google-Smtp-Source: AMrXdXtis66ZZp4iuOLsfD0EKxADLIBqL0mEo6PA3ru3IAV/Mk7OpewTX3LNI1xP26vq43Tpuz5qNani77SUFYTEVhs=
-X-Received: by 2002:a25:c283:0:b0:70c:8bcc:6c94 with SMTP id
- s125-20020a25c283000000b0070c8bcc6c94mr6993225ybf.135.1672931539079; Thu, 05
- Jan 2023 07:12:19 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=JonkN/5yYHnucf2q3jhmBsrrdYdJsV4jujR0sLg/+OQ=;
+        b=LD9qwEGdrF6bxBC7ydLWyLmWZoMeeY4VOnksUwKYlyXMVkCrplxvxNVXTSGCxRExZ3
+         KSTiphph6RS+6iitrHK0MAp4HeyYioa1G0CSx5Ms8Poqk48gIZkOL7VB6AoEdwYUzP/H
+         /kM2Qroykx/q3ZwgLBprMp39I5zaRSNusqvjUykOGXsKojuS4tM6cP8iPIIwbR4NPrE6
+         WoNdwZkqwbfiNNbptYUAyTyUW4VDTZB6LlSHd7MSM0nxVZeB/Wno8ZfCahfQMBAdsZ/g
+         kWFFBjQrSmZN9ldL7JnLyiCbwjRDEkhq0+7jxh9sWPDFGWCkD0crjh0rT36e9rVmhLHS
+         h0EA==
+X-Gm-Message-State: AFqh2kqx6yb/faYlR7gyzobjyL9W/n751ovcs260nRYicFzT8adZw1BD
+        iT2NIllD/U6FhZ4Ja8bz++w=
+X-Google-Smtp-Source: AMrXdXskES35BGhVDGhNRFrHW7Srev49jb9drqf1nYZ5w0pgiciJYQhEhWHVVLIIRYupFQrd8EPrpg==
+X-Received: by 2002:a05:600c:22ca:b0:3d1:ebdf:d586 with SMTP id 10-20020a05600c22ca00b003d1ebdfd586mr36666492wmg.29.1672933091073;
+        Thu, 05 Jan 2023 07:38:11 -0800 (PST)
+Received: from [192.168.1.50] ([79.119.240.114])
+        by smtp.gmail.com with ESMTPSA id p3-20020a05600c358300b003d1f2c3e571sm3152999wmq.33.2023.01.05.07.38.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Jan 2023 07:38:10 -0800 (PST)
+Message-ID: <7b3e4eaf-258f-bf5c-80f8-68d04d285235@gmail.com>
+Date:   Thu, 5 Jan 2023 17:38:08 +0200
 MIME-Version: 1.0
-Received: by 2002:a05:7010:a8a0:b0:316:cb40:61dc with HTTP; Thu, 5 Jan 2023
- 07:12:18 -0800 (PST)
-Reply-To: cristinacampel@outlook.com
-From:   "Mrs. Cristina Campbell" <jp735098@gmail.com>
-Date:   Thu, 5 Jan 2023 15:12:18 +0000
-Message-ID: <CAG9MkKuu+7kE-OTrsGOGCE31EJ7HtSds4Vn=R7WjRTfrjVhWKw@mail.gmail.com>
-Subject: Pouvez-vous m'aider
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Subject: Re: [RFC PATCH v1 19/19] rtw88: Add support for the SDIO based
+ RTL8821CS chipset
+To:     Sascha Hauer <sha@pengutronix.de>
+Cc:     Chris Morgan <macroalpha82@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-wireless@vger.kernel.org,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mmc@vger.kernel.org, Nitin Gupta <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
+ <20221227233020.284266-20-martin.blumenstingl@googlemail.com>
+ <63b4b3e1.050a0220.791fb.767c@mx.google.com>
+ <0acf173d-a425-dcca-ad2f-f0f0f13a9f5e@gmail.com>
+ <20230105080142.GA15042@pengutronix.de>
+Content-Language: en-US
+From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
+In-Reply-To: <20230105080142.GA15042@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        UNDISC_FREEM,UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b29 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5008]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [jp735098[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [jp735098[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.4 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  1.7 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cher bien-aim=C3=A9,
-
-Je suis Mme Cristina Campbell de Londres, Royaume-Uni, il y a quelque
-chose de s=C3=A9rieux dont nous devons parler si vous n'=C3=AAtes pas trop
-occup=C3=A9, veuillez r=C3=A9pondre =C3=A0 mon courrier personnel qui est
-(cristinacampel@outlook.com) afin que je puisse vous en dire plus sur
-ce projet caritatif humanitaire dans votre pays d'une valeur de six
-millions de dollars am=C3=A9ricains 6 000 000,00 USD.
-
-Cordialement.
-Mme Cristina Campbell
-E-mail; cristinacampel@outlook.com
+On 05/01/2023 10:01, Sascha Hauer wrote:
+> On Wed, Jan 04, 2023 at 09:59:35PM +0200, Bitterblue Smith wrote:
+>> On 04/01/2023 01:01, Chris Morgan wrote:
+>>> On Wed, Dec 28, 2022 at 12:30:20AM +0100, Martin Blumenstingl wrote:
+>>>> Wire up RTL8821CS chipset support using the new rtw88 SDIO HCI code as
+>>>> well as the existing RTL8821C chipset code.
+>>>>
+>>>
+>>> Unfortunately, this doesn't work for me. I applied it on top of 6.2-rc2
+>>> master and I get errors during probe (it appears the firmware never
+>>> loads).
+>>>
+>>> Relevant dmesg logs are as follows:
+>>>
+>>> [    0.989545] mmc2: new high speed SDIO card at address 0001
+>>> [    0.989993] rtw_8821cs mmc2:0001:1: Firmware version 24.8.0, H2C version 12
+>>> [    1.005684] rtw_8821cs mmc2:0001:1: sdio write32 failed (0x14): -110
+>>> [    1.005737] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x1080): -110
+>>> [    1.005789] rtw_8821cs mmc2:0001:1: sdio write32 failed (0x11080): -110
+>>> [    1.005840] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x3): -110
+>>> [    1.005920] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x1103): -110
+>>> [    1.005998] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x80): -110
+>>> [    1.006078] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x1700): -110
+>>>
+>>> The error of "sdio read32 failed (0x1700): -110" then repeats several
+>>> hundred times, then I get this:
+>>>
+>>> [    1.066294] rtw_8821cs mmc2:0001:1: failed to download firmware
+>>> [    1.066367] rtw_8821cs mmc2:0001:1: sdio read16 failed (0x80): -110
+>>> [    1.066417] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x100): -110
+>>> [    1.066697] rtw_8821cs mmc2:0001:1: failed to setup chip efuse info
+>>> [    1.066703] rtw_8821cs mmc2:0001:1: failed to setup chip information
+>>> [    1.066839] rtw_8821cs: probe of mmc2:0001:1 failed with error -16
+>>>
+>>> The hardware I am using is an rtl8821cs that I can confirm was working
+>>> with a previous driver.
+>>>
+>>> Thank you.
+>>>
+>> The USB-based RTL8811CU also doesn't work, with suspiciously similar
+>> errors:
+>>
+>> Dec 25 21:43:37 home kernel: rtw_8821cu 1-2:1.0: Firmware version 24.11.0, H2C version 12
+>> Dec 25 21:43:37 home kernel: rtw_8821cu 1-2:1.0 wlp0s20f0u2: renamed from wlan0
+>> Dec 25 21:43:40 home kernel: rtw_8821cu 1-2:1.0: read register 0x5 failed with -110
+> 
+> Is this the very first register access or are there other register
+> accesses before that actually do work?
+> 
+> Sascha
+> 
+It's not the first register access. rtw_mac_power_switch() runs a few
+times before things fail.
