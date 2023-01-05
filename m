@@ -2,264 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C62465E5AF
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 07:43:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D23DF65E5CB
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 08:04:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbjAEGnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 01:43:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S230189AbjAEHET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 02:04:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbjAEGnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 01:43:21 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CC542E2D
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 22:43:19 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id z4-20020a17090a170400b00226d331390cso7886pjd.5
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 22:43:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MDxCcqax0xnf4UFr4XDeJpIoQrkiJ0zbStINLGfQnog=;
-        b=e8KizvwoMwGgYfbYAHlE+AVGp+HbmuE21APAJ0h1zNDmgQWjqoLLIYuNkIdnLUmOFj
-         3Igk0kj47y9y1ocoDrVqiYzRPYZUFWtQtWguxw2GvDJik9AgDW6D0JE8n/HdeaijZ5y8
-         jQp37WWMjOo/UjB+s6RUVTvaL0zrXJ0xsaaCQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MDxCcqax0xnf4UFr4XDeJpIoQrkiJ0zbStINLGfQnog=;
-        b=j11FNNO2qllvCpNNL3m0ucmDXew/ZH+HDEkJJ4/vOPF6Whv4rGByNeC4OmqNMEvuWq
-         DXzuLLxgPghxH4z+MkNm+FBAzfPADTmhvxiXYFlZzb/3cCSCbDWFaNbfCTTlQILLQcjw
-         ft7+gSRMFrFc/JrLV/YkgwNnhGtVF/Hi9WbbzddbwezdaSsUmN6vlop9/9HA6wKHce4N
-         r4WcO4tiN4ZR04+H8dfNq0Nl7VCJAGqKmCQa/Nb4mIiT+B8rOOAo6DI939U2m6H+o1Ic
-         hIYfYWeaOFwK1zlPFM2lcsk/UiiHXrm9JssnvgisS2+TB76yTZaAJy6NXJAhqjjPi4Vk
-         1Y8Q==
-X-Gm-Message-State: AFqh2kpWTCasDGuPsWrnHpk8tulDgaflc7AEBhtIUa4bqAxjEldzcCTF
-        PuF2R1vetTTD3ZPzKiLT+vyi1Lg0wCP/4DTWKrAywQ==
-X-Google-Smtp-Source: AMrXdXvNhGYFRds/un7BkybHtFwfoyj7h4xGVsCepWM/P6fPcbc8V8DoD36E3r7yHM16DXDcaHJi2A==
-X-Received: by 2002:a17:902:a601:b0:192:910e:6083 with SMTP id u1-20020a170902a60100b00192910e6083mr33210445plq.15.1672900999087;
-        Wed, 04 Jan 2023 22:43:19 -0800 (PST)
-Received: from [192.168.1.33] ([192.183.212.197])
-        by smtp.googlemail.com with ESMTPSA id jd6-20020a170903260600b00192a8d795f3sm12265930plb.192.2023.01.04.22.43.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Jan 2023 22:43:18 -0800 (PST)
-Message-ID: <133a4655-bafa-a4f1-b9f4-df43cf443e83@schmorgal.com>
-Date:   Wed, 4 Jan 2023 22:43:16 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Content-Language: en-US
-To:     Dan Williams <dcbw@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230102234714.169831-1-doug@schmorgal.com>
- <657adc8e514d4486853ef90cdf97bd75f55b44fa.camel@redhat.com>
- <cc785f92-587c-c260-6369-c2dde9a392ca@schmorgal.com>
- <9d9b16079503d64096b5d16e4552698ccecb9c7f.camel@redhat.com>
-From:   Doug Brown <doug@schmorgal.com>
-Subject: Re: [PATCH] wifi: libertas: return consistent length in
- lbs_add_wpa_tlv()
-In-Reply-To: <9d9b16079503d64096b5d16e4552698ccecb9c7f.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        with ESMTP id S229631AbjAEHER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 02:04:17 -0500
+Received: from outbound.mail.protection.outlook.com (mail-tyzapc01on2050.outbound.protection.outlook.com [40.107.117.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C245548805;
+        Wed,  4 Jan 2023 23:04:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mw9ZFLeaPSbQK301zOuyJGd5KW/x5iLYjlc3cwdmRL8uyRIDjh+x6GA4+dQx33TyCrzVrfEI8kIQWGZyqoOmhkAH5Dx0FmhzOXzb0QfY3Z1QPvhgrL/xi8aYRjSj4Udb7UFTW/OPgtKA67ost8mFtpW47rK6yg4cncQXP3+Fu80VqQNg7zdKvm/vT5adWvjd2RFiOAkWQDvBm6hM0SicHusmYpXg/AeoIgvUlCZaK+2ZmwEfOMwA7sRZnRMKVzpVerPT1Mp9Vs2eqiyOZt/V/tgyNtuYR5IYeJ9FykNx8MIYfCX7zA4emtHrM7shOVwDAdj/ct16HIVcl4JXVD9PFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nf2+kPQlHRKB7B/O/OwtpAougFeZGusNvdexzj42HQY=;
+ b=V1gb6cH3Uw+S1aIPiwdZNg9gEGjd4UERxQ7+ysckVvMiLWo0QVY5pHgqKZZTngVRkhAxZI4JUGSFZf4+DlaW3mYgyaD4r587vKCrnPdcJjNgEWLStb8WjLSkBsAMZcuq/jDDrYtXCTG9/qFDzRleVJOA+xrUfdsX1f7b9H1eb0Yl76q16I6k0iiuZCx3qwPVJDKQkKbDk4bBO+n4XIMBqRbYrMsDf/SZAtSbY5P5ZAMBaRVAQC0TB32E38XuPFTANVDtzmtsBwtF7Flqs6GDBVVN3OFu9SV/qZvQ81ujGsbI+gGugEwkKar+pHoWIf5VIMgx/2mKxDNdvi3tE7ozRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=jaguarmicro.com; dmarc=pass action=none
+ header.from=jaguarmicro.com; dkim=pass header.d=jaguarmicro.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jaguarmicro.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nf2+kPQlHRKB7B/O/OwtpAougFeZGusNvdexzj42HQY=;
+ b=fd3uDxhqTS/2Vv0zH1rU1PHAZQsIfMKMQEsHCn6sO9WF/xFS0sxdWLu9912ur9ol36PVG1oNojx8hgkWx1TH6DRy7WJcZ0fSAyIXOIl69W28oSsrQN16CSdEA5OFLKe8qC9jErHOcZS4AgNsQ8ZPC2EDzsvaObCX1oAI4El2mekfCrWlyp0TwgYgoKTgakaomAtBuAkVlJRxwoQs0A2RkiDLv6eRR8E03jAcjDaYCbNjdzFWvER1a0ImwAGqXhjzPCVdWnNi/w5CjvIbNGMRtrBARJ1e3vP30xrrV/UzkRJi8J7q3SNWA+ZQiFayEndA6SiL6eNCndoIkY6CkD6KuQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=jaguarmicro.com;
+Received: from PSAPR06MB3942.apcprd06.prod.outlook.com (2603:1096:301:2b::5)
+ by SI2PR06MB4489.apcprd06.prod.outlook.com (2603:1096:4:151::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
+ 2023 07:04:13 +0000
+Received: from PSAPR06MB3942.apcprd06.prod.outlook.com
+ ([fe80::dbda:208a:7bdb:4edf]) by PSAPR06MB3942.apcprd06.prod.outlook.com
+ ([fe80::dbda:208a:7bdb:4edf%5]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
+ 07:04:13 +0000
+From:   liming.wu@jaguarmicro.com
+To:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        398776277@qq.com, Liming Wu <liming.wu@jaguarmicro.com>
+Subject: [PATCH] vhost-test: remove meaningless debug info
+Date:   Thu,  5 Jan 2023 15:03:56 +0800
+Message-Id: <20230105070357.274-1-liming.wu@jaguarmicro.com>
+X-Mailer: git-send-email 2.34.0.windows.1
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0105.apcprd02.prod.outlook.com
+ (2603:1096:4:92::21) To PSAPR06MB3942.apcprd06.prod.outlook.com
+ (2603:1096:301:2b::5)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PSAPR06MB3942:EE_|SI2PR06MB4489:EE_
+X-MS-Office365-Filtering-Correlation-Id: 63332dec-2d3d-4313-d315-08daeeeb0d35
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Byoqfw2DYeX/nRfcVZSTnNiEoXJvXPWNsbN/sPif/TKyOE/kUSSQsNjzffXio1WD/+zFAvaCi5K/6xzT0qX+kTSyqxgyVvZtZBwvhJoHXrh6AmoZZoc8qhQsHMr+wS3ZGqst418XySaSbkhBOowoNGFTHvQadLG7GJfnQ318uap9PUlCFYV2mEyn5rb9CGxCnZ5ZXW6cWWTERJwaem3gaE94kEt0kjNKnCulSfscPuBwg7AGHwwIKJqRuW3OoMAITfddiR/P4rDIEK+9atIGkbtrHb+g1sJjwj+Nf/TVVvNRJ4TMxwBKVB6/v/7zkigQQ/Ft7n45Bm0NZaoAxJLhtvhsDAF7zA5GHELwmrg9N80RjraK1DZQYXwdB1vJro12iI4ifslGMH9x2heBM3mWDaxNYAQzCrono2aL40UFkySeWgfCuDrxxhvKrBMpOzpZx2/wT/cfk08FqnWK50Eh13Vz+ACzUy7A+xu8aV640e5fInl1TDU2yf29E9vorVo+mLBSUptf7XMCcDFf3Pl0Xg1KVV1OAz2Yyv/3LbqG3EjCq3SENhQ20QM63+evBnRrybtsDG9OsV+MlBcGwhUm7qqCnrbE23F1m7q8gzOIe4KpynyD7ZOfIWWyf5UcZULXkghN2Pr6Xh38aSclXHVs4GR3JINP1p/+TfxQ8L30lb2DuoRtduBSUxyAlDZnuVGHXdMNGhZ0eviUXdOTZp0A8Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PSAPR06MB3942.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(376002)(346002)(39840400004)(366004)(396003)(451199015)(83380400001)(1076003)(26005)(186003)(6512007)(9686003)(107886003)(6666004)(6506007)(86362001)(36756003)(38350700002)(38100700002)(2616005)(4326008)(41300700001)(8676002)(6486002)(2906002)(5660300002)(4744005)(8936002)(52116002)(478600001)(66556008)(316002)(66946007)(6636002)(66476007)(110136005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LtSCy2qCmd5t3hPIuzGIg5i74q4qCUjvhnJANIsIX6j84VDEJ3YZM9FHhFeA?=
+ =?us-ascii?Q?C+kaLB/UYpvJb+ZiX1T6RDTzhVJQ79YAAexHD73zTQo+X25tInjPOX28SJ7y?=
+ =?us-ascii?Q?RQCfsyCFHtlwWCUP11HtCkpkeedgQuiPc3db5R0b1tpauFX1S9lWA0Az8068?=
+ =?us-ascii?Q?AId6nOUvpDPud/gIP2WONDEygEs6rZDui5vb9MWN6jMfBmWhUtjisHiPFEkZ?=
+ =?us-ascii?Q?UO28ZKHvRrSxNU9JDfawQWgzsmVCotJV0EoUWkOqH2In0t1+wDa6u5blALmw?=
+ =?us-ascii?Q?i68X/Q0EDHTlSuzzq/CdiN/Dbgpy2InFByeor2t2aKmB2O5aGmPTqTsL7QP/?=
+ =?us-ascii?Q?wXt68DVO33YFLSanEjiEj8CEnUTiHQcnS8BmmZqsFiUNdYOSaN2zjSW2eIID?=
+ =?us-ascii?Q?MqZSSBC7tevc9sjxMqC/qiUNnkiTUXKikNFMDY5dNKCjDTjlePxYkJ0U8jzm?=
+ =?us-ascii?Q?pNGgUSEUq6XAKM00+H8Q4tN6mVCk942KoA5iwfLr+rdle1zPNUF6ESoNzBJl?=
+ =?us-ascii?Q?DsY6hrlqck9eItiYeLGoj1kiiAl97/zPSqu/IsGwe3NMXc5Yjdofdw3RfW5s?=
+ =?us-ascii?Q?jt6kTpWEt4Gca0b+auZwcWwypwnQbvJMGRf9lrAIo0FtPaLsLd6HjWrQK/DD?=
+ =?us-ascii?Q?GwfTaE4D8F83x8pLgMQEW7fqIRe2K+vUcLP2FhEIkw0TD6jJ5ZvBOrTlJwUl?=
+ =?us-ascii?Q?G+868uB1oPLXuC8FaFMi8pVu61NJs7YbTcAiPHy22GPPbBvW+nAFUM/Gem9T?=
+ =?us-ascii?Q?C3FOGGLdy5Oulwz1AJF9wLYGy1uegSpYuUFAkS+cw9yDPSbew7jljRoxSyt3?=
+ =?us-ascii?Q?fs/gOTo3Nb83/E8uI1MQ2c8VeE1rbWtmkeyTTzCJXno+RQWVfjkjVddi/qsA?=
+ =?us-ascii?Q?YrdcMpvVE8yR7a5hav8AMclpzT549az5NfEKNrBtcm/aOCoxpkFISEeaU+eN?=
+ =?us-ascii?Q?ZZ+AxHUljFGjf+lGpKsq3Gbqg++UhU5TMBBXc6Ucq4HOSo8JkuzpisSNtYxC?=
+ =?us-ascii?Q?uYqaWpmQDSpJQt2HfoCyXy+WrvO8CXowikfUWl6EwU+c/7bPgmsz7CA8LRXa?=
+ =?us-ascii?Q?A7Yh8kInKSO0P9JgaJBvZFY3g16YojjD2eCERr5Cyy3W+chrCDnzanr6eIMF?=
+ =?us-ascii?Q?MkNcnKlLIIDmTZr/yUTP9wxPojiOtiLoAy+9jKC+Gf5VN6QIoXFwuQI61msq?=
+ =?us-ascii?Q?g5GkLI4mKdWz6ioBNnqNWt2pneS5Vtczb+rRy560pWwwsX3yBrF82beAZ8v9?=
+ =?us-ascii?Q?UR3TSwAhQfOOQTapEGUSj5TM7/9gE5HfwDfTMC1fmFgx+71Ms8ZqQFopqsiV?=
+ =?us-ascii?Q?aRoi420rUlV9Qo+H1EjfvY8hvdHx5l4l/hmTrgK04jwCgVy7xe+VeIC1Acr+?=
+ =?us-ascii?Q?sPx3qPjt/TgZ8zsLipwWHr7R9BfMN6DcXxb4a5RRREmm2tgTHNAVW7r3CBkc?=
+ =?us-ascii?Q?cdQnkLdHVwWmSd2O1MNvFANaQdtJYcDirDtot/1x6npTiIzAqkrTvxfFTJuO?=
+ =?us-ascii?Q?5kpNW7x4dw7tbLt5QVXmMAL4r+RyBgzzn5Jak9dK+aOBrt2cFkjBel4kSCvY?=
+ =?us-ascii?Q?/h/9IAUKxfQdHUE+LfKk8JhRnetUfx0XEy8wkE9TtwHAzplHWOUT0joWOepZ?=
+ =?us-ascii?Q?mw=3D=3D?=
+X-OriginatorOrg: jaguarmicro.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 63332dec-2d3d-4313-d315-08daeeeb0d35
+X-MS-Exchange-CrossTenant-AuthSource: PSAPR06MB3942.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 07:04:13.5046
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1e45a5c2-d3e1-46b3-a0e6-c5ebf6d8ba7b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QJboL5JObrPd+PYRagE+hebN1ew+hqyUbP8Xq3QJ76Diq908GDLq4NC7EBT2/+UFPVEUiwC2b+gpOFuJRlIGfVJAbZD4rIT1mMk+2/IFu34=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB4489
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_PASS,T_SPF_HELO_TEMPERROR autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/4/2023 6:47 AM, Dan Williams wrote:
-> On Tue, 2023-01-03 at 17:13 -0800, Doug Brown wrote:
->> Hi Dan,
->>
->> Thanks for reviewing my patch! Comments below:
->>
->> On 1/3/2023 9:47 AM, Dan Williams wrote:
->>> On Mon, 2023-01-02 at 15:47 -0800, Doug Brown wrote:
->>>> The existing code only converts the first IE to a TLV, but it
->>>> returns
->>>> a
->>>> value that takes the length of all IEs into account. When there
->>>> is
->>>> more
->>>> than one IE (which happens with modern wpa_supplicant versions
->>>> for
->>>> example), the returned length is too long and extra junk TLVs get
->>>> sent
->>>> to the firmware, resulting in an association failure.
->>>>
->>>> Fix this by returning a length that only factors in the single IE
->>>> that
->>>> was converted. The firmware doesn't seem to support the
->>>> additional
->>>> IEs,
->>>> so there is no value in trying to convert them to additional
->>>> TLVs.
->>>>
->>>> Fixes: e86dc1ca4676 ("Libertas: cfg80211 support")
->>>> Signed-off-by: Doug Brown <doug@schmorgal.com>
->>>> ---
->>>>    drivers/net/wireless/marvell/libertas/cfg.c | 7 +++----
->>>>    1 file changed, 3 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/net/wireless/marvell/libertas/cfg.c
->>>> b/drivers/net/wireless/marvell/libertas/cfg.c
->>>> index 3e065cbb0af9..fcc5420ec7ea 100644
->>>> --- a/drivers/net/wireless/marvell/libertas/cfg.c
->>>> +++ b/drivers/net/wireless/marvell/libertas/cfg.c
->>>> @@ -432,10 +432,9 @@ static int lbs_add_wpa_tlv(u8 *tlv, const u8
->>>> *ie, u8 ie_len)
->>>>           *tlv++ = 0;
->>>>           tlv_len = *tlv++ = *ie++;
->>>>           *tlv++ = 0;
->>>> -       while (tlv_len--)
->>>> -               *tlv++ = *ie++;
->>>> -       /* the TLV is two bytes larger than the IE */
->>>> -       return ie_len + 2;
->>>> +       memcpy(tlv, ie, tlv_len);
->>>> +       /* the TLV has a four-byte header */
->>>> +       return tlv_len + 4;
->>>
->>> Since you're removing ie_len usage in the function, you might as
->>> well
->>> remove it from the function's arguments.
->>
->> That's an excellent point. Thinking about it further after your
->> questions below, maybe we should keep it around and use it to
->> validate
->> how far we are allowed to go into "ie" though...technically the
->> existing
->> code could overflow the buffer with a malformed IE.
-> 
-> Yeah, that's a good point, though I'd hope cfg80211 had already
-> validated the IE structure that gets put into sme->ie. If not, I'd
-> expect bigger problems. But doesn't hurt.
+From: Liming Wu <liming.wu@jaguarmicro.com>
 
-Ah, I didn't even consider that cfg80211 might be validating it ahead of
-time, but that would make a lot of sense. I'll do some more digging and
-figure out if that much validation is really needed in this driver.
+remove printk as it is meaningless.
 
->>
->>> Can you also update the comments to say something like "only copy
->>> the
->>> first IE into the command buffer".
->>
->> Will do.
->>
->>> Lastly, should you check the IE to make sure you're copying the WPA
->>> or
->>> WMM IE that the firmware expects? What other IEs does
->>> wpa_supplicant/cfg80211 add these days?
->>
->> I was wondering about that too. I wasn't sure exactly which potential
->> IEs are the ones I should be looking for during this check. I've seen
->> "RSN Information" = 48 during my testing with WPA2, and assume based
->> on
->> the old Marvell driver code that "Vendor Specific" = 221 would be
->> used
->> with WPA. Going through the entire IE list and finding a match seems
->> safer than just blindly grabbing the first one. This would also be a
->> good time to add some bounds checking to make sure not to overrun
->> "ie"
->> as well...
-> 
-> Everything after CMD_802_11_ASSOCIATE's DTIM Period field is just a
-> bunch of IEs; the command only accepts certain IEs (at least it was
-> documented to do that, no idea what the actual firmware does). So I
-> wouldn't be surprised if it ignores some.
-> 
-> So I guess ignore the reasoning I had above, but there's one more good
-> reason to filter IEs passed to the firmware: space. We're probably not
-> close to overrunning the buffer, but we really don't want to do that
-> for security reasons.
+Signed-off-by: Liming Wu <liming.wu@jaguarmicro.com>
+---
+ drivers/vhost/test.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index bc8e7fb1e635..42c955a5b211 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -333,13 +333,10 @@ static long vhost_test_ioctl(struct file *f, unsigned int ioctl,
+ 			return -EFAULT;
+ 		return 0;
+ 	case VHOST_SET_FEATURES:
+-		printk(KERN_ERR "1\n");
+ 		if (copy_from_user(&features, featurep, sizeof features))
+ 			return -EFAULT;
+-		printk(KERN_ERR "2\n");
+ 		if (features & ~VHOST_FEATURES)
+ 			return -EOPNOTSUPP;
+-		printk(KERN_ERR "3\n");
+ 		return vhost_test_set_features(n, features);
+ 	case VHOST_RESET_OWNER:
+ 		return vhost_test_reset_owner(n);
+-- 
+2.25.1
 
-I like that idea a lot. I'll filter and only allow through 48 and 221
-IEs in lbs_add_wpa_tlv() in the next version of the patch.
-
->>
->> The other two IEs that are being added by modern wpa_supplicant are
->> "Extended Capabilities" (127) with SCS and mirrored SCS set:
->>
->> 7f 0b 00 00 00 00 00 00 40 00 00 00 20
->>
->> ...and "Supported Operating Classes" (59) with current = 81 and
->> supported = 81 and 82:
->>
->> 3b 03 51 51 52
->>
->> I tried converting these additional IEs to TLVs. It resulted in a
->> successful connection, but the firmware didn't pass on these two IEs
->> in
->> the association request -- I verified by sniffing packets. So I was
->> concerned about passing them onto the firmware if it's not making use
->> of
->> them, in case it's interpreting them in some other unexpected way.
-> 
-> Yeah, it might.
-> 
->>
->> Do you have any guidance on which possible IEs I should be looking
->> for
->> other than 48 and 221, or where I could find that out?
-> 
-> Only those two. The rest that are required get added specifically in
-> the driver. There is a way to push unrecognized IEs through
-> ("passthrough IEs" ID 0x010A) but we never implemented that in the
-> driver because we never needed it.
-
-
-Thanks. Good to know that passthrough is possible if any additional IEs
-need to be supported in the future. I see that in the old Marvell source
-code now, thanks.
-
->>
->> BTW, modern wpa_supplicant also doesn't work with libertas for one
->> additional reason: it violates NL80211_ATTR_MAX_SCAN_IE_LEN on some
->> older drivers including this one. But I believe that's a
->> wpa_supplicant
->> problem that I can't really address in the kernel...
-> 
-> That's lame... but Jouni's response was that not allowing extra IEs
-> would break some WPS stuff; CMD_802_11_SCAN does allow adding a TLV
-> (0x011B) for WPS Enrollee IE contents, so maybe you could just set
-> max_scan_ie_len to something larger than zero and ignore IEs that are
-> not valid in WPS Enrollee Probe Request frames, while adding the WPS
-> TLVs?
-
-
-I love this idea, and I'm definitely interested in attempting it in
-another patch in order to fully restore this driver's compatibility with
-wpa_supplicant. I'll play around with it a bit.
-
-Do you happen to have any more info on how to use this TLV? It isn't
-documented in the old Marvell driver or this driver. Based on what I'm
-seeing in wpa_supplicant, it looks like the WPS stuff is encapsulated in
-Vendor Specific (221) IEs with special OUI/type values for WPS. There's
-another OUI/type for P2P info that can potentially be added for WPS too.
-Would I just need to directly convert these IEs into 0x011B TLVs
-(obviously with a new TLV_TYPE_ #define added for it)?
-
-Thanks,
-Doug
-
-> 
-> Dan
-> 
->>
->> http://lists.infradead.org/pipermail/hostap/2022-January/040185.html
->>
->> Thanks!
->> Doug
->>
-> 
