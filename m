@@ -2,293 +2,521 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 119E765E562
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 07:04:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C676865E56F
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 07:13:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbjAEGEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 01:04:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
+        id S230406AbjAEGNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 01:13:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230489AbjAEGDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 01:03:54 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2060.outbound.protection.outlook.com [40.107.96.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E2E5276F
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 22:03:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XtQGf8J8t6DQvsG1m/m5c2/F2MdttNBKYfp1kOhX3aQPyRUqnC5AU9xrN5ulofTc33DvPydc9wdLe3XD7r3U5DfXm41gcuIztJMz5FHBNXymein+Q7lnSH53L9rvjkIMKI34iyQJQJwXJ4hcItBoezrUPEzHQY/4YsdISAyrVhaRXjzz8IeHSp4BtIfpSqpo77CjGPcYMIDVQkLcDVldfgWVdEryHWouHhuSbUqXNqE4oEanH0vBSLFsRj6HeM40TN3UoAea4eBVqufuyLp30s5VT33N9iWN39a/lGQW2qHhTAy46mpSwQZeKc7kcebbJtHUgKeeDZkSglACklnhew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WBKZp4ZTNvLX+R3eMsIXe4actPS/uhtJmktqZAgllKU=;
- b=Y4YMJsgLz8EBf0v4q5PVyTxL175TIdLiQQkXmbQUhtUcDc6Lcmay6YX2tJAT5vK1KBudKaAKDiq1lb/ipktJtQSMJyvFvJ02fxdijfV5cP2BeyNbsldygoz88VJs7XzZ4T5MqW5ZKkZhShu8RwP1Ig3PZv8seefuHJR+O8aMUeJtNolgPe3Wsh2bH6fbiAzgf/fIlPMZGyM16h2xMseS6i9P7YC9pdzfgVM57f65qu1Be5hqldGB3eveTEVSYv83Ebv8A/bqASoGEeiUSeM/Bb3SgylchcLOZuXLQbudwJ9o5JL9uQf3OTOiRi6t7u15kS6n1Y32cshcP1P6U9LjkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WBKZp4ZTNvLX+R3eMsIXe4actPS/uhtJmktqZAgllKU=;
- b=BYupQ/nD+Q8NTHU3dt6ukzf+NcfigbMthAW4+m74b5BWLnQsTZmniV28BEA1SBDZqfYHsXXshzBHibIdiUDFaHhsPKMQHPo8rpK2VVnQ6T3d9SfR+GU/MgMy9ZvFZH1W+2cBnhcNJQi0++aZskHwr95RE4d8Uq1eHP2U9ci8AhOAYaFK1ghAcLX1rlGA6MPPQQ0nQw7MZ4ZUawTW6BEh7bGu1emTJRR6NtRKvqmr4LZ198Be1x0rgVwfgxlI/BRWnCpOUHovZC0eCPIHBRzbED+GSfF3XF3ev6f6reFSB8REAO3Yt6KrXsIHky5KzxG8LuK4Pj7zOM1a1mg78Eylgg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
- by SJ0PR12MB8166.namprd12.prod.outlook.com (2603:10b6:a03:4e2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
- 2023 06:03:46 +0000
-Received: from BYAPR12MB2743.namprd12.prod.outlook.com
- ([fe80::f051:6bd:a5b2:175]) by BYAPR12MB2743.namprd12.prod.outlook.com
- ([fe80::f051:6bd:a5b2:175%5]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
- 06:03:46 +0000
-From:   Rahul Rameshbabu <rrameshbabu@nvidia.com>
-To:     Maxim Mikityanskiy <maxtram95@gmail.com>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net] sch_htb: Fix prematurely activating netdev during
- htb_destroy_class_offload
-References: <20230104174744.22280-1-rrameshbabu@nvidia.com>
-        <CAKErNvojEx1jeWfqoo+CA3iSJpc2URVbUvmdc=QtVEuif4_YNQ@mail.gmail.com>
-Date:   Wed, 04 Jan 2023 22:03:29 -0800
-In-Reply-To: <CAKErNvojEx1jeWfqoo+CA3iSJpc2URVbUvmdc=QtVEuif4_YNQ@mail.gmail.com>
- (Maxim
-        Mikityanskiy's message of "Wed, 4 Jan 2023 22:12:11 +0200")
-Message-ID: <878rihplfy.fsf@nvidia.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR13CA0127.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::12) To BYAPR12MB2743.namprd12.prod.outlook.com
- (2603:10b6:a03:61::28)
+        with ESMTP id S229579AbjAEGNQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 01:13:16 -0500
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D803751325;
+        Wed,  4 Jan 2023 22:13:10 -0800 (PST)
+Received: by mail-ej1-f49.google.com with SMTP id fc4so87753868ejc.12;
+        Wed, 04 Jan 2023 22:13:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9hqDh2Xim+tTDH75JTENXdECaatY8kGHcxbqvmsRA3E=;
+        b=AZ/xqhT/M10u60SohsULnjUa2vH9KgadT8BWjPB+7FUAVKJvI/s7R7FGCyD3SREzfl
+         CitAg6bIbPLZIAj0WDl+JyadYc2AscolZ//fvssT6pS8kgeEe0Snh3bOTxeVMr9TrHBU
+         5BBBlf6M0mgwFym7xYo3GVdaCGc/XU3XcxU59zGoRVr7XAuhdDdjeuAomfLZgWrCuD9s
+         83SfKaVBRfbXtkUn4JMVlbopipMnNYabfcfsuaLyQroVtz7oHqVDGegM43pWR5R6wU12
+         4ATV/7+Sp9yXNWRE4fQMV8VGv34W8g0H12nEoUIZbeCFS73d0IKjnlmg7Nw4Q2n/QjWw
+         72EA==
+X-Gm-Message-State: AFqh2krxS5QPo2TLr9De5fBJEuBPCASO0JkYG9VSd/mbpK/Xb3MDHG6T
+        nc1bzsb/utTRP9DJkjb/MyA=
+X-Google-Smtp-Source: AMrXdXsKlRVn0RJBi17w2liEz4+CZ0KHwnMKR5bmUqdPZM/IvBJ/fkif9boqK4X7TOaFGYDo3SSuVA==
+X-Received: by 2002:a17:907:3888:b0:83f:757e:f182 with SMTP id sq8-20020a170907388800b0083f757ef182mr41761314ejc.65.1672899189152;
+        Wed, 04 Jan 2023 22:13:09 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id fy10-20020a1709069f0a00b007bd7178d311sm16375349ejc.51.2023.01.04.22.13.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Jan 2023 22:13:08 -0800 (PST)
+Message-ID: <f4016bf5-6377-170d-dd76-8f01ff6cb7da@kernel.org>
+Date:   Thu, 5 Jan 2023 07:13:06 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|SJ0PR12MB8166:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6e550ae3-6cf7-4a6c-8d45-08daeee29b74
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Nq14CkDAAJINVQ+rLKLfSW/PHfxh6wipaEFuvSTd3t2tbQEHT+6t2u0hFrhjT6sA7J7RjRyZj0NGwTfC5Tl5kIPAsRpqfpC3QUCeL+tRnkXz6x92p2D0wle/nDc982rTRVE88+qqr0oP8GIxcY3AS75EAAvCjxYtlIMChvqYXhKik9GRbvGR39qnrgVQb9ICPCEA1lmeYXJ6YL6s/5EAm393IS0pPxbY2VaxekZS98DJjO1STvRaVo362+98haM8AB1YwyV6wl+nel2zuzyyRtYC/xwx0tC5osGrW5GAD5arMA2DlTt2oHk5+GW1GADzFSXmXjNFHbLWc9Dfper+CuCoWqYQDRt6rl/x9yP49zFnEI4cggGPByKUAVivwmzvHoyTnwtTMSf6w4dpLsr33UU9vnv76N1GJ3Cw1yFFKfv8/tl6V9PQs+iIEpTrgV3x+4IibO8bqzTG4ztc+c9kybitL9R0067NtKgRhLQg/WjpLoYQx7zL3CPizL1YtXpwo7x2TEc4/+lMy1aRlVxIrSCcJeJOViIQb7clB3V1YPNAg2FyG6bP/FJMKlkV/gehsgdcAZOVkbntTAAI1qbJ5iK0LGCTfdqB9SDIzVgdP5ldHKIGzmE2qZg2B4wPEQu+P2K9XghSXjor5hArqw8/aA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(136003)(346002)(39860400002)(396003)(451199015)(2906002)(5660300002)(8936002)(8676002)(4326008)(41300700001)(54906003)(316002)(66946007)(6916009)(66556008)(6486002)(478600001)(66476007)(45080400002)(2616005)(6506007)(186003)(6666004)(83380400001)(6512007)(38100700002)(86362001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ya/P8Bttvn93BAERDDoj1vLgtjoRuSX5mkBSzQ7g9L6W1bMeYbchx5Tq3gVa?=
- =?us-ascii?Q?sUrQoVv98aFdZEBbKO6duuGAU8wUiVfHKRK1Zf9elkvJkihZiyGSOJ2BT2FN?=
- =?us-ascii?Q?3s3erNmoAwts30EP+WnZQexAiltfZGwl9asy+1OH1u0z3SzDKbVc8NRBWpS5?=
- =?us-ascii?Q?8utqvVrRlIq7oQ+cDiH6X96wStRK+nFrgV0NJKfBA+Ll6AGuWMFKkEfNQiuh?=
- =?us-ascii?Q?4wcZIpXmSNAmXLv70/lUcUvBTCmV0uhBTqMmF8SVIw9i40v6YrTCQ+ZfO/3Q?=
- =?us-ascii?Q?Sqq7IeS6RyzNE44sEpZoTM06CWW08S5DfHH6GJe7OJsAr844GoqANKTPZGtJ?=
- =?us-ascii?Q?HM2L8YObUTjTDkQJziu7KPRnb7gf6UghReAdafsoxzgbrggJfb0PVOC9pq0o?=
- =?us-ascii?Q?Z0rp9uI1/Cq9jQuGv1nI9NS+8GqTg3JPqigFOIlMzqvS6KJaZlhSlWdX4VWC?=
- =?us-ascii?Q?lTwGjKVtt9mexiUT9EtyyX3tcZs0GIxGKSWR1DE1kCeX0YR8PY6YFR32RkI+?=
- =?us-ascii?Q?xcM73sUWfs37uwoVFx0LO/2+cJv24hQzbEzuGUw7EW/ODGPd3VL34h+sq/yI?=
- =?us-ascii?Q?72yGNlTvNGSHHTqAK1Q2GFns31BrbQZXx8UN1hnAVzapdlfwEhXrIvtPmIRJ?=
- =?us-ascii?Q?5nYqDHEQ27/+TGnx9zhcml9MikAq8XkwaNAfcOXf3FJfYD6MMiGnA9tk0EbG?=
- =?us-ascii?Q?j49Fxxt+9UpfUa4LmqeVrg3ZEA0eRcqpSZVlrNYKV5/H5UirjoKIuvjt+GIq?=
- =?us-ascii?Q?uWmmNXryQyBK+bn8zUz3Mxes15MQ90vh6vGStZ7Q5VyYXyPtDWVY7Bx/65D6?=
- =?us-ascii?Q?zrqbMkLwU2eXatKlGLCq/HDi/f7aa8RCYGG/zByQuZLteGX9He/tOywWCktD?=
- =?us-ascii?Q?QsXUmvidadD7UiIS2cm5Kx2Q8QRm/IQIlHsRrA7ccOEc1BhP/uv57P2ZTDGK?=
- =?us-ascii?Q?haqxOBf04I0q+DDurMqMtlfuEny2dwCNKQFIkGrpjB60BKbAj0zf8idfyI/z?=
- =?us-ascii?Q?+eORVR8ZtRUk0rh6/7AM5YvSaXBldzfnp/0gTrxu4hBfs50S44WNScrpwIwH?=
- =?us-ascii?Q?sD8LFnzjKMAVqCJcBChZ54LD/LKh07y1qGCQgUEeNDMCuam80cwr8GFIZpxQ?=
- =?us-ascii?Q?P7PwKH662v+IeBIjvmrUWIsS14fMiag5UVe8YPqIqNQ9d26IohyjDM2jDq1v?=
- =?us-ascii?Q?8qk4DQeCj7kcJy4X47CdVEQJxxcBSgkXrBV896Tmdqhtg1rTfHXizoLO+opV?=
- =?us-ascii?Q?zxcv8n97UmjnqwYsR2eSJSQ8++dMeBX+7I9GISM2UdPBwYFrdihaWJr2Q2/U?=
- =?us-ascii?Q?bXzEJ/xYN1uO9ap+AVALSBm5hoQaXvJ5GWE5vrkuyyxW7F+SBnihUDguQOBY?=
- =?us-ascii?Q?IQnrq5xGIZTzOgiDCkjKSK4LW/y7KOYnXVvOK4qdlAPnE3OKvds7wIqOYrPm?=
- =?us-ascii?Q?jKJcHh9sujkRuAKAAz9PtdjJJPDJZABUgsbbXJ7d9xQwC/BAodYIuWc7/Pmv?=
- =?us-ascii?Q?NCGGM2HAlsSX2oxUJtmziie7tuQYMCAkXn0k4AxJeoZ3HF7mYWqQ4zJ43sBr?=
- =?us-ascii?Q?SpPNE/LZAj8WlkS47eefdkDTF9FMDo7UZzGaHyz0QKNdtO5KtfVijuMeG8+r?=
- =?us-ascii?Q?nYfwh4mqQq1E0RhMYC/UqOUyd6SzEGRmFPwZ90Fi3MKtCwKl664qGJQPB4Vm?=
- =?us-ascii?Q?G1SSLA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e550ae3-6cf7-4a6c-8d45-08daeee29b74
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 06:03:46.6504
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z6z3emfBz2eM9hn6HQTB/5HkThqy3gkPhY2bWCyRY0iwBbdSMeyEBcsL1t/+l/nz5i+UZ52y4ie7VyWoj5oYYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8166
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 06/10] tty: Convert ->carrier_raised() and callchains to
+ bool
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Johan Hovold <johan@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-usb@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230104151531.73994-1-ilpo.jarvinen@linux.intel.com>
+ <20230104151531.73994-7-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230104151531.73994-7-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maxim Mikityanskiy <maxtram95@gmail.com> writes:
+On 04. 01. 23, 16:15, Ilpo Järvinen wrote:
+> Return boolean from ->carrier_raised() instead of 0 and 1. Make the
+> return type change also to tty_port_carrier_raised() that makes the
+> ->carrier_raised() call (+ cd variable in moxa into which its return
+> value is stored).
+> 
+> Also cleans up a few unnecessary constructs related to this change:
+> 
+> 	return xx ? 1 : 0;
+> 	-> return xx;
+> 
+> 	if (xx)
+> 		return 1;
+> 	return 0;
+> 	-> return xx;
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-> On Wed, 4 Jan 2023 at 19:53, Rahul Rameshbabu <rrameshbabu@nvidia.com> wrote:
->>
->> When the netdev qdisc is updated correctly with the new qdisc before
->> destroying the old qdisc, the netdev should not be activated till cleanup
->> is completed. When htb_destroy_class_offload called htb_graft_helper, the
->> netdev may be activated before cleanup is completed.
->
-> Oh, so that's what was happening! Now I get the full picture:
->
-> 1. The user does RTM_DELQDISC.
-> 2. qdisc_graft calls dev_deactivate, which sets dev_queue->qdisc to
-> NULL, but keeps dev_queue->qdisc_sleeping.
-> 3. The loop in qdisc_graft calls dev_graft_qdisc(dev_queue, new),
-> where new is NULL, for each queue.
-> 4. Then we get into htb_destroy_class_offload, and it's important
-> whether dev->qdisc is still HTB (before Eric's patch) or noop_qdisc
-> (after Eric's patch).
-> 5. If dev->qdisc is noop_qdisc, and htb_graft_helper accidentally
-> activates the netdev, attach_default_qdiscs will be called, and
-> dev_queue->qdisc will no longer be NULL for the rest of the queues,
-> hence the WARN_ON triggering.
->
-> Nice catch indeed, premature activation of the netdev wasn't intended.
->
->> The new netdev qdisc
->> may be used prematurely by queues before cleanup is done. Call
->> dev_graft_qdisc in place of htb_graft_helper when destroying the htb to
->> prevent premature netdev activation.
->>
->> Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
->> Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
->> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
->> Cc: Eric Dumazet <edumazet@google.com>
->> Cc: Maxim Mikityanskiy <maxtram95@gmail.com>
->> ---
->>  net/sched/sch_htb.c | 8 +++++---
->>  1 file changed, 5 insertions(+), 3 deletions(-)
->>
->> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
->> index 2238edece1a4..f62334ef016a 100644
->> --- a/net/sched/sch_htb.c
->> +++ b/net/sched/sch_htb.c
->> @@ -1557,14 +1557,16 @@ static int htb_destroy_class_offload(struct Qdisc *sch, struct htb_class *cl,
->>
->>         WARN_ON(!q);
->>         dev_queue = htb_offload_get_queue(cl);
->> -       old = htb_graft_helper(dev_queue, NULL);
->> -       if (destroying)
->> +       if (destroying) {
->> +               old = dev_graft_qdisc(dev_queue, NULL);
->>                 /* Before HTB is destroyed, the kernel grafts noop_qdisc to
->>                  * all queues.
->>                  */
->>                 WARN_ON(!(old->flags & TCQ_F_BUILTIN));
->
-> Now regarding this WARN_ON, I have concerns about its correctness.
->
-> Can the user replace the root qdisc from HTB to something else with a
-> single command? I.e. instead of `tc qdisc del dev eth2 root handle 1:`
-> do `tc qdisc replace ...` or whatever that causes qdisc_graft to be
-> called with new != NULL? If that is possible, then:
->
-> 1. `old` won't be noop_qdisc, but rather the new qdisc (if it doesn't
-> support the attach callback) or the old one left from HTB (old == q,
-> if the new qdisc supports the attach callback). WARN_ON should
-> trigger.
->
-> 2. We shouldn't even call dev_graft_qdisc in this case (if destroying
-> is true). Likewise, we shouldn't try to revert it on errors or call
-> qdisc_put on it.
->
-> Could you please try to reproduce this scenario of triggering WARN_ON?
-> I remember testing it, and something actually prevented me from doing
-> a replacement, but maybe I just missed something back then.
->
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Reproduction steps
 
-  ip link set dev eth2 up
-  ip link set dev eth2 up
-  ip addr add 194.237.173.123/16 dev eth2
-  tc qdisc add dev eth2 clsact
-  tc qdisc add dev eth2 root handle 1: htb default 1 offload
-  tc class add dev eth2 classid 1: parent root htb rate 18000mbit ceil 22500.0mbit burst 450000kbit cburst 450000kbit
-  tc class add dev eth2 classid 1:3 parent 1: htb rate 3596mbit burst 89900kbit cburst 89900kbit 
-  tc qdisc replace dev eth2 root pfifo
+> ---
+>   drivers/char/pcmcia/synclink_cs.c | 8 +++-----
+>   drivers/mmc/core/sdio_uart.c      | 7 +++----
+>   drivers/tty/amiserial.c           | 2 +-
+>   drivers/tty/moxa.c                | 4 ++--
+>   drivers/tty/mxser.c               | 5 +++--
+>   drivers/tty/n_gsm.c               | 8 ++++----
+>   drivers/tty/serial/serial_core.c  | 9 ++++-----
+>   drivers/tty/synclink_gt.c         | 7 ++++---
+>   drivers/tty/tty_port.c            | 4 ++--
+>   drivers/usb/serial/ch341.c        | 7 +++----
+>   drivers/usb/serial/f81232.c       | 6 ++----
+>   drivers/usb/serial/pl2303.c       | 7 ++-----
+>   drivers/usb/serial/spcp8x5.c      | 7 ++-----
+>   drivers/usb/serial/usb-serial.c   | 4 ++--
+>   include/linux/tty_port.h          | 6 +++---
+>   include/linux/usb/serial.h        | 2 +-
+>   net/bluetooth/rfcomm/tty.c        | 2 +-
+>   17 files changed, 42 insertions(+), 53 deletions(-)
+> 
+> diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
+> index baa46e8a094b..4391138e1b8a 100644
+> --- a/drivers/char/pcmcia/synclink_cs.c
+> +++ b/drivers/char/pcmcia/synclink_cs.c
+> @@ -377,7 +377,7 @@ static void async_mode(MGSLPC_INFO *info);
+>   
+>   static void tx_timeout(struct timer_list *t);
+>   
+> -static int carrier_raised(struct tty_port *port);
+> +static bool carrier_raised(struct tty_port *port);
+>   static void dtr_rts(struct tty_port *port, int onoff);
+>   
+>   #if SYNCLINK_GENERIC_HDLC
+> @@ -2430,7 +2430,7 @@ static void mgslpc_hangup(struct tty_struct *tty)
+>   	tty_port_hangup(&info->port);
+>   }
+>   
+> -static int carrier_raised(struct tty_port *port)
+> +static bool carrier_raised(struct tty_port *port)
+>   {
+>   	MGSLPC_INFO *info = container_of(port, MGSLPC_INFO, port);
+>   	unsigned long flags;
+> @@ -2439,9 +2439,7 @@ static int carrier_raised(struct tty_port *port)
+>   	get_signals(info);
+>   	spin_unlock_irqrestore(&info->lock, flags);
+>   
+> -	if (info->serial_signals & SerialSignal_DCD)
+> -		return 1;
+> -	return 0;
+> +	return info->serial_signals & SerialSignal_DCD;
+>   }
+>   
+>   static void dtr_rts(struct tty_port *port, int onoff)
+> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
+> index ae7ef2e038be..47f58258d8ff 100644
+> --- a/drivers/mmc/core/sdio_uart.c
+> +++ b/drivers/mmc/core/sdio_uart.c
+> @@ -526,7 +526,7 @@ static void sdio_uart_irq(struct sdio_func *func)
+>   	port->in_sdio_uart_irq = NULL;
+>   }
+>   
+> -static int uart_carrier_raised(struct tty_port *tport)
+> +static bool uart_carrier_raised(struct tty_port *tport)
+>   {
+>   	struct sdio_uart_port *port =
+>   			container_of(tport, struct sdio_uart_port, port);
+> @@ -535,9 +535,8 @@ static int uart_carrier_raised(struct tty_port *tport)
+>   		return 1;
+>   	ret = sdio_uart_get_mctrl(port);
+>   	sdio_uart_release_func(port);
+> -	if (ret & TIOCM_CAR)
+> -		return 1;
+> -	return 0;
+> +
+> +	return ret & TIOCM_CAR;
+>   }
+>   
+>   /**
+> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+> index 460d33a1e70b..01c4fd3ce7c8 100644
+> --- a/drivers/tty/amiserial.c
+> +++ b/drivers/tty/amiserial.c
+> @@ -1454,7 +1454,7 @@ static const struct tty_operations serial_ops = {
+>   	.proc_show = rs_proc_show,
+>   };
+>   
+> -static int amiga_carrier_raised(struct tty_port *port)
+> +static bool amiga_carrier_raised(struct tty_port *port)
+>   {
+>   	return !(ciab.pra & SER_DCD);
+>   }
+> diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+> index 2d9635e14ded..6a1e78e33a2c 100644
+> --- a/drivers/tty/moxa.c
+> +++ b/drivers/tty/moxa.c
+> @@ -501,7 +501,7 @@ static int moxa_tiocmset(struct tty_struct *tty,
+>   static void moxa_poll(struct timer_list *);
+>   static void moxa_set_tty_param(struct tty_struct *, const struct ktermios *);
+>   static void moxa_shutdown(struct tty_port *);
+> -static int moxa_carrier_raised(struct tty_port *);
+> +static bool moxa_carrier_raised(struct tty_port *);
+>   static void moxa_dtr_rts(struct tty_port *, int);
+>   /*
+>    * moxa board interface functions:
+> @@ -1432,7 +1432,7 @@ static void moxa_shutdown(struct tty_port *port)
+>   	MoxaPortFlushData(ch, 2);
+>   }
+>   
+> -static int moxa_carrier_raised(struct tty_port *port)
+> +static bool moxa_carrier_raised(struct tty_port *port)
+>   {
+>   	struct moxa_port *ch = container_of(port, struct moxa_port, port);
+>   	int dcd;
+> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> index 2926a831727d..96c72e691cd7 100644
+> --- a/drivers/tty/mxser.c
+> +++ b/drivers/tty/mxser.c
+> @@ -458,10 +458,11 @@ static void __mxser_stop_tx(struct mxser_port *info)
+>   	outb(info->IER, info->ioaddr + UART_IER);
+>   }
+>   
+> -static int mxser_carrier_raised(struct tty_port *port)
+> +static bool mxser_carrier_raised(struct tty_port *port)
+>   {
+>   	struct mxser_port *mp = container_of(port, struct mxser_port, port);
+> -	return (inb(mp->ioaddr + UART_MSR) & UART_MSR_DCD)?1:0;
+> +
+> +	return inb(mp->ioaddr + UART_MSR) & UART_MSR_DCD;
+>   }
+>   
+>   static void mxser_dtr_rts(struct tty_port *port, int on)
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 631539c17d85..81fc2ec3693f 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -3770,16 +3770,16 @@ static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
+>   	return -EPROTONOSUPPORT;
+>   }
+>   
+> -static int gsm_carrier_raised(struct tty_port *port)
+> +static bool gsm_carrier_raised(struct tty_port *port)
+>   {
+>   	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
+>   	struct gsm_mux *gsm = dlci->gsm;
+>   
+>   	/* Not yet open so no carrier info */
+>   	if (dlci->state != DLCI_OPEN)
+> -		return 0;
+> +		return false;
+>   	if (debug & DBG_CD_ON)
+> -		return 1;
+> +		return true;
+>   
+>   	/*
+>   	 * Basic mode with control channel in ADM mode may not respond
+> @@ -3787,7 +3787,7 @@ static int gsm_carrier_raised(struct tty_port *port)
+>   	 */
+>   	if (gsm->encoding == GSM_BASIC_OPT &&
+>   	    gsm->dlci[0]->mode == DLCI_MODE_ADM && !dlci->modem_rx)
+> -		return 1;
+> +		return true;
+>   
+>   	return dlci->modem_rx & TIOCM_CD;
+>   }
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index a0260a40bdb9..f91b27e2058a 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1859,7 +1859,7 @@ static void uart_port_shutdown(struct tty_port *port)
+>   	}
+>   }
+>   
+> -static int uart_carrier_raised(struct tty_port *port)
+> +static bool uart_carrier_raised(struct tty_port *port)
+>   {
+>   	struct uart_state *state = container_of(port, struct uart_state, port);
+>   	struct uart_port *uport;
+> @@ -1873,15 +1873,14 @@ static int uart_carrier_raised(struct tty_port *port)
+>   	 * continue and not sleep
+>   	 */
+>   	if (WARN_ON(!uport))
+> -		return 1;
+> +		return true;
+>   	spin_lock_irq(&uport->lock);
+>   	uart_enable_ms(uport);
+>   	mctrl = uport->ops->get_mctrl(uport);
+>   	spin_unlock_irq(&uport->lock);
+>   	uart_port_deref(uport);
+> -	if (mctrl & TIOCM_CAR)
+> -		return 1;
+> -	return 0;
+> +
+> +	return mctrl & TIOCM_CAR;
+>   }
+>   
+>   static void uart_dtr_rts(struct tty_port *port, int raise)
+> diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
+> index 81c94906f06e..4ba71ec764f7 100644
+> --- a/drivers/tty/synclink_gt.c
+> +++ b/drivers/tty/synclink_gt.c
+> @@ -3126,7 +3126,7 @@ static int tiocmset(struct tty_struct *tty,
+>   	return 0;
+>   }
+>   
+> -static int carrier_raised(struct tty_port *port)
+> +static bool carrier_raised(struct tty_port *port)
+>   {
+>   	unsigned long flags;
+>   	struct slgt_info *info = container_of(port, struct slgt_info, port);
+> @@ -3134,7 +3134,8 @@ static int carrier_raised(struct tty_port *port)
+>   	spin_lock_irqsave(&info->lock,flags);
+>   	get_gtsignals(info);
+>   	spin_unlock_irqrestore(&info->lock,flags);
+> -	return (info->signals & SerialSignal_DCD) ? 1 : 0;
+> +
+> +	return info->signals & SerialSignal_DCD;
+>   }
+>   
+>   static void dtr_rts(struct tty_port *port, int on)
+> @@ -3162,7 +3163,7 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
+>   	int		retval;
+>   	bool		do_clocal = false;
+>   	unsigned long	flags;
+> -	int		cd;
+> +	bool		cd;
+>   	struct tty_port *port = &info->port;
+>   
+>   	DBGINFO(("%s block_til_ready\n", tty->driver->name));
+> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> index 469de3c010b8..a573c500f95b 100644
+> --- a/drivers/tty/tty_port.c
+> +++ b/drivers/tty/tty_port.c
+> @@ -444,10 +444,10 @@ EXPORT_SYMBOL_GPL(tty_port_tty_wakeup);
+>    * to hide some internal details. This will eventually become entirely
+>    * internal to the tty port.
+>    */
+> -int tty_port_carrier_raised(struct tty_port *port)
+> +bool tty_port_carrier_raised(struct tty_port *port)
+>   {
+>   	if (port->ops->carrier_raised == NULL)
+> -		return 1;
+> +		return true;
+>   	return port->ops->carrier_raised(port);
+>   }
+>   EXPORT_SYMBOL(tty_port_carrier_raised);
+> diff --git a/drivers/usb/serial/ch341.c b/drivers/usb/serial/ch341.c
+> index 6e1b87e67304..792f01a4ed22 100644
+> --- a/drivers/usb/serial/ch341.c
+> +++ b/drivers/usb/serial/ch341.c
+> @@ -413,12 +413,11 @@ static void ch341_port_remove(struct usb_serial_port *port)
+>   	kfree(priv);
+>   }
+>   
+> -static int ch341_carrier_raised(struct usb_serial_port *port)
+> +static bool ch341_carrier_raised(struct usb_serial_port *port)
+>   {
+>   	struct ch341_private *priv = usb_get_serial_port_data(port);
+> -	if (priv->msr & CH341_BIT_DCD)
+> -		return 1;
+> -	return 0;
+> +
+> +	return priv->msr & CH341_BIT_DCD;
+>   }
+>   
+>   static void ch341_dtr_rts(struct usb_serial_port *port, int on)
+> diff --git a/drivers/usb/serial/f81232.c b/drivers/usb/serial/f81232.c
+> index 891fb1fe69df..1a8c2925c26f 100644
+> --- a/drivers/usb/serial/f81232.c
+> +++ b/drivers/usb/serial/f81232.c
+> @@ -774,7 +774,7 @@ static bool f81232_tx_empty(struct usb_serial_port *port)
+>   	return true;
+>   }
+>   
+> -static int f81232_carrier_raised(struct usb_serial_port *port)
+> +static bool f81232_carrier_raised(struct usb_serial_port *port)
+>   {
+>   	u8 msr;
+>   	struct f81232_private *priv = usb_get_serial_port_data(port);
+> @@ -783,9 +783,7 @@ static int f81232_carrier_raised(struct usb_serial_port *port)
+>   	msr = priv->modem_status;
+>   	mutex_unlock(&priv->lock);
+>   
+> -	if (msr & UART_MSR_DCD)
+> -		return 1;
+> -	return 0;
+> +	return msr & UART_MSR_DCD;
+>   }
+>   
+>   static void f81232_get_serial(struct tty_struct *tty, struct serial_struct *ss)
+> diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
+> index 8949c1891164..4cb81746a149 100644
+> --- a/drivers/usb/serial/pl2303.c
+> +++ b/drivers/usb/serial/pl2303.c
+> @@ -1050,14 +1050,11 @@ static int pl2303_tiocmget(struct tty_struct *tty)
+>   	return result;
+>   }
+>   
+> -static int pl2303_carrier_raised(struct usb_serial_port *port)
+> +static bool pl2303_carrier_raised(struct usb_serial_port *port)
+>   {
+>   	struct pl2303_private *priv = usb_get_serial_port_data(port);
+>   
+> -	if (priv->line_status & UART_DCD)
+> -		return 1;
+> -
+> -	return 0;
+> +	return priv->line_status & UART_DCD;
+>   }
+>   
+>   static void pl2303_set_break(struct usb_serial_port *port, bool enable)
+> diff --git a/drivers/usb/serial/spcp8x5.c b/drivers/usb/serial/spcp8x5.c
+> index 09a972a838ee..8175db6c4554 100644
+> --- a/drivers/usb/serial/spcp8x5.c
+> +++ b/drivers/usb/serial/spcp8x5.c
+> @@ -247,16 +247,13 @@ static void spcp8x5_set_work_mode(struct usb_serial_port *port, u16 value,
+>   		dev_err(&port->dev, "failed to set work mode: %d\n", ret);
+>   }
+>   
+> -static int spcp8x5_carrier_raised(struct usb_serial_port *port)
+> +static bool spcp8x5_carrier_raised(struct usb_serial_port *port)
+>   {
+>   	u8 msr;
+>   	int ret;
+>   
+>   	ret = spcp8x5_get_msr(port, &msr);
+> -	if (ret || msr & MSR_STATUS_LINE_DCD)
+> -		return 1;
+> -
+> -	return 0;
+> +	return ret || msr & MSR_STATUS_LINE_DCD;
+>   }
+>   
+>   static void spcp8x5_dtr_rts(struct usb_serial_port *port, int on)
+> diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+> index 164521ee10c6..019720a63fac 100644
+> --- a/drivers/usb/serial/usb-serial.c
+> +++ b/drivers/usb/serial/usb-serial.c
+> @@ -754,7 +754,7 @@ static struct usb_serial_driver *search_serial_device(
+>   	return NULL;
+>   }
+>   
+> -static int serial_port_carrier_raised(struct tty_port *port)
+> +static bool serial_port_carrier_raised(struct tty_port *port)
+>   {
+>   	struct usb_serial_port *p = container_of(port, struct usb_serial_port, port);
+>   	struct usb_serial_driver *drv = p->serial->type;
+> @@ -762,7 +762,7 @@ static int serial_port_carrier_raised(struct tty_port *port)
+>   	if (drv->carrier_raised)
+>   		return drv->carrier_raised(p);
+>   	/* No carrier control - don't block */
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   static void serial_port_dtr_rts(struct tty_port *port, int on)
+> diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+> index fa3c3bdaa234..cf098459cb01 100644
+> --- a/include/linux/tty_port.h
+> +++ b/include/linux/tty_port.h
+> @@ -15,7 +15,7 @@ struct tty_struct;
+>   
+>   /**
+>    * struct tty_port_operations -- operations on tty_port
+> - * @carrier_raised: return 1 if the carrier is raised on @port
+> + * @carrier_raised: return true if the carrier is raised on @port
+>    * @dtr_rts: raise the DTR line if @raise is nonzero, otherwise lower DTR
+>    * @shutdown: called when the last close completes or a hangup finishes IFF the
+>    *	port was initialized. Do not use to free resources. Turn off the device
+> @@ -31,7 +31,7 @@ struct tty_struct;
+>    *	the port itself.
+>    */
+>   struct tty_port_operations {
+> -	int (*carrier_raised)(struct tty_port *port);
+> +	bool (*carrier_raised)(struct tty_port *port);
+>   	void (*dtr_rts)(struct tty_port *port, int raise);
+>   	void (*shutdown)(struct tty_port *port);
+>   	int (*activate)(struct tty_port *port, struct tty_struct *tty);
+> @@ -230,7 +230,7 @@ static inline void tty_port_set_kopened(struct tty_port *port, bool val)
+>   
+>   struct tty_struct *tty_port_tty_get(struct tty_port *port);
+>   void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty);
+> -int tty_port_carrier_raised(struct tty_port *port);
+> +bool tty_port_carrier_raised(struct tty_port *port);
+>   void tty_port_raise_dtr_rts(struct tty_port *port);
+>   void tty_port_lower_dtr_rts(struct tty_port *port);
+>   void tty_port_hangup(struct tty_port *port);
+> diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
+> index f7bfedb740f5..dc7f90522b42 100644
+> --- a/include/linux/usb/serial.h
+> +++ b/include/linux/usb/serial.h
+> @@ -293,7 +293,7 @@ struct usb_serial_driver {
+>   	/* Called by the tty layer for port level work. There may or may not
+>   	   be an attached tty at this point */
+>   	void (*dtr_rts)(struct usb_serial_port *port, int on);
+> -	int  (*carrier_raised)(struct usb_serial_port *port);
+> +	bool (*carrier_raised)(struct usb_serial_port *port);
+>   	/* Called by the usb serial hooks to allow the user to rework the
+>   	   termios state */
+>   	void (*init_termios)(struct tty_struct *tty);
+> diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+> index 8009e0e93216..5697df9d4394 100644
+> --- a/net/bluetooth/rfcomm/tty.c
+> +++ b/net/bluetooth/rfcomm/tty.c
+> @@ -119,7 +119,7 @@ static int rfcomm_dev_activate(struct tty_port *port, struct tty_struct *tty)
+>   }
+>   
+>   /* we block the open until the dlc->state becomes BT_CONNECTED */
+> -static int rfcomm_dev_carrier_raised(struct tty_port *port)
+> +static bool rfcomm_dev_carrier_raised(struct tty_port *port)
+>   {
+>   	struct rfcomm_dev *dev = container_of(port, struct rfcomm_dev, port);
+>   
 
-The warning is indeed triggered because the new root is pfifo rather
-than noop_qdisc. I agree with both points you brought up in the patch.
-When I saw the ternary in qdisc_graft for the rcu_assign_pointer call, I
-was worried about the case when new was defined as a new qdisc rather
-than defaulting to noop_qdisc but assumed there were some guaratees for
-htb.
+-- 
+js
+suse labs
 
-I believe the correct fix for a robust implementation of
-htb_destroy_class_offload would be to not depend on functions that
-retrieve the top level qdisc. However, I see a number of functions, not
-just offload related ones, in the htb implementation that seem to depend
-on the assumption that the old qdisc can safely be accessed with helpers
-such as htb_graft_helper. One such example is htb_change_class. The
-trivial solution I see is to change qdisc_graft to first do a
-rcu_assign_pointer with noop_qdisc, call notify_and_destroy, and only
-afterwards call rcu_assign_pointer with the new qdisc if defined. Let me
-know your thoughts on this.
-
-  [  384.474535] ------------[ cut here ]------------
-  [  384.476685] WARNING: CPU: 2 PID: 1038 at net/sched/sch_htb.c:1561 htb_destroy_class_offload+0x179/0x430 [sch_htb]
-  [  384.481217] Modules linked in: sch_htb sch_ingress xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_umad ib_ipoib ib_cm mlx5_ib ib_uverbs ib_core fuse mlx5_core
-  [  384.487081] CPU: 2 PID: 1038 Comm: tc Not tainted 6.1.0-rc2_for_upstream_min_debug_2022_10_24_15_44 #1
-  [  384.488414] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-  [  384.489987] RIP: 0010:htb_destroy_class_offload+0x179/0x430 [sch_htb]
-  [  384.490937] Code: 2b 04 25 28 00 00 00 0f 85 cb 02 00 00 48 83 c4 48 44 89 f0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 41 f6 45 10 01 0f 85 26 ff ff ff <0f> 0b e9 1f ff ff ff 4d 3b 7e 40 0f 84 d9 fe ff ff 0f 0b e9 d2 fe
-  [  384.493495] RSP: 0018:ffff88815162b840 EFLAGS: 00010246
-  [  384.494358] RAX: 000000000000002a RBX: ffff88810e040000 RCX: 0000000021800002
-  [  384.495461] RDX: 0000000021800000 RSI: 0000000000000246 RDI: ffff88810e0404c0
-  [  384.496581] RBP: ffff888151ea0c00 R08: 0000000100006174 R09: ffffffff82897070
-  [  384.497684] R10: 0000000000000000 R11: 0000000000000002 R12: 0000000000000001
-  [  384.498923] R13: ffff88810b189200 R14: ffff88810b189a00 R15: ffff888110060a00
-  [  384.500044] FS:  00007f7a2e7a3800(0000) GS:ffff88852cc80000(0000) knlGS:0000000000000000
-  [  384.501390] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [  384.502339] CR2: 0000000000487598 CR3: 0000000151f41003 CR4: 0000000000370ea0
-  [  384.503458] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  [  384.504581] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-  [  384.505699] Call Trace:
-  [  384.506231]  <TASK>
-  [  384.506691]  ? tcf_block_put+0x74/0xa0
-  [  384.507365]  htb_destroy+0x142/0x3c0 [sch_htb]
-  [  384.508131]  ? hrtimer_cancel+0x11/0x40
-  [  384.508832]  ? rtnl_is_locked+0x11/0x20
-  [  384.509522]  ? htb_reset+0xe3/0x1a0 [sch_htb]
-  [  384.510293]  qdisc_destroy+0x3b/0xd0
-  [  384.510943]  qdisc_graft+0x40b/0x590
-  [  384.511600]  tc_modify_qdisc+0x577/0x870
-  [  384.512309]  rtnetlink_rcv_msg+0x2a2/0x390
-  [  384.513031]  ? rtnl_calcit.isra.0+0x120/0x120
-  [  384.513806]  netlink_rcv_skb+0x54/0x100
-  [  384.514495]  netlink_unicast+0x1f6/0x2c0
-  [  384.515190]  netlink_sendmsg+0x237/0x490
-  [  384.515890]  sock_sendmsg+0x33/0x40
-  [  384.516556]  ____sys_sendmsg+0x1d1/0x1f0
-  [  384.517265]  ___sys_sendmsg+0x72/0xb0
-  [  384.517942]  ? ___sys_recvmsg+0x7c/0xb0
-  [  384.518631]  __sys_sendmsg+0x51/0x90
-  [  384.519289]  do_syscall_64+0x3d/0x90
-  [  384.519943]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-  [  384.520794] RIP: 0033:0x7f7a2eaccc17
-  [  384.521449] Code: 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
-  [  384.524306] RSP: 002b:00007ffd8c62fe78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-  [  384.525568] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f7a2eaccc17
-  [  384.526703] RDX: 0000000000000000 RSI: 00007ffd8c62fee0 RDI: 0000000000000003
-  [  384.527828] RBP: 0000000063b66264 R08: 0000000000000001 R09: 00007f7a2eb8da40
-  [  384.528962] R10: 0000000000405aeb R11: 0000000000000246 R12: 0000000000000001
-  [  384.530097] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000485400
-  [  384.531221]  </TASK>
-  [  384.531689] ---[ end trace 0000000000000000 ]---
-
->> -       else
->> +       } else {
->> +               old = htb_graft_helper(dev_queue, NULL);
->>                 WARN_ON(old != q);
->> +       }
->>
->>         if (cl->parent) {
->>                 _bstats_update(&cl->parent->bstats_bias,
->> --
->> 2.36.2
->>
