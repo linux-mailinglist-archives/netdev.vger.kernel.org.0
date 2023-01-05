@@ -2,201 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B420E65F78B
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 00:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B7A65F799
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 00:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236372AbjAEXWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 18:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        id S235715AbjAEXe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 18:34:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236302AbjAEXWl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 18:22:41 -0500
-Received: from mx04lb.world4you.com (mx04lb.world4you.com [81.19.149.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9018A69513
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 15:22:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WJaMWSa4X7X7uRKG/j7MwgwxtRKhJgCU9vILHDTbRzs=; b=uKYe6ghhQV/AkLCWRKA7u1ZJ+L
-        q16pBPvsE3pHxQi6DE8+SoZ0FWn7jxmiatml48Fx34IRcpNhL7MT1Rf7YhOQPcE66ZqC5Tr2KrmKZ
-        DLoc3Mi6HjuJgUF38lQEMemQl7nW15lIjbg9Clr8ZW+e3+nJdOQj0gelP5ltp+ipLsfY=;
-Received: from [88.117.53.17] (helo=[10.0.0.160])
-        by mx04lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pDZZA-0008Mm-MQ; Fri, 06 Jan 2023 00:22:32 +0100
-Message-ID: <6d625989-5be4-a780-b4a4-c53e6f219ee8@engleder-embedded.com>
-Date:   Fri, 6 Jan 2023 00:22:32 +0100
+        with ESMTP id S235556AbjAEXe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 18:34:26 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FB66B19E
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 15:34:25 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id n12so28610087pjp.1
+        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 15:34:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mnjMUsNaqsc3bFj0hCnVr+HEVRtXh9lYu5+A3u3k9jE=;
+        b=FhgoiBz//Hq2zlHWEY0GvHC+3EwQsZYrLRlOg/ijq+CY+n7ocXTRyTT2U9n6GaiG1g
+         8tFvFAd2FaUxs01khfZf/3AGBTzAeDSGHFa43YjkF/9b0q1P2rQ9McEnafj4Wh9l93xp
+         rgVYxfKA8NCly3YkJHFHxjVfebbhkhEn8GCdQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mnjMUsNaqsc3bFj0hCnVr+HEVRtXh9lYu5+A3u3k9jE=;
+        b=qXZSidJTWv2gUxifzMeqRalQIVDTOeTkZSTDYvgbIE+P6o3KixObKfRs2xaJYQyRN0
+         PjA1ioPKfxH+tq95EzyridUaSBFRDUjecnHRn6/TeRx9fU7tbisP/SISACuC6bL9ni4I
+         iYUgQLoghxfSBHwTvHY0ow551tHXMF0GdwZYzwKEJUOeWAzeasPCIPFv/tyGPKCvzX8J
+         ztYn/b6xYyNQVJZQYQmxYphPSdmNotTekjsDfxevpY2PCZ7OrqRwag1EEyiIrFyz5Tb9
+         Ey5msH9Y4OPuXP7fyr/i2E0Lg4RbX12Iijgo9ajRDe1lmM1oh3q8vp4d1rt83yfJTaPy
+         EBwA==
+X-Gm-Message-State: AFqh2koqdVCufqSaatLSA4aaTVIqGnri/ypusgmiSgRoSpYx8o1af8dL
+        IAtAPuUpH9yy4Ru0i6mruK4vAQ==
+X-Google-Smtp-Source: AMrXdXsBBxekHc6xo6pHUp9oxWIKd2cWsWBJDt0TtPVkqgfY24rtDvS0KLlN9m3jTju75mh0ew3kKA==
+X-Received: by 2002:a05:6a20:13a6:b0:af:9c75:6699 with SMTP id w38-20020a056a2013a600b000af9c756699mr88571915pzh.1.1672961664564;
+        Thu, 05 Jan 2023 15:34:24 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 72-20020a63064b000000b00477602ff6a8sm22294810pgg.94.2023.01.05.15.34.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Jan 2023 15:34:23 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        kernel test robot <lkp@intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2] ethtool: Replace 0-length array with flexible array
+Date:   Thu,  5 Jan 2023 15:34:21 -0800
+Message-Id: <20230105233420.gonna.036-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v3 9/9] tsnep: Add XDP RX support
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-References: <20230104194132.24637-1-gerhard@engleder-embedded.com>
- <20230104194132.24637-10-gerhard@engleder-embedded.com>
- <b148f80c-fa9a-a663-a723-b8f58de29a24@intel.com>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <b148f80c-fa9a-a663-a723-b8f58de29a24@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2085; h=from:subject:message-id; bh=1iUGLA8kaB3CJRvh3FxMd+ySF+NlZH9NcPM8ecAtiFU=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjt159CzP7YQEWftITKlRz8J/J8bWwOE7S1bgJ1+SZ 82F5dO6JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY7defQAKCRCJcvTf3G3AJm6WEA CAy/JSaB1kXgZoiUaYTmjDoZKr77QATHK2tWv+MhNSKsFmmege3NRhulIiLPLBFNKEA7j4ISCBXB+8 4pVbmSRTi6cv1ofOiUX4gNv0coMncSuSlhsfo7izhdvb1zIpMxp51s0gTh6VZcfqgFI577CfdvsoiT PZDPuGDLxUNw2Vp4Qk7gZufL08RUm43Xc/Cj5OQ/z2QLY6mNCJpIgf8ZtjNjV7yQW9jnW6YcUsX5YL z09J9yCa2tRjXiU/MIEOV2Lb+XsRF6l6mqB/2uXBr/LAoLKcjpVWNmMbQRFSxYPwviIZe9LYCU47S6 gGmJUhElWFFWcF6HPRnmsn2JeyssMKKc+ZcpN6VEsRqT0ziuh0izxDnrSvGmlahxw/Wv0L5m2Wh06b obAQnPLXKx9NxzpoKGeqVS1byQTEShf/xAg9kAGng1FDqNxfXISw9sgXcNj3HodZ+0ou6kpPDHnZPD R6BSKe8B0LFjNF5IU2A2+xFtXRQ3szwtu6HAJ6yOshwJmvQWaLZxwshPWRSJIrTe3zF/tuOveZ+Mic IOBc3N1xkIbFvoYkiiDaOCzKCR02EBCwMXsHLDEupJ/FWDf2DWCYCo8RjjsPdXlyHgyf4McqxG6RO4 /MBIMDGc6f/N5oopHgfNdwNCZmww5/Rh5wqd0ixmQEuOGIHQ4OPTjwCOjGTw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.01.23 18:52, Alexander Lobakin wrote:
-> From: Gerhard Engleder <gerhard@engleder-embedded.com>
-> Date: Wed Jan 04 2023 20:41:32 GMT+0100
-> 
->> If BPF program is set up, then run BPF program for every received frame
->> and execute the selected action.
->>
->> Test results with A53 1.2GHz:
->>
->> XDP_DROP (samples/bpf/xdp1)
->> proto 17:     883878 pkt/s
->>
->> XDP_TX (samples/bpf/xdp2)
->> proto 17:     255693 pkt/s
->>
->> XDP_REDIRECT (samples/bpf/xdpsock)
->>   sock0@eth2:0 rxdrop xdp-drv
->>                     pps            pkts           1.00
->> rx                 855,582        5,404,523
->> tx                 0              0
->>
->> XDP_REDIRECT (samples/bpf/xdp_redirect)
->> eth2->eth1         613,267 rx/s   0 err,drop/s   613,272 xmit/s
->>
->> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
->> ---
->>   drivers/net/ethernet/engleder/tsnep_main.c | 129 ++++++++++++++++++++-
->>   1 file changed, 127 insertions(+), 2 deletions(-)
-> 
-> [...]
-> 
->> @@ -624,6 +628,34 @@ static void tsnep_xdp_xmit_flush(struct tsnep_tx *tx)
->>   	iowrite32(TSNEP_CONTROL_TX_ENABLE, tx->addr + TSNEP_CONTROL);
->>   }
->>   
->> +static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
->> +				struct xdp_buff *xdp)
->> +{
->> +	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
->> +	int cpu = smp_processor_id();
->> +	struct netdev_queue *nq;
->> +	int queue;
-> 
-> Squash with @cpu above (or make @cpu u32)?
+Zero-length arrays are deprecated[1]. Replace struct ethtool_rxnfc's
+"rule_locs" 0-length array with a flexible array. Detected with GCC 13,
+using -fstrict-flex-arrays=3:
 
-Will change to u32.
+net/ethtool/common.c: In function 'ethtool_get_max_rxnfc_channel':
+net/ethtool/common.c:558:55: warning: array subscript i is outside array bounds of '__u32[0]' {aka 'unsigned int[]'} [-Warray-bounds=]
+  558 |                         .fs.location = info->rule_locs[i],
+      |                                        ~~~~~~~~~~~~~~~^~~
+In file included from include/linux/ethtool.h:19,
+                 from include/uapi/linux/ethtool_netlink.h:12,
+                 from include/linux/ethtool_netlink.h:6,
+                 from net/ethtool/common.c:3:
+include/uapi/linux/ethtool.h:1186:41: note: while referencing
+'rule_locs'
+ 1186 |         __u32                           rule_locs[0];
+      |                                         ^~~~~~~~~
 
->> +	bool xmit;
->> +
->> +	if (unlikely(!xdpf))
->> +		return -EFAULT;
->> +
->> +	queue = cpu % adapter->num_tx_queues;
->> +	nq = netdev_get_tx_queue(adapter->netdev, queue);
->> +
->> +	__netif_tx_lock(nq, cpu);
-> 
-> [...]
-> 
->> @@ -788,6 +820,11 @@ static unsigned int tsnep_rx_offset(struct tsnep_rx *rx)
->>   	return TSNEP_SKB_PAD;
->>   }
->>   
->> +static unsigned int tsnep_rx_offset_xdp(void)
->> +{
->> +	return XDP_PACKET_HEADROOM;
->> +}
-> 
-> The reason for creating a function to always return a constant?
+[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
 
-It is a variant of tsnep_rx_offset() for the XDP path to prevent
-unneeded calls of tsnep_xdp_is_enabled(). With this function I
-keep the RX offset local. But yes, it provides actually no
-functionality. I will add a comment.
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: kernel test robot <lkp@intel.com>
+Cc: Oleksij Rempel <linux@rempel-privat.de>
+Cc: Sean Anderson <sean.anderson@seco.com>
+Cc: Alexandru Tachici <alexandru.tachici@analog.com>
+Cc: Amit Cohen <amcohen@nvidia.com>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+v2: resend, this time without missing netdev CC. :)
+---
+ include/uapi/linux/ethtool.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-What about always using XDP_PACKET_HEADROOM as offset in the RX buffer?
-NET_IP_ALIGN would not be considered then, but it is zero anyway on
-the main platforms x86 and arm64. This would simplify the code.
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index 58e587ba0450..9b97b3e0ec1f 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -1183,7 +1183,7 @@ struct ethtool_rxnfc {
+ 		__u32			rule_cnt;
+ 		__u32			rss_context;
+ 	};
+-	__u32				rule_locs[0];
++	__DECLARE_FLEX_ARRAY(__u32,	rule_locs);
+ };
+ 
+ 
+-- 
+2.34.1
 
->> +
->>   static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
->>   {
->>   	struct device *dmadev = rx->adapter->dmadev;
-> 
-> [...]
-> 
->> +static void tsnep_finalize_xdp(struct tsnep_adapter *adapter, int status)
->> +{
->> +	int cpu = smp_processor_id();
->> +	struct netdev_queue *nq;
->> +	int queue;
-> 
-> (same re squashing)
-
-u32.
-
->> +
->> +	if (status & TSNEP_XDP_TX) {
->> +		queue = cpu % adapter->num_tx_queues;
->> +		nq = netdev_get_tx_queue(adapter->netdev, queue);
->> +
->> +		__netif_tx_lock(nq, cpu);
->> +		tsnep_xdp_xmit_flush(&adapter->tx[queue]);
->> +		__netif_tx_unlock(nq);
->> +	}
-> 
-> This can be optimized. Given that one NAPI cycle is always being run on
-> one CPU, you can get both @queue and @nq once at the beginning of a
-> polling cycle and then pass it to perform %XDP_TX and this flush.
-> Alternatively, if you don't want to do that not knowing in advance if
-> you'll need it at all during the cycle, you can obtain them at the first
-> tsnep_xdp_xmit_back() invocation.
-
-I will give it a try.
-
->> +
->> +	if (status & TSNEP_XDP_REDIRECT)
->> +		xdp_do_flush();
->> +}
->> +
->>   static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
->>   				       int length)
->>   {
-> 
-> [...]
-> 
->> @@ -1087,6 +1189,26 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
->>   		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
->>   		desc_available++;
->>   
->> +		if (prog) {
->> +			bool consume;
->> +
->> +			xdp_init_buff(&xdp, PAGE_SIZE, &rx->xdp_rxq);
-> 
-> xdp_init_buff() is designed to be called once per NAPI cycle, at the
-> beginning. You don't need to reinit it given that the values you pass
-> are always the same.
-
-Will be done.
-
-Thanks for the review!
-
-Gerhard
