@@ -2,184 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0BE65E917
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 11:38:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6372465E92A
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 11:43:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbjAEKhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 05:37:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        id S232091AbjAEKn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 05:43:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232298AbjAEKh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 05:37:26 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DA444C4F;
-        Thu,  5 Jan 2023 02:37:22 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id A0BBA8531D;
-        Thu,  5 Jan 2023 11:37:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1672915040;
-        bh=N6yv+vVaCjEH/Vdac9ex4yjrrpuU16UbKkONhTmDbDs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PhSTmdky8PEq2J+EHeqsR8AGUd63hwnvcv5HioA+RxvNMt/D86NEciPzRXHy9biFg
-         eujD8P/NPvLgj8oqweMJyRc4GrnKnQfSFwIKiyf/u1aLPqKQQdw+1yAOqS41mk1UU1
-         qE52rNtXNGJlGbhPBt9A1P6vVlNy+s0NrorVCZ83NNN6/36kHyi3eP1hRo27ewrMb1
-         D2F7xGigKvNFugRctEbJfYCPTerdlfmwraigjZN8b8LaR7lFBv4tJmVm3m/i0Cn49m
-         I0iZ3yvtjQ8xn1+BwsOEdR6tD+lhYFHBFusxDS1SF2kkODr+78nE+CAN6qv3u3Y1BD
-         qg8jHd5Hy5IbA==
-Date:   Thu, 5 Jan 2023 11:37:12 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S231453AbjAEKnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 05:43:23 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE84395E2;
+        Thu,  5 Jan 2023 02:43:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1672915401; x=1704451401;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=D09wia/xBIh5VPDEISOZsQ1nVpd1S2d7Q+SDHIXy+OU=;
+  b=DTcinu5dXraAtwKpje0KKhTnOeVg/Z1/A47l/+T7Tt9usKSsiQmG5/pi
+   SJ9Pi5Dno/NuPeioEU4CjkgDBBGcVwZiqnyQ7ndoZNDQ2tPllSBrfrS7v
+   hWxFMg6xcWurWGWnUInGq8cs+iKsAGzKvz12YzeyKd50fnkUnXWmJJsig
+   1+EZElyv4HQZPC7k+KlWnz2IB0cCiJFYtPFBHhKUgcPYFNyqr1kBD0zgl
+   WH2dv2k681itZfdTPppF0/hf/cJg9HbaMfKGZAg7XanggmGkC5YIynhhH
+   UrhMes/fCVCtem2lC2X/Unpkj0fZrN1WepdM+RO3J/6neEqxbylZbI1IT
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
+   d="scan'208";a="206513514"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jan 2023 03:43:21 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 5 Jan 2023 03:43:20 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Thu, 5 Jan 2023 03:43:17 -0700
+Message-ID: <7fa8ea30beffcb9256422f7a474a8be7d5791f5a.camel@microchip.com>
+Subject: Re: [PATCH net-next 2/8] net: microchip: sparx5: Reset VCAP counter
+ for new rules
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Dan Carpenter <error27@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230105113712.2bf0d37b@wsk>
-In-Reply-To: <20230103100251.08a5db46@wsk>
-References: <20230102150209.985419-1-lukma@denx.de>
-        <Y7M+mWMU+DJPYubp@lunn.ch>
-        <20230103100251.08a5db46@wsk>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        "Russell King" <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Daniel Machon" <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Date:   Thu, 5 Jan 2023 11:43:17 +0100
+In-Reply-To: <Y7aT8xGOCfvC/U0a@kadam>
+References: <20230105081335.1261636-1-steen.hegelund@microchip.com>
+         <20230105081335.1261636-3-steen.hegelund@microchip.com>
+         <Y7aT8xGOCfvC/U0a@kadam>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.2 
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/6ww_7R43XAgS8UoX0pNf3AM";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/6ww_7R43XAgS8UoX0pNf3AM
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Dan,
 
-Hi Andrew, Alexander,
-
-> Hi Andrew,
+On Thu, 2023-01-05 at 12:10 +0300, Dan Carpenter wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
 >=20
-> > > @@ -3548,7 +3548,9 @@ static int mv88e6xxx_get_max_mtu(struct
-> > > dsa_switch *ds, int port) if
-> > > (chip->info->ops->port_set_jumbo_size) return 10240 -
-> > > VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; else if
-> > > (chip->info->ops->set_max_frame_size)
-> > > -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN -
-> > > ETH_FCS_LEN;
-> > > +		return (max_t(int, chip->info->max_frame_size,
-> > > 1632)
-> > > +			- VLAN_ETH_HLEN - EDSA_HLEN -
-> > > ETH_FCS_LEN); +
-> > >  	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> > > =20
+> On Thu, Jan 05, 2023 at 09:13:29AM +0100, Steen Hegelund wrote:
+> > When a rule counter is external to the VCAP such as the Sparx5 IS2 coun=
+ters
+> > are, then this counter must be reset when a new rule is created.
 > >=20
-> > I would also prefer if all this if/else logic is removed, and the
-> > code simply returned chip->info->max_frame_size - VLAN_ETH_HLEN -
-> > EDSA_HLEN - ETH_FCS_LEN;
-> >  =20
->=20
-> So then the mv88e6xxx_get_max_mtu shall look like:
->=20
-> WARN_ON_ONCE(!chip->info->max_frame_size)
->=20
-> if (chip->info->ops->port_set_jumbo_size)
-> ...
-> else=20
->     return chip->info->max_frame_size - VLAN_ETH_HLEN -
-> 	EDSA_HLEN - ETH_FCS_LEN;
->=20
->=20
-> Or shall I put WARN_ON_ONCE to the mv88e6xxx_probe() function?
->=20
->=20
-> The above approach is contrary to one proposed by Alexander, who
-> wanted to improve the defensive approach in this driver (to avoid
-> situation where the max_frame_size callback is not defined and
-> max_frame_size member of *_info struct is not added by developer).
->=20
-> Which approach is the recommended one for this driver?
-
-Is there any decision regarding the preferred approach to rewrite this
-code?
-
->=20
-> > > +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-> > > @@ -132,6 +132,7 @@ struct mv88e6xxx_info {
-> > >  	unsigned int num_gpio;
-> > >  	unsigned int max_vid;
-> > >  	unsigned int max_sid;
-> > > +	unsigned int max_frame_size;   =20
+> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> > ---
+> > =C2=A0drivers/net/ethernet/microchip/vcap/vcap_api.c=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 | 3 +++
+> > =C2=A0drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c | 4 ++--
+> > =C2=A02 files changed, 5 insertions(+), 2 deletions(-)
 > >=20
-> > It might be worth adding a comment here what this value actually
-> > represents. =20
->=20
-> Ok. I will add proper comment.
->=20
-> > We don't want any mixups where the value already has the
-> > frame checksum removed for example. =20
->=20
-> Could you be more specific here about this use case?
->=20
-> The max_frame_size is the maximal size of the ethernet frame for which
-> the IC designer provided specified amount of RAM (it is a different
-> value for different SoCs in the Link Street family).
->=20
+> > diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > index b9b6432f4094..67e0a3d9103a 100644
+> > --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > @@ -1808,6 +1808,7 @@ int vcap_add_rule(struct vcap_rule *rule)
+> > =C2=A0{
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct vcap_rule_internal *ri =3D to_int=
+rule(rule);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct vcap_rule_move move =3D {0};
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 struct vcap_counter ctr =3D {0};
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int ret;
 > >=20
-> >       Andrew =20
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D vcap_api_check(ri->vctrl);
+> > @@ -1833,6 +1834,8 @@ int vcap_add_rule(struct vcap_rule *rule)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D vcap_write_rule(ri);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 pr_err("%s:%d: rule write error: %d\n", __func__, __LINE__,
+> > ret);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 /* Set the counter to zero */
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D vcap_write_counter(ri, &ctr);
+> > =C2=A0out:
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mutex_unlock(&ri->admin->lock);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
 >=20
+> I feel like you intended to send a v2 series but accidentally resent
+> the v1 series.=C2=A0 Otherwise I guess I have the same question as before=
+.
+
+This series was first sent to net, but the response was that I should go in=
+to
+net-next instead, so it is really a first version in net-next.
+
+What was your question?  I was not able to find it...
+
+BR
+Steen
+
 >=20
-> Best regards,
+> regards,
+> dan carpenter
 >=20
-> Lukasz Majewski
->=20
-> --
->=20
-> DENX Software Engineering GmbH,      Managing Director: Erika Unter
-> HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-> Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email:
-> lukma@denx.de
 
-
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/6ww_7R43XAgS8UoX0pNf3AM
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmO2qFgACgkQAR8vZIA0
-zr1r9wgAys1TrWSHvZUhjo0hrnAaM6SRfe7OiUa9FMrGJeQvyJ9CwoN0iU6NcdHd
-PeNmg3VZ5mF9M32g+GbMjgMQLlHXiq7jc0qXpKUGxDhw6oO98z9knkuIor9IfNKm
-sP2cjb/8hWMh+YjLR7h2Olj98QnkMGnbG6U7o4vfKzdcvpENxptzi0LxCELD/P2E
-SUXg1L4US1ur7KSkNGT1M9FBXhGefTU38Knj2baKcVbfI6Q8z5t4GGUippqAyHhv
-rn36AexE3cg+0Kp1byPzn+/atox4Pj1IbMutKVFxaYiUxt8fHhBt734MSyhZ4w9v
-wyyfrK6mB08heO3nVnmYqOfV3A9vrQ==
-=dqKk
------END PGP SIGNATURE-----
-
---Sig_/6ww_7R43XAgS8UoX0pNf3AM--
