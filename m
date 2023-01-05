@@ -2,130 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AC065F042
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 16:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BE165F04B
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 16:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232073AbjAEPkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 10:40:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59690 "EHLO
+        id S234385AbjAEPmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 10:42:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234503AbjAEPkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 10:40:06 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC43F33D60
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 07:40:03 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id 36so24731798pgp.10
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 07:40:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=s/qJ85LB6yXZxVKFmB2K/KRhKzUWYMc3G3shHEn4BJ8=;
-        b=5fYaMV3yDX1tYR6PGiQS9T2UOhQLmyt/91i3WwotWyAT8sfMFnr83nWsufbhP9OOyI
-         m4hz45xFjybxFgrpv/vsrR+YD7V9Xk+ppb3hJ9+TCwTaTE2UEUBhJB4WhYgzXTCoIqx1
-         L9dBblSlLQdN1cZZ5jd+zJsFWqAb2fg59c63WZs7QaQsvSvfw1s7EMekfCXCMCmWoyxN
-         eCNwwtrFDyWX+TzGagAdNS7QVicSv6MSROSPaAneV7bxplUdNnmIzE+56FdzbYtUm5bB
-         BQtfJbY7o6cDtSnH6hONTxoNPud7zfN3vdCyPN1sxpajp8OgiEFGY9oXKqM+vyGr++8/
-         pRUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=s/qJ85LB6yXZxVKFmB2K/KRhKzUWYMc3G3shHEn4BJ8=;
-        b=uNDDLnh/KD0paw7OcNVfOOKLb+PrW4j6gUZvl1YMqAm79vDp6uoP3AMscdXdxHK/P2
-         qPvwbjDMC53Z6HsQjACZrimUhtLm5HkOg59jOP12cGKWE6X3kK2fZljCvTDeDnArK2Dk
-         8D5vyNAFxOqLtG1ttvrcdY5lFzHP2QAboDk6I+lsHC5tEjBke3SIopKnKn3CGJiBP+ST
-         RWNeGybsXHPamYjobomXjUMUk0AYy9CJXX6HeL1JgSbiB7y1cvexFg4kuT+VDvSkM95Z
-         HKW30+pX8WxVmCjRa2RVptiTR7zXHZCo7RLKI+Pis2mlxe/6SqzcMyQM8DNd5YaGR6RD
-         sD3A==
-X-Gm-Message-State: AFqh2krRehSsw+i6y+fxj59+NMx6ZD5ieA1TxOrHeoXvi5FLvgXJK06G
-        xbNoCk8lyLye4lkZ1Y4n+nHmL+Lnc/RY9ENG/5JUIXWy
-X-Google-Smtp-Source: AMrXdXsAxsWvX0POS+FjEX4pICnB5Jyn5kJAvOWNyYCb817hAo0anS5n/FvzvRjIbV/ve0WCnn959Q==
-X-Received: by 2002:a62:198a:0:b0:577:d10d:6eab with SMTP id 132-20020a62198a000000b00577d10d6eabmr51840475pfz.21.1672933203331;
-        Thu, 05 Jan 2023 07:40:03 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id x5-20020a626305000000b005815017d348sm19012860pfb.179.2023.01.05.07.40.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 07:40:02 -0800 (PST)
-Date:   Thu, 5 Jan 2023 16:39:59 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Raed Salem <raeds@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "atenart@kernel.org" <atenart@kernel.org>
-Subject: Re: [PATCH net-next 0/2] Add support to offload macsec using netlink
- update
-Message-ID: <Y7bvT4myLYsSCjHl@nanopsycho>
-References: <20230105080442.17873-1-ehakim@nvidia.com>
- <Y7bY+oYkMojpMCJU@nanopsycho>
- <IA1PR12MB6353778987E1DBFA4B3489D2ABFA9@IA1PR12MB6353.namprd12.prod.outlook.com>
+        with ESMTP id S232700AbjAEPmM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 10:42:12 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269974E415
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 07:42:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672933332; x=1704469332;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tIxYioqwMOstAQNqkA3XAWOBkxP7oLKSkPGqOp3UQBI=;
+  b=gpwtq5CSyi/u14TukSECM/PDZ5F4ezZPPuhpN9MrIgJA8PJrDR/Uy5ky
+   bM0N+BHapAF4glpImnWfpqrz+u8koCrIbdpP/c4FFYM/DpK9ITZc3TwWl
+   TmIAABT2NjW4kTennRuljOp280IbdzwKUQ5H7ub/tgZ0jeGepqEKDzkpr
+   1NxsvLH03BIVUzrgzT22f5w+QKUv5tnwJJtw0hC87oLzBekyJvBINqptK
+   uOuYcwBxlRe1x+AFTRrSHTnYYERQBLV/E2d78UtDq8PtmhV/QVtc1HJ//
+   4gEGMcvmKtKVxOyz36HZd9zAyH8vlmXJQwROEmkuJXn4nD+Kb7sZFg+2d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="302602265"
+X-IronPort-AV: E=Sophos;i="5.96,303,1665471600"; 
+   d="scan'208";a="302602265"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2023 07:42:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="779670088"
+X-IronPort-AV: E=Sophos;i="5.96,303,1665471600"; 
+   d="scan'208";a="779670088"
+Received: from bswcg005.iind.intel.com ([10.224.174.136])
+  by orsmga004.jf.intel.com with ESMTP; 05 Jan 2023 07:42:03 -0800
+From:   m.chetan.kumar@linux.intel.com
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
+        m.chetan.kumar@linux.intel.com
+Subject: [PATCH v2 net-next 0/5] net: wwan: t7xx: fw flashing & coredump support
+Date:   Thu,  5 Jan 2023 21:11:49 +0530
+Message-Id: <20230105154149.198813-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <IA1PR12MB6353778987E1DBFA4B3489D2ABFA9@IA1PR12MB6353.namprd12.prod.outlook.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 05, 2023 at 04:02:06PM CET, ehakim@nvidia.com wrote:
->
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Thursday, 5 January 2023 16:05
->> To: Emeel Hakim <ehakim@nvidia.com>
->> Cc: netdev@vger.kernel.org; Raed Salem <raeds@nvidia.com>;
->> davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
->> pabeni@redhat.com; sd@queasysnail.net; atenart@kernel.org
->> Subject: Re: [PATCH net-next 0/2] Add support to offload macsec using netlink
->> update
->> 
->> External email: Use caution opening links or attachments
->> 
->> 
->> The whole patchset emails, including all patches and coverletter should be marked
->> with the same version number.
->
->Ack, wanted to make it clear that this is being sent for the first time, also 
->do I leave the change log of non-changed patches empty?
+From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
-If you don't change a patch in between the versions, you can either omit
-the "vx->vy:" entry or you say "no change" there.
+This patch series brings-in the support for FM350 wwan device firmware
+flashing & coredump collection using devlink interface.
 
->should I resend the patches?
+Below is the high level description of individual patches.
+Refer to individual patch commit message for details.
 
-Yes.
+PATCH1:  Enables AP CLDMA communication for firmware flashing &
+coredump collection.
 
-> 
->>
->> Thu, Jan 05, 2023 at 09:04:40AM CET, ehakim@nvidia.com wrote:
->> >From: Emeel Hakim <ehakim@nvidia.com>
->> >
->> >This series adds support for offloading macsec as part of the netlink
->> >update routine , command example:
->> >ip link set link eth2 macsec0 type macsec offload mac
->> >
->> >The above is done using the IFLA_MACSEC_OFFLOAD attribute hence the
->> >second patch of dumping this attribute as part of the macsec dump.
->> >
->> >Emeel Hakim (2):
->> >  macsec: add support for IFLA_MACSEC_OFFLOAD in macsec_changelink
->> >  macsec: dump IFLA_MACSEC_OFFLOAD attribute as part of macsec dump
->> >
->> > drivers/net/macsec.c | 127 ++++++++++++++++++++++---------------------
->> > 1 file changed, 66 insertions(+), 61 deletions(-)
->> >
->> >--
->> >2.21.3
->> >
+PATCH2: Enables the infrastructure & queue configuration required
+for early ports enumeration.
+
+PATCH3: Implements device reset and rescan logic required to enter
+or exit fastboot mode.
+
+PATCH4: Implements devlink interface & uses the fastboot protocol for
+fw flashing and coredump collection.
+
+PATCH5: t7xx devlink commands documentation.
+
+Haijun Liu (1):
+  net: wwan: t7xx: Add AP CLDMA
+
+M Chetan Kumar (4):
+  net: wwan: t7xx: Infrastructure for early port configuration
+  net: wwan: t7xx: PCIe reset rescan
+  net: wwan: t7xx: Enable devlink based fw flashing and coredump
+    collection
+  net: wwan: t7xx: Devlink documentation
+
+ Documentation/networking/devlink/index.rst |   1 +
+ Documentation/networking/devlink/t7xx.rst  | 161 +++++
+ drivers/net/wwan/Kconfig                   |   1 +
+ drivers/net/wwan/t7xx/Makefile             |   5 +-
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c     |  64 +-
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.h     |  20 +-
+ drivers/net/wwan/t7xx/t7xx_mhccif.h        |   1 +
+ drivers/net/wwan/t7xx/t7xx_modem_ops.c     |  81 ++-
+ drivers/net/wwan/t7xx/t7xx_modem_ops.h     |   2 +
+ drivers/net/wwan/t7xx/t7xx_pci.c           |  72 ++-
+ drivers/net/wwan/t7xx/t7xx_pci.h           |   2 +
+ drivers/net/wwan/t7xx/t7xx_pci_rescan.c    |  96 +++
+ drivers/net/wwan/t7xx/t7xx_pci_rescan.h    |  28 +
+ drivers/net/wwan/t7xx/t7xx_port.h          |  12 +-
+ drivers/net/wwan/t7xx/t7xx_port_ap_msg.c   |  78 +++
+ drivers/net/wwan/t7xx/t7xx_port_ap_msg.h   |  11 +
+ drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c |   8 +-
+ drivers/net/wwan/t7xx/t7xx_port_devlink.c  | 665 +++++++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_port_devlink.h  |  86 +++
+ drivers/net/wwan/t7xx/t7xx_port_proxy.c    | 135 ++++-
+ drivers/net/wwan/t7xx/t7xx_port_proxy.h    |  16 +-
+ drivers/net/wwan/t7xx/t7xx_port_wwan.c     |  25 +-
+ drivers/net/wwan/t7xx/t7xx_reg.h           |  32 +-
+ drivers/net/wwan/t7xx/t7xx_state_monitor.c | 134 ++++-
+ drivers/net/wwan/t7xx/t7xx_state_monitor.h |   3 +
+ 25 files changed, 1634 insertions(+), 105 deletions(-)
+ create mode 100644 Documentation/networking/devlink/t7xx.rst
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ap_msg.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ap_msg.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_devlink.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_devlink.h
+
+--
+2.34.1
+
