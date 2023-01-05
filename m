@@ -2,83 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 442FA65E4DC
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 05:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B2565E4DF
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 05:52:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbjAEEv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 23:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S230155AbjAEEw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 23:52:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbjAEEvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 23:51:25 -0500
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD6B42627
-        for <netdev@vger.kernel.org>; Wed,  4 Jan 2023 20:51:24 -0800 (PST)
-Received: by mail-io1-f69.google.com with SMTP id y23-20020a056602201700b006e408c1d2a1so948599iod.1
-        for <netdev@vger.kernel.org>; Wed, 04 Jan 2023 20:51:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4YZEILdTxalOjZrpjdXjI7ZuleQOS64DZ4zEKFOzr5o=;
-        b=6Qs1wTjVrBgJtmSHhfEjhs2Y4Em86PyXc14c3cMLvRH0zQlBZ9PvYgOKCXtySXaK0J
-         kiupvJHiXQKKw9YC8+BTdV7zEF+N9YKODTLR1T6yTfEpk3yFJNA9w32skf9A5JPGyJo/
-         QjL76MafV+rbKlXg4xSfj7Wl0BLkFoHXhcF8cfa8JkHaogPBLAZJxLBFtPxwLdPspPzD
-         ScnDoC8WeAiDW8VR9pR27iyfIpKN2MdwpJncwePAiuvfKi03X5aVqIDGvw0DbnJXh5F2
-         59HuZFweYpXbryHq2SquKOmHDpy0VDBcEt/JpBIgYeDA6gwasbVdSHnujzMkG5CDYNci
-         BHHg==
-X-Gm-Message-State: AFqh2kr8znQr3+qb1dzgf8ec4uXOMNitj3otgKh3gxVVSekWlB3PweTy
-        55ml2n28NDRuQTMbYZu/a/ChQI4Ycp3HLPNjzYWnpXIz1VbB
-X-Google-Smtp-Source: AMrXdXsA2/fwxzkS+chSk6tRfeEYR+OaBNLy0ars3ue5dz/qLr9krjaHhy3jiDZPpgMyhZYdMcDoisRGOSiheRStM51vm0f5jLCS
+        with ESMTP id S230225AbjAEEws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 23:52:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CC751310;
+        Wed,  4 Jan 2023 20:52:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D477E6149B;
+        Thu,  5 Jan 2023 04:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E62A4C433EF;
+        Thu,  5 Jan 2023 04:52:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672894358;
+        bh=h+Zt8kl9f/QMFlD2IOoAtcRssR1q5VE8RGSwXgCHpvw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r0ZQFVETsdq8x0PXZDJRzaw1GDfX1BSMEt8kqexXOy2fqKnc5s+2Qldytn41UjZQ2
+         +DYH7Xw/2trq76T5X6gXuSGtxZYk0jNBmsVXgrjaVGj8fUi21CqMWiPVZZJhHFoyNS
+         pMyP3ruZ914D5nEB6MeGNKFY3I9WgmsfFBZpuZw/mi6EuAO28foz2oGkp8ldH0EzBl
+         ZqHzjsy8CgQ2MGLmyk4rAFzvwGZCXk93+nFoUdZG72TREra3m5sS4Vml9Tg6scM8tl
+         uzNOAzCzVWgzhiqGuCN27teaWTQZDwUc1CUZoWeOAtPfrcu5IY6NrtgCOiTZSSU+gj
+         tcOs88ATVhDmA==
+Date:   Wed, 4 Jan 2023 20:52:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] ezchip: Remove some redundant clean-up
+ functions
+Message-ID: <20230104205236.3c0f90de@kernel.org>
+In-Reply-To: <43e9d047a036cd8a84aad8e9fffdfdcb17a1cf2a.1672865629.git.christophe.jaillet@wanadoo.fr>
+References: <cover.1672865629.git.christophe.jaillet@wanadoo.fr>
+        <43e9d047a036cd8a84aad8e9fffdfdcb17a1cf2a.1672865629.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9758:0:b0:6e3:b9b:f145 with SMTP id
- c24-20020a5d9758000000b006e30b9bf145mr3841571ioo.117.1672894283916; Wed, 04
- Jan 2023 20:51:23 -0800 (PST)
-Date:   Wed, 04 Jan 2023 20:51:23 -0800
-In-Reply-To: <0000000000003a68dc05f164fd69@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008a2d5305f17d0dbe@google.com>
-Subject: Re: [syzbot] kernel BUG in vhost_vsock_handle_tx_kick
-From:   syzbot <syzbot+30b72abaa17c07fe39dd@syzkaller.appspotmail.com>
-To:     bobby.eshleman@bytedance.com, bobby.eshleman@gmail.com,
-        bobbyeshleman@gmail.com, cong.wang@bytedance.com, deshantm@xen.org,
-        jasowang@redhat.com, jiang.wang@bytedance.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, oxffffaa@gmail.com, pabeni@redhat.com,
-        sgarzare@redhat.com, stefanha@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Wed,  4 Jan 2023 22:05:32 +0100 Christophe JAILLET wrote:
+> @@ -640,7 +639,6 @@ static s32 nps_enet_remove(struct platform_device *pdev)
+>  	struct nps_enet_priv *priv = netdev_priv(ndev);
+>  
+>  	unregister_netdev(ndev);
+> -	netif_napi_del(&priv->napi);
+>  	free_netdev(ndev);
 
-commit b68396fad17ff7fae3bb5b594d703f7195caebb9
-Author: Bobby Eshleman <bobby.eshleman@bytedance.com>
-Date:   Thu Dec 15 04:36:44 2022 +0000
-
-    virtio/vsock: replace virtio_vsock_pkt with sk_buff
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132ece3a480000
-start commit:   c76083fac3ba Add linux-next specific files for 20221226
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10aece3a480000
-console output: https://syzkaller.appspot.com/x/log.txt?x=172ece3a480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c217c755f1884ab6
-dashboard link: https://syzkaller.appspot.com/bug?extid=30b72abaa17c07fe39dd
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14fc414c480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1604b20a480000
-
-Reported-by: syzbot+30b72abaa17c07fe39dd@syzkaller.appspotmail.com
-Fixes: b68396fad17f ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+This adds an unused variable warning, which is fixed by the next patch.
+Could you remove the @priv variable here already?
