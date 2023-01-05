@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B1065E26B
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 02:17:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6A465E274
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 02:22:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230227AbjAEBRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Jan 2023 20:17:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
+        id S230367AbjAEBWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Jan 2023 20:22:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbjAEBRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 20:17:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D9133D6F;
-        Wed,  4 Jan 2023 17:17:37 -0800 (PST)
+        with ESMTP id S229535AbjAEBWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Jan 2023 20:22:47 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B442F783;
+        Wed,  4 Jan 2023 17:22:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FFA2B818F2;
-        Thu,  5 Jan 2023 01:17:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD336C433D2;
-        Thu,  5 Jan 2023 01:17:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EAA38CE193C;
+        Thu,  5 Jan 2023 01:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 08456C433EF;
+        Thu,  5 Jan 2023 01:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672881454;
-        bh=ZThWZLGnE1uBHhW+ZPEz4zsyBO1cinSai+TYFDqiNKE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HhmNSmtaFYtMpL+KciBrmZKHAcW0h26OcLTrQuvdSLw8aVo19W5sGjIrekJiXuX0p
-         G5UhvbqZmxt8dKISeF4skF9nt2HzXGoM1xu5glo8OB2fjxbZM9u6v28nV0edbsUug9
-         VmVbHPvIsgbGxp73fCPGPpHQ/HNXYUxizqDV1054rrRIjp3gGMl751NCEob5DjxO/Y
-         8phSvt+uUIfyIFRVW7RadI5XEUqAf2gHDt3aJwn+PD/gxBp/5acpvseF/UB1DDnggM
-         SQsuw64DB6CaM1/0ISwYZmg+42m54Y7xLMq9qXvDaFIIwZpVJApJ6cas18qdkkYep1
-         oPCed1EJYd7Uw==
-Date:   Wed, 4 Jan 2023 17:17:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, lorenzo.bianconi@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andy Gospodarek <gospo@broadcom.com>, gal@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
-Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
- support xdp multibuffer
-Message-ID: <20230104171733.5fa4638c@kernel.org>
-In-Reply-To: <87bkne32ly.fsf@toke.dk>
-References: <20220621175402.35327-1-gospo@broadcom.com>
-        <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
-        <87k0234pd6.fsf@toke.dk>
-        <20230103172153.58f231ba@kernel.org>
-        <Y7U8aAhdE3TuhtxH@lore-desk>
-        <87bkne32ly.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        s=k20201202; t=1672881763;
+        bh=ExpxEIguBmVK6mxVxd9YEswT2YfPe7zBo9G4esPP838=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=gB2WDuUS6KfnjtiNTPNPRUmG7LTic9mE03cppW5NPP7t0t9t+u0GUaulFtbsBOxF5
+         5XNUk7b41IY8FT4LCmSZ4RXd4Wb2AAJjc46tBcGlaZ9jY7CNjvyVhwo7u5SFa+Lqub
+         l0Evofho7p9aeXb89IXIyVlCwB/+hdM6az/Qdsx81px8S6ON12J+VwJSWK6RzIvQq7
+         9bNjQz5Bv8YHpEQNtJoNDD8DAzGWXvU6Q9fcrdoKd3teJuMECR/9VUCJ1IwbroM3yx
+         cLuUFfL9KBkwJawIdgpQSJpSpOObUvt+w+zuTVD5Aq/xf/6OqxDzIzGK/fLar6AZ/H
+         Qwnjxb/zz8D6g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6A2FE57249;
+        Thu,  5 Jan 2023 01:22:42 +0000 (UTC)
+Subject: Re: [GIT PULL v2] virtio,vhost,vdpa: fixes, cleanups
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20230103104946-mutt-send-email-mst@kernel.org>
+References: <20230103104946-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20230103104946-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+X-PR-Tracked-Commit-Id: a26116c1e74028914f281851488546c91cbae57d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 41c03ba9beea760bd2d2ac9250b09a2e192da2dc
+Message-Id: <167288176293.29184.569668467593245088.pr-tracker-bot@kernel.org>
+Date:   Thu, 05 Jan 2023 01:22:42 +0000
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        angus.chen@jaguarmicro.com, colin.i.king@gmail.com,
+        dave@stgolabs.net, dengshaomin@cdjrlc.com, dmitry.fomichev@wdc.com,
+        elic@nvidia.com, eperezma@redhat.com, gautam.dawar@xilinx.com,
+        harshit.m.mogalapalli@oracle.com, jasowang@redhat.com,
+        lulu@redhat.com, mst@redhat.com, pizhenwei@bytedance.com,
+        rafaelmendsr@gmail.com, ricardo.canuelo@collabora.com,
+        ruanjinjie@huawei.com, set_pte_at@outlook.com, sgarzare@redhat.com,
+        shaoqin.huang@intel.com, si-wei.liu@oracle.com,
+        stable@vger.kernel.org, sunnanyong@huawei.com,
+        wangjianli@cdjrlc.com, wangrong68@huawei.com,
+        weiyongjun1@huawei.com, yuancan@huawei.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -68,20 +71,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 04 Jan 2023 13:28:57 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >> Interesting! :) My mental model was closer to GRO by frags=20
-> >> so the linear part would have no data, just headers. =20
-> >
-> > That is assumption as well. =20
->=20
-> Right, okay, so how many headers? Only Ethernet, or all the way up to
-> L4 (TCP/UDP)?
+The pull request you sent on Tue, 3 Jan 2023 10:49:46 -0500:
 
-If we're speaking about guarantees or hard requirements - I think that
-we can only require / guarantee the Ethernet header. Requiring more
-will be defeated by tunnels (i.e. adjust_head() + redirect to a veth).
+> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-> I do seem to recall a discussion around the header/data split for TCP
-> specifically, but I think I mentally put that down as "something people
-> may way to do at some point in the future", which is why it hasn't made
-> it into my own mental model (yet?) :)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/41c03ba9beea760bd2d2ac9250b09a2e192da2dc
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
