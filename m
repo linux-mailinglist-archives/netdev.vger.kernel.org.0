@@ -2,120 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6302665E661
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 09:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB27565E663
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 09:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbjAEIB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 03:01:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S231332AbjAEICE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 03:02:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231192AbjAEIB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 03:01:57 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E38F544FC
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 00:01:55 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1pDLC4-0006Mj-IX; Thu, 05 Jan 2023 09:01:44 +0100
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1pDLC2-0004l2-MY; Thu, 05 Jan 2023 09:01:42 +0100
-Date:   Thu, 5 Jan 2023 09:01:42 +0100
-To:     Bitterblue Smith <rtl8821cerfe2@gmail.com>
-Cc:     Chris Morgan <macroalpha82@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: Re: [RFC PATCH v1 19/19] rtw88: Add support for the SDIO based
- RTL8821CS chipset
-Message-ID: <20230105080142.GA15042@pengutronix.de>
-References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
- <20221227233020.284266-20-martin.blumenstingl@googlemail.com>
- <63b4b3e1.050a0220.791fb.767c@mx.google.com>
- <0acf173d-a425-dcca-ad2f-f0f0f13a9f5e@gmail.com>
+        with ESMTP id S230475AbjAEIB7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 03:01:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8804C17597;
+        Thu,  5 Jan 2023 00:01:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB3C6190B;
+        Thu,  5 Jan 2023 08:01:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB89C433EF;
+        Thu,  5 Jan 2023 08:01:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672905716;
+        bh=w5W3eLaqipVDvJWkR5utJmks9c/6Wu40ITZJrOR/Vtg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ASD4yqvYISTgGKoiCrSfdnp5vYULBiuzLPyd6t5jCwXTnQ0VKRF8Kil9MYFTHwOpw
+         tC0tWgHHo+jinhek8L5B8BpBfaPOoDKQUBsR7T1J5FcI0rtgsiOWE7vYZiY6wQXIWB
+         K86khD8z7k0I7MtDJw+55IvgELxPUYPNizyY8Y5ktddjXO8YSY006TSzq8v5Z8KuAU
+         bO2jmIcp4ZG4Pj/JZeonkcjHS+gs6suQ4drs8NtlKHWVBL5U0MukZJEYzyITrhHLlQ
+         W5qroik6iikA54zX0C4WsIIbMdFiPzC0Yd/MALlee4SG0fWJ6P26U7UigVLCDEIBSq
+         GEX54KZB9ZUvA==
+Date:   Thu, 5 Jan 2023 10:01:52 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] ezchip: Switch to some devm_ function to
+ simplify code
+Message-ID: <Y7aD8F5OuAwaEKjU@unreal>
+References: <cover.1672865629.git.christophe.jaillet@wanadoo.fr>
+ <e1fd0cc1fd865e58af713c92f09251e6180c1636.1672865629.git.christophe.jaillet@wanadoo.fr>
+ <20230104205438.61a7dc20@kernel.org>
+ <94876618-bc7c-dd42-6d41-eda80deb6f1d@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <0acf173d-a425-dcca-ad2f-f0f0f13a9f5e@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-From:   Sascha Hauer <sha@pengutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <94876618-bc7c-dd42-6d41-eda80deb6f1d@wanadoo.fr>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 09:59:35PM +0200, Bitterblue Smith wrote:
-> On 04/01/2023 01:01, Chris Morgan wrote:
-> > On Wed, Dec 28, 2022 at 12:30:20AM +0100, Martin Blumenstingl wrote:
-> >> Wire up RTL8821CS chipset support using the new rtw88 SDIO HCI code as
-> >> well as the existing RTL8821C chipset code.
-> >>
+On Thu, Jan 05, 2023 at 07:27:00AM +0100, Christophe JAILLET wrote:
+> Le 05/01/2023 à 05:54, Jakub Kicinski a écrit :
+> > On Wed,  4 Jan 2023 22:05:33 +0100 Christophe JAILLET wrote:
+> > > devm_alloc_etherdev() and devm_register_netdev() can be used to simplify
+> > > code.
+> > > 
+> > > Now the error handling path of the probe and the remove function are
+> > > useless and can be removed completely.
 > > 
-> > Unfortunately, this doesn't work for me. I applied it on top of 6.2-rc2
-> > master and I get errors during probe (it appears the firmware never
-> > loads).
+> > Right, but this is very likely a dead driver. Why invest in refactoring?
 > > 
-> > Relevant dmesg logs are as follows:
-> > 
-> > [    0.989545] mmc2: new high speed SDIO card at address 0001
-> > [    0.989993] rtw_8821cs mmc2:0001:1: Firmware version 24.8.0, H2C version 12
-> > [    1.005684] rtw_8821cs mmc2:0001:1: sdio write32 failed (0x14): -110
-> > [    1.005737] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x1080): -110
-> > [    1.005789] rtw_8821cs mmc2:0001:1: sdio write32 failed (0x11080): -110
-> > [    1.005840] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x3): -110
-> > [    1.005920] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x1103): -110
-> > [    1.005998] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x80): -110
-> > [    1.006078] rtw_8821cs mmc2:0001:1: sdio read32 failed (0x1700): -110
-> > 
-> > The error of "sdio read32 failed (0x1700): -110" then repeats several
-> > hundred times, then I get this:
-> > 
-> > [    1.066294] rtw_8821cs mmc2:0001:1: failed to download firmware
-> > [    1.066367] rtw_8821cs mmc2:0001:1: sdio read16 failed (0x80): -110
-> > [    1.066417] rtw_8821cs mmc2:0001:1: sdio read8 failed (0x100): -110
-> > [    1.066697] rtw_8821cs mmc2:0001:1: failed to setup chip efuse info
-> > [    1.066703] rtw_8821cs mmc2:0001:1: failed to setup chip information
-> > [    1.066839] rtw_8821cs: probe of mmc2:0001:1 failed with error -16
-> > 
-> > The hardware I am using is an rtl8821cs that I can confirm was working
-> > with a previous driver.
-> > 
-> > Thank you.
-> > 
-> The USB-based RTL8811CU also doesn't work, with suspiciously similar
-> errors:
 > 
-> Dec 25 21:43:37 home kernel: rtw_8821cu 1-2:1.0: Firmware version 24.11.0, H2C version 12
-> Dec 25 21:43:37 home kernel: rtw_8821cu 1-2:1.0 wlp0s20f0u2: renamed from wlan0
-> Dec 25 21:43:40 home kernel: rtw_8821cu 1-2:1.0: read register 0x5 failed with -110
+> Hi Jakub,
+> 
+> this driver was just randomly picked as an example.
+> 
+> My main point is in the cover letter. I look for feed-back to know if
+> patches like that are welcomed. Only the first, Only the second, Both or
+> None.
+> 
+> 
+> I put it here, slightly rephrased:
+> 
+> 
+> These patches (at least 1 and 2) can be seen as an RFC for net MAINTAINERS,
+> to see if there is any interest in:
+>   - axing useless netif_napi_del() calls, when free_netdev() is called just
+> after. (patch 1)
+>   - simplifying code with axing the error handling path of the probe and the
+> remove function in favor of using devm_ functions (patch 2)
 
-Is this the very first register access or are there other register
-accesses before that actually do work?
+I would say no. In many occasions, the devm_* calls were marked as harmful.
+Latest talk about devm_kzalloc(): https://lpc.events/event/16/contributions/1227/
 
-Sascha
+Thanks
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+> 
+>   or
+> 
+> if it doesn't worth it and would only waste MAINTAINERS' time to review what
+> is in fact only code clean-ups.
+> 
+> 
+> The rational for patch 1 is based on Jakub's comment [1].
+> free_netdev() already cleans up NAPIs (see [2]).
+> 
+> CJ
+> 
+> [1]: https://lore.kernel.org/all/20221221174043.1191996a@kernel.org/
+> [2]: https://elixir.bootlin.com/linux/v6.2-rc1/source/net/core/dev.c#L10710
