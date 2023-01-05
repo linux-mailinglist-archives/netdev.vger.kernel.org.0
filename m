@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC4965F388
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 19:12:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17AEB65F395
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 19:16:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235420AbjAESMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 13:12:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
+        id S232101AbjAESQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 13:16:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234720AbjAESL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 13:11:59 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871A8DFA8;
-        Thu,  5 Jan 2023 10:11:56 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id r26so48683691edc.5;
-        Thu, 05 Jan 2023 10:11:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VaqEalELRRS60fT0pWhc7k/aSgD8gHCORo9MWkR6xC0=;
-        b=odUMUe6smwZCC13YCKCjGqjOp1KIz1/cqilutwBSkQOALe70TzZGxqpkzVGElKS2Q9
-         YihNj9xNJFGMnDJUlFCrCsGayDCbvgUFAfgAXRuApzdgpkhrugKjW4Ee2liVaIO8L9o4
-         aAvVAEWsIW7r+c3jxRwu6VJLJtLLSw12c4C2+BbQ0pu/9wmKqDz4lAo9buflzDlYoIW/
-         cUDkJ2T+89wUaj9C+DwgHbgTUXB2oJDi+Lkevh3495WDivLOqH80BeQMR829KL/WkdP1
-         6cqK/z1iw0ApvatIB0P13CNoOffoJ6jADJmg/icrzO6pZXHSntH7GGEQSEJYvbLcbj2J
-         MrSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VaqEalELRRS60fT0pWhc7k/aSgD8gHCORo9MWkR6xC0=;
-        b=A2ClHnh2PtzOMeIspj50gyQDHuzOzHXEfsJ3N6QrU8u0cQvJrOz9kZPkKI9GnrvaYJ
-         VhDeiA9ZgP7/gr7pGHm+5iS7ZLRJZPh/nF2pRiM0S2nl4hcTweyDB1oNaqcmKb20k/PY
-         3wwRUUoUV7Um0az8gwgf23iM3+rmTf/BCxC7rIX0BQI1ARUtsr/aJJBN9bPn4oacSP6j
-         oYWEhr1GQFhYZLxuueO5Epn6neizKg/ugYJEVr7Ln+9aSud7vaRwuaGk0/wEr8cuvSA4
-         XTtIiFFRJanVq4way42reaAamcGW7vWSv6iuJu0BiOZ6joWjeouyNEz4hz5UCJk2fItS
-         UJDg==
-X-Gm-Message-State: AFqh2kq0KEGsaHTHwKujXL9qnXFnFX6byk0zaPygPZFGUkZZf7hT3vVt
-        hGxeHNzzYYxcZTpWsr5qDd8=
-X-Google-Smtp-Source: AMrXdXtxAtNMZ5WBGXyAkwAAzZjuHx/oadPiev8Al70mmJrPZy95W+uDp+vj+iQxOfZznWc2oBeP+w==
-X-Received: by 2002:a05:6402:d5c:b0:46b:444b:ec40 with SMTP id ec28-20020a0564020d5c00b0046b444bec40mr42447438edb.15.1672942315139;
-        Thu, 05 Jan 2023 10:11:55 -0800 (PST)
-Received: from skbuf ([188.26.184.223])
-        by smtp.gmail.com with ESMTPSA id p15-20020a056402500f00b0047eeaae9558sm16074218eda.60.2023.01.05.10.11.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 10:11:54 -0800 (PST)
-Date:   Thu, 5 Jan 2023 20:11:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Tim Harvey <tharvey@gateworks.com>
-Subject: Re: [PATCH net-next v5 4/4] phy: aquantia: Determine rate adaptation
- support from registers
-Message-ID: <20230105181152.ruzdv3iusvan4mek@skbuf>
-References: <20230103220511.3378316-1-sean.anderson@seco.com>
- <20230103220511.3378316-5-sean.anderson@seco.com>
- <20230105140421.bqd2aed6du5mtxn4@skbuf>
- <6ffe6719-648c-36aa-74be-467c8db40531@seco.com>
- <20230105173445.72rvdt4etvteageq@skbuf>
- <3919acb9-04bb-0ca0-07b9-45e96c4dad10@seco.com>
- <20230105175206.h3nmvccnzml2xa5d@skbuf>
- <20230105175542.ozqn67o3qmadnaph@skbuf>
- <39660d10-69b9-fa52-5a49-67d5f7e1acaf@seco.com>
+        with ESMTP id S229842AbjAESQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 13:16:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603A22672;
+        Thu,  5 Jan 2023 10:16:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F139C61AC9;
+        Thu,  5 Jan 2023 18:16:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A869C433D2;
+        Thu,  5 Jan 2023 18:16:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1672942604;
+        bh=spNqhtecEzPXAesgLew7Qzlo1+T6wWByMbgn+mPFE/k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BQxyw/QwqmefFG99oJIJkSqeYJbbi9n77zfW2iRTIXHZlPVP7BXBtfs8Sh4RTV2a7
+         zkfGObdd7AirnrSsI82jVtFkf9/rGJ8d3YdgDDvW/0Qa5EGsGgfOBRNxJPR0VcvL9m
+         f0z1hu9/7ShKje7XFIMkPuzZx2V+IBNgVrEFmS5jZXmvNccn7v0lKEnwKaaxOMJxW2
+         sT+/uRFGxjHXaaVDrSN6kJvsUQKH8dvfva2t+QjUxrIM7bbcQSaKBEdk+6LoKG2lzs
+         nMyka6+xEMD0RHozi6urGxpJpnrAixepU1qPUrfjYjNuuBjsgrwmL5gU0N2yNt6DFi
+         IqQCQ+pQQTf7Q==
+Date:   Thu, 5 Jan 2023 10:16:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, ast@kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        lorenzo.bianconi@redhat.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>, gal@nvidia.com,
+        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
+Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
+ support xdp multibuffer
+Message-ID: <20230105101642.1a31f278@kernel.org>
+In-Reply-To: <Y7cBfE7GpX04EI97@C02YVCJELVCG.dhcp.broadcom.net>
+References: <20220621175402.35327-1-gospo@broadcom.com>
+        <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
+        <87k0234pd6.fsf@toke.dk>
+        <20230103172153.58f231ba@kernel.org>
+        <Y7U8aAhdE3TuhtxH@lore-desk>
+        <87bkne32ly.fsf@toke.dk>
+        <a12de9d9-c022-3b57-0a15-e22cdae210fa@gmail.com>
+        <871qo90yxr.fsf@toke.dk>
+        <Y7cBfE7GpX04EI97@C02YVCJELVCG.dhcp.broadcom.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <39660d10-69b9-fa52-5a49-67d5f7e1acaf@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 01:03:49PM -0500, Sean Anderson wrote:
-> IMO if we really want to support this, the easier way would be to teach
-> the phy driver how to change the rate adaptation mode. That way we could
-> always advertise rate adaptation, but if someone came along and
-> requested 10HD we could reconfigure the phy to support it. However, this
-> was deemed too risky in the discussion for v1, since we don't really
-> know how the firmware interacts with the registers.
+On Thu, 5 Jan 2023 11:57:32 -0500 Andy Gospodarek wrote:
+> > So my main concern would be that if we "allow" this, the only way to
+> > write an interoperable XDP program will be to use bpf_xdp_load_bytes()
+> > for every packet access. Which will be slower than DPA, so we may end up
+> > inadvertently slowing down all of the XDP ecosystem, because no one is
+> > going to bother with writing two versions of their programs. Whereas if
+> > you can rely on packet headers always being in the linear part, you can
+> > write a lot of the "look at headers and make a decision" type programs
+> > using just DPA, and they'll work for multibuf as well.  
+> 
+> The question I would have is what is really the 'slow down' for
+> bpf_xdp_load_bytes() vs DPA?  I know you and Jesper can tell me how many
+> instructions each use. :)
 
-I think I would prefer not exporting anything rate adaptation related to
-user space, at least until things clean up a little and we're confident
-that we don't need to radically change how it works.
+Until we have an efficient and inlined DPA access to frags an
+unconditional memcpy() of the first 2 cachelines-worth of headers
+in the driver must be faster than a piece-by-piece bpf_xdp_load_bytes()
+onto the stack, right?
+
+> Taking a step back...years ago Dave mentioned wanting to make XDP
+> programs easy to write and it feels like using these accessor APIs would
+> help accomplish that.  If the kernel examples use bpf_xdp_load_bytes()
+> accessors everywhere then that would accomplish that.
+
+I've been pushing for an skb_header_pointer()-like helper but 
+the semantics were not universally loved :)
