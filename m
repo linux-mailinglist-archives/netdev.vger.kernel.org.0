@@ -2,87 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E1265EE7A
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 15:12:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CF5465EEA2
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 15:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234087AbjAEOMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 09:12:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
+        id S233126AbjAEOVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 09:21:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbjAEOL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 09:11:59 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BFA54719
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 06:11:55 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id b12so24580205pgj.6
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 06:11:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JoOKD3fhvjltOz/BKivLTcbhttDC/bdQobavcXcDp9Q=;
-        b=gAzUJJZY5TesWCbvlLm0Nvx5S8CWI/OFNcWGJRSXMa4u88qBLtq5Z57hlmLeVUiUXT
-         Q8qjI/S0cMW9p8VYrieFiq0UGy5hnC86U+wYcFYymtPtgcdR/0SMbf0iXhDaBCaYTWVM
-         6EV941rjN0MvpnXmnAsYcu+KRfPbRLXLKs5RFKov6UP4Z/rLlMqHNZTWzc0GjfGZ98vL
-         7bK6FnyecXCpEKUA/oLqjRvQgzrsb270C9MAuES3bQRVOJIjEaB8QihVyc4pLscEdypU
-         yNTS7dDPW3Idv+LDW+1kKfPZSvzqYRKttpcOuTb5lR7YyW8LbbVVpp2tQm+NbqpazAAB
-         xKIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JoOKD3fhvjltOz/BKivLTcbhttDC/bdQobavcXcDp9Q=;
-        b=dqQ4rKZLhz1wo9vD8JLLMCrhBYLPoQ9Mq5p7Q9Z8p8NY3vVz5oGkWk+P875jVun+kT
-         HWZMCceVozTt5NiWORQeag3QMdFJZ25Gw+k+Rc35YQ9MP/WxJ/WMRrVUJu+ED/CscGFN
-         QeldcO/Jo7DU8s+dqFVGe7RIyrapbHbUAbJYM9HZKO8WlBm0d4QoQC9RgCBvWLg8QhP1
-         md5WoYmeWKcvgjCp+ueizjqtMWF3bYDIDCfMvOBT5GttHV6tv/Pb3mLKxTdcp6uSsCZo
-         qDiUbsyCceQdXB21RKsVij8Qw+zfxxJZoZ4YK3Ph0bbulXTFcMb4EfDn1oXL6cEV2FrJ
-         EYFA==
-X-Gm-Message-State: AFqh2ko8J7WyTqlQQmwW8+LlrimpDuQ3ABmQqLpJ/N3vaeUIUGg3XZgV
-        zTwSNMpZ/Shg2PgITRe0Fes4TA==
-X-Google-Smtp-Source: AMrXdXt6ixVFYcF7JJc/xVT+7SfOpce9UgPPB+H+PfeNMBECoEDdXUIxAj9b40GeUTZxLY9XysPaXQ==
-X-Received: by 2002:a05:6a00:c5:b0:582:6173:c6c5 with SMTP id e5-20020a056a0000c500b005826173c6c5mr18357064pfj.14.1672927914729;
-        Thu, 05 Jan 2023 06:11:54 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id f76-20020a62384f000000b005810a54fdefsm20048453pfa.114.2023.01.05.06.11.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 06:11:54 -0800 (PST)
-Date:   Thu, 5 Jan 2023 15:11:51 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Taku Izumi <izumi.taku@jp.fujitsu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] fjes: Fix an error handling path in
- fjes_probe()
-Message-ID: <Y7bap08pgqs1LL48@nanopsycho>
-References: <a294f5f3af7e29212a27cc7d17503fba346266b5.1672864635.git.christophe.jaillet@wanadoo.fr>
+        with ESMTP id S233087AbjAEOVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 09:21:05 -0500
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFDF44C5E
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 06:21:02 -0800 (PST)
+Received: from pps.filterd (m0050102.ppops.net [127.0.0.1])
+        by m0050102.ppops.net-00190b01. (8.17.1.19/8.17.1.19) with ESMTP id 305AVMgF027091;
+        Thu, 5 Jan 2023 14:21:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=jan2016.eng;
+ bh=v7BX8JNkNPsjMuIfz9r5tihi1hRNVgbLDsrREFV/Xpg=;
+ b=bX65k4m2Tssg1wKBg+2giVtkTX9P1F18w8fGoE0j+OwGwZNbAcNPEG2XYRDZEhKAUYN0
+ emev7SoOAGqh0UW/7P7O2JeFyr9GGQfjZ/AagxojDWNYv6VQYocp0ADguSR8xr+mWU7f
+ f2v/lsyTCZcNPUL9gIQPMFStkTl8pv/N6xelDd3cOweLCnoiykT7G6Z8wL/EyvDozQV5
+ Pul3wEe/K8wmDfFld8aG3olDRGGRBBcTV4Arps+qipth2qLAzxyktkWCZ2uW9SZ7/r78
+ H5gt7rW1M/TKelmGi3F0hBlKmBQrUTrsjtJGE364QaCFmXlV5Gt1rlDhXoOKiib+sMdu 9g== 
+Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
+        by m0050102.ppops.net-00190b01. (PPS) with ESMTPS id 3mtb1r8rrv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Jan 2023 14:21:00 +0000
+Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
+        by prod-mail-ppoint6.akamai.com (8.17.1.19/8.17.1.19) with ESMTP id 305BE4Of012360;
+        Thu, 5 Jan 2023 09:21:00 -0500
+Received: from email.msg.corp.akamai.com ([172.27.91.24])
+        by prod-mail-ppoint6.akamai.com (PPS) with ESMTPS id 3mwwgarkxr-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Jan 2023 09:21:00 -0500
+Received: from bos-lhv018.bos01.corp.akamai.com (172.28.221.201) by
+ usma1ex-dag4mb5.msg.corp.akamai.com (172.27.91.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.20; Thu, 5 Jan 2023 09:20:34 -0500
+From:   Max Tottenham <mtottenh@akamai.com>
+To:     <netdev@vger.kernel.org>
+CC:     <johunt@akamai.com>, <stephen@networkplumber.org>
+Subject: [PATCH iproute2-next] tc: Add JSON output to tc-class 
+Date:   Thu, 5 Jan 2023 09:20:12 -0500
+Message-ID: <20230105142013.243810-1-mtottenh@akamai.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a294f5f3af7e29212a27cc7d17503fba346266b5.1672864635.git.christophe.jaillet@wanadoo.fr>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [172.28.221.201]
+X-ClientProxiedBy: usma1ex-dag4mb6.msg.corp.akamai.com (172.27.91.25) To
+ usma1ex-dag4mb5.msg.corp.akamai.com (172.27.91.24)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-05_05,2023-01-05_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 spamscore=0
+ malwarescore=0 bulkscore=0 mlxlogscore=300 suspectscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2301050113
+X-Proofpoint-ORIG-GUID: qXfPCRFX-4J69sZ4PuoQ5Co6XDhopT9-
+X-Proofpoint-GUID: qXfPCRFX-4J69sZ4PuoQ5Co6XDhopT9-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-05_05,2023-01-05_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 lowpriorityscore=0
+ bulkscore=0 clxscore=1031 suspectscore=0 mlxlogscore=294 mlxscore=0
+ adultscore=0 malwarescore=0 impostorscore=0 priorityscore=1501
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301050113
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 04, 2023 at 09:40:47PM CET, christophe.jaillet@wanadoo.fr wrote:
->free_netdev() already calls netif_napi_del(), no need to call it
->explicitly.
->It's harmless, but useless.
->
->Remove the call, make the  error handling path of the probe and the remove
->function be consistent one with the other.
->
->Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Re-sending my original patch rebased to current main branch. 
+Looks like it got dropped somewhere along the way.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+
