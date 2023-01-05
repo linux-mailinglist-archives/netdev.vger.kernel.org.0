@@ -2,118 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F1AB65F69B
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 23:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D51365F6CA
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 23:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235826AbjAEWVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 17:21:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53066 "EHLO
+        id S236237AbjAEW3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 17:29:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235813AbjAEWVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 17:21:20 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBA26951E
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 14:21:20 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id w203so9768603pfc.12
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 14:21:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+/rwlFIn0hzbcNETA4wyU6wemvJ1Z4GiTdDdXZcLwaY=;
-        b=dkTzAk+1ntj0auXOIzhxwO3g6qxTLW5rcQufexl+8slQLretMtDK9f5HKR4Aliyo39
-         TBXDLPSZZ+cPoJEh5357XW2coZYeq+1e9MNXq7GSKaeRBrIVMhLdSL2gmSWInW2aRur7
-         qX5tn4dbTdyy53FZ/I69t664nI2sKKOffks2Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+/rwlFIn0hzbcNETA4wyU6wemvJ1Z4GiTdDdXZcLwaY=;
-        b=dMKc5vjpQB9OWDXS6VIhEof26mE9OkauhlRvXt+3aNw0n6C+BKczM11pS4FUTxBLCJ
-         QsXX+40MOrkztt8PxOPS17VFVtNXAU9iGRq4xARjrIqaPv2WcMUBk40Zbdxc43I9Hz5s
-         j8PR5DgyZ2GScRPmemGAc2S5fZEP1GxEBow9Q2mx0NeRbdbDGTJP4B+CdLNzJA0zPIf+
-         297dUVCFqKEoRvjZR1ZjTRRP6MZDqZPyh0pFlqb0ujJOr99O2FjsBz68vXeKSwZfcyix
-         IjHIy/ekG048LesbI/qryx0lc0uiUccLQo4f1QIySF/bqQ2XUwUO2kQ/7yxyenyUMPmF
-         jnmw==
-X-Gm-Message-State: AFqh2krnaleo2zEiLNNmplMTK+Xfj1hEC1WirC8ldsRqDxVuDKIo2auo
-        sc1TKht6SYmOvWXTRSXEmKmmOA==
-X-Google-Smtp-Source: AMrXdXvsbcCqthlgFG/jU8xpWagS4JweS/XnATbEg9XOc38bDAosUQDy6Y5JAAFYoWTkfmAnN6dDwA==
-X-Received: by 2002:a62:6d82:0:b0:580:da4d:d42a with SMTP id i124-20020a626d82000000b00580da4dd42amr41325570pfc.14.1672957279547;
-        Thu, 05 Jan 2023 14:21:19 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 68-20020a621947000000b00580e679dcf2sm21861943pfz.157.2023.01.05.14.21.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 14:21:19 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Justin Iurman <justin.iurman@uliege.be>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH] ipv6: ioam: Replace 0-length array with flexible array
-Date:   Thu,  5 Jan 2023 14:21:16 -0800
-Message-Id: <20230105222115.never.661-kees@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S236349AbjAEW3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 17:29:15 -0500
+Received: from mx04lb.world4you.com (mx04lb.world4you.com [81.19.149.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B69AA1ADB6
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 14:28:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7mka5k2l3e2+AD2rtpWSxCiWBKIdLBRyM+3Y4oBVqek=; b=pmmalQKKvPdZwq8Nfv6g3oPb1t
+        TxHW8PSqpDfTppziVr1QpGYfV8f7SU2iHOSo6lyuPNBiSTW6QNLZ+VK4uCzA4F2eofdfsnglClW/N
+        /VCdhN/VSS93MqRztmipfV1QUmTdcbxxFXQvab5KugQ5AEP3cVplRBiWmsgrOkLi6k4k=;
+Received: from [88.117.53.17] (helo=[10.0.0.160])
+        by mx04lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1pDYj3-0006Yo-AO; Thu, 05 Jan 2023 23:28:41 +0100
+Message-ID: <7b61f312-2377-53c2-ff66-cc4f71c124d3@engleder-embedded.com>
+Date:   Thu, 5 Jan 2023 23:28:40 +0100
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1685; h=from:subject:message-id; bh=8PkLlA/lLOXSW+eJB32T+aG9Kn60zUa4hKXC+rzMGLs=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjt01cz7/LecK3nXxfm63JdHDplN1K4Q+y5tGGGSPM pUHKzwGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY7dNXAAKCRCJcvTf3G3AJvCJD/ 9dtKcuau0YnqLh8x7WrForeOZfMnYtRszMXUYKVft4FOrOsQ1BAzfridH4lEFedSI0AKz34hSCQxNI 9pU9cHvUjhC/gCo/ssOAQl9wJJ4HZhUqFWjzKpAHuaHE3e1VRoOJYt6L/RoF0EjE0XlVCLMZ9x1Vqs r+Le39VVbucfueuZyrYi9EzDHAw3zF46MNjMcq+m/FWvq4/n+g79tmQRJqEmUeLr2eHVdXqu+AI39R /t6xkHYShlreOKfsg4+qeySTppv/Go0fNAkVuU6ExrA/f6uWBZUQxb8NhSgRcR7U9RF1O3YydmqOFN cqzv7/8m6aUw9mxIojwCPpM+cn1jvTR13BLgwVYe5m+RW4LxUceL04xi/L1YZEhALEWzDXj+gWxotQ GVhwpNAPpztHLjX8fY0Jdzu3Pk8iAPFfqQkl1YNz89kk2bPNyuCDKjBPyGHzeK4x6GNgbKkQZ68Ilm TroxxrefIN30wEIhaLki1WABr+rZs0neuiRFkMMtfZAkA9PbdO1iIb260Ei+FbNutOcTYx1AZR6v7b Mcm1Dx0wF27u+OS0E6bME4TPp/JN3R6YpcsFNUa37xsXm/z7wfsjF10gPcUaMWTHbKaGIXG4X4Z+dc nPIUp2LUnE7439+DrZRdr9Nc/UhV8/G+2Hu+dkW97XuczBseF8nZVsKhlUvQ==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v3 8/9] tsnep: Add RX queue info for XDP support
+Content-Language: en-US
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Saeed Mahameed <saeed@kernel.org>,
+        netdev@vger.kernel.org
+References: <20230104194132.24637-1-gerhard@engleder-embedded.com>
+ <20230104194132.24637-9-gerhard@engleder-embedded.com>
+ <1dbae52d-6aba-467a-a864-24eeb3f96449@intel.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <1dbae52d-6aba-467a-a864-24eeb3f96449@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero-length arrays are deprecated[1]. Replace struct ioam6_trace_hdr's
-"data" 0-length array with a flexible array. Detected with GCC 13,
-using -fstrict-flex-arrays=3:
+On 05.01.23 18:35, Alexander Lobakin wrote:
+> From: Gerhard Engleder <gerhard@engleder-embedded.com>
+> Date: Wed Jan 04 2023 20:41:31 GMT+0100
+> 
+>> Register xdp_rxq_info with page_pool memory model. This is needed for
+>> XDP buffer handling.
+>>
+>> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+>> Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+>> ---
+>>   drivers/net/ethernet/engleder/tsnep.h      |  6 ++--
+>>   drivers/net/ethernet/engleder/tsnep_main.c | 34 +++++++++++++++++-----
+>>   2 files changed, 31 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
+>> index 0e7fc36a64e1..0210dab90f71 100644
+>> --- a/drivers/net/ethernet/engleder/tsnep.h
+>> +++ b/drivers/net/ethernet/engleder/tsnep.h
+>> @@ -133,17 +133,19 @@ struct tsnep_rx {
+>>   	u32 dropped;
+>>   	u32 multicast;
+>>   	u32 alloc_failed;
+>> +
+>> +	struct xdp_rxq_info xdp_rxq;
+>>   };
+>>   
+>>   struct tsnep_queue {
+>>   	struct tsnep_adapter *adapter;
+>>   	char name[IFNAMSIZ + 9];
+>>   
+>> +	struct napi_struct napi;
+>> +
+>>   	struct tsnep_tx *tx;
+>>   	struct tsnep_rx *rx;
+>>   
+>> -	struct napi_struct napi;
+>> -
+> 
+> I'd leave a word in the commit message that you're moving ::napi to
+> improve structure cacheline span. Or even do that in a separate commit
+> with some pahole output to make it clear why you do that.
 
-net/ipv6/ioam6_iptunnel.c: In function 'ioam6_build_state':
-net/ipv6/ioam6_iptunnel.c:194:37: warning: array subscript <unknown> is outside array bounds of '__u8[0]' {aka 'unsigned char[]'} [-Warray-bounds=]
-  194 |                 tuninfo->traceh.data[trace->remlen * 4] = IPV6_TLV_PADN;
-      |                 ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
-In file included from include/linux/ioam6.h:11,
-                 from net/ipv6/ioam6_iptunnel.c:13:
-include/uapi/linux/ioam6.h:130:17: note: while referencing 'data'
-  130 |         __u8    data[0];
-      |                 ^~~~
+I only reordered based on access order during initialization. But I 
+understand that this not a valid reason. I will remove that reordering.
 
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+>>   	int irq;
+>>   	u32 irq_mask;
+>>   	void __iomem *irq_delay_addr;
+> 
+> [...]
+> 
+>> @@ -1253,6 +1266,7 @@ int tsnep_netdev_open(struct net_device *netdev)
+>>   {
+>>   	struct tsnep_adapter *adapter = netdev_priv(netdev);
+>>   	int i;
+>> +	unsigned int napi_id;
+> 
+> Reverse Christmas Tree variable style is already messed up here, maybe
+> you could fix it inplace while at it or at least not make it worse? :D
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Justin Iurman <justin.iurman@uliege.be>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- include/uapi/linux/ioam6.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I forgot to do that here. Will be fixed.
 
-diff --git a/include/uapi/linux/ioam6.h b/include/uapi/linux/ioam6.h
-index ac4de376f0ce..8f72b24fefb3 100644
---- a/include/uapi/linux/ioam6.h
-+++ b/include/uapi/linux/ioam6.h
-@@ -127,7 +127,7 @@ struct ioam6_trace_hdr {
- #endif
- 
- #define IOAM6_TRACE_DATA_SIZE_MAX 244
--	__u8	data[0];
-+	__u8	data[];
- } __attribute__((packed));
- 
- #endif /* _UAPI_LINUX_IOAM6_H */
--- 
-2.34.1
-
+Gerhard
