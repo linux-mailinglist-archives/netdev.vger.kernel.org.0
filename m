@@ -2,66 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF5A65E9F8
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:34:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA23F65EA13
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:42:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233291AbjAELd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 06:33:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
+        id S231524AbjAELm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 06:42:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233315AbjAELdh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 06:33:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF5011A27;
-        Thu,  5 Jan 2023 03:33:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC122619C9;
-        Thu,  5 Jan 2023 11:33:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE274C433D2;
-        Thu,  5 Jan 2023 11:33:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672918414;
-        bh=GZ/oxElBbGOcTDLAg4QnaapTHh9nj+beO5PtIB3KxK0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=uP45hb1MDd2Xiwn2n/0fQ6fDLt1SWtUHLBBCMAAOZIkwhpui/fNQoma//RC5zOh9s
-         QPTdx0+TOuRGLI3TgIf2P3m7delgJfMr+hgpKmTDozNMBw005PBU9QNTj1Nnonu/RO
-         mqTbUciS8tBHStdLY6MLVfqH3cVX+PeQY/u5pou1Ii8twEET1DdERG8oMlEYPcco7K
-         u+Q1gpRriUiKlZipx4CJwNyk2DL/BjQIHf4ffD16LSpjhwgcqDJbjBziFGvJ/uGHYw
-         WRYhVkDZ7rcovEAHnR4krtEzibu9JWGwqKnuj22DAuYA2T37CmgACn4EG/BhmJFoHt
-         /3HPtklGezGkQ==
-Message-ID: <b55dec4b-4fd5-71fa-4073-b5793cafdee7@kernel.org>
-Date:   Thu, 5 Jan 2023 13:33:26 +0200
+        with ESMTP id S229839AbjAELmY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 06:42:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4CD44C71
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 03:41:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672918896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D6yFSsu1+uJ+W8DhHQe6JdN2idAkDqdvuQjxWUZWOw0=;
+        b=CX4I4piz5arNTsU7v8c9dXkF68LgsrhKnE4YFelr6M31QemcRZMOMXWAbZsgcNXA3WIMye
+        Q77/maAA4a68rm4Th1LOne/GA7/iY7J2JfD5LQf916I/HnRbMr57uYK7LOnzszfqbuv99I
+        CQsjklIJW54bQwZYAqaxyWIhgp4iXaI=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-141-4VeVaU2ROqWDLoRb0NzD8w-1; Thu, 05 Jan 2023 06:41:35 -0500
+X-MC-Unique: 4VeVaU2ROqWDLoRb0NzD8w-1
+Received: by mail-wm1-f71.google.com with SMTP id m38-20020a05600c3b2600b003d1fc5f1f80so890756wms.1
+        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 03:41:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D6yFSsu1+uJ+W8DhHQe6JdN2idAkDqdvuQjxWUZWOw0=;
+        b=47Rj9kUY5i1/H5UkKCOFkKyoATqNx05MZTcgvdur9E6vFjxIYI8KAxyrApDA4Dx8K6
+         rKaID6LqapRodhqMdc5PZdcGLhLzC5VuC76bQfGr+xtCoUe5rXaGiq85m5zExBPTkwFB
+         oxbE5K9Wmes+lJv6jCOjQ3NJtifaobOyMfJzQyOpPaS/b3bqU8xguwAEn174cIvmTWlw
+         hKpPnWUwf2BnMOvHr9WADtARlKjwvV2lt74IzzxXmRcIuON6PTPNiDddVTZp/097xUa6
+         RzdhOWj64gIhZMoEUCy77VsTYtz6sRFF2ZLAhF2fZqCvK8zx9ei430pAojpBLDAi5RS6
+         0yJQ==
+X-Gm-Message-State: AFqh2kpfakx5kGZN9k8yhURnTnahTfrjmb89kaOkNgKNIPM5uWqc5XMW
+        a9VXARjYfaAkJo+VDwHLwPtxIlvTpUBF3g+fIG/uGXe9OzQvejPKfP7bQYrap5RM2hEsL6zm8hr
+        bYYNehVz4/WVSHUQT
+X-Received: by 2002:a05:600c:3b26:b0:3d7:fa4a:681b with SMTP id m38-20020a05600c3b2600b003d7fa4a681bmr38507683wms.0.1672918893929;
+        Thu, 05 Jan 2023 03:41:33 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXubjqYBX+KIYBx9px3snM++K14YlGTcGtyBKFq2fkNxXv2vpxHhyUuVs1GsekH/my2lo7mGlg==
+X-Received: by 2002:a05:600c:3b26:b0:3d7:fa4a:681b with SMTP id m38-20020a05600c3b2600b003d7fa4a681bmr38507675wms.0.1672918893695;
+        Thu, 05 Jan 2023 03:41:33 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-105-31.dyn.eolo.it. [146.241.105.31])
+        by smtp.gmail.com with ESMTPSA id fm14-20020a05600c0c0e00b003d208eb17ecsm2150451wmb.26.2023.01.05.03.41.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Jan 2023 03:41:33 -0800 (PST)
+Message-ID: <0a0932848b04b844d94561c3dc4186b6ae9dbe31.camel@redhat.com>
+Subject: Re: [PATCH] net: nfc: Fix use-after-free in local_cleanup()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
+        krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org
+Cc:     edumazet@google.com, kuba@kernel.org, dokyungs@yonsei.ac.kr,
+        linuxlovemin@yonsei.ac.kr
+Date:   Thu, 05 Jan 2023 12:41:31 +0100
+In-Reply-To: <20230104125738.418427-1-jisoo.jang@yonsei.ac.kr>
+References: <20230104125738.418427-1-jisoo.jang@yonsei.ac.kr>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v3 1/2] dt-bindings: net: Add ICSSG Ethernet Driver
- bindings
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>, Md Danish Anwar <danishanwar@ti.com>
-Cc:     "Andrew F. Davis" <afd@ti.com>, Tero Kristo <t-kristo@ti.com>,
-        Suman Anna <s-anna@ti.com>, YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, nm@ti.com,
-        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20221223110930.1337536-1-danishanwar@ti.com>
- <20221223110930.1337536-2-danishanwar@ti.com> <Y6W7FNzJEHYt6URg@lunn.ch>
- <620ce8e6-2b40-1322-364a-0099a6e2af26@kernel.org> <Y7Mjx8ZEVEcU2mK8@lunn.ch>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <Y7Mjx8ZEVEcU2mK8@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,49 +79,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/01/2023 20:34, Andrew Lunn wrote:
-> On Mon, Jan 02, 2023 at 03:04:19PM +0200, Roger Quadros wrote:
->>
->>
->> On 23/12/2022 16:28, Andrew Lunn wrote:
->>>> +        ethernet-ports {
->>>> +            #address-cells = <1>;
->>>> +            #size-cells = <0>;
->>>> +            pruss2_emac0: port@0 {
->>>> +                reg = <0>;
->>>> +                phy-handle = <&pruss2_eth0_phy>;
->>>> +                phy-mode = "rgmii-rxid";
->>>
->>> That is unusual. Where are the TX delays coming from?
->>
->> >From the below property
->>
->> +                ti,syscon-rgmii-delay = <&scm_conf 0x4120>;
->>
->> The TX delay can be enabled/disabled from within the ICSSG block.
->>
->> If this property exists and PHY mode is neither PHY_INTERFACE_MODE_RGMII_ID
->> nor PHY_INTERFACE_MODE_RGMII_TXID then the internal delay is enabled.
->>
->> This logic is in prueth_config_rgmiidelay() function in the introduced driver.
+On Wed, 2023-01-04 at 21:57 +0900, Jisoo Jang wrote:
+> Fix a use-after-free that occurs in kfree_skb() called from
+> local_cleanup(). When detaching an nfc device, local_cleanup()
+> called from nfc_llcp_unregister_device() frees local->rx_pending
+> and cancels local->rx_work. So the socket allocated before
+> unregister is not set null by nfc_llcp_rx_work().
+> local_cleanup() called from local_release() frees local->rx_pending
+> again, which leads to the bug.
 > 
-> What nearly every other MAC driver does is pass the phy-mode to the
-> PHY and lets the PHY add the delays. I would recommend you do that,
-> rather than be special and different.
+> Ensure kfree_skb() is called once when unregistering the device.
+> 
+> Found by a modified version of syzkaller.
+> 
+> BUG: KASAN: use-after-free in kfree_skb
+> Call Trace:
+>  kfree_skb
+>  local_cleanup
+>  nfc_llcp_local_put
+>  llcp_sock_destruct
+>  __sk_destruct
+>  sk_destruct
+>  __sk_free
+>  sk_free
+>  llcp_sock_release
+>  __sock_release
+>  sock_close
+>  __fput
+>  task_work_run
+>  exit_to_user_mode_prepare
+>  syscall_exit_to_user_mode
+>  do_syscall_64
+>  entry_SYSCALL_64_after_hwframe
+> 
+> Allocate by:
+>  __alloc_skb
+>  pn533_recv_response
+>  __usb_hcd_giveback_urb
+>  usb_hcd_giveback_urb
+>  dummy_timer
+>  call_timer_fn
+>  run_timer_softirq
+>  __do_softirq
+> 
+> Freed by:
+>  kfree_skbmem
+>  kfree_skb
+>  local_cleanup
+>  nfc_llcp_unregister_device
+>  nfc_unregister_device
+>  pn53x_unregister_nfc
+>  pn533_usb_disconnect
+>  usb_unbind_interface
+>  device_release_driver_internal
+>  bus_remove_device
+>  device_del
+>  usb_disable_device
+>  usb_disconnect
+>  hub_event
+>  process_one_work
+>  worker_thread
+>  kthread
+>  ret_from_fork
+> 
+> Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
+> ---
+>  net/nfc/llcp_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
+> index 3364caabef8b..cbf2ef0af57b 100644
+> --- a/net/nfc/llcp_core.c
+> +++ b/net/nfc/llcp_core.c
+> @@ -156,7 +156,6 @@ static void local_cleanup(struct nfc_llcp_local *local)
+>  	cancel_work_sync(&local->tx_work);
+>  	cancel_work_sync(&local->rx_work);
+>  	cancel_work_sync(&local->timeout_work);
+> -	kfree_skb(local->rx_pending);
+>  	del_timer_sync(&local->sdreq_timer);
+>  	cancel_work_sync(&local->sdreq_timeout_work);
+>  	nfc_llcp_free_sdp_tlv_list(&local->pending_sdreqs);
+> @@ -170,6 +169,7 @@ static void local_release(struct kref *ref)
+>  
+>  	list_del(&local->list);
+>  	local_cleanup(local);
+> +	kfree_skb(local->rx_pending);
+>  	kfree(local);
+>  }
+> 
 
+With this change, local->tx_work/nfc_llcp_tx_work can be invoked after
+nfc_unregister_device(). nfc_llcp_tx_work assumnes the nfc device is
+alive, so I guess we need (part of) local_cleanup() being in place at
+nfc de-registration time.
 
-If I remember right we couldn't disable MAC TX delay on some earlier silicon
-so had to take this route. I don't remember why we couldn't disable it though.
+What about simply setting local->rx_pending to NULL in local_cleanup()?
 
-In more recent Silicon Manuals I do see that MAC TX delay can be enabled/disabled.
-If this really is the case then we should change to
+Thanks!
 
- phy-mode = "rgmii-id";
+Paolo
 
-And let PHY handle the TX+RX delays.
-
-Danish,
-could you please make the change and test if it works on current silicon?
-
-cheers,
--roger
