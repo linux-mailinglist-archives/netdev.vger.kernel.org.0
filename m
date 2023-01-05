@@ -2,112 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF3A65EE0E
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 14:59:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6862865EE54
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 15:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234551AbjAEN7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 08:59:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
+        id S234437AbjAEOFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 09:05:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234385AbjAEN7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 08:59:36 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D402E4A960
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 05:57:29 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id f3so24562661pgc.2
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 05:57:29 -0800 (PST)
+        with ESMTP id S234452AbjAEOF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 09:05:26 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4FA5D42C;
+        Thu,  5 Jan 2023 06:04:25 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id vm8so83358148ejc.2;
+        Thu, 05 Jan 2023 06:04:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JnPTTZBQxeUaGmr3kM8/hj78PXm2U95GjDvhf9qEzdc=;
-        b=k6UgecyzrnaDlQF/U4Ucqwk1+n4vLnnF4AZjImX0LDU6yQbCVJj6awiwpR2ltrPq96
-         +IQzBk54n1W5NuxTbtemdMKp/yHKJBAv2/VwlRAStqJSWeQD94x66ISdoOi2BsPta/9P
-         L/328kqldOx2gxZB2Yj1VjXHzmQ0sAO+4eoUOBxwzXsDcGY3Z74FxqgR1sC8XvR3wiHu
-         okDfMKQbBX7lC2auQdXsem/ea6VRhtSZaAKLqKAoFQvIXu0U70Bo99JX48GvC2G7IXL5
-         znfC+9pIBYF44TLzWiwcZOjOZxO02yFFePZ2Jq64TN6JgRXexk2KkEfyTq+t4NxCIpRL
-         2isg==
+        bh=MIRXXRB+sw2omNtjMhkV2HFQPFTLCgL9wZ2vi4bV6S0=;
+        b=QEYOhyxvDuZKucaFK5ymbZjBykJO3QlfnVvtHvGJb4alIwc0mOYX35B6PQ9+zUHkf5
+         KgBzJNyeqmEUlxiBdAp3T9wwBiToTrCuhlN+kI2ZyXE3V9Bbr6nI9xNL/9OHUCiWSlmk
+         CMUms4jTsAv6yvxIrhkPkJDKqKRTUrinl1OHBQweJEruL5uRGKY+uBkXoPAg2KWeTKLj
+         nFMsxFhSysGs3H3vWFE9HXGwvoPJzTGxWIl7ZtQSznNNHH+iKqf6dDcBXMHl4TBYFReL
+         RS/VBEtaRvfE21sqoG/KHa4zUB2BANsXi6BTgOaaRkNxQdwvKPnbpJWf9YRXngfns4i2
+         Oaow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JnPTTZBQxeUaGmr3kM8/hj78PXm2U95GjDvhf9qEzdc=;
-        b=kJVCUlBK6HYh6nMhBDRw0DPsA/i6tWpI1NbXOUySQRFRwy7exDj8qPNnqeFoa480pb
-         cBl8wJa3FZUas4sSFPCXHuJ4rLV4mL8NJqIMMGET0IeEEjLdfpQaeCGPcJtbtbhwovyJ
-         v4RWqOloEReGO92oQhzwohcxs6JciCBsOXpVsV+gNeoBgLf2x/XhKMweu/0pf2BvFcRQ
-         4afecjQag1JI756Xmdqiy9F2vQnU40pIFjOV+70d/zpfJKm1OUg5VesIRb1bhfYTjaOh
-         +MXQQuNDtcFtrA+dmjzQN5n+0pYKAJxkprJ81M7dGJlDwWm3LRLVIctY/Ch18Ca1Si2U
-         8qwA==
-X-Gm-Message-State: AFqh2kp1/5poZKbR0c/oQGDPbsACKk2l1pEbcNFbAvbhY42EAk5YECE4
-        rBpKGPplFm33zzO707WnSgrS+Q==
-X-Google-Smtp-Source: AMrXdXtscTc883URlpW45mC1YQ7zXRZBVh/czHCs5ScfTjmicT7ACG8h7+KhxgKs6LOTGl8aM30nNQ==
-X-Received: by 2002:aa7:8284:0:b0:580:e549:559e with SMTP id s4-20020aa78284000000b00580e549559emr37040352pfm.17.1672927049337;
-        Thu, 05 Jan 2023 05:57:29 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id u4-20020a62d444000000b005809542aaf3sm23296669pfl.135.2023.01.05.05.57.28
+        bh=MIRXXRB+sw2omNtjMhkV2HFQPFTLCgL9wZ2vi4bV6S0=;
+        b=2+12yAxk3RQZQjgTV4cnLvUjGJbrh183/ySTCTDVYHqb8tP044htcAMpoc3xGDG5RU
+         T/740gBjkb6uVw+QyqcuXXuykB00+3QmEP6Tx9fR9YjLxjH4W1/ZxZY+6694RZbmJaqo
+         x3uiQkA/AZdl5Sn3/HqW+7P7Hr/CyqMyPHuQk8tA6Lwjur0BF/zgwE1Ap9XQFgA92Hcc
+         d8cuCRRQJXQWAtILMm+9lrAZxt4Hq2XOF+FVHaNLzar0o6oup5jYYnaiw+Xh2DJG7jVt
+         PcKcDiAQxo+knoSjhKJcie0XeIRuLvNZoiQrMaw/BIGvCchyZIT7prlA3xYZaLMgmQrT
+         skaA==
+X-Gm-Message-State: AFqh2kpZCXbWl0CF756rxfJhUREwxQ5vjUtdtAevIMuF8YZs7gaUapKX
+        H6IPp2laWuWBKl5u/KL15S8=
+X-Google-Smtp-Source: AMrXdXv35xPx9swlre+rFgoitFWWHdm9wKBXF8gloEDID6Jfjmyd+RgShsJEKfVgHi3NYBP3G/KW9A==
+X-Received: by 2002:a17:907:8b0a:b0:7c0:ae13:7407 with SMTP id sz10-20020a1709078b0a00b007c0ae137407mr48620138ejc.3.1672927464143;
+        Thu, 05 Jan 2023 06:04:24 -0800 (PST)
+Received: from skbuf ([188.26.184.223])
+        by smtp.gmail.com with ESMTPSA id kx20-20020a170907775400b0078d3f96d293sm16562530ejc.30.2023.01.05.06.04.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 05:57:28 -0800 (PST)
-Date:   Thu, 5 Jan 2023 14:57:26 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     stf_xl@wp.pl, helmut.schaa@googlemail.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] wifi: rt2x00: Remove useless else if
-Message-ID: <Y7bXRivrmsVq6nUW@nanopsycho>
-References: <20230105085802.30905-1-jiapeng.chong@linux.alibaba.com>
+        Thu, 05 Jan 2023 06:04:23 -0800 (PST)
+Date:   Thu, 5 Jan 2023 16:04:21 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Tim Harvey <tharvey@gateworks.com>
+Subject: Re: [PATCH net-next v5 4/4] phy: aquantia: Determine rate adaptation
+ support from registers
+Message-ID: <20230105140421.bqd2aed6du5mtxn4@skbuf>
+References: <20230103220511.3378316-1-sean.anderson@seco.com>
+ <20230103220511.3378316-5-sean.anderson@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230105085802.30905-1-jiapeng.chong@linux.alibaba.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230103220511.3378316-5-sean.anderson@seco.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 05, 2023 at 09:58:02AM CET, jiapeng.chong@linux.alibaba.com wrote:
->The assignment of the else and else if branches is the same, so the else
->if here is redundant, so we remove it and add a comment to make the code
->here readable.
->
->./drivers/net/wireless/ralink/rt2x00/rt2800lib.c:8927:9-11: WARNING: possible condition with no effect (if == else).
->
->Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3631
->Reported-by: Abaci Robot <abaci@linux.alibaba.com>
->Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
->---
-> drivers/net/wireless/ralink/rt2x00/rt2800lib.c | 4 +---
-> 1 file changed, 1 insertion(+), 3 deletions(-)
->
->diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
->index 12b700c7b9c3..36b9cd4dd138 100644
->--- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
->+++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
->@@ -8924,9 +8924,7 @@ static void rt2800_rxiq_calibration(struct rt2x00_dev *rt2x00dev)
-> 
-> 				if (i < 2 && (bbptemp & 0x800000))
-> 					result = (bbptemp & 0xffffff) - 0x1000000;
->-				else if (i == 4)
->-					result = bbptemp;
->-				else
->+				else /* This branch contains if(i==4) */
+On Tue, Jan 03, 2023 at 05:05:11PM -0500, Sean Anderson wrote:
+>  static int aqr107_get_rate_matching(struct phy_device *phydev,
+>  				    phy_interface_t iface)
+>  {
+> -	if (iface == PHY_INTERFACE_MODE_10GBASER ||
+> -	    iface == PHY_INTERFACE_MODE_2500BASEX ||
+> -	    iface == PHY_INTERFACE_MODE_NA)
+> -		return RATE_MATCH_PAUSE;
+> -	return RATE_MATCH_NONE;
+> +	static const struct aqr107_link_speed_cfg speed_table[] = {
+> +		{
+> +			.speed = SPEED_10,
+> +			.reg = VEND1_GLOBAL_CFG_10M,
+> +			.speed_bit = MDIO_PMA_SPEED_10,
+> +		},
+> +		{
+> +			.speed = SPEED_100,
+> +			.reg = VEND1_GLOBAL_CFG_100M,
+> +			.speed_bit = MDIO_PMA_SPEED_100,
+> +		},
+> +		{
+> +			.speed = SPEED_1000,
+> +			.reg = VEND1_GLOBAL_CFG_1G,
+> +			.speed_bit = MDIO_PMA_SPEED_1000,
+> +		},
+> +		{
+> +			.speed = SPEED_2500,
+> +			.reg = VEND1_GLOBAL_CFG_2_5G,
+> +			.speed_bit = MDIO_PMA_SPEED_2_5G,
+> +		},
+> +		{
+> +			.speed = SPEED_5000,
+> +			.reg = VEND1_GLOBAL_CFG_5G,
+> +			.speed_bit = MDIO_PMA_SPEED_5G,
+> +		},
+> +		{
+> +			.speed = SPEED_10000,
+> +			.reg = VEND1_GLOBAL_CFG_10G,
+> +			.speed_bit = MDIO_PMA_SPEED_10G,
+> +		},
+> +	};
+> +	int speed = phy_interface_max_speed(iface);
+> +	bool got_one = false;
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(speed_table) &&
+> +		    speed_table[i].speed <= speed; i++) {
+> +		if (!aqr107_rate_adapt_ok(phydev, speed, &speed_table[i]))
+> +			return RATE_MATCH_NONE;
+> +		got_one = true;
+> +	}
 
-I don't see how this comment is useful. Better to remove. One way or
-another:
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Trying to wrap my head around the API for rate matching that was
+originally proposed and how it applies to what we read from Aquantia
+registers now.
 
+IIUC, phylink (via the PHY library) asks "what kind of rate matching is
+supported for this SERDES protocol?". It doesn't ask "via what kind of
+rate matching can this SERDES protocol support this particular media
+side speed?".
 
+Your code walks through the speed_table[] of media speeds (from 10M up
+until the max speed of the SERDES) and sees whether the PHY was
+provisioned, for that speed, to use PAUSE rate adaptation.
 
-> 					result = bbptemp;
-> 
-> 				if (i == 0)
->-- 
->2.20.1.7.g153144c
->
+If the PHY firmware uses a combination like this: 10GBASE-R/XFI for
+media speeds of 10G, 5G, 2.5G (rate adapted), and SGMII for 1G, 100M
+and 10M, a call to your implementation of
+aqr107_get_rate_matching(PHY_INTERFACE_MODE_10GBASER) would return
+RATE_MATCH_NONE, right? So only ETHTOOL_LINK_MODE_10000baseT_Full_BIT
+would be advertised on the media side?
+
+Shouldn't you take into consideration in your aqr107_rate_adapt_ok()
+function only the media side link speeds for which the PHY was actually
+*configured* to use the SERDES protocol @iface?
+
+> +
+> +	/* Must match at least one speed */
+> +	return got_one ? RATE_MATCH_PAUSE : RATE_MATCH_NONE;
+>  }
