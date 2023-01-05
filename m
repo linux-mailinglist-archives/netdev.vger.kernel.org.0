@@ -2,76 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E523565E94C
-	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 11:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A45565E973
+	for <lists+netdev@lfdr.de>; Thu,  5 Jan 2023 12:00:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232790AbjAEKtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 05:49:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        id S231940AbjAEK76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 05:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232688AbjAEKtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 05:49:33 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA2854718;
-        Thu,  5 Jan 2023 02:49:32 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id c17so52244003edj.13;
-        Thu, 05 Jan 2023 02:49:32 -0800 (PST)
+        with ESMTP id S233114AbjAEK7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 05:59:40 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9E957907;
+        Thu,  5 Jan 2023 02:59:30 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id az7so11325504wrb.5;
+        Thu, 05 Jan 2023 02:59:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0filXF68FHJ6ZWCVzi7qhWK2rOtyQx7FNriFJV/pCmM=;
-        b=L7CVuu1Uek/knGn2cPZ7ZWzk4OcXFXAL3vJPv9mC8MNf/UCjFkS4MhXJLYysguWF8i
-         NA24GyVkXSWgHd1DPR8JyHMae1Q2zPZA5sEKdQT19JoSYQYpImvAwmPwvo8wLNdaiLo4
-         mJNFH5GGtWY0V0r++CcT3fJhWSl0YlRTZWS9fXREygDa1RM6yIq2H1OwGZ7KoScB+EDz
-         BpsXZxni+3IV78YiQPwupW+TL0ZYMbhANpX0n1QHOWvYJA8LLts0pERM44bGR1k5Aj0Y
-         RkArTdFNNSnJM2z7EKjuj62A28xnHJU68h/5jSQI2jKspRiwdRFgdey/mdgMKg6tCvcH
-         wH7A==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Wxg4n9JP4gJD7PKhSiNfZm9HcsyJiX7nt/oNFVx3d0s=;
+        b=IogR2t2gkZFtz//KdpYY+adNeEuq7UdJSkjO6nCOkAzu1atSQsKciiH5hiVlXxnHR+
+         MmrTYUex+/Sr59FIioxlYp81SFIIqACUrOG7shjmyOUnk68UKWAx708gobvhtgSnqZLV
+         KI4ck1NOo/qE2y/SR0OzPM4E7nFvSt8eeOwkW7kfviBU6aBIm0XuxvFuTdY26a9exi80
+         nZfpi/OqHJnQmVs+iltP+xl+rirdERCd3v4BxSjm6PQC2ZxbkdPGx6Xh1t+QS9HcP2XE
+         QiafpN1rBxcrEhwIywUy6PMkrgnbDPjMQM0VChkmN2q40xTFr1ULbXxNxFmXrIVUrdVi
+         R9rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0filXF68FHJ6ZWCVzi7qhWK2rOtyQx7FNriFJV/pCmM=;
-        b=BZmZUQ1HiXoouxycUnPdPTMbbZuQ/XLnCDRbrk+CRvxuu/zzGXvtBVVWvGLJ2Cr2Lx
-         WOsXawRAMsCJQ53MDzGOtVg/JukxfKBF+9vo6XJlYqxz5Utxd3BFVVMFV0zJ5aUzXBgv
-         DN9zftsdNs/5kHU210E4SuN2RrzchN/4A0Tm/JhHN16gY2uTrV2XmZjPHPQ5Ez/7F/pz
-         iXTqSJmBc8AoQ1L8iQ5jvaixU/AOquJfJDjQzIErYmCp3I7Wr9Y/bXIDSfvxp0oyDX7Z
-         tZEsILqWnuwCMb8RiKGbwwTh1B5xaY1atkxY0xybQsH8cz1cZYN7zkyRsAzcnkpj4o55
-         bUdg==
-X-Gm-Message-State: AFqh2kp7tlo54joQCP+2cFikNQ6Pa/calKxgqzBrmYPLnc8ReLre3CCC
-        lhUk6gEAJB4bgVwQxZnHbfY=
-X-Google-Smtp-Source: AMrXdXs2Z3EUhO27Z52EYVwbT1R05Xs/dwWHSukv4yK77+ao6OWJFUODaPSh9xZyDdQh/Mcy8xhvmA==
-X-Received: by 2002:a05:6402:3706:b0:472:9af1:163f with SMTP id ek6-20020a056402370600b004729af1163fmr45200378edb.37.1672915770861;
-        Thu, 05 Jan 2023 02:49:30 -0800 (PST)
-Received: from gvm01 (net-5-89-66-224.cust.vodafonedsl.it. [5.89.66.224])
-        by smtp.gmail.com with ESMTPSA id p14-20020a05640210ce00b0047025bf942bsm15744880edu.16.2023.01.05.02.49.30
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Wxg4n9JP4gJD7PKhSiNfZm9HcsyJiX7nt/oNFVx3d0s=;
+        b=MhL4p+hBK8LKnJrLVIsw/H41ee2qN4uEFEBLPKbOJWXyS5/L9gORuED3gIdyx0eEmS
+         mkJVKgqq621gkCUSNkMElrfkCTb47mG/MwKDKGXuDeg5iLZBfAEg5pcdX+nihBMlgVHP
+         ceSjxGiwdfdUIvAnbR6am5AkfBvf6/NFcn12LSXnkBX1cB7fQMdqQU2nlRzYCsKceV3w
+         mw0jJb/REWrxiAO53wP+PwBdWOGI1c3b6+5w7iqdNhD/d05OsXqsxQe+UpHzFWGiYwVk
+         4XZMGcRHV9H5zbCRx6qRJiRjXjO1lrbqA1NlKkpkuDbonT9hiEb1gZIsOea0CKNQfu0v
+         3/tg==
+X-Gm-Message-State: AFqh2koaw9iZGezkATdBOkod7If/GZyrc8lJuKZGVfT4OgNKaxYEsaQL
+        dsSru2K6f6pjNR3My5nVr2k=
+X-Google-Smtp-Source: AMrXdXtYwh5O+rYA9+7GVMmmJIKoPK/pGHeSNjC1fUIzIxedgu9At+LnqH/M8jguOESETkxHzlrVlg==
+X-Received: by 2002:adf:f0ca:0:b0:275:e426:4134 with SMTP id x10-20020adff0ca000000b00275e4264134mr27976450wro.51.1672916369161;
+        Thu, 05 Jan 2023 02:59:29 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id c11-20020a5d4ccb000000b002b6bcc0b64dsm126541wrt.4.2023.01.05.02.59.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 02:49:30 -0800 (PST)
-Date:   Thu, 5 Jan 2023 11:49:36 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 05 Jan 2023 02:59:28 -0800 (PST)
+Date:   Thu, 5 Jan 2023 13:58:20 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH net-next 5/5] drivers/net/phy: add driver for the onsemi
- NCN26000 10BASE-T1S PHY
-Message-ID: <Y7arQLi9ELyvXViZ@gvm01>
-References: <cover.1672840325.git.piergiorgio.beruto@gmail.com>
- <d6ffe9c0296bc10c51068d3efaadd48e05561208.1672840326.git.piergiorgio.beruto@gmail.com>
- <Y7aS7GrjFDauGm9u@unreal>
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: Re: [PATCH net-next 2/8] net: microchip: sparx5: Reset VCAP counter
+ for new rules
+Message-ID: <Y7atTB9r07M+ZUC0@kadam>
+References: <20230105081335.1261636-1-steen.hegelund@microchip.com>
+ <20230105081335.1261636-3-steen.hegelund@microchip.com>
+ <Y7aT8xGOCfvC/U0a@kadam>
+ <7fa8ea30beffcb9256422f7a474a8be7d5791f5a.camel@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Y7aS7GrjFDauGm9u@unreal>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7fa8ea30beffcb9256422f7a474a8be7d5791f5a.camel@microchip.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,36 +88,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 11:05:48AM +0200, Leon Romanovsky wrote:
-> On Wed, Jan 04, 2023 at 03:07:05PM +0100, Piergiorgio Beruto wrote:
-> > This patch adds support for the onsemi NCN26000 10BASE-T1S industrial
-> > Ethernet PHY. The driver supports Point-to-Multipoint operation without
-> > auto-negotiation and with link control handling. The PHY also features
-> > PLCA for improving performance in P2MP mode.
+[ Email re-arranged because I screwed up - dan]
+
+On Thu, Jan 05, 2023 at 11:43:17AM +0100, Steen Hegelund wrote:
+
+> This series was first sent to net, but the response was that I should go into
+> net-next instead, so it is really a first version in net-next.
+> 
+> What was your question?  I was not able to find it...
+
+Ugh...  Oauth2 code (mutt/msmtp) silently ate my email.  Sorry.
+
+> > > @@ -1833,6 +1834,8 @@ int vcap_add_rule(struct vcap_rule *rule)
+> > >       ret = vcap_write_rule(ri);
+> > >       if (ret)
+> > >               pr_err("%s:%d: rule write error: %d\n", __func__, __LINE__,
+> > > ret);
+
+There should be a "goto out;" after the pr_err().
+
+> > > +     /* Set the counter to zero */
+> > > +     ret = vcap_write_counter(ri, &ctr);
+> > >  out:
+> > >       mutex_unlock(&ri->admin->lock);
+> > >       return ret;
 > > 
-> > Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-> > ---
-> >  MAINTAINERS                |   7 ++
-> >  drivers/net/phy/Kconfig    |   7 ++
-> >  drivers/net/phy/Makefile   |   1 +
-> >  drivers/net/phy/ncn26000.c | 171 +++++++++++++++++++++++++++++++++++++
-> >  4 files changed, 186 insertions(+)
-> >  create mode 100644 drivers/net/phy/ncn26000.c
-> 
-> <...>
-> 
-> > +static int ncn26000_config_aneg(struct phy_device *phydev)
-> > +{
-> > +	// Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
-> > +	// supported. However, this function is invoked by phylib to enable the
-> > +	// PHY, regardless of the AN support.
-> 
-> Please use C-style comments for multi lines blocks.
-Fixed.
-> 
-> > +	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-> > +	phydev->mdix = ETH_TP_MDI;
-> > +
-> > +	// bring up the link
-> 
-> Thanks
+
+regards,
+dan carpenter
+
