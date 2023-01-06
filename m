@@ -2,334 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 465126603EE
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEBB6603F8
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:09:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234484AbjAFQH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 11:07:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
+        id S234749AbjAFQJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 11:09:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232580AbjAFQHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:07:19 -0500
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2640425F;
-        Fri,  6 Jan 2023 08:07:14 -0800 (PST)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 242671884680;
-        Fri,  6 Jan 2023 16:07:12 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 1DF9E2503B65;
-        Fri,  6 Jan 2023 16:07:12 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 10A4991201E4; Fri,  6 Jan 2023 16:07:12 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id C11C39EC000C;
-        Fri,  6 Jan 2023 16:07:11 +0000 (UTC)
-From:   "Hans J. Schultz" <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3 net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB implementation
-Date:   Fri,  6 Jan 2023 17:05:29 +0100
-Message-Id: <20230106160529.1668452-4-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230106160529.1668452-1-netdev@kapio-technology.com>
-References: <20230106160529.1668452-1-netdev@kapio-technology.com>
+        with ESMTP id S235039AbjAFQIz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:08:55 -0500
+Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E6B3225F;
+        Fri,  6 Jan 2023 08:08:30 -0800 (PST)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
+        (authenticated bits=0)
+        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 306G86fA1390822
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Fri, 6 Jan 2023 16:08:07 GMT
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 306G7waq2910560
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Fri, 6 Jan 2023 17:07:59 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1673021281; bh=34wK8yK2QM8C7OYxwb3tmF/R6nqgC8vJ0iImqPFm0FI=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        b=GqF4nVpZWhtQ3zPyUtdVYUBIanRUgjr75i4L3DmoguXcxErGof/XzPW7cXRUyMkOP
+         WaFoF+0Ujyl3ml7pITVQ+6Hyp52euTKC76tB644WZ/UrDUswJUxoFXns0MfuxDSkEo
+         nYgX+8AJiuDz/H4whnrWnF6TIsYKaFsziScz+Qvc=
+Received: (nullmailer pid 100758 invoked by uid 1000);
+        Fri, 06 Jan 2023 16:07:58 -0000
+From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+To:     netdev@vger.kernel.org
+Cc:     Hayes Wang <hayeswang@realtek.com>, linux-usb@vger.kernel.org,
+        Oliver Neukum <oliver@neukum.org>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Subject: [PATCH 0/2] r8152: allow firmwares with NCM support
+Date:   Fri,  6 Jan 2023 17:07:37 +0100
+Message-Id: <20230106160739.100708-1-bjorn@mork.no>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Virus-Scanned: clamav-milter 0.103.7 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implementation for the Marvell mv88e6xxx chip series is based on
-handling ATU miss violations occurring when packets ingress on a port
-that is locked with learning on. This will trigger a
-SWITCHDEV_FDB_ADD_TO_BRIDGE event, which will result in the bridge module
-adding a locked FDB entry. This bridge FDB entry will not age out as
-it has the extern_learn flag set.
+Some device and firmware combinations with NCM support will
+end up using the cdc_ncm driver by default.  This is sub-
+optimal for the same reasons we've previously accepted the
+blacklist hack in cdc_ether.
 
-Userspace daemons can listen to these events and either accept or deny
-access for the host, by either replacing the locked FDB entry with a
-simple entry or leave the locked entry.
+The recent support for subclassing the generic USB device
+driver allows us to create a very slim driver with the same
+functionality.  This patch set uses that to implement a
+device specific configuration default which is independent
+of any USB interface drivers.  This means that it works
+equally whether the device initially ends up in NCM or ECM
+mode, without depending on any code in the respective class
+drivers.
 
-If the host MAC address is already present on another port, a ATU
-member violation will occur, but to no real effect, and the packet will
-be dropped in hardware. Statistics on these violations can be shown with
-the command and example output of interest:
+Bjørn Mork (2):
+  r8152: add USB device driver for config selection
+  cdc_ether: no need to blacklist any r8152 devices
 
-ethtool -S ethX
-NIC statistics:
-...
-     atu_member_violation: 5
-     atu_miss_violation: 23
-...
+ drivers/net/usb/cdc_ether.c | 114 ------------------------------------
+ drivers/net/usb/r8152.c     | 113 +++++++++++++++++++++++++----------
+ 2 files changed, 81 insertions(+), 146 deletions(-)
 
-Where ethX is the interface of the MAB enabled port.
-
-Furthermore, as added vlan interfaces where the vid is not added to the
-VTU will cause ATU miss violations reporting the FID as
-MV88E6XXX_FID_STANDALONE, we need to check and skip the miss violations
-handling in this case.
-
-Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
----
- drivers/net/dsa/mv88e6xxx/Makefile      |  1 +
- drivers/net/dsa/mv88e6xxx/chip.c        | 18 ++++--
- drivers/net/dsa/mv88e6xxx/chip.h        | 15 +++++
- drivers/net/dsa/mv88e6xxx/global1_atu.c |  8 +++
- drivers/net/dsa/mv88e6xxx/switchdev.c   | 83 +++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/switchdev.h   | 19 ++++++
- 6 files changed, 138 insertions(+), 6 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.h
-
-diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
-index 49bf358b9c4f..1409e691ab77 100644
---- a/drivers/net/dsa/mv88e6xxx/Makefile
-+++ b/drivers/net/dsa/mv88e6xxx/Makefile
-@@ -15,6 +15,7 @@ mv88e6xxx-objs += port_hidden.o
- mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
- mv88e6xxx-objs += serdes.o
- mv88e6xxx-objs += smi.o
-+mv88e6xxx-objs += switchdev.o
- mv88e6xxx-objs += trace.o
- 
- # for tracing framework to find trace.h
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 29d4ff8e1181..07f1391c64e7 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1728,11 +1728,11 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
- 	return err;
- }
- 
--static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
--			      int (*cb)(struct mv88e6xxx_chip *chip,
--					const struct mv88e6xxx_vtu_entry *entry,
--					void *priv),
--			      void *priv)
-+int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+		       int (*cb)(struct mv88e6xxx_chip *chip,
-+				 const struct mv88e6xxx_vtu_entry *entry,
-+				 void *priv),
-+		       void *priv)
- {
- 	struct mv88e6xxx_vtu_entry entry = {
- 		.vid = mv88e6xxx_max_vid(chip),
-@@ -6526,7 +6526,7 @@ static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 	const struct mv88e6xxx_ops *ops;
- 
- 	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--			   BR_BCAST_FLOOD | BR_PORT_LOCKED))
-+			   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB))
- 		return -EINVAL;
- 
- 	ops = chip->info->ops;
-@@ -6584,6 +6584,12 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 			goto out;
- 	}
- 
-+	if (flags.mask & BR_PORT_MAB) {
-+		bool mab = !!(flags.val & BR_PORT_MAB);
-+
-+		mv88e6xxx_port_set_mab(chip, port, mab);
-+	}
-+
- 	if (flags.mask & BR_PORT_LOCKED) {
- 		bool locked = !!(flags.val & BR_PORT_LOCKED);
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index e693154cf803..f635a5bb47ce 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -280,6 +280,9 @@ struct mv88e6xxx_port {
- 	unsigned int serdes_irq;
- 	char serdes_irq_name[64];
- 	struct devlink_region *region;
-+
-+	/* MacAuth Bypass control flag */
-+	bool mab;
- };
- 
- enum mv88e6xxx_region_id {
-@@ -784,6 +787,12 @@ static inline bool mv88e6xxx_is_invalid_port(struct mv88e6xxx_chip *chip, int po
- 	return (chip->info->invalid_port_mask & BIT(port)) != 0;
- }
- 
-+static inline void mv88e6xxx_port_set_mab(struct mv88e6xxx_chip *chip,
-+					  int port, bool mab)
-+{
-+	chip->ports[port].mab = mab;
-+}
-+
- int mv88e6xxx_read(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val);
- int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val);
- int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
-@@ -802,6 +811,12 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
- 	mutex_unlock(&chip->reg_lock);
- }
- 
-+int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+		       int (*cb)(struct mv88e6xxx_chip *chip,
-+				 const struct mv88e6xxx_vtu_entry *entry,
-+				 void *priv),
-+		       void *priv);
-+
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
- 
- #endif /* _MV88E6XXX_CHIP_H */
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-index 557428cee457..ce3b3690c3c0 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-@@ -12,6 +12,7 @@
- 
- #include "chip.h"
- #include "global1.h"
-+#include "switchdev.h"
- #include "trace.h"
- 
- /* Offset 0x01: ATU FID Register */
-@@ -443,6 +444,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
- 						   entry.portvec, entry.mac,
- 						   fid);
- 		chip->ports[spid].atu_miss_violation++;
-+
-+		if (fid != MV88E6XXX_FID_STANDALONE && chip->ports[spid].mab) {
-+			err = mv88e6xxx_handle_miss_violation(chip, spid,
-+							      &entry, fid);
-+			if (err)
-+				goto out;
-+		}
- 	}
- 
- 	if (val & MV88E6XXX_G1_ATU_OP_FULL_VIOLATION) {
-diff --git a/drivers/net/dsa/mv88e6xxx/switchdev.c b/drivers/net/dsa/mv88e6xxx/switchdev.c
-new file mode 100644
-index 000000000000..4c346a884fb2
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/switchdev.c
-@@ -0,0 +1,83 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * switchdev.c
-+ *
-+ *	Authors:
-+ *	Hans J. Schultz		<netdev@kapio-technology.com>
-+ *
-+ */
-+
-+#include <net/switchdev.h>
-+#include "chip.h"
-+#include "global1.h"
-+#include "switchdev.h"
-+
-+struct mv88e6xxx_fid_search_ctx {
-+	u16 fid_search;
-+	u16 vid_found;
-+};
-+
-+static int __mv88e6xxx_find_vid(struct mv88e6xxx_chip *chip,
-+				const struct mv88e6xxx_vtu_entry *entry,
-+				void *priv)
-+{
-+	struct mv88e6xxx_fid_search_ctx *ctx = priv;
-+
-+	if (ctx->fid_search == entry->fid) {
-+		ctx->vid_found = entry->vid;
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mv88e6xxx_find_vid(struct mv88e6xxx_chip *chip, u16 fid, u16 *vid)
-+{
-+	struct mv88e6xxx_fid_search_ctx ctx;
-+	int err;
-+
-+	ctx.fid_search = fid;
-+	mv88e6xxx_reg_lock(chip);
-+	err = mv88e6xxx_vtu_walk(chip, __mv88e6xxx_find_vid, &ctx);
-+	mv88e6xxx_reg_unlock(chip);
-+	if (err < 0)
-+		return err;
-+	if (err == 1)
-+		*vid = ctx.vid_found;
-+	else
-+		return -ENOENT;
-+
-+	return 0;
-+}
-+
-+int mv88e6xxx_handle_miss_violation(struct mv88e6xxx_chip *chip, int port,
-+				    struct mv88e6xxx_atu_entry *entry, u16 fid)
-+{
-+	struct switchdev_notifier_fdb_info info = {
-+		.addr = entry->mac,
-+		.locked = true,
-+	};
-+	struct net_device *brport;
-+	struct dsa_port *dp;
-+	u16 vid;
-+	int err;
-+
-+	err = mv88e6xxx_find_vid(chip, fid, &vid);
-+	if (err)
-+		return err;
-+
-+	info.vid = vid;
-+	dp = dsa_to_port(chip->ds, port);
-+
-+	rtnl_lock();
-+	brport = dsa_port_to_bridge_port(dp);
-+	if (!brport) {
-+		rtnl_unlock();
-+		return -ENODEV;
-+	}
-+	err = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
-+				       brport, &info.info, NULL);
-+	rtnl_unlock();
-+
-+	return err;
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/switchdev.h b/drivers/net/dsa/mv88e6xxx/switchdev.h
-new file mode 100644
-index 000000000000..62214f9d62b0
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/switchdev.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later
-+ *
-+ * switchdev.h
-+ *
-+ *	Authors:
-+ *	Hans J. Schultz		<netdev@kapio-technology.com>
-+ *
-+ */
-+
-+#ifndef _MV88E6XXX_SWITCHDEV_H_
-+#define _MV88E6XXX_SWITCHDEV_H_
-+
-+#include "chip.h"
-+
-+int mv88e6xxx_handle_miss_violation(struct mv88e6xxx_chip *chip, int port,
-+				    struct mv88e6xxx_atu_entry *entry,
-+				    u16 fid);
-+
-+#endif /* _MV88E6XXX_SWITCHDEV_H_ */
 -- 
-2.34.1
+2.30.2
 
