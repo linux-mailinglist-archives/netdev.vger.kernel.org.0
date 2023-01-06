@@ -2,152 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC79F660775
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 20:55:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18BD1660779
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 20:56:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236026AbjAFTym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 14:54:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
+        id S236061AbjAFT4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 14:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbjAFTyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 14:54:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9515081C39
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 11:54:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEC2D61F1C
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 19:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB99C433EF;
-        Fri,  6 Jan 2023 19:54:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673034842;
-        bh=BE/w00XWlxsVRLdFITecDHmgDjOZU/hjHFK+/cy7e4Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cF39X0P7hHCLe5DsUmaGNSXozs9/Qw+qG69HizbbQvjnL1hOeUAJYKS3g2U9xmE1N
-         86FoRXiA7xLggLfHM9aFSaIHzzLalw/X+NlTksAJrSQOIZ65aDtL8pM4at6w/rWjgL
-         xYvnyBdZIwW8clYd8AYmfwVaUQ5c9VPmfDf+x0yyVfRsqoWexFhNhmWC3WpuFrEvVC
-         1lf3w21e0CbD+8mqYKTPAw4HSQuPbZ82GBIFM1RolbykRcyt91QgPI9Dz77pndsXm+
-         g9Ww7Z9VZhzjvwuwsIqi2SGm126aV7ad0cPxYdzRl1D/oADV4Gqwi8YSkZ45IXRkGT
-         /cro14xioHb8g==
-Date:   Fri, 6 Jan 2023 11:54:00 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net-next 1/2] net: fix call location in
- kfree_skb_list_reason
-Message-ID: <Y7h8WPoi6hS/2Hs2@x130>
-References: <167293333469.249536.14941306539034136264.stgit@firesoul>
- <167293336279.249536.18331792118487373874.stgit@firesoul>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <167293336279.249536.18331792118487373874.stgit@firesoul>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236254AbjAFTz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 14:55:58 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB59C81D72
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 11:55:56 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id y8-20020a170902b48800b00192a600df83so1819197plr.15
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 11:55:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mIPfW8itmy1nSGwQkVM3Is8GI7aiE3cD3klmvrspZs0=;
+        b=gK3Rq0cvWTBHU4Zc/89GDyZmL/Xomq02yNExaES11bqv8Qq6JyQxyps2qm2tOQvOhp
+         MbEEjC8t5aDfiWotmAxiEYDOrCrfryogB9kDZ8HBnvDDnv+wLO0I3D50hZDVOnxRh0QL
+         KS0HCMkKuEwWmya6zPvpdkxXifclPDqjLFRVBR4+682IgC1pb2cdNqHshG3XiYX8+yQo
+         /V8SUEOJm4t9FvsszVrJ0b+YhuIuFulrrZjiVP1oJAYuOOWeLl2PXrTjfIPNvoFkQryH
+         /006iPK9TwLv4N5LGWPGQQSUzR6LlwzsNfUBS0Cq5LUlHdgT0xYxpGOyYrdCM+Pzt5o1
+         9whQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mIPfW8itmy1nSGwQkVM3Is8GI7aiE3cD3klmvrspZs0=;
+        b=8PTYU0d1GzlgV7baKM6e8xzvaVMRbAI1XpXneY+e5QePHFzSNpvOwGzRV/hIVIBHcM
+         f7fWZWvReprlHdEK9BK2xbwP2SmBXDBncj7kZKmod9gTKUylGuPgKWwVGngs+RkHQ98O
+         2FBcdKdmFRrkm0koz7h8GELDRbitWSxuwSZqI961UfQ5bXbfMpmMeIX7AIaWG2z8yN2M
+         1YZTRHdwA3jYDcl61EOZl84WqDbkh/Pg+MCK/239PL4TKGrJByyyG8U0M/bCFfGUpZH2
+         TQHDXa797jogfsHOcVOirWiUFrBda+pgrcw2nvo3Dm/c8Ya48RRAAZ7Zi8TGYQf5lRZj
+         qaSQ==
+X-Gm-Message-State: AFqh2koUnd7iAhVWxmZxfBnwivPDROQIBjj5skASIT2tb1ssQJDRk9yr
+        EtIy0nZY7tG4WebKEYHxL1uyZgQ=
+X-Google-Smtp-Source: AMrXdXvyR146I6BbPaAgJWkImFp33rAI/P5iLiFaYEMqoHm7uOIZBP467ozGpC8WQiBzBaYOkhw75fQ=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a62:6502:0:b0:577:d52e:b585 with SMTP id
+ z2-20020a626502000000b00577d52eb585mr3905945pfb.57.1673034956425; Fri, 06 Jan
+ 2023 11:55:56 -0800 (PST)
+Date:   Fri, 6 Jan 2023 11:55:54 -0800
+In-Reply-To: <7e9ca6837b20bea661248957dbbd1db198e3d1f8.1672976410.git.william.xuanziyang@huawei.com>
+Mime-Version: 1.0
+References: <cover.1672976410.git.william.xuanziyang@huawei.com> <7e9ca6837b20bea661248957dbbd1db198e3d1f8.1672976410.git.william.xuanziyang@huawei.com>
+Message-ID: <Y7h8yrOEkPuHkNpJ@google.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Add ipip6 and ip6ip decap support for bpf_skb_adjust_room()
+From:   sdf@google.com
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
+        jolsa@kernel.org, willemb@google.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05 Jan 16:42, Jesper Dangaard Brouer wrote:
->The SKB drop reason uses __builtin_return_address(0) to give the call
->"location" to trace_kfree_skb() tracepoint skb:kfree_skb.
->
->To keep this stable for compilers kfree_skb_reason() is annotated with
->__fix_address (noinline __noclone) as fixed in commit c205cc7534a9
->("net: skb: prevent the split of kfree_skb_reason() by gcc").
->
->The function kfree_skb_list_reason() invoke kfree_skb_reason(), which
->cause the __builtin_return_address(0) "location" to report the
->unexpected address of kfree_skb_list_reason.
->
->Example output from 'perf script':
-> kpktgend_0  1337 [000]    81.002597: skb:kfree_skb: skbaddr=0xffff888144824700 protocol=2048 location=kfree_skb_list_reason+0x1e reason: QDISC_DROP
->
->Patch creates an __always_inline __kfree_skb_reason() helper call that
->is called from both kfree_skb_list() and kfree_skb_list_reason().
->Suggestions for solutions that shares code better are welcome.
->
->As preparation for next patch move __kfree_skb() invocation out of
->this helper function.
->
->Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->---
-> net/core/skbuff.c |   34 +++++++++++++++++++++-------------
-> 1 file changed, 21 insertions(+), 13 deletions(-)
->
->diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->index 4a0eb5593275..007a5fbe284b 100644
->--- a/net/core/skbuff.c
->+++ b/net/core/skbuff.c
->@@ -932,6 +932,21 @@ void __kfree_skb(struct sk_buff *skb)
-> }
-> EXPORT_SYMBOL(__kfree_skb);
->
->+static __always_inline
->+bool __kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
->+{
->+	if (unlikely(!skb_unref(skb)))
->+		return false;
->+
->+	DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
->+
->+	if (reason == SKB_CONSUMED)
->+		trace_consume_skb(skb);
->+	else
->+		trace_kfree_skb(skb, __builtin_return_address(0), reason);
->+	return true;
+On 01/06, Ziyang Xuan wrote:
+> Add ipip6 and ip6ip decap support for bpf_skb_adjust_room().
+> Main use case is for using cls_bpf on ingress hook to decapsulate
+> IPv4 over IPv6 and IPv6 over IPv4 tunnel packets.
 
-why not just call __kfree_skb(skb); here instead of the boolean return ? 
-if it because __kfree_skb() makes a call to
-skb_release_all()->..->kfree_skb_list_reason()
-then it's already too deep and the return address in that case isn't
-predictable, so you're not avoiding any breakage by keeping
-direct calls to __kfree_skb() from kfree_skb_reason and+kfree_skb_list_reason
+CC'd Willem since he has done bpf_skb_adjust_room changes in the past.
+There might be a lot of GRO/GSO context I'm missing.
 
->+}
->+
-> /**
->  *	kfree_skb_reason - free an sk_buff with special reason
->  *	@skb: buffer to free
->@@ -944,26 +959,19 @@ EXPORT_SYMBOL(__kfree_skb);
-> void __fix_address
-> kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
-> {
->-	if (unlikely(!skb_unref(skb)))
->-		return;
->-
->-	DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
->-
->-	if (reason == SKB_CONSUMED)
->-		trace_consume_skb(skb);
->-	else
->-		trace_kfree_skb(skb, __builtin_return_address(0), reason);
->-	__kfree_skb(skb);
->+	if (__kfree_skb_reason(skb, reason))
->+		__kfree_skb(skb);
-> }
-> EXPORT_SYMBOL(kfree_skb_reason);
->
->-void kfree_skb_list_reason(struct sk_buff *segs,
->-			   enum skb_drop_reason reason)
->+void __fix_address
->+kfree_skb_list_reason(struct sk_buff *segs, enum skb_drop_reason reason)
-> {
-> 	while (segs) {
-> 		struct sk_buff *next = segs->next;
->
->-		kfree_skb_reason(segs, reason);
->+		if (__kfree_skb_reason(segs, reason))
->+			__kfree_skb(segs);
-> 		segs = next;
-> 	}
-> }
->
->
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>   net/core/filter.c | 34 ++++++++++++++++++++++++++++++++--
+>   1 file changed, 32 insertions(+), 2 deletions(-)
+
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 929358677183..73982fb4fe2e 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3495,6 +3495,12 @@ static int bpf_skb_net_grow(struct sk_buff *skb,  
+> u32 off, u32 len_diff,
+>   static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
+>   			      u64 flags)
+>   {
+> +	union {
+> +		struct iphdr *v4;
+> +		struct ipv6hdr *v6;
+> +		unsigned char *hdr;
+> +	} ip;
+> +	__be16 proto;
+>   	int ret;
+
+>   	if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO |
+> @@ -3512,10 +3518,19 @@ static int bpf_skb_net_shrink(struct sk_buff  
+> *skb, u32 off, u32 len_diff,
+>   	if (unlikely(ret < 0))
+>   		return ret;
+
+> +	ip.hdr = skb_inner_network_header(skb);
+> +	if (ip.v4->version == 4)
+> +		proto = htons(ETH_P_IP);
+> +	else
+> +		proto = htons(ETH_P_IPV6);
+> +
+>   	ret = bpf_skb_net_hdr_pop(skb, off, len_diff);
+>   	if (unlikely(ret < 0))
+>   		return ret;
+
+> +	/* Match skb->protocol to new outer l3 protocol */
+> +	skb->protocol = proto;
+> +
+>   	if (skb_is_gso(skb)) {
+>   		struct skb_shared_info *shinfo = skb_shinfo(skb);
+
+> @@ -3578,10 +3593,14 @@ BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *,  
+> skb, s32, len_diff,
+>   	   u32, mode, u64, flags)
+>   {
+>   	u32 len_cur, len_diff_abs = abs(len_diff);
+> -	u32 len_min = bpf_skb_net_base_len(skb);
+> -	u32 len_max = BPF_SKB_MAX_LEN;
+> +	u32 len_min, len_max = BPF_SKB_MAX_LEN;
+>   	__be16 proto = skb->protocol;
+>   	bool shrink = len_diff < 0;
+> +	union {
+> +		struct iphdr *v4;
+> +		struct ipv6hdr *v6;
+> +		unsigned char *hdr;
+> +	} ip;
+>   	u32 off;
+>   	int ret;
+
+> @@ -3594,6 +3613,9 @@ BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *,  
+> skb, s32, len_diff,
+>   		     proto != htons(ETH_P_IPV6)))
+>   		return -ENOTSUPP;
+
+> +	if (unlikely(shrink && !skb->encapsulation))
+> +		return -ENOTSUPP;
+> +
+>   	off = skb_mac_header_len(skb);
+>   	switch (mode) {
+>   	case BPF_ADJ_ROOM_NET:
+> @@ -3605,6 +3627,14 @@ BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *,  
+> skb, s32, len_diff,
+>   		return -ENOTSUPP;
+>   	}
+
+> +	if (shrink) {
+> +		ip.hdr = skb_inner_network_header(skb);
+> +		if (ip.v4->version == 4)
+> +			len_min = sizeof(struct iphdr);
+> +		else
+> +			len_min = sizeof(struct ipv6hdr);
+> +	}
+> +
+>   	len_cur = skb->len - skb_network_offset(skb);
+>   	if ((shrink && (len_diff_abs >= len_cur ||
+>   			len_cur - len_diff_abs < len_min)) ||
+> --
+> 2.25.1
+
