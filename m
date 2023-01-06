@@ -2,133 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18CED65FAF3
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 06:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8CF465FAFC
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 06:47:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbjAFFix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 00:38:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
+        id S231361AbjAFFru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 00:47:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbjAFFiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 00:38:50 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725E65F90B
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 21:38:49 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id y24-20020a5ec818000000b006e2c0847835so323438iol.12
-        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 21:38:49 -0800 (PST)
+        with ESMTP id S229509AbjAFFrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 00:47:49 -0500
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD9948CD4;
+        Thu,  5 Jan 2023 21:47:46 -0800 (PST)
+Received: by mail-pj1-f50.google.com with SMTP id o8-20020a17090a9f8800b00223de0364beso4223678pjp.4;
+        Thu, 05 Jan 2023 21:47:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9haJaoxzzlxIw80KSghijxYYontjX86CShnPu8UjfW4=;
-        b=Oac7rOSpxLWIgaoGFbdeVTTq90W1wAOXWZ/afW7UHMiZv+kwJuMQGEergrT+HOBv4O
-         xkwIwsfWI09X2V906/VrA4d1uG2OCw+0eaiPGXxhDQvufUjIQo+xTdk5sXFNLz688TM7
-         0cBcTX0b2hWpg9JmSCA2k1oCgZvAGoJ7WzhWfWcLacchTn/1AQ+8vFi68NzYge7ySxOc
-         GZYEjboSNVaixpe2keeI1F4zJleZ1s57kPcECNYu3wIOZ6uw4ke0cYtQ1aLjFYc7K5YH
-         tYbXQxATbqcyrdKo9TQKY8CsRqGbFfYDpaHcnrngIZEvmzVamSFu0/uov2sVPscoFUw2
-         MXVg==
-X-Gm-Message-State: AFqh2kr+Jz//wujSh4+N8bjwCKj+G8EMbZ/CDzeo1H931e9rmpFVMcKO
-        15ugPvh3lyaRaVkZeCfJ9pspCeTcz+vxXMxARn34hDxiwcEI
-X-Google-Smtp-Source: AMrXdXsruXyrNEkCIYr6WYHzHNmYGVS2jLn5bC+W07DFgx/KzGjFaAh/wTFmxNS2SlEDLWf7FbBp2WpymlZEbGzufhoGGftuJW4I
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3YubsmjlT8gvaUNIbLlS2Rx5IGQKnpyKadMDjv71G7c=;
+        b=LLZwZOxnXI8avDE5Jt5cMfQKBijAwnEfmOvuGAezu362nWzKMSDE6mQZg7lYISvZGL
+         XqQprTfizgiPktFO192lrlMiTVwAwCG9ifwUr87xO0/hZRPaBv85kDOfRbK5OeR760JD
+         Ju5MAZ9RVMGVlhC7vy8tpLoUbJliTh0CPpezrF6T7aRipBR2Dp1ArK5BDqloL2ugzoWn
+         YEiehB45nLVb6beRTny2BGz71J6pcwXoGofHySWUqpewTk5g0KRZ5q8+Z5nnmzrfMpuA
+         oUAIxJOA6OWkbbh7Phdptjt0vJZ3kjOxIVyf57+vfB+hoB8f9bS/6k3D207fe+bnrzHG
+         /TTw==
+X-Gm-Message-State: AFqh2krlbnvXcdWKIZoyVfkNWu4rFaTM2yosDpSDBLpdL5SCBeQJWn8Y
+        aD64WFsAJDfoaH8FBGsnLBQPwxyqcUT26+QP9fk=
+X-Google-Smtp-Source: AMrXdXuDUVBnGhwZoxjcV0kodG3U5wRj+DXUQMWLdzEIhmGty+QTS7CeirNo2kTS3VxHb9HveTW1MqzR8K9BNMEtcGk=
+X-Received: by 2002:a17:902:ef87:b0:192:5cb3:b01a with SMTP id
+ iz7-20020a170902ef8700b001925cb3b01amr2832255plb.95.1672984066101; Thu, 05
+ Jan 2023 21:47:46 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:a510:0:b0:38a:1efa:7053 with SMTP id
- e16-20020a02a510000000b0038a1efa7053mr5097206jam.173.1672983528747; Thu, 05
- Jan 2023 21:38:48 -0800 (PST)
-Date:   Thu, 05 Jan 2023 21:38:48 -0800
-In-Reply-To: <000000000000cad14205ee10ec87@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f238aa05f191d4d6@google.com>
-Subject: Re: [syzbot] BUG: unable to handle kernel paging request in p9_client_disconnect
-From:   syzbot <syzbot+ea8b28e8dca42fc3bcbe@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
+References: <20230106042844.give.885-kees@kernel.org>
+In-Reply-To: <20230106042844.give.885-kees@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Fri, 6 Jan 2023 14:47:35 +0900
+Message-ID: <CAMZ6RqKghb-YqQuWGiEn8D-CQgvecBxsxUz_2XYE0m3hs752gQ@mail.gmail.com>
+Subject: Re: [PATCH v3] ethtool: Replace 0-length array with flexible array
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        kernel test robot <lkp@intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Fri. 6 Jan 2023 at 13:28, Kees Cook <keescook@chromium.org> wrote:
+> Zero-length arrays are deprecated[1]. Replace struct ethtool_rxnfc's
+> "rule_locs" 0-length array with a flexible array. Detected with GCC 13,
+> using -fstrict-flex-arrays=3:
+>
+> net/ethtool/common.c: In function 'ethtool_get_max_rxnfc_channel':
+> net/ethtool/common.c:558:55: warning: array subscript i is outside array bounds of '__u32[0]' {aka 'unsigned int[]'} [-Warray-bounds=]
+>   558 |                         .fs.location = info->rule_locs[i],
+>       |                                        ~~~~~~~~~~~~~~~^~~
+> In file included from include/linux/ethtool.h:19,
+>                  from include/uapi/linux/ethtool_netlink.h:12,
+>                  from include/linux/ethtool_netlink.h:6,
+>                  from net/ethtool/common.c:3:
+> include/uapi/linux/ethtool.h:1186:41: note: while referencing
+> 'rule_locs'
+>  1186 |         __u32                           rule_locs[0];
+>       |                                         ^~~~~~~~~
+>
+> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: kernel test robot <lkp@intel.com>
+> Cc: Oleksij Rempel <linux@rempel-privat.de>
+> Cc: Sean Anderson <sean.anderson@seco.com>
+> Cc: Alexandru Tachici <alexandru.tachici@analog.com>
+> Cc: Amit Cohen <amcohen@nvidia.com>
+> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> v3: don't use helper (vincent)
 
-HEAD commit:    247f34f7b803 Linux 6.1-rc2
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=145dcb52480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9bed8d6a8992a0
-dashboard link: https://syzkaller.appspot.com/bug?extid=ea8b28e8dca42fc3bcbe
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1360a90c480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1580e9e6480000
+v1: https://lore.kernel.org/all/20230105214126.never.757-kees@kernel.org
+                                               ^^^^^
+> v2: https://lore.kernel.org/lkml/20230105233420.gonna.036-kees@kernel.org
+                                                  ^^^^^
+v3: https://lore.kernel.org/netdev/20230106042844.give.885-kees@kernel.org
+                                                  ^^^^
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/05f9a7fca332/disk-247f34f7.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/ec50c3ad7d48/vmlinux-247f34f7.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/1446f94b11ed/Image-247f34f7.gz.xz
+Seriously... :)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ea8b28e8dca42fc3bcbe@syzkaller.appspotmail.com
-
-Unable to handle kernel paging request at virtual address 0032503900080052
-Mem abort info:
-  ESR = 0x0000000096000044
-  EC = 0x25: DABT (current EL), IL = 32 bits
-  SET = 0, FnV = 0
-  EA = 0, S1PTW = 0
-  FSC = 0x04: level 0 translation fault
-Data abort info:
-  ISV = 0, ISS = 0x00000044
-  CM = 0, WnR = 1
-[0032503900080052] address between user and kernel address ranges
-Internal error: Oops: 0000000096000044 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 1 PID: 3076 Comm: syz-executor424 Not tainted 6.1.0-rc2-syzkaller-154433-g247f34f7b803 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : p9_client_disconnect+0x1c/0x30 net/9p/client.c:1067
-lr : p9_client_disconnect+0x18/0x30 net/9p/client.c:1065
-sp : ffff800012e43ca0
-x29: ffff800012e43ca0 x28: ffff0000cb48cec0 x27: 0000000000000000
-x26: 00000000000000c0 x25: 0000000000000002 x24: ffff80000d37d050
-x23: ffff80000d379000 x22: 0000000000000000 x21: 0000000000000000
-x20: ffff0000cc82cf00 x19: 3032503900080002 x18: 0000000000000035
-x17: 4553006964623d4d x16: 0000000000000000 x15: 0000000000000000
-x14: 0000000000000000 x13: ffff0000c5860c18 x12: ffff0000ccb854d8
-x11: ff8080000be7a520 x10: 0000000000000000 x9 : ffff80000be7a520
-x8 : 0000000000000002 x7 : 0000000000000000 x6 : ffff80000c0374d8
-x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
-x2 : ffff0000cb48cec0 x1 : 0000000000000000 x0 : 3032503900080002
-Call trace:
- p9_client_disconnect+0x1c/0x30
- v9fs_session_cancel+0x20/0x30 fs/9p/v9fs.c:530
- v9fs_kill_super+0x2c/0x50 fs/9p/vfs_super.c:225
- deactivate_locked_super+0x70/0xe8 fs/super.c:331
- deactivate_super+0xd0/0xd4 fs/super.c:362
- cleanup_mnt+0x184/0x1c0 fs/namespace.c:1186
- __cleanup_mnt+0x20/0x30 fs/namespace.c:1193
- task_work_run+0x100/0x148 kernel/task_work.c:179
- resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
- do_notify_resume+0x174/0x1f0 arch/arm64/kernel/signal.c:1127
- prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
- exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
- el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:637
- el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:654
- el0t_64_sync+0x18c/0x190 arch/arm64/kernel/entry.S:581
-Code: 910003fd aa0003f3 9710b2fd 52800048 (b9005268) 
----[ end trace 0000000000000000 ]---
-----------------
-Code disassembly (best guess):
-   0:	910003fd 	mov	x29, sp
-   4:	aa0003f3 	mov	x19, x0
-   8:	9710b2fd 	bl	0xfffffffffc42cbfc
-   c:	52800048 	mov	w8, #0x2                   	// #2
-* 10:	b9005268 	str	w8, [x19, #80] <-- trapping instruction
-
+> v2: https://lore.kernel.org/lkml/20230105233420.gonna.036-kees@kernel.org
+> ---
+>  include/uapi/linux/ethtool.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index 58e587ba0450..3135fa0ba9a4 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -1183,7 +1183,7 @@ struct ethtool_rxnfc {
+>                 __u32                   rule_cnt;
+>                 __u32                   rss_context;
+>         };
+> -       __u32                           rule_locs[0];
+> +       __u32                           rule_locs[];
+>  };
