@@ -2,82 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 310DC6601B3
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1573A6601BE
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234804AbjAFOAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 09:00:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
+        id S234806AbjAFODj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 09:03:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234805AbjAFOAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:00:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922B977D0B
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 05:59:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673013576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ld6skC87Efg95aZaTh35h3rM1PWHruwrzm5wBeouCCo=;
-        b=A3j1JtP9i9S4zey3XiclTC9FwcsOs+uAobyB9kIjholI+3yhyRqqPzchlmXIszQQUtYFrz
-        Dr30r1G9ckt+8ryOuojQo8FTS/9Iab0KrXNISBWbpYIX/VkKknXI3DpoF+6LXQfjuo6VkX
-        XSmUV4P7Cxa4EIiIVGGNgiV6kqaGkSY=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-454-QPBWjbfFP8iaXTdEMrky5Q-1; Fri, 06 Jan 2023 08:59:33 -0500
-X-MC-Unique: QPBWjbfFP8iaXTdEMrky5Q-1
-Received: by mail-ej1-f72.google.com with SMTP id sg39-20020a170907a42700b007c19b10a747so1185203ejc.11
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 05:59:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ld6skC87Efg95aZaTh35h3rM1PWHruwrzm5wBeouCCo=;
-        b=VHOOyADY7PGhoWzYt6HNFvpShUMggF4bGdzy0EfRAHIG6ZclG3Pn7UeTSRNyggjX6m
-         mOk9cbjXm6COIujuoLljiT65C2qo/wzMEGoqy5UPe3RndyEcVX7nZcnhQnRCR2ZoZf+g
-         rC7biVRIh1nym6Zu/MZAr/MajrmLwpcBoJRL8LmfUVCLnom/AaIsen7+5OLvPC4/iRT8
-         h9+dPHVsPql7e8W0aThqz7sBF86/bIZPpRCiGYyn+cpap9/C7fZseCkvS12ffpaTlbE0
-         43vOQCM/c4WhogngAf7kFsZ6Np0O8Ko151sRjIi7E2aoNVuCf58sGfGGjrSznWdPSYfJ
-         4pxw==
-X-Gm-Message-State: AFqh2koMXKi69WgFm4UHr0AzSPMDKtLp5sDEl9//f8I+Ye5n/UnX3cWO
-        wOcM4oPu93xZBJ6Uz9ITS9Loun8VbW75vJ12XoGaCx93+B4l/0CSFs7m7/cO3VKOZEyylM2+z+O
-        NmqaS0Tllw2ixtfFH
-X-Received: by 2002:a17:906:8d03:b0:83f:743e:86d with SMTP id rv3-20020a1709068d0300b0083f743e086dmr6820256ejc.14.1673013572498;
-        Fri, 06 Jan 2023 05:59:32 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXu/Ypg+zVVXXcX8tORlQQl+nbyb1LpahzhTJUDXGoEF4RRfu4eIbH86RVlS/sA+tygbzZ5Dag==
-X-Received: by 2002:a17:906:8d03:b0:83f:743e:86d with SMTP id rv3-20020a1709068d0300b0083f743e086dmr6820247ejc.14.1673013572296;
-        Fri, 06 Jan 2023 05:59:32 -0800 (PST)
-Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id sb25-20020a1709076d9900b0084c6581c16fsm432981ejc.64.2023.01.06.05.59.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Jan 2023 05:59:31 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <aa334df4-e362-a6d6-87bf-fd6be16023ec@redhat.com>
-Date:   Fri, 6 Jan 2023 14:59:30 +0100
+        with ESMTP id S229968AbjAFODg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:03:36 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296161ADA7
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:03:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AWkxn9TiyaOQivLTKREQp74OcAF242cAxx4LEIi1Ndo=; b=aSClYVoCjLbmEs/Wk/nFeqtB6v
+        S6pMsRXIlBs8izUGN/bPjdp6qCvoL/rYFFGO7+Ric5Ltx2yhhGUxs4hY1tsFN1hiWyEjYp2G25+T/
+        PIJ31vIxEh7SxZEpE0M2iWOtUvRiyhrr22PwJ9ZtyPyrSzv2uOLFHnfCzJbooiXa4N8U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pDnJl-001L3g-Nm; Fri, 06 Jan 2023 15:03:33 +0100
+Date:   Fri, 6 Jan 2023 15:03:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hau <hau@realtek.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: Re: [PATCH net] r8169: fix rtl8168h wol fail
+Message-ID: <Y7gqNfpRvOpeFPEN@lunn.ch>
+References: <20230105180408.2998-1-hau@realtek.com>
+ <714782c5-b955-4511-23c0-9688224bba84@gmail.com>
+ <Y7dAbxSPeaMnW/ly@lunn.ch>
+ <9ee2f626bab3481697b71c58091e7def@realtek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: [PATCH v2 05/24] page_pool: Start using netmem in allocation
- path.
-Content-Language: en-US
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-References: <20230105214631.3939268-1-willy@infradead.org>
- <20230105214631.3939268-6-willy@infradead.org>
-In-Reply-To: <20230105214631.3939268-6-willy@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9ee2f626bab3481697b71c58091e7def@realtek.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,44 +50,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 06, 2023 at 06:53:12AM +0000, Hau wrote:
+> > > > rtl8168h has an application that it will connect to rtl8211fs
+> > > > through mdi interface. And rtl8211fs will connect to fiber through serdes
+> > interface.
+> > > > In this application, rtl8168h revision id will be set to 0x2a.
+> > > >
+> > > > Because rtl8211fs's firmware will set link capability to 100M and
+> > > > GIGA when link is from off to on. So when system suspend and wol is
+> > > > enabled, rtl8168h will speed down to 100M (because rtl8211fs
+> > > > advertise 100M and GIGA to rtl8168h). If the link speed between
+> > rtl81211fs and fiber is GIGA.
+> > > > The link speed between rtl8168h and fiber will mismatch. That will
+> > > > cause wol fail.
+> > > >
+> > > > In this patch, if rtl8168h is in this kind of application, driver
+> > > > will not speed down phy when wol is enabled.
+> > > >
+> > > I think the patch title is inappropriate because WoL works normally on
+> > > RTL8168h in the standard setup.
+> > > What you add isn't a fix but a workaround for a firmware bug in RTL8211FS.
+> > > As mentioned in a previous review comment: if speed on fibre side is
+> > > 1Gbps then RTL8211FS shouldn't advertise 100Mbps on MDI/UTP side.
+> > > Last but not least the user can still use e.g. ethtool to change the
+> > > speed to 100Mbps thus breaking the link.
+> > 
+> > I agree with Heiner here. I assume you cannot fix the firmware?
+> > 
+> > So can we detect the broken firmware and correctly set
+> > phydev->advertising? That will fix WoL and should prevent the user
+> > from using ethtool to select a slower speed.
+> > 
+> It is a rtl8211fs's firmware bug. Because in this application it will support both 100M and GIGA
+> fiber module, so it cannot just set phydev->advertising to 100M or GIGA. We  may need to 
+> use bit-bang MDIO to detect fiber link speed and set phydev->advertising properly. But it will
+> let this patch become more complicated.
 
-On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
-> Convert __page_pool_alloc_page_order() and __page_pool_alloc_pages_slow()
-> to use netmem internally.  This removes a couple of calls
-> to compound_head() that are hidden inside put_page().
-> Convert trace_page_pool_state_hold(), page_pool_dma_map() and
-> page_pool_set_pp_info() to take a netmem argument.
-> 
-> Saves 83 bytes of text in __page_pool_alloc_page_order() and 98 in
-> __page_pool_alloc_pages_slow() for a total of 181 bytes.
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->   include/trace/events/page_pool.h | 14 +++++------
->   net/core/page_pool.c             | 42 +++++++++++++++++---------------
->   2 files changed, 29 insertions(+), 27 deletions(-)
+You mean you will read the EEPROM in the SFP to determine what it
+supports? If so, please use phylink, and the SFP driver, which will do
+this for you.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-Question below.
-
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 437241aba5a7..4e985502c569 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-[...]
-> @@ -421,7 +422,8 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
->   		page = NULL;
->   	}
->   
-> -	/* When page just alloc'ed is should/must have refcnt 1. */
-> +	/* When page just allocated it should have refcnt 1 (but may have
-> +	 * speculative references) */
->   	return page;
-
-What does it mean page may have speculative references ?
-
-And do I/we need to worry about that for page_pool?
-
---Jesper
-
+     Andrew
