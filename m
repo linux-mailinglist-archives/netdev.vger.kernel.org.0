@@ -2,75 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5827E660798
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 21:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D83D660801
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 21:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235820AbjAFUJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 15:09:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
+        id S236189AbjAFUQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 15:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233967AbjAFUJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 15:09:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BDE107
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 12:09:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62165B81E5A
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 20:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFEC8C433D2;
-        Fri,  6 Jan 2023 20:09:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673035755;
-        bh=ps6A/aVPu6olZOxeK28dvWoxlLYzeEsrPOY7RuSWSn4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uYKC7BHKgjehfuFIg01coAvXKoZshi1LXqmIbFWruX3rkRXxdbvQBM2y76UJTHEIq
-         rbwiBSXaSMj1q3ko8FbIvAbpGTGh1/LOiBWt86D+HMNS5ASSPAbtv+swheYa0HAS/I
-         ML8jidwwB9hxLTtnU6CkjFSSjnSL6KrLx2xs1pWpBAv+6nQc3mjnqEe6abgYctpE7S
-         z8zAuARxdPgYuCxzjKmjTujcsIFTO0VGKhTg67v7HhCRHFTvWBP0CaOHA0frmXdT2P
-         xoWUSkSEg0AMOTRlThp2DopNjwSL9A8z06W86zOL1ppyrDXU88AHbg05dxlwxpgxdi
-         DpTNFjrdgeWNA==
-Date:   Fri, 6 Jan 2023 12:09:13 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net-next 2/2] net: kfree_skb_list use kmem_cache_free_bulk
-Message-ID: <Y7h/6RwHW2IU3dq3@x130>
-References: <167293333469.249536.14941306539034136264.stgit@firesoul>
- <167293336786.249536.14237439594457105125.stgit@firesoul>
+        with ESMTP id S236382AbjAFUQD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 15:16:03 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A92882F5D
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 12:14:29 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id y1so2806519plb.2
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 12:14:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=euU3G/ya0gtqqY9FQvfGrmCYDfDSO1DRx03jpA8QOoU=;
+        b=DxpJV32juCIC7h57KYTRrjCuSAEKETG43oBjZgf71yvmAQHb0L6DqYb1TF0bUPTUta
+         zq/0lgACacdY+WTeXku5JZ3Y1TAbuKWHPO8sa/cyKEk48X+V8Ut3URpj3vxBHM867N28
+         dEqxrQbhpBIzPD95jnlH21RK+ftUvSSFMAtOc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=euU3G/ya0gtqqY9FQvfGrmCYDfDSO1DRx03jpA8QOoU=;
+        b=npLvbPxhYgCe58RVptHc7B7skIAhxQwpx9TSpxiST7WDiYvAMh7TCgNOUfBgH8KssH
+         8ABmoFzDP3PYeU4+mXJtHplDY0E1dY/IvjXYEvizRpQKTUGIBYTy7NNHgSQatGnqbfyw
+         OEm5Qp7fruqnESSK22zOZCw+9xvaqhZVblK1bvQTexxHLhPaQmzvcw1y9ik1fhwgEeeV
+         GmqiLhuVmP9oPgR7JVTWBwz/hbJtmlF/SIFxwEFPsQAnc+oSK5zD/mJ4rKR5wnXLNDT2
+         NYN0X7p86KB4NMLVAQ46GMGncvcbRlR36o2h79C9oozxbjP7B9Mz64g7B47DU4mldf4/
+         DDgA==
+X-Gm-Message-State: AFqh2kpJIEIBt7UNAZBeypeDg24BpNIAL9DpX6ifiJFJX8UN9fL+wNED
+        z0SauHW1GB9hjOdWcAPFz1k7ZPxPLRbDRs6/
+X-Google-Smtp-Source: AMrXdXtkvQ+XpEzmJFaUJ0JVX00yVP9flnzGcmoU0MwhgVx2K6M1UpjXmeQnvV8L4me6P8O7LDJT/A==
+X-Received: by 2002:a05:6a20:3d26:b0:a7:8c43:d669 with SMTP id y38-20020a056a203d2600b000a78c43d669mr74101910pzi.51.1673036019131;
+        Fri, 06 Jan 2023 12:13:39 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e2-20020a170902784200b0019309be03e7sm1347726pln.66.2023.01.06.12.13.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Jan 2023 12:13:38 -0800 (PST)
+Date:   Fri, 6 Jan 2023 12:13:37 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jann Horn <jannh@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        kernel test robot <lkp@intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: minimum compiler for Linux UAPI (was Re: [PATCH v3] ethtool:
+ Replace 0-length array with flexible array)
+Message-ID: <202301061209.4EA0C177@keescook>
+References: <20230106042844.give.885-kees@kernel.org>
+ <CAG48ez0Jg9Eeh=RWpYh=sKhzukE3Sza2RKMmNs8o0FrHU0dj9w@mail.gmail.com>
+ <CAMZ6RqJXnUBxqyCFRaLxELjnvGzn9NoiePV2RVwBzAZRGH_Qmg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <167293336786.249536.14237439594457105125.stgit@firesoul>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAMZ6RqJXnUBxqyCFRaLxELjnvGzn9NoiePV2RVwBzAZRGH_Qmg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05 Jan 16:42, Jesper Dangaard Brouer wrote:
->The kfree_skb_list function walks SKB (via skb->next) and frees them
->individually to the SLUB/SLAB allocator (kmem_cache). It is more
->efficient to bulk free them via the kmem_cache_free_bulk API.
->
->This patches create a stack local array with SKBs to bulk free while
->walking the list. Bulk array size is limited to 16 SKBs to trade off
->stack usage and efficiency. The SLUB kmem_cache "skbuff_head_cache"
->uses objsize 256 bytes usually in an order-1 page 8192 bytes that is
->32 objects per slab (can vary on archs and due to SLUB sharing). Thus,
->for SLUB the optimal bulk free case is 32 objects belonging to same
->slab, but runtime this isn't likely to occur.
->
->Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+On Fri, Jan 06, 2023 at 11:25:14PM +0900, Vincent MAILHOL wrote:
+> On Fri. 6 Jan 2023 at 22:19, Jann Horn <jannh@google.com> wrote:
+> > On Fri, Jan 6, 2023 at 5:28 AM Kees Cook <keescook@chromium.org> wrote:
+> > > Zero-length arrays are deprecated[1]. Replace struct ethtool_rxnfc's
+> > > "rule_locs" 0-length array with a flexible array. Detected with GCC 13,
+> > > using -fstrict-flex-arrays=3:
+> [...]
+> > > diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> > > index 58e587ba0450..3135fa0ba9a4 100644
+> > > --- a/include/uapi/linux/ethtool.h
+> > > +++ b/include/uapi/linux/ethtool.h
+> > > @@ -1183,7 +1183,7 @@ struct ethtool_rxnfc {
+> > >                 __u32                   rule_cnt;
+> > >                 __u32                   rss_context;
+> > >         };
+> > > -       __u32                           rule_locs[0];
+> > > +       __u32                           rule_locs[];
+> >
+> > Stupid question: Is this syntax allowed in UAPI headers despite not
+> > being part of standard C90 or C++? Are we relying on all C/C++
+> > compilers for pre-C99 having gcc/clang extensions?
+> 
+> The [0] isn't part of the C90 standard either. So having to choose
+> between [0] and [], the latter is the most portable nowadays.
+> 
+> If I do a bit of speleology, I can see that C99 flexible array members
+> were used as early as v2.6.19 (released in November 2006):
+> 
+>   https://elixir.bootlin.com/linux/v2.6.19/source/include/linux/usb/audio.h#L36
+> 
+> This is prior to the include/linux and include/uapi/linux split, but
+> believe me, this usb/audio.h file is indeed part of the uapi.
+> So, yes, using C99 flexible array members in the UAPI is de facto
+> allowed because it was used for the last 16 years.
+> 
+> An interesting sub question would be:
+> 
+>   What are the minimum compiler requirements to build a program using
+> the Linux UAPI?
 
-any performance numbers ? 
+You're right -- we haven't explicitly documented this. C99 seems like
+the defacto minimum, though.
 
-LGTM,
-Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+> And, after research, I could not find the answer. The requirements to
+> build the kernel are well documented:
+> 
+>   https://docs.kernel.org/process/changes.html#changes
+> 
+> But no clue for the uapi. I guess that at one point in 2006, people
+> decided that it was time to set the minimum requirement to C99. Maybe
+> this matches the end of life of the latest pre-C99 GCC version? The
+> detailed answer must be hidden somewhere on lkml.
 
+I would make the argument that the requirements for building Linux UAPI
+should match that of building the kernel...
+
+-- 
+Kees Cook
