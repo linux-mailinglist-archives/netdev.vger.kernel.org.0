@@ -2,74 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B382266008E
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 13:52:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A436600B1
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 13:57:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232094AbjAFMwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 07:52:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        id S234777AbjAFM5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 07:57:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbjAFMwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 07:52:16 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801A666981
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 04:52:15 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id q64so1409630pjq.4
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 04:52:15 -0800 (PST)
+        with ESMTP id S234212AbjAFM4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 07:56:43 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FA869B36
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 04:55:57 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso5163312pjt.0
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 04:55:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=QktckT1Dg+7YrSBNbNHyYysT0vMTxZl1GQ0CnV1tjLXcmLTF6LcT6vMYqz6fWFzOTS
-         yVpHK7Lzy8iBQ1J3dibw4ztAuAUVDt7IYCMeuAGGTk1tU7Cb+mNj0aSpsVFn+WzClTMr
-         pNCoR2ndjbTYOAUcOVwHNUC0lo+GfERbt0ouXz3G9iV/0FPYv92b+Q37U0LkVMVSd6xm
-         L8Tw69rYzIN2IvRpzqEEjXFyt6yHOnqaVHzEk9RIT4p/oDdyRQZwsAy7z06hUrVVlKee
-         kU1qcOF/hQ+f6zJp2gZcyupFLidjX9jf3injfzsKHs9VkK8nF00Zg/Wc5ua9CLP8MDAz
-         TjQg==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=lEYk+mZODoO93cG2HIO3aDsjhc6RoXoABRAPTfEB/Z8=;
+        b=3mFkSsuvByNdmVJReuv5KJvmxXZuP+l2uFkB7hrZVRPNRYvDSpku5Mg9E00VZAy66I
+         R0uENPjzPsMyksg1w3tYM17UZEhd/IOf/8xlKkvJsUWCkHFxSnIwAEb0l1awVgaLwRDB
+         Ki90fgfTmrWOFrg1cJIry3x13Jd6a/Do/vUDcx0BUzaZKREbw0cdLd6E1nJleE23RtFT
+         s9K7ZHOWmemLGqJNQJQuGgKUWeNjizQbfiwP+xfLufNcW8SDT9VGQxFrpJbG+F6QuQlx
+         5Sv75IkFV3imjYXLH11BzTCrf9uNwOaylYgagxccy2dJu2lLpAO/i4LnyC3yFIzf5Af5
+         N4PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=72AgItOtFTWHoeCSZwLRpcwUXWBhYObSKH+nPQ/Aq2X7rC6qDts+4pLAmm5T9n+Kdt
-         MjgH8rG5LJHtV45DUIhIYIBSbyzJu0+PWa7CTkV6z9MgCjpcOEC5NpzH8XqMv31Gh/uV
-         IS3z1bbTXFRzXKGE4XotGjVi5uk9yPOEgYprMj2JMgMe4gzHt/R2CHj863OqRX0gNWZA
-         /Dibt4GC7X57zB+za1QIkhi45XfCMhl0aZIU53DXBfNzYyDxEiBkNVVQY6AVYRpolDjf
-         /uQBxj2mHVD+4oLn0HB1dVyEcoCmR+NPG0fBdb/mv5yorxlmn1zKqZMQTslChBsKWCDc
-         Zlaw==
-X-Gm-Message-State: AFqh2kofa0Sm3r8QQ20wnsrGXR2b7jL2LJNOqf6Y/fh898w8EFStQAM5
-        djwwmSmFbz4RpfMsR08ZpKdjx+Ic0tfyE7tXPe0=
-X-Google-Smtp-Source: AMrXdXuVylLWLtH2aB0FiMusNtlvqnwVXbBMOz/34+DaaH6sw8dpdjeYXYTM9qWf1Z0B6H+h7wHu8rhAUtKUa/OKoow=
-X-Received: by 2002:a17:90a:9513:b0:226:e191:4417 with SMTP id
- t19-20020a17090a951300b00226e1914417mr169847pjo.16.1673009534958; Fri, 06 Jan
- 2023 04:52:14 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lEYk+mZODoO93cG2HIO3aDsjhc6RoXoABRAPTfEB/Z8=;
+        b=eGbMuGFW5bOF02Hwz4zNNHefZZOsrv1KodooGDgezynrhpoVRtaOOX8HljSYuMTd++
+         AO1CmCCl4dm1hao8RdhvpuapzeC7iPRPwzZussDm9xM2SoNaJIAz19mvojP+wR3rsFpQ
+         CIaMO373K1ttQ7wjmSY37sulOAI8hmO8i/49g9HPi7LyEkf1gWGwQ46lycucQUpPTwJR
+         1ZnMX3uzGbSft2cvjgn6FtSSBcy00M6EQohha1d4Az3c+ZVIyDmkqQtprwz9y6AnkJsN
+         QfC91g/QIg+2LvAEF4opFjAw8ol3kykNbE9V4NBMX6L4Q4ukN2Cx+4SDB7Q4FyfgKvLF
+         eIeA==
+X-Gm-Message-State: AFqh2kr3+NRly9+Jih5EH9dJ0rvxD0ulH8O0vg8hrKK55N6acYQ9BM8E
+        5MmEukXALkDCXaKyYyomjcMt0w==
+X-Google-Smtp-Source: AMrXdXvreS1DYEmViRy5+KZBiB3VYQmWVr/mAZfI1QZ9quJZsofu0RJiSBOcl8DFfskMNUOrU+Rg6w==
+X-Received: by 2002:a17:902:a5cc:b0:192:f999:1e73 with SMTP id t12-20020a170902a5cc00b00192f9991e73mr7478849plq.51.1673009757280;
+        Fri, 06 Jan 2023 04:55:57 -0800 (PST)
+Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
+        by smtp.gmail.com with ESMTPSA id b14-20020a1709027e0e00b00193132018ecsm554134plm.170.2023.01.06.04.55.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Jan 2023 04:55:56 -0800 (PST)
+Date:   Fri, 6 Jan 2023 13:55:53 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jacob.e.keller@intel.com
+Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters after
+ the instance
+Message-ID: <Y7gaWTGHTwL5PIWn@nanopsycho>
+References: <20230106063402.485336-1-kuba@kernel.org>
+ <20230106063402.485336-8-kuba@kernel.org>
 MIME-Version: 1.0
-Sender: cd295377@gmail.com
-Received: by 2002:a05:7300:b30c:b0:96:207d:959 with HTTP; Fri, 6 Jan 2023
- 04:52:14 -0800 (PST)
-From:   "Mrs. LiaAhil Ahil " <mrsliaahilahil@gmail.com>
-Date:   Fri, 6 Jan 2023 12:52:14 +0000
-X-Google-Sender-Auth: 4iGnKp3msWQdgXXk9Tt8K3y7olk
-Message-ID: <CALQf4VaJs31K_r+vRd2Gcp0rvFeNEEWuxh2nzLdHojHQFMdLvQ@mail.gmail.com>
-Subject: =?UTF-8?Q?Gr=C3=BC=C3=9Fe=2C_Ich_m=C3=B6chte_eine_private_Kommunikation_mit_?=
-        =?UTF-8?Q?Ihnen_haben=2C_bitte_best=C3=A4tigen_Sie_mir=2C_ob_diese_E=2DMail_sich?=
-        =?UTF-8?Q?er_genug_f=C3=BCr_eine_private_Unterhaltung_ist=2E_Kontaktieren_Si?=
-        =?UTF-8?Q?e_mich_=C3=BCber_meine_private_E=2DMail=2DAdresse=3A_mrsliaahilahil=40gm?=
-        =?UTF-8?Q?ail=2Ecom_Ich_freue_mich_auf_Ihre_positive_Antwort=2E_Frau_LiaAh?=
-        =?UTF-8?Q?il_Ahil?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.9 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,EMPTY_MESSAGE,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230106063402.485336-8-kuba@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fri, Jan 06, 2023 at 07:34:00AM CET, kuba@kernel.org wrote:
+>It's most natural to register the instance first and then its
+>subobjects. Now that we can use the instance lock to protect
+>the atomicity of all init - it should also be safe.
+>
+>Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>---
+> net/devlink/leftover.c | 22 +++++++++++-----------
+> 1 file changed, 11 insertions(+), 11 deletions(-)
+>
+>diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+>index 491f821c8b77..1e23b2da78cc 100644
+>--- a/net/devlink/leftover.c
+>+++ b/net/devlink/leftover.c
+>@@ -5263,7 +5263,13 @@ static void devlink_param_notify(struct devlink *devlink,
+> 	WARN_ON(cmd != DEVLINK_CMD_PARAM_NEW && cmd != DEVLINK_CMD_PARAM_DEL &&
+> 		cmd != DEVLINK_CMD_PORT_PARAM_NEW &&
+> 		cmd != DEVLINK_CMD_PORT_PARAM_DEL);
+>-	ASSERT_DEVLINK_REGISTERED(devlink);
+>+
+>+	/* devlink_notify_register() / devlink_notify_unregister()
+>+	 * will replay the notifications if the params are added/removed
+>+	 * outside of the lifetime of the instance.
+>+	 */
+>+	if (!devl_is_registered(devlink))
+>+		return;
 
+This helper would be nice to use on other places as well.
+Like devlink_trap_group_notify(), devlink_trap_notify() and others. I
+will take care of that in a follow-up.
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
