@@ -2,112 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1043565FD50
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 10:12:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E900B65FD63
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 10:16:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbjAFJME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 04:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39014 "EHLO
+        id S232655AbjAFJQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 04:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbjAFJMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 04:12:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73741007
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 01:11:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 565CEB81CDC
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 09:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FCEC433EF;
-        Fri,  6 Jan 2023 09:11:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672996315;
-        bh=hwYF8sQ1hbsW3p2mh1zLVxDNNwkqFYQUd+lsO9xwLvo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MMXs2eHpbajlfIhByNWzzm83UvpdH2WLdvPrT18iySgxH0Z9quvFOsCZ28vcfp6dq
-         sxpsi12oh83+dHRtR4kUTr9AQEPJQaWGK1grp6rWBw8CIXBlHblx0t6FEOd5eNoNCm
-         wedrLRl2kRT2oAKi0pMXf/rUMcJ1O2L7AtQI5X1M+Py9r7uuaf9Yis05HgCfjwnGQg
-         n6g+Mmj8zBGDoL1WTSV9CnsjKiNg5RD+H83vww3/e2Y2rvdxwmvZ2X6ov9+U5SYUpC
-         e+IVmF45xhqJL/3OGf0MJ4KMvRIAlHQ7VyHyYAA47tQqbZsPkKA1Y8+XHb/qfzcxyH
-         dhehEIB57ENbg==
-Date:   Fri, 6 Jan 2023 10:11:52 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        lorenzo.bianconi@redhat.com, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        sujuan.chen@mediatek.com, daniel@makrotopia.org, kvalo@kernel.org
-Subject: Re: [PATCH v2 net-next 5/5] net: ethernet: mtk_wed: add
- reset/reset_complete callbacks
-Message-ID: <Y7fl2AlCwepPx6Gq@lore-desk>
-References: <cover.1672840858.git.lorenzo@kernel.org>
- <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
- <Y7WKcdWap3SrLAp3@unreal>
- <Y7WURTK70778grfD@lore-desk>
- <Y7aW3k4xZVfDb6oh@unreal>
- <Y7a5XeLjTj1MNCDz@lore-desk>
- <20230105214832.7a73d6ed@kernel.org>
+        with ESMTP id S232518AbjAFJQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 04:16:31 -0500
+Received: from out29-10.mail.aliyun.com (out29-10.mail.aliyun.com [115.124.29.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B65B63D2A;
+        Fri,  6 Jan 2023 01:16:28 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07872471|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0430848-0.00314929-0.953766;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047202;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=17;RT=17;SR=0;TI=SMTPD_---.Qlv4Ozn_1672996585;
+Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.Qlv4Ozn_1672996585)
+          by smtp.aliyun-inc.com;
+          Fri, 06 Jan 2023 17:16:26 +0800
+Message-ID: <8fa89dac-6859-af93-0dc0-ffcb42b5bb30@motor-comm.com>
+Date:   Fri, 6 Jan 2023 17:17:04 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Rc5lWFUTISwO9aH0"
-Content-Disposition: inline
-In-Reply-To: <20230105214832.7a73d6ed@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
+ ethernet phy Driver bindings
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
+ <20230105073024.8390-2-Frank.Sae@motor-comm.com>
+ <b74baadf-37a4-c9a2-c821-3c3e0143fa4a@linaro.org>
+From:   "Frank.Sae" <Frank.Sae@motor-comm.com>
+In-Reply-To: <b74baadf-37a4-c9a2-c821-3c3e0143fa4a@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Krzysztof Kozlowski,
 
---Rc5lWFUTISwO9aH0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2023/1/6 16:26, Krzysztof Kozlowski wrote:
+> On 05/01/2023 08:30, Frank wrote:
+>> Add a YAML binding document for the Motorcom yt8xxx Ethernet phy driver.
+>>
+> 
+> Subject: drop second, redundant "Driver bindings".
 
-On Jan 05, Jakub Kicinski wrote:
-> On Thu, 5 Jan 2023 12:49:49 +0100 Lorenzo Bianconi wrote:
-> > > > These callbacks are implemented in the mt76 driver. I have not adde=
-d these
-> > > > patches to the series since mt76 patches usually go through Felix/K=
-alle's
-> > > > trees (anyway I am fine to add them to the series if they can go in=
-to net-next
-> > > > directly). =20
-> > >=20
-> > > Usually patches that use specific functionality are submitted together
-> > > with API changes. =20
-> >=20
-> > I would say it is better mt76 patches go through Felix/Kalle's tree in =
-order to avoid
-> > conflicts.
-> >=20
-> > @Felix, Kalle: any opinions?
->=20
-> FWIW as long as the implementation is in net-next before the merge
-> window I'm fine either way. But it would be good to see the
-> implementation, a co-posted RFC maybe?
+Change Subject from
+dt-bindings: net: Add Motorcomm yt8xxx ethernet phy Driver bindings
+to
+dt-bindings: net: Add Motorcomm yt8xxx ethernet phy
+?
 
-ack, I will post mt76 series to wireless mailing list just after the new ve=
-rsion
-of this one.
+> 
+>> Signed-off-by: Frank <Frank.Sae@motor-comm.com>
+> 
+> Use full first and last name. Your email suggests something more than
+> only "Frank".
+> 
 
-Regards,
-Lorenzo
+OK , I will use  Frank.Sae <Frank.Sae@motor-comm.com>
 
---Rc5lWFUTISwO9aH0
-Content-Type: application/pgp-signature; name="signature.asc"
+>> ---
+>>  .../bindings/net/motorcomm,yt8xxx.yaml        | 180 ++++++++++++++++++
+>>  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+>>  MAINTAINERS                                   |   1 +
+>>  3 files changed, 183 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>> new file mode 100644
+>> index 000000000000..337a562d864c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>> @@ -0,0 +1,180 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/net/motorcomm,yt8xxx.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: MotorComm yt8xxx Ethernet PHY
+>> +
+>> +maintainers:
+>> +  - frank <frank.sae@motor-comm.com>
+>> +
+>> +description: |
+>> +  Bindings for MotorComm yt8xxx PHYs.
+> 
+> Instead describe the hardware. No need to state the obvious that these
+> are bindings.
+> 
 
------BEGIN PGP SIGNATURE-----
+I will fix.
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY7fl1wAKCRA6cBh0uS2t
-rAZmAQCqN1SkKaImFaEleynUG6+81m2zSrDcEpLKpgkdkPK7pQEAjjfk9vTexUop
-PNsL/x4tKete0qZVCGqkEV5LZwgEng4=
-=R7JT
------END PGP SIGNATURE-----
+>> +  yt8511 will be supported later.
+> 
+> Bindings should be complete. Your driver support is not relevant here.
 
---Rc5lWFUTISwO9aH0--
+I will fix.
+
+> 
+>> +
+>> +allOf:
+>> +  - $ref: ethernet-phy.yaml#
+>> +
+>> +properties:
+>> +  motorcomm,clk-out-frequency:
+> 
+> Use property suffixes matching the type.
+> 
+>> +    description: clock output in Hertz on clock output pin.
+> 
+> Drop "Hertz". It should be obvious from the suffix.
+> 
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+> 
+> Drop.
+> 
+> Anyway, does it fit standard clock-frequency property?
+> 
+>> +    enum: [0, 25000000, 125000000]
+>> +    default: 0
+>> +
+
+Yes, I will fix.
+
+>> +  motorcomm,rx-delay-basic:
+>> +    description: |
+>> +      Tristate, setup the basic RGMII RX Clock delay of PHY.
+>> +      This basic delay is fixed at 2ns (1000Mbps) or 8ns (100Mbps、10Mbps).
+>> +      This basic delay usually auto set by hardware according to the voltage
+>> +      of RXD0 pin (low = 0, turn off;   high = 1, turn on).
+>> +      If not exist, this delay is controlled by hardware.
+> 
+> I don't understand that at all. What "not exist"? There is no verb and
+> no subject.
+> 
+> The type and description are really unclear.
+> 
+>> +      0: turn off;   1: turn on.
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>> +    enum: [0, 1]
+> 
+> So this is bool?
+> 
+
+This basic delay can be controlled by hardware or dts.
+
+Default value depends on power on strapping, according to the voltage
+of RXD0 pin (low = 0, turn off;   high = 1, turn on).
+
+"not exist" means that This basic delay is controlled by hardware,
+and software don't change this.
+
+I will fix.
+
+>> +
+>> +  motorcomm,rx-delay-additional-ps:
+>> +    description: |
+>> +      Setup the additional RGMII RX Clock delay of PHY defined in pico seconds.
+>> +      RGMII RX Clock Delay = rx-delay-basic + rx-delay-additional-ps.
+>> +    enum:
+> 
+> Best regards,
+> Krzysztof
