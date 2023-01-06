@@ -2,113 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4280D65FBE7
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 08:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4FB65FBFA
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 08:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231315AbjAFH2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 02:28:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
+        id S229954AbjAFHc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 02:32:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjAFH2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 02:28:05 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3568B6ECBD
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 23:28:04 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 3922E244F0;
-        Fri,  6 Jan 2023 07:28:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1672990082; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=qcHUiVAjJO3DMY5+VXRQErLJFnEpu+52N7JyRTTtab8=;
-        b=Obnz0JTZbqZVSRu5rHlgGY7Yld96w/YO9gpnshQBxWPxVzcBSGZn0HYGLtbSnYlqH5JBin
-        PwpyF/Wnx/FAL6sYxVRzp78ORRdQfTZyQ7uMO7uerv+zCesMaG1mDu8SWK6YtylZa2Ykqx
-        rQYra1Xo7uoBaiVbwzfK57281Dxf/TM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1672990082;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=qcHUiVAjJO3DMY5+VXRQErLJFnEpu+52N7JyRTTtab8=;
-        b=0n5SWdt2T2a2g8v/Cm3hugx00Bfu6ro6SXuTprzvpAu/F9VDwejNc8vPScqNx6W8QlGW7j
-        ASgXtMZN9+iokUCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 14E5A13596;
-        Fri,  6 Jan 2023 07:28:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Gg2+BILNt2OMMwAAMHmgww
-        (envelope-from <iivanov@suse.de>); Fri, 06 Jan 2023 07:28:02 +0000
-From:   "Ivan T. Ivanov" <iivanov@suse.de>
-To:     aspriel@gmail.com, marcan@marcan.st
-Cc:     franky.lin@broadcom.com, hante.meuleman@broadcom.com,
-        rmk+kernel@armlinux.org.uk, kvalo@kernel.org, davem@davemloft.net,
-        devicetree@vger.kernel.org, edumazet@google.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        "Ivan T. Ivanov" <iivanov@suse.de>
-Subject: [PATCH] brcmfmac: of: Use board compatible string for board type
-Date:   Fri,  6 Jan 2023 09:27:46 +0200
-Message-Id: <20230106072746.29516-1-iivanov@suse.de>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S232056AbjAFHbs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 02:31:48 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6309665AD6
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 23:31:24 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id r18so652293pgr.12
+        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 23:31:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=56U3L/n2SWLavdhRRg0Yc0+2596Qz1l4ZkRdkLejoUU=;
+        b=elQsgd3s95kZjmqyDOBj/aqKTfcjhDKSBAgNt5cuMtwoh1TDQCbxOJPMeVDM2n34II
+         5WWyQbHNsqew5MFvLAKhqbkRjlfi8i6JbOVNkPF4d6ylgZCzFLvJQRZWoNb1ejf9kJM+
+         NfTPXEr5bkjHvkINeaw9AGcJ1xeUx5LZgAg1WLPUJIGpUvgSfGuh1dMYfp6gaIR5h9y4
+         k5NOK7cDG/RFjOV9Nf2uu81jtUraAgd0ZXfh5aueEv01IRRFPdie0n7mBQ9zquCpL5zL
+         kE906JTkT7idaJEC2qPy99BmXRp4hJvJBkIJIaWZ+1m8JJ7qTBMw6LB6EAeDvUmI4Yr5
+         KoFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=56U3L/n2SWLavdhRRg0Yc0+2596Qz1l4ZkRdkLejoUU=;
+        b=yvg9UqIIUytbtPYI4T99zx3R0d0nheuuPa2EXwYTotYVRnuUyELmyv9gwfGqB5Ql5/
+         JZK7xSOwIPtp02YT1Pb9Dyy8LfkLw9gcBIDMiOct0g2EADkdSQ0GF3vK2bZYcUwa6jI/
+         Mdsq0g/vhFcMbAY8FiylZJJykx7F/ND1T4sj5G5aoPBYBWICW/GIBn9wZZ6vn3xkS8yB
+         qS4uKBP3Lhn2vmsvTjFx5qMjG4QBmlqbjAESQKn+nNHKmXBMEfXHBFCkX3XjJK9BkeU3
+         AUW9iH5cbR7nIsJTwiKqMdf7jhdty2ZdTn05iUZjPGJqlD+jysr/2IFV9rXsQyF25bhY
+         tmuQ==
+X-Gm-Message-State: AFqh2kr/RXDPFm+ZAvyLsNA692mtkrd+3lhAvSQhwwQJ5eQzWloOlElz
+        rYqtuLepbJLhm+s07bbQD619fcI0i5mtA9KG5Q==
+X-Google-Smtp-Source: AMrXdXuPGUqAq/gA4NvozqeSwhn313z9hsk0takCEbXTYxO29I/cls4kzRsujk3GtUKYbVvzE0Io7hI2+QgjSU9lx+Q=
+X-Received: by 2002:a05:6a00:1d95:b0:57e:1a5b:d40 with SMTP id
+ z21-20020a056a001d9500b0057e1a5b0d40mr3728240pfw.23.1672990276328; Thu, 05
+ Jan 2023 23:31:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6a11:586:b0:3a0:4e21:32f3 with HTTP; Thu, 5 Jan 2023
+ 23:31:15 -0800 (PST)
+Reply-To: westernuniont27@gmail.com
+From:   Western Union Togo <yatche512@gmail.com>
+Date:   Fri, 6 Jan 2023 07:31:15 +0000
+Message-ID: <CALrTvTod0pZ28OGsS0=wgrEWApwA47ZKYROhS2LEwT1iZdMVNA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When "brcm,board-type" is not explicitly set in devicetree
-fallback to board compatible string for board type.
-
-Some of the existing devices rely on the most compatible device
-string to find best firmware files, including Raspberry PI's[1].
-
-Fixes: 7682de8b3351 ("wifi: brcmfmac: of: Fetch Apple properties")
-
-[1] https://bugzilla.opensuse.org/show_bug.cgi?id=1206697#c13
-
-Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index a83699de01ec..fdd0c9abc1a1 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -79,7 +79,8 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 	/* Apple ARM64 platforms have their own idea of board type, passed in
- 	 * via the device tree. They also have an antenna SKU parameter
- 	 */
--	if (!of_property_read_string(np, "brcm,board-type", &prop))
-+	err = of_property_read_string(np, "brcm,board-type", &prop);
-+	if (!err)
- 		settings->board_type = prop;
- 
- 	if (!of_property_read_string(np, "apple,antenna-sku", &prop))
-@@ -87,7 +88,7 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 
- 	/* Set board-type to the first string of the machine compatible prop */
- 	root = of_find_node_by_path("/");
--	if (root && !settings->board_type) {
-+	if (root && err) {
- 		char *board_type;
- 		const char *tmp;
- 
--- 
-2.35.3
-
+Your overdue fund payment has been approved for payment via Western Union
+Money Transfer. Get back to us now for your payment. Note, your Transaction
+Code is: TG104110KY.
