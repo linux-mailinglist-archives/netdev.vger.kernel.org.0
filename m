@@ -2,140 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B5C165FEA1
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:17:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD84A65FEEC
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:27:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233166AbjAFKRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 05:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        id S232108AbjAFK0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 05:26:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbjAFKRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:17:37 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624CA26E8;
-        Fri,  6 Jan 2023 02:17:34 -0800 (PST)
-Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E0E23855F7;
-        Fri,  6 Jan 2023 11:17:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1673000252;
-        bh=ca7u5r5AJwU9viujkR4q5SjnPmHR8I3Fn08GgpfJcz0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ehw9TsqYqownENUoM5E8BZj1QZDp8K6Edu+gkuhChDwd2v4OPV7fmoxhvhJdpmAvp
-         Y9mW450K37s8DDljOSrdr2GoYYbAmJFEsqVKE57ZW1JcDOLnmlwWeF2073RvgnPoSz
-         nV/91c1RdRn37CQ1mOBAhhDe1ViRcnn/YNXdRR43m4yXeGeFZbCm9c4R3cYVkVc1Tu
-         Ct0olLrAKZ+EbGev0OSgADxQ66T9EM1CnQh4fwyUkpJxvrBOu2UJb4LCwaDhunPbTO
-         ZINkmyg3LjX+n97ZPkTZQEtLTGLUBjic8FBEkQk99Qz4hS6dQI0q2KWugfEGLhbU/2
-         E3syNCbVBUAkg==
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v4 3/3] net: dsa: mv88e6xxx: add support for MV88E6071 switch
-Date:   Fri,  6 Jan 2023 11:16:51 +0100
-Message-Id: <20230106101651.1137755-3-lukma@denx.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230106101651.1137755-1-lukma@denx.de>
-References: <20230106101651.1137755-1-lukma@denx.de>
+        with ESMTP id S233027AbjAFK02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:26:28 -0500
+X-Greylist: delayed 398 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 Jan 2023 02:25:05 PST
+Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD7171498
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 02:25:05 -0800 (PST)
+Received: (wp-smtpd smtp.wp.pl 15989 invoked from network); 6 Jan 2023 11:18:23 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1673000303; bh=PNw2w9IynA9dhg+0BXAX2mG+8xC0xN3sSjZgRTrUy2k=;
+          h=From:To:Cc:Subject;
+          b=HvFKJqvncCfqqvdgOT31sdIinFMMK4bGhMdyXTLJUqTMIRsozJYlADS/MNdaGjPXF
+           0ebhJaQpD+M7OkAFN1R3b0d8Rqrjt5FTCuMlHk+tZr69yarOmD5+m/d4CEUoGO//ZS
+           clfVqosQZgQ5rNvQfDY2TErCjDunRjfN1W30UcDY=
+Received: from 89-64-1-45.dynamic.chello.pl (HELO localhost) (stf_xl@wp.pl@[89.64.1.45])
+          (envelope-sender <stf_xl@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <jiapeng.chong@linux.alibaba.com>; 6 Jan 2023 11:18:23 +0100
+Date:   Fri, 6 Jan 2023 11:18:23 +0100
+From:   Stanislaw Gruszka <stf_xl@wp.pl>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     helmut.schaa@googlemail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH v2] wifi: rt2x00: Remove useless else if
+Message-ID: <20230106101823.GA994926@wp.pl>
+References: <20230106022731.111243-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230106022731.111243-1-jiapeng.chong@linux.alibaba.com>
+X-WP-MailID: 9c2c211b270cb0c6755bfb4135db918b
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [YXO0]                               
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A mv88e6250 family (i.e. LinkStreet) switch with 5 internal PHYs,
-2 RMIIs and no PTP support.
+On Fri, Jan 06, 2023 at 10:27:31AM +0800, Jiapeng Chong wrote:
+> The assignment of the else and else if branches is the same, so the else
+> if here is redundant, so we remove it.
+> 
+> ./drivers/net/wireless/ralink/rt2x00/rt2800lib.c:8927:9-11: WARNING:
+> possible condition with no effect (if == else).
+> 
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3631
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-Signed-off-by: Lukasz Majewski <lukma@denx.de>
----
-Changes for v2:
-- Update commit message
-- Add information about max frame size
-
-Changes for v3:
-- None
-
-Changes for v4:
-- None
----
- drivers/net/dsa/mv88e6xxx/chip.c | 21 +++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h |  1 +
- drivers/net/dsa/mv88e6xxx/port.h |  1 +
- 3 files changed, 23 insertions(+)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index fb9b362c2a50..dbb3b8d4ecaa 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5554,6 +5554,27 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.ops = &mv88e6250_ops,
- 	},
- 
-+	[MV88E6071] = {
-+		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6071,
-+		.family = MV88E6XXX_FAMILY_6250,
-+		.name = "Marvell 88E6071",
-+		.num_databases = 64,
-+		.num_ports = 7,
-+		.num_internal_phys = 5,
-+		.max_vid = 4095,
-+		.max_frame_size = 2048,
-+		.port_base_addr = 0x08,
-+		.phy_base_addr = 0x00,
-+		.global1_addr = 0x0f,
-+		.global2_addr = 0x07,
-+		.age_time_coeff = 15000,
-+		.g1_irqs = 9,
-+		.g2_irqs = 5,
-+		.atu_move_port_mask = 0xf,
-+		.dual_chip = true,
-+		.ops = &mv88e6250_ops,
-+	},
-+
- 	[MV88E6085] = {
- 		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6085,
- 		.family = MV88E6XXX_FAMILY_6097,
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index dd3f777a7201..eed59c595d11 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -55,6 +55,7 @@ enum mv88e6xxx_frame_mode {
- /* List of supported models */
- enum mv88e6xxx_model {
- 	MV88E6020,
-+	MV88E6071,
- 	MV88E6085,
- 	MV88E6095,
- 	MV88E6097,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 169ce5b6fa31..494a221c9d9a 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -112,6 +112,7 @@
- #define MV88E6XXX_PORT_SWITCH_ID		0x03
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_MASK	0xfff0
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6020	0x0200
-+#define MV88E6XXX_PORT_SWITCH_ID_PROD_6071	0x0710
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6085	0x04a0
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6095	0x0950
- #define MV88E6XXX_PORT_SWITCH_ID_PROD_6097	0x0990
--- 
-2.20.1
-
+Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
