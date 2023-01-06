@@ -2,254 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C645660A3F
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 00:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EE0660A41
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 00:27:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235511AbjAFXZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 18:25:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
+        id S235541AbjAFX1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 18:27:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbjAFXZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 18:25:44 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B3C88DD3;
-        Fri,  6 Jan 2023 15:25:42 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 306N015s017306;
-        Fri, 6 Jan 2023 23:25:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- reply-to : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=Jc2oMl6BUrWmUUNskl1NCJiHvYadp1+KmYN/nbPvcJk=;
- b=lwx97KFc8s1fyDAwQ8YUX3kjqvcLNNECZwxzCdDpWI435cCKk/Z2uATBrNkA0WtdqZzK
- u2SPJE8aSkwqKS/9mTLrm6mmwH56lHZnf0SlW9aesRXjhe4aSCie1khamk2Otw/Je1pV
- rV8BTmlnNB4maEKYhBCn7f1JcnHdwSx2X5McC9ep53m1zUojxojz9jIn/h5KUNBF5LcY
- 7bWbsygfpzvMxKidt46KS6U0h9DmLq/N2jTWSbx+xAUUd986iZbEE1SKw8EPPbUy85KW
- pjsMgfIr1+sxhYXlGN8hkfX9vOpY7WwPBcMzB4dxXFYEvaZp/DG5n8er8aBfhSozGVVg 4A== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3mtcptc6sh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 06 Jan 2023 23:25:13 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 306MvIWt032480;
-        Fri, 6 Jan 2023 23:25:13 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3mwft1ntb1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 06 Jan 2023 23:25:12 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E9pV1q3Wkla4iH8Ym9qZFHC7YksHEwPY9oqL6nXgP4Il7q8MvWvyyLa7w8d76hiYWZhojx7HuxUFPoUg2cAM0Gm++TiMQthUrLoKVtN+sjkukNK6ETDD1oyahRTFCl27t9a55WOLg0lJ2n6rBgpBCHR9Ha1OczAHbphP+I9eEgigfK+X4yQe4PLaDZ947Ar+35FpdgoV7OFn6/i58ADFO0A+ePysFsoi5iDokOkhl3xoSp6Y/43pdy3NRi+X/2PaRM1sm1Cux78dvjGejXN8O8Hi9XrFEDYL53wrnJ0FgsdNvAyYuSseS4Re5ilOA9JeCBfeOx0+ulhousSYn6HZKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Jc2oMl6BUrWmUUNskl1NCJiHvYadp1+KmYN/nbPvcJk=;
- b=e7xuQof/hF3d7WTgF5NTHF9RCjbukj5GIjk+yl7mZVlUIDQBaw6SNn5bJysyne2EsaAK0iaFgsjSNvbzRrHndvPBp9KhfJbiak5NwlDE+bdO2D4M39udvbhE1le1+CttYVgQGeM74UclgDHz0V6aiQBv4Gc6HGCpj3gimQnTWYmovXXf9X9fwsxxovBtEMsv3Udaz+bN92XRoDLmJcgG9dXOe8CVtlYwobKrnwGVraKuaz8DyNObfWRUkJKv2ib3MIrjRj3Gr2ErFuu8CtSEd54TDbWR6ufgup4r2OXdWXhmWlXq3RJit8lo0G0Q0gq4uUnM1+KxiMN+cskrV0plnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Jc2oMl6BUrWmUUNskl1NCJiHvYadp1+KmYN/nbPvcJk=;
- b=IlA7/FjQSJDGCbdg4xeZqVJWOx1qX0A8qI7HLjUhBSQyt6xf9EvXxe3UXTm/ftsN2eLz9Thjy6mga8TqibweuxNnNXIxJ4r5Z1rp1h/R7gYcK5Q6daIq9Ke/VtzIeh5AdO+QvyBMGw93nnrF/p+fiWPF8i1HpClBv4g4Bo1IZt0=
-Received: from BLAPR10MB4945.namprd10.prod.outlook.com (2603:10b6:208:324::13)
- by MW4PR10MB6679.namprd10.prod.outlook.com (2603:10b6:303:227::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Fri, 6 Jan
- 2023 23:25:10 +0000
-Received: from BLAPR10MB4945.namprd10.prod.outlook.com
- ([fe80::3afe:336:671e:6d9]) by BLAPR10MB4945.namprd10.prod.outlook.com
- ([fe80::3afe:336:671e:6d9%4]) with mapi id 15.20.5944.019; Fri, 6 Jan 2023
- 23:25:10 +0000
-Message-ID: <d9afabea-2c8b-6047-7126-5e55704bb291@oracle.com>
-Date:   Fri, 6 Jan 2023 16:25:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Reply-To: karl.volz@oracle.com
-Subject: Re: [PATCH net-next 0/7] Remove three Sun net drivers
-Content-Language: en-US
-To:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org
-Cc:     linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mips@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        sparclinux@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-References: <20230106220020.1820147-1-anirudh.venkataramanan@intel.com>
- <c43562d7-8e6b-40d9-26dc-ab85afcef70e@oracle.com>
- <048ca2e1-4490-21da-b95f-8be018d64e5a@intel.com>
-From:   Karl Volz <karl.volz@oracle.com>
-In-Reply-To: <048ca2e1-4490-21da-b95f-8be018d64e5a@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SA0PR11CA0024.namprd11.prod.outlook.com
- (2603:10b6:806:d3::29) To BLAPR10MB4945.namprd10.prod.outlook.com
- (2603:10b6:208:324::13)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BLAPR10MB4945:EE_|MW4PR10MB6679:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f895c81-fa87-46cf-d22c-08daf03d414c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: e4scqdgoQGTl1KgWIEVW4ekBHl4xiHjdeklvdygy2tdF0BAtuFWYCFhRPDEJ5GHcNRbhBCLsVEzavJC2TUNvYcdoUBizfT54tCJ8joLSdr0PBHRQCvJlL/OTKQbIb81SjKIm+VMrPo88Lo+nfpBrhHonATwVtFCIJlxYRGm9iPn6+Okdx+70ncYLf1tEWUZ6iQoUnTd3bFTQNpFywMxDLf/vFUiO7rFbz5AlZz+fEdAXh5uLliVAZG6fdVox5BdNGIBVmJYfpyoceJrB4yEpDoZ/M4LoSu4F8dEaljNLeRDn/cM8Se1anMyUzgWEPpGCU1K75G3VnKb/89Cr+Qc25HzEU6M7ut978O37ZNi1IL4eeSggv67WWFjkOwJREFJ13OVyC3IBiOSh7+/GWad7jTfN8xqebgNpKkFjjizP97slQTTkg3Fzk+74HDgl/9E2YQ3aKqwtk0B6jQq3W1g+PBTx2k1S8pqnvCiMJOl6/YUjZ1BbOQWbTZNSYE9KcgY06GpU03ozNWkMZKLU81aPwL2P6kCJy092ND6g4Y0dmOmXl+RcmHe6qTyoUwupldQOsR5faDZkECmlhaDnBIm1k9Opd8D1FSnOMueY1qVCMrjvGiyryv9xZs2xhFPWOiO5ZHMVI/thYz/GPQhybvkkE887lg/z/HPf9X0h8AfTN92clij0KjhqQXmYWgsGoZxG5iRuuK2mnNu52XAWgX988S8Im5KwA0zyXakBbvylx1o=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4945.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(346002)(136003)(396003)(39860400002)(366004)(451199015)(26005)(186003)(6512007)(31696002)(86362001)(2616005)(36756003)(38100700002)(44832011)(31686004)(54906003)(478600001)(2906002)(316002)(41300700001)(8676002)(5660300002)(6666004)(66946007)(4326008)(8936002)(3450700001)(66556008)(53546011)(66476007)(6506007)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ck9ZZHFJQkVVYm9iN1cxeWJRM1EyTjZsSm5LSDZhTkM2SURSZURYWlFqNzVR?=
- =?utf-8?B?M0plWGhIeVd3dVlTZGdkNSt6ZVcxaHBaZC9haDJRVGkrNVZ1MmI1dEhLT3Rx?=
- =?utf-8?B?ZFJwNWVsUHg3djZWSlhjYUEzN1E0Uy9HVlU3bDFRUzRSbXg1M2hBdW9BNUNR?=
- =?utf-8?B?eTluOUlIVXl1VUhUNG8wQVlkWEV6NXJ2bWdRNmNjYnQ4Q2NOd2JZZkcyRDR2?=
- =?utf-8?B?OCs2dTdaWlNDT1QzSU1qNENsT3lQNVZ2eU91dGVqdDUyTEp1czk2ejVXU29P?=
- =?utf-8?B?eUFoK0phWlZDTHNybCtzcmhXeUtkS1FpUHlqRFVGVERKOVNjWDRrcDhRSHZC?=
- =?utf-8?B?cE9kL0ZOMGl3SW11RWdPU2N3RDM3cWxGL1JkWlE2c3hmTTk2eGMvRWNWazV2?=
- =?utf-8?B?RWlsRHlMaUpxTy9xdGk5dTNHWHBSY1Q3TmtTZTlTN21ObE4ycHllNlNJa0p1?=
- =?utf-8?B?L2QzVzB6eHEwVlowRFl4aWFCcHBCMDE3S2JOazduUU0zRUNMaHpGUENITUFO?=
- =?utf-8?B?MVl3bXRVQTc4dGNvbHRDQVlJVDY4a09PcDhwTmh3SUprZ1Y3NDh3bWwxY09o?=
- =?utf-8?B?MDF5U1k3YVpEUVhhWk10V1ZIaXJJa0VBb3RUMVRoYlpQZ3pWcStvR1ZXUHJ4?=
- =?utf-8?B?Wlo1a2hUZVc4ZXBrbnhJYlgrV0wxSHVRVEhtU3Fub3Rna0IwVGlmUE5wcnpD?=
- =?utf-8?B?TUUzSmdGcERTdDk3dkU4Wjl2c3pyeGxqUmtDbE1zd0tLRGw5c3FTU0pDZ2xF?=
- =?utf-8?B?RDg4NCszUDRjaU1jUXk1SEU2UTRhQUlJa0RQd0hXNEhHVDdyanVWYzdqQ3ZO?=
- =?utf-8?B?TUVFOHUxMEp1YXJsUmNTTWQ2ZnF4WmxHSTVHT09MOUtIL1NYZi83ZlozS1ph?=
- =?utf-8?B?Q0xMdzV3WUd5Yko2V3UvTXdQa3VEYnowQzV3cGcvb0huSm0zRTV1KzFxeWNj?=
- =?utf-8?B?QkZLNHg0L3hGWlFYRHpLMUVHcFNNUnpzWHFaTCtzTVpOUHkwQ0lHMCtKRW9W?=
- =?utf-8?B?UTJ4a05IMk1CR2RheGFuTFB6RFhtbURKeVMvcE1RVkN5aGduUklGbW1MVjYv?=
- =?utf-8?B?ZjBMdlgyZ0VDMWNpQVdJMEZ3dGtSa2JIREQ0UVppaVNJdFdEd1BZZmJqMVds?=
- =?utf-8?B?OWhSWEs1UGxrbmYzM1J3N3ZhM0VlRnZDMEtaWVZIcFVkYzE2a1dPT0cvNCt3?=
- =?utf-8?B?YTFJbExHc3IrazZlcmoxNTcwdks2ZmdqakZyNXAvZE5wR0Zab04yVEt5ZGNB?=
- =?utf-8?B?MU5KcHh2ZDBUNURETDNsam5ZMi8wZ2RhTmR4TW9obTFmbHV1amcrUHBJLzA1?=
- =?utf-8?B?dE4xczA4dWdaY283NEVXNnpkaDF3TVYvTXBvWCtQa1VZWWpKRWxBbVRpaXJI?=
- =?utf-8?B?MFRHVnJPWDdmZTQ0RWZpVVZ2Vkd2d1V4VHBJS3hhWCs0aFdSTkViOFJ1YTBL?=
- =?utf-8?B?YWJhUElLckU3eHoxdjdJU3hHV0VrZWF1SmdFb1NtN1FybWNmbU5YNTRwOFMy?=
- =?utf-8?B?U21DRlRoVzF5MHBtQnp0aW56YThnZGJxeFVlWVZXNnN1U3hrUlhVL3VOTUlZ?=
- =?utf-8?B?K3lwWlVPNTFseXZ5OC9nRHJDSHQ3NGtFMHpQb1VWSFl6K3ZtNXJtU2tKanlm?=
- =?utf-8?B?MjY0Uys3RWo3emxPQjFYc0pXRDMrTDNQREx0NFZ1VVg0VkFtYmp6RWg1MGIz?=
- =?utf-8?B?UHVNYW1qT1g0eW1mNmdFZHh4c2c5TVprdkI2ZnVKcENlUkZMcGR5ckxTd2Vl?=
- =?utf-8?B?V3BoOUt1R2czL3ZzYXdRTzdtVDVtWkNEYkxRT3VLNER2TDZOdTlzZnRDcVgy?=
- =?utf-8?B?aUFJa2kxS0lZWkJ6QUxHVkJBeEsrRUs4QXgvV1grTXR6aTRzdjdaUjFuREdI?=
- =?utf-8?B?d0I1cWMrSHkyUU5qVXdpTm13bDBWQ1BJSkdkano3MTNzemZtTm9ycWt6Vm1W?=
- =?utf-8?B?dVNSa05aY0dCNmZpVGE3ZnUxTHBuVm1MMURMcVZwelhsbnh1NGpIR1FKOFBB?=
- =?utf-8?B?Z0ZZanQ0VENSOEZtMlNlNnR5ano3UXQ1OGFZRllxNGhibWVPN2krYTduWmw5?=
- =?utf-8?B?eEFLV1VTelMxRHQ4UFJSWFlncEFVVDRSZkJsWHBnNDFJZXA5UE9ldkhybFRt?=
- =?utf-8?Q?2R9+fHQKcDuVN0JuotxGGXyXt?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?utf-8?B?VTh6QmFpb0pnVzRPMWdST1hiSkJqNE5GUXBVSnJWWGpYbmhxWUIwVmd0ekhX?=
- =?utf-8?B?clZ5d28vN1I0ZmJybWRnL2JmZ2g4ZHRaT09rWHFZMFRwbnlkWHM5aktxcDhw?=
- =?utf-8?B?WnNIV3VpVlFEamJ3QnNQUUhoZEM4RXhLV2tLZWZlN0FUMTczd2pxbVZoQVNy?=
- =?utf-8?B?ZDNMVFFPanBJR0ZPTE94ck9tVytYWkFLR29oYnd1Q2ZBejhOR0RRZWpmeElm?=
- =?utf-8?B?eWlKdWNrZlZMTG9YbkxDZVlhbXVQSGdYTi91cG1OUFA2RDJWWkEvMUVLSjI4?=
- =?utf-8?B?amhSQjBJdk9PcWRTYUxMS29Bc05xaUpHZE9HMTZIWVJOVW9aZzM4NnZueDUx?=
- =?utf-8?B?bGsyTmJZS1ZycmN5eWJDVjBDY3VFeGUvTFh6cEs3NzdGaGVYNlZCYVpQVG1V?=
- =?utf-8?B?VDU0QVBOYTBXUCtEd1RCMHBTRS9EcXVUcFRtYzNlTy9EQlcwUmRTR1B6cW11?=
- =?utf-8?B?UTk5UjUxRmk5TXJjTXRJUmtNNDhiQkdydURxODJ1S0NyMkpZZllCMEk2cFNV?=
- =?utf-8?B?MUhSejhwYnVRWUwrR0pYQ1ZjWWtUUTYwVld6M2w5eHR4Rys2enhoOTlQTmdH?=
- =?utf-8?B?blQ4cUFnTXZBUGtsc0EwSEkrd0N2OXVhZ2lYQndINlVlTHlqS2M5VDdIbEQ2?=
- =?utf-8?B?UFNkVm42THByYXRUVVhFYjBkMEw5aWQ4TUFBbmd5T1BVSW5DWjh1VjlQWlN4?=
- =?utf-8?B?RmhsU1ZyckZvcEpoeU80ajNwMk4ySnVpMGF2cmJDQ2oxdVJOM3J1bmo1aVI2?=
- =?utf-8?B?RERMYmJwTmJXVG9VdGFVV0toRFBiZXl6RlRGc2lOWEdSOGZwMkhkSVJacTNr?=
- =?utf-8?B?aURaNU5KRXc5R0dESUlid2VVQjBCNFdpWC9sMXRsRS8yb1lPS1hTeVorQklw?=
- =?utf-8?B?alcwTVRJaC9LSFJBbEFiMDdUL2lkVWxucTg2VEhKZkNTbVE0QW5ZeW9Zb09W?=
- =?utf-8?B?cktJZ2tvNnZoRk95UG03b21lYzU5V2UzZE9obklzTGI0WDdTdnIzWGNFbGRq?=
- =?utf-8?B?YmVsRzlXdDZMRTJ0UkZicHhYUkYyLzdSMzdNVDFSWm5hNUIrbyt1ZjEwbElu?=
- =?utf-8?B?V0hiL2tXKzF2bExnT0lRZ3I5cmkrTXMxZS9tVWYwQkp1NUxic2hCY0xKUFRt?=
- =?utf-8?B?TUlOSVNlY1c3S3RmU0kyYUlmM0pKNk96UkdpR0trbERpYjlGQXpjT2R1SEpm?=
- =?utf-8?B?SzFoK2pRZ3VqUFFWZ2pTem9wMWpOdVh5WmEwdXpRd1ZsZXYrbVUvcE9TeEVQ?=
- =?utf-8?B?ZDhQSFQ5bVpQMTdiaENXL25QTGJXV1V1WlM1MG1SdVVUelBsbHluL3htOElk?=
- =?utf-8?B?STc4dnk4aGFTa25KOElOa1FIUTl3a2xVaTFSZ29xaHQydTV2WGNVb1g5TjA5?=
- =?utf-8?B?RlAyQVNLNnEvY252UXZ4M3RQa1VXTmRLVU45bHBOZzhqbitRVHBwRkRyd2lN?=
- =?utf-8?B?S3NDNlVpWC9MTE9TYTQxd3QwSkpmRnZaZm0vdGNBPT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f895c81-fa87-46cf-d22c-08daf03d414c
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4945.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2023 23:25:10.7134
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AG11Dc2mgPAcjkubrJfSdbHCNVseCkFaBWryaeL4aABeW/HLv2KrsCsFpxJdrwg1i35/vzUL5hapO7tDAnd1qA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6679
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-06_14,2023-01-06_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
- spamscore=0 malwarescore=0 bulkscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2301060183
-X-Proofpoint-ORIG-GUID: xmgIWEMMvFO_-1fdL-eOGHjz6qb9jzRD
-X-Proofpoint-GUID: xmgIWEMMvFO_-1fdL-eOGHjz6qb9jzRD
-X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229780AbjAFX1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 18:27:39 -0500
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4F9714B8;
+        Fri,  6 Jan 2023 15:27:36 -0800 (PST)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 306NR0XH010592;
+        Sat, 7 Jan 2023 00:27:05 +0100
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id E878A120EC9;
+        Sat,  7 Jan 2023 00:26:56 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1673047617; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pS18w6uXzarPO0E2GYQ9ODmcRpg6MzsTKfGq36Z0OeI=;
+        b=EYSfhUEz8n46+fVN52Pb/Or/9ohzlRWnbwjCICeT4QwQq5FsXJP/6Vmj5vOKqJJ8fmYmqC
+        yKJvPmdN/OwqAbCQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1673047617; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pS18w6uXzarPO0E2GYQ9ODmcRpg6MzsTKfGq36Z0OeI=;
+        b=JEAXTfBsggsRO0unHhQymR/5ylWPiFl+B06S8sz719Cqy7+QGIC7MeMNZNF79AllZKl72H
+        SH3ddoOCT+IVFs9Tj5KUbpMGLNEchHdT+Qu743QUp7YGA+8SzFXBXqA4l/arX0RghJOcBL
+        m6QcSq0MMc0e5j7/1R8TYNC0EPxZ0mLQa5yg+3jhVD6ixnCFX2XDvaO4gg0SPFWc59+YFh
+        JkeOS8NFJ/FtgN3usMMXH5CRxd+Psnq8Ec2HyMUlJ/IvO3Qd5/QtOuRt2o2W1BG77morRU
+        BBZceUJHe62jH+Zm1D2hWTuXrEOdKDR2Nftg2cwjPArLHehORyAUyW61w+Q9Nw==
+Date:   Sat, 7 Jan 2023 00:26:56 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Jonathan Maxwell <jmaxwell37@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
+Message-Id: <20230107002656.b732de6750a063d07cdb8a5f@uniroma2.it>
+In-Reply-To: <20230103170711.819921d40132494b4bfd6a0d@uniroma2.it>
+References: <20221218234801.579114-1-jmaxwell37@gmail.com>
+        <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
+        <CAGHK07ALtLTjRP-XOepqoc8xzWcT8=0v5ccL-98f4+SU9vwfsg@mail.gmail.com>
+        <20221223212835.eb9d03f3f7db22360e34341d@uniroma2.it>
+        <CAGHK07APOwLvhs73WKkQfZuEy2FoKEWJusSyejKVcth4D47g=w@mail.gmail.com>
+        <CAGHK07Crj8s0wOivw62Q_N4Km6r1qsH-y-8YgfYhX-JJF6kZSA@mail.gmail.com>
+        <20230103170711.819921d40132494b4bfd6a0d@uniroma2.it>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jon,
+please see after, thanks.
+
+> 
+> > Any chance you could test this patch based on the latest net-next
+> > kernel and let me know the result?
+> > 
+> > diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+> > index 88ff7bb2bb9b..632086b2f644 100644
+> > --- a/include/net/dst_ops.h
+> > +++ b/include/net/dst_ops.h
+> > @@ -16,7 +16,7 @@ struct dst_ops {
+> >         unsigned short          family;
+> >         unsigned int            gc_thresh;
+> > 
+> > -       int                     (*gc)(struct dst_ops *ops);
+> > +       void                    (*gc)(struct dst_ops *ops);
+> >         struct dst_entry *      (*check)(struct dst_entry *, __u32 cookie);
+> >         unsigned int            (*default_advmss)(const struct dst_entry *);
+> >         unsigned int            (*mtu)(const struct dst_entry *);
+> > diff --git a/net/core/dst.c b/net/core/dst.c
+> > index 6d2dd03dafa8..31c08a3386d3 100644
+> > --- a/net/core/dst.c
+> > +++ b/net/core/dst.c
+> > @@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+> > 
+> >         if (ops->gc &&
+> >             !(flags & DST_NOCOUNT) &&
+> > -           dst_entries_get_fast(ops) > ops->gc_thresh) {
+> > -               if (ops->gc(ops)) {
+> > -                       pr_notice_ratelimited("Route cache is full:
+> > consider increasing sysctl net.ipv6.route.max_size.\n");
+> > -                       return NULL;
+> > -               }
+> > -       }
+> > +           dst_entries_get_fast(ops) > ops->gc_thresh)
+> > +               ops->gc(ops);
+> > 
+> >         dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+> >         if (!dst)
+> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> > index e74e0361fd92..b643dda68d31 100644
+> > --- a/net/ipv6/route.c
+> > +++ b/net/ipv6/route.c
+> > @@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct
+> > dst_entry *);
+> >  static void            ip6_dst_destroy(struct dst_entry *);
+> >  static void            ip6_dst_ifdown(struct dst_entry *,
+> >                                        struct net_device *dev, int how);
+> > -static int              ip6_dst_gc(struct dst_ops *ops);
+> > +static void             ip6_dst_gc(struct dst_ops *ops);
+> > 
+> >  static int             ip6_pkt_discard(struct sk_buff *skb);
+> >  static int             ip6_pkt_discard_out(struct net *net, struct
+> > sock *sk, struct sk_buff *skb);
+> > @@ -3284,11 +3284,10 @@ struct dst_entry *icmp6_dst_alloc(struct
+> > net_device *dev,
+> >         return dst;
+> >  }
+> > 
+> > -static int ip6_dst_gc(struct dst_ops *ops)
+> > +static void ip6_dst_gc(struct dst_ops *ops)
+> >  {
+> >         struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
+> >         int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
+> > -       int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
+> >         int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+> >         int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+> >         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+> > @@ -3296,11 +3295,10 @@ static int ip6_dst_gc(struct dst_ops *ops)
+> >         int entries;
+> > 
+> >         entries = dst_entries_get_fast(ops);
+> > -       if (entries > rt_max_size)
+> > +       if (entries > ops->gc_thresh)
+> >                 entries = dst_entries_get_slow(ops);
+> > 
+> > -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> > -           entries <= rt_max_size)
+> > +       if (time_after(rt_last_gc + rt_min_interval, jiffies))
+> >                 goto out;
+> > 
+> >         fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
+> > @@ -3310,7 +3308,6 @@ static int ip6_dst_gc(struct dst_ops *ops)
+> >  out:
+> >         val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
+> >         atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
+> > -       return entries > rt_max_size;
+> >  }
+> > 
+> >  static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
+> > @@ -6512,7 +6509,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+> >  #endif
+> > 
+> >         net->ipv6.sysctl.flush_delay = 0;
+> > -       net->ipv6.sysctl.ip6_rt_max_size = 4096;
+> > +       net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
+> >         net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
+> >         net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
+> >         net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
+> > 
+> 
+> Yes, I will apply this patch in the next days and check how it deals with the
+> seg6 subsystem. I will keep you posted.
+> 
+
+I applied the patch* to the net-next (HEAD 6bd4755c7c49) and did some tests on
+the seg6 subsystem, specifically running the End.X/DX6 behaviors. They seem to
+work fine.
+
+(*) I had to slightly edit the patch because of the code formatting, e.g.
+    some incorrect line breaks, spaces, etc.
+
+Ciao,
+Andrea
+
+> 
+> > On Sat, Dec 24, 2022 at 6:38 PM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+> > >
+> > > On Sat, Dec 24, 2022 at 7:28 AM Andrea Mayer <andrea.mayer@uniroma2.it> wrote:
+> > > >
+> > > > Hi Jon,
+> > > > please see below, thanks.
+> > > >
+> > > > On Wed, 21 Dec 2022 08:48:11 +1100
+> > > > Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+> > > >
+> > > > > On Tue, Dec 20, 2022 at 11:35 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > > >
+> > > > > > On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
+> > > > > > > Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
+> > > > > > > route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
+> > > > > > > consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
+> > > > > > > these warnings:
+> > > > > > >
+> > > > > > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > > > > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > > > > > .
+> > > > > > > .
+> > > > > > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > > > >
+> > > > > > If I read correctly, the maximum number of dst that the raw socket can
+> > > > > > use this way is limited by the number of packets it allows via the
+> > > > > > sndbuf limit, right?
+> > > > > >
+> > > > >
+> > > > > Yes, but in my test sndbuf limit is never hit so it clones a route for
+> > > > > every packet.
+> > > > >
+> > > > > e.g:
+> > > > >
+> > > > > output from C program sending 5000000 packets via a raw socket.
+> > > > >
+> > > > > ip raw: total num pkts 5000000
+> > > > >
+> > > > > # bpftrace -e 'kprobe:dst_alloc {@count[comm] = count()}'
+> > > > > Attaching 1 probe...
+> > > > >
+> > > > > @count[a.out]: 5000009
+> > > > >
+> > > > > > Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
+> > > > > > ipvs, seg6?
+> > > > > >
+> > > > >
+> > > > > Any call to ip6_pol_route(s) where no res.nh->fib_nh_gw_family is 0 can do it.
+> > > > > But we have only seen this for raw sockets so far.
+> > > > >
+> > > >
+> > > > In the SRv6 subsystem, the seg6_lookup_nexthop() is used by some
+> > > > cross-connecting behaviors such as End.X and End.DX6 to forward traffic to a
+> > > > specified nexthop. SRv6 End.X/DX6 can specify an IPv6 DA (i.e., a nexthop)
+> > > > different from the one carried by the IPv6 header. For this purpose,
+> > > > seg6_lookup_nexthop() sets the FLOWI_FLAG_KNOWN_NH.
+> > > >
+> > > Hi Andrea,
+> > >
+> > > Thanks for pointing that datapath out. The more generic approach we are
+> > > taking bringing Ipv6 closer to Ipv4 in this regard should fix all instances
+> > > of this.
+> > >
+> > > > > > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> > > > > > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > > > > > .
+> > > > > > > .
+> > > > > > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> > > >
+> > > > I can reproduce the same warning messages reported by you, by instantiating an
+> > > > End.X behavior whose nexthop is handled by a route for which there is no "via".
+> > > > In this configuration, the ip6_pol_route() (called by seg6_lookup_nexthop())
+> > > > triggers ip6_rt_cache_alloc() because i) the FLOWI_FLAG_KNOWN_NH is present ii)
+> > > > and the res.nh->fib_nh_gw_family is 0 (as already pointed out).
+> > > >
+> > >
+> > > Nice, when I get back after the holiday break I'll submit the next patch. It
+> > > would be great if you could test the new patch and let me know how it works in
+> > > your tests at that juncture. I'll keep you posted.
+> > >
+> > > Regards
+> > >
+> > > Jon
+> > >
+> > > > > Regards
+> > > > >
+> > > > > Jon
+> > > >
+> > > > Ciao,
+> > > > Andrea
+> 
+> 
+> -- 
+> Andrea Mayer <andrea.mayer@uniroma2.it>
 
 
-On 1/6/23 16:10, Anirudh Venkataramanan wrote:
-> On 1/6/2023 2:44 PM, Karl Volz wrote:
->>
->>
->> On 1/6/23 15:00, Anirudh Venkataramanan wrote:
->>> This series removes the Sun Cassini, LDOM vswitch and sunvnet drivers.
->>>
->>> In a recent patch series that touched these drivers [1], it was 
->>> suggested
->>> that these drivers should be removed completely. git logs suggest that
->>> there hasn't been any significant feature addition, improvement or 
->>> fixes
->>> to user-visible bugs in a while. A web search didn't indicate any 
->>> recent
->>> discussions or any evidence that there are users out there who care 
->>> about
->>> these drivers.
->>>
->>> The idea behind putting out this series is to either establish that 
->>> these
->>> drivers are used and should be maintained, or remove them.
->> Anirudh,
->>
->> The Sun LDOM vswitch and sunvnet drivers are still in use, please do 
->> not remove them or the event tracing.
->> We use them internally and you don't see any discussions because they 
->> generally work fine (AFAIK).
->
-> Hello Karl,
->
-> Thanks for chiming in.
->
-> Are there recent platforms where these drivers are used? If yes, do 
-> you know which ones? Or are these drivers useful in old/legacy 
-> platforms that are still around but perhaps no longer in production?
-
-These drivers work on older T4, T5, etc  to the latest T7, T8 Sun 
-servers (e.g. T8-2, T8-4, note, T7/T8 are still in production).
-They may also work on T2/T3  (but I don't use those anymore, though 
-Adrian (John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>) might).
-You might have missed a lot of the linux SPARC developers since they are 
-on the debian-sparc@lists.debian.org list, hence I'd ask there also.
->
->> I think you are also going to break things by removing Sun Cassini 
->> support, but I am not using it personally.
->
-> You suspect there are users for this driver as well?
-
-Yes, they may not have seen this yet or recognized the servers this card 
-goes in (post on debian-sparc@lists.debian.org list).
-
->
->> What user visible bugs are you referring to here?
->
-> I was saying I don't see any evidence of recent bug fixes, which would 
-> make sense if these drivers "just work".
-
-ok, no worries.
-
-Cheers
-Karl
-
->
-> Ani
-
+-- 
+Andrea Mayer <andrea.mayer@uniroma2.it>
