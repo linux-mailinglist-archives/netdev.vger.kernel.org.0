@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC786608A2
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 22:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B11AA6608B1
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 22:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231588AbjAFVMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 16:12:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
+        id S230318AbjAFVRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 16:17:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235636AbjAFVMS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 16:12:18 -0500
+        with ESMTP id S236366AbjAFVR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 16:17:26 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBD0736E8
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 13:12:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8910F26D;
+        Fri,  6 Jan 2023 13:17:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4CA761F7D
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 21:12:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3586C433D2;
-        Fri,  6 Jan 2023 21:12:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23D1861F7B;
+        Fri,  6 Jan 2023 21:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5924DC433EF;
+        Fri,  6 Jan 2023 21:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673039536;
-        bh=4jGKulgMymK4yuSpDvl2mPFyWUSdjmHIMwjB2voPjfQ=;
+        s=k20201202; t=1673039844;
+        bh=QB5AwjKeWWhvw5Z1NuNuVpQZGGr6CYrqmnve8NpIVyw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C6+1v4qeCKwRklfqaD0t/0vdGQ7fiV9yhKGkFruClJRPPOY3Z3nzG9KWR6CnBFpy0
-         z1WIKqOgzqn7zgcKPdFlE+wv2Xi+EdU0Sx5CCItdUGsGEsRJG3jGSr/E+E2RQ9VCpe
-         EbJu0DqUnXuf0dTmGF3jSr5Sl8rRcDMpyOqvIa1FbRim2S9GGLtJ3GHxAVMAdBwGFf
-         E7PMQK6l3EW6kmZ3Mn3gdxunCHEqdbvjafaRmxhjLVIjboWXGXTNd2ihqUrfpO9xtN
-         N1qZQSj9ftntBwgyqC3/vh8sjGeoOBM1pzszCFu4yifctMNlZbhwnpd9CO5Ys51F3j
-         zfaNj4qOFLi1Q==
-Date:   Fri, 6 Jan 2023 13:12:14 -0800
+        b=elZczKUQRrJ3dkqc5wWtldwvl7x3DeQPutmAeT3w2YFxPjRlGTxrBwyuoQ92waHGv
+         +Ekb+7jZA0JZjN2+riwEcogycF2cbig/9K0D4dZhIbVUXNc4yKDYTMPqfa48P/1R/P
+         DbWRyDexx4nZAKLQ0XZIkeze4sP3MJ8JmNxk7aSXxOFFALmvih+vUQ5+dLXwEeQ1Yj
+         U9UdQITaiql0AmW7v0tqFXeixGTV25v1+CzvgJVujDNVYaRhAHrnIt1hbqUyPzVn1K
+         q+DECpXQClIKqhKzPmoliu6Iwwvd2ITYybNnri/lG7asAumr4F5E2pTXHZlchdlQe3
+         fH0uKmHTXekzA==
+Date:   Fri, 6 Jan 2023 13:17:23 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 13/14] devlink: add by-instance dump infra
-Message-ID: <20230106131214.79abb95c@kernel.org>
-In-Reply-To: <Y7fiRHoucfua+Erz@nanopsycho>
-References: <20230104041636.226398-1-kuba@kernel.org>
-        <20230104041636.226398-14-kuba@kernel.org>
-        <Y7WuWd2jfifQ3E8A@nanopsycho>
-        <20230104194604.545646c5@kernel.org>
-        <Y7aSPuRPQxxQKQGN@nanopsycho>
-        <20230105102437.0d2bf14e@kernel.org>
-        <Y7fiRHoucfua+Erz@nanopsycho>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH mlx5-next 0/8] mlx5 IPsec RoCEv2 support and netdev
+ events fixes in RDMA
+Message-ID: <20230106131723.2c7596e3@kernel.org>
+In-Reply-To: <Y7h4Cl/69g2yQzKh@x130>
+References: <20230105041756.677120-1-saeed@kernel.org>
+        <20230105103846.6dc776a3@kernel.org>
+        <Y7h4Cl/69g2yQzKh@x130>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,19 +57,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 6 Jan 2023 09:56:36 +0100 Jiri Pirko wrote:
->> Oh, just the "it" at the end? Sorry, I don't see the point.  
+On Fri, 6 Jan 2023 11:35:38 -0800 Saeed Mahameed wrote:
+> On 05 Jan 10:38, Jakub Kicinski wrote:
+> >On Wed,  4 Jan 2023 20:17:48 -0800 Saeed Mahameed wrote:  
+> >>   net/mlx5: Configure IPsec steering for ingress RoCEv2 traffic
+> >>   net/mlx5: Configure IPsec steering for egress RoCEv2 traffic  
+> >
+> >How is the TC forwarding coming along?  
 > 
-> The point is simple. Ops is a struct of callback by name X. If someone
-> implements this ops struct, it is nice to assign the callbacks functions
-> of name y_X so it is obvious from the first sight, what the function
-> is related to.
-> 
-> I'm not sure what's wrong about having this sort of consistency. I
-> believe that you as a maintainer should rather enforce it than to be
-> against it. Am I missing something?
+> Not aware of such effort, can you please elaborate ? 
 
-IMO you have a tendency to form names by concatenating adjacent
-information rather than reflecting on what matters to the reader.
-I believe the low readability of the devlink code is sufficient 
-evidence to disagree with that direction.
+When Leon posted the IPsec patches I correctly guessed that it's for
+RDMA and expressed my strong preference for RDMA to stop using netdev
+interfaces for configuration. He made the claim that the full IPsec
+offload will be used for eswitch offload as well, so I'm asking how 
+is that work going.
