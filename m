@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE86C65FA6A
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 04:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F092A65FA6F
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 04:42:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbjAFDm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 22:42:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        id S231978AbjAFDmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 22:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbjAFDmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 22:42:11 -0500
-Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A476ADA3
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 19:42:00 -0800 (PST)
-X-QQ-mid: bizesmtp76t1672976513tjrlogry
+        with ESMTP id S231982AbjAFDmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 22:42:14 -0500
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660066AD80
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 19:42:07 -0800 (PST)
+X-QQ-mid: bizesmtp76t1672976516tcohchkh
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 06 Jan 2023 11:41:53 +0800 (CST)
+        id ; Fri, 06 Jan 2023 11:41:55 +0800 (CST)
 X-QQ-SSF: 01400000002000H0X000B00A0000000
-X-QQ-FEAT: gbku9ixYwtrjmc0kryHR6IRPkSG8CEdCORWZekJXleWSgC7GUIe2WunsfFA05
-        0Blsf+nvo+vWtOEB6X7x6rd1N7EI9U+yj2nhv0+S5AAVY/kWpExH6TRGnnuRZvXx7YeCiTn
-        wytEIuMNVw7YZnPcOd2qssEDjDMXsSncioEL0k6+Tagu+pQkLJgz23V2mFHT43806as3GCj
-        s0kIPi3Msqku9qvfPSGHd8BXoMRpQ6l2hqYMDaTmtK7HzFHeOVDKTLxWF6Qyx3WqVat5ih8
-        7HnF9Y5/uSwvCCOq4z6WA8WKF67h5BNJhVRh9s4G5ZpSschEJIn8j9s2bdmgPRJO6uAVTAW
-        HWNh0ueu81WzrXQbn/Gguwjhwum9l41/Fh/d9x/J+ScgR7kdwOhGKfsKFhqRgURH/Zmk1vq
-        E8xyeiv1N3s=
+X-QQ-FEAT: 5GQVR+7sbELGAakiyIq8iJpkmd1x860qLezGcE4lD7EXOwVjvgDJbbLnbB25E
+        1BUaN+jVrSjodj1yHXjKo9nmn6QWjLfWim351Rrs/mxl7Q4omLpKf3zpavNzX97xXdB4vJ1
+        F2EROYY8ZOTGpG6LBEhxHF2cGzfyu0D7Kq87UGz4HvmR1wE6ULMbEy4qL4rf0Pt05iVDpqI
+        5TUltoYSEnmXJsppujbiahzqTHuIAGgym7+fOVHmaUIwTQPXH+GNf2oyYQ3loHMPQA78Ref
+        TyeRzQJonL2a74948BD0TYZsLlp7TusF1ZcCDQBBTvW5diwwGnzhEJmhsZeoLExP4Snsfbu
+        qw2UU3X/GSHYXt7K6K/5+U4ZFvpaRiXqLMo6gFrFBaxkxY3AsLYKco505bfS5hwcMeducau
+        OMsXxLuwpIc=
 X-QQ-GoodBg: 2
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
 Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v3 1/8] net: txgbe: Remove structure txgbe_hw
-Date:   Fri,  6 Jan 2023 11:38:46 +0800
-Message-Id: <20230106033853.2806007-2-jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v3 2/8] net: ngbe: Remove structure ngbe_hw
+Date:   Fri,  6 Jan 2023 11:38:47 +0800
+Message-Id: <20230106033853.2806007-3-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20230106033853.2806007-1-jiawenwu@trustnetic.com>
 References: <20230106033853.2806007-1-jiawenwu@trustnetic.com>
@@ -49,377 +49,431 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove useless structure txgbe_hw to make the codes clear.
+Remove useless structure ngbe_hw to make the codes clear.
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    | 20 ----------
- drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c | 36 ++++++++----------
- drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |  6 +--
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 37 ++++++++-----------
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   | 16 +++++++-
- 5 files changed, 49 insertions(+), 66 deletions(-)
+ drivers/net/ethernet/wangxun/ngbe/ngbe.h      | 46 -------------
+ drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   | 20 +++---
+ drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h   |  4 +-
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 66 +++++++++----------
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h | 43 +++++++++++-
+ 5 files changed, 84 insertions(+), 95 deletions(-)
 
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-index 19e61377bd00..629c139926c5 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-@@ -14,30 +14,10 @@
- #define TXGBE_SP_RAR_ENTRIES    128
- #define TXGBE_SP_MC_TBL_SIZE    128
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe.h b/drivers/net/ethernet/wangxun/ngbe/ngbe.h
+index af147ca8605c..ed832ab3e5ed 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe.h
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe.h
+@@ -4,8 +4,6 @@
+ #ifndef _NGBE_H_
+ #define _NGBE_H_
  
--struct txgbe_mac_addr {
+-#include "ngbe_type.h"
+-
+ #define NGBE_MAX_FDIR_INDICES		7
+ 
+ #define NGBE_MAX_RX_QUEUES		(NGBE_MAX_FDIR_INDICES + 1)
+@@ -30,50 +28,6 @@
+ #define NGBE_MAC_STATE_MODIFIED		0x2
+ #define NGBE_MAC_STATE_IN_USE		0x4
+ 
+-struct ngbe_mac_addr {
 -	u8 addr[ETH_ALEN];
 -	u16 state; /* bitmask */
 -	u64 pools;
 -};
 -
- #define TXGBE_MAC_STATE_DEFAULT         0x1
- #define TXGBE_MAC_STATE_MODIFIED        0x2
- #define TXGBE_MAC_STATE_IN_USE          0x4
- 
 -/* board specific private data structure */
--struct txgbe_adapter {
+-struct ngbe_adapter {
 -	u8 __iomem *io_addr;    /* Mainly for iounmap use */
 -	/* OS defined structs */
 -	struct net_device *netdev;
 -	struct pci_dev *pdev;
 -
--	/* structs defined in txgbe_type.h */
--	struct txgbe_hw hw;
+-	/* structs defined in ngbe_hw.h */
+-	struct ngbe_hw hw;
+-	struct ngbe_mac_addr *mac_table;
 -	u16 msg_enable;
--	struct txgbe_mac_addr *mac_table;
--	char eeprom_id[32];
+-
+-	/* Tx fast path data */
+-	int num_tx_queues;
+-	u16 tx_itr_setting;
+-	u16 tx_work_limit;
+-
+-	/* Rx fast path data */
+-	int num_rx_queues;
+-	u16 rx_itr_setting;
+-	u16 rx_work_limit;
+-
+-	int num_q_vectors;      /* current number of q_vectors for device */
+-	int max_q_vectors;      /* upper limit of q_vectors for device */
+-
+-	u32 tx_ring_count;
+-	u32 rx_ring_count;
+-
+-#define NGBE_MAX_RETA_ENTRIES 128
+-	u8 rss_indir_tbl[NGBE_MAX_RETA_ENTRIES];
+-
+-#define NGBE_RSS_KEY_SIZE     40  /* size of RSS Hash Key in bytes */
+-	u32 *rss_key;
+-	u32 wol;
+-
+-	u16 bd_number;
 -};
 -
- extern char txgbe_driver_name[];
+ extern char ngbe_driver_name[];
  
- #endif /* _TXGBE_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-index 167f7ff73192..0536f2059db9 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-@@ -16,14 +16,13 @@
+ #endif /* _NGBE_H_ */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+index 0e3923b3737e..d54e22ce7c31 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+@@ -11,10 +11,10 @@
+ #include "ngbe_hw.h"
+ #include "ngbe.h"
  
- /**
-  *  txgbe_init_thermal_sensor_thresh - Inits thermal sensor thresholds
-- *  @hw: pointer to hardware structure
-+ *  @wxhw: pointer to hardware structure
-  *
-  *  Inits the thermal sensor thresholds according to the NVM map
-  *  and save off the threshold and location values into mac.thermal_sensor_data
-  **/
--static void txgbe_init_thermal_sensor_thresh(struct txgbe_hw *hw)
-+static void txgbe_init_thermal_sensor_thresh(struct wx_hw *wxhw)
+-int ngbe_eeprom_chksum_hostif(struct ngbe_hw *hw)
++int ngbe_eeprom_chksum_hostif(struct ngbe_adapter *adapter)
  {
+ 	struct wx_hic_read_shadow_ram buffer;
 -	struct wx_hw *wxhw = &hw->wxhw;
- 	struct wx_thermal_sensor_data *data = &wxhw->mac.sensor;
- 
- 	memset(data, 0, sizeof(struct wx_thermal_sensor_data));
-@@ -46,16 +45,15 @@ static void txgbe_init_thermal_sensor_thresh(struct txgbe_hw *hw)
- 
- /**
-  *  txgbe_read_pba_string - Reads part number string from EEPROM
-- *  @hw: pointer to hardware structure
-+ *  @wxhw: pointer to hardware structure
-  *  @pba_num: stores the part number string from the EEPROM
-  *  @pba_num_size: part number string buffer length
-  *
-  *  Reads the part number string from the EEPROM.
-  **/
--int txgbe_read_pba_string(struct txgbe_hw *hw, u8 *pba_num, u32 pba_num_size)
-+int txgbe_read_pba_string(struct wx_hw *wxhw, u8 *pba_num, u32 pba_num_size)
- {
- 	u16 pba_ptr, offset, length, data;
--	struct wx_hw *wxhw = &hw->wxhw;
- 	int ret_val;
- 
- 	if (!pba_num) {
-@@ -155,14 +153,13 @@ int txgbe_read_pba_string(struct txgbe_hw *hw, u8 *pba_num, u32 pba_num_size)
- 
- /**
-  *  txgbe_calc_eeprom_checksum - Calculates and returns the checksum
-- *  @hw: pointer to hardware structure
-+ *  @wxhw: pointer to hardware structure
-  *  @checksum: pointer to cheksum
-  *
-  *  Returns a negative error code on error
-  **/
--static int txgbe_calc_eeprom_checksum(struct txgbe_hw *hw, u16 *checksum)
-+static int txgbe_calc_eeprom_checksum(struct wx_hw *wxhw, u16 *checksum)
- {
--	struct wx_hw *wxhw = &hw->wxhw;
- 	u16 *eeprom_ptrs = NULL;
- 	u32 buffer_size = 0;
- 	u16 *buffer = NULL;
-@@ -210,15 +207,14 @@ static int txgbe_calc_eeprom_checksum(struct txgbe_hw *hw, u16 *checksum)
- 
- /**
-  *  txgbe_validate_eeprom_checksum - Validate EEPROM checksum
-- *  @hw: pointer to hardware structure
-+ *  @wxhw: pointer to hardware structure
-  *  @checksum_val: calculated checksum
-  *
-  *  Performs checksum calculation and validates the EEPROM checksum.  If the
-  *  caller does not need checksum_val, the value can be NULL.
-  **/
--int txgbe_validate_eeprom_checksum(struct txgbe_hw *hw, u16 *checksum_val)
-+int txgbe_validate_eeprom_checksum(struct wx_hw *wxhw, u16 *checksum_val)
- {
--	struct wx_hw *wxhw = &hw->wxhw;
- 	u16 read_checksum = 0;
- 	u16 checksum;
++	struct wx_hw *wxhw = &adapter->wxhw;
  	int status;
-@@ -234,7 +230,7 @@ int txgbe_validate_eeprom_checksum(struct txgbe_hw *hw, u16 *checksum_val)
- 	}
+ 	int tmp;
  
- 	checksum = 0;
--	status = txgbe_calc_eeprom_checksum(hw, &checksum);
-+	status = txgbe_calc_eeprom_checksum(wxhw, &checksum);
- 	if (status != 0)
- 		return status;
- 
-@@ -258,25 +254,25 @@ int txgbe_validate_eeprom_checksum(struct txgbe_hw *hw, u16 *checksum_val)
- 	return status;
+@@ -38,14 +38,14 @@ int ngbe_eeprom_chksum_hostif(struct ngbe_hw *hw)
+ 	return -EIO;
  }
  
--static void txgbe_reset_misc(struct txgbe_hw *hw)
-+static void txgbe_reset_misc(struct txgbe_adapter *adapter)
+-static int ngbe_reset_misc(struct ngbe_hw *hw)
++static int ngbe_reset_misc(struct ngbe_adapter *adapter)
  {
 -	struct wx_hw *wxhw = &hw->wxhw;
 +	struct wx_hw *wxhw = &adapter->wxhw;
  
  	wx_reset_misc(wxhw);
--	txgbe_init_thermal_sensor_thresh(hw);
-+	txgbe_init_thermal_sensor_thresh(wxhw);
- }
+-	if (hw->mac_type == ngbe_mac_type_rgmii)
++	if (adapter->mac_type == ngbe_mac_type_rgmii)
+ 		wr32(wxhw, NGBE_MDIO_CLAUSE_SELECT, 0xF);
+-	if (hw->gpio_ctrl) {
++	if (adapter->gpio_ctrl) {
+ 		/* gpio0 is used to power on/off control*/
+ 		wr32(wxhw, NGBE_GPIO_DDR, 0x1);
+ 		wr32(wxhw, NGBE_GPIO_DR, NGBE_GPIO_DR_0);
+@@ -55,15 +55,15 @@ static int ngbe_reset_misc(struct ngbe_hw *hw)
  
  /**
-  *  txgbe_reset_hw - Perform hardware reset
+  *  ngbe_reset_hw - Perform hardware reset
 - *  @hw: pointer to hardware structure
-+ *  @adapter: pointer to adapter structure
++ *  @adapter: pointer to hardware structure
   *
   *  Resets the hardware by resetting the transmit and receive units, masks
   *  and clears all interrupts, perform a PHY reset, and perform a link (MAC)
   *  reset.
   **/
--int txgbe_reset_hw(struct txgbe_hw *hw)
-+int txgbe_reset_hw(struct txgbe_adapter *adapter)
+-int ngbe_reset_hw(struct ngbe_hw *hw)
++int ngbe_reset_hw(struct ngbe_adapter *adapter)
  {
 -	struct wx_hw *wxhw = &hw->wxhw;
 +	struct wx_hw *wxhw = &adapter->wxhw;
- 	int status;
+ 	int status = 0;
+ 	u32 reset = 0;
  
- 	/* Call adapter stop to disable tx/rx and clear interrupts */
-@@ -294,7 +290,7 @@ int txgbe_reset_hw(struct txgbe_hw *hw)
- 	if (status != 0)
+@@ -73,7 +73,7 @@ int ngbe_reset_hw(struct ngbe_hw *hw)
  		return status;
- 
--	txgbe_reset_misc(hw);
-+	txgbe_reset_misc(adapter);
+ 	reset = WX_MIS_RST_LAN_RST(wxhw->bus.func);
+ 	wr32(wxhw, WX_MIS_RST, reset | rd32(wxhw, WX_MIS_RST));
+-	ngbe_reset_misc(hw);
++	ngbe_reset_misc(adapter);
  
  	/* Store the permanent mac address */
  	wx_get_mac_addr(wxhw, wxhw->mac.perm_addr);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
-index 6a751a69177b..bd0cfb22338c 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
-@@ -4,8 +4,8 @@
- #ifndef _TXGBE_HW_H_
- #define _TXGBE_HW_H_
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
+index 42476a3fe57c..0683aefab0d9 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
+@@ -7,6 +7,6 @@
+ #ifndef _NGBE_HW_H_
+ #define _NGBE_HW_H_
  
--int txgbe_read_pba_string(struct txgbe_hw *hw, u8 *pba_num, u32 pba_num_size);
--int txgbe_validate_eeprom_checksum(struct txgbe_hw *hw, u16 *checksum_val);
--int txgbe_reset_hw(struct txgbe_hw *hw);
-+int txgbe_read_pba_string(struct wx_hw *wxhw, u8 *pba_num, u32 pba_num_size);
-+int txgbe_validate_eeprom_checksum(struct wx_hw *wxhw, u16 *checksum_val);
-+int txgbe_reset_hw(struct txgbe_adapter *adapter);
+-int ngbe_eeprom_chksum_hostif(struct ngbe_hw *hw);
+-int ngbe_reset_hw(struct ngbe_hw *hw);
++int ngbe_eeprom_chksum_hostif(struct ngbe_adapter *adapter);
++int ngbe_reset_hw(struct ngbe_adapter *adapter);
+ #endif /* _NGBE_HW_H_ */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index f0b24366da18..5d679c39f451 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -41,25 +41,23 @@ static const struct pci_device_id ngbe_pci_tbl[] = {
  
- #endif /* _TXGBE_HW_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index 36780e7f05b7..900f0f2be262 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -75,8 +75,7 @@ static int txgbe_enumerate_functions(struct txgbe_adapter *adapter)
- 
- static void txgbe_sync_mac_table(struct txgbe_adapter *adapter)
+ static void ngbe_mac_set_default_filter(struct ngbe_adapter *adapter, u8 *addr)
  {
--	struct txgbe_hw *hw = &adapter->hw;
--	struct wx_hw *wxhw = &hw->wxhw;
-+	struct wx_hw *wxhw = &adapter->wxhw;
- 	int i;
- 
- 	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-@@ -98,7 +97,7 @@ static void txgbe_sync_mac_table(struct txgbe_adapter *adapter)
- static void txgbe_mac_set_default_filter(struct txgbe_adapter *adapter,
- 					 u8 *addr)
- {
--	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+	struct wx_hw *wxhw = &adapter->wxhw;
- 
+-	struct ngbe_hw *hw = &adapter->hw;
+-
  	memcpy(&adapter->mac_table[0].addr, addr, ETH_ALEN);
  	adapter->mac_table[0].pools = 1ULL;
-@@ -111,7 +110,7 @@ static void txgbe_mac_set_default_filter(struct txgbe_adapter *adapter,
+ 	adapter->mac_table[0].state = (NGBE_MAC_STATE_DEFAULT |
+ 				       NGBE_MAC_STATE_IN_USE);
+-	wx_set_rar(&hw->wxhw, 0, adapter->mac_table[0].addr,
++	wx_set_rar(&adapter->wxhw, 0, adapter->mac_table[0].addr,
+ 		   adapter->mac_table[0].pools,
+ 		   WX_PSR_MAC_SWC_AD_H_AV);
+ }
  
- static void txgbe_flush_sw_mac_table(struct txgbe_adapter *adapter)
+ /**
+  *  ngbe_init_type_code - Initialize the shared code
+- *  @hw: pointer to hardware structure
++ *  @adapter: pointer to hardware structure
+  **/
+-static void ngbe_init_type_code(struct ngbe_hw *hw)
++static void ngbe_init_type_code(struct ngbe_adapter *adapter)
  {
--	struct wx_hw *wxhw = &adapter->hw.wxhw;
 +	struct wx_hw *wxhw = &adapter->wxhw;
- 	u32 i;
+ 	int wol_mask = 0, ncsi_mask = 0;
+-	struct wx_hw *wxhw = &hw->wxhw;
+ 	u16 type_mask = 0;
  
- 	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-@@ -125,7 +124,7 @@ static void txgbe_flush_sw_mac_table(struct txgbe_adapter *adapter)
+ 	wxhw->mac.type = wx_mac_em;
+@@ -70,39 +68,39 @@ static void ngbe_init_type_code(struct ngbe_hw *hw)
+ 	switch (type_mask) {
+ 	case NGBE_SUBID_M88E1512_SFP:
+ 	case NGBE_SUBID_LY_M88E1512_SFP:
+-		hw->phy.type = ngbe_phy_m88e1512_sfi;
++		adapter->phy.type = ngbe_phy_m88e1512_sfi;
+ 		break;
+ 	case NGBE_SUBID_M88E1512_RJ45:
+-		hw->phy.type = ngbe_phy_m88e1512;
++		adapter->phy.type = ngbe_phy_m88e1512;
+ 		break;
+ 	case NGBE_SUBID_M88E1512_MIX:
+-		hw->phy.type = ngbe_phy_m88e1512_unknown;
++		adapter->phy.type = ngbe_phy_m88e1512_unknown;
+ 		break;
+ 	case NGBE_SUBID_YT8521S_SFP:
+ 	case NGBE_SUBID_YT8521S_SFP_GPIO:
+ 	case NGBE_SUBID_LY_YT8521S_SFP:
+-		hw->phy.type = ngbe_phy_yt8521s_sfi;
++		adapter->phy.type = ngbe_phy_yt8521s_sfi;
+ 		break;
+ 	case NGBE_SUBID_INTERNAL_YT8521S_SFP:
+ 	case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
+-		hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
++		adapter->phy.type = ngbe_phy_internal_yt8521s_sfi;
+ 		break;
+ 	case NGBE_SUBID_RGMII_FPGA:
+ 	case NGBE_SUBID_OCP_CARD:
+ 		fallthrough;
+ 	default:
+-		hw->phy.type = ngbe_phy_internal;
++		adapter->phy.type = ngbe_phy_internal;
+ 		break;
+ 	}
  
- static int txgbe_del_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 pool)
+-	if (hw->phy.type == ngbe_phy_internal ||
+-	    hw->phy.type == ngbe_phy_internal_yt8521s_sfi)
+-		hw->mac_type = ngbe_mac_type_mdi;
++	if (adapter->phy.type == ngbe_phy_internal ||
++	    adapter->phy.type == ngbe_phy_internal_yt8521s_sfi)
++		adapter->mac_type = ngbe_mac_type_mdi;
+ 	else
+-		hw->mac_type = ngbe_mac_type_rgmii;
++		adapter->mac_type = ngbe_mac_type_rgmii;
+ 
+-	hw->wol_enabled = (wol_mask == NGBE_WOL_SUP) ? 1 : 0;
+-	hw->ncsi_enabled = (ncsi_mask == NGBE_NCSI_MASK ||
++	adapter->wol_enabled = (wol_mask == NGBE_WOL_SUP) ? 1 : 0;
++	adapter->ncsi_enabled = (ncsi_mask == NGBE_NCSI_MASK ||
+ 			   type_mask == NGBE_SUBID_OCP_CARD) ? 1 : 0;
+ 
+ 	switch (type_mask) {
+@@ -110,10 +108,10 @@ static void ngbe_init_type_code(struct ngbe_hw *hw)
+ 	case NGBE_SUBID_LY_M88E1512_SFP:
+ 	case NGBE_SUBID_YT8521S_SFP_GPIO:
+ 	case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
+-		hw->gpio_ctrl = 1;
++		adapter->gpio_ctrl = 1;
+ 		break;
+ 	default:
+-		hw->gpio_ctrl = 0;
++		adapter->gpio_ctrl = 0;
+ 		break;
+ 	}
+ }
+@@ -147,8 +145,7 @@ static inline int ngbe_init_rss_key(struct ngbe_adapter *adapter)
+ static int ngbe_sw_init(struct ngbe_adapter *adapter)
  {
--	struct wx_hw *wxhw = &adapter->hw.wxhw;
+ 	struct pci_dev *pdev = adapter->pdev;
+-	struct ngbe_hw *hw = &adapter->hw;
+-	struct wx_hw *wxhw = &hw->wxhw;
 +	struct wx_hw *wxhw = &adapter->wxhw;
- 	u32 i;
+ 	u16 msix_count = 0;
+ 	int err = 0;
  
- 	if (is_zero_ether_addr(addr))
-@@ -160,8 +159,7 @@ static int txgbe_del_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 poo
+@@ -164,7 +161,7 @@ static int ngbe_sw_init(struct ngbe_adapter *adapter)
+ 	}
  
- static void txgbe_up_complete(struct txgbe_adapter *adapter)
+ 	/* mac type, phy type , oem type */
+-	ngbe_init_type_code(hw);
++	ngbe_init_type_code(adapter);
+ 
+ 	wxhw->mac.max_rx_queues = NGBE_MAX_RX_QUEUES;
+ 	wxhw->mac.max_tx_queues = NGBE_MAX_TX_QUEUES;
+@@ -221,8 +218,7 @@ static void ngbe_down(struct ngbe_adapter *adapter)
+ static int ngbe_open(struct net_device *netdev)
  {
--	struct txgbe_hw *hw = &adapter->hw;
+ 	struct ngbe_adapter *adapter = netdev_priv(netdev);
+-	struct ngbe_hw *hw = &adapter->hw;
 -	struct wx_hw *wxhw = &hw->wxhw;
 +	struct wx_hw *wxhw = &adapter->wxhw;
  
  	wx_control_hw(wxhw, true);
- }
-@@ -169,11 +167,10 @@ static void txgbe_up_complete(struct txgbe_adapter *adapter)
- static void txgbe_reset(struct txgbe_adapter *adapter)
- {
- 	struct net_device *netdev = adapter->netdev;
--	struct txgbe_hw *hw = &adapter->hw;
- 	u8 old_addr[ETH_ALEN];
- 	int err;
  
--	err = txgbe_reset_hw(hw);
-+	err = txgbe_reset_hw(adapter);
- 	if (err != 0)
- 		dev_err(&adapter->pdev->dev, "Hardware Error: %d\n", err);
+@@ -245,7 +241,7 @@ static int ngbe_close(struct net_device *netdev)
+ 	struct ngbe_adapter *adapter = netdev_priv(netdev);
  
-@@ -186,7 +183,7 @@ static void txgbe_reset(struct txgbe_adapter *adapter)
- static void txgbe_disable_device(struct txgbe_adapter *adapter)
- {
- 	struct net_device *netdev = adapter->netdev;
--	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+	struct wx_hw *wxhw = &adapter->wxhw;
- 
- 	wx_disable_pcie_master(wxhw);
- 	/* disable receives */
-@@ -225,8 +222,7 @@ static void txgbe_down(struct txgbe_adapter *adapter)
- static int txgbe_sw_init(struct txgbe_adapter *adapter)
- {
- 	struct pci_dev *pdev = adapter->pdev;
--	struct txgbe_hw *hw = &adapter->hw;
--	struct wx_hw *wxhw = &hw->wxhw;
-+	struct wx_hw *wxhw = &adapter->wxhw;
- 	int err;
- 
- 	wxhw->hw_addr = adapter->io_addr;
-@@ -313,7 +309,7 @@ static int txgbe_close(struct net_device *netdev)
- 	struct txgbe_adapter *adapter = netdev_priv(netdev);
- 
- 	txgbe_down(adapter);
+ 	ngbe_down(adapter);
 -	wx_control_hw(&adapter->hw.wxhw, false);
 +	wx_control_hw(&adapter->wxhw, false);
  
  	return 0;
  }
-@@ -322,8 +318,7 @@ static void txgbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
+@@ -266,7 +262,7 @@ static netdev_tx_t ngbe_xmit_frame(struct sk_buff *skb,
+ static int ngbe_set_mac(struct net_device *netdev, void *p)
  {
- 	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
- 	struct net_device *netdev = adapter->netdev;
--	struct txgbe_hw *hw = &adapter->hw;
--	struct wx_hw *wxhw = &hw->wxhw;
-+	struct wx_hw *wxhw = &adapter->wxhw;
- 
- 	netif_device_detach(netdev);
- 
-@@ -365,7 +360,7 @@ static netdev_tx_t txgbe_xmit_frame(struct sk_buff *skb,
- static int txgbe_set_mac(struct net_device *netdev, void *p)
- {
- 	struct txgbe_adapter *adapter = netdev_priv(netdev);
+ 	struct ngbe_adapter *adapter = netdev_priv(netdev);
 -	struct wx_hw *wxhw = &adapter->hw.wxhw;
 +	struct wx_hw *wxhw = &adapter->wxhw;
  	struct sockaddr *addr = p;
- 	int retval;
  
-@@ -405,7 +400,6 @@ static int txgbe_probe(struct pci_dev *pdev,
- 		       const struct pci_device_id __always_unused *ent)
+ 	if (!is_valid_ether_addr(addr->sa_data))
+@@ -291,7 +287,7 @@ static void ngbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
+ 	if (netif_running(netdev))
+ 		ngbe_down(adapter);
+ 	rtnl_unlock();
+-	wx_control_hw(&adapter->hw.wxhw, false);
++	wx_control_hw(&adapter->wxhw, false);
+ 
+ 	pci_disable_device(pdev);
+ }
+@@ -334,7 +330,6 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 		      const struct pci_device_id __always_unused *ent)
  {
- 	struct txgbe_adapter *adapter = NULL;
--	struct txgbe_hw *hw = NULL;
+ 	struct ngbe_adapter *adapter = NULL;
+-	struct ngbe_hw *hw = NULL;
  	struct wx_hw *wxhw = NULL;
  	struct net_device *netdev;
- 	int err, expected_gts;
-@@ -453,8 +447,7 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 	u32 e2rom_cksum_cap = 0;
+@@ -381,8 +376,7 @@ static int ngbe_probe(struct pci_dev *pdev,
  	adapter = netdev_priv(netdev);
  	adapter->netdev = netdev;
  	adapter->pdev = pdev;
 -	hw = &adapter->hw;
 -	wxhw = &hw->wxhw;
 +	wxhw = &adapter->wxhw;
- 	adapter->msg_enable = (1 << DEFAULT_DEBUG_LEVEL_SHIFT) - 1;
+ 	adapter->msg_enable = BIT(3) - 1;
  
  	adapter->io_addr = devm_ioremap(&pdev->dev,
-@@ -486,7 +479,7 @@ static int txgbe_probe(struct pci_dev *pdev,
+@@ -417,7 +411,7 @@ static int ngbe_probe(struct pci_dev *pdev,
  		goto err_free_mac_table;
  	}
  
--	err = txgbe_reset_hw(hw);
-+	err = txgbe_reset_hw(adapter);
+-	err = ngbe_reset_hw(hw);
++	err = ngbe_reset_hw(adapter);
  	if (err) {
  		dev_err(&pdev->dev, "HW Init failed: %d\n", err);
  		goto err_free_mac_table;
-@@ -495,7 +488,7 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	netdev->features |= NETIF_F_HIGHDMA;
+@@ -434,7 +428,7 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 	wx_init_eeprom_params(wxhw);
+ 	if (wxhw->bus.func == 0 || e2rom_cksum_cap == 0) {
+ 		/* make sure the EEPROM is ready */
+-		err = ngbe_eeprom_chksum_hostif(hw);
++		err = ngbe_eeprom_chksum_hostif(adapter);
+ 		if (err) {
+ 			dev_err(&pdev->dev, "The EEPROM Checksum Is Not Valid\n");
+ 			err = -EIO;
+@@ -443,10 +437,10 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 	}
  
- 	/* make sure the EEPROM is good */
--	err = txgbe_validate_eeprom_checksum(hw, NULL);
-+	err = txgbe_validate_eeprom_checksum(wxhw, NULL);
- 	if (err != 0) {
- 		dev_err(&pdev->dev, "The EEPROM Checksum Is Not Valid\n");
- 		wr32(wxhw, WX_MIS_RST, WX_MIS_RST_SW_RST);
-@@ -565,7 +558,7 @@ static int txgbe_probe(struct pci_dev *pdev,
- 		dev_warn(&pdev->dev, "Failed to enumerate PF devices.\n");
+ 	adapter->wol = 0;
+-	if (hw->wol_enabled)
++	if (adapter->wol_enabled)
+ 		adapter->wol = NGBE_PSR_WKUP_CTL_MAG;
  
- 	/* First try to read PBA as a string */
--	err = txgbe_read_pba_string(hw, part_str, TXGBE_PBANUM_LENGTH);
-+	err = txgbe_read_pba_string(wxhw, part_str, TXGBE_PBANUM_LENGTH);
- 	if (err)
- 		strncpy(part_str, "Unknown", TXGBE_PBANUM_LENGTH);
+-	hw->wol_enabled = !!(adapter->wol);
++	adapter->wol_enabled = !!(adapter->wol);
+ 	wr32(wxhw, NGBE_PSR_WKUP_CTL, adapter->wol);
  
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 740a1c447e20..0cc333a11cab 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -67,8 +67,22 @@
- #define TXGBE_PBANUM1_PTR                       0x06
- #define TXGBE_PBANUM_PTR_GUARD                  0xFAFA
+ 	device_set_wakeup_enable(&pdev->dev, adapter->wol);
+@@ -479,7 +473,7 @@ static int ngbe_probe(struct pci_dev *pdev,
  
--struct txgbe_hw {
-+struct txgbe_mac_addr {
+ 	netif_info(adapter, probe, netdev,
+ 		   "PHY: %s, PBA No: Wang Xun GbE Family Controller\n",
+-		   hw->phy.type == ngbe_phy_internal ? "Internal" : "External");
++		   adapter->phy.type == ngbe_phy_internal ? "Internal" : "External");
+ 	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+index 39f6c03f1a54..5a64ce6ded8f 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+@@ -127,7 +127,19 @@ struct ngbe_phy_info {
+ 
+ };
+ 
+-struct ngbe_hw {
++struct ngbe_mac_addr {
 +	u8 addr[ETH_ALEN];
 +	u16 state; /* bitmask */
 +	u64 pools;
 +};
 +
 +/* board specific private data structure */
-+struct txgbe_adapter {
-+	u8 __iomem *io_addr;
++struct ngbe_adapter {
++	u8 __iomem *io_addr;    /* Mainly for iounmap use */
 +	/* OS defined structs */
 +	struct net_device *netdev;
 +	struct pci_dev *pdev;
++
  	struct wx_hw wxhw;
+ 	struct ngbe_phy_info phy;
+ 	enum ngbe_mac_type mac_type;
+@@ -135,5 +147,34 @@ struct ngbe_hw {
+ 	bool wol_enabled;
+ 	bool ncsi_enabled;
+ 	bool gpio_ctrl;
++
++	struct ngbe_mac_addr *mac_table;
 +	u16 msg_enable;
-+	struct txgbe_mac_addr *mac_table;
-+	char eeprom_id[32];
++
++	/* Tx fast path data */
++	int num_tx_queues;
++	u16 tx_itr_setting;
++	u16 tx_work_limit;
++
++	/* Rx fast path data */
++	int num_rx_queues;
++	u16 rx_itr_setting;
++	u16 rx_work_limit;
++
++	int num_q_vectors;      /* current number of q_vectors for device */
++	int max_q_vectors;      /* upper limit of q_vectors for device */
++
++	u32 tx_ring_count;
++	u32 rx_ring_count;
++
++#define NGBE_MAX_RETA_ENTRIES 128
++	u8 rss_indir_tbl[NGBE_MAX_RETA_ENTRIES];
++
++#define NGBE_RSS_KEY_SIZE     40  /* size of RSS Hash Key in bytes */
++	u32 *rss_key;
++	u32 wol;
++
++	u16 bd_number;
  };
- 
- #endif /* _TXGBE_TYPE_H_ */
++
+ #endif /* _NGBE_TYPE_H_ */
 -- 
 2.27.0
 
