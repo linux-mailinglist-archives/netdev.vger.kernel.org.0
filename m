@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 213D065FD28
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 09:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA70665FD2A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 09:55:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232180AbjAFIzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 03:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
+        id S232637AbjAFIzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 03:55:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232608AbjAFIy5 (ORCPT
+        with ESMTP id S232614AbjAFIy5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 03:54:57 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AEE6E0C3;
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5096F944;
         Fri,  6 Jan 2023 00:53:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1672995237; x=1704531237;
+  t=1672995236; x=1704531236;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=HUxs7myYM1/33LqA8lbJVWFyfxefzrP59orf/XuptpE=;
-  b=zj1pxwOTEdUClziPxShrGrbUVZ/IeFnAd9HYql1HY3q7wRroYcCODCUz
-   dDe/NW3hsdf10rZ12VW1fYMYPP88h5p1sLUDgAOuN4jlZpSinOO6gqZ/M
-   UVA+QhdrxDukTuehlk4FFhL3faM/kJwWrP12l1akaUSAYLBDnXe5VZMIE
-   iQTzq6FxQCObZZWNMAFiPm2YaZ2s9g7rTMSO2A6yg2+eeQufrIliKcP8e
-   BOmU6X49MN4VrwpRou5KxUSP4yTdQw2Gig9yzzJgZplAn+Go1cQGjAgc0
-   jzbaM2X19VjXKuzVu0c9DxngBBpajZUL1erlxBbhhi86Gr/PvFodH/tRB
-   w==;
+  bh=ZnOu0sD1u1nN6UilL4C+YFt71fxsv2RM0zKR2zAD53U=;
+  b=S4uDDKEp2QM/Htwi5b9y4kc/SVSqC1iQmC5XaczAzi0AUoYPlEbT2Q5E
+   b0HDPjufHx3XteJvhiy8x6dAlgG2Put/BoPfJAQCc2NqXpH/vsYIS/qXX
+   jdZe2i8cR7Vr7L0mVGuq/9p+cy9c3S6EXNbBOxGSKtpMaf0WQ1sNiIggJ
+   obsGmC/NgoXLDl1QrvCvKqx1rlp3b5kUbFX6H6F6G2faTAiuEKmYRs0th
+   Mw0ptmmXg/XGbbUyU5hn2Ulk2s/ddpvam5b4QrPHkXDE5ES4YBYpOmiaj
+   enQh8tQMphWeQftj9dWjbuCgpznLf0LYbBfMizDUILmutuU2DYxuBMoum
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.96,304,1665471600"; 
-   d="scan'208";a="191045002"
+   d="scan'208";a="206646911"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jan 2023 01:53:57 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jan 2023 01:53:55 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 6 Jan 2023 01:53:51 -0700
+ 15.1.2507.16; Fri, 6 Jan 2023 01:53:55 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Fri, 6 Jan 2023 01:53:47 -0700
+ 15.1.2507.16 via Frontend Transport; Fri, 6 Jan 2023 01:53:51 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2 6/8] net: microchip: vcap api: Check chains when adding a tc flower filter
-Date:   Fri, 6 Jan 2023 09:53:15 +0100
-Message-ID: <20230106085317.1720282-7-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 7/8] net: microchip: vcap api: Add a storage state to a VCAP rule
+Date:   Fri, 6 Jan 2023 09:53:16 +0100
+Message-ID: <20230106085317.1720282-8-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230106085317.1720282-1-steen.hegelund@microchip.com>
 References: <20230106085317.1720282-1-steen.hegelund@microchip.com>
@@ -77,278 +77,366 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This changes the way the chain information verified when adding a new tc
-flower filter.
+This allows a VCAP rule to be in one of 3 states:
 
-When adding a flower filter it is now checked that the filter contains a
-goto action to one of the IS2 VCAP lookups, except for the last lookup
-which may omit this goto action.
+- permanently stored in the VCAP HW (for rules that must always be present)
+- enabled (stored in HW) when the corresponding lookup has been enabled
+- disabled (stored in SW) when the lookup is disabled
 
-It is also checked if you attempt to add multiple matchall filters to
-enable the same VCAP lookup.  This will be rejected.
+This way important VCAP rules can be added even before the user enables the
+VCAP lookups using a TC matchall filter.
 
 Fixes: 4426b78c626d ("net: lan966x: Add port keyset config and callback interface")
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../microchip/lan966x/lan966x_tc_flower.c     | 30 +++++-----
- .../microchip/sparx5/sparx5_tc_flower.c       | 28 +++++----
- .../net/ethernet/microchip/vcap/vcap_api.c    | 59 +++++++++++--------
- .../ethernet/microchip/vcap/vcap_api_client.h |  2 +
- .../ethernet/microchip/vcap/vcap_api_kunit.c  |  8 +--
- 5 files changed, 72 insertions(+), 55 deletions(-)
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 126 ++++++++++++++++--
+ .../microchip/vcap/vcap_api_debugfs.c         |  52 +++++---
+ .../microchip/vcap/vcap_api_debugfs_kunit.c   |   1 +
+ .../microchip/vcap/vcap_api_private.h         |   9 +-
+ 4 files changed, 161 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
-index ba3fa917d6b7..b66a8725a071 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
-@@ -82,8 +82,8 @@ static int lan966x_tc_flower_use_dissectors(struct flow_cls_offload *f,
- }
- 
- static int lan966x_tc_flower_action_check(struct vcap_control *vctrl,
--					  struct flow_cls_offload *fco,
--					  struct vcap_admin *admin)
-+					  struct net_device *dev,
-+					  struct flow_cls_offload *fco)
- {
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(fco);
- 	struct flow_action_entry *actent, *last_actent = NULL;
-@@ -109,21 +109,23 @@ static int lan966x_tc_flower_action_check(struct vcap_control *vctrl,
- 		last_actent = actent; /* Save last action for later check */
- 	}
- 
--	/* Check that last action is a goto */
--	if (last_actent->id != FLOW_ACTION_GOTO) {
-+	/* Check that last action is a goto
-+	 * The last chain/lookup does not need to have goto action
-+	 */
-+	if (last_actent->id == FLOW_ACTION_GOTO) {
-+		/* Check if the destination chain is in one of the VCAPs */
-+		if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
-+					 last_actent->chain_index)) {
-+			NL_SET_ERR_MSG_MOD(fco->common.extack,
-+					   "Invalid goto chain");
-+			return -EINVAL;
-+		}
-+	} else if (!vcap_is_last_chain(vctrl, fco->common.chain_index)) {
- 		NL_SET_ERR_MSG_MOD(fco->common.extack,
- 				   "Last action must be 'goto'");
- 		return -EINVAL;
- 	}
- 
--	/* Check if the goto chain is in the next lookup */
--	if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
--				 last_actent->chain_index)) {
--		NL_SET_ERR_MSG_MOD(fco->common.extack,
--				   "Invalid goto chain");
--		return -EINVAL;
--	}
--
- 	/* Catch unsupported combinations of actions */
- 	if (action_mask & BIT(FLOW_ACTION_TRAP) &&
- 	    action_mask & BIT(FLOW_ACTION_ACCEPT)) {
-@@ -145,8 +147,8 @@ static int lan966x_tc_flower_add(struct lan966x_port *port,
- 	struct vcap_rule *vrule;
- 	int err, idx;
- 
--	err = lan966x_tc_flower_action_check(port->lan966x->vcap_ctrl, f,
--					     admin);
-+	err = lan966x_tc_flower_action_check(port->lan966x->vcap_ctrl,
-+					     port->dev, f);
- 	if (err)
- 		return err;
- 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index 1ed304a816cc..986e41d3bb28 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -573,8 +573,8 @@ static int sparx5_tc_use_dissectors(struct flow_cls_offload *fco,
- }
- 
- static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
--					 struct flow_cls_offload *fco,
--					 struct vcap_admin *admin)
-+					 struct net_device *ndev,
-+					 struct flow_cls_offload *fco)
- {
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(fco);
- 	struct flow_action_entry *actent, *last_actent = NULL;
-@@ -600,21 +600,23 @@ static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
- 		last_actent = actent; /* Save last action for later check */
- 	}
- 
--	/* Check that last action is a goto */
--	if (last_actent->id != FLOW_ACTION_GOTO) {
-+	/* Check if last action is a goto
-+	 * The last chain/lookup does not need to have a goto action
-+	 */
-+	if (last_actent->id == FLOW_ACTION_GOTO) {
-+		/* Check if the destination chain is in one of the VCAPs */
-+		if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
-+					 last_actent->chain_index)) {
-+			NL_SET_ERR_MSG_MOD(fco->common.extack,
-+					   "Invalid goto chain");
-+			return -EINVAL;
-+		}
-+	} else if (!vcap_is_last_chain(vctrl, fco->common.chain_index)) {
- 		NL_SET_ERR_MSG_MOD(fco->common.extack,
- 				   "Last action must be 'goto'");
- 		return -EINVAL;
- 	}
- 
--	/* Check if the goto chain is in the next lookup */
--	if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
--				 last_actent->chain_index)) {
--		NL_SET_ERR_MSG_MOD(fco->common.extack,
--				   "Invalid goto chain");
--		return -EINVAL;
--	}
--
- 	/* Catch unsupported combinations of actions */
- 	if (action_mask & BIT(FLOW_ACTION_TRAP) &&
- 	    action_mask & BIT(FLOW_ACTION_ACCEPT)) {
-@@ -833,7 +835,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
- 
- 	vctrl = port->sparx5->vcap_ctrl;
- 
--	err = sparx5_tc_flower_action_check(vctrl, fco, admin);
-+	err = sparx5_tc_flower_action_check(vctrl, ndev, fco);
- 	if (err)
- 		return err;
- 
 diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index a5572bcab8e6..2cc6e94077a4 100644
+index 2cc6e94077a4..9226968d32dc 100644
 --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
 +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -1553,39 +1553,31 @@ struct vcap_admin *vcap_find_admin(struct vcap_control *vctrl, int cid)
+@@ -950,9 +950,12 @@ int vcap_lookup_rule_by_cookie(struct vcap_control *vctrl, u64 cookie)
  }
- EXPORT_SYMBOL_GPL(vcap_find_admin);
+ EXPORT_SYMBOL_GPL(vcap_lookup_rule_by_cookie);
  
--/* Is the next chain id in the following lookup, possible in another VCAP */
--bool vcap_is_next_lookup(struct vcap_control *vctrl, int cur_cid, int next_cid)
-+/* Is the next chain id in one of the following lookups
-+ * For now this does not support filters linked to other filters using
-+ * keys and actions. That will be added later.
-+ */
-+bool vcap_is_next_lookup(struct vcap_control *vctrl, int src_cid, int dst_cid)
+-/* Make a shallow copy of the rule without the fields */
+-struct vcap_rule_internal *vcap_dup_rule(struct vcap_rule_internal *ri)
++/* Make a copy of the rule, shallow or full */
++static struct vcap_rule_internal *vcap_dup_rule(struct vcap_rule_internal *ri,
++						bool full)
  {
--	struct vcap_admin *admin, *next_admin;
--	int lookup, next_lookup;
-+	struct vcap_admin *admin;
-+	int next_cid;
++	struct vcap_client_actionfield *caf, *newcaf;
++	struct vcap_client_keyfield *ckf, *newckf;
+ 	struct vcap_rule_internal *duprule;
  
--	/* The offset must be at least one lookup */
--	if (next_cid < cur_cid + VCAP_CID_LOOKUP_SIZE)
-+	if (vcap_api_check(vctrl))
- 		return false;
- 
--	if (vcap_api_check(vctrl))
-+	/* The offset must be at least one lookup, round up */
-+	next_cid = src_cid + VCAP_CID_LOOKUP_SIZE;
-+	next_cid /= VCAP_CID_LOOKUP_SIZE;
-+	next_cid *= VCAP_CID_LOOKUP_SIZE;
+ 	/* Allocate the client part */
+@@ -965,6 +968,27 @@ struct vcap_rule_internal *vcap_dup_rule(struct vcap_rule_internal *ri)
+ 	/* No elements in these lists */
+ 	INIT_LIST_HEAD(&duprule->data.keyfields);
+ 	INIT_LIST_HEAD(&duprule->data.actionfields);
 +
-+	if (dst_cid < next_cid)
- 		return false;
- 
--	admin = vcap_find_admin(vctrl, cur_cid);
-+	admin = vcap_find_admin(vctrl, dst_cid);
- 	if (!admin)
- 		return false;
- 
--	/* If no VCAP contains the next chain, the next chain must be beyond
--	 * the last chain in the current VCAP
--	 */
--	next_admin = vcap_find_admin(vctrl, next_cid);
--	if (!next_admin)
--		return next_cid > admin->last_cid;
--
--	lookup = vcap_chain_id_to_lookup(admin, cur_cid);
--	next_lookup = vcap_chain_id_to_lookup(next_admin, next_cid);
--
--	/* Next lookup must be the following lookup */
--	if (admin == next_admin || admin->vtype == next_admin->vtype)
--		return next_lookup == lookup + 1;
--
--	/* Must be the first lookup in the next VCAP instance */
--	return next_lookup == 0;
-+	return true;
++	/* A full rule copy includes keys and actions */
++	if (!full)
++		return duprule;
++
++	list_for_each_entry(ckf, &ri->data.keyfields, ctrl.list) {
++		newckf = kzalloc(sizeof(*newckf), GFP_KERNEL);
++		if (!newckf)
++			return ERR_PTR(-ENOMEM);
++		memcpy(newckf, ckf, sizeof(*newckf));
++		list_add_tail(&newckf->ctrl.list, &duprule->data.keyfields);
++	}
++
++	list_for_each_entry(caf, &ri->data.actionfields, ctrl.list) {
++		newcaf = kzalloc(sizeof(*newcaf), GFP_KERNEL);
++		if (!newcaf)
++			return ERR_PTR(-ENOMEM);
++		memcpy(newcaf, caf, sizeof(*newcaf));
++		list_add_tail(&newcaf->ctrl.list, &duprule->data.actionfields);
++	}
++
+ 	return duprule;
  }
- EXPORT_SYMBOL_GPL(vcap_is_next_lookup);
  
-@@ -2718,6 +2710,25 @@ int vcap_enable_lookups(struct vcap_control *vctrl, struct net_device *ndev,
+@@ -1877,8 +1901,8 @@ static int vcap_insert_rule(struct vcap_rule_internal *ri,
+ 		ri->addr = vcap_next_rule_addr(admin->last_used_addr, ri);
+ 		admin->last_used_addr = ri->addr;
+ 
+-		/* Add a shallow copy of the rule to the VCAP list */
+-		duprule = vcap_dup_rule(ri);
++		/* Add a copy of the rule to the VCAP list */
++		duprule = vcap_dup_rule(ri, ri->state == VCAP_RS_DISABLED);
+ 		if (IS_ERR(duprule))
+ 			return PTR_ERR(duprule);
+ 
+@@ -1891,8 +1915,8 @@ static int vcap_insert_rule(struct vcap_rule_internal *ri,
+ 	ri->addr = vcap_next_rule_addr(addr, ri);
+ 	addr = ri->addr;
+ 
+-	/* Add a shallow copy of the rule to the VCAP list */
+-	duprule = vcap_dup_rule(ri);
++	/* Add a copy of the rule to the VCAP list */
++	duprule = vcap_dup_rule(ri, ri->state == VCAP_RS_DISABLED);
+ 	if (IS_ERR(duprule))
+ 		return PTR_ERR(duprule);
+ 
+@@ -1939,6 +1963,72 @@ static bool vcap_is_chain_used(struct vcap_control *vctrl,
+ 	return false;
  }
- EXPORT_SYMBOL_GPL(vcap_enable_lookups);
  
-+/* Is this chain id the last lookup of all VCAPs */
-+bool vcap_is_last_chain(struct vcap_control *vctrl, int cid)
++/* Fetch the next chain in the enabled list for the port */
++static int vcap_get_next_chain(struct vcap_control *vctrl,
++			       struct net_device *ndev,
++			       int dst_cid)
 +{
++	struct vcap_enabled_port *eport;
 +	struct vcap_admin *admin;
-+	int lookup;
 +
-+	if (vcap_api_check(vctrl))
-+		return false;
++	list_for_each_entry(admin, &vctrl->list, list) {
++		list_for_each_entry(eport, &admin->enabled, list) {
++			if (eport->ndev != ndev)
++				continue;
++			if (eport->src_cid == dst_cid)
++				return eport->dst_cid;
++		}
++	}
 +
-+	admin = vcap_find_admin(vctrl, cid);
-+	if (!admin)
-+		return false;
-+
-+	/* This must be the last lookup in this VCAP type */
-+	lookup = vcap_chain_id_to_lookup(admin, cid);
-+	return lookup == admin->lookups - 1;
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(vcap_is_last_chain);
 +
- /* Set a rule counter id (for certain vcaps only) */
- void vcap_rule_set_counter_id(struct vcap_rule *rule, u32 counter_id)
++static bool vcap_path_exist(struct vcap_control *vctrl, struct net_device *ndev,
++			    int dst_cid)
++{
++	struct vcap_enabled_port *eport, *elem;
++	struct vcap_admin *admin;
++	int tmp;
++
++	/* Find first entry that starts from chain 0*/
++	list_for_each_entry(admin, &vctrl->list, list) {
++		list_for_each_entry(elem, &admin->enabled, list) {
++			if (elem->src_cid == 0 && elem->ndev == ndev) {
++				eport = elem;
++				break;
++			}
++		}
++		if (eport)
++			break;
++	}
++
++	if (!eport)
++		return false;
++
++	tmp = eport->dst_cid;
++	while (tmp != dst_cid && tmp != 0)
++		tmp = vcap_get_next_chain(vctrl, ndev, tmp);
++
++	return !!tmp;
++}
++
++/* Internal clients can always store their rules in HW
++ * External clients can store their rules if the chain is enabled all
++ * the way from chain 0, otherwise the rule will be cached until
++ * the chain is enabled.
++ */
++static void vcap_rule_set_state(struct vcap_rule_internal *ri)
++{
++	if (ri->data.user <= VCAP_USER_QOS)
++		ri->state = VCAP_RS_PERMANENT;
++	else if (vcap_path_exist(ri->vctrl, ri->ndev, ri->data.vcap_chain_id))
++		ri->state = VCAP_RS_ENABLED;
++	else
++		ri->state = VCAP_RS_DISABLED;
++	/* For now always store directly in HW */
++	ri->state = VCAP_RS_PERMANENT;
++}
++
+ /* Encode and write a validated rule to the VCAP */
+ int vcap_add_rule(struct vcap_rule *rule)
  {
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-index e07dc8d3c639..f44228436051 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-@@ -217,6 +217,8 @@ const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
- int vcap_lookup_rule_by_cookie(struct vcap_control *vctrl, u64 cookie);
- /* Is the next chain id in the following lookup, possible in another VCAP */
- bool vcap_is_next_lookup(struct vcap_control *vctrl, int cur_cid, int next_cid);
-+/* Is this chain id the last lookup of all VCAPs */
-+bool vcap_is_last_chain(struct vcap_control *vctrl, int cid);
- /* Provide all rules via a callback interface */
- int vcap_rule_iter(struct vcap_control *vctrl,
- 		   int (*callback)(void *, struct vcap_rule *), void *arg);
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index cc6a62338162..fdef9102a9b3 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1865,7 +1865,7 @@ static void vcap_api_next_lookup_basic_test(struct kunit *test)
- 	ret = vcap_is_next_lookup(&test_vctrl, 8300000, 8301000);
- 	KUNIT_EXPECT_EQ(test, false, ret);
- 	ret = vcap_is_next_lookup(&test_vctrl, 8300000, 8401000);
--	KUNIT_EXPECT_EQ(test, true, ret);
-+	KUNIT_EXPECT_EQ(test, false, ret);
+@@ -1952,6 +2042,8 @@ int vcap_add_rule(struct vcap_rule *rule)
+ 		return ret;
+ 	/* Insert the new rule in the list of vcap rules */
+ 	mutex_lock(&ri->admin->lock);
++
++	vcap_rule_set_state(ri);
+ 	ret = vcap_insert_rule(ri, &move);
+ 	if (ret < 0) {
+ 		pr_err("%s:%d: could not insert rule in vcap list: %d\n",
+@@ -1960,6 +2052,13 @@ int vcap_add_rule(struct vcap_rule *rule)
+ 	}
+ 	if (move.count > 0)
+ 		vcap_move_rules(ri, &move);
++
++	if (ri->state == VCAP_RS_DISABLED) {
++		/* Erase the rule area */
++		ri->vctrl->ops->init(ri->ndev, ri->admin, ri->addr, ri->size);
++		goto out;
++	}
++
+ 	vcap_erase_cache(ri);
+ 	ret = vcap_encode_rule(ri);
+ 	if (ret) {
+@@ -2071,9 +2170,13 @@ struct vcap_rule *vcap_get_rule(struct vcap_control *vctrl, u32 id)
+ 	if (!elem)
+ 		return NULL;
+ 	mutex_lock(&elem->admin->lock);
+-	ri = vcap_dup_rule(elem);
++	ri = vcap_dup_rule(elem, elem->state == VCAP_RS_DISABLED);
+ 	if (IS_ERR(ri))
+ 		goto unlock;
++
++	if (ri->state == VCAP_RS_DISABLED)
++		goto unlock;
++
+ 	err = vcap_read_rule(ri);
+ 	if (err) {
+ 		ri = ERR_PTR(err);
+@@ -2111,6 +2214,11 @@ int vcap_mod_rule(struct vcap_rule *rule)
+ 		return -ENOENT;
+ 
+ 	mutex_lock(&ri->admin->lock);
++
++	vcap_rule_set_state(ri);
++	if (ri->state == VCAP_RS_DISABLED)
++		goto out;
++
+ 	/* Encode the bitstreams to the VCAP cache */
+ 	vcap_erase_cache(ri);
+ 	err = vcap_encode_rule(ri);
+@@ -2203,7 +2311,7 @@ int vcap_del_rule(struct vcap_control *vctrl, struct net_device *ndev, u32 id)
+ 	mutex_lock(&admin->lock);
+ 	list_del(&ri->list);
+ 	vctrl->ops->init(ndev, admin, admin->last_used_addr, ri->size + gap);
+-	kfree(ri);
++	vcap_free_rule(&ri->data);
+ 	mutex_unlock(&admin->lock);
+ 
+ 	/* Update the last used address, set to default when no rules */
+@@ -2232,7 +2340,7 @@ int vcap_del_rules(struct vcap_control *vctrl, struct vcap_admin *admin)
+ 	list_for_each_entry_safe(ri, next_ri, &admin->rules, list) {
+ 		vctrl->ops->init(ri->ndev, admin, ri->addr, ri->size);
+ 		list_del(&ri->list);
+-		kfree(ri);
++		vcap_free_rule(&ri->data);
+ 	}
+ 	admin->last_used_addr = admin->last_valid_addr;
+ 
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
+index e0b206247f2e..d6a09ce75e4f 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
+@@ -152,37 +152,45 @@ vcap_debugfs_show_rule_actionfield(struct vcap_control *vctrl,
+ 	out->prf(out->dst, "\n");
  }
  
- static void vcap_api_next_lookup_advanced_test(struct kunit *test)
-@@ -1926,9 +1926,9 @@ static void vcap_api_next_lookup_advanced_test(struct kunit *test)
- 	ret = vcap_is_next_lookup(&test_vctrl, 1100000, 1201000);
- 	KUNIT_EXPECT_EQ(test, true, ret);
- 	ret = vcap_is_next_lookup(&test_vctrl, 1100000, 1301000);
--	KUNIT_EXPECT_EQ(test, false, ret);
-+	KUNIT_EXPECT_EQ(test, true, ret);
- 	ret = vcap_is_next_lookup(&test_vctrl, 1100000, 8101000);
--	KUNIT_EXPECT_EQ(test, false, ret);
-+	KUNIT_EXPECT_EQ(test, true, ret);
- 	ret = vcap_is_next_lookup(&test_vctrl, 1300000, 1401000);
- 	KUNIT_EXPECT_EQ(test, true, ret);
- 	ret = vcap_is_next_lookup(&test_vctrl, 1400000, 1501000);
-@@ -1944,7 +1944,7 @@ static void vcap_api_next_lookup_advanced_test(struct kunit *test)
- 	ret = vcap_is_next_lookup(&test_vctrl, 8300000, 8301000);
- 	KUNIT_EXPECT_EQ(test, false, ret);
- 	ret = vcap_is_next_lookup(&test_vctrl, 8300000, 8401000);
--	KUNIT_EXPECT_EQ(test, true, ret);
-+	KUNIT_EXPECT_EQ(test, false, ret);
- }
+-static int vcap_debugfs_show_rule_keyset(struct vcap_rule_internal *ri,
+-					 struct vcap_output_print *out)
++static int vcap_debugfs_show_keysets(struct vcap_rule_internal *ri,
++				     struct vcap_output_print *out)
+ {
+-	struct vcap_control *vctrl = ri->vctrl;
+ 	struct vcap_admin *admin = ri->admin;
+ 	enum vcap_keyfield_set keysets[10];
+-	const struct vcap_field *keyfield;
+-	enum vcap_type vt = admin->vtype;
+-	struct vcap_client_keyfield *ckf;
+ 	struct vcap_keyset_list matches;
+-	u32 *maskstream;
+-	u32 *keystream;
+-	int res;
++	int err;
  
- static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
+-	keystream = admin->cache.keystream;
+-	maskstream = admin->cache.maskstream;
+ 	matches.keysets = keysets;
+ 	matches.cnt = 0;
+ 	matches.max = ARRAY_SIZE(keysets);
+-	res = vcap_find_keystream_keysets(vctrl, vt, keystream, maskstream,
++
++	err = vcap_find_keystream_keysets(ri->vctrl, admin->vtype,
++					  admin->cache.keystream,
++					  admin->cache.maskstream,
+ 					  false, 0, &matches);
+-	if (res < 0) {
++	if (err) {
+ 		pr_err("%s:%d: could not find valid keysets: %d\n",
+-		       __func__, __LINE__, res);
+-		return -EINVAL;
++		       __func__, __LINE__, err);
++		return err;
+ 	}
++
+ 	out->prf(out->dst, "  keysets:");
+ 	for (int idx = 0; idx < matches.cnt; ++idx)
+ 		out->prf(out->dst, " %s",
+-			 vcap_keyset_name(vctrl, matches.keysets[idx]));
++			 vcap_keyset_name(ri->vctrl, matches.keysets[idx]));
+ 	out->prf(out->dst, "\n");
++	return 0;
++}
++
++static int vcap_debugfs_show_rule_keyset(struct vcap_rule_internal *ri,
++					 struct vcap_output_print *out)
++{
++	struct vcap_control *vctrl = ri->vctrl;
++	struct vcap_admin *admin = ri->admin;
++	const struct vcap_field *keyfield;
++	struct vcap_client_keyfield *ckf;
++
++	vcap_debugfs_show_keysets(ri, out);
+ 	out->prf(out->dst, "  keyset_sw: %d\n", ri->keyset_sw);
+ 	out->prf(out->dst, "  keyset_sw_regs: %d\n", ri->keyset_sw_regs);
+ 
+@@ -233,6 +241,18 @@ static void vcap_show_admin_rule(struct vcap_control *vctrl,
+ 	out->prf(out->dst, "  chain_id: %d\n", ri->data.vcap_chain_id);
+ 	out->prf(out->dst, "  user: %d\n", ri->data.user);
+ 	out->prf(out->dst, "  priority: %d\n", ri->data.priority);
++	out->prf(out->dst, "  state: ");
++	switch (ri->state) {
++	case VCAP_RS_PERMANENT:
++		out->prf(out->dst, "permanent\n");
++		break;
++	case VCAP_RS_DISABLED:
++		out->prf(out->dst, "disabled\n");
++		break;
++	case VCAP_RS_ENABLED:
++		out->prf(out->dst, "enabled\n");
++		break;
++	}
+ 	vcap_debugfs_show_rule_keyset(ri, out);
+ 	vcap_debugfs_show_rule_actionset(ri, out);
+ }
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
+index bef0b28a4a50..9211cb453a3d 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
+@@ -445,6 +445,7 @@ static const char * const test_admin_expect[] = {
+ 	"  chain_id: 0\n",
+ 	"  user: 0\n",
+ 	"  priority: 0\n",
++	"  state: permanent\n",
+ 	"  keysets: VCAP_KFS_MAC_ETYPE\n",
+ 	"  keyset_sw: 6\n",
+ 	"  keyset_sw_regs: 2\n",
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_private.h b/drivers/net/ethernet/microchip/vcap/vcap_api_private.h
+index 4fd21da97679..ce35af9a853d 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_private.h
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_private.h
+@@ -13,6 +13,12 @@
+ 
+ #define to_intrule(rule) container_of((rule), struct vcap_rule_internal, data)
+ 
++enum vcap_rule_state {
++	VCAP_RS_PERMANENT, /* the rule is always stored in HW */
++	VCAP_RS_ENABLED, /* enabled in HW but can be disabled */
++	VCAP_RS_DISABLED, /* disabled (stored in SW) and can be enabled */
++};
++
+ /* Private VCAP API rule data */
+ struct vcap_rule_internal {
+ 	struct vcap_rule data; /* provided by the client */
+@@ -29,6 +35,7 @@ struct vcap_rule_internal {
+ 	u32 addr; /* address in the VCAP at insertion */
+ 	u32 counter_id; /* counter id (if a dedicated counter is available) */
+ 	struct vcap_counter counter; /* last read counter value */
++	enum vcap_rule_state state;  /* rule storage state */
+ };
+ 
+ /* Bit iterator for the VCAP cache streams */
+@@ -43,8 +50,6 @@ struct vcap_stream_iter {
+ 
+ /* Check that the control has a valid set of callbacks */
+ int vcap_api_check(struct vcap_control *ctrl);
+-/* Make a shallow copy of the rule without the fields */
+-struct vcap_rule_internal *vcap_dup_rule(struct vcap_rule_internal *ri);
+ /* Erase the VCAP cache area used or encoding and decoding */
+ void vcap_erase_cache(struct vcap_rule_internal *ri);
+ 
 -- 
 2.39.0
 
