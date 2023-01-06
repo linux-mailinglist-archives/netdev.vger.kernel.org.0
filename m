@@ -2,81 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAEE365FF40
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3CB65FF5E
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 12:11:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232457AbjAFK7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 05:59:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        id S232760AbjAFLLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 06:11:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232216AbjAFK7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:59:12 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944566CFF2;
-        Fri,  6 Jan 2023 02:59:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1673002751; x=1704538751;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=czBvPkOaTKzYlrTp7htNRXp6MXEfNLCtJhGdaz9BVkI=;
-  b=hqYIyiL5AZDuIt9pQBU8/A35HSGNkJZ7QxnVFleO85m0b7VwHAuam/Ka
-   3/zpqoU+hlNaFgRkv9XeMsWGvvDLtgA72GRxReKxn9RiYj5oZGw5hKluk
-   kZ+Q2EdX84k5Ff0YXONIzUPtHm/wiy+ZuJcWNDigR+6jEcykdG/bXesn6
-   bIjHM85yB/mKkfxEM5AF30wZDjv8uAxUHEaICPallU0OYl1f0JuUENKIM
-   jA+RfR8LY4A0u/qRQHTv8tgoU1IX4BaWG2SGSIyZ4beCBqpV6/zU+f1BC
-   fRlC9RNv+dTCjJm6i55cwag3m7/woQI5MBhvWy/6P2rabB/J/RO6tJNLI
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,305,1665439200"; 
-   d="scan'208";a="28272863"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 06 Jan 2023 11:59:05 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 06 Jan 2023 11:59:05 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 06 Jan 2023 11:59:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1673002745; x=1704538745;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=czBvPkOaTKzYlrTp7htNRXp6MXEfNLCtJhGdaz9BVkI=;
-  b=XQUigQXxv5ynyoISP8af8eDnLner2u0CQtzUDJhYOK9/g/WW5WHGE1A8
-   N7cVpnVEkQANhC2ufX+wY/890u/y4Bx8A1qhNyNqXLaYoDrMf6Ju/WdzH
-   sztBWbClcYRVVn/+iDjSeQpy+FYmcNbL1e6bXSUO9busdLSX23VBVz7y+
-   CHjf6dspRyHtSSXQcx5qU/xP2rjxEnoruUmsQMhUa/LdHsy5UHHM5RvWN
-   PvWseUu1Ev09wrFJQreDFs793AiXF37sePP4G7EAaaAfrWJD7pGXsbntG
-   xb3q3wy3hOil0vWhcKeicFWEy3gltW6H7tUmNb2FcWZ/f6i0yOf+PDBsc
-   g==;
-X-IronPort-AV: E=Sophos;i="5.96,305,1665439200"; 
-   d="scan'208";a="28272861"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 06 Jan 2023 11:59:05 +0100
-Received: from steina-w.tq-net.de (unknown [10.123.53.21])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 9FC58280056;
-        Fri,  6 Jan 2023 11:59:05 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [RFC PATCH 2/2] ath10k: Add support for QCA9377 hw1.1 usb
-Date:   Fri,  6 Jan 2023 11:58:53 +0100
-Message-Id: <20230106105853.3484381-3-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230106105853.3484381-1-alexander.stein@ew.tq-group.com>
-References: <20230106105853.3484381-1-alexander.stein@ew.tq-group.com>
+        with ESMTP id S232940AbjAFLL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 06:11:27 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C135714A9;
+        Fri,  6 Jan 2023 03:11:25 -0800 (PST)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pDkd8-0003wz-1x; Fri, 06 Jan 2023 12:11:22 +0100
+Message-ID: <68b14b11-d0c7-65c9-4eeb-0487c95e395d@leemhuis.info>
+Date:   Fri, 6 Jan 2023 12:11:21 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: Network do not works with linux >= 6.1.2. Issue bisected to
+ "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the correct
+ link speed)
+Content-Language: en-US, de-DE
+To:     Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
+        kamalheib1@gmail.com, shiraz.saleem@intel.com, leon@kernel.org,
+        sashal@kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Igor Raits <igor.raits@gooddata.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <CAK8fFZ6A_Gphw_3-QMGKEFQk=sfCw1Qmq0TVZK3rtAi7vb621A@mail.gmail.com>
+From:   "Linux kernel regression tracking (#adding)" 
+        <regressions@leemhuis.info>
+Reply-To: Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CAK8fFZ6A_Gphw_3-QMGKEFQk=sfCw1Qmq0TVZK3rtAi7vb621A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1673003485;dd734773;
+X-HE-SMSGID: 1pDkd8-0003wz-1x
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,92 +50,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds hw_param for QCA9377 hw1.1 usb device.
+[CCing the regression list, as it should be in the loop for regressions:
+https://docs.kernel.org/admin-guide/reporting-regressions.html]
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- drivers/net/wireless/ath/ath10k/core.c | 28 ++++++++++++++++++++++++++
- drivers/net/wireless/ath/ath10k/hw.h   |  8 ++++++++
- drivers/net/wireless/ath/ath10k/usb.c  |  1 +
- 3 files changed, 37 insertions(+)
+[TLDR: I'm adding this report to the list of tracked Linux kernel
+regressions; all text you find below is based on a few templates
+paragraphs you might have encountered already already in similar form.
+See link in footer if these mails annoy you.]
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index f69dab55fa36..e67f1a852cd1 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -646,6 +646,34 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.use_fw_tx_credits = true,
- 		.delay_unmap_buffer = false,
- 	},
-+	{
-+		.id = QCA9377_HW_1_1_DEV_VERSION,
-+		.dev_id = QCA9377_1_1_DEVICE_ID,
-+		.bus = ATH10K_BUS_USB,
-+		.name = "qca9377 hw1.1 usb",
-+		.patch_load_addr = QCA9377_HW_1_1_PATCH_LOAD_ADDR,
-+		.uart_pin = 19,
-+		.otp_exe_param = 0,
-+		.channel_counters_freq_hz = 88000,
-+		.max_probe_resp_desc_thres = 0,
-+		.cal_data_len = 8124,
-+		.fw = {
-+			.dir = QCA9377_HW_1_1_FW_DIR,
-+			.board = QCA9377_HW_1_1_USB_BOARD_DATA_FILE,
-+			.board_size = QCA9377_BOARD_DATA_SZ,
-+			.board_ext_size = QCA9377_BOARD_EXT_DATA_SZ,
-+		},
-+		.hw_ops = &qca6174_ops,
-+		.hw_clk = qca6174_clk,
-+		.target_cpu_freq = 176000000,
-+		.decap_align_bytes = 4,
-+		.n_cipher_suites = 8,
-+		.num_peers = TARGET_QCA9377_HL_NUM_PEERS,
-+		.ast_skid_limit = 0x10,
-+		.num_wds_entries = 0x20,
-+		.uart_pin_workaround = true,
-+		.start_once = true,
-+	},
- 	{
- 		.id = QCA4019_HW_1_0_DEV_VERSION,
- 		.dev_id = 0,
-diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
-index ea3b5c5c6c9b..2e934d74d7cc 100644
---- a/drivers/net/wireless/ath/ath10k/hw.h
-+++ b/drivers/net/wireless/ath/ath10k/hw.h
-@@ -29,6 +29,7 @@ enum ath10k_bus {
- #define QCA9888_2_0_DEVICE_ID	(0x0056)
- #define QCA9984_1_0_DEVICE_ID	(0x0046)
- #define QCA9377_1_0_DEVICE_ID   (0x0042)
-+#define QCA9377_1_1_DEVICE_ID   (0x9378)
- #define QCA9887_1_0_DEVICE_ID   (0x0050)
- 
- /* QCA988X 1.0 definitions (unsupported) */
-@@ -123,6 +124,13 @@ enum qca9377_chip_id_rev {
- #define QCA9377_HW_1_0_BOARD_DATA_FILE "board.bin"
- #define QCA9377_HW_1_0_PATCH_LOAD_ADDR	0x1234
- 
-+/* QCA9377 1.1 definitions */
-+#define QCA9377_HW_1_1_FW_DIR          ATH10K_FW_DIR "/QCA9377/hw1.1"
-+#define QCA9377_HW_1_1_BOARD_DATA_FILE "board.bin"
-+#define QCA9377_HW_1_1_SDIO_BOARD_DATA_FILE "board-sdio.bin"
-+#define QCA9377_HW_1_1_USB_BOARD_DATA_FILE "board-usb.bin"
-+#define QCA9377_HW_1_1_PATCH_LOAD_ADDR	0x1234
-+
- /* QCA4019 1.0 definitions */
- #define QCA4019_HW_1_0_DEV_VERSION     0x01000000
- #define QCA4019_HW_1_0_FW_DIR          ATH10K_FW_DIR "/QCA4019/hw1.0"
-diff --git a/drivers/net/wireless/ath/ath10k/usb.c b/drivers/net/wireless/ath/ath10k/usb.c
-index b0067af685b1..efb949158aa1 100644
---- a/drivers/net/wireless/ath/ath10k/usb.c
-+++ b/drivers/net/wireless/ath/ath10k/usb.c
-@@ -1107,6 +1107,7 @@ static int ath10k_usb_pm_resume(struct usb_interface *interface)
- /* table of devices that work with this driver */
- static struct usb_device_id ath10k_usb_ids[] = {
- 	{USB_DEVICE(0x13b1, 0x0042)}, /* Linksys WUSB6100M */
-+	{USB_DEVICE(0x0CF3, 0x9378)}, /* Qualcomm QCA9377-7 */
- 	{ /* Terminating entry */ },
- };
- 
--- 
-2.34.1
+On 06.01.23 08:55, Jaroslav Pulchart wrote:
+> Hello,
+> 
+> I would like to report a >= 6.1.2 some network regression (looks like
+> NIC us not UP) on our Dell R7525 servers with E810 NICs. The issue was
+> observed after I updated 6.1.0 to 6.1.2 or newer (tested up to newest
+> 6.1.4-rc1). The system is not accesible and all services are in D
+> state after each reboot.
+> 
+> [  257.625207]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> [  257.631911] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  257.639740] task:kworker/u192:1  state:D stack:0     pid:11
+> ppid:2      flags:0x00004000
+> [  257.648095] Workqueue: netns cleanup_net
+> [  257.652029] Call Trace:
+> [  257.654481]  <TASK>
+> [  257.656589]  __schedule+0x1eb/0x630
+> [  257.660087]  schedule+0x5a/0xd0
+> [  257.663233]  schedule_preempt_disabled+0x11/0x20
+> [  257.667851]  __mutex_lock.constprop.0+0x372/0x6c0
+> [  257.672561]  rdma_dev_change_netns+0x25/0x120 [ib_core]
+> [  257.677821]  rdma_dev_exit_net+0x139/0x1e0 [ib_core]
+> [  257.682804]  ops_exit_list+0x30/0x70
+> [  257.686382]  cleanup_net+0x213/0x3b0
+> [  257.689964]  process_one_work+0x1e2/0x3b0
+> [  257.693984]  ? rescuer_thread+0x390/0x390
+> [  257.697995]  worker_thread+0x50/0x3a0
+> [  257.701661]  ? rescuer_thread+0x390/0x390
+> [  257.705674]  kthread+0xd6/0x100
+> [  257.708819]  ? kthread_complete_and_exit+0x20/0x20
+> [  257.713613]  ret_from_fork+0x1f/0x30
+> [  257.717192]  </TASK>
+> [  257.719496] INFO: task kworker/87:0:470 blocked for more than 122 seconds.
+> [  257.726423]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> [  257.733123] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  257.740949] task:kworker/87:0    state:D stack:0     pid:470
+> ppid:2      flags:0x00004000
+> [  257.749307] Workqueue: events linkwatch_event
+> [  257.753672] Call Trace:
+> [  257.756124]  <TASK>
+> [  257.758228]  __schedule+0x1eb/0x630
+> [  257.761723]  schedule+0x5a/0xd0
+> [  257.764867]  schedule_preempt_disabled+0x11/0x20
+> [  257.769487]  __mutex_lock.constprop.0+0x372/0x6c0
+> [  257.774196]  ? pick_next_task+0x57/0x9b0
+> [  257.778127]  ? finish_task_switch.isra.0+0x8f/0x2a0
+> [  257.783007]  linkwatch_event+0xa/0x30
+> [  257.786674]  process_one_work+0x1e2/0x3b0
+> [  257.790687]  worker_thread+0x50/0x3a0
+> [  257.794352]  ? rescuer_thread+0x390/0x390
+> [  257.798365]  kthread+0xd6/0x100
+> [  257.801513]  ? kthread_complete_and_exit+0x20/0x20
+> [  257.806303]  ret_from_fork+0x1f/0x30
+> [  257.809885]  </TASK>
+> [  257.812109] INFO: task kworker/39:1:614 blocked for more than 123 seconds.
+> [  257.818984]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> [  257.825686] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  257.833519] task:kworker/39:1    state:D stack:0     pid:614
+> ppid:2      flags:0x00004000
+> [  257.841869] Workqueue: infiniband ib_cache_event_task [ib_core]
+> [  257.847802] Call Trace:
+> [  257.850252]  <TASK>
+> [  257.852360]  __schedule+0x1eb/0x630
+> [  257.855851]  schedule+0x5a/0xd0
+> [  257.858998]  schedule_preempt_disabled+0x11/0x20
+> [  257.863617]  __mutex_lock.constprop.0+0x372/0x6c0
+> [  257.868325]  ib_get_eth_speed+0x65/0x190 [ib_core]
+> [  257.873127]  ? ib_cache_update.part.0+0x4b/0x2b0 [ib_core]
+> [  257.878619]  ? __kmem_cache_alloc_node+0x18c/0x2b0
+> [  257.883417]  irdma_query_port+0xb3/0x110 [irdma]
+> [  257.888051]  ib_query_port+0xaa/0x100 [ib_core]
+> [  257.892601]  ib_cache_update.part.0+0x65/0x2b0 [ib_core]
+> [  257.897924]  ? pick_next_task+0x57/0x9b0
+> [  257.901855]  ? dequeue_task_fair+0xb6/0x3c0
+> [  257.906043]  ? finish_task_switch.isra.0+0x8f/0x2a0
+> [  257.910920]  ib_cache_event_task+0x58/0x80 [ib_core]
+> [  257.915906]  process_one_work+0x1e2/0x3b0
+> [  257.919918]  ? rescuer_thread+0x390/0x390
+> [  257.923931]  worker_thread+0x50/0x3a0
+> [  257.927595]  ? rescuer_thread+0x390/0x390
+> [  257.931609]  kthread+0xd6/0x100
+> [  257.934755]  ? kthread_complete_and_exit+0x20/0x20
+> [  257.939549]  ret_from_fork+0x1f/0x30
+> [  257.943128]  </TASK>
+> [  257.945438] INFO: task NetworkManager:3387 blocked for more than 123 seconds.
+> [  257.952577]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> [  257.959274] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  257.967099] task:NetworkManager  state:D stack:0     pid:3387
+> ppid:1      flags:0x00004002
+> [  257.975446] Call Trace:
+> [  257.977901]  <TASK>
+> [  257.980004]  __schedule+0x1eb/0x630
+> [  257.983498]  schedule+0x5a/0xd0
+> [  257.986641]  schedule_timeout+0x11d/0x160
+> [  257.990654]  __wait_for_common+0x90/0x1e0
+> [  257.994666]  ? usleep_range_state+0x90/0x90
+> [  257.998854]  __flush_workqueue+0x13a/0x3f0
+> [  258.002955]  ? __kernfs_remove.part.0+0x11e/0x1e0
+> [  258.007661]  ib_cache_cleanup_one+0x1c/0xe0 [ib_core]
+> [  258.012721]  __ib_unregister_device+0x62/0xa0 [ib_core]
+> [  258.017959]  ib_unregister_device+0x22/0x30 [ib_core]
+> [  258.023024]  irdma_remove+0x1a/0x60 [irdma]
+> [  258.027223]  auxiliary_bus_remove+0x18/0x30
+> [  258.031414]  device_release_driver_internal+0x1aa/0x230
+> [  258.036643]  bus_remove_device+0xd8/0x150
+> [  258.040654]  device_del+0x18b/0x3f0
+> [  258.044149]  ice_unplug_aux_dev+0x42/0x60 [ice]
+> [  258.048707]  ice_lag_changeupper_event+0x287/0x2a0 [ice]
+> [  258.054038]  ice_lag_event_handler+0x51/0x130 [ice]
+> [  258.058930]  raw_notifier_call_chain+0x41/0x60
+> [  258.063381]  __netdev_upper_dev_link+0x1a0/0x370
+> [  258.068008]  netdev_master_upper_dev_link+0x3d/0x60
+> [  258.072886]  bond_enslave+0xd16/0x16f0 [bonding]
+> [  258.077517]  ? nla_put+0x28/0x40
+> [  258.080756]  do_setlink+0x26c/0xc10
+> [  258.084249]  ? avc_alloc_node+0x27/0x180
+> [  258.088173]  ? __nla_validate_parse+0x141/0x190
+> [  258.092708]  __rtnl_newlink+0x53a/0x620
+> [  258.096549]  rtnl_newlink+0x44/0x70
+> [  258.100040]  rtnetlink_rcv_msg+0x159/0x3d0
+> [  258.104140]  ? rtnl_calcit.isra.0+0x140/0x140
+> [  258.108496]  netlink_rcv_skb+0x4e/0x100
+> [  258.112338]  netlink_unicast+0x23b/0x360
+> [  258.116264]  netlink_sendmsg+0x24e/0x4b0
+> [  258.120191]  sock_sendmsg+0x5f/0x70
+> [  258.123684]  ____sys_sendmsg+0x241/0x2c0
+> [  258.127609]  ? copy_msghdr_from_user+0x6d/0xa0
+> [  258.132054]  ___sys_sendmsg+0x88/0xd0
+> [  258.135722]  ? ___sys_recvmsg+0x88/0xd0
+> [  258.139559]  ? wake_up_q+0x4a/0x90
+> [  258.142967]  ? rseq_get_rseq_cs.isra.0+0x16/0x220
+> [  258.147673]  ? __fget_light+0xa4/0x130
+> [  258.151434]  __sys_sendmsg+0x59/0xa0
+> [  258.155012]  do_syscall_64+0x38/0x90
+> [  258.158591]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> [  258.163645] RIP: 0033:0x7ff23714fa7d
+> [  258.167226] RSP: 002b:00007ffdddfc8c70 EFLAGS: 00000293 ORIG_RAX:
+> 000000000000002e
+> [  258.174798] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff23714fa7d
+> [  258.181933] RDX: 0000000000000000 RSI: 00007ffdddfc8cb0 RDI: 000000000000000d
+> [  258.189063] RBP: 00005572f5d77040 R08: 0000000000000000 R09: 0000000000000000
+> [  258.196197] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffdddfc8e1c
+> [  258.203332] R13: 00007ffdddfc8e20 R14: 0000000000000000 R15: 00007ffdddfc8e28
+> [  258.210464]  </TASK>
+> ...
+> 
+> I bisected the issue to a commit
+> "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the
+> correct link speed). Reverting this commit in my kernel build "fix"
+> the issue and the server has a working network again.
 
+Thanks for the report. To be sure the issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
+tracking bot:
+
+#regzbot ^introduced 425c9bd06b7a7079
+#regzbot title RDMA/irdma: network stopped working
+#regzbot ignore-activity
+
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
+
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report (see page linked in footer for details).
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
