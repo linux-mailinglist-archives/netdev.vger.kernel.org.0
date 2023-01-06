@@ -2,204 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 863DD660A1D
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 00:11:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9706A660A20
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 00:13:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbjAFXLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 18:11:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
+        id S229929AbjAFXNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 18:13:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbjAFXLK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 18:11:10 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6839A687BD;
-        Fri,  6 Jan 2023 15:11:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673046665; x=1704582665;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=EqZOp7uWeeu8a3MVeZt3TWaz2kZ+s7CDpqAlSFAmBq4=;
-  b=LY9CSfvUdYNT7ZN052lC5hSG78Ah9kr3jXj2zq58V8g0rcUnN0/26tt2
-   k7V+G5RUpbTszoKgkyrY9V4S3rHM6bBJ5YwR29i227EZ4XlF5kwu6ez5b
-   e0ShAkdafBvN0AwvO6r0LDwf9+ZVnb+aQPgosZoNu2jw9DNZef4vNE+EJ
-   M1CLHhCe7fvc1/dr/EoXVFJLLvISvnUmpEl+HBMsEzl0l4F6xLatfTnBt
-   7vee8ylmqVwWpS61qvpjXtGQtmrTjnFiP2EBeac9B2IhN5Kx7VUEQB7uH
-   Nisx7HKRy0ewyaF1eHpTGqbqetLhyEYqy2HhjKFcfjoA4ACetB2DfyX2w
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="408832337"
-X-IronPort-AV: E=Sophos;i="5.96,306,1665471600"; 
-   d="scan'208";a="408832337"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 15:11:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="633623436"
-X-IronPort-AV: E=Sophos;i="5.96,306,1665471600"; 
-   d="scan'208";a="633623436"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jan 2023 15:11:04 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 6 Jan 2023 15:11:04 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 6 Jan 2023 15:11:04 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Fri, 6 Jan 2023 15:11:04 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.170)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Fri, 6 Jan 2023 15:11:03 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nmKQ/t0BBTFTt3hfPyVHI61ycBRIrnjVi68OjVRP6ipHdmhqcqlfBrFz8ctm5oHrSe0IHyQCoe6GkudIMJEn4T7vVz/KZ4t9qWqt/VlppVRgzY8syHHL524NipWQxdjZ4yxMF7+YJLgeCqPpzDgjfXfgNoDHPw1Lvse7kWcjMZFC2wEbFS5uB17z423zBk5Oi7GTMKI+jf4l6SFT1zYUULC04HgvvwALQ4vNXCeEl6cKpQKQsWMqKh1WvBih/CxrXOaCUfTeezYg3EHxcYMzMn9xDa96Wmhmn9EAD5Em56dLyYdSzHTrEVjLi+oKLeyjqPS6fhpclyuTCyDBrlz8mA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MGa5jeU+nYMHocmvpDdj+D+XO0SEOhjI6DRM1749xjA=;
- b=KOJYt+mNPb9J4vcg35vlb3zRynDEUhGmAM/XuLQiOzzQEN0Fx08d0sausee3uATVDf6MPNyl97AoKTEAFuPR3E1CkFhoSqhbDGuM9kh5jtq+6Bu8kwZmWfnfHnFZAns1zNXGrzwLWJObppIB3RXnWEMYYRNSU9n2ZlYRMuWuSJY2eaSf7jPdoyF3+ZAszEdNuMsa5NuWps76vYI9i3w6Sem2cMcMdLYegwcLyr1Xw/OYsBXdHHn1s5ApMJoHRA1bcPpclfl4gXWPI2gFbs2JPIaiPovnRTZDnUbXPPAE4XvYfn55e9FbG+IPA6opOdK1hcWTRgEp7NLU8+ThtSeGgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
- by BL3PR11MB6483.namprd11.prod.outlook.com (2603:10b6:208:3be::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Fri, 6 Jan
- 2023 23:10:59 +0000
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::d585:716:9c72:fbab]) by MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::d585:716:9c72:fbab%6]) with mapi id 15.20.5944.019; Fri, 6 Jan 2023
- 23:10:59 +0000
-Message-ID: <048ca2e1-4490-21da-b95f-8be018d64e5a@intel.com>
-Date:   Fri, 6 Jan 2023 15:10:55 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH net-next 0/7] Remove three Sun net drivers
-To:     <karl.volz@oracle.com>, <netdev@vger.kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-mips@vger.kernel.org>, <linux-trace-kernel@vger.kernel.org>,
-        <sparclinux@vger.kernel.org>, Leon Romanovsky <leon@kernel.org>
-References: <20230106220020.1820147-1-anirudh.venkataramanan@intel.com>
- <c43562d7-8e6b-40d9-26dc-ab85afcef70e@oracle.com>
-Content-Language: en-US
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-In-Reply-To: <c43562d7-8e6b-40d9-26dc-ab85afcef70e@oracle.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR17CA0015.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::28) To MW3PR11MB4764.namprd11.prod.outlook.com
- (2603:10b6:303:5a::16)
+        with ESMTP id S229547AbjAFXNE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 18:13:04 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48B17A3B5
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 15:13:02 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id d17so2657206wrs.2
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 15:13:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=53yvmUNgm/nJeFIqaAWjlcQiJTyOwNXEbv/xj5CnK58=;
+        b=F5jXX2l6VS6qavSTmuKveDvTCuLEX4qwjt9KDN8wyWNoOvQz0iO/60i9coBD6UgQPk
+         W7UXe8gUGTyPlazTu9MpsMIpUycJ5oBMX4rp4iZ4QI4jg6K9V69u2Q7DF5/s60qksy0L
+         C2B+06sQxvKkUrRDYKwxk3Cbm+lhXeos1mm3Oyawe7VTkjYoIT2yt7uYP3VeK/eoLoMR
+         O1NHTFl7mF1xLlYP60AzQX5Ia0Fk3XSUFva4NxMjI0NgRYsUalSz/Y2Sk7492z9bh4US
+         +ztJhFLindRwOiYN8zcxDo7kNOiCNI3+UCVVz7XzyBQ8jg9iA9mYx7fRNTGLwKmkvC3k
+         JiZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=53yvmUNgm/nJeFIqaAWjlcQiJTyOwNXEbv/xj5CnK58=;
+        b=uDtUIYU0K15DRHoguZEfe+kDWe/KxA8MwnN+80a7uvT+THoK86lVwh+UiQqeqsZD50
+         D/d58q42d1pGhAGKBDJJQGq67Ni0N+6wH8yKiU9NTAOncg+ewC4OZcb4Qa5MVR9GrpI2
+         MMTnUkrqiXMaroqwrvFmM9WfKQUL33TejEgjIJUXxKouimWklR6HBwgSRagrzhclgHA7
+         w4KCUCjJ35Wor3LHzw6Wrmp5byPYuCKj7opc97J5PvAdhQMIMMfUHAgJHewMIlhfm2Rj
+         FckjnoPGIpmQ6yPSk8RHm+Lt70vD8A/nqFeCudlFJcUtf8nNiH2X3spYKQSL/67MQVL7
+         eckA==
+X-Gm-Message-State: AFqh2koajVhalQHoQ+dcQIxi+rDY0ZcvHesiKwY0AxgpU4nkvAYxAg6j
+        FYqQNZl8b/NPKIEzHc+90ruloyj4krBxxVbVXFw=
+X-Google-Smtp-Source: AMrXdXtI+yunQtzyEAlYlvPNMTleuiQKgApQVVFTOpksAg6+1Cdxu6tvlVd68ZksgD0g6NixncthPtyRMW57qad8zvU=
+X-Received: by 2002:a5d:58d1:0:b0:2b3:62cf:aa3e with SMTP id
+ o17-20020a5d58d1000000b002b362cfaa3emr316013wrf.703.1673046781142; Fri, 06
+ Jan 2023 15:13:01 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|BL3PR11MB6483:EE_
-X-MS-Office365-Filtering-Correlation-Id: 42c77dda-29c9-402c-360d-08daf03b45ad
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lrgw8uyJOStAjaP1N0GGJhPcD8vaacoTBrmH9Ug5OJzdzT0EFEX3nZAwurRv7f3XIyFfUTqF+jOsA2Bj/9Eo6EoRT/wR1KuABSwDU/hJs20x6uL/vPwskhLMkL8dPvnBzSfP0JVo0lTnT9CnkPsoAvF2yY29ZwKZUMU76Mllv/wv3h4qajHvbCbCr/u7d1S7PnGn+FS9Ogp/604y3T+LipLhIiMjaDjJOs48I2oZYpv8L0izLSWNfI2OtVUVbXOFyrnQmPy3GtQF9l2bhR7ZyFx9oNG8dKu0XR4RpI3u2645F8TLppRM48SkE/2dnKq+tGvvSTinPvOtR/JgW1ET3gR99U8rUQ2i2NC/z3N3rEONi5d8VxQRmXGNNVLBdZ1Tm/Oyitxu3erVujK0EsWESlzZ+3Ov15YP8EgK7ajJW8aPN1tjKcLwpOr5ojYNJJMIWAUoVv8Lx7vfJi+az3EcjdTrPhEPg2g3OfQHl+tWYtWCEU+ltp5IsTImrTmQGf0iRcDEpRe67xaKdRoi2q0kVcuqeC14C+RFFVgErxDBolya+Zoc2gyYGIhzRH6RGMr4DUAJbtbq+HrIPUnVs3J+EyG7CD87oqM+Y9mXSKLpFt9fmD8Yxfvk+kgatmUv5FyyCAHONd6PFHTgf4/f/3ZibbIzX3Y+1lDRCwi2mHrZPr4zTqmAayKpN/qD9HqBRR4w5yNeK3wjwNGoaMsvIDzaywqo38tUAD8VHo45Lw/EdXo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(39860400002)(376002)(136003)(346002)(396003)(451199015)(66556008)(82960400001)(4326008)(2616005)(66476007)(8676002)(36756003)(41300700001)(316002)(66946007)(31696002)(2906002)(38100700002)(86362001)(5660300002)(6486002)(8936002)(6506007)(53546011)(478600001)(26005)(186003)(6666004)(6512007)(44832011)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N1ZCaHdlVVpRYnhGM3A4RlpXTkgvR2tCdnRVOUVPUFY1WTBCa085V0xqclRL?=
- =?utf-8?B?c1hLK29tbE9HV3grazFkRUpSWVJpRkJFdWFHVjB3M1U1M3U0U2ZEUmUrY25F?=
- =?utf-8?B?c1k0MWsyMzN0eEVScHlSV2NyWkxQUm84RUYxZEJ6VTlCeW5iTHhXNGxZRHJl?=
- =?utf-8?B?eTg4bHJtaUpQMGxHbjJBNTJvV05NMHQ3b2EwdkVOakZNR3dCZm1wNXU1eVky?=
- =?utf-8?B?Nk5NWnBvRUxvUFVQK213SURiQXpsdkVwTDJNYTBoU1hML3NSTGtsaXBNcnFr?=
- =?utf-8?B?U2Q5dmF2UGdDdGFpRWJMbUVubzhHSTFaT2Y5aXZXdjVEWlZFNW1ka3g1OGU0?=
- =?utf-8?B?cERMOUMwdHk4ZkwrS2MxNEdwVlIybFhhWFBLMzBDNVpQeEhKbmJGMXVSVDNo?=
- =?utf-8?B?cVRZYzdPdEpudGZNb1hPMnM4cXlpclg0QjRkTHZ2Q2NIYXErSDVBTUpLa2Rq?=
- =?utf-8?B?a3BZR1VWT3pyR2lDUkI2NlkwVG8yMDgvWHNpWm5wOEsxODdYekd0YVgzKy9G?=
- =?utf-8?B?UDE0bWR0ckFMMkdncWJWVStnSnQ1QUxuOEJyY0hIaTJ1OXV5QTlPOUFjNW9T?=
- =?utf-8?B?aGVzVlV3a01YQnVxRFVydjNFYlpPeEVzSVBlSktuTVM5dzBTNUxsdVRHSCtx?=
- =?utf-8?B?SEQxSFA0bHFBeWJFQmFyL3BBK0NCZEFVMzNSZHAyM284WTFQY05ia1IxMkpm?=
- =?utf-8?B?SDZxd3lqUVpDZWVxN091MWV3QVlpczY2WFNNU0tWdFQ4SHlyeVRLWkNVVGds?=
- =?utf-8?B?VlVOOUZZeUpvOXZ2OUluZFkvR0ZHOEJ6QzllVVVsWCtpcmI5WSt4cUkyVmVr?=
- =?utf-8?B?UW1rRFQvSy9WQTRpYWZOeTcxT3BBb09DS1NBNG1XYk5JSDUzOU9TVUdlVXhD?=
- =?utf-8?B?TjZGcmtxRXFYY2kxbVlIY3RRUXJGSkpVS1ZBMnZYN3dBOGJwZUozUVBsNC84?=
- =?utf-8?B?eTF0VWlHUnUwYTZRUmo5UjIrUDV1Z0R4bi9uL1BGRllSZ0VoR1JIY1h0QzVZ?=
- =?utf-8?B?RTZwcEZpSUNPSmFYYVJlM1p0eHM5aXY5RC9uc3EwbXZsdk4xcU12NUJyRFZm?=
- =?utf-8?B?U2srV3pQK0dzSXJCRzYrUzNxOFNndXJDREZuUXBzU1dQQktPRnROemJ6dEI3?=
- =?utf-8?B?RERJWFVxRDhDN1ZMSzlGVSs1aXVuaXBCWmhPU3FQUWNGd3Yra3dSWE5mYWto?=
- =?utf-8?B?NTdJd09KWllTS1lzNzNQWXNMUDlaTUF5NXdhRnRid3ZCdXp1cExUeU9VcDE4?=
- =?utf-8?B?QXJZTVRLbnMydS9seDlCTTZieVAvU085RTBLenVqZ3lKQklmMFJUMWxCT3Fh?=
- =?utf-8?B?MWVzNEgrN0g5MWxoaHRYQW12MHdCQWwvYUZMWitPZDBFMTVTeitsZ1oyYXQz?=
- =?utf-8?B?WTd6SkJPOHpwTkw5cWt0L2g5ejFhdEtvTjkrbFBtSUM1Wk0yQU02cWxrSE5Q?=
- =?utf-8?B?MXpUblhTWGpzdmFYbTg3cUxZa1BTald3UlZ3Q2UzOVhuZXFsM01mUDVYVW9p?=
- =?utf-8?B?QWs4NUxrUm1udlloWE9HNzJBTHUyeHR5K0QvdTl2UkxHYjk4bmZWcmNqanJO?=
- =?utf-8?B?Y1RvNDdKcVFjOUhWQTQ4ZVBuV2k4TTRQTzRQWVMrcW8ydUVnL2krcG5PNmxH?=
- =?utf-8?B?Myt2SXpqUHVhV0N2dFp3Y1lKVHR5TlZadFF1Z0xleXhOd0syVHkzejJNRmlx?=
- =?utf-8?B?UllMakVvVGdVSUJ6Tjg0cXYrQld0NmErOS9oSFlnaURoZmlXd1Nrd2FZTk9K?=
- =?utf-8?B?Q2YwaDM0ZFM2RjFHMGcwVjUzU25uelgzcWpWdjdGZHZadXp4c2NTRzdNOTl2?=
- =?utf-8?B?aGEzOFdMMHJ1ckdHOFB1RDczYVgrdW12RW5ETmh2NTJqdjJDUmxGNjlHd3lV?=
- =?utf-8?B?eVhYWEEzNllMSHU2d0pPSStiZ2taMlBPME5Ra1JXREgyWWpndXZ6YkVmd2V3?=
- =?utf-8?B?RHBhQmo5ejdjdjZkTC8vNVNUTlFmeGFkVGtFdURtTWUzdFdScndoWXRJZDVx?=
- =?utf-8?B?ajBmczE4RUlrRU0zRkJzMmExdkEzWE1hcXNKbVI1U21OZkNZMnJ1NFowdmUr?=
- =?utf-8?B?bXVDaTdPL2QwZFFSUGlJSWxURjc0cG9FSXJsY2VlYXVlYmJxd25UNjlnWGJ4?=
- =?utf-8?B?WjhTZU92OGh4TFVIUGUvN0JtMUxBM0tPbzFwUTVwZDc2WFJreTFJNnBEK1lG?=
- =?utf-8?Q?AU9ayvOTcSRRT/0e84z6vI0=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42c77dda-29c9-402c-360d-08daf03b45ad
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2023 23:10:59.0312
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1lAnEqZo7m9K5aB5sj+WM65NLunDhMneFQDoVn1UFcJMZt8QwzFBqFoghOb9GoAMY7yKIwPOy06YwVbK/d06TVfkVegnG2NrKhTqq4Gg0Nq9dEJY2Kp4eb8zFiOQ3Wsg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6483
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <Y7iQeGb2xzkf0iR7@westworld> <20230106145553.6dd014f1@kernel.org>
+In-Reply-To: <20230106145553.6dd014f1@kernel.org>
+From:   Kyle Zeng <zengyhkyle@gmail.com>
+Date:   Fri, 6 Jan 2023 16:12:25 -0700
+Message-ID: <CADW8OBu8R7tp-SfEwNByZqJaV-j2squT1JigniZLPwe0sWpRWg@mail.gmail.com>
+Subject: Re: net: ipv6: raw: fixes null pointer deference in rawv6_push_pending_frames
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/6/2023 2:44 PM, Karl Volz wrote:
-> 
-> 
-> On 1/6/23 15:00, Anirudh Venkataramanan wrote:
->> This series removes the Sun Cassini, LDOM vswitch and sunvnet drivers.
->>
->> In a recent patch series that touched these drivers [1], it was suggested
->> that these drivers should be removed completely. git logs suggest that
->> there hasn't been any significant feature addition, improvement or fixes
->> to user-visible bugs in a while. A web search didn't indicate any recent
->> discussions or any evidence that there are users out there who care about
->> these drivers.
->>
->> The idea behind putting out this series is to either establish that these
->> drivers are used and should be maintained, or remove them.
-> Anirudh,
-> 
-> The Sun LDOM vswitch and sunvnet drivers are still in use, please do not 
-> remove them or the event tracing.
-> We use them internally and you don't see any discussions because they 
-> generally work fine (AFAIK).
+Hi Jakub,
 
-Hello Karl,
+The null dereference can happen if every execution in the loop enters
+the `if (offset >= len) {`branch  and directly `continue` without
+running `csum_skb = skb`.
+A crash report is attached to this email.
 
-Thanks for chiming in.
+Best,
+Kyle Zeng
 
-Are there recent platforms where these drivers are used? If yes, do you 
-know which ones? Or are these drivers useful in old/legacy platforms 
-that are still around but perhaps no longer in production?
+=============================================
+[    7.203616] BUG: kernel NULL pointer dereference, address: 00000000000000b2
+[    7.205204] #PF: supervisor read access in kernel mode
+[    7.206448] #PF: error_code(0x0000) - not-present page
+[    7.207630] PGD 88d0067 P4D 88d0067 PUD 79af067 PMD 0
+[    7.208060] Oops: 0000 [#1] SMP NOPTI
+[    7.208343] CPU: 1 PID: 1846 Comm: poc Not tainted 5.10.133 #39
+[    7.208816] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS 1.15.0-1 04/01/2014
+[    7.209489] RIP: 0010:rawv6_push_pending_frames+0x96/0x1e0
+[    7.209934] Code: 00 00 8d 57 ff 39 d0 0f 8d bc 00 00 00 48 89 7c
+24 08 41 83 bc 24 d0 01 00 00 01 0f 85 b8 00 00 00 8b a9 88 00 00 00
+48 89 cb <44> 0f b7 ab b2 00 00 00 44 03 ab c0 00 00 00 44 2b ab c8 00
+00 00
+[    7.211433] RSP: 0018:ffffc90003487b10 EFLAGS: 00010246
+[    7.211859] RAX: 00000000000000d8 RBX: 0000000000000000 RCX: ffff8880064101c0
+[    7.212410] RDX: 00000000000003c0 RSI: ffff8880064101c0 RDI: 00000000090e5840
+[    7.212992] RBP: 00000000479c45b8 R08: 0000000000000000 R09: ffff8880064101a4
+[    7.213559] R10: ffff8880064103d0 R11: ffff888006524b00 R12: ffff888006410000
+[    7.214106] R13: ffffc90003487c10 R14: ffffc90003487c10 R15: 0000000000000000
+[    7.214653] FS:  00000000017e03c0(0000) GS:ffff88803ec80000(0000)
+knlGS:0000000000000000
+[    7.215272] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    7.215769] CR2: 00000000000000b2 CR3: 0000000009068006 CR4: 0000000000770ee0
+[    7.216318] PKRU: 55555554
+[    7.216532] Call Trace:
+[    7.216744]  rawv6_sendmsg+0x72c/0x7d0
+[    7.217041]  kernel_sendmsg+0x7a/0x90
+[    7.217325]  sock_no_sendpage+0xc1/0xe0
+[    7.217644]  kernel_sendpage+0xa3/0xe0
+[    7.217945]  sock_sendpage+0x23/0x30
+[    7.218224]  pipe_to_sendpage+0x76/0xa0
+[    7.218529]  __splice_from_pipe+0xe5/0x200
+[    7.218870]  ? generic_splice_sendpage+0xa0/0xa0
+[    7.219263]  generic_splice_sendpage+0x72/0xa0
+[    7.219650]  do_splice+0x4ad/0x780
+[    7.219928]  __se_sys_splice+0x162/0x210
+[    7.220231]  do_syscall_64+0x31/0x40
+[    7.220518]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
+[    7.220944] RIP: 0033:0x47656d
+[    7.221189] Code: c3 e8 47 28 00 00 0f 1f 80 00 00 00 00 f3 0f 1e
+fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24
+08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89
+01 48
+[    7.222645] RSP: 002b:00007ffd36d11668 EFLAGS: 00000216 ORIG_RAX:
+0000000000000113
+[    7.223266] RAX: ffffffffffffffda RBX: 000000002000102f RCX: 000000000047656d
+[    7.223860] RDX: 0000000000000007 RSI: 0000000000000000 RDI: 0000000000000005
+[    7.224414] RBP: 00007ffd36d116a0 R08: 000000000804ffe2 R09: 0000000000000000
+[    7.224986] R10: 0000000000000000 R11: 0000000000000216 R12: 0000000000000001
+[    7.225546] R13: 00007ffd36d118d8 R14: 00000000005026c0 R15: 0000000000000002
+[    7.226112] Modules linked in:
+[    7.226350] CR2: 00000000000000b2
+[    7.226613] ---[ end trace 5d56aba11d09b665 ]---
+[    7.226993] RIP: 0010:rawv6_push_pending_frames+0x96/0x1e0
+[    7.227442] Code: 00 00 8d 57 ff 39 d0 0f 8d bc 00 00 00 48 89 7c
+24 08 41 83 bc 24 d0 01 00 00 01 0f 85 b8 00 00 00 8b a9 88 00 00 00
+48 89 cb <44> 0f b7 ab b2 00 00 00 44 03 ab c0 00 00 00 44 2b ab c8 00
+00 00
+[    7.228918] RSP: 0018:ffffc90003487b10 EFLAGS: 00010246
+[    7.229322] RAX: 00000000000000d8 RBX: 0000000000000000 RCX: ffff8880064101c0
+[    7.229880] RDX: 00000000000003c0 RSI: ffff8880064101c0 RDI: 00000000090e5840
+[    7.230516] RBP: 00000000479c45b8 R08: 0000000000000000 R09: ffff8880064101a4
+[    7.231112] R10: ffff8880064103d0 R11: ffff888006524b00 R12: ffff888006410000
+[    7.231687] R13: ffffc90003487c10 R14: ffffc90003487c10 R15: 0000000000000000
+[    7.232250] FS:  00000000017e03c0(0000) GS:ffff88803ec80000(0000)
+knlGS:0000000000000000
+[    7.232912] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    7.233376] CR2: 00000000000000b2 CR3: 0000000009068006 CR4: 0000000000770ee0
+[    7.233958] PKRU: 55555554
+[    7.234170] Kernel panic - not syncing: Fatal exception
+[    7.234762] Kernel Offset: disabled
+[    7.235062] Rebooting in 1000 seconds..
 
-> I think you are also going to break things by removing Sun Cassini 
-> support, but I am not using it personally.
-
-You suspect there are users for this driver as well?
-
-> What user visible bugs are you referring to here?
-
-I was saying I don't see any evidence of recent bug fixes, which would 
-make sense if these drivers "just work".
-
-Ani
+On Fri, Jan 6, 2023 at 3:55 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 6 Jan 2023 14:19:52 -0700 Kyle Zeng wrote:
+> > It is posible that the skb_queue_walkloop does not assign csum_skb to a real skb.
+>
+> Not immediately obvious to me how that could happen given prior checks
+> in this function.
