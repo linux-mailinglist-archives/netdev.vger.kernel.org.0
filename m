@@ -2,268 +2,765 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D97D660446
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:28:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB30D66044A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:32:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbjAFQ2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 11:28:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49364 "EHLO
+        id S234403AbjAFQcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 11:32:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235516AbjAFQ2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:28:19 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8FA76EC8;
-        Fri,  6 Jan 2023 08:28:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673022498; x=1704558498;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KPM4CYTOH2kJiIRbFngO28NyOGabwRen0ySdT9mHomU=;
-  b=UMrnQAg/8Sb7rwoxghnkPvXgbIEFm8u5HvsJ+pl2ItU74+VYSgoy7kcB
-   X563EZoVbhQd/TIN8N5PGdsQOlgbNLKicA3UoePeAbIo45SIjEOKIGL9f
-   WPZShWU9XGe5SalB2EJhFlWt/XXu9pIuK4COFHE7DaleJ4NHdgA+ptIkT
-   9TdSBMUWem2JD6NfHNq7wSDWRZIBNJ5NEad9b2iRv9aSodom35ChQlE5O
-   w2a+b2zzvbX3kdUA9xyg2QbUC/5zN/d8LPL8YjzdUr86Z1PytQ5vPP+Kk
-   hPbtolzODFPJTE6XR/bPVBKWE3afXUnLpQ/wQL9Up/FS2SO0PtXWR04Mx
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="384808567"
-X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
-   d="scan'208";a="384808567"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 08:28:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="655987093"
-X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
-   d="scan'208";a="655987093"
-Received: from bswcg005.iind.intel.com ([10.224.174.136])
-  by orsmga002.jf.intel.com with ESMTP; 06 Jan 2023 08:28:11 -0800
-From:   m.chetan.kumar@linux.intel.com
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
-        m.chetan.kumar@linux.intel.com, matthias.bgg@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-doc@vger.kernel.org,
-        jiri@nvidia.com, corbet@lwn.net
-Subject: [PATCH v3 net-next 5/5] net: wwan: t7xx: Devlink documentation
-Date:   Fri,  6 Jan 2023 21:58:06 +0530
-Message-Id: <500a41cb400b4cdedd6df414b40200a5211965f5.1673016069.git.m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
-References: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
+        with ESMTP id S229877AbjAFQc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:32:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0371B76EEF
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 08:31:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673022699;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uOnLnsrTaUBGadCsngo5caqfW+N0nnkGWxXjP1rnFFU=;
+        b=KSuqYCa125lEdEk7ECnI8FCoF2C/JRSGNnYZYVAJBREaiHbOHe+ZM8mwADs47qK14qDgD3
+        poh91j4DEUwAyD45Zmg+fuEHCpixPA7119xqKJFtUvCjSEcJuPpVMX5hqubVExTO8wRNMz
+        Yl+b3b3bv9g1Yj7AHFQ3UJlCi5H4r2A=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-658-Gq64lIhZM8ugz8DUT1dglg-1; Fri, 06 Jan 2023 11:31:37 -0500
+X-MC-Unique: Gq64lIhZM8ugz8DUT1dglg-1
+Received: by mail-ed1-f70.google.com with SMTP id z8-20020a056402274800b0048a31c1746aso1548022edd.0
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 08:31:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uOnLnsrTaUBGadCsngo5caqfW+N0nnkGWxXjP1rnFFU=;
+        b=z7BJco0zecVb9DQR6ce16nyD1upqlD3ZQQaui2I05hc2D93xA95/GTIG2MjZhnBvJP
+         8meVujmfoX56TFG5izOL1iSPIeNHwS6tKnpYn8hknJTzMAHMknldjvMgakyieKx2OZJz
+         0Rpb2Cib8O/lxdWAnw+wu7fS7a/Zqz87TKs8YCNV/9A/BPD3Qnj+N49UhsHddSXdHERN
+         UO5DHGrvTjrfiC/C47CtvOmBInHAg2LTIi5fWwi2e0ZRJaXtnUUJ68moE+bovglawtg9
+         ANfBYSmFmpUf9l3b1hcgUdKOa+Yl2RlJ+AFOvDyG1GjRxr82pU+xHCR9tFfwpYGu/kIw
+         LGVw==
+X-Gm-Message-State: AFqh2kor9zfGEivXQFW9DXXNOZP/cyzDB7WeFIbbDYWBB1WLwVYRz9l/
+        Qz/nDN7iVr55itUrzKLgzTvxqYfOsKZ/IgxPdXkrH142KKvNLz7AEXp5+i42Owli1ggz43BDmHW
+        HOtMBp5LO4j5xCzbf
+X-Received: by 2002:a17:907:d045:b0:7c1:5464:3360 with SMTP id vb5-20020a170907d04500b007c154643360mr66162291ejc.65.1673022696473;
+        Fri, 06 Jan 2023 08:31:36 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtnqam5SzeV20g+ckxxKKv7Af8aq7Sm6BGio43kJdQlTQDawpyQ2NO2PqoDG570JuY8WCTiSQ==
+X-Received: by 2002:a17:907:d045:b0:7c1:5464:3360 with SMTP id vb5-20020a170907d04500b007c154643360mr66162259ejc.65.1673022696070;
+        Fri, 06 Jan 2023 08:31:36 -0800 (PST)
+Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id la23-20020a170907781700b0078de26f66b9sm545482ejc.114.2023.01.06.08.31.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 08:31:35 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <6ebfda57-3a01-7fe2-4a95-65108a02e887@redhat.com>
+Date:   Fri, 6 Jan 2023 17:31:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>
+Subject: Re: [PATCH v2 24/24] mlx5: Convert to netmem
+Content-Language: en-US
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-25-willy@infradead.org>
+In-Reply-To: <20230105214631.3939268-25-willy@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
-Document the t7xx devlink commands usage for fw flashing &
-coredump collection.
+To Saeed and Tariq, please review.
 
-Refer to t7xx.rst file for details.
+This reminds me, that IMHO we/nvidia/mellanox should remove the local
+mlx5e_page_cache functionality, as SKBs can now recycle page_pool pages.
+This should simplify the driver and we get rid of the head-of-line
+blocking issue with the local page cache (refcnt elevation tricks).
+It might look good in microbencmarks, but my experience from prod
+systems are that this local cache isn't utilized.  And I believe we
+should be able to get good/similar microbenchmark with page_pool, which
+will continue to recycle and have no HoL issues for prod use-cases.
 
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
---
-v3:
- * No Change.
-v2:
- * Documentation correction.
- * Add param details.
----
- Documentation/networking/devlink/index.rst |   1 +
- Documentation/networking/devlink/t7xx.rst  | 161 +++++++++++++++++++++
- 2 files changed, 162 insertions(+)
- create mode 100644 Documentation/networking/devlink/t7xx.rst
 
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index fee4d3968309..0c4f5961e78f 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -66,3 +66,4 @@ parameters, info versions, and other features it supports.
-    prestera
-    iosm
-    octeontx2
-+   t7xx
-diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
-new file mode 100644
-index 000000000000..de220878ad76
---- /dev/null
-+++ b/Documentation/networking/devlink/t7xx.rst
-@@ -0,0 +1,161 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+====================
-+t7xx devlink support
-+====================
-+
-+This document describes the devlink features implemented by the ``t7xx``
-+device driver.
-+
-+Parameters
-+==========
-+The ``t7xx_driver`` driver implements the following driver-specific parameters.
-+
-+.. list-table:: Driver-specific parameters implemented
-+   :widths: 5 5 5 85
-+
-+   * - Name
-+     - Type
-+     - Mode
-+     - Description
-+   * - ``fastboot``
-+     - boolean
-+     - driverinit
-+     - Set this param to enter fastboot mode.
-+
-+Flash Update
-+============
-+
-+The ``t7xx`` driver implements the flash update using the ``devlink-flash``
-+interface.
-+
-+The driver uses DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT to identify the type of
-+firmware image that need to be programmed upon the request by user space application.
-+
-+The supported list of firmware image types is described below.
-+
-+.. list-table:: Firmware Image types
-+    :widths: 15 85
-+
-+    * - Name
-+      - Description
-+    * - ``preloader``
-+      - The first-stage bootloader image
-+    * - ``loader_ext1``
-+      - Preloader extension image
-+    * - ``tee1``
-+      - ARM trusted firmware and TEE (Trusted Execution Environment) image
-+    * - ``lk``
-+      - The second-stage bootloader image
-+    * - ``spmfw``
-+      - MediaTek in-house ASIC for power management image
-+    * - ``sspm_1``
-+      - MediaTek in-house ASIC for power management under secure world image
-+    * - ``mcupm_1``
-+      - MediaTek in-house ASIC for cpu power management image
-+    * - ``dpm_1``
-+      - MediaTek in-house ASIC for dram power management image
-+    * - ``boot``
-+      - The kernel and dtb image
-+    * - ``rootfs``
-+      - Root filesystem image
-+    * - ``md1img``
-+      - Modem image
-+    * - ``md1dsp``
-+      - Modem DSP image
-+    * - ``mcf1``
-+      - Modem OTA image (Modem Configuration Framework) for operators
-+    * - ``mcf2``
-+      - Modem OTA image (Modem Configuration Framework) for OEM vendors
-+    * - ``mcf3``
-+      - Modem OTA image (other usage) for OEM configurations
-+
-+``t7xx`` driver uses fastboot protocol for fw flashing. In the fw flashing
-+procedure, fastboot command & response are exchanged between driver and wwan
-+device.
-+
-+The wwan device is put into fastboot mode via devlink reload command, by
-+passing "driver_reinit" action.
-+
-+$ devlink dev reload pci/0000:$bdf action driver_reinit
-+
-+Upon completion of fw flashing or coredump collection the wwan device is
-+reset to normal mode using devlink reload command, by passing "fw_activate"
-+action.
-+
-+$ devlink dev reload pci/0000:$bdf action fw_activate
-+
-+Flash Commands:
-+===============
-+
-+$ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
-+
-+$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
-+
-+$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
-+
-+$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
-+
-+$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
-+
-+$ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
-+
-+$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
-+
-+$ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
-+
-+$ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
-+
-+$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
-+
-+$ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
-+
-+$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
-+
-+$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
-+
-+$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
-+
-+$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
-+
-+Note: Component selects the partition type to be programmed.
-+
-+Regions
-+=======
-+
-+The ``t7xx`` driver supports core dump collection when device encounters
-+an exception. When wwan device encounters an exception, a snapshot of device
-+internal data will be taken by the driver using fastboot commands.
-+
-+Following regions are accessed for device internal data.
-+
-+.. list-table:: Regions implemented
-+    :widths: 15 85
-+
-+    * - Name
-+      - Description
-+    * - ``mr_dump``
-+      - The detailed modem component logs are captured in this region
-+    * - ``lk_dump``
-+      - This region dumps the current snapshot of lk
-+
-+
-+Region commands
-+===============
-+
-+$ devlink region show
-+
-+
-+$ devlink region new mr_dump
-+
-+$ devlink region read mr_dump snapshot 0 address 0 length $len
-+
-+$ devlink region del mr_dump snapshot 0
-+
-+$ devlink region new lk_dump
-+
-+$ devlink region read lk_dump snapshot 0 address 0 length $len
-+
-+$ devlink region del lk_dump snapshot 0
-+
-+Note: $len is actual len to be dumped.
--- 
-2.34.1
+On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
+> Use the netmem APIs instead of the page_pool APIs.  Possibly we should
+> add a netmem equivalent of skb_add_rx_frag(), but that can happen
+> later.  Saves one call to compound_head() in the call to put_page()
+> in mlx5e_page_release_dynamic() which saves 58 bytes of text.
+> 
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>   drivers/net/ethernet/mellanox/mlx5/core/en.h  |  10 +-
+>   .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   4 +-
+>   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  24 ++--
+>   .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |   2 +-
+>   .../net/ethernet/mellanox/mlx5/core/en_main.c |  12 +-
+>   .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 130 +++++++++---------
+>   6 files changed, 94 insertions(+), 88 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> index 2d77fb8a8a01..35bff3b0d9f6 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> @@ -467,7 +467,7 @@ struct mlx5e_txqsq {
+>   } ____cacheline_aligned_in_smp;
+>   
+>   union mlx5e_alloc_unit {
+> -	struct page *page;
+> +	struct netmem *nmem;
+>   	struct xdp_buff *xsk;
+>   };
+>   
+> @@ -501,7 +501,7 @@ struct mlx5e_xdp_info {
+>   		} frame;
+>   		struct {
+>   			struct mlx5e_rq *rq;
+> -			struct page *page;
+> +			struct netmem *nmem;
+>   		} page;
+>   	};
+>   };
+> @@ -619,7 +619,7 @@ struct mlx5e_mpw_info {
+>   struct mlx5e_page_cache {
+>   	u32 head;
+>   	u32 tail;
+> -	struct page *page_cache[MLX5E_CACHE_SIZE];
+> +	struct netmem *page_cache[MLX5E_CACHE_SIZE];
+>   };
+>   
+>   struct mlx5e_rq;
+> @@ -657,13 +657,13 @@ struct mlx5e_rq_frags_info {
+>   
+>   struct mlx5e_dma_info {
+>   	dma_addr_t addr;
+> -	struct page *page;
+> +	struct netmem *nmem;
+>   };
+>   
+>   struct mlx5e_shampo_hd {
+>   	u32 mkey;
+>   	struct mlx5e_dma_info *info;
+> -	struct page *last_page;
+> +	struct netmem *last_nmem;
+>   	u16 hd_per_wq;
+>   	u16 hd_per_wqe;
+>   	unsigned long *bitmap;
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> index 853f312cd757..688d3ea9aa36 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> @@ -65,8 +65,8 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget);
+>   int mlx5e_poll_ico_cq(struct mlx5e_cq *cq);
+>   
+>   /* RX */
+> -void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct page *page);
+> -void mlx5e_page_release_dynamic(struct mlx5e_rq *rq, struct page *page, bool recycle);
+> +void mlx5e_nmem_dma_unmap(struct mlx5e_rq *rq, struct netmem *nmem);
+> +void mlx5e_page_release_dynamic(struct mlx5e_rq *rq, struct netmem *nmem, bool recycle);
+>   INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq));
+>   INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq));
+>   int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget);
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> index 20507ef2f956..878e4e9f0f8b 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> @@ -32,6 +32,7 @@
+>   
+>   #include <linux/bpf_trace.h>
+>   #include <net/xdp_sock_drv.h>
+> +#include "en/txrx.h"
+>   #include "en/xdp.h"
+>   #include "en/params.h"
+>   
+> @@ -57,7 +58,7 @@ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
+>   
+>   static inline bool
+>   mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+> -		    struct page *page, struct xdp_buff *xdp)
+> +		    struct netmem *nmem, struct xdp_buff *xdp)
+>   {
+>   	struct skb_shared_info *sinfo = NULL;
+>   	struct mlx5e_xmit_data xdptxd;
+> @@ -116,7 +117,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+>   	xdpi.mode = MLX5E_XDP_XMIT_MODE_PAGE;
+>   	xdpi.page.rq = rq;
+>   
+> -	dma_addr = page_pool_get_dma_addr(page) + (xdpf->data - (void *)xdpf);
+> +	dma_addr = netmem_get_dma_addr(nmem) + (xdpf->data - (void *)xdpf);
+>   	dma_sync_single_for_device(sq->pdev, dma_addr, xdptxd.len, DMA_BIDIRECTIONAL);
+>   
+>   	if (unlikely(xdp_frame_has_frags(xdpf))) {
+> @@ -127,7 +128,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+>   			dma_addr_t addr;
+>   			u32 len;
+>   
+> -			addr = page_pool_get_dma_addr(skb_frag_page(frag)) +
+> +			addr = netmem_get_dma_addr(skb_frag_netmem(frag)) +
+>   				skb_frag_off(frag);
+>   			len = skb_frag_size(frag);
+>   			dma_sync_single_for_device(sq->pdev, addr, len,
+> @@ -141,14 +142,14 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+>   				      mlx5e_xmit_xdp_frame, sq, &xdptxd, sinfo, 0)))
+>   		return false;
+>   
+> -	xdpi.page.page = page;
+> +	xdpi.page.nmem = nmem;
+>   	mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo, &xdpi);
+>   
+>   	if (unlikely(xdp_frame_has_frags(xdpf))) {
+>   		for (i = 0; i < sinfo->nr_frags; i++) {
+>   			skb_frag_t *frag = &sinfo->frags[i];
+>   
+> -			xdpi.page.page = skb_frag_page(frag);
+> +			xdpi.page.nmem = skb_frag_netmem(frag);
+>   			mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo, &xdpi);
+>   		}
+>   	}
+> @@ -157,7 +158,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+>   }
+>   
+>   /* returns true if packet was consumed by xdp */
+> -bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
+> +bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct netmem *nmem,
+>   		      struct bpf_prog *prog, struct xdp_buff *xdp)
+>   {
+>   	u32 act;
+> @@ -168,19 +169,19 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
+>   	case XDP_PASS:
+>   		return false;
+>   	case XDP_TX:
+> -		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, page, xdp)))
+> +		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, nmem, xdp)))
+>   			goto xdp_abort;
+>   		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags); /* non-atomic */
+>   		return true;
+>   	case XDP_REDIRECT:
+> -		/* When XDP enabled then page-refcnt==1 here */
+> +		/* When XDP enabled then nmem->refcnt==1 here */
+>   		err = xdp_do_redirect(rq->netdev, xdp, prog);
+>   		if (unlikely(err))
+>   			goto xdp_abort;
+>   		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags);
+>   		__set_bit(MLX5E_RQ_FLAG_XDP_REDIRECT, rq->flags);
+>   		if (xdp->rxq->mem.type != MEM_TYPE_XSK_BUFF_POOL)
+> -			mlx5e_page_dma_unmap(rq, page);
+> +			mlx5e_nmem_dma_unmap(rq, nmem);
+>   		rq->stats->xdp_redirect++;
+>   		return true;
+>   	default:
+> @@ -445,7 +446,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
+>   			skb_frag_t *frag = &sinfo->frags[i];
+>   			dma_addr_t addr;
+>   
+> -			addr = page_pool_get_dma_addr(skb_frag_page(frag)) +
+> +			addr = netmem_get_dma_addr(skb_frag_netmem(frag)) +
+>   				skb_frag_off(frag);
+>   
+>   			dseg++;
+> @@ -495,7 +496,8 @@ static void mlx5e_free_xdpsq_desc(struct mlx5e_xdpsq *sq,
+>   			break;
+>   		case MLX5E_XDP_XMIT_MODE_PAGE:
+>   			/* XDP_TX from the regular RQ */
+> -			mlx5e_page_release_dynamic(xdpi.page.rq, xdpi.page.page, recycle);
+> +			mlx5e_page_release_dynamic(xdpi.page.rq,
+> +						xdpi.page.nmem, recycle);
+>   			break;
+>   		case MLX5E_XDP_XMIT_MODE_XSK:
+>   			/* AF_XDP send */
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+> index bc2d9034af5b..5bc875f131a2 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+> @@ -46,7 +46,7 @@
+>   
+>   struct mlx5e_xsk_param;
+>   int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
+> -bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
+> +bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct netmem *nmem,
+>   		      struct bpf_prog *prog, struct xdp_buff *xdp);
+>   void mlx5e_xdp_mpwqe_complete(struct mlx5e_xdpsq *sq);
+>   bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq);
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index cff5f2e29e1e..7c2a1ecd730b 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -555,16 +555,18 @@ static void mlx5e_rq_err_cqe_work(struct work_struct *recover_work)
+>   
+>   static int mlx5e_alloc_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
+>   {
+> -	rq->wqe_overflow.page = alloc_page(GFP_KERNEL);
+> -	if (!rq->wqe_overflow.page)
+> +	struct page *page = alloc_page(GFP_KERNEL);
+> +	if (!page)
+>   		return -ENOMEM;
+>   
+> -	rq->wqe_overflow.addr = dma_map_page(rq->pdev, rq->wqe_overflow.page, 0,
+> +	rq->wqe_overflow.addr = dma_map_page(rq->pdev, page, 0,
+>   					     PAGE_SIZE, rq->buff.map_dir);
+>   	if (dma_mapping_error(rq->pdev, rq->wqe_overflow.addr)) {
+> -		__free_page(rq->wqe_overflow.page);
+> +		__free_page(page);
+>   		return -ENOMEM;
+>   	}
+> +
+> +	rq->wqe_overflow.nmem = page_netmem(page);
+>   	return 0;
+>   }
+>   
+> @@ -572,7 +574,7 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
+>   {
+>   	 dma_unmap_page(rq->pdev, rq->wqe_overflow.addr, PAGE_SIZE,
+>   			rq->buff.map_dir);
+> -	 __free_page(rq->wqe_overflow.page);
+> +	 __free_page(netmem_page(rq->wqe_overflow.nmem));
+>   }
+>   
+>   static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> index c8820ab22169..11c1bf3f485d 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> @@ -274,7 +274,7 @@ static inline u32 mlx5e_decompress_cqes_start(struct mlx5e_rq *rq,
+>   	return mlx5e_decompress_cqes_cont(rq, wq, 1, budget_rem);
+>   }
+>   
+> -static inline bool mlx5e_rx_cache_put(struct mlx5e_rq *rq, struct page *page)
+> +static inline bool mlx5e_rx_cache_put(struct mlx5e_rq *rq, struct netmem *nmem)
+>   {
+>   	struct mlx5e_page_cache *cache = &rq->page_cache;
+>   	u32 tail_next = (cache->tail + 1) & (MLX5E_CACHE_SIZE - 1);
+> @@ -285,12 +285,12 @@ static inline bool mlx5e_rx_cache_put(struct mlx5e_rq *rq, struct page *page)
+>   		return false;
+>   	}
+>   
+> -	if (!dev_page_is_reusable(page)) {
+> +	if (!dev_page_is_reusable(netmem_page(nmem))) {
+>   		stats->cache_waive++;
+>   		return false;
+>   	}
+>   
+> -	cache->page_cache[cache->tail] = page;
+> +	cache->page_cache[cache->tail] = nmem;
+>   	cache->tail = tail_next;
+>   	return true;
+>   }
+> @@ -306,16 +306,16 @@ static inline bool mlx5e_rx_cache_get(struct mlx5e_rq *rq, union mlx5e_alloc_uni
+>   		return false;
+>   	}
+>   
+> -	if (page_ref_count(cache->page_cache[cache->head]) != 1) {
+> +	if (netmem_ref_count(cache->page_cache[cache->head]) != 1) {
+>   		stats->cache_busy++;
+>   		return false;
+>   	}
+>   
+> -	au->page = cache->page_cache[cache->head];
+> +	au->nmem = cache->page_cache[cache->head];
+>   	cache->head = (cache->head + 1) & (MLX5E_CACHE_SIZE - 1);
+>   	stats->cache_reuse++;
+>   
+> -	addr = page_pool_get_dma_addr(au->page);
+> +	addr = netmem_get_dma_addr(au->nmem);
+>   	/* Non-XSK always uses PAGE_SIZE. */
+>   	dma_sync_single_for_device(rq->pdev, addr, PAGE_SIZE, rq->buff.map_dir);
+>   	return true;
+> @@ -328,43 +328,45 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq, union mlx5e_alloc_u
+>   	if (mlx5e_rx_cache_get(rq, au))
+>   		return 0;
+>   
+> -	au->page = page_pool_dev_alloc_pages(rq->page_pool);
+> -	if (unlikely(!au->page))
+> +	au->nmem = page_pool_dev_alloc_netmem(rq->page_pool);
+> +	if (unlikely(!au->nmem))
+>   		return -ENOMEM;
+>   
+>   	/* Non-XSK always uses PAGE_SIZE. */
+> -	addr = dma_map_page(rq->pdev, au->page, 0, PAGE_SIZE, rq->buff.map_dir);
+> +	addr = dma_map_page(rq->pdev, netmem_page(au->nmem), 0, PAGE_SIZE,
+> +				rq->buff.map_dir);
+>   	if (unlikely(dma_mapping_error(rq->pdev, addr))) {
+> -		page_pool_recycle_direct(rq->page_pool, au->page);
+> -		au->page = NULL;
+> +		page_pool_recycle_netmem(rq->page_pool, au->nmem);
+> +		au->nmem = NULL;
+>   		return -ENOMEM;
+>   	}
+> -	page_pool_set_dma_addr(au->page, addr);
+> +	netmem_set_dma_addr(au->nmem, addr);
+>   
+>   	return 0;
+>   }
+>   
+> -void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct page *page)
+> +void mlx5e_nmem_dma_unmap(struct mlx5e_rq *rq, struct netmem *nmem)
+>   {
+> -	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
+> +	dma_addr_t dma_addr = netmem_get_dma_addr(nmem);
+>   
+>   	dma_unmap_page_attrs(rq->pdev, dma_addr, PAGE_SIZE, rq->buff.map_dir,
+>   			     DMA_ATTR_SKIP_CPU_SYNC);
+> -	page_pool_set_dma_addr(page, 0);
+> +	netmem_set_dma_addr(nmem, 0);
+>   }
+>   
+> -void mlx5e_page_release_dynamic(struct mlx5e_rq *rq, struct page *page, bool recycle)
+> +void mlx5e_page_release_dynamic(struct mlx5e_rq *rq, struct netmem *nmem,
+> +		bool recycle)
+>   {
+>   	if (likely(recycle)) {
+> -		if (mlx5e_rx_cache_put(rq, page))
+> +		if (mlx5e_rx_cache_put(rq, nmem))
+>   			return;
+>   
+> -		mlx5e_page_dma_unmap(rq, page);
+> -		page_pool_recycle_direct(rq->page_pool, page);
+> +		mlx5e_nmem_dma_unmap(rq, nmem);
+> +		page_pool_recycle_netmem(rq->page_pool, nmem);
+
+I see page_pool_recycle_direct() is replaced with 
+page_pool_recycle_netmem().
+It does make the allow_direct=true correct, but I don't like the name
+  page_pool_recycle_netmem()
+because driver developers might mistake this for a safe thing to call.
+
+Can we rename it to page_pool_recycle_direct_netmem() ?
+
+
+>   	} else {
+> -		mlx5e_page_dma_unmap(rq, page);
+> -		page_pool_release_page(rq->page_pool, page);
+> -		put_page(page);
+> +		mlx5e_nmem_dma_unmap(rq, nmem);
+> +		page_pool_release_netmem(rq->page_pool, nmem);
+> +		netmem_put(nmem);
+>   	}
+>   }
+>   
+> @@ -389,7 +391,7 @@ static inline void mlx5e_put_rx_frag(struct mlx5e_rq *rq,
+>   				     bool recycle)
+>   {
+>   	if (frag->last_in_page)
+> -		mlx5e_page_release_dynamic(rq, frag->au->page, recycle);
+> +		mlx5e_page_release_dynamic(rq, frag->au->nmem, recycle);
+>   }
+>   
+>   static inline struct mlx5e_wqe_frag_info *get_frag(struct mlx5e_rq *rq, u16 ix)
+> @@ -413,7 +415,7 @@ static int mlx5e_alloc_rx_wqe(struct mlx5e_rq *rq, struct mlx5e_rx_wqe_cyc *wqe,
+>   			goto free_frags;
+>   
+>   		headroom = i == 0 ? rq->buff.headroom : 0;
+> -		addr = page_pool_get_dma_addr(frag->au->page);
+> +		addr = netmem_get_dma_addr(frag->au->nmem);
+>   		wqe->data[i].addr = cpu_to_be64(addr + frag->offset + headroom);
+>   	}
+>   
+> @@ -475,21 +477,21 @@ mlx5e_add_skb_frag(struct mlx5e_rq *rq, struct sk_buff *skb,
+>   		   union mlx5e_alloc_unit *au, u32 frag_offset, u32 len,
+>   		   unsigned int truesize)
+>   {
+> -	dma_addr_t addr = page_pool_get_dma_addr(au->page);
+> +	dma_addr_t addr = netmem_get_dma_addr(au->nmem);
+>   
+>   	dma_sync_single_for_cpu(rq->pdev, addr + frag_offset, len,
+>   				rq->buff.map_dir);
+> -	page_ref_inc(au->page);
+> +	netmem_get(au->nmem);
+>   	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> -			au->page, frag_offset, len, truesize);
+> +			netmem_page(au->nmem), frag_offset, len, truesize);
+>   }
+>   
+>   static inline void
+>   mlx5e_copy_skb_header(struct mlx5e_rq *rq, struct sk_buff *skb,
+> -		      struct page *page, dma_addr_t addr,
+> +		      struct netmem *nmem, dma_addr_t addr,
+>   		      int offset_from, int dma_offset, u32 headlen)
+>   {
+> -	const void *from = page_address(page) + offset_from;
+> +	const void *from = netmem_address(nmem) + offset_from;
+>   	/* Aligning len to sizeof(long) optimizes memcpy performance */
+>   	unsigned int len = ALIGN(headlen, sizeof(long));
+>   
+> @@ -522,7 +524,7 @@ mlx5e_free_rx_mpwqe(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi, bool recycle
+>   	} else {
+>   		for (i = 0; i < rq->mpwqe.pages_per_wqe; i++)
+>   			if (no_xdp_xmit || !test_bit(i, wi->xdp_xmit_bitmap))
+> -				mlx5e_page_release_dynamic(rq, alloc_units[i].page, recycle);
+> +				mlx5e_page_release_dynamic(rq, alloc_units[i].nmem, recycle);
+>   	}
+>   }
+>   
+> @@ -586,7 +588,7 @@ static int mlx5e_build_shampo_hd_umr(struct mlx5e_rq *rq,
+>   	struct mlx5e_shampo_hd *shampo = rq->mpwqe.shampo;
+>   	u16 entries, pi, header_offset, err, wqe_bbs, new_entries;
+>   	u32 lkey = rq->mdev->mlx5e_res.hw_objs.mkey;
+> -	struct page *page = shampo->last_page;
+> +	struct netmem *nmem = shampo->last_nmem;
+>   	u64 addr = shampo->last_addr;
+>   	struct mlx5e_dma_info *dma_info;
+>   	struct mlx5e_umr_wqe *umr_wqe;
+> @@ -613,11 +615,11 @@ static int mlx5e_build_shampo_hd_umr(struct mlx5e_rq *rq,
+>   			err = mlx5e_page_alloc_pool(rq, &au);
+>   			if (unlikely(err))
+>   				goto err_unmap;
+> -			page = dma_info->page = au.page;
+> -			addr = dma_info->addr = page_pool_get_dma_addr(au.page);
+> +			nmem = dma_info->nmem = au.nmem;
+> +			addr = dma_info->addr = netmem_get_dma_addr(au.nmem);
+>   		} else {
+>   			dma_info->addr = addr + header_offset;
+> -			dma_info->page = page;
+> +			dma_info->nmem = nmem;
+>   		}
+>   
+>   update_klm:
+> @@ -635,7 +637,7 @@ static int mlx5e_build_shampo_hd_umr(struct mlx5e_rq *rq,
+>   	};
+>   
+>   	shampo->pi = (shampo->pi + new_entries) & (shampo->hd_per_wq - 1);
+> -	shampo->last_page = page;
+> +	shampo->last_nmem = nmem;
+>   	shampo->last_addr = addr;
+>   	sq->pc += wqe_bbs;
+>   	sq->doorbell_cseg = &umr_wqe->ctrl;
+> @@ -647,7 +649,7 @@ static int mlx5e_build_shampo_hd_umr(struct mlx5e_rq *rq,
+>   		dma_info = &shampo->info[--index];
+>   		if (!(i & (MLX5E_SHAMPO_WQ_HEADER_PER_PAGE - 1))) {
+>   			dma_info->addr = ALIGN_DOWN(dma_info->addr, PAGE_SIZE);
+> -			mlx5e_page_release_dynamic(rq, dma_info->page, true);
+> +			mlx5e_page_release_dynamic(rq, dma_info->nmem, true);
+>   		}
+>   	}
+>   	rq->stats->buff_alloc_err++;
+> @@ -721,7 +723,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+>   		err = mlx5e_page_alloc_pool(rq, au);
+>   		if (unlikely(err))
+>   			goto err_unmap;
+> -		addr = page_pool_get_dma_addr(au->page);
+> +		addr = netmem_get_dma_addr(au->nmem);
+>   		umr_wqe->inline_mtts[i] = (struct mlx5_mtt) {
+>   			.ptag = cpu_to_be64(addr | MLX5_EN_WR),
+>   		};
+> @@ -763,7 +765,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+>   err_unmap:
+>   	while (--i >= 0) {
+>   		au--;
+> -		mlx5e_page_release_dynamic(rq, au->page, true);
+> +		mlx5e_page_release_dynamic(rq, au->nmem, true);
+>   	}
+>   
+>   err:
+> @@ -782,7 +784,7 @@ void mlx5e_shampo_dealloc_hd(struct mlx5e_rq *rq, u16 len, u16 start, bool close
+>   {
+>   	struct mlx5e_shampo_hd *shampo = rq->mpwqe.shampo;
+>   	int hd_per_wq = shampo->hd_per_wq;
+> -	struct page *deleted_page = NULL;
+> +	struct netmem *deleted_nmem = NULL;
+>   	struct mlx5e_dma_info *hd_info;
+>   	int i, index = start;
+>   
+> @@ -795,9 +797,9 @@ void mlx5e_shampo_dealloc_hd(struct mlx5e_rq *rq, u16 len, u16 start, bool close
+>   
+>   		hd_info = &shampo->info[index];
+>   		hd_info->addr = ALIGN_DOWN(hd_info->addr, PAGE_SIZE);
+> -		if (hd_info->page != deleted_page) {
+> -			deleted_page = hd_info->page;
+> -			mlx5e_page_release_dynamic(rq, hd_info->page, false);
+> +		if (hd_info->nmem != deleted_nmem) {
+> +			deleted_nmem = hd_info->nmem;
+> +			mlx5e_page_release_dynamic(rq, hd_info->nmem, false);
+>   		}
+>   	}
+>   
+> @@ -1136,7 +1138,7 @@ static void *mlx5e_shampo_get_packet_hd(struct mlx5e_rq *rq, u16 header_index)
+>   	struct mlx5e_dma_info *last_head = &rq->mpwqe.shampo->info[header_index];
+>   	u16 head_offset = (last_head->addr & (PAGE_SIZE - 1)) + rq->buff.headroom;
+>   
+> -	return page_address(last_head->page) + head_offset;
+> +	return netmem_address(last_head->nmem) + head_offset;
+>   }
+>   
+>   static void mlx5e_shampo_update_ipv4_udp_hdr(struct mlx5e_rq *rq, struct iphdr *ipv4)
+> @@ -1595,11 +1597,11 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+>   	dma_addr_t addr;
+>   	u32 frag_size;
+>   
+> -	va             = page_address(au->page) + wi->offset;
+> +	va             = netmem_address(au->nmem) + wi->offset;
+>   	data           = va + rx_headroom;
+>   	frag_size      = MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
+>   
+> -	addr = page_pool_get_dma_addr(au->page);
+> +	addr = netmem_get_dma_addr(au->nmem);
+>   	dma_sync_single_range_for_cpu(rq->pdev, addr, wi->offset,
+>   				      frag_size, rq->buff.map_dir);
+>   	net_prefetch(data);
+> @@ -1610,7 +1612,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+>   
+>   		net_prefetchw(va); /* xdp_frame data area */
+>   		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
+> -		if (mlx5e_xdp_handle(rq, au->page, prog, &xdp))
+> +		if (mlx5e_xdp_handle(rq, au->nmem, prog, &xdp))
+>   			return NULL; /* page/packet was consumed by XDP */
+>   
+>   		rx_headroom = xdp.data - xdp.data_hard_start;
+> @@ -1623,7 +1625,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+>   		return NULL;
+>   
+>   	/* queue up for recycling/reuse */
+> -	page_ref_inc(au->page);
+> +	netmem_get(au->nmem);
+>   
+>   	return skb;
+>   }
+> @@ -1645,10 +1647,10 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+>   	u32 truesize;
+>   	void *va;
+>   
+> -	va = page_address(au->page) + wi->offset;
+> +	va = netmem_address(au->nmem) + wi->offset;
+>   	frag_consumed_bytes = min_t(u32, frag_info->frag_size, cqe_bcnt);
+>   
+> -	addr = page_pool_get_dma_addr(au->page);
+> +	addr = netmem_get_dma_addr(au->nmem);
+>   	dma_sync_single_range_for_cpu(rq->pdev, addr, wi->offset,
+>   				      rq->buff.frame0_sz, rq->buff.map_dir);
+>   	net_prefetchw(va); /* xdp_frame data area */
+> @@ -1669,7 +1671,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+>   
+>   		frag_consumed_bytes = min_t(u32, frag_info->frag_size, cqe_bcnt);
+>   
+> -		addr = page_pool_get_dma_addr(au->page);
+> +		addr = netmem_get_dma_addr(au->nmem);
+>   		dma_sync_single_for_cpu(rq->pdev, addr + wi->offset,
+>   					frag_consumed_bytes, rq->buff.map_dir);
+>   
+> @@ -1683,11 +1685,11 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+>   		}
+>   
+>   		frag = &sinfo->frags[sinfo->nr_frags++];
+> -		__skb_frag_set_page(frag, au->page);
+> +		__skb_frag_set_netmem(frag, au->nmem);
+>   		skb_frag_off_set(frag, wi->offset);
+>   		skb_frag_size_set(frag, frag_consumed_bytes);
+>   
+> -		if (page_is_pfmemalloc(au->page))
+> +		if (netmem_is_pfmemalloc(au->nmem))
+>   			xdp_buff_set_frag_pfmemalloc(&xdp);
+>   
+>   		sinfo->xdp_frags_size += frag_consumed_bytes;
+> @@ -1701,7 +1703,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+>   	au = head_wi->au;
+>   
+>   	prog = rcu_dereference(rq->xdp_prog);
+> -	if (prog && mlx5e_xdp_handle(rq, au->page, prog, &xdp)) {
+> +	if (prog && mlx5e_xdp_handle(rq, au->nmem, prog, &xdp)) {
+>   		if (test_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
+>   			int i;
+>   
+> @@ -1718,7 +1720,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+>   	if (unlikely(!skb))
+>   		return NULL;
+>   
+> -	page_ref_inc(au->page);
+> +	netmem_get(au->nmem);
+>   
+>   	if (unlikely(xdp_buff_has_frags(&xdp))) {
+>   		int i;
+> @@ -1967,8 +1969,8 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
+>   
+>   	mlx5e_fill_skb_data(skb, rq, au, byte_cnt, frag_offset);
+>   	/* copy header */
+> -	addr = page_pool_get_dma_addr(head_au->page);
+> -	mlx5e_copy_skb_header(rq, skb, head_au->page, addr,
+> +	addr = netmem_get_dma_addr(head_au->nmem);
+> +	mlx5e_copy_skb_header(rq, skb, head_au->nmem, addr,
+>   			      head_offset, head_offset, headlen);
+>   	/* skb linear part was allocated with headlen and aligned to long */
+>   	skb->tail += headlen;
+> @@ -1996,11 +1998,11 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   		return NULL;
+>   	}
+>   
+> -	va             = page_address(au->page) + head_offset;
+> +	va             = netmem_address(au->nmem) + head_offset;
+>   	data           = va + rx_headroom;
+>   	frag_size      = MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
+>   
+> -	addr = page_pool_get_dma_addr(au->page);
+> +	addr = netmem_get_dma_addr(au->nmem);
+>   	dma_sync_single_range_for_cpu(rq->pdev, addr, head_offset,
+>   				      frag_size, rq->buff.map_dir);
+>   	net_prefetch(data);
+> @@ -2011,7 +2013,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   
+>   		net_prefetchw(va); /* xdp_frame data area */
+>   		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
+> -		if (mlx5e_xdp_handle(rq, au->page, prog, &xdp)) {
+> +		if (mlx5e_xdp_handle(rq, au->nmem, prog, &xdp)) {
+>   			if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
+>   				__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
+>   			return NULL; /* page/packet was consumed by XDP */
+> @@ -2027,7 +2029,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   		return NULL;
+>   
+>   	/* queue up for recycling/reuse */
+> -	page_ref_inc(au->page);
+> +	netmem_get(au->nmem);
+>   
+>   	return skb;
+>   }
+> @@ -2044,7 +2046,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   	void *hdr, *data;
+>   	u32 frag_size;
+>   
+> -	hdr		= page_address(head->page) + head_offset;
+> +	hdr		= netmem_address(head->nmem) + head_offset;
+>   	data		= hdr + rx_headroom;
+>   	frag_size	= MLX5_SKB_FRAG_SZ(rx_headroom + head_size);
+>   
+> @@ -2059,7 +2061,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   			return NULL;
+>   
+>   		/* queue up for recycling/reuse */
+> -		page_ref_inc(head->page);
+> +		netmem_get(head->nmem);
+>   
+>   	} else {
+>   		/* allocate SKB and copy header for large header */
+> @@ -2072,7 +2074,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   		}
+>   
+>   		prefetchw(skb->data);
+> -		mlx5e_copy_skb_header(rq, skb, head->page, head->addr,
+> +		mlx5e_copy_skb_header(rq, skb, head->nmem, head->addr,
+>   				      head_offset + rx_headroom,
+>   				      rx_headroom, head_size);
+>   		/* skb linear part was allocated with headlen and aligned to long */
+> @@ -2124,7 +2126,7 @@ mlx5e_free_rx_shampo_hd_entry(struct mlx5e_rq *rq, u16 header_index)
+>   
+>   	if (((header_index + 1) & (MLX5E_SHAMPO_WQ_HEADER_PER_PAGE - 1)) == 0) {
+>   		shampo->info[header_index].addr = ALIGN_DOWN(addr, PAGE_SIZE);
+> -		mlx5e_page_release_dynamic(rq, shampo->info[header_index].page, true);
+> +		mlx5e_page_release_dynamic(rq, shampo->info[header_index].nmem, true);
+>   	}
+>   	bitmap_clear(shampo->bitmap, header_index, 1);
+>   }
 
