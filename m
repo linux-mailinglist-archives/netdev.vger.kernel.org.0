@@ -2,230 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B73660503
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:45:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5664366050A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:46:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235902AbjAFQo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 11:44:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
+        id S232940AbjAFQq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 11:46:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236142AbjAFQnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:43:31 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB4D7CDFA;
-        Fri,  6 Jan 2023 08:42:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jKKKUO27oWIBdzaRaXYJhd7KCW+dyFqIZBf2fJml4kzYBFM2du/CinC9/FnbeTjE0KZZM2MrJbkjPEeFfjVcuW0z22f3ULRTPiIg08uGifZBJMIr5eEkSndjyR3SPIfLsrPNtOI6vTqvGQdMSi1sVqBDvSfqTmcxyZ+LPc/8cmNB9eBa2LWIe+8Y/nehL4nLc6n7SStLkIyuS8p7+vanTWGEigf5MYmhVEoc2PvueKi/aXgkgc4wXnyvZ0vRdXpIMUR6zwPyT+SY7vSdzSNdvfixYdORzxFfLrfqV0ITp3eOclk3n3hbbBf6aM9xJ8p7/Xp6U7TXsUxTG6/rTNrlYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vtyZnwdFxQsh/b7h/nRYnn/WPi+/nJjaPNr6yHdQXRg=;
- b=VNzdyg1O+lc/wD4WEzfkP39pcF2edzksWxw0i/2bOLRo81RzSFwh0ybx3aHeRHBYYNvBbwLc4vjSv7M+65PctqY8e2TKPM6YKYLbYVxgXJqJT9zc8MzM6/ZnlAfbMi3CBo2P8bqKvDfUsx9OI7wivYdYJGHiFSzE5BqajOermMXPG5qRuki8zMMe+7Yz5jqPAPtbbBOazYJiudcMGVk4dhwtADyvkufcpFwNyGnmOLCeUd2VGFu4sd/U6Syu3Xl1mIUdQPakAB/sy7WTR9YpaxYyWMPQ89HZzBTfhS2HdwQKpajwl3AmB4FQo5yZV8itTwq8tcYVPrOI01FULUdtEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vtyZnwdFxQsh/b7h/nRYnn/WPi+/nJjaPNr6yHdQXRg=;
- b=bu/TG0GbnC/GqaxtBr+PkgqgLrSSWkvy9P/8aBQghk395HoqFnRrXp//JLrr+ikcFpNugzgDpOwFi7Xwb8a/RzVxsjWvEMjtj9RVaNC9jKhKRKnvz9vvETU0dcMPkjWLMj6gLBN1FHxQsuQAaT8ThdvSvvCfXIEuaCDJxDOxUvSQOZ961ziHMJdm/wb9piLDnrlKfm3StxJRjsHBvnzeByMZncdu9LUwIGfqqXx+y6zpODaPc8eDxGxmcogFzFlTPc3EmkIU0JUNUo9uSuZKaX0cIT5IzDT/V4Hpzk1xrW6ehR1soR1hulxlfopj8rsKJbnjTo0gaCuaFB00h/KYIw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB6437.namprd12.prod.outlook.com (2603:10b6:8:cb::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Fri, 6 Jan
- 2023 16:42:51 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.5944.019; Fri, 6 Jan 2023
- 16:42:51 +0000
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        ath10k@lists.infradead.org, ath11k@lists.infradead.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH 7/8] iommu/intel: Support the gfp argument to the map_pages op
-Date:   Fri,  6 Jan 2023 12:42:47 -0400
-Message-Id: <7-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
-In-Reply-To: <0-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
-References: 
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0325.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::30) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+        with ESMTP id S236037AbjAFQnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:43:23 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C30E7CBEC
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 08:42:48 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id h24-20020a056e021d9800b0030be8a5dd68so1380942ila.13
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 08:42:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gvnTtvXpGJN5zZbFh3jZtwrLP0BDJJ/TidQgOyTSPxA=;
+        b=vEPPbWnmitYQIiexzwuM8sqhWQYNFSYJcD40zoINK+k4E1aM5BZiVio5PC3ENFDtQW
+         zTnPUy37zWjGZSJIMhv13Q+OhtvxgNS2D2junn85FFuu4u3L06lWfh7tl5lMfsOnb3Xs
+         5Rdmf+CZ/YuDgj71w8raY+52PK5wxntt+hJe/UDif34+swAR8TZ5qD33aSxg0zk0LSHJ
+         7/6dFbrhy3xhsNSXJYwjgtPvBrN7pJE2iLeqmfkVt9IMuK2Uv17D1aI8YWMpVE7zO4NF
+         X45HY7U2cKi26297LbomLyx/+O7kGaOYJyjECC8OrVjNW/Cdr+bXc7TI+k9y+PZ3QfxU
+         U8Dw==
+X-Gm-Message-State: AFqh2kpIkzdM5KfyBLWGCSc/DW8JgY8hvsGzknaYcb/xkH1nLMyhukEz
+        rsnzir7GeK7GBmU6/vXPDV8QqdqH/oXORpc87g51wqKwyQ8A
+X-Google-Smtp-Source: AMrXdXtbTKZx0xaVhZo+Va8nivpRcsV2rCU+B2IiJH+92spgN0obN1JiHO+iWTLSxyj7OH8uHEIvzW0jro+oWY+LVyoe6KCP+9rs
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB6437:EE_
-X-MS-Office365-Filtering-Correlation-Id: f97b4f3e-ece5-413e-50f1-08daf0050c8e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D9s2GJX7M/iJziWYLK+8fyVJS4eXbzRzw5tWWblbXv4Rne1DveE8iJYEj41xFKdOWyfovgBDyiPCILiYkFYhrAe8vVxq/hE1oQaePyMNa4YGeXguIx2BO49z1tGLyBBe4BQzUl8PACGMiPTcb75++7/99uJY0cwsc432kkOsxzrs/6OF56rdsytT9VPhxhqNtjod1KB7bSvQJNgAZc+cz5reWrDX3Xfn19La00G15P+RNQWRiSX7CcJeNcIcCoy9C72/QxnChO8oGKn82aY0HgU9Apab/TksT+Ehk1zB5EuAMZ1SxKJSgEe5U1pscOVQHOzl6pkNlkiBmZgipXcOlkmbieYFXlPQH5vuNmB1wAb5WXL6lrCs9eHiqVy610l0KfUDXElfDELtEz+pvPm9uB86s4aEa75ryot6jpZbXg2240Lzo+9AhQsM3gUXnvX4r3TvQ+ka4xWRG5jgcSDUJqNgMtydst3s+LubXfsjg/hN9bzRnhUs4e/1tgjImYwXGmeCzuVXdrDucufZIT5i4fmomVtbSVHt/LjUVj2O5K+yrtRM7yMg/ubZnrGl1+BtH2vvu93X1dj3ZEoGb72XtLj6K+Yx41v9R3W2dekc+5bO/qMteRpgzy5Lk6Clklfl5N5AbBfCiYSRIYOweEkTx6EFnQMfWVZVasBMA2kK8dX/HiG1/gODGeuvULDw9qrj
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(376002)(346002)(39860400002)(396003)(451199015)(7416002)(5660300002)(54906003)(2906002)(41300700001)(8676002)(66946007)(8936002)(66476007)(316002)(4326008)(66556008)(83380400001)(6666004)(478600001)(110136005)(6506007)(36756003)(186003)(2616005)(26005)(6512007)(6486002)(86362001)(38100700002)(4216001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xAuvy2Rum2EeTgxRkVf2Ofdp/k+awq0v+1TT9H7mYJpc057JsIvxOaFeOgLg?=
- =?us-ascii?Q?/Pt2Jowk5yATUtW5yQyqerMqJIiDV71IstK8Qn8qwkjme1hevNEE5F2C/17W?=
- =?us-ascii?Q?ue9biHV0GhQlRpkHcQ6lPKvL9SHxlNh9BGSpXqpEYDki2RlgpnKmdj2y/AIQ?=
- =?us-ascii?Q?UxZcxYFISmYfIM7Wn6lV4sIe9U5A3899A+sm0Qd/5ZDzPbMTkd3S7rHM4PqP?=
- =?us-ascii?Q?H7rvQ2mjczK1y5rvCvrS+2Y31yOOlqed2PTMeXMAoo/LNqjnY0bGZBlxCXB8?=
- =?us-ascii?Q?jgwOVk6klQ2BGLIEwfc2ighyzSswXVo/U27u2I2A5VuSakqzZj7I2f4JV7Gp?=
- =?us-ascii?Q?xFahl5Law8X3GzZLPJ7txJLUQ6Q/sGrz9N6/8ZrR078uDwe008ab6Z8FhitT?=
- =?us-ascii?Q?Tq9fhh/dcatoqOflXfc9yR+3UEweWKTZ2qaroX4SggdeZv3VfZkHoGm5wtTZ?=
- =?us-ascii?Q?7a1J9VLLqzaLgAG3Gauhax9kEjqoku//roK/EvlsJin86+j7vtfhsns8QNFz?=
- =?us-ascii?Q?2QpV3p+aSpMTyhPAs11NS5GC+cqn0xhyVK+T2QUuCYDW1Ebc55uj9iWYMKse?=
- =?us-ascii?Q?ylasjOykI3PQOeX7eUt0T/KYSq0FoeirRO/rEBBVQ0/QUfZo5L2HOdGyZh5h?=
- =?us-ascii?Q?ri8MZScgHXQnjGsO3caQjOwJF9HnahNWIHr/fI5Wo9wXQ/AbHPmsFRICMOBK?=
- =?us-ascii?Q?265bzihrlgV26x0PCj43e1+UCYJ+non9EJ44b14EWP+vQYBkrF/1K3zMU3ON?=
- =?us-ascii?Q?yGqcooCnqlgdV22fCxZezLlnX85/1hB/ksPCsztQhPzE/9iY00fMziCRBLoK?=
- =?us-ascii?Q?7KKNq/slpcqq+j9Vo79tEcRATdGIcRFn0oeTFb/j5CUMZqZw2jW67u8fVKz2?=
- =?us-ascii?Q?V55FBQMtE1wMPK2wAw5oPQqp1cl3Zgya7QrFexKTfPjkmulKz8wkVKituhvk?=
- =?us-ascii?Q?2xCUB+zpEGevtZ4VBotA/8ZAyVBHKMKFnXIrygCqdBsYVRuigM3WXW+gAUwX?=
- =?us-ascii?Q?NaMVfKouQKYQpvfmJm0qn08Km4C/W8sBCC32T9yIF+IKuADdFAuV0FSk82fh?=
- =?us-ascii?Q?GeaaJ64LnzChlSMgPSJbz7DIGhCeJp7GklecB0ozg9dRKHQq+KmbbwV0uqLE?=
- =?us-ascii?Q?1WW7qenbw84oFNqzXCEyd0ytlUfnMROQXOuDUCHf0aP4D04FaBcIydqF/lsR?=
- =?us-ascii?Q?MBqS4JGTVOzJyjlahEg0W2klUZRoH/DNvalfhF8gVLuhiY3g3CqL08mYU765?=
- =?us-ascii?Q?BIsxeTR0NPFOCpm51zxssyqTqFMQAjUDaEgjbP3R0gZ1cGqz1x3qQutprXq/?=
- =?us-ascii?Q?BoeKWJyhTlXHzQdKIZzYg+vbyfuJqF7o+a7dhLN35Gkc0U0qHZNBimqn5Ht2?=
- =?us-ascii?Q?rgFsPmbr8R0T8woDdjGB52gnbWqc7O8YIfPKCxAuqpbIzrkck/RSZWJ7ceoL?=
- =?us-ascii?Q?lHLG45SvJNuTWyfUvi9TlHyUVkikUFaG/l4pFL5GOJ1FUne1bTNVM4Ns/EIK?=
- =?us-ascii?Q?TzVqznGEnutsJchhOsF8Fu0cFNfMc+sOq/3wUZoXdBNPYS0C5ajbFMK/Ir/q?=
- =?us-ascii?Q?qQgK5MAT2qVvYbgFrDAa2D4PjjPjZw49eUcXF1WT?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f97b4f3e-ece5-413e-50f1-08daf0050c8e
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2023 16:42:50.4064
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FpnNY0ZfFa8YIwCQCblO0pdiZNbT0Em1SDfALrK7Z97EG2AynYi3oxZ834lqKdAs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6437
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Received: by 2002:a5e:a915:0:b0:6fa:3c6a:ec69 with SMTP id
+ c21-20020a5ea915000000b006fa3c6aec69mr2079121iod.66.1673023367467; Fri, 06
+ Jan 2023 08:42:47 -0800 (PST)
+Date:   Fri, 06 Jan 2023 08:42:47 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000084e89f05f19b1b2c@google.com>
+Subject: [syzbot] possible deadlock in rds_message_purge
+From:   syzbot <syzbot+2286d16a0b79933453e5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        rds-devel@oss.oracle.com, santosh.shilimkar@oracle.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flow it down to alloc_pgtable_page() via pfn_to_dma_pte() and
-__domain_mapping().
+Hello,
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+syzbot found the following issue on:
+
+HEAD commit:    a5541c0811a0 Merge branch 'for-next/core' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=15a11934480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cbd4e584773e9397
+dashboard link: https://syzkaller.appspot.com/bug?extid=2286d16a0b79933453e5
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14fe2f2a480000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10badc54480000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/4b7702208fb9/disk-a5541c08.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/9ec0153ec051/vmlinux-a5541c08.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/6f8725ad290a/Image-a5541c08.gz.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2286d16a0b79933453e5@syzkaller.appspotmail.com
+
+======================================================
+WARNING: possible circular locking dependency detected
+6.1.0-rc8-syzkaller-33330-ga5541c0811a0 #0 Not tainted
+------------------------------------------------------
+syz-executor742/13012 is trying to acquire lock:
+ffff0000c7f2a100 (&rm->m_rs_lock){..-.}-{2:2}, at: rds_message_purge+0x4c/0x5c4 net/rds/message.c:138
+
+but task is already holding lock:
+ffff0000cc450d70 (&rs->rs_recv_lock){...-}-{2:2}, at: rds_clear_recv_queue+0x34/0x1a4 net/rds/recv.c:761
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (&rs->rs_recv_lock){...-}-{2:2}:
+       __raw_read_lock_irqsave include/linux/rwlock_api_smp.h:160 [inline]
+       _raw_read_lock_irqsave+0x7c/0xc4 kernel/locking/spinlock.c:236
+       rds_wake_sk_sleep+0x28/0x88 net/rds/af_rds.c:109
+       rds_send_remove_from_sock+0xcc/0x564 net/rds/send.c:634
+       rds_send_path_drop_acked+0x1ac/0x1e8 net/rds/send.c:710
+       rds_tcp_write_space+0xcc/0x2f0 net/rds/tcp_send.c:198
+       tcp_new_space net/ipv4/tcp_input.c:5471 [inline]
+       tcp_check_space+0x178/0x1c0 net/ipv4/tcp_input.c:5490
+       tcp_data_snd_check net/ipv4/tcp_input.c:5499 [inline]
+       tcp_rcv_established+0x6e4/0xa64 net/ipv4/tcp_input.c:6007
+       tcp_v4_do_rcv+0x4b8/0x51c net/ipv4/tcp_ipv4.c:1670
+       sk_backlog_rcv include/net/sock.h:1109 [inline]
+       __release_sock+0xe4/0x1d0 net/core/sock.c:2906
+       release_sock+0x40/0x108 net/core/sock.c:3462
+       tcp_sock_set_cork+0xb4/0xc8 net/ipv4/tcp.c:3340
+       rds_tcp_xmit_path_complete+0x2c/0x3c net/rds/tcp_send.c:52
+       rds_send_xmit+0xa40/0xfcc net/rds/send.c:422
+       rds_sendmsg+0xd20/0xf28 net/rds/send.c:1382
+       sock_sendmsg_nosec net/socket.c:714 [inline]
+       sock_sendmsg net/socket.c:734 [inline]
+       __sys_sendto+0x1e4/0x280 net/socket.c:2117
+       __do_sys_sendto net/socket.c:2129 [inline]
+       __se_sys_sendto net/socket.c:2125 [inline]
+       __arm64_sys_sendto+0x30/0x44 net/socket.c:2125
+       __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+       invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
+       el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
+       do_el0_svc+0x48/0x140 arch/arm64/kernel/syscall.c:197
+       el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:637
+       el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+       el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+
+-> #0 (&rm->m_rs_lock){..-.}-{2:2}:
+       check_prev_add kernel/locking/lockdep.c:3097 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+       validate_chain kernel/locking/lockdep.c:3831 [inline]
+       __lock_acquire+0x1530/0x3084 kernel/locking/lockdep.c:5055
+       lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5668
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x6c/0xb4 kernel/locking/spinlock.c:162
+       rds_message_purge+0x4c/0x5c4 net/rds/message.c:138
+       rds_message_put+0x88/0x120 net/rds/message.c:180
+       rds_loop_inc_free+0x20/0x30 net/rds/loop.c:115
+       rds_inc_put net/rds/recv.c:82 [inline]
+       rds_clear_recv_queue+0xf0/0x1a4 net/rds/recv.c:767
+       rds_release+0x54/0x19c net/rds/af_rds.c:73
+       __sock_release net/socket.c:650 [inline]
+       sock_close+0x50/0xf0 net/socket.c:1365
+       __fput+0x198/0x3e4 fs/file_table.c:320
+       ____fput+0x20/0x30 fs/file_table.c:348
+       task_work_run+0x100/0x148 kernel/task_work.c:179
+       resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+       do_notify_resume+0x174/0x1f0 arch/arm64/kernel/signal.c:1132
+       prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+       exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+       el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
+       el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+       el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&rs->rs_recv_lock);
+                               lock(&rm->m_rs_lock);
+                               lock(&rs->rs_recv_lock);
+  lock(&rm->m_rs_lock);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor742/13012:
+ #0: ffff0000ce4baa50 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:756 [inline]
+ #0: ffff0000ce4baa50 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: __sock_release net/socket.c:649 [inline]
+ #0: ffff0000ce4baa50 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: sock_close+0x40/0xf0 net/socket.c:1365
+ #1: ffff0000cc450d70 (&rs->rs_recv_lock){...-}-{2:2}, at: rds_clear_recv_queue+0x34/0x1a4 net/rds/recv.c:761
+
+stack backtrace:
+CPU: 0 PID: 13012 Comm: syz-executor742 Not tainted 6.1.0-rc8-syzkaller-33330-ga5541c0811a0 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call trace:
+ dump_backtrace+0x1c4/0x1f0 arch/arm64/kernel/stacktrace.c:156
+ show_stack+0x2c/0x3c arch/arm64/kernel/stacktrace.c:163
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x104/0x16c lib/dump_stack.c:106
+ dump_stack+0x1c/0x58 lib/dump_stack.c:113
+ print_circular_bug+0x2c4/0x2c8 kernel/locking/lockdep.c:2055
+ check_noncircular+0x14c/0x154 kernel/locking/lockdep.c:2177
+ check_prev_add kernel/locking/lockdep.c:3097 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+ validate_chain kernel/locking/lockdep.c:3831 [inline]
+ __lock_acquire+0x1530/0x3084 kernel/locking/lockdep.c:5055
+ lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5668
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x6c/0xb4 kernel/locking/spinlock.c:162
+ rds_message_purge+0x4c/0x5c4 net/rds/message.c:138
+ rds_message_put+0x88/0x120 net/rds/message.c:180
+ rds_loop_inc_free+0x20/0x30 net/rds/loop.c:115
+ rds_inc_put net/rds/recv.c:82 [inline]
+ rds_clear_recv_queue+0xf0/0x1a4 net/rds/recv.c:767
+ rds_release+0x54/0x19c net/rds/af_rds.c:73
+ __sock_release net/socket.c:650 [inline]
+ sock_close+0x50/0xf0 net/socket.c:1365
+ __fput+0x198/0x3e4 fs/file_table.c:320
+ ____fput+0x20/0x30 fs/file_table.c:348
+ task_work_run+0x100/0x148 kernel/task_work.c:179
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ do_notify_resume+0x174/0x1f0 arch/arm64/kernel/signal.c:1132
+ prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+ exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+ el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
+ el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+ el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+
+
 ---
- drivers/iommu/intel/iommu.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e3807776971563..a1a66798e1f06c 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -908,7 +908,8 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
- #endif
- 
- static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
--				      unsigned long pfn, int *target_level)
-+				      unsigned long pfn, int *target_level,
-+				      gfp_t gfp)
- {
- 	struct dma_pte *parent, *pte;
- 	int level = agaw_to_level(domain->agaw);
-@@ -935,7 +936,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
- 		if (!dma_pte_present(pte)) {
- 			uint64_t pteval;
- 
--			tmp_page = alloc_pgtable_page(domain->nid, GFP_ATOMIC);
-+			tmp_page = alloc_pgtable_page(domain->nid, gfp);
- 
- 			if (!tmp_page)
- 				return NULL;
-@@ -2150,7 +2151,8 @@ static void switch_to_super_page(struct dmar_domain *domain,
- 
- 	while (start_pfn <= end_pfn) {
- 		if (!pte)
--			pte = pfn_to_dma_pte(domain, start_pfn, &level);
-+			pte = pfn_to_dma_pte(domain, start_pfn, &level,
-+					     GFP_ATOMIC);
- 
- 		if (dma_pte_present(pte)) {
- 			dma_pte_free_pagetable(domain, start_pfn,
-@@ -2172,7 +2174,8 @@ static void switch_to_super_page(struct dmar_domain *domain,
- 
- static int
- __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
--		 unsigned long phys_pfn, unsigned long nr_pages, int prot)
-+		 unsigned long phys_pfn, unsigned long nr_pages, int prot,
-+		 gfp_t gfp)
- {
- 	struct dma_pte *first_pte = NULL, *pte = NULL;
- 	unsigned int largepage_lvl = 0;
-@@ -2202,7 +2205,8 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 			largepage_lvl = hardware_largepage_caps(domain, iov_pfn,
- 					phys_pfn, nr_pages);
- 
--			pte = pfn_to_dma_pte(domain, iov_pfn, &largepage_lvl);
-+			pte = pfn_to_dma_pte(domain, iov_pfn, &largepage_lvl,
-+					     gfp);
- 			if (!pte)
- 				return -ENOMEM;
- 			first_pte = pte;
-@@ -2368,7 +2372,7 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
- 
- 	return __domain_mapping(domain, first_vpfn,
- 				first_vpfn, last_vpfn - first_vpfn + 1,
--				DMA_PTE_READ|DMA_PTE_WRITE);
-+				DMA_PTE_READ|DMA_PTE_WRITE, GFP_KERNEL);
- }
- 
- static int md_domain_init(struct dmar_domain *domain, int guest_width);
-@@ -4298,7 +4302,7 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 	   the low bits of hpa would take us onto the next page */
- 	size = aligned_nrpages(hpa, size);
- 	return __domain_mapping(dmar_domain, iova >> VTD_PAGE_SHIFT,
--				hpa >> VTD_PAGE_SHIFT, size, prot);
-+				hpa >> VTD_PAGE_SHIFT, size, prot, gfp);
- }
- 
- static int intel_iommu_map_pages(struct iommu_domain *domain,
-@@ -4333,7 +4337,8 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 
- 	/* Cope with horrid API which requires us to unmap more than the
- 	   size argument if it happens to be a large-page mapping. */
--	BUG_ON(!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level));
-+	BUG_ON(!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level,
-+			       GFP_ATOMIC));
- 
- 	if (size < VTD_PAGE_SIZE << level_to_offset_bits(level))
- 		size = VTD_PAGE_SIZE << level_to_offset_bits(level);
-@@ -4392,7 +4397,8 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
- 	int level = 0;
- 	u64 phys = 0;
- 
--	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level);
-+	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level,
-+			     GFP_ATOMIC);
- 	if (pte && dma_pte_present(pte))
- 		phys = dma_pte_addr(pte) +
- 			(iova & (BIT_MASK(level_to_offset_bits(level) +
--- 
-2.39.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
