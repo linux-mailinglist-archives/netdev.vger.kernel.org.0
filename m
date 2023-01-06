@@ -2,211 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4499265F908
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 02:25:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D7DE65F90E
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 02:28:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjAFBZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Jan 2023 20:25:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
+        id S230053AbjAFB2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Jan 2023 20:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbjAFBYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 20:24:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9276D9B9;
-        Thu,  5 Jan 2023 17:19:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DCE7B81C19;
-        Fri,  6 Jan 2023 01:18:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3313C433EF;
-        Fri,  6 Jan 2023 01:18:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672967915;
-        bh=LOc/1vk5J3PHU/tc9+WdDn/srQi6iioE3xJWPyfRGS8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nWgmrqSl7tFssvRedNHNpjPLA7Cr/m8XsMIUYfQ7jSSOqhw+wf7UkOErLS0xVLEmW
-         XkxiY73D8mOxRVzt06nSaGUP+RKv7Xy83x2dFmRbnWlSSkQBE+aDAmigv3NniU/OLk
-         pjV6JY/yZwT31NpGIdjt8oxISVM8CsB+QmxlkIk286JF5jSEsAwJ/OgSGpNtqBxCAY
-         jEoxQRufrS0lrTDyqwBdwPTJ9OQK82F8XxNXyNqoPDw4w0H0yO5wiwPwsLte+CrUTz
-         8gOAU2kfrzvotb2cwBaPLH1b1OdhV/seVMm0ogalsDHiMcS6ngZ3ojRpTI7MafrqZn
-         QqaEv4vNks/3g==
-Date:   Thu, 5 Jan 2023 17:18:33 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Ying Hsu <yinghsu@chromium.org>, linux-bluetooth@vger.kernel.org,
-        marcel@holtmann.org, leon@kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] Bluetooth: Fix possible deadlock in
- rfcomm_sk_state_change
-Message-ID: <Y7d26dhGXOij+xSO@x130>
-References: <20230104150642.v2.1.I1f29bb547a03e9adfe2e6754212f9d14a2e39c4b@changeid>
- <CABBYNZL9FiZjRYJE_h4n2kf9LKv_5XF3Fd=bz=cU4bTcDR-QHQ@mail.gmail.com>
+        with ESMTP id S230407AbjAFB1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Jan 2023 20:27:44 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E423B78163
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 17:21:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672968079; x=1704504079;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Gjag4xNe3BGmQIQ51dVgVOq6ycugHFryjcg98uiizCM=;
+  b=g4pqcL2TqzUQUnvmZ3DoJn49l9kjw2p7UJXotZYToZu2g+LS+EZsMTVw
+   WeRlFysF1jV+v/aYkofn8UyhPZpMZr4WR6FV1aTx9yy3A0IH5tdl0jmY4
+   miakRaEwtMC5GpqU6Y5esj9ZH72xJ5LEbVTdWIqCmXFTHPmgCgVRInb7o
+   AFmcoCveUIXJaPknBxpQsRwNHx4hA3lZbzQl7ekJyBiEPu6vQcU/2kayG
+   jv9fQM0/jA6GmgxikLjm5wg1u7zBgw19gvKF4Bb2dpYII5A++qVJg3UfO
+   90geTWNlZafimxwH7Vo2ygHtq/F8s/Qr+gR50X38J+kxMkI//5Ku/nfBk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10581"; a="386820155"
+X-IronPort-AV: E=Sophos;i="5.96,303,1665471600"; 
+   d="scan'208";a="386820155"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2023 17:21:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10581"; a="798118980"
+X-IronPort-AV: E=Sophos;i="5.96,303,1665471600"; 
+   d="scan'208";a="798118980"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Jan 2023 17:21:04 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 5 Jan 2023 17:21:04 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 5 Jan 2023 17:21:03 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Thu, 5 Jan 2023 17:21:03 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Thu, 5 Jan 2023 17:21:02 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OvRvWb/Us7qE9XZSmKn/05uUuSMCRhwHYo71YDtx0VIokYLEuby0NAa3u5ODlOfx9RYrhguqjcpoQhe0PVP+kaFdV3eOX0D2EVqedzyGu9MX0YDrX58287iXJRhzUBFpk5ZGwTrSa4l/yFhikmQ8ZsoCna/UxADq+g+fStJk2VrvDR3lxxQFAuXCA10S6IRNYBPSTiwTHjTsHs293cF5GiKmXja1qcOZIpRBux8Tnx5TbrS2IsPv3XBKUiMi05W2TIaGlAYfQghoaf2/QiQFuir2KbAvPKQYnguxJCU8zAAeSxAgwj0vNB0TzG9Xc5GKBNlDEAuP4h2EVFMARxUEWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/c9MPf5KvJC3WW6HHMyX2ToIWWZWXp25L0FypxN4n8A=;
+ b=DdZSwVStRZwSJiTxtEoxPSvbwK+yijLKqcKpWcSzG1Jby0AoUi76sQ+rY3ahO+uGgZQQPWZWHKA2pdBj5kvdw116ZvZayxQy6j5vYDXa52NDoU8cz2c5DBOY8hY7W1O8d56dDGJxwOu1HBJY6bCBMYBl4Iwdy/QdRjVvpBM+pC1io6tPWQfgayWgWNMlYRWFI/pEDQbN4EZtJnxXIVIDciIKZNh9cSWLcUBciYLfj2SWRZmwdYzpH3b4mGpLo5Lw7YA8H67kHA8qceDu4PtwjfdFQp7HglBZ0pP4TEP+9aiikj5v6P0ObUJIm4q1EPoQS6yyM+lXY8y4ujYqDf66mQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
+ by IA1PR11MB7917.namprd11.prod.outlook.com (2603:10b6:208:3fe::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Fri, 6 Jan
+ 2023 01:21:00 +0000
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::6ce9:35:a5db:f6dc]) by CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::6ce9:35:a5db:f6dc%6]) with mapi id 15.20.5944.019; Fri, 6 Jan 2023
+ 01:21:00 +0000
+Message-ID: <153c38bf-f16b-cd6f-0c6a-8db226769159@intel.com>
+Date:   Thu, 5 Jan 2023 17:20:58 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 00/24] Split netmem from struct page
+Content-Language: en-US
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+CC:     <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>
+References: <20230105214631.3939268-1-willy@infradead.org>
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+In-Reply-To: <20230105214631.3939268-1-willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY3PR05CA0040.namprd05.prod.outlook.com
+ (2603:10b6:a03:39b::15) To CO1PR11MB4914.namprd11.prod.outlook.com
+ (2603:10b6:303:90::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CABBYNZL9FiZjRYJE_h4n2kf9LKv_5XF3Fd=bz=cU4bTcDR-QHQ@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4914:EE_|IA1PR11MB7917:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed0c87e6-1957-49b3-fd4f-08daef844534
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eHGnKPrhqCusv8S41oNYfZ650ntry++APSBMu+mrmLyWuM7lg3xX9FmxLWDPzojfODWX6ZHE2sOaOP+bWuVJAIip0sw5wfFVPDrYJM7qX7W6qzDf7XR4Qwx5M/2saUisjJC1ePi5C5/NXshYM2MACASiDioeSlm8/IC7kqSXQ0/UOs/ImmMDBZlTJH2mn0IfkibGfJt4nqvzjZoVxC8Uyli4WOqaUPGI+CxdNoLTYNv+aifVE86lrNGIowV9muxE8rZ4Ck5NMyhGK+KyVR6OiKpHTmZ6oKli0RKTGQ0UYeUdEy4WEa9vZupLhXALEYsbARGpOojKPLnwrwix2lR4+ZukhrlO73UkbgsHIALD1HBKjGNbtPTPNqtiNrB/dJ/4P/2GirW0f4F2hOySbd1BDsA0EmqndmDdhNAlcuRwzINpg5v+NL5/UBswhFvbvV/7p6DlBjU7wSRmzTtpTEe+gGiX2ftwPCJmKW47ew2Ve70rOFlvMj0u8lp7me6ArCfVctQu3YTrL5zD6QsCtWLzagHDWk5vkodVZ/kFljIrztJlvBTwlBbozqNfXCFcR/GSV8YUNmBVKdilO4XNdYSSvtEHVNljCHXThwxiO0sGB2sjdBK1ixGGbxLdklNn3nxUXp0y/nZOXO5gE2m1xKJtE/LtbG47WM7+CbB2OEixqHDTHjFmOhLLO5G+SYpbur5zRxqUwRXGew937QiuTs8YqI2/FxCUcN5XQKDwngwCHiY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(366004)(396003)(346002)(376002)(39860400002)(451199015)(36756003)(31696002)(82960400001)(83380400001)(8936002)(44832011)(38100700002)(5660300002)(2906002)(4744005)(86362001)(41300700001)(6486002)(31686004)(66946007)(4326008)(6506007)(53546011)(110136005)(66556008)(66476007)(2616005)(478600001)(316002)(26005)(186003)(6512007)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cjRYTDFQZjFkNGRqcjN2V3FLaitzcHpmbmREQytESk9MU0M2clEzSDlXUSs2?=
+ =?utf-8?B?T1F0MUV5N3J3c052d1hXbjdqWkNsTG1QWmo3NGgycWFkZUVXN0YrVmcwZ0t0?=
+ =?utf-8?B?SFkrT0tUMktkVHBNODd5bm4zS1Nua2tSelJaeXZGK0VMZUttZG5mbGVCN3NS?=
+ =?utf-8?B?NkJmKzl1MmtIbHpUNllzUjd4Z2ErbXF4aU1haTY5eWl6MkR5TjFhVURCRWk0?=
+ =?utf-8?B?K2FuU0hIaGp5d2NVN3dpcUMvUktlQnBNT0VJV2c3cmRORUMvQ0RXV3lOVzla?=
+ =?utf-8?B?eVcvNDlTYlFka0IyUnNNV290anFMSmk2TlJidllPQlcrbFRhSUU0cENlVzVW?=
+ =?utf-8?B?enFqZDVYR1g1N3ZEUFdsekNUV2RZcTVWdXMxQS9qTVhYN0xkelEvaTlPaE0y?=
+ =?utf-8?B?ME12NXBtNURkWUIwa2NZZUw4MlVDWVNodE1VYndocG1ZVXZOSFBLbSt6N24w?=
+ =?utf-8?B?WEE2N2o4UE9WaGRxQ2VacnFuUHNJQm9JbjN5VCsxcklJQXppanhvRnBjbndD?=
+ =?utf-8?B?YTRkT0U2QTUvTHl1MlhZVmhuVUpoQzdwY214a0o3YmNMem1VeHZGcGZOblNL?=
+ =?utf-8?B?TzdtT1QwMUhUbmx4NjU1NTMydFZuRkg1RTBvQ05SbnkydWk0QmowbkhCenlR?=
+ =?utf-8?B?STlpK3ZWcU1vMFFSVEFReURBVjUzbUpyL1RId2F3SXZublJwblhnOVNnczM2?=
+ =?utf-8?B?b2hQdHY1SlFEazgvc0FBalhVOTVUeDEwem9TTjJmTWhzdi9kNld1K0VFMjZx?=
+ =?utf-8?B?dUJWOFlMVkpMOWNmdlBVQ09tQTlqdkIyYnFKeUZXbktFVndPbk5IRU1WVTMv?=
+ =?utf-8?B?SW5uc0dyeWttcjBNWGdzUG9PREFXNTJlMnNsRmR5UElEVjRaTUhFVEFLTXBZ?=
+ =?utf-8?B?Qkx2WHB3OXh4Rncxb1F2aWtoMTlXUjZSTC9zZ2tQMnpuL2lSdFhSdHRDQTNO?=
+ =?utf-8?B?SUtoM3FaWnVsMVdkTlpERDVIeXJEaUVXQkhaQ0l5UitXSjNSYVB4b0g3aTI0?=
+ =?utf-8?B?bmcvbXpreHZYeEt4dXhkUGJFeTQyeXJySEJOWEgxL3F4Sld3NnFINFQ4WU9R?=
+ =?utf-8?B?T0VnMTQyVFpaVXc3MDFzdkwvbm5XYkpocHVHblByRG5TTWFXL2YzT2tiOTVy?=
+ =?utf-8?B?T2hFZHpzWlAweDFSdWh6YkRERUNLSXdpangzWVhhSDJqVDNhOTFPZGhqUnRI?=
+ =?utf-8?B?Qks1bzJuc00wdUE1QzBrUnFlT0JHbjdaUFI3YnhmaVhWVGh5bDB6V1J1Q1hZ?=
+ =?utf-8?B?MmtRNzBUUm1sbEFwa0RpRnpKeXltcitTOFdrYlJYRVp5QU5tSHNpOG9kTDg2?=
+ =?utf-8?B?YUlWVmxDUUU3enh6dXZZN2MzL2Fya25UdHlNUjhsY3Y4aEhRTXZJTlhFQ2ts?=
+ =?utf-8?B?WVUzY1ZOdEtxZnNna2pEampvbnl3R3VLWHNjM2xranRQay9TRUE2Z0MxSHRP?=
+ =?utf-8?B?dUUxempZeFJHUWx1Y2RtU3NuYnJXT2ZyWmYyOGFvOXRwRXhTbTVkZWwyQXBM?=
+ =?utf-8?B?cEtaRkJDSG0ybTlDaENoWFlBMHNSeTJ3ZXVVeE41QlZBc0l0Z2xGUjdITXlZ?=
+ =?utf-8?B?QzQ1U2IrV2Qza2RscjQyQnFkam5XbjNzWFJaU2M1V2ZnU0xSVDVCeGhaZWVF?=
+ =?utf-8?B?aVljRGoyQ0QvY0FtbkZ0a3NxNWs0ZFM0YlNQY01XMXVDYyt5UWRCSkpSUk5U?=
+ =?utf-8?B?cFlWOXBrL00xNGVyOWVwVXA3OWc4WWVIOUc5QmN3K0xHKzh3L2R1RFh6SUhn?=
+ =?utf-8?B?c3F6NEZxb04rYlZST3B4QlNOSlRaWFVhZVZTNi9SZU9sTDUvMS9KT20rS1N4?=
+ =?utf-8?B?MUJyYU53Rnd0VTBOU2l3anlkWjNUc3lPdUtaMkFsOGZqbFNqTGpreXRtRlZt?=
+ =?utf-8?B?UExWUURtbGJnWk5lVVZUL1JydUx0TVYwOC9XZG13RU9GbWJhdTRMa3BtVUZu?=
+ =?utf-8?B?TW9UZnlOMTErL3dSNDZJWW5JWmRBR1VpNDAxNTBrNFFCU0IrWldqcU9zdmNn?=
+ =?utf-8?B?cFBpUWNINFJmOTl1SmxGa3VCS0dzR0dQc2JSZWJkMGRTcWFadkd6YU54U2dt?=
+ =?utf-8?B?WkhaL0g0L3IrNUNGQnNmc2xEV3hJV3Zodjh4OXRHMmVEOVFHQ1J4aElkMXZK?=
+ =?utf-8?B?YncyeVJuTk1USnVwbk5tUHJrcjNZVHBoRVM0SHZ0TUtkM2VMa1JTdDk4d3Vy?=
+ =?utf-8?B?Y0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed0c87e6-1957-49b3-fd4f-08daef844534
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2023 01:21:00.3261
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lSUzPbyyyrffeVsjZJs2jEHN6qGClB7p4fhxllY/4fGZB0XuRv36eIiluft3B3Y/VFdA6YxaJhaCsfDlGZwoVDabchD0SCtLHlfKu1N2YJI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7917
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04 Jan 14:21, Luiz Augusto von Dentz wrote:
->Hi Ying,
->
->On Wed, Jan 4, 2023 at 7:07 AM Ying Hsu <yinghsu@chromium.org> wrote:
->>
->> There's a possible deadlock when two processes are connecting
->> and closing a RFCOMM socket concurrently. Here's the call trace:
->
->Are you sure it is 2 different processes? Usually that would mean 2
->different sockets (sk) then so they wouldn't share the same lock, so
->this sounds more like 2 different threads, perhaps it is worth
->creating a testing case in our rfcomm-tester so we are able to detect
->this sort of thing in the future.
->
->> -> #2 (&d->lock){+.+.}-{3:3}:
->>        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
->>        __mutex_lock0x12f/0x1360 kernel/locking/mutex.c:747
->>        __rfcomm_dlc_close+0x15d/0x890 net/bluetooth/rfcomm/core.c:487
->>        rfcomm_dlc_close+1e9/0x240 net/bluetooth/rfcomm/core.c:520
->>        __rfcomm_sock_close+0x13c/0x250 net/bluetooth/rfcomm/sock.c:220
->>        rfcomm_sock_shutdown+0xd8/0x230 net/bluetooth/rfcomm/sock.c:907
->>        rfcomm_sock_release+0x68/0x140 net/bluetooth/rfcomm/sock.c:928
->>        __sock_release+0xcd/0x280 net/socket.c:650
->>        sock_close+0x1c/0x20 net/socket.c:1365
->>        __fput+0x27c/0xa90 fs/file_table.c:320
->>        task_work_run+0x16f/0x270 kernel/task_work.c:179
->>        exit_task_work include/linux/task_work.h:38 [inline]
->>        do_exit+0xaa8/0x2950 kernel/exit.c:867
->>        do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
->>        get_signal+0x21c3/0x2450 kernel/signal.c:2859
->>        arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
->>        exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
->>        exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
->>        __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
->>        syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
->>        do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
->>        entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>
->> -> #1 (rfcomm_mutex){+.+.}-{3:3}:
->>        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
->>        __mutex_lock+0x12f/0x1360 kernel/locking/mutex.c:747
->>        rfcomm_dlc_open+0x93/0xa80 net/bluetooth/rfcomm/core.c:425
->>        rfcomm_sock_connect+0x329/0x450 net/bluetooth/rfcomm/sock.c:413
->>        __sys_connect_file+0x153/0x1a0 net/socket.c:1976
->>        __sys_connect+0x165/0x1a0 net/socket.c:1993
->>        __do_sys_connect net/socket.c:2003 [inline]
->>        __se_sys_connect net/socket.c:2000 [inline]
->>        __x64_sys_connect+0x73/0xb0 net/socket.c:2000
->>        do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>        do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->>        entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>
->> -> #0 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}:
->>        check_prev_add kernel/locking/lockdep.c:3097 [inline]
->>        check_prevs_add kernel/locking/lockdep.c:3216 [inline]
->>        validate_chain kernel/locking/lockdep.c:3831 [inline]
->>        __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5055
->>        lock_acquire kernel/locking/lockdep.c:5668 [inline]
->>        lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
->>        lock_sock_nested+0x3a/0xf0 net/core/sock.c:3470
->>        lock_sock include/net/sock.h:1725 [inline]
->>        rfcomm_sk_state_change+0x6d/0x3a0 net/bluetooth/rfcomm/sock.c:73
->>        __rfcomm_dlc_close+0x1b1/0x890 net/bluetooth/rfcomm/core.c:489
->>        rfcomm_dlc_close+0x1e9/0x240 net/bluetooth/rfcomm/core.c:520
->>        __rfcomm_sock_close+0x13c/0x250 net/bluetooth/rfcomm/sock.c:220
->>        rfcomm_sock_shutdown+0xd8/0x230 net/bluetooth/rfcomm/sock.c:907
->>        rfcomm_sock_release+0x68/0x140 net/bluetooth/rfcomm/sock.c:928
->>        __sock_release+0xcd/0x280 net/socket.c:650
->>        sock_close+0x1c/0x20 net/socket.c:1365
->>        __fput+0x27c/0xa90 fs/file_table.c:320
->>        task_work_run+0x16f/0x270 kernel/task_work.c:179
->>        exit_task_work include/linux/task_work.h:38 [inline]
->>        do_exit+0xaa8/0x2950 kernel/exit.c:867
->>        do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
->>        get_signal+0x21c3/0x2450 kernel/signal.c:2859
->>        arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
->>        exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
->>        exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
->>        __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
->>        syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
->>        do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
->>        entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>
->> Signed-off-by: Ying Hsu <yinghsu@chromium.org>
->> ---
->> This commit has been tested with a C reproducer on qemu-x86_64
->> and a ChromeOS device.
->>
->> Changes in v2:
->> - Fix potential use-after-free in rfc_comm_sock_connect.
->>
->>  net/bluetooth/rfcomm/sock.c | 7 ++++++-
->>  1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
->> index 21e24da4847f..4397e14ff560 100644
->> --- a/net/bluetooth/rfcomm/sock.c
->> +++ b/net/bluetooth/rfcomm/sock.c
->> @@ -391,6 +391,7 @@ static int rfcomm_sock_connect(struct socket *sock, struct sockaddr *addr, int a
->>             addr->sa_family != AF_BLUETOOTH)
->>                 return -EINVAL;
->>
->> +       sock_hold(sk);
->>         lock_sock(sk);
->>
->>         if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
->> @@ -410,14 +411,18 @@ static int rfcomm_sock_connect(struct socket *sock, struct sockaddr *addr, int a
->>         d->sec_level = rfcomm_pi(sk)->sec_level;
->>         d->role_switch = rfcomm_pi(sk)->role_switch;
->>
->> +       /* Drop sock lock to avoid potential deadlock with the RFCOMM lock */
->> +       release_sock(sk);
->>         err = rfcomm_dlc_open(d, &rfcomm_pi(sk)->src, &sa->rc_bdaddr,
->>                               sa->rc_channel);
->> -       if (!err)
->> +       lock_sock(sk);
->> +       if (!err && !sock_flag(sk, SOCK_ZAPPED))
->>                 err = bt_sock_wait_state(sk, BT_CONNECTED,
->>                                 sock_sndtimeo(sk, flags & O_NONBLOCK));
->>
->>  done:
->>         release_sock(sk);
->> +       sock_put(sk);
->>         return err;
->>  }
->
->This sounds like a great solution to hold the reference and then
+On 1/5/2023 1:46 PM, Matthew Wilcox (Oracle) wrote:
+> The MM subsystem is trying to reduce struct page to a single pointer.
+> The first step towards that is splitting struct page by its individual
+> users, as has already been done with folio and slab.  This patchset does
+> that for netmem which is used for page pools.
+> 
+> There are some relatively significant reductions in kernel text size
+> from these changes.  They don't appear to affect performance at all,
+> but it's nice to save a bit of memory.
+> 
+> v2:
+>   - Rebase to next-20230105
+>   - Add kernel-doc for struct netmem
+>   - Add mlx5 compilation fixes from Jesper
+>   - Folded in minor nit from Alex Duyck
 
-Why do you need sock_hold/put in the same proto_ops.callback sock opts ? 
-it should be guaranteed by the caller the sk will remain valid 
-or if you are paranoid then sock_hold() on your proto_ops.bind() and put()
-on your proto_ops.release()
+I had a brief look over the whole series and didn't see anything bad 
+that stood out to me.
 
->checking if the socket has been zapped when attempting to lock_sock,
->so Ive been thinking on generalize this into something like
->bt_sock_connect(sock, addr, alen, callback) so we make sure the
->callback is done while holding a reference but with the socket
->unlocked since typically the underline procedure only needs to access
->the pi(sk) information without changing it e.g. rfcomm_dlc_open,
->anyway Im fine if you don't want to pursue doing it right now but I'm
->afraid these type of locking problem is no restricted to RFCOMM only.
->
->> --
->> 2.39.0.314.g84b9a713c41-goog
->>
->
->
->-- 
->Luiz Augusto von Dentz
+The series is remarkably small, with many small and easy to review 
+patches, so thanks for taking the time to do those.
+
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+
