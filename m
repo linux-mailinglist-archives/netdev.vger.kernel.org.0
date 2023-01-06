@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 342626603AE
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 879876603B9
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbjAFPtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 10:49:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        id S232453AbjAFPwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 10:52:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230142AbjAFPtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:49:50 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7467A92A
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:49:50 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id e10so1391417pgc.9
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 07:49:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=N4kwD0xGNEfM7SV5a5wxWT11H0xVVzVnjmR4NCYx5Ww=;
-        b=ujytYLW4bfRC6RQ15okq7k7zCGI1k6hkOqu5YdkSzfFNuvYTFWKnXwbIPzW79mdnUt
-         vruIbeqnwLNWF4GwrPb/75keRMdziACqxGXEeOyWVrxlOJRPo8ppetwmzPzek5H9mocd
-         hpIVUAY5zuLywZpy8W2KYJMsA6g9TBLJIwEHQ7LrD3OQcRNRZnEcI6VKAtGx0N+HWq7G
-         SJROOoZWE57OMCrHbOTxBVeP8OoKefjAKgiI26dyEM45qcjXyyllggwRQUixiN5sfckV
-         KFAWJLRBVmXRz5mPkIXRawnAvk5TXtooctyekZaY49PL79A8grHWxuHq/esTVuWilS2J
-         Ru+A==
+        with ESMTP id S233398AbjAFPwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:52:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F90728BA
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:51:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673020313;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qPs88zrZ+jLjyqERyQWgINBt96bL0UXWc655zTk9zc4=;
+        b=eIkus8L41eJ1quTE+WZkhB0B4FxcBLsOP7DBykl1YC4tN7XsO+RuvyGexFOmhjsLFvsheN
+        tp7gYFcPK3NSAvsNIx8i25OhV47KaIPqwL99I2WpR4nsu5J34nOyWIRoB4dP8dVZ1GfbEB
+        Ya5oPVMaoKs7xHzh74/w89ZhEbO62EA=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-303-70wvRJ36PsC0V5Nrz0wEkw-1; Fri, 06 Jan 2023 10:51:51 -0500
+X-MC-Unique: 70wvRJ36PsC0V5Nrz0wEkw-1
+Received: by mail-ej1-f71.google.com with SMTP id qf33-20020a1709077f2100b007c155ab74e9so1375084ejc.18
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 07:51:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N4kwD0xGNEfM7SV5a5wxWT11H0xVVzVnjmR4NCYx5Ww=;
-        b=hQFw9niNDBbkxDRJpzroZVcRZ4nSpGnKedaPgzv8L0IAgW6WrSyuXUwzj8Lko4LIqw
-         SE3FjqQnWxTga09KIOQRe5VFfs4XBim18KTqHeqTax44NNdchc8E3GOVtiE6KAr8qlX9
-         w95DzKUZvZdu+d+aQsYawZj+vVkTcZo6zzJhciwUxJDtuK+rFO+gz1gtZ2ewYpICK/ge
-         Qlpwy/10hIizSU378Ynu6Ptf0UBixn/xMiVFch5IUwHycD8rd+dU1gWNmGwhrEHmC0YM
-         qETvSz8mp14m+5iRducVIgdlC8Gb8a9q5cJjK8ewe/vg9u1ooqKat87boklT96e3Tdwf
-         nwKQ==
-X-Gm-Message-State: AFqh2ko34fQAV4iwewWy1mrJq7BWhZ6P+EhSLXctzx0f1DB/v8Y4v+C5
-        3TD1DQudydLdUjAlmJ27078DpA==
-X-Google-Smtp-Source: AMrXdXvvaJnSWo7IuUsuG2D/BgLVIZFHECbm3vGm1E9Ee6pInmXGgSvZIkkosSAW0NGAClPWlcoWFA==
-X-Received: by 2002:a05:6a00:d4e:b0:581:a2b6:df19 with SMTP id n14-20020a056a000d4e00b00581a2b6df19mr30124189pfv.14.1673020189696;
-        Fri, 06 Jan 2023 07:49:49 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id x28-20020aa78f1c000000b0056b2e70c2f5sm1310533pfr.25.2023.01.06.07.49.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 07:49:49 -0800 (PST)
-Date:   Fri, 6 Jan 2023 16:49:46 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 0/9] devlink: remove the wait-for-references on
- unregister
-Message-ID: <Y7hDGnDcjVKDSuHV@nanopsycho>
-References: <20230106063402.485336-1-kuba@kernel.org>
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qPs88zrZ+jLjyqERyQWgINBt96bL0UXWc655zTk9zc4=;
+        b=e12oLT6u3c08+yH6wrl32mXvTBs5zqNNzVPkoidn0j7Rxe0olrMJI2UwLPq62vAfwr
+         ElfVXQmV6qsQstN3xzzZx3wfqbFutzjhIZNx3ZJxsE3/9dksEhu2aH0z4bQDTYXFcx2S
+         /SgzyzUafAw/eTcLNT0l+SwkmjvPJdykxSHTol6zW3udPiWEVmdERFgWSnkcLTVioHTi
+         n1gB1U+buKcX1DwfQSQsQU/sOXJzawE3E7tjY72AGK7e6DwZHRQIw9oRGbD31M3VJJ6f
+         sUPZGNwwPr1pGnt8kOo/9VGVuI2oXLlysUkXqsNg8z9vxjkP71YqO4Xp6Tgsbk2jbe8h
+         Pfgw==
+X-Gm-Message-State: AFqh2kpDyFmrCo5v2KiqU1kA3FRSfZzFIzJZFxJD5Yo2KurfEEdHQ33R
+        SV7Nf78bnDrWXYYFr5SKa7Fw5pjL3gAiLLmiEIpXcXAopzZAVrY3CU6EY18KcuMCxL0Iu87cvwR
+        lKdjMJO0TuuUanCgB
+X-Received: by 2002:a05:6402:4141:b0:469:ee22:d97a with SMTP id x1-20020a056402414100b00469ee22d97amr50239342eda.32.1673020310723;
+        Fri, 06 Jan 2023 07:51:50 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvpQunVLrPDSQOz5kOszKpfUoSJDJ2vHi7FxQvOELTdvFDRw7DAzl4UgCGCFV/xqrXIqSrkPQ==
+X-Received: by 2002:a05:6402:4141:b0:469:ee22:d97a with SMTP id x1-20020a056402414100b00469ee22d97amr50239336eda.32.1673020310591;
+        Fri, 06 Jan 2023 07:51:50 -0800 (PST)
+Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id cb1-20020a170906a44100b0084d199d7f08sm517833ejb.21.2023.01.06.07.51.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 07:51:50 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <3a3ad0cb-4176-cc83-5e7c-dc52bcb0d5c0@redhat.com>
+Date:   Fri, 6 Jan 2023 16:51:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230106063402.485336-1-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>
+Subject: Re: [PATCH v2 18/24] page_pool: Convert frag_page to frag_nmem
+Content-Language: en-US
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-19-willy@infradead.org>
+In-Reply-To: <20230105214631.3939268-19-willy@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 06, 2023 at 07:33:53AM CET, kuba@kernel.org wrote:
->Move the registration and unregistration of the devlink instances
->under their instance locks. Don't perform the netdev-style wait
->for all references when unregistering the instance.
->
->Instead the devlink instance refcount will only ensure that
->the memory of the instance is not freed. All places which acquire
->access to devlink instances via a reference must check that the
->instance is still registered under the instance lock.
->
->This fixes the problem of the netdev code accessing devlink
->instances before they are registered.
 
-Nice work. Thanks!
+On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
+> Remove page_pool_defrag_page() and page_pool_return_page() as they have
+> no more callers.
+> 
+> Signed-off-by: Matthew Wilcox (Oracle)<willy@infradead.org>
+> ---
+>   include/net/page_pool.h | 17 ++++++---------
+>   net/core/page_pool.c    | 47 ++++++++++++++++++-----------------------
+>   2 files changed, 26 insertions(+), 38 deletions(-)
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
