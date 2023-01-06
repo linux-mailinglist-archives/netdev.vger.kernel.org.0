@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A999C6600B2
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 13:57:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8611F6600DE
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 14:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbjAFM5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 07:57:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        id S229490AbjAFNAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 08:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234390AbjAFM4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 07:56:45 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA8C6B5AB
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 04:56:11 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id d15so1582951pls.6
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 04:56:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=flP4gSGBCiSpNm4TTuKoN09+Jn6Vrjybwd0k1MEHewI=;
-        b=A59sgKV8Dsg3sixHXZfymEmPvv+swBaQNXtnpBdKSPzcT0rBGcDy6soGt1OKGY+KCP
-         bIKomuq+KESBYHRawVcbsuIPNI4wNpftm/jv9KPAb1peHg2he5FoTdNSjbXsaqojAKNG
-         5L7TjnjBSZqBFbejaImvk26Ptost1f9dBuTFhtZbuQcyAJVfa1zmrn/NGHXibZoKJkb2
-         JyIT76UA31eTkG231WesusIGuRefqy6o39C8cpaI9ko2ajrxPvlMFF99ZXN4TGeQH1pO
-         DAnl9fUUHiYE84OkusgSO+XyxX29YwyQrHJ6psT+1CxAveBctZ/CZ1+tI9EffupmVNo/
-         3RVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=flP4gSGBCiSpNm4TTuKoN09+Jn6Vrjybwd0k1MEHewI=;
-        b=U4sBVgfFKf64dkIcd9rLSjmwiUXdAYksLmLd9zbtEhvhMoNgo+7p5cdjzir6XJPl5E
-         OhPrVgvjFBbyntp87TTWxVDreN3pU412mXbfvZpYWqVki+s3wp97X+vZw8T9YFsOfXKy
-         dxtNKUDjrxpBdbBoUZVK88K36XAI4zQlIByekamm7i7CrRxmNnqJZ8crFXOpMNTLQO9f
-         f2I0DRz1Na6Oc4L0+uYbte2D4uXJJnobTRXiF3VqSt11X0xj7Zlbd+RAIYhliNgJodCS
-         nFuAW3hLZzD2UWv9y2/sWetvq9khRBUNQ6InmlZltGfhgPn2FbeH7L2YtuHcBFY+Tqwr
-         lc2g==
-X-Gm-Message-State: AFqh2kpJcJV4U2cOpWuPG6N0kTxrT9ie5wQ3yLQ7h2Q0Or1j2/QM3AzD
-        +35Sl00WF+avEZiJyhTH5HyhPv5LQfpPEq02zrH1Ww==
-X-Google-Smtp-Source: AMrXdXtl5xIcqLJS6/UfkwgJjtB29Gv7a3ULYjSjwHHt5Vi6nA4oBxy8/wio8ZLuwhodqJOe2nKuvw==
-X-Received: by 2002:a17:90a:ab16:b0:226:6d:1a31 with SMTP id m22-20020a17090aab1600b00226006d1a31mr43125440pjq.49.1673009771227;
-        Fri, 06 Jan 2023 04:56:11 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id mn6-20020a17090b188600b002263faf8431sm2864558pjb.17.2023.01.06.04.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 04:56:10 -0800 (PST)
-Date:   Fri, 6 Jan 2023 13:56:08 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 8/9] netdevsim: rename a label
-Message-ID: <Y7gaaH2wNB3k4RhP@nanopsycho>
-References: <20230106063402.485336-1-kuba@kernel.org>
- <20230106063402.485336-9-kuba@kernel.org>
+        with ESMTP id S234769AbjAFNA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 08:00:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600926B583
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 05:00:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16469B81D3E
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 13:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8AA18C433F0;
+        Fri,  6 Jan 2023 13:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673010016;
+        bh=TTvJHvU3JxbDPnsc0WAhpQjLtugVdN/lbhixt4wrdXE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ab3q42P8tr+9hnN25zpMkYVEEwwxP7ESMIskFsUCy2K5WivIQjC7dw9WCvMiZLptv
+         2A9shD+FCYlja3ASD1JR9RUl5mhpfBVW11xuEI5Z3yRcvl3R0tcpnBR91sh584twgg
+         c7dMxj3REldRJVfWqBi2tGBeAQ25C7ZVWUPC8uwz1+u7wS2t5flc2wwekJ3hQAdxNy
+         /U5/RQWKTGgPK7E8h8PqCkibZG4JHcwZ76aObuoUEm2QfcR7jromEyHmmrdIBfKHof
+         GWcDYjAOgOXGOwdq7Dyt0uHu85oMnLfY8AoHaxDxayz4zhdBqB2PQPFunxOHEQcs7d
+         GSs7K2Us/yc1Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6BDADE270EC;
+        Fri,  6 Jan 2023 13:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230106063402.485336-9-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net 1/1] tipc: fix unexpected link reset due to discovery
+ messages
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167301001643.32012.2626222000937248173.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 Jan 2023 13:00:16 +0000
+References: <20230105060251.144515-1-tung.q.nguyen@dektech.com.au>
+In-Reply-To: <20230105060251.144515-1-tung.q.nguyen@dektech.com.au>
+To:     Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, jmaloy@redhat.com,
+        ying.xue@windriver.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 06, 2023 at 07:34:01AM CET, kuba@kernel.org wrote:
->err_dl_unregister should unregister the devlink instance.
->Looks like renaming it was missed in one of the reshufflings.
->
->Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Hello:
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu,  5 Jan 2023 06:02:51 +0000 you wrote:
+> This unexpected behavior is observed:
+> 
+> node 1                    | node 2
+> ------                    | ------
+> link is established       | link is established
+> reboot                    | link is reset
+> up                        | send discovery message
+> receive discovery message |
+> link is established       | link is established
+> send discovery message    |
+>                           | receive discovery message
+>                           | link is reset (unexpected)
+>                           | send reset message
+> link is reset             |
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net,1/1] tipc: fix unexpected link reset due to discovery messages
+    https://git.kernel.org/netdev/net/c/c244c092f1ed
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
