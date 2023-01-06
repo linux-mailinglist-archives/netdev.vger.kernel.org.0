@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2008A66031D
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:28:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 287D4660338
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234867AbjAFP2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 10:28:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        id S235291AbjAFPaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 10:30:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233592AbjAFP2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:28:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E7113A
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:27:32 -0800 (PST)
+        with ESMTP id S235619AbjAFP33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:29:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00F3831B4
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:28:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673018852;
+        s=mimecast20190719; t=1673018922;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Wqldc59IyE6GClXAgz6o8M/DUbFE2wUbD1HBJcCrPDo=;
-        b=hCbowdHqoRAVSPOzkpztvxnPYvDvjhOtptDaN6m3fA3utg3jgxkDwrnwMN5qewXTDy2sOI
-        vlrzUw8k1Zxt7vJTdVIoVY1v4BmJvxqtAxl2yTWiJU9YYf2wt9w2cQPV03zIot9Coy4o0s
-        h3IU3Ks0zCe39GHtCsdngoEq9eC86Bg=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7cFjv1lP/ZjmYEIybBWAW8pxgUkHvOZMDXzsmCKt9ko=;
+        b=OCDfHL2SEdCgo7QCCzPaBVsw5s7kilCH0WwM+BjVIHkDIAcfWKLeRzW+FUxAcahAbPS60x
+        m2McDhqeWGTXlWktlj8wKrEynHb3AWat+yT9P3Qlc9ESVQ2eD7v35Sf1zkRCp+Tij87HOR
+        jkgQAj/Lp9iTlNKELfpctn1LqQdwj4U=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-332-3fJsPP2SOQ-p6C4KipraSQ-1; Fri, 06 Jan 2023 10:27:30 -0500
-X-MC-Unique: 3fJsPP2SOQ-p6C4KipraSQ-1
-Received: by mail-ej1-f72.google.com with SMTP id qw20-20020a1709066a1400b007c1727f7c55so1339442ejc.2
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 07:27:30 -0800 (PST)
+ us-mta-359-JqIe1MpJMouWLQqDVZANoQ-1; Fri, 06 Jan 2023 10:28:38 -0500
+X-MC-Unique: JqIe1MpJMouWLQqDVZANoQ-1
+Received: by mail-ej1-f70.google.com with SMTP id dr5-20020a170907720500b00808d17c4f27so1336438ejc.6
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 07:28:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:references:to
          :content-language:subject:cc:user-agent:mime-version:date:message-id
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wqldc59IyE6GClXAgz6o8M/DUbFE2wUbD1HBJcCrPDo=;
-        b=6c/7FuH86gd/ZaBCjxuqCEkXJ7wcnkomH12syUCHW1aYQjk5DCilLsH9LqAp7sF0w8
-         skC2Yp5+byr7F2Xz2KBsx5cHymOgAUY0BkjtafFZzoNM8nHCv/j0N3KcOivM3YexyPPL
-         Zcn5POHFzMqitbIR/nJtp3KhtrvSueZ9zh5Hj1bdMUdG6LxBCwBwRDnGGMq/WaMUNnip
-         Zmg0CY6akR0+RramfRL37JqKA+VSWhdLAlmhoKquL9sBGcv54Y1JB920NcxNJ5KpGUfp
-         i8y1aj8yLEv3BAHAT3ZXSdZX6Uv7ekO8MGoMfDvZ0Iy0ksAqtd1Jms6F5Gq9aL3nswen
-         YBrA==
-X-Gm-Message-State: AFqh2kqYRjkp398cCwg8dybH/wdxMMDHGSF9faVGTUo95OnXLbqMCQmG
-        xmMteY4t1qCLtTGmI09aH/eg9d91cIqfpVpMrSXn/XgFyZuidszS92uRuT+7Ql1xWQWdGid1/6N
-        XQmcxzhyLgKB15hyN
-X-Received: by 2002:a05:6402:33a:b0:461:608f:f3e0 with SMTP id q26-20020a056402033a00b00461608ff3e0mr46482418edw.28.1673018849506;
-        Fri, 06 Jan 2023 07:27:29 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtAz8mhik02/SF7ESF1JSYLiK3xTEHtMqrWtlv2nZq5iQtmDXoJwXywWasRLF8zfQz65AnZ8A==
-X-Received: by 2002:a05:6402:33a:b0:461:608f:f3e0 with SMTP id q26-20020a056402033a00b00461608ff3e0mr46482405edw.28.1673018849301;
-        Fri, 06 Jan 2023 07:27:29 -0800 (PST)
+        bh=7cFjv1lP/ZjmYEIybBWAW8pxgUkHvOZMDXzsmCKt9ko=;
+        b=T3GtrywhdDFe8+z9yvSzt5a3hzuH2Db6W1NBi3m5nJmPqosJiuZuPfVr4USgJkdysK
+         C5HA7UOEIODgOehch/bKvu1FQI1vrRk76r7JehTL16f1mKpPvHCLRAoAZiE+16skFxEb
+         0Dwv4/anrBsafsmb5iytOiGW19BXdaze9JHF5cQnrjDGE+b69IZ+u6NIbrUZV4M160nq
+         lXPFq7PW0ZLLiN2sImlWKXDjPbD4Unw6wPg6HrOJ42l70VX1fIi/VqTXvIct8x2sTWNc
+         /FUbAE0CSUErmSxuEhU1DmYmKP/bR5966xJc34yi7NloAJ9PCAiDsTZ0jiq1N7yktwXg
+         ErFQ==
+X-Gm-Message-State: AFqh2ko4O6/Pfq4CCPOsFPtKOtpdkpRQR0used9fdm68E9X7jP7KLbPp
+        sFNw6dgXQXo8KBkAaGJ/3lcfiuv4q9I7ermDolp3xNopuHlq47WEhfb0Ujh4p9h1Wxc4wy4yhbj
+        MtUsC9aIPwKxVDAbe
+X-Received: by 2002:a17:906:b142:b0:7c1:6fd3:1efa with SMTP id bt2-20020a170906b14200b007c16fd31efamr52148986ejb.28.1673018917736;
+        Fri, 06 Jan 2023 07:28:37 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvYdyDZturEy/KwLBFxjcp4Ho9Ml/tRtnMdah1QWYrijGz+JZ0M04tYC0+uilvtcfJ1Fsaylw==
+X-Received: by 2002:a17:906:b142:b0:7c1:6fd3:1efa with SMTP id bt2-20020a170906b14200b007c16fd31efamr52148977ejb.28.1673018917564;
+        Fri, 06 Jan 2023 07:28:37 -0800 (PST)
 Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id n3-20020aa7c443000000b00486074b4ce4sm580485edr.68.2023.01.06.07.27.27
+        by smtp.gmail.com with ESMTPSA id g23-20020a170906349700b0072a881b21d8sm500220ejb.119.2023.01.06.07.28.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Jan 2023 07:27:28 -0800 (PST)
+        Fri, 06 Jan 2023 07:28:37 -0800 (PST)
 From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
 X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <5e54569c-fde8-02ba-894b-f545872b5cd4@redhat.com>
-Date:   Fri, 6 Jan 2023 16:27:27 +0100
+Message-ID: <2fbe877b-20e8-b8d8-006e-69bd6f7665b5@redhat.com>
+Date:   Fri, 6 Jan 2023 16:28:35 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.0
 Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
         Shakeel Butt <shakeelb@google.com>
-Subject: Re: [PATCH v2 12/24] page_pool: Convert page_pool_alloc_pages() to
- page_pool_alloc_netmem()
+Subject: Re: [PATCH v2 13/24] page_pool: Convert
+ page_pool_dma_sync_for_device() to take a netmem
 Content-Language: en-US
 To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>
 References: <20230105214631.3939268-1-willy@infradead.org>
- <20230105214631.3939268-13-willy@infradead.org>
-In-Reply-To: <20230105214631.3939268-13-willy@infradead.org>
+ <20230105214631.3939268-14-willy@infradead.org>
+In-Reply-To: <20230105214631.3939268-14-willy@infradead.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -87,17 +87,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
-> Add wrappers for page_pool_alloc_pages() and
-> page_pool_dev_alloc_netmem().  Also convert __page_pool_alloc_pages_slow()
-> to __page_pool_alloc_netmem_slow() and __page_pool_alloc_page_order()
-> to __page_pool_alloc_netmem().  __page_pool_get_cached() now returns
-> a netmem.
+> Change all callers.
 > 
 > Signed-off-by: Matthew Wilcox (Oracle)<willy@infradead.org>
 > ---
->   include/net/page_pool.h | 13 ++++++++++++-
->   net/core/page_pool.c    | 39 +++++++++++++++++++--------------------
->   2 files changed, 31 insertions(+), 21 deletions(-)
+>   net/core/page_pool.c | 11 ++++++-----
+>   1 file changed, 6 insertions(+), 5 deletions(-)
 
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
