@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB7E65FB7D
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 07:34:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEA4365FB7A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 07:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231557AbjAFGeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 01:34:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
+        id S231754AbjAFGeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 01:34:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231602AbjAFGeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 01:34:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5482E6E0CF
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 22:34:11 -0800 (PST)
+        with ESMTP id S229697AbjAFGeK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 01:34:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E546E0F8
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 22:34:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA4CFB81CCB
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3110F61D2E
         for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383B9C43396;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7273C433F0;
         Fri,  6 Jan 2023 06:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672986848;
-        bh=DBs1ChKoi6R70LDrGAyxzrYuAdgpnLROcBw9lihUXXY=;
+        s=k20201202; t=1672986849;
+        bh=NJgfx2Az1H2RjyMBh6cjN0iiPzKdywpyAxV/rK2WX7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AO/UsW3L8/86p5BzDU/+3366YV2c0MuMy0JyHPvEnM4XgAoz8z4m8o6IIsHToMMAf
-         CojJT6WbRnQSiXfnq8p5p1hJ50q2YjqyDgFKizziZRu2UyZhASSDrJZ8uMnOhQNr4L
-         /Z1PsUk8mEq0vmh6/0jmvqHWCRrLgC82ecA84uR6o1tTVEurZ3I/QlHzf5+YIshurC
-         4g2s0ga7z2E6llKtMmwsYbCnDGa9EElZuL7Dbd3VsisFXMcD35EolWkPNYIuf5ADyf
-         aeqapmPexJiDycWt3ht1uKj5wK6nptXGoRCENvHjNiZxTGZ8yyMPzBiPsVhRY9zp1K
-         wADqlEQKd/XpQ==
+        b=tvdYaYvWoEDZuBmiIhPZ7tvY5XHZ61koVzRWvCaW1zCJvmyDqMZAwVCsk6sYp9W/a
+         /jXT87CNAS1jg/ysuZF1N0D3MV3smoFFA0OWNalfkPQYhXWom8+SJizClhxko/NuO2
+         7tdZUzIrL6N9U3Y0sHGLWMT2g8KzIvNaP1uoOv68o/fA1aWLboabpO0e3f2HRobtmb
+         h8LEABSeQ4x9HqPKILaXuhZ6/VRspfO9hzdv92is2X5mb8d4RSv8QLGUJt5uPdefAi
+         /7HZE6tVVUK245ZHEo/LhplWVbn72UGKoYnPkyhEKFCKrrYDbAyPzHElNWUmQlQyrm
+         RZTV2UGN+UK6Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jacob.e.keller@intel.com, jiri@resnulli.us,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/9] devlink: protect devlink->dev by the instance lock
-Date:   Thu,  5 Jan 2023 22:33:56 -0800
-Message-Id: <20230106063402.485336-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/9] devlink: always check if the devlink instance is registered
+Date:   Thu,  5 Jan 2023 22:33:57 -0800
+Message-Id: <20230106063402.485336-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230106063402.485336-1-kuba@kernel.org>
 References: <20230106063402.485336-1-kuba@kernel.org>
@@ -53,101 +53,208 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink->dev is assumed to be always valid as long as any
-outstanding reference to the devlink instance exists.
+Always check under the instance lock whether the devlink instance
+is still / already registered.
 
-In prep for weakening of the references take the instance lock.
+This is a no-op for the most part, as the unregistration path currently
+waits for all references. On the init path, however, we may temporarily
+open up a race with netdev code, if netdevs are registered before the
+devlink instance. This is temporary, the next change fixes it, and this
+commit has been split out for the ease of review.
+
+Note that in case of iterating over sub-objects which have their
+own lock (regions and line cards) we assume an implicit dependency
+between those objects existing and devlink unregistration.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/devlink/devl_internal.h | 3 ++-
- net/devlink/leftover.c      | 7 +++----
- net/devlink/netlink.c       | 9 ++++++---
- 3 files changed, 11 insertions(+), 8 deletions(-)
+ net/devlink/core.c          | 19 +++++++++++++++----
+ net/devlink/devl_internal.h |  8 ++++++++
+ net/devlink/leftover.c      | 35 +++++++++++++++++++++++++++++------
+ net/devlink/netlink.c       | 10 ++++++++--
+ 4 files changed, 60 insertions(+), 12 deletions(-)
 
+diff --git a/net/devlink/core.c b/net/devlink/core.c
+index d3b8336946fd..c53c996edf1d 100644
+--- a/net/devlink/core.c
++++ b/net/devlink/core.c
+@@ -67,6 +67,15 @@ void devl_unlock(struct devlink *devlink)
+ }
+ EXPORT_SYMBOL_GPL(devl_unlock);
+ 
++/**
++ * devlink_try_get() - try to obtain a reference on a devlink instance
++ * @devlink: instance to reference
++ *
++ * Obtain a reference on a devlink instance. A reference on a devlink instance
++ * only implies that it's safe to take the instance lock. It does not imply
++ * that the instance is registered, use devl_is_registered() after taking
++ * the instance lock to check registration status.
++ */
+ struct devlink *__must_check devlink_try_get(struct devlink *devlink)
+ {
+ 	if (refcount_inc_not_zero(&devlink->refcount))
+@@ -300,10 +309,12 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
+ 	devlinks_xa_for_each_registered_get(net, index, devlink) {
+ 		WARN_ON(!(devlink->features & DEVLINK_F_RELOAD));
+ 		devl_lock(devlink);
+-		err = devlink_reload(devlink, &init_net,
+-				     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
+-				     DEVLINK_RELOAD_LIMIT_UNSPEC,
+-				     &actions_performed, NULL);
++		err = 0;
++		if (devl_is_registered(devlink))
++			err = devlink_reload(devlink, &init_net,
++					     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
++					     DEVLINK_RELOAD_LIMIT_UNSPEC,
++					     &actions_performed, NULL);
+ 		devl_unlock(devlink);
+ 		devlink_put(devlink);
+ 
 diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-index 14767e809178..6342552e5f99 100644
+index 6342552e5f99..01a00df81d0e 100644
 --- a/net/devlink/devl_internal.h
 +++ b/net/devlink/devl_internal.h
-@@ -131,7 +131,8 @@ struct devlink_gen_cmd {
+@@ -86,6 +86,14 @@ extern struct genl_family devlink_nl_family;
  
- extern const struct genl_small_ops devlink_nl_ops[56];
+ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp);
  
--struct devlink *devlink_get_from_attrs(struct net *net, struct nlattr **attrs);
-+struct devlink *
-+devlink_get_from_attrs_lock(struct net *net, struct nlattr **attrs);
- 
- void devlink_notify_unregister(struct devlink *devlink);
- void devlink_notify_register(struct devlink *devlink);
++static inline bool devl_is_registered(struct devlink *devlink)
++{
++	/* To prevent races the caller must hold the instance lock
++	 * or another lock taken during unregistration.
++	 */
++	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
++}
++
+ /* Netlink */
+ #define DEVLINK_NL_FLAG_NEED_PORT		BIT(0)
+ #define DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT	BIT(1)
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index e6d6c7f74ae7..bec408da4dbe 100644
+index bec408da4dbe..491f821c8b77 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -6314,12 +6314,10 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+@@ -2130,6 +2130,9 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
+ 		int idx = 0;
  
- 	start_offset = state->start_offset;
- 
--	devlink = devlink_get_from_attrs(sock_net(cb->skb->sk), attrs);
-+	devlink = devlink_get_from_attrs_lock(sock_net(cb->skb->sk), attrs);
- 	if (IS_ERR(devlink))
- 		return PTR_ERR(devlink);
- 
--	devl_lock(devlink);
--
- 	if (!attrs[DEVLINK_ATTR_REGION_NAME]) {
- 		NL_SET_ERR_MSG(cb->extack, "No region name provided");
- 		err = -EINVAL;
-@@ -7735,9 +7733,10 @@ devlink_health_reporter_get_from_cb(struct netlink_callback *cb)
- 	struct nlattr **attrs = info->attrs;
- 	struct devlink *devlink;
- 
--	devlink = devlink_get_from_attrs(sock_net(cb->skb->sk), attrs);
-+	devlink = devlink_get_from_attrs_lock(sock_net(cb->skb->sk), attrs);
- 	if (IS_ERR(devlink))
- 		return NULL;
-+	devl_unlock(devlink);
- 
- 	reporter = devlink_health_reporter_get_from_attrs(devlink, attrs);
- 	devlink_put(devlink);
-diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
-index a552e723f4a6..69111746f5d9 100644
---- a/net/devlink/netlink.c
-+++ b/net/devlink/netlink.c
-@@ -82,7 +82,8 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_REGION_DIRECT] = { .type = NLA_FLAG },
- };
- 
--struct devlink *devlink_get_from_attrs(struct net *net, struct nlattr **attrs)
-+struct devlink *
-+devlink_get_from_attrs_lock(struct net *net, struct nlattr **attrs)
- {
- 	struct devlink *devlink;
- 	unsigned long index;
-@@ -96,9 +97,11 @@ struct devlink *devlink_get_from_attrs(struct net *net, struct nlattr **attrs)
- 	devname = nla_data(attrs[DEVLINK_ATTR_DEV_NAME]);
- 
- 	devlinks_xa_for_each_registered_get(net, index, devlink) {
-+		devl_lock(devlink);
- 		if (strcmp(devlink->dev->bus->name, busname) == 0 &&
- 		    strcmp(dev_name(devlink->dev), devname) == 0)
- 			return devlink;
-+		devl_unlock(devlink);
+ 		mutex_lock(&devlink->linecards_lock);
++		if (!devl_is_registered(devlink))
++			goto next_devlink;
++
+ 		list_for_each_entry(linecard, &devlink->linecard_list, list) {
+ 			if (idx < state->idx) {
+ 				idx++;
+@@ -2151,6 +2154,7 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
+ 			}
+ 			idx++;
+ 		}
++next_devlink:
+ 		mutex_unlock(&devlink->linecards_lock);
  		devlink_put(devlink);
  	}
+@@ -7809,6 +7813,12 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
+ 		int idx = 0;
  
-@@ -113,10 +116,10 @@ static int devlink_nl_pre_doit(const struct genl_split_ops *ops,
- 	struct devlink *devlink;
- 	int err;
- 
--	devlink = devlink_get_from_attrs(genl_info_net(info), info->attrs);
-+	devlink = devlink_get_from_attrs_lock(genl_info_net(info), info->attrs);
- 	if (IS_ERR(devlink))
- 		return PTR_ERR(devlink);
--	devl_lock(devlink);
+ 		mutex_lock(&devlink->reporters_lock);
++		if (!devl_is_registered(devlink)) {
++			mutex_unlock(&devlink->reporters_lock);
++			devlink_put(devlink);
++			continue;
++		}
 +
- 	info->user_ptr[0] = devlink;
- 	if (ops->internal_flags & DEVLINK_NL_FLAG_NEED_PORT) {
- 		devlink_port = devlink_port_get_from_info(devlink, info);
+ 		list_for_each_entry(reporter, &devlink->reporter_list,
+ 				    list) {
+ 			if (idx < state->idx) {
+@@ -7830,6 +7840,9 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
+ 		mutex_unlock(&devlink->reporters_lock);
+ 
+ 		devl_lock(devlink);
++		if (!devl_is_registered(devlink))
++			goto next_devlink;
++
+ 		xa_for_each(&devlink->ports, port_index, port) {
+ 			mutex_lock(&port->reporters_lock);
+ 			list_for_each_entry(reporter, &port->reporter_list, list) {
+@@ -7853,6 +7866,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
+ 			}
+ 			mutex_unlock(&port->reporters_lock);
+ 		}
++next_devlink:
+ 		devl_unlock(devlink);
+ 		devlink_put(devlink);
+ 	}
+@@ -12218,7 +12232,8 @@ void devlink_compat_running_version(struct devlink *devlink,
+ 		return;
+ 
+ 	devl_lock(devlink);
+-	__devlink_compat_running_version(devlink, buf, len);
++	if (devl_is_registered(devlink))
++		__devlink_compat_running_version(devlink, buf, len);
+ 	devl_unlock(devlink);
+ }
+ 
+@@ -12227,20 +12242,28 @@ int devlink_compat_flash_update(struct devlink *devlink, const char *file_name)
+ 	struct devlink_flash_update_params params = {};
+ 	int ret;
+ 
+-	if (!devlink->ops->flash_update)
+-		return -EOPNOTSUPP;
++	devl_lock(devlink);
++	if (!devl_is_registered(devlink)) {
++		ret = -ENODEV;
++		goto out_unlock;
++	}
++
++	if (!devlink->ops->flash_update) {
++		ret = -EOPNOTSUPP;
++		goto out_unlock;
++	}
+ 
+ 	ret = request_firmware(&params.fw, file_name, devlink->dev);
+ 	if (ret)
+-		return ret;
++		goto out_unlock;
+ 
+-	devl_lock(devlink);
+ 	devlink_flash_update_begin_notify(devlink);
+ 	ret = devlink->ops->flash_update(devlink, &params, NULL);
+ 	devlink_flash_update_end_notify(devlink);
+-	devl_unlock(devlink);
+ 
+ 	release_firmware(params.fw);
++out_unlock:
++	devl_unlock(devlink);
+ 
+ 	return ret;
+ }
+diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
+index 69111746f5d9..b5b8ac6db2d1 100644
+--- a/net/devlink/netlink.c
++++ b/net/devlink/netlink.c
+@@ -98,7 +98,8 @@ devlink_get_from_attrs_lock(struct net *net, struct nlattr **attrs)
+ 
+ 	devlinks_xa_for_each_registered_get(net, index, devlink) {
+ 		devl_lock(devlink);
+-		if (strcmp(devlink->dev->bus->name, busname) == 0 &&
++		if (devl_is_registered(devlink) &&
++		    strcmp(devlink->dev->bus->name, busname) == 0 &&
+ 		    strcmp(dev_name(devlink->dev), devname) == 0)
+ 			return devlink;
+ 		devl_unlock(devlink);
+@@ -211,7 +212,12 @@ int devlink_nl_instance_iter_dump(struct sk_buff *msg,
+ 
+ 	devlink_dump_for_each_instance_get(msg, state, devlink) {
+ 		devl_lock(devlink);
+-		err = cmd->dump_one(msg, devlink, cb);
++
++		if (devl_is_registered(devlink))
++			err = cmd->dump_one(msg, devlink, cb);
++		else
++			err = 0;
++
+ 		devl_unlock(devlink);
+ 		devlink_put(devlink);
+ 
 -- 
 2.38.1
 
