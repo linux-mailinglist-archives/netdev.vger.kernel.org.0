@@ -2,180 +2,302 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 099AE66028E
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:52:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC7E66602B4
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:05:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235209AbjAFOvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 09:51:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49260 "EHLO
+        id S232923AbjAFPFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 10:05:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234813AbjAFOvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:51:15 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C955243A2C;
-        Fri,  6 Jan 2023 06:51:13 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id qk9so3962664ejc.3;
-        Fri, 06 Jan 2023 06:51:13 -0800 (PST)
+        with ESMTP id S231195AbjAFPFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:05:12 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD5749169
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:05:10 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id 192so2128248ybt.6
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 07:05:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=V/b5xdPDPSWVWTYlzwsggTEuli7HFWe9jfWKH5uUek0=;
-        b=hGfxj6RHbFmBbqewngh/OVICsKnsIBOZRWn/uo9MZ7eC21Wbjmb+elLfxsKArutD3N
-         sGGiFwAfX/0Y8yrOQ4pt5uebEuXonadJOq6VssFGM37UDC3Ph1lcvdx2F0tEuB583YWE
-         EqpNXl0WPCsoLo/0nhc9fcS6l4NTbgWbCY8LfBkPeJEL1g4tT7GDnmHiwxKvZ9CEc0X/
-         ouI8CHjV6ssbvJRCjy1Va6k4+tsz4z83O+kVZsPzBBVCd/ekf52TQOLKvaG2UoDU15eb
-         +DCAcrRsM2sfBkgLQ7xbwMToLrCTm8zx6s7fQdweJ/hoVUXMfrNLs9UE6KtM3VsUiEXy
-         RXKA==
+        d=gooddata.com; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CM1FaVUmSzrg5KC29pIuXxqfSvJ37PjXDe1B0wR1QHY=;
+        b=ijKoQlbB+f2MUtprs5VBWHTGRHTXp8BUoemA7DP3hi6GKUCJsq/TPjSEJoOkP8xprG
+         apNnGNvOEJ1c/VbCU9PNqUA7fwhVhrSbxUABXKZv2tdB6ll5i65yoz1Jv5mCmzWnDVwr
+         Mvs4aBpw72rM3NE9aL9962oj/tcqN4YbViZO4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V/b5xdPDPSWVWTYlzwsggTEuli7HFWe9jfWKH5uUek0=;
-        b=14Yd9SiKbrxx+GhlFKbAmnXtRkny2IOLe7DvXWdt53FwI0Fe0c1bEeRp/RDXq7o63D
-         SX9lhxXJjLQAjhv7tZA+1eJ0+edgi19sSSbCT9MDL/fAExTIhSjCYdc/WMTu6WM3nODM
-         ZP8lfnZMpRFAcqI+nKuPrAKSveopCBk46JnCy68zDNlFnQgyLzI9ceBn3X5gVOpOPfvY
-         SHfIYLbUAl6QU9WWn23vqhoIeXDepE73LcMtkWVqd3M/0obJby/gWqEmxZCmXJVCmhbx
-         7O01ElrwU3JUuL7XpRDgnLZAJ7i+FXZ7ETyGLXzMmGy97yubjA3OGccxgLHjOCkMM9ig
-         0YRw==
-X-Gm-Message-State: AFqh2kpZxdAN3UA3Jcclb4w9Wld26eCgL++YlvT9zMJ6bDJ353VHRaXX
-        eNqmfHW4LQ70HmF7UKkpJT0=
-X-Google-Smtp-Source: AMrXdXuN+SnZKK25ZGLfrRBIQO7EkvwAUBENcaPQvGR0cFStWFWb9Nf9SDOOxviLB+TpgvqBg4Ep1A==
-X-Received: by 2002:a17:907:7ea1:b0:7c4:f752:e95c with SMTP id qb33-20020a1709077ea100b007c4f752e95cmr60991198ejc.1.1673016672337;
-        Fri, 06 Jan 2023 06:51:12 -0800 (PST)
-Received: from skbuf ([188.26.184.223])
-        by smtp.gmail.com with ESMTPSA id a17-20020a170906369100b007c0f2c4cdffsm471192ejc.44.2023.01.06.06.51.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 06:51:12 -0800 (PST)
-Date:   Fri, 6 Jan 2023 16:51:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230106145109.mrv2n3ppcz52jwa2@skbuf>
-References: <20230106101651.1137755-1-lukma@denx.de>
- <20230106101651.1137755-1-lukma@denx.de>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CM1FaVUmSzrg5KC29pIuXxqfSvJ37PjXDe1B0wR1QHY=;
+        b=xVNYVNTyVlq4FN4Bl6TmZa53xfD+9DtzadWejDTIbous8tvdJz2YDFbsz4usqDDMSm
+         nNRPuhLdSQd0EyQkXBcP+FivP0XiJMxafRqpE4VEvaAFRPi6qZjsQY0KgJ8JZ1mQ5Cfs
+         IYhlFN4f1ujrYyF0Tqgm+ErK/9i4EXFpUcRMpZtQRA/zlfCqogMfU2cAhGd2IuqTgoKx
+         kYdKSCQV348f3ExRoNtaT+0ZCMqMbS2bJPk9C7OsAPAbAhSp4CkAwn8PecSD5qdcHqBo
+         eVp0AToaiNphlfVS0cgnhUb+eN537QOFoayAO2IuXXVE0ab4y7uLnvx088ofXobaFI4B
+         UQSg==
+X-Gm-Message-State: AFqh2kq9h+NruQ2/+FKeajA0LPJ5BbQoDUQO+MIO/1SvYG8+9D0zB41G
+        nTGJ5sMx4nQM6jbI8hI5kAG0tsqYR5pq5rrH+2QxrxDJm7GxJQ==
+X-Google-Smtp-Source: AMrXdXs27S4xLarX3D2eTva6k9Ske45/TzRZxfu919gbZNPi1jObzJzDEJZCNGtrIVd75DmEyol7CyCVUzw4UKJ3K9M=
+X-Received: by 2002:a25:c283:0:b0:70c:8bcc:6c94 with SMTP id
+ s125-20020a25c283000000b0070c8bcc6c94mr7493383ybf.135.1673017509741; Fri, 06
+ Jan 2023 07:05:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230106101651.1137755-1-lukma@denx.de>
- <20230106101651.1137755-1-lukma@denx.de>
+References: <CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com>
+ <CANn89iJFmfv569Mu7REiP5OBMscuv8EBSGJqi_7c4pxcJymrKw@mail.gmail.com>
+ <CAK8fFZ7cyhnUsFiCE-mpQF9P_Q7M70RiDbXGNvjA+2Y_PyuQYQ@mail.gmail.com>
+ <CANn89iKeNj4uUAVW2GJUiD5COqvUJjey-4-gpuUTp-er=2hAWg@mail.gmail.com>
+ <CAK8fFZ7cYRkGjUJD2D86G6Jh9YRmP_L+7Ke6CLFSyFmRkoe-Hg@mail.gmail.com> <CANn89i+x+ogekTUieW3DD1wYTxZFrNW9XSLnm1KBy8KEkRYDxA@mail.gmail.com>
+In-Reply-To: <CANn89i+x+ogekTUieW3DD1wYTxZFrNW9XSLnm1KBy8KEkRYDxA@mail.gmail.com>
+From:   Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Date:   Fri, 6 Jan 2023 16:04:44 +0100
+Message-ID: <CAK8fFZ7nWOhutDREJce9+ywnRTH_z4iCkrM2=Hnx00wXqGYxZQ@mail.gmail.com>
+Subject: Re: Network performance regression with linux 6.1.y. Issue bisected
+ to "5eddb24901ee49eee23c0bfce6af2e83fd5679bd" (gro: add support of (hw)gro
+ packets to gro stack)
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, lixiaoyan@google.com, pabeni@redhat.com,
+        davem@davemloft.net, Igor Raits <igor.raits@gooddata.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 06, 2023 at 11:16:49AM +0100, Lukasz Majewski wrote:
-> Different Marvell DSA switches support different size of max frame
-> bytes to be sent. This value corresponds to the memory allocated
-> in switch to store single frame.
-> 
-> For example mv88e6185 supports max 1632 bytes, which is now in-driver
-> standard value. On the other hand - mv88e6250 supports 2048 bytes.
-> To be more interresting - devices supporting jumbo frames - use yet
-> another value (10240 bytes)
-> 
-> As this value is internal and may be different for each switch IC,
-> new entry in struct mv88e6xxx_info has been added to store it.
-> 
-> This commit doesn't change the code functionality - it just provides
-> the max frame size value explicitly - up till now it has been
-> assigned depending on the callback provided by the IC driver
-> (e.g. .set_max_frame_size, .port_set_jumbo_size).
-> 
-> Signed-off-by: Lukasz Majewski <lukma@denx.de>
-> 
-> ---
-> Changes for v2:
-> - Define max_frame_size with default value of 1632 bytes,
-> - Set proper value for the mv88e6250 switch SoC (linkstreet) family
-> 
-> Changes for v3:
-> - Add default value for 1632B of the max frame size (to avoid problems
->   with not defined values)
-> 
-> Changes for v4:
-> - Rework the mv88e6xxx_get_max_mtu() by using per device defined
->   max_frame_size value
-> 
-> - Add WARN_ON_ONCE() when max_frame_size is not defined
-> 
-> - Add description for the new 'max_frame_size' member of mv88e6xxx_info
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 41 ++++++++++++++++++++++++++++----
->  drivers/net/dsa/mv88e6xxx/chip.h |  6 +++++
->  2 files changed, 42 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 242b8b325504..fc6d98c4a029 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -3545,11 +3545,10 @@ static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
->  {
->  	struct mv88e6xxx_chip *chip = ds->priv;
->  
-> -	if (chip->info->ops->port_set_jumbo_size)
-> -		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> -	else if (chip->info->ops->set_max_frame_size)
-> -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> -	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> +	WARN_ON_ONCE(!chip->info->max_frame_size);
-> +
-> +	return chip->info->max_frame_size - VLAN_ETH_HLEN - EDSA_HLEN
-> +		- ETH_FCS_LEN;
+OK, I re-tested it with a new version of patch and it still works.
 
-VLAN_ETH_HLEN (18) + EDSA_HLEN (8) + ETH_FCS_LEN (4) = 30
 
->  }
->  
->  static int mv88e6xxx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-> @@ -4955,6 +4954,7 @@ static const struct mv88e6xxx_ops mv88e6250_ops = {
->  	.avb_ops = &mv88e6352_avb_ops,
->  	.ptp_ops = &mv88e6250_ptp_ops,
->  	.phylink_get_caps = mv88e6250_phylink_get_caps,
-> +	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
->  };
->  
->  static const struct mv88e6xxx_ops mv88e6290_ops = {
-> @@ -5543,6 +5543,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
->  		.num_internal_phys = 5,
->  		.max_vid = 4095,
->  		.max_sid = 63,
-> +		.max_frame_size = 1522,
 
-1522 - 30 = 1492.
+p=C3=A1 6. 1. 2023 v 15:04 odes=C3=ADlatel Eric Dumazet <edumazet@google.co=
+m> napsal:
+>
+> On Thu, Jan 5, 2023 at 8:56 PM Jaroslav Pulchart
+> <jaroslav.pulchart@gooddata.com> wrote:
+> >
+> > I can and I did. Your "Random guess" patch fix the problem and speed
+> > is like with 6.0.y:
+> >
+> >   # git clone ...
+> >   ...
+> >   Receiving objects: 100% (571306/571306), 350.58 MiB | 67.51 MiB/s, do=
+ne.
+> >
+> > Thanks,
+>
+> Excellent :)
+>
+> I will move the new test out of the fast path though, in a section we
+> are sure gso_size is !=3D 0.
+>
+> Something like this.
+>
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index fd8c6a7e8d3e2e6b439109d0089f44a547c7347e..506f83d715f873c9bc3727e28=
+ace71e00fa79d2f
+> 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -505,8 +505,9 @@ static enum gro_result dev_gro_receive(struct
+> napi_struct *napi, struct sk_buff
+>         NAPI_GRO_CB(skb)->count =3D 1;
+>         if (unlikely(skb_is_gso(skb))) {
+>                 NAPI_GRO_CB(skb)->count =3D skb_shinfo(skb)->gso_segs;
+> -               /* Only support TCP at the moment. */
+> -               if (!skb_is_gso_tcp(skb))
+> +               /* Only support TCP and non DODGY users. */
+> +               if (!skb_is_gso_tcp(skb) ||
+> +                   (skb_shinfo(skb)->gso_type & SKB_GSO_DODGY))
+>                         NAPI_GRO_CB(skb)->flush =3D 1;
+>         }
+>
+>
+>
+> > JP
+> >
+> > =C4=8Dt 5. 1. 2023 v 19:49 odes=C3=ADlatel Eric Dumazet <edumazet@googl=
+e.com> napsal:
+> > >
+> > > On Thu, Jan 5, 2023 at 6:54 PM Jaroslav Pulchart
+> > > <jaroslav.pulchart@gooddata.com> wrote:
+> > > >
+> > > > It is at KVM based VMs "CentOS 9 Stream" and "CentOS 8 Stream" usin=
+g
+> > > > upstream kernel 6.1.y. Hosted on Dell PowerEdge 7525 servers (2x AM=
+D
+> > > > 74F3) and OS CentOS 9 Stream again with upstream kernel 6.1.y or
+> > > > 6.0.y.
+> > > >
+> > > > # ethtool -k eth0
+> > > > Features for eth0:
+> > > > rx-checksumming: on [fixed]
+> > > > tx-checksumming: on
+> > > > tx-checksum-ipv4: off [fixed]
+> > > > tx-checksum-ip-generic: on
+> > > > tx-checksum-ipv6: off [fixed]
+> > > > tx-checksum-fcoe-crc: off [fixed]
+> > > > tx-checksum-sctp: off [fixed]
+> > > > scatter-gather: on
+> > > > tx-scatter-gather: on
+> > > > tx-scatter-gather-fraglist: off [fixed]
+> > > > tcp-segmentation-offload: on
+> > > > tx-tcp-segmentation: on
+> > > > tx-tcp-ecn-segmentation: on
+> > > > tx-tcp-mangleid-segmentation: off
+> > > > tx-tcp6-segmentation: on
+> > > > generic-segmentation-offload: on
+> > > > generic-receive-offload: on
+> > > > large-receive-offload: off [fixed]
+> > > > rx-vlan-offload: off [fixed]
+> > > > tx-vlan-offload: off [fixed]
+> > > > ntuple-filters: off [fixed]
+> > > > receive-hashing: off [fixed]
+> > > > highdma: on [fixed]
+> > > > rx-vlan-filter: on [fixed]
+> > > > vlan-challenged: off [fixed]
+> > > > tx-lockless: off [fixed]
+> > > > netns-local: off [fixed]
+> > > > tx-gso-robust: on [fixed]
+> > > > tx-fcoe-segmentation: off [fixed]
+> > > > tx-gre-segmentation: off [fixed]
+> > > > tx-gre-csum-segmentation: off [fixed]
+> > > > tx-ipxip4-segmentation: off [fixed]
+> > > > tx-ipxip6-segmentation: off [fixed]
+> > > > tx-udp_tnl-segmentation: off [fixed]
+> > > > tx-udp_tnl-csum-segmentation: off [fixed]
+> > > > tx-gso-partial: off [fixed]
+> > > > tx-tunnel-remcsum-segmentation: off [fixed]
+> > > > tx-sctp-segmentation: off [fixed]
+> > > > tx-esp-segmentation: off [fixed]
+> > > > tx-udp-segmentation: off [fixed]
+> > > > tx-gso-list: off [fixed]
+> > > > fcoe-mtu: off [fixed]
+> > > > tx-nocache-copy: off
+> > > > loopback: off [fixed]
+> > > > rx-fcs: off [fixed]
+> > > > rx-all: off [fixed]
+> > > > tx-vlan-stag-hw-insert: off [fixed]
+> > > > rx-vlan-stag-hw-parse: off [fixed]
+> > > > rx-vlan-stag-filter: off [fixed]
+> > > > l2-fwd-offload: off [fixed]
+> > > > hw-tc-offload: off [fixed]
+> > > > esp-hw-offload: off [fixed]
+> > > > esp-tx-csum-hw-offload: off [fixed]
+> > > > rx-udp_tunnel-port-offload: off [fixed]
+> > > > tls-hw-tx-offload: off [fixed]
+> > > > tls-hw-rx-offload: off [fixed]
+> > > > rx-gro-hw: on
+> > > > tls-hw-record: off [fixed]
+> > > > rx-gro-list: off
+> > > > macsec-hw-offload: off [fixed]
+> > > > rx-udp-gro-forwarding: off
+> > > > hsr-tag-ins-offload: off [fixed]
+> > > > hsr-tag-rm-offload: off [fixed]
+> > > > hsr-fwd-offload: off [fixed]
+> > > > hsr-dup-offload: off [fixed]
+> > > >
+> > > > # ethtool -i eth0
+> > > > driver: virtio_net
+> > > > version: 1.0.0
+> > > > firmware-version:
+> > > > expansion-rom-version:
+> > > > bus-info: 0000:03:00.0
+> > > > supports-statistics: yes
+> > > > supports-test: no
+> > > > supports-eeprom-access: no
+> > > > supports-register-dump: no
+> > > > supports-priv-flags: no
+> > >
+> > > Random guess, can you try:
+> > >
+> > > diff --git a/net/core/gro.c b/net/core/gro.c
+> > > index fd8c6a7e8d3e2e6b439109d0089f44a547c7347e..f162674e7ae1bdf96bcbf=
+7e1ed7326729d862f9a
+> > > 100644
+> > > --- a/net/core/gro.c
+> > > +++ b/net/core/gro.c
+> > > @@ -500,7 +500,8 @@ static enum gro_result dev_gro_receive(struct
+> > > napi_struct *napi, struct sk_buff
+> > >         BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed)=
+,
+> > >                                         sizeof(u32))); /* Avoid slow
+> > > unaligned acc */
+> > >         *(u32 *)&NAPI_GRO_CB(skb)->zeroed =3D 0;
+> > > -       NAPI_GRO_CB(skb)->flush =3D skb_has_frag_list(skb);
+> > > +       NAPI_GRO_CB(skb)->flush =3D skb_has_frag_list(skb) ||
+> > > +                                 (skb_shinfo(skb)->gso_type & SKB_GS=
+O_DODGY);
+> > >         NAPI_GRO_CB(skb)->is_atomic =3D 1;
+> > >         NAPI_GRO_CB(skb)->count =3D 1;
+> > >         if (unlikely(skb_is_gso(skb))) {
+> > >
+> > >
+> > >
+> > > >
+> > > > =C4=8Dt 5. 1. 2023 v 18:43 odes=C3=ADlatel Eric Dumazet <edumazet@g=
+oogle.com> napsal:
+> > > > >
+> > > > > On Thu, Jan 5, 2023 at 6:37 PM Jaroslav Pulchart
+> > > > > <jaroslav.pulchart@gooddata.com> wrote:
+> > > > > >
+> > > > > > Hello,
+> > > > > >
+> > > > > > I would like to report a 6.1,y regression in a network performa=
+nce
+> > > > > > observed when using "git clone".
+> > > > > >
+> > > > > > BAD: "git clone" speed with kernel 6.1,y:
+> > > > > >    # git clone git@github.com:..../.....git
+> > > > > >    ...
+> > > > > >    Receiving objects:   8% (47797/571306), 20.69 MiB | 3.27 MiB=
+/s
+> > > > > >
+> > > > > > GOOD: "git clone" speed with kernel 6.0,y:
+> > > > > >    # git clone git@github.com:..../.....git
+> > > > > >    ...
+> > > > > >    Receiving objects:  72% (411341/571306), 181.05 MiB | 60.27 =
+MiB/s
+> > > > > >
+> > > > > > I bisected the issue to a commit
+> > > > > > 5eddb24901ee49eee23c0bfce6af2e83fd5679bd "gro: add support of (=
+hw)gro
+> > > > > > packets to gro stack". Reverting it from 6.1.y branch makes the=
+ git
+> > > > > > clone fast like with 6.0.y.
+> > > > > >
+> > > > >
+> > > > > Hmm, please provide more information.
+> > > > >
+> > > > > NIC used ? (ethtool -i eth0)
+> > > > >
+> > > > > ethtool -k eth0  # replace by your netdev name
+> > > > >
+> > > > > And packet captures would be nice (with and without the patch)
+> > > > >
+> > > > > Thanks.
+> > > >
+> > > >
+> > > >
+> > > > --
+> > > > Jaroslav Pulchart
+> > > > Sr. Principal SW Engineer
+> > > > GoodData
+> >
+> >
+> >
+> > --
+> > Jaroslav Pulchart
+> > Sr. Principal SW Engineer
+> > GoodData
 
-I don't believe that there are switches which don't support the standard
-MTU of 1500 ?!
 
->  		.port_base_addr = 0x10,
->  		.phy_base_addr = 0x0,
->  		.global1_addr = 0x1b,
 
-Note that I see this behavior isn't new. But I've simulated it, and it
-will produce the following messages on probe:
-
-[    7.425752] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-[    7.437516] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 0
-[    7.588585] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-[    7.600433] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 1
-[    7.752613] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-[    7.764457] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 2
-[    7.900771] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-[    7.912501] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 3
-
-I wonder, shouldn't we first fix that, and apply this patch set afterwards?
+--=20
+Jaroslav Pulchart
+Sr. Principal SW Engineer
+GoodData
