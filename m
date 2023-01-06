@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C2FD66068C
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 19:44:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3EA566068E
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 19:45:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235707AbjAFSof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 13:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
+        id S235877AbjAFSoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 13:44:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235021AbjAFSod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 13:44:33 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4CC7DE0C;
-        Fri,  6 Jan 2023 10:44:31 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id jo4so5405761ejb.7;
-        Fri, 06 Jan 2023 10:44:31 -0800 (PST)
+        with ESMTP id S231376AbjAFSox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 13:44:53 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8E77F460;
+        Fri,  6 Jan 2023 10:44:51 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id ud5so5435680ejc.4;
+        Fri, 06 Jan 2023 10:44:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LOHQNzxyhCyp/pSsiErbMwRBkDPtMseMp+89CcI9VqM=;
-        b=FdG8S4Uph0Sqckcw+nAPQ+v/wupAiMBfKaVZ+TuvXgYgV6IWLW1xAbQCvWOaMhtRzr
-         TuibAGavPRxiODnTpEccGgGtMdupG2NIQGKKbj0odDTVMoV05orATDJ6k+IxGE8UADz9
-         WI1M/Da6Ft5u4y1bQpkcV5ucA/doPGiHrxPGz5SPp7Pdi+vkAC/l4s6o7o1oCcY1kZa4
-         Cm8kYoE+WWG2aowUnp3hIaAyky2+EYGdctAZEN4v4g1w3aKz9SVZx7anDtYYXR5syphA
-         L09+JBhlM2qBETiIKqa8c2p8v/WwzNAqpLdXfB87oVmvuI1D2GuylPBcmndsW13uY9mZ
-         F42g==
+        bh=yypWqVKEdta3bMqoC2xwqPUCUlhlVjx/ezyD5c6nTGQ=;
+        b=Se/+yCHYmD3Mxye56zU17P+jUcMzqaj7+Y0eWND/9SDghFrhz9p9J0aW8V1L818j+H
+         XGQUfi7mCxdPyNJY8gH0q5yQUj8NagxK+S1NAux8IE1Tdqb6JDFnYiYphzo1wBD1NzsD
+         yt67Ddskp/EY4jJ8MDcMo4uCHZoyHhAdBQpM/YH6iGH6GSy4I8heZn1Lj2bSEIBe6yMe
+         oufddMRTQda1oHec95evdLOv+sv89qWcjPgB36k/vfU8jbklvv0guVT3YK+wveMHMrCB
+         zi2aE4dWLXqSaM4/W53DoaDMnJd3r1MIMN4m+y0cvERrz6eox2QnAT3LVmiX2zMjEsop
+         EzLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LOHQNzxyhCyp/pSsiErbMwRBkDPtMseMp+89CcI9VqM=;
-        b=2QjuaIkJAG6NVTC8XfWkJG6y5HOy8u2V0hcg1PUwJShUeRQ1zvnAFBD14M5FMmBpFx
-         RmtFAENBlYQgj2YVadFKFrKYUZaT9Lzpvye+PGV1GZ7H0HX0AuSt2Cp2R3Dz3CTs3Yoy
-         YJChN16kluNwXjkMKlARXqF58p9wwQ/5V35EVjw1TGm7Fy/PXVnt/LTwKEk5mP2atbWK
-         mg6CiREvZUwBFFXUdIRXaIk7LlZD5+81ERWizbrt0c4KXbxtmaBTCvIfX1lbozXp61j1
-         VX2aNzBjU85HPKyTd0KuGD13xBhTLtWghdcpT0/mi+dboEIjjDe7xxh+Oit4DUDnL215
-         2z4g==
-X-Gm-Message-State: AFqh2kq/KqRYtrRew/68J36bHUKCk5dS3OOPtxtztmZuBsZgWulfGBwc
-        jx3tzS2EkMXa6lFbXcQOEIU=
-X-Google-Smtp-Source: AMrXdXuGyx2GBepkiY2jqemcUfKvo3hU84Ujw4Qu1XOxj8Z/HiagRN3jfmWKPN+mhOUKpR+FRgshHg==
-X-Received: by 2002:a17:906:398f:b0:7fd:ec83:b8b9 with SMTP id h15-20020a170906398f00b007fdec83b8b9mr46747312eje.44.1673030669715;
-        Fri, 06 Jan 2023 10:44:29 -0800 (PST)
+        bh=yypWqVKEdta3bMqoC2xwqPUCUlhlVjx/ezyD5c6nTGQ=;
+        b=h1/jcd0h/kKgYTg+zxNz1+WZzPeD090P9tN5DSSGVqBs5Ao6Ey/I/GrG3TcddClsfk
+         qrK18/b5EgaX169hTLPIJqjW4vEA0deLVSz3F750VQz2SoLBlO10SOnKBuz7Wqh7cxFN
+         Yb6xnUvIg6ZFf97V4fmlByyP2ARfFjQAohgAmBc0cfHacydZi5QLvIYUvNZQ2ShOU+W/
+         1R2mks3PgIu6ZqREjcD/3GEKrGGhQjDhexAku0EsAZXcAD/TNaIy1iF+1IZ0Lu9mdyJm
+         jL0UcPzE8WTDToPBL6IDvmdAdD8FxS8iLKWFxTxsTS2oWG4L3nLuuNYlBYzAC/4nF1N3
+         VRXw==
+X-Gm-Message-State: AFqh2koHJ85Ipi47TumxPBo9JWt3sUou9QX6DLX2Xy3kCkHys452RcGJ
+        fXWMKXj/4rLlF7pgxYwcMig=
+X-Google-Smtp-Source: AMrXdXvBGQdTUol+aIinSr37hKMMSy/ae+6v14JOi1Xgacr4Ss+U7cmB7ts8JYSuN/UlKT29wMNQkw==
+X-Received: by 2002:a17:906:5048:b0:7c0:b770:df94 with SMTP id e8-20020a170906504800b007c0b770df94mr48988079ejk.63.1673030690354;
+        Fri, 06 Jan 2023 10:44:50 -0800 (PST)
 Received: from gvm01 ([91.199.164.40])
-        by smtp.gmail.com with ESMTPSA id lj1-20020a170906f9c100b0078d22b0bcf2sm629607ejb.168.2023.01.06.10.44.27
+        by smtp.gmail.com with ESMTPSA id sh39-20020a1709076ea700b007c0e6d6bd10sm638798ejc.132.2023.01.06.10.44.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 10:44:29 -0800 (PST)
-Date:   Fri, 6 Jan 2023 19:44:23 +0100
+        Fri, 06 Jan 2023 10:44:49 -0800 (PST)
+Date:   Fri, 6 Jan 2023 19:44:44 +0100
 From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -63,9 +63,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         sbhatta@marvell.com, linux-doc@vger.kernel.org,
         wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
         gal@nvidia.com, gustavoars@kernel.org
-Subject: [PATCH v2 net-next 1/5] net/ethtool: add netlink interface for the
- PLCA RS
-Message-ID: <7d75e759e1073aad0fcc4571b6bc93a6667d104d.1673030528.git.piergiorgio.beruto@gmail.com>
+Subject: [PATCH v2 net-next 2/5] drivers/net/phy: add the link modes for the
+ 10BASE-T1S Ethernet PHY
+Message-ID: <d7d3501203849891c884e8b7b7803f1cedfa1c97.1673030528.git.piergiorgio.beruto@gmail.com>
 References: <cover.1673030528.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -81,735 +81,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for configuring the PLCA Reconciliation Sublayer on
-multi-drop PHYs that support IEEE802.3cg-2019 Clause 148 (e.g.,
-10BASE-T1S). This patch adds the appropriate netlink interface
-to ethtool.
+This patch adds the link modes for the IEEE 802.3cg Clause 147 10BASE-T1S
+Ethernet PHY. According to the specifications, the 10BASE-T1S supports
+Point-To-Point Full-Duplex, Point-To-Point Half-Duplex and/or
+Point-To-Multipoint (AKA Multi-Drop) Half-Duplex operations.
 
 Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 ---
- Documentation/networking/ethtool-netlink.rst | 138 +++++++++
- MAINTAINERS                                  |   6 +
- include/linux/ethtool.h                      |  12 +
- include/linux/phy.h                          |  57 ++++
- include/uapi/linux/ethtool_netlink.h         |  25 ++
- net/ethtool/Makefile                         |   2 +-
- net/ethtool/netlink.c                        |  29 ++
- net/ethtool/netlink.h                        |   6 +
- net/ethtool/plca.c                           | 277 +++++++++++++++++++
- 9 files changed, 551 insertions(+), 1 deletion(-)
- create mode 100644 net/ethtool/plca.c
+ drivers/net/phy/phy-core.c   |  5 ++++-
+ drivers/net/phy/phy_device.c | 14 ++++++++++++++
+ drivers/net/phy/phylink.c    |  6 +++++-
+ include/linux/phy.h          | 14 ++++++++++++++
+ include/uapi/linux/ethtool.h |  3 +++
+ net/ethtool/common.c         |  8 ++++++++
+ 6 files changed, 48 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index f10f8eb44255..c59b542eb693 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -1716,6 +1716,141 @@ being used. Current supported options are toeplitz, xor or crc32.
- ETHTOOL_A_RSS_INDIR attribute returns RSS indrection table where each byte
- indicates queue number.
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 5d08c627a516..a64186dc53f8 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -13,7 +13,7 @@
+  */
+ const char *phy_speed_to_str(int speed)
+ {
+-	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 99,
++	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 102,
+ 		"Enum ethtool_link_mode_bit_indices and phylib are out of sync. "
+ 		"If a speed or mode has been added please update phy_speed_to_str "
+ 		"and the PHY settings array.\n");
+@@ -260,6 +260,9 @@ static const struct phy_setting settings[] = {
+ 	PHY_SETTING(     10, FULL,     10baseT_Full		),
+ 	PHY_SETTING(     10, HALF,     10baseT_Half		),
+ 	PHY_SETTING(     10, FULL,     10baseT1L_Full		),
++	PHY_SETTING(     10, FULL,     10baseT1S_Full		),
++	PHY_SETTING(     10, HALF,     10baseT1S_Half		),
++	PHY_SETTING(     10, HALF,     10baseT1S_P2MP_Half	),
+ };
+ #undef PHY_SETTING
  
-+PLCA_GET_CFG
-+============
-+
-+Gets the IEEE 802.3cg-2019 Clause 148 Physical Layer Collision Avoidance
-+(PLCA) Reconciliation Sublayer (RS) attributes.
-+
-+Request contents:
-+
-+  =====================================  ======  ==========================
-+  ``ETHTOOL_A_PLCA_HEADER``              nested  request header
-+  =====================================  ======  ==========================
-+
-+Kernel response contents:
-+
-+  ======================================  ======  =============================
-+  ``ETHTOOL_A_PLCA_HEADER``               nested  reply header
-+  ``ETHTOOL_A_PLCA_VERSION``              u16     Supported PLCA management
-+                                                  interface standard/version
-+  ``ETHTOOL_A_PLCA_ENABLED``              u8      PLCA Admin State
-+  ``ETHTOOL_A_PLCA_NODE_ID``              u32     PLCA unique local node ID
-+  ``ETHTOOL_A_PLCA_NODE_CNT``             u32     Number of PLCA nodes on the
-+                                                  network, including the
-+                                                  coordinator
-+  ``ETHTOOL_A_PLCA_TO_TMR``               u32     Transmit Opportunity Timer
-+                                                  value in bit-times (BT)
-+  ``ETHTOOL_A_PLCA_BURST_CNT``            u32     Number of additional packets
-+                                                  the node is allowed to send
-+                                                  within a single TO
-+  ``ETHTOOL_A_PLCA_BURST_TMR``            u32     Time to wait for the MAC to
-+                                                  transmit a new frame before
-+                                                  terminating the burst
-+  ======================================  ======  =============================
-+
-+When set, the optional ``ETHTOOL_A_PLCA_VERSION`` attribute indicates which
-+standard and version the PLCA management interface complies to. When not set,
-+the interface is vendor-specific and (possibly) supplied by the driver.
-+The OPEN Alliance SIG specifies a standard register map for 10BASE-T1S PHYs
-+embedding the PLCA Reconcialiation Sublayer. See "10BASE-T1S PLCA Management
-+Registers" at https://www.opensig.org/about/specifications/.
-+
-+When set, the optional ``ETHTOOL_A_PLCA_ENABLED`` attribute indicates the
-+administrative state of the PLCA RS. When not set, the node operates in "plain"
-+CSMA/CD mode. This option is corresponding to ``IEEE 802.3cg-2019`` 30.16.1.1.1
-+aPLCAAdminState / 30.16.1.2.1 acPLCAAdminControl.
-+
-+When set, the optional ``ETHTOOL_A_PLCA_NODE_ID`` attribute indicates the
-+configured local node ID of the PHY. This ID determines which transmit
-+opportunity (TO) is reserved for the node to transmit into. This option is
-+corresponding to ``IEEE 802.3cg-2019`` 30.16.1.1.4 aPLCALocalNodeID. The valid
-+range for this attribute is [0 .. 255] where 255 means "not configured".
-+
-+When set, the optional ``ETHTOOL_A_PLCA_NODE_CNT`` attribute indicates the
-+configured maximum number of PLCA nodes on the mixing-segment. This number
-+determines the total number of transmit opportunities generated during a
-+PLCA cycle. This attribute is relevant only for the PLCA coordinator, which is
-+the node with aPLCALocalNodeID set to 0. Follower nodes ignore this setting.
-+This option is corresponding to ``IEEE 802.3cg-2019`` 30.16.1.1.3
-+aPLCANodeCount. The valid range for this attribute is [1 .. 255].
-+
-+When set, the optional ``ETHTOOL_A_PLCA_TO_TMR`` attribute indicates the
-+configured value of the transmit opportunity timer in bit-times. This value
-+must be set equal across all nodes sharing the medium for PLCA to work
-+correctly. This option is corresponding to ``IEEE 802.3cg-2019`` 30.16.1.1.5
-+aPLCATransmitOpportunityTimer. The valid range for this attribute is
-+[0 .. 255].
-+
-+When set, the optional ``ETHTOOL_A_PLCA_BURST_CNT`` attribute indicates the
-+configured number of extra packets that the node is allowed to send during a
-+single transmit opportunity. By default, this attribute is 0, meaning that
-+the node can only send a sigle frame per TO. When greater than 0, the PLCA RS
-+keeps the TO after any transmission, waiting for the MAC to send a new frame
-+for up to aPLCABurstTimer BTs. This can only happen a number of times per PLCA
-+cycle up to the value of this parameter. After that, the burst is over and the
-+normal counting of TOs resumes. This option is corresponding to
-+``IEEE 802.3cg-2019`` 30.16.1.1.6 aPLCAMaxBurstCount. The valid range for this
-+attribute is [0 .. 255].
-+
-+When set, the optional ``ETHTOOL_A_PLCA_BURST_TMR`` attribute indicates how
-+many bit-times the PLCA RS waits for the MAC to initiate a new transmission
-+when aPLCAMaxBurstCount is greater than 0. If the MAC fails to send a new
-+frame within this time, the burst ends and the counting of TOs resumes.
-+Otherwise, the new frame is sent as part of the current burst. This option
-+is corresponding to ``IEEE 802.3cg-2019`` 30.16.1.1.7 aPLCABurstTimer. The
-+valid range for this attribute is [0 .. 255]. Although, the value should be
-+set greater than the Inter-Frame-Gap (IFG) time of the MAC (plus some margin)
-+for PLCA burst mode to work as intended.
-+
-+PLCA_SET_CFG
-+============
-+
-+Sets PLCA RS parameters.
-+
-+Request contents:
-+
-+  ======================================  ======  =============================
-+  ``ETHTOOL_A_PLCA_HEADER``               nested  request header
-+  ``ETHTOOL_A_PLCA_ENABLED``              u8      PLCA Admin State
-+  ``ETHTOOL_A_PLCA_NODE_ID``              u8      PLCA unique local node ID
-+  ``ETHTOOL_A_PLCA_NODE_CNT``             u8      Number of PLCA nodes on the
-+                                                  netkork, including the
-+                                                  coordinator
-+  ``ETHTOOL_A_PLCA_TO_TMR``               u8      Transmit Opportunity Timer
-+                                                  value in bit-times (BT)
-+  ``ETHTOOL_A_PLCA_BURST_CNT``            u8      Number of additional packets
-+                                                  the node is allowed to send
-+                                                  within a single TO
-+  ``ETHTOOL_A_PLCA_BURST_TMR``            u8      Time to wait for the MAC to
-+                                                  transmit a new frame before
-+                                                  terminating the burst
-+  ======================================  ======  =============================
-+
-+For a description of each attribute, see ``PLCA_GET_CFG``.
-+
-+PLCA_GET_STATUS
-+===============
-+
-+Gets PLCA RS status information.
-+
-+Request contents:
-+
-+  =====================================  ======  ==========================
-+  ``ETHTOOL_A_PLCA_HEADER``              nested  request header
-+  =====================================  ======  ==========================
-+
-+Kernel response contents:
-+
-+  ======================================  ======  =============================
-+  ``ETHTOOL_A_PLCA_HEADER``               nested  reply header
-+  ``ETHTOOL_A_PLCA_STATUS``               u8      PLCA RS operational status
-+  ======================================  ======  =============================
-+
-+When set, the ``ETHTOOL_A_PLCA_STATUS`` attribute indicates whether the node is
-+detecting the presence of the BEACON on the network. This flag is
-+corresponding to ``IEEE 802.3cg-2019`` 30.16.1.1.2 aPLCAStatus.
-+
- Request translation
- ===================
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 716870a4499c..8e48b3cec5e7 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -45,6 +45,9 @@ EXPORT_SYMBOL_GPL(phy_basic_features);
+ __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_basic_t1_features) __ro_after_init;
+ EXPORT_SYMBOL_GPL(phy_basic_t1_features);
  
-@@ -1817,4 +1952,7 @@ are netlink only.
-   n/a                                 ``ETHTOOL_MSG_PHC_VCLOCKS_GET``
-   n/a                                 ``ETHTOOL_MSG_MODULE_GET``
-   n/a                                 ``ETHTOOL_MSG_MODULE_SET``
-+  n/a                                 ``ETHTOOL_MSG_PLCA_GET_CFG``
-+  n/a                                 ``ETHTOOL_MSG_PLCA_SET_CFG``
-+  n/a                                 ``ETHTOOL_MSG_PLCA_GET_STATUS``
-   =================================== =====================================
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7f0b7181e60a..8faa15c360e3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16613,6 +16613,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
- F:	drivers/iio/chemical/pms7003.c
- 
-+PLCA RECONCILIATION SUBLAYER (IEEE802.3 Clause 148)
-+M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	net/ethtool/plca.c
++__ETHTOOL_DECLARE_LINK_MODE_MASK(phy_basic_t1s_p2mp_features) __ro_after_init;
++EXPORT_SYMBOL_GPL(phy_basic_t1s_p2mp_features);
 +
- PLDMFW LIBRARY
- M:	Jacob Keller <jacob.e.keller@intel.com>
- S:	Maintained
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 9e0a76fc7de9..d0da303f6634 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -802,12 +802,17 @@ int ethtool_virtdev_set_link_ksettings(struct net_device *dev,
+ __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_gbit_features) __ro_after_init;
+ EXPORT_SYMBOL_GPL(phy_gbit_features);
  
- struct phy_device;
- struct phy_tdr_config;
-+struct phy_plca_cfg;
-+struct phy_plca_status;
+@@ -98,6 +101,12 @@ const int phy_basic_t1_features_array[3] = {
+ };
+ EXPORT_SYMBOL_GPL(phy_basic_t1_features_array);
  
- /**
-  * struct ethtool_phy_ops - Optional PHY device options
-  * @get_sset_count: Get number of strings that @get_strings will write.
-  * @get_strings: Return a set of strings that describe the requested objects
-  * @get_stats: Return extended statistics about the PHY device.
-+ * @get_plca_cfg: Return PLCA configuration.
-+ * @set_plca_cfg: Set PLCA configuration.
-+ * @get_plca_status: Get PLCA configuration.
-  * @start_cable_test: Start a cable test
-  * @start_cable_test_tdr: Start a Time Domain Reflectometry cable test
-  *
-@@ -819,6 +824,13 @@ struct ethtool_phy_ops {
- 	int (*get_strings)(struct phy_device *dev, u8 *data);
- 	int (*get_stats)(struct phy_device *dev,
- 			 struct ethtool_stats *stats, u64 *data);
-+	int (*get_plca_cfg)(struct phy_device *dev,
-+			    struct phy_plca_cfg *plca_cfg);
-+	int (*set_plca_cfg)(struct phy_device *dev,
-+			    const struct phy_plca_cfg *plca_cfg,
-+			    struct netlink_ext_ack *extack);
-+	int (*get_plca_status)(struct phy_device *dev,
-+			       struct phy_plca_status *plca_st);
- 	int (*start_cable_test)(struct phy_device *phydev,
- 				struct netlink_ext_ack *extack);
- 	int (*start_cable_test_tdr)(struct phy_device *phydev,
++const int phy_basic_t1s_p2mp_features_array[2] = {
++	ETHTOOL_LINK_MODE_TP_BIT,
++	ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
++};
++EXPORT_SYMBOL_GPL(phy_basic_t1s_p2mp_features_array);
++
+ const int phy_gbit_features_array[2] = {
+ 	ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
+ 	ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
+@@ -138,6 +147,11 @@ static void features_init(void)
+ 			       ARRAY_SIZE(phy_basic_t1_features_array),
+ 			       phy_basic_t1_features);
+ 
++	/* 10 half, P2MP, TP */
++	linkmode_set_bit_array(phy_basic_t1s_p2mp_features_array,
++			       ARRAY_SIZE(phy_basic_t1s_p2mp_features_array),
++			       phy_basic_t1s_p2mp_features);
++
+ 	/* 10/100 half/full + 1000 half/full */
+ 	linkmode_set_bit_array(phy_basic_ports_array,
+ 			       ARRAY_SIZE(phy_basic_ports_array),
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 09cc65c0da93..319790221d7f 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -241,12 +241,16 @@ void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps)
+ 	if (caps & MAC_ASYM_PAUSE)
+ 		__set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes);
+ 
+-	if (caps & MAC_10HD)
++	if (caps & MAC_10HD) {
+ 		__set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, linkmodes);
++		__set_bit(ETHTOOL_LINK_MODE_10baseT1S_Half_BIT, linkmodes);
++		__set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT, linkmodes);
++	}
+ 
+ 	if (caps & MAC_10FD) {
+ 		__set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, linkmodes);
+ 		__set_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT, linkmodes);
++		__set_bit(ETHTOOL_LINK_MODE_10baseT1S_Full_BIT, linkmodes);
+ 	}
+ 
+ 	if (caps & MAC_100HD) {
 diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 71eeb4e3b1fd..c2c04b989cc2 100644
+index c2c04b989cc2..1e87d3f05209 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -765,6 +765,63 @@ struct phy_tdr_config {
+@@ -45,6 +45,7 @@
+ 
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_basic_features) __ro_after_init;
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_basic_t1_features) __ro_after_init;
++extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_basic_t1s_p2mp_features) __ro_after_init;
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_gbit_features) __ro_after_init;
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_gbit_fibre_features) __ro_after_init;
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_gbit_all_ports_features) __ro_after_init;
+@@ -54,6 +55,7 @@ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_10gbit_full_features) __ro_after_ini
+ 
+ #define PHY_BASIC_FEATURES ((unsigned long *)&phy_basic_features)
+ #define PHY_BASIC_T1_FEATURES ((unsigned long *)&phy_basic_t1_features)
++#define PHY_BASIC_T1S_P2MP_FEATURES ((unsigned long *)&phy_basic_t1s_p2mp_features)
+ #define PHY_GBIT_FEATURES ((unsigned long *)&phy_gbit_features)
+ #define PHY_GBIT_FIBRE_FEATURES ((unsigned long *)&phy_gbit_fibre_features)
+ #define PHY_GBIT_ALL_PORTS_FEATURES ((unsigned long *)&phy_gbit_all_ports_features)
+@@ -66,6 +68,7 @@ extern const int phy_fibre_port_array[1];
+ extern const int phy_all_ports_features_array[7];
+ extern const int phy_10_100_features_array[4];
+ extern const int phy_basic_t1_features_array[3];
++extern const int phy_basic_t1s_p2mp_features_array[2];
+ extern const int phy_gbit_features_array[2];
+ extern const int phy_10gbit_features_array[1];
+ 
+@@ -1036,6 +1039,17 @@ struct phy_driver {
+ 	int (*get_sqi)(struct phy_device *dev);
+ 	/** @get_sqi_max: Get the maximum signal quality indication */
+ 	int (*get_sqi_max)(struct phy_device *dev);
++
++	/* PLCA RS interface */
++	/** @get_plca_cfg: Return the current PLCA configuration */
++	int (*get_plca_cfg)(struct phy_device *dev,
++			    struct phy_plca_cfg *plca_cfg);
++	/** @set_plca_cfg: Set the PLCA configuration */
++	int (*set_plca_cfg)(struct phy_device *dev,
++			    const struct phy_plca_cfg *plca_cfg);
++	/** @get_plca_status: Return the current PLCA status info */
++	int (*get_plca_status)(struct phy_device *dev,
++			       struct phy_plca_status *plca_st);
  };
- #define PHY_PAIR_ALL -1
+ #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+ 				      struct phy_driver, mdiodrv)
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index 58e587ba0450..5f414deacf23 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -1741,6 +1741,9 @@ enum ethtool_link_mode_bit_indices {
+ 	ETHTOOL_LINK_MODE_800000baseDR8_2_Full_BIT	 = 96,
+ 	ETHTOOL_LINK_MODE_800000baseSR8_Full_BIT	 = 97,
+ 	ETHTOOL_LINK_MODE_800000baseVR8_Full_BIT	 = 98,
++	ETHTOOL_LINK_MODE_10baseT1S_Full_BIT		 = 99,
++	ETHTOOL_LINK_MODE_10baseT1S_Half_BIT		 = 100,
++	ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT	 = 101,
  
-+/**
-+ * struct phy_plca_cfg - Configuration of the PLCA (Physical Layer Collision
-+ * Avoidance) Reconciliation Sublayer.
-+ *
-+ * @version: read-only PLCA register map version. -1 = not available. Ignored
-+ *   when setting the configuration. Format is the same as reported by the PLCA
-+ *   IDVER register (31.CA00). -1 = not available.
-+ * @enabled: PLCA configured mode (enabled/disabled). -1 = not available / don't
-+ *   set. 0 = disabled, anything else = enabled.
-+ * @node_id: the PLCA local node identifier. -1 = not available / don't set.
-+ *   Allowed values [0 .. 254]. 255 = node disabled.
-+ * @node_cnt: the PLCA node count (maximum number of nodes having a TO). Only
-+ *   meaningful for the coordinator (node_id = 0). -1 = not available / don't
-+ *   set. Allowed values [1 .. 255].
-+ * @to_tmr: The value of the PLCA to_timer in bit-times, which determines the
-+ *   PLCA transmit opportunity window opening. See IEEE802.3 Clause 148 for
-+ *   more details. The to_timer shall be set equal over all nodes.
-+ *   -1 = not available / don't set. Allowed values [0 .. 255].
-+ * @burst_cnt: controls how many additional frames a node is allowed to send in
-+ *   single transmit opportunity (TO). The default value of 0 means that the
-+ *   node is allowed exactly one frame per TO. A value of 1 allows two frames
-+ *   per TO, and so on. -1 = not available / don't set.
-+ *   Allowed values [0 .. 255].
-+ * @burst_tmr: controls how many bit times to wait for the MAC to send a new
-+ *   frame before interrupting the burst. This value should be set to a value
-+ *   greater than the MAC inter-packet gap (which is typically 96 bits).
-+ *   -1 = not available / don't set. Allowed values [0 .. 255].
-+ *
-+ * A structure containing configuration parameters for setting/getting the PLCA
-+ * RS configuration. The driver does not need to implement all the parameters,
-+ * but should report what is actually used.
-+ */
-+struct phy_plca_cfg {
-+	int version;
-+	int enabled;
-+	int node_id;
-+	int node_cnt;
-+	int to_tmr;
-+	int burst_cnt;
-+	int burst_tmr;
-+};
-+
-+/**
-+ * struct phy_plca_status - Status of the PLCA (Physical Layer Collision
-+ * Avoidance) Reconciliation Sublayer.
-+ *
-+ * @pst: The PLCA status as reported by the PST bit in the PLCA STATUS
-+ *	register(31.CA03), indicating BEACON activity.
-+ *
-+ * A structure containing status information of the PLCA RS configuration.
-+ * The driver does not need to implement all the parameters, but should report
-+ * what is actually used.
-+ */
-+struct phy_plca_status {
-+	bool pst;
-+};
-+
- /**
-  * struct phy_driver - Driver structure for a particular PHY type
-  *
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index 5799a9db034e..75b3d6d476ff 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -52,6 +52,9 @@ enum {
- 	ETHTOOL_MSG_PSE_GET,
- 	ETHTOOL_MSG_PSE_SET,
- 	ETHTOOL_MSG_RSS_GET,
-+	ETHTOOL_MSG_PLCA_GET_CFG,
-+	ETHTOOL_MSG_PLCA_SET_CFG,
-+	ETHTOOL_MSG_PLCA_GET_STATUS,
- 
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_USER_CNT,
-@@ -99,6 +102,9 @@ enum {
- 	ETHTOOL_MSG_MODULE_NTF,
- 	ETHTOOL_MSG_PSE_GET_REPLY,
- 	ETHTOOL_MSG_RSS_GET_REPLY,
-+	ETHTOOL_MSG_PLCA_GET_CFG_REPLY,
-+	ETHTOOL_MSG_PLCA_GET_STATUS_REPLY,
-+	ETHTOOL_MSG_PLCA_NTF,
- 
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_KERNEL_CNT,
-@@ -894,6 +900,25 @@ enum {
- 	ETHTOOL_A_RSS_MAX = (__ETHTOOL_A_RSS_CNT - 1),
+ 	/* must be last entry */
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 6f399afc2ff2..5fb19050991e 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -208,6 +208,9 @@ const char link_mode_names[][ETH_GSTRING_LEN] = {
+ 	__DEFINE_LINK_MODE_NAME(800000, DR8_2, Full),
+ 	__DEFINE_LINK_MODE_NAME(800000, SR8, Full),
+ 	__DEFINE_LINK_MODE_NAME(800000, VR8, Full),
++	__DEFINE_LINK_MODE_NAME(10, T1S, Full),
++	__DEFINE_LINK_MODE_NAME(10, T1S, Half),
++	__DEFINE_LINK_MODE_NAME(10, T1S_P2MP, Half),
  };
+ static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
  
-+/* PLCA */
-+
-+enum {
-+	ETHTOOL_A_PLCA_UNSPEC,
-+	ETHTOOL_A_PLCA_HEADER,			/* nest - _A_HEADER_* */
-+	ETHTOOL_A_PLCA_VERSION,			/* u16 */
-+	ETHTOOL_A_PLCA_ENABLED,			/* u8  */
-+	ETHTOOL_A_PLCA_STATUS,			/* u8  */
-+	ETHTOOL_A_PLCA_NODE_CNT,		/* u32 */
-+	ETHTOOL_A_PLCA_NODE_ID,			/* u32 */
-+	ETHTOOL_A_PLCA_TO_TMR,			/* u32 */
-+	ETHTOOL_A_PLCA_BURST_CNT,		/* u32 */
-+	ETHTOOL_A_PLCA_BURST_TMR,		/* u32 */
-+
-+	/* add new constants above here */
-+	__ETHTOOL_A_PLCA_CNT,
-+	ETHTOOL_A_PLCA_MAX = (__ETHTOOL_A_PLCA_CNT - 1)
-+};
-+
- /* generic netlink info */
- #define ETHTOOL_GENL_NAME "ethtool"
- #define ETHTOOL_GENL_VERSION 1
-diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
-index 228f13df2e18..563864c1bf5a 100644
---- a/net/ethtool/Makefile
-+++ b/net/ethtool/Makefile
-@@ -8,4 +8,4 @@ ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o rss.o \
- 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
- 		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
- 		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o \
--		   pse-pd.o
-+		   pse-pd.o plca.o
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index aee98be6237f..9f924875bba9 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -288,6 +288,8 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
- 	[ETHTOOL_MSG_MODULE_GET]	= &ethnl_module_request_ops,
- 	[ETHTOOL_MSG_PSE_GET]		= &ethnl_pse_request_ops,
- 	[ETHTOOL_MSG_RSS_GET]		= &ethnl_rss_request_ops,
-+	[ETHTOOL_MSG_PLCA_GET_CFG]	= &ethnl_plca_cfg_request_ops,
-+	[ETHTOOL_MSG_PLCA_GET_STATUS]	= &ethnl_plca_status_request_ops,
+@@ -244,6 +247,8 @@ static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
+ #define __LINK_MODE_LANES_X		1
+ #define __LINK_MODE_LANES_FX		1
+ #define __LINK_MODE_LANES_T1L		1
++#define __LINK_MODE_LANES_T1S		1
++#define __LINK_MODE_LANES_T1S_P2MP	1
+ #define __LINK_MODE_LANES_VR8		8
+ #define __LINK_MODE_LANES_DR8_2		8
+ 
+@@ -366,6 +371,9 @@ const struct link_mode_info link_mode_params[] = {
+ 	__DEFINE_LINK_MODE_PARAMS(800000, DR8_2, Full),
+ 	__DEFINE_LINK_MODE_PARAMS(800000, SR8, Full),
+ 	__DEFINE_LINK_MODE_PARAMS(800000, VR8, Full),
++	__DEFINE_LINK_MODE_PARAMS(10, T1S, Full),
++	__DEFINE_LINK_MODE_PARAMS(10, T1S, Half),
++	__DEFINE_LINK_MODE_PARAMS(10, T1S_P2MP, Half),
  };
+ static_assert(ARRAY_SIZE(link_mode_params) == __ETHTOOL_LINK_MODE_MASK_NBITS);
  
- static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
-@@ -603,6 +605,7 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
- 	[ETHTOOL_MSG_EEE_NTF]		= &ethnl_eee_request_ops,
- 	[ETHTOOL_MSG_FEC_NTF]		= &ethnl_fec_request_ops,
- 	[ETHTOOL_MSG_MODULE_NTF]	= &ethnl_module_request_ops,
-+	[ETHTOOL_MSG_PLCA_NTF]		= &ethnl_plca_cfg_request_ops,
- };
- 
- /* default notification handler */
-@@ -696,6 +699,7 @@ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
- 	[ETHTOOL_MSG_EEE_NTF]		= ethnl_default_notify,
- 	[ETHTOOL_MSG_FEC_NTF]		= ethnl_default_notify,
- 	[ETHTOOL_MSG_MODULE_NTF]	= ethnl_default_notify,
-+	[ETHTOOL_MSG_PLCA_NTF]		= ethnl_default_notify,
- };
- 
- void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
-@@ -1047,6 +1051,31 @@ static const struct genl_ops ethtool_genl_ops[] = {
- 		.policy = ethnl_rss_get_policy,
- 		.maxattr = ARRAY_SIZE(ethnl_rss_get_policy) - 1,
- 	},
-+	{
-+		.cmd	= ETHTOOL_MSG_PLCA_GET_CFG,
-+		.doit	= ethnl_default_doit,
-+		.start	= ethnl_default_start,
-+		.dumpit	= ethnl_default_dumpit,
-+		.done	= ethnl_default_done,
-+		.policy = ethnl_plca_get_cfg_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_plca_get_cfg_policy) - 1,
-+	},
-+	{
-+		.cmd	= ETHTOOL_MSG_PLCA_SET_CFG,
-+		.flags	= GENL_UNS_ADMIN_PERM,
-+		.doit	= ethnl_set_plca_cfg,
-+		.policy = ethnl_plca_set_cfg_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_plca_set_cfg_policy) - 1,
-+	},
-+	{
-+		.cmd	= ETHTOOL_MSG_PLCA_GET_STATUS,
-+		.doit	= ethnl_default_doit,
-+		.start	= ethnl_default_start,
-+		.dumpit	= ethnl_default_dumpit,
-+		.done	= ethnl_default_done,
-+		.policy = ethnl_plca_get_status_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_plca_get_status_policy) - 1,
-+	},
- };
- 
- static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index 3753787ba233..f271266f6e28 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -347,6 +347,8 @@ extern const struct ethnl_request_ops ethnl_phc_vclocks_request_ops;
- extern const struct ethnl_request_ops ethnl_module_request_ops;
- extern const struct ethnl_request_ops ethnl_pse_request_ops;
- extern const struct ethnl_request_ops ethnl_rss_request_ops;
-+extern const struct ethnl_request_ops ethnl_plca_cfg_request_ops;
-+extern const struct ethnl_request_ops ethnl_plca_status_request_ops;
- 
- extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
- extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
-@@ -388,6 +390,9 @@ extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MO
- extern const struct nla_policy ethnl_pse_get_policy[ETHTOOL_A_PSE_HEADER + 1];
- extern const struct nla_policy ethnl_pse_set_policy[ETHTOOL_A_PSE_MAX + 1];
- extern const struct nla_policy ethnl_rss_get_policy[ETHTOOL_A_RSS_CONTEXT + 1];
-+extern const struct nla_policy ethnl_plca_get_cfg_policy[ETHTOOL_A_PLCA_HEADER + 1];
-+extern const struct nla_policy ethnl_plca_set_cfg_policy[ETHTOOL_A_PLCA_MAX + 1];
-+extern const struct nla_policy ethnl_plca_get_status_policy[ETHTOOL_A_PLCA_HEADER + 1];
- 
- int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
-@@ -408,6 +413,7 @@ int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callback *cb);
- int ethnl_set_fec(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_module(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_pse(struct sk_buff *skb, struct genl_info *info);
-+int ethnl_set_plca_cfg(struct sk_buff *skb, struct genl_info *info);
- 
- extern const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN];
- extern const char stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN];
-diff --git a/net/ethtool/plca.c b/net/ethtool/plca.c
-new file mode 100644
-index 000000000000..d9bb13ffc654
---- /dev/null
-+++ b/net/ethtool/plca.c
-@@ -0,0 +1,277 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/phy.h>
-+#include <linux/ethtool_netlink.h>
-+
-+#include "netlink.h"
-+#include "common.h"
-+
-+struct plca_req_info {
-+	struct ethnl_req_info		base;
-+};
-+
-+struct plca_reply_data {
-+	struct ethnl_reply_data		base;
-+	struct phy_plca_cfg		plca_cfg;
-+	struct phy_plca_status		plca_st;
-+};
-+
-+// Helpers ------------------------------------------------------------------ //
-+
-+#define PLCA_REPDATA(__reply_base) \
-+	container_of(__reply_base, struct plca_reply_data, base)
-+
-+static void plca_update_sint(int *dst, const struct nlattr *attr,
-+			     bool *mod)
-+{
-+	if (!attr)
-+		return;
-+
-+	*dst = nla_get_u32(attr);
-+	*mod = true;
-+}
-+
-+// PLCA get configuration message ------------------------------------------- //
-+
-+const struct nla_policy ethnl_plca_get_cfg_policy[] = {
-+	[ETHTOOL_A_PLCA_HEADER]		=
-+		NLA_POLICY_NESTED(ethnl_header_policy),
-+};
-+
-+static int plca_get_cfg_prepare_data(const struct ethnl_req_info *req_base,
-+				     struct ethnl_reply_data *reply_base,
-+				     struct genl_info *info)
-+{
-+	struct plca_reply_data *data = PLCA_REPDATA(reply_base);
-+	struct net_device *dev = reply_base->dev;
-+	const struct ethtool_phy_ops *ops;
-+	int ret;
-+
-+	// check that the PHY device is available and connected
-+	if (!dev->phydev) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	// note: rtnl_lock is held already by ethnl_default_doit
-+	ops = ethtool_phy_ops;
-+	if (!ops || !ops->get_plca_cfg) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	ret = ethnl_ops_begin(dev);
-+	if (!ret)
-+		goto out;
-+
-+	memset(&data->plca_cfg, 0xff,
-+	       sizeof_field(struct plca_reply_data, plca_cfg));
-+
-+	ret = ops->get_plca_cfg(dev->phydev, &data->plca_cfg);
-+	ethnl_ops_complete(dev);
-+
-+out:
-+	return ret;
-+}
-+
-+static int plca_get_cfg_reply_size(const struct ethnl_req_info *req_base,
-+				   const struct ethnl_reply_data *reply_base)
-+{
-+	return nla_total_size(sizeof(u16)) +	/* _VERSION */
-+	       nla_total_size(sizeof(u8)) +	/* _ENABLED */
-+	       nla_total_size(sizeof(u32)) +	/* _NODE_CNT */
-+	       nla_total_size(sizeof(u32)) +	/* _NODE_ID */
-+	       nla_total_size(sizeof(u32)) +	/* _TO_TIMER */
-+	       nla_total_size(sizeof(u32)) +	/* _BURST_COUNT */
-+	       nla_total_size(sizeof(u32));	/* _BURST_TIMER */
-+}
-+
-+static int plca_get_cfg_fill_reply(struct sk_buff *skb,
-+				   const struct ethnl_req_info *req_base,
-+				   const struct ethnl_reply_data *reply_base)
-+{
-+	const struct plca_reply_data *data = PLCA_REPDATA(reply_base);
-+	const struct phy_plca_cfg *plca = &data->plca_cfg;
-+
-+	if ((plca->version >= 0 &&
-+	     nla_put_u16(skb, ETHTOOL_A_PLCA_VERSION, plca->version)) ||
-+	    (plca->enabled >= 0 &&
-+	     nla_put_u8(skb, ETHTOOL_A_PLCA_ENABLED, !!plca->enabled)) ||
-+	    (plca->node_id >= 0 &&
-+	     nla_put_u32(skb, ETHTOOL_A_PLCA_NODE_ID, plca->node_id)) ||
-+	    (plca->node_cnt >= 0 &&
-+	     nla_put_u32(skb, ETHTOOL_A_PLCA_NODE_CNT, plca->node_cnt)) ||
-+	    (plca->to_tmr >= 0 &&
-+	     nla_put_u32(skb, ETHTOOL_A_PLCA_TO_TMR, plca->to_tmr)) ||
-+	    (plca->burst_cnt >= 0 &&
-+	     nla_put_u32(skb, ETHTOOL_A_PLCA_BURST_CNT, plca->burst_cnt)) ||
-+	    (plca->burst_tmr >= 0 &&
-+	     nla_put_u32(skb, ETHTOOL_A_PLCA_BURST_TMR, plca->burst_tmr)))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+};
-+
-+const struct ethnl_request_ops ethnl_plca_cfg_request_ops = {
-+	.request_cmd		= ETHTOOL_MSG_PLCA_GET_CFG,
-+	.reply_cmd		= ETHTOOL_MSG_PLCA_GET_CFG_REPLY,
-+	.hdr_attr		= ETHTOOL_A_PLCA_HEADER,
-+	.req_info_size		= sizeof(struct plca_req_info),
-+	.reply_data_size	= sizeof(struct plca_reply_data),
-+
-+	.prepare_data		= plca_get_cfg_prepare_data,
-+	.reply_size		= plca_get_cfg_reply_size,
-+	.fill_reply		= plca_get_cfg_fill_reply,
-+};
-+
-+// PLCA set configuration message ------------------------------------------- //
-+
-+const struct nla_policy ethnl_plca_set_cfg_policy[] = {
-+	[ETHTOOL_A_PLCA_HEADER]		=
-+		NLA_POLICY_NESTED(ethnl_header_policy),
-+	[ETHTOOL_A_PLCA_ENABLED]	= NLA_POLICY_MAX(NLA_U8, 1),
-+	[ETHTOOL_A_PLCA_NODE_ID]	= NLA_POLICY_MAX(NLA_U32, 255),
-+	[ETHTOOL_A_PLCA_NODE_CNT]	= NLA_POLICY_RANGE(NLA_U32, 1, 255),
-+	[ETHTOOL_A_PLCA_TO_TMR]		= NLA_POLICY_MAX(NLA_U32, 255),
-+	[ETHTOOL_A_PLCA_BURST_CNT]	= NLA_POLICY_MAX(NLA_U32, 255),
-+	[ETHTOOL_A_PLCA_BURST_TMR]	= NLA_POLICY_MAX(NLA_U32, 255),
-+};
-+
-+int ethnl_set_plca_cfg(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ethnl_req_info req_info = {};
-+	struct nlattr **tb = info->attrs;
-+	const struct ethtool_phy_ops *ops;
-+	struct phy_plca_cfg plca_cfg;
-+	struct net_device *dev;
-+	bool mod = false;
-+	int ret;
-+
-+	ret = ethnl_parse_header_dev_get(&req_info,
-+					 tb[ETHTOOL_A_PLCA_HEADER],
-+					 genl_info_net(info), info->extack,
-+					 true);
-+	if (!ret)
-+		return ret;
-+
-+	dev = req_info.dev;
-+
-+	rtnl_lock();
-+
-+	// check that the PHY device is available and connected
-+	if (!dev->phydev) {
-+		ret = -EOPNOTSUPP;
-+		goto out_rtnl;
-+	}
-+
-+	ops = ethtool_phy_ops;
-+	if (!ops || !ops->set_plca_cfg) {
-+		ret = -EOPNOTSUPP;
-+		goto out_rtnl;
-+	}
-+
-+	ret = ethnl_ops_begin(dev);
-+	if (!ret)
-+		goto out_rtnl;
-+
-+	memset(&plca_cfg, 0xff, sizeof(plca_cfg));
-+	plca_update_sint(&plca_cfg.enabled, tb[ETHTOOL_A_PLCA_ENABLED], &mod);
-+	plca_update_sint(&plca_cfg.node_id, tb[ETHTOOL_A_PLCA_NODE_ID], &mod);
-+	plca_update_sint(&plca_cfg.node_cnt, tb[ETHTOOL_A_PLCA_NODE_CNT], &mod);
-+	plca_update_sint(&plca_cfg.to_tmr, tb[ETHTOOL_A_PLCA_TO_TMR], &mod);
-+	plca_update_sint(&plca_cfg.burst_cnt, tb[ETHTOOL_A_PLCA_BURST_CNT],
-+			 &mod);
-+	plca_update_sint(&plca_cfg.burst_tmr, tb[ETHTOOL_A_PLCA_BURST_TMR],
-+			 &mod);
-+
-+	ret = 0;
-+	if (!mod)
-+		goto out_ops;
-+
-+	ret = ops->set_plca_cfg(dev->phydev, &plca_cfg, info->extack);
-+	if (!ret)
-+		goto out_ops;
-+
-+	ethtool_notify(dev, ETHTOOL_MSG_PLCA_NTF, NULL);
-+
-+out_ops:
-+	ethnl_ops_complete(dev);
-+out_rtnl:
-+	rtnl_unlock();
-+	ethnl_parse_header_dev_put(&req_info);
-+
-+	return ret;
-+}
-+
-+// PLCA get status message -------------------------------------------------- //
-+
-+const struct nla_policy ethnl_plca_get_status_policy[] = {
-+	[ETHTOOL_A_PLCA_HEADER]		=
-+		NLA_POLICY_NESTED(ethnl_header_policy),
-+};
-+
-+static int plca_get_status_prepare_data(const struct ethnl_req_info *req_base,
-+					struct ethnl_reply_data *reply_base,
-+					struct genl_info *info)
-+{
-+	struct plca_reply_data *data = PLCA_REPDATA(reply_base);
-+	struct net_device *dev = reply_base->dev;
-+	const struct ethtool_phy_ops *ops;
-+	int ret;
-+
-+	// check that the PHY device is available and connected
-+	if (!dev->phydev) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	// note: rtnl_lock is held already by ethnl_default_doit
-+	ops = ethtool_phy_ops;
-+	if (!ops || !ops->get_plca_status) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	ret = ethnl_ops_begin(dev);
-+	if (!ret)
-+		goto out;
-+
-+	memset(&data->plca_st, 0xff,
-+	       sizeof_field(struct plca_reply_data, plca_st));
-+
-+	ret = ops->get_plca_status(dev->phydev, &data->plca_st);
-+	ethnl_ops_complete(dev);
-+out:
-+	return ret;
-+}
-+
-+static int plca_get_status_reply_size(const struct ethnl_req_info *req_base,
-+				      const struct ethnl_reply_data *reply_base)
-+{
-+	return nla_total_size(sizeof(u8));	/* _STATUS */
-+}
-+
-+static int plca_get_status_fill_reply(struct sk_buff *skb,
-+				      const struct ethnl_req_info *req_base,
-+				      const struct ethnl_reply_data *reply_base)
-+{
-+	const struct plca_reply_data *data = PLCA_REPDATA(reply_base);
-+	const u8 status = data->plca_st.pst;
-+
-+	if (nla_put_u8(skb, ETHTOOL_A_PLCA_STATUS, !!status))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+};
-+
-+const struct ethnl_request_ops ethnl_plca_status_request_ops = {
-+	.request_cmd		= ETHTOOL_MSG_PLCA_GET_STATUS,
-+	.reply_cmd		= ETHTOOL_MSG_PLCA_GET_STATUS_REPLY,
-+	.hdr_attr		= ETHTOOL_A_PLCA_HEADER,
-+	.req_info_size		= sizeof(struct plca_req_info),
-+	.reply_data_size	= sizeof(struct plca_reply_data),
-+
-+	.prepare_data		= plca_get_status_prepare_data,
-+	.reply_size		= plca_get_status_reply_size,
-+	.fill_reply		= plca_get_status_fill_reply,
-+};
 -- 
 2.37.4
 
