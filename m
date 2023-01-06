@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F0A660580
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 18:18:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1204C660583
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 18:18:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235210AbjAFRRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 12:17:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
+        id S231543AbjAFRSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 12:18:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235714AbjAFRRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 12:17:30 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E843D6E
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 09:17:29 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id 124so1539455pfy.0
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 09:17:29 -0800 (PST)
+        with ESMTP id S233925AbjAFRRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 12:17:40 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E4B140ED
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 09:17:35 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id d15so2288716pls.6
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 09:17:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TavTUbONX2+yXfbTWhYMTZaU5crQvqDDzZMkJ5klCoI=;
-        b=OQ2i+YjNeDuVeemoCKcA2XSQdxATDnzDlf0RB/QbImUC7WJyGCcbS+x3ItHv4p3bSv
-         YtxcAO9wJ4U1ZRz0pWW0kdxuj3iVn5LCbwY9VXEc7SoFVY4Ze4VN/J86L/Rbi4fdQ4ia
-         kZvZbvJQ7T8FOXHZOUs1OjOneoLgnPKriCppNEFspUmNHyuAXeq93f8Nha/QLLXXAnBq
-         9w9xVh0G2hrl7s1FC1d0QezYm/Qge3h8cpEjHDWd+xIR8NJIjmhy5oDNQ5IuXJ2E3f+u
-         ruL+MhSEBDfwy5449lBWB+myk7pp+6o1q4jlikuYrUb1HA3LP1/eqL/vSQDsyAmD669O
-         mmDQ==
+        bh=+BszObA54pUrS6LbjCGZnkDETNcwahguKQU7tKjQAnc=;
+        b=nxhl4YlRNgXEL6DzvFH0wf5sH3oKGJZwZW5j+mDfxIXt/jrXR/AvYhsm/DTbSwyH2M
+         GlVyjfa8U81CTQwoVMfXXM2deCySN+LnBLXtMlTopy7jvlxMkgRJdUOzny0vjF5Gu80u
+         UUJNnnceo33J2VG8PCW6A2hog6DTu34bTcfJ362Y/YfH9TSEa6TT8vTobx9p8UFTYMjh
+         CAbsws84tyQQ/RS6kIbTZLWTsPGP8aZDfVZj2Eij1KZRa5N4wrs13BPG099tAQeFfZ9H
+         3vAP33Fl5lpJx7ZS93miXyFDImJjBrdnJ9Zk3Ifn8nxSvSa2NBoZa6RbD16lNXnZPT7V
+         /3nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=TavTUbONX2+yXfbTWhYMTZaU5crQvqDDzZMkJ5klCoI=;
-        b=YxgOmd7ubPdVxP6k8Tps7dQ4GBayypqBi76+Gqj2pFMY5gGmLK5ewOwOc8t4i0ZoaU
-         yD/PwT+GWrpcBMczer88mNOMHe7suoEFOAdl51N29UGjO9Pq7e9PWl4lTLOsF+Ved2Iv
-         szeGCiHoXeKavQo/JNi7A5nrxPH9UZUXFVWSWQ/vFvGSmvNaAleACF0eYBcizCWRkw6o
-         NZC5RNM7JTStISrBONSb7tLBQhEKqHfLEsKtl0WMq/CIK3NHaBjMUuip9rHCdJ7XFkiT
-         FquFVGEdjE30dJg0cnFC0gCshfWvFoVBJhOkVQ8H3qKJXgBzYb5cF2sa69ebaJU+pfsO
-         tedw==
-X-Gm-Message-State: AFqh2kq4F5Lmmq6ZziioCAgOPfdz3GYtStE8ljpzujzk/Le2R5MEr6NO
-        /04BZzC6qlG49d2u63KR4sDM/7ProeqPBcvFYN7cWA==
-X-Google-Smtp-Source: AMrXdXvZ8opWqDUM60+7TMJoKaRUq+N+CT1X9WhXI5/EMF0PYpXOXugqaMscHIisifaLKZRR3tVlDWwEC+73ayGQIAs=
-X-Received: by 2002:a63:9d0a:0:b0:49f:478d:a72c with SMTP id
- i10-20020a639d0a000000b0049f478da72cmr1706861pgd.250.1673025448721; Fri, 06
- Jan 2023 09:17:28 -0800 (PST)
+        bh=+BszObA54pUrS6LbjCGZnkDETNcwahguKQU7tKjQAnc=;
+        b=xHHL+6VczZIWl2456bTdRHt8bnEkv6laHAguDgrXsR9D1v8n2deU+nSiXjLl8arbPZ
+         HrUNjJ4LskPNfn1oWR/hOvXsdjCG6BdrYYCilVz9i7P7rKY4yE7RDgh8npRkuGxkw3yq
+         c8+1U3Efz4ApT2yRVU9DbWRBVJ/otL5g5njEMvZeyS+dwESn0QFxoGy4eJozJuj2D2LQ
+         VrXnW9K6WQS07zBZf4SzUMvUIlvU1nQ6twVp9wpJrSQOLW+vy7ShYzcFAiDudnCEgc75
+         P0ayB8fQ7fh2eTdQ5EOk6IlwM57/4znXddA4rTa0KgdeMzjJ3S2sxVn1VsN41V4imsrh
+         /KlA==
+X-Gm-Message-State: AFqh2kpCNxXAGFReb0/3UTKTXmg2+fCAFUmadX9cbQRq2BMKfkGFhAUM
+        7oYcJjOatLi+Gc+aPhP/Q5iFaeOcDo5/9vRa7uQBPg==
+X-Google-Smtp-Source: AMrXdXsHeN7kO1opdugoqFTEsv0uWWRotDtg2lt7BlV0dLV+THh3uWF07Tz6TyKnsVTE2MPc28OY8yjdWAMHnomHBKM=
+X-Received: by 2002:a17:90a:8b92:b0:218:9107:381b with SMTP id
+ z18-20020a17090a8b9200b002189107381bmr4368808pjn.75.1673025454798; Fri, 06
+ Jan 2023 09:17:34 -0800 (PST)
 MIME-Version: 1.0
-References: <20230104215949.529093-1-sdf@google.com> <20230104215949.529093-8-sdf@google.com>
- <bd002756-3295-b708-e304-976d42dbf121@linux.dev>
-In-Reply-To: <bd002756-3295-b708-e304-976d42dbf121@linux.dev>
+References: <20230104215949.529093-1-sdf@google.com> <20230104215949.529093-6-sdf@google.com>
+ <2795feb1-c968-b588-6a4c-9716afd8ecf2@linux.dev>
+In-Reply-To: <2795feb1-c968-b588-6a4c-9716afd8ecf2@linux.dev>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 6 Jan 2023 09:17:17 -0800
-Message-ID: <CAKH8qBvaTUH+gSYRXpmuLBS90=pAumvZ6dPyzdFrBndpEx3+sQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 07/17] bpf: XDP metadata RX kfuncs
+Date:   Fri, 6 Jan 2023 09:17:23 -0800
+Message-ID: <CAKH8qBvgE09m21ugW3j5Af99fOLqh8K0MH+4VM7hgS3TFW5Cdg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 05/17] bpf: Introduce device-bound XDP programs
 To:     Martin KaFai Lau <martin.lau@linux.dev>
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
@@ -78,23 +78,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 5, 2023 at 4:48 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+On Thu, Jan 5, 2023 at 4:41 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
 >
 > On 1/4/23 1:59 PM, Stanislav Fomichev wrote:
-> > +void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
-> > +{
-> > +     const struct xdp_metadata_ops *ops;
-> > +     void *p = NULL;
-> > +
-> > +     /* We don't hold bpf_devs_lock while resolving several
-> > +      * kfuncs and can race with the unregister_netdevice().
-> > +      * We rely on bpf_dev_bound_match() check at attach
-> > +      * to render this program unusable.
-> > +      */
-> > +     down_read(&bpf_devs_lock);
-> > +     if (!prog->aux->offload || !prog->aux->offload->netdev)
+> > @@ -199,12 +197,12 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
+> >           attr->prog_type != BPF_PROG_TYPE_XDP)
+> >               return -EINVAL;
+> >
+> > -     if (attr->prog_flags)
+> > +     if (attr->prog_flags & ~BPF_F_XDP_DEV_BOUND_ONLY)
+> >               return -EINVAL;
+> >
+> > -     offload = kzalloc(sizeof(*offload), GFP_USER);
 >
-> nit. !prog->aux->offload->netdev check is not needed. Testing
-> !prog->aux->offload should be as good.
+> The kzalloc is still needed. Although a latter patch added it bad, it is better
+> not to miss it in the first place.
 
-Yeah, true, will remove, thanks!
+Oh, good catch, probably lost during reshuffling some changes around, will undo.
+
+
+> > -     if (!offload)
+> > -             return -ENOMEM;
+> > +     if (attr->prog_type == BPF_PROG_TYPE_SCHED_CLS &&
+> > +         attr->prog_flags & BPF_F_XDP_DEV_BOUND_ONLY)
+> > +             return -EINVAL;
+> >
+> >       offload->prog = prog;
+> >
+>
