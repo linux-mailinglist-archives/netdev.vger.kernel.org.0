@@ -2,213 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4316603FE
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:09:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0642B660402
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234989AbjAFQJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 11:09:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
+        id S235097AbjAFQJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 11:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235047AbjAFQIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:08:55 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F2776238;
-        Fri,  6 Jan 2023 08:08:30 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 306G861L1390823
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Fri, 6 Jan 2023 16:08:07 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 306G81XI2910658
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Fri, 6 Jan 2023 17:08:01 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1673021281; bh=EWbAkaWMwM+ddCnHHCeZvsK8g1GQ+twZTFv+8M5+ooQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:References:From;
-        b=X7BsuPAVtbKmrlvRies8ZcW7P9/S2WsMkCGJBA/T9jcJ7MZv9KOq2WXfq0AZoYaqx
-         4ri+RKhtLmqdA+iXXFDyhYg0CcIJGeM7D+K0vELMGscey/WaTaL2PM4yPtR7X3t2KD
-         8YnYn6p7l2Jk+uz9l3BA/+neh9SSUydkguz7oJVo=
-Received: (nullmailer pid 100763 invoked by uid 1000);
-        Fri, 06 Jan 2023 16:07:58 -0000
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     Hayes Wang <hayeswang@realtek.com>, linux-usb@vger.kernel.org,
-        Oliver Neukum <oliver@neukum.org>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH 2/2] cdc_ether: no need to blacklist any r8152 devices
-Date:   Fri,  6 Jan 2023 17:07:39 +0100
-Message-Id: <20230106160739.100708-3-bjorn@mork.no>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230106160739.100708-1-bjorn@mork.no>
-References: <20230106160739.100708-1-bjorn@mork.no>
+        with ESMTP id S235050AbjAFQJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:09:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31F876217;
+        Fri,  6 Jan 2023 08:09:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61895B81D68;
+        Fri,  6 Jan 2023 16:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF886C433EF;
+        Fri,  6 Jan 2023 16:09:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673021376;
+        bh=MUEA5P8aUc9cA0WP6rd+wCEMwkUB7jkqwUkSTTU50+U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qryNqo57IBPj1BstNTiz1l/XYcGe1XZMnCsIDegK67eKaOVUlOE2WNczmcpPzy5Bk
+         pupAbdHSkRxv+xfRSTXBnZu58IJNiyHLr8PPigUyKs5FnnXFioFTM/jW4a+yoKi4cZ
+         rIenJ+UuTtQrbt4qq2WiSRLOjlIEjjfO2OMByeOCl5anghu2Lv8haHH/swLhfgIZ6U
+         fcNMj1bPa1dP9C1rzM/efcm0y336Qs2zxgVHPHdbqRMnsLMFXTUNaQZcO1BZVN/mK1
+         s0dMVWGO8W0bJDOTI77IFc3M3iQnN2NrKHIJSaunQOpIEgylEX5u7x44464vPwfrAj
+         FZ9LZK0PUR5Kw==
+Date:   Fri, 6 Jan 2023 10:09:40 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] net/mlx5e: Replace 0-length array with flexible array
+Message-ID: <Y7hHxKgX24+pGCsI@work>
+References: <20230105223642.never.980-kees@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230105223642.never.980-kees@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The r8152 driver does not need this anymore.
+On Thu, Jan 05, 2023 at 02:36:43PM -0800, Kees Cook wrote:
+> Zero-length arrays are deprecated[1]. Replace struct mlx5e_rx_wqe_cyc's
+> "data" 0-length array with a flexible array. Detected with GCC 13,
+> using -fstrict-flex-arrays=3:
+> 
+> drivers/net/ethernet/mellanox/mlx5/core/en_main.c: In function 'mlx5e_alloc_rq':
+> drivers/net/ethernet/mellanox/mlx5/core/en_main.c:827:42: warning: array subscript f is outside array bounds of 'struct mlx5_wqe_data_seg[0]' [-Warray-bounds=]
+>   827 |                                 wqe->data[f].byte_count = 0;
+>       |                                 ~~~~~~~~~^~~
+> In file included from drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h:11,
+>                  from drivers/net/ethernet/mellanox/mlx5/core/eswitch.h:48,
+>                  from drivers/net/ethernet/mellanox/mlx5/core/en_main.c:42:
+> drivers/net/ethernet/mellanox/mlx5/core/en.h:250:39: note: while referencing 'data'
+>   250 |         struct mlx5_wqe_data_seg      data[0];
+>       |                                       ^~~~
+> 
+> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Cc: Saeed Mahameed <saeedm@nvidia.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-rdma@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Dropping blacklist entries adds optional support for these
-devices in ECM mode.
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-The 8153 devices are handled by the r8153_ecm driver when
-in ECM mode, and must still be blacklisted here.
+Thanks!
+--
+Gustavo
 
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
----
- drivers/net/usb/cdc_ether.c | 114 ------------------------------------
- 1 file changed, 114 deletions(-)
-
-diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index 8911cd2ed534..9568fe5612ca 100644
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -747,13 +747,6 @@ static const struct usb_device_id	products[] = {
- 	.driver_info = 0,
- },
- 
--/* Realtek RTL8152 Based USB 2.0 Ethernet Adapters */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(REALTEK_VENDOR_ID, 0x8152, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
- /* Realtek RTL8153 Based USB 3.0 Ethernet Adapters */
- {
- 	USB_DEVICE_AND_INTERFACE_INFO(REALTEK_VENDOR_ID, 0x8153, USB_CLASS_COMM,
-@@ -761,71 +754,6 @@ static const struct usb_device_id	products[] = {
- 	.driver_info = 0,
- },
- 
--/* Samsung USB Ethernet Adapters */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(SAMSUNG_VENDOR_ID, 0xa101, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--#if IS_ENABLED(CONFIG_USB_RTL8152)
--/* Linksys USB3GIGV1 Ethernet Adapter */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LINKSYS_VENDOR_ID, 0x0041, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--#endif
--
--/* Lenovo ThinkPad OneLink+ Dock (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x3054, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* ThinkPad USB-C Dock (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x3062, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* ThinkPad Thunderbolt 3 Dock (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x3069, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* ThinkPad Thunderbolt 3 Dock Gen 2 (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x3082, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* Lenovo Thinkpad USB 3.0 Ethernet Adapters (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x7205, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* Lenovo USB C to Ethernet Adapter (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x720c, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* Lenovo USB-C Travel Hub (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x7214, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
- /* Lenovo Powered USB-C Travel Hub (4X90S92381, based on Realtek RTL8153) */
- {
- 	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x721e, USB_CLASS_COMM,
-@@ -833,48 +761,6 @@ static const struct usb_device_id	products[] = {
- 	.driver_info = 0,
- },
- 
--/* ThinkPad USB-C Dock Gen 2 (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0xa387, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* NVIDIA Tegra USB 3.0 Ethernet Adapters (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(NVIDIA_VENDOR_ID, 0x09ff, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* Microsoft Surface 2 dock (based on Realtek RTL8152) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(MICROSOFT_VENDOR_ID, 0x07ab, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* Microsoft Surface Ethernet Adapter (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(MICROSOFT_VENDOR_ID, 0x07c6, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* Microsoft Surface Ethernet Adapter (based on Realtek RTL8153B) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(MICROSOFT_VENDOR_ID, 0x0927, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
--/* TP-LINK UE300 USB 3.0 Ethernet Adapters (based on Realtek RTL8153) */
--{
--	USB_DEVICE_AND_INTERFACE_INFO(TPLINK_VENDOR_ID, 0x0601, USB_CLASS_COMM,
--			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
--	.driver_info = 0,
--},
--
- /* Aquantia AQtion USB to 5GbE Controller (based on AQC111U) */
- {
- 	USB_DEVICE_AND_INTERFACE_INFO(AQUANTIA_VENDOR_ID, 0xc101,
--- 
-2.30.2
-
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> index 2d77fb8a8a01..37cf3b1bb144 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> @@ -247,7 +247,7 @@ struct mlx5e_rx_wqe_ll {
+>  };
+>  
+>  struct mlx5e_rx_wqe_cyc {
+> -	struct mlx5_wqe_data_seg      data[0];
+> +	DECLARE_FLEX_ARRAY(struct mlx5_wqe_data_seg, data);
+>  };
+>  
+>  struct mlx5e_umr_wqe {
+> -- 
+> 2.34.1
+> 
