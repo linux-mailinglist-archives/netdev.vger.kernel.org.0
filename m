@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFD83660698
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 19:45:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E7B66069A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 19:46:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235978AbjAFSpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 13:45:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        id S235945AbjAFSqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 13:46:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235916AbjAFSpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 13:45:30 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380DF81130;
-        Fri,  6 Jan 2023 10:45:29 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id v30so3407602edb.9;
-        Fri, 06 Jan 2023 10:45:29 -0800 (PST)
+        with ESMTP id S235942AbjAFSqQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 13:46:16 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6825BA2E;
+        Fri,  6 Jan 2023 10:45:49 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id qk9so5434990ejc.3;
+        Fri, 06 Jan 2023 10:45:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lXdQJuCgdcK3bFq0qc/kkXKb90RrNwHuu1s1i0Cf6y0=;
-        b=pkkjbDTEs5OPeJHNl7lopR5cJliet1dXU5MEDth36HzMdx5NlzPP/49vO/w/hr+AWw
-         tHXSiNMNjn2q6eC2f2BGcHfkI2tP9WQn07Zn4IjbBfs5Q5BC1uMQlDv4dC54znUzzSMc
-         wUre2tFjuikAcpgJgdeIVdY+iSJt5dsQsUwnvW74Wottoi8VTl33uJSsV5g+Y2rOut0m
-         gB2QEpfeKJZnFsrlvSVNIgnWid/p15a5IcDq0Cp/5CxCnC2WHFionqqRCs7JkDF0+gzN
-         nge8pLB8rH0fhXB6oUcikv5cZ9tg8hp97s/Rhd4t0flJjRQKbnLwBfB6bHeaVz4blVhb
-         8jdw==
+        bh=iyowmIGF+f5k8v+c61rZcWpKAykxXCkSoENr82z43jQ=;
+        b=CEDLXYYpx7fpiXCz1nD16B2v7M2hjQBnCvS/bnLz/APeKTUTcCk6p+Zm+6IQmp8IpL
+         SuqBuTqVOvEDIpoTvWAlMOsFd9VT78nS4aYwu+SDf5v40pwGE8qftBk/4WfxZPSZILM6
+         GEActp15JCKM0qE5qCx/WeqL+4sZNCWzgaYS9nZcqMuMRynpRYamNVs1Ziv9XdFQIfY9
+         L+yK5OiH8C66DlepqCsRWRt62dVpSeWnfWL27xJf7MWaINUaK0BpZgl27i0CFXoz7Uus
+         MeZEUCONSDuSPG+mlxuGztMlQKe8TTM9cnKohunpZemYoz9HVUeDE9OpENKikmL0azgP
+         zMpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lXdQJuCgdcK3bFq0qc/kkXKb90RrNwHuu1s1i0Cf6y0=;
-        b=wxkaKXsbtVGY5qtNNSmlcNwCaoEW//4XvS0/VEoAqErbCD+5qppTglmi9KGveFqmph
-         Z4xDnEEtYfQvAJ63g1dvNjWPaG8ZB+ahWcB+OfG3Airn42z73ntS07dg9/2L0Dnmq/5z
-         /YcVOq8FNVHWWQbtBz69NHL3joLzy+hXOAM5Swv+fk3JxRfdnrMubF/ReUhn5Hf6tXlI
-         43lRWGx69McMct+kKjuZmzOx2Y12tUDd3SfwHrnYIPRBQzfwb9rk3+6PfJZb7eOdL+zK
-         wwtXC2NThuikS9flmulTzyhyAQLbgi2XOxa/T4N0ZnoPfnya3yn42ExQlQ3ULOE5+Xm2
-         lkBg==
-X-Gm-Message-State: AFqh2kr7H3qWs13mccBUZ1Nm4nEja76AUo9mBc+xJxn3ogH+Qp2WuH8w
-        xzTX8l7cgdqDxH6xOVNLmKk=
-X-Google-Smtp-Source: AMrXdXsxYp71cqii8He3bFE07AvichCS3lwzvyxT9pW4/civf4Cu9Ra4OpcMg7ujjmM3mDu6j+H7nA==
-X-Received: by 2002:a05:6402:206c:b0:47c:30aa:ae0e with SMTP id bd12-20020a056402206c00b0047c30aaae0emr47561141edb.11.1673030727657;
-        Fri, 06 Jan 2023 10:45:27 -0800 (PST)
+        bh=iyowmIGF+f5k8v+c61rZcWpKAykxXCkSoENr82z43jQ=;
+        b=kUf8wTU1fYQJ0Un12m/8fQ2Md/yA+PbC6EgWJwOw6alK6Gsxx2dMnkp2WQ2GHJwCjX
+         G4SlK/eGogcZ6CpFfm9WbnkFXiieeFJugYBtMRW7AhC1e9ppDGT6OKI44mdMwrHW9eSR
+         Z8MbAGGlefnYuTq7o1cXfMl5Zsx2oNsPyXzF3hhFBI2kuuRPbCWWCNGZ2DG4tV6QQpS7
+         VFR1FqCiAJndOBIx58xS2/vWddx+H/RpttHrMOInqoIucy/FD5TGV40uqXZBUdA3ERLU
+         /arAKB35AGV5A2t8Bjy1iOpjpmgkd9ldFtxUpmUiYy/vBSTdkEtNzanCknoEHfVkizGW
+         i7tA==
+X-Gm-Message-State: AFqh2kpww4FfdtRCQmG5gDx9MFrgPJ3v7+6RJN77lE9LWFIywRXOuVHQ
+        UYQQjl8DmGkVEGNqtXb1uow=
+X-Google-Smtp-Source: AMrXdXsNj5xs08K8qR62Qg8G9dJr7YRqfbe5NHTLemtY5GiewoGVE5xoGkKimSY7pWttGxYNBz6oeg==
+X-Received: by 2002:a17:907:3e26:b0:7ad:c8d7:4fd9 with SMTP id hp38-20020a1709073e2600b007adc8d74fd9mr63510638ejc.36.1673030747834;
+        Fri, 06 Jan 2023 10:45:47 -0800 (PST)
 Received: from gvm01 ([91.199.164.40])
-        by smtp.gmail.com with ESMTPSA id f9-20020a056402068900b0048999d127e0sm716044edy.86.2023.01.06.10.45.25
+        by smtp.gmail.com with ESMTPSA id gn19-20020a1709070d1300b00816edcb4e59sm632970ejc.146.2023.01.06.10.45.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 10:45:27 -0800 (PST)
-Date:   Fri, 6 Jan 2023 19:45:21 +0100
+        Fri, 06 Jan 2023 10:45:47 -0800 (PST)
+Date:   Fri, 6 Jan 2023 19:45:41 +0100
 From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -63,9 +63,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         sbhatta@marvell.com, linux-doc@vger.kernel.org,
         wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
         gal@nvidia.com, gustavoars@kernel.org
-Subject: [PATCH v2 net-next 4/5] drivers/net/phy: add helpers to get/set PLCA
- configuration
-Message-ID: <35720efb893ac9ae2667110d4c2dc2828e9d4222.1673030528.git.piergiorgio.beruto@gmail.com>
+Subject: [PATCH v2 net-next 5/5] drivers/net/phy: add driver for the onsemi
+ NCN26000 10BASE-T1S PHY
+Message-ID: <b15b3867233c7adf33870460ea442ff9a4f6ad41.1673030528.git.piergiorgio.beruto@gmail.com>
 References: <cover.1673030528.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -81,302 +81,247 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support in phylib to read/write PLCA configuration for
-Ethernet PHYs that support the OPEN Alliance "10BASE-T1S PLCA
-Management Registers" specifications. These can be found at
-https://www.opensig.org/about/specifications/
+This patch adds support for the onsemi NCN26000 10BASE-T1S industrial
+Ethernet PHY. The driver supports Point-to-Multipoint operation without
+auto-negotiation and with link control handling. The PHY also features
+PLCA for improving performance in P2MP mode.
 
 Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 ---
- MAINTAINERS                          |   1 +
- drivers/net/phy/mdio-open-alliance.h |  46 +++++++
- drivers/net/phy/phy-c45.c            | 183 +++++++++++++++++++++++++++
- include/linux/phy.h                  |   6 +
- 4 files changed, 236 insertions(+)
- create mode 100644 drivers/net/phy/mdio-open-alliance.h
+ MAINTAINERS                |   7 ++
+ drivers/net/phy/Kconfig    |   7 ++
+ drivers/net/phy/Makefile   |   1 +
+ drivers/net/phy/ncn26000.c | 173 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 188 insertions(+)
+ create mode 100644 drivers/net/phy/ncn26000.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 8faa15c360e3..4356382ad57c 100644
+index 4356382ad57c..c1dadb34009d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -16617,6 +16617,7 @@ PLCA RECONCILIATION SUBLAYER (IEEE802.3 Clause 148)
- M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
- L:	netdev@vger.kernel.org
+@@ -15581,6 +15581,13 @@ L:	linux-mips@vger.kernel.org
  S:	Maintained
-+F:	drivers/net/phy/mdio-open-alliance.h
- F:	net/ethtool/plca.c
+ F:	arch/mips/boot/dts/ralink/omega2p.dts
  
- PLDMFW LIBRARY
-diff --git a/drivers/net/phy/mdio-open-alliance.h b/drivers/net/phy/mdio-open-alliance.h
++ONSEMI ETHERNET PHY DRIVERS
++M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++W:	http://www.onsemi.com
++F:	drivers/net/phy/ncn*
++
+ OP-TEE DRIVER
+ M:	Jens Wiklander <jens.wiklander@linaro.org>
+ L:	op-tee@lists.trustedfirmware.org
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 1327290decab..08706efa4b43 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -264,6 +264,13 @@ config NATIONAL_PHY
+ 	help
+ 	  Currently supports the DP83865 PHY.
+ 
++config NCN26000_PHY
++	tristate "onsemi 10BASE-T1S Ethernet PHY"
++	help
++	  Adds support for the onsemi 10BASE-T1S Ethernet PHY.
++	  Currently supports the NCN26000 10BASE-T1S Industrial PHY
++	  with MII interface.
++
+ config NXP_C45_TJA11XX_PHY
+ 	tristate "NXP C45 TJA11XX PHYs"
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index f7138d3c896b..b5138066ba04 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -77,6 +77,7 @@ obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
+ obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
+ obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
+ obj-$(CONFIG_NATIONAL_PHY)	+= national.o
++obj-$(CONFIG_NCN26000_PHY)	+= ncn26000.o
+ obj-$(CONFIG_NXP_C45_TJA11XX_PHY)	+= nxp-c45-tja11xx.o
+ obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
+ obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
+diff --git a/drivers/net/phy/ncn26000.c b/drivers/net/phy/ncn26000.c
 new file mode 100644
-index 000000000000..931e14660d75
+index 000000000000..2b2ce49c32fc
 --- /dev/null
-+++ b/drivers/net/phy/mdio-open-alliance.h
-@@ -0,0 +1,46 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
++++ b/drivers/net/phy/ncn26000.c
+@@ -0,0 +1,173 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
-+ * mdio-open-alliance.h - definition of OPEN Alliance SIG standard registers
++ *  Driver for the onsemi 10BASE-T1S NCN26000 PHYs family.
++ *
++ * Copyright 2022 onsemi
 + */
++#include <linux/kernel.h>
++#include <linux/bitfield.h>
++#include <linux/errno.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/mii.h>
++#include <linux/phy.h>
 +
-+#ifndef __MDIO_OPEN_ALLIANCE__
-+#define __MDIO_OPEN_ALLIANCE__
-+
-+#include <linux/mdio.h>
-+
-+/* NOTE: all OATC14 registers are located in MDIO_MMD_VEND2 */
-+
-+/* Open Alliance TC14 (10BASE-T1S) registers */
-+#define MDIO_OATC14_PLCA_IDVER	0xca00  /* PLCA ID and version */
-+#define MDIO_OATC14_PLCA_CTRL0	0xca01	/* PLCA Control register 0 */
-+#define MDIO_OATC14_PLCA_CTRL1	0xca02	/* PLCA Control register 1 */
-+#define MDIO_OATC14_PLCA_STATUS	0xca03	/* PLCA Status register */
-+#define MDIO_OATC14_PLCA_TOTMR	0xca04	/* PLCA TO Timer register */
-+#define MDIO_OATC14_PLCA_BURST	0xca05	/* PLCA BURST mode register */
-+
-+/* Open Alliance TC14 PLCA IDVER register */
-+#define MDIO_OATC14_PLCA_IDM	0xff00	/* PLCA MAP ID */
-+#define MDIO_OATC14_PLCA_VER	0x00ff	/* PLCA MAP version */
-+
-+/* Open Alliance TC14 PLCA CTRL0 register */
-+#define MDIO_OATC14_PLCA_EN	BIT(15) /* PLCA enable */
-+#define MDIO_OATC14_PLCA_RST	BIT(14) /* PLCA reset */
-+
-+/* Open Alliance TC14 PLCA CTRL1 register */
-+#define MDIO_OATC14_PLCA_NCNT	0xff00	/* PLCA node count */
-+#define MDIO_OATC14_PLCA_ID	0x00ff	/* PLCA local node ID */
-+
-+/* Open Alliance TC14 PLCA STATUS register */
-+#define MDIO_OATC14_PLCA_PST	BIT(15)	/* PLCA status indication */
-+
-+/* Open Alliance TC14 PLCA TOTMR register */
-+#define MDIO_OATC14_PLCA_TOT	0x00ff
-+
-+/* Open Alliance TC14 PLCA BURST register */
-+#define MDIO_OATC14_PLCA_MAXBC	0xff00
-+#define MDIO_OATC14_PLCA_BTMR	0x00ff
-+
-+/* Version Identifiers */
-+#define OATC14_IDM		0x0a00
-+
-+#endif /* __MDIO_OPEN_ALLIANCE__ */
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index a87a4b3ffce4..508edd1f17d7 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -8,6 +8,8 @@
- #include <linux/mii.h>
- #include <linux/phy.h>
- 
 +#include "mdio-open-alliance.h"
 +
- /**
-  * genphy_c45_baset1_able - checks if the PMA has BASE-T1 extended abilities
-  * @phydev: target phy_device struct
-@@ -931,6 +933,187 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
- }
- EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
- 
-+/**
-+ * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
-+ * @phydev: target phy_device struct
-+ * @plca_cfg: output structure to store the PLCA configuration
-+ *
-+ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
-+ *   Management Registers specifications, this function can be used to retrieve
-+ *   the current PLCA configuration from the standard registers in MMD 31.
-+ */
-+int genphy_c45_plca_get_cfg(struct phy_device *phydev,
-+			    struct phy_plca_cfg *plca_cfg)
++#define PHY_ID_NCN26000			0x180FF5A1
++
++#define NCN26000_REG_IRQ_CTL            16
++#define NCN26000_REG_IRQ_STATUS         17
++
++// the NCN26000 maps link_ctrl to BMCR_ANENABLE
++#define NCN26000_BCMR_LINK_CTRL_BIT	BMCR_ANENABLE
++
++// the NCN26000 maps link_status to BMSR_ANEGCOMPLETE
++#define NCN26000_BMSR_LINK_STATUS_BIT	BMSR_ANEGCOMPLETE
++
++#define NCN26000_IRQ_LINKST_BIT		BIT(0)
++#define NCN26000_IRQ_PLCAST_BIT		BIT(1)
++#define NCN26000_IRQ_LJABBER_BIT	BIT(2)
++#define NCN26000_IRQ_RJABBER_BIT	BIT(3)
++#define NCN26000_IRQ_PLCAREC_BIT	BIT(4)
++#define NCN26000_IRQ_PHYSCOL_BIT	BIT(5)
++#define NCN26000_IRQ_RESET_BIT		BIT(15)
++
++#define TO_TMR_DEFAULT			32
++
++// driver callbacks --------------------------------------------------------- //
++
++static int ncn26000_config_init(struct phy_device *phydev)
 +{
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_IDVER);
-+	if (ret < 0)
-+		return ret;
-+
-+	if ((ret & MDIO_OATC14_PLCA_IDM) != OATC14_IDM)
-+		return -ENODEV;
-+
-+	plca_cfg->version = ret & ~MDIO_OATC14_PLCA_IDM;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_CTRL0);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->enabled = !!(ret & MDIO_OATC14_PLCA_EN);
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_CTRL1);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->node_cnt = (ret & MDIO_OATC14_PLCA_NCNT) >> 8;
-+	plca_cfg->node_id = (ret & MDIO_OATC14_PLCA_ID);
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_TOTMR);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->to_tmr = ret & MDIO_OATC14_PLCA_TOT;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_BURST);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->burst_cnt = (ret & MDIO_OATC14_PLCA_MAXBC) >> 8;
-+	plca_cfg->burst_tmr = (ret & MDIO_OATC14_PLCA_BTMR);
-+
-+	return 0;
++	/* HW bug workaround: the default value of the PLCA TO_TIMER should be
++	 * 32, where the current version of NCN26000 reports 24. This will be
++	 * fixed in future PHY versions. For the time being, we force the
++	 * correct default here.
++	 */
++	return phy_write_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_TOTMR,
++			     TO_TMR_DEFAULT);
 +}
-+EXPORT_SYMBOL_GPL(genphy_c45_plca_get_cfg);
 +
-+/**
-+ * genphy_c45_plca_set_cfg - set PLCA configuration using standard registers
-+ * @phydev: target phy_device struct
-+ * @plca_cfg: structure containing the PLCA configuration. Fields set to -1 are
-+ * not to be changed.
-+ *
-+ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
-+ *   Management Registers specifications, this function can be used to modify
-+ *   the PLCA configuration using the standard registers in MMD 31.
-+ */
-+int genphy_c45_plca_set_cfg(struct phy_device *phydev,
-+			    const struct phy_plca_cfg *plca_cfg)
++static int ncn26000_config_aneg(struct phy_device *phydev)
 +{
++	/* Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
++	 * supported. However, this function is invoked by phylib to enable the
++	 * PHY, regardless of the AN support.
++	 */
++	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++	phydev->mdix = ETH_TP_MDI;
++
++	// bring up the link
++	return phy_write(phydev, MII_BMCR, NCN26000_BCMR_LINK_CTRL_BIT);
++}
++
++static int ncn26000_read_status(struct phy_device *phydev)
++{
++	/* The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
++	 * the PHY is up. It further reports the logical AND of the link status
++	 * and the PLCA status in the BMSR_LSTATUS bit.
++	 */
 +	int ret;
-+	u16 val;
 +
-+	// PLCA IDVER is read-only
-+	if (plca_cfg->version >= 0)
-+		return -EINVAL;
-+
-+	// first of all, disable PLCA if required
-+	if (plca_cfg->enabled == 0) {
-+		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
-+					 MDIO_OATC14_PLCA_CTRL0,
-+					 MDIO_OATC14_PLCA_EN);
-+
++	/* The link state is latched low so that momentary link
++	 * drops can be detected. Do not double-read the status
++	 * in polling mode to detect such short link drops except
++	 * the link was already down.
++	 */
++	if (!phy_polling_mode(phydev) || !phydev->link) {
++		ret = phy_read(phydev, MII_BMSR);
 +		if (ret < 0)
 +			return ret;
++		else if (ret & NCN26000_BMSR_LINK_STATUS_BIT)
++			goto upd_link;
 +	}
 +
-+	if (plca_cfg->node_cnt >= 0 || plca_cfg->node_id >= 0) {
-+		if (plca_cfg->node_cnt < 0 || plca_cfg->node_id < 0) {
-+			ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
-+					   MDIO_OATC14_PLCA_CTRL1);
++	ret = phy_read(phydev, MII_BMSR);
++	if (unlikely(ret < 0))
++		return ret;
 +
-+			if (ret < 0)
-+				return ret;
-+
-+			val = ret;
-+		}
-+
-+		if (plca_cfg->node_cnt >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
-+			      (plca_cfg->node_cnt << 8);
-+
-+		if (plca_cfg->node_id >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_ID) |
-+			      (plca_cfg->node_id);
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    MDIO_OATC14_PLCA_CTRL1, val);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (plca_cfg->to_tmr >= 0) {
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    MDIO_OATC14_PLCA_TOTMR,
-+				    plca_cfg->to_tmr);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (plca_cfg->burst_cnt >= 0 || plca_cfg->burst_tmr >= 0) {
-+		if (plca_cfg->burst_cnt < 0 || plca_cfg->burst_tmr < 0) {
-+			ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
-+					   MDIO_OATC14_PLCA_BURST);
-+
-+			if (ret < 0)
-+				return ret;
-+
-+			val = ret;
-+		}
-+
-+		if (plca_cfg->burst_cnt >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
-+			      (plca_cfg->burst_cnt << 8);
-+
-+		if (plca_cfg->burst_tmr >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
-+			      (plca_cfg->burst_tmr);
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    MDIO_OATC14_PLCA_BURST, val);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	// if we need to enable PLCA, do it at the end
-+	if (plca_cfg->enabled > 0) {
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+				       MDIO_OATC14_PLCA_CTRL0,
-+				       MDIO_OATC14_PLCA_EN);
-+
-+		if (ret < 0)
-+			return ret;
++upd_link:
++	// update link status
++	if (ret & NCN26000_BMSR_LINK_STATUS_BIT) {
++		phydev->link = 1;
++		phydev->pause = 0;
++		phydev->duplex = DUPLEX_HALF;
++		phydev->speed = SPEED_10;
++	} else {
++		phydev->link = 0;
++		phydev->duplex = DUPLEX_UNKNOWN;
++		phydev->speed = SPEED_UNKNOWN;
 +	}
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(genphy_c45_plca_set_cfg);
 +
-+/**
-+ * genphy_c45_plca_get_status - get PLCA status from standard registers
-+ * @phydev: target phy_device struct
-+ * @plca_st: output structure to store the PLCA status
-+ *
-+ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
-+ *   Management Registers specifications, this function can be used to retrieve
-+ *   the current PLCA status information from the standard registers in MMD 31.
-+ */
-+int genphy_c45_plca_get_status(struct phy_device *phydev,
-+			       struct phy_plca_status *plca_st)
++static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
 +{
 +	int ret;
 +
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_STATUS);
-+	if (ret < 0)
++	// read and aknowledge the IRQ status register
++	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
++
++	// check only link status changes
++	if (unlikely(ret < 0) || (ret & NCN26000_REG_IRQ_STATUS) == 0)
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++	return IRQ_HANDLED;
++}
++
++static int ncn26000_config_intr(struct phy_device *phydev)
++{
++	int ret;
++	u16 irqe;
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		// acknowledge IRQs
++		ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
++		if (ret < 0)
++			return ret;
++
++		// get link status notifications
++		irqe = NCN26000_IRQ_LINKST_BIT;
++	} else {
++		// disable all IRQs
++		irqe = 0;
++	}
++
++	ret = phy_write(phydev, NCN26000_REG_IRQ_CTL, irqe);
++	if (ret != 0)
 +		return ret;
 +
-+	plca_st->pst = !!(ret & MDIO_OATC14_PLCA_PST);
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(genphy_c45_plca_get_status);
 +
- struct phy_driver genphy_c45_driver = {
- 	.phy_id         = 0xffffffff,
- 	.phy_id_mask    = 0xffffffff,
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index bcaf1dfd0687..23aa23cde940 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1748,6 +1748,12 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
- int genphy_c45_pma_resume(struct phy_device *phydev);
- int genphy_c45_pma_suspend(struct phy_device *phydev);
- int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
-+int genphy_c45_plca_get_cfg(struct phy_device *phydev,
-+			    struct phy_plca_cfg *plca_cfg);
-+int genphy_c45_plca_set_cfg(struct phy_device *phydev,
-+			    const struct phy_plca_cfg *plca_cfg);
-+int genphy_c45_plca_get_status(struct phy_device *phydev,
-+			       struct phy_plca_status *plca_st);
- 
- /* Generic C45 PHY driver */
- extern struct phy_driver genphy_c45_driver;
++static struct phy_driver ncn26000_driver[] = {
++	{
++		PHY_ID_MATCH_MODEL(PHY_ID_NCN26000),
++		.name			= "NCN26000",
++		.features		= PHY_BASIC_T1S_P2MP_FEATURES,
++		.config_init            = ncn26000_config_init,
++		.config_intr            = ncn26000_config_intr,
++		.config_aneg		= ncn26000_config_aneg,
++		.read_status		= ncn26000_read_status,
++		.handle_interrupt       = ncn26000_handle_interrupt,
++		.get_plca_cfg		= genphy_c45_plca_get_cfg,
++		.set_plca_cfg		= genphy_c45_plca_set_cfg,
++		.get_plca_status	= genphy_c45_plca_get_status,
++		.soft_reset             = genphy_soft_reset,
++	},
++};
++
++module_phy_driver(ncn26000_driver);
++
++static struct mdio_device_id __maybe_unused ncn26000_tbl[] = {
++	{ PHY_ID_MATCH_MODEL(PHY_ID_NCN26000) },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(mdio, ncn26000_tbl);
++
++MODULE_AUTHOR("Piergiorgio Beruto");
++MODULE_DESCRIPTION("onsemi 10BASE-T1S PHY driver");
++MODULE_LICENSE("Dual BSD/GPL");
 -- 
 2.37.4
 
