@@ -2,107 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F86966020C
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:25:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31656660219
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:28:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233101AbjAFOZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 09:25:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
+        id S234865AbjAFO2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 09:28:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbjAFOZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:25:26 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3647BDE3
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:25:25 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-46839d9ca5dso19259067b3.16
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 06:25:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=bd8ai8qv1wKopdO9WVErBGIsnnYrc0zRGIlCsBo5A0k=;
-        b=khFqWr4rRt/kd7KsJe+IbnPEUw0zk+PAyTmaf0nOWvVgj4JATxYs3QXHB0IkyPvbP5
-         sIWehjHQvo1xfdXsXHVnPk2lPkZoNU/I3h+KGfjbzCa+sLW/f0sI7/u0BViKXLQz1YlK
-         KEXJfVDp5kHoq3nUO4NPSvxymx4UF1keK3cgQelycnC8b7VMb7SMmLjYxTAx1oV3Qtec
-         k07hHLkr8pOxQB0gLQ4i4cLX/ntgUR5SnRJ9uK9GRog0H8iM54v+lJf09yxfid6XorF8
-         bC+Bi7s/2s91DLHjVy/C8Or0jPDnMvHe3X0yLBQ5wjJK0+iiR5N3B4HDjm9gBhpLgLvD
-         TNWg==
+        with ESMTP id S234409AbjAFO2L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:28:11 -0500
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6D07BDFA;
+        Fri,  6 Jan 2023 06:28:10 -0800 (PST)
+Received: by mail-qt1-f182.google.com with SMTP id c7so2105415qtw.8;
+        Fri, 06 Jan 2023 06:28:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bd8ai8qv1wKopdO9WVErBGIsnnYrc0zRGIlCsBo5A0k=;
-        b=Ek6F9m7E1m3FKsXwd8H9MmQRtMCushpl2TSqJxMr4hP3PL29BrSAq0b4A4M1Qxrv6F
-         em/Ltxd2eFEgdRbW3Imz4ZJ0S3AsIAXUu1/EFo7VCyLcORsfeheKc/SL8TpBSm32Iqfk
-         9e3SUM1gQGwSjdCMZydalChYPNWHudt3Qe//h5zA0M78SltVQ/uU048qLOWFaCnVdk9M
-         phODZvB9O90YXtvlIl+iZa3Y1n8rq85xDrEtrOdeIbebIrqtaHMgTLLouUT/S+M5hySb
-         xXSb25d2vDF5yXX/tDmaoJGFfFeB75CsXIHFyw61tBGX9VgifYSmwf78sUtWJuXpkb7v
-         LI1g==
-X-Gm-Message-State: AFqh2kq8+EPbmnQmyzLa0Jx7+yca3Z6UaLygPZG6W6UrEoWBWPXrNezV
-        h1GJmU12LGxhiT8neQOHgTydaXeuxpqd4w==
-X-Google-Smtp-Source: AMrXdXvncwNeqXe9cfyayVKATafrskSsVmKnrpyjZszYuGCh7YRMzZ8CaI2MP+Nmo/MWVrLn03xLCuyqTeBMhg==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:4f4b:0:b0:36a:bc93:587c with SMTP id
- d72-20020a814f4b000000b0036abc93587cmr341337ywb.59.1673015124797; Fri, 06 Jan
- 2023 06:25:24 -0800 (PST)
-Date:   Fri,  6 Jan 2023 14:25:23 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
-Message-ID: <20230106142523.1234476-1-edumazet@google.com>
-Subject: [PATCH net] gro: take care of DODGY packets
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        Coco Li <lixiaoyan@google.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sTTGdSaTAYfgyHoEh6QlDUjZgdx3Q8oPnHfz8VzgQOg=;
+        b=Q6CmC3NSakWvriapeKHNhR0OIaHEZCG0AJi6GytUNWSynftDKGy88mKe/CgoZzUhcH
+         UKqbRLh6aMUnhsfJR57mUHt6eH5n54xDqvbsP77ff7AsQ9j3xL8v60duoEmOzhsDdQ9J
+         KCpCQ0X5199tKnUMsjKvVAvAXcnedSk/3bSFevwAb8xNAwslcoUkK5BoxYQrjzDTLCDU
+         YDsQQg4N4bgyNIbapGE9ntR0Nj3SkNYNRor58gWkgAKS/wuEJDCpPXWU8kUSN22WIHzG
+         sc5b1WiXbT3uLT3VcnRDMU0i+lJezTqfPeDCeJiWhwERCNtfeneGnGTqaKJkDuqBS0Si
+         XGQQ==
+X-Gm-Message-State: AFqh2koNmMqSeVrZ8VVt3if8eUCJxfjqZOc2wMOO4A84AKLoRhg4mR1Q
+        xpiZLB0jHUUfGR45ZfVPx5kQPfsNZ6DEhQ==
+X-Google-Smtp-Source: AMrXdXvqrl1jwQBvcq1sKQK95248AgIOxEt9qyToLcHNUhEjpUkj+LCGd4pcfPPT7STTMxoNXQHODQ==
+X-Received: by 2002:ac8:6049:0:b0:3a6:8b77:7eef with SMTP id k9-20020ac86049000000b003a68b777eefmr72958306qtm.38.1673015288853;
+        Fri, 06 Jan 2023 06:28:08 -0800 (PST)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id ge9-20020a05622a5c8900b003a7e38055c9sm553291qtb.63.2023.01.06.06.28.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 06:28:08 -0800 (PST)
+Received: by mail-yb1-f176.google.com with SMTP id 203so1984437yby.10;
+        Fri, 06 Jan 2023 06:28:08 -0800 (PST)
+X-Received: by 2002:a25:b944:0:b0:7b2:4421:82be with SMTP id
+ s4-20020a25b944000000b007b2442182bemr806049ybm.380.1673015287896; Fri, 06 Jan
+ 2023 06:28:07 -0800 (PST)
+MIME-Version: 1.0
+References: <20230104141245.8407-1-aford173@gmail.com> <20230104141245.8407-2-aford173@gmail.com>
+In-Reply-To: <20230104141245.8407-2-aford173@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 6 Jan 2023 15:27:56 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXQfAJUVsYeN37T_KvXUoEaSqYJ+UWtUehLv-9R9goVzA@mail.gmail.com>
+Message-ID: <CAMuHMdXQfAJUVsYeN37T_KvXUoEaSqYJ+UWtUehLv-9R9goVzA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] Revert "arm64: dts: renesas: Add compatible
+ properties to AR8031 Ethernet PHYs"
+To:     Adam Ford <aford173@gmail.com>
+Cc:     linux-renesas-soc@vger.kernel.org, aford@beaconembedded.com,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jaroslav reported a recent throughput regression with virtio_net
-caused by blamed commit.
+Hi Adam,
 
-It is unclear if DODGY GSO packets coming from user space
-can be accepted by GRO engine in the future with minimal
-changes, and if there is any expected gain from it.
+CC Ethernet phy
 
-In the meantime, make sure to detect and flush DODGY packets.
+On Wed, Jan 4, 2023 at 3:12 PM Adam Ford <aford173@gmail.com> wrote:
+> This reverts commit 18a2427146bf8a3da8fc7825051d6aadb9c2d8fb.
+>
+> Due to the part shortage, the AR8031 PHY was replaced with a
+> Micrel KSZ9131.  Hard-coding the ID of the PHY makes this new
+> PHY non-operational.  Since previous hardware had shipped,
+> it's not as simple as just replacing the ID number as it would
+> break the older hardware.  Since the generic mode can correctly
+> identify both versions of hardware, it seems safer to revert
+> this patch.
+>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-Fixes: 5eddb24901ee ("gro: add support of (hw)gro packets to gro stack")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-and-bisected-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
-Cc: Coco Li <lixiaoyan@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
----
- net/core/gro.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Thanks for your patch!
 
-diff --git a/net/core/gro.c b/net/core/gro.c
-index fd8c6a7e8d3e2e6b439109d0089f44a547c7347e..506f83d715f873c9bc3727e28ace71e00fa79d2f 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -505,8 +505,9 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
- 	NAPI_GRO_CB(skb)->count = 1;
- 	if (unlikely(skb_is_gso(skb))) {
- 		NAPI_GRO_CB(skb)->count = skb_shinfo(skb)->gso_segs;
--		/* Only support TCP at the moment. */
--		if (!skb_is_gso_tcp(skb))
-+		/* Only support TCP and non DODGY users. */
-+		if (!skb_is_gso_tcp(skb) ||
-+		    (skb_shinfo(skb)->gso_type & SKB_GSO_DODGY))
- 			NAPI_GRO_CB(skb)->flush = 1;
- 	}
- 
--- 
-2.39.0.314.g84b9a713c41-goog
+> --- a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
+> +++ b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
+> @@ -59,8 +59,6 @@ &avb {
+>         status = "okay";
+>
+>         phy0: ethernet-phy@0 {
+> -               compatible = "ethernet-phy-id004d.d074",
+> -                            "ethernet-phy-ieee802.3-c22";
+>                 reg = <0>;
+>                 interrupt-parent = <&gpio2>;
+>                 interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
 
+The next line:
+
+                reset-gpios = <&gpio2 10 GPIO_ACTIVE_LOW>;
+
+Unfortunately, removing the compatible value will cause regressions
+for kexec/kdump and for Ethernet driver unbind, as the PHY reset will
+be asserted before starting the new kernel, or on driver unbind.
+Due to a deficiency in the Ethernet PHY subsystem, the PHY will be
+probed while the reset is still asserted, and thus fail probing[1].
+
+Is there a (new) proper way to handle this?
+Perhaps the issue has been fixed in the PHY subsystem meanwhile?
+
+Thanks!
+
+[1] https://lore.kernel.org/all/cover.1631174218.git.geert+renesas@glider.be
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
