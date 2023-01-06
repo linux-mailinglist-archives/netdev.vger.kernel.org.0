@@ -2,99 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C8A6601E6
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D19096601E2
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234951AbjAFOQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 09:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
+        id S233770AbjAFOP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 09:15:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235233AbjAFOPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:15:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213557814B
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:15:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673014499;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1HbAZFCQHoB7KCS88jGK1MvZ0nX1Vbznt6Ohf9bI3yc=;
-        b=HFAgpGHXk8pZ2SGbZEMPIgu+25msWNayyk6k2M2UjIeX3MDF4VxtbcIKDNlNqiiIivWc5a
-        v7twwQHtiQYXfpWDYYJvmfHSyBuDuJ0jSQ4Z6wmPbFZQyXIQ4X5lTxfekmAsP5FFzXDJeE
-        zA9XWHuVH+XoLlH777dj+iuVKk8eWNQ=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-65-TB_hDHX6O3mUObwJwXKlBw-1; Fri, 06 Jan 2023 09:14:58 -0500
-X-MC-Unique: TB_hDHX6O3mUObwJwXKlBw-1
-Received: by mail-ej1-f70.google.com with SMTP id gn28-20020a1709070d1c00b007c177fee5faso1205936ejc.23
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 06:14:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1HbAZFCQHoB7KCS88jGK1MvZ0nX1Vbznt6Ohf9bI3yc=;
-        b=IRpUcWilH+yyViCgYVN1RJgeK7ta1cGMrF85ew/ifIIuEkxUoaIO6mWJGH6LDW8wjI
-         24e9LtH7z35DJGtpJqmnp8bioAGbBdMUKZDH/P5JwRAtnoZLn3bac5QPCgXCGr6aWNjA
-         Mq5fRAusEMceeDUDl6B2hzH5QnL6CWNsb7YPmMEqdtHT8oeS8dsltPoY03cm4NuZToGQ
-         /3U1grYo7HyPD4F7qq9EJjbsvXCod4RGLQyKmCuqXopXyAQnjAA53DEEnFpNnCH0xJhl
-         cTDJO4Q5kBXmMsczganGBr+RMB0cvPNC1RRCmPYdslaxW58M5Rxb2NlhtJUR7ewzJMtk
-         J9oQ==
-X-Gm-Message-State: AFqh2koI/D09SIXFA+hth3leNqkIdZTHO8XRLU+Uwn01KdWxZAI/H1aB
-        sKQVjpnlt1gGu+pTG1wfbsBJqQMLtp1Brunx3IaezWYIjaM8GQ8nqBUmlLhcuqXayomAjp0c908
-        sJM3tNFU8MlzUjmMQ
-X-Received: by 2002:a17:906:8a58:b0:7c1:6981:d062 with SMTP id gx24-20020a1709068a5800b007c16981d062mr48881719ejc.72.1673014496912;
-        Fri, 06 Jan 2023 06:14:56 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvwdyVXbgCgJWgv/NtB4G/vAEMk5wPi9BulGNDj/NJSO6Ff3njXVIvsJxFsVM4OIl2HlPhTVg==
-X-Received: by 2002:a17:906:8a58:b0:7c1:6981:d062 with SMTP id gx24-20020a1709068a5800b007c16981d062mr48881705ejc.72.1673014496713;
-        Fri, 06 Jan 2023 06:14:56 -0800 (PST)
-Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id k9-20020a17090646c900b00782e3cf7277sm429583ejs.120.2023.01.06.06.14.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Jan 2023 06:14:56 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <bfeda5eb-9c51-f27e-a594-cf523696ff8e@redhat.com>
-Date:   Fri, 6 Jan 2023 15:14:54 +0100
+        with ESMTP id S234049AbjAFOPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:15:20 -0500
+Received: from 2.mo619.mail-out.ovh.net (2.mo619.mail-out.ovh.net [178.33.254.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFF177D2D
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:15:18 -0800 (PST)
+Received: from ex4.mail.ovh.net (unknown [10.108.4.137])
+        by mo619.mail-out.ovh.net (Postfix) with ESMTPS id E39B22288D;
+        Fri,  6 Jan 2023 14:15:14 +0000 (UTC)
+Received: from [192.168.1.125] (37.65.8.229) by DAG10EX1.indiv4.local
+ (172.16.2.91) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.16; Fri, 6 Jan
+ 2023 15:15:12 +0100
+Message-ID: <cf6f7e30-9b0e-497b-87d4-df450949cd32@naccy.de>
+Date:   Fri, 6 Jan 2023 15:15:12 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: [PATCH v2 07/24] page_pool: Convert __page_pool_put_page() to
- __page_pool_put_netmem()
-Content-Language: en-US
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-References: <20230105214631.3939268-1-willy@infradead.org>
- <20230105214631.3939268-8-willy@infradead.org>
-In-Reply-To: <20230105214631.3939268-8-willy@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH bpf-next v3 00/16] bpfilter
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Dmitrii Banshchikov <me@ubique.spb.ru>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@meta.com>, <fw@strlen.de>
+References: <20221224000402.476079-1-qde@naccy.de>
+ <20221227182242.ozkc6u2lbwneoi4r@macbook-pro-6.dhcp.thefacebook.com>
+Content-Language: fr
+From:   Quentin Deslandes <qde@naccy.de>
+In-Reply-To: <20221227182242.ozkc6u2lbwneoi4r@macbook-pro-6.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.65.8.229]
+X-ClientProxiedBy: CAS11.indiv4.local (172.16.1.11) To DAG10EX1.indiv4.local
+ (172.16.2.91)
+X-Ovh-Tracer-Id: 3239214032702926553
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -85
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrkedtgdeivdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfghrlhcuvffnffculdduhedmnecujfgurhepkfffgggfuffvvehfhfgjtgfgihesthekredttdefjeenucfhrhhomhepsfhuvghnthhinhcuffgvshhlrghnuggvshcuoehquggvsehnrggttgihrdguvgeqnecuggftrfgrthhtvghrnhephfeuieffudeutdfgkeelffehtefhueeuudegteeghfetgfeutdejhfefhfdtgedtnecuffhomhgrihhnpegsrhgvrghkphhoihhnthdrtggtnecukfhppeduvdejrddtrddtrddupdefjedrieehrdekrddvvdelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddvjedrtddrtddruddpmhgrihhlfhhrohhmpeeoqhguvgesnhgrtggthidruggvqedpnhgspghrtghpthhtohepuddprhgtphhtthhopegrlhgvgigvihdrshhtrghrohhvohhithhovhesghhmrghilhdrtghomhdpnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkshgvlhhfthgvshhtsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdgsphhfsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpmhgvsehusghiqhhuvgdrshhpsgdrrh
+ hupdhshhhurghhsehkvghrnhgvlhdrohhrghdpmhihkhholhgrlhesfhgsrdgtohhmpdhprggsvghnihesrhgvughhrghtrdgtohhmpdhkuhgsrgeskhgvrhhnvghlrdhorhhgpdgvughumhgriigvthesghhoohhglhgvrdgtohhmpdhkvghrnhgvlhdqthgvrghmsehmvghtrgdrtghomhdpuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvthdphhgrohhluhhosehgohhoghhlvgdrtghomhdpshgufhesghhoohhglhgvrdgtohhmpdhkphhsihhnghhhsehkvghrnhgvlhdrohhrghdpjhhohhhnrdhfrghsthgrsggvnhgusehgmhgrihhlrdgtohhmpdihhhhssehfsgdrtghomhdpshhonhhgsehkvghrnhgvlhdrohhrghdpmhgrrhhtihhnrdhlrghusehlihhnuhigrdguvghvpdgrnhgurhhiiheskhgvrhhnvghlrdhorhhgpdgurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprghstheskhgvrhhnvghlrdhorhhgpdhjohhlshgrsehkvghrnhgvlhdrohhrghdpfhifsehsthhrlhgvnhdruggvpdfovfetjfhoshhtpehmoheiudelpdhmohguvgepshhmthhpohhuth
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
-> Removes the call to compound_head() hidden in put_page() which
-> saves 169 bytes of kernel text as __page_pool_put_page() is
-> inlined twice.
+Le 27/12/2022 à 19:22, Alexei Starovoitov a écrit :
+> On Sat, Dec 24, 2022 at 01:03:46AM +0100, Quentin Deslandes wrote:
+>>
+>> Due to poor hardware availability on my side, I've not been able to
+>> benchmark those changes. I plan to get some numbers for the next iteration.
 > 
-> Signed-off-by: Matthew Wilcox (Oracle)<willy@infradead.org>
-> ---
->   net/core/page_pool.c | 29 +++++++++++++++++++----------
->   1 file changed, 19 insertions(+), 10 deletions(-)
+> Yeah. Performance numbers would be my main question :)
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Hardware is on the way! :)
 
+>> FORWARD filter chain is now supported, however, it's attached to
+>> TC INGRESS along with INPUT filter chain. This is due to XDP not supporting
+>> multiple programs to be attached. I could generate a single program
+>> out of both INPUT and FORWARD chains, but that would prevent another
+>> BPF program to be attached to the interface anyway. If a solution
+>> exists to attach both those programs to XDP while allowing for other
+>> programs to be attached, it requires more investigation. In the meantime,
+>> INPUT and FORWARD filtering is supported using TC.
+> 
+> I think we can ignore XDP chaining for now assuming that Daniel's bpf_link-tc work
+> will be applicable to XDP as well, so we'll have a simple chaining
+> for XDP eventually.
+> 
+> As far as attaching to TC... I think it would be great to combine bpfilter
+> codegen and attach to Florian's bpf hooks exactly at netfilter.
+> See
+> https://git.breakpoint.cc/cgit/fw/nf-next.git/commit/?h=nf_hook_jit_bpf_29&id=0c1ec06503cb8a142d3ad9f760b72d94ea0091fa
+> With nf_hook_ingress() calling either into classic iptable or into bpf_prog_run_nf
+> which is either generated by Florian's optimizer of nf chains or into
+> bpfilter generated code would be ideal.
+
+That sounds interesting. If my understanding is correct, Florian's
+work doesn't yet allow for userspace-generated programs to be attached,
+which will be required for bpfilter.
