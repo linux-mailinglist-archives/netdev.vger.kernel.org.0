@@ -2,55 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE05D66070F
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 20:22:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A47D66071C
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 20:28:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234814AbjAFTWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 14:22:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55808 "EHLO
+        id S230290AbjAFT2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 14:28:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235789AbjAFTWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 14:22:42 -0500
-Received: from smtp-bc0d.mail.infomaniak.ch (smtp-bc0d.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D3E43E57
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 11:22:41 -0800 (PST)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NpYBh6TpjzMr6M3;
-        Fri,  6 Jan 2023 20:22:36 +0100 (CET)
-Received: from unknown by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4NpYBg6kwJzMppKr;
-        Fri,  6 Jan 2023 20:22:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1673032956;
-        bh=6OCpciQuYs/fuH7eKfax3wZFytmN21aeZpdhduiqY0c=;
+        with ESMTP id S229752AbjAFT2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 14:28:38 -0500
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E1526DB;
+        Fri,  6 Jan 2023 11:28:38 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id EDEC8604F1;
+        Fri,  6 Jan 2023 20:28:35 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673033316; bh=pkj5eZw69uhq7PAkgnV5pcK3+tC4Sfkn0s8g4WltJmE=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XH9Zr+q6eH9CLaHWF81v8o5NvIjUwf3EZMSx1Lz71eC/zHSarCFa5KGEzipW9jN0u
-         hiynpCclKr/dxtVtdfy8mWXAPMGv5S9jPIpXNpBRFaiiA9AWfxSRUcIxDoZfunfSVy
-         0G3Yic5RoCwPuys8FoslWtvdD+C6zE0bdR7vJzmE=
-Message-ID: <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
-Date:   Fri, 6 Jan 2023 20:22:35 +0100
+        b=Ety5o8haNBbW+RifhVPXyGmX2hKK0NB9ij6NSjaYRlDf963W7LAMpuDY76eIHX3R6
+         6ifhVI/YLsLwCd9JEHsaEj9wLhQ0kKMQVldaWgm9vMTvtS0k8oEQUbJqYJbMi8xkhe
+         dsj1yvyfLv+vokrfitytxvkT3hxn9Wz4go557KoWGYOCG08iKtp/XXF9nCMThfEV1D
+         RmibZb6tCYtzZCSa2Wp4tHEeNfKTv2O9wt/w3Qhlr+0nCbbr8muW4yzPV9gdKpY7qQ
+         /9v5UmJRHq2TEF9QlsrEb2CterbHByfUHRdah/I/OPd0X6Jxf8RD8gchJGlsY556UP
+         8XidSd52AkF/g==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id AJhsjG6nCrlb; Fri,  6 Jan 2023 20:28:33 +0100 (CET)
+Received: from [192.168.0.12] (unknown [188.252.196.35])
+        by domac.alu.hr (Postfix) with ESMTPSA id 54E68604F0;
+        Fri,  6 Jan 2023 20:28:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673033313; bh=pkj5eZw69uhq7PAkgnV5pcK3+tC4Sfkn0s8g4WltJmE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=BiwEXrucVJK+nf2UqsmGK7gOM/32OtlZRBNXHFc5VLOrCriwerp0hpnQ/z3EAiG/x
+         rLOZ54sy0I1pwCQVFwBbj7VELIAwzEwkMyWSfjKx+orIIQjhXzhUWW7qbxwESZrKZv
+         Saj7U57INZf/bCirAZ4LNlB2v2RYJ4SCWi5sr3IuMGBZzT5yqOjo2Zcc3MCmw5zquV
+         B9+O3YHSGcL/xFFMi/qpRJaQYMqqkYSBkb4pgr1SrUnXkszVKE5+/r5rPVQ7r/dZ5q
+         IfNbIthiBpRi7NWtbyr7OQ80qQK4yOwwjRMRq8FFQ1uOUitXgsYjmPBba3mcgis96A
+         20ti8+lmS7ylw==
+Message-ID: <b80ffedf-3f53-08f7-baf0-db0450b8853f@alu.unizg.hr>
+Date:   Fri, 6 Jan 2023 20:28:33 +0100
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
-Content-Language: en-US
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
-        linux-sparse@vger.kernel.org
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com,
-        Linux API <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
- <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
- <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: [PATCH net v2] af_unix: selftest: Fix the size of the parameter to
+ connect()
+Content-Language: en-US, hr
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, edumazet@google.com, fw@strlen.de,
+        kuba@kernel.org, kuniyu@amazon.co.jp, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+References: <bd7ff00a-6892-fd56-b3ca-4b3feb6121d8@alu.unizg.hr>
+ <20230106175828.13333-1-kuniyu@amazon.com>
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <20230106175828.13333-1-kuniyu@amazon.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -58,85 +71,64 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 04/01/2023 12:41, Konstantin Meskhidze (A) wrote:
-> 
-> 
-> 11/17/2022 9:43 PM, Mickaël Salaün пишет:
+From: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
 
-[...]
+Adjust size parameter in connect() to match the type of the parameter, to
+fix the "No such file or directory" error in selftests/net/af_unix/
+test_oob_unix.c:127.
 
->>>    /**
->>> @@ -79,6 +91,24 @@ struct landlock_path_beneath_attr {
->>>    	 */
->>>    } __attribute__((packed));
->>>
->>> +/**
->>> + * struct landlock_net_service_attr - TCP subnet definition
->>> + *
->>> + * Argument of sys_landlock_add_rule().
->>> + */
->>> +struct landlock_net_service_attr {
->>> +	/**
->>> +	 * @allowed_access: Bitmask of allowed access network for services
->>> +	 * (cf. `Network flags`_).
->>> +	 */
->>> +	__u64 allowed_access;
->>> +	/**
->>> +	 * @port: Network port.
->>> +	 */
->>> +	__u16 port;
->>
->>    From an UAPI point of view, I think the port field should be __be16, as
->> for sockaddr_in->port and other network-related APIs. This will require
->> some kernel changes to please sparse: make C=2 security/landlock/ must
->> not print any warning.
-> 
->     I have this errors trying to launch sparse checking:
-> 
->     DESCEND objtool
->     DESCEND bpf/resolve_btfids
->     CALL    scripts/checksyscalls.sh
->     CHK     kernel/kheaders_data.tar.xz
->     CC      security/landlock/setup.o
->     CHECK   security/landlock/setup.c
-> ./include/asm-generic/rwonce.h:67:16: error: typename in expression
-> ./include/asm-generic/rwonce.h:67:16: error: Expected ) in function call
-> ./include/asm-generic/rwonce.h:67:16: error: got :
-> ./include/linux/list.h:292:16: error: typename in expression
-> ./include/linux/list.h:292:16: error: Expected ) in function call
-> ./include/linux/list.h:292:16: error: got :
-> 
-> ....
-> 
-> ./include/linux/seqlock.h:682:16: error: Expected ) in function call
-> ./include/linux/seqlock.h:682:16: error: got :
-> ./include/linux/seqlock.h:695:16: error: typename in expression
-> ./include/linux/seqlock.h:695:16: error: Expected ) in function call
-> ./include/linux/seqlock.h:695:16: error: too many errors
-> Segmentation fault (core dumped)
-> make[3]: *** [scripts/Makefile.build:250: security/landlock/setup.o]
-> Error 139
-> make[3]: *** Deleting file 'security/landlock/setup.o'
-> make[3]: *** Waiting for unfinished jobs....
-> Segmentation fault (core dumped)
-> make[3]: *** [scripts/Makefile.build:250: security/landlock/syscalls.o]
-> Error 139
-> make[3]: *** Deleting file 'security/landlock/syscalls.o'
-> make[2]: *** [scripts/Makefile.build:502: security/landlock] Error 2
-> make[1]: *** [scripts/Makefile.build:502: security] Error 2
-> make[1]: *** Waiting for unfinished jobs....
-> make: *** [Makefile:1994: .] Error 2
+The existing code happens to work provided that the autogenerated pathname
+is shorter than sizeof (struct sockaddr), which is why it hasn't been
+noticed earlier.
 
-I don't know about this error. Did you follow the documentation?
-https://docs.kernel.org/dev-tools/sparse.html#getting-sparse
+Visible from the trace excerpt:
+
+bind(3, {sa_family=AF_UNIX, sun_path="unix_oob_453059"}, 110) = 0
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fa6a6577a10) = 453060
+[pid <child>] connect(6, {sa_family=AF_UNIX, sun_path="unix_oob_45305"}, 16) = -1 ENOENT (No such file or directory)
+
+BUG: The filename is trimmed to sizeof (struct sockaddr).
+
+The patch is generated against the "vanilla" torvalds mainline tree 6.2-rc2.
+(Tested to apply against net.git tree.)
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Florian Westphal <fw@strlen.de>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+
+---
+  tools/testing/selftests/net/af_unix/test_unix_oob.c | 2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+index b57e91e1c3f2..532459a15067 100644
+--- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
++++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+@@ -124,7 +124,7 @@ void producer(struct sockaddr_un *consumer_addr)
+
+  	wait_for_signal(pipefd[0]);
+  	if (connect(cfd, (struct sockaddr *)consumer_addr,
+-		     sizeof(struct sockaddr)) != 0) {
++		     sizeof(*consumer_addr)) != 0) {
+  		perror("Connect failed");
+  		kill(0, SIGTERM);
 
 
+--
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+-- 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
 
->>
->> Using big-endian values as keys (casted to uintptr_t, not strictly
->> __be16) in the rb-tree should not be an issue because there is no port
->> range ordering (for now).
->>
->> A dedicated test should check that endianness is correct, e.g. by using
->> different port encoding. This should include passing and failing tests,
->> but they should work on all architectures (i.e. big or little endian).
