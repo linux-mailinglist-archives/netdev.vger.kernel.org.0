@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F4065FB7C
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 07:34:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6071C65FB7E
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 07:34:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbjAFGeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 01:34:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        id S231971AbjAFGeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 01:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbjAFGeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 01:34:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815F16E0FE
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 22:34:10 -0800 (PST)
+        with ESMTP id S231646AbjAFGeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 01:34:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3C76CFFA
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 22:34:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F7E661D3A
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E43FC433F0;
-        Fri,  6 Jan 2023 06:34:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A85FEB81C6C
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B0CC433D2;
+        Fri,  6 Jan 2023 06:34:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672986849;
-        bh=DX8D7va/x/euBLTkXY4R8x0u5ES46bDaeKv0voM01yU=;
+        s=k20201202; t=1672986850;
+        bh=EOpJ0iWWzp2dgeV3YFHJxGliQhnwT2I6hw07fwug1i0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OX6QRtyC1D7vUjLg/ejuaC6OtjFTigR+96O0OTHvIFPMgy947HX2zTeiFUJzY4EQd
-         5scr76m/fJ7qPkTw07wH/W5YVrib+QS0X7/BrWo6NWLBX8UrBVrdeu28AvPPVjN08a
-         F6g41oZHJviZuIVHVBhLMUjg8/OgD7NFMcBjnBt/QPDT3VvXANTNgq2NonjqF4q9Xw
-         yy3OGpxe4QJo51e/GQSw52YLLtQ18HOHC5xHOZxCZyWtEcG3kx0qNMaT/0DxqPAjXF
-         AJc7EQJ19cVl+/FIJvbbLdRvXPJDYnRbMXW39LOm9MayaBtx8b+O2vIkejCq4XibJA
-         yfr/D41fdbZ8Q==
+        b=clX81HSxjJb4OvAKumlUdMZAEFbYAvacWlBQfL1hQiXWUM4BgYs/KVhOcd1OsOW7p
+         v5OJiSdFaOq4GzjdY5/NROpKI37ixUiemI62S08ht6rsn0GVU7fRwRM20QgnOL3lfu
+         5ZgM18Zs0BbFfhtUvjh4Mp83XDKHstPVogdA8s92Wa7F6eYbOuIWJt14JfXY+qGjtZ
+         ZvLoEgMU60yZ4katrXy6sLNLHyFmD19rPRn38lJatPJq5PCRlQYoiMI8iit3Wbo0ql
+         Jtr+7yzrsikss9m8d8zeCu1CHci3qlWfE7CBYHlxsiBOTWzakRqYemEShNHgfdk0mS
+         H/L+gixDVQvsA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jacob.e.keller@intel.com, jiri@resnulli.us,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 6/9] devlink: don't require setting features before registration
-Date:   Thu,  5 Jan 2023 22:33:59 -0800
-Message-Id: <20230106063402.485336-7-kuba@kernel.org>
+Subject: [PATCH net-next 7/9] devlink: allow registering parameters after the instance
+Date:   Thu,  5 Jan 2023 22:34:00 -0800
+Message-Id: <20230106063402.485336-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230106063402.485336-1-kuba@kernel.org>
 References: <20230106063402.485336-1-kuba@kernel.org>
@@ -53,29 +53,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Requiring devlink_set_features() to be run before devlink is
-registered is overzealous. devlink_set_features() itself is
-a leftover from old workarounds which were trying to prevent
-initiating reload before probe was complete.
+It's most natural to register the instance first and then its
+subobjects. Now that we can use the instance lock to protect
+the atomicity of all init - it should also be safe.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/devlink/core.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/devlink/leftover.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/net/devlink/core.c b/net/devlink/core.c
-index 7cf0b3efbb2f..a31a317626d7 100644
---- a/net/devlink/core.c
-+++ b/net/devlink/core.c
-@@ -125,8 +125,6 @@ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp)
-  */
- void devlink_set_features(struct devlink *devlink, u64 features)
- {
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index 491f821c8b77..1e23b2da78cc 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -5263,7 +5263,13 @@ static void devlink_param_notify(struct devlink *devlink,
+ 	WARN_ON(cmd != DEVLINK_CMD_PARAM_NEW && cmd != DEVLINK_CMD_PARAM_DEL &&
+ 		cmd != DEVLINK_CMD_PORT_PARAM_NEW &&
+ 		cmd != DEVLINK_CMD_PORT_PARAM_DEL);
+-	ASSERT_DEVLINK_REGISTERED(devlink);
++
++	/* devlink_notify_register() / devlink_notify_unregister()
++	 * will replay the notifications if the params are added/removed
++	 * outside of the lifetime of the instance.
++	 */
++	if (!devl_is_registered(devlink))
++		return;
+ 
+ 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+ 	if (!msg)
+@@ -10915,8 +10921,6 @@ int devlink_params_register(struct devlink *devlink,
+ 	const struct devlink_param *param = params;
+ 	int i, err;
+ 
 -	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
 -
- 	WARN_ON(features & DEVLINK_F_RELOAD &&
- 		!devlink_reload_supported(devlink->ops));
- 	devlink->features = features;
+ 	for (i = 0; i < params_count; i++, param++) {
+ 		err = devlink_param_register(devlink, param);
+ 		if (err)
+@@ -10947,8 +10951,6 @@ void devlink_params_unregister(struct devlink *devlink,
+ 	const struct devlink_param *param = params;
+ 	int i;
+ 
+-	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+-
+ 	for (i = 0; i < params_count; i++, param++)
+ 		devlink_param_unregister(devlink, param);
+ }
+@@ -10968,8 +10970,6 @@ int devlink_param_register(struct devlink *devlink,
+ {
+ 	struct devlink_param_item *param_item;
+ 
+-	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+-
+ 	WARN_ON(devlink_param_verify(param));
+ 	WARN_ON(devlink_param_find_by_name(&devlink->param_list, param->name));
+ 
+@@ -10985,6 +10985,7 @@ int devlink_param_register(struct devlink *devlink,
+ 	param_item->param = param;
+ 
+ 	list_add_tail(&param_item->list, &devlink->param_list);
++	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(devlink_param_register);
+@@ -10999,11 +11000,10 @@ void devlink_param_unregister(struct devlink *devlink,
+ {
+ 	struct devlink_param_item *param_item;
+ 
+-	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+-
+ 	param_item =
+ 		devlink_param_find_by_name(&devlink->param_list, param->name);
+ 	WARN_ON(!param_item);
++	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_DEL);
+ 	list_del(&param_item->list);
+ 	kfree(param_item);
+ }
+@@ -11063,8 +11063,6 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ {
+ 	struct devlink_param_item *param_item;
+ 
+-	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+-
+ 	param_item = devlink_param_find_by_id(&devlink->param_list, param_id);
+ 	if (!param_item)
+ 		return -EINVAL;
+@@ -11078,6 +11076,8 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ 	else
+ 		param_item->driverinit_value = init_val;
+ 	param_item->driverinit_value_valid = true;
++
++	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
 -- 
 2.38.1
 
