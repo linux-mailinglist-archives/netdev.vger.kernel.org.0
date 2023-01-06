@@ -2,99 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0567D6602CF
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:13:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2437B66030B
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 16:24:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbjAFPNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 10:13:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
+        id S234291AbjAFPYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 10:24:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235054AbjAFPNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:13:19 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C292077D29
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:13:17 -0800 (PST)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1pDoPC-0008Gn-3z; Fri, 06 Jan 2023 16:13:14 +0100
-Message-ID: <f0aef3a8-7cd3-efb0-715a-92bcd145715d@leemhuis.info>
-Date:   Fri, 6 Jan 2023 16:13:13 +0100
+        with ESMTP id S234399AbjAFPXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 10:23:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E602545670
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 07:23:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673018581;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vkMlgudnEw9cYCp+n6zfUM112uSc+tuDo/FfsaWzwqc=;
+        b=SA9KWthuL+uVJyQBUrQmc0Ao9L0QU7j2ONETDWGQwYW36BxvYSijOn3VXBymJ/6TByMs9F
+        o+iya9geHEH51Kk3OTSMm6nD2iOlmDvI2+jDhXp6rR837malJgJqE95lyT2/sXquU0gmSH
+        Snu4rk1pncdoXf4JeQgLJOaG4TESTnw=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-529-nae1WlimPOCBY0VOYvg3uQ-1; Fri, 06 Jan 2023 10:22:20 -0500
+X-MC-Unique: nae1WlimPOCBY0VOYvg3uQ-1
+Received: by mail-ej1-f70.google.com with SMTP id hd17-20020a170907969100b007c117851c81so1338990ejc.10
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 07:22:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vkMlgudnEw9cYCp+n6zfUM112uSc+tuDo/FfsaWzwqc=;
+        b=hJJ1vrRjBOivVTcoI5RHF/CugKFeU26QTMW7I6GmsVynaRHn5tvoUIpF2lMbt+W/4o
+         mGMUSFi/fkk3aHuVjVbDSJq4BOv+mrcJoVuODba496EH/ar022LpTmH2y9qWUsB9t6BA
+         RdrrTYQxHaslWLpFhBvl+ahd1l8q/Jv1IVUuTq1aGJpFs3sKVlezWjHs52QqRS+xEJMZ
+         twYR/WL1zcF8MUOUM7sSUi8u2Hs1wVhm88CpMUkvnD6R3SCVoehBODw0CNqS/C62nA6i
+         6bNvZQf1ig5WUL4aD9pUoR8T+uIYQuf/vLQiM3vSLCAZEsFprokCM/4RlTrFaB/E7QeO
+         FRcw==
+X-Gm-Message-State: AFqh2kqum/kpxe6gPyRXcjyZOwFslKoVcBBKfD8su0/p6QvhryhIQWKI
+        QToa5jECciu1UuAwELf27c4aDKc8I3GMwedvSbgv+CvXE2qmhqLg+PcPzgARBFitxjAgqauyXLf
+        ykid/bk8vzhtOSePb
+X-Received: by 2002:a17:906:2b16:b0:81b:f931:cb08 with SMTP id a22-20020a1709062b1600b0081bf931cb08mr53830172ejg.47.1673018539372;
+        Fri, 06 Jan 2023 07:22:19 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXskB1uFKW7sCrySt3QwJTexCkq+KHK25MYr8JlE4mYtzsho/RGqB4+BwR1dK/+DDvQtlwcBXQ==
+X-Received: by 2002:a17:906:2b16:b0:81b:f931:cb08 with SMTP id a22-20020a1709062b1600b0081bf931cb08mr53830160ejg.47.1673018539203;
+        Fri, 06 Jan 2023 07:22:19 -0800 (PST)
+Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id l10-20020a1709063d2a00b0078db18d7972sm497026ejf.117.2023.01.06.07.22.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 07:22:18 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <2dc46e55-6d16-d8d5-b70c-02c283970d4a@redhat.com>
+Date:   Fri, 6 Jan 2023 16:22:17 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.0
-Subject: Re: [PATCH net] gro: take care of DODGY packets
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        Coco Li <lixiaoyan@google.com>
-References: <20230106142523.1234476-1-edumazet@google.com>
-Content-Language: en-US, de-DE
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20230106142523.1234476-1-edumazet@google.com>
-Content-Type: text/plain; charset=UTF-8
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>
+Subject: Re: [PATCH v2 11/24] page_pool: Convert page_pool_empty_ring() to use
+ netmem
+Content-Language: en-US
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-12-willy@infradead.org>
+In-Reply-To: <20230105214631.3939268-12-willy@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1673017997;6e12cd7e;
-X-HE-SMSGID: 1pDoPC-0008Gn-3z
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06.01.23 15:25, Eric Dumazet wrote:
-> Jaroslav reported a recent throughput regression with virtio_net
-> caused by blamed commit.
+
+
+On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
+> Retrieve a netmem from the ptr_ring instead of a page.
 > 
-> It is unclear if DODGY GSO packets coming from user space
-> can be accepted by GRO engine in the future with minimal
-> changes, and if there is any expected gain from it.
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>   net/core/page_pool.c | 10 +++++-----
+>   1 file changed, 5 insertions(+), 5 deletions(-)
 > 
-> In the meantime, make sure to detect and flush DODGY packets.
-> 
-> Fixes: 5eddb24901ee ("gro: add support of (hw)gro packets to gro stack")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-and-bisected-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index e727a74504c2..0212244e07e7 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -755,16 +755,16 @@ EXPORT_SYMBOL(page_pool_alloc_frag);
+>   
+>   static void page_pool_empty_ring(struct page_pool *pool)
+>   {
+> -	struct page *page;
+> +	struct netmem *nmem;
+>   
+>   	/* Empty recycle ring */
+> -	while ((page = ptr_ring_consume_bh(&pool->ring))) {
+> +	while ((nmem = ptr_ring_consume_bh(&pool->ring)) != NULL) {
+>   		/* Verify the refcnt invariant of cached pages */
+> -		if (!(page_ref_count(page) == 1))
+> +		if (netmem_ref_count(nmem) != 1)
+>   			pr_crit("%s() page_pool refcnt %d violation\n",
+> -				__func__, page_ref_count(page));
+> +				__func__, netmem_ref_count(nmem));
+>   
+> -		page_pool_return_page(pool, page);
+> +		page_pool_return_netmem(pool, nmem);
+>   	}
+>
 
-Many thx for taking care of this. There is one small thing to improve,
-please add the following tag here to make things easier for future code
-archaeologists:
+I like the changes as it makes code more human readable :-)
 
-Link:
-https://lore.kernel.org/r/CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com/
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-To explain: Linus[1] and others considered proper link tags important in
-cases like this, as they allow anyone to look into the backstory of a
-commit weeks or years later. That's nothing new, the documentation[2]
-for some time says to place tags in cases like this. I care personally
-(and made it a bit more explicit in the docs a while ago), because these
-tags make my regression tracking efforts a whole lot easier, as they
-allow my tracking bot 'regzbot' to automatically connect reports with
-patches posted or committed to fix tracked regressions.
-
-Apropos regzbot, let me tell regzbot to monitor this thread:
-
-#regzbot ^backmonitor:
-https://lore.kernel.org/r/CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com/
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-[1] for details, see:
-https://lore.kernel.org/all/CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=wjxzafG-=J8oT30s7upn4RhBs6TX-uVFZ5rME+L5_DoJA@mail.gmail.com/
-
-[2] see Documentation/process/submitting-patches.rst
-(http://docs.kernel.org/process/submitting-patches.html) and
-Documentation/process/5.Posting.rst
-(https://docs.kernel.org/process/5.Posting.html)
-
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
