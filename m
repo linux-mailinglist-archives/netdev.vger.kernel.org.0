@@ -2,193 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 214E465FCAC
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 09:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B31565FCB2
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 09:26:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231980AbjAFIYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 03:24:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44498 "EHLO
+        id S231998AbjAFI0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 03:26:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbjAFIYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 03:24:15 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62598625E5
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 00:24:09 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id 141so763863pgc.0
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 00:24:09 -0800 (PST)
+        with ESMTP id S231912AbjAFI0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 03:26:09 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E57C6953B
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 00:26:05 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id m8-20020a05600c3b0800b003d96f801c48so3048103wms.0
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 00:26:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=yonsei-ac-kr.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=sn4vclDppemT9HR5gllHV02avqYoKes1VuAorkVaAhE=;
-        b=OykugGdeI1b8varXjNUGA0/rpqGUPfzdg+fuKc86CijoX97iiNxiUaB1a5FyMRbHpE
-         EF8ToHEaLAZL0A0/CZ7DiLTtXKnQ49rVaVHct5iIEuCp4C0CG4t3m14a679TXzwRZVH1
-         V2hYCctcETH0M59MLNvU0qQQ1njL4BslQr6asa3tXAOs/EN9hHKZ1sS9sVxVsp4WUEWN
-         rO8TkmL/IE0Iw7n1Dwkk0MM8ECrfx9lB9dZm+5TeUmhSyVzm0hcgN2t474pE87escejh
-         nxn20rq0+xKrglwpQUM+xSlssHI6Mj+lRJz2DWW0giID1mpY7s7ydck5/QJ3HRzcdXdZ
-         56sw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L0n/DIgDTfYifomNRqJzUTabMZYhQa7BFKwTKwm66yQ=;
+        b=qiRLqYUBA2u2o8wp63XaQ1VC8fn2Tiftp14ohCTvWdoi2JqSvKwHcGcTRvloLjI6tB
+         Cye4uonPkFK0xu5bB0aRg+d0beK5vTG7ubVHCQTQeRPDkGjz7LhzULFpZPbGyiAEz+/I
+         TZhbECeetpmSogDFh+t93fTk/vRYiFdT2+C1bYxpddDFMWzBhbMHINnNdWGUnIr8nEy/
+         BkX3x22vJHs2iANB4Hcz2zb8Rc40LStrfhrDBfRL6oOmdvdL4lM8TIDtidspddMnnhL9
+         3oM+d+ploOFa6/yD5zaAkwjpNOZwqHzQpflnASbpucCWsI5b7mQdUF84ioHBUQYWYuK2
+         V/xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sn4vclDppemT9HR5gllHV02avqYoKes1VuAorkVaAhE=;
-        b=0UvI/IZcy8zRmtdz0S3Q/ilU5SFSDh2D+yYDZ06ZS3WuMUG4RSGadPaH7/gBA8qrP+
-         hpP1l6LfeQArrGB2/rfhjDUgR6Yi20nTMLqokCTVrJWBc0ItOiVhdhPcIARON5v8Yk+B
-         n5E4R30KaYstEGhUy2ZvqqTSadS8N8InR7yBZiKxxbJ/VXQGTMO6z20cGHeiinFd2w7Z
-         usvKlpLG7YkF1ppP+SqSXZlqrwOZhj+Y7Rr5tA8ppGqLhjNlaaMjOb9nKOiaed2t8tvu
-         GYAD53dC+q/SJWQPo3DZivtcl5OzdorIeh76bsPzOAm2XPclgU5TI2CmQoIJ3GJsiI4m
-         p8nQ==
-X-Gm-Message-State: AFqh2kq8sx/dpNNHI2uOphwAobXayCttBDyikACgNFSIU0HLhZo5nSem
-        JBjYmNnIns8VKDjfm5pAr26VXlsTmqBq849IAlUSMQ==
-X-Google-Smtp-Source: AMrXdXtJ5r42tjQvO6OFDqB4LOX+Ip4QPuWMXWJZ/i+4OziaHIhAnKEaS0HEHFYnbUzhoXZPUYNGpQ==
-X-Received: by 2002:a05:6a00:3247:b0:576:65f5:c60a with SMTP id bn7-20020a056a00324700b0057665f5c60amr47625335pfb.27.1672993448756;
-        Fri, 06 Jan 2023 00:24:08 -0800 (PST)
-Received: from localhost.localdomain ([165.132.118.52])
-        by smtp.gmail.com with ESMTPSA id j123-20020a62c581000000b00576d76c9927sm557240pfg.106.2023.01.06.00.24.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 00:24:08 -0800 (PST)
-From:   Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-To:     kuba@kernel.org, krzysztof.kozlowski@linaro.org,
-        netdev@vger.kernel.org
-Cc:     aloisio.almeida@openbossa.org, sameo@linux.intel.com,
-        lauro.venancio@openbossa.org, linville@tuxdriver.com,
-        dokyungs@yonsei.ac.kr, jisoo.jang@yonsei.ac.kr,
-        Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Subject: [PATCH net v2] nfc: pn533: Wait for out_urb's completion in pn533_usb_send_frame()
-Date:   Fri,  6 Jan 2023 17:23:44 +0900
-Message-Id: <20230106082344.357906-1-linuxlovemin@yonsei.ac.kr>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=L0n/DIgDTfYifomNRqJzUTabMZYhQa7BFKwTKwm66yQ=;
+        b=GhIePTrju3Coj0VN4HKvn6bR+4u4N+Y1JRcUsP4ysx0HD67bCdeq2LW66Gg1ADpyYA
+         MSXMFmnBzjPGCKQCpBusLCOThJsiM3POWJE5JOTldulZVO0D32U1g0UJSHSgK0bsG616
+         VcZU8mYmdapTsNfKi6Ia6ihbfi0P4DlZU3cK+/N0fuX8RZhB5Eyqbtb7dZOPoOMuIC60
+         /jrsWMr9C7CN3y41eREDMzlFZskwV1kt5KO30mvg93D0pPvq72ycNVVgFxEDfL1zY6C6
+         PgEoRHvdsiq+/uotnkTFY4CRFE39B/niRx7ENmVNNPUzQgChoLxtdr4J2BpdHWxWK3gt
+         jOPw==
+X-Gm-Message-State: AFqh2koXb+1PkXR1AhRl5GXUqUvNdYSK/yT5qxKR3vU/7AgZkqPwOsEg
+        QgufhY4GHzExCYfNav+QsfOEBw==
+X-Google-Smtp-Source: AMrXdXuX4rDk5SLD2+Tq3xdf8miNpN3ODoaCpth4Y3JrZB56qa6ivt8EASjBYJGcf1JMrsCqcPcdwQ==
+X-Received: by 2002:a05:600c:3ba7:b0:3d3:4dac:aa69 with SMTP id n39-20020a05600c3ba700b003d34dacaa69mr38293045wms.36.1672993563943;
+        Fri, 06 Jan 2023 00:26:03 -0800 (PST)
+Received: from [192.168.1.102] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id z14-20020a05600c220e00b003d99fad7511sm821735wml.22.2023.01.06.00.26.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 00:26:03 -0800 (PST)
+Message-ID: <b74baadf-37a4-c9a2-c821-3c3e0143fa4a@linaro.org>
+Date:   Fri, 6 Jan 2023 09:26:01 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
+ ethernet phy Driver bindings
+Content-Language: en-US
+To:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
+ <20230105073024.8390-2-Frank.Sae@motor-comm.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230105073024.8390-2-Frank.Sae@motor-comm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a use-after-free that occurs in hcd when in_urb sent from
-pn533_usb_send_frame() is completed earlier than out_urb. Its callback
-frees the skb data in pn533_send_async_complete() that is used as a
-transfer buffer of out_urb. Wait before sending in_urb until the
-callback of out_urb is called. To modify the callback of out_urb alone,
-separate the complete function of out_urb and ack_urb.
+On 05/01/2023 08:30, Frank wrote:
+> Add a YAML binding document for the Motorcom yt8xxx Ethernet phy driver.
+> 
 
-Found by a modified version of syzkaller.
+Subject: drop second, redundant "Driver bindings".
 
-BUG: KASAN: use-after-free in dummy_timer
-Call Trace:
- memcpy (mm/kasan/shadow.c:65)
- dummy_perform_transfer (drivers/usb/gadget/udc/dummy_hcd.c:1352)
- transfer (drivers/usb/gadget/udc/dummy_hcd.c:1453)
- dummy_timer (drivers/usb/gadget/udc/dummy_hcd.c:1972)
- arch_static_branch (arch/x86/include/asm/jump_label.h:27)
- static_key_false (include/linux/jump_label.h:207)
- timer_expire_exit (include/trace/events/timer.h:127)
- call_timer_fn (kernel/time/timer.c:1475)
- expire_timers (kernel/time/timer.c:1519)
- __run_timers (kernel/time/timer.c:1790)
- run_timer_softirq (kernel/time/timer.c:1803)
+> Signed-off-by: Frank <Frank.Sae@motor-comm.com>
 
-Fixes: c46ee38620a2 ("NFC: pn533: add NXP pn533 nfc device driver")
-Signed-off-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
----
-v1->v2
-  Add file names and line numbers in the stack trace.
-  Put the completion struct for out_urb on the stack.
+Use full first and last name. Your email suggests something more than
+only "Frank".
 
- drivers/nfc/pn533/usb.c | 44 ++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 41 insertions(+), 3 deletions(-)
+> ---
+>  .../bindings/net/motorcomm,yt8xxx.yaml        | 180 ++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+>  MAINTAINERS                                   |   1 +
+>  3 files changed, 183 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> new file mode 100644
+> index 000000000000..337a562d864c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> @@ -0,0 +1,180 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/motorcomm,yt8xxx.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MotorComm yt8xxx Ethernet PHY
+> +
+> +maintainers:
+> +  - frank <frank.sae@motor-comm.com>
+> +
+> +description: |
+> +  Bindings for MotorComm yt8xxx PHYs.
 
-diff --git a/drivers/nfc/pn533/usb.c b/drivers/nfc/pn533/usb.c
-index 6f71ac72012e..ed9c5e2cf3ad 100644
---- a/drivers/nfc/pn533/usb.c
-+++ b/drivers/nfc/pn533/usb.c
-@@ -153,10 +153,17 @@ static int pn533_usb_send_ack(struct pn533 *dev, gfp_t flags)
- 	return usb_submit_urb(phy->ack_urb, flags);
- }
- 
-+struct pn533_out_arg {
-+	struct pn533_usb_phy *phy;
-+	struct completion done;
-+};
-+
- static int pn533_usb_send_frame(struct pn533 *dev,
- 				struct sk_buff *out)
- {
- 	struct pn533_usb_phy *phy = dev->phy;
-+	struct pn533_out_arg arg;
-+	void *cntx;
- 	int rc;
- 
- 	if (phy->priv == NULL)
-@@ -168,10 +175,17 @@ static int pn533_usb_send_frame(struct pn533 *dev,
- 	print_hex_dump_debug("PN533 TX: ", DUMP_PREFIX_NONE, 16, 1,
- 			     out->data, out->len, false);
- 
-+	init_completion(&arg.done);
-+	cntx = phy->out_urb->context;
-+	phy->out_urb->context = &arg;
-+
- 	rc = usb_submit_urb(phy->out_urb, GFP_KERNEL);
- 	if (rc)
- 		return rc;
- 
-+	wait_for_completion(&arg.done);
-+	phy->out_urb->context = cntx;
-+
- 	if (dev->protocol_type == PN533_PROTO_REQ_RESP) {
- 		/* request for response for sent packet directly */
- 		rc = pn533_submit_urb_for_response(phy, GFP_KERNEL);
-@@ -408,7 +422,31 @@ static int pn533_acr122_poweron_rdr(struct pn533_usb_phy *phy)
- 	return arg.rc;
- }
- 
--static void pn533_send_complete(struct urb *urb)
-+static void pn533_out_complete(struct urb *urb)
-+{
-+	struct pn533_out_arg *arg = urb->context;
-+	struct pn533_usb_phy *phy = arg->phy;
-+
-+	switch (urb->status) {
-+	case 0:
-+		break; /* success */
-+	case -ECONNRESET:
-+	case -ENOENT:
-+		dev_dbg(&phy->udev->dev,
-+			"The urb has been stopped (status %d)\n",
-+			urb->status);
-+		break;
-+	case -ESHUTDOWN:
-+	default:
-+		nfc_err(&phy->udev->dev,
-+			"Urb failure (status %d)\n",
-+			urb->status);
-+	}
-+
-+	complete(&arg->done);
-+}
-+
-+static void pn533_ack_complete(struct urb *urb)
- {
- 	struct pn533_usb_phy *phy = urb->context;
- 
-@@ -496,10 +534,10 @@ static int pn533_usb_probe(struct usb_interface *interface,
- 
- 	usb_fill_bulk_urb(phy->out_urb, phy->udev,
- 			  usb_sndbulkpipe(phy->udev, out_endpoint),
--			  NULL, 0, pn533_send_complete, phy);
-+			  NULL, 0, pn533_out_complete, phy);
- 	usb_fill_bulk_urb(phy->ack_urb, phy->udev,
- 			  usb_sndbulkpipe(phy->udev, out_endpoint),
--			  NULL, 0, pn533_send_complete, phy);
-+			  NULL, 0, pn533_ack_complete, phy);
- 
- 	switch (id->driver_info) {
- 	case PN533_DEVICE_STD:
--- 
-2.25.1
+Instead describe the hardware. No need to state the obvious that these
+are bindings.
+
+> +  yt8511 will be supported later.
+
+Bindings should be complete. Your driver support is not relevant here.
+
+> +
+> +allOf:
+> +  - $ref: ethernet-phy.yaml#
+> +
+> +properties:
+> +  motorcomm,clk-out-frequency:
+
+Use property suffixes matching the type.
+
+> +    description: clock output in Hertz on clock output pin.
+
+Drop "Hertz". It should be obvious from the suffix.
+
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+
+Drop.
+
+Anyway, does it fit standard clock-frequency property?
+
+> +    enum: [0, 25000000, 125000000]
+> +    default: 0
+> +
+> +  motorcomm,rx-delay-basic:
+> +    description: |
+> +      Tristate, setup the basic RGMII RX Clock delay of PHY.
+> +      This basic delay is fixed at 2ns (1000Mbps) or 8ns (100Mbps、10Mbps).
+> +      This basic delay usually auto set by hardware according to the voltage
+> +      of RXD0 pin (low = 0, turn off;   high = 1, turn on).
+> +      If not exist, this delay is controlled by hardware.
+
+I don't understand that at all. What "not exist"? There is no verb and
+no subject.
+
+The type and description are really unclear.
+
+> +      0: turn off;   1: turn on.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [0, 1]
+
+So this is bool?
+
+> +
+> +  motorcomm,rx-delay-additional-ps:
+> +    description: |
+> +      Setup the additional RGMII RX Clock delay of PHY defined in pico seconds.
+> +      RGMII RX Clock Delay = rx-delay-basic + rx-delay-additional-ps.
+> +    enum:
+
+Best regards,
+Krzysztof
 
