@@ -2,191 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A1B65FF2B
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:50:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4F4A65FF3B
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232424AbjAFKu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 05:50:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46162 "EHLO
+        id S231665AbjAFK7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 05:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232399AbjAFKuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:50:22 -0500
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868BD6DB8D;
-        Fri,  6 Jan 2023 02:50:20 -0800 (PST)
-Received: by mail-pj1-f52.google.com with SMTP id v13-20020a17090a6b0d00b00219c3be9830so1296991pjj.4;
-        Fri, 06 Jan 2023 02:50:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lRAlJPnsHvwo9+KYVt93sJxqGpThqmJEXZYgKf4vous=;
-        b=J5XLk1J7zJg+ZFA5q239CwxTwUVQ346vk6vQCPwoTay7Rf46O+9wgmoA6JIBoQ5aBD
-         zLn/w8caWm+C8pHli3V3KW2xRQbnBrc1JMPPG4CF3kE+FZOEZ3nkjIv0S0XKecxXh+vl
-         IOOBz+iGiL3tpwKMAMQ4Z2g6jaHYLJliK1mi6hvzFZLFwyfg8So9U+9Im2GO4VkEnuvW
-         22/ElRSHryi8SVZutRfo9yCemVS/9kyBMB43xWQiQwzHlqZshrhkck8gufhioEfMC32p
-         JkQG5XEUrw67VkxIExIQue6V7pyAN8+JrSgnOQF7ts+EBVkJv6n8iYXFV6dxP+v8v8gB
-         l+Ew==
-X-Gm-Message-State: AFqh2krKklZ4WbkbKYLlOveyvaLmTmm46TjjfBrOcafSDAjSbkf1rqOy
-        +srkHAI4kl/SU1Qh3FeVno4=
-X-Google-Smtp-Source: AMrXdXtUXYhEuTaGeA1+kPaRkyzwam/EhnGFQrOYqs3mfWmn9ZEjmO8GRSINAUVXTUyz1tzWTcpd8A==
-X-Received: by 2002:a17:902:d386:b0:192:68e8:c60c with SMTP id e6-20020a170902d38600b0019268e8c60cmr47799898pld.31.1673002220070;
-        Fri, 06 Jan 2023 02:50:20 -0800 (PST)
-Received: from milyway.. ([125.191.247.116])
-        by smtp.googlemail.com with ESMTPSA id e5-20020a17090301c500b00188fadb71ecsm732486plh.16.2023.01.06.02.50.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 02:50:19 -0800 (PST)
-From:   Leesoo Ahn <lsahn@ooseel.net>
-To:     lsahn@ooseel.net
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4] usbnet: optimize usbnet_bh() to reduce CPU load
-Date:   Fri,  6 Jan 2023 19:49:49 +0900
-Message-Id: <20230106104950.22741-1-lsahn@ooseel.net>
+        with ESMTP id S229837AbjAFK7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:59:09 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93BC6C28D;
+        Fri,  6 Jan 2023 02:59:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1673002748; x=1704538748;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=L3iMh35MDqRytr4MyNasNEh2imYIgz6B3BBSnvsTzpM=;
+  b=Y+AXBE7SSroEMcAnCZTYmYTz2BTz9I/cqlV804i6kCLnQJHo3U/6wmBO
+   g2jYIX5tQ+koldgpL4qXnBtQI157oCoRVdis8X9H0MFFuqMnTah/qsf9Y
+   7X1s0OLAGKAHf7SJukWT1p+/8ueFd40PUt82FJ83t5YK0rA11fUy5/vSi
+   S265Jr5ZX2vib40SDkpFX4fiv/mziD5+gvXcdSh5KUP8tPVL+FZrzfxBJ
+   DbMTi/Y0C6Sw/tzGKSaYFu84XZGpXH8KC8zWRpmFo3nvPo2fIl76DzLgf
+   TECSZHXwZJ3LPEe0af9ys6ZvcAlRR+9B1asQLwxVwtiiB3PF1AnUyuGpM
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,305,1665439200"; 
+   d="scan'208";a="28272859"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 06 Jan 2023 11:59:05 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 06 Jan 2023 11:59:05 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 06 Jan 2023 11:59:05 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1673002745; x=1704538745;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=L3iMh35MDqRytr4MyNasNEh2imYIgz6B3BBSnvsTzpM=;
+  b=LcTvFfx+HYtOvKQ1JPaQXBRLXjJ7SocvBzuzwP2arctAVv6u6KxPutH7
+   P/0vi/jQpiqu7/Ywfr4jkxhFBmfFvb45AA4R0m0+HCxlrgJQvkI7/Oopr
+   Ew+iuo9JJNJvP2qg3bl+v1t7pmftyP+pfCkq2WRr51iR7ObE8UPN7L7GA
+   Rjckr4jiOrKY7eC66ZPqYJkwTMH7ZuIhOqGVrUIrw/3pa1nBP/aISiWow
+   Cc2yzJ2z2JeP8Sn6c2S/9F9Pyt+FF9F8FB3ykDFh4vf/NrP/dqr8m/SlZ
+   UOg3iwPa+1lQ5P+E435fhFidDNqJrG/rDFsUXVsXcSIxeYB/WrMM13fZE
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,305,1665439200"; 
+   d="scan'208";a="28272858"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 06 Jan 2023 11:59:05 +0100
+Received: from steina-w.tq-net.de (unknown [10.123.53.21])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 39159280056;
+        Fri,  6 Jan 2023 11:59:05 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [RFC PATCH 0/2] ath10k USB support (QCA9377)
+Date:   Fri,  6 Jan 2023 11:58:51 +0100
+Message-Id: <20230106105853.3484381-1-alexander.stein@ew.tq-group.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current source pushes skb into dev-done queue by calling
-skb_dequeue_tail() and then pop it by skb_dequeue() to branch to
-rx_cleanup state for freeing urb/skb in usbnet_bh(). It takes extra CPU
-load, 2.21% (skb_queue_tail) as follows,
+Hello everyone,
 
--   11.58%     0.26%  swapper          [k] usbnet_bh
-   - 11.32% usbnet_bh
-      - 6.43% skb_dequeue
-           6.34% _raw_spin_unlock_irqrestore
-      - 2.21% skb_queue_tail
-           2.19% _raw_spin_unlock_irqrestore
-      - 1.68% consume_skb
-         - 0.97% kfree_skbmem
-              0.80% kmem_cache_free
-           0.53% skb_release_data
+apparently there have been several tries for adding ath10k USB support, see
+[1] & [2]. There are probably even more.
+This series is a first step for supporting my actual device,
+a Silex SX-USBAC. This is a Bluetooth & WiFi combo device.
 
-To reduce the extra CPU load use return values to call helper function
-usb_free_skb() to free the resources instead of calling skb_queue_tail()
-and skb_dequeue() for push and pop respectively.
+I picked commit 131da4f5a5b9 ("HACK: ath10k: add start_once support") from
+[2] and extracted the ath10k_hw_params_list entry from [3].
+Since v5.9, the base of [3], other required changes have already been
+integrated.
+For now I tested a very simple STA mode usage profile, using
+wpa_supplicant on a WPA interface. AP is untested, module unloading not
+supported, probably affected by the firmware start/stop patch 1 adds a
+workaround.
 
--    7.87%     0.25%  swapper          [k] usbnet_bh
-   - 7.62% usbnet_bh
-      - 4.81% skb_dequeue
-           4.74% _raw_spin_unlock_irqrestore
-      - 1.75% consume_skb
-         - 0.98% kfree_skbmem
-              0.78% kmem_cache_free
-           0.58% skb_release_data
-        0.53% smsc95xx_rx_fixup
+Reading the other, older series, apparently a lot has been merged already,
+but I do not know what is still missing fpr proper USB support.
+I would like to have a discussion for how to add support so the device is
+at least probing and can be used rudimentary.
 
-Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
----
-v4:
-  - Use usb_free_skb() helper function instead of goto label
+Best regards,
+Alexander
 
-v3:
-  - Replace return values with proper -ERR values in rx_process()
-  https://lore.kernel.org/netdev/20221221075924.1141346-1-lsahn@ooseel.net/
+[1] https://lore.kernel.org/all/1484343309-6327-1-git-send-email-erik.stromdahl@gmail.com/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/log/?h=ath10k-pending-sdio-usb
+[3] https://customergts.silexamerica.com/gpl/backports-ath10k-5.9.12-1
 
-v2:
-  - Replace goto label with return statement to reduce goto entropy
-  - Add CPU load information by perf in commit message
-  https://lore.kernel.org/netdev/20221221044230.1012787-1-lsahn@ooseel.net/
+For completness, here are USB IDs and 'lsusb -vvv' output
 
-v1 at:
-  https://lore.kernel.org/netdev/20221217161851.829497-1-lsahn@ooseel.net/
+Bus 001 Device 005: ID 0cf3: Ap9378 Qualcomm Atheros Communications QCA9377-7
+Bus 001 Device 004: ID 0cf3:e500 Qualcomm Atheros Communications
 
----
- drivers/net/usb/usbnet.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+$ lsusb -vvv -s 1:5
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index e4fbb4d86606..fc12b5c4241b 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -556,32 +556,30 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
- 
- /*-------------------------------------------------------------------------*/
- 
--static inline void rx_process (struct usbnet *dev, struct sk_buff *skb)
-+static inline int rx_process(struct usbnet *dev, struct sk_buff *skb)
- {
- 	if (dev->driver_info->rx_fixup &&
- 	    !dev->driver_info->rx_fixup (dev, skb)) {
- 		/* With RX_ASSEMBLE, rx_fixup() must update counters */
- 		if (!(dev->driver_info->flags & FLAG_RX_ASSEMBLE))
- 			dev->net->stats.rx_errors++;
--		goto done;
-+		return -EPROTO;
- 	}
- 	// else network stack removes extra byte if we forced a short packet
- 
- 	/* all data was already cloned from skb inside the driver */
- 	if (dev->driver_info->flags & FLAG_MULTI_PACKET)
--		goto done;
-+		return -EALREADY;
- 
- 	if (skb->len < ETH_HLEN) {
- 		dev->net->stats.rx_errors++;
- 		dev->net->stats.rx_length_errors++;
- 		netif_dbg(dev, rx_err, dev->net, "rx length %d\n", skb->len);
--	} else {
--		usbnet_skb_return(dev, skb);
--		return;
-+		return -EPROTO;
- 	}
- 
--done:
--	skb_queue_tail(&dev->done, skb);
-+	usbnet_skb_return(dev, skb);
-+	return 0;
- }
- 
- /*-------------------------------------------------------------------------*/
-@@ -1515,6 +1513,14 @@ static int rx_alloc_submit(struct usbnet *dev, gfp_t flags)
- 	return ret;
- }
- 
-+static inline void usb_free_skb(struct sk_buff *skb)
-+{
-+	struct skb_data *entry = (struct skb_data *)skb->cb;
-+
-+	usb_free_urb(entry->urb);
-+	dev_kfree_skb(skb);
-+}
-+
- /*-------------------------------------------------------------------------*/
- 
- // tasklet (work deferred from completions, in_irq) or timer
-@@ -1529,15 +1535,14 @@ static void usbnet_bh (struct timer_list *t)
- 		entry = (struct skb_data *) skb->cb;
- 		switch (entry->state) {
- 		case rx_done:
--			entry->state = rx_cleanup;
--			rx_process (dev, skb);
-+			if (rx_process(dev, skb))
-+				usb_free_skb(skb);
- 			continue;
- 		case tx_done:
- 			kfree(entry->urb->sg);
- 			fallthrough;
- 		case rx_cleanup:
--			usb_free_urb (entry->urb);
--			dev_kfree_skb (skb);
-+			usb_free_skb(skb);
- 			continue;
- 		default:
- 			netdev_dbg(dev->net, "bogus skb state %d\n", entry->state);
+Bus 001 Device 005: ID 0cf3:9378 Qualcomm Atheros Communications QCA9377-7
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.01
+  bDeviceClass          255 Vendor Specific Class
+  bDeviceSubClass       255 Vendor Specific Subclass
+  bDeviceProtocol       255 Vendor Specific Protocol
+  bMaxPacketSize0        64
+  idVendor           0x0cf3 Qualcomm Atheros Communications
+  idProduct          0x9378 QCA9377-7
+  bcdDevice            3.00
+  iManufacturer           1 Qualcomm Atheros
+  iProduct                2 USBWLAN
+  iSerial                 3 12345678
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength       0x006f
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xa0
+      (Bus Powered)
+      Remote Wakeup
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           8
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              2 USBWLAN
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x83  EP 3 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x84  EP 4 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x03  EP 3 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x04  EP 4 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       1
+      bNumEndpoints           4
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              2 USBWLAN
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x04  EP 4 OUT
+        bmAttributes            1
+          Transfer Type            Isochronous
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               1
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x83  EP 3 IN
+        bmAttributes            1
+          Transfer Type            Isochronous
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               1
+Binary Object Store Descriptor:
+  bLength                 5
+  bDescriptorType        15
+  wTotalLength       0x0016
+  bNumDeviceCaps          2
+  USB 2.0 Extension Device Capability:
+    bLength                 7
+    bDescriptorType        16
+    bDevCapabilityType      2
+    bmAttributes   0x0000f11e
+      BESL Link Power Management (LPM) Supported
+    BESL value      256 us 
+    Deep BESL value    61440 us 
+  SuperSpeed USB Device Capability:
+    bLength                10
+    bDescriptorType        16
+    bDevCapabilityType      3
+    bmAttributes         0x00
+    wSpeedsSupported   0x000e
+      Device can operate at Full Speed (12Mbps)
+      Device can operate at High Speed (480Mbps)
+      Device can operate at SuperSpeed (5Gbps)
+    bFunctionalitySupport   2
+      Lowest fully-functional device speed is High Speed (480Mbps)
+    bU1DevExitLat          10 micro seconds
+    bU2DevExitLat         256 micro seconds
+can't get debug descriptor: Resource temporarily unavailable
+Device Status:     0x0000
+  (Bus Powered)
+
+Alexander Stein (1):
+  ath10k: Add support for QCA9377 hw1.1 usb
+
+Erik Stromdahl (1):
+  HACK: ath10k: add start_once support
+
+ drivers/net/wireless/ath/ath10k/core.c | 48 +++++++++++++++++++++++---
+ drivers/net/wireless/ath/ath10k/core.h |  2 ++
+ drivers/net/wireless/ath/ath10k/hw.h   | 14 ++++++++
+ drivers/net/wireless/ath/ath10k/mac.c  |  7 ++--
+ drivers/net/wireless/ath/ath10k/usb.c  |  1 +
+ 5 files changed, 66 insertions(+), 6 deletions(-)
+
 -- 
 2.34.1
 
