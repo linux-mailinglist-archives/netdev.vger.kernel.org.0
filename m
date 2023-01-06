@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C5C65FCBA
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 09:29:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF0C65FCE1
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 09:37:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbjAFI3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 03:29:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46648 "EHLO
+        id S229437AbjAFIh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 03:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232180AbjAFI3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 03:29:23 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596187A920;
-        Fri,  6 Jan 2023 00:29:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1672993762; x=1704529762;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=OKsrMUds3JwbloBzsKaWTIBxPZJcQykKaE7DFA0jHmc=;
-  b=U/xWVyOHxgN8UVNgCoxjkPp5/PDVkvNqKEUqvkOXELYdMdLnmprncL2z
-   19xtwCs/rpAOXFp5Xhe/V6wLn3zq6bCkXtkmTy70WOyutJt29FEWWaFpf
-   tfN9+Qsv3LXg4w+PexnnqtTw2PVG+hio7PbCBLNuxxMJkGzBSQ5Uf0h0P
-   MnBsIyy/wfMdCcV8s4ynolUn90AMLdk2tkj64JQI+5XVj92X+6Q35RvQf
-   Wsh9n5L5rzpYPADVzZDd7YuVCeu8I8APaJfb+b7GpyLbBRnnfAtvnmus9
-   Ew8H/fl3EgyqD9PgiyXDTCg4Ukzf6IwFrmgazsFjLphiT3F83UnCRTkNB
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,304,1665471600"; 
-   d="scan'208";a="195562570"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jan 2023 01:29:21 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 6 Jan 2023 01:29:21 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Fri, 6 Jan 2023 01:29:17 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>,
-        <alexanderduyck@fb.com>
-CC:     <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v6 net-next 2/2] net: phy: micrel: Fix warn: passing zero to PTR_ERR
-Date:   Fri, 6 Jan 2023 13:59:05 +0530
-Message-ID: <20230106082905.1159-3-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230106082905.1159-1-Divya.Koppera@microchip.com>
-References: <20230106082905.1159-1-Divya.Koppera@microchip.com>
+        with ESMTP id S232591AbjAFIg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 03:36:57 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040E76699B
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 00:36:09 -0800 (PST)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pDiCt-0000Zg-9H; Fri, 06 Jan 2023 09:36:07 +0100
+Message-ID: <adb0129f-0570-6a11-7ea6-3ee7d851bb50@leemhuis.info>
+Date:   Fri, 6 Jan 2023 09:36:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: Network performance regression with linux 6.1.y. Issue bisected
+ to "5eddb24901ee49eee23c0bfce6af2e83fd5679bd" (gro: add support of (hw)gro
+ packets to gro stack)
+Content-Language: en-US, de-DE
+To:     Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
+        edumazet@google.com, netdev@vger.kernel.org, lixiaoyan@google.com,
+        pabeni@redhat.com, davem@davemloft.net,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc:     Igor Raits <igor.raits@gooddata.com>
+References: <CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com>
+From:   "Linux kernel regression tracking (#adding)" 
+        <regressions@leemhuis.info>
+Reply-To: Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CAK8fFZ5pzMaw3U1KXgC_OK4shKGsN=HDcR62cfPOuL0umXE1Ww@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1672994170;3edb1e72;
+X-HE-SMSGID: 1pDiCt-0000Zg-9H
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,74 +49,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle the NULL pointer case
+[TLDR: I'm adding this report to the list of tracked Linux kernel
+regressions; all text you find below is based on a few templates
+paragraphs you might have encountered already already in similar form.
+See link in footer if these mails annoy you.]
 
-Fixes New smatch warnings:
-drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
+[CCing the regression list, as it should be in the loop for regressions:
+https://docs.kernel.org/admin-guide/reporting-regressions.html]
 
-vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
----
-v5 -> v6:
-- Removed fixes tag as this is to fix static analysis issues and not
-  real fix.
+On 05.01.23 18:37, Jaroslav Pulchart wrote:
+> Hello,
+> 
+> I would like to report a 6.1,y regression in a network performance
+> observed when using "git clone".
+> 
+> BAD: "git clone" speed with kernel 6.1,y:
+>    # git clone git@github.com:..../.....git
+>    ...
+>    Receiving objects:   8% (47797/571306), 20.69 MiB | 3.27 MiB/s
+> 
+> GOOD: "git clone" speed with kernel 6.0,y:
+>    # git clone git@github.com:..../.....git
+>    ...
+>    Receiving objects:  72% (411341/571306), 181.05 MiB | 60.27 MiB/s
+> 
+> I bisected the issue to a commit
+> 5eddb24901ee49eee23c0bfce6af2e83fd5679bd "gro: add support of (hw)gro
+> packets to gro stack". Reverting it from 6.1.y branch makes the git
+> clone fast like with 6.0.y.
 
-v4 -> v5:
-- Removed run time check and added compile time check for PHC
+Thanks for the report. To be sure the issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
+tracking bot:
 
-v3 -> v4:
-- Split the patch for different warnings
-- Renamed variable from shared_priv to shared.
+#regzbot ^introduced 5eddb24901ee49eee23c0bfce6af2e83fd5679bd
+#regzbot title net: gro: Network performance regressed
+#regzbot ignore-activity
 
-v2 -> v3:
-- Changed subject line from net to net-next
-- Removed config check for ptp and clock configuration
-  instead added null check for ptp_clock
-- Fixed one more warning related to initialisaton.
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
 
-v1 -> v2:
-- Handled NULL pointer case
-- Changed subject line with net-next to net
----
- drivers/net/phy/micrel.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report (see page linked in footer for details).
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 1bcdb828db56..650ef53fcf20 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -3017,10 +3017,6 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
- {
- 	struct lan8814_shared_priv *shared = phydev->shared->priv;
- 
--	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
--	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
--		return 0;
--
- 	/* Initialise shared lock for clock*/
- 	mutex_init(&shared->shared_lock);
- 
-@@ -3040,12 +3036,16 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
- 
- 	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
- 					       &phydev->mdio.dev);
--	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
-+	if (IS_ERR(shared->ptp_clock)) {
- 		phydev_err(phydev, "ptp_clock_register failed %lu\n",
- 			   PTR_ERR(shared->ptp_clock));
- 		return -EINVAL;
- 	}
- 
-+	/* Check if PHC support is missing at the configuration level */
-+	if (!shared->ptp_clock)
-+		return 0;
-+
- 	phydev_dbg(phydev, "successfully registered ptp clock\n");
- 
- 	shared->phydev = phydev;
--- 
-2.17.1
-
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
