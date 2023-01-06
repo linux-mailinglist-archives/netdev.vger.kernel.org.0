@@ -2,147 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6EF665FD3B
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 10:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC15665FD4B
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 10:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbjAFI7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 03:59:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
+        id S231719AbjAFJHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 04:07:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232810AbjAFI7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 03:59:38 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22E26879E
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 00:59:33 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id d9so1055898pll.9
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 00:59:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sw3sp6r9vymtrtgrofpxGouclnST4oSk5PXU3tJTd6Y=;
-        b=fEvFxUg8GYOJa5qJZ8gZCANmM3YuhFXrU4NnnXsREOu3m1c8OaCaM/6ssQxLOwgoK5
-         r8UQc6j8mQhCSGzV0STazkt6O5AzmysmQ7hK8IVlxTE2zu+GXspNpLdHD3h1fGqBb6e9
-         agqieBcSA/UbciWj+RtRbyU0lsFAgbhTDVGQbSkxb2Kt5hpm7PjMQHhzn/zDHFQd49Gc
-         a85feNnPMABviCjD7uFCX2tH02nG88RF4+BWBl6OEJkX4MdOvKkUKeGiDT4slbvAre0F
-         fK6QThd1ufF/cKApY8EGlxhv+vWhtr3zn6P0i77ENAzRezQWRARErgvLlwyFDiGvWZ6x
-         gBFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Sw3sp6r9vymtrtgrofpxGouclnST4oSk5PXU3tJTd6Y=;
-        b=PIwU4y0ymEAcbmVe+t4vXsX7R4cN0vHmrRkUaWDfLnl/vSBlCzQ+kqPlj1bUYeBSVe
-         +/RCW4ukspg9QQO8m/i8VDGywlIo+B7bN2KSPzaLlMsUbZY0HKUFQ3+KeyUsMnt5UlVw
-         9It7BWHslNbmZpZxNmKN6//m9cn11bBiTsff/vBGLdwWlYr8ImnZjBn9rGEFWfTLUbLI
-         F6eLNxLxmhN4jmgiamVmpdYqiYhXnbeSA9meH2bTlWotVUKGdx69HHZdr8FJQ7kppRMJ
-         669d+Q9jgi1HGQVqHPNFmEbckX755sdzkf7/DwXGOJCC1ROHSQu5xcj8zQDBg3Fy6Em0
-         gScQ==
-X-Gm-Message-State: AFqh2kq/orwoueqzc5ngg7UI6EPeJCHqzABbXGdVpG5pLr+FUalM2d40
-        sd0AmJ2KZSsO2ibipzZ+UqFhVQ==
-X-Google-Smtp-Source: AMrXdXtq3+fsLo7FMkYY7uu9qDJmuVDMnySF4v8cHZ+msLX8d5uIZ3VVGVMotNrHKuBxRwOWgo3CMw==
-X-Received: by 2002:a17:90a:5503:b0:219:6bf0:9861 with SMTP id b3-20020a17090a550300b002196bf09861mr57341302pji.10.1672995573519;
-        Fri, 06 Jan 2023 00:59:33 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id m2-20020a17090a5a4200b00219220edf0dsm510070pji.48.2023.01.06.00.59.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 00:59:33 -0800 (PST)
-Date:   Fri, 6 Jan 2023 09:59:30 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
-Subject: Re: [PATCH net-next v2 14/15] devlink: add by-instance dump infra
-Message-ID: <Y7fi8tIYTlQp1PWo@nanopsycho>
-References: <20230105040531.353563-1-kuba@kernel.org>
- <20230105040531.353563-15-kuba@kernel.org>
- <Y7aXXQUraJl6So2V@nanopsycho>
- <e460c958-625e-a7e7-6552-d3ce5334654f@intel.com>
+        with ESMTP id S229532AbjAFJHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 04:07:30 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5581C42E;
+        Fri,  6 Jan 2023 01:07:29 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id BD12C11FB;
+        Fri,  6 Jan 2023 10:07:27 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1672996047;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G/N9bFhFvobzsxRElHamLqc2QSzr6u1r8qJYQ1cDHWs=;
+        b=OODeHX4+Fne2I9M3Ccj5dHUWATFgG/aLXyDmh8ECSxscD0O8FfLYSvxDCuqmtctdZlZfrI
+        l0u0Y/l4eTU06lHziwX9q2KsUqecQPdMUtji3mWNP8QosRd3AfdjcoN2Rp5vrPksMI8TJX
+        +k7sBr/igIPm0iigwUsrhKUwsKXKaTBFgFeo/9gJFXOsBHAjBMB9zxB/MYZVNDJXY2DqZ7
+        Vo9CycD6DWFT4/0fvertQrb/KY9cMfFA1gNyGrS1UGgiR7Y4haw+//eqLA6kcNRIaYuhC3
+        QObe1TMR3iyumZpXOREXMU9vPiqWYpP3KPt/VlXLUKeXvenE6BH+elLE1oM3WQ==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e460c958-625e-a7e7-6552-d3ce5334654f@intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Fri, 06 Jan 2023 10:07:27 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH net-next v2 0/8] Add support for two classes of VCAP rules
+In-Reply-To: <20230106085317.1720282-1-steen.hegelund@microchip.com>
+References: <20230106085317.1720282-1-steen.hegelund@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <35a9ff9fa0980e1e8542d338c6bf1e0c@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 06, 2023 at 01:16:05AM CET, jacob.e.keller@intel.com wrote:
->
->
->On 1/5/2023 1:24 AM, Jiri Pirko wrote:
->> Thu, Jan 05, 2023 at 05:05:30AM CET, kuba@kernel.org wrote:
->>> Most dumpit implementations walk the devlink instances.
->>> This requires careful lock taking and reference dropping.
->>> Factor the loop out and provide just a callback to handle
->>> a single instance dump.
->>>
->>> Convert one user as an example, other users converted
->>> in the next change.
->>>
->>> Slightly inspired by ethtool netlink code.
->>>
->>> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
->>> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->>> ---
->>> net/devlink/devl_internal.h | 10 +++++++
->>> net/devlink/leftover.c      | 55 ++++++++++++++++---------------------
->>> net/devlink/netlink.c       | 34 +++++++++++++++++++++++
->>> 3 files changed, 68 insertions(+), 31 deletions(-)
->>>
->>> diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
->>> index 15149b0a68af..734553beccde 100644
->>> --- a/net/devlink/devl_internal.h
->>> +++ b/net/devlink/devl_internal.h
->>> @@ -122,6 +122,11 @@ struct devlink_nl_dump_state {
->>> 	};
->>> };
->>>
->>> +struct devlink_gen_cmd {
->> 
->> As I wrote in reply to v1, could this be "genl"?
->> 
->
->Except Kuba already said this wasn't about "generic netlink" but
->"generic devlink command" vs "complicated command that can't use the new
+Hi Steen,
 
-Okay, that confuses me. What is supposed to be "generic devlink
-command"? I don't see anything "generic" about these.
+thanks for adding me on CC :) I was just about to reply on your v1.
 
+Am 2023-01-06 09:53, schrieb Steen Hegelund:
+> This adds support for two classes of VCAP rules:
+> 
+> - Permanent rules (added e.g. for PTP support)
+> - TC user rules (added by the TC userspace tool)
+> 
+> For this to work the VCAP Loopups must be enabled from boot, so that 
+> the
+> "internal" clients like PTP can add rules that are always active.
+> 
+> When the TC tool add a flower filter the VCAP rule corresponding to 
+> this
+> filter will be disabled (kept in memory) until a TC matchall filter 
+> creates
+> a link from chain 0 to the chain (lookup) where the flower filter was
+> added.
+> 
+> When the flower filter is enabled it will be written to the appropriate
+> VCAP lookup and become active in HW.
+> 
+> Likewise the flower filter will be disabled if there is no link from 
+> chain
+> 0 to the chain of the filter (lookup), and when that happens the
+> corresponding VCAP rule will be read from the VCAP instance and stored 
+> in
+> memory until it is deleted or enabled again.
 
->iterator for whatever reason", so genl feels misleading.
->
->I guess gen is also kind of misleading but I can't think of anything better.
->
->> 
->>> +	int (*dump_one)(struct sk_buff *msg, struct devlink *devlink,
->>> +			struct netlink_callback *cb);
->>> +};
->>> +
->>> /* Iterate over registered devlink instances for devlink dump.
->>>  * devlink_put() needs to be called for each iterated devlink pointer
->>>  * in loop body in order to release the reference.
->> 
->> [...]
->> 
->> 
->>> @@ -9130,7 +9123,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
->>> 	{
->>> 		.cmd = DEVLINK_CMD_RATE_GET,
->>> 		.doit = devlink_nl_cmd_rate_get_doit,
->>> -		.dumpit = devlink_nl_cmd_rate_get_dumpit,
->>> +		.dumpit = devlink_nl_instance_iter_dump,
->> 
->> devlink_nl_instance_iter_dumpit to match ".dumpit".
->> 
->> 
->>> 		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
->>> 		/* can be retrieved by unprivileged users */
->>> 	},
->> 
->> [...]
+I've just done a very quick smoke test and looked at my lan9668 board
+that the following error isn't printed anymore. No functional testing.
+   vcap_val_rule:1678: keyset was not updated: -22
+
+And it is indeed gone. But I have a few questions regarding how these
+patches are applied. They were first sent for net, but now due to
+a remark that they are too invasive they are targeted at net-next.
+But they have a Fixes: tag. Won't they be eventually backported to
+later kernels in any case? What's the difference between net and
+net-next then?
+
+Also patches 3-8 (the one with the fixes tags) don't apply without
+patch 1-2 (which don't have fixes tags). IMHO they should be
+reordered.
+
+Wouldn't it make more sense, to fix the regression via net (and
+a Fixes: tag) and then make that stuff work without tc? Maybe
+the fix is just reverting the commits.
+
+-michael
