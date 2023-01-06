@@ -2,152 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C340166020E
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:25:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F86966020C
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234833AbjAFOZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 09:25:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
+        id S233101AbjAFOZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 09:25:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234693AbjAFOZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:25:28 -0500
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C857BDCA;
-        Fri,  6 Jan 2023 06:25:27 -0800 (PST)
-Received: by mail-pf1-f181.google.com with SMTP id z7so1131153pfq.13;
-        Fri, 06 Jan 2023 06:25:27 -0800 (PST)
+        with ESMTP id S229601AbjAFOZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:25:26 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3647BDE3
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:25:25 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-46839d9ca5dso19259067b3.16
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 06:25:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=bd8ai8qv1wKopdO9WVErBGIsnnYrc0zRGIlCsBo5A0k=;
+        b=khFqWr4rRt/kd7KsJe+IbnPEUw0zk+PAyTmaf0nOWvVgj4JATxYs3QXHB0IkyPvbP5
+         sIWehjHQvo1xfdXsXHVnPk2lPkZoNU/I3h+KGfjbzCa+sLW/f0sI7/u0BViKXLQz1YlK
+         KEXJfVDp5kHoq3nUO4NPSvxymx4UF1keK3cgQelycnC8b7VMb7SMmLjYxTAx1oV3Qtec
+         k07hHLkr8pOxQB0gLQ4i4cLX/ntgUR5SnRJ9uK9GRog0H8iM54v+lJf09yxfid6XorF8
+         bC+Bi7s/2s91DLHjVy/C8Or0jPDnMvHe3X0yLBQ5wjJK0+iiR5N3B4HDjm9gBhpLgLvD
+         TNWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZnhpvIy2ZsoQIvjxqkh6LV97wMF7pwAzJclzOI/EkUA=;
-        b=gJpZEqK8J9iUXg6/NaMcM7g+hrm6Idxwqlmg2b1oNBbzs6/lK/Loxi/Aw5Qxq0QDSL
-         Wzp5ZdvcMC4ujm8MnXlIKhlnF8ZUjqHI9TH5AiZQCCNsNoap4tu6GunKKk2qjR9HqW4u
-         J8ghWWq4JwmMmYkbOBsS0ok57pIMsqzoE1eL+gu9TQ/GvYMfgTCZ3WS8K0VTnen/BsOz
-         IOFqTOn25Q3HJoK9P6IJtl2knqLE86CIWndu/O6NDO83G/uhQPltF5L8o531fSzkeM2g
-         9oT9VV09XCANxxPLCJrBuhnGbPQxclXN1S079dOK5hzQ5PI8+k39fAOhRvDnuH1PoWTf
-         dWsw==
-X-Gm-Message-State: AFqh2koRrzxuFn0EPfhR9C0HyGBKOJMf9T2VMmVWRQZn8W0lbSysSCzL
-        x34QhEVBo7gsiSewxncoEuIKxMqnO4m9/mggJlY=
-X-Google-Smtp-Source: AMrXdXupE8sC+Y3fGN3ty9aij7GdI5lL4SimVP4vcqOWquE7YENA7c1nv0MwPYafQUD94503z2yComXmE17v1S9TlPc=
-X-Received: by 2002:a63:2106:0:b0:483:f80c:cdf3 with SMTP id
- h6-20020a632106000000b00483f80ccdf3mr2608100pgh.70.1673015126142; Fri, 06 Jan
- 2023 06:25:26 -0800 (PST)
-MIME-Version: 1.0
-References: <20230106042844.give.885-kees@kernel.org> <CAG48ez0Jg9Eeh=RWpYh=sKhzukE3Sza2RKMmNs8o0FrHU0dj9w@mail.gmail.com>
-In-Reply-To: <CAG48ez0Jg9Eeh=RWpYh=sKhzukE3Sza2RKMmNs8o0FrHU0dj9w@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 6 Jan 2023 23:25:14 +0900
-Message-ID: <CAMZ6RqJXnUBxqyCFRaLxELjnvGzn9NoiePV2RVwBzAZRGH_Qmg@mail.gmail.com>
-Subject: Re: [PATCH v3] ethtool: Replace 0-length array with flexible array
-To:     Jann Horn <jannh@google.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        kernel test robot <lkp@intel.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bd8ai8qv1wKopdO9WVErBGIsnnYrc0zRGIlCsBo5A0k=;
+        b=Ek6F9m7E1m3FKsXwd8H9MmQRtMCushpl2TSqJxMr4hP3PL29BrSAq0b4A4M1Qxrv6F
+         em/Ltxd2eFEgdRbW3Imz4ZJ0S3AsIAXUu1/EFo7VCyLcORsfeheKc/SL8TpBSm32Iqfk
+         9e3SUM1gQGwSjdCMZydalChYPNWHudt3Qe//h5zA0M78SltVQ/uU048qLOWFaCnVdk9M
+         phODZvB9O90YXtvlIl+iZa3Y1n8rq85xDrEtrOdeIbebIrqtaHMgTLLouUT/S+M5hySb
+         xXSb25d2vDF5yXX/tDmaoJGFfFeB75CsXIHFyw61tBGX9VgifYSmwf78sUtWJuXpkb7v
+         LI1g==
+X-Gm-Message-State: AFqh2kq8+EPbmnQmyzLa0Jx7+yca3Z6UaLygPZG6W6UrEoWBWPXrNezV
+        h1GJmU12LGxhiT8neQOHgTydaXeuxpqd4w==
+X-Google-Smtp-Source: AMrXdXvncwNeqXe9cfyayVKATafrskSsVmKnrpyjZszYuGCh7YRMzZ8CaI2MP+Nmo/MWVrLn03xLCuyqTeBMhg==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a81:4f4b:0:b0:36a:bc93:587c with SMTP id
+ d72-20020a814f4b000000b0036abc93587cmr341337ywb.59.1673015124797; Fri, 06 Jan
+ 2023 06:25:24 -0800 (PST)
+Date:   Fri,  6 Jan 2023 14:25:23 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.0.314.g84b9a713c41-goog
+Message-ID: <20230106142523.1234476-1-edumazet@google.com>
+Subject: [PATCH net] gro: take care of DODGY packets
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
+        Coco Li <lixiaoyan@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri. 6 Jan 2023 at 22:19, Jann Horn <jannh@google.com> wrote:
-> On Fri, Jan 6, 2023 at 5:28 AM Kees Cook <keescook@chromium.org> wrote:
-> > Zero-length arrays are deprecated[1]. Replace struct ethtool_rxnfc's
-> > "rule_locs" 0-length array with a flexible array. Detected with GCC 13,
-> > using -fstrict-flex-arrays=3:
-> >
-> > net/ethtool/common.c: In function 'ethtool_get_max_rxnfc_channel':
-> > net/ethtool/common.c:558:55: warning: array subscript i is outside array bounds of '__u32[0]' {aka 'unsigned int[]'} [-Warray-bounds=]
-> >   558 |                         .fs.location = info->rule_locs[i],
-> >       |                                        ~~~~~~~~~~~~~~~^~~
-> > In file included from include/linux/ethtool.h:19,
-> >                  from include/uapi/linux/ethtool_netlink.h:12,
-> >                  from include/linux/ethtool_netlink.h:6,
-> >                  from net/ethtool/common.c:3:
-> > include/uapi/linux/ethtool.h:1186:41: note: while referencing
-> > 'rule_locs'
-> >  1186 |         __u32                           rule_locs[0];
-> >       |                                         ^~~~~~~~~
-> >
-> > [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: kernel test robot <lkp@intel.com>
-> > Cc: Oleksij Rempel <linux@rempel-privat.de>
-> > Cc: Sean Anderson <sean.anderson@seco.com>
-> > Cc: Alexandru Tachici <alexandru.tachici@analog.com>
-> > Cc: Amit Cohen <amcohen@nvidia.com>
-> > Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-> > Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> > v3: don't use helper (vincent)
-> > v2: https://lore.kernel.org/lkml/20230105233420.gonna.036-kees@kernel.org
-> > ---
-> >  include/uapi/linux/ethtool.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> > index 58e587ba0450..3135fa0ba9a4 100644
-> > --- a/include/uapi/linux/ethtool.h
-> > +++ b/include/uapi/linux/ethtool.h
-> > @@ -1183,7 +1183,7 @@ struct ethtool_rxnfc {
-> >                 __u32                   rule_cnt;
-> >                 __u32                   rss_context;
-> >         };
-> > -       __u32                           rule_locs[0];
-> > +       __u32                           rule_locs[];
->
-> Stupid question: Is this syntax allowed in UAPI headers despite not
-> being part of standard C90 or C++? Are we relying on all C/C++
-> compilers for pre-C99 having gcc/clang extensions?
+Jaroslav reported a recent throughput regression with virtio_net
+caused by blamed commit.
 
-The [0] isn't part of the C90 standard either. So having to choose
-between [0] and [], the latter is the most portable nowadays.
+It is unclear if DODGY GSO packets coming from user space
+can be accepted by GRO engine in the future with minimal
+changes, and if there is any expected gain from it.
 
-If I do a bit of speleology, I can see that C99 flexible array members
-were used as early as v2.6.19 (released in November 2006):
+In the meantime, make sure to detect and flush DODGY packets.
 
-  https://elixir.bootlin.com/linux/v2.6.19/source/include/linux/usb/audio.h#L36
+Fixes: 5eddb24901ee ("gro: add support of (hw)gro packets to gro stack")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-and-bisected-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Cc: Coco Li <lixiaoyan@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+---
+ net/core/gro.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-This is prior to the include/linux and include/uapi/linux split, but
-believe me, this usb/audio.h file is indeed part of the uapi.
-So, yes, using C99 flexible array members in the UAPI is de facto
-allowed because it was used for the last 16 years.
+diff --git a/net/core/gro.c b/net/core/gro.c
+index fd8c6a7e8d3e2e6b439109d0089f44a547c7347e..506f83d715f873c9bc3727e28ace71e00fa79d2f 100644
+--- a/net/core/gro.c
++++ b/net/core/gro.c
+@@ -505,8 +505,9 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+ 	NAPI_GRO_CB(skb)->count = 1;
+ 	if (unlikely(skb_is_gso(skb))) {
+ 		NAPI_GRO_CB(skb)->count = skb_shinfo(skb)->gso_segs;
+-		/* Only support TCP at the moment. */
+-		if (!skb_is_gso_tcp(skb))
++		/* Only support TCP and non DODGY users. */
++		if (!skb_is_gso_tcp(skb) ||
++		    (skb_shinfo(skb)->gso_type & SKB_GSO_DODGY))
+ 			NAPI_GRO_CB(skb)->flush = 1;
+ 	}
+ 
+-- 
+2.39.0.314.g84b9a713c41-goog
 
-An interesting sub question would be:
-
-  What are the minimum compiler requirements to build a program using
-the Linux UAPI?
-
-And, after research, I could not find the answer. The requirements to
-build the kernel are well documented:
-
-  https://docs.kernel.org/process/changes.html#changes
-
-But no clue for the uapi. I guess that at one point in 2006, people
-decided that it was time to set the minimum requirement to C99. Maybe
-this matches the end of life of the latest pre-C99 GCC version? The
-detailed answer must be hidden somewhere on lkml.
-
-
-Yours sincerely,
-Vincent Mailhol
