@@ -2,123 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14B32660433
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:25:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC59660437
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:26:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235167AbjAFQZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 11:25:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47370 "EHLO
+        id S235325AbjAFQ0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 11:26:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235256AbjAFQZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:25:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5717BDDB;
-        Fri,  6 Jan 2023 08:25:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B6C8B81DDE;
-        Fri,  6 Jan 2023 16:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82EC2C4339E;
-        Fri,  6 Jan 2023 16:25:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673022335;
-        bh=lVDpUjnFc4FP1Bc2ZATeWjj7jUbr00O4vLVnvBsZp4A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qqkUuSacfFJLFtwu8WN/u3Mm7bMbg3DVIHB8KT+0cOHYldjs+DMzXL69oj1VhptiV
-         sVJonKjYbS1YFm5bhxmkTKByZwo6ovSzvaJ10VQ2P4sKo4XtYWONrhPNMXGiBks02U
-         kd3dUcbz9wactIKl224wLqQ/E8nidCoEEncgAnXMx1I3DX/EVGPXbL/439sLeetRcA
-         sXHhYWvVzEVKOnRCllJJNpOy8vpfZ9BPN7c0nVyh4bfYvwJpj6DTpiwBVPgrnpFCd8
-         j/XkLMQZoZpqgTkFdLHiW1JNYVmHGrzOTLhTGq+QL28ZTXadNln9YpZKcXJIvPI3hr
-         gxat35coZk8GQ==
-Date:   Fri, 6 Jan 2023 10:25:40 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        kernel test robot <lkp@intel.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v3] ethtool: Replace 0-length array with flexible array
-Message-ID: <Y7hLhG6xf6KowsDo@work>
-References: <20230106042844.give.885-kees@kernel.org>
+        with ESMTP id S231374AbjAFQ0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:26:35 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5016E1A838
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 08:26:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673022394; x=1704558394;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ctzDQnYxxyCDps2wP23DPf/rRuEaD1btA2BvbQjol7M=;
+  b=bGWjUL+/uGPcbobLiTu05rWYxbQYjYxgEdWqMBSZFXfCDz3fS7j3ZRir
+   VwPiD4xvOHLY0tvLai+M+bHP/VuWfk2OopzmRZRgJNfY8y13/Z3BD6jHc
+   qHQuaQtq1WIggFY4p7foN51bmHLJZ/qaECr3WWa60/I2bIplBZ7t0R1Ni
+   0W2UkTUcfezGWB06QUYMn9AY+nBPhsrUTNutXW4wQ61SVWp9qcv3VYT2m
+   89z8QVYZRfqJXkl6hIVoFaZmr7qeWk2r2xAPbYzuL3R7JHI5jrOzanWXJ
+   sdbiBMiI+pU8RSU9sHGua3ZHk9Izo5qIyVPPJRZosCZRbHtp0dy5V1gqP
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="321210293"
+X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
+   d="scan'208";a="321210293"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 08:26:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="798319063"
+X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
+   d="scan'208";a="798319063"
+Received: from bswcg005.iind.intel.com ([10.224.174.136])
+  by fmsmga001.fm.intel.com with ESMTP; 06 Jan 2023 08:26:28 -0800
+From:   m.chetan.kumar@linux.intel.com
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
+        m.chetan.kumar@linux.intel.com, matthias.bgg@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v3 net-next 0/5] net: wwan: t7xx: fw flashing & coredump support
+Date:   Fri,  6 Jan 2023 21:56:16 +0530
+Message-Id: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230106042844.give.885-kees@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 08:28:48PM -0800, Kees Cook wrote:
-> Zero-length arrays are deprecated[1]. Replace struct ethtool_rxnfc's
-> "rule_locs" 0-length array with a flexible array. Detected with GCC 13,
-> using -fstrict-flex-arrays=3:
-> 
-> net/ethtool/common.c: In function 'ethtool_get_max_rxnfc_channel':
-> net/ethtool/common.c:558:55: warning: array subscript i is outside array bounds of '__u32[0]' {aka 'unsigned int[]'} [-Warray-bounds=]
->   558 |                         .fs.location = info->rule_locs[i],
->       |                                        ~~~~~~~~~~~~~~~^~~
-> In file included from include/linux/ethtool.h:19,
->                  from include/uapi/linux/ethtool_netlink.h:12,
->                  from include/linux/ethtool_netlink.h:6,
->                  from net/ethtool/common.c:3:
-> include/uapi/linux/ethtool.h:1186:41: note: while referencing
-> 'rule_locs'
->  1186 |         __u32                           rule_locs[0];
->       |                                         ^~~~~~~~~
-> 
-> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: kernel test robot <lkp@intel.com>
-> Cc: Oleksij Rempel <linux@rempel-privat.de>
-> Cc: Sean Anderson <sean.anderson@seco.com>
-> Cc: Alexandru Tachici <alexandru.tachici@analog.com>
-> Cc: Amit Cohen <amcohen@nvidia.com>
-> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-> Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+This patch series brings-in the support for FM350 wwan device firmware
+flashing & coredump collection using devlink interface.
 
-Thanks!
+Below is the high level description of individual patches.
+Refer to individual patch commit message for details.
+
+PATCH1:  Enables AP CLDMA communication for firmware flashing &
+coredump collection.
+
+PATCH2: Enables the infrastructure & queue configuration required
+for early ports enumeration.
+
+PATCH3: Implements device reset and rescan logic required to enter
+or exit fastboot mode.
+
+PATCH4: Implements devlink interface & uses the fastboot protocol for
+fw flashing and coredump collection.
+
+PATCH5: t7xx devlink commands documentation.
+
+Version History:
+================
+v3: Repost the series by setting format.thread git-config option to
+    shallow as suggested by Brandeburg, Jesse.
+v2: Address review comments given by Jarvinen, Ilpo Johannes and
+    Sergey Ryazanov. Refer to Individual patches on v2 changes.
+v1: Initial Version.
+
+Haijun Liu (1):
+  net: wwan: t7xx: Add AP CLDMA
+
+M Chetan Kumar (4):
+  net: wwan: t7xx: Infrastructure for early port configuration
+  net: wwan: t7xx: PCIe reset rescan
+  net: wwan: t7xx: Enable devlink based fw flashing and coredump
+    collection
+  net: wwan: t7xx: Devlink documentation
+
+ Documentation/networking/devlink/index.rst |   1 +
+ Documentation/networking/devlink/t7xx.rst  | 161 +++++
+ drivers/net/wwan/Kconfig                   |   1 +
+ drivers/net/wwan/t7xx/Makefile             |   5 +-
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c     |  64 +-
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.h     |  20 +-
+ drivers/net/wwan/t7xx/t7xx_mhccif.h        |   1 +
+ drivers/net/wwan/t7xx/t7xx_modem_ops.c     |  81 ++-
+ drivers/net/wwan/t7xx/t7xx_modem_ops.h     |   2 +
+ drivers/net/wwan/t7xx/t7xx_pci.c           |  72 ++-
+ drivers/net/wwan/t7xx/t7xx_pci.h           |   2 +
+ drivers/net/wwan/t7xx/t7xx_pci_rescan.c    |  96 +++
+ drivers/net/wwan/t7xx/t7xx_pci_rescan.h    |  28 +
+ drivers/net/wwan/t7xx/t7xx_port.h          |  12 +-
+ drivers/net/wwan/t7xx/t7xx_port_ap_msg.c   |  78 +++
+ drivers/net/wwan/t7xx/t7xx_port_ap_msg.h   |  11 +
+ drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c |   8 +-
+ drivers/net/wwan/t7xx/t7xx_port_devlink.c  | 665 +++++++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_port_devlink.h  |  86 +++
+ drivers/net/wwan/t7xx/t7xx_port_proxy.c    | 135 ++++-
+ drivers/net/wwan/t7xx/t7xx_port_proxy.h    |  16 +-
+ drivers/net/wwan/t7xx/t7xx_port_wwan.c     |  25 +-
+ drivers/net/wwan/t7xx/t7xx_reg.h           |  32 +-
+ drivers/net/wwan/t7xx/t7xx_state_monitor.c | 134 ++++-
+ drivers/net/wwan/t7xx/t7xx_state_monitor.h |   3 +
+ 25 files changed, 1634 insertions(+), 105 deletions(-)
+ create mode 100644 Documentation/networking/devlink/t7xx.rst
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ap_msg.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ap_msg.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_devlink.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_devlink.h
+
 --
-Gustavo
+2.34.1
 
-> ---
-> v3: don't use helper (vincent)
-> v2: https://lore.kernel.org/lkml/20230105233420.gonna.036-kees@kernel.org
-> ---
->  include/uapi/linux/ethtool.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> index 58e587ba0450..3135fa0ba9a4 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -1183,7 +1183,7 @@ struct ethtool_rxnfc {
->  		__u32			rule_cnt;
->  		__u32			rss_context;
->  	};
-> -	__u32				rule_locs[0];
-> +	__u32				rule_locs[];
->  };
->  
->  
-> -- 
-> 2.34.1
-> 
