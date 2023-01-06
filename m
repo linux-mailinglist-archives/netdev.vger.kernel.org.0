@@ -2,53 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D30F465FB63
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 07:21:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E2165FB6A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 07:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbjAFGVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 01:21:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        id S231875AbjAFGZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 01:25:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232415AbjAFGUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 01:20:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0887E6E40D
-        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 22:20:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7004B81BFD
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6BE3BC433EF;
-        Fri,  6 Jan 2023 06:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672986018;
-        bh=x2z8/EpGQc2LkpHVWixivXW+Q/U0vkCA8gbE55MjCJw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sQGHWH4Axd4U8degOl5SWDNM0+yeDANyX2BJ0wmTLaKARo30njQqKQwhZgXo/uXI8
-         k5NjC/5pCbYnxRUcn0+yCaGBoyDtj7udQvEK+eBNqHK253R44hUf42mEjqDxXWUO3d
-         EelADgL2du6fGvQk6vTEHymN24W0watXFLZWVOb16NFZjY1G8YYebSBKISicM9rDEt
-         VnTnZXoKOK2ltOkwXZUGUBITfUaJMX3Y7L17yuBIECn5U9ZZyGjahwbcqGApWR5m4I
-         KryyOjQxJnq9NJ6NGB+MbGpGz3A7U0Meu0xxib44fpN4lStbR3qF2xiKYZTWs5X/6x
-         QH0trxY3pCTEg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 546F0E21EEB;
-        Fri,  6 Jan 2023 06:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231536AbjAFGZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 01:25:34 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB9F654D
+        for <netdev@vger.kernel.org>; Thu,  5 Jan 2023 22:25:33 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id gq18so447822pjb.2
+        for <netdev@vger.kernel.org>; Thu, 05 Jan 2023 22:25:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YayHG7lExe8amFBKiiDo3qeuO6fzGOFyXNJRlTndIyE=;
+        b=Y29z1GWtlyZLdfJyfGvzO3zxWqYuBWudOWfkzJiIV7d/AhpRS27ZH6IAN+aoHBCvaz
+         B6ah7v1oIewCmGcQ0IZjDKZk8Hwrn7x17NB+36FoWZOCeHVbzd/PqDl85MrFEi3WL1eu
+         EiylNkCc5tCsaYipJ5iRd0nx59HJqmV02fhHg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YayHG7lExe8amFBKiiDo3qeuO6fzGOFyXNJRlTndIyE=;
+        b=X10BdWPuNcBJtNSTKh80YcmIfzNmiepS/IVRI+akkZqMl0ZDR7o/+epNS6ueVC8kg4
+         47HzY03zCRgGSebUO/XHEFTpMyJJ597sIH6qsGwL9whrhDToX85kpgtqJuVKUv9V1M/v
+         uuuBRVMMrSL0eie+3L7tfGu3aZ9rocqeomAEZFVfy4SSNbAFZriO8csShStvxTTT8gch
+         3Ss5rOuL/KQo6GM/hDSbDADounJFFuroeaCk+O0H5ShF0ZtW8B4DB9KRRHYXlBRxNIXE
+         3K0EAGB/fkVh71vi8eef0Bzxru++DwRkoMAhdvcPzmGk45HHxUN/gg9Lw/o9guhbcwo9
+         tC/Q==
+X-Gm-Message-State: AFqh2kodYmbd7t2hWqDbUFzNBitqFLiefIMyJfIyndj+lYPAb/mA5jMQ
+        hyy3lTT5cy9Zd4LU+cnobulR8A==
+X-Google-Smtp-Source: AMrXdXsJR0Jp0gvO8YvY12mJU7b2mREhu4mq2+p7jeRBSbkqkTeWPoVzJ58HtbpMMkv6mkmDI2j1LQ==
+X-Received: by 2002:a05:6a20:939a:b0:af:9539:a29e with SMTP id x26-20020a056a20939a00b000af9539a29emr65774366pzh.16.1672986332761;
+        Thu, 05 Jan 2023 22:25:32 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id h3-20020aa796c3000000b005609d3d3008sm309232pfq.171.2023.01.05.22.25.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Jan 2023 22:25:32 -0800 (PST)
+Date:   Thu, 5 Jan 2023 22:25:31 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        kernel test robot <lkp@intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3] ethtool: Replace 0-length array with flexible array
+Message-ID: <202301052224.D2569E38@keescook>
+References: <20230106042844.give.885-kees@kernel.org>
+ <CAMZ6RqKghb-YqQuWGiEn8D-CQgvecBxsxUz_2XYE0m3hs752gQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/15]  devlink: code split and structured
- instance walk
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167298601834.4609.10563145944962909204.git-patchwork-notify@kernel.org>
-Date:   Fri, 06 Jan 2023 06:20:18 +0000
-References: <20230105040531.353563-1-kuba@kernel.org>
-In-Reply-To: <20230105040531.353563-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, jiri@resnulli.us
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqKghb-YqQuWGiEn8D-CQgvecBxsxUz_2XYE0m3hs752gQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,59 +75,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  4 Jan 2023 20:05:16 -0800 you wrote:
-> Split devlink.c into a handful of files, trying to keep the "core"
-> code away from all the command-specific implementations.
-> The core code has been quite scattered until now. Going forward we can
-> consider using a source file per-subobject, I think that it's quite
-> beneficial to newcomers (based on relative ease with which folks
-> contribute to ethtool vs devlink). But this series doesn't split
-> everything out, yet - partially due to backporting concerns,
-> but mostly due to lack of time. Bulk of the netlink command
-> handling is left in a leftover.c file.
+On Fri, Jan 06, 2023 at 02:47:35PM +0900, Vincent MAILHOL wrote:
+> On Fri. 6 Jan 2023 at 13:28, Kees Cook <keescook@chromium.org> wrote:
+> > Zero-length arrays are deprecated[1]. Replace struct ethtool_rxnfc's
+> > "rule_locs" 0-length array with a flexible array. Detected with GCC 13,
+> > using -fstrict-flex-arrays=3:
+> >
+> > net/ethtool/common.c: In function 'ethtool_get_max_rxnfc_channel':
+> > net/ethtool/common.c:558:55: warning: array subscript i is outside array bounds of '__u32[0]' {aka 'unsigned int[]'} [-Warray-bounds=]
+> >   558 |                         .fs.location = info->rule_locs[i],
+> >       |                                        ~~~~~~~~~~~~~~~^~~
+> > In file included from include/linux/ethtool.h:19,
+> >                  from include/uapi/linux/ethtool_netlink.h:12,
+> >                  from include/linux/ethtool_netlink.h:6,
+> >                  from net/ethtool/common.c:3:
+> > include/uapi/linux/ethtool.h:1186:41: note: while referencing
+> > 'rule_locs'
+> >  1186 |         __u32                           rule_locs[0];
+> >       |                                         ^~~~~~~~~
+> >
+> > [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+> >
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Andrew Lunn <andrew@lunn.ch>
+> > Cc: kernel test robot <lkp@intel.com>
+> > Cc: Oleksij Rempel <linux@rempel-privat.de>
+> > Cc: Sean Anderson <sean.anderson@seco.com>
+> > Cc: Alexandru Tachici <alexandru.tachici@analog.com>
+> > Cc: Amit Cohen <amcohen@nvidia.com>
+> > Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> > Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> > v3: don't use helper (vincent)
 > 
-> [...]
+> v1: https://lore.kernel.org/all/20230105214126.never.757-kees@kernel.org
+>                                                ^^^^^
+> > v2: https://lore.kernel.org/lkml/20230105233420.gonna.036-kees@kernel.org
+>                                                   ^^^^^
+> v3: https://lore.kernel.org/netdev/20230106042844.give.885-kees@kernel.org
+>                                                   ^^^^
+> 
+> Seriously... :)
 
-Here is the summary with links:
-  - [net-next,v2,01/15] devlink: move code to a dedicated directory
-    (no matching commit)
-  - [net-next,v2,02/15] devlink: rename devlink_netdevice_event -> devlink_port_netdevice_event
-    https://git.kernel.org/netdev/net-next/c/e50ef40f9a9a
-  - [net-next,v2,03/15] devlink: split out core code
-    (no matching commit)
-  - [net-next,v2,04/15] devlink: split out netlink code
-    https://git.kernel.org/netdev/net-next/c/623cd13b1654
-  - [net-next,v2,05/15] netlink: add macro for checking dump ctx size
-    https://git.kernel.org/netdev/net-next/c/2c7bc10d0f7b
-  - [net-next,v2,06/15] devlink: use an explicit structure for dump context
-    https://git.kernel.org/netdev/net-next/c/3015f8224961
-  - [net-next,v2,07/15] devlink: remove start variables from dumps
-    https://git.kernel.org/netdev/net-next/c/20615659b514
-  - [net-next,v2,08/15] devlink: drop the filter argument from devlinks_xa_find_get
-    https://git.kernel.org/netdev/net-next/c/8861c0933c78
-  - [net-next,v2,09/15] devlink: health: combine loops in dump
-    https://git.kernel.org/netdev/net-next/c/a0e13dfdc391
-  - [net-next,v2,10/15] devlink: restart dump based on devlink instance ids (simple)
-    https://git.kernel.org/netdev/net-next/c/731d69a6bd13
-  - [net-next,v2,11/15] devlink: restart dump based on devlink instance ids (nested)
-    https://git.kernel.org/netdev/net-next/c/a8f947073f4a
-  - [net-next,v2,12/15] devlink: restart dump based on devlink instance ids (function)
-    https://git.kernel.org/netdev/net-next/c/c9666bac537e
-  - [net-next,v2,13/15] devlink: uniformly take the devlink instance lock in the dump loop
-    https://git.kernel.org/netdev/net-next/c/e4d5015bc11b
-  - [net-next,v2,14/15] devlink: add by-instance dump infra
-    https://git.kernel.org/netdev/net-next/c/07f3af66089e
-  - [net-next,v2,15/15] devlink: convert remaining dumps to the by-instance scheme
-    https://git.kernel.org/netdev/net-next/c/5ce76d78b996
+Hurray! Someone noticed and it's not even April yet. :) *celebrate*
 
-You are awesome, thank you!
+-Kees
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Kees Cook
