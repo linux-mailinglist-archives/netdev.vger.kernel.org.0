@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E556C65FF82
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 12:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2C5065FF92
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 12:32:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232590AbjAFLZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 06:25:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        id S233342AbjAFLbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 06:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231972AbjAFLZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 06:25:39 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367CC687AF
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 03:25:36 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id o7-20020a17090a0a0700b00226c9b82c3aso1373884pjo.3
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 03:25:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fNpOej0WQRYIf1vM6xEAS9yoKOpBeblZYES0x3jJjbg=;
-        b=UHW3sQce66hRMaf729qKpYAcW0VMUJniGPBqK2Edeg+1upV+jjPG24z+IgMJC347+K
-         JqJ8FJXsA9jYRpUDlPquqPrtog1MJgNLvYuWx9Efq2bTPVFLX5JgXeIFLQa+5O+HmIA1
-         txHB/6dRCFwvbvKw0sVKv3ELWB26K7t9lbqOFE2MIEih6bRHsZT1YXpeDtpvEpctqD6/
-         kCyjO/HKl2hrKYhF2UCpo2+k1Y1lFgDfk9sWh3GC0csPE7OW2FVaQ05YoiY26z9ThI8X
-         /+HJmJN6DljavWRycAEU8mxm14Typx60mjiRHshGthROc26zR55SQelZOp0uVRY114cn
-         K1tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fNpOej0WQRYIf1vM6xEAS9yoKOpBeblZYES0x3jJjbg=;
-        b=eG3qiglVV/D7dm0N23LeZjf2B8A+AbTKfIO5WhglDJZDaf3IhM6r2sAi1qxsPjbtdg
-         bijvSVr027A02Ozl6dqVfYQDxyKnlBG1XXz5KSax4HlmvWMxMwr3i8xdCcFWzp/w7qc5
-         gefKWUdURlxOWfjeFMTwfD0V+0fQu86PtPIIAjduZzMeCEab3CA+1UQOwgymvNLfbxuy
-         MJzeWOS/G+UaquXDn6BStkZFktohmD12elYBrdgWq0QP/h3U4eb56FdD2M70/5Qm+a0B
-         qFatpzotPaOadpQoStZwVbEyGZDZt8HX4KpPVJ7M8A4hK3sWrxfRJCQJG/kklMc3PZyF
-         Cykw==
-X-Gm-Message-State: AFqh2kqcqcwgX1Z9KthdZi5jjVrQLOaBJZ/8HhMozxaL9NroWn4XmGk+
-        TDt+Oq6bNLRezOgHtHSN7X00bQ==
-X-Google-Smtp-Source: AMrXdXvABNY/MAbIRqnZGqNR+8aR4B8uB9a4itqUhdsH0deTlpgdokVRb67wMmZs9IomV77aIFfvwQ==
-X-Received: by 2002:a17:902:8f86:b0:191:282:5d6c with SMTP id z6-20020a1709028f8600b0019102825d6cmr62989632plo.61.1673004335659;
-        Fri, 06 Jan 2023 03:25:35 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id e2-20020a170902784200b0017d97d13b18sm779872pln.65.2023.01.06.03.25.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 03:25:35 -0800 (PST)
-Date:   Fri, 6 Jan 2023 12:25:32 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 13/14] devlink: add by-instance dump infra
-Message-ID: <Y7gFLHFGQ36ZQFIP@nanopsycho>
-References: <20230104041636.226398-1-kuba@kernel.org>
- <20230104041636.226398-14-kuba@kernel.org>
- <Y7WuWd2jfifQ3E8A@nanopsycho>
- <20230104194604.545646c5@kernel.org>
+        with ESMTP id S229597AbjAFLbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 06:31:37 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCF11A073;
+        Fri,  6 Jan 2023 03:31:34 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1738B1C000C;
+        Fri,  6 Jan 2023 11:31:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1673004693;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hS7wvPjpYD+YRt/6yWHg36Yax1aVk1VS5LVh5KThhKk=;
+        b=RoYUrkQOh9Nr43MAGFUIbG8RoY5DnN/Fw8MUtH1pa/aBKtNZbJ8cMw7UsnSmiHbDcLn8ba
+        ZJOlV99/YLQZWhJ+zKCxQ3F6ezux10BIt7t1qgCOlEmxCY8ywOozl8DOAHYTYY7WT2bf3Y
+        ykjpXokUYQ+1w9gGrmeYBv5gxzaV4xjcnsMJf0MDVl8WVr73N9il6o31MKkoAfmBT3y35d
+        AwwPab1hQ+eAIwtPHxVb7v6OM6C865SxNyQ98B6VrqB/vCFmlgSRzG3skDvwnS4guut5JZ
+        QoeeTCjEIdIjOkMTqp6VSA23ESUcfQt/t4JnuVqRbqN2xJwGHOZOn292OxttEA==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next 0/2] ieee802154: Beaconing support
+Date:   Fri,  6 Jan 2023 12:31:27 +0100
+Message-Id: <20230106113129.694750-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230104194604.545646c5@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 05, 2023 at 04:46:04AM CET, kuba@kernel.org wrote:
->On Wed, 4 Jan 2023 17:50:33 +0100 Jiri Pirko wrote:
->> Wed, Jan 04, 2023 at 05:16:35AM CET, kuba@kernel.org wrote:
+Scanning being now supported, we can eg. play with hwsim to verify
+everything works as soon as this series including beaconing support gets
+merged.
 
-[...]
+Thanks,
+Miquèl
 
->> >@@ -173,6 +181,8 @@ devlink_linecard_get_from_info(struct devlink
->> >*devlink, struct genl_info *info);
->> > void devlink_linecard_put(struct devlink_linecard *linecard);
->> > 
->> > /* Rates */
->> >+extern const struct devlink_gen_cmd devl_gen_rate_get;  
+Miquel Raynal (2):
+  ieee802154: Add support for user beaconing requests
+  mac802154: Handle basic beaconing
 
-The rest of the commands (next patch) you put in a different place, so
-this is alone here.
+ include/net/cfg802154.h         |  23 +++++
+ include/net/ieee802154_netdev.h |  16 ++++
+ include/net/nl802154.h          |   3 +
+ net/ieee802154/header_ops.c     |  24 +++++
+ net/ieee802154/nl802154.c       |  93 ++++++++++++++++++++
+ net/ieee802154/nl802154.h       |   1 +
+ net/ieee802154/rdev-ops.h       |  28 ++++++
+ net/ieee802154/trace.h          |  21 +++++
+ net/mac802154/cfg.c             |  31 ++++++-
+ net/mac802154/ieee802154_i.h    |  18 ++++
+ net/mac802154/iface.c           |   3 +
+ net/mac802154/main.c            |   1 +
+ net/mac802154/scan.c            | 151 ++++++++++++++++++++++++++++++++
+ 13 files changed, 411 insertions(+), 2 deletions(-)
 
-
->> 
->> The struct name is *_cmd, not sure why the variable name is *_get
->> Shouldn't it be rather devl_gen_cmd_rate?
->
->It is the implementation of get.. there's also a set command.. 
->which would be under a different index...
-
-The rest of the commands (next patch) you omitted the "_get" suffix.
+-- 
+2.34.1
 
