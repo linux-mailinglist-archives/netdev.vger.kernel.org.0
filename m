@@ -2,100 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A34B86600FD
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 14:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5E966010C
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 14:16:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbjAFNKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 08:10:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        id S233783AbjAFNQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 08:16:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbjAFNKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 08:10:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BAE76804
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 05:10:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A586B61E33
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 13:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 09A71C433F0;
-        Fri,  6 Jan 2023 13:10:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673010618;
-        bh=f+HRQSGojnPIfuTfBPClM0EQZsTx/PN0DLX75EoZaIE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NbeMZlISFOj7NJTyMxC12niGFxe22hvh7QND1Xon0cZYvAVRdhhQr2UyJfxxBoLod
-         D/k0EJAuvTx6YEmrGBaJcOss2LWY8sP2q1FRL69BKtjToQ+nnMyMvSvW3LeSHkHtYD
-         kjXN+/OZ6Eh16mFvwlrDGCn2ipd/zBkicYT7rkEWyDHC7rlT0GKkuXZqXGqG6FUrNB
-         fUR6TjLlSA+mholLcy9yo6n/F4/4N6lJSchWV4/3au7bsmZNrmraouLUcH+mA+lkK/
-         cVCGKKao0Ss2tcVbpwd/b/ArxPR23uUMEMF9LM4Gni3Ld93zlHL3jUPHAj9d8ro7bn
-         A5kUJdDWma3DA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E2B51E270EC;
-        Fri,  6 Jan 2023 13:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231289AbjAFNQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 08:16:41 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929A86C289
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 05:16:40 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id i16so456365ilq.9
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 05:16:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=s1LywjUroOs2NrgqtOKf4lPkuoCqOIhLUrwwnpXq1Ks=;
+        b=g71f0MKyl7a4tKOomdOmTJosMPOmmoETipJ3XedVA0ZPudtpAMibVUAveJ+s/XnOIh
+         wSLX93JPFrBPG1M/fGfXuNGBOohMyB/AtCZHJjU2NrqHQjHprIXtrX+/6t+njlpZDoBi
+         PwUaMstLzXPCeTofwqJz4Gg9dCsKkx7wUrVEXcuhoaZHb8nPdplPBFNlyqL7molaMA3L
+         d8kAMsQIOD0BQmOWqL6DWDT1dKZbjr2tYyZOv73eI6YZz9QDOJgHRZ4yTxId2vvGvZeP
+         fEUg+b3cT4saYg2VCgIUD2H2FlkOizKlnX9hbNcqgEbW9G0WiwT3GnoBTOHL/L/8pOsi
+         jx6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=s1LywjUroOs2NrgqtOKf4lPkuoCqOIhLUrwwnpXq1Ks=;
+        b=jthyYERWQpTrJX1QPafE5R93TxCemfJV1cjsjYEB2sByPXPn2nySnZM153hgpYRQVb
+         UKruIi5MJPS90q4BPISGYHmhUiwRi7pG3qMjfFQc9pr7mb0cNkbSAUzIxZsLerb7MGzh
+         N9Gv+zXx93zZOty7NFTRa0sLhjoLIFSsVygflvYuNXLhD+vKLUkuShPmPES3BhaAwVXW
+         uAd2lHhJ//qd/1xVS2gB9EqSTlQlH4Jk8UPpz0P5Y8jSuJBH7iFMImCnaSsc+Rd8gbQ2
+         XIPsbAD8gu+PuXPL1m+dyLJP36iV7qAlrB1bFvkSvWAChykziQOro0/+E7YM391j8cUJ
+         oiAA==
+X-Gm-Message-State: AFqh2kqKkAKtX4ttW0jGqJV4UHsqnBvAitnENNU8ByDM4IopkEjzMuvu
+        bl0OVUBNY94I7CtHjc5hfsaj+g==
+X-Google-Smtp-Source: AMrXdXsOg9ULNlsfpIyZ479J8TePmgEgGfziF3VIkTGzJr4CTw24cyLNhgMwW3ul6hcuQZ1AVUKm0g==
+X-Received: by 2002:a92:6e10:0:b0:30c:44bb:8d23 with SMTP id j16-20020a926e10000000b0030c44bb8d23mr13007747ilc.2.1673010999918;
+        Fri, 06 Jan 2023 05:16:39 -0800 (PST)
+Received: from [172.22.22.4] ([98.61.227.136])
+        by smtp.googlemail.com with ESMTPSA id a17-20020a92d591000000b0030be6c79645sm362853iln.68.2023.01.06.05.16.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 05:16:39 -0800 (PST)
+Message-ID: <04bf6bd1-1150-ac57-5a8d-a9971148bd40@linaro.org>
+Date:   Fri, 6 Jan 2023 07:16:38 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] devlink: remove the wait-for-references on
- unregister
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167301061792.5551.10032135395535882008.git-patchwork-notify@kernel.org>
-Date:   Fri, 06 Jan 2023 13:10:17 +0000
-References: <20230106063402.485336-1-kuba@kernel.org>
-In-Reply-To: <20230106063402.485336-1-kuba@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next] net: ipa: correct IPA v4.7 IMEM offset
+Content-Language: en-US
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, jiri@resnulli.us
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        luca.weiss@fairphone.com, konrad.dybcio@linaro.org,
+        caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230104181017.2880916-1-elder@linaro.org>
+ <20230105215806.4c192dad@kernel.org>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20230105215806.4c192dad@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu,  5 Jan 2023 22:33:53 -0800 you wrote:
-> Move the registration and unregistration of the devlink instances
-> under their instance locks. Don't perform the netdev-style wait
-> for all references when unregistering the instance.
+On 1/5/23 11:58 PM, Jakub Kicinski wrote:
+> On Wed,  4 Jan 2023 12:10:17 -0600 Alex Elder wrote:
+>> Note:  This fixes a commit that first landed in v6.2-rc1.
 > 
-> Instead the devlink instance refcount will only ensure that
-> the memory of the instance is not freed. All places which acquire
-> access to devlink instances via a reference must check that the
-> instance is still registered under the instance lock.
-> 
-> [...]
+> Why is it tagged for net-next then? 🤔️
+> Let's treat it as a normal fix with a Fixes tag and for net.
+> I reckon the commit message makes is sufficiently clear that
+> I'm to blame :)
 
-Here is the summary with links:
-  - [net-next,1/9] devlink: bump the instance index directly when iterating
-    https://git.kernel.org/netdev/net-next/c/d77278196441
-  - [net-next,2/9] devlink: update the code in netns move to latest helpers
-    https://git.kernel.org/netdev/net-next/c/7a54a5195b2a
-  - [net-next,3/9] devlink: protect devlink->dev by the instance lock
-    https://git.kernel.org/netdev/net-next/c/870c7ad4a52b
-  - [net-next,4/9] devlink: always check if the devlink instance is registered
-    https://git.kernel.org/netdev/net-next/c/ed539ba614a0
-  - [net-next,5/9] devlink: remove the registration guarantee of references
-    https://git.kernel.org/netdev/net-next/c/9053637e0da7
-  - [net-next,6/9] devlink: don't require setting features before registration
-    https://git.kernel.org/netdev/net-next/c/6ef8f7da9275
-  - [net-next,7/9] devlink: allow registering parameters after the instance
-    https://git.kernel.org/netdev/net-next/c/1d18bb1a4ddd
-  - [net-next,8/9] netdevsim: rename a label
-    https://git.kernel.org/netdev/net-next/c/5c5ea1d09fd8
-  - [net-next,9/9] netdevsim: move devlink registration under the instance lock
-    https://git.kernel.org/netdev/net-next/c/82a3aef2e6af
+Sorry about that, I was confused, thinking it is only
+needed in 6.2-rc--the current release cycle.  But that's
+not the way it works.  I guess I wasn't fully recovered
+from the holiday break.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I'll re-send and base it on net/master.  Thanks.
 
-
+					-Alex
