@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8084660459
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92CD1660465
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 17:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234091AbjAFQfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 11:35:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
+        id S235535AbjAFQia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 11:38:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbjAFQfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:35:44 -0500
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FEE777E7;
-        Fri,  6 Jan 2023 08:35:41 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id EDA63425F5;
-        Fri,  6 Jan 2023 16:35:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1673022939; bh=89y7NsFS+v4aw4niloxNfhOvjApWwxZ5Xy0E6uaeOlw=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=fERt/yltWB3jC395niUM/SwsAnPcR3pbB7XkYefi2ScEZr9CGqDROZsqYHeaXYUt3
-         IRKM9kVc7ubodizHfIpUI+18RSNO8FbzOvzrNKpl/woDXmEGTkjp/bM/ayEwaZNDCi
-         5Dot7L2oqAvqEvfHSxW7x3X28PJlssGpQaumvD9LvR3Xby2gWiztK8TnuKUksuiMC3
-         3y0qG8T0hRNfRv2/5RhyCRaTsvilbTUk5BqQoJ9knY4h1MsaqU2QfeLA+jpy2pDv57
-         b1bfZi79Vym/FhIgTJqR/ZWo+ZQnhsBnCxfJTWcUbYTlui16wECTeCJC9PNSAaVR4h
-         SlFpofTsnp5/w==
-Message-ID: <3cf5c1cd-1cc3-35bb-db65-e7f4a3f00527@marcan.st>
-Date:   Sat, 7 Jan 2023 01:35:31 +0900
+        with ESMTP id S235545AbjAFQiF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 11:38:05 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CE078A5C;
+        Fri,  6 Jan 2023 08:38:03 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id fy8so4550739ejc.13;
+        Fri, 06 Jan 2023 08:38:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=cVVA+wtN3OwRb/Llt+vsUs/VHbWYd94vDiApWlf28eA=;
+        b=ABQKaLwPguTKBSF04UtKiM3TJSxZzUYPYoqdOYC0irtnhPMRygdoBOKLtHXbiD8bUh
+         gfNHXwr7rpHSdc1rf3SuXySjrRn0uIGWfMlAHDpr3xUOYtTfkXvkxk+qQtt0AHr+aJXx
+         nw7ULMBESX5IwdWftp8lQ4qRHYWP6Anw4z4817kQZF3LB48kTdchDpgoQW2Gf3UNqOgJ
+         S9XzK9OthCMViShxcBtwrVzMdpjYgglyOGHaeZc2a38W5AJj0HsIHnh8upsQRiDGvjpE
+         UpP0i7YxFFCu/WMqJs+zD17riwqXvGuI6o4aEHEn9j4xr3HGqi/p7LC6xbJnbPxIlezw
+         r/NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cVVA+wtN3OwRb/Llt+vsUs/VHbWYd94vDiApWlf28eA=;
+        b=6Yp1Lzij7+dIhRpvdZ5lYBS+x+MHfCzPrY11pXlVPxc3H2I5zQ3LDmoAqJZ+YySoz3
+         gy+QI12YHHClSVUr+P8CYK2l6x8s528fCIMIogz+sBe+sr7OcmaYe8Q9By1k7dboLl3i
+         cd3tOooVhvGBDTfbo/QkS2rb5CRDkfampe5bdliBe+ptllfXRaT7J66Bon+LxTcfkZTN
+         bPoPyzSMwiiJREKcNacxasrVVyU2QKGIrK+OLDPqyuSz4mGRZWuCuLsjZSQjEfcg5ZzU
+         9gSnqzsE5voS68U7pXNH/faablpFQ0UBArTXtKmB+/EWpmZaGIExiv/DDCK61lucexoe
+         hD9A==
+X-Gm-Message-State: AFqh2kqaDm2bnQ9phpDzVkbvfpsFduAh7PbiJVgwnMIgsJagFqUQvbAr
+        Uh20B36rLazFvMeokDeY/d0=
+X-Google-Smtp-Source: AMrXdXuOH0umBDp9wrpS/HB4IQPoIxstkudT+eR+WDE7VdDybsxAkuOFnTnmy4R46+qCB3IcOd+IOg==
+X-Received: by 2002:a17:907:d601:b0:7c1:2d36:d11a with SMTP id wd1-20020a170907d60100b007c12d36d11amr54637846ejc.11.1673023082381;
+        Fri, 06 Jan 2023 08:38:02 -0800 (PST)
+Received: from skbuf ([188.26.184.223])
+        by smtp.gmail.com with ESMTPSA id k8-20020a17090632c800b00780982d77d1sm546762ejk.154.2023.01.06.08.38.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Jan 2023 08:38:02 -0800 (PST)
+Date:   Fri, 6 Jan 2023 18:37:59 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Hans J. Schultz" <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 net-next 2/3] net: dsa: mv88e6xxx: shorten the locked
+ section in mv88e6xxx_g1_atu_prob_irq_thread_fn()
+Message-ID: <20230106163759.42jrkxuyjlg3l3s5@skbuf>
+References: <20230106160529.1668452-1-netdev@kapio-technology.com>
+ <20230106160529.1668452-3-netdev@kapio-technology.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Arend Van Spriel <aspriel@gmail.com>,
-        "Ivan T. Ivanov" <iivanov@suse.de>
-Cc:     franky.lin@broadcom.com, hante.meuleman@broadcom.com,
-        rmk+kernel@armlinux.org.uk, stefan.wahren@i2se.com,
-        pbrobinson@gmail.com, jforbes@fedoraproject.org, kvalo@kernel.org,
-        davem@davemloft.net, devicetree@vger.kernel.org,
-        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, stable@vger.kernel.org
-References: <20230106131905.81854-1-iivanov@suse.de>
- <0b277149-867b-8acf-30d8-2cd68ba24c99@gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Subject: Re: [PATCH v2] brcmfmac: Prefer DT board type over DMI board type
-In-Reply-To: <0b277149-867b-8acf-30d8-2cd68ba24c99@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230106160529.1668452-3-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/01/2023 01.21, Arend Van Spriel wrote:
-> On 1/6/2023 2:19 PM, Ivan T. Ivanov wrote:
->> The introduction of support for Apple board types inadvertently changed
->> the precedence order, causing hybrid SMBIOS+DT platforms to look up the
->> firmware using the DMI information instead of the device tree compatible
->> to generate the board type. Revert back to the old behavior,
->> as affected platforms use firmwares named after the DT compatible.
->>
->> Fixes: 7682de8b3351 ("wifi: brcmfmac: of: Fetch Apple properties")
->>
->> [1] https://bugzilla.opensuse.org/show_bug.cgi?id=1206697#c13
->>
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
+On Fri, Jan 06, 2023 at 05:05:28PM +0100, Hans J. Schultz wrote:
+> As only the hardware access functions up til and including
+> mv88e6xxx_g1_atu_mac_read() called under the interrupt handler
+> need to take the chip lock, we release the chip lock after this call.
+> The follow up code that handles the violations can run without the
+> chip lock held.
+> In further patches, the violation handler function will even be
+> incompatible with having the chip lock held. This due to an AB/BA
+> ordering inversion with rtnl_lock().
 > 
-> Looks good to me. I do have a question about the devicetree node for 
-> brcmfmac. The driver does a compatible check against 
-> "brcm,bcm4329-fmac". I actually expect all devicetree specifications to 
-> use this. That said I noticed the check for it in brcmf_of_probe() 
-> should be moved so it is the first check done.
+> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+> ---
 
-We're talking about the machine compatible in the root OF node, not the
-compatible for the device itself. That's how firmware selection for
-non-Apple platforms works (and has worked since before the Apple stuff
-got introduced): first try the machine type which is either derived from
-DMI info or the root compatible, and fall back to generic firmware.
+Needs to compile without new warnings patch by patch.
 
-The device compatible is indeed always brcm,bcm4329-fmac.
-
-- Hector
+../drivers/net/dsa/mv88e6xxx/global1_atu.c: In function ‘mv88e6xxx_g1_atu_prob_irq_thread_fn’:
+../drivers/net/dsa/mv88e6xxx/global1_atu.c:460:1: warning: label ‘out’ defined but not used [-Wunused-label]
+  460 | out:
+      | ^~~
+../drivers/net/dsa/mv88e6xxx/global1_atu.c:460:1: warning: unused label 'out'
