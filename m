@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6655866092A
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 22:59:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99951660955
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 23:11:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236568AbjAFV7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 16:59:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
+        id S235708AbjAFWLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 17:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236161AbjAFV7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 16:59:21 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEB2728AD;
-        Fri,  6 Jan 2023 13:59:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673042361; x=1704578361;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0AI0odRghP/P2eZTU9+vUvGrnUWUgK7vgCVx3xkIU9s=;
-  b=I1PcuUKOF1qxryEjviOCk2Q/LT0NFLlqxVVmdatbpPrT7NPUjburRl5G
-   V28RpTk/E0xXGgs3C/daHNlwUUuQbojodQF1Irc2c/iq0jUvMSjPQSclN
-   8/q5oN0jAHaCKyU7TmA/8cRDbNDpJ13ps/KRgpVLSHJyckPS7S0FF4Omk
-   6XHYXdo8c1b6Q3/GwPB8epW3SoW7xHho3bwLX+CZQy6qgZgdJzdGhrNyK
-   ZRjq7sT+bV/XFfJ/wJg1mgWkyGL8i8IGqp4CXJTFa/93yiMgGq3xw/qCn
-   ctHuaawCT6apjgSTO5eP60VHd6UtvqqeOvxUXpyhnHJKUp89qg18jtuXT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="387030720"
-X-IronPort-AV: E=Sophos;i="5.96,306,1665471600"; 
-   d="scan'208";a="387030720"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 13:59:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="763652899"
-X-IronPort-AV: E=Sophos;i="5.96,306,1665471600"; 
-   d="scan'208";a="763652899"
-Received: from avenkata-desk0.sc.intel.com ([172.25.112.60])
-  by fmsmga002.fm.intel.com with ESMTP; 06 Jan 2023 13:59:17 -0800
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mips@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        sparclinux@vger.kernel.org,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH net-next 7/7] sparc: configs: Remove references to CONFIG_SUNVNET and CONFIG_LDMVSW
-Date:   Fri,  6 Jan 2023 14:00:20 -0800
-Message-Id: <20230106220020.1820147-8-anirudh.venkataramanan@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230106220020.1820147-1-anirudh.venkataramanan@intel.com>
-References: <20230106220020.1820147-1-anirudh.venkataramanan@intel.com>
+        with ESMTP id S235610AbjAFWLe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 17:11:34 -0500
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E077A85CA3
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 14:11:27 -0800 (PST)
+Received: by mail-ua1-x929.google.com with SMTP id d14so632716uak.12
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 14:11:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W5Yt8EHAL82AW2pIu1Df2UQ7Stz46vSnaDUHJvWI9NM=;
+        b=Vzux6YYx84yDsFF6awU4uybwE8dYKzNboqTUk4OZpPOrM10j3BmCflZHiB0zyIbkr3
+         MLmuFpZVFow4Upz896vi+uU2wwkKbY52xZlFDuTdn0P2XcB4VwZ23m1tuFp50Ceyw5r4
+         /pJIxP+KVef6OwlxPUw/1cUseSWc2kMdnafpdR0uj3nde9Nj7WMs8TzGqdPtWugLKtYm
+         06ka09YEcPgnlQo1dQqNk8F1e0JKnLljM0TF9v/M66GdXJtF8vqA4GduPZJD5pj87BP6
+         NAmA/2wJYweEZelCnhahahExV6W3W1YJmb2jAvtebjqAoEV/RoW8snPU/3PDURBq/Wj5
+         yOmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=W5Yt8EHAL82AW2pIu1Df2UQ7Stz46vSnaDUHJvWI9NM=;
+        b=NwNnJeMiwLY8e0VBdoeI4JQvGnw8thjsWEzlNRD6m3qlKWLakHrq4qCMLGqMSc7ybC
+         SAnP3l/KQ1/rCrG12TIcAxWVenDrWc7ZFAPhz+eTlUJ5RWMARrNo2cjEEnngvzvA5BZa
+         59BZzuQ+ICkidyXfoTC5TagfhZlLfsVp0xOEb8X68J6BPV+pch/LlYdJLVLYndWecXh2
+         i65y9Qjl3k1m0Gm52JLz9Q8adRtD6cTc4EsSrX8rtBYnIUTUU5gmC7BedFYAYKrWTjBp
+         J9rYo0RtZ0f8SMG6MfOpHXroRMUJXfIkBVEHTSCU/WXQhN7z2Jb7v2kwBbFi/EviBNJD
+         IrJA==
+X-Gm-Message-State: AFqh2krB/UgErMPKbymrQBGRrbQ9c/NO8pLLsW0JACkQSqCTfubYOnd2
+        PPUhQ4TCwLSeyAbLJPov85VQpNCQrcVhlANgfNc=
+X-Google-Smtp-Source: AMrXdXsDaWDC2DoweYtBMBNz6oyPUdHBl8oZ44Nbx9g8rPZgqDJplB7zzRBi0h2bfGuF9e5LucJOb2P/B31g2uyLn4g=
+X-Received: by 2002:ab0:1e82:0:b0:419:cb7c:e6e7 with SMTP id
+ o2-20020ab01e82000000b00419cb7ce6e7mr5372017uak.110.1673043086920; Fri, 06
+ Jan 2023 14:11:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a59:b591:0:b0:335:27b0:f0f6 with HTTP; Fri, 6 Jan 2023
+ 14:11:26 -0800 (PST)
+Reply-To: loralanthony830@gmail.com
+From:   Lora Anthony <tonykoffi200@gmail.com>
+Date:   Fri, 6 Jan 2023 10:11:26 -1200
+Message-ID: <CAP-gqrW77-FwGPdrUneq+8J8h8Sw-m0CqQA96v=XraJgzDW_og@mail.gmail.com>
+Subject: Lora Anthony
+To:     loralanthony830 <loralanthony830@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.4 required=5.0 tests=ADVANCE_FEE_4_NEW,BAYES_50,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An earlier patch removed the Sun LDOM vswitch and sunvnet drivers. Remove
-references to CONFIG_SUNVNET and CONFIG_LDMVSW from the sparc64 defconfig.
+307 Birch street
+Skellytown,TX 79080
+Phone:+1(219)237 4122
+Date:6/1/2023
 
-Cc: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
----
- arch/sparc/configs/sparc64_defconfig | 2 --
- 1 file changed, 2 deletions(-)
+Dear Ms,
+My names are Lora Anthony from Texas United States of America. I am
+the lawyer representing Mr. Oleg Deripaska(metals mogul) from Russia.
+Based on his directives i am contacting you for the repatriation of
+investment fund (USM6 Million) which was stuck by western sanction in
+a Togolese bank
 
-diff --git a/arch/sparc/configs/sparc64_defconfig b/arch/sparc/configs/sparc64_defconfig
-index 1809909..a2c76e8 100644
---- a/arch/sparc/configs/sparc64_defconfig
-+++ b/arch/sparc/configs/sparc64_defconfig
-@@ -95,8 +95,6 @@ CONFIG_MII=m
- CONFIG_SUNLANCE=m
- CONFIG_HAPPYMEAL=y
- CONFIG_SUNGEM=m
--CONFIG_SUNVNET=m
--CONFIG_LDMVSW=m
- CONFIG_NET_PCI=y
- CONFIG_E1000=m
- CONFIG_E1000E=m
--- 
-2.37.2
+However, he needs your assistance in the repatriation of this fund to
+your country to enable him to continue his investments aspirations
+hence the money cannot be allowed to find its way to Russian economy
+because of the severe economic sanctions placed by the western
+governments.
 
+Note,30% of this fund goes to you if this offer is acceptable to you
+contact me on the below details for more directives.
+
+yours
+Lora
+Phone:+1(219)237 4122
+Email:loralanthony830@gmail.com
