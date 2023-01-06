@@ -2,106 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC4865FED4
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:26:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEE865FF0A
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 11:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234249AbjAFKZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 05:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
+        id S230465AbjAFKhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 05:37:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233869AbjAFKY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:24:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42E96C2B0
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 02:24:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673000645;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TEHObZijjJUTNDtqqI8JM1N/tfOCpCjHguBWcNndJb4=;
-        b=UBnEGapDepP17RXsYiXTuGO8fU3nIcUJoPevxBdDmJGLvyy2Mmc9HoGQob9bO5LhNRWNjT
-        5xdjHeC+JRIPvlAPXty8NVN3TKkTqYJsgQQx52IG+PZtfUZQ5P/NWxF+umscavbjUQnkou
-        zaS9aXsIknSAcqv6wcaufq8DC38MQg8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-568-tWF9Y5jIPEmZn9-cpEBG-g-1; Fri, 06 Jan 2023 05:24:00 -0500
-X-MC-Unique: tWF9Y5jIPEmZn9-cpEBG-g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4D6D41C05AE7;
-        Fri,  6 Jan 2023 10:24:00 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.97])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D6FBC15BAD;
-        Fri,  6 Jan 2023 10:23:58 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH HID for-next v1 9/9] HID: bpf: reorder BPF registration
-Date:   Fri,  6 Jan 2023 11:23:32 +0100
-Message-Id: <20230106102332.1019632-10-benjamin.tissoires@redhat.com>
-In-Reply-To: <20230106102332.1019632-1-benjamin.tissoires@redhat.com>
-References: <20230106102332.1019632-1-benjamin.tissoires@redhat.com>
+        with ESMTP id S229478AbjAFKho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 05:37:44 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99016C2A5
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 02:37:42 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id fc4so2536343ejc.12
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 02:37:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gQnlpKgwe0xqLhj+MTVc/9g2kyjsM2ur4M2Y+9pYfEk=;
+        b=hUcb1qds4iVXpS5xpGp9+kqZtcGLgUKUXzxsCHoPp21+inyvuVIQW15dSwnHK0Qe2d
+         vIon3IN688mxIuIM5NK1xu+ZwhMdJ+ER1/9UqlK0d0so6Wo/f6BSCKfmEx9rsgEUKgKP
+         3wcfthFgmwAxy8vM5O3hDpgkwBcrd3eHedmSo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gQnlpKgwe0xqLhj+MTVc/9g2kyjsM2ur4M2Y+9pYfEk=;
+        b=EGO0b35a0VDEnUYi7Qafje7DMapyoWuMJw3fyZD2o6eqo5g4SWwIS+wBvafpHcLlnK
+         ux2OMuTKDHv9Lc4HMWWcElRINA0wugoRALJmC/h/7/rFPhFoAM2B38QOM//zOt8pagUG
+         bLJwPjJwNxqTYld0Czs7P2Y/QsfvrTODifqFcJZEt+G4jaoMxD1bT10s0JRs1N/6a7QY
+         R/E9IbHlisoF2co4/xtSbK3gOFQIT6xN7nqcLS0jEtLt7rP7PJDCVoMoGm3FwpA8udp7
+         BbE6dRfYlWGwmIgbTq0zKIo+ndy8oiwo8gYMi4q9Y7f+/p5kc+k1CicNPMeuvN4SLZut
+         qpVA==
+X-Gm-Message-State: AFqh2kp5KD+hCUCPbTQGzbr579Zs7DcpBUdSlZ0DIytSLLvo8E0MuRZ/
+        MkXiH8shGWnoK3l6WvFjDrFdXrl3osoCAUca
+X-Google-Smtp-Source: AMrXdXvUweYjpe0RGwLD7nyR838+Uhz7gsLetOq47n7oc3atX0Z8DDV3DSZokLW6DblJ0gJRij9I3g==
+X-Received: by 2002:a17:906:9f07:b0:7c1:6f0a:a2cf with SMTP id fy7-20020a1709069f0700b007c16f0aa2cfmr48899470ejc.32.1673001460498;
+        Fri, 06 Jan 2023 02:37:40 -0800 (PST)
+Received: from cloudflare.com (79.184.146.66.ipv4.supernova.orange.pl. [79.184.146.66])
+        by smtp.gmail.com with ESMTPSA id 17-20020a170906059100b007933047f923sm278807ejn.118.2023.01.06.02.37.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Jan 2023 02:37:39 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kernel-team@cloudflare.com
+Subject: [PATCH net-next 0/2] Add IP_LOCAL_PORT_RANGE socket option
+Date:   Fri,  6 Jan 2023 11:37:36 +0100
+Message-Id: <20221221-sockopt-port-range-v1-0-e2b094b60ffd@cloudflare.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given that our initial BPF program is not using any kfuncs anymore,
-we can reorder the initialization to first try to load it and then
-register the kfuncs. This has the advantage of not exporting kfuncs
-when HID-BPF is not working.
+This patch set is a follow up to the "How to share IPv4 addresses by
+partitioning the port space" talk given at LPC 2022 [1].
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Please see patch #1 for the motivation & the use case description.
+Patch #2 adds tests exercising the new option in various scenarios.
+
+If the changes were to be accepted, here is the proposed update to the ip(7)
+man-page:
+
+  IP_LOCAL_PORT_RANGE (since Linux X.Y)
+         Set  or get the per-socket default local port range. This option
+         can be used to clamp down the global local port  range,  defined
+         by  the ip_local_port_range /proc interface described below, for
+         a socket. The option takes a uint32_t value  with  the  high  16
+         bits  set  to  the upper range bound, and the low 16 bits set to
+         the lower range bound. Range bounds are inclusive. If the speci‐
+         fied  high  or  low  bound  is  outside of the global local port
+         range, or is set to zero, the set bound has no effect.
+
+Changelog:
+---------
+RFC -> v1
+RFC: https://lore.kernel.org/netdev/20220912225308.93659-1-jakub@cloudflare.com/
+
+ * Allow either the high bound or the low bound, or both, to be zero
+ * Add getsockopt support
+ * Add selftests
+
+Links:
+------
+[1]: https://lpc.events/event/16/contributions/1349/
+
+To: netdev@vger.kernel.org
+To: "David S. Miller" <davem@davemloft.net>
+To: Eric Dumazet <edumazet@google.com>
+To: Jakub Kicinski <kuba@kernel.org>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: kernel-team@cloudflare.com
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+
 ---
- drivers/hid/bpf/hid_bpf_dispatch.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Jakub Sitnicki (2):
+      inet: Add IP_LOCAL_PORT_RANGE socket option
+      selftests/net: Cover the IP_LOCAL_PORT_RANGE socket option
 
-diff --git a/drivers/hid/bpf/hid_bpf_dispatch.c b/drivers/hid/bpf/hid_bpf_dispatch.c
-index 26117b4ec016..8a034a555d4c 100644
---- a/drivers/hid/bpf/hid_bpf_dispatch.c
-+++ b/drivers/hid/bpf/hid_bpf_dispatch.c
-@@ -514,15 +514,16 @@ static int __init hid_bpf_init(void)
- 		return 0;
- 	}
- 
--	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &hid_bpf_kfunc_set);
-+	err = hid_bpf_preload_skel();
- 	if (err) {
--		pr_warn("error while setting HID BPF tracing kfuncs: %d", err);
-+		pr_warn("error while preloading HID BPF dispatcher: %d", err);
- 		return 0;
- 	}
- 
--	err = hid_bpf_preload_skel();
-+	/* register tracing kfuncs after we are sure we can load our preloaded bpf program */
-+	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &hid_bpf_kfunc_set);
- 	if (err) {
--		pr_warn("error while preloading HID BPF dispatcher: %d", err);
-+		pr_warn("error while setting HID BPF tracing kfuncs: %d", err);
- 		return 0;
- 	}
- 
+ include/net/inet_sock.h                            |   4 +
+ include/net/ip.h                                   |   3 +-
+ include/uapi/linux/in.h                            |   1 +
+ net/ipv4/inet_connection_sock.c                    |  22 +-
+ net/ipv4/inet_hashtables.c                         |   2 +-
+ net/ipv4/ip_sockglue.c                             |  18 +
+ net/ipv4/udp.c                                     |   2 +-
+ tools/testing/selftests/net/Makefile               |   2 +
+ tools/testing/selftests/net/ip_local_port_range.c  | 439 +++++++++++++++++++++
+ tools/testing/selftests/net/ip_local_port_range.sh |   5 +
+ 10 files changed, 493 insertions(+), 5 deletions(-)
+---
+base-commit: 3d759e9e24c38758abc19a4f5e1872a6460d5745
+change-id: 20221221-sockopt-port-range-e142de700f4d
+
+Best regards,
 -- 
-2.38.1
-
+Jakub Sitnicki <jakub@cloudflare.com>
