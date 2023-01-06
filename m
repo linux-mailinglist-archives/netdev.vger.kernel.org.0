@@ -2,200 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 242A76601D7
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C8A6601E6
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 15:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231838AbjAFOOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 09:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
+        id S234951AbjAFOQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 09:16:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjAFOO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:14:29 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8CA77D2D;
-        Fri,  6 Jan 2023 06:14:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1673014468; x=1704550468;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=aEBfaaVuZETiOkWi+RcMNlVF6gTwODTi4CN2pCpZCms=;
-  b=iQOYsQzTsZt9YLuT+8KtiCJuilgLcDKRp1IKq/Dh7OUI2iFu2ILNYE98
-   ROTY/LSPt0aWAwG5aKlnGta0IlHYv2HiO43IK5/IKCi9jLU0GfiwsxSAo
-   znWUYKFkFhqhxEdqVidDA4IpLahwKzL84Uq06vMYgWNIP0S9pEeJEXRDF
-   vxTsVSoJQqeGV+pdUn782p4MrfSqaXFfqK4KmPxrG2t9WMRjcmwwIUH0d
-   drVj+kSwWGr2MDkFOen5c5sFysfUOLWQnc1tuThwA5Ng7B1O8EOjb03F+
-   Qyrv5ZMCr/A5efFAac8TRvtN6bM5bIwuJa1+4HC5yZINRR6pSEUTLu8eD
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
-   d="scan'208";a="191090095"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jan 2023 07:14:27 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 6 Jan 2023 07:14:26 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Fri, 6 Jan 2023 07:14:22 -0700
-Message-ID: <dc4c4fbf0cb1892dbe45c0ee80d5fafbd5fc36ff.camel@microchip.com>
-Subject: Re: [PATCH net-next v2 0/8] Add support for two classes of VCAP
- rules
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        "Russell King" <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Daniel Machon" <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Dan Carpenter <error27@gmail.com>
-Date:   Fri, 6 Jan 2023 15:14:22 +0100
-In-Reply-To: <40eea59265ce70a80ca61164608f4739@walle.cc>
-References: <20230106085317.1720282-1-steen.hegelund@microchip.com>
-         <35a9ff9fa0980e1e8542d338c6bf1e0c@walle.cc>
-         <b6b2db49dfdd2c3809c8b2c99077ca5110d84d97.camel@microchip.com>
-         <40eea59265ce70a80ca61164608f4739@walle.cc>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.2 
+        with ESMTP id S235233AbjAFOPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 09:15:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213557814B
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 06:15:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673014499;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1HbAZFCQHoB7KCS88jGK1MvZ0nX1Vbznt6Ohf9bI3yc=;
+        b=HFAgpGHXk8pZ2SGbZEMPIgu+25msWNayyk6k2M2UjIeX3MDF4VxtbcIKDNlNqiiIivWc5a
+        v7twwQHtiQYXfpWDYYJvmfHSyBuDuJ0jSQ4Z6wmPbFZQyXIQ4X5lTxfekmAsP5FFzXDJeE
+        zA9XWHuVH+XoLlH777dj+iuVKk8eWNQ=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-65-TB_hDHX6O3mUObwJwXKlBw-1; Fri, 06 Jan 2023 09:14:58 -0500
+X-MC-Unique: TB_hDHX6O3mUObwJwXKlBw-1
+Received: by mail-ej1-f70.google.com with SMTP id gn28-20020a1709070d1c00b007c177fee5faso1205936ejc.23
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 06:14:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1HbAZFCQHoB7KCS88jGK1MvZ0nX1Vbznt6Ohf9bI3yc=;
+        b=IRpUcWilH+yyViCgYVN1RJgeK7ta1cGMrF85ew/ifIIuEkxUoaIO6mWJGH6LDW8wjI
+         24e9LtH7z35DJGtpJqmnp8bioAGbBdMUKZDH/P5JwRAtnoZLn3bac5QPCgXCGr6aWNjA
+         Mq5fRAusEMceeDUDl6B2hzH5QnL6CWNsb7YPmMEqdtHT8oeS8dsltPoY03cm4NuZToGQ
+         /3U1grYo7HyPD4F7qq9EJjbsvXCod4RGLQyKmCuqXopXyAQnjAA53DEEnFpNnCH0xJhl
+         cTDJO4Q5kBXmMsczganGBr+RMB0cvPNC1RRCmPYdslaxW58M5Rxb2NlhtJUR7ewzJMtk
+         J9oQ==
+X-Gm-Message-State: AFqh2koI/D09SIXFA+hth3leNqkIdZTHO8XRLU+Uwn01KdWxZAI/H1aB
+        sKQVjpnlt1gGu+pTG1wfbsBJqQMLtp1Brunx3IaezWYIjaM8GQ8nqBUmlLhcuqXayomAjp0c908
+        sJM3tNFU8MlzUjmMQ
+X-Received: by 2002:a17:906:8a58:b0:7c1:6981:d062 with SMTP id gx24-20020a1709068a5800b007c16981d062mr48881719ejc.72.1673014496912;
+        Fri, 06 Jan 2023 06:14:56 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvwdyVXbgCgJWgv/NtB4G/vAEMk5wPi9BulGNDj/NJSO6Ff3njXVIvsJxFsVM4OIl2HlPhTVg==
+X-Received: by 2002:a17:906:8a58:b0:7c1:6981:d062 with SMTP id gx24-20020a1709068a5800b007c16981d062mr48881705ejc.72.1673014496713;
+        Fri, 06 Jan 2023 06:14:56 -0800 (PST)
+Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id k9-20020a17090646c900b00782e3cf7277sm429583ejs.120.2023.01.06.06.14.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jan 2023 06:14:56 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <bfeda5eb-9c51-f27e-a594-cf523696ff8e@redhat.com>
+Date:   Fri, 6 Jan 2023 15:14:54 +0100
 MIME-Version: 1.0
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>
+Subject: Re: [PATCH v2 07/24] page_pool: Convert __page_pool_put_page() to
+ __page_pool_put_netmem()
+Content-Language: en-US
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-8-willy@infradead.org>
+In-Reply-To: <20230105214631.3939268-8-willy@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
 
-On Fri, 2023-01-06 at 11:46 +0100, Michael Walle wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
-e
-> content is safe
->=20
-> Hi,
->=20
-> > > Wouldn't it make more sense, to fix the regression via net (and
-> > > a Fixes: tag) and then make that stuff work without tc? Maybe
-> > > the fix is just reverting the commits.
-> >=20
-> > I have discussed this again with Horatiu and I have the following
-> > suggestion of
-> > how to proceed:
-> >=20
-> > 1) Create a small LAN966x specific patch for net (see below for the two
-> > possible
-> > =C2=A0=C2=A0 variants).
-> >=20
-> > 2) Continue with a net-next V3 without any 'Fixes' tags on top of the
-> > patch in
-> > =C2=A0=C2=A0 (1) when it becomes available in net-next.
->=20
-> Sounds good.
->=20
-> [coming back to this after writing the response below, so see there
-> for more context]
-> When do the patches from net become available in net-next? Only after a
-> merge window? If so, depending on the solution for (1) you'd have two
-> "in-between" kernel versions (v6.2 and v6.3).
+On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
+> Removes the call to compound_head() hidden in put_page() which
+> saves 169 bytes of kernel text as __page_pool_put_page() is
+> inlined twice.
+> 
+> Signed-off-by: Matthew Wilcox (Oracle)<willy@infradead.org>
+> ---
+>   net/core/page_pool.c | 29 +++++++++++++++++++----------
+>   1 file changed, 19 insertions(+), 10 deletions(-)
 
-According to our own experience the changes in net are usually merged into =
-net-
-next the following Thursday: so not too much delay, before we can continue.
-
->=20
-> > The LAN966x patch for net (with a Fixes tag) could contain either:
-> >=20
-> > a) No check on enabled lookup
-> >=20
-> > =C2=A0=C2=A0 Removal of the check for enabled lookups:
-> >=20
-> > =C2=A0=C2=A0 -=C2=A0 if (!ANA_VCAP_S2_CFG_ENA_GET(val))
-> > =C2=A0=C2=A0 -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 re=
-turn -ENOENT;
-> >=20
-> > =C2=A0=C2=A0 This will remove the error that you have seen, but=C2=A0 w=
-ill still
-> > require a
-> > =C2=A0=C2=A0 matchall rule to enable the PTP rules.=C2=A0 This is compa=
-tible with the
-> > TC
-> > =C2=A0=C2=A0 framework.
-> >=20
-> > b) Always enable lookups
-> >=20
-> > =C2=A0=C2=A0 Enable the lookups at startup.
-> > =C2=A0=C2=A0 Remove the lookup enable check as above.
-> >=20
-> > =C2=A0=C2=A0 This will make the PTP rules (and any other rules) work ev=
-en without
-> > the
-> > =C2=A0=C2=A0 matchall rule to enable them.=C2=A0 It its not ideal, but =
-solves the
-> > problem that
-> > =C2=A0=C2=A0 you have been experiencing without the 'TC magic'
-> >=20
-> > =C2=A0=C2=A0 The V3 in net-next will provide the full solution.
-> >=20
-> > I expect that you might prefer the b) version.
->=20
-> I *assume* linuxptp would have worked in my case (no bridge interface)
-> before Horatiu patches. As mentioned before, I haven't really tested it.
-> Does that mean with a) the error is gone and linuxptp is working as
-> before? If so, I'm also fine with a).
-
-Yes this is the result: So I also suggest to go for solution a).
-
-This will still allow LinuxPTP to work (without the error that you have see=
-n),
-but the bridged interface PTP support must be enabled with a TC matchall ru=
-le.
-
->=20
-> Honestly, now that there is a good solution in future kernels, I
-> don't care toooo much about that one particular kernel. Other
-> users might disagree though ;)
->=20
-> I just want to point out that right now you have some kind of
-> in-between kernel with 6.2:
->=20
-> =C2=A0 <=3D6.1 linuxptp working (but not on bridged ports)
-> =C2=A0 6.2=C2=A0=C2=A0 linuxptp working only with tc magic
-> =C2=A0 6.3=C2=A0=C2=A0 linuxptp working
-
-So with the LAN966x patch the second line would change to:
-
-6.2   linuxptp working. PTP on bridged interfaces: needs TC matchall rule
-
->=20
-> Therefore, I've raised the question if it's also viable to just
-> revert the former changes for 6.2. The you'd have a clean
-> transition.
->=20
-> -michael
-
-TLDR Summary:
-
-1) LAN966x patch for net to ensure PTP is working without errors
-2) A V3 net-next VCAP series with the improvements for enabled/disable/perm=
-anent
-rules (both LAN966x and Sparx5)
-
-I will move forward with this.
-
-BR
-Steen
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
