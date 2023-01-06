@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17D0F660056
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 13:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16A0A66005B
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 13:38:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231972AbjAFMhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 07:37:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
+        id S232656AbjAFMiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 07:38:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjAFMhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 07:37:10 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 093DE687BF
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 04:37:09 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id l26so954586wme.5
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 04:37:08 -0800 (PST)
+        with ESMTP id S230294AbjAFMio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 07:38:44 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9953F687AC
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 04:38:43 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id bg13-20020a05600c3c8d00b003d9712b29d2so3445678wmb.2
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 04:38:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=JfkdNWtaqfWf7qUFl/BGUV8KbJ5Fivhd3o6PbjSCcN8=;
-        b=lP5AwIEjAC+3lfJNrf+S9HB/EoC0nnqsOeX2OpUVaCtd9m0t6N/SekUoj2S8/8a+oV
-         3NDmOlZMPf/4H3gxlYzHbOKgYJbG1pAxkZU/IqDmP7gocWJYV6gw0qalGrw2uHDEa8ja
-         t67SacSBAMqh8FhuwPMJsfsbaoEecUf/BhehB0RKihXqv/G+IKY59+9XVEDygULYFkvF
-         MAs/IPzgz9TVNckMPf8yqsx24mYCQj7kzB7BZJNp+JLs3tqji7vbAiE5PvLDfKgerU1g
-         AofBPUiNukfD4l5WoaQV8uFQ280d6gilfsIJQFcP14ZXCKqgN59C2j332NGhsr8QcgQ9
-         CuUA==
+        bh=OJ7xr6hqaFunxstN9Frwa743d6EY0RYUMvbu/BvcENU=;
+        b=k533u49JmlzI9E0GmLi1/SbA4DHKKnuJLwcWPrk5dQCS8t7rkz+MHy08ABQhin/X/6
+         JgRoDBIY7EFHGJgc9dMEvwbhzTO0xbC3ALki8QJnhibyoI2nI9CwYpQcqCg9P/fjNqCs
+         KOGaNGKYtv0TvGzekX+Rn0gYaHJa96u63r2TCFFwoG5i49iv8XvbV92w7kwe2FydP22z
+         7kn9AMzHk5eFhxiflGGLIWTzivhLMwSi6yQQpqwWwpjbXoQKRkw2MZsgbtZZ9iOmr5Qb
+         IH6h6ZmVnSg3H5JJ2/HvwbK0bBIk4wLbn/xXWxNANNI6X1Kc37/4U42ZwinHarOws8PY
+         bAjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JfkdNWtaqfWf7qUFl/BGUV8KbJ5Fivhd3o6PbjSCcN8=;
-        b=GVYtbfGX2MrtGb/cR7VUAKHzo+ozniafYBGJ5qbyXYCU1GomcG6+ACCoYYQKSlPm0Y
-         SY9sZDdZ39hRwVPm+0LN3vgkMl1DD43mvsMXnY6d9055K7Ts/LOVGHZi7ZjrxSsvl6vV
-         0fMOmhZw2ViM/TPfe9OYwgzCaXbSIsadCtU9vJ5dbKFb7CzceujCPG+iLgFH9y5xfHU4
-         9lVoG9cEL++RycyMUExevOZe2u52nSbsApeSUAh9ShNFJ+5a1NL4NkX4ZwFrFAfX/LRb
-         ts4g6siajBUpEeFayntCxusQmpl+waFF1OnFSaXNeF+9+H9XkTwzOW+Ez8c9+RE4Mdba
-         7CNA==
-X-Gm-Message-State: AFqh2krloK+aBLEG9A35bMUp0XGtuAEZGMkDLjxx7Gfol/whyGAvF6cv
-        tDjDSnbKq9AUwQjyjfhh9iwJmQ==
-X-Google-Smtp-Source: AMrXdXt4SwoPX7N00J959R6a9X52m1stIfhnB9gX7yMTUn+jnioUf0KQclnbmOfsHkl40kkFhoLvcA==
-X-Received: by 2002:a05:600c:b4d:b0:3d3:49db:d84 with SMTP id k13-20020a05600c0b4d00b003d349db0d84mr38422517wmr.20.1673008627610;
-        Fri, 06 Jan 2023 04:37:07 -0800 (PST)
+        bh=OJ7xr6hqaFunxstN9Frwa743d6EY0RYUMvbu/BvcENU=;
+        b=osqMCVhE+Yrid5F7miD8Dp/3gW7aupAs9ttgVdTYqo9xamZC79b5EN2MrYm4z/Qf6U
+         nb7ruI3SQo8DjEHmuRMQ34/tDReyqYmsX7NPtTye1Lqhk/mP4QTE4XbaYeIDQU4N0lPi
+         SkC8ksIbaoPwePA5+0rB521LFA8DlF3v5v2fV2C9/HE934hzB4hSPcYJCGbd/QPUhCcc
+         txLzXCynFm63gR9uCa5uWlu+aVCvTBYIdsDXXGh4GD+ga54aVVA33hj5d4kT7dBsy/fD
+         QoebC69GXfk8TcaIgBDTKRWz9Chju6FEhxiPceqjgHyqhySKwcwm4F6MtRWFWzS0sBOF
+         p0Pg==
+X-Gm-Message-State: AFqh2kqtxqRIN6p9sVhpHZAHNb1HEg+Uv/1FwrFmTiPnNZMCl8lBBziw
+        YcTGWqY9vK/N7caGygTbF6jneQ==
+X-Google-Smtp-Source: AMrXdXuDF8odo1Q4/ENstUcn7M+3KtSn24l85y5PF2Bz6Wp1IzYdkylooKFh18FcHa+t5fjNy1Ng1A==
+X-Received: by 2002:a05:600c:5012:b0:3d3:5a4a:9103 with SMTP id n18-20020a05600c501200b003d35a4a9103mr38570557wmr.31.1673008722161;
+        Fri, 06 Jan 2023 04:38:42 -0800 (PST)
 Received: from [192.168.1.102] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id fc14-20020a05600c524e00b003a3442f1229sm6903655wmb.29.2023.01.06.04.37.06
+        by smtp.gmail.com with ESMTPSA id s2-20020adff802000000b00241bd7a7165sm1025445wrp.82.2023.01.06.04.38.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Jan 2023 04:37:07 -0800 (PST)
-Message-ID: <e501df1b-93ac-b56e-cb57-8059fe251536@linaro.org>
-Date:   Fri, 6 Jan 2023 13:37:05 +0100
+        Fri, 06 Jan 2023 04:38:41 -0800 (PST)
+Message-ID: <80c9fac7-36fe-293e-62f0-945515b8f481@linaro.org>
+Date:   Fri, 6 Jan 2023 13:38:38 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH v3 1/7] dt-bindings: net: snps,dwmac: Add dwmac-5.20
- version
+Subject: Re: [PATCH v3 2/7] dt-bindings: net: snps,dwmac: Update the maxitems
+ number of resets and reset-names
 Content-Language: en-US
 To:     Yanhong Wang <yanhong.wang@starfivetech.com>,
         linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
@@ -72,14 +72,15 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Peter Geis <pgwipeout@gmail.com>
 References: <20230106030001.1952-1-yanhong.wang@starfivetech.com>
- <20230106030001.1952-2-yanhong.wang@starfivetech.com>
+ <20230106030001.1952-3-yanhong.wang@starfivetech.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230106030001.1952-2-yanhong.wang@starfivetech.com>
+In-Reply-To: <20230106030001.1952-3-yanhong.wang@starfivetech.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -87,16 +88,38 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 06/01/2023 03:59, Yanhong Wang wrote:
-> From: Emil Renner Berthing <kernel@esmil.dk>
+> Some boards(such as StarFive VisionFive v2) require more than one value
+> which defined by resets property, so the original definition can not
+> meet the requirements. In order to adapt to different requirements,
+> adjust the maxitems number definition.
 > 
-> Add dwmac-5.20 IP version to snps.dwmac.yaml
-> 
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
 > Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
 > ---
+>  .../devicetree/bindings/net/snps,dwmac.yaml   | 36 ++++++++++++++-----
+>  1 file changed, 28 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index e26c3e76ebb7..f7693e8c8d6d 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -132,14 +132,6 @@ properties:
+>          - pclk
+>          - ptp_ref
+>  
+> -  resets:
+> -    maxItems: 1
+> -    description:
+> -      MAC Reset signal.
+> -
+> -  reset-names:
+> -    const: stmmaceth
 
+Do not remove properties from top-level properties. Instead these should
+have widest constraints which are further constrain in allOf:if:then.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Here you should list items with minItems: 1.
+
+> -
 
 Best regards,
 Krzysztof
