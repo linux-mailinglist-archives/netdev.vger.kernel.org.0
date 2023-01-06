@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDA306601A1
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 14:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 415EF6601A3
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 14:58:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233525AbjAFN5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 08:57:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
+        id S233750AbjAFN6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 08:58:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230294AbjAFN5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 08:57:10 -0500
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F2196ADBA
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 05:57:09 -0800 (PST)
-Received: by mail-vs1-xe2d.google.com with SMTP id 3so1507625vsq.7
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 05:57:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=soEyyt7+ke/EsbfgoWOrqE55snldr7SLoTwPDy3CMeY=;
-        b=AkkNad1rjTGucAaU2dHBnnW+cBKWYZyAhZx6HNrp856hl3FeP7Atubf4FrRXomaJUV
-         mxuDZb+FVqgIXOXroOj6P8Gy3QwMLUeAJR3SDg1A3K0FXA/ntjx5lU8JAE9e8/1cxdms
-         p1qF/vttIVleWlJHQzyu0wB1yTf9AiPMXjJxM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=soEyyt7+ke/EsbfgoWOrqE55snldr7SLoTwPDy3CMeY=;
-        b=kCknZKHpeOAoGOLDOlBRsN1B1PvWrbbKULp2Si3XlMVgQ5Lc+WRNEV1fvbl2Vibff9
-         RjjTGuZ12g347rB9kNVsrbJl3abIN4OB0qu6JJ0MwnNOILWuIGcRgmJi432l9XTZgA4q
-         JG4z/L2E7VoIN6qIizUxZf7c70KW0AuZeU5wVfmiKV1BKAOsSJPoheAVKLIdna7IpShD
-         DToqX9rc1ltR9w1lhN/iiqK2WyemnAKi3RYrDthx8kixKcM+iotTKgyAkBe6NmYFmfPU
-         APKIbE3p50uqvujQSWLrbvoqbor4dV+7dd8iwDzPNaE3JBAR/648xHbc7IEjE5nKpqCE
-         2MYQ==
-X-Gm-Message-State: AFqh2koV3SrxijZCL2aoNf2lSOOcwTlHvb2MaB2W73QnyRhuk9g5JfgL
-        p+nZ1bL2flntsqI4BiZUOoIE6A==
-X-Google-Smtp-Source: AMrXdXtVbNTx+ftJZ+o859NRgn8LDUvAQikRdJRoKsOkfUGoqNvqym3cn+XI39mMoDvFpPPYmd1PuQ==
-X-Received: by 2002:a67:f749:0:b0:3ca:b9:928 with SMTP id w9-20020a67f749000000b003ca00b90928mr19734815vso.33.1673013428446;
-        Fri, 06 Jan 2023 05:57:08 -0800 (PST)
-Received: from C02YVCJELVCG ([136.56.52.194])
-        by smtp.gmail.com with ESMTPSA id bs15-20020a05620a470f00b006b61b2cb1d2sm554675qkb.46.2023.01.06.05.57.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jan 2023 05:57:07 -0800 (PST)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Fri, 6 Jan 2023 08:56:59 -0500
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        lorenzo.bianconi@redhat.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>, gal@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>, tariqt@nvidia.com
-Subject: Re: [PATCH net-next v2] samples/bpf: fixup some tools to be able to
- support xdp multibuffer
-Message-ID: <Y7goqzGAb+dk8KIw@C02YVCJELVCG>
-References: <20220621175402.35327-1-gospo@broadcom.com>
- <40fd78fc-2bb1-8eed-0b64-55cb3db71664@gmail.com>
- <87k0234pd6.fsf@toke.dk>
- <20230103172153.58f231ba@kernel.org>
- <Y7U8aAhdE3TuhtxH@lore-desk>
- <87bkne32ly.fsf@toke.dk>
- <a12de9d9-c022-3b57-0a15-e22cdae210fa@gmail.com>
- <871qo90yxr.fsf@toke.dk>
- <Y7cBfE7GpX04EI97@C02YVCJELVCG.dhcp.broadcom.net>
- <20230105101642.1a31f278@kernel.org>
+        with ESMTP id S229547AbjAFN6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 08:58:30 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB0277AD5;
+        Fri,  6 Jan 2023 05:58:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=EuJq8aalKfu+0oZW3TJ0EoGfR/E0+h0Uny3kQ2BRO4g=; b=R4
+        RWJo5mePeXJ9soGnmolcF0e7zMy3/p87zDpSlnL6WWuevJ0S+C5GwOvRs3oVyKbqmJt/bx6m77ik5
+        Fv23PRuTah0ptEw+uq5QmLMx3Aw2B/WMdrZaoP+BdsqpdBAf6rr1uCu3nqJaCnSwy8vhadhHVXXjd
+        Rey+f/JnKIkoptE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pDnEi-001L0W-1K; Fri, 06 Jan 2023 14:58:20 +0100
+Date:   Fri, 6 Jan 2023 14:58:20 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Frank.Sae" <Frank.Sae@motor-comm.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        xiaogang.fan@motor-comm.com, fei.zhang@motor-comm.com,
+        hua.sun@motor-comm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: Add Motorcomm yt8xxx
+ ethernet phy Driver bindings
+Message-ID: <Y7go/KP8TZTdp6wm@lunn.ch>
+References: <20230105073024.8390-1-Frank.Sae@motor-comm.com>
+ <20230105073024.8390-2-Frank.Sae@motor-comm.com>
+ <b74baadf-37a4-c9a2-c821-3c3e0143fa4a@linaro.org>
+ <8fa89dac-6859-af93-0dc0-ffcb42b5bb30@motor-comm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230105101642.1a31f278@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8fa89dac-6859-af93-0dc0-ffcb42b5bb30@motor-comm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 10:16:42AM -0800, Jakub Kicinski wrote:
-> On Thu, 5 Jan 2023 11:57:32 -0500 Andy Gospodarek wrote:
-> > > So my main concern would be that if we "allow" this, the only way to
-> > > write an interoperable XDP program will be to use bpf_xdp_load_bytes()
-> > > for every packet access. Which will be slower than DPA, so we may end up
-> > > inadvertently slowing down all of the XDP ecosystem, because no one is
-> > > going to bother with writing two versions of their programs. Whereas if
-> > > you can rely on packet headers always being in the linear part, you can
-> > > write a lot of the "look at headers and make a decision" type programs
-> > > using just DPA, and they'll work for multibuf as well.  
+> >> +  motorcomm,rx-delay-basic:
+> >> +    description: |
+> >> +      Tristate, setup the basic RGMII RX Clock delay of PHY.
+> >> +      This basic delay is fixed at 2ns (1000Mbps) or 8ns (100Mbps、10Mbps).
+> >> +      This basic delay usually auto set by hardware according to the voltage
+> >> +      of RXD0 pin (low = 0, turn off;   high = 1, turn on).
+> >> +      If not exist, this delay is controlled by hardware.
 > > 
-> > The question I would have is what is really the 'slow down' for
-> > bpf_xdp_load_bytes() vs DPA?  I know you and Jesper can tell me how many
-> > instructions each use. :)
+> > I don't understand that at all. What "not exist"? There is no verb and
+> > no subject.
+> > 
+> > The type and description are really unclear.
+> > 
+> >> +      0: turn off;   1: turn on.
+> >> +    $ref: /schemas/types.yaml#/definitions/uint32
+> >> +    enum: [0, 1]
+> > 
+> > So this is bool?
+> > 
 > 
-> Until we have an efficient and inlined DPA access to frags an
-> unconditional memcpy() of the first 2 cachelines-worth of headers
-> in the driver must be faster than a piece-by-piece bpf_xdp_load_bytes()
-> onto the stack, right?
-
-100% 
-
-Seems like we are back to speed vs ease of use, then?
-
-> > Taking a step back...years ago Dave mentioned wanting to make XDP
-> > programs easy to write and it feels like using these accessor APIs would
-> > help accomplish that.  If the kernel examples use bpf_xdp_load_bytes()
-> > accessors everywhere then that would accomplish that.
+> This basic delay can be controlled by hardware or dts.
 > 
-> I've been pushing for an skb_header_pointer()-like helper but 
-> the semantics were not universally loved :)
+> Default value depends on power on strapping, according to the voltage
+> of RXD0 pin (low = 0, turn off;   high = 1, turn on).
+> 
+> "not exist" means that This basic delay is controlled by hardware,
+> and software don't change this.
 
-I didn't recall that -- maybe I'll check the archives and see what I can
-find.
+As i said in my other reply, this is not how Linux controls this. This
+property should be removed.
 
+	 Andrew
