@@ -2,107 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1204C660583
-	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 18:18:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F14660584
+	for <lists+netdev@lfdr.de>; Fri,  6 Jan 2023 18:18:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbjAFRSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 12:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52858 "EHLO
+        id S235594AbjAFRSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 12:18:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233925AbjAFRRk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 12:17:40 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E4B140ED
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 09:17:35 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id d15so2288716pls.6
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 09:17:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+BszObA54pUrS6LbjCGZnkDETNcwahguKQU7tKjQAnc=;
-        b=nxhl4YlRNgXEL6DzvFH0wf5sH3oKGJZwZW5j+mDfxIXt/jrXR/AvYhsm/DTbSwyH2M
-         GlVyjfa8U81CTQwoVMfXXM2deCySN+LnBLXtMlTopy7jvlxMkgRJdUOzny0vjF5Gu80u
-         UUJNnnceo33J2VG8PCW6A2hog6DTu34bTcfJ362Y/YfH9TSEa6TT8vTobx9p8UFTYMjh
-         CAbsws84tyQQ/RS6kIbTZLWTsPGP8aZDfVZj2Eij1KZRa5N4wrs13BPG099tAQeFfZ9H
-         3vAP33Fl5lpJx7ZS93miXyFDImJjBrdnJ9Zk3Ifn8nxSvSa2NBoZa6RbD16lNXnZPT7V
-         /3nQ==
+        with ESMTP id S235562AbjAFRSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 12:18:30 -0500
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6421A806
+        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 09:18:29 -0800 (PST)
+Received: by mail-io1-f71.google.com with SMTP id be25-20020a056602379900b006f166af94d6so1096463iob.8
+        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 09:18:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+BszObA54pUrS6LbjCGZnkDETNcwahguKQU7tKjQAnc=;
-        b=xHHL+6VczZIWl2456bTdRHt8bnEkv6laHAguDgrXsR9D1v8n2deU+nSiXjLl8arbPZ
-         HrUNjJ4LskPNfn1oWR/hOvXsdjCG6BdrYYCilVz9i7P7rKY4yE7RDgh8npRkuGxkw3yq
-         c8+1U3Efz4ApT2yRVU9DbWRBVJ/otL5g5njEMvZeyS+dwESn0QFxoGy4eJozJuj2D2LQ
-         VrXnW9K6WQS07zBZf4SzUMvUIlvU1nQ6twVp9wpJrSQOLW+vy7ShYzcFAiDudnCEgc75
-         P0ayB8fQ7fh2eTdQ5EOk6IlwM57/4znXddA4rTa0KgdeMzjJ3S2sxVn1VsN41V4imsrh
-         /KlA==
-X-Gm-Message-State: AFqh2kpCNxXAGFReb0/3UTKTXmg2+fCAFUmadX9cbQRq2BMKfkGFhAUM
-        7oYcJjOatLi+Gc+aPhP/Q5iFaeOcDo5/9vRa7uQBPg==
-X-Google-Smtp-Source: AMrXdXsHeN7kO1opdugoqFTEsv0uWWRotDtg2lt7BlV0dLV+THh3uWF07Tz6TyKnsVTE2MPc28OY8yjdWAMHnomHBKM=
-X-Received: by 2002:a17:90a:8b92:b0:218:9107:381b with SMTP id
- z18-20020a17090a8b9200b002189107381bmr4368808pjn.75.1673025454798; Fri, 06
- Jan 2023 09:17:34 -0800 (PST)
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KNubMI1GatQvLGtaWUgQht+S/ChcWAcDTlFlP/zM3lw=;
+        b=08Ntxm9JjflLchLndDExNBzPsZadSEozqyj8T4R3LZ4JHbnDCrxKda7gU7sn6DzB9d
+         5eGB4fujdo8HT6oIiWc2zN+4Dg2Txh2bf2bB89KEEjYIEv0oUmzlqaj3SfU/LuoNJn2Z
+         Ef1xtAzGXwToIouirYGoF/JZ10J2Jn8U6UhYqMD5mWHFRiKbEWCu431l7/9wVsFKzEFD
+         EWvhmB9Cf8UAkv5y1o3z/rW0uIXLPUCwbX8+lniQOvWcMY3UTb+EPknkbhfylEmc7WaK
+         /EpwtdOdr9JWtlNMKGOKUESBbLteUGg3bHP//j9xbLO4eLHMjY5RPbYklOGpB7SU78bk
+         Z6ug==
+X-Gm-Message-State: AFqh2kqw9ri2m2eXl9CCSqR1nz3pdxRBhRX/9Mbjt4OAiqI/lBVYILHz
+        kkxzDIrKcB7I37UaI9chBF32noyhiJkVToep91XoRJpNXgpU
+X-Google-Smtp-Source: AMrXdXsC4+9DIJj/3HSQrpzNWCyl6PVy0sO43QtssChaZWPBo2v+DiTAj5KrRFuPHZIJNFMRYRhQQO79CuInadAneRX5Eo4M6ZNg
 MIME-Version: 1.0
-References: <20230104215949.529093-1-sdf@google.com> <20230104215949.529093-6-sdf@google.com>
- <2795feb1-c968-b588-6a4c-9716afd8ecf2@linux.dev>
-In-Reply-To: <2795feb1-c968-b588-6a4c-9716afd8ecf2@linux.dev>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 6 Jan 2023 09:17:23 -0800
-Message-ID: <CAKH8qBvgE09m21ugW3j5Af99fOLqh8K0MH+4VM7hgS3TFW5Cdg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 05/17] bpf: Introduce device-bound XDP programs
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+X-Received: by 2002:a92:c984:0:b0:304:a7a2:6878 with SMTP id
+ y4-20020a92c984000000b00304a7a26878mr5636073iln.206.1673025508785; Fri, 06
+ Jan 2023 09:18:28 -0800 (PST)
+Date:   Fri, 06 Jan 2023 09:18:28 -0800
+In-Reply-To: <783988.1673005658@warthog.procyon.org.uk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000026c40c05f19b9b69@google.com>
+Subject: Re: [syzbot] kernel BUG in rxrpc_put_peer
+From:   syzbot <syzbot+c22650d2844392afdcfd@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 5, 2023 at 4:41 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 1/4/23 1:59 PM, Stanislav Fomichev wrote:
-> > @@ -199,12 +197,12 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
-> >           attr->prog_type != BPF_PROG_TYPE_XDP)
-> >               return -EINVAL;
-> >
-> > -     if (attr->prog_flags)
-> > +     if (attr->prog_flags & ~BPF_F_XDP_DEV_BOUND_ONLY)
-> >               return -EINVAL;
-> >
-> > -     offload = kzalloc(sizeof(*offload), GFP_USER);
->
-> The kzalloc is still needed. Although a latter patch added it bad, it is better
-> not to miss it in the first place.
+Hello,
 
-Oh, good catch, probably lost during reshuffling some changes around, will undo.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+INFO: rcu detected stall in corrupted
+
+rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { P5540 } 2684 jiffies s: 2885 root: 0x0/T
+rcu: blocking rcu_node structures (internal RCU debug):
 
 
-> > -     if (!offload)
-> > -             return -ENOMEM;
-> > +     if (attr->prog_type == BPF_PROG_TYPE_SCHED_CLS &&
-> > +         attr->prog_flags & BPF_F_XDP_DEV_BOUND_ONLY)
-> > +             return -EINVAL;
-> >
-> >       offload->prog = prog;
-> >
->
+Tested on:
+
+commit:         9e80802b rxrpc: TEST: Remove almost all use of RCU
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=1587a762480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=affadc28955d87c3
+dashboard link: https://syzkaller.appspot.com/bug?extid=c22650d2844392afdcfd
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
