@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6587E660D62
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 10:49:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70CE6660D63
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 10:49:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbjAGJtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 04:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
+        id S231550AbjAGJtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 04:49:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231819AbjAGJtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 04:49:32 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443D07CBF4
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 01:49:31 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id b2so4238193pld.7
-        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 01:49:31 -0800 (PST)
+        with ESMTP id S229525AbjAGJtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 04:49:35 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052417CBCA
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 01:49:35 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id l1-20020a17090a384100b00226f05b9595so2272995pjf.0
+        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 01:49:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EyKELENjESTSNL4MxKERr1hlhSw93lJP/Wpb5CQ8Jf8=;
-        b=BjC6ee4Q6rGFba8CL4y6bhEmeYNeAAtg5hGTcvlhxhj6jZ3uZLIcvtwTbxDL1qAEO1
-         eXk0Aq76/Oahyp+LJ9ld7hemdEO5Y/CJtcTIkx8+kNyhyyf6a4opWQmdYipl1rY9TR4+
-         69npC16kAd8qF7/dtPLDWDcFCNwaau7f0wBYUU+Nxeojeft7vNSUovDLOCoYRwSMeiQq
-         weUXntmcmWgxjVzBcvhaKPTeK/pFNXMFtCIxcypmruj0MaTvonMzPee2DvF9kMSeIfVo
-         QYLW6uprkZYH5BRdVlYbT0LZPp5FZzgwFifCLUY1iRqbuvEZh/0Q9JGAe1NJjQ7ySspE
-         s//w==
+        bh=z7b+dIa8qQHA/Sr0355zYfqLJQAvAHw7gJ8jDK656W0=;
+        b=RxId5u7U+DhvUg8S6oFV0cYC/qf7/kMk94JKSUeK0zA5v78oyrz51kWvxhNJVMRoFs
+         demy3vq13F5YPYwgR7ppmcB9Dkgoanwj1hD5Z8AqYE3A/q9VZ9Yo+vs47dANui1f0Qps
+         Bd+RXGYWKf2qAsvibNqsz6KJYOxLMiAJ5Ro+0iu8s+MWMbaIFxVuNvp4xQk0w4UtaWO8
+         EY260xwVZAsjTBe2PbJ53gmo2HpLOdJamx4aZWGG5Nh414d6NFQpIszDAsgQ0SJMBfNC
+         Wl9CkFdFCS1lc7VmXrBaGz2Xt85ArSHYhM9r9KVKVeXG1+1ewmxYMTKGR9IcNN8lQK+a
+         nXfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EyKELENjESTSNL4MxKERr1hlhSw93lJP/Wpb5CQ8Jf8=;
-        b=5ryT32xCAkLtDiCydZOBhIqPrNu6Phur9AU0K3z/DhueU6la8Bbkp5r9k6afWXvccZ
-         3rCKtZDIOiveElk3aJ1gDPPwDGp4mZhypeP+wkfo0zDJM1HhLd3eMxPmWx4QToD0TfZQ
-         Mg7sa4tzpZo1MolTytCbDImeOsD5kEbPMvmMNLAP2Y0ETcb8gnmiGziOLVLzP/tlWOQd
-         f9CO4jIsMxbhmoNmiS8fJFu5ALuwk3kbr7MXA+GlavtwRwJozu1GsuaaKcF5qdPcSYKa
-         /4kNoeDp5RsHV97yVXJX3c4PxhaVnkcn0DOXP44jGx0Qmek99qkuFE5MUMYAW3O8Gd0Z
-         nO+Q==
-X-Gm-Message-State: AFqh2kqw/428gtd6bFwc/4fLtyT4aOXA/H2b4mP8De2G56OJdyZAxUzN
-        HrL2xmxsfMihS7aST0kh90p1rzNqy/uV2FVAIfhMsw==
-X-Google-Smtp-Source: AMrXdXswPshHkKrzeMmhtoNZfQY1zqWkri9edBhSRvhkRZdKnysUO7L5BmQX+Lf6v6bt84WU8iedww==
-X-Received: by 2002:a17:902:da86:b0:188:f570:7bdf with SMTP id j6-20020a170902da8600b00188f5707bdfmr78351959plx.40.1673084970769;
-        Sat, 07 Jan 2023 01:49:30 -0800 (PST)
+        bh=z7b+dIa8qQHA/Sr0355zYfqLJQAvAHw7gJ8jDK656W0=;
+        b=b1ql93AtqaBo0F+/0M3KAtJSyQk+Lni5NmGDlXxXg0xi/cy3/yT4qjt9dhTib6VvMU
+         Bn/Asz557XaXBI6VH+Wv8VeameDPTlOSv615Y7nR+BCaNmG9GXDLwV3ZjJjWcwuuf/TS
+         dRDfkVQLbPj9hNk6zU4WOn67evBE5VV0PwPjwOfbV9lI39qTu8Zr1VESVkX4clkX9ub7
+         7M5QtRs1V6MOTxjKZ3KKj8RcleEW5Qn5W9vKA07a8rYmFy6TBMAWr3b13eDoQZqDMZ2G
+         NHd/uH2RGN+apcVVzrfUo4Xw1D4SUUTvRj/+gFpvMlzQ2Tk7EIhlIjfvudom2jzJuZ+/
+         SQmQ==
+X-Gm-Message-State: AFqh2kqS46IjICU//lpt40ghkd1jKBrVWICqst6FMmxdHKwtMyOwYxzG
+        mWS1o2eyn8JKTPSyVikembpkDHLBiim9eovDxfHp7Q==
+X-Google-Smtp-Source: AMrXdXuzZoYlaGMan/qzdLoA23jnRqdaCRuWt2qe5g+kxbWbNcpMnCA9dKgdwqjRYMB2YkTuRrhfVw==
+X-Received: by 2002:a17:902:f788:b0:192:dda4:30e2 with SMTP id q8-20020a170902f78800b00192dda430e2mr17796285pln.52.1673084974524;
+        Sat, 07 Jan 2023 01:49:34 -0800 (PST)
 Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id t24-20020a170902b21800b001766a3b2a26sm2359570plr.105.2023.01.07.01.49.29
+        by smtp.gmail.com with ESMTPSA id p8-20020a170902780800b0019117164732sm2298080pll.213.2023.01.07.01.49.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Jan 2023 01:49:30 -0800 (PST)
+        Sat, 07 Jan 2023 01:49:33 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -58,9 +58,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
         idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
         jacob.e.keller@intel.com, maximmi@nvidia.com, gal@nvidia.com
-Subject: [patch net-next 5/8] devlink: remove reporter reference counting
-Date:   Sat,  7 Jan 2023 10:49:06 +0100
-Message-Id: <20230107094909.530239-6-jiri@resnulli.us>
+Subject: [patch net-next 6/8] devlink: convert linecards dump to devlink_nl_instance_iter_dump()
+Date:   Sat,  7 Jan 2023 10:49:07 +0100
+Message-Id: <20230107094909.530239-7-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230107094909.530239-1-jiri@resnulli.us>
 References: <20230107094909.530239-1-jiri@resnulli.us>
@@ -77,285 +77,131 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-As long as the reporter live time is protected by devlink instance
-lock, the reference counting is no longer needed. Remove it.
+Benefit from recently introduced instance iteration and convert
+linecards .dumpit generic netlink callback to use it.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/devlink/leftover.c | 113 +++++++++++------------------------------
- 1 file changed, 30 insertions(+), 83 deletions(-)
+ net/devlink/devl_internal.h |  1 +
+ net/devlink/leftover.c      | 64 ++++++++++++++++---------------------
+ net/devlink/netlink.c       |  1 +
+ 3 files changed, 30 insertions(+), 36 deletions(-)
 
+diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+index 69d10b93616e..52d958c1c977 100644
+--- a/net/devlink/devl_internal.h
++++ b/net/devlink/devl_internal.h
+@@ -165,6 +165,7 @@ extern const struct devlink_gen_cmd devl_gen_info;
+ extern const struct devlink_gen_cmd devl_gen_trap;
+ extern const struct devlink_gen_cmd devl_gen_trap_group;
+ extern const struct devlink_gen_cmd devl_gen_trap_policer;
++extern const struct devlink_gen_cmd devl_gen_linecard;
+ 
+ /* Ports */
+ int devlink_port_netdevice_event(struct notifier_block *nb,
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 70b8a9f15ac3..c512ddb6bd5e 100644
+index c512ddb6bd5e..c5feda997932 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -7266,7 +7266,6 @@ struct devlink_health_reporter {
- 	u64 error_count;
- 	u64 recovery_count;
- 	u64 last_recovery_ts;
--	refcount_t refcount;
+@@ -2105,50 +2105,42 @@ static int devlink_nl_cmd_linecard_get_doit(struct sk_buff *skb,
+ 	return genlmsg_reply(msg, info);
+ }
+ 
+-static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
+-					      struct netlink_callback *cb)
++static int devlink_nl_cmd_linecard_get_dump_one(struct sk_buff *msg,
++						struct devlink *devlink,
++						struct netlink_callback *cb)
+ {
+ 	struct devlink_nl_dump_state *state = devlink_dump_state(cb);
+ 	struct devlink_linecard *linecard;
+-	struct devlink *devlink;
+-	int err;
+-
+-	devlink_dump_for_each_instance_get(msg, state, devlink) {
+-		int idx = 0;
+-
+-		devl_lock(devlink);
+-		if (!devl_is_registered(devlink))
+-			goto next_devlink;
++	int idx = 0;
++	int err = 0;
+ 
+-		list_for_each_entry(linecard, &devlink->linecard_list, list) {
+-			if (idx < state->idx) {
+-				idx++;
+-				continue;
+-			}
+-			mutex_lock(&linecard->state_lock);
+-			err = devlink_nl_linecard_fill(msg, devlink, linecard,
+-						       DEVLINK_CMD_LINECARD_NEW,
+-						       NETLINK_CB(cb->skb).portid,
+-						       cb->nlh->nlmsg_seq,
+-						       NLM_F_MULTI,
+-						       cb->extack);
+-			mutex_unlock(&linecard->state_lock);
+-			if (err) {
+-				devl_unlock(devlink);
+-				devlink_put(devlink);
+-				state->idx = idx;
+-				goto out;
+-			}
++	list_for_each_entry(linecard, &devlink->linecard_list, list) {
++		if (idx < state->idx) {
+ 			idx++;
++			continue;
+ 		}
+-next_devlink:
+-		devl_unlock(devlink);
+-		devlink_put(devlink);
++		mutex_lock(&linecard->state_lock);
++		err = devlink_nl_linecard_fill(msg, devlink, linecard,
++					       DEVLINK_CMD_LINECARD_NEW,
++					       NETLINK_CB(cb->skb).portid,
++					       cb->nlh->nlmsg_seq,
++					       NLM_F_MULTI,
++					       cb->extack);
++		mutex_unlock(&linecard->state_lock);
++		if (err) {
++			state->idx = idx;
++			break;
++		}
++		idx++;
+ 	}
+-out:
+-	return msg->len;
++
++	return err;
+ }
+ 
++const struct devlink_gen_cmd devl_gen_linecard = {
++	.dump_one		= devlink_nl_cmd_linecard_get_dump_one,
++};
++
+ static struct devlink_linecard_type *
+ devlink_linecard_type_lookup(struct devlink_linecard *linecard,
+ 			     const char *type)
+@@ -8996,7 +8988,7 @@ const struct genl_small_ops devlink_nl_ops[56] = {
+ 	{
+ 		.cmd = DEVLINK_CMD_LINECARD_GET,
+ 		.doit = devlink_nl_cmd_linecard_get_doit,
+-		.dumpit = devlink_nl_cmd_linecard_get_dumpit,
++		.dumpit = devlink_nl_instance_iter_dump,
+ 		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
+ 		/* can be retrieved by unprivileged users */
+ 	},
+diff --git a/net/devlink/netlink.c b/net/devlink/netlink.c
+index 3f2ab4360f11..b18e216e09b0 100644
+--- a/net/devlink/netlink.c
++++ b/net/devlink/netlink.c
+@@ -191,6 +191,7 @@ static const struct devlink_gen_cmd *devl_gen_cmds[] = {
+ 	[DEVLINK_CMD_TRAP_GET]		= &devl_gen_trap,
+ 	[DEVLINK_CMD_TRAP_GROUP_GET]	= &devl_gen_trap_group,
+ 	[DEVLINK_CMD_TRAP_POLICER_GET]	= &devl_gen_trap_policer,
++	[DEVLINK_CMD_LINECARD_GET]	= &devl_gen_linecard,
+ 	[DEVLINK_CMD_SELFTESTS_GET]	= &devl_gen_selftests,
  };
  
- void *
-@@ -7325,7 +7324,6 @@ __devlink_health_reporter_create(struct devlink *devlink,
- 	reporter->auto_recover = !!ops->recover;
- 	reporter->auto_dump = !!ops->dump;
- 	mutex_init(&reporter->dump_lock);
--	refcount_set(&reporter->refcount, 1);
- 	return reporter;
- }
- 
-@@ -7416,13 +7414,6 @@ devlink_health_reporter_free(struct devlink_health_reporter *reporter)
- 	kfree(reporter);
- }
- 
--static void
--devlink_health_reporter_put(struct devlink_health_reporter *reporter)
--{
--	if (refcount_dec_and_test(&reporter->refcount))
--		devlink_health_reporter_free(reporter);
--}
--
- /**
-  *	devl_health_reporter_destroy - destroy devlink health reporter
-  *
-@@ -7434,7 +7425,7 @@ devl_health_reporter_destroy(struct devlink_health_reporter *reporter)
- 	devl_assert_locked(reporter->devlink);
- 
- 	list_del(&reporter->list);
--	devlink_health_reporter_put(reporter);
-+	devlink_health_reporter_free(reporter);
- }
- EXPORT_SYMBOL_GPL(devl_health_reporter_destroy);
- 
-@@ -7678,7 +7669,6 @@ static struct devlink_health_reporter *
- devlink_health_reporter_get_from_attrs(struct devlink *devlink,
- 				       struct nlattr **attrs)
- {
--	struct devlink_health_reporter *reporter;
- 	struct devlink_port *devlink_port;
- 	char *reporter_name;
- 
-@@ -7687,17 +7677,12 @@ devlink_health_reporter_get_from_attrs(struct devlink *devlink,
- 
- 	reporter_name = nla_data(attrs[DEVLINK_ATTR_HEALTH_REPORTER_NAME]);
- 	devlink_port = devlink_port_get_from_attrs(devlink, attrs);
--	if (IS_ERR(devlink_port)) {
--		reporter = devlink_health_reporter_find_by_name(devlink, reporter_name);
--		if (reporter)
--			refcount_inc(&reporter->refcount);
--	} else {
--		reporter = devlink_port_health_reporter_find_by_name(devlink_port, reporter_name);
--		if (reporter)
--			refcount_inc(&reporter->refcount);
--	}
--
--	return reporter;
-+	if (IS_ERR(devlink_port))
-+		return devlink_health_reporter_find_by_name(devlink,
-+							    reporter_name);
-+	else
-+		return devlink_port_health_reporter_find_by_name(devlink_port,
-+								 reporter_name);
- }
- 
- static struct devlink_health_reporter *
-@@ -7756,10 +7741,8 @@ static int devlink_nl_cmd_health_reporter_get_doit(struct sk_buff *skb,
- 		return -EINVAL;
- 
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
--	if (!msg) {
--		err = -ENOMEM;
--		goto out;
--	}
-+	if (!msg)
-+		return -ENOMEM;
- 
- 	err = devlink_nl_health_reporter_fill(msg, reporter,
- 					      DEVLINK_CMD_HEALTH_REPORTER_GET,
-@@ -7767,13 +7750,10 @@ static int devlink_nl_cmd_health_reporter_get_doit(struct sk_buff *skb,
- 					      0);
- 	if (err) {
- 		nlmsg_free(msg);
--		goto out;
-+		return err;
- 	}
- 
--	err = genlmsg_reply(msg, info);
--out:
--	devlink_health_reporter_put(reporter);
--	return err;
-+	return genlmsg_reply(msg, info);
- }
- 
- static int
-@@ -7847,7 +7827,6 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
- {
- 	struct devlink *devlink = info->user_ptr[0];
- 	struct devlink_health_reporter *reporter;
--	int err;
- 
- 	reporter = devlink_health_reporter_get_from_info(devlink, info);
- 	if (!reporter)
-@@ -7855,15 +7834,12 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
- 
- 	if (!reporter->ops->recover &&
- 	    (info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD] ||
--	     info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER])) {
--		err = -EOPNOTSUPP;
--		goto out;
--	}
-+	     info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER]))
-+		return -EOPNOTSUPP;
-+
- 	if (!reporter->ops->dump &&
--	    info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]) {
--		err = -EOPNOTSUPP;
--		goto out;
--	}
-+	    info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP])
-+		return -EOPNOTSUPP;
- 
- 	if (info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD])
- 		reporter->graceful_period =
-@@ -7877,11 +7853,7 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
- 		reporter->auto_dump =
- 		nla_get_u8(info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]);
- 
--	devlink_health_reporter_put(reporter);
- 	return 0;
--out:
--	devlink_health_reporter_put(reporter);
--	return err;
- }
- 
- static int devlink_nl_cmd_health_reporter_recover_doit(struct sk_buff *skb,
-@@ -7889,16 +7861,12 @@ static int devlink_nl_cmd_health_reporter_recover_doit(struct sk_buff *skb,
- {
- 	struct devlink *devlink = info->user_ptr[0];
- 	struct devlink_health_reporter *reporter;
--	int err;
- 
- 	reporter = devlink_health_reporter_get_from_info(devlink, info);
- 	if (!reporter)
- 		return -EINVAL;
- 
--	err = devlink_health_reporter_recover(reporter, NULL, info->extack);
--
--	devlink_health_reporter_put(reporter);
--	return err;
-+	return devlink_health_reporter_recover(reporter, NULL, info->extack);
- }
- 
- static int devlink_nl_cmd_health_reporter_diagnose_doit(struct sk_buff *skb,
-@@ -7913,36 +7881,27 @@ static int devlink_nl_cmd_health_reporter_diagnose_doit(struct sk_buff *skb,
- 	if (!reporter)
- 		return -EINVAL;
- 
--	if (!reporter->ops->diagnose) {
--		devlink_health_reporter_put(reporter);
-+	if (!reporter->ops->diagnose)
- 		return -EOPNOTSUPP;
--	}
- 
- 	fmsg = devlink_fmsg_alloc();
--	if (!fmsg) {
--		devlink_health_reporter_put(reporter);
-+	if (!fmsg)
- 		return -ENOMEM;
--	}
- 
- 	err = devlink_fmsg_obj_nest_start(fmsg);
- 	if (err)
--		goto out;
-+		return err;
- 
- 	err = reporter->ops->diagnose(reporter, fmsg, info->extack);
- 	if (err)
--		goto out;
-+		return err;
- 
- 	err = devlink_fmsg_obj_nest_end(fmsg);
- 	if (err)
--		goto out;
--
--	err = devlink_fmsg_snd(fmsg, info,
--			       DEVLINK_CMD_HEALTH_REPORTER_DIAGNOSE, 0);
-+		return err;
- 
--out:
--	devlink_fmsg_free(fmsg);
--	devlink_health_reporter_put(reporter);
--	return err;
-+	return devlink_fmsg_snd(fmsg, info,
-+				DEVLINK_CMD_HEALTH_REPORTER_DIAGNOSE, 0);
- }
- 
- static int
-@@ -7957,10 +7916,9 @@ devlink_nl_cmd_health_reporter_dump_get_dumpit(struct sk_buff *skb,
- 	if (!reporter)
- 		return -EINVAL;
- 
--	if (!reporter->ops->dump) {
--		err = -EOPNOTSUPP;
--		goto out;
--	}
-+	if (!reporter->ops->dump)
-+		return -EOPNOTSUPP;
-+
- 	mutex_lock(&reporter->dump_lock);
- 	if (!state->idx) {
- 		err = devlink_health_do_dump(reporter, NULL, cb->extack);
-@@ -7978,8 +7936,6 @@ devlink_nl_cmd_health_reporter_dump_get_dumpit(struct sk_buff *skb,
- 				  DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET);
- unlock:
- 	mutex_unlock(&reporter->dump_lock);
--out:
--	devlink_health_reporter_put(reporter);
- 	return err;
- }
- 
-@@ -7994,15 +7950,12 @@ devlink_nl_cmd_health_reporter_dump_clear_doit(struct sk_buff *skb,
- 	if (!reporter)
- 		return -EINVAL;
- 
--	if (!reporter->ops->dump) {
--		devlink_health_reporter_put(reporter);
-+	if (!reporter->ops->dump)
- 		return -EOPNOTSUPP;
--	}
- 
- 	mutex_lock(&reporter->dump_lock);
- 	devlink_health_dump_clear(reporter);
- 	mutex_unlock(&reporter->dump_lock);
--	devlink_health_reporter_put(reporter);
- 	return 0;
- }
- 
-@@ -8011,21 +7964,15 @@ static int devlink_nl_cmd_health_reporter_test_doit(struct sk_buff *skb,
- {
- 	struct devlink *devlink = info->user_ptr[0];
- 	struct devlink_health_reporter *reporter;
--	int err;
- 
- 	reporter = devlink_health_reporter_get_from_info(devlink, info);
- 	if (!reporter)
- 		return -EINVAL;
- 
--	if (!reporter->ops->test) {
--		devlink_health_reporter_put(reporter);
-+	if (!reporter->ops->test)
- 		return -EOPNOTSUPP;
--	}
--
--	err = reporter->ops->test(reporter, info->extack);
- 
--	devlink_health_reporter_put(reporter);
--	return err;
-+	return reporter->ops->test(reporter, info->extack);
- }
- 
- struct devlink_stats {
 -- 
 2.39.0
 
