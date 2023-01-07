@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F09660D1F
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 10:08:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8057E660D3E
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 10:21:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjAGJFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 04:05:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
+        id S231873AbjAGJVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 04:21:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjAGJFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 04:05:41 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA4A81D6E
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 01:05:39 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id r18so2683974pgr.12
-        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 01:05:39 -0800 (PST)
+        with ESMTP id S237003AbjAGJU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 04:20:29 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC238463A
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 01:20:17 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id fz16-20020a17090b025000b002269d6c2d83so7527720pjb.0
+        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 01:20:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ySuTU3/2ve7nbb0FFI005zdxYhuuq4YkutjLx2Ct+0Y=;
-        b=RW6yEYLuXYPoOVSnuNT5J3HpuWbpn4DO0DffQLL7uqgnlDKHsF4s4wx+N18PdHuN9W
-         voi3rblqUq5k3UXEiNwpVLMZ0wplL19gCzK9r7lZqt8u5t/Y6fqMfC4epFDxeiOHwdTR
-         vie3f/BCe0Ov2I6isVR/eslig6i2bl1FNm7nQggdD2NXNQE1qbMGlRSOcAqVelGbN31P
-         2jbb6B3RmRzfrBslhiSCv40h00W6ZSQEK2CyL3QE3PTa8rM65xEY9ScMzy2RJRVYkqfO
-         dRCOv5+gisi7Q4eeheoZqmX7BZmlie926BNEqxAkFX/b4jPj/cYcsEoJU0EsjP9mxvpj
-         Tf3Q==
+        bh=TeWzdmWS75kiKb/+dm9GNBoHP1/5T3qxY8e5eVBdqNY=;
+        b=byJ3eNk8qU6cJ89qFyAGphuKRhuQUcHg/3kE+RjVQaVIb8MXQkfPGKo+Y+1BDFipV8
+         XHOj9qc+SniodY1aQ7i9IjUfJ5Fz8Fs4p0TQXXgSNG2HLNPVgGk2+CFsITCzGrcFso4E
+         yK8mgOLIs2yY5uPxS0Qd0d5vzcm0K7MbOLsKatFdd1gO1bou/ZjpuCuBAr1VJ4eTKa9m
+         EnjPEhWKedw7ryD3FlqikRg/d+6VxGYIUISpqotIx8ds4gxa0PsNbp0ahigui+azGGvU
+         aOFTAXWfw++DBYnA/ogD+9A/IgfRuYiOWih4c//ZAzU9cvgaPLFmfXRCUGsdNeOlGtHG
+         J/Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ySuTU3/2ve7nbb0FFI005zdxYhuuq4YkutjLx2Ct+0Y=;
-        b=ArZYcYDZpfWSQn8EYmGYOjmD4ohBhC9kknrm6pzYMzjiCK3QS9jYoCEVUmfF477zws
-         40DeHGx2Uw6AOjPO1ty4CZryGLscyZe6rVLnUWE7LwR3/76ZqSKIxzlk0NdElciW0qUp
-         SpH9FxAzn1y4+IShHQxCb1aTHUzUW59yX/aUHN58LPNGjreZf+3Q4B09f1SwXoTnJxqK
-         Woojq7i67TaZWotGRBGglaLgbz9XVkzK9NyQs1RoPT7DQoWRCoGVcqwYmGMaAIzzpx+m
-         omcwzZuygSfoaWFIgQ5r2dM/haKxI+nvTXaXAIieCDIY3/2cVNwnni0TkSJ2eznouQM5
-         iiVA==
-X-Gm-Message-State: AFqh2kpZnNkOxl/5iPhCJJQi3TeCl5MAfhVgvEa3MLQQ9jvy2Xz68Eq1
-        dlsne5Idrl8BzhkHjSoLzLkrYw==
-X-Google-Smtp-Source: AMrXdXte8Gy+C55Km8MWjs7rRsg9m2ErEEBD9ktU5WeVaroWWQFXJmF4Gsh8fAHhw2GYjHcO7qQGIw==
-X-Received: by 2002:a05:6a00:1255:b0:576:b8e1:862b with SMTP id u21-20020a056a00125500b00576b8e1862bmr71940483pfi.14.1673082338488;
-        Sat, 07 Jan 2023 01:05:38 -0800 (PST)
+        bh=TeWzdmWS75kiKb/+dm9GNBoHP1/5T3qxY8e5eVBdqNY=;
+        b=dJCZ8ZueKWHMqBwZbMrMyLsSGa52rLZazY/9doh6LK6Uvo/4FG3SU0IXJXyyp4m2bi
+         hciBsnTOpLb8Kg/ZWKx+ujhS5ml3+InLlpDNhA2GtHtpDpzN/dDAZCf4CsgLifsI2pkH
+         9cvPd3crXkdmmF05as26tvk7hC7dxtGyObz3t9MqwXI0k5AtIh4o1Qi8tHQ7LM7VilrW
+         pSAoSsPMKkPVb26Q84otNog/4cNjMkFA651Jf8ij0g3OHZrk8Z8Cwhwg+WZJzgTygSrJ
+         Bq/7Vr4i7me2VdKHd3hYv1gQFMNEYU1SDWm95drJ+bPJlCGK4S6BVtzBoAngSr5vRMGZ
+         8IYA==
+X-Gm-Message-State: AFqh2kqGYj7Jltr7n67Dgi9JL869j4hnVXIqAY8Fy+KTXYpbNfAVdKju
+        P5I6UeDTtlVj1xCSrBiuV+TESg==
+X-Google-Smtp-Source: AMrXdXvuOjYhunuF7z4xGh3yMLT9mWff3ZEqckF0DK+pxfjXyMneJOFRjJHtPTdujAcVK1z6j0mbWA==
+X-Received: by 2002:a17:90a:c24a:b0:225:f3e6:424e with SMTP id d10-20020a17090ac24a00b00225f3e6424emr44606945pjx.17.1673083217031;
+        Sat, 07 Jan 2023 01:20:17 -0800 (PST)
 Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id u64-20020a627943000000b00581816425f3sm2019386pfc.112.2023.01.07.01.05.37
+        by smtp.gmail.com with ESMTPSA id z3-20020a17090a170300b00225e5686943sm3972385pjd.48.2023.01.07.01.20.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Jan 2023 01:05:37 -0800 (PST)
-Date:   Sat, 7 Jan 2023 10:05:35 +0100
+        Sat, 07 Jan 2023 01:20:16 -0800 (PST)
+Date:   Sat, 7 Jan 2023 10:20:13 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
-Subject: Re: [PATCH net-next 4/9] devlink: always check if the devlink
- instance is registered
-Message-ID: <Y7k13+lkw2o0Qiva@nanopsycho>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jacob.e.keller@intel.com
+Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters after
+ the instance
+Message-ID: <Y7k5TWKqvMrfjEfV@nanopsycho>
 References: <20230106063402.485336-1-kuba@kernel.org>
- <20230106063402.485336-5-kuba@kernel.org>
- <9f408a8c-4e23-9de5-0ee8-5deccd901543@intel.com>
- <20230106131934.14e7a900@kernel.org>
+ <20230106063402.485336-8-kuba@kernel.org>
+ <Y7gaWTGHTwL5PIWn@nanopsycho>
+ <20230106132251.29565214@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230106131934.14e7a900@kernel.org>
+In-Reply-To: <20230106132251.29565214@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -73,22 +73,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 06, 2023 at 10:19:34PM CET, kuba@kernel.org wrote:
->On Fri, 6 Jan 2023 09:03:18 -0800 Jacob Keller wrote:
->> > +static inline bool devl_is_registered(struct devlink *devlink)
->> > +{
->> > +	/* To prevent races the caller must hold the instance lock
->> > +	 * or another lock taken during unregistration.
->> > +	 */  
+Fri, Jan 06, 2023 at 10:22:51PM CET, kuba@kernel.org wrote:
+>On Fri, 6 Jan 2023 13:55:53 +0100 Jiri Pirko wrote:
+>> >@@ -5263,7 +5263,13 @@ static void devlink_param_notify(struct devlink *devlink,
+>> > 	WARN_ON(cmd != DEVLINK_CMD_PARAM_NEW && cmd != DEVLINK_CMD_PARAM_DEL &&
+>> > 		cmd != DEVLINK_CMD_PORT_PARAM_NEW &&
+>> > 		cmd != DEVLINK_CMD_PORT_PARAM_DEL);
+>> >-	ASSERT_DEVLINK_REGISTERED(devlink);
+>> >+
+>> >+	/* devlink_notify_register() / devlink_notify_unregister()
+>> >+	 * will replay the notifications if the params are added/removed
+>> >+	 * outside of the lifetime of the instance.
+>> >+	 */
+>> >+	if (!devl_is_registered(devlink))
+>> >+		return;  
 >> 
->> Why not just lockdep_assert here on the instance lock? I guess this
->> comment implies that another lock could be used instead but it seems
->> weird to allow that? I guess because of things like the linecards_lock
->> as opposed to the instance lock?
+>> This helper would be nice to use on other places as well.
+>> Like devlink_trap_group_notify(), devlink_trap_notify() and others. I
+>> will take care of that in a follow-up.
 >
->Yup, as discussed on the RFC - removing the regions lock specifically 
->is quite tricky.
+>Alternatively we could reorder back to registering sub-objects
+>after the instance and not have to worry about re-sending 
+>notifications :S
 
-I will submit in a jiff. Will add the assert here as a part
-of the patchset.
+Hmm, let me explore that path. Thanks!
 
