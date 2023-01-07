@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D547660F8B
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 15:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73795660F9B
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 15:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbjAGOln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 09:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
+        id S229502AbjAGOvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 09:51:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjAGOlm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 09:41:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0752568A7
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 06:41:41 -0800 (PST)
+        with ESMTP id S229475AbjAGOvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 09:51:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF19216
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 06:51:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D3FA60112
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 14:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D3EC433EF;
-        Sat,  7 Jan 2023 14:41:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A47C3B81975
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 14:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF8D2C433D2;
+        Sat,  7 Jan 2023 14:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673102500;
-        bh=McacUSoHVNUouXTjebG+SgMnb6S0UDLtKP1fw6la7Vo=;
+        s=k20201202; t=1673103080;
+        bh=wioYI3i7PiwpBEZ+tZzjLvvew6sL4iUpozMsoTz0zwg=;
         h=From:To:Cc:Subject:Date:From;
-        b=K/Bv+4sb5MrAC2DdCDzh4zLycCil8i7OlbtoqOKs6PjmhC5DQbAFtk0yu01HO+hd1
-         XQdNvRLN7t2td5kx4mgAk8xTd0KqH3xAoFHsknoVrvYoIwgGQ/kiqt18qjfIrsghML
-         muCDWgFMaaCjqOTvWHvnG/vfJnlsGMK3ZA+stMJoQONxSDZ96OvqOnZ1S2yRPtZo74
-         fN3fSukTQSbRyaBKssPFd5BSmyOOlD5gd5OrXixMadmQfzxDLZSpRh5LOhfu+kPcAD
-         /iQx8wkEGgmQ+lDYH85LVqU3A5ATUuXPZ0PDJ9h3TKaFcmeqh4/spZcHFfHlhtHdQc
-         2wxvJxHDVrRsg==
+        b=SxHE9EhK0bmegAMxZ+p8huMYzjaVwT3Ey454XlQatjKa/fy+Bgp+iKDSmojl1Y0RK
+         CHjxg8c3FVs2aY/5WnFRWC3fJapLuXBxK79yides4eoxHVvLQ/Hl1T2HmoeNrdvLcf
+         g0iO5In+qlxdSKIdSbV2YApvq//VF9KdJyX3ySy0alse42pw7EJzhDQGXisbJUHHVn
+         zdjF16b6WfMsVAm4+OLav+6VUnnsJOmhYcaMF0l1PlbZ5hlSLtPHOWSwUYQ+LvWPKN
+         2iGCxZ18iSnZIxOoft/m1OiURqhbStQwHjIpk3E8NRPW92sw120qwW/yvkoEGTHEml
+         Uby3YkqCg3lhg==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, lorenzo.bianconi@redhat.com, nbd@nbd.name,
         john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        sujuan.chen@mediatek.com, daniel@makrotopia.org
-Subject: [PATCH net-next] net: ethernet: mtk_wed: get rid of queue lock for rx queue
-Date:   Sat,  7 Jan 2023 15:41:32 +0100
-Message-Id: <bff65ff7f9a269b8a066cae0095b798ad5b37065.1673102426.git.lorenzo@kernel.org>
+        sujuan.chen@mediatek.com, daniel@makrotopia.org, leon@kernel.org
+Subject: [PATCH v3 net-next 0/5] net: ethernet: mtk_wed: introduce reset support
+Date:   Sat,  7 Jan 2023 15:50:49 +0100
+Message-Id: <cover.1673102767.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,50 +52,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mtk_wed_wo_queue_rx_clean and mtk_wed_wo_queue_refill routines can't run
-concurrently so get rid of spinlock for rx queues.
+Introduce proper reset integration between ethernet and wlan drivers in order
+to schedule wlan driver reset when ethernet/wed driver is resetting.
+Introduce mtk_hw_reset_monitor work in order to detect possible DMA hangs.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/mediatek/mtk_wed_wo.c | 4 ----
- 1 file changed, 4 deletions(-)
+Changes since v2:
+- rebase on top of net-next
+- move rtnl_lock/rtnl_unlock in reset callback
+- re-run mtk_prepare_for_reset() after mtk_wed_fe_reset() acquiring RTNL lock
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.c b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
-index a0a39643caf7..d32b86499896 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_wo.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
-@@ -138,7 +138,6 @@ mtk_wed_wo_queue_refill(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q,
- 	enum dma_data_direction dir = rx ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
- 	int n_buf = 0;
- 
--	spin_lock_bh(&q->lock);
- 	while (q->queued < q->n_desc) {
- 		struct mtk_wed_wo_queue_entry *entry;
- 		dma_addr_t addr;
-@@ -172,7 +171,6 @@ mtk_wed_wo_queue_refill(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q,
- 		q->queued++;
- 		n_buf++;
- 	}
--	spin_unlock_bh(&q->lock);
- 
- 	return n_buf;
- }
-@@ -316,7 +314,6 @@ mtk_wed_wo_queue_rx_clean(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
- {
- 	struct page *page;
- 
--	spin_lock_bh(&q->lock);
- 	for (;;) {
- 		void *buf = mtk_wed_wo_dequeue(wo, q, NULL, true);
- 
-@@ -325,7 +322,6 @@ mtk_wed_wo_queue_rx_clean(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q)
- 
- 		skb_free_frag(buf);
- 	}
--	spin_unlock_bh(&q->lock);
- 
- 	if (!q->cache.va)
- 		return;
+Changes since v1:
+- rebase on top of net-next
+
+Lorenzo Bianconi (5):
+  net: ethernet: mtk_eth_soc: introduce mtk_hw_reset utility routine
+  net: ethernet: mtk_eth_soc: introduce mtk_hw_warm_reset support
+  net: ethernet: mtk_eth_soc: align reset procedure to vendor sdk
+  net: ethernet: mtk_eth_soc: add dma checks to mtk_hw_reset_check
+  net: ethernet: mtk_wed: add reset/reset_complete callbacks
+
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c  | 300 ++++++++++++++++---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h  |  38 +++
+ drivers/net/ethernet/mediatek/mtk_ppe.c      |  27 ++
+ drivers/net/ethernet/mediatek/mtk_ppe.h      |   1 +
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h |   6 +
+ drivers/net/ethernet/mediatek/mtk_wed.c      |  40 +++
+ drivers/net/ethernet/mediatek/mtk_wed.h      |   8 +
+ include/linux/soc/mediatek/mtk_wed.h         |   2 +
+ 8 files changed, 381 insertions(+), 41 deletions(-)
+
 -- 
 2.39.0
 
