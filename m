@@ -2,105 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A46E660DEA
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 11:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00055660DEB
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 11:32:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237235AbjAGK2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 05:28:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
+        id S231594AbjAGKcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 05:32:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237326AbjAGK2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 05:28:02 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99ABB921ED
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 02:26:16 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id q64so3934182pjq.4
-        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 02:26:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OyrMFYMpDwJrP4wZGU94xNWhMaXJyPqmR+ydD4RxfFo=;
-        b=QGRxmx9lWf7+7/OG9ZiRE+8UkWbPPjLl+f518c6F6+T4LfVvDID/yjuPNhUXnNdFNX
-         zf4TlVsKyYLbKiZr8QrU3gJqA1M32s/NOdzy4IIi+OAOp5yrdcjDUjGIPnhr3tURrAUZ
-         sJPX2Wbtv8ojSmKMk7a+jRTvVZbhSshHecf7LZ8AO56BT1saK6ME1/vcRnakrZg5KYmx
-         2mivVq4r0wZcTQMeHDbhaQEx7gJnx4uOQqJIKVR/9HVorMbZH61t+V2tgjMu5y5eSxwc
-         aja5heH0ojTa5glt+dgyajVjpan3zLm+T2b6X62HU3SDRLM7VWtxl9vX4ZudPNGQxjTX
-         gQFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OyrMFYMpDwJrP4wZGU94xNWhMaXJyPqmR+ydD4RxfFo=;
-        b=Y3pyoMSy6Ao2nNxLtVN8pP8C5bwk9ejPlhS1dGD7hSHtw/JKL4U+gIuq0FQWmNPKaA
-         lOTreTw3UYHXlaDXHby6A2jx3FySuXtuUxlOUPlUZ3Xi4OXE0BgCxisdBthmh0t9+kkA
-         94vUgd6mjIQ3tPYHN6y6w59bDR3j0UKgvwdLv5I2OuhfQPWefnkAglQ2vEkoBm9wPmF5
-         DsiTjDOFTvRMuhHE8U506srIJy4QoYr1XRfjfIAxMPklU3LWeZQXdOcJDqOa7pRxKEPJ
-         9e1zbbiaU9CQbqo5FSbS8s2Bg5/Zve4Q+nI9wAKeRfQCcjcP1UJk6fVVoRgUAGxLtkKC
-         5MmA==
-X-Gm-Message-State: AFqh2kpipdmF/+5SVU56522cUsxGT2t76vCdGCCHbxAtB5Uk1e+1Smg4
-        MWZfyUnxZ5JVxO/iG8WcZ9l2qYbSHLd8BZQUkpYqHg==
-X-Google-Smtp-Source: AMrXdXuEtmWQwKAkoGZFAf10jvNENYsd5MuoKl/Za0j2UpdqLeVRRSQs6j5AAOWO2mY5MkDttXFF0A==
-X-Received: by 2002:a17:903:228a:b0:191:271f:4789 with SMTP id b10-20020a170903228a00b00191271f4789mr78945837plh.27.1673087176069;
-        Sat, 07 Jan 2023 02:26:16 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id ij30-20020a170902ab5e00b00193198ffeddsm1313229plb.30.2023.01.07.02.26.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Jan 2023 02:26:15 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, michael.chan@broadcom.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: [patch net-next v2 9/9] devlink: add instance lock assertion in devl_is_registered()
-Date:   Sat,  7 Jan 2023 11:26:12 +0100
-Message-Id: <20230107102612.533262-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230107101151.532611-1-jiri@resnulli.us>
-References: <20230107101151.532611-1-jiri@resnulli.us>
+        with ESMTP id S231651AbjAGKcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 05:32:10 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22F285CB2;
+        Sat,  7 Jan 2023 02:32:08 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6EE2C1883903;
+        Sat,  7 Jan 2023 10:32:07 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 4924E250007B;
+        Sat,  7 Jan 2023 10:32:07 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 3743E91201E4; Sat,  7 Jan 2023 10:32:07 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Sat, 07 Jan 2023 11:32:06 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20230106164112.qwpqszvrmb5uv437@skbuf>
+References: <20230106160529.1668452-1-netdev@kapio-technology.com>
+ <20230106160529.1668452-4-netdev@kapio-technology.com>
+ <20230106164112.qwpqszvrmb5uv437@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <6abb27f946d39602bd05cdcbea21766c@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On 2023-01-06 17:41, Vladimir Oltean wrote:
+> On Fri, Jan 06, 2023 at 05:05:29PM +0100, Hans J. Schultz wrote:
+>> This implementation for the Marvell mv88e6xxx chip series is based on
+>> handling ATU miss violations occurring when packets ingress on a port
+>> that is locked with learning on. This will trigger a
+>> SWITCHDEV_FDB_ADD_TO_BRIDGE event, which will result in the bridge 
+>> module
+>> adding a locked FDB entry. This bridge FDB entry will not age out as
+>> it has the extern_learn flag set.
+>> 
+>> Userspace daemons can listen to these events and either accept or deny
+>> access for the host, by either replacing the locked FDB entry with a
+>> simple entry or leave the locked entry.
+>> 
+>> If the host MAC address is already present on another port, a ATU
+>> member violation will occur, but to no real effect, and the packet 
+>> will
+>> be dropped in hardware. Statistics on these violations can be shown 
+>> with
+>> the command and example output of interest:
+>> 
+>> ethtool -S ethX
+>> NIC statistics:
+>> ...
+>>      atu_member_violation: 5
+>>      atu_miss_violation: 23
+>> ...
+>> 
+>> Where ethX is the interface of the MAB enabled port.
+>> 
+>> Furthermore, as added vlan interfaces where the vid is not added to 
+>> the
+>> VTU will cause ATU miss violations reporting the FID as
+>> MV88E6XXX_FID_STANDALONE, we need to check and skip the miss 
+>> violations
+>> handling in this case.
+>> 
+>> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+>> ---
+> 
+> Please add Acked-by/Reviewed-by tags when posting new versions. 
+> However,
+> there's no need to repost patches *only* to add the tags. The upstream
+> maintainer will do that for acks received on the version they apply.
+> 
+> If a tag was not added on purpose, please state why and what changed.
+> 
+> Missing tags:
+> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> 
+> 
+> Please allow at least 24 hours between patch submissions to give time
+> for other review comments.
 
-After region and linecard lock removals, this helper is always supposed
-to be called with instance lock held. So put the assertion here and
-remove the comment which is no longer accurate.
-
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- net/devlink/devl_internal.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-index 2b0e119e7b84..09fc4d60fefb 100644
---- a/net/devlink/devl_internal.h
-+++ b/net/devlink/devl_internal.h
-@@ -83,9 +83,7 @@ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp);
- 
- static inline bool devl_is_registered(struct devlink *devlink)
- {
--	/* To prevent races the caller must hold the instance lock
--	 * or another lock taken during unregistration.
--	 */
-+	devl_assert_locked(devlink);
- 	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
- }
- 
--- 
-2.39.0
-
+I presume that since I move the exit tag 'out' to this patch, it has 
+changed and the review tag is reset?
