@@ -2,108 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E60BD660B33
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 02:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9184B660B5D
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 02:17:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjAGBEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 20:04:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        id S235968AbjAGBRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 20:17:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236553AbjAGBEA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 20:04:00 -0500
-Received: from mail-oa1-x43.google.com (mail-oa1-x43.google.com [IPv6:2001:4860:4864:20::43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DF38408F
-        for <netdev@vger.kernel.org>; Fri,  6 Jan 2023 17:03:59 -0800 (PST)
-Received: by mail-oa1-x43.google.com with SMTP id 586e51a60fabf-1322d768ba7so3414635fac.5
-        for <netdev@vger.kernel.org>; Fri, 06 Jan 2023 17:03:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=C56Q+YV0i1VwzqpPgsaApjf/2tDIDNvnJyLhwVpmM08=;
-        b=Ui1nZAQwen1JZHhk/UNb1oDDJUikJKWwSFDQT7fDxIdrjTsFTfnr65aD0MQpJxZuMF
-         RmyXYHMc9Ky4LUKKCV35cfXeVKg9kcUaSr4tiVZgaqF5EFPOnEzUzKBi95ahnFWEJuB/
-         wikAeNAEQCrGUuHayT33w+2rQ4+HBUUxhxKBasC1xNVeOOKwbrPJi4n0XGoiGNV0Ta5k
-         CclCoy5QAcIdpNT2BCRseJKd9epac9YGs66Cgc9nZMojVBhKvtImHmE+ZbhBIfigRiBi
-         98nZh86gtiJqweGJlylRyzSsCuKNMTFPzlfmr38W444ZCFDfVUVeCB+li6CwVFx/Asvw
-         l86g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=C56Q+YV0i1VwzqpPgsaApjf/2tDIDNvnJyLhwVpmM08=;
-        b=SJ2fiKgBhpoa6gkODaTo1K4WhCaaxhr1D7yaj/xWUoeeszs/vSTm1TtdEZjoD0Y6hv
-         KdoXspJyw00V0wt3jeFdHc3hPO11OfjwCLS0e4JRGq38DETFormUzOqL8p2W4xbSL+Y/
-         qwYvDyQg/jfeVkcBU+ZJ5ifINMUX8RKo+fRSzr0Rjdd5I1A5LMuCak/X3vdQd1dsVSXn
-         4PxlUrnxT4aTatczrTsviXYWLFQD5MAYeAKEW7/SapZws3qJO9NwmFO1dJrSXxB4b3z5
-         ee+0Z8Yg4etJcYBtpPyjL/goklZGaI6HTySm2BxYK24RRM+qgOgcpx9gp+ozjFt2cjU7
-         2yNg==
-X-Gm-Message-State: AFqh2krcOmyWXohesXouG+XqfuzzZYsWFekb24k6IP2bSuaPD2GrQeOG
-        s9kLJ69NSzf94E/Llj6t7MLN0Q9cyOcw23qeCgs=
-X-Google-Smtp-Source: AMrXdXuy6RV5DBW3idauFhx1utsKIy/tzX1PwuIHZiENrh5zCMKQgqD9oBX+tZBveG7/3LbSFusOjNssMxTFlJ2Y1NU=
-X-Received: by 2002:a05:6870:4b8d:b0:14f:d35e:b7fa with SMTP id
- lx13-20020a0568704b8d00b0014fd35eb7famr3510003oab.222.1673053439258; Fri, 06
- Jan 2023 17:03:59 -0800 (PST)
+        with ESMTP id S229521AbjAGBRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 20:17:15 -0500
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42B91582A;
+        Fri,  6 Jan 2023 17:17:13 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 4370F604F1;
+        Sat,  7 Jan 2023 02:17:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673054231; bh=tOXkAcpVzrI4E+5+ZN43yIpq5j8zJF+acCO3Fcif6zc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=zm1IbIjgjy6oK6N72T5+uASSYpEmjtOiiAxE4COmPYs74vloKLz/ZLiv59bd98xmH
+         niiHGyNSqtQsObKNFsBEMKrc96sGZm0p9V0vHJqcG2om7UZwJ1hss5vKsRmOZHfCtY
+         M8owRHgopmOZUNEbnT7DiR41xCg+TtZCiCCjp+/MkWHls8FbszdIEp6lPJVlyGbeYl
+         qHG2NBNY/f4K61Sr3/ZPRzktZjDYj6xrP8bjzq+OVJdFLgtvWz7L73t6BnWvtmVVb3
+         sFZQMYUwci3GTpRMH429c69OfJqnGxFVEj5tW09fiUepGARWbUdv9Q3yPyzJB4/gaO
+         e3uS3EpN6JOoA==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id nhdIEi3gejxc; Sat,  7 Jan 2023 02:17:08 +0100 (CET)
+Received: from [192.168.0.12] (unknown [188.252.196.35])
+        by domac.alu.hr (Postfix) with ESMTPSA id ED354604F0;
+        Sat,  7 Jan 2023 02:17:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673054228; bh=tOXkAcpVzrI4E+5+ZN43yIpq5j8zJF+acCO3Fcif6zc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=S2Vsk/Nn6rS/utirW0NetD9KbZ1+k3jfS41b3lRf/FNgnpsuKtZinjJ2XthUImM3a
+         YQxaMVrLB7v0Sm2i86CX2jXcuUVheAInv7Q+Q8VtEGetgZNQOmLyfo8BNflHgNCtn4
+         m0IRbdFIiaAXa46CjUMqxH8KJUbTOaHyd3d5/rWvrK/yOGbjYpGR8CD85CnB0NxNAD
+         LChIQwz2NavuThVgLIo7q0aqC1vcx+r6I4zUrC/Xc7tyGgR1ZkmMu+RvXgmGE6bQYt
+         20NO3nmkVvB9xDedALD2oWd1znHAUWvPSEJ6wi0Emt9rkFfNp14FDohE33wPv4zvnK
+         J8vvnWX3OBe4g==
+Message-ID: <5ef41d3c-8d81-86b3-c571-044636702342@alu.unizg.hr>
+Date:   Sat, 7 Jan 2023 02:17:07 +0100
 MIME-Version: 1.0
-Received: by 2002:a05:6808:2387:0:0:0:0 with HTTP; Fri, 6 Jan 2023 17:03:58
- -0800 (PST)
-Reply-To: jamesaissy13@gmail.com
-From:   James AISSY <samueltia200@gmail.com>
-Date:   Fri, 6 Jan 2023 17:03:58 -0800
-Message-ID: <CAOD2y7mxfJEiJcw8zGx8n6ktU0yeDj2shbDio9PsogOVj9NGZQ@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2001:4860:4864:20:0:0:0:43 listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.7812]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [samueltia200[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [jamesaissy13[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [samueltia200[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: BUG: tools/testing/selftests/net/l2_tos_ttl_inherit.sh hangs when
+ selftest restarted
+Content-Language: en-US, hr
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     linux-kselftest@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <924f1062-ab59-9b88-3b43-c44e73a30387@alu.unizg.hr>
+ <Y7i5cT1AlyC53hzN@debian>
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <Y7i5cT1AlyC53hzN@debian>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dear,
+On 07. 01. 2023. 01:14, Guillaume Nault wrote:
+> On Fri, Jan 06, 2023 at 02:44:11AM +0100, Mirsad Goran Todorovac wrote:
+>> [root@pc-mtodorov linux_torvalds]# tools/testing/selftests/net/l2_tos_ttl_inherit.sh
+>> ┌────────┬───────┬───────┬──────────────┬──────────────┬───────┬────────┐
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     4 │     4 │ inherit 0xc4 │  inherit 116 │ false │Cannot create namespace file "/var/run/netns/testing": File exists
+>> RTNETLINK answers: File exists
+>> RTNETLINK answers: File exists
+>> RTNETLINK answers: File exists
+> 
+> You probably have leftovers from a previous test case. In particular
+> the "testing" network name space already exists, which prevents the
+> script from creating it. You can delete it manually with
+> "ip netns del testing". If this netns is there because of a previous
+> incomplete run of l2_tos_ttl_inherit.sh, then you'll likely need to
+> also remove the tunnel interface it created in your current netns
+> ("ip link del tep0").
 
-I hope this message finds you in good Health.
+Thanks, it worked :)
 
-My name is Mr. James AISSY. I am looking for a partner who is willing to
-team up with me for potential investment opportunities. I shall provide the
-FUND for the investment, and upon your acknowledgment of receiving this
-Message I will therefore enlighten you with the Full Details of my
-investment proposal.
+> Ideally this script wouldn't touch the current netns and would clean up
+> its environment in all cases upon exit. I have a patch almost ready
+> that does just that.
 
-I'm awaiting your Response.
+As these interfaces were not cleared by "make kselftest-clean",
+this patch with a cleanup trap would be most welcome.
 
-My regards,
-Mr. James AISSY.
+However, after the cleanup above, the ./l2_tos_ttl_inherit.sh
+script hangs at the spot where it did in the first place (but
+only on Lenovo desktop 10TX000VCR with BIOS M22KT49A from
+11/10/2022, AlmaLinux 8.7, and kernel 6.2-rc2; not on Lenovo
+Ideapad3 with Ubuntu 22.10, where it worked like a charm with
+the same kernel RC).
+
+The point of hang is this:
+
+[root@pc-mtodorov net]# ./l2_tos_ttl_inherit.sh
+┌────────┬───────┬───────┬──────────────┬──────────────┬───────┬────────┐
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     4 │     4 │ inherit 0xb8 │  inherit 102 │ false │     OK │
+│    gre │     4 │     4 │ inherit 0x10 │   inherit 53 │  true │     OK │
+│    gre │     4 │     4 │   fixed 0xa8 │    fixed 230 │ false │     OK │
+│    gre │     4 │     4 │   fixed 0x0c │     fixed 96 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     4 │     6 │ inherit 0xbc │  inherit 159 │ false │     OK │
+│    gre │     4 │     6 │ inherit 0x5c │  inherit 242 │  true │     OK │
+│    gre │     4 │     6 │   fixed 0x38 │    fixed 113 │ false │     OK │
+│    gre │     4 │     6 │   fixed 0x78 │     fixed 34 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     4 │ other │ inherit 0xec │   inherit 69 │ false │     OK │
+│    gre │     4 │ other │ inherit 0xf0 │  inherit 201 │  true │     OK │
+│    gre │     4 │ other │   fixed 0xec │     fixed 14 │ false │     OK │
+│    gre │     4 │ other │   fixed 0xe4 │     fixed 15 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     6 │     4 │ inherit 0xc4 │   inherit 21 │ false │     OK │
+│    gre │     6 │     4 │ inherit 0xc8 │  inherit 230 │  true │     OK │
+│    gre │     6 │     4 │   fixed 0x24 │    fixed 193 │ false │     OK │
+│    gre │     6 │     4 │   fixed 0x1c │    fixed 200 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     6 │     6 │ inherit 0xe4 │   inherit 81 │ false │     OK │
+│    gre │     6 │     6 │ inherit 0xa4 │  inherit 130 │  true │     OK │
+│    gre │     6 │     6 │   fixed 0x18 │    fixed 140 │ false │     OK │
+│    gre │     6 │     6 │   fixed 0xc8 │    fixed 175 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     6 │ other │ inherit 0x74 │  inherit 142 │ false │     OK │
+│    gre │     6 │ other │ inherit 0x50 │  inherit 125 │  true │     OK │
+│    gre │     6 │ other │   fixed 0x90 │     fixed 84 │ false │     OK │
+│    gre │     6 │ other │   fixed 0xb8 │    fixed 240 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     4 │     4 │ inherit 0xb4 │   inherit 93 │ false │
+
+Developers usually ask for bash -x output of the script that failed or hung
+when reporting problems (too long for an email):
+
+https://domac.alu.unizg.hr/~mtodorov/linux/selftests/net-namespace-20230106/bash-l2_tos_ttl_inherit.html
+
+dmesg might be useful:
+
+https://domac.alu.unizg.hr/~mtodorov/linux/selftests/net-namespace-20230106/dmesg-20230107.txt
+
+Hope this helps.
+
+I am rather new to namespaces, so I can't help more than that with the current
+state of my learning curve :)
+
+Thanks,
+Mirsad
+
+--
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+-- 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
+
