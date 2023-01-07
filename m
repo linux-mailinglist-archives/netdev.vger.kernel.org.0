@@ -2,105 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35833660F64
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 15:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF7CE660F8A
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 15:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbjAGORK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 09:17:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47112 "EHLO
+        id S230046AbjAGOjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 09:39:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjAGORJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 09:17:09 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE7D4859C;
-        Sat,  7 Jan 2023 06:17:04 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id v6so5973196edd.6;
-        Sat, 07 Jan 2023 06:17:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OhSst57QklQ/s1OdeaurUei9fLgv+a0PdBl46HD5IBk=;
-        b=NgI1bKafS6/mLKXlcaYG5kpsVWLUkxAIjG/1A9d9Ye7uprk5Iq2Lx7FLKKCWk25LEv
-         Yf9qR6vV4A7Dmmd0LaEWtfyiJHnPDzAq4m3AQfU/yMiC/Ahq3YyF55QoZ6iVZv3fL5Xa
-         CP/KB9oKZGHq1JpqwkSpHqucdZcwaaGzaXBP4rbtqmHeqYuyT6qm2fvuMC+d/b+HMSf5
-         5d/G5cunL4EkZX7FOSXDk9Kp65t+ZYkT1/qBIk1lzyR0+GKwrKG7fxBXKwARRz7Pg/OP
-         1ixF1ITAIaS3hoEUj2gg+C0lkLXt//7qS8hlti1gFY1j88HYvhQiXD2PF8Ynf7CIRpwg
-         yBXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OhSst57QklQ/s1OdeaurUei9fLgv+a0PdBl46HD5IBk=;
-        b=1/r4Q/N0IkJShJ1XFkGEzlvsm61gXiOJkl9bdYcHuR+X4ToWLEVqPL+WrXHrYPc0nj
-         5UgKrQT90gRrlUTaN7yJDvZEQIWwsGPuRQVRGaFnY4CyoSzrcL98E6w75FB39xh2avmt
-         x3WgOWuVaAHwPgl0Phn76d6OPiNZSQ6KW8Q8aYm8xLR0N2t3RLCmAdMQoA5z22S88QJG
-         JK6ur78Vs36fFdalOw1mjrc1WOA9aB4d5CgnlRhBbDm5OJiWb1GQWzlnPkbUp8qtON86
-         eTac3gGCtjWAHItaQ/EVribwswwwRmwqQrHTlqWWijNnL7IJi0nwZ1kzU6I6FgrSu3dL
-         oayg==
-X-Gm-Message-State: AFqh2kpVZq1QxzELy4Ibdul+tsNEK6zfB15fIi2jvyTHHUCv7zxqfJaE
-        CI7FZydS2sZAzNd7PJ84fZI=
-X-Google-Smtp-Source: AMrXdXs2wTwrYKKqPdz2KeIfEoCQ9buukpeu3vsS4/NZi88+rUo94bsuopXCML25Q7KWqI/3992gxQ==
-X-Received: by 2002:a05:6402:220b:b0:475:32d2:74a5 with SMTP id cq11-20020a056402220b00b0047532d274a5mr45692428edb.42.1673101022590;
-        Sat, 07 Jan 2023 06:17:02 -0800 (PST)
-Received: from [192.168.1.50] ([79.119.240.114])
-        by smtp.gmail.com with ESMTPSA id v15-20020a056402184f00b0046c5baa1f58sm1490888edy.97.2023.01.07.06.17.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Jan 2023 06:17:01 -0800 (PST)
-Message-ID: <18907e6b-93b4-d850-8a17-95ad43501136@gmail.com>
-Date:   Sat, 7 Jan 2023 16:17:00 +0200
+        with ESMTP id S229475AbjAGOji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 09:39:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C9552766
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 06:39:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66439B8170D
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 14:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE076C433D2;
+        Sat,  7 Jan 2023 14:39:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673102374;
+        bh=oHq0O7NipgURzsGXKLUqewVXp8Tt2ikWbIknloP3sf0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kcF5G0T0lEyyRgFgNm4FkfXGGkBa8HZq1qdE0c30FxiNvSLGWoVQBvCWiw+YBcLAY
+         7adpxUC+At8yHYivnFHv6Rd9lXNBeGnScprHWxeFeCc+HJpem93qyL3ttdoj2V+913
+         HlMV6sosGrS0/0OwIAsDm3R2QCieF61llvfQ1Tg3w752t+TZv26FmpKLbs4rT1Mp8a
+         yv+4JYL5+cyH7Q3/KU7Cboi9FTdYzxZceuIGNe79jb2hJWLuA/tlmVShKy56ySO+rK
+         g8NSGyTQPSc4cba7WTqzt1q+fQnGIMvJAQa8RL4gYLOxkqz9ensQPBmYxZ/jcZfSeE
+         AADZR84m9hbRg==
+Date:   Sat, 7 Jan 2023 15:39:30 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lorenzo.bianconi@redhat.com,
+        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, sujuan.chen@mediatek.com,
+        daniel@makrotopia.org
+Subject: Re: [PATCH v2 net-next 5/5] net: ethernet: mtk_wed: add
+ reset/reset_complete callbacks
+Message-ID: <Y7mEItAb41ANfDS+@lore-desk>
+References: <cover.1672840858.git.lorenzo@kernel.org>
+ <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
+ <Y7WKcdWap3SrLAp3@unreal>
+ <Y7WURTK70778grfD@lore-desk>
+ <Y7aW3k4xZVfDb6oh@unreal>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-To:     Jun ASAKA <JunASAKA@zzy040330.moe>, Jes.Sorensen@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
-Content-Language: en-US
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-In-Reply-To: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="o3HJf4cBXGnqiUAV"
+Content-Disposition: inline
+In-Reply-To: <Y7aW3k4xZVfDb6oh@unreal>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/12/2022 05:06, Jun ASAKA wrote:
-> Fixing transmission failure which results in
-> "authentication with ... timed out". This can be
-> fixed by disable the REG_TXPAUSE.
-> 
-> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
-> ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-> index a7d76693c02d..9d0ed6760cb6 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
->  	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
->  	val8 &= ~BIT(0);
->  	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
-> +
-> +	/*
-> +	 * Fix transmission failure of rtl8192e.
-> +	 */
-> +	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
->  }
->  
->  static s8 rtl8192e_cck_rssi(struct rtl8xxxu_priv *priv, u8 cck_agc_rpt)
 
-By the way, you should get this into the stable kernels too:
-https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+--o3HJf4cBXGnqiUAV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> On Wed, Jan 04, 2023 at 03:59:17PM +0100, Lorenzo Bianconi wrote:
+> > > On Wed, Jan 04, 2023 at 03:03:14PM +0100, Lorenzo Bianconi wrote:
+> > > > Introduce reset and reset_complete wlan callback to schedule WLAN d=
+river
+> > > > reset when ethernet/wed driver is resetting.
+> > > >=20
+> > > > Tested-by: Daniel Golle <daniel@makrotopia.org>
+> > > > Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+> > > > Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > >  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  6 ++++
+> > > >  drivers/net/ethernet/mediatek/mtk_wed.c     | 40 +++++++++++++++++=
+++++
+> > > >  drivers/net/ethernet/mediatek/mtk_wed.h     |  8 +++++
+> > > >  include/linux/soc/mediatek/mtk_wed.h        |  2 ++
+> > > >  4 files changed, 56 insertions(+)
+> > > >=20
+> > > > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/=
+net/ethernet/mediatek/mtk_eth_soc.c
+> > > > index bafae4f0312e..2d74e26f45c9 100644
+> > > > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > > > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > > > @@ -3913,6 +3913,10 @@ static void mtk_pending_work(struct work_str=
+uct *work)
+> > > >  		mtk_w32(eth, val, MTK_MAC_MCR(i));
+> > > >  	}
+> > > > =20
+> > > > +	rtnl_unlock();
+> > > > +	mtk_wed_fe_reset();
+> > > > +	rtnl_lock();
+> > >=20
+> > > Is it safe to call rtnl_unlock(), perform some work and lock again?
+> >=20
+> > Yes, mtk_pending_work sets MTK_RESETTING bit and a new reset work is not
+> > scheduled until this bit is cleared
+>=20
+> I'm more worried about opening a window for user-space access while you
+> are performing FW reset.
+
+looking at mtk_pending_work() I guess running mtk_wed_fe_reset() releasing =
+RTNL
+lock is not harmful since we just perform few actions (ppe reset, ...)  bef=
+ore
+running mtk_wed_fe_reset(). Moreover, the core reset part in mtk_pending_wo=
+rk()
+(mtk_stop(), mtk_open(), ..) is done after mtk_wed_fe_reset() where we reac=
+quired
+RTNL lock.
+In order to avoid any possible race, I guess we can just re-do the prelimin=
+ary
+reset configuration done before mtk_wed_fe_reset() just after re-acquiring =
+RTNL
+lock.
+
+Regards,
+Lorenzo
+
+>=20
+> <...>
+>=20
+> > > > diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/s=
+oc/mediatek/mtk_wed.h
+> > > > index db637a13888d..ddff54fc9717 100644
+> > > > --- a/include/linux/soc/mediatek/mtk_wed.h
+> > > > +++ b/include/linux/soc/mediatek/mtk_wed.h
+> > > > @@ -150,6 +150,8 @@ struct mtk_wed_device {
+> > > >  		void (*release_rx_buf)(struct mtk_wed_device *wed);
+> > > >  		void (*update_wo_rx_stats)(struct mtk_wed_device *wed,
+> > > >  					   struct mtk_wed_wo_rx_stats *stats);
+> > > > +		int (*reset)(struct mtk_wed_device *wed);
+> > > > +		int (*reset_complete)(struct mtk_wed_device *wed);
+> > >=20
+> > > I don't see any driver implementation of these callbacks in this seri=
+es.
+> > > Did I miss it?
+> >=20
+> > These callbacks are implemented in the mt76 driver. I have not added th=
+ese
+> > patches to the series since mt76 patches usually go through Felix/Kalle=
+'s
+> > trees (anyway I am fine to add them to the series if they can go into n=
+et-next
+> > directly).
+>=20
+> Usually patches that use specific functionality are submitted together
+> with API changes.
+>=20
+> >=20
+> > Regards,
+> > Lorenzo
+> >=20
+> > >=20
+> > > Thanks
+> > >=20
+> > > >  	} wlan;
+> > > >  #endif
+> > > >  };
+> > > > --=20
+> > > > 2.39.0
+> > > >=20
+>=20
+>=20
+
+--o3HJf4cBXGnqiUAV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY7mEIgAKCRA6cBh0uS2t
+rFuzAP0QRWMIoSUroMKspSE7LRWxsZcfe2Jn0tqjd5q4sEip7QD+KaVTSVpERduG
+zXvn/gla31BiRhl4xeBRi87kyIwDgA8=
+=i3cU
+-----END PGP SIGNATURE-----
+
+--o3HJf4cBXGnqiUAV--
