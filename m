@@ -2,99 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 457D7661114
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 19:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C2766112D
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 19:52:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232440AbjAGSlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 13:41:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S232822AbjAGSwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 13:52:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbjAGSlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 13:41:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DD71BC91
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 10:41:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EB81B803F6
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 18:41:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33C4C433EF;
-        Sat,  7 Jan 2023 18:41:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673116902;
-        bh=TrOg9Ud6kGnAYrg6+ETgV1I59BDXtzn2KKih6Rn/mZY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mZHH9laehtd6lrYkvW3E0V9ioaxM8nXCUz6zQTVyn0PXlO41GpcUK5vEbe4dVC3CJ
-         fsF4Gw5tLOQImJGYBueGQ9gJNc28/Y3EI+WqBf6htmOAv25tIodIvUlCFqknd5pBtm
-         bK/HnYzaPk0r/LXmI1PWRTY9V4JssVF2h6r7bzKVc7tfckmSzIPJgMO4CEvDlvMzQW
-         hzlEyVZ6QSkMulsrVgDOJmgyvaTq/8sUw1ZtHeES5bDnlGXTJIVyZySw0BTpOXjeRd
-         XmlXORRDWM8o9EGTsZ+CtXZFbteutHYmgJ0oFomQN8rSc3pwhZTlf1kyqF7XCLQIPg
-         Gz14jIqFpf2SQ==
-Date:   Sat, 7 Jan 2023 10:41:41 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, g.nault@alphalink.fr,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot+52866e24647f9a23403f@syzkaller.appspotmail.com,
-        syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [Patch net 2/2] l2tp: close all race conditions in
- l2tp_tunnel_register()
-Message-ID: <Y7m85XdeKwi9+Ytt@x130>
-References: <20230105191339.506839-1-xiyou.wangcong@gmail.com>
- <20230105191339.506839-3-xiyou.wangcong@gmail.com>
+        with ESMTP id S230360AbjAGSwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 13:52:12 -0500
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A2129C
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 10:52:12 -0800 (PST)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-142b72a728fso4796477fac.9
+        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 10:52:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=XppnWxwUDd4VKlDQMnttNa0YhBi85GdHW05upV3mZfc=;
+        b=JHrjx+CPI6+o8vI5XaPTU8d4Rba2fyliEd8VcPnHjc4QNFglXkrbpA+dm9IYsMkn5/
+         dl6zWRAkwai8c+Bzs+KUIraJdD0FtmYTyCF/IPXRp+9EGEmXnCqu/3qII+/UTCzbZm1T
+         j5qyMcUudr4ZCMHTWHUxvtRu8C4QeZkwBGzi+MoTV4Tu3tQX8XWHOJMc/s02qPGs/5uW
+         +4x7Yol8rGkVOc5lJLMrG+ClDnF/ECarwuE8r95xLhuYVlLgAuAgH7LjtmdbDwil2+iT
+         MdUVh3Aw1HDRXnhKEhMpcVYulb5AxdjW2ISJjyBNKemHS5KQPGw3a6KzXtlKsVRFqKe+
+         BAKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XppnWxwUDd4VKlDQMnttNa0YhBi85GdHW05upV3mZfc=;
+        b=PVWqWtDB8/MY7pxOG9uOJDIJHcTWcGhAsi5nElZ8IUvjyPbH0I/rn6cFXLnmpXf67a
+         8aXpn88dc8KXO8GUiaX0XG6Smqz9y/CvYRUFAxlFa4DxtHtRATO/vz45pbz+D9+9f9b9
+         Cb02u+w0BoWzijMFDA6TLz2WflUeAQZdKEHAiVge1lGaZp3UFkkbpaf8ETzxM3pI/B0p
+         7Xe+5nszCJuvksVLQA7EqSLSizf7kNkFIJ+j35ZU0lwASh/unq+LGZbdHJUAT4fVvROl
+         Z1eU9t4NOoZkH9IlXe+HUcFDvhqSi4/U+Ise3IRyaC/+vJ+lVQBBqbpBfLO9xsCLF6od
+         L8Ig==
+X-Gm-Message-State: AFqh2kpaD8wB82RwnIMDO9EpC0UBTXQzms3NguGXoLTFjEs9ZSBShanv
+        lHrEa+FmWxmpm154v4aYSEba6W1Ywf/hA9XOvgA=
+X-Google-Smtp-Source: AMrXdXtZ2uwxjGIccmfG79+cJAxs3h3LHmtN7hCXAvTJ9zPAvEB9bZ5FIulx4x9FwGNv6Q1Eoa6XHk+/I2V8VIqFmiE=
+X-Received: by 2002:a05:6870:54d4:b0:150:7c93:9cd7 with SMTP id
+ g20-20020a05687054d400b001507c939cd7mr2560230oan.180.1673117531532; Sat, 07
+ Jan 2023 10:52:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20230105191339.506839-3-xiyou.wangcong@gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6838:2307:b0:577:153e:6778 with HTTP; Sat, 7 Jan 2023
+ 10:52:10 -0800 (PST)
+Reply-To: lisaarobet@gmail.com
+From:   Lisa <ws6392981@gmail.com>
+Date:   Sat, 7 Jan 2023 18:52:10 +0000
+Message-ID: <CALcNZmHG0gNY4Ti-KB1DhyREvaaE7tXn3oTGASJNtu5fon+9Ug@mail.gmail.com>
+Subject: Greetings
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05 Jan 11:13, Cong Wang wrote:
->From: Cong Wang <cong.wang@bytedance.com>
->
->The code in l2tp_tunnel_register() is racy in several ways:
->
->1. It modifies the tunnel socket _after_ publishing it.
->
->2. It calls setup_udp_tunnel_sock() on an existing socket without
->   locking.
->
->3. It changes sock lock class on fly, which triggers many syzbot
->   reports.
->
->This patch amends all of them by moving socket initialization code
->before publishing and under sock lock. As suggested by Jakub, the
->l2tp lockdep class is not necessary as we can just switch to
->bh_lock_sock_nested().
->
->Fixes: 37159ef2c1ae ("l2tp: fix a lockdep splat")
->Fixes: 6b9f34239b00 ("l2tp: fix races in tunnel creation")
+Hi,
 
-This patch relies on the previous one which doesn't include any tags.
-If you are interested in this making it to -stable then maybe you need to
-add those tags to the previous commit ?
+Just wanted to check in and see if you receive my request?
 
-I am not really familiar with the issue and how socket locks should work
-here, but code wise LGTM.
-
-Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-
-
->Reported-by: syzbot+52866e24647f9a23403f@syzkaller.appspotmail.com
->Reported-by: syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com
->Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->Cc: Guillaume Nault <g.nault@alphalink.fr>
->Cc: Jakub Sitnicki <jakub@cloudflare.com>
->Cc: Eric Dumazet <edumazet@google.com>
->Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-
+Thanks
