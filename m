@@ -2,128 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5024B661214
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 23:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD42366127F
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 00:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbjAGWqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 17:46:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54296 "EHLO
+        id S232286AbjAGXHM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 7 Jan 2023 18:07:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbjAGWqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 17:46:12 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2069.outbound.protection.outlook.com [40.107.223.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A80B1BC9F;
-        Sat,  7 Jan 2023 14:46:08 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kjsLY2CJM0UH0OtHt1fM8GbfTU2jRRvFCGh77JHKYFF+0pmsEjUHxWPGYsHohO//n63HVfvx86VAc2hw3AcJcrWptbhQESB7y7Gom8tTk2KuE1DG2UK8J/v030rWLKpvdUqlr/oBdvVtq0RKIJf7TALrEwpvSNiuZTQ2NgGthJpnhI3CztiilXPVOCPZharFDZwwXpnKHS0jtwta7qWymRbXTeHZuEndOJ3DOPnVvriRLiPK1qitjX54U05X/euvrQgaXGqoenTkLsaUtzcieOgKPZt3V0MfP81wvtTblOFYWmAzZeW9TUKNZI3ePrmJV3xTNOutc4BkhdpIt7h75A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jPZqDCFp/4OriRWD0Qw9BaBsAvX4JgHWhsp4XzuqFbw=;
- b=VO2qfy1cDHq7dOV5PVQF3iovjxYZ8J11I8ZzZUyK/TFnGZNAdtb6tFV6gGlom5C/AdliDm6Kr56617Uf7w/heBS97I865/PMySge2M+fvVqG7UhwdZIm88q56tTxUbRRscyDfNokoXhhGvpQ5Au0vtfCF+JEbmaTBkl7xKFWXdSJmQHBb69AUup8hRJwiFQEemXu8/VDoEbEysRrTJcdUp17nuPiL0d4vWsjohhHdL8IL5bCtTytbBHTcyArWRWfZFY8oxe+hFelmJtgw0lMqIMKVf4AW5Vt/fQSAKoNT31/Y71VtJZwAXFb0ZKPJ2PlDJ51C0ZQccrSq6xbwrXUmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jPZqDCFp/4OriRWD0Qw9BaBsAvX4JgHWhsp4XzuqFbw=;
- b=kTgP7M/ALZ0aXOaV0FHH1tXuMpybh7ko1XjXO9HkZiel0aStTHFfg4dsYy8SujgZFbtbgBtUU3jeS3Pm3b1C/ugD/8P9vQ4snUp7WWlBiv4qzWv/GOflOZcTfIdRmf1yRY+7WFEpGfWYEE6k8PWWsGQMTOyAzAdEC4uvsZn10FyyE/LxJwDRUfjCFMP494xPSnyk0k/ZX3JqEd/hSaKECudtGTKT+AdCnmHt9Tn6fj12vWglQ/ck0JD6pNj6FziGjd+pTtukbZ3ouYe42XO/rsUIRgQnTr+1QTuaiRVFuQUYwe8LV5ghOtB7NxgLOXJoyy1xC+V8R/B8PGGna8C+pg==
-Received: from MW4P222CA0017.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::22)
- by DS0PR12MB6605.namprd12.prod.outlook.com (2603:10b6:8:d3::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Sat, 7 Jan
- 2023 22:46:06 +0000
-Received: from CO1NAM11FT114.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:114:cafe::49) by MW4P222CA0017.outlook.office365.com
- (2603:10b6:303:114::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18 via Frontend
- Transport; Sat, 7 Jan 2023 22:46:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT114.mail.protection.outlook.com (10.13.174.103) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5986.14 via Frontend Transport; Sat, 7 Jan 2023 22:46:05 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 7 Jan 2023
- 14:45:54 -0800
-Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 7 Jan 2023
- 14:45:51 -0800
-References: <20230105232224.never.150-kees@kernel.org>
- <87v8lk7x9r.fsf@nvidia.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-CC:     Kees Cook <keescook@chromium.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-hardening@vger.kernel.org>
-Subject: Re: [PATCH] mlxsw: spectrum_router: Replace 0-length array with
- flexible array
-Date:   Sat, 7 Jan 2023 23:44:52 +0100
-In-Reply-To: <87v8lk7x9r.fsf@nvidia.com>
-Message-ID: <87eds67ylf.fsf@nvidia.com>
+        with ESMTP id S229785AbjAGXHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 18:07:10 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65961271A2
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 15:07:08 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-3-kWdCFTcGNaOP4aCAd1ze4Q-1; Sat, 07 Jan 2023 18:06:00 -0500
+X-MC-Unique: kWdCFTcGNaOP4aCAd1ze4Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B238685C1A0;
+        Sat,  7 Jan 2023 23:05:59 +0000 (UTC)
+Received: from hog (unknown [10.39.192.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 54BE82166B30;
+        Sat,  7 Jan 2023 23:05:58 +0000 (UTC)
+Date:   Sun, 8 Jan 2023 00:04:36 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     ehakim@nvidia.com
+Cc:     netdev@vger.kernel.org, raeds@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        atenart@kernel.org
+Subject: Re: [PATCH net-next v6 1/2] macsec: add support for
+ IFLA_MACSEC_OFFLOAD in macsec_changelink
+Message-ID: <Y7n6hF3voEe8Hv+5@hog>
+References: <20230106133551.31940-1-ehakim@nvidia.com>
+ <20230106133551.31940-2-ehakim@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT114:EE_|DS0PR12MB6605:EE_
-X-MS-Office365-Filtering-Correlation-Id: 04193b49-a12f-4840-bbb8-08daf100f62e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yiCQb1DYqOlvLrLA9gT8cokGmzchoLIi3JY8Ap8KBCV7444FO29pTMy/DeVG8RqHwYZqERFT2Xdx59nf1zzfa5yLwRKTaWwQEIoDrlOZ4tB455fTI5xsQgXBc4kUuN3a8hs3+nZvIgyua6hlruE87gMb18SR8r1C8TIfcY3nJXF36hDz4SehbqU1ZQgi40Rz5/+1J5SI6RMXYK7ofZnpkbPY7N/So2z822b94ifBHrd2tOidttXfoGfqDVA1XgU7PLpZemqV1Vxw/azpS9XRF7A3s2B/euQL4Q3cmCUk/v/BJcgAJ6cxvlpbHEBCgPtLp/PfchzWArmXTx9YC8F1XfSiK9mJ/HwN/eV/OVnumKYuh3LbWW4ZrK8R1X9rSc9VNdUEWhQzh/RDZTTckpI6+U7r+xrEc9KAEcnVTKmWVxDOuSNx3Z/9YdJSqIaTJx2eZvONoS5OcuEC4OKSbJArrGTOeatsxXL7SQfFyi3bXnY4zGi6PaocDokgUDVa+/tB74yhyr8JGLPF9s54lzLTsVXUm1ZdfinjqUEhHS0XE3NyAa7gi0M/kHbXwWHRo4uv9sian2qz8txRKxKklKLyOJx3nnC3OYD8IV6VIxBoxhP782X5uooWsCPPbUsdn9S8qIpJq9x6RlunIyv6r1DjjVNlPNIxGujHc1dTx2YhI848ZbaR0babcbqV0EeEZ9+uaPw8sreuE48ZJTa3e+ex7Q==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(376002)(39860400002)(346002)(451199015)(40470700004)(46966006)(36840700001)(4326008)(70206006)(8676002)(40460700003)(70586007)(86362001)(7636003)(356005)(478600001)(36756003)(316002)(82310400005)(37006003)(82740400003)(54906003)(2616005)(6200100001)(426003)(4744005)(6862004)(5660300002)(41300700001)(336012)(186003)(36860700001)(8936002)(2906002)(26005)(16526019)(40480700001)(47076005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2023 22:46:05.7960
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04193b49-a12f-4840-bbb8-08daf100f62e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT114.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6605
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230106133551.31940-2-ehakim@nvidia.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Petr Machata <petrm@nvidia.com> writes:
-
-> Kees Cook <keescook@chromium.org> writes:
->
->> Zero-length arrays are deprecated[1]. Replace struct
->> mlxsw_sp_nexthop_group_info's "nexthops" 0-length array with a flexible
->> array.
-
+2023-01-06, 15:35:50 +0200, ehakim@nvidia.com wrote:
 [...]
+> +static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
+> +{
+> +	struct nlattr *tb_offload[MACSEC_OFFLOAD_ATTR_MAX + 1];
+> +	struct nlattr **attrs = info->attrs;
+> +	enum macsec_offload offload;
+> +	struct net_device *dev;
+> +	int ret;
+> +
+> +	if (!attrs[MACSEC_ATTR_IFINDEX])
+> +		return -EINVAL;
+> +
+> +	if (!attrs[MACSEC_ATTR_OFFLOAD])
+> +		return -EINVAL;
+> +
+> +	if (nla_parse_nested_deprecated(tb_offload, MACSEC_OFFLOAD_ATTR_MAX,
+> +					attrs[MACSEC_ATTR_OFFLOAD],
+> +					macsec_genl_offload_policy, NULL))
+> +		return -EINVAL;
+> +
+> +	dev = get_dev_from_nl(genl_info_net(info), attrs);
+> +	if (IS_ERR(dev))
+> +		return PTR_ERR(dev);
+> +
+> +	if (!tb_offload[MACSEC_OFFLOAD_ATTR_TYPE])
+> +		return -EINVAL;
+> +
+> +	offload = nla_get_u8(tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]);
+> +
+> +	rtnl_lock();
 
-> Thanks. I'll pass this through our nightly and report back.
+Why are you putting rtnl_lock() back down here? You just moved it
+above get_dev_from_nl with commit f3b4a00f0f62 ("net: macsec: fix net
+device access prior to holding a lock"), now you're pretty much
+reverting that fix.
 
-Looking good.
+> +
+> +	ret = macsec_update_offload(dev, offload);
+>  
+> -rollback:
+> -	macsec->offload = prev_offload;
+> -out:
+>  	rtnl_unlock();
+> +
+>  	return ret;
+>  }
+>  
 
-Tested-by: Petr Machata <petrm@nvidia.com>
+-- 
+Sabrina
+
