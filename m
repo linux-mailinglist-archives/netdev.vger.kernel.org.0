@@ -2,99 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D9C660FA4
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 15:53:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCDB660FC1
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 16:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbjAGOxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 09:53:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        id S232745AbjAGPB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 10:01:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbjAGOxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 09:53:34 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130EE3D5F0;
-        Sat,  7 Jan 2023 06:53:33 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id qk9so9687305ejc.3;
-        Sat, 07 Jan 2023 06:53:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=W0kQdEWzRpszG8s93+6SCtv6ZFhZz1XMPwhp4yY8Nt0=;
-        b=o7+jcXXYD57KsUrkWZfu+BXXBBmYh1iSJ/u+jLNtUeOKvgEtEXAberPDm73JjJFy6/
-         vjuA0udOQUwPKFKZ+tejxT3baUhHQigvpA7lUYksVrw6fL1dS6ecMFOhmDNqJvD8LI7G
-         aa8/57IOiiFb3HWXbjMgEjDfP5VGA8dv2ZpQ9fPPnH5AehjUrRZufTQMcZzQRQf3yB0P
-         bABgyCIl6zmiimkYNNuWYdY/A92Zh971B6dnbRzPWqEvzd6PKlp8v2xgxb5prxHtC3tV
-         E4KxJs9QZzHwnmquy39yTQaKlD8Vg17Mr7+6Tgtev3u/PxV1lqzh1jsg/mbU9bEmBt2X
-         4yOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=W0kQdEWzRpszG8s93+6SCtv6ZFhZz1XMPwhp4yY8Nt0=;
-        b=yObUyWfkUkk4/GYnDa9NgWYlkvsSGVbrGQq2WkSohYHgWBPUpyRlB4b4qa27HzBr/i
-         aO1kzEpC25pWO3UrQIyKqqYBhzzC4OaBFQ+cJbgz/eKRm9qbKBZhBKcl2l5oPZpBqZZd
-         r8srqPgcOSh1lcU2pkZ1J9goII8505r8ZNZ1+FZvPMjcjWpGgWOnF2lhgEnNC60CtYv5
-         aYjJNaM0xHWswZDGb0Q0vab7F23chn9x9UGZYzGSjVJ+Pp3PzOtdKoLs0tmG5FaGM3LE
-         aPSOUOxzttC6OOep+ZN//cukGFVA1tXRTNWgBM2gUnrLdG4jK6V7ZRHfWdjTdYqYUAIq
-         fIyg==
-X-Gm-Message-State: AFqh2kqrLuUdXtLueiclJMoKJr1rH0YqJVHMS9g3TZ3TDJcZUpN/2Wcx
-        V3xWh00ddhtHtr8uUN+C5fE=
-X-Google-Smtp-Source: AMrXdXus3hVj1/+R5sPy7RVf+N6SWVxEiqYjmF7uGL7atpt8Vbkp9zi2N/QrBORdjW68/z6WHa0brA==
-X-Received: by 2002:a17:906:c0ce:b0:7c1:6151:34c0 with SMTP id bn14-20020a170906c0ce00b007c1615134c0mr46524675ejb.6.1673103211624;
-        Sat, 07 Jan 2023 06:53:31 -0800 (PST)
-Received: from [192.168.1.50] ([79.119.240.114])
-        by smtp.gmail.com with ESMTPSA id b6-20020a17090630c600b007c0d0dad9c6sm1513827ejb.108.2023.01.07.06.53.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Jan 2023 06:53:31 -0800 (PST)
-Message-ID: <85019785-dc58-0826-8362-cd2deca6a32e@gmail.com>
-Date:   Sat, 7 Jan 2023 16:53:29 +0200
+        with ESMTP id S232521AbjAGPBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 10:01:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C689A61443;
+        Sat,  7 Jan 2023 07:01:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71A9EB81913;
+        Sat,  7 Jan 2023 15:01:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 995D7C433EF;
+        Sat,  7 Jan 2023 15:01:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673103668;
+        bh=1N4qUATX9JRex5hZQtihEei+C+P46WN8C/vJ/eXH0n8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UhBNcTlXO5liRKqWrNuFIhsUlc80ucvZPcAzGbgOI9KENU8OGR0diRqhcpTzt9Xcz
+         SoP8wAxjJO+Sz15YBiNjgdjUUbt+D1loZc3I6KHNzSdQfUrfqsAWod9/jGklD8cy3X
+         QLJ2hCRo8AalA9POx1c7W+oWU7M8tMZ33dFRBJCc5JYycFA6gY/glsWrOeqyDNhVKl
+         pNw5NAiG+gu9f+jeHyskUjzIJ45W5CilLK5v3Bd5kZpOEAQIuimtg65+oksvW72PX8
+         /LeeC+qrrjgc/nxMFJnJGVWn+a1ZynB9Co4aBR/IZveYJBzaF/oew7ka13BD4bvcWZ
+         3qAj6VL9t0RgA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com, nbd@nbd.name,
+        sujuan.chen@mediatek.com, daniel@makrotopia.org, leon@kernel.org
+Subject: [PATCH 0/4] mt76: add wed reset callbacks
+Date:   Sat,  7 Jan 2023 16:00:35 +0100
+Message-Id: <cover.1673103214.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [RFC PATCH v1 19/19] rtw88: Add support for the SDIO based
- RTL8821CS chipset
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Chris Morgan <macroalpha82@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-References: <20221227233020.284266-1-martin.blumenstingl@googlemail.com>
- <20221227233020.284266-20-martin.blumenstingl@googlemail.com>
- <63b4b3e1.050a0220.791fb.767c@mx.google.com>
- <0acf173d-a425-dcca-ad2f-f0f0f13a9f5e@gmail.com>
- <2b839329-7816-722d-cb57-649fc5bf8816@lwfinger.net>
-Content-Language: en-US
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-In-Reply-To: <2b839329-7816-722d-cb57-649fc5bf8816@lwfinger.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/01/2023 22:14, Larry Finger wrote:
-> On 1/4/23 13:59, Bitterblue Smith wrote:
->> I tested with https://github.com/lwfinger/rtw88/ which should have the
->> same code as wireless-next currently.
-> 
-> I just rechecked. My repo was missing some changes from wireless-next. It now matches.
-> 
-> Larry
-> 
-> 
-Did you mean to push some commits? The latest one is still from December.
+Introduce Wireless Ethernet Dispatcher reset callbacks in order to complete
+reset requested by ethernet NIC.
+
+This patch is based on the following mtk_eth_soc series:
+https://lore.kernel.org/netdev/cover.1673102767.git.lorenzo@kernel.org/T/#m830c78ce34a4383ae1dedc5349bed19a74dbf4af
+
+Lorenzo Bianconi (2):
+  wifi: mt76: mt7915: add mt7915 wed reset callbacks
+  wifi: mt76: mt7915: complete wed reset support
+
+Sujuan Chen (2):
+  wifi: mt76: dma: add reset to mt76_dma_wed_setup signature
+  wifi: mt76: dma: reset wed queues in mt76_dma_rx_reset
+
+ drivers/net/wireless/mediatek/mt76/dma.c      | 27 +++++++----
+ drivers/net/wireless/mediatek/mt76/dma.h      |  1 +
+ drivers/net/wireless/mediatek/mt76/mt76.h     |  3 ++
+ .../net/wireless/mediatek/mt76/mt7915/dma.c   | 45 ++++++++++++++++---
+ .../net/wireless/mediatek/mt76/mt7915/mac.c   |  6 +++
+ .../net/wireless/mediatek/mt76/mt7915/mmio.c  | 42 +++++++++++++++++
+ 6 files changed, 111 insertions(+), 13 deletions(-)
+
+-- 
+2.39.0
+
