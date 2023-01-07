@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1CE6660D0F
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 09:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F09660D1F
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 10:08:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbjAGIqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 03:46:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56462 "EHLO
+        id S229742AbjAGJFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 04:05:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbjAGIqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 03:46:42 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965DA6144D
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 00:46:41 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id p1-20020a05600c1d8100b003d8c9b191e0so2596790wms.4
-        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 00:46:41 -0800 (PST)
+        with ESMTP id S229475AbjAGJFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 04:05:41 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA4A81D6E
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 01:05:39 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id r18so2683974pgr.12
+        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 01:05:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=m7I0g3RUNnmlRDA9bESwDF7S68Xwa5pRIsZ/jUo0xnc=;
-        b=hJxmMu5E8Hx9dSxhuSDuqvb5fGiI7tvJt80P15TDMrQS6Y2ZRbrwgPcyrFbOfuc/dF
-         PWMNEfQw8UwF6Zr75VE6JfP9+9YwMMTc7kW6QaysXxb6zZ37n89b63/bfTnPnrjX2kMD
-         91aVnimmiX9g4j3vURU4GSxI0s1nHz25bg8V2/LDDtU901AbrTY0qurlBYKhvXAlAKyQ
-         ll5yPrV4Su/+kKpfe25yJNUnKNgio4WsctDxvEnKGJA32XD0j1Wav+VsnB7lua4OTDxC
-         A0x1OCbQBJDG1HsjLNnCKPl55TUkXrkdry0aXzEE17l9Zn33CJaXXNiVK3icx9FBhQAr
-         EaDQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ySuTU3/2ve7nbb0FFI005zdxYhuuq4YkutjLx2Ct+0Y=;
+        b=RW6yEYLuXYPoOVSnuNT5J3HpuWbpn4DO0DffQLL7uqgnlDKHsF4s4wx+N18PdHuN9W
+         voi3rblqUq5k3UXEiNwpVLMZ0wplL19gCzK9r7lZqt8u5t/Y6fqMfC4epFDxeiOHwdTR
+         vie3f/BCe0Ov2I6isVR/eslig6i2bl1FNm7nQggdD2NXNQE1qbMGlRSOcAqVelGbN31P
+         2jbb6B3RmRzfrBslhiSCv40h00W6ZSQEK2CyL3QE3PTa8rM65xEY9ScMzy2RJRVYkqfO
+         dRCOv5+gisi7Q4eeheoZqmX7BZmlie926BNEqxAkFX/b4jPj/cYcsEoJU0EsjP9mxvpj
+         Tf3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=m7I0g3RUNnmlRDA9bESwDF7S68Xwa5pRIsZ/jUo0xnc=;
-        b=EV80OVq9ln4Bc1srp68JG7yudOvryX9ZF2LnI4QXIqN8DUjkPUTt+QBwXnlR/o0PtY
-         MV81CCyhyPwhgCtf1+qyW845wmaUEGaGGsrit33jRlQwdMiqfyAxOnCkaWuO2Rj2tPpD
-         MDsBs/gUFAD+nN/pSluyO7vLfJnyDZZc7wHdFTtnB+MI4Rqw/QuLgA+YJ946gKr6tUHO
-         dEWKCtKNBUIm59MoPWmXXlMLVyGOu+Zp1LBwL+Yy0eLyXGTq1iwI9fAmvqu3+cjsI7y5
-         YKeanOXUzOii6204+rv9mWhkLhxuqjnR3YQEzASAmGBfcPaZPvPYogP+UAoGIR4CJe0O
-         v1Mw==
-X-Gm-Message-State: AFqh2kqiOv2FJoXsyVemHJmZYNM8YQ+RipSTBW3OxvKyAvGCHLBS5eQU
-        ukyjMiYolWb7rXI4rs8hRzcGT0RrfjJHd4rJ
-X-Google-Smtp-Source: AMrXdXtc7XYGRFIQ8WaPw65cvcqtQCHPTHJD8gwVfNidnhZ4kvPt3p0hkTua3kVXQjYOh+rNU7NBjA==
-X-Received: by 2002:a1c:4c12:0:b0:3c6:e63e:89a6 with SMTP id z18-20020a1c4c12000000b003c6e63e89a6mr41401326wmf.2.1673081200188;
-        Sat, 07 Jan 2023 00:46:40 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id c13-20020adffb0d000000b00241fde8fe04sm3276487wrr.7.2023.01.07.00.46.38
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ySuTU3/2ve7nbb0FFI005zdxYhuuq4YkutjLx2Ct+0Y=;
+        b=ArZYcYDZpfWSQn8EYmGYOjmD4ohBhC9kknrm6pzYMzjiCK3QS9jYoCEVUmfF477zws
+         40DeHGx2Uw6AOjPO1ty4CZryGLscyZe6rVLnUWE7LwR3/76ZqSKIxzlk0NdElciW0qUp
+         SpH9FxAzn1y4+IShHQxCb1aTHUzUW59yX/aUHN58LPNGjreZf+3Q4B09f1SwXoTnJxqK
+         Woojq7i67TaZWotGRBGglaLgbz9XVkzK9NyQs1RoPT7DQoWRCoGVcqwYmGMaAIzzpx+m
+         omcwzZuygSfoaWFIgQ5r2dM/haKxI+nvTXaXAIieCDIY3/2cVNwnni0TkSJ2eznouQM5
+         iiVA==
+X-Gm-Message-State: AFqh2kpZnNkOxl/5iPhCJJQi3TeCl5MAfhVgvEa3MLQQ9jvy2Xz68Eq1
+        dlsne5Idrl8BzhkHjSoLzLkrYw==
+X-Google-Smtp-Source: AMrXdXte8Gy+C55Km8MWjs7rRsg9m2ErEEBD9ktU5WeVaroWWQFXJmF4Gsh8fAHhw2GYjHcO7qQGIw==
+X-Received: by 2002:a05:6a00:1255:b0:576:b8e1:862b with SMTP id u21-20020a056a00125500b00576b8e1862bmr71940483pfi.14.1673082338488;
+        Sat, 07 Jan 2023 01:05:38 -0800 (PST)
+Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
+        by smtp.gmail.com with ESMTPSA id u64-20020a627943000000b00581816425f3sm2019386pfc.112.2023.01.07.01.05.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Jan 2023 00:46:39 -0800 (PST)
-Date:   Sat, 7 Jan 2023 11:46:32 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     oe-kbuild@lists.linux.dev,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        netdev@vger.kernel.org
-Cc:     lkp@intel.com, oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: Re: [PATCH net-next v3 9/9] tsnep: Add XDP RX support
-Message-ID: <202301071414.ritICMHu-lkp@intel.com>
+        Sat, 07 Jan 2023 01:05:37 -0800 (PST)
+Date:   Sat, 7 Jan 2023 10:05:35 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net-next 4/9] devlink: always check if the devlink
+ instance is registered
+Message-ID: <Y7k13+lkw2o0Qiva@nanopsycho>
+References: <20230106063402.485336-1-kuba@kernel.org>
+ <20230106063402.485336-5-kuba@kernel.org>
+ <9f408a8c-4e23-9de5-0ee8-5deccd901543@intel.com>
+ <20230106131934.14e7a900@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230104194132.24637-10-gerhard@engleder-embedded.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20230106131934.14e7a900@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,56 +73,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Gerhard,
+Fri, Jan 06, 2023 at 10:19:34PM CET, kuba@kernel.org wrote:
+>On Fri, 6 Jan 2023 09:03:18 -0800 Jacob Keller wrote:
+>> > +static inline bool devl_is_registered(struct devlink *devlink)
+>> > +{
+>> > +	/* To prevent races the caller must hold the instance lock
+>> > +	 * or another lock taken during unregistration.
+>> > +	 */  
+>> 
+>> Why not just lockdep_assert here on the instance lock? I guess this
+>> comment implies that another lock could be used instead but it seems
+>> weird to allow that? I guess because of things like the linecards_lock
+>> as opposed to the instance lock?
+>
+>Yup, as discussed on the RFC - removing the regions lock specifically 
+>is quite tricky.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Gerhard-Engleder/tsnep-Use-spin_lock_bh-for-TX/20230105-034351
-patch link:    https://lore.kernel.org/r/20230104194132.24637-10-gerhard%40engleder-embedded.com
-patch subject: [PATCH net-next v3 9/9] tsnep: Add XDP RX support
-config: arc-randconfig-m041-20230106
-compiler: arc-elf-gcc (GCC) 12.1.0
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <error27@gmail.com>
-
-New smatch warnings:
-drivers/net/ethernet/engleder/tsnep_main.c:641 tsnep_xdp_xmit_back() warn: signedness bug returning '(-14)'
-
-vim +641 drivers/net/ethernet/engleder/tsnep_main.c
-
-dd23b834a352b5 Gerhard Engleder 2023-01-04  631  static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
-                                                        ^^^^
-dd23b834a352b5 Gerhard Engleder 2023-01-04  632  				struct xdp_buff *xdp)
-dd23b834a352b5 Gerhard Engleder 2023-01-04  633  {
-dd23b834a352b5 Gerhard Engleder 2023-01-04  634  	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
-dd23b834a352b5 Gerhard Engleder 2023-01-04  635  	int cpu = smp_processor_id();
-dd23b834a352b5 Gerhard Engleder 2023-01-04  636  	struct netdev_queue *nq;
-dd23b834a352b5 Gerhard Engleder 2023-01-04  637  	int queue;
-dd23b834a352b5 Gerhard Engleder 2023-01-04  638  	bool xmit;
-dd23b834a352b5 Gerhard Engleder 2023-01-04  639  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  640  	if (unlikely(!xdpf))
-dd23b834a352b5 Gerhard Engleder 2023-01-04 @641  		return -EFAULT;
-
-return false?
-
-dd23b834a352b5 Gerhard Engleder 2023-01-04  642  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  643  	queue = cpu % adapter->num_tx_queues;
-dd23b834a352b5 Gerhard Engleder 2023-01-04  644  	nq = netdev_get_tx_queue(adapter->netdev, queue);
-dd23b834a352b5 Gerhard Engleder 2023-01-04  645  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  646  	__netif_tx_lock(nq, cpu);
-dd23b834a352b5 Gerhard Engleder 2023-01-04  647  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  648  	/* Avoid transmit queue timeout since we share it with the slow path */
-dd23b834a352b5 Gerhard Engleder 2023-01-04  649  	txq_trans_cond_update(nq);
-dd23b834a352b5 Gerhard Engleder 2023-01-04  650  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  651  	xmit = tsnep_xdp_xmit_frame_ring(xdpf, &adapter->tx[queue],
-dd23b834a352b5 Gerhard Engleder 2023-01-04  652  					 TSNEP_TX_TYPE_XDP_TX);
-dd23b834a352b5 Gerhard Engleder 2023-01-04  653  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  654  	__netif_tx_unlock(nq);
-dd23b834a352b5 Gerhard Engleder 2023-01-04  655  
-dd23b834a352b5 Gerhard Engleder 2023-01-04  656  	return xmit;
-dd23b834a352b5 Gerhard Engleder 2023-01-04  657  }
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+I will submit in a jiff. Will add the assert here as a part
+of the patchset.
 
