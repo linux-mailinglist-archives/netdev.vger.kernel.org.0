@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA86C660CB0
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 07:37:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 466C2660CC4
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 08:34:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbjAGGho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 01:37:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
+        id S230064AbjAGHev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 02:34:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbjAGGhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 01:37:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8DD714BA;
-        Fri,  6 Jan 2023 22:37:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B0BEB81EFE;
-        Sat,  7 Jan 2023 06:37:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D732C433D2;
-        Sat,  7 Jan 2023 06:37:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673073457;
-        bh=0m0iEcQ/rUw96vXul6Nm7VxnMIAr9UmRVFM/KKbJW7o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uqHyaO72u/1PuJOzhW2DquuPsaSntmsgRn4oPx9+riMd74/4+VvFrPpCaM2IHNeYg
-         TeiCbWhVLrHonLDVBdcrCSumRzZ/1pNfddupoFUTVoT95TKw5am9g0F4cdvN5K2VCV
-         UEw8MHL2J1dZ1mSA3K+Bz6ssstCWVPAqxBOoTBGgCcVA5EyI8Jn2OuPoELyVd6Ndht
-         hTq7NQrlLExupt23X5e+2qpr4BPaODYfwyv0ChGsAS0EO/njA7IXob7BwK2mwCUFV/
-         4as/gb0fiqDjBc103hhDEpXPu7b9qd9mYpL4UyuujmpIcanT4tIbFigO8Eha34h0k8
-         hOEBykAJXXw0w==
-Date:   Sat, 7 Jan 2023 08:37:33 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH mlx5-next 0/8] mlx5 IPsec RoCEv2 support and netdev
- events fixes in RDMA
-Message-ID: <Y7kTLRSeFHzAvcom@unreal>
-References: <20230105041756.677120-1-saeed@kernel.org>
- <20230105103846.6dc776a3@kernel.org>
- <Y7h4Cl/69g2yQzKh@x130>
- <20230106131723.2c7596e3@kernel.org>
+        with ESMTP id S229468AbjAGHet (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 02:34:49 -0500
+X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 Jan 2023 23:34:46 PST
+Received: from mail-m11880.qiye.163.com (mail-m11880.qiye.163.com [115.236.118.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AE47CBE5;
+        Fri,  6 Jan 2023 23:34:46 -0800 (PST)
+Received: from caicai-HWPC.. (unknown [IPV6:240e:36a:145d:dd00:75ba:b6bd:3f9b:b978])
+        by mail-m11880.qiye.163.com (Hmail) with ESMTPA id E560C2020C;
+        Sat,  7 Jan 2023 15:27:44 +0800 (CST)
+From:   Yupeng Li <liyupeng@zbhlos.com>
+To:     tariqt@nvidia.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yupeng Li <liyupeng@zbhlos.com>,
+        Caicai <caizp2008@163.com>
+Subject: [PATCH 1/1] net/mlx4: Fix build error use array_size() helper in copy_to_user()
+Date:   Sat,  7 Jan 2023 15:27:25 +0800
+Message-Id: <20230107072725.673064-1-liyupeng@zbhlos.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230106131723.2c7596e3@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSkoYVhpCH09MTksYGU9CTVUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUlPSx5BSE0aQUpPTh9BHx9LS0FMThkaQRlNGR9BSB1CGUEZQkxDWVdZFhoPEhUdFF
+        lBWU9LSFVKSktPSEhVSktLVUtZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PS46TCo*Gj0aHRY4FB8VLz1O
+        OjMaFDhVSlVKTUxIS0xNT01OTkpJVTMWGhIXVRcSAg4LHhUcOwEZExcUCFUYFBZFWVdZEgtZQVlJ
+        T0seQUhNGkFKT04fQR8fS0tBTE4ZGkEZTRkfQUgdQhlBGUJMQ1lXWQgBWUFITUtKNwY+
+X-HM-Tid: 0a858b20dde52eb6kusne560c2020c
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 06, 2023 at 01:17:23PM -0800, Jakub Kicinski wrote:
-> On Fri, 6 Jan 2023 11:35:38 -0800 Saeed Mahameed wrote:
-> > On 05 Jan 10:38, Jakub Kicinski wrote:
-> > >On Wed,  4 Jan 2023 20:17:48 -0800 Saeed Mahameed wrote:  
-> > >>   net/mlx5: Configure IPsec steering for ingress RoCEv2 traffic
-> > >>   net/mlx5: Configure IPsec steering for egress RoCEv2 traffic  
-> > >
-> > >How is the TC forwarding coming along?  
-> > 
-> > Not aware of such effort, can you please elaborate ? 
-> 
-> When Leon posted the IPsec patches I correctly guessed that it's for
-> RDMA and expressed my strong preference for RDMA to stop using netdev
-> interfaces for configuration. He made the claim that the full IPsec
-> offload will be used for eswitch offload as well, so I'm asking how 
-> is that work going.
+When CONFIG_64BIT was disabled, check_copy_size() was declared with
+attribute error: copy source size is too small, array_size() for 32BIT
+was wrong size, some compiled msg with error like:
 
-It is planned, as we need this support too for ASAP program, but I simply
-can't say for sure if I success to make it in this cycle due to my personal
-constraints.
+  CALL    scripts/checksyscalls.sh
+  CC [M]  drivers/net/ethernet/mellanox/mlx4/cq.o
+In file included from ./arch/x86/include/asm/preempt.h:7,
+                 from ./include/linux/preempt.h:78,
+                 from ./include/linux/percpu.h:6,
+                 from ./include/linux/context_tracking_state.h:5,
+                 from ./include/linux/hardirq.h:5,
+                 from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
+In function ‘check_copy_size’,
+    inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:168:6,
+    inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
+    inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
+./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
+  228 |    __bad_copy_from();
+      |    ^~~~~~~~~~~~~~~~~
+make[6]: *** [scripts/Makefile.build:250：drivers/net/ethernet/mellanox/mlx4/cq.o] 错误 1
+make[5]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox/mlx4] 错误 2
+make[5]: *** 正在等待未完成的任务....
+make[4]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox] 错误 2
+make[3]: *** [scripts/Makefile.build:500：drivers/net/ethernet] 错误 2
+make[3]: *** 正在等待未完成的任务....
+make[2]: *** [scripts/Makefile.build:500：drivers/net] 错误 2
+make[2]: *** 正在等待未完成的任务....
+make[1]: *** [scripts/Makefile.build:500：drivers] 错误 2
+make: *** [Makefile:1992：.] 错误 2
 
-On my plate, without going into much details:
-1. Overcome cx7 HW limitation when dealing with hard/soft lifetime counters.
-2. Tunnel mode support. 
-3. IPsec on FDB. This is TC forwarding support.
+Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
+Reviewed-by: Caicai <caizp2008@163.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/cq.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Thanks
+diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
+index 4d4f9cf9facb..7dadd7227480 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/cq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
+@@ -315,7 +315,11 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
+ 		}
+ 	} else {
+ 		err = copy_to_user((void __user *)buf, init_ents,
++#ifdef CONFIG_64BIT
+ 				   array_size(entries, cqe_size)) ?
++#else
++				   entries * cqe_size) ?
++#endif
+ 			-EFAULT : 0;
+ 	}
+ 
+-- 
+2.25.1
+
