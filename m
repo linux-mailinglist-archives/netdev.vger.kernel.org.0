@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 984A5660BB9
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 03:05:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4D2A660BBE
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 03:06:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbjAGCFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Jan 2023 21:05:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
+        id S235483AbjAGCGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Jan 2023 21:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjAGCFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 21:05:30 -0500
+        with ESMTP id S236366AbjAGCGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Jan 2023 21:06:21 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05EFE84BD9;
-        Fri,  6 Jan 2023 18:05:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B5687F2C;
+        Fri,  6 Jan 2023 18:06:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3E1AB81F55;
-        Sat,  7 Jan 2023 02:05:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4362C433D2;
-        Sat,  7 Jan 2023 02:05:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3610B81EE6;
+        Sat,  7 Jan 2023 02:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AFD3C433D2;
+        Sat,  7 Jan 2023 02:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673057127;
-        bh=vuRooI/0IKFfiukBgQuJyic73OVaQ9W2FXk647mejH0=;
+        s=k20201202; t=1673057177;
+        bh=TjnR4/cNwXYZcaHqUWqPKsdE8NWp+ngNLYzqeN7WR2I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s0Dme05qM2ZOWJJtuYVBV/KCzIKMnKd7jYhnCnoLup+/RpRcogmN8KK4Zm5P5vm3D
-         8MNgauXeyOS1FC41Kg88QYoj0r8jN/KQdDhpfDYlrDu1OSdrEVx4Jlmm7+nVzhh6yR
-         Q7CXEY38gguw/W3ejNTxaS2BDj6lvvdo/Q0eR1U7lgKSkbj99EpZCrAIx60tnDrYwJ
-         HEv0O2MrPDYloS+BjKkZ+tBQhjskm9BJl8XuG4pTJ+tN8xv7qMWNxUJgbON2mAKE4W
-         KPEN+KfXZYzJIbvU+I4CbHO1v9vAvJHIw7F4SJGNI1sx9t9HwssiDbOXS0G0wKfH0b
-         i8BTstgh2U7yA==
-Date:   Fri, 6 Jan 2023 18:05:26 -0800
+        b=UzRilV2g2QXwDJ0pSBDmIV06RzW7VAcxSXdN0j0pt8M2/fKc+9Dsbn36uBRfGz/a7
+         4dnpNM1YXth199JN5bZ0AqMFCIxEeiNYNLi/21t8Xt34IAwQr2PXGUJ7uPnPDfa29y
+         Wv8kRESxkuY/qeHy+13oNtgmEatB9kWlCTtRZuBMrgyDE7dN7QRwbDhwT2mLTp6r0O
+         PnONf9GVKZCA//eggdSoXjdXvOixjUUGYnj3DPTX8HkhO+WWmTdzHuuwG+uGSRs0N/
+         Z+/9LvPPAgmfxWjQyAPS+kouV1gjOQox5+Nmt7W44/X7lb2DuehGq5TUqZSp+QdF8F
+         l4wK59vbia82A==
+Date:   Fri, 6 Jan 2023 18:06:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Dmitry Safonov <dima@arista.com>
 Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
@@ -46,11 +46,11 @@ Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Salam Noureddine <noureddine@arista.com>,
         netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] crypto/net/tcp: Use crypto_pool for TCP-MD5
-Message-ID: <20230106180526.6e65b54d@kernel.org>
-In-Reply-To: <20230103184257.118069-4-dima@arista.com>
+Subject: Re: [PATCH v2 5/5] crypto/Documentation: Add crypto_pool kernel API
+Message-ID: <20230106180616.4a39dd2a@kernel.org>
+In-Reply-To: <20230103184257.118069-6-dima@arista.com>
 References: <20230103184257.118069-1-dima@arista.com>
-        <20230103184257.118069-4-dima@arista.com>
+        <20230103184257.118069-6-dima@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,66 +63,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 Jan 2023 18:42:55 +0000 Dmitry Safonov wrote:
-> Use crypto_pool API that was designed with tcp_md5sig_pool in mind.
-> The conversion to use crypto_pool will allow:
-> - to reuse ahash_request(s) for different users
-> - to allocate only one per-CPU scratch buffer rather than a new one for
->   each user
-> - to have a common API for net/ users that need ahash on RX/TX fast path
+Some extra nits here since you need to respin for the build warning
+(include the document in some index / toc tree and adjust the length 
+of the underscores to match the line length).
 
->  config TCP_MD5SIG
->  	bool "TCP: MD5 Signature Option support (RFC2385)"
-> -	select CRYPTO
-> +	select CRYPTO_POOL
+On Tue,  3 Jan 2023 18:42:57 +0000 Dmitry Safonov wrote:
+> diff --git a/Documentation/crypto/crypto_pool.rst b/Documentation/crypto/crypto_pool.rst
+> new file mode 100644
+> index 000000000000..4b8443171421
+> --- /dev/null
+> +++ b/Documentation/crypto/crypto_pool.rst
+> @@ -0,0 +1,33 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +Per-CPU pool of crypto requests
+> +=============
+> +
+> +Overview
+> +--------
+> +The crypto pool API manages pre-allocated per-CPU pool of crypto requests,
+> +providing ability to use async crypto requests on fast paths, potentially
 
-Are you sure we don't need to select CRYPTO any more?
-select does not resolve dependencies.
+.. you *don't* enable async crypto in this series, right?
 
->  	select CRYPTO_MD5
->  	help
->  	  RFC2385 specifies a method of giving MD5 protection to TCP sessions.
+> +on atomic contexts. The allocation and initialization of the requests should
 
-> @@ -749,29 +746,27 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
->  		daddr = &ip6h->daddr;
->  	}
->  
-> -	hp = tcp_get_md5sig_pool();
-> -	if (!hp)
-> +	if (crypto_pool_get(tcp_md5_crypto_pool_id, (struct crypto_pool *)&hp))
+s/on/in/ atomic contexts
 
-&hp.base ? To avoid the cast
+> +be done before their usage as it's slow-path and may sleep.
+> +
+> +Order of operations
+> +-------------------
+> +You are required to allocate a new pool prior using it and manage its lifetime.
 
->  		goto clear_hash_noput;
-> -	req = hp->md5_req;
->  
-> -	if (crypto_ahash_init(req))
-> +	if (crypto_ahash_init(hp.req))
->  		goto clear_hash;
->  
-> -	if (tcp_v6_md5_hash_headers(hp, daddr, saddr, th, skb->len))
-> +	if (tcp_v6_md5_hash_headers(&hp, daddr, saddr, th, skb->len))
->  		goto clear_hash;
-> -	if (tcp_md5_hash_skb_data(hp, skb, th->doff << 2))
-> +	if (tcp_md5_hash_skb_data(&hp, skb, th->doff << 2))
->  		goto clear_hash;
-> -	if (tcp_md5_hash_key(hp, key))
-> +	if (tcp_md5_hash_key(&hp, key))
->  		goto clear_hash;
-> -	ahash_request_set_crypt(req, NULL, md5_hash, 0);
-> -	if (crypto_ahash_final(req))
-> +	ahash_request_set_crypt(hp.req, NULL, md5_hash, 0);
-> +	if (crypto_ahash_final(hp.req))
->  		goto clear_hash;
->  
-> -	tcp_put_md5sig_pool();
-> +	crypto_pool_put();
->  	return 0;
->  
->  clear_hash:
-> -	tcp_put_md5sig_pool();
-> +	crypto_pool_put();
->  clear_hash_noput:
->  	memset(md5_hash, 0, 16);
->  	return 1;
+The use of second person is quite uncommon for documentation, but if
+you prefer so be it..
 
+> +You can allocate a per-CPU pool of ahash requests by ``crypto_pool_alloc_ahash()``.
+
+You don't need to use the backticks around function names and struct
+names. Our doc rendering system recognizes them automatically. 
+
+`make htmldocs` to see for yourself.
