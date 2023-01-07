@@ -2,45 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 466C2660CC4
-	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 08:34:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1CE6660D0F
+	for <lists+netdev@lfdr.de>; Sat,  7 Jan 2023 09:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbjAGHev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 02:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
+        id S231162AbjAGIqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 03:46:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjAGHet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 02:34:49 -0500
-X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 Jan 2023 23:34:46 PST
-Received: from mail-m11880.qiye.163.com (mail-m11880.qiye.163.com [115.236.118.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AE47CBE5;
-        Fri,  6 Jan 2023 23:34:46 -0800 (PST)
-Received: from caicai-HWPC.. (unknown [IPV6:240e:36a:145d:dd00:75ba:b6bd:3f9b:b978])
-        by mail-m11880.qiye.163.com (Hmail) with ESMTPA id E560C2020C;
-        Sat,  7 Jan 2023 15:27:44 +0800 (CST)
-From:   Yupeng Li <liyupeng@zbhlos.com>
-To:     tariqt@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yupeng Li <liyupeng@zbhlos.com>,
-        Caicai <caizp2008@163.com>
-Subject: [PATCH 1/1] net/mlx4: Fix build error use array_size() helper in copy_to_user()
-Date:   Sat,  7 Jan 2023 15:27:25 +0800
-Message-Id: <20230107072725.673064-1-liyupeng@zbhlos.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229550AbjAGIqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 03:46:42 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965DA6144D
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 00:46:41 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id p1-20020a05600c1d8100b003d8c9b191e0so2596790wms.4
+        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 00:46:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=m7I0g3RUNnmlRDA9bESwDF7S68Xwa5pRIsZ/jUo0xnc=;
+        b=hJxmMu5E8Hx9dSxhuSDuqvb5fGiI7tvJt80P15TDMrQS6Y2ZRbrwgPcyrFbOfuc/dF
+         PWMNEfQw8UwF6Zr75VE6JfP9+9YwMMTc7kW6QaysXxb6zZ37n89b63/bfTnPnrjX2kMD
+         91aVnimmiX9g4j3vURU4GSxI0s1nHz25bg8V2/LDDtU901AbrTY0qurlBYKhvXAlAKyQ
+         ll5yPrV4Su/+kKpfe25yJNUnKNgio4WsctDxvEnKGJA32XD0j1Wav+VsnB7lua4OTDxC
+         A0x1OCbQBJDG1HsjLNnCKPl55TUkXrkdry0aXzEE17l9Zn33CJaXXNiVK3icx9FBhQAr
+         EaDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m7I0g3RUNnmlRDA9bESwDF7S68Xwa5pRIsZ/jUo0xnc=;
+        b=EV80OVq9ln4Bc1srp68JG7yudOvryX9ZF2LnI4QXIqN8DUjkPUTt+QBwXnlR/o0PtY
+         MV81CCyhyPwhgCtf1+qyW845wmaUEGaGGsrit33jRlQwdMiqfyAxOnCkaWuO2Rj2tPpD
+         MDsBs/gUFAD+nN/pSluyO7vLfJnyDZZc7wHdFTtnB+MI4Rqw/QuLgA+YJ946gKr6tUHO
+         dEWKCtKNBUIm59MoPWmXXlMLVyGOu+Zp1LBwL+Yy0eLyXGTq1iwI9fAmvqu3+cjsI7y5
+         YKeanOXUzOii6204+rv9mWhkLhxuqjnR3YQEzASAmGBfcPaZPvPYogP+UAoGIR4CJe0O
+         v1Mw==
+X-Gm-Message-State: AFqh2kqiOv2FJoXsyVemHJmZYNM8YQ+RipSTBW3OxvKyAvGCHLBS5eQU
+        ukyjMiYolWb7rXI4rs8hRzcGT0RrfjJHd4rJ
+X-Google-Smtp-Source: AMrXdXtc7XYGRFIQ8WaPw65cvcqtQCHPTHJD8gwVfNidnhZ4kvPt3p0hkTua3kVXQjYOh+rNU7NBjA==
+X-Received: by 2002:a1c:4c12:0:b0:3c6:e63e:89a6 with SMTP id z18-20020a1c4c12000000b003c6e63e89a6mr41401326wmf.2.1673081200188;
+        Sat, 07 Jan 2023 00:46:40 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id c13-20020adffb0d000000b00241fde8fe04sm3276487wrr.7.2023.01.07.00.46.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Jan 2023 00:46:39 -0800 (PST)
+Date:   Sat, 7 Jan 2023 11:46:32 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     oe-kbuild@lists.linux.dev,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        netdev@vger.kernel.org
+Cc:     lkp@intel.com, oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH net-next v3 9/9] tsnep: Add XDP RX support
+Message-ID: <202301071414.ritICMHu-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSkoYVhpCH09MTksYGU9CTVUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUlPSx5BSE0aQUpPTh9BHx9LS0FMThkaQRlNGR9BSB1CGUEZQkxDWVdZFhoPEhUdFF
-        lBWU9LSFVKSktPSEhVSktLVUtZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PS46TCo*Gj0aHRY4FB8VLz1O
-        OjMaFDhVSlVKTUxIS0xNT01OTkpJVTMWGhIXVRcSAg4LHhUcOwEZExcUCFUYFBZFWVdZEgtZQVlJ
-        T0seQUhNGkFKT04fQR8fS0tBTE4ZGkEZTRkfQUgdQhlBGUJMQ1lXWQgBWUFITUtKNwY+
-X-HM-Tid: 0a858b20dde52eb6kusne560c2020c
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230104194132.24637-10-gerhard@engleder-embedded.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,58 +72,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CONFIG_64BIT was disabled, check_copy_size() was declared with
-attribute error: copy source size is too small, array_size() for 32BIT
-was wrong size, some compiled msg with error like:
+Hi Gerhard,
 
-  CALL    scripts/checksyscalls.sh
-  CC [M]  drivers/net/ethernet/mellanox/mlx4/cq.o
-In file included from ./arch/x86/include/asm/preempt.h:7,
-                 from ./include/linux/preempt.h:78,
-                 from ./include/linux/percpu.h:6,
-                 from ./include/linux/context_tracking_state.h:5,
-                 from ./include/linux/hardirq.h:5,
-                 from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
-In function ‘check_copy_size’,
-    inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:168:6,
-    inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
-    inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
-./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
-  228 |    __bad_copy_from();
-      |    ^~~~~~~~~~~~~~~~~
-make[6]: *** [scripts/Makefile.build:250：drivers/net/ethernet/mellanox/mlx4/cq.o] 错误 1
-make[5]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox/mlx4] 错误 2
-make[5]: *** 正在等待未完成的任务....
-make[4]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox] 错误 2
-make[3]: *** [scripts/Makefile.build:500：drivers/net/ethernet] 错误 2
-make[3]: *** 正在等待未完成的任务....
-make[2]: *** [scripts/Makefile.build:500：drivers/net] 错误 2
-make[2]: *** 正在等待未完成的任务....
-make[1]: *** [scripts/Makefile.build:500：drivers] 错误 2
-make: *** [Makefile:1992：.] 错误 2
+url:    https://github.com/intel-lab-lkp/linux/commits/Gerhard-Engleder/tsnep-Use-spin_lock_bh-for-TX/20230105-034351
+patch link:    https://lore.kernel.org/r/20230104194132.24637-10-gerhard%40engleder-embedded.com
+patch subject: [PATCH net-next v3 9/9] tsnep: Add XDP RX support
+config: arc-randconfig-m041-20230106
+compiler: arc-elf-gcc (GCC) 12.1.0
 
-Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-Reviewed-by: Caicai <caizp2008@163.com>
----
- drivers/net/ethernet/mellanox/mlx4/cq.c | 4 ++++
- 1 file changed, 4 insertions(+)
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Reported-by: Dan Carpenter <error27@gmail.com>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-index 4d4f9cf9facb..7dadd7227480 100644
---- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-@@ -315,7 +315,11 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
- 		}
- 	} else {
- 		err = copy_to_user((void __user *)buf, init_ents,
-+#ifdef CONFIG_64BIT
- 				   array_size(entries, cqe_size)) ?
-+#else
-+				   entries * cqe_size) ?
-+#endif
- 			-EFAULT : 0;
- 	}
- 
+New smatch warnings:
+drivers/net/ethernet/engleder/tsnep_main.c:641 tsnep_xdp_xmit_back() warn: signedness bug returning '(-14)'
+
+vim +641 drivers/net/ethernet/engleder/tsnep_main.c
+
+dd23b834a352b5 Gerhard Engleder 2023-01-04  631  static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
+                                                        ^^^^
+dd23b834a352b5 Gerhard Engleder 2023-01-04  632  				struct xdp_buff *xdp)
+dd23b834a352b5 Gerhard Engleder 2023-01-04  633  {
+dd23b834a352b5 Gerhard Engleder 2023-01-04  634  	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
+dd23b834a352b5 Gerhard Engleder 2023-01-04  635  	int cpu = smp_processor_id();
+dd23b834a352b5 Gerhard Engleder 2023-01-04  636  	struct netdev_queue *nq;
+dd23b834a352b5 Gerhard Engleder 2023-01-04  637  	int queue;
+dd23b834a352b5 Gerhard Engleder 2023-01-04  638  	bool xmit;
+dd23b834a352b5 Gerhard Engleder 2023-01-04  639  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  640  	if (unlikely(!xdpf))
+dd23b834a352b5 Gerhard Engleder 2023-01-04 @641  		return -EFAULT;
+
+return false?
+
+dd23b834a352b5 Gerhard Engleder 2023-01-04  642  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  643  	queue = cpu % adapter->num_tx_queues;
+dd23b834a352b5 Gerhard Engleder 2023-01-04  644  	nq = netdev_get_tx_queue(adapter->netdev, queue);
+dd23b834a352b5 Gerhard Engleder 2023-01-04  645  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  646  	__netif_tx_lock(nq, cpu);
+dd23b834a352b5 Gerhard Engleder 2023-01-04  647  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  648  	/* Avoid transmit queue timeout since we share it with the slow path */
+dd23b834a352b5 Gerhard Engleder 2023-01-04  649  	txq_trans_cond_update(nq);
+dd23b834a352b5 Gerhard Engleder 2023-01-04  650  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  651  	xmit = tsnep_xdp_xmit_frame_ring(xdpf, &adapter->tx[queue],
+dd23b834a352b5 Gerhard Engleder 2023-01-04  652  					 TSNEP_TX_TYPE_XDP_TX);
+dd23b834a352b5 Gerhard Engleder 2023-01-04  653  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  654  	__netif_tx_unlock(nq);
+dd23b834a352b5 Gerhard Engleder 2023-01-04  655  
+dd23b834a352b5 Gerhard Engleder 2023-01-04  656  	return xmit;
+dd23b834a352b5 Gerhard Engleder 2023-01-04  657  }
+
 -- 
-2.25.1
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
 
