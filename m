@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D71066178B
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 18:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 025A76617A6
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 18:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236017AbjAHRer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 12:34:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S233764AbjAHR4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 12:56:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235986AbjAHRep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 12:34:45 -0500
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB75CD2E7;
-        Sun,  8 Jan 2023 09:34:42 -0800 (PST)
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 308HY53o024467;
-        Sun, 8 Jan 2023 18:34:11 +0100
-Received: from lubuntu-18.04 (unknown [160.80.103.126])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id F3E0C1228E1;
-        Sun,  8 Jan 2023 18:34:01 +0100 (CET)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1673199242; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z4kc5qFAos7ZIAgwgfR4xycDpTMwBJ6/I/3JrmodzQI=;
-        b=vv/whSHi6xon2T/NpYA/YyAng8wsROAmsXoPBZSJRw9j6zV9hUvX84YnK6CGgtH3UXlwYN
-        cljmvok+3YvCckBg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1673199242; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z4kc5qFAos7ZIAgwgfR4xycDpTMwBJ6/I/3JrmodzQI=;
-        b=DvYa+m5qYheA9on2p5bcdeAxaC35YrEPne0KXjosVgLqqlXxeewrDTYbZoOLCkXV/t1RN3
-        YvMSJ3beOpMxprQglcMkFammt5zT+ZkYM8WfCLi3PA0RvwGJFHfNE2ijB0ZwoC9vC0y3dr
-        5GFmq4LIaNNKoi5ZxabDqdHCOYvnyP0n7g4dpHXRU2XHkl+JkUodxWIO3H8hPAKfx1xs9F
-        na9ibZMAPFf50qIflnI45qUVfLVoB052DBMHwN8UxssF+a6jLZ/vRphISimU55kRRLotfl
-        MFejP0h5sGfF67TwAnMEXrySvRlAPwrCHuRy+lfjQjMnSup3YfIt2l/v6wY+/g==
-Date:   Sun, 8 Jan 2023 18:34:01 +0100
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     Jonathan Maxwell <jmaxwell37@gmail.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: Re: [net-next] ipv6: fix routing cache overflow for raw sockets
-Message-Id: <20230108183401.3fa2b3ac27bde441265b4fca@uniroma2.it>
-In-Reply-To: <CAGHK07CbJo_XPpTnfWtvy+_nxM267vhx3hUT5AR4-mpkfsh7pQ@mail.gmail.com>
-References: <20221218234801.579114-1-jmaxwell37@gmail.com>
-        <9f145202ca6a59b48d4430ed26a7ab0fe4c5dfaf.camel@redhat.com>
-        <CAGHK07ALtLTjRP-XOepqoc8xzWcT8=0v5ccL-98f4+SU9vwfsg@mail.gmail.com>
-        <20221223212835.eb9d03f3f7db22360e34341d@uniroma2.it>
-        <CAGHK07APOwLvhs73WKkQfZuEy2FoKEWJusSyejKVcth4D47g=w@mail.gmail.com>
-        <CAGHK07Crj8s0wOivw62Q_N4Km6r1qsH-y-8YgfYhX-JJF6kZSA@mail.gmail.com>
-        <20230103170711.819921d40132494b4bfd6a0d@uniroma2.it>
-        <20230107002656.b732de6750a063d07cdb8a5f@uniroma2.it>
-        <CAGHK07CbJo_XPpTnfWtvy+_nxM267vhx3hUT5AR4-mpkfsh7pQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        with ESMTP id S236106AbjAHR4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 12:56:09 -0500
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97517DF7E;
+        Sun,  8 Jan 2023 09:56:06 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 30DAA604F0;
+        Sun,  8 Jan 2023 18:56:04 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673200564; bh=cFy19nqO0N/rhSk+x/Xbk7AN8qcY/NuNeS7fDEclcDk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MntAe4S1+xnRIi2KmZ6YYRg5CMrQcoKB19K+5YZ5i7HEjSa2qKX3E0cYHGpVd1Htn
+         vch5jOJOXv62y3CXQbIjjsUEZESYO4J/tGqaaC+KSvqTVqn6yIWrLc/UhTCG6IS/8Y
+         lNxpqpB3wzpliVb/xYIQjedtJJG5eq1twLMG6iKgXy37raBX8+luPSDb3MHmEaFOwx
+         sAbvxFp6M7zM7/xRkL9ucceBM4ULZsVo+ccqRuWu9gVovUpnY8FmBWQnZdfsQ7vySP
+         5/59kUDkEsEP8uSvzoW6NW/peFFDXRC1n7bEKgej6tXQwsKj/4jlFzPd0D7xHQx4EZ
+         HPrVvKer66i7Q==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Zp4xA9GqTLLj; Sun,  8 Jan 2023 18:56:01 +0100 (CET)
+Received: from [192.168.0.12] (unknown [188.252.196.35])
+        by domac.alu.hr (Postfix) with ESMTPSA id A210C604F1;
+        Sun,  8 Jan 2023 18:56:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673200561; bh=cFy19nqO0N/rhSk+x/Xbk7AN8qcY/NuNeS7fDEclcDk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ujlhbDy0JzHx2y/4fSmdWLvXZDAt54KhtztTjC4+GebspozRbHHkEwEZhISvBBQlv
+         Ch0sol339H4G03B1KVulopc5sLsZ4SIw7yTVSKAS8y4fk+FqEMJP8mQvlb3CQc0FfG
+         ccEScBTeHhf5/uK/WiP9CSS/cetQ+5XVbQlFzTWFm7lbE02WpTZzcifp9PIdGTDrhg
+         j/MGgQYERPdk76FTfcYMWZhdM6Wd0eGvV7kYzGjVKMJVSXzPDnk7G5jfxOXenEMRnD
+         3s17M+fIC6ArUTv71zb1SFm9T7Ndjq042OhCTpTcR7hGqnreAg9nrPAWQclCqEA4Lf
+         8EiogmljR2+/w==
+Message-ID: <d51dcdba-86b8-78d7-d173-5826d9fa88ca@alu.unizg.hr>
+Date:   Sun, 8 Jan 2023 18:55:59 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: BUG: tools/testing/selftests/net/l2_tos_ttl_inherit.sh hangs when
+ selftest restarted
+Content-Language: en-US, hr
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     linux-kselftest@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias May <matthias.may@westermo.com>
+References: <924f1062-ab59-9b88-3b43-c44e73a30387@alu.unizg.hr>
+ <Y7i5cT1AlyC53hzN@debian> <5ef41d3c-8d81-86b3-c571-044636702342@alu.unizg.hr>
+ <Y7lpO9IHtSIyHVej@debian> <81fdf2bc-4842-96d8-b124-43d0bd5ec124@alu.unizg.hr>
+ <Y7rNgPj9WIroPcQ/@debian> <750cd534-1361-4102-67c5-2898814f8b4c@alu.unizg.hr>
+ <Y7ryNK2sMv+PC6xr@debian>
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <Y7ryNK2sMv+PC6xr@debian>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,244 +76,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 8 Jan 2023 10:46:09 +1100
-Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
-
-> On Sat, Jan 7, 2023 at 10:27 AM Andrea Mayer <andrea.mayer@uniroma2.it> wrote:
-> >
-> > Hi Jon,
-> > please see after, thanks.
-> >
-> > >
-> > > > Any chance you could test this patch based on the latest net-next
-> > > > kernel and let me know the result?
-> > > >
-> > > > diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
-> > > > index 88ff7bb2bb9b..632086b2f644 100644
-> > > > --- a/include/net/dst_ops.h
-> > > > +++ b/include/net/dst_ops.h
-> > > > @@ -16,7 +16,7 @@ struct dst_ops {
-> > > >         unsigned short          family;
-> > > >         unsigned int            gc_thresh;
-> > > >
-> > > > -       int                     (*gc)(struct dst_ops *ops);
-> > > > +       void                    (*gc)(struct dst_ops *ops);
-> > > >         struct dst_entry *      (*check)(struct dst_entry *, __u32 cookie);
-> > > >         unsigned int            (*default_advmss)(const struct dst_entry *);
-> > > >         unsigned int            (*mtu)(const struct dst_entry *);
-> > > > diff --git a/net/core/dst.c b/net/core/dst.c
-> > > > index 6d2dd03dafa8..31c08a3386d3 100644
-> > > > --- a/net/core/dst.c
-> > > > +++ b/net/core/dst.c
-> > > > @@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
-> > > >
-> > > >         if (ops->gc &&
-> > > >             !(flags & DST_NOCOUNT) &&
-> > > > -           dst_entries_get_fast(ops) > ops->gc_thresh) {
-> > > > -               if (ops->gc(ops)) {
-> > > > -                       pr_notice_ratelimited("Route cache is full:
-> > > > consider increasing sysctl net.ipv6.route.max_size.\n");
-> > > > -                       return NULL;
-> > > > -               }
-> > > > -       }
-> > > > +           dst_entries_get_fast(ops) > ops->gc_thresh)
-> > > > +               ops->gc(ops);
-> > > >
-> > > >         dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
-> > > >         if (!dst)
-> > > > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> > > > index e74e0361fd92..b643dda68d31 100644
-> > > > --- a/net/ipv6/route.c
-> > > > +++ b/net/ipv6/route.c
-> > > > @@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct
-> > > > dst_entry *);
-> > > >  static void            ip6_dst_destroy(struct dst_entry *);
-> > > >  static void            ip6_dst_ifdown(struct dst_entry *,
-> > > >                                        struct net_device *dev, int how);
-> > > > -static int              ip6_dst_gc(struct dst_ops *ops);
-> > > > +static void             ip6_dst_gc(struct dst_ops *ops);
-> > > >
-> > > >  static int             ip6_pkt_discard(struct sk_buff *skb);
-> > > >  static int             ip6_pkt_discard_out(struct net *net, struct
-> > > > sock *sk, struct sk_buff *skb);
-> > > > @@ -3284,11 +3284,10 @@ struct dst_entry *icmp6_dst_alloc(struct
-> > > > net_device *dev,
-> > > >         return dst;
-> > > >  }
-> > > >
-> > > > -static int ip6_dst_gc(struct dst_ops *ops)
-> > > > +static void ip6_dst_gc(struct dst_ops *ops)
-> > > >  {
-> > > >         struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
-> > > >         int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
-> > > > -       int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
-> > > >         int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
-> > > >         int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
-> > > >         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-> > > > @@ -3296,11 +3295,10 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> > > >         int entries;
-> > > >
-> > > >         entries = dst_entries_get_fast(ops);
-> > > > -       if (entries > rt_max_size)
-> > > > +       if (entries > ops->gc_thresh)
-> > > >                 entries = dst_entries_get_slow(ops);
-> > > >
-> > > > -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-> > > > -           entries <= rt_max_size)
-> > > > +       if (time_after(rt_last_gc + rt_min_interval, jiffies))
-> > > >                 goto out;
-> > > >
-> > > >         fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
-> > > > @@ -3310,7 +3308,6 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> > > >  out:
-> > > >         val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
-> > > >         atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
-> > > > -       return entries > rt_max_size;
-> > > >  }
-> > > >
-> > > >  static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
-> > > > @@ -6512,7 +6509,7 @@ static int __net_init ip6_route_net_init(struct net *net)
-> > > >  #endif
-> > > >
-> > > >         net->ipv6.sysctl.flush_delay = 0;
-> > > > -       net->ipv6.sysctl.ip6_rt_max_size = 4096;
-> > > > +       net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
-> > > >         net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
-> > > >         net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
-> > > >         net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
-> > > >
-> > >
-> > > Yes, I will apply this patch in the next days and check how it deals with the
-> > > seg6 subsystem. I will keep you posted.
-> > >
-> >
-> > I applied the patch* to the net-next (HEAD 6bd4755c7c49) and did some tests on
-> > the seg6 subsystem, specifically running the End.X/DX6 behaviors. They seem to
-> > work fine.
+On 08. 01. 2023. 17:41, Guillaume Nault wrote:
+> On Sun, Jan 08, 2023 at 03:49:05PM +0100, Mirsad Goran Todorovac wrote:
+>> On 08. 01. 2023. 15:04, Guillaume Nault wrote:
+>>
+>>> For some reasons, your host doesn't accept the VXLAN packets received
+>>> over veth0. I guess there are some firewalling rules incompatible with
+>>> this tests script.
+>>
+>> That beats me. It is essentially a vanilla desktop AlmaLinux (CentOS fork)
+>> installation w 6.2-rc2 vanilla torvalds tree kernel.
+>>
+>> Maybe DHCPv4+DHCPv6 assigned address got in the way?
 > 
-> Thanks Andrea much appreciated. It worked fine in my raw socket tests as well.
-
-You're welcome. Good!
-
-> I'll look at submitting it soon.
-
-Please let me know (keep me in cc).
-
+> I don't think so. The host sends an administratively prohibited
+> error. That's not an IP address conflict (and the script uses reserved
+> IP address ranges which shouldn't conflict with those assigned to regular
+> host).
 > 
-> >
-> > (*) I had to slightly edit the patch because of the code formatting, e.g.
-> >     some incorrect line breaks, spaces, etc.
-> >
-> 
-> Sorry about that, I should have sent it from git to avoid that.
-> 
+> The problem looks more like what you get with some firewalling setup
+> (like an "iptables XXX -j REJECT --reject-with icmp-admin-prohibited"
+> command).
 
-Don't worry.
+To eliminate that, the only rules that seem to be enabled are those automatic,
+as this is essentially a desktop machine. This reminds me that I forgot to
+install fail2ban, I thought it came with the system ...
 
-> Regards
+[root@pc-mtodorov linux_torvalds]# iptables-save
+# Generated by iptables-save v1.8.4 on Sun Jan  8 18:50:53 2023
+*filter
+:INPUT ACCEPT [15241235:25618772171]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [13209318:19634265528]
+:LIBVIRT_INP - [0:0]
+:LIBVIRT_OUT - [0:0]
+:LIBVIRT_FWO - [0:0]
+:LIBVIRT_FWI - [0:0]
+:LIBVIRT_FWX - [0:0]
+COMMIT
+# Completed on Sun Jan  8 18:50:53 2023
+# Generated by iptables-save v1.8.4 on Sun Jan  8 18:50:53 2023
+*security
+:INPUT ACCEPT [15163987:25613250223]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [13209319:19634265904]
+COMMIT
+# Completed on Sun Jan  8 18:50:53 2023
+# Generated by iptables-save v1.8.4 on Sun Jan  8 18:50:53 2023
+*raw
+:PREROUTING ACCEPT [15241455:25618791347]
+:OUTPUT ACCEPT [13209321:19634266304]
+COMMIT
+# Completed on Sun Jan  8 18:50:53 2023
+# Generated by iptables-save v1.8.4 on Sun Jan  8 18:50:53 2023
+*mangle
+:PREROUTING ACCEPT [15241455:25618791347]
+:INPUT ACCEPT [15241235:25618772171]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [13209322:19634266440]
+:POSTROUTING ACCEPT [13211416:19634553617]
+:LIBVIRT_PRT - [0:0]
+-A POSTROUTING -j LIBVIRT_PRT
+-A LIBVIRT_PRT -o virbr0 -p udp -m udp --dport 68 -j CHECKSUM --checksum-fill
+COMMIT
+# Completed on Sun Jan  8 18:50:53 2023
+# Generated by iptables-save v1.8.4 on Sun Jan  8 18:50:53 2023
+*nat
+:PREROUTING ACCEPT [282314:13237147]
+:INPUT ACCEPT [207948:8194212]
+:POSTROUTING ACCEPT [1351498:86025578]
+:OUTPUT ACCEPT [1351498:86025578]
+:LIBVIRT_PRT - [0:0]
+-A POSTROUTING -j LIBVIRT_PRT
+-A LIBVIRT_PRT -s 192.168.122.0/24 -d 224.0.0.0/24 -j RETURN
+-A LIBVIRT_PRT -s 192.168.122.0/24 -d 255.255.255.255/32 -j RETURN
+-A LIBVIRT_PRT -s 192.168.122.0/24 ! -d 192.168.122.0/24 -p tcp -j MASQUERADE --to-ports 1024-65535
+-A LIBVIRT_PRT -s 192.168.122.0/24 ! -d 192.168.122.0/24 -p udp -j MASQUERADE --to-ports 1024-65535
+-A LIBVIRT_PRT -s 192.168.122.0/24 ! -d 192.168.122.0/24 -j MASQUERADE
+COMMIT
+# Completed on Sun Jan  8 18:50:53 2023
+[root@pc-mtodorov linux_torvalds]# 
+[root@pc-mtodorov linux_torvalds]# ip6tables-save
+# Generated by ip6tables-save v1.8.4 on Sun Jan  8 18:52:56 2023
+*filter
+:INPUT ACCEPT [8458:771878]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [9605:895758]
+:LIBVIRT_INP - [0:0]
+:LIBVIRT_OUT - [0:0]
+:LIBVIRT_FWO - [0:0]
+:LIBVIRT_FWI - [0:0]
+:LIBVIRT_FWX - [0:0]
+-A INPUT -j LIBVIRT_INP
+-A FORWARD -j LIBVIRT_FWX
+-A FORWARD -j LIBVIRT_FWI
+-A FORWARD -j LIBVIRT_FWO
+-A OUTPUT -j LIBVIRT_OUT
+COMMIT
+# Completed on Sun Jan  8 18:52:56 2023
+# Generated by ip6tables-save v1.8.4 on Sun Jan  8 18:52:56 2023
+*security
+:INPUT ACCEPT [7327:586054]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [9605:895758]
+COMMIT
+# Completed on Sun Jan  8 18:52:56 2023
+# Generated by ip6tables-save v1.8.4 on Sun Jan  8 18:52:56 2023
+*raw
+:PREROUTING ACCEPT [10028:893325]
+:OUTPUT ACCEPT [9605:895758]
+COMMIT
+# Completed on Sun Jan  8 18:52:56 2023
+# Generated by ip6tables-save v1.8.4 on Sun Jan  8 18:52:56 2023
+*mangle
+:PREROUTING ACCEPT [9679:867735]
+:INPUT ACCEPT [8458:771878]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [9605:895758]
+:POSTROUTING ACCEPT [10500:1051905]
+:LIBVIRT_PRT - [0:0]
+-A POSTROUTING -j LIBVIRT_PRT
+COMMIT
+# Completed on Sun Jan  8 18:52:56 2023
+# Generated by ip6tables-save v1.8.4 on Sun Jan  8 18:52:56 2023
+*nat
+:PREROUTING ACCEPT [252:33745]
+:INPUT ACCEPT [105:21315]
+:POSTROUTING ACCEPT [2041:188025]
+:OUTPUT ACCEPT [2041:188025]
+:LIBVIRT_PRT - [0:0]
+-A POSTROUTING -j LIBVIRT_PRT
+COMMIT
+# Completed on Sun Jan  8 18:52:56 2023
+[root@pc-mtodorov linux_torvalds]# 
+
+>>> I can probably help with the l2tp.sh failure and maybe with the
+>>> fcnal-test.sh hang. Please report them in their own mail thread.
+>>
+>> Then I will Cc: you for sure on those two.
+>>
+>> But I cannot promise that this will be today. In fact, tomorrow is prognosed
+>> rain so I'd better use the remaining blue-sky-patched day to do some biking ;-)
 > 
-> Jon
-> 
+> No hurry :)
 
-Ciao,
-Andrea
+:)
 
-> > >
-> > > > On Sat, Dec 24, 2022 at 6:38 PM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
-> > > > >
-> > > > > On Sat, Dec 24, 2022 at 7:28 AM Andrea Mayer <andrea.mayer@uniroma2.it> wrote:
-> > > > > >
-> > > > > > Hi Jon,
-> > > > > > please see below, thanks.
-> > > > > >
-> > > > > > On Wed, 21 Dec 2022 08:48:11 +1100
-> > > > > > Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
-> > > > > >
-> > > > > > > On Tue, Dec 20, 2022 at 11:35 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > On Mon, 2022-12-19 at 10:48 +1100, Jon Maxwell wrote:
-> > > > > > > > > Sending Ipv6 packets in a loop via a raw socket triggers an issue where a
-> > > > > > > > > route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly
-> > > > > > > > > consumes the Ipv6 max_size threshold which defaults to 4096 resulting in
-> > > > > > > > > these warnings:
-> > > > > > > > >
-> > > > > > > > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
-> > > > > > > > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
-> > > > > > > > > .
-> > > > > > > > > .
-> > > > > > > > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
-> > > > > > > >
-> > > > > > > > If I read correctly, the maximum number of dst that the raw socket can
-> > > > > > > > use this way is limited by the number of packets it allows via the
-> > > > > > > > sndbuf limit, right?
-> > > > > > > >
-> > > > > > >
-> > > > > > > Yes, but in my test sndbuf limit is never hit so it clones a route for
-> > > > > > > every packet.
-> > > > > > >
-> > > > > > > e.g:
-> > > > > > >
-> > > > > > > output from C program sending 5000000 packets via a raw socket.
-> > > > > > >
-> > > > > > > ip raw: total num pkts 5000000
-> > > > > > >
-> > > > > > > # bpftrace -e 'kprobe:dst_alloc {@count[comm] = count()}'
-> > > > > > > Attaching 1 probe...
-> > > > > > >
-> > > > > > > @count[a.out]: 5000009
-> > > > > > >
-> > > > > > > > Are other FLOWI_FLAG_KNOWN_NH users affected, too? e.g. nf_dup_ipv6,
-> > > > > > > > ipvs, seg6?
-> > > > > > > >
-> > > > > > >
-> > > > > > > Any call to ip6_pol_route(s) where no res.nh->fib_nh_gw_family is 0 can do it.
-> > > > > > > But we have only seen this for raw sockets so far.
-> > > > > > >
-> > > > > >
-> > > > > > In the SRv6 subsystem, the seg6_lookup_nexthop() is used by some
-> > > > > > cross-connecting behaviors such as End.X and End.DX6 to forward traffic to a
-> > > > > > specified nexthop. SRv6 End.X/DX6 can specify an IPv6 DA (i.e., a nexthop)
-> > > > > > different from the one carried by the IPv6 header. For this purpose,
-> > > > > > seg6_lookup_nexthop() sets the FLOWI_FLAG_KNOWN_NH.
-> > > > > >
-> > > > > Hi Andrea,
-> > > > >
-> > > > > Thanks for pointing that datapath out. The more generic approach we are
-> > > > > taking bringing Ipv6 closer to Ipv4 in this regard should fix all instances
-> > > > > of this.
-> > > > >
-> > > > > > > > > [1]   99.187805] dst_alloc: 7728 callbacks suppressed
-> > > > > > > > > [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
-> > > > > > > > > .
-> > > > > > > > > .
-> > > > > > > > > [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
-> > > > > >
-> > > > > > I can reproduce the same warning messages reported by you, by instantiating an
-> > > > > > End.X behavior whose nexthop is handled by a route for which there is no "via".
-> > > > > > In this configuration, the ip6_pol_route() (called by seg6_lookup_nexthop())
-> > > > > > triggers ip6_rt_cache_alloc() because i) the FLOWI_FLAG_KNOWN_NH is present ii)
-> > > > > > and the res.nh->fib_nh_gw_family is 0 (as already pointed out).
-> > > > > >
-> > > > >
-> > > > > Nice, when I get back after the holiday break I'll submit the next patch. It
-> > > > > would be great if you could test the new patch and let me know how it works in
-> > > > > your tests at that juncture. I'll keep you posted.
-> > > > >
-> > > > > Regards
-> > > > >
-> > > > > Jon
-> > > > >
-> > > > > > > Regards
-> > > > > > >
-> > > > > > > Jon
-> > > > > >
-> > > > > > Ciao,
-> > > > > > Andrea
-> > >
-> > >
-> > > --
-> > > Andrea Mayer <andrea.mayer@uniroma2.it>
-> >
-> >
-> > --
-> > Andrea Mayer <andrea.mayer@uniroma2.it>
+-- 
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+ 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
+
