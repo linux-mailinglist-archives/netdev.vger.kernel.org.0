@@ -2,509 +2,844 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E3266140C
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 08:38:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA7DC66143F
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 10:11:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbjAHHid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 02:38:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S232564AbjAHJLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 04:11:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbjAHHib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 02:38:31 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001B5BE13;
-        Sat,  7 Jan 2023 23:38:28 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id qk9so12851428ejc.3;
-        Sat, 07 Jan 2023 23:38:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kv54G9yei7cxwSz6jWUhSY6/zSNgzi3WeKu2VeIGgnw=;
-        b=WIHR5dMR5uJ6lAtOaIUlhigYzvPE+VyhvxWr905s+CS37HLLWbRTS8bPl0/Dk9rugd
-         C7lH3C63uqCtIh4EdLEFrguxaej6LzYBwPqeMMhGHZizb+7oIaoFic7qUUlT7tTV22Kg
-         YimtD702dSZdmNeW9jl9+95Ka2bMy0E61xB7kG9uPBCdkU46x04da3xzFKMNwDCBPxp9
-         U/t2cdb+nIiyhx09btDSv4i/WNXesdFSHsD0+Rcnkz3mQQcs8n37L5Gx6EicwtCA4sNZ
-         L4Gwof8BspNkfqDG9kHsQ6Fm55HNK1pgvMA2/qNSiJTLYs00McufLYSlcISkDDXDmBXs
-         ZgZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kv54G9yei7cxwSz6jWUhSY6/zSNgzi3WeKu2VeIGgnw=;
-        b=0L9O/U7ldqqtTrRAJxiW8YG76mSIk8PHl6S+P5Rnf02IDzaVoylTPLRr8RLRW3zDzV
-         axiHsbLYby9eXTHklJie24pOUeInppprHWoarsa+G/TBgt50RvH4dBAqbv8OPCsSDAUy
-         bHYfKrw/9fLJYMWJ4LUDfCIOnFjq6i5JKM/2iGm0Ql7lpAIbVbKSRkkp1/wnjAB3Ztuh
-         1TLC4vPKx1a0n1mpEkWk2gdVh7BJKp8mw2TkI1Xqm7chdeCGNoHIJ/J0B7xzrDN6oC4K
-         vUW8/W9mJDMJlG06IzlnYnRyK9IrFmEsZ2JL+eJdW/PJUberLeO1fm664W7oTXFX/ZwD
-         nU2Q==
-X-Gm-Message-State: AFqh2kohe+6Fch8fU5HZmWip1SNGAnpb5CzU031+kWaBuOQaRBc5RYQb
-        dHcCe5RHt7v9UStWSNnl0JA=
-X-Google-Smtp-Source: AMrXdXuypfJnm2L29PLGQxv6ffEPNHSKevc1Da6TQzdBbpNlIAqMiQa9KCkM8AB+v47xxFwmXtmn3w==
-X-Received: by 2002:a17:907:c388:b0:849:e96f:51f4 with SMTP id tm8-20020a170907c38800b00849e96f51f4mr44341378ejc.23.1673163507446;
-        Sat, 07 Jan 2023 23:38:27 -0800 (PST)
-Received: from [192.168.0.105] ([77.126.9.245])
-        by smtp.gmail.com with ESMTPSA id b6-20020a17090630c600b007c0d0dad9c6sm2237487ejb.108.2023.01.07.23.38.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Jan 2023 23:38:26 -0800 (PST)
-Message-ID: <9ea66b5b-f2e7-f2cb-ef1c-a01274f111b0@gmail.com>
-Date:   Sun, 8 Jan 2023 09:38:24 +0200
+        with ESMTP id S229520AbjAHJLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 04:11:38 -0500
+Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F78B65DC;
+        Sun,  8 Jan 2023 01:11:34 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 983D8604F1;
+        Sun,  8 Jan 2023 10:11:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673169091; bh=TnCx8MnHw+76fXaOHxoEMNtZFF3k2xtIXTAR7hD526s=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=OYlAsPQ4VtpK9KujKktkCX131KHoTKntQvYNMmdpgNcmrPuiTc1QCPCC1fi3S7nSt
+         flVLZxC4PrX93ULE9CVIgw+KY80sK+Ud5og3/ecwq/wpSjE61NHrJLMtVtoN972/l3
+         9ogZf4L/JIGYbPxXPDV4LpLcsIa6ggWF9+Z1yvz86B/C+tOwqO1d2P15LAFpi1DnRI
+         7/ZDaKrJBcEB+NSfH5hRaCay15qwLuBMST/qqQrkAX1A1qhX3ub3INrtHfQLKWQMJB
+         Bw4drkvU9+CViPrcKzK+bLgZAWWPLURJh9uXPC4QHg2dUAmsfCz1YRcIWbboEg+z/F
+         wN/iyEM4wCK5g==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id eBtGShARrNjI; Sun,  8 Jan 2023 10:11:26 +0100 (CET)
+Received: from [192.168.0.12] (unknown [188.252.196.35])
+        by domac.alu.hr (Postfix) with ESMTPSA id 23A1A604F0;
+        Sun,  8 Jan 2023 10:11:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673169086; bh=TnCx8MnHw+76fXaOHxoEMNtZFF3k2xtIXTAR7hD526s=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bVRojJllrqCedLa4v85mqVwohqxqLfo2sB63LNaYYHis8IV/c4e7vJTGbNuEFrbid
+         /nd4FZvrvRVeTzUuNl96oPd+HXKypgD02b1DJuSFRlibBvfuhs1M/yunq9hHrAteUf
+         78i/MEFsfUxfRDp53NekvAUO/KVnyw8gmlfsxD9BWk59oowT576gKRaM3zNLhyx1ai
+         Wg4rIEA0czmMiodjzNruVbbxRohJFsul2oroWKilaCGPyw/3yM7Q93ftSJAaa2gXc0
+         rjFApwe0ZnMdv0MwFwwnxCyfwwFhOep6oxeHXJ08PGxsPoetsiJUSEPnA5X+WRj3qZ
+         Hr3vZ8f56kKQQ==
+Message-ID: <81fdf2bc-4842-96d8-b124-43d0bd5ec124@alu.unizg.hr>
+Date:   Sun, 8 Jan 2023 10:11:25 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH bpf-next v6 16/17] net/mlx5e: Support RX XDP metadata
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: BUG: tools/testing/selftests/net/l2_tos_ttl_inherit.sh hangs when
+ selftest restarted
+Content-Language: en-US, hr
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     linux-kselftest@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-References: <20230104215949.529093-1-sdf@google.com>
- <20230104215949.529093-17-sdf@google.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20230104215949.529093-17-sdf@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias May <matthias.may@westermo.com>
+References: <924f1062-ab59-9b88-3b43-c44e73a30387@alu.unizg.hr>
+ <Y7i5cT1AlyC53hzN@debian> <5ef41d3c-8d81-86b3-c571-044636702342@alu.unizg.hr>
+ <Y7lpO9IHtSIyHVej@debian>
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <Y7lpO9IHtSIyHVej@debian>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 04/01/2023 23:59, Stanislav Fomichev wrote:
-> From: Toke Høiland-Jørgensen <toke@redhat.com>
+On 07. 01. 2023. 13:44, Guillaume Nault wrote:
+> [Cc: Matthias since he's the original author of the script]
 > 
-> Support RX hash and timestamp metadata kfuncs. We need to pass in the cqe
-> pointer to the mlx5e_skb_from* functions so it can be retrieved from the
-> XDP ctx to do this.
+> On Sat, Jan 07, 2023 at 02:17:07AM +0100, Mirsad Goran Todorovac wrote:
+>> On 07. 01. 2023. 01:14, Guillaume Nault wrote:
+>>> On Fri, Jan 06, 2023 at 02:44:11AM +0100, Mirsad Goran Todorovac wrote:
+>>>> [root@pc-mtodorov linux_torvalds]# tools/testing/selftests/net/l2_tos_ttl_inherit.sh
+>>>> ┌────────┬───────┬───────┬──────────────┬──────────────┬───────┬────────┐
+>>>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>>>> │  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+>>>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>>>> │    gre │     4 │     4 │ inherit 0xc4 │  inherit 116 │ false │Cannot create namespace file "/var/run/netns/testing": File exists
+>>>> RTNETLINK answers: File exists
+>>>> RTNETLINK answers: File exists
+>>>> RTNETLINK answers: File exists
+>>>
+>>> You probably have leftovers from a previous test case. In particular
+>>> the "testing" network name space already exists, which prevents the
+>>> script from creating it. You can delete it manually with
+>>> "ip netns del testing". If this netns is there because of a previous
+>>> incomplete run of l2_tos_ttl_inherit.sh, then you'll likely need to
+>>> also remove the tunnel interface it created in your current netns
+>>> ("ip link del tep0").
+>>
+>> Thanks, it worked :)
 > 
-> Cc: Saeed Mahameed <saeedm@nvidia.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> Cc: xdp-hints@xdp-project.net
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
-
-Thanks for your patch!
-It looks good in general. A few minor comments below.
-
->   drivers/net/ethernet/mellanox/mlx5/core/en.h  | 10 +++-
->   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 23 +++++++++
->   .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  5 ++
->   .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 10 ++++
->   .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |  2 +
->   .../net/ethernet/mellanox/mlx5/core/en_main.c |  6 +++
->   .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 51 ++++++++++---------
->   7 files changed, 81 insertions(+), 26 deletions(-)
+> Good to know.
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> index af663978d1b4..af0be59b956e 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -627,10 +627,11 @@ struct mlx5e_rq;
->   typedef void (*mlx5e_fp_handle_rx_cqe)(struct mlx5e_rq*, struct mlx5_cqe64*);
->   typedef struct sk_buff *
->   (*mlx5e_fp_skb_from_cqe_mpwrq)(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
-> -			       u16 cqe_bcnt, u32 head_offset, u32 page_idx);
-> +			       struct mlx5_cqe64 *cqe, u16 cqe_bcnt,
-> +			       u32 head_offset, u32 page_idx);
->   typedef struct sk_buff *
->   (*mlx5e_fp_skb_from_cqe)(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
-> -			 u32 cqe_bcnt);
-> +			 struct mlx5_cqe64 *cqe, u32 cqe_bcnt);
->   typedef bool (*mlx5e_fp_post_rx_wqes)(struct mlx5e_rq *rq);
->   typedef void (*mlx5e_fp_dealloc_wqe)(struct mlx5e_rq*, u16);
->   typedef void (*mlx5e_fp_shampo_dealloc_hd)(struct mlx5e_rq*, u16, u16, bool);
-> @@ -1036,6 +1037,11 @@ int mlx5e_vlan_rx_kill_vid(struct net_device *dev, __always_unused __be16 proto,
->   			   u16 vid);
->   void mlx5e_timestamp_init(struct mlx5e_priv *priv);
->   
-> +static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
-> +{
-> +	return config->rx_filter == HWTSTAMP_FILTER_ALL;
+>>> Ideally this script wouldn't touch the current netns and would clean up
+>>> its environment in all cases upon exit. I have a patch almost ready
+>>> that does just that.
+>>
+>> As these interfaces were not cleared by "make kselftest-clean",
+>> this patch with a cleanup trap would be most welcome.
+> 
+> Yes, I'll send a patch soon.
+> 
+>> However, after the cleanup above, the ./l2_tos_ttl_inherit.sh
+>> script hangs at the spot where it did in the first place (but
+>> only on Lenovo desktop 10TX000VCR with BIOS M22KT49A from
+>> 11/10/2022, AlmaLinux 8.7, and kernel 6.2-rc2; not on Lenovo
+>> Ideapad3 with Ubuntu 22.10, where it worked like a charm with
+>> the same kernel RC).
+>>
+>> The point of hang is this:
+>>
+>> [root@pc-mtodorov net]# ./l2_tos_ttl_inherit.sh
+>> ┌────────┬───────┬───────┬──────────────┬──────────────┬───────┬────────┐
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     4 │     4 │ inherit 0xb8 │  inherit 102 │ false │     OK │
+>> │    gre │     4 │     4 │ inherit 0x10 │   inherit 53 │  true │     OK │
+>> │    gre │     4 │     4 │   fixed 0xa8 │    fixed 230 │ false │     OK │
+>> │    gre │     4 │     4 │   fixed 0x0c │     fixed 96 │  true │     OK │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     4 │     6 │ inherit 0xbc │  inherit 159 │ false │     OK │
+>> │    gre │     4 │     6 │ inherit 0x5c │  inherit 242 │  true │     OK │
+>> │    gre │     4 │     6 │   fixed 0x38 │    fixed 113 │ false │     OK │
+>> │    gre │     4 │     6 │   fixed 0x78 │     fixed 34 │  true │     OK │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     4 │ other │ inherit 0xec │   inherit 69 │ false │     OK │
+>> │    gre │     4 │ other │ inherit 0xf0 │  inherit 201 │  true │     OK │
+>> │    gre │     4 │ other │   fixed 0xec │     fixed 14 │ false │     OK │
+>> │    gre │     4 │ other │   fixed 0xe4 │     fixed 15 │  true │     OK │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     6 │     4 │ inherit 0xc4 │   inherit 21 │ false │     OK │
+>> │    gre │     6 │     4 │ inherit 0xc8 │  inherit 230 │  true │     OK │
+>> │    gre │     6 │     4 │   fixed 0x24 │    fixed 193 │ false │     OK │
+>> │    gre │     6 │     4 │   fixed 0x1c │    fixed 200 │  true │     OK │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     6 │     6 │ inherit 0xe4 │   inherit 81 │ false │     OK │
+>> │    gre │     6 │     6 │ inherit 0xa4 │  inherit 130 │  true │     OK │
+>> │    gre │     6 │     6 │   fixed 0x18 │    fixed 140 │ false │     OK │
+>> │    gre │     6 │     6 │   fixed 0xc8 │    fixed 175 │  true │     OK │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │    gre │     6 │ other │ inherit 0x74 │  inherit 142 │ false │     OK │
+>> │    gre │     6 │ other │ inherit 0x50 │  inherit 125 │  true │     OK │
+>> │    gre │     6 │ other │   fixed 0x90 │     fixed 84 │ false │     OK │
+>> │    gre │     6 │ other │   fixed 0xb8 │    fixed 240 │  true │     OK │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+>> ├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+>> │  vxlan │     4 │     4 │ inherit 0xb4 │   inherit 93 │ false │
+>>
+>> Developers usually ask for bash -x output of the script that failed or hung
+>> when reporting problems (too long for an email):
+>>
+>> https://domac.alu.unizg.hr/~mtodorov/linux/selftests/net-namespace-20230106/bash-l2_tos_ttl_inherit.html
+> 
+> Tcpdump blocks until it captures an encapsulated ICMP Echo Request. But
+> it seems that it doesn't see any. When the script is hanging, what's the
+> result of "ip route get 198.19.0.2"?
+> 
+> The output of following commands might also help debugging the problem (run
+> them while the script is still hanging):
+>   ip link show
+>   ip address show
+>   ip route show
+>   tcpdump --immediate-mode -p -v -i veth0 -n # Kill it manually after a few seconds
+>   ping -c 3 198.19.0.2
+
+OK, but is is copious:
+
+[root@pc-mtodorov marvin]# ip link show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether f4:93:9f:f0:a5:f5 brd ff:ff:ff:ff:ff:ff
+3: virbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:54:00:56:df:f2 brd ff:ff:ff:ff:ff:ff
+51: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/gre 0.0.0.0 brd 0.0.0.0
+52: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+53: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+55: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/tunnel6 :: brd :: permaddr bae0:176c:6eed::
+56: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/gre6 :: brd :: permaddr ca5f:978e:c395::
+67: veth-outside@if66: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 9e:d6:a5:cb:0a:2b brd ff:ff:ff:ff:ff:ff link-netns test-ns
+78: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+79: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+80: ip6_vti0@NONE: <NOARP> mtu 1332 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/tunnel6 :: brd :: permaddr c2fe:1782:e33d::
+81: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+1110: veth0@if1111: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 6e:c5:68:82:23:e4 brd ff:ff:ff:ff:ff:ff link-netns testing
+1112: tep0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ether da:73:bd:1b:a4:5f brd ff:ff:ff:ff:ff:ff
+100: ifb0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 32
+    link/ether 36:3a:ca:87:f6:d7 brd ff:ff:ff:ff:ff:ff
+101: ifb1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 32
+    link/ether ce:76:dd:e7:dd:fc brd ff:ff:ff:ff:ff:ff
+[root@pc-mtodorov marvin]# 
+
+[root@pc-mtodorov marvin]# ip address show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet 10.0.0.1/32 scope global lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether f4:93:9f:f0:a5:f5 brd ff:ff:ff:ff:ff:ff
+    inet 193.198.186.200/27 brd 193.198.186.223 scope global dynamic noprefixroute enp1s0
+       valid_lft 26499sec preferred_lft 26499sec
+    inet6 2001:b68:2:2a00::1098/128 scope global dynamic noprefixroute 
+       valid_lft 2591173sec preferred_lft 603973sec
+    inet6 fe80::f693:9fff:fef0:a5f5/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+3: virbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    link/ether 52:54:00:56:df:f2 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0
+       valid_lft forever preferred_lft forever
+51: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN group default qlen 1000
+    link/gre 0.0.0.0 brd 0.0.0.0
+52: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN group default qlen 1000
+    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+53: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN group default qlen 1000
+    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+55: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN group default qlen 1000
+    link/tunnel6 :: brd :: permaddr bae0:176c:6eed::
+56: ip6gre0@NONE: <NOARP> mtu 1448 qdisc noop state DOWN group default qlen 1000
+    link/gre6 :: brd :: permaddr ca5f:978e:c395::
+67: veth-outside@if66: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 9e:d6:a5:cb:0a:2b brd ff:ff:ff:ff:ff:ff link-netns test-ns
+    inet6 fe80::9cd6:a5ff:fecb:a2b/64 scope link 
+       valid_lft forever preferred_lft forever
+78: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+79: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN group default qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+80: ip6_vti0@NONE: <NOARP> mtu 1332 qdisc noop state DOWN group default qlen 1000
+    link/tunnel6 :: brd :: permaddr c2fe:1782:e33d::
+81: ip_vti0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+1110: veth0@if1111: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 6e:c5:68:82:23:e4 brd ff:ff:ff:ff:ff:ff link-netns testing
+    inet 198.18.0.1/24 scope global veth0
+       valid_lft forever preferred_lft forever
+1112: tep0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether da:73:bd:1b:a4:5f brd ff:ff:ff:ff:ff:ff
+    inet 198.19.0.1/24 brd 198.19.0.255 scope global tep0
+       valid_lft forever preferred_lft forever
+100: ifb0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 32
+    link/ether 36:3a:ca:87:f6:d7 brd ff:ff:ff:ff:ff:ff
+101: ifb1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 32
+    link/ether ce:76:dd:e7:dd:fc brd ff:ff:ff:ff:ff:ff
+[root@pc-mtodorov marvin]# 
+
+[root@pc-mtodorov marvin]# ip route show
+default via 193.198.186.193 dev enp1s0 proto dhcp src 193.198.186.200 metric 100 
+192.168.122.0/24 dev virbr0 proto kernel scope link src 192.168.122.1 linkdown 
+193.198.186.192/27 dev enp1s0 proto kernel scope link src 193.198.186.200 metric 100 
+198.18.0.0/24 dev veth0 proto kernel scope link src 198.18.0.1 
+198.19.0.0/24 dev tep0 proto kernel scope link src 198.19.0.1 
+[root@pc-mtodorov marvin]# 
+
+[root@pc-mtodorov marvin]# tcpdump --immediate-mode -p -v -i veth0 -n
+dropped privs to tcpdump
+tcpdump: listening on veth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+08:30:22.835825 IP (tos 0x0, ttl 64, id 2490, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.1.35195 > 198.18.0.2.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Request who-has 198.19.0.2 tell 198.19.0.1, length 28
+08:30:22.835926 IP (tos 0x0, ttl 64, id 1388, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:22.835976 IP (tos 0xc0, ttl 64, id 29533, offset 0, flags [none], proto ICMP (1), length 106)
+    198.18.0.1 > 198.18.0.2: ICMP host 198.18.0.1 unreachable - admin prohibited filter, length 86
+        IP (tos 0x0, ttl 64, id 1388, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:23.859770 IP (tos 0x0, ttl 64, id 2585, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.1.35195 > 198.18.0.2.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Request who-has 198.19.0.2 tell 198.19.0.1, length 28
+08:30:23.859803 IP (tos 0x0, ttl 64, id 1465, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:23.859852 IP (tos 0xc0, ttl 64, id 29535, offset 0, flags [none], proto ICMP (1), length 106)
+    198.18.0.1 > 198.18.0.2: ICMP host 198.18.0.1 unreachable - admin prohibited filter, length 86
+        IP (tos 0x0, ttl 64, id 1465, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:24.888024 IP (tos 0x0, ttl 64, id 2652, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.1.35195 > 198.18.0.2.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Request who-has 198.19.0.2 tell 198.19.0.1, length 28
+08:30:24.888094 IP (tos 0x0, ttl 64, id 1630, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:24.888131 IP (tos 0xc0, ttl 64, id 29607, offset 0, flags [none], proto ICMP (1), length 106)
+    198.18.0.1 > 198.18.0.2: ICMP host 198.18.0.1 unreachable - admin prohibited filter, length 86
+        IP (tos 0x0, ttl 64, id 1630, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:25.911810 IP (tos 0x0, ttl 64, id 2658, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.1.35195 > 198.18.0.2.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Request who-has 198.19.0.2 tell 198.19.0.1, length 28
+08:30:25.911876 IP (tos 0x0, ttl 64, id 1698, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+08:30:25.911920 IP (tos 0xc0, ttl 64, id 29757, offset 0, flags [none], proto ICMP (1), length 106)
+    198.18.0.1 > 198.18.0.2: ICMP host 198.18.0.1 unreachable - admin prohibited filter, length 86
+        IP (tos 0x0, ttl 64, id 1698, offset 0, flags [none], proto UDP (17), length 78)
+    198.18.0.2.35195 > 198.18.0.1.vxlan: VXLAN, flags [I] (0x08), vni 100
+ARP, Ethernet (len 6), IPv4 (len 4), Reply 198.19.0.2 is-at a6:45:d5:c4:93:1f, length 28
+^C
+12 packets captured
+12 packets received by filter
+0 packets dropped by kernel
+[root@pc-mtodorov marvin]# 
+
+[root@pc-mtodorov marvin]# ping -c 3 198.19.0.2
+PING 198.19.0.2 (198.19.0.2) 56(84) bytes of data.
+From 198.19.0.1 icmp_seq=1 Destination Host Unreachable
+From 198.19.0.1 icmp_seq=2 Destination Host Unreachable
+From 198.19.0.1 icmp_seq=3 Destination Host Unreachable
+
+--- 198.19.0.2 ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2017ms
+pipe 2
+[root@pc-mtodorov marvin]# 
+
+ 
+> Also, can you please try the below patch?
+> 
+> -------- >8 --------
+> 
+> Isolate testing environment and ensure everything is cleaned up on
+> exit.
+> 
+> diff --git a/tools/testing/selftests/net/l2_tos_ttl_inherit.sh b/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
+> index dca1e6f777a8..f11756e7df2f 100755
+> --- a/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
+> +++ b/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
+> @@ -12,19 +12,27 @@
+>  # In addition this script also checks if forcing a specific field in the
+>  # outer header is working.
+>  
+> +# Return 4 by default (Kselftest SKIP code)
+> +ERR=4
+> +
+>  if [ "$(id -u)" != "0" ]; then
+>  	echo "Please run as root."
+> -	exit 0
+> +	exit $ERR
+>  fi
+>  if ! which tcpdump > /dev/null 2>&1; then
+>  	echo "No tcpdump found. Required for this test."
+> -	exit 0
+> +	exit $ERR
+>  fi
+>  
+>  expected_tos="0x00"
+>  expected_ttl="0"
+>  failed=false
+>  
+> +readonly NS0=$(mktemp -u ns0-XXXXXXXX)
+> +readonly NS1=$(mktemp -u ns1-XXXXXXXX)
+> +
+> +RUN_NS0="ip netns exec ${NS0}"
+> +
+>  get_random_tos() {
+>  	# Get a random hex tos value between 0x00 and 0xfc, a multiple of 4
+>  	echo "0x$(tr -dc '0-9a-f' < /dev/urandom | head -c 1)\
+> @@ -61,7 +69,6 @@ setup() {
+>  	local vlan="$5"
+>  	local test_tos="0x00"
+>  	local test_ttl="0"
+> -	local ns="ip netns exec testing"
+>  
+>  	# We don't want a test-tos of 0x00,
+>  	# because this is the value that we get when no tos is set.
+> @@ -94,14 +101,15 @@ setup() {
+>  	printf "│%7s │%6s │%6s │%13s │%13s │%6s │" \
+>  	"$type" "$outer" "$inner" "$tos" "$ttl" "$vlan"
+>  
+> -	# Create 'testing' netns, veth pair and connect main ns with testing ns
+> -	ip netns add testing
+> -	ip link add type veth
+> -	ip link set veth1 netns testing
+> -	ip link set veth0 up
+> -	$ns ip link set veth1 up
+> -	ip addr flush dev veth0
+> -	$ns ip addr flush dev veth1
+> +	# Create netns NS0 and NS1 and connect them with a veth pair
+> +	ip netns add "${NS0}"
+> +	ip netns add "${NS1}"
+> +	ip link add name veth0 netns "${NS0}" type veth \
+> +		peer name veth1 netns "${NS1}"
+> +	ip -netns "${NS0}" link set dev veth0 up
+> +	ip -netns "${NS1}" link set dev veth1 up
+> +	ip -netns "${NS0}" address flush dev veth0
+> +	ip -netns "${NS1}" address flush dev veth1
+>  
+>  	local local_addr1=""
+>  	local local_addr2=""
+> @@ -127,51 +135,59 @@ setup() {
+>  		if [ "$type" = "gre" ]; then
+>  			type="gretap"
+>  		fi
+> -		ip addr add 198.18.0.1/24 dev veth0
+> -		$ns ip addr add 198.18.0.2/24 dev veth1
+> -		ip link add name tep0 type $type $local_addr1 remote \
+> -		198.18.0.2 tos $test_tos ttl $test_ttl $vxlan $geneve
+> -		$ns ip link add name tep1 type $type $local_addr2 remote \
+> -		198.18.0.1 tos $test_tos ttl $test_ttl $vxlan $geneve
+> +		ip -netns "${NS0}" address add 198.18.0.1/24 dev veth0
+> +		ip -netns "${NS1}" address add 198.18.0.2/24 dev veth1
+> +		ip -netns "${NS0}" link add name tep0 type $type $local_addr1 \
+> +			remote 198.18.0.2 tos $test_tos ttl $test_ttl         \
+> +			$vxlan $geneve
+> +		ip -netns "${NS1}" link add name tep1 type $type $local_addr2 \
+> +			remote 198.18.0.1 tos $test_tos ttl $test_ttl         \
+> +			$vxlan $geneve
+>  	elif [ "$outer" = "6" ]; then
+>  		if [ "$type" = "gre" ]; then
+>  			type="ip6gretap"
+>  		fi
+> -		ip addr add fdd1:ced0:5d88:3fce::1/64 dev veth0
+> -		$ns ip addr add fdd1:ced0:5d88:3fce::2/64 dev veth1
+> -		ip link add name tep0 type $type $local_addr1 \
+> -		remote fdd1:ced0:5d88:3fce::2 tos $test_tos ttl $test_ttl \
+> -		$vxlan $geneve
+> -		$ns ip link add name tep1 type $type $local_addr2 \
+> -		remote fdd1:ced0:5d88:3fce::1 tos $test_tos ttl $test_ttl \
+> -		$vxlan $geneve
+> +		ip -netns "${NS0}" address add fdd1:ced0:5d88:3fce::1/64 \
+> +			dev veth0 nodad
+> +		ip -netns "${NS1}" address add fdd1:ced0:5d88:3fce::2/64 \
+> +			dev veth1 nodad
+> +		ip -netns "${NS0}" link add name tep0 type $type $local_addr1 \
+> +			remote fdd1:ced0:5d88:3fce::2 tos $test_tos           \
+> +			ttl $test_ttl $vxlan $geneve
+> +		ip -netns "${NS1}" link add name tep1 type $type $local_addr2 \
+> +			remote fdd1:ced0:5d88:3fce::1 tos $test_tos           \
+> +			ttl $test_ttl $vxlan $geneve
+>  	fi
+>  
+>  	# Bring L2-tunnel link up and create VLAN on top
+> -	ip link set tep0 up
+> -	$ns ip link set tep1 up
+> -	ip addr flush dev tep0
+> -	$ns ip addr flush dev tep1
+> +	ip -netns "${NS0}" link set tep0 up
+> +	ip -netns "${NS1}" link set tep1 up
+> +	ip -netns "${NS0}" address flush dev tep0
+> +	ip -netns "${NS1}" address flush dev tep1
+>  	local parent
+>  	if $vlan; then
+>  		parent="vlan99-"
+> -		ip link add link tep0 name ${parent}0 type vlan id 99
+> -		$ns ip link add link tep1 name ${parent}1 type vlan id 99
+> -		ip link set ${parent}0 up
+> -		$ns ip link set ${parent}1 up
+> -		ip addr flush dev ${parent}0
+> -		$ns ip addr flush dev ${parent}1
+> +		ip -netns "${NS0}" link add link tep0 name ${parent}0 \
+> +			type vlan id 99
+> +		ip -netns "${NS1}" link add link tep1 name ${parent}1 \
+> +			type vlan id 99
+> +		ip -netns "${NS0}" link set dev ${parent}0 up
+> +		ip -netns "${NS1}" link set dev ${parent}1 up
+> +		ip -netns "${NS0}" address flush dev ${parent}0
+> +		ip -netns "${NS1}" address flush dev ${parent}1
+>  	else
+>  		parent="tep"
+>  	fi
+>  
+>  	# Assign inner IPv4/IPv6 addresses
+>  	if [ "$inner" = "4" ] || [ "$inner" = "other" ]; then
+> -		ip addr add 198.19.0.1/24 brd + dev ${parent}0
+> -		$ns ip addr add 198.19.0.2/24 brd + dev ${parent}1
+> +		ip -netns "${NS0}" address add 198.19.0.1/24 brd + dev ${parent}0
+> +		ip -netns "${NS1}" address add 198.19.0.2/24 brd + dev ${parent}1
+>  	elif [ "$inner" = "6" ]; then
+> -		ip addr add fdd4:96cf:4eae:443b::1/64 dev ${parent}0
+> -		$ns ip addr add fdd4:96cf:4eae:443b::2/64 dev ${parent}1
+> +		ip -netns "${NS0}" address add fdd4:96cf:4eae:443b::1/64 \
+> +			dev ${parent}0 nodad
+> +		ip -netns "${NS1}" address add fdd4:96cf:4eae:443b::2/64 \
+> +			dev ${parent}1 nodad
+>  	fi
+>  }
+>  
+> @@ -192,10 +208,10 @@ verify() {
+>  		ping_dst="198.19.0.3" # Generates ARPs which are not IPv4/IPv6
+>  	fi
+>  	if [ "$tos_ttl" = "inherit" ]; then
+> -		ping -i 0.1 $ping_dst -Q "$expected_tos" -t "$expected_ttl" \
+> -		2>/dev/null 1>&2 & ping_pid="$!"
+> +		${RUN_NS0} ping -i 0.1 $ping_dst -Q "$expected_tos"          \
+> +			 -t "$expected_ttl" 2>/dev/null 1>&2 & ping_pid="$!"
+>  	else
+> -		ping -i 0.1 $ping_dst 2>/dev/null 1>&2 & ping_pid="$!"
+> +		${RUN_NS0} ping -i 0.1 $ping_dst 2>/dev/null 1>&2 & ping_pid="$!"
+>  	fi
+>  	local tunnel_type_offset tunnel_type_proto req_proto_offset req_offset
+>  	if [ "$type" = "gre" ]; then
+> @@ -216,10 +232,12 @@ verify() {
+>  				req_proto_offset="$((req_proto_offset + 4))"
+>  				req_offset="$((req_offset + 4))"
+>  			fi
+> -			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
+> -			ip[$tunnel_type_offset] = $tunnel_type_proto and \
+> -			ip[$req_proto_offset] = 0x01 and \
+> -			ip[$req_offset] = 0x08 2>/dev/null | head -n 1)"
+> +			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
+> +				-i veth0 -n                                   \
+> +				ip[$tunnel_type_offset] = $tunnel_type_proto and \
+> +				ip[$req_proto_offset] = 0x01 and              \
+> +				ip[$req_offset] = 0x08 2>/dev/null            \
+> +				| head -n 1)"
+>  		elif [ "$inner" = "6" ]; then
+>  			req_proto_offset="44"
+>  			req_offset="78"
+> @@ -231,10 +249,12 @@ verify() {
+>  				req_proto_offset="$((req_proto_offset + 4))"
+>  				req_offset="$((req_offset + 4))"
+>  			fi
+> -			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
+> -			ip[$tunnel_type_offset] = $tunnel_type_proto and \
+> -			ip[$req_proto_offset] = 0x3a and \
+> -			ip[$req_offset] = 0x80 2>/dev/null | head -n 1)"
+> +			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
+> +				-i veth0 -n                                   \
+> +				ip[$tunnel_type_offset] = $tunnel_type_proto and \
+> +				ip[$req_proto_offset] = 0x3a and              \
+> +				ip[$req_offset] = 0x80 2>/dev/null            \
+> +				| head -n 1)"
+>  		elif [ "$inner" = "other" ]; then
+>  			req_proto_offset="36"
+>  			req_offset="45"
+> @@ -250,11 +270,13 @@ verify() {
+>  				expected_tos="0x00"
+>  				expected_ttl="64"
+>  			fi
+> -			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
+> -			ip[$tunnel_type_offset] = $tunnel_type_proto and \
+> -			ip[$req_proto_offset] = 0x08 and \
+> -			ip[$((req_proto_offset + 1))] = 0x06 and \
+> -			ip[$req_offset] = 0x01 2>/dev/null | head -n 1)"
+> +			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
+> +				-i veth0 -n                                   \
+> +				ip[$tunnel_type_offset] = $tunnel_type_proto and \
+> +				ip[$req_proto_offset] = 0x08 and              \
+> +				ip[$((req_proto_offset + 1))] = 0x06 and      \
+> +				ip[$req_offset] = 0x01 2>/dev/null            \
+> +				| head -n 1)"
+>  		fi
+>  	elif [ "$outer" = "6" ]; then
+>  		if [ "$type" = "gre" ]; then
+> @@ -273,10 +295,12 @@ verify() {
+>  				req_proto_offset="$((req_proto_offset + 4))"
+>  				req_offset="$((req_offset + 4))"
+>  			fi
+> -			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
+> -			ip6[$tunnel_type_offset] = $tunnel_type_proto and \
+> -			ip6[$req_proto_offset] = 0x01 and \
+> -			ip6[$req_offset] = 0x08 2>/dev/null | head -n 1)"
+> +			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
+> +				-i veth0 -n                                   \
+> +				ip6[$tunnel_type_offset] = $tunnel_type_proto and \
+> +				ip6[$req_proto_offset] = 0x01 and             \
+> +				ip6[$req_offset] = 0x08 2>/dev/null           \
+> +				| head -n 1)"
+>  		elif [ "$inner" = "6" ]; then
+>  			local req_proto_offset="72"
+>  			local req_offset="106"
+> @@ -288,10 +312,12 @@ verify() {
+>  				req_proto_offset="$((req_proto_offset + 4))"
+>  				req_offset="$((req_offset + 4))"
+>  			fi
+> -			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
+> -			ip6[$tunnel_type_offset] = $tunnel_type_proto and \
+> -			ip6[$req_proto_offset] = 0x3a and \
+> -			ip6[$req_offset] = 0x80 2>/dev/null | head -n 1)"
+> +			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
+> +				-i veth0 -n                                   \
+> +				ip6[$tunnel_type_offset] = $tunnel_type_proto and \
+> +				ip6[$req_proto_offset] = 0x3a and             \
+> +				ip6[$req_offset] = 0x80 2>/dev/null           \
+> +				| head -n 1)"
+>  		elif [ "$inner" = "other" ]; then
+>  			local req_proto_offset="64"
+>  			local req_offset="73"
+> @@ -307,15 +333,17 @@ verify() {
+>  				expected_tos="0x00"
+>  				expected_ttl="64"
+>  			fi
+> -			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
+> -			ip6[$tunnel_type_offset] = $tunnel_type_proto and \
+> -			ip6[$req_proto_offset] = 0x08 and \
+> -			ip6[$((req_proto_offset + 1))] = 0x06 and \
+> -			ip6[$req_offset] = 0x01 2>/dev/null | head -n 1)"
+> +			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
+> +				-i veth0 -n                                   \
+> +				ip6[$tunnel_type_offset] = $tunnel_type_proto and \
+> +				ip6[$req_proto_offset] = 0x08 and             \
+> +				ip6[$((req_proto_offset + 1))] = 0x06 and     \
+> +				ip6[$req_offset] = 0x01 2>/dev/null           \
+> +				| head -n 1)"
+>  		fi
+>  	fi
+>  	kill -9 $ping_pid
+> -	wait $ping_pid 2>/dev/null
+> +	wait $ping_pid 2>/dev/null || true
+>  	result="FAIL"
+>  	if [ "$outer" = "4" ]; then
+>  		captured_ttl="$(get_field "ttl" "$out")"
+> @@ -351,11 +379,35 @@ verify() {
+>  }
+>  
+>  cleanup() {
+> -	ip link del veth0 2>/dev/null
+> -	ip netns del testing 2>/dev/null
+> -	ip link del tep0 2>/dev/null
+> +	ip netns del "${NS0}" 2>/dev/null
+> +	ip netns del "${NS1}" 2>/dev/null
+>  }
+>  
+> +exit_handler() {
+> +	# Don't exit immediately if one of the intermediate commands fails.
+> +	# We might be called at the end of the script, when the network
+> +	# namespaces have already been deleted. So cleanup() may fail, but we
+> +	# still need to run until 'exit $ERR' or the script won't return the
+> +	# correct error code.
+> +	set +e
+> +
+> +	cleanup
+> +
+> +	exit $ERR
 > +}
 > +
-
-Fits better here
-drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-
->   struct mlx5e_xsk_param;
->   
->   struct mlx5e_rq_param;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> index 31bb6806bf5d..d10d31e12ba2 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> @@ -156,6 +156,29 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
->   	return true;
->   }
->   
-> +int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
-> +{
-> +	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
+> +# Restore the default SIGINT handler (just in case) and exit.
+> +# The exit handler will take care of cleaning everything up.
+> +interrupted() {
+> +	trap - INT
 > +
-> +	if (unlikely(!mlx5e_rx_hw_stamp(_ctx->rq->tstamp)))
-> +		return -EOPNOTSUPP;
-> +
-> +	*timestamp =  mlx5e_cqe_ts_to_ns(_ctx->rq->ptp_cyc2time,
-> +					 _ctx->rq->clock, get_cqe_ts(_ctx->cqe));
-> +	return 0;
-> +}
-
-There's room for code reuse, with similar use case in mlx5e_build_rx_skb.
-
-> +
-> +int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
-> +{
-> +	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
-> +
-> +	if (unlikely(!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH)))
-> +		return -EOPNOTSUPP;
-> +
-> +	*hash = be32_to_cpu(_ctx->cqe->rss_hash_result);
-> +	return 0;
+> +	exit $ERR
 > +}
 > +
->   /* returns true if packet was consumed by xdp */
->   bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
->   		      struct bpf_prog *prog, struct mlx5e_xdp_buff *mxbuf)
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-> index 389818bf6833..cb568c62aba0 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-> @@ -46,6 +46,8 @@
->   
->   struct mlx5e_xdp_buff {
->   	struct xdp_buff xdp;
-> +	struct mlx5_cqe64 *cqe;
-> +	struct mlx5e_rq *rq;
->   };
->   
->   struct mlx5e_xsk_param;
-> @@ -60,6 +62,9 @@ void mlx5e_xdp_rx_poll_complete(struct mlx5e_rq *rq);
->   int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
->   		   u32 flags);
->   
-> +int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp);
-> +int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash);
+> +set -e
+> +trap exit_handler EXIT
+> +trap interrupted INT
 > +
->   INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
->   							  struct mlx5e_xmit_data *xdptxd,
->   							  struct skb_shared_info *sinfo,
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-> index 9cff82d764e3..8bf3029abd3c 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-> @@ -49,6 +49,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
->   			umr_wqe->inline_mtts[i] = (struct mlx5_mtt) {
->   				.ptag = cpu_to_be64(addr | MLX5_EN_WR),
->   			};
-> +			wi->alloc_units[i].mxbuf->rq = rq;
->   		}
->   	} else if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)) {
->   		for (i = 0; i < batch; i++) {
-> @@ -58,6 +59,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
->   				.key = rq->mkey_be,
->   				.va = cpu_to_be64(addr),
->   			};
-> +			wi->alloc_units[i].mxbuf->rq = rq;
->   		}
->   	} else if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_TRIPLE)) {
->   		u32 mapping_size = 1 << (rq->mpwqe.page_shift - 2);
-> @@ -81,6 +83,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
->   				.key = rq->mkey_be,
->   				.va = cpu_to_be64(rq->wqe_overflow.addr),
->   			};
-> +			wi->alloc_units[i].mxbuf->rq = rq;
->   		}
->   	} else {
->   		__be32 pad_size = cpu_to_be32((1 << rq->mpwqe.page_shift) -
-> @@ -100,6 +103,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
->   				.va = cpu_to_be64(rq->wqe_overflow.addr),
->   				.bcount = pad_size,
->   			};
-> +			wi->alloc_units[i].mxbuf->rq = rq;
->   		}
->   	}
->   
-> @@ -230,6 +234,7 @@ static struct sk_buff *mlx5e_xsk_construct_skb(struct mlx5e_rq *rq, struct xdp_b
->   
->   struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
->   						    struct mlx5e_mpw_info *wi,
-> +						    struct mlx5_cqe64 *cqe,
->   						    u16 cqe_bcnt,
->   						    u32 head_offset,
->   						    u32 page_idx)
-> @@ -250,6 +255,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
->   	 */
->   	WARN_ON_ONCE(head_offset);
->   
-> +	/* mxbuf->rq is set on allocation, but cqe is per-packet so set it here */
-> +	mxbuf->cqe = cqe;
->   	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
->   	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
->   	net_prefetch(mxbuf->xdp.data);
-> @@ -284,6 +291,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
->   
->   struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
->   					      struct mlx5e_wqe_frag_info *wi,
-> +					      struct mlx5_cqe64 *cqe,
->   					      u32 cqe_bcnt)
->   {
->   	struct mlx5e_xdp_buff *mxbuf = wi->au->mxbuf;
-> @@ -296,6 +304,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
->   	 */
->   	WARN_ON_ONCE(wi->offset);
->   
-> +	/* mxbuf->rq is set on allocation, but cqe is per-packet so set it here */
-> +	mxbuf->cqe = cqe;
->   	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
->   	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
->   	net_prefetch(mxbuf->xdp.data);
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-> index 087c943bd8e9..cefc0ef6105d 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-> @@ -13,11 +13,13 @@ int mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq, u16 ix, int wqe_bulk);
->   int mlx5e_xsk_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, int wqe_bulk);
->   struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
->   						    struct mlx5e_mpw_info *wi,
-> +						    struct mlx5_cqe64 *cqe,
->   						    u16 cqe_bcnt,
->   						    u32 head_offset,
->   						    u32 page_idx);
->   struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
->   					      struct mlx5e_wqe_frag_info *wi,
-> +					      struct mlx5_cqe64 *cqe,
->   					      u32 cqe_bcnt);
->   
->   #endif /* __MLX5_EN_XSK_RX_H__ */
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 8d36e2de53a9..2dddb05d2e60 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -4913,6 +4913,11 @@ const struct net_device_ops mlx5e_netdev_ops = {
->   #endif
->   };
->   
-> +static const struct xdp_metadata_ops mlx5_xdp_metadata_ops = {
-> +	.xmo_rx_timestamp		= mlx5e_xdp_rx_timestamp,
-> +	.xmo_rx_hash			= mlx5e_xdp_rx_hash,
-> +};
-> +
->   static u32 mlx5e_choose_lro_timeout(struct mlx5_core_dev *mdev, u32 wanted_timeout)
->   {
->   	int i;
-> @@ -5053,6 +5058,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
->   	SET_NETDEV_DEV(netdev, mdev->device);
->   
->   	netdev->netdev_ops = &mlx5e_netdev_ops;
-> +	netdev->xdp_metadata_ops = &mlx5_xdp_metadata_ops;
->   
->   	mlx5e_dcbnl_build_netdev(netdev);
->   
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> index c8a2b26de36e..10d45064e613 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> @@ -62,10 +62,12 @@
->   
->   static struct sk_buff *
->   mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
-> -				u16 cqe_bcnt, u32 head_offset, u32 page_idx);
-> +				struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
-> +				u32 page_idx);
->   static struct sk_buff *
->   mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
-> -				   u16 cqe_bcnt, u32 head_offset, u32 page_idx);
-> +				   struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
-> +				   u32 page_idx);
->   static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
->   static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
->   static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
-> @@ -76,11 +78,6 @@ const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic = {
->   	.handle_rx_cqe_mpwqe_shampo = mlx5e_handle_rx_cqe_mpwrq_shampo,
->   };
->   
-> -static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
-> -{
-> -	return config->rx_filter == HWTSTAMP_FILTER_ALL;
-> -}
-> -
->   static inline void mlx5e_read_cqe_slot(struct mlx5_cqwq *wq,
->   				       u32 cqcc, void *data)
->   {
-> @@ -1575,16 +1572,19 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
->   	return skb;
->   }
->   
-> -static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, void *va, u16 headroom,
-> -				u32 len, struct mlx5e_xdp_buff *mxbuf)
-> +static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
-> +				void *va, u16 headroom, u32 len,
-> +				struct mlx5e_xdp_buff *mxbuf)
->   {
->   	xdp_init_buff(&mxbuf->xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
->   	xdp_prepare_buff(&mxbuf->xdp, va, headroom, len, true);
-> +	mxbuf->cqe = cqe;
-> +	mxbuf->rq = rq;
->   }
->   
->   static struct sk_buff *
->   mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
-> -			  u32 cqe_bcnt)
-> +			  struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
->   {
->   	union mlx5e_alloc_unit *au = wi->au;
->   	u16 rx_headroom = rq->buff.headroom;
-> @@ -1609,7 +1609,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
->   		struct mlx5e_xdp_buff mxbuf;
->   
->   		net_prefetchw(va); /* xdp_frame data area */
-> -		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &mxbuf);
-> +		mlx5e_fill_xdp_buff(rq, cqe, va, rx_headroom, cqe_bcnt, &mxbuf);
->   		if (mlx5e_xdp_handle(rq, au->page, prog, &mxbuf))
->   			return NULL; /* page/packet was consumed by XDP */
->   
-> @@ -1630,7 +1630,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
->   
->   static struct sk_buff *
->   mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
-> -			     u32 cqe_bcnt)
-> +			     struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
->   {
->   	struct mlx5e_rq_frag_info *frag_info = &rq->wqe.info.arr[0];
->   	struct mlx5e_wqe_frag_info *head_wi = wi;
-> @@ -1654,7 +1654,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
->   	net_prefetchw(va); /* xdp_frame data area */
->   	net_prefetch(va + rx_headroom);
->   
-> -	mlx5e_fill_xdp_buff(rq, va, rx_headroom, frag_consumed_bytes, &mxbuf);
-> +	mlx5e_fill_xdp_buff(rq, cqe, va, rx_headroom, frag_consumed_bytes, &mxbuf);
->   	sinfo = xdp_get_shared_info_from_buff(&mxbuf.xdp);
->   	truesize = 0;
->   
-> @@ -1777,7 +1777,7 @@ static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
->   			      mlx5e_skb_from_cqe_linear,
->   			      mlx5e_skb_from_cqe_nonlinear,
->   			      mlx5e_xsk_skb_from_cqe_linear,
-> -			      rq, wi, cqe_bcnt);
-> +			      rq, wi, cqe, cqe_bcnt);
->   	if (!skb) {
->   		/* probably for XDP */
->   		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
-> @@ -1830,7 +1830,7 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
->   	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
->   			      mlx5e_skb_from_cqe_linear,
->   			      mlx5e_skb_from_cqe_nonlinear,
-> -			      rq, wi, cqe_bcnt);
-> +			      rq, wi, cqe, cqe_bcnt);
->   	if (!skb) {
->   		/* probably for XDP */
->   		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
-> @@ -1889,7 +1889,7 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
->   	skb = INDIRECT_CALL_2(rq->mpwqe.skb_from_cqe_mpwrq,
->   			      mlx5e_skb_from_cqe_mpwrq_linear,
->   			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
-> -			      rq, wi, cqe_bcnt, head_offset, page_idx);
-> +			      rq, wi, cqe, cqe_bcnt, head_offset, page_idx);
->   	if (!skb)
->   		goto mpwrq_cqe_out;
->   
-> @@ -1940,7 +1940,8 @@ mlx5e_fill_skb_data(struct sk_buff *skb, struct mlx5e_rq *rq,
->   
->   static struct sk_buff *
->   mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
-> -				   u16 cqe_bcnt, u32 head_offset, u32 page_idx)
-> +				   struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
-> +				   u32 page_idx)
->   {
->   	union mlx5e_alloc_unit *au = &wi->alloc_units[page_idx];
->   	u16 headlen = min_t(u16, MLX5E_RX_MAX_HEAD, cqe_bcnt);
-> @@ -1979,7 +1980,8 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
->   
->   static struct sk_buff *
->   mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
-> -				u16 cqe_bcnt, u32 head_offset, u32 page_idx)
-> +				struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
-> +				u32 page_idx)
->   {
->   	union mlx5e_alloc_unit *au = &wi->alloc_units[page_idx];
->   	u16 rx_headroom = rq->buff.headroom;
-> @@ -2010,7 +2012,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
->   		struct mlx5e_xdp_buff mxbuf;
->   
->   		net_prefetchw(va); /* xdp_frame data area */
-> -		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &mxbuf);
-> +		mlx5e_fill_xdp_buff(rq, cqe, va, rx_headroom, cqe_bcnt, &mxbuf);
->   		if (mlx5e_xdp_handle(rq, au->page, prog, &mxbuf)) {
->   			if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
->   				__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
-> @@ -2174,8 +2176,8 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
->   		if (likely(head_size))
->   			*skb = mlx5e_skb_from_cqe_shampo(rq, wi, cqe, header_index);
->   		else
-> -			*skb = mlx5e_skb_from_cqe_mpwrq_nonlinear(rq, wi, cqe_bcnt, data_offset,
-> -								  page_idx);
-> +			*skb = mlx5e_skb_from_cqe_mpwrq_nonlinear(rq, wi, cqe, cqe_bcnt,
-> +								  data_offset, page_idx);
->   		if (unlikely(!*skb))
->   			goto free_hd_entry;
->   
-> @@ -2249,7 +2251,8 @@ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cq
->   			      mlx5e_skb_from_cqe_mpwrq_linear,
->   			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
->   			      mlx5e_xsk_skb_from_cqe_mpwrq_linear,
-> -			      rq, wi, cqe_bcnt, head_offset, page_idx);
-> +			      rq, wi, cqe, cqe_bcnt, head_offset,
-> +			      page_idx);
->   	if (!skb)
->   		goto mpwrq_cqe_out;
->   
-> @@ -2494,7 +2497,7 @@ static void mlx5i_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
->   	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
->   			      mlx5e_skb_from_cqe_linear,
->   			      mlx5e_skb_from_cqe_nonlinear,
-> -			      rq, wi, cqe_bcnt);
-> +			      rq, wi, cqe, cqe_bcnt);
->   	if (!skb)
->   		goto wq_free_wqe;
->   
-> @@ -2586,7 +2589,7 @@ static void mlx5e_trap_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe
->   		goto free_wqe;
->   	}
->   
-> -	skb = mlx5e_skb_from_cqe_nonlinear(rq, wi, cqe_bcnt);
-> +	skb = mlx5e_skb_from_cqe_nonlinear(rq, wi, cqe, cqe_bcnt);
->   	if (!skb)
->   		goto free_wqe;
->   
+>  printf "┌────────┬───────┬───────┬──────────────┬"
+>  printf "──────────────┬───────┬────────┐\n"
+>  for type in gre vxlan geneve; do
+> @@ -385,6 +437,10 @@ done
+>  printf "└────────┴───────┴───────┴──────────────┴"
+>  printf "──────────────┴───────┴────────┘\n"
+>  
+> +# All tests done.
+> +# Set ERR appropriately: it will be returned by the exit handler.
+>  if $failed; then
+> -	exit 1
+> +	ERR=1
+> +else
+> +	ERR=0
+>  fi
+
+Wow, Guillaueme, this patch actually made things unstuck :)
+
+[root@pc-mtodorov linux_torvalds]# git apply ../net-inherit-guilllaume1.patch
+[root@pc-mtodorov linux_torvalds]# cd tools/testing/selftests/net
+[root@pc-mtodorov net]# ./l2_tos_ttl_inherit.sh
+┌────────┬───────┬───────┬──────────────┬──────────────┬───────┬────────┐
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     4 │     4 │ inherit 0x80 │  inherit 186 │ false │     OK │
+│    gre │     4 │     4 │ inherit 0xd0 │  inherit 168 │  true │     OK │
+│    gre │     4 │     4 │   fixed 0xcc │    fixed 234 │ false │     OK │
+│    gre │     4 │     4 │   fixed 0xf4 │    fixed 144 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     4 │     6 │ inherit 0x08 │  inherit 252 │ false │     OK │
+│    gre │     4 │     6 │ inherit 0x10 │  inherit 171 │  true │     OK │
+│    gre │     4 │     6 │   fixed 0x5c │    fixed 151 │ false │     OK │
+│    gre │     4 │     6 │   fixed 0xc0 │    fixed 140 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     4 │ other │ inherit 0xf4 │    inherit 8 │ false │     OK │
+│    gre │     4 │ other │ inherit 0x44 │  inherit 231 │  true │     OK │
+│    gre │     4 │ other │   fixed 0x40 │    fixed 143 │ false │     OK │
+│    gre │     4 │ other │   fixed 0xa8 │     fixed 13 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     6 │     4 │ inherit 0xe4 │  inherit 114 │ false │     OK │
+│    gre │     6 │     4 │ inherit 0xd8 │  inherit 190 │  true │     OK │
+│    gre │     6 │     4 │   fixed 0x60 │    fixed 255 │ false │     OK │
+│    gre │     6 │     4 │   fixed 0x48 │     fixed 90 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     6 │     6 │ inherit 0xb4 │  inherit 179 │ false │     OK │
+│    gre │     6 │     6 │ inherit 0x68 │   inherit 95 │  true │     OK │
+│    gre │     6 │     6 │   fixed 0x0c │     fixed 96 │ false │     OK │
+│    gre │     6 │     6 │   fixed 0x38 │     fixed 98 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│    gre │     6 │ other │ inherit 0x44 │   inherit 54 │ false │     OK │
+│    gre │     6 │ other │ inherit 0xec │   inherit 82 │  true │     OK │
+│    gre │     6 │ other │   fixed 0xf0 │      fixed 3 │ false │     OK │
+│    gre │     6 │ other │   fixed 0x90 │    fixed 183 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     4 │     4 │ inherit 0xa8 │  inherit 157 │ false │     OK │
+│  vxlan │     4 │     4 │ inherit 0x9c │  inherit 159 │  true │     OK │
+│  vxlan │     4 │     4 │   fixed 0x88 │     fixed 21 │ false │     OK │
+│  vxlan │     4 │     4 │   fixed 0x84 │    fixed 241 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     4 │     6 │ inherit 0x78 │  inherit 115 │ false │     OK │
+│  vxlan │     4 │     6 │ inherit 0x3c │   inherit 21 │  true │     OK │
+│  vxlan │     4 │     6 │   fixed 0xf4 │     fixed 61 │ false │     OK │
+│  vxlan │     4 │     6 │   fixed 0x0c │     fixed 24 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     4 │ other │ inherit 0xa0 │  inherit 112 │ false │     OK │
+│  vxlan │     4 │ other │ inherit 0x2c │  inherit 236 │  true │     OK │
+│  vxlan │     4 │ other │   fixed 0x20 │    fixed 166 │ false │     OK │
+│  vxlan │     4 │ other │   fixed 0x18 │    fixed 129 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     6 │     4 │ inherit 0xa0 │   inherit 69 │ false │     OK │
+│  vxlan │     6 │     4 │ inherit 0x4c │  inherit 100 │  true │     OK │
+│  vxlan │     6 │     4 │   fixed 0x38 │      fixed 1 │ false │     OK │
+│  vxlan │     6 │     4 │   fixed 0x34 │    fixed 109 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     6 │     6 │ inherit 0x18 │  inherit 156 │ false │     OK │
+│  vxlan │     6 │     6 │ inherit 0x88 │  inherit 104 │  true │     OK │
+│  vxlan │     6 │     6 │   fixed 0x44 │    fixed 179 │ false │     OK │
+│  vxlan │     6 │     6 │   fixed 0x84 │    fixed 107 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  vxlan │     6 │ other │ inherit 0x54 │   inherit 98 │ false │     OK │
+│  vxlan │     6 │ other │ inherit 0x5c │  inherit 121 │  true │     OK │
+│  vxlan │     6 │ other │   fixed 0x3c │     fixed 54 │ false │     OK │
+│  vxlan │     6 │ other │   fixed 0x58 │    fixed 239 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│ geneve │     4 │     4 │ inherit 0x58 │   inherit 33 │ false │     OK │
+│ geneve │     4 │     4 │ inherit 0x28 │   inherit 98 │  true │     OK │
+│ geneve │     4 │     4 │   fixed 0x98 │     fixed 60 │ false │     OK │
+│ geneve │     4 │     4 │   fixed 0x78 │    fixed 152 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│ geneve │     4 │     6 │ inherit 0x14 │  inherit 124 │ false │     OK │
+│ geneve │     4 │     6 │ inherit 0x24 │  inherit 147 │  true │     OK │
+│ geneve │     4 │     6 │   fixed 0x38 │    fixed 178 │ false │     OK │
+│ geneve │     4 │     6 │   fixed 0x78 │     fixed 38 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│ geneve │     4 │ other │ inherit 0xc0 │   inherit 68 │ false │     OK │
+│ geneve │     4 │ other │ inherit 0x64 │  inherit 136 │  true │     OK │
+│ geneve │     4 │ other │   fixed 0x7c │    fixed 115 │ false │     OK │
+│ geneve │     4 │ other │   fixed 0x9c │     fixed 68 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│  Type  │ outer | inner │     tos      │      ttl     │  vlan │ result │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│ geneve │     6 │     4 │ inherit 0xa0 │   inherit 89 │ false │     OK │
+│ geneve │     6 │     4 │ inherit 0x5c │  inherit 123 │  true │     OK │
+│ geneve │     6 │     4 │   fixed 0x4c │     fixed 54 │ false │     OK │
+│ geneve │     6 │     4 │   fixed 0x70 │     fixed 12 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│ geneve │     6 │     6 │ inherit 0xc0 │  inherit 161 │ false │     OK │
+│ geneve │     6 │     6 │ inherit 0x60 │   inherit 47 │  true │     OK │
+│ geneve │     6 │     6 │   fixed 0xb4 │    fixed 135 │ false │     OK │
+│ geneve │     6 │     6 │   fixed 0x48 │     fixed 35 │  true │     OK │
+├────────┼───────┼───────┼──────────────┼──────────────┼───────┼────────┤
+│ geneve │     6 │ other │ inherit 0xd0 │  inherit 100 │ false │     OK │
+│ geneve │     6 │ other │ inherit 0x3c │  inherit 149 │  true │     OK │
+│ geneve │     6 │ other │   fixed 0x2c │    fixed 182 │ false │     OK │
+│ geneve │     6 │ other │   fixed 0x68 │    fixed 215 │  true │     OK │
+└────────┴───────┴───────┴──────────────┴──────────────┴───────┴────────┘
+[root@pc-mtodorov net]# 
+
+The entire tools/tests/selftests/net section now had a PASS w "OK", save for a couple of tests here:
+
+not ok 1 selftests: nci: nci_dev # exit=1
+not ok 12 selftests: net: nat6to4.o
+not ok 13 selftests: net: run_netsocktests # exit=1
+not ok 29 selftests: net: udpgro_bench.sh # exit=255
+not ok 30 selftests: net: udpgro.sh # exit=255
+not ok 37 selftests: net: fcnal-test.sh # TIMEOUT 1500 seconds
+not ok 38 selftests: net: l2tp.sh # exit=2
+not ok 46 selftests: net: icmp_redirect.sh # exit=1
+not ok 55 selftests: net: vrf_route_leaking.sh # exit=1
+not ok 59 selftests: net: udpgro_fwd.sh # exit=1
+not ok 60 selftests: net: udpgro_frglist.sh # exit=255
+not ok 61 selftests: net: veth.sh # exit=1
+not ok 68 selftests: net: srv6_end_dt46_l3vpn_test.sh # exit=1
+not ok 69 selftests: net: srv6_end_dt4_l3vpn_test.sh # exit=1
+not ok 75 selftests: net: arp_ndisc_evict_nocarrier.sh # exit=255
+not ok 83 selftests: net: test_ingress_egress_chaining.sh # exit=1
+not ok 1 selftests: net/hsr: hsr_ping.sh # TIMEOUT 45 seconds
+not ok 3 selftests: net/mptcp: mptcp_join.sh # exit=1
+
+If you are interested in additional diagnostics, this is a very interesting part of the
+Linux kernel testing ...
+
+There was apparent hang in selftest/net/fcnal-test.sh as well.
+I can help you with the diagnostics if you wish? Thanks.
+
+If I could make them all work both on Ubuntu 22.10 kinetic kudu and AlmaLinux 8.7
+stone smilodon (CentOS fork), this would be a milestone for me :)
+
+Have a nice day!
+
+Regards,
+Mirsad
+
+-- 
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+ 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
+
+
