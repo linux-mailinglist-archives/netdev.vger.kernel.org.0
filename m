@@ -2,309 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2287C6615CC
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:20:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 068D56615D1
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:28:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbjAHOUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 09:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
+        id S231295AbjAHO2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 09:28:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbjAHOUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:20:23 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBA0E028;
-        Sun,  8 Jan 2023 06:20:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673187622; x=1704723622;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=uhwP33k79WfVOAOHMUzfxXOTAP/es5YajUb9QxIA5qs=;
-  b=KS2oLp5ftY/JURezUYvUV7pEdXv6PsrsZOYHt7LuWawhSbXeqk9fmtF0
-   z9FxZa9eSLFJSvxN+FZPSZUR3Xg87aTKLohMh4SVRCjwXm84P2ehRrjdw
-   TosL/Ufuhe7rcikHCrPgSIOEP7zCulFXE/vuVKDtKLafR8dXipnfu86/l
-   2PPKxMzHRBdrsbpo/0TNLTLPuKOAYslpLPmb49SnMcaCJfspqRsfdfyfD
-   DdJsGg0yhVTS589nrz2BkgVx3Cv4J+bxkZirWUYF3dpOrvgfcstBVhJ/O
-   4Mg3VsqRQPwrEaWp1m5bdBNh1NWn1kxcE8XUa49hIUTBPB5oRJm5GDHHl
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="303082433"
-X-IronPort-AV: E=Sophos;i="5.96,310,1665471600"; 
-   d="scan'208";a="303082433"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:20:21 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="606354019"
-X-IronPort-AV: E=Sophos;i="5.96,310,1665471600"; 
-   d="scan'208";a="606354019"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.213.110.20]) ([10.213.110.20])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:20:14 -0800
-Message-ID: <38d010a2-17db-f752-6027-20520ade11bb@linux.intel.com>
-Date:   Sun, 8 Jan 2023 19:50:11 +0530
+        with ESMTP id S229822AbjAHO2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:28:19 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EA2FAEC
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 06:28:18 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-4b718cab0e4so82321247b3.9
+        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 06:28:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Hl8rv16Vi9yO1zD4Tw+vHLF8DFTsp+prcVm/z5ugrGg=;
+        b=CLvc2v5gTueRCCIKy5bVYaeRLLySVl4hWryeBd/OHoIdtUGLVIGMTVkjD0ocuK0k27
+         4e2PwDbJjD3q3tiHOZiculMlVU6szXXI1pqIf0Ob8X7ylXE8nk6RpY9W3svzXkawIWeJ
+         6JjdgiXdaJK+XEpRrDYUzam0gv8/jFgR8XDiT79lh56I4ptHJO69s70TmaQfAm6OTwMG
+         QdzPNQ1gqe/DhJwvjTJDtuA2CXmabFGkz+j+aoxHG2UiqO5tkQhMuDuOretPa6mKbzbe
+         bRAypKrADRznDEuJmgeGKN1Lyall7CGv+uwQ6W0+gVu9WtmxcxKSjPvyc0lFn1UcfKGe
+         /Lig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Hl8rv16Vi9yO1zD4Tw+vHLF8DFTsp+prcVm/z5ugrGg=;
+        b=n61H5SNMxSxtbITO0YAuLQParx4uNBL7011aHASG692N/ylbJ5K4btI9LmjWbUAJIw
+         xjulDcq3za/WgX6ALXTsdnbvMfYqfukErNtelGjPP7EDpisFuaoaGATSIdOL0EulHNPE
+         eYHV26emzrtFl4A02h3YhLCYupnI4yFy8U4hoRCTRmD19DrrRlD2h2lYPWbL3sHP7ekt
+         rjcJ3X65juvnZxbv5+JOegKAW/2gihirkXa2d3nsdvLBDoPxqH7AH26Ooy1YstmA9zbO
+         JQz6hDlpXkElUXy16gsZYI/aoJRA4e4rkS/tcj+x3Y5DR5xA4aCpuPi8qQpfnbLfkdwH
+         jLNg==
+X-Gm-Message-State: AFqh2kreoMZIqHB4wkny+62FIYO6Gz1l6LQ4o4gfjEysgzTHTFafDS8V
+        mQQtu/1MFIQ/RG01/dsuHn0IJNEqnVdklXcEt1o=
+X-Google-Smtp-Source: AMrXdXt2uryEhRsA2hVIuBn01do+TR+zfE6Vfi2jOqkcdMhpYnQ/hcGmgLQ+PiX07PbS7eyRZllkM3tfASIwpqM6yl4=
+X-Received: by 2002:a81:e16:0:b0:3f6:6e73:e606 with SMTP id
+ 22-20020a810e16000000b003f66e73e606mr587206ywo.475.1673188097070; Sun, 08 Jan
+ 2023 06:28:17 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v3 net-next 5/5] net: wwan: t7xx: Devlink documentation
-Content-Language: en-US
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
-        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-doc@vger.kernel.org,
-        jiri@nvidia.com, corbet@lwn.net
-References: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
- <500a41cb400b4cdedd6df414b40200a5211965f5.1673016069.git.m.chetan.kumar@linux.intel.com>
- <270ae807-6842-b5c9-0b14-fbc1b768fa79@intel.com>
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <270ae807-6842-b5c9-0b14-fbc1b768fa79@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230105223120.16231-1-u9012063@gmail.com> <35c08589266c69e25f50e1f1572a0364d32abd08.camel@gmail.com>
+In-Reply-To: <35c08589266c69e25f50e1f1572a0364d32abd08.camel@gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Sun, 8 Jan 2023 06:27:40 -0800
+Message-ID: <CALDO+Sbjweh5RS5Oqce3cqBhhyL1RbG7z40fe=mjNYXvhbFhqg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next v10] vmxnet3: Add XDP support.
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     netdev@vger.kernel.org, tuc@vmware.com, gyang@vmware.com,
+        doshir@vmware.com, gerhard@engleder-embedded.com,
+        alexandr.lobakin@intel.com, bang@vmware.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/2023 12:07 AM, Jesse Brandeburg wrote:
-> On 1/6/2023 8:28 AM, m.chetan.kumar@linux.intel.com wrote:
->> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
->>
->> Document the t7xx devlink commands usage for fw flashing &
-> 
-> it would make the documentation easier and faster to read if you just 
-> spelled out fw as firmware.
+Hi Alexander,
+Thanks for your review!
 
-Sure. Will correct all such instances.
+On Fri, Jan 6, 2023 at 9:21 AM Alexander H Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Thu, 2023-01-05 at 14:31 -0800, William Tu wrote:
+> > The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIRECT.
 
-> 
->> coredump collection.
->>
->> Refer to t7xx.rst file for details.
->>
->> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
->> Signed-off-by: Devegowda Chandrashekar 
->> <chandrashekar.devegowda@intel.com>
->> -- 
->> v3:
->>   * No Change.
->> v2:
->>   * Documentation correction.
->>   * Add param details.
->> ---
->>   Documentation/networking/devlink/index.rst |   1 +
->>   Documentation/networking/devlink/t7xx.rst  | 161 +++++++++++++++++++++
->>   2 files changed, 162 insertions(+)
->>   create mode 100644 Documentation/networking/devlink/t7xx.rst
->>
->> diff --git a/Documentation/networking/devlink/index.rst 
->> b/Documentation/networking/devlink/index.rst
->> index fee4d3968309..0c4f5961e78f 100644
->> --- a/Documentation/networking/devlink/index.rst
->> +++ b/Documentation/networking/devlink/index.rst
->> @@ -66,3 +66,4 @@ parameters, info versions, and other features it 
->> supports.
->>      prestera
->>      iosm
->>      octeontx2
->> +   t7xx
->> diff --git a/Documentation/networking/devlink/t7xx.rst 
->> b/Documentation/networking/devlink/t7xx.rst
->> new file mode 100644
->> index 000000000000..de220878ad76
->> --- /dev/null
->> +++ b/Documentation/networking/devlink/t7xx.rst
->> @@ -0,0 +1,161 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +====================
->> +t7xx devlink support
->> +====================
->> +
->> +This document describes the devlink features implemented by the ``t7xx``
->> +device driver.
->> +
->> +Parameters
->> +==========
->> +The ``t7xx_driver`` driver implements the following driver-specific 
->> parameters.
->> +
->> +.. list-table:: Driver-specific parameters implemented
->> +   :widths: 5 5 5 85
->> +
->> +   * - Name
->> +     - Type
->> +     - Mode
->> +     - Description
->> +   * - ``fastboot``
->> +     - boolean
->> +     - driverinit
->> +     - Set this param to enter fastboot mode.
->> +
->> +Flash Update
->> +============
->> +
->> +The ``t7xx`` driver implements the flash update using the 
->> ``devlink-flash``
->> +interface.
->> +
->> +The driver uses DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT to identify 
->> the type of
->> +firmware image that need to be programmed upon the request by user 
->> space application.
->> +
->> +The supported list of firmware image types is described below.
->> +
->> +.. list-table:: Firmware Image types
->> +    :widths: 15 85
->> +
->> +    * - Name
->> +      - Description
->> +    * - ``preloader``
->> +      - The first-stage bootloader image
->> +    * - ``loader_ext1``
->> +      - Preloader extension image
->> +    * - ``tee1``
->> +      - ARM trusted firmware and TEE (Trusted Execution Environment) 
->> image
->> +    * - ``lk``
->> +      - The second-stage bootloader image
->> +    * - ``spmfw``
->> +      - MediaTek in-house ASIC for power management image
->> +    * - ``sspm_1``
->> +      - MediaTek in-house ASIC for power management under secure 
->> world image
->> +    * - ``mcupm_1``
->> +      - MediaTek in-house ASIC for cpu power management image
->> +    * - ``dpm_1``
->> +      - MediaTek in-house ASIC for dram power management image
->> +    * - ``boot``
->> +      - The kernel and dtb image
->> +    * - ``rootfs``
->> +      - Root filesystem image
->> +    * - ``md1img``
->> +      - Modem image
->> +    * - ``md1dsp``
->> +      - Modem DSP image
->> +    * - ``mcf1``
->> +      - Modem OTA image (Modem Configuration Framework) for operators
->> +    * - ``mcf2``
->> +      - Modem OTA image (Modem Configuration Framework) for OEM vendors
->> +    * - ``mcf3``
->> +      - Modem OTA image (other usage) for OEM configurations
->> +
->> +``t7xx`` driver uses fastboot protocol for fw flashing. In the fw 
->> flashing
-> 
-> it would make the documentation easier and faster to read if you just 
-> spelled out fw as firmware.
-> 
->> +procedure, fastboot command & response are exchanged between driver 
->> and wwan
->> +device.
->> +
->> +The wwan device is put into fastboot mode via devlink reload command, by
->> +passing "driver_reinit" action.
->> +
->> +$ devlink dev reload pci/0000:$bdf action driver_reinit
->> +
->> +Upon completion of fw flashing or coredump collection the wwan device is
->> +reset to normal mode using devlink reload command, by passing 
->> "fw_activate"
->> +action.
->> +
->> +$ devlink dev reload pci/0000:$bdf action fw_activate
->> +
->> +Flash Commands:
->> +===============
->> +
->> +$ devlink dev flash pci/0000:$bdf file 
->> preloader_k6880v1_mdot2_datacard.bin component "preloader"
->> +
->> +$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img 
->> component "loader_ext1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
->> +
->> +$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component 
->> "spmfw"
->> +
->> +$ devlink dev flash pci/0000:$bdf file sspm-verified.img component 
->> "sspm_1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component 
->> "mcupm_1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file dpm-verified.img component 
->> "dpm_1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file boot-verified.img component 
->> "boot"
->> +
->> +$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
->> +
->> +$ devlink dev flash pci/0000:$bdf file modem-verified.img component 
->> "md1img"
->> +
->> +$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component 
->> "md1dsp"
->> +
->> +$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
->> +
->> +$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
->> +
->> +Note: Component selects the partition type to be programmed.
->> +
->> +Regions
->> +=======
->> +
->> +The ``t7xx`` driver supports core dump collection when device encounters
->> +an exception. When wwan device encounters an exception, a snapshot of 
->> device
->> +internal data will be taken by the driver using fastboot commands.
->> +
->> +Following regions are accessed for device internal data.
->> +
->> +.. list-table:: Regions implemented
->> +    :widths: 15 85
->> +
->> +    * - Name
->> +      - Description
->> +    * - ``mr_dump``
->> +      - The detailed modem component logs are captured in this region
->> +    * - ``lk_dump``
->> +      - This region dumps the current snapshot of lk
->> +
->> +
->> +Region commands
->> +===============
->> +
->> +$ devlink region show
->> +
->> +
->> +$ devlink region new mr_dump
->> +
->> +$ devlink region read mr_dump snapshot 0 address 0 length $len
->> +
->> +$ devlink region del mr_dump snapshot 0
->> +
->> +$ devlink region new lk_dump
->> +
->> +$ devlink region read lk_dump snapshot 0 address 0 length $len
->> +
->> +$ devlink region del lk_dump snapshot 0
->> +
->> +Note: $len is actual len to be dumped.
-> 
+<...>
 
--- 
-Chetan
+> >  static void
+> > -vmxnet3_unmap_tx_buf(struct vmxnet3_tx_buf_info *tbi,
+> > -                  struct pci_dev *pdev)
+> > +vmxnet3_unmap_tx_buf(struct vmxnet3_tx_buf_info *tbi, struct pci_dev *pdev,
+> > +                  struct xdp_frame_bulk *bq)
+> >  {
+> > -     if (tbi->map_type == VMXNET3_MAP_SINGLE)
+> > +     switch (tbi->map_type) {
+> > +     case VMXNET3_MAP_SINGLE:
+> > +     case VMXNET3_MAP_SINGLE | VMXNET3_MAP_XDP:
+> >               dma_unmap_single(&pdev->dev, tbi->dma_addr, tbi->len,
+> >                                DMA_TO_DEVICE);
+> > -     else if (tbi->map_type == VMXNET3_MAP_PAGE)
+> > +             break;
+> > +     case VMXNET3_MAP_PAGE:
+> >               dma_unmap_page(&pdev->dev, tbi->dma_addr, tbi->len,
+> >                              DMA_TO_DEVICE);
+> > -     else
+> > +             break;
+> > +     case VMXNET3_MAP_XDP:
+> > +             break;
+> > +     default:
+> >               BUG_ON(tbi->map_type != VMXNET3_MAP_NONE);
+> > +     }
+> > +
+> > +     if (tbi->map_type & VMXNET3_MAP_XDP)
+> > +             xdp_return_frame_bulk(tbi->xdpf, bq);
+> >
+> >       tbi->map_type = VMXNET3_MAP_NONE; /* to help debugging */
+> >  }
+>
+> This may not be right place to be returning the XDP frame. More on that
+> below. If that is the case it might be better to look at just replacing
+> the == with an & check to see if the bit is set rather then use the
+> switch statement. The else/BUG_ON might need to be tweaked to exclude
+> MAP_XDP from the map_type via a "(& ~)".
+>
+> > @@ -343,22 +354,29 @@ static int
+> >  vmxnet3_unmap_pkt(u32 eop_idx, struct vmxnet3_tx_queue *tq,
+> >                 struct pci_dev *pdev, struct vmxnet3_adapter *adapter)
+> >  {
+> > -     struct sk_buff *skb;
+> > +     struct vmxnet3_tx_buf_info *tbi;
+> > +     struct sk_buff *skb = NULL;
+> > +     struct xdp_frame_bulk bq;
+> >       int entries = 0;
+> >
+> >       /* no out of order completion */
+> >       BUG_ON(tq->buf_info[eop_idx].sop_idx != tq->tx_ring.next2comp);
+> >       BUG_ON(VMXNET3_TXDESC_GET_EOP(&(tq->tx_ring.base[eop_idx].txd)) != 1);
+> >
+> > -     skb = tq->buf_info[eop_idx].skb;
+> > -     BUG_ON(skb == NULL);
+> > -     tq->buf_info[eop_idx].skb = NULL;
+> > +     tbi = &tq->buf_info[eop_idx];
+> > +     if (!(tbi->map_type & VMXNET3_MAP_XDP)) {
+> > +             skb = tq->buf_info[eop_idx].skb;
+> > +             BUG_ON(!skb);
+> > +             tq->buf_info[eop_idx].skb = NULL;
+> > +     }
+> >
+> >       VMXNET3_INC_RING_IDX_ONLY(eop_idx, tq->tx_ring.size);
+> >
+> > +     xdp_frame_bulk_init(&bq);
+> > +
+> >       while (tq->tx_ring.next2comp != eop_idx) {
+> >               vmxnet3_unmap_tx_buf(tq->buf_info + tq->tx_ring.next2comp,
+> > -                                  pdev);
+> > +                                  pdev, &bq);
+> >
+> >               /* update next2comp w/o tx_lock. Since we are marking more,
+> >                * instead of less, tx ring entries avail, the worst case is
+> > @@ -369,7 +387,11 @@ vmxnet3_unmap_pkt(u32 eop_idx, struct vmxnet3_tx_queue *tq,
+> >               entries++;
+> >       }
+> >
+> > -     dev_kfree_skb_any(skb);
+> > +     xdp_flush_frame_bulk(&bq);
+> > +
+> > +     if (skb)
+> > +             dev_kfree_skb_any(skb);
+> > +
+> >       return entries;
+> >  }
+> >
+>
+> Based on the naming I am assuming vmxnet3_unmap_pkt is a per packet
+> call? If so we are defeating the bulk freeing doing this here. I can't
+> help but wonder if we have this operating at the correct level. It
+> might make more sense to do the bulk_init and flush_frame_bulk in
+> vmxnet3_tq_tx_complete and pass the bulk queue down to this function.
+
+Yes, vmxnet3_unmap_pkt is per-packet, and I got your point.
+The current code indeed doesn't free in batch.
+I should move the bulk init and flush to up level, vmxnet3_tq_tx_complete.
+
+>
+> Specifically XDP frames are now capable of being multi-buffer. So it
+> might make sense to have vmnet3_unmap_tx_buf stick to just doing the
+> dma unmapping and instead have the freeing of the buffer XDP frame
+> handled here where you would have handled dev_kfree_skb_any. You could
+> then push the bulk_init and flush up one level to the caller you
+> actually get some bulking.
+Got it! thanks!
+
+>
+>
+> > @@ -414,26 +436,37 @@ static void
+> >  vmxnet3_tq_cleanup(struct vmxnet3_tx_queue *tq,
+> >                  struct vmxnet3_adapter *adapter)
+> >  {
+> > +     struct xdp_frame_bulk bq;
+> >       int i;
+> >
+> > +     xdp_frame_bulk_init(&bq);
+> > +
+> >       while (tq->tx_ring.next2comp != tq->tx_ring.next2fill) {
+> >               struct vmxnet3_tx_buf_info *tbi;
+> >
+> >               tbi = tq->buf_info + tq->tx_ring.next2comp;
+> >
+> > -             vmxnet3_unmap_tx_buf(tbi, adapter->pdev);
+> > -             if (tbi->skb) {
+> > +             vmxnet3_unmap_tx_buf(tbi, adapter->pdev, &bq);
+> > +             switch (tbi->map_type) {
+> > +             case VMXNET3_MAP_SINGLE:
+> > +             case VMXNET3_MAP_PAGE:
+> > +                     if (!tbi->skb)
+> > +                             break;
+> >                       dev_kfree_skb_any(tbi->skb);
+> >                       tbi->skb = NULL;
+> > +                     break;
+> > +             case VMXNET3_MAP_XDP:
+> > +             default:
+> > +                     break;
+> >               }
+>
+> This can probably be simplified. Basically if tbi->skb && !(map_type &
+> VMXNET3_MAP_XDP) then you have an skb to free. No need for the switch
+> statement.
+>
+> This too could benefit from keeping the buffer freeing out of
+> vmxnet3_unmap_tx_buf since we could just do something like:
+>         vmxnet3_unmap_tx_buf()
+>         /* xdpf and skb are in an anonymous union, if set we need to
+>          * free a buffer.
+>          */
+>         if (tbi->skb) {
+>                 if (tbi->map_type & VMXNET3_MAP_XDP)
+>                         xdp_return_frame_bulk(tbi->xdpf, bq);
+>                 else
+>                         dev_kfree_skb_any(tbi->skb);
+>                 tbi->skb = NULL;
+>         }
+thanks, will do it.
+William
