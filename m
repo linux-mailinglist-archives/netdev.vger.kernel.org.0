@@ -2,111 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03EA26615D8
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:39:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2EC86615DD
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:49:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbjAHOjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 09:39:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
+        id S232731AbjAHOtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 09:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjAHOjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:39:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F88A764F
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 06:38:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673188736;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=8nmF6yGQPc7csrjOj7kKwdzfOlPcQjGza6hQEjZq+L8=;
-        b=NYmnbTvNDd2qa25qaeVBnnIRm5nLvaaewhL/FeIOEKOTJ1MRluyWNd1qRwMGOiQ3J8ZHxj
-        7pVTQy36ep6yiXGyrXY3iBglOcZnEZgJ7v8BhllxmLZB7RZ1gPjMu6Q/7LnljIZG7tdNTj
-        HlhnAFZJSfNVk4cbkBxUob0QGzifdzU=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-190-9qJo_BRnPPCtnq-UlLDzjQ-1; Sun, 08 Jan 2023 09:38:54 -0500
-X-MC-Unique: 9qJo_BRnPPCtnq-UlLDzjQ-1
-Received: by mail-qv1-f71.google.com with SMTP id p11-20020ad451cb000000b005319296a239so3875607qvq.18
-        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 06:38:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8nmF6yGQPc7csrjOj7kKwdzfOlPcQjGza6hQEjZq+L8=;
-        b=T4gCOz4z9bXCEglPVNPlLg4B3oomKZHbdX+2stS2Osx9rXitzihhqMUWN4tkYo/Irn
-         nTvbfDC+0rPr4oPSnMcmt0B93jpFsAWnErQqxMRrwV64LXTu8dB8plzQz4MWyyWpRRJq
-         3wUGz7iFzQGhNHJEhHpWffn3y9AdkTuHd2xGWdp3OcA3J8le1KVRkl4FUodGmpP8fUmW
-         6d/ao2aHUa402THKf1MGsOoyRfR91S0HjF3n2Qe7z2HZhnNNkZMZNbM2z2A+chdDJdnV
-         NMrzxpgsapxNO+8hwd1EU6YrrJlW5oO0bZjppA4eM/SLFvHMWLSEV6rA762FX91LXvFU
-         Jqwg==
-X-Gm-Message-State: AFqh2kp8brNXtWYD6bADIoocQEeLvUq3WHj+noftcKa/SUQ0PDiFbViZ
-        u2+smwmGjOMx6XmNTHeBIyJ9jtR2rfKTEkibpTuSTdGdmiVsjCLNFift93FQtfgkbgsqkMHgijN
-        non/SQpzVXpfWm/A3
-X-Received: by 2002:a05:622a:181e:b0:3a5:ed7:1644 with SMTP id t30-20020a05622a181e00b003a50ed71644mr114338855qtc.45.1673188734222;
-        Sun, 08 Jan 2023 06:38:54 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsKAHGfagVXu0UGthHdTUi8lf8mpUA43lYoZ63p/qHcdByb7YZnxyYzllZilXvP41HZfOJ4Yw==
-X-Received: by 2002:a05:622a:181e:b0:3a5:ed7:1644 with SMTP id t30-20020a05622a181e00b003a50ed71644mr114338832qtc.45.1673188734004;
-        Sun, 08 Jan 2023 06:38:54 -0800 (PST)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id y4-20020ac87c84000000b0039a55f78792sm3273434qtv.89.2023.01.08.06.38.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Jan 2023 06:38:53 -0800 (PST)
-From:   Tom Rix <trix@redhat.com>
-To:     shayagr@amazon.com, akiyano@amazon.com, darinzon@amazon.com,
-        ndagan@amazon.com, saeedb@amazon.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        nathan@kernel.org, ndesaulniers@google.com, khalasa@piap.pl,
-        wsa+renesas@sang-engineering.com, yuancan@huawei.com,
-        tglx@linutronix.de, 42.hyeyoo@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: ena: initialize dim_sample
-Date:   Sun,  8 Jan 2023 09:38:43 -0500
-Message-Id: <20230108143843.2987732-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229822AbjAHOtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:49:13 -0500
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CAEFAF1;
+        Sun,  8 Jan 2023 06:49:12 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id AD2C4604F1;
+        Sun,  8 Jan 2023 15:49:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673189349; bh=OS8rlvupmkFQBCQzSf/w7ocx8qttC8TLbeD1niJU5eg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oYz7NEp4jURKXSDmFzXXdYHy7Zk/Gr7COc8X1BeigKrig72LjSwE378wbMdOf1ZMI
+         mppNHBQ2MS4BypN4i3XYusEiVuQT6nK89hDz7qTntUn/QfNyFj9TD6Ur/2Yt9aSIoP
+         B0lmnZNP2asZzEHpszTtJdkQKBlwEm+G93/Itj6GD6PA3lbEnazhaU/AeiElC6zBVD
+         OESXoXEuKT6aq/hI4CZwjtZYomzRSf1WpQhcmzKNyoFGfn+vZIu+z17Yth0vW5Xmhm
+         wLixBwnwiE1hTG1apgM7wUSJ3PyZPhWwhAxSJhZ1kVwpzHPt0+Io8abUN4RBw4a/PR
+         FqfucYm8YaNrQ==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id fUg93Lk8AU9Y; Sun,  8 Jan 2023 15:49:07 +0100 (CET)
+Received: from [192.168.0.12] (unknown [188.252.196.35])
+        by domac.alu.hr (Postfix) with ESMTPSA id 9EAD2604F0;
+        Sun,  8 Jan 2023 15:49:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1673189347; bh=OS8rlvupmkFQBCQzSf/w7ocx8qttC8TLbeD1niJU5eg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HfAoLkwNQgTJOS23qUFNlQSXnG2HXCMjgUWeSi+pZ1WOOPGcMIFa9/1w7I7r+VP08
+         v+tJOh4ao35SBXRZnaKYvRRCd5Y6Xpaz4rUYHnaYlC+d6aBwDK76P7/d7ian8Uello
+         maXs9jGmgOhgqEDwmE7jhLy7Eq4I5VykmDuEFpQaoxzmvqFI+uQy5C/l1coO9bxdvU
+         avxXhUQ9dBEsT9B1KbTt5/TKgTln0HzHflxyIF2rbRAI65U6l9kI9RBEkFnYeTS8dl
+         /q7YlJK9CaApBbHm4HBkdyYBZ7HdVL+f14yzwBhMuMZFC98azn+/9JnR1ZerycsoTK
+         oovKqBEbZmgYA==
+Message-ID: <750cd534-1361-4102-67c5-2898814f8b4c@alu.unizg.hr>
+Date:   Sun, 8 Jan 2023 15:49:05 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: BUG: tools/testing/selftests/net/l2_tos_ttl_inherit.sh hangs when
+ selftest restarted
+Content-Language: en-US, hr
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     linux-kselftest@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias May <matthias.may@westermo.com>
+References: <924f1062-ab59-9b88-3b43-c44e73a30387@alu.unizg.hr>
+ <Y7i5cT1AlyC53hzN@debian> <5ef41d3c-8d81-86b3-c571-044636702342@alu.unizg.hr>
+ <Y7lpO9IHtSIyHVej@debian> <81fdf2bc-4842-96d8-b124-43d0bd5ec124@alu.unizg.hr>
+ <Y7rNgPj9WIroPcQ/@debian>
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <Y7rNgPj9WIroPcQ/@debian>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang static analysis reports this problem
-drivers/net/ethernet/amazon/ena/ena_netdev.c:1821:2: warning: Passed-by-value struct
-  argument contains uninitialized data (e.g., field: 'comp_ctr') [core.CallAndMessage]
-        net_dim(&ena_napi->dim, dim_sample);
-        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+On 08. 01. 2023. 15:04, Guillaume Nault wrote:
 
-net_dim can call dim_calc_stats() which uses the comp_ctr element,
-so it must be initialized.
+> For some reasons, your host doesn't accept the VXLAN packets received
+> over veth0. I guess there are some firewalling rules incompatible with
+> this tests script.
 
-Fixes: 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive interrupt moderation")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That beats me. It is essentially a vanilla desktop AlmaLinux (CentOS fork)
+installation w 6.2-rc2 vanilla torvalds tree kernel.
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index e8ad5ea31aff..938184465eae 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1805,7 +1805,7 @@ static void ena_dim_work(struct work_struct *w)
- 
- static void ena_adjust_adaptive_rx_intr_moderation(struct ena_napi *ena_napi)
- {
--	struct dim_sample dim_sample;
-+	struct dim_sample dim_sample = {};
- 	struct ena_ring *rx_ring = ena_napi->rx_ring;
- 
- 	if (!rx_ring->per_napi_packets)
+Maybe DHCPv4+DHCPv6 assigned address got in the way?
+
+>>> -------- >8 --------
+>>>
+>>> Isolate testing environment and ensure everything is cleaned up on
+>>> exit.
+>>>
+>>> diff --git a/tools/testing/selftests/net/l2_tos_ttl_inherit.sh b/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
+> 
+>> Wow, Guillaueme, this patch actually made things unstuck :)
+> 
+> Great! The patch isolates the testing environment, making it less
+> dependent from the host that runs it. So the routing and firewalling
+> configurations don't interfere anymore.
+
+:)
+
+>> The entire tools/tests/selftests/net section now had a PASS w "OK", save for a couple of tests here:
+>>
+>> not ok 1 selftests: nci: nci_dev # exit=1
+>> not ok 12 selftests: net: nat6to4.o
+>> not ok 13 selftests: net: run_netsocktests # exit=1
+>> not ok 29 selftests: net: udpgro_bench.sh # exit=255
+>> not ok 30 selftests: net: udpgro.sh # exit=255
+>> not ok 37 selftests: net: fcnal-test.sh # TIMEOUT 1500 seconds
+>> not ok 38 selftests: net: l2tp.sh # exit=2
+>> not ok 46 selftests: net: icmp_redirect.sh # exit=1
+>> not ok 55 selftests: net: vrf_route_leaking.sh # exit=1
+>> not ok 59 selftests: net: udpgro_fwd.sh # exit=1
+>> not ok 60 selftests: net: udpgro_frglist.sh # exit=255
+>> not ok 61 selftests: net: veth.sh # exit=1
+>> not ok 68 selftests: net: srv6_end_dt46_l3vpn_test.sh # exit=1
+>> not ok 69 selftests: net: srv6_end_dt4_l3vpn_test.sh # exit=1
+>> not ok 75 selftests: net: arp_ndisc_evict_nocarrier.sh # exit=255
+>> not ok 83 selftests: net: test_ingress_egress_chaining.sh # exit=1
+>> not ok 1 selftests: net/hsr: hsr_ping.sh # TIMEOUT 45 seconds
+>> not ok 3 selftests: net/mptcp: mptcp_join.sh # exit=1
+>>
+>> If you are interested in additional diagnostics, this is a very interesting part of the
+>> Linux kernel testing ...
+>>
+>> There was apparent hang in selftest/net/fcnal-test.sh as well.
+>> I can help you with the diagnostics if you wish? Thanks.
+>>
+>> If I could make them all work both on Ubuntu 22.10 kinetic kudu and AlmaLinux 8.7
+>> stone smilodon (CentOS fork), this would be a milestone for me :)
+> 
+> I'm surprised you have so many failures. Feel free to report them
+> individually. Don't forget to Cc the authors of the scripts. Just
+> pay attention not to overwhelm people.
+
+Sure. I have already submitted half a dozen and I already feel the backlash,
+"wear and tear" :)
+
+But it is a good brainstorming session for me.
+
+I realise that developers receive a lot of bug reports from the volume of LKML.
+
+> I can probably help with the l2tp.sh failure and maybe with the
+> fcnal-test.sh hang. Please report them in their own mail thread.
+
+Then I will Cc: you for sure on those two.
+
+But I cannot promise that this will be today. In fact, tomorrow is prognosed
+rain so I'd better use the remaining blue-sky-patched day to do some biking ;-)
+
+Anyway, I haven't received feedback from all submitted bug reports, so my stack
+is near the overload. However, I made the "make kselftest" complete on both boxes
+(and OSs of Debian and RH lineage), so I already feel some accomplishment :)
+
+Maybe some issues will be fixed in today's release candidate, anyway.
+
+Mirsad 
+
 -- 
-2.27.0
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+ 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
 
