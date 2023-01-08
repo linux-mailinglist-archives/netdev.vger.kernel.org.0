@@ -2,607 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F96E661456
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 10:39:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F317A66145D
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 10:49:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbjAHJj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 04:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
+        id S232861AbjAHJqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 04:46:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbjAHJj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 04:39:27 -0500
-Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF9E13E0C
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 01:39:22 -0800 (PST)
-X-QQ-mid: bizesmtp68t1673170753tww8g8ig
-Received: from localhost.localdomain ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 08 Jan 2023 17:39:06 +0800 (CST)
-X-QQ-SSF: 01400000002000M0N000B00A0000000
-X-QQ-FEAT: +oIWmpEafD+QGHa9yTXAfjeKCSjp3QLS+31PXfzhDBa5v+GIWEhVoWFz/O/yM
-        DfqXTXMPZDv/gY1Ax5qba9OF/SYP0s/NuioYSu4DwRCnIHrjvtKYqU776mPdQ5dt013yEPe
-        JN9/sKDafHioPoSP3iCchG0IBJBEfdsSzzgmt7UFdAtj4vunPD2a2gRPoMQJyzlgCzERpTf
-        LR32Md7pigeGhenhtj98IgMKWQQKP6tCwG4g0D8G3Fy94Bya/03SN5kW/abW5Luq6ImftTw
-        +aEJ45UecftzwzQZb6fOXWU9Jk/eGyozVQvDlqWUmeHaL8s0dRxQYHvTUdcZzv8WXO59Xn3
-        vO7zIZZYECk9Tsg5RFH13I2EmwctxcwnWJ/CetS2CFINqj1pee5TPM/Yda3KdGmFLg5NLbs
-        g8W8NZtiPHbe7gLAybxdzQ==
-X-QQ-GoodBg: 2
-From:   Mengyuan Lou <mengyuanlou@net-swift.com>
-To:     netdev@vger.kernel.org
-Cc:     jiawenwu@net-swift.com, Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next v6] net: ngbe: Add ngbe mdio bus driver.
-Date:   Sun,  8 Jan 2023 17:39:03 +0800
-Message-Id: <20230108093903.27054-1-mengyuanlou@net-swift.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229520AbjAHJq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 04:46:29 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF11183B3
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 01:46:28 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bqW+nXEnrWzAK2BlFeI2TnxOHbC+q6TebfJ/WRrMXzeswYdINXOmGTNFSIsSX+oaj2duXXt6f6lk2Sg3gNoP0tkhdIW9pyP+kgV8ZdR3qhd32p5y/fxkkx9tOGkoJFh9HnDPXoDuv3nCsYwuqi54oRY2tZPfPbVzdgOxaJesMvMt2CF5pzuR9YGbNpvuHKs3IgDMpW6GvVbJRpsE67rEDqq4gteyG8crsW2RePfXrYHjCvWtw+nYbERR3CXFpSDCo1ezi+so87im1ikyZXIXr8wZwWVi4CY0Ppv14i3EfwCmNggnlQVPRvhaXjIyPunKS6KUjB48+3nuNbJcQjATvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fLHZ1lG9XvghLyOcbldbCvfjzLqNzd6qzVZHfg02A5w=;
+ b=UyfmydoWHEkjm7UgkDE/xYWARTj4xmVxMzQ2oOnOWCQ6Z1DxEmZK3JG7WFJFjWkQBl3Fzm2Z9tVlguWUv+slSubQyTzR5ejPeAoW5aZIjQoCcfafwrb8D6x0ITQddLsfIRL9vM3Tdp4TGbTwk/CSacijF4jRXcMKhMPcCIcHVjYhWxAjecH7Xio0NPL5rpvYcIZD3dDOTvRi1XxUykk2ts5uGod+6456sjmNLJH6XuWXw+OZ/HuIB7yYtkea9jXbr6bnsUiWtFwAclVqmWn1SbR2OwN8gq3pXc4owKdAhNvCleN1QjRpEo3MyUDaUT4Qq5tyHMtWZouxEZwWvm8IvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fLHZ1lG9XvghLyOcbldbCvfjzLqNzd6qzVZHfg02A5w=;
+ b=cHan/sOyArRu77a8WQQVCSDeVLl4WDGihUjOgqn493jQUTZJJu2lGcloWn1jzDxuiVDc0DhZcp4+J81uLzOXL1NI0jVrTWavv7Ellq4XssRxKSvQ9IPoRQ5p4CL9+C1RrvEAXU8u3Sd5ab01uQKz86itsla/SUoxr5Z5dfPbirbWcrldddJ7KyXIvONIDGurbC4wCiWapYqD1RfNzhw6A6pFLgIuavPjW13WNLNteA0bRg4pYF9Lzqd2dSOI2zmEDovSZ4vkSChKdlCWQPWklCmaNN1T3g1ToJFZY4G1JLOw7EU4mz8BxbAbvE1cc2tbMLEdbH/sFd5y0KrnKwsSWQ==
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com (2603:10b6:208:3e3::9)
+ by MW4PR12MB7357.namprd12.prod.outlook.com (2603:10b6:303:219::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Sun, 8 Jan
+ 2023 09:46:26 +0000
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::9d53:4213:d937:514e]) by IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::9d53:4213:d937:514e%7]) with mapi id 15.20.5986.018; Sun, 8 Jan 2023
+ 09:46:26 +0000
+From:   Emeel Hakim <ehakim@nvidia.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "atenart@kernel.org" <atenart@kernel.org>
+Subject: RE: [PATCH net-next v6 1/2] macsec: add support for
+ IFLA_MACSEC_OFFLOAD in macsec_changelink
+Thread-Topic: [PATCH net-next v6 1/2] macsec: add support for
+ IFLA_MACSEC_OFFLOAD in macsec_changelink
+Thread-Index: AQHZIdPaFaMiBfrX7kOK449UwGF6U66TlSsAgACzD1A=
+Date:   Sun, 8 Jan 2023 09:46:26 +0000
+Message-ID: <IA1PR12MB6353B1E92F98FEC8B1B04F8EABF99@IA1PR12MB6353.namprd12.prod.outlook.com>
+References: <20230106133551.31940-1-ehakim@nvidia.com>
+ <20230106133551.31940-2-ehakim@nvidia.com> <Y7n6hF3voEe8Hv+5@hog>
+In-Reply-To: <Y7n6hF3voEe8Hv+5@hog>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR12MB6353:EE_|MW4PR12MB7357:EE_
+x-ms-office365-filtering-correlation-id: 53d63961-f5ed-4573-3197-08daf15d3610
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7Y3LQO4bRrifgekY8r2YWez+BGhjwfIRhsjUnuvKS9wnjVn86WuqAjvswK3jyIgo4fdu8SbaFsX4pIr6TqueUwqsRxoiTg7wPj20hM5z0UTNj7psJN6u81xgQwy74FD/PS/3uI6L+GMmE3iipMl+Qazp5ha+oY3SDexf6dBDjENOu4xC1wyOaYvw7sNq3AF7jHyH632zRBOkSoU8CVNLtG/wmb+ugeRtoEqCfNJXA21g9wizm76AW4AgQ8w8FSJXtgqlmLrMlje6sNqJPstCEdw3sUh0L6QOqpklEtzRtewAgvEnJC5d67kq6MLVvGCHcePXJLWOHKiCwOZjbcGaPacAoExXpZng2RtkLTQgdBiZ6H30Xqz05jaNNUV1aJ/o6zG6Rkrm2g3Eu8B+zzZo/F4leFR3XCT7WsecaBxIlb40LdVWGgKP0xNfGt04i7EuY9gnU/WptkcTxkwwlm7AFD3x5+Mj2Fj/bySkoeocXBj8Bk1jwY0jDms1dNR40M3iynrhdwn3k8XD6/poBbdzQstaMFPnOcxMIm9s5lLlVy8fYKGkN5U0BKl7UaCTf9YGFOqJv9k+SaGwLSoSSTFDxodyI+0uos522MNLs/PfAkv97W8eTgMjEcPB8aCvAmBfe/IZDIUo5aRNL5h1uaVUqNFVTAR3gn3IwV16kWWCcTaJXcyp4JnnqgeAYFlxQvK4GQhr2D9cwEQ858rO3Zdp2A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6353.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(136003)(39860400002)(346002)(396003)(451199015)(33656002)(5660300002)(316002)(71200400001)(7696005)(186003)(26005)(9686003)(478600001)(38070700005)(41300700001)(76116006)(66556008)(66476007)(54906003)(4326008)(66946007)(64756008)(66446008)(6916009)(8676002)(83380400001)(8936002)(52536014)(86362001)(55016003)(53546011)(6506007)(122000001)(38100700002)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?L3ZydXdnbmY3Q0JGZEU0SmxRM2ZONTZ5Z1pIZVFPMklsSmplVTlyMVlzVkNi?=
+ =?utf-8?B?cVpHalcrdStGUGlEVlFwQzRiTXNwU0RUazNaeU1vcnRlSFdQSnlyVTFCcXRw?=
+ =?utf-8?B?R042Q2VKL3VTb3pBdUh5ek9yVHl5WlRWTTdDVVZXZWFzdjlPT0dxVzFaWVFY?=
+ =?utf-8?B?STcrT2FTeVlpaXh4bVMwV2dISDdMVFlvR0YvYVRNWGM2bklqSWEzRi90cGUr?=
+ =?utf-8?B?MkZhL0hhcHQrOVZvTVVFNVVaNjIxN3VoQmwwRUM5RExVL3R2OURUeGlrL0VQ?=
+ =?utf-8?B?YXJUUWMySmorR1I2bEIwNDNTZjlkQVdqb3lUTFNPZnBGNTYrK1phSXZ0VnNv?=
+ =?utf-8?B?M1hIU1hJZHlmc1d2OVZIdTk1bmhwZEVUOSt2OTJIRXVOWW4wS05nWml6Tllu?=
+ =?utf-8?B?YXBBeG5QNm9VNzF0SnBQdk1xRVFxTGlDR01oa2ZVMzNabVJTcmZQWUx0NFVB?=
+ =?utf-8?B?d0dka3orU2Fzc1JIUUhSSjdjN21IUEZGRTRvczNDUFZabytKL0RZUjQwdWF5?=
+ =?utf-8?B?VEVYdmpleTJyTnNzSlA2REIyeWV6Z3AvU0FLaUEvRTYxa24wV00xbGcxS1Fr?=
+ =?utf-8?B?YWtpcXc4UlZHTXZ4TStYM3ZjY3dONmk4c1Q0SEpBTmZRZktaWnlLYjJZNkgx?=
+ =?utf-8?B?RXFOQUs5allBVThtdENIZHh5YTIvTnhjaDJpTVpiaENtRFV0R0xRRkt1MCt2?=
+ =?utf-8?B?SzhkZjU4djByK1dIQ3RhaDlLaHRwU05mNzB1b3lTWnljSUduVWRhajNmY1VP?=
+ =?utf-8?B?OVpBa0pMdDlpUXUzK1I2bWZlck5qMTFmb3dkNENMZjdLeTV5dU1YZjhoRDVt?=
+ =?utf-8?B?YzhNTGIvMXdQT0JLMHdqQVloajZwSytlLzFvUVdvNnBiNysrOWlHNTNZbVJ6?=
+ =?utf-8?B?Szd6Z3lRbk5vSHluLzZQTStxRklhbVpqRlZXak43RDBHVHlSOWNmM1l3UUEx?=
+ =?utf-8?B?Vmx4bytEeXdvaHFuNzd2RjNNenVVOGxyN20vVG1UWGxsaWJVYXZGbVY1ODFl?=
+ =?utf-8?B?SHJxbDJ6OGtoVURQMktRODdpeitCVjUvSWhKT1paUEJmaENFSU5tY2RjdUht?=
+ =?utf-8?B?RHc5TUZrMjVXOEdaeCtCNkRZL0E1b1dNQkpnRkNJSVE4N2JLajExL1lra1dk?=
+ =?utf-8?B?dnl0MkdCL2M2NFNLbmxIZmh4TGNnckJ6UFVSY1dUYWZ1NXdCbnhqMVNmSGRs?=
+ =?utf-8?B?bVJoU21QRVJtWWhnTkt1ckhSeGFSM0RCV0J4eUllUk1YNXNFUlJHUDF2WXZM?=
+ =?utf-8?B?dDlodE1wNlZEMnhLdFZVSFZRY0NDc0ZDM3JVTEhlKzF1dXVIcHVQc0ZhOFJX?=
+ =?utf-8?B?UjFXa093RXFWOE1QYjdZZjBiYVhpNlE5TTFqOGVzS0xYQVdJZ3FlK1Azd2VM?=
+ =?utf-8?B?bnUybERKZ0hjY2RUNUtzVmF0TzRRTW5LNnNMOWd4cnFwdlhNVWhDWmYrTWhH?=
+ =?utf-8?B?SzMreERaYytENml0UjVzeXQyc2xORXB5aXArc3N0SjJlQkxYYms4dm9OeVFJ?=
+ =?utf-8?B?bTl2ck9WWjM2eGxhZ2hTN0Z2MElMQ0NSY2h1QWNEc245UDAwaDMxdHBOVWtS?=
+ =?utf-8?B?bEJVTUVzMXdoL2hoY3piaE9XS3ZzQnk4cXorZlNlN1l4QVo0SVdkcllDcEIy?=
+ =?utf-8?B?OE5uTmpubTg1N0t2ZGlEZ1pZRDZEQ0ZFVi85dGsySEVtdkRtSXNCUmw4YWQ5?=
+ =?utf-8?B?Y3IvL1JUc1FRMkFEQzNvZkFhOVdEczJYNTZrTFlxQ2VPOE0yM0wzVlZWMU8y?=
+ =?utf-8?B?MHZEVndhNmVDdWFZdmhSNllTYlNuazFZUy8weDBMQTV4ckMzZWZ1Q0dBMjRw?=
+ =?utf-8?B?aVRNR3hpdFZtZ3lJbjlGNTM4OHQ4UkI0TCt4dWk0SmVNaE9tMWxSbFdSMDBE?=
+ =?utf-8?B?Qzk1UHEwTEcvNVVNdE0vMU5HTVV6V0lOTnVUV1QxdER5NjFxbHdOUm9GYzBz?=
+ =?utf-8?B?K3dNdDBJSXA0K25xZVJvT3pweWFUNm1RNzJzemE4WDF6cytLL1N0M0wvSmFX?=
+ =?utf-8?B?L3ltbFZEYUtabDlTMll5QlBmdmRJZHNBTjZBQlBHcTRTSEtxcitHZVNPcStk?=
+ =?utf-8?B?bDd2MjRWMGJmcXVGT28xR2pyZEhLc2Q4WldJSHJTWkVKZkJHblFtcWFiM1JC?=
+ =?utf-8?Q?HEJg0v1B91TxKu4JRimwDpLw0?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6353.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53d63961-f5ed-4573-3197-08daf15d3610
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2023 09:46:26.7041
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: N3b7I/nrq+67SBox7/s+yL61WPHtIyiOVRemca02nbF4dDui04Dayl5KCSBFZFzxFxSKhT8wstb8cRZHDzp+iQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7357
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add mdio bus register for ngbe.
-The internal phy and external phy need to be handled separately.
-Add phy changed event detection.
-
-Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
----
-Change log:
-v6: 
-	Remove structure ngbe_adapter and ngbe_hw, put all members to structure wx.
-v5: address comments:
-	Andrew Lunn: https://lore.kernel.org/netdev/Y5RjwYgetMdzlQVZ@lunn.ch/
-v4: address comments:
-	Jiri Pirko: https://lore.kernel.org/netdev/Y5L9m%2FMMOG6GTNrb@nanopsycho/
-v3: address comments:
-	Jakub Kicinski: https://lore.kernel.org/netdev/20221208194215.55bc2ee1@kernel.org/
-v2: address comments:
-	Andrew Lunn: https://lore.kernel.org/netdev/Y4p0dQWijzQMlBmW@lunn.ch/
-
- drivers/net/ethernet/wangxun/Kconfig          |   1 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h  |   9 +
- drivers/net/ethernet/wangxun/ngbe/Makefile    |   2 +-
- drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   |  40 ++-
- drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h   |   1 +
- drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  37 ++-
- drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c | 244 ++++++++++++++++++
- drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h |  12 +
- drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  24 ++
- 9 files changed, 356 insertions(+), 14 deletions(-)
- create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
- create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h
-
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-index 86310588c6c1..0922beac3ec0 100644
---- a/drivers/net/ethernet/wangxun/Kconfig
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -25,6 +25,7 @@ config NGBE
- 	tristate "Wangxun(R) GbE PCI Express adapters support"
- 	depends on PCI
- 	select LIBWX
-+	select PHYLIB
- 	help
- 	  This driver supports Wangxun(R) GbE PCI Express family of
- 	  adapters.
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index a52908d01c9c..165f61698177 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -133,11 +133,14 @@
- /************************************* ETH MAC *****************************/
- #define WX_MAC_TX_CFG                0x11000
- #define WX_MAC_TX_CFG_TE             BIT(0)
-+#define WX_MAC_TX_CFG_SPEED_MASK     GENMASK(30, 29)
-+#define WX_MAC_TX_CFG_SPEED_1G       (0x3 << 29)
- #define WX_MAC_RX_CFG                0x11004
- #define WX_MAC_RX_CFG_RE             BIT(0)
- #define WX_MAC_RX_CFG_JE             BIT(8)
- #define WX_MAC_PKT_FLT               0x11008
- #define WX_MAC_PKT_FLT_PR            BIT(0) /* promiscuous mode */
-+#define WX_MAC_WDG_TIMEOUT           0x1100C
- #define WX_MAC_RX_FLOW_CTRL          0x11090
- #define WX_MAC_RX_FLOW_CTRL_RFE      BIT(0) /* receive fc enable */
- #define WX_MMC_CONTROL               0x11800
-@@ -330,6 +333,12 @@ struct wx {
- 	char eeprom_id[32];
- 	enum wx_reset_type reset_type;
- 
-+	/* PHY stuff */
-+	unsigned int link;
-+	int speed;
-+	int duplex;
-+	struct phy_device *phydev;
-+
- 	bool wol_enabled;
- 	bool ncsi_enabled;
- 	bool gpio_ctrl;
-diff --git a/drivers/net/ethernet/wangxun/ngbe/Makefile b/drivers/net/ethernet/wangxun/ngbe/Makefile
-index 391c2cbc1bb4..50fdca87d2a5 100644
---- a/drivers/net/ethernet/wangxun/ngbe/Makefile
-+++ b/drivers/net/ethernet/wangxun/ngbe/Makefile
-@@ -6,4 +6,4 @@
- 
- obj-$(CONFIG_NGBE) += ngbe.o
- 
--ngbe-objs := ngbe_main.o ngbe_hw.o
-+ngbe-objs := ngbe_main.o ngbe_hw.o ngbe_mdio.o
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-index 588de24b5e18..453ad736f9c7 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-@@ -39,16 +39,25 @@ int ngbe_eeprom_chksum_hostif(struct wx *wx)
- static int ngbe_reset_misc(struct wx *wx)
- {
- 	wx_reset_misc(wx);
--	if (wx->mac_type == em_mac_type_rgmii)
--		wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0xF);
- 	if (wx->gpio_ctrl) {
- 		/* gpio0 is used to power on/off control*/
- 		wr32(wx, NGBE_GPIO_DDR, 0x1);
--		wr32(wx, NGBE_GPIO_DR, NGBE_GPIO_DR_0);
-+		ngbe_sfp_modules_txrx_powerctl(wx, false);
- 	}
- 	return 0;
- }
- 
-+void ngbe_sfp_modules_txrx_powerctl(struct wx *wx, bool swi)
-+{
-+	if (swi) {
-+		/* gpio0 is used to power on control*/
-+		wr32(wx, NGBE_GPIO_DR, 0);
-+	} else {
-+		/* gpio0 is used to power off control*/
-+		wr32(wx, NGBE_GPIO_DR, NGBE_GPIO_DR_0);
-+	}
-+}
-+
- /**
-  *  ngbe_reset_hw - Perform hardware reset
-  *  @wx: pointer to hardware structure
-@@ -59,15 +68,26 @@ static int ngbe_reset_misc(struct wx *wx)
-  **/
- int ngbe_reset_hw(struct wx *wx)
- {
--	int status = 0;
--	u32 reset = 0;
-+	u32 val = 0;
-+	int ret = 0;
- 
- 	/* Call wx stop to disable tx/rx and clear interrupts */
--	status = wx_stop_adapter(wx);
--	if (status != 0)
--		return status;
--	reset = WX_MIS_RST_LAN_RST(wx->bus.func);
--	wr32(wx, WX_MIS_RST, reset | rd32(wx, WX_MIS_RST));
-+	ret = wx_stop_adapter(wx);
-+	if (ret != 0)
-+		return ret;
-+
-+	if (wx->mac_type != em_mac_type_mdi) {
-+		val = WX_MIS_RST_LAN_RST(wx->bus.func);
-+		wr32(wx, WX_MIS_RST, val | rd32(wx, WX_MIS_RST));
-+
-+		ret = read_poll_timeout(rd32, val,
-+					!(val & (BIT(9) << wx->bus.func)), 1000,
-+					100000, false, wx, 0x10028);
-+		if (ret) {
-+			wx_err(wx, "Lan reset exceed s maximum times.\n");
-+			return ret;
-+		}
-+	}
- 	ngbe_reset_misc(wx);
- 
- 	/* Store the permanent mac address */
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
-index 8d14d51c0a90..a4693e006816 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h
-@@ -8,5 +8,6 @@
- #define _NGBE_HW_H_
- 
- int ngbe_eeprom_chksum_hostif(struct wx *wx);
-+void ngbe_sfp_modules_txrx_powerctl(struct wx *wx, bool swi);
- int ngbe_reset_hw(struct wx *wx);
- #endif /* _NGBE_HW_H_ */
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-index f66513ddf6d9..ed52f80b5475 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-@@ -9,10 +9,12 @@
- #include <linux/aer.h>
- #include <linux/etherdevice.h>
- #include <net/ip.h>
-+#include <linux/phy.h>
- 
- #include "../libwx/wx_type.h"
- #include "../libwx/wx_hw.h"
- #include "ngbe_type.h"
-+#include "ngbe_mdio.h"
- #include "ngbe_hw.h"
- 
- char ngbe_driver_name[] = "ngbe";
-@@ -146,11 +148,29 @@ static int ngbe_sw_init(struct wx *wx)
- 	return 0;
- }
- 
-+static void ngbe_disable_device(struct wx *wx)
-+{
-+	struct net_device *netdev = wx->netdev;
-+
-+	/* disable receives */
-+	wx_disable_rx(wx);
-+	netif_tx_disable(netdev);
-+	if (wx->gpio_ctrl)
-+		ngbe_sfp_modules_txrx_powerctl(wx, false);
-+}
-+
- static void ngbe_down(struct wx *wx)
- {
--	netif_carrier_off(wx->netdev);
--	netif_tx_disable(wx->netdev);
--};
-+	phy_stop(wx->phydev);
-+	ngbe_disable_device(wx);
-+}
-+
-+static void ngbe_up(struct wx *wx)
-+{
-+	if (wx->gpio_ctrl)
-+		ngbe_sfp_modules_txrx_powerctl(wx, true);
-+	phy_start(wx->phydev);
-+}
- 
- /**
-  * ngbe_open - Called when a network interface is made active
-@@ -164,8 +184,13 @@ static void ngbe_down(struct wx *wx)
- static int ngbe_open(struct net_device *netdev)
- {
- 	struct wx *wx = netdev_priv(netdev);
-+	int err;
- 
- 	wx_control_hw(wx, true);
-+	err = ngbe_phy_connect(wx);
-+	if (err)
-+		return err;
-+	ngbe_up(wx);
- 
- 	return 0;
- }
-@@ -186,6 +211,7 @@ static int ngbe_close(struct net_device *netdev)
- 	struct wx *wx = netdev_priv(netdev);
- 
- 	ngbe_down(wx);
-+	phy_disconnect(wx->phydev);
- 	wx_control_hw(wx, false);
- 
- 	return 0;
-@@ -385,6 +411,11 @@ static int ngbe_probe(struct pci_dev *pdev,
- 	eth_hw_addr_set(netdev, wx->mac.perm_addr);
- 	wx_mac_set_default_filter(wx, wx->mac.perm_addr);
- 
-+	/* phy Interface Configuration */
-+	err = ngbe_mdio_init(wx);
-+	if (err)
-+		goto err_free_mac_table;
-+
- 	err = register_netdev(netdev);
- 	if (err)
- 		goto err_register;
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
-new file mode 100644
-index 000000000000..ba88aca5b045
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
-@@ -0,0 +1,244 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#include <linux/ethtool.h>
-+#include <linux/iopoll.h>
-+#include <linux/pci.h>
-+#include <linux/phy.h>
-+
-+#include "../libwx/wx_type.h"
-+#include "../libwx/wx_hw.h"
-+#include "ngbe_type.h"
-+#include "ngbe_mdio.h"
-+
-+static int ngbe_phy_read_reg_internal(struct mii_bus *bus, int phy_addr, int regnum)
-+{
-+	struct wx *wx = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+	return (u16)rd32(wx, NGBE_PHY_CONFIG(regnum));
-+}
-+
-+static int ngbe_phy_write_reg_internal(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
-+{
-+	struct wx *wx = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+	wr32(wx, NGBE_PHY_CONFIG(regnum), value);
-+	return 0;
-+}
-+
-+static int ngbe_phy_read_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum)
-+{
-+	u32 command, device_type = 0;
-+	struct wx *wx = bus->priv;
-+	u32 val;
-+	int ret;
-+
-+	if (regnum & MII_ADDR_C45) {
-+		wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0x0);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(mdiobus_c45_regad(regnum)) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(mdiobus_c45_devad(regnum));
-+	} else {
-+		wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0xF);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(regnum) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(device_type);
-+	}
-+	wr32(wx, NGBE_MSCA, command);
-+	command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
-+		  NGBE_MSCC_BUSY |
-+		  NGBE_MDIO_CLK(6);
-+	wr32(wx, NGBE_MSCC, command);
-+
-+	/* wait to complete */
-+	ret = read_poll_timeout(rd32, val, !(val & NGBE_MSCC_BUSY), 1000,
-+				100000, false, wx, NGBE_MSCC);
-+	if (ret) {
-+		wx_err(wx, "PHY address command did not complete.\n");
-+		return ret;
-+	}
-+
-+	return (u16)rd32(wx, NGBE_MSCC);
-+}
-+
-+static int ngbe_phy_write_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
-+{
-+	u32 command, device_type = 0;
-+	struct wx *wx = bus->priv;
-+	int ret;
-+	u16 val;
-+
-+	if (regnum & MII_ADDR_C45) {
-+		wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0x0);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(mdiobus_c45_regad(regnum)) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(mdiobus_c45_devad(regnum));
-+	} else {
-+		wr32(wx, NGBE_MDIO_CLAUSE_SELECT, 0xF);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(regnum) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(device_type);
-+	}
-+	wr32(wx, NGBE_MSCA, command);
-+	command = value |
-+		  NGBE_MSCC_CMD(NGBE_MSCA_CMD_WRITE) |
-+		  NGBE_MSCC_BUSY |
-+		  NGBE_MDIO_CLK(6);
-+	wr32(wx, NGBE_MSCC, command);
-+
-+	/* wait to complete */
-+	ret = read_poll_timeout(rd32, val, !(val & NGBE_MSCC_BUSY), 1000,
-+				100000, false, wx, NGBE_MSCC);
-+	if (ret)
-+		wx_err(wx, "PHY address command did not complete.\n");
-+
-+	return ret;
-+}
-+
-+static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
-+{
-+	struct wx *wx = bus->priv;
-+	u16 phy_data;
-+
-+	if (wx->mac_type == em_mac_type_mdi)
-+		phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
-+	else
-+		phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
-+
-+	return phy_data;
-+}
-+
-+static int ngbe_phy_write_reg(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
-+{
-+	struct wx *wx = bus->priv;
-+	int ret;
-+
-+	if (wx->mac_type == em_mac_type_mdi)
-+		ret = ngbe_phy_write_reg_internal(bus, phy_addr, regnum, value);
-+	else
-+		ret = ngbe_phy_write_reg_mdi(bus, phy_addr, regnum, value);
-+
-+	return ret;
-+}
-+
-+static void ngbe_handle_link_change(struct net_device *dev)
-+{
-+	struct wx *wx = netdev_priv(dev);
-+	struct phy_device *phydev;
-+	u32 lan_speed, reg;
-+
-+	phydev = wx->phydev;
-+	if (!(wx->link != phydev->link ||
-+	      wx->speed != phydev->speed ||
-+	      wx->duplex != phydev->duplex))
-+		return;
-+
-+	wx->link = phydev->link;
-+	wx->speed = phydev->speed;
-+	wx->duplex = phydev->duplex;
-+	switch (phydev->speed) {
-+	case SPEED_10:
-+		lan_speed = 0;
-+		break;
-+	case SPEED_100:
-+		lan_speed = 1;
-+		break;
-+	case SPEED_1000:
-+	default:
-+		lan_speed = 2;
-+		break;
-+	}
-+	wr32m(wx, NGBE_CFG_LAN_SPEED, 0x3, lan_speed);
-+
-+	if (phydev->link) {
-+		reg = rd32(wx, WX_MAC_TX_CFG);
-+		reg &= ~WX_MAC_TX_CFG_SPEED_MASK;
-+		reg |= WX_MAC_TX_CFG_SPEED_1G | WX_MAC_TX_CFG_TE;
-+		wr32(wx, WX_MAC_TX_CFG, reg);
-+		/* Re configure MAC RX */
-+		reg = rd32(wx, WX_MAC_RX_CFG);
-+		wr32(wx, WX_MAC_RX_CFG, reg);
-+		wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
-+		reg = rd32(wx, WX_MAC_WDG_TIMEOUT);
-+		wr32(wx, WX_MAC_WDG_TIMEOUT, reg);
-+	}
-+	phy_print_status(phydev);
-+}
-+
-+int ngbe_phy_connect(struct wx *wx)
-+{
-+	int ret;
-+
-+	ret = phy_connect_direct(wx->netdev,
-+				 wx->phydev,
-+				 ngbe_handle_link_change,
-+				 PHY_INTERFACE_MODE_RGMII_ID);
-+	if (ret) {
-+		wx_err(wx, "PHY connect failed.\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void ngbe_phy_fixup(struct wx *wx)
-+{
-+	struct phy_device *phydev = wx->phydev;
-+	struct ethtool_eee eee;
-+
-+	if (wx->mac_type != em_mac_type_mdi)
-+		return;
-+	/* disable EEE, EEE not supported by mac */
-+	memset(&eee, 0, sizeof(eee));
-+	phy_ethtool_set_eee(phydev, &eee);
-+
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+}
-+
-+int ngbe_mdio_init(struct wx *wx)
-+{
-+	struct pci_dev *pdev = wx->pdev;
-+	struct mii_bus *mii_bus;
-+	int ret;
-+
-+	mii_bus = devm_mdiobus_alloc(&pdev->dev);
-+	if (!mii_bus)
-+		return -ENOMEM;
-+
-+	mii_bus->name = "ngbe_mii_bus";
-+	mii_bus->read = ngbe_phy_read_reg;
-+	mii_bus->write = ngbe_phy_write_reg;
-+	mii_bus->phy_mask = GENMASK(31, 4);
-+	mii_bus->probe_capabilities = MDIOBUS_C22_C45;
-+	mii_bus->parent = &pdev->dev;
-+	mii_bus->priv = wx;
-+
-+	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
-+		 (pdev->bus->number << 8) | pdev->devfn);
-+	ret = devm_mdiobus_register(&pdev->dev, mii_bus);
-+	if (ret)
-+		return ret;
-+
-+	wx->phydev = phy_find_first(mii_bus);
-+	if (!wx->phydev)
-+		return -ENODEV;
-+
-+	phy_attached_info(wx->phydev);
-+	ngbe_phy_fixup(wx);
-+
-+	wx->link = 0;
-+	wx->speed = 0;
-+	wx->duplex = 0;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h
-new file mode 100644
-index 000000000000..0a6400dd89c4
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * WangXun Gigabit PCI Express Linux driver
-+ * Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd.
-+ */
-+
-+#ifndef _NGBE_MDIO_H_
-+#define _NGBE_MDIO_H_
-+
-+int ngbe_phy_connect(struct wx *wx);
-+int ngbe_mdio_init(struct wx *wx);
-+#endif /* _NGBE_MDIO_H_ */
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-index 369d181930bc..612b9da2db8f 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-@@ -60,6 +60,26 @@
- #define NGBE_EEPROM_VERSION_L			0x1D
- #define NGBE_EEPROM_VERSION_H			0x1E
- 
-+/* mdio access */
-+#define NGBE_MSCA				0x11200
-+#define NGBE_MSCA_RA(v)				((0xFFFF & (v)))
-+#define NGBE_MSCA_PA(v)				((0x1F & (v)) << 16)
-+#define NGBE_MSCA_DA(v)				((0x1F & (v)) << 21)
-+#define NGBE_MSCC				0x11204
-+#define NGBE_MSCC_DATA(v)			((0xFFFF & (v)))
-+#define NGBE_MSCC_CMD(v)			((0x3 & (v)) << 16)
-+
-+enum NGBE_MSCA_CMD_value {
-+	NGBE_MSCA_CMD_RSV = 0,
-+	NGBE_MSCA_CMD_WRITE,
-+	NGBE_MSCA_CMD_POST_READ,
-+	NGBE_MSCA_CMD_READ,
-+};
-+
-+#define NGBE_MSCC_SADDR				BIT(18)
-+#define NGBE_MSCC_BUSY				BIT(22)
-+#define NGBE_MDIO_CLK(v)			((0x7 & (v)) << 19)
-+
- /* Media-dependent registers. */
- #define NGBE_MDIO_CLAUSE_SELECT			0x11220
- 
-@@ -72,6 +92,10 @@
- #define NGBE_GPIO_DDR_0				BIT(0) /* SDP0 IO direction */
- #define NGBE_GPIO_DDR_1				BIT(1) /* SDP1 IO direction */
- 
-+#define NGBE_PHY_CONFIG(reg_offset)		(0x14000 + ((reg_offset) * 4))
-+#define NGBE_CFG_LAN_SPEED			0x14440
-+#define NGBE_CFG_PORT_ST			0x14404
-+
- /* Wake up registers */
- #define NGBE_PSR_WKUP_CTL			0x15B80
- /* Wake Up Filter Control Bit */
--- 
-2.38.1
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2FicmluYSBEdWJyb2Nh
+IDxzZEBxdWVhc3lzbmFpbC5uZXQ+DQo+IFNlbnQ6IFN1bmRheSwgOCBKYW51YXJ5IDIwMjMgMTow
+NQ0KPiBUbzogRW1lZWwgSGFraW0gPGVoYWtpbUBudmlkaWEuY29tPg0KPiBDYzogbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZzsgUmFlZCBTYWxlbSA8cmFlZHNAbnZpZGlhLmNvbT47DQo+IGRhdmVtQGRh
+dmVtbG9mdC5uZXQ7IGVkdW1hemV0QGdvb2dsZS5jb207IGt1YmFAa2VybmVsLm9yZzsNCj4gcGFi
+ZW5pQHJlZGhhdC5jb207IGF0ZW5hcnRAa2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENI
+IG5ldC1uZXh0IHY2IDEvMl0gbWFjc2VjOiBhZGQgc3VwcG9ydCBmb3INCj4gSUZMQV9NQUNTRUNf
+T0ZGTE9BRCBpbiBtYWNzZWNfY2hhbmdlbGluaw0KPiANCj4gRXh0ZXJuYWwgZW1haWw6IFVzZSBj
+YXV0aW9uIG9wZW5pbmcgbGlua3Mgb3IgYXR0YWNobWVudHMNCj4gDQo+IA0KPiAyMDIzLTAxLTA2
+LCAxNTozNTo1MCArMDIwMCwgZWhha2ltQG52aWRpYS5jb20gd3JvdGU6DQo+IFsuLi5dDQo+ID4g
+K3N0YXRpYyBpbnQgbWFjc2VjX3VwZF9vZmZsb2FkKHN0cnVjdCBza19idWZmICpza2IsIHN0cnVj
+dCBnZW5sX2luZm8NCj4gPiArKmluZm8pIHsNCj4gPiArICAgICBzdHJ1Y3QgbmxhdHRyICp0Yl9v
+ZmZsb2FkW01BQ1NFQ19PRkZMT0FEX0FUVFJfTUFYICsgMV07DQo+ID4gKyAgICAgc3RydWN0IG5s
+YXR0ciAqKmF0dHJzID0gaW5mby0+YXR0cnM7DQo+ID4gKyAgICAgZW51bSBtYWNzZWNfb2ZmbG9h
+ZCBvZmZsb2FkOw0KPiA+ICsgICAgIHN0cnVjdCBuZXRfZGV2aWNlICpkZXY7DQo+ID4gKyAgICAg
+aW50IHJldDsNCj4gPiArDQo+ID4gKyAgICAgaWYgKCFhdHRyc1tNQUNTRUNfQVRUUl9JRklOREVY
+XSkNCj4gPiArICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOw0KPiA+ICsNCj4gPiArICAgICBp
+ZiAoIWF0dHJzW01BQ1NFQ19BVFRSX09GRkxPQURdKQ0KPiA+ICsgICAgICAgICAgICAgcmV0dXJu
+IC1FSU5WQUw7DQo+ID4gKw0KPiA+ICsgICAgIGlmIChubGFfcGFyc2VfbmVzdGVkX2RlcHJlY2F0
+ZWQodGJfb2ZmbG9hZCwgTUFDU0VDX09GRkxPQURfQVRUUl9NQVgsDQo+ID4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBhdHRyc1tNQUNTRUNfQVRUUl9PRkZMT0FEXSwNCj4g
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1hY3NlY19nZW5sX29mZmxv
+YWRfcG9saWN5LCBOVUxMKSkNCj4gPiArICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOw0KPiA+
+ICsNCj4gPiArICAgICBkZXYgPSBnZXRfZGV2X2Zyb21fbmwoZ2VubF9pbmZvX25ldChpbmZvKSwg
+YXR0cnMpOw0KPiA+ICsgICAgIGlmIChJU19FUlIoZGV2KSkNCj4gPiArICAgICAgICAgICAgIHJl
+dHVybiBQVFJfRVJSKGRldik7DQo+ID4gKw0KPiA+ICsgICAgIGlmICghdGJfb2ZmbG9hZFtNQUNT
+RUNfT0ZGTE9BRF9BVFRSX1RZUEVdKQ0KPiA+ICsgICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7
+DQo+ID4gKw0KPiA+ICsgICAgIG9mZmxvYWQgPSBubGFfZ2V0X3U4KHRiX29mZmxvYWRbTUFDU0VD
+X09GRkxPQURfQVRUUl9UWVBFXSk7DQo+ID4gKw0KPiA+ICsgICAgIHJ0bmxfbG9jaygpOw0KPiAN
+Cj4gV2h5IGFyZSB5b3UgcHV0dGluZyBydG5sX2xvY2soKSBiYWNrIGRvd24gaGVyZT8gWW91IGp1
+c3QgbW92ZWQgaXQgYWJvdmUNCj4gZ2V0X2Rldl9mcm9tX25sIHdpdGggY29tbWl0IGYzYjRhMDBm
+MGY2MiAoIm5ldDogbWFjc2VjOiBmaXggbmV0IGRldmljZSBhY2Nlc3MNCj4gcHJpb3IgdG8gaG9s
+ZGluZyBhIGxvY2siKSwgbm93IHlvdSdyZSBwcmV0dHkgbXVjaCByZXZlcnRpbmcgdGhhdCBmaXgu
+DQoNCkFjayB3aWxsIGZpeC4NCg0KPiA+ICsNCj4gPiArICAgICByZXQgPSBtYWNzZWNfdXBkYXRl
+X29mZmxvYWQoZGV2LCBvZmZsb2FkKTsNCj4gPg0KPiA+IC1yb2xsYmFjazoNCj4gPiAtICAgICBt
+YWNzZWMtPm9mZmxvYWQgPSBwcmV2X29mZmxvYWQ7DQo+ID4gLW91dDoNCj4gPiAgICAgICBydG5s
+X3VubG9jaygpOw0KPiA+ICsNCj4gPiAgICAgICByZXR1cm4gcmV0Ow0KPiA+ICB9DQo+ID4NCj4g
+DQo+IC0tDQo+IFNhYnJpbmENCg0K
