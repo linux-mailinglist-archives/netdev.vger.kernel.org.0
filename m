@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5727A66164E
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 16:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCDE866164D
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 16:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233183AbjAHPrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 10:47:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
+        id S232994AbjAHPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 10:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233176AbjAHPq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 10:46:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC012189
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 07:45:52 -0800 (PST)
+        with ESMTP id S231454AbjAHPq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 10:46:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C3B22A
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 07:45:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673192752;
+        s=mimecast20190719; t=1673192756;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5ptAFNsep8HXiPzjvLvKAeNsYgL5tAwOTyUmzT5fDRM=;
-        b=io3dq70DBtK/hAhwH/I0y8lfxdl8W2au2uc2rLmyDkqf89laxD7hVCxgWXIPI7FxVTSKUh
-        KxTjKEjtPNntIja1wzxH10XnCXW48xLlSngmWRV6TPNtUqL8FrdVW6gNq1siFDehgomAYy
-        yyi5ooWwL3ksBXX75YpD5EXQMHDHpus=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=FtjyxBTyHgcMmUp4eECMrOwxInBVUuzyxbE0sO3oxjs=;
+        b=CXDxjwpbULXVgSe90mOKLu5c39yEAboj4609uuwQ1HMswR9bhOjX+eYe58TR4hC/auZ6Bx
+        I0uzJ7Q+TfE3NtRoyCzuatuq9OJQ5gtoPBuJ7N1DdbNfKW5bTgtxn1yqwYr75pF3WAgwnt
+        PVsXPqssGnnCXQV8F9tzi7ktvoFlmTo=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-460-IQCDeGVrPBK1WHoFBryIMg-1; Sun, 08 Jan 2023 10:45:50 -0500
-X-MC-Unique: IQCDeGVrPBK1WHoFBryIMg-1
-Received: by mail-qv1-f69.google.com with SMTP id ob12-20020a0562142f8c00b004c6c72bf1d0so3921953qvb.9
-        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 07:45:50 -0800 (PST)
+ us-mta-473-tX69ycueP0qXyzL-xQ0iRQ-1; Sun, 08 Jan 2023 10:45:54 -0500
+X-MC-Unique: tX69ycueP0qXyzL-xQ0iRQ-1
+Received: by mail-qk1-f198.google.com with SMTP id bi3-20020a05620a318300b00702545f73d5so4805040qkb.8
+        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 07:45:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5ptAFNsep8HXiPzjvLvKAeNsYgL5tAwOTyUmzT5fDRM=;
-        b=AAtWcPghLYWqq41E1UlH0IS6D7oPbSx1NKz7rZemOr4CbqfD3LrpVAdAew7P0ds3Qw
-         QKq0fBoi1Brt/6s11BEMkKHBDJOBVjC9Bk4r2wFB1lHYOC8qhGVJJJIlQdA5Dho7evDC
-         9Qn0mJP8w2OnsOuV+1PZVr0BfjcPXMiJe/SvPZij3KW6eEuuiDrsx/qoyL5flvURBzQ/
-         Scp7NmtNBHVN/dlz+cFAwvkVy5xRe3qOKHVIdme4xRhSLbUBGfqERkqw7YXS0KMDFT/W
-         FXxIDxy502tapOAaMjgP45I+xWtpQIGG5E7kuQN2O8bYP8f3k1laNNo9+EeTP8bJG9oI
-         2Z4A==
-X-Gm-Message-State: AFqh2krHbAi7Hn96hLo5QpgBFpUOqUfSsW3aszCovre49c8/FrIeYTkv
-        MHsjx15Ey6umYcVBD4gkXlsOQvVge/6L9Cgmo5+69bbAL4084AKaKrRrul3mvRDDUp9rLE/kVGy
-        5yY34OuDr/I3IGQ2t
-X-Received: by 2002:ac8:44b7:0:b0:3a8:2080:3c83 with SMTP id a23-20020ac844b7000000b003a820803c83mr81251222qto.4.1673192750336;
-        Sun, 08 Jan 2023 07:45:50 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXs8K9N7LoRpQ/4YzJ6vbjqRlP2Fg1jRKW550TELt4V7IZJgqnMhDSkGpIx8RsjVKmaX2FP28w==
-X-Received: by 2002:ac8:44b7:0:b0:3a8:2080:3c83 with SMTP id a23-20020ac844b7000000b003a820803c83mr81251209qto.4.1673192750040;
-        Sun, 08 Jan 2023 07:45:50 -0800 (PST)
+        bh=FtjyxBTyHgcMmUp4eECMrOwxInBVUuzyxbE0sO3oxjs=;
+        b=Cju6biY3elGESDGe/LtTggzaXBD28FQuNEU2eQygcLpYeiloL0MKJSBJCMQzmwn84m
+         0p6+T7PnFKV0ugCpMVxIjf8zyGiY6liuWEIgNbm9EOmvKAuIENm/iW7U1eJtqXurZSQz
+         Y70n83F5ufR3PFIGXR+Ku9ChifH69ZpvZA+/LH6IjRCu1xRmYkIRHHu873kbTWE9IDse
+         p6A0/Q5EAtWFtnq1vrcnnMz9fCzbFK4HD3YR4h2cui8y7ESFhR9Ut59Zxl2HY01TYzNa
+         Bc+iByqINa1TBDwUZwD838TtkVxKCQSZ0tMobSPgwrdVXzEJkFa2gtKae+U6rN4OgGlJ
+         SWjw==
+X-Gm-Message-State: AFqh2kq194+azULS0uMs9SS2hsV6W2cU/JbBnRN68ihnIfq0Gfmqflyy
+        Q716jr5quBnQrFnDCcOmJGjicospkuPp+RfLszTMvKFxEgl4wmBwpujhGlFPJugD9muEPP+nHlG
+        Wzs3kSchtYvNahUyN
+X-Received: by 2002:a05:6214:5f92:b0:532:b90:1993 with SMTP id ls18-20020a0562145f9200b005320b901993mr20786116qvb.11.1673192754251;
+        Sun, 08 Jan 2023 07:45:54 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsDbO0oNA6ey8fyoPjndADuq9SLkuSxCdXR9dYfR4KehLHX/0m9XDEUGayV889iIptyGs2GsQ==
+X-Received: by 2002:a05:6214:5f92:b0:532:b90:1993 with SMTP id ls18-20020a0562145f9200b005320b901993mr20786106qvb.11.1673192754037;
+        Sun, 08 Jan 2023 07:45:54 -0800 (PST)
 Received: from debian (2a01cb058918ce0098fed9113971adae.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:98fe:d911:3971:adae])
-        by smtp.gmail.com with ESMTPSA id d16-20020ac85350000000b003a689a5b177sm3373911qto.8.2023.01.08.07.45.48
+        by smtp.gmail.com with ESMTPSA id p16-20020a05620a057000b006fafaac72a6sm3817988qkp.84.2023.01.08.07.45.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Jan 2023 07:45:49 -0800 (PST)
-Date:   Sun, 8 Jan 2023 16:45:46 +0100
+        Sun, 08 Jan 2023 07:45:53 -0800 (PST)
+Date:   Sun, 8 Jan 2023 16:45:50 +0100
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -65,9 +65,9 @@ Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
         Matthias May <matthias.may@westermo.com>,
         linux-kselftest@vger.kernel.org,
         Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-Subject: [PATCH net 2/3] selftests/net: l2_tos_ttl_inherit.sh: Run tests in
- their own netns.
-Message-ID: <76483052cf40e0b0de4ea8dcc71d060a8fed75f8.1673191942.git.gnault@redhat.com>
+Subject: [PATCH net 3/3] selftests/net: l2_tos_ttl_inherit.sh: Ensure
+ environment cleanup on failure.
+Message-ID: <1fdc9f2de958c8eb2c6bc435f149cf0adde72114.1673191942.git.gnault@redhat.com>
 References: <cover.1673191942.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -76,7 +76,7 @@ Content-Transfer-Encoding: 8bit
 In-Reply-To: <cover.1673191942.git.gnault@redhat.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,301 +84,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This selftest currently runs half in the current namespace and half in
-a netns of its own. Therefore, the test can fail if the current
-namespace is already configured with incompatible parameters (for
-example if it already has a veth0 interface).
+Use 'set -e' and an exit handler to stop the script if a command fails
+and ensure the test environment is cleaned up in any case. Also, handle
+the case where the script is interrupted by SIGINT.
 
-Adapt the script to put both ends of the veth pair in their own netns.
-Now veth0 is created in NS0 instead of the current namespace, while
-veth1 is set up in NS1 (instead of the 'testing' netns).
+The only command that's expected to fail is 'wait $ping_pid', since
+it's killed by the script. Handle this case with '|| true' to make it
+play well with 'set -e'.
 
-The user visible netns names are randomised to minimise the risk of
-conflicts with already existing namespaces. The cleanup() function
-doesn't need to remove the virtual interface anymore: deleting NS0 and
-NS1 automatically removes the virtual interfaces they contained.
-
-We can remove $ns, which was only used to run ip commands in the
-'testing' netns (let's use the builtin "-netns" option instead).
-However, we still need a similar functionality as ping and tcpdump
-now need to run in NS0. So we now have $RUN_NS0 for that.
+Finally, return the Kselftest SKIP code (4) when the script breaks
+because of an environment problem or a command line failure. The 0 and
+1 return codes should now reliably indicate that all tests have been
+run (0: all tests run and passed, 1: all tests run but at least one
+failed, 4: test script didn't run completely).
 
 Fixes: b690842d12fd ("selftests/net: test l2 tunnel TOS/TTL inheriting")
 Reported-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
 Tested-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- .../selftests/net/l2_tos_ttl_inherit.sh       | 162 ++++++++++--------
- 1 file changed, 93 insertions(+), 69 deletions(-)
+ .../selftests/net/l2_tos_ttl_inherit.sh       | 40 +++++++++++++++++--
+ 1 file changed, 36 insertions(+), 4 deletions(-)
 
 diff --git a/tools/testing/selftests/net/l2_tos_ttl_inherit.sh b/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
-index e2574b08eabc..cf56680d598f 100755
+index cf56680d598f..f11756e7df2f 100755
 --- a/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
 +++ b/tools/testing/selftests/net/l2_tos_ttl_inherit.sh
-@@ -25,6 +25,11 @@ expected_tos="0x00"
- expected_ttl="0"
- failed=false
+@@ -12,13 +12,16 @@
+ # In addition this script also checks if forcing a specific field in the
+ # outer header is working.
  
-+readonly NS0=$(mktemp -u ns0-XXXXXXXX)
-+readonly NS1=$(mktemp -u ns1-XXXXXXXX)
++# Return 4 by default (Kselftest SKIP code)
++ERR=4
 +
-+RUN_NS0="ip netns exec ${NS0}"
-+
- get_random_tos() {
- 	# Get a random hex tos value between 0x00 and 0xfc, a multiple of 4
- 	echo "0x$(tr -dc '0-9a-f' < /dev/urandom | head -c 1)\
-@@ -61,7 +66,6 @@ setup() {
- 	local vlan="$5"
- 	local test_tos="0x00"
- 	local test_ttl="0"
--	local ns="ip netns exec testing"
+ if [ "$(id -u)" != "0" ]; then
+ 	echo "Please run as root."
+-	exit 0
++	exit $ERR
+ fi
+ if ! which tcpdump > /dev/null 2>&1; then
+ 	echo "No tcpdump found. Required for this test."
+-	exit 0
++	exit $ERR
+ fi
  
- 	# We don't want a test-tos of 0x00,
- 	# because this is the value that we get when no tos is set.
-@@ -94,14 +98,15 @@ setup() {
- 	printf "│%7s │%6s │%6s │%13s │%13s │%6s │" \
- 	"$type" "$outer" "$inner" "$tos" "$ttl" "$vlan"
- 
--	# Create 'testing' netns, veth pair and connect main ns with testing ns
--	ip netns add testing
--	ip link add type veth
--	ip link set veth1 netns testing
--	ip link set veth0 up
--	$ns ip link set veth1 up
--	ip addr flush dev veth0
--	$ns ip addr flush dev veth1
-+	# Create netns NS0 and NS1 and connect them with a veth pair
-+	ip netns add "${NS0}"
-+	ip netns add "${NS1}"
-+	ip link add name veth0 netns "${NS0}" type veth \
-+		peer name veth1 netns "${NS1}"
-+	ip -netns "${NS0}" link set dev veth0 up
-+	ip -netns "${NS1}" link set dev veth1 up
-+	ip -netns "${NS0}" address flush dev veth0
-+	ip -netns "${NS1}" address flush dev veth1
- 
- 	local local_addr1=""
- 	local local_addr2=""
-@@ -127,51 +132,59 @@ setup() {
- 		if [ "$type" = "gre" ]; then
- 			type="gretap"
- 		fi
--		ip addr add 198.18.0.1/24 dev veth0
--		$ns ip addr add 198.18.0.2/24 dev veth1
--		ip link add name tep0 type $type $local_addr1 remote \
--		198.18.0.2 tos $test_tos ttl $test_ttl $vxlan $geneve
--		$ns ip link add name tep1 type $type $local_addr2 remote \
--		198.18.0.1 tos $test_tos ttl $test_ttl $vxlan $geneve
-+		ip -netns "${NS0}" address add 198.18.0.1/24 dev veth0
-+		ip -netns "${NS1}" address add 198.18.0.2/24 dev veth1
-+		ip -netns "${NS0}" link add name tep0 type $type $local_addr1 \
-+			remote 198.18.0.2 tos $test_tos ttl $test_ttl         \
-+			$vxlan $geneve
-+		ip -netns "${NS1}" link add name tep1 type $type $local_addr2 \
-+			remote 198.18.0.1 tos $test_tos ttl $test_ttl         \
-+			$vxlan $geneve
- 	elif [ "$outer" = "6" ]; then
- 		if [ "$type" = "gre" ]; then
- 			type="ip6gretap"
- 		fi
--		ip addr add fdd1:ced0:5d88:3fce::1/64 dev veth0 nodad
--		$ns ip addr add fdd1:ced0:5d88:3fce::2/64 dev veth1 nodad
--		ip link add name tep0 type $type $local_addr1 \
--		remote fdd1:ced0:5d88:3fce::2 tos $test_tos ttl $test_ttl \
--		$vxlan $geneve
--		$ns ip link add name tep1 type $type $local_addr2 \
--		remote fdd1:ced0:5d88:3fce::1 tos $test_tos ttl $test_ttl \
--		$vxlan $geneve
-+		ip -netns "${NS0}" address add fdd1:ced0:5d88:3fce::1/64 \
-+			dev veth0 nodad
-+		ip -netns "${NS1}" address add fdd1:ced0:5d88:3fce::2/64 \
-+			dev veth1 nodad
-+		ip -netns "${NS0}" link add name tep0 type $type $local_addr1 \
-+			remote fdd1:ced0:5d88:3fce::2 tos $test_tos           \
-+			ttl $test_ttl $vxlan $geneve
-+		ip -netns "${NS1}" link add name tep1 type $type $local_addr2 \
-+			remote fdd1:ced0:5d88:3fce::1 tos $test_tos           \
-+			ttl $test_ttl $vxlan $geneve
- 	fi
- 
- 	# Bring L2-tunnel link up and create VLAN on top
--	ip link set tep0 up
--	$ns ip link set tep1 up
--	ip addr flush dev tep0
--	$ns ip addr flush dev tep1
-+	ip -netns "${NS0}" link set tep0 up
-+	ip -netns "${NS1}" link set tep1 up
-+	ip -netns "${NS0}" address flush dev tep0
-+	ip -netns "${NS1}" address flush dev tep1
- 	local parent
- 	if $vlan; then
- 		parent="vlan99-"
--		ip link add link tep0 name ${parent}0 type vlan id 99
--		$ns ip link add link tep1 name ${parent}1 type vlan id 99
--		ip link set ${parent}0 up
--		$ns ip link set ${parent}1 up
--		ip addr flush dev ${parent}0
--		$ns ip addr flush dev ${parent}1
-+		ip -netns "${NS0}" link add link tep0 name ${parent}0 \
-+			type vlan id 99
-+		ip -netns "${NS1}" link add link tep1 name ${parent}1 \
-+			type vlan id 99
-+		ip -netns "${NS0}" link set dev ${parent}0 up
-+		ip -netns "${NS1}" link set dev ${parent}1 up
-+		ip -netns "${NS0}" address flush dev ${parent}0
-+		ip -netns "${NS1}" address flush dev ${parent}1
- 	else
- 		parent="tep"
- 	fi
- 
- 	# Assign inner IPv4/IPv6 addresses
- 	if [ "$inner" = "4" ] || [ "$inner" = "other" ]; then
--		ip addr add 198.19.0.1/24 brd + dev ${parent}0
--		$ns ip addr add 198.19.0.2/24 brd + dev ${parent}1
-+		ip -netns "${NS0}" address add 198.19.0.1/24 brd + dev ${parent}0
-+		ip -netns "${NS1}" address add 198.19.0.2/24 brd + dev ${parent}1
- 	elif [ "$inner" = "6" ]; then
--		ip addr add fdd4:96cf:4eae:443b::1/64 dev ${parent}0 nodad
--		$ns ip addr add fdd4:96cf:4eae:443b::2/64 dev ${parent}1 nodad
-+		ip -netns "${NS0}" address add fdd4:96cf:4eae:443b::1/64 \
-+			dev ${parent}0 nodad
-+		ip -netns "${NS1}" address add fdd4:96cf:4eae:443b::2/64 \
-+			dev ${parent}1 nodad
- 	fi
- }
- 
-@@ -192,10 +205,10 @@ verify() {
- 		ping_dst="198.19.0.3" # Generates ARPs which are not IPv4/IPv6
- 	fi
- 	if [ "$tos_ttl" = "inherit" ]; then
--		ping -i 0.1 $ping_dst -Q "$expected_tos" -t "$expected_ttl" \
--		2>/dev/null 1>&2 & ping_pid="$!"
-+		${RUN_NS0} ping -i 0.1 $ping_dst -Q "$expected_tos"          \
-+			 -t "$expected_ttl" 2>/dev/null 1>&2 & ping_pid="$!"
- 	else
--		ping -i 0.1 $ping_dst 2>/dev/null 1>&2 & ping_pid="$!"
-+		${RUN_NS0} ping -i 0.1 $ping_dst 2>/dev/null 1>&2 & ping_pid="$!"
- 	fi
- 	local tunnel_type_offset tunnel_type_proto req_proto_offset req_offset
- 	if [ "$type" = "gre" ]; then
-@@ -216,10 +229,12 @@ verify() {
- 				req_proto_offset="$((req_proto_offset + 4))"
- 				req_offset="$((req_offset + 4))"
- 			fi
--			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
--			ip[$tunnel_type_offset] = $tunnel_type_proto and \
--			ip[$req_proto_offset] = 0x01 and \
--			ip[$req_offset] = 0x08 2>/dev/null | head -n 1)"
-+			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
-+				-i veth0 -n                                   \
-+				ip[$tunnel_type_offset] = $tunnel_type_proto and \
-+				ip[$req_proto_offset] = 0x01 and              \
-+				ip[$req_offset] = 0x08 2>/dev/null            \
-+				| head -n 1)"
- 		elif [ "$inner" = "6" ]; then
- 			req_proto_offset="44"
- 			req_offset="78"
-@@ -231,10 +246,12 @@ verify() {
- 				req_proto_offset="$((req_proto_offset + 4))"
- 				req_offset="$((req_offset + 4))"
- 			fi
--			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
--			ip[$tunnel_type_offset] = $tunnel_type_proto and \
--			ip[$req_proto_offset] = 0x3a and \
--			ip[$req_offset] = 0x80 2>/dev/null | head -n 1)"
-+			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
-+				-i veth0 -n                                   \
-+				ip[$tunnel_type_offset] = $tunnel_type_proto and \
-+				ip[$req_proto_offset] = 0x3a and              \
-+				ip[$req_offset] = 0x80 2>/dev/null            \
-+				| head -n 1)"
- 		elif [ "$inner" = "other" ]; then
- 			req_proto_offset="36"
- 			req_offset="45"
-@@ -250,11 +267,13 @@ verify() {
- 				expected_tos="0x00"
- 				expected_ttl="64"
- 			fi
--			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
--			ip[$tunnel_type_offset] = $tunnel_type_proto and \
--			ip[$req_proto_offset] = 0x08 and \
--			ip[$((req_proto_offset + 1))] = 0x06 and \
--			ip[$req_offset] = 0x01 2>/dev/null | head -n 1)"
-+			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
-+				-i veth0 -n                                   \
-+				ip[$tunnel_type_offset] = $tunnel_type_proto and \
-+				ip[$req_proto_offset] = 0x08 and              \
-+				ip[$((req_proto_offset + 1))] = 0x06 and      \
-+				ip[$req_offset] = 0x01 2>/dev/null            \
-+				| head -n 1)"
- 		fi
- 	elif [ "$outer" = "6" ]; then
- 		if [ "$type" = "gre" ]; then
-@@ -273,10 +292,12 @@ verify() {
- 				req_proto_offset="$((req_proto_offset + 4))"
- 				req_offset="$((req_offset + 4))"
- 			fi
--			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
--			ip6[$tunnel_type_offset] = $tunnel_type_proto and \
--			ip6[$req_proto_offset] = 0x01 and \
--			ip6[$req_offset] = 0x08 2>/dev/null | head -n 1)"
-+			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
-+				-i veth0 -n                                   \
-+				ip6[$tunnel_type_offset] = $tunnel_type_proto and \
-+				ip6[$req_proto_offset] = 0x01 and             \
-+				ip6[$req_offset] = 0x08 2>/dev/null           \
-+				| head -n 1)"
- 		elif [ "$inner" = "6" ]; then
- 			local req_proto_offset="72"
- 			local req_offset="106"
-@@ -288,10 +309,12 @@ verify() {
- 				req_proto_offset="$((req_proto_offset + 4))"
- 				req_offset="$((req_offset + 4))"
- 			fi
--			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
--			ip6[$tunnel_type_offset] = $tunnel_type_proto and \
--			ip6[$req_proto_offset] = 0x3a and \
--			ip6[$req_offset] = 0x80 2>/dev/null | head -n 1)"
-+			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
-+				-i veth0 -n                                   \
-+				ip6[$tunnel_type_offset] = $tunnel_type_proto and \
-+				ip6[$req_proto_offset] = 0x3a and             \
-+				ip6[$req_offset] = 0x80 2>/dev/null           \
-+				| head -n 1)"
- 		elif [ "$inner" = "other" ]; then
- 			local req_proto_offset="64"
- 			local req_offset="73"
-@@ -307,11 +330,13 @@ verify() {
- 				expected_tos="0x00"
- 				expected_ttl="64"
- 			fi
--			out="$(tcpdump --immediate-mode -p -c 1 -v -i veth0 -n \
--			ip6[$tunnel_type_offset] = $tunnel_type_proto and \
--			ip6[$req_proto_offset] = 0x08 and \
--			ip6[$((req_proto_offset + 1))] = 0x06 and \
--			ip6[$req_offset] = 0x01 2>/dev/null | head -n 1)"
-+			out="$(${RUN_NS0} tcpdump --immediate-mode -p -c 1 -v \
-+				-i veth0 -n                                   \
-+				ip6[$tunnel_type_offset] = $tunnel_type_proto and \
-+				ip6[$req_proto_offset] = 0x08 and             \
-+				ip6[$((req_proto_offset + 1))] = 0x06 and     \
-+				ip6[$req_offset] = 0x01 2>/dev/null           \
-+				| head -n 1)"
+ expected_tos="0x00"
+@@ -340,7 +343,7 @@ verify() {
  		fi
  	fi
  	kill -9 $ping_pid
-@@ -351,9 +376,8 @@ verify() {
+-	wait $ping_pid 2>/dev/null
++	wait $ping_pid 2>/dev/null || true
+ 	result="FAIL"
+ 	if [ "$outer" = "4" ]; then
+ 		captured_ttl="$(get_field "ttl" "$out")"
+@@ -380,6 +383,31 @@ cleanup() {
+ 	ip netns del "${NS1}" 2>/dev/null
  }
  
- cleanup() {
--	ip link del veth0 2>/dev/null
--	ip netns del testing 2>/dev/null
--	ip link del tep0 2>/dev/null
-+	ip netns del "${NS0}" 2>/dev/null
-+	ip netns del "${NS1}" 2>/dev/null
- }
- 
++exit_handler() {
++	# Don't exit immediately if one of the intermediate commands fails.
++	# We might be called at the end of the script, when the network
++	# namespaces have already been deleted. So cleanup() may fail, but we
++	# still need to run until 'exit $ERR' or the script won't return the
++	# correct error code.
++	set +e
++
++	cleanup
++
++	exit $ERR
++}
++
++# Restore the default SIGINT handler (just in case) and exit.
++# The exit handler will take care of cleaning everything up.
++interrupted() {
++	trap - INT
++
++	exit $ERR
++}
++
++set -e
++trap exit_handler EXIT
++trap interrupted INT
++
  printf "┌────────┬───────┬───────┬──────────────┬"
+ printf "──────────────┬───────┬────────┐\n"
+ for type in gre vxlan geneve; do
+@@ -409,6 +437,10 @@ done
+ printf "└────────┴───────┴───────┴──────────────┴"
+ printf "──────────────┴───────┴────────┘\n"
+ 
++# All tests done.
++# Set ERR appropriately: it will be returned by the exit handler.
+ if $failed; then
+-	exit 1
++	ERR=1
++else
++	ERR=0
+ fi
 -- 
 2.30.2
 
