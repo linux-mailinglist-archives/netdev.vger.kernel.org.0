@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 347A66615B8
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:07:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 574226615C2
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:14:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbjAHOHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 09:07:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
+        id S229483AbjAHOOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 09:14:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbjAHOHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:07:53 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B97F5A
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 06:07:52 -0800 (PST)
+        with ESMTP id S233244AbjAHOOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:14:25 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70390101C4
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 06:14:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673186872; x=1704722872;
+  t=1673187264; x=1704723264;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=0JO44a6TP/Whpsx+Vpq0JEinNmF/qxJY8OAm9sasGMw=;
-  b=m8g815PVITllUZaO2lECSlzX/yGMLQlJClTDRiT/QppZN2NLsOkLba2F
-   KpKxh7oyhDZ/zDZBgJeDFQnIrS+r2OyR1Y+j72iwj5A8+ZIy/Onm/AvM9
-   QjGkQj6fJ9tdedWZyzXlzI7Gw01tdCOfw6voq6siFn6T9MUJbv92xITCz
-   QFwsdwjJCRK2wk6GRXQNF3y5j7I25nKUcRU3OckEh9cfevF1Lbu6lrori
-   z4jEbNbeVRE1BRfAux5lGwKBtJQ5EatdiNZhjwtGKhrNfIzRpH7D3Ep8O
-   YqYBSvPaPYNQWpXAZyVJRzpxE5gh7Zk2LtnDgFCuN8RsEeqH93jyRWtOL
+  bh=SC925gniDEpapFVYL+Ri3iaAESIrleJtaNGf3pJgYD4=;
+  b=TN3+I0ZqwshfmwxMdWf7tEV5bP33/211SrdPhxTUU3+mz2XqCYoljnJU
+   LpS2UPVpsXfWq3DY9UyEhyE01dixbN4mF7YuE/Ohb9/inJTSKLkI2lZRT
+   YsbBJm9WlzmDRLZ1yJKQNmj+zUAVRy3QPlvjlrodordzh6RFXtibKC5Pz
+   Fd6HFq3fZwDg8BAjYsr1uboV5kKUAf47GGfwsvF5ZGfM3Ms+GZ30EOLTb
+   dyxA/jDeAaUs6toMvlilux2uGI08+a57PtqGQUKSCKoxh4xhHDl2tRM5D
+   6E+aCw12V9U8t0xFb87FLlXooNnLN8M4oeBkhNzE3YtZENi70Yg5kMivH
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="306246928"
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="408974310"
 X-IronPort-AV: E=Sophos;i="5.96,310,1665471600"; 
-   d="scan'208";a="306246928"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:07:45 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="649762467"
+   d="scan'208";a="408974310"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:14:19 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="745112079"
 X-IronPort-AV: E=Sophos;i="5.96,310,1665471600"; 
-   d="scan'208";a="649762467"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.213.110.20]) ([10.213.110.20])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:07:39 -0800
-Message-ID: <e392d2df-48b3-fb7b-86d3-2ea22aa11467@linux.intel.com>
-Date:   Sun, 8 Jan 2023 19:37:35 +0530
+   d="scan'208";a="745112079"
+Received: from bmothe-mobl.gar.corp.intel.com (HELO [10.213.110.20]) ([10.213.110.20])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:14:11 -0800
+Message-ID: <253f689e-ce60-ee87-6ec9-9efc9b001960@linux.intel.com>
+Date:   Sun, 8 Jan 2023 19:44:08 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH v3 net-next 2/5] net: wwan: t7xx: Infrastructure for early
- port configuration
+Subject: Re: [PATCH v3 net-next 3/5] net: wwan: t7xx: PCIe reset rescan
 Content-Language: en-US
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org
@@ -57,272 +56,329 @@ Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         linux-mediatek@lists.infradead.org,
         Madhusmita Sahu <madhusmita.sahu@intel.com>
 References: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
- <cad74cd61423dbf01375a96432b3d1dbfcce0f1a.1673016069.git.m.chetan.kumar@linux.intel.com>
- <8b1bd24c-f14c-0244-d2fb-69d4f02b46d5@intel.com>
+ <568b6ed1fa2ddf9b8f44980bec9a28df7a24662e.1673016069.git.m.chetan.kumar@linux.intel.com>
+ <6a8b7eee-2af9-b953-8431-875ea9701a89@intel.com>
 From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <8b1bd24c-f14c-0244-d2fb-69d4f02b46d5@intel.com>
+In-Reply-To: <6a8b7eee-2af9-b953-8431-875ea9701a89@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jesse,
-Thank you for the feedback.
-
-On 1/7/2023 12:01 AM, Jesse Brandeburg wrote:
-> On 1/6/2023 8:26 AM, m.chetan.kumar@linux.intel.com wrote:
+On 1/7/2023 12:12 AM, Jesse Brandeburg wrote:
+> On 1/6/2023 8:27 AM, m.chetan.kumar@linux.intel.com wrote:
 >> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 >>
->> To support cases such as FW update or Core dump, the t7xx
->> device is capable of signaling the host that a special port
->> needs to be created before the handshake phase.
+>> PCI rescan module implements "rescan work queue".
+>> In firmware flashing or coredump collection procedure
+>> WWAN device is programmed to boot in fastboot mode and
+>> a work item is scheduled for removal & detection.
 >>
->> This patch adds the infrastructure required to create the
->> early ports which also requires a different configuration of
->> CLDMA queues.
-> 
-> nit: use imperative voice in your commit messages: no "this patch".
-> instead:
-> "Add the infrastructure..."
-
-Sure. Will correct it.
-
-> 
+>> The WWAN device is reset using APCI call as part driver
+>> removal flow. Work queue rescans pci bus at fixed interval
+>> for device detection, later when device is detect work queue
+>> exits.
 >>
 >> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
 >> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
 >> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
 >> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 >> Signed-off-by: Devegowda Chandrashekar 
 >> <chandrashekar.devegowda@intel.com>
->> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 >> -- 
 >> v3:
 >>   * No Change.
 >> v2:
->>   * Move recv_skb handler to cldma_queue.
->>   * Drop cldma_queue_type.
->>   * Restore prototype of t7xx_port_send_raw_skb().
->>   * Remove PORT_CFG_ID_INVALID check in t7xx_port_proxy_set_cfg().
->>   * Add space before */.
->>   * Drop unnecessary logs.
->>   * Use WARN_ON on early port.
->>   * Use new MISC_DEV_STATUS_INVALID instead of MISC_DEV_STATUS.
->>   * Use macros instead of const identifiers.
->>   * Change ports member type from pointer to array type.
->>   * Prefix LK_EVENT_XX with MISC prefix.
->>   * Use t7xx prefix for device_stage enums.
->>   * Correct log messages.
->>   * Don’t override pkt_size for non-download port under dedicated Queue.
->>   * Drop cldma_txq_rxq_ids.
->>   * Use macro for txq/rxq index.
->>   * Use warn_on for rxq_idx comparison.
->>   * Drop t7xx_port_proxy_get_port_by_name().
->>   * Replace fsm poll with read_poll_timeout().
->>   * Use "\n" consistently across log message.
->>   * Remove local var _dev prefixes in fsm_routine_start().
->>   * Use max_t.
-> 
-> ...
-> 
-> 
->> diff --git a/drivers/net/wwan/t7xx/t7xx_reg.h 
->> b/drivers/net/wwan/t7xx/t7xx_reg.h
->> index c41d7d094c08..44352cd02460 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_reg.h
->> +++ b/drivers/net/wwan/t7xx/t7xx_reg.h
->> @@ -102,10 +102,28 @@ enum t7xx_pm_resume_state {
->>   };
->>   #define T7XX_PCIE_MISC_DEV_STATUS        0x0d1c
->> -#define MISC_STAGE_MASK                GENMASK(2, 0)
->> -#define MISC_RESET_TYPE_PLDR            BIT(26)
->>   #define MISC_RESET_TYPE_FLDR            BIT(27)
->> -#define LINUX_STAGE                4
->> +#define MISC_RESET_TYPE_PLDR            BIT(26)
->> +#define MISC_DEV_STATUS_MASK            GENMASK(15, 0)
->> +#define MISC_DEV_STATUS_INVALID            GENMASK(15, 0)
-> 
-> I don't see any uses of this, even though it's mentioned in the commit 
-> message. The only reason I looked was because it was weird to have 
-> DEV_STATUS_MASK and STATUS_INVALID be the same values, is that correct?
-
-Both are unused. Will drop it.
-
-> 
-> 
->> +#define MISC_LK_EVENT_MASK            GENMASK(11, 8)
+>>   * Drop empty line inside critical sections.
+>>   * Correct log message.
+>>   * Correct logic inside t7xx_always_match().
+>>   * Drop hp_enable changes.
+>>   * Drop g_ prefix from t7xx_rescan_ctx.
+>>   * Use tab before comment in struct decl.
+>>   * Remove extra white space.
+>>   * Drop modem exception state check.
+>>   * Crit section newlines.
+>>   * Remove unnecessary header files inclusion.
+>>   * Drop spinlock around reset and rescan flow.
+>> ---
+>>   drivers/net/wwan/t7xx/Makefile          |  3 +-
+>>   drivers/net/wwan/t7xx/t7xx_modem_ops.c  |  3 +
+>>   drivers/net/wwan/t7xx/t7xx_pci.c        | 56 ++++++++++++++-
+>>   drivers/net/wwan/t7xx/t7xx_pci_rescan.c | 96 +++++++++++++++++++++++++
+>>   drivers/net/wwan/t7xx/t7xx_pci_rescan.h | 28 ++++++++
+>>   5 files changed, 184 insertions(+), 2 deletions(-)
+>>   create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.c
+>>   create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.h
+>>
+>> diff --git a/drivers/net/wwan/t7xx/Makefile 
+>> b/drivers/net/wwan/t7xx/Makefile
+>> index 268ff9e87e5b..ba5c607404a4 100644
+>> --- a/drivers/net/wwan/t7xx/Makefile
+>> +++ b/drivers/net/wwan/t7xx/Makefile
+>> @@ -17,7 +17,8 @@ mtk_t7xx-y:=    t7xx_pci.o \
+>>           t7xx_hif_dpmaif_tx.o \
+>>           t7xx_hif_dpmaif_rx.o  \
+>>           t7xx_dpmaif.o \
+>> -        t7xx_netdev.o
+>> +        t7xx_netdev.o \
+>> +        t7xx_pci_rescan.o
+>>   mtk_t7xx-$(CONFIG_WWAN_DEBUGFS) += \
+>>           t7xx_port_trace.o \
+>> diff --git a/drivers/net/wwan/t7xx/t7xx_modem_ops.c 
+>> b/drivers/net/wwan/t7xx/t7xx_modem_ops.c
+>> index cbd65aa48721..2fcaea4694ba 100644
+>> --- a/drivers/net/wwan/t7xx/t7xx_modem_ops.c
+>> +++ b/drivers/net/wwan/t7xx/t7xx_modem_ops.c
+>> @@ -37,6 +37,7 @@
+>>   #include "t7xx_modem_ops.h"
+>>   #include "t7xx_netdev.h"
+>>   #include "t7xx_pci.h"
+>> +#include "t7xx_pci_rescan.h"
+>>   #include "t7xx_pcie_mac.h"
+>>   #include "t7xx_port.h"
+>>   #include "t7xx_port_proxy.h"
+>> @@ -194,6 +195,8 @@ static irqreturn_t t7xx_rgu_isr_thread(int irq, 
+>> void *data)
+>>       msleep(RGU_RESET_DELAY_MS);
+>>       t7xx_reset_device_via_pmic(t7xx_dev);
+>> +    t7xx_rescan_queue_work(t7xx_dev->pdev);
 >> +
->> +enum lk_event_id {
->> +    LK_EVENT_NORMAL = 0,
->> +    LK_EVENT_CREATE_PD_PORT = 1,
->> +    LK_EVENT_CREATE_POST_DL_PORT = 2,
->> +    LK_EVENT_RESET = 7,
->> +};
->> +
->> +#define MISC_STAGE_MASK                GENMASK(2, 0)
->> +
->> +enum t7xx_device_stage {
->> +    T7XX_DEV_STAGE_INIT = 0,
->> +    T7XX_DEV_STAGE_BROM_PRE = 1,
->> +    T7XX_DEV_STAGE_BROM_POST = 2,
->> +    T7XX_DEV_STAGE_LK = 3,
->> +    T7XX_DEV_STAGE_LINUX = 4,
->> +};
->>   #define T7XX_PCIE_RESOURCE_STATUS        0x0d28
->>   #define T7XX_PCIE_RESOURCE_STS_MSK        GENMASK(4, 0)
->> diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.c 
->> b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
->> index 80edb8e75a6a..76fb5d57d4d7 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_state_monitor.c
->> +++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
->> @@ -206,6 +206,34 @@ static void fsm_routine_exception(struct 
->> t7xx_fsm_ctl *ctl, struct t7xx_fsm_comm
->>           fsm_finish_command(ctl, cmd, 0);
+>>       return IRQ_HANDLED;
 >>   }
->> +static void t7xx_lk_stage_event_handling(struct t7xx_fsm_ctl *ctl, 
->> unsigned int status)
+>> diff --git a/drivers/net/wwan/t7xx/t7xx_pci.c 
+>> b/drivers/net/wwan/t7xx/t7xx_pci.c
+>> index 871f2a27a398..1e953ec7dd00 100644
+>> --- a/drivers/net/wwan/t7xx/t7xx_pci.c
+>> +++ b/drivers/net/wwan/t7xx/t7xx_pci.c
+>> @@ -38,6 +38,7 @@
+>>   #include "t7xx_mhccif.h"
+>>   #include "t7xx_modem_ops.h"
+>>   #include "t7xx_pci.h"
+>> +#include "t7xx_pci_rescan.h"
+>>   #include "t7xx_pcie_mac.h"
+>>   #include "t7xx_reg.h"
+>>   #include "t7xx_state_monitor.h"
+>> @@ -715,6 +716,7 @@ static int t7xx_pci_probe(struct pci_dev *pdev, 
+>> const struct pci_device_id *id)
+>>           return ret;
+>>       }
+>> +    t7xx_rescan_done();
+>>       t7xx_pcie_mac_set_int(t7xx_dev, MHCCIF_INT);
+>>       t7xx_pcie_mac_interrupts_en(t7xx_dev);
+>> @@ -754,7 +756,59 @@ static struct pci_driver t7xx_pci_driver = {
+>>       .shutdown = t7xx_pci_shutdown,
+>>   };
+>> -module_pci_driver(t7xx_pci_driver);
+>> +static int __init t7xx_pci_init(void)
 >> +{
->> +    struct t7xx_modem *md = ctl->md;
->> +    struct cldma_ctrl *md_ctrl;
->> +    enum lk_event_id lk_event;
+>> +    int ret;
+>> +
+>> +    t7xx_pci_dev_rescan();
+>> +    ret = t7xx_rescan_init();
+>> +    if (ret) {
+>> +        pr_err("Failed to init t7xx rescan work\n");
+>> +        return ret;
+>> +    }
+>> +
+>> +    return pci_register_driver(&t7xx_pci_driver);
+>> +}
+>> +module_init(t7xx_pci_init);
+>> +
+>> +static int t7xx_always_match(struct device *dev, const void *data)
+>> +{
+>> +    struct pci_dev *pdev = to_pci_dev(dev);
+>> +    const struct pci_device_id *id = data;
+>> +
+>> +    if (pci_match_id(id, pdev))
+>> +        return 1;
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static void __exit t7xx_pci_cleanup(void)
+>> +{
+>> +    int remove_flag = 0;
 >> +    struct device *dev;
 >> +
->> +    dev = &md->t7xx_dev->pdev->dev;
->> +    lk_event = FIELD_GET(MISC_LK_EVENT_MASK, status);
->> +    switch (lk_event) {
->> +    case LK_EVENT_NORMAL:
->> +    case LK_EVENT_RESET:
->> +        break;
+>> +    dev = driver_find_device(&t7xx_pci_driver.driver, NULL, 
+>> &t7xx_pci_table[0],
+>> +                 t7xx_always_match);
+>> +    if (dev) {
+>> +        pr_debug("unregister t7xx PCIe driver while device is still 
+>> exist.\n");
+> 
+> nit: s/is still exist/still exists/
+
+Ok, will correct it.
+
+> 
+>> +        put_device(dev);
+>> +        remove_flag = 1;
+>> +    } else {
+>> +        pr_debug("no t7xx PCIe driver found.\n");
+>> +    }
 >> +
->> +    case LK_EVENT_CREATE_PD_PORT:
->> +        md_ctrl = md->md_ctrl[CLDMA_ID_AP];
->> +        t7xx_cldma_hif_hw_init(md_ctrl);
->> +        t7xx_cldma_stop(md_ctrl);
->> +        t7xx_cldma_switch_cfg(md_ctrl, CLDMA_DEDICATED_Q_CFG);
->> +        t7xx_cldma_start(md_ctrl);
->> +        break;
+>> +    pci_lock_rescan_remove();
+>> +    pci_unregister_driver(&t7xx_pci_driver);
+>> +    pci_unlock_rescan_remove();
 >> +
->> +    default:
->> +        dev_err(dev, "Invalid LK event %d\n", lk_event);
->> +        break;
+>> +    t7xx_rescan_deinit();
+>> +    if (remove_flag) {
+>> +        pr_debug("remove t7xx PCI device\n");
+>> +        pci_stop_and_remove_bus_device_locked(to_pci_dev(dev));
 >> +    }
 >> +}
 >> +
->>   static int fsm_stopped_handler(struct t7xx_fsm_ctl *ctl)
->>   {
->>       ctl->curr_state = FSM_STATE_STOPPED;
->> @@ -317,8 +345,9 @@ static int fsm_routine_starting(struct 
->> t7xx_fsm_ctl *ctl)
->>   static void fsm_routine_start(struct t7xx_fsm_ctl *ctl, struct 
->> t7xx_fsm_command *cmd)
->>   {
->>       struct t7xx_modem *md = ctl->md;
->> -    u32 dev_status;
->> -    int ret;
->> +    struct device *dev;
->> +    u32 status, stage;
->> +    int ret = 0;
->>       if (!md)
->>           return;
->> @@ -329,23 +358,55 @@ static void fsm_routine_start(struct 
->> t7xx_fsm_ctl *ctl, struct t7xx_fsm_command
->>           return;
->>       }
->> +    dev = &md->t7xx_dev->pdev->dev;
->>       ctl->curr_state = FSM_STATE_PRE_START;
->>       t7xx_md_event_notify(md, FSM_PRE_START);
->> -    ret = read_poll_timeout(ioread32, dev_status,
->> -                (dev_status & MISC_STAGE_MASK) == LINUX_STAGE, 20000, 
->> 2000000,
->> -                false, IREG_BASE(md->t7xx_dev) + 
->> T7XX_PCIE_MISC_DEV_STATUS);
->> +    ret = read_poll_timeout(ioread32, status,
->> +                ((status & MISC_STAGE_MASK) == T7XX_DEV_STAGE_LINUX) ||
->> +                ((status & MISC_STAGE_MASK) == T7XX_DEV_STAGE_LK), 
->> 100000,
->> +                20000000, false, IREG_BASE(md->t7xx_dev) +
->> +                T7XX_PCIE_MISC_DEV_STATUS);
+>> +module_exit(t7xx_pci_cleanup);
+>>   MODULE_AUTHOR("MediaTek Inc");
+>>   MODULE_DESCRIPTION("MediaTek PCIe 5G WWAN modem T7xx driver");
+>> diff --git a/drivers/net/wwan/t7xx/t7xx_pci_rescan.c 
+>> b/drivers/net/wwan/t7xx/t7xx_pci_rescan.c
+>> new file mode 100644
+>> index 000000000000..67f13c035846
+>> --- /dev/null
+>> +++ b/drivers/net/wwan/t7xx/t7xx_pci_rescan.c
+>> @@ -0,0 +1,96 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Copyright (c) 2021, MediaTek Inc.
+>> + * Copyright (c) 2021-2023, Intel Corporation.
+>> + */
 >> +
->>       if (ret) {
->> -        struct device *dev = &md->t7xx_dev->pdev->dev;
->> +        ret = -ETIMEDOUT;
->> +        dev_err(dev, "read poll %d\n", ret);
->> +        goto finish_command;
+>> +#define pr_fmt(fmt) KBUILD_MODNAME ":t7xx:%s: " fmt, __func__
+>> +#define dev_fmt(fmt) "t7xx: " fmt
+>> +
+>> +#include <linux/delay.h>
+>> +#include <linux/pci.h>
+>> +#include <linux/spinlock.h>
+>> +#include <linux/workqueue.h>
+>> +
+>> +#include "t7xx_pci.h"
+>> +#include "t7xx_pci_rescan.h"
+>> +
+>> +static struct remove_rescan_context t7xx_rescan_ctx;
+>> +
+>> +void t7xx_pci_dev_rescan(void)
+>> +{
+>> +    struct pci_bus *b = NULL;
+>> +
+>> +    pci_lock_rescan_remove();
+>> +    while ((b = pci_find_next_bus(b)))
+>> +        pci_rescan_bus(b);
+>> +    pci_unlock_rescan_remove();
+>> +}
+>> +
+>> +void t7xx_rescan_done(void)
+>> +{
+>> +    if (!atomic_read(&t7xx_rescan_ctx.rescan_done)) {
+>> +        atomic_set(&t7xx_rescan_ctx.rescan_done, 1);
+>> +        pr_debug("Rescan probe\n");
+>> +    } else {
+>> +        pr_debug("Init probe\n");
 >> +    }
->> -        fsm_finish_command(ctl, cmd, -ETIMEDOUT);
->> -        dev_err(dev, "Invalid device status 0x%lx\n", dev_status & 
->> MISC_STAGE_MASK);
->> -        return;
->> +    if (status != ctl->prev_status) {
->> +        stage = FIELD_GET(MISC_STAGE_MASK, status);
-> 
-> if stage is only used down here you can declare it locally. cppcheck has 
-> a check that will find these for you.
-
-Ok. Will consider it.
-
-> 
->> +        switch (stage) {
->> +        case T7XX_DEV_STAGE_INIT:
->> +        case T7XX_DEV_STAGE_BROM_PRE:
->> +        case T7XX_DEV_STAGE_BROM_POST:
->> +            dev_info(dev, "BROM_STAGE Entered\n");
->> +            ret = t7xx_fsm_append_cmd(ctl, FSM_CMD_START, 0);
+>> +}
+>> +
+>> +static void t7xx_remove_rescan(struct work_struct *work)
+>> +{
+>> +    int num_retries = RESCAN_RETRIES;
+>> +    struct pci_dev *pdev;
+>> +
+>> +    atomic_set(&t7xx_rescan_ctx.rescan_done, 0);
+>> +    pdev = t7xx_rescan_ctx.dev;
+>> +
+>> +    if (pdev) {
+>> +        pci_stop_and_remove_bus_device_locked(pdev);
+>> +        pr_debug("start remove and rescan flow\n");
+>> +    }
+>> +
+>> +    do {
+>> +        t7xx_pci_dev_rescan();
+>> +
+>> +        if (atomic_read(&t7xx_rescan_ctx.rescan_done))
 >> +            break;
 >> +
->> +        case T7XX_DEV_STAGE_LK:
->> +            dev_info(dev, "LK_STAGE Entered\n");
->> +            t7xx_lk_stage_event_handling(ctl, status);
->> +            break;
+>> +        msleep(DELAY_RESCAN_MTIME);
+>> +    } while (num_retries--);
+>> +}
 >> +
->> +        case T7XX_DEV_STAGE_LINUX:
->> +            dev_info(dev, "LINUX_STAGE Entered\n");
->> +            t7xx_cldma_hif_hw_init(md->md_ctrl[CLDMA_ID_AP]);
->> +            t7xx_cldma_hif_hw_init(md->md_ctrl[CLDMA_ID_MD]);
->> +            t7xx_mhccif_mask_clr(md->t7xx_dev, D2H_INT_PORT_ENUM |
->> +                         D2H_INT_ASYNC_MD_HK | D2H_INT_ASYNC_AP_HK);
->> +            t7xx_port_proxy_set_cfg(md, PORT_CFG_ID_NORMAL);
->> +            ret = fsm_routine_starting(ctl);
->> +            break;
+>> +void t7xx_rescan_queue_work(struct pci_dev *pdev)
+>> +{
+>> +    if (!atomic_read(&t7xx_rescan_ctx.rescan_done)) {
+>> +        dev_err(&pdev->dev, "Rescan failed\n");
+>> +        return;
+>> +    }
 >> +
->> +        default:
->> +            break;
->> +        }
->> +        ctl->prev_status = status;
->>       }
->> -    t7xx_cldma_hif_hw_init(md->md_ctrl[CLDMA_ID_AP]);
->> -    t7xx_cldma_hif_hw_init(md->md_ctrl[CLDMA_ID_MD]);
->> -    fsm_finish_command(ctl, cmd, fsm_routine_starting(ctl));
->> +finish_command:
->> +    fsm_finish_command(ctl, cmd, ret);
->>   }
->>   static int fsm_main_thread(void *data)
->> @@ -516,6 +577,7 @@ void t7xx_fsm_reset(struct t7xx_modem *md)
->>       fsm_flush_event_cmd_qs(ctl);
->>       ctl->curr_state = FSM_STATE_STOPPED;
->>       ctl->exp_flg = false;
->> +    ctl->prev_status = 0;
->>   }
->>   int t7xx_fsm_init(struct t7xx_modem *md)
->> diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.h 
->> b/drivers/net/wwan/t7xx/t7xx_state_monitor.h
->> index b6e76f3903c8..5e8012567ba1 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_state_monitor.h
->> +++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.h
->> @@ -96,6 +96,7 @@ struct t7xx_fsm_ctl {
->>       bool            exp_flg;
->>       spinlock_t        notifier_lock;        /* Protects notifier 
->> list */
->>       struct list_head    notifier_list;
->> +    u32                     prev_status;
->>   };
->>   struct t7xx_fsm_event {
+>> +    t7xx_rescan_ctx.dev = pdev;
+>> +    queue_work(t7xx_rescan_ctx.pcie_rescan_wq, 
+>> &t7xx_rescan_ctx.service_task);
+>> +}
+>> +
+>> +int t7xx_rescan_init(void)
+>> +{
+>> +    atomic_set(&t7xx_rescan_ctx.rescan_done, 1);
+>> +    t7xx_rescan_ctx.dev = NULL;
+>> +
+>> +    t7xx_rescan_ctx.pcie_rescan_wq = 
+>> create_singlethread_workqueue(MTK_RESCAN_WQ);
+>> +    if (!t7xx_rescan_ctx.pcie_rescan_wq) {
+>> +        pr_err("Failed to create workqueue: %s\n", MTK_RESCAN_WQ);
+>> +        return -ENOMEM;
+>> +    }
+>> +
+>> +    INIT_WORK(&t7xx_rescan_ctx.service_task, t7xx_remove_rescan);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +void t7xx_rescan_deinit(void)
+>> +{
+>> +    t7xx_rescan_ctx.dev = NULL;
+>> +    atomic_set(&t7xx_rescan_ctx.rescan_done, 0);
+>> +    cancel_work_sync(&t7xx_rescan_ctx.service_task);
+>> +    destroy_workqueue(t7xx_rescan_ctx.pcie_rescan_wq);
+>> +}
+>> diff --git a/drivers/net/wwan/t7xx/t7xx_pci_rescan.h 
+>> b/drivers/net/wwan/t7xx/t7xx_pci_rescan.h
+>> new file mode 100644
+>> index 000000000000..80b25c44151c
+>> --- /dev/null
+>> +++ b/drivers/net/wwan/t7xx/t7xx_pci_rescan.h
+>> @@ -0,0 +1,28 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only
+>> + *
+>> + * Copyright (c) 2021, MediaTek Inc.
+>> + * Copyright (c) 2021-2023, Intel Corporation.
+>> + */
+>> +
+>> +#ifndef __T7XX_PCI_RESCAN_H__
+>> +#define __T7XX_PCI_RESCAN_H__
+>> +
+>> +#define MTK_RESCAN_WQ "mtk_rescan_wq"
+>> +
+>> +#define DELAY_RESCAN_MTIME 1000
+>> +#define RESCAN_RETRIES 35
+>> +
+>> +struct remove_rescan_context {
+>> +    struct work_struct service_task;
+>> +    struct workqueue_struct *pcie_rescan_wq;
+>> +    struct pci_dev *dev;
+>> +    atomic_t rescan_done;
+>> +};
+>> +
+>> +void t7xx_pci_dev_rescan(void);
+>> +void t7xx_rescan_queue_work(struct pci_dev *pdev);
+>> +int t7xx_rescan_init(void);
+>> +void t7xx_rescan_deinit(void);
+>> +void t7xx_rescan_done(void);
+>> +
+>> +#endif    /* __T7XX_PCI_RESCAN_H__ */
 > 
 
 -- 
