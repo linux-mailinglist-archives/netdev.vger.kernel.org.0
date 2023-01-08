@@ -2,120 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A580661642
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 16:45:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD54E661648
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 16:46:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbjAHPpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 10:45:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
+        id S233122AbjAHPqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 10:46:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230323AbjAHPpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 10:45:21 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DFFFCE7
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 07:45:20 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id s9so5836415wru.13
-        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 07:45:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5lUNU/2LnxHy71s+RNzB8twooobGE4TdibjGwC5aGDo=;
-        b=EQxeUB6SwYT20MUHkPhFiNw1Ugd+C3AXCmL6Y9PMbUA+kVOQY7VTFTXotaCv0vb1KD
-         Rtrgczknqi6Qmc3kTY5rkco3pjhVjjEcjAKa7GmuD37yO8966+9i3atyaNJ5cujGcOPS
-         qsBp0Ua9Yy9HFqsYrFMmKiVizPesgLUwFGtZ1RHtjF4n3RLL3H3xvwfBZpBw912QI+Dy
-         qMkguuwKjMhcss7/IfF6/+HZL8Jff+Ebw3+5Fwwf4pqAGpsZueNHz7XldkvAOv+tm/vu
-         Iy/oJjBICAX333j/5RookqlYoBPm3a0sq+XUun9JRimhll5jw7MYK2LkMTKNXVqLXBi+
-         Hy5A==
+        with ESMTP id S233053AbjAHPqc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 10:46:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33CA10042
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 07:45:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673192739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=mBUPsllV7S0PFvOHT8nwAOJJCxWYHkxwaycDYQO5qZs=;
+        b=Q7MuMZZ8tSxJho9112S/WoTnivYVJERm7HjeUfZdDTw8haXX6LHNsD+uUn0Pdscyh3Bu2G
+        l3VeDW2f0Uyt7QTTTJ5ylph+SmHtCuXWIGvTg8pVZkyWVYbr7smMuonfn/+zSyb/KLb4yb
+        nOlaZrohcp7QGOqiv8CLGQ3IYzB8Xs8=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-424-hXHUWsxDPs6yCvE-iSKJ6g-1; Sun, 08 Jan 2023 10:45:37 -0500
+X-MC-Unique: hXHUWsxDPs6yCvE-iSKJ6g-1
+Received: by mail-qk1-f197.google.com with SMTP id y6-20020a05620a44c600b00704d482d3a0so4877826qkp.21
+        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 07:45:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5lUNU/2LnxHy71s+RNzB8twooobGE4TdibjGwC5aGDo=;
-        b=dSAd6uvlWPvoeMRRbzHl4orczO+Q00lM5cKFVYSkhjAWQurZe1iw3aUOMcNzl4U7Ds
-         VPFuMEWG1HudgIFrXFujB0ZWRPGY1sOUOAvWyUjo57hb0silWlmcnV+67lgh8gDR6c2P
-         U+uTqGGmER8+Mrs3YhOOHMrvqyh/1ighlPqCbwInx3bvkhEpCW14OytvA+TlUbsP8xLX
-         ENSnDGa+t9BUpfWhHwO32XnMo/kQSTinG3RgMFJv8XDt1EPkXp9SFCszKENZdYHR/RYJ
-         hWzzPQmmCrwbiOO23Hsg8yA+lcCwuruTRl97RlBYFSQZ+ueX2UPsUKoevDnztu9SZyzy
-         rFxA==
-X-Gm-Message-State: AFqh2kovx3U2pXEgI/zQfIG9soQFDziSdeyyEZG9qQwWzu92twBAG8e2
-        8dRyxPFZeOpvr/8yiFyDyrq15g==
-X-Google-Smtp-Source: AMrXdXtOmd+GQD//e/TfxCoGLNQM9uN5kqGICNBqraIO9cvKT4s4gnNvl3ns/9B3NKuNeevxV32nOw==
-X-Received: by 2002:a5d:4ac5:0:b0:273:bdf5:663a with SMTP id y5-20020a5d4ac5000000b00273bdf5663amr43555470wrs.26.1673192719027;
-        Sun, 08 Jan 2023 07:45:19 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id s10-20020adfea8a000000b002421ed1d8c8sm6204660wrm.103.2023.01.08.07.45.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Jan 2023 07:45:18 -0800 (PST)
-Message-ID: <f02fc413-43e7-f405-ed86-13a96846a1a8@linaro.org>
-Date:   Sun, 8 Jan 2023 16:45:17 +0100
+        bh=mBUPsllV7S0PFvOHT8nwAOJJCxWYHkxwaycDYQO5qZs=;
+        b=u6A4ZyZvLHhQVWyjHdOUseyME26x/qtLNU11v9/rFtwTSJeM09q2qCtuouyDyhSvCe
+         youyL3XkkS8tlMRaz2p3ii9jyNDWSVZhzj7CC+yt3P/TOnDlcgTTYn9ZsFUynpoJfTxr
+         al41BaP5AZmjK2yHAYgvWCcdgFJ4WyMkNQw7mwTcrPznvOBhcO7Ddp+RLLwnwkxjzJT9
+         93C3GStYkpevNJNNkcN32xWz9/S0PZzWtGaz6S6NHjAk/PNmshFiPKwWXP1MFyuWrBm4
+         OhccPveuVbhfF/UpDu2vh87MJWs3ypmt1EZq5MiXzoJMJDNqGd591ujzOBvD1iVKRK+i
+         ZmRQ==
+X-Gm-Message-State: AFqh2kqiyPRbn9owzheDCLAV3GZXIBzfE4ywhXYn1VC7sqFfepKl+9kl
+        zPqm4PcoxVDC2GXZE1Lz7Z8kq1iS9bgGyoJNXcmODOcMNF1/N73C6fcVA0ktdBloI1H3UC8yMQy
+        DaAB75jOvfRcWhx9j
+X-Received: by 2002:a05:6214:c6c:b0:4c6:fcf7:9aea with SMTP id t12-20020a0562140c6c00b004c6fcf79aeamr113843015qvj.49.1673192737392;
+        Sun, 08 Jan 2023 07:45:37 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuPuNPqKiPcbcSTUSOcOvyUfZX//mmtaUg5y3+sN2P0QdNm6wotBczBPXa+bMRlEDm04TvPNw==
+X-Received: by 2002:a05:6214:c6c:b0:4c6:fcf7:9aea with SMTP id t12-20020a0562140c6c00b004c6fcf79aeamr113842838qvj.49.1673192735159;
+        Sun, 08 Jan 2023 07:45:35 -0800 (PST)
+Received: from debian (2a01cb058918ce0098fed9113971adae.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:98fe:d911:3971:adae])
+        by smtp.gmail.com with ESMTPSA id t7-20020a05620a034700b007054a238bf2sm3842200qkm.126.2023.01.08.07.45.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Jan 2023 07:45:34 -0800 (PST)
+Date:   Sun, 8 Jan 2023 16:45:31 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Matthias May <matthias.may@westermo.com>,
+        linux-kselftest@vger.kernel.org,
+        Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Subject: [PATCH net 0/3] selftests/net: Isolate l2_tos_ttl_inherit.sh in its
+ own netns.
+Message-ID: <cover.1673191942.git.gnault@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v3] net: nfc: Fix use-after-free in local_cleanup()
-Content-Language: en-US
-To:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Cc:     edumazet@google.com, kuba@kernel.org, dokyungs@yonsei.ac.kr,
-        linuxlovemin@yonsei.ac.kr
-References: <20230106063253.877394-1-jisoo.jang@yonsei.ac.kr>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230106063253.877394-1-jisoo.jang@yonsei.ac.kr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/01/2023 07:32, Jisoo Jang wrote:
-> Fix a use-after-free that occurs in kfree_skb() called from
-> local_cleanup(). When detaching an nfc device, local_cleanup()
-> called from nfc_llcp_unregister_device() frees local->rx_pending
-> and cancels local->rx_work. So the socket allocated before
-> unregister is not set null by nfc_llcp_rx_work().
+l2_tos_ttl_inherit.sh uses a veth pair to run its tests, but only one
+of the veth interfaces runs in a dedicated netns. The other one remains
+in the initial namespace where the existing network configuration can
+interfere with the setup used for the tests.
 
-How nfc_llcp_rx_work() is related to this case? It would if there was a
-race condition to which your fix does nothing (so does not close any
-race). If there is no race condition, drop the sentence, it is confusing.
+Isolate both veth devices in their own netns and ensure everything gets
+cleaned up when the script exits.
 
-If there is a race condition, this is not sufficient fix.
+Link: https://lore.kernel.org/netdev/924f1062-ab59-9b88-3b43-c44e73a30387@alu.unizg.hr/
 
-> local_cleanup() called from local_release() frees local->rx_pending
-> again, which leads to the bug.
-> 
-> Set local->rx_pending to NULL in local_cleanup()
-> 
-> Found by a modified version of syzkaller.
-> 
-> BUG: KASAN: use-after-free in kfree_skb
-> Call Trace:
->  kfree_skb
->  local_cleanup
->  nfc_llcp_local_put
->  llcp_sock_destruct
->  __sk_destruct
->  sk_destruct
->  __sk_free
->  sk_free
->  llcp_sock_release
->  __sock_release
->  sock_close
->  __fput
->  task_work_run
->  exit_to_user_mode_prepare
->  syscall_exit_to_user_mode
->  do_syscall_64
->  entry_SYSCALL_64_after_hwframe
+Guillaume Nault (3):
+  selftests/net: l2_tos_ttl_inherit.sh: Set IPv6 addresses with "nodad".
+  selftests/net: l2_tos_ttl_inherit.sh: Run tests in their own netns.
+  selftests/net: l2_tos_ttl_inherit.sh: Ensure environment cleanup on
+    failure.
 
-decode_stacktrace.sh could be useful here.
+ .../selftests/net/l2_tos_ttl_inherit.sh       | 202 +++++++++++-------
+ 1 file changed, 129 insertions(+), 73 deletions(-)
 
-Best regards,
-Krzysztof
+-- 
+2.30.2
 
