@@ -2,172 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5FC6612EA
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 02:31:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 782F26612EC
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 02:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232151AbjAHBbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Jan 2023 20:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47796 "EHLO
+        id S231357AbjAHBeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Jan 2023 20:34:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232182AbjAHBbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 20:31:12 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F3B3B907
-        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 17:31:05 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id c85so467979pfc.8
-        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 17:31:05 -0800 (PST)
+        with ESMTP id S230390AbjAHBeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Jan 2023 20:34:44 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229273633E
+        for <netdev@vger.kernel.org>; Sat,  7 Jan 2023 17:34:43 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id bg13-20020a05600c3c8d00b003d9712b29d2so6343254wmb.2
+        for <netdev@vger.kernel.org>; Sat, 07 Jan 2023 17:34:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F1XsLmyJLSZxFahyH+bnrRO9ogW2CStFBT/wHKkbpOs=;
-        b=dAqKoTa0yqV8w6eb3XT5pFsi9y8g3XfsYIe2rS1/0t5CnqoGNhzHCePXIZGXBaPwI9
-         Ac2oUarTv5SISyiBuG7siLopcI3yQLQnr0h8kfNPf0KPGp09Y9/T+NZ51v2rco+DZTWO
-         k+bZCedKgWMvgnt/bMIgWtPUZTQiRdiqcUf0w=
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=nt8bf7yY2IA0nhwlnQJ7DuxvVX3dIEzslwGHOn83FJo=;
+        b=CS2UnOpOHf41jr69bJneaWCGkc8bk32YP0s5iK4rEO0z+NR20cpaMGNGx+ftFR4c8e
+         Y1dVMxrTUwLMLPZrDukwtYMsE+Shzn9eMPEYDe+cD5BmLzxV3NICUI36LHwOsn1hX3DK
+         +2OJic1oF4odTJ15gsbB7TfvacN8oX1iwnAaBFpcn9zbP/FtnpqoftUQ4FRr1kxJrCdX
+         JhdgyNpPGxD/6xGFcWcjSP+hmEH8tNJXXXLAN/BqBiLIGRZ8Kk/gG/8izubxx35IecE/
+         N0rwdUiysbBAm2oj858eukW2Ala14qlJ+n0WspOsqKtk0/8S9PSzyvKMaYFSM2GVFJzW
+         rXoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=F1XsLmyJLSZxFahyH+bnrRO9ogW2CStFBT/wHKkbpOs=;
-        b=mos5kIby3yp1OtS2tV95S3ij4WE/N/2KUyRD08lprEQOehdeWC9SWepaY6bGbvedth
-         lXuIQitFX7cXz2nwfNMJTYn3boQC2EsLY4pT5ItBYAZIAXH44s5zyRzj+1kQptolAPuv
-         gKZbLSWAvKLpwfTf971xvv79YCNPA+1JKPYfMbOOEOF5XWkMe3ICGq21oHJXFUa5g1Yt
-         U346eIP1egz/NYjeNTHXfzRrAC3KkapssqbQ2d8puu/+mOYiqADkUPB+eEPkufOx8E6X
-         CSGu2i8UMU1pY7dnVHHbTg7ESiu/2/PQT5lJkUwlXC2TRQEBP7NjCvUxFuOGo45cQYV4
-         /tTw==
-X-Gm-Message-State: AFqh2kr+YUw5VDFwX9pICBRdIZdrIcNLuRTcBNww97a+XCPuF7kt0jGT
-        N68E3f2kI0DFvcn+sbxUYCFNgw==
-X-Google-Smtp-Source: AMrXdXvJwd3Tyv51nq/yoDQJehhVAmFPArqq8grbCdGcLQViy06OM3Vpq4nd8kgYVQ7uqUIL6C57yA==
-X-Received: by 2002:a62:2903:0:b0:57f:f2cd:6180 with SMTP id p3-20020a622903000000b0057ff2cd6180mr57052288pfp.0.1673141464818;
-        Sat, 07 Jan 2023 17:31:04 -0800 (PST)
-Received: from doug-ryzen-5700G.. ([192.183.212.197])
-        by smtp.gmail.com with ESMTPSA id x14-20020aa79a4e000000b005811c421e6csm3323714pfj.162.2023.01.07.17.31.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Jan 2023 17:31:04 -0800 (PST)
-From:   Doug Brown <doug@schmorgal.com>
-To:     Dan Williams <dcbw@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Doug Brown <doug@schmorgal.com>
-Subject: [PATCH v2 4/4] wifi: libertas: add support for WPS enrollee IE in probe requests
-Date:   Sat,  7 Jan 2023 17:30:16 -0800
-Message-Id: <20230108013016.222494-5-doug@schmorgal.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230108013016.222494-1-doug@schmorgal.com>
-References: <20230108013016.222494-1-doug@schmorgal.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nt8bf7yY2IA0nhwlnQJ7DuxvVX3dIEzslwGHOn83FJo=;
+        b=poZaAmmJWa3oBqB+jf46wqq9RVe1+xw9YGguNGEUrQ78K0YxM6q+qM0IVQcyAWiF/P
+         jVGF/Ale/xLMgY1yaRReekOmdyUOYZ6ON1grCGZTN7Kuv97kL3YOp14xlYjsGyu9vujh
+         2obG78qIPuTvob9pWMKWFRaZkOh751VrVjA3lMFkrelgjq16XwresW+z547txmwfdDle
+         ahSQfP94cxytkOYyNijNdpczRs8gIck0ColuEWZDlwjN4aaZwBONgGd2OraQGkmJP/QQ
+         KGZp0EL26by0AheXmrtVPbMadv47iPkm4oPAOAk6FwWaJKcSkV3uwd7T1euvF8jmVEnG
+         KRCw==
+X-Gm-Message-State: AFqh2krKSkGHP4AYgO9bc4rUdhBVIt25cUtBjSopdEWlL3TuDIuhuwkQ
+        RDoT0MLw/9yPDZqNUXIre867y3pAsbsWzQlURjfpzQ==
+X-Google-Smtp-Source: AMrXdXu18jMQ566qkDjxqWcKsWO1kZvjAfxTKcA3J0VYERPSPKNK4p4VC0MLRdmYP3+hj9t4CxeB8XkMYa2uiHhmpnc=
+X-Received: by 2002:a7b:c5d6:0:b0:3cf:70a0:f689 with SMTP id
+ n22-20020a7bc5d6000000b003cf70a0f689mr2997475wmk.161.1673141681640; Sat, 07
+ Jan 2023 17:34:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230107035923.363-1-cuiyunhui@bytedance.com> <Y7nP5PAGxWZ+2GHN@pop-os.localdomain>
+In-Reply-To: <Y7nP5PAGxWZ+2GHN@pop-os.localdomain>
+From:   =?UTF-8?B?6L+Q6L6J5bSU?= <cuiyunhui@bytedance.com>
+Date:   Sun, 8 Jan 2023 09:34:30 +0800
+Message-ID: <CAEEQ3wm3iZ1e3w=-Q_C19LbGsR_iDhWc_M-0KfmbPwUzqNVE=g@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v3] sock: add tracepoint for send recv length
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     rostedt@goodmis.org, mhiramat@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        kuniyu@amazon.com, duanxiongchun@bytedance.com,
+        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add compatibility with WPS by passing on WPS enrollee information in
-probe requests. Ignore other IEs supplied in the scan request. This also
-has the added benefit of restoring compatibility with newer
-wpa_supplicant versions that always add scan IEs. Previously, with
-max_scan_ie_len set to 0, scans would always fail.
+On Sun, Jan 8, 2023 at 4:03 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 
-Suggested-by: Dan Williams <dcbw@redhat.com>
-Signed-off-by: Doug Brown <doug@schmorgal.com>
----
- drivers/net/wireless/marvell/libertas/cfg.c | 48 +++++++++++++++++++--
- 1 file changed, 45 insertions(+), 3 deletions(-)
+>
+> Thanks for the numbers, they help a lot.
+>
+> Acked-by: Cong Wang <cong.wang@bytedance.com>
+>
+> A few minor issues below.
 
-diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
-index 5cd78fefbe4c..ec3f35ae15fd 100644
---- a/drivers/net/wireless/marvell/libertas/cfg.c
-+++ b/drivers/net/wireless/marvell/libertas/cfg.c
-@@ -446,6 +446,41 @@ static int lbs_add_wpa_tlv(u8 *tlv, const u8 *ie, u8 ie_len)
- 	return sizeof(struct mrvl_ie_header) + wpaie->datalen;
- }
- 
-+/* Add WPS enrollee TLV
-+ */
-+#define LBS_MAX_WPS_ENROLLEE_TLV_SIZE		\
-+	(sizeof(struct mrvl_ie_header)		\
-+	 + 256)
-+
-+static int lbs_add_wps_enrollee_tlv(u8 *tlv, const u8 *ie, size_t ie_len)
-+{
-+	struct mrvl_ie_data *wpstlv = (struct mrvl_ie_data *)tlv;
-+	const struct element *wpsie;
-+
-+	/* Look for a WPS IE and add it to the probe request */
-+	wpsie = cfg80211_find_vendor_elem(WLAN_OUI_MICROSOFT,
-+					  WLAN_OUI_TYPE_MICROSOFT_WPS,
-+					  ie, ie_len);
-+	if (!wpsie)
-+		return 0;
-+
-+	/* Convert the WPS IE to a TLV. The IE looks like this:
-+	 *   u8      type (WLAN_EID_VENDOR_SPECIFIC)
-+	 *   u8      len
-+	 *   u8[]    data
-+	 * but the TLV will look like this instead:
-+	 *   __le16  type (TLV_TYPE_WPS_ENROLLEE)
-+	 *   __le16  len
-+	 *   u8[]    data
-+	 */
-+	wpstlv->header.type = TLV_TYPE_WPS_ENROLLEE;
-+	wpstlv->header.len = wpsie->datalen;
-+	memcpy(wpstlv->data, wpsie->data, wpsie->datalen);
-+
-+	/* Return the total number of bytes added to the TLV buffer */
-+	return sizeof(struct mrvl_ie_header) + wpsie->datalen;
-+}
-+
- /*
-  * Set Channel
-  */
-@@ -672,14 +707,15 @@ static int lbs_ret_scan(struct lbs_private *priv, unsigned long dummy,
- 
- 
- /*
-- * Our scan command contains a TLV, consting of a SSID TLV, a channel list
-- * TLV and a rates TLV. Determine the maximum size of them:
-+ * Our scan command contains a TLV, consisting of a SSID TLV, a channel list
-+ * TLV, a rates TLV, and an optional WPS IE. Determine the maximum size of them:
-  */
- #define LBS_SCAN_MAX_CMD_SIZE			\
- 	(sizeof(struct cmd_ds_802_11_scan)	\
- 	 + LBS_MAX_SSID_TLV_SIZE		\
- 	 + LBS_MAX_CHANNEL_LIST_TLV_SIZE	\
--	 + LBS_MAX_RATES_TLV_SIZE)
-+	 + LBS_MAX_RATES_TLV_SIZE		\
-+	 + LBS_MAX_WPS_ENROLLEE_TLV_SIZE)
- 
- /*
-  * Assumes priv->scan_req is initialized and valid
-@@ -728,6 +764,11 @@ static void lbs_scan_worker(struct work_struct *work)
- 	/* add rates TLV */
- 	tlv += lbs_add_supported_rates_tlv(tlv);
- 
-+	/* add optional WPS enrollee TLV */
-+	if (priv->scan_req->ie && priv->scan_req->ie_len)
-+		tlv += lbs_add_wps_enrollee_tlv(tlv, priv->scan_req->ie,
-+						priv->scan_req->ie_len);
-+
- 	if (priv->scan_channel < priv->scan_req->n_channels) {
- 		cancel_delayed_work(&priv->scan_work);
- 		if (netif_running(priv->dev))
-@@ -2114,6 +2155,7 @@ int lbs_cfg_register(struct lbs_private *priv)
- 	int ret;
- 
- 	wdev->wiphy->max_scan_ssids = 1;
-+	wdev->wiphy->max_scan_ie_len = 256;
- 	wdev->wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
- 
- 	wdev->wiphy->interface_modes =
--- 
-2.34.1
+Ok, Thanks for your suggestion, I'll update these on v4.
 
+> > +
+> > +     TP_printk("sk address = %p, family = %s protocol = %s, length = %d, error = %d, flags = 0x%x",
+> > +                     __entry->sk,
+> > +                     show_family_name(__entry->family),
+> > +                     show_inet_protocol_name(__entry->protocol),
+> > +                     __entry->length,
+> > +                     __entry->error, __entry->flags)
+>
+> Please align and pack those parameters properly.
+
+OK, thanks.
+
+> > +
+> > +DEFINE_EVENT(sock_msg_length, sock_recvmsg_length,
+> > +     TP_PROTO(struct sock *sk, __u16 family, __u16 protocol, int ret,
+> > +              int flags),
+> > +
+> > +     TP_ARGS(sk, family, protocol, ret, flags)
+> > +);
+>
+> It might be a better idea to remove "msg" from the tracepoint names, in
+> case of any confusion with "sendpage". So
+> s/sock_sendmsg_length/sock_send_length/ ?
+
+OK, I'll rename both to sock_send_length/sock_recv_length.
+
+
+> > -     return INDIRECT_CALL_INET(sock->ops->recvmsg, inet6_recvmsg,
+> > +     int ret = INDIRECT_CALL_INET(sock->ops->recvmsg, inet6_recvmsg,
+> >                                 inet_recvmsg, sock, msg, msg_data_left(msg),
+> >                                 flags);
+>
+> Please adjust the indentations properly.
+
+Roger that!
+
+Thanks,
+Yunhui
