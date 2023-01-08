@@ -2,152 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 592DB661696
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 17:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 687906616CB
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 17:42:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234846AbjAHQ3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 11:29:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        id S231249AbjAHQmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 11:42:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234724AbjAHQ27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 11:28:59 -0500
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2047.outbound.protection.outlook.com [40.107.101.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698CB5F64
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 08:28:58 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N9tUAgwAAW3DJV7qD4Sq3CjJEa3USLLgeTPCp0aBrune+AVZZajtJphPeR4/XhUJuOO6rh8vGJi1npRClMO6Ql8xtsyF8CgdYprBSL+mt9rqVTSo9A5sAYbpisqU1O7DbwMyK/wOYA01uheodw8iFV0bcMQeBLNQlooP7Xtqi8oTlrmVdOnmzt4LMFQc9llGhBs94xrjk7o+ADEOeqKYbSqWU0xkUwGFVD9DaJVOx22YS7ZWPyXHoRXBl4gx91dt3ETjbOGu+0a7TG5WQhkz7PMECDd1MFv81siOyyfIvTdNMTsxwApIQ7USGe/rbEytYLSM9V/8nTLpnTGwjlB+Jg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0cWVycK4OFyvNCjud6dohIUJ4Co7ESS53zvV/5dp5/4=;
- b=e0wTQmQpbb5WqtEvTs0/BPSlnLjYLTuFlaPFE7lmntgB1ZajfPT+3j1qxAxSMh34VwBERVU29E5m+Cd9E91Ro2Arjsh9e8p7VKgfSWxpnHZcv9t5YK5BnqEbDe69onR2/PFb9JdtUqGtBHKR9GHRMmAsQxb2Q5Yv4xLR3hr2vjMPOfAfdvIy3SNoj+W63xhHBhp5i+v7Uz+GBzMLMCMH/Z+4X81lnD2CijP2SiSOECN92ltbmeM5wc+m1/slRFpe003AFFpthBYgR7umrFailSBz84J8fddXj49g+4lpmsz2msxZKP3aXay3xuN/VtFlQs6W5vRuxM71XJjQ54zhnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0cWVycK4OFyvNCjud6dohIUJ4Co7ESS53zvV/5dp5/4=;
- b=OKKeMYw/z7KQOH+rRVTJvxUccTPrsTC4OirL10xfdFCSta+EmaAtO+IcBHHKteQ0M6Qjzchlhn5WtTDo5S6jM/HRKDnQxMlKglsV10ynRAQuPzSvLKlDR8evMoGQ+o4i1ZH8OGoe8sQnVJDHd3o9tZH9up2S5cF/73StPGamA2vHCSYNrCQUY/sN/XKE7hExnroNCsGyFdZcC/HmaylMk84gyurCeNzHH1SwTSGMlm5epqil2Oqifa7O6H7Gk+tKk7SSVtz9JR1ohRburu+7j1iDxy0h1AIVe95BTrR8FNU/hPW2fXx3ItnqaacXH21jD2BnWRkwHJM1erruIdnfNg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by DM4PR12MB6447.namprd12.prod.outlook.com (2603:10b6:8:bf::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Sun, 8 Jan
- 2023 16:28:56 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a600:9252:615:d31a]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a600:9252:615:d31a%3]) with mapi id 15.20.5986.018; Sun, 8 Jan 2023
- 16:28:56 +0000
-Date:   Sun, 8 Jan 2023 18:28:50 +0200
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, michael.chan@broadcom.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: Re: [patch net-next v2 4/9] devlink: remove reporters_lock
-Message-ID: <Y7rvQkoatRhKMwGI@shredder>
-References: <20230107101151.532611-1-jiri@resnulli.us>
- <20230107101151.532611-5-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230107101151.532611-5-jiri@resnulli.us>
-X-ClientProxiedBy: LO4P123CA0654.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:296::12) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S230390AbjAHQmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 11:42:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4462BDEEF
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 08:41:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673196091;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KZPrrHbMqSgKL8BLXVN4N8Vx5I+kAphM9nctHUJQUi8=;
+        b=SqqjTneUL79n+Iz1R164jM0I4Qo5bl0l85rtas1OkJOai7PYLfVpmyZXZq+JQVF5YJBBcd
+        pjBim0pmZprbcq7HdCsXoZtcOixZ3B+BDJNiT0bd5ld5nEQ86tMkSKC0J3RIRbAoA3URUJ
+        JEhtmafkiEy407K14saDh5P9NuVvRxU=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-231-fSscDs0WNLugwo9yoGRtsg-1; Sun, 08 Jan 2023 11:41:29 -0500
+X-MC-Unique: fSscDs0WNLugwo9yoGRtsg-1
+Received: by mail-qv1-f70.google.com with SMTP id nh4-20020a056214390400b004e36a91ecffso3990282qvb.19
+        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 08:41:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KZPrrHbMqSgKL8BLXVN4N8Vx5I+kAphM9nctHUJQUi8=;
+        b=quGD8+eEEWGNYZuWk3JoW2oTchvou+u2BdyTw8OGIBGtCSHezTrmJ75euWauax/82+
+         CcBOyrnPAQxbzR9e8fT8inWuuBKjQuY670wnbDVySoFgCXXhGo4qQXWqbjI6KZ6SqJuW
+         8AclCrJsBDzbFTy9h6w6jpQ2W4O/zdkpoTncTF4G+HtyFVjRCJE2aKgt8ykW2qA5yO0E
+         jXJusiTizEtpMlxha1GxAIoScxbw4k4b6AKreH5Ntbh+61VDyQoIdY6Ap+fi9UfVmnb/
+         VNY06RzXU5kpfVZKS4dzvSNTCo4jqZVf5hAcuRY1f1q6sdSB/N6IRka4CMf0K4rXaIMb
+         CTeg==
+X-Gm-Message-State: AFqh2kpUUnW+6rPgTDah/R/qNkuUXCdUHAtVOAQ1Uhi4vUPWh7juecaT
+        LsV4DOZZKJmcbqwNA6NstDfRwVx1n3PWLjkepnVW3jXZ53/RUOo1uEeCDv6VSkdtiL5EvnulWgG
+        BSNfW7UuZPA4zzsSO
+X-Received: by 2002:a05:6214:3713:b0:531:bb5a:3418 with SMTP id np19-20020a056214371300b00531bb5a3418mr44260856qvb.13.1673196089179;
+        Sun, 08 Jan 2023 08:41:29 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvdyico4iBmiWuyPHZKh2g2tFBMAznUg0tI9GsdDN2jNUzKQ5otucYpEsWESNWm1Ub6TmeuzA==
+X-Received: by 2002:a05:6214:3713:b0:531:bb5a:3418 with SMTP id np19-20020a056214371300b00531bb5a3418mr44260840qvb.13.1673196088944;
+        Sun, 08 Jan 2023 08:41:28 -0800 (PST)
+Received: from debian (2a01cb058918ce0098fed9113971adae.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:98fe:d911:3971:adae])
+        by smtp.gmail.com with ESMTPSA id k19-20020a05620a415300b006feb0007217sm3925779qko.65.2023.01.08.08.41.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Jan 2023 08:41:28 -0800 (PST)
+Date:   Sun, 8 Jan 2023 17:41:24 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Cc:     linux-kselftest@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias May <matthias.may@westermo.com>
+Subject: Re: BUG: tools/testing/selftests/net/l2_tos_ttl_inherit.sh hangs
+ when selftest restarted
+Message-ID: <Y7ryNK2sMv+PC6xr@debian>
+References: <924f1062-ab59-9b88-3b43-c44e73a30387@alu.unizg.hr>
+ <Y7i5cT1AlyC53hzN@debian>
+ <5ef41d3c-8d81-86b3-c571-044636702342@alu.unizg.hr>
+ <Y7lpO9IHtSIyHVej@debian>
+ <81fdf2bc-4842-96d8-b124-43d0bd5ec124@alu.unizg.hr>
+ <Y7rNgPj9WIroPcQ/@debian>
+ <750cd534-1361-4102-67c5-2898814f8b4c@alu.unizg.hr>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|DM4PR12MB6447:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6499546b-c217-45f1-a76a-08daf1957014
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dSHmU52gAXNvwRRQmQeB9f/1bWYG3igM5INo0JstD9c3mUN1pVHW9RXlXYNURhFo5kAk+9ipQUs2I56FkTE7GcqFbGY91tPqK894DWPes48Y10TfWrlyL7lXIgPgrm/kTdkuKnkuB+iVm1wcBxFZrU/8gz7+t5CLER5eg29pPApOl9NlSFLEt1FCXXIOikaCGqPTTnpb/dNVO2p+sfxNWyy1afEmY8+FDTTvEe+b2y2nwyb7wQZepD4E1jlNDv8sff3CmzeTr7Ea8UPJCHxVLfOuGArdUVTDgvx5rTLhntEC6sEr205+AA0q+hyEHSuLIiWlODsIKWKAeM7R1xU6pNPe7PYwTDXgL4R1LGyDnBpdoTwgsYCvc3DfRuBGjBwMLs14cI2yIKIytDL7Dvpv3iLJIdqx3xHBuSOaw9o1DQRMh6qPmcH8AwjQJbw8pOASiulp5vdPJg7lzDdefsknRUHebWTBUSrZ4i6pceMFoAAgCqpbvy6gEF6M6AXswlinh2bWkE0S/T/xdzCMnB5ZJ4U4ol4IlW78IWuqfsRP1MaSFqcikiRt6C5+WQ/WjxbQ87k40SiTPnuChrbneOH/5gYjH4NDR3XVPpus69UN3RTzmk9LKSPsJ6rP3PUbBaKEttTQs+XkvGsIKLg+Qk3XPw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(396003)(346002)(136003)(366004)(376002)(39860400002)(451199015)(33716001)(8936002)(2906002)(5660300002)(41300700001)(7416002)(4326008)(66556008)(66476007)(6916009)(8676002)(66946007)(316002)(9686003)(186003)(26005)(6512007)(38100700002)(83380400001)(86362001)(6486002)(478600001)(107886003)(6506007)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fxBY+dPWc+qZWi4erpDuNTH912MbA92kFpeskkuIu5GiUG0q+l9dbrq4RmTq?=
- =?us-ascii?Q?vKHiD93U+0KzzWJKb6DxKotjU46vv6oIHmVYzFlqgPGjz2BEHx5rI6IceDfO?=
- =?us-ascii?Q?K8z1oKkvuk8XnjEDVTdUmISvFCFX3sGYrvfNYi+5FL2JvokKa7cHKWFAbPs9?=
- =?us-ascii?Q?k5qyoTDXvDfnQ+jOzs6NQ2lDW5Thst0c1lA7eirbQXh2V8zPWjZKYGgtxNno?=
- =?us-ascii?Q?MNTUsr3dM4QXFIZ44rW7Gx0u24uq7MWcxt0tIEjtxUXWCJtJtoY6aPgIrO9w?=
- =?us-ascii?Q?9KTyzSi6B2RbVSjYBhWhYLlNu6nOzBEhvULYhVc/5QYXe52pDd7Vgyq3nwHJ?=
- =?us-ascii?Q?yHFjTwmRCkpJvXUoHf9xm8zOyFDBtxP9wZbr8zCnnywCW0/d+G7hIYf/RD8y?=
- =?us-ascii?Q?r/ZTP+jeAsGrwb8JgpOnGfSuZTeAaihCxlhiyQsvyMp++fHBqGM9roeQYDRc?=
- =?us-ascii?Q?zHcnsA1byHx2LrzptfOaStciRi1WlPpVrFHtJn27eCKKbd5QZLFTtc4iAops?=
- =?us-ascii?Q?8VrKoSetoXXF+efJE38tpjtbwusbo6b9ozPdjgaEOV5eQUBE4i7x1P29uQZb?=
- =?us-ascii?Q?0Io8yVMiW3VMNtNy8OKwaEqX4nS6d006IbxoOB3HevcP3sHEHHLOLfA20/ql?=
- =?us-ascii?Q?35hcBOdrCyb8N+Sudu4rQcF7kdl8HswrDL9dluiaFG+/NCEg27FQv8uzBpXv?=
- =?us-ascii?Q?U6+xrtSrtvYwAzaB58yJfwQfWmKGjRORM5Pa4WFTwNFVDbhnwdBM05JWoSk5?=
- =?us-ascii?Q?LqAgCyeaMFP+nlk9vRU5hkYKwMBDOn7Ttz0r8cwMKBHZaHYczVrCBen7AugI?=
- =?us-ascii?Q?MdWe8GCSExG01dLaF0LhOiDqz3dPzSFTjsu31l2dIE2c5fTMsT+Q2O6Igl63?=
- =?us-ascii?Q?22r7IfBym3zE8QQym8M4ssxWxJemTxuAe3Ts0Aed3q1jv4XX0ILaZM7PVvZ+?=
- =?us-ascii?Q?IaXCFZYb24CVKUiUYMDt5Fn5qFIsToP+9A6vrC1WVDIh7QKGVjGehW9O31iW?=
- =?us-ascii?Q?/mjcjPzlMKBD8DRFVd+PQW0WFgN6dYsytG8IozSclbITBejM2ENRnbMl1EMQ?=
- =?us-ascii?Q?GH7Ma5dzuSEI3+dfJCmNNJiGnsswhQs7O39ZRXcdndbJ6tMtcDDm7X/MmeSf?=
- =?us-ascii?Q?tJyZqcVMLe5kjEfKpY9GBRSKfWwkkOuRCr8qf/49iSLiPL3CqA3jOddAAik5?=
- =?us-ascii?Q?JHvv/5SSrTjoA3ROm0D7X3Q82yBhwzFDjm6YlOgIFy4YFlvijhcAfUAfPMwe?=
- =?us-ascii?Q?M+JQNxfFkOPGmRupWlnas4crVT7rkZutbF2f/ZsMzrOVE3csu+IbIBYxXIT2?=
- =?us-ascii?Q?fFEYWaKPDxjIuFOmfCa9LB8tmEC5x2g2oDCgYWvCQRnNiV0kCIB04EUV//7v?=
- =?us-ascii?Q?5G3xIsQjXmG1O7EMoFyQ5HLU2JlqVf78jiqLjMNLw49sRzh/Qp+0PvGB0iKA?=
- =?us-ascii?Q?GBGCAWzr5tdXk6hxcZvNGIvwcBSAY5x6O3u0EkOYyj0iSOTgUDyvIbpcwNnu?=
- =?us-ascii?Q?b/uvBftEGKgSlzRuwR8Ap3Vjb1jGJ8DcnwtUZt49EGvVXpwaFOu1othu9Wjk?=
- =?us-ascii?Q?K1qIZnwoVoUYj7GbWuKvWPOZgbFuW1JrfMNqiI8s?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6499546b-c217-45f1-a76a-08daf1957014
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2023 16:28:56.0418
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OxLzP1MTR6vXn8eeMPXo3k7lNyQnCRRib6gUsif5vtDgvxANtsk5wL7EwFKI8neW1OcUe/CMmBPqDfGKkOUoeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6447
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <750cd534-1361-4102-67c5-2898814f8b4c@alu.unizg.hr>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 07, 2023 at 11:11:45AM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On Sun, Jan 08, 2023 at 03:49:05PM +0100, Mirsad Goran Todorovac wrote:
+> On 08. 01. 2023. 15:04, Guillaume Nault wrote:
 > 
-> Similar to other devlink objects, convert the reporters list to be
-> protected by devlink instance lock. Alongside add unlocked versions
-> of health reporter create functions and remove port-specific destroy
-> function which is no longer needed.
+> > For some reasons, your host doesn't accept the VXLAN packets received
+> > over veth0. I guess there are some firewalling rules incompatible with
+> > this tests script.
 > 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  .../ethernet/mellanox/mlx5/core/en/health.c   |  12 ++
->  .../mellanox/mlx5/core/en/reporter_rx.c       |   6 +-
->  .../mellanox/mlx5/core/en/reporter_tx.c       |   6 +-
->  drivers/net/ethernet/mellanox/mlxsw/core.c    |   8 +-
->  drivers/net/netdevsim/health.c                |  20 +--
->  include/net/devlink.h                         |  20 +--
->  net/devlink/core.c                            |   2 -
->  net/devlink/devl_internal.h                   |   1 -
->  net/devlink/leftover.c                        | 131 +++++++-----------
->  9 files changed, 96 insertions(+), 110 deletions(-)
+> That beats me. It is essentially a vanilla desktop AlmaLinux (CentOS fork)
+> installation w 6.2-rc2 vanilla torvalds tree kernel.
+> 
+> Maybe DHCPv4+DHCPv6 assigned address got in the way?
 
-This is quite difficult to review because there are multiple changes
-squashed into one patch:
+I don't think so. The host sends an administratively prohibited
+error. That's not an IP address conflict (and the script uses reserved
+IP address ranges which shouldn't conflict with those assigned to regular
+host).
 
-1. Addition of locked versions of both device and port health reporter
-while refactoring the code to share code paths.
+The problem looks more like what you get with some firewalling setup
+(like an "iptables XXX -j REJECT --reject-with icmp-admin-prohibited"
+command).
 
-2. Removal of the reporters mutex.
+> > I can probably help with the l2tp.sh failure and maybe with the
+> > fcnal-test.sh hang. Please report them in their own mail thread.
+> 
+> Then I will Cc: you for sure on those two.
+> 
+> But I cannot promise that this will be today. In fact, tomorrow is prognosed
+> rain so I'd better use the remaining blue-sky-patched day to do some biking ;-)
 
-3. Partial conversion of drivers to use the locked APIs. The conversion
-of mlxsw and netdevsim is trivial because they hold the instance lock
-during probe, but the conversion of mlx5 is less trivial. I would split
-it into a separate patch.
+No hurry :)
+
+> Anyway, I haven't received feedback from all submitted bug reports, so my stack
+> is near the overload. However, I made the "make kselftest" complete on both boxes
+> (and OSs of Debian and RH lineage), so I already feel some accomplishment :)
+> 
+> Maybe some issues will be fixed in today's release candidate, anyway.
+> 
+> Mirsad 
+> 
+> -- 
+> Mirsad Goran Todorovac
+> Sistem inženjer
+> Grafički fakultet | Akademija likovnih umjetnosti
+> Sveučilište u Zagrebu
+>  
+> System engineer
+> Faculty of Graphic Arts | Academy of Fine Arts
+> University of Zagreb, Republic of Croatia
+> The European Union
+> 
+
