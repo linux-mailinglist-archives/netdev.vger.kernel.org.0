@@ -2,73 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8114166158B
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 14:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88653661594
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 14:57:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230460AbjAHNpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 08:45:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
+        id S232596AbjAHN46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 08:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjAHNpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 08:45:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9A0BE0D
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 05:45:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB076B80B26
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 13:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD52CC433EF;
-        Sun,  8 Jan 2023 13:45:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673185510;
-        bh=h8ty4SF01hRcyrS6KzkakItTbR1f1HLj79uobFmOA00=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iVmCWa2FnyHIOvQec7PYEm2eylTI74eQXXP05R7m5DlvdNs29BSvRJ0oTtr0LUL2J
-         UbIp6jRn5k1gLrRn4yUTPUFhnZLvgJxF2Ub3MHhEE7YoDtBM0PfcJUjTUs0Rh1JnRP
-         Ysi+S0aO5CWmR9wMv0Cplm+n5YM9UWNYUBGJvIqcO1bvvYp3371D1E7Yp3O1oXhDdF
-         N4VpeNx3gBfYhguVI8T3aG+OqBIdewSezLh1B93QQI0n9/8J6xHPxwWmpeE4az0pFs
-         BWlleoiYBbL/bH1ua9+6GoGly8ePOodkGrlBwEwhwC6VMjfcqaTm1YD6e6IuP0GtGs
-         7Skaj/9jI8iKw==
-Date:   Sun, 8 Jan 2023 15:45:06 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, lorenzo.bianconi@redhat.com,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, sujuan.chen@mediatek.com,
-        daniel@makrotopia.org
-Subject: Re: [PATCH v3 net-next 4/5] net: ethernet: mtk_eth_soc: add dma
- checks to mtk_hw_reset_check
-Message-ID: <Y7rI4tH+E8Rem+Wh@unreal>
-References: <cover.1673102767.git.lorenzo@kernel.org>
- <0128a91db1788deef5bc48bd7c2760d8e2d28a7b.1673102767.git.lorenzo@kernel.org>
+        with ESMTP id S229482AbjAHN45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 08:56:57 -0500
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD40D2FB
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 05:56:55 -0800 (PST)
+Received: by mail-pj1-x1041.google.com with SMTP id z9-20020a17090a468900b00226b6e7aeeaso6647313pjf.1
+        for <netdev@vger.kernel.org>; Sun, 08 Jan 2023 05:56:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HcpM41K3Tg/Gq2Sy2fOw39ukTQf5X/VzmfsS+yU67xU=;
+        b=KEW1uA95W83mO1+vVHYnP/RPB2eVYPV7ayenPBDk2MNA0R8eI72I+xLBVZ6h1dbzZ5
+         IKqz2LlKUY0fSmJpT97cxSqqxRrrB4dSEH5yt62Nfj4h+8dR+uC6X+gKCi56w9Udb0Lz
+         lv0JRl3rzun04VV2pScW0HdCX0QwE13NCxI+KCNGA+Apz9qhMdMVjiY6XZdSJf3oQwyZ
+         Q4A/DSAcdj7mVncKkiDF/u4TUQtKU6wQo9KzMOB40EuMM4dRTjiy+SPdUsBjMZIOdYbX
+         la593oQA0txirQjBJV0z6jzay2LfRZmo2Yz7ZKJdtvb2f68clgtf00HeHM9RAj0ICIrg
+         btbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HcpM41K3Tg/Gq2Sy2fOw39ukTQf5X/VzmfsS+yU67xU=;
+        b=dBQE5/ni0zpfODx/Zcd7dkJk0IH1Ekv2td/d6wHkm3cTSOWw3Xlilm9tEa3ACFpi8B
+         lOKvR9qGk6UE7HkI5MNf46PZmM3J8/yAFlM1PBO8qZuC7HaaWFPiQOE8imyZ6PQWMzoR
+         bwSwXYA6VOuR1889pUS9oKnf17FZIqb2PMydhlLfhr0/qoTQkN5rCnDDbUNpfPRz9rTS
+         Q3tOw4sjjwe+nvmxlzv346/QbbFRXMlKera4WDnPo2WOgCeYSEDqnLBQ3vYoQ/tR2dHj
+         yw9pxwXETutsPLHDhojyQYhAMT5eDSyeSzm5QDYu57g3W1xQqpNYMYjTXyue51eY9dxZ
+         XSKQ==
+X-Gm-Message-State: AFqh2koeWy+G3iwuSSVTPMLbHKldL/2RM83AwN5XrK2tI/DS5nqGrXlF
+        76eJI3fF5baZDbcZ2bquhVM4jRvRYvvfiAOF+IM=
+X-Google-Smtp-Source: AMrXdXszcWMQPjb2mcCW2ed5N7gHY0Bc9T8gpYexbiURqxjXgJLmErPYn31ImjA9qwZZ46d1phV8kCO77EIrvjZWjeg=
+X-Received: by 2002:a17:90b:78e:b0:21a:1a66:cd91 with SMTP id
+ l14-20020a17090b078e00b0021a1a66cd91mr4680665pjz.190.1673186215049; Sun, 08
+ Jan 2023 05:56:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0128a91db1788deef5bc48bd7c2760d8e2d28a7b.1673102767.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:7022:6890:b0:50:37fa:6d9b with HTTP; Sun, 8 Jan 2023
+ 05:56:54 -0800 (PST)
+Reply-To: muhammadabdulrahma999@gmail.com
+From:   muhammad <jameswilliams0j@gmail.com>
+Date:   Sun, 8 Jan 2023 05:56:54 -0800
+Message-ID: <CAGpaBj5ByuBnrf1QzfiFpNFos_m5UqYqpRnV00zhhR+gvnwCww@mail.gmail.com>
+Subject: Re:Urgent supply to Qatar
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.5 required=5.0 tests=BAYES_50,DEAR_SOMETHING,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:1041 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5001]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [jameswilliams0j[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [muhammadabdulrahma999[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  2.0 DEAR_SOMETHING BODY: Contains 'Dear (something)'
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 07, 2023 at 03:50:53PM +0100, Lorenzo Bianconi wrote:
-> Introduce mtk_hw_check_dma_hang routine to monitor possible dma hangs.
-> 
-> Tested-by: Daniel Golle <daniel@makrotopia.org>
-> Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 106 ++++++++++++++++++++
->  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  26 +++++
->  2 files changed, 132 insertions(+)
-> 
+Dear Sir/Madam,
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+An open Tender for the supply of your company products to (Doha,
+Qatar). Urgently furnish us in full details about the standard of your
+product. We will appreciate it more if you give us with Details:
+Specification and Catalogs or Price list via Email.To avoid making a
+wrong choice of products before placing an order for it.
+
+Terms of payment:An upfront payment of 80% (T/T) will be made to your
+account for production,While 20% will be paid before shipment.
+
+Thanks and Regards
