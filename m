@@ -2,110 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F273A6619F8
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 22:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72AE7661A01
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 22:31:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbjAHVah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 16:30:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
+        id S235959AbjAHVbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 16:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbjAHVaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 16:30:35 -0500
-Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B056158;
-        Sun,  8 Jan 2023 13:30:33 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by domac.alu.hr (Postfix) with ESMTP id 05EEC604F1;
-        Sun,  8 Jan 2023 22:30:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1673213431; bh=6bFY0+6U8NZmKtX+MFR+30MPyUxcHqLB8IlTkTcposo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=rxmXkq9HoXu7DXK4ce6GFsCmqY7ysp6CbaVYtzS9ijxKx9sLmIP9kDFbZ6JOct4dl
-         Fm+O8Tgogty4G/KCzr8+xdF6mnDgB47C+Z0zqWZYkzU5zEZBdU3+hibuUyzYfoRPTk
-         PsUdr7mkYGhpdvdg+qNPaH6WwFuF4vhrmrJLa0A/zC2mGbharIjnz6T/9vunWGsbXq
-         rIGsXfLzXkul5TJRJ9yGp36AAqaSk1rOZL1zwFDqi3GK6sHWrsxTwydOvCn2BwGmm+
-         4LOsRVS9QGdWWfziY0gtlZc+Rvlr29EW0rFGjnaVVYZ3+NSXtOO/VunNq6PJs5weZx
-         8S9XG2ykeFfZA==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id nTFwe5H3eL8x; Sun,  8 Jan 2023 22:30:28 +0100 (CET)
-Received: from [192.168.0.12] (unknown [188.252.196.35])
-        by domac.alu.hr (Postfix) with ESMTPSA id E9886604F0;
-        Sun,  8 Jan 2023 22:30:27 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1673213428; bh=6bFY0+6U8NZmKtX+MFR+30MPyUxcHqLB8IlTkTcposo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=qWVcdqMnK7LJZKG0xyZE8Wh0alvO/npanPaBF0GUGiXSwlR0ydvx/lQfaKoyduv4n
-         Hjn0kSkR6dDqyQykiy+0gMxA4Z7TkEv7/JEezjSf/2MgyQtfQn6rB/apNyEsk+LFdo
-         CkRb9Mhn6eBRhy2UhDvai9QbpS/Z6O6XL1369a0pd2O3ByEoil+XqICGALVZ78kfmz
-         cDG2Io7t97B3Lue0n3L4VcSMR977OfJEYb/80kyWs8FVZLzLcrNR/4cNCbxAPahaeE
-         rhIpbUptcjPYDWYCNVRgSiswpj2YdbWg2XUsa6ssUWsv+o/mF/l0DHuM0AWdkiJqS0
-         7zscghNkIMEuw==
-Message-ID: <a0add3e5-5e37-1585-bcf6-57ead27ccdae@alu.unizg.hr>
-Date:   Sun, 8 Jan 2023 22:30:27 +0100
+        with ESMTP id S233656AbjAHVbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 16:31:42 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01591BD2;
+        Sun,  8 Jan 2023 13:31:40 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id fc4so15651078ejc.12;
+        Sun, 08 Jan 2023 13:31:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=17ds/3tpasRi8RnIAMFZ0yeGk76Sd506Y/IMKaXpmhI=;
+        b=fQ08vR5Swm6oSOCLOepmQLeSEcM4HXPkM7i1E/SnU/Oh/Ap1w6TYU7KvaPfyRvu4MG
+         JXbLfK9f55kI0VK3ldz/m2ewNoRtT1WzW0LhwEQQYHexjdElXJbz6LzV7UcrYAmp13mF
+         Ya0Dsh7swoEu8rfj1Xd6fsCqcKHhcR/IG8CV37ovoC2aHXt+Y7OjiDJCR0ApkT4zxfb4
+         NvQgUXoM247JaYlFJJSj7Z6MgNAkIQ1feNa/dp2s3S/uUChUG7OtBdloCSHdZW4NhBNt
+         1QsebvIYlCP9VWrfgfHcBHRk4R8FzrpOo8tmJfPtiTT2CMmRMcZXt+W6cariwJ6chHfb
+         Eb1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=17ds/3tpasRi8RnIAMFZ0yeGk76Sd506Y/IMKaXpmhI=;
+        b=snzXGUlvSDH/fBv08ubchH40sevbP6Dimj/F617WJzS2Po+EpxY6PqgcvUKz1rMJLn
+         uWuvwJ5LAxVqAU7zdlyZYB+5YdzAwZkKZLquw1JJKl0N+wwdvoS1UUEnQ/aMLjEheDLa
+         LAKP3TSXRg45LJn0sDg8zDTVjeK1eRadw2BLKWsr5byhbtLP6YXU9CvU3wgNGtJZi9NG
+         1ZLqaUtNxjvZpNqCy5yJ2SQyhUCFu/UQUKWrNE+GNw/LlmxbheESQxFOjLRHz4bJTq5T
+         aENbEwVNUdRzK0xTjCl/z5NrKW5osTUP1Mq6YZWX70cUCwjkyY4tUBhj0Bvx2tl+IKaY
+         lDNQ==
+X-Gm-Message-State: AFqh2kqF7C94zIZ689GAaDR7G8BKJo44+bvya8RqGKuZgwjoLVCcVqoM
+        RPPOZhfpeGaRsrWkaVNmaszVT8Uxdig=
+X-Google-Smtp-Source: AMrXdXuGDVxgSs0RwHD3OZpABzUzxKRzA+9vom+UpU0rCOYShpgl88byR1MlijIHPPt1okJ7Zfk8jw==
+X-Received: by 2002:a17:907:c48d:b0:7c0:fe60:be12 with SMTP id tp13-20020a170907c48d00b007c0fe60be12mr49425430ejc.25.1673213498311;
+        Sun, 08 Jan 2023 13:31:38 -0800 (PST)
+Received: from localhost.localdomain (dynamic-2a01-0c23-c485-2500-0000-0000-0000-0e63.c23.pool.telefonica.de. [2a01:c23:c485:2500::e63])
+        by smtp.googlemail.com with ESMTPSA id f1-20020a17090631c100b007aea1dc1840sm2917620ejf.111.2023.01.08.13.31.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Jan 2023 13:31:37 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        David Laight <David.Laight@aculab.com>
+Subject: [PATCH v1 RFC] wifi: rtw88: Validate the eFuse structs
+Date:   Sun,  8 Jan 2023 22:31:14 +0100
+Message-Id: <20230108213114.547135-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net v2] af_unix: selftest: Fix the size of the parameter
- to connect()
-Content-Language: en-US, hr
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>, davem@davemloft.net,
-        edumazet@google.com, fw@strlen.de, kuniyu@amazon.co.jp,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, shuah@kernel.org
-References: <bd7ff00a-6892-fd56-b3ca-4b3feb6121d8@alu.unizg.hr>
- <20230106175828.13333-1-kuniyu@amazon.com>
- <b80ffedf-3f53-08f7-baf0-db0450b8853f@alu.unizg.hr>
- <20230106161450.1d5579bf@kernel.org>
- <8fb1a2c5-ee35-67eb-ef3c-e2673061850d@alu.unizg.hr>
- <20230106180808.51550e82@kernel.org>
-From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-In-Reply-To: <20230106180808.51550e82@kernel.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07. 01. 2023. 03:08, Jakub Kicinski wrote:
-> On Sat, 7 Jan 2023 02:42:43 +0100 Mirsad Goran Todorovac wrote:
->>> still doesn't apply, probably because there are two email footers  
->>
->> Thank you for the guidelines to make your robots happy :), the next
->> time I will assume all these from start, provided that I find and
->> patch another bug or issue.
-> 
-> Ah, sorry, wrong assumption :S
-> 
-> Your email client converts tabs to spaces, that's the problem.
-> 
-> Could you try get send-email ?
+Add static assertions for the PCIe/USB offsets inside the eFuse structs
+to ensure that the compiler doesn't add padding anywhere (relevant)
+inside the structs.
 
-Sorry, Jakub, just to "remove this from stack", did the
-[PATCH net v4] af_unix: selftest: Fix the size of the parameter to connect()
-apply?
+Suggested-by: Ping-Ke Shih <pkshih@realtek.com>
+Suggested-by: David Laight <David.Laight@aculab.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+This is the continuation of my patch from [0] where initially I added
+__packed attributes to the eFuse structs. David raised concerns that
+this is the "sledgehammer" way of doing things and it can impact
+performance.
 
-I can't seem to handle more than about half a dozen of bug reports at a time or
-I started overlooking emails :(
+So this implementation is my understanding of David's suggestion from
+[1] (and Ping-Ke also suggested a similar approach for debugging a
+size difference I've been seeing with / without __packed).
 
-Thanks,
-Mirsad
 
--- 
-Mirsad Goran Todorovac
-Sistem inženjer
-Grafički fakultet | Akademija likovnih umjetnosti
-Sveučilište u Zagrebu
+[0] https://lore.kernel.org/linux-wireless/20221228133547.633797-2-martin.blumenstingl@googlemail.com/
+[1] https://lore.kernel.org/linux-wireless/4c4551c787ee4fc9ac40b34707d7365a@AcuMS.aculab.com/
+
+
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h | 5 +++++
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h | 5 +++++
+ drivers/net/wireless/realtek/rtw88/rtw8822b.h | 5 +++++
+ drivers/net/wireless/realtek/rtw88/rtw8822c.h | 5 +++++
+ 4 files changed, 20 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8723d.h b/drivers/net/wireless/realtek/rtw88/rtw8723d.h
+index a356318a5c15..b1747a22135c 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8723d.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.h
+@@ -83,6 +83,11 @@ struct rtw8723d_efuse {
+ 	};
+ };
  
-System engineer
-Faculty of Graphic Arts | Academy of Fine Arts
-University of Zagreb, Republic of Croatia
-The European Union
++static_assert(offsetof(struct rtw8723d_efuse, e) == 0xd0);
++static_assert(sizeof(struct rtw8723de_efuse) == 14);
++static_assert(offsetof(struct rtw8723d_efuse, u) == 0xd0);
++static_assert(sizeof(struct rtw8723du_efuse) == 59);
++
+ extern const struct rtw_chip_info rtw8723d_hw_spec;
+ 
+ /* phy status page0 */
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index 1c81260f3a54..70fdc7bf2b64 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -97,6 +97,11 @@ struct rtw8821c_efuse {
+ 	};
+ };
+ 
++static_assert(offsetof(struct rtw8821c_efuse, e) == 0xd0);
++static_assert(sizeof(struct rtw8821ce_efuse) == 49);
++static_assert(offsetof(struct rtw8821c_efuse, u) == 0xd0);
++static_assert(sizeof(struct rtw8821cu_efuse) == 304);
++
+ static inline void
+ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ {
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.h b/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+index 01d3644e0c94..5d24ce7a8943 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+@@ -97,6 +97,11 @@ struct rtw8822b_efuse {
+ 	};
+ };
+ 
++static_assert(offsetof(struct rtw8822b_efuse, e) == 0xd0);
++static_assert(sizeof(struct rtw8822be_efuse) == 49);
++static_assert(offsetof(struct rtw8822b_efuse, u) == 0xd0);
++static_assert(sizeof(struct rtw8822bu_efuse) == 304);
++
+ static inline void
+ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ {
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.h b/drivers/net/wireless/realtek/rtw88/rtw8822c.h
+index 479d5d769c52..4c5402008387 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.h
+@@ -96,6 +96,11 @@ struct rtw8822c_efuse {
+ 	};
+ };
+ 
++static_assert(offsetof(struct rtw8822c_efuse, e) == 0x120);
++static_assert(sizeof(struct rtw8822ce_efuse) == 47);
++static_assert(offsetof(struct rtw8822c_efuse, u) == 0x120);
++static_assert(sizeof(struct rtw8822cu_efuse) == 122);
++
+ enum rtw8822c_dpk_agc_phase {
+ 	RTW_DPK_GAIN_CHECK,
+ 	RTW_DPK_GAIN_LARGE,
+-- 
+2.39.0
 
