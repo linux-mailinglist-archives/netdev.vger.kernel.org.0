@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 574226615C2
-	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2287C6615CC
+	for <lists+netdev@lfdr.de>; Sun,  8 Jan 2023 15:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbjAHOOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 09:14:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
+        id S230478AbjAHOUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 09:20:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233244AbjAHOOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:14:25 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70390101C4
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 06:14:24 -0800 (PST)
+        with ESMTP id S229627AbjAHOUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 09:20:23 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBA0E028;
+        Sun,  8 Jan 2023 06:20:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673187264; x=1704723264;
+  t=1673187622; x=1704723622;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=SC925gniDEpapFVYL+Ri3iaAESIrleJtaNGf3pJgYD4=;
-  b=TN3+I0ZqwshfmwxMdWf7tEV5bP33/211SrdPhxTUU3+mz2XqCYoljnJU
-   LpS2UPVpsXfWq3DY9UyEhyE01dixbN4mF7YuE/Ohb9/inJTSKLkI2lZRT
-   YsbBJm9WlzmDRLZ1yJKQNmj+zUAVRy3QPlvjlrodordzh6RFXtibKC5Pz
-   Fd6HFq3fZwDg8BAjYsr1uboV5kKUAf47GGfwsvF5ZGfM3Ms+GZ30EOLTb
-   dyxA/jDeAaUs6toMvlilux2uGI08+a57PtqGQUKSCKoxh4xhHDl2tRM5D
-   6E+aCw12V9U8t0xFb87FLlXooNnLN8M4oeBkhNzE3YtZENi70Yg5kMivH
+  bh=uhwP33k79WfVOAOHMUzfxXOTAP/es5YajUb9QxIA5qs=;
+  b=KS2oLp5ftY/JURezUYvUV7pEdXv6PsrsZOYHt7LuWawhSbXeqk9fmtF0
+   z9FxZa9eSLFJSvxN+FZPSZUR3Xg87aTKLohMh4SVRCjwXm84P2ehRrjdw
+   TosL/Ufuhe7rcikHCrPgSIOEP7zCulFXE/vuVKDtKLafR8dXipnfu86/l
+   2PPKxMzHRBdrsbpo/0TNLTLPuKOAYslpLPmb49SnMcaCJfspqRsfdfyfD
+   DdJsGg0yhVTS589nrz2BkgVx3Cv4J+bxkZirWUYF3dpOrvgfcstBVhJ/O
+   4Mg3VsqRQPwrEaWp1m5bdBNh1NWn1kxcE8XUa49hIUTBPB5oRJm5GDHHl
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="408974310"
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="303082433"
 X-IronPort-AV: E=Sophos;i="5.96,310,1665471600"; 
-   d="scan'208";a="408974310"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:14:19 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="745112079"
+   d="scan'208";a="303082433"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:20:21 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="606354019"
 X-IronPort-AV: E=Sophos;i="5.96,310,1665471600"; 
-   d="scan'208";a="745112079"
-Received: from bmothe-mobl.gar.corp.intel.com (HELO [10.213.110.20]) ([10.213.110.20])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:14:11 -0800
-Message-ID: <253f689e-ce60-ee87-6ec9-9efc9b001960@linux.intel.com>
-Date:   Sun, 8 Jan 2023 19:44:08 +0530
+   d="scan'208";a="606354019"
+Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.213.110.20]) ([10.213.110.20])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 06:20:14 -0800
+Message-ID: <38d010a2-17db-f752-6027-20520ade11bb@linux.intel.com>
+Date:   Sun, 8 Jan 2023 19:50:11 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH v3 net-next 3/5] net: wwan: t7xx: PCIe reset rescan
+Subject: Re: [PATCH v3 net-next 5/5] net: wwan: t7xx: Devlink documentation
 Content-Language: en-US
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org
@@ -53,13 +53,13 @@ Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
         linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
         matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>
+        linux-mediatek@lists.infradead.org, linux-doc@vger.kernel.org,
+        jiri@nvidia.com, corbet@lwn.net
 References: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
- <568b6ed1fa2ddf9b8f44980bec9a28df7a24662e.1673016069.git.m.chetan.kumar@linux.intel.com>
- <6a8b7eee-2af9-b953-8431-875ea9701a89@intel.com>
+ <500a41cb400b4cdedd6df414b40200a5211965f5.1673016069.git.m.chetan.kumar@linux.intel.com>
+ <270ae807-6842-b5c9-0b14-fbc1b768fa79@intel.com>
 From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <6a8b7eee-2af9-b953-8431-875ea9701a89@intel.com>
+In-Reply-To: <270ae807-6842-b5c9-0b14-fbc1b768fa79@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -71,24 +71,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/2023 12:12 AM, Jesse Brandeburg wrote:
-> On 1/6/2023 8:27 AM, m.chetan.kumar@linux.intel.com wrote:
+On 1/7/2023 12:07 AM, Jesse Brandeburg wrote:
+> On 1/6/2023 8:28 AM, m.chetan.kumar@linux.intel.com wrote:
 >> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 >>
->> PCI rescan module implements "rescan work queue".
->> In firmware flashing or coredump collection procedure
->> WWAN device is programmed to boot in fastboot mode and
->> a work item is scheduled for removal & detection.
+>> Document the t7xx devlink commands usage for fw flashing &
+> 
+> it would make the documentation easier and faster to read if you just 
+> spelled out fw as firmware.
+
+Sure. Will correct all such instances.
+
+> 
+>> coredump collection.
 >>
->> The WWAN device is reset using APCI call as part driver
->> removal flow. Work queue rescans pci bus at fixed interval
->> for device detection, later when device is detect work queue
->> exits.
+>> Refer to t7xx.rst file for details.
 >>
->> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
->> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 >> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 >> Signed-off-by: Devegowda Chandrashekar 
 >> <chandrashekar.devegowda@intel.com>
@@ -96,289 +94,216 @@ On 1/7/2023 12:12 AM, Jesse Brandeburg wrote:
 >> v3:
 >>   * No Change.
 >> v2:
->>   * Drop empty line inside critical sections.
->>   * Correct log message.
->>   * Correct logic inside t7xx_always_match().
->>   * Drop hp_enable changes.
->>   * Drop g_ prefix from t7xx_rescan_ctx.
->>   * Use tab before comment in struct decl.
->>   * Remove extra white space.
->>   * Drop modem exception state check.
->>   * Crit section newlines.
->>   * Remove unnecessary header files inclusion.
->>   * Drop spinlock around reset and rescan flow.
+>>   * Documentation correction.
+>>   * Add param details.
 >> ---
->>   drivers/net/wwan/t7xx/Makefile          |  3 +-
->>   drivers/net/wwan/t7xx/t7xx_modem_ops.c  |  3 +
->>   drivers/net/wwan/t7xx/t7xx_pci.c        | 56 ++++++++++++++-
->>   drivers/net/wwan/t7xx/t7xx_pci_rescan.c | 96 +++++++++++++++++++++++++
->>   drivers/net/wwan/t7xx/t7xx_pci_rescan.h | 28 ++++++++
->>   5 files changed, 184 insertions(+), 2 deletions(-)
->>   create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.c
->>   create mode 100644 drivers/net/wwan/t7xx/t7xx_pci_rescan.h
+>>   Documentation/networking/devlink/index.rst |   1 +
+>>   Documentation/networking/devlink/t7xx.rst  | 161 +++++++++++++++++++++
+>>   2 files changed, 162 insertions(+)
+>>   create mode 100644 Documentation/networking/devlink/t7xx.rst
 >>
->> diff --git a/drivers/net/wwan/t7xx/Makefile 
->> b/drivers/net/wwan/t7xx/Makefile
->> index 268ff9e87e5b..ba5c607404a4 100644
->> --- a/drivers/net/wwan/t7xx/Makefile
->> +++ b/drivers/net/wwan/t7xx/Makefile
->> @@ -17,7 +17,8 @@ mtk_t7xx-y:=    t7xx_pci.o \
->>           t7xx_hif_dpmaif_tx.o \
->>           t7xx_hif_dpmaif_rx.o  \
->>           t7xx_dpmaif.o \
->> -        t7xx_netdev.o
->> +        t7xx_netdev.o \
->> +        t7xx_pci_rescan.o
->>   mtk_t7xx-$(CONFIG_WWAN_DEBUGFS) += \
->>           t7xx_port_trace.o \
->> diff --git a/drivers/net/wwan/t7xx/t7xx_modem_ops.c 
->> b/drivers/net/wwan/t7xx/t7xx_modem_ops.c
->> index cbd65aa48721..2fcaea4694ba 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_modem_ops.c
->> +++ b/drivers/net/wwan/t7xx/t7xx_modem_ops.c
->> @@ -37,6 +37,7 @@
->>   #include "t7xx_modem_ops.h"
->>   #include "t7xx_netdev.h"
->>   #include "t7xx_pci.h"
->> +#include "t7xx_pci_rescan.h"
->>   #include "t7xx_pcie_mac.h"
->>   #include "t7xx_port.h"
->>   #include "t7xx_port_proxy.h"
->> @@ -194,6 +195,8 @@ static irqreturn_t t7xx_rgu_isr_thread(int irq, 
->> void *data)
->>       msleep(RGU_RESET_DELAY_MS);
->>       t7xx_reset_device_via_pmic(t7xx_dev);
->> +    t7xx_rescan_queue_work(t7xx_dev->pdev);
->> +
->>       return IRQ_HANDLED;
->>   }
->> diff --git a/drivers/net/wwan/t7xx/t7xx_pci.c 
->> b/drivers/net/wwan/t7xx/t7xx_pci.c
->> index 871f2a27a398..1e953ec7dd00 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_pci.c
->> +++ b/drivers/net/wwan/t7xx/t7xx_pci.c
->> @@ -38,6 +38,7 @@
->>   #include "t7xx_mhccif.h"
->>   #include "t7xx_modem_ops.h"
->>   #include "t7xx_pci.h"
->> +#include "t7xx_pci_rescan.h"
->>   #include "t7xx_pcie_mac.h"
->>   #include "t7xx_reg.h"
->>   #include "t7xx_state_monitor.h"
->> @@ -715,6 +716,7 @@ static int t7xx_pci_probe(struct pci_dev *pdev, 
->> const struct pci_device_id *id)
->>           return ret;
->>       }
->> +    t7xx_rescan_done();
->>       t7xx_pcie_mac_set_int(t7xx_dev, MHCCIF_INT);
->>       t7xx_pcie_mac_interrupts_en(t7xx_dev);
->> @@ -754,7 +756,59 @@ static struct pci_driver t7xx_pci_driver = {
->>       .shutdown = t7xx_pci_shutdown,
->>   };
->> -module_pci_driver(t7xx_pci_driver);
->> +static int __init t7xx_pci_init(void)
->> +{
->> +    int ret;
->> +
->> +    t7xx_pci_dev_rescan();
->> +    ret = t7xx_rescan_init();
->> +    if (ret) {
->> +        pr_err("Failed to init t7xx rescan work\n");
->> +        return ret;
->> +    }
->> +
->> +    return pci_register_driver(&t7xx_pci_driver);
->> +}
->> +module_init(t7xx_pci_init);
->> +
->> +static int t7xx_always_match(struct device *dev, const void *data)
->> +{
->> +    struct pci_dev *pdev = to_pci_dev(dev);
->> +    const struct pci_device_id *id = data;
->> +
->> +    if (pci_match_id(id, pdev))
->> +        return 1;
->> +
->> +    return 0;
->> +}
->> +
->> +static void __exit t7xx_pci_cleanup(void)
->> +{
->> +    int remove_flag = 0;
->> +    struct device *dev;
->> +
->> +    dev = driver_find_device(&t7xx_pci_driver.driver, NULL, 
->> &t7xx_pci_table[0],
->> +                 t7xx_always_match);
->> +    if (dev) {
->> +        pr_debug("unregister t7xx PCIe driver while device is still 
->> exist.\n");
-> 
-> nit: s/is still exist/still exists/
-
-Ok, will correct it.
-
-> 
->> +        put_device(dev);
->> +        remove_flag = 1;
->> +    } else {
->> +        pr_debug("no t7xx PCIe driver found.\n");
->> +    }
->> +
->> +    pci_lock_rescan_remove();
->> +    pci_unregister_driver(&t7xx_pci_driver);
->> +    pci_unlock_rescan_remove();
->> +
->> +    t7xx_rescan_deinit();
->> +    if (remove_flag) {
->> +        pr_debug("remove t7xx PCI device\n");
->> +        pci_stop_and_remove_bus_device_locked(to_pci_dev(dev));
->> +    }
->> +}
->> +
->> +module_exit(t7xx_pci_cleanup);
->>   MODULE_AUTHOR("MediaTek Inc");
->>   MODULE_DESCRIPTION("MediaTek PCIe 5G WWAN modem T7xx driver");
->> diff --git a/drivers/net/wwan/t7xx/t7xx_pci_rescan.c 
->> b/drivers/net/wwan/t7xx/t7xx_pci_rescan.c
+>> diff --git a/Documentation/networking/devlink/index.rst 
+>> b/Documentation/networking/devlink/index.rst
+>> index fee4d3968309..0c4f5961e78f 100644
+>> --- a/Documentation/networking/devlink/index.rst
+>> +++ b/Documentation/networking/devlink/index.rst
+>> @@ -66,3 +66,4 @@ parameters, info versions, and other features it 
+>> supports.
+>>      prestera
+>>      iosm
+>>      octeontx2
+>> +   t7xx
+>> diff --git a/Documentation/networking/devlink/t7xx.rst 
+>> b/Documentation/networking/devlink/t7xx.rst
 >> new file mode 100644
->> index 000000000000..67f13c035846
+>> index 000000000000..de220878ad76
 >> --- /dev/null
->> +++ b/drivers/net/wwan/t7xx/t7xx_pci_rescan.c
->> @@ -0,0 +1,96 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Copyright (c) 2021, MediaTek Inc.
->> + * Copyright (c) 2021-2023, Intel Corporation.
->> + */
+>> +++ b/Documentation/networking/devlink/t7xx.rst
+>> @@ -0,0 +1,161 @@
+>> +.. SPDX-License-Identifier: GPL-2.0
 >> +
->> +#define pr_fmt(fmt) KBUILD_MODNAME ":t7xx:%s: " fmt, __func__
->> +#define dev_fmt(fmt) "t7xx: " fmt
+>> +====================
+>> +t7xx devlink support
+>> +====================
 >> +
->> +#include <linux/delay.h>
->> +#include <linux/pci.h>
->> +#include <linux/spinlock.h>
->> +#include <linux/workqueue.h>
+>> +This document describes the devlink features implemented by the ``t7xx``
+>> +device driver.
 >> +
->> +#include "t7xx_pci.h"
->> +#include "t7xx_pci_rescan.h"
+>> +Parameters
+>> +==========
+>> +The ``t7xx_driver`` driver implements the following driver-specific 
+>> parameters.
 >> +
->> +static struct remove_rescan_context t7xx_rescan_ctx;
+>> +.. list-table:: Driver-specific parameters implemented
+>> +   :widths: 5 5 5 85
 >> +
->> +void t7xx_pci_dev_rescan(void)
->> +{
->> +    struct pci_bus *b = NULL;
+>> +   * - Name
+>> +     - Type
+>> +     - Mode
+>> +     - Description
+>> +   * - ``fastboot``
+>> +     - boolean
+>> +     - driverinit
+>> +     - Set this param to enter fastboot mode.
 >> +
->> +    pci_lock_rescan_remove();
->> +    while ((b = pci_find_next_bus(b)))
->> +        pci_rescan_bus(b);
->> +    pci_unlock_rescan_remove();
->> +}
+>> +Flash Update
+>> +============
 >> +
->> +void t7xx_rescan_done(void)
->> +{
->> +    if (!atomic_read(&t7xx_rescan_ctx.rescan_done)) {
->> +        atomic_set(&t7xx_rescan_ctx.rescan_done, 1);
->> +        pr_debug("Rescan probe\n");
->> +    } else {
->> +        pr_debug("Init probe\n");
->> +    }
->> +}
+>> +The ``t7xx`` driver implements the flash update using the 
+>> ``devlink-flash``
+>> +interface.
 >> +
->> +static void t7xx_remove_rescan(struct work_struct *work)
->> +{
->> +    int num_retries = RESCAN_RETRIES;
->> +    struct pci_dev *pdev;
+>> +The driver uses DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT to identify 
+>> the type of
+>> +firmware image that need to be programmed upon the request by user 
+>> space application.
 >> +
->> +    atomic_set(&t7xx_rescan_ctx.rescan_done, 0);
->> +    pdev = t7xx_rescan_ctx.dev;
+>> +The supported list of firmware image types is described below.
 >> +
->> +    if (pdev) {
->> +        pci_stop_and_remove_bus_device_locked(pdev);
->> +        pr_debug("start remove and rescan flow\n");
->> +    }
+>> +.. list-table:: Firmware Image types
+>> +    :widths: 15 85
 >> +
->> +    do {
->> +        t7xx_pci_dev_rescan();
+>> +    * - Name
+>> +      - Description
+>> +    * - ``preloader``
+>> +      - The first-stage bootloader image
+>> +    * - ``loader_ext1``
+>> +      - Preloader extension image
+>> +    * - ``tee1``
+>> +      - ARM trusted firmware and TEE (Trusted Execution Environment) 
+>> image
+>> +    * - ``lk``
+>> +      - The second-stage bootloader image
+>> +    * - ``spmfw``
+>> +      - MediaTek in-house ASIC for power management image
+>> +    * - ``sspm_1``
+>> +      - MediaTek in-house ASIC for power management under secure 
+>> world image
+>> +    * - ``mcupm_1``
+>> +      - MediaTek in-house ASIC for cpu power management image
+>> +    * - ``dpm_1``
+>> +      - MediaTek in-house ASIC for dram power management image
+>> +    * - ``boot``
+>> +      - The kernel and dtb image
+>> +    * - ``rootfs``
+>> +      - Root filesystem image
+>> +    * - ``md1img``
+>> +      - Modem image
+>> +    * - ``md1dsp``
+>> +      - Modem DSP image
+>> +    * - ``mcf1``
+>> +      - Modem OTA image (Modem Configuration Framework) for operators
+>> +    * - ``mcf2``
+>> +      - Modem OTA image (Modem Configuration Framework) for OEM vendors
+>> +    * - ``mcf3``
+>> +      - Modem OTA image (other usage) for OEM configurations
 >> +
->> +        if (atomic_read(&t7xx_rescan_ctx.rescan_done))
->> +            break;
+>> +``t7xx`` driver uses fastboot protocol for fw flashing. In the fw 
+>> flashing
+> 
+> it would make the documentation easier and faster to read if you just 
+> spelled out fw as firmware.
+> 
+>> +procedure, fastboot command & response are exchanged between driver 
+>> and wwan
+>> +device.
 >> +
->> +        msleep(DELAY_RESCAN_MTIME);
->> +    } while (num_retries--);
->> +}
+>> +The wwan device is put into fastboot mode via devlink reload command, by
+>> +passing "driver_reinit" action.
 >> +
->> +void t7xx_rescan_queue_work(struct pci_dev *pdev)
->> +{
->> +    if (!atomic_read(&t7xx_rescan_ctx.rescan_done)) {
->> +        dev_err(&pdev->dev, "Rescan failed\n");
->> +        return;
->> +    }
+>> +$ devlink dev reload pci/0000:$bdf action driver_reinit
 >> +
->> +    t7xx_rescan_ctx.dev = pdev;
->> +    queue_work(t7xx_rescan_ctx.pcie_rescan_wq, 
->> &t7xx_rescan_ctx.service_task);
->> +}
+>> +Upon completion of fw flashing or coredump collection the wwan device is
+>> +reset to normal mode using devlink reload command, by passing 
+>> "fw_activate"
+>> +action.
 >> +
->> +int t7xx_rescan_init(void)
->> +{
->> +    atomic_set(&t7xx_rescan_ctx.rescan_done, 1);
->> +    t7xx_rescan_ctx.dev = NULL;
+>> +$ devlink dev reload pci/0000:$bdf action fw_activate
 >> +
->> +    t7xx_rescan_ctx.pcie_rescan_wq = 
->> create_singlethread_workqueue(MTK_RESCAN_WQ);
->> +    if (!t7xx_rescan_ctx.pcie_rescan_wq) {
->> +        pr_err("Failed to create workqueue: %s\n", MTK_RESCAN_WQ);
->> +        return -ENOMEM;
->> +    }
+>> +Flash Commands:
+>> +===============
 >> +
->> +    INIT_WORK(&t7xx_rescan_ctx.service_task, t7xx_remove_rescan);
+>> +$ devlink dev flash pci/0000:$bdf file 
+>> preloader_k6880v1_mdot2_datacard.bin component "preloader"
 >> +
->> +    return 0;
->> +}
+>> +$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img 
+>> component "loader_ext1"
 >> +
->> +void t7xx_rescan_deinit(void)
->> +{
->> +    t7xx_rescan_ctx.dev = NULL;
->> +    atomic_set(&t7xx_rescan_ctx.rescan_done, 0);
->> +    cancel_work_sync(&t7xx_rescan_ctx.service_task);
->> +    destroy_workqueue(t7xx_rescan_ctx.pcie_rescan_wq);
->> +}
->> diff --git a/drivers/net/wwan/t7xx/t7xx_pci_rescan.h 
->> b/drivers/net/wwan/t7xx/t7xx_pci_rescan.h
->> new file mode 100644
->> index 000000000000..80b25c44151c
->> --- /dev/null
->> +++ b/drivers/net/wwan/t7xx/t7xx_pci_rescan.h
->> @@ -0,0 +1,28 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only
->> + *
->> + * Copyright (c) 2021, MediaTek Inc.
->> + * Copyright (c) 2021-2023, Intel Corporation.
->> + */
+>> +$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
 >> +
->> +#ifndef __T7XX_PCI_RESCAN_H__
->> +#define __T7XX_PCI_RESCAN_H__
+>> +$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
 >> +
->> +#define MTK_RESCAN_WQ "mtk_rescan_wq"
+>> +$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component 
+>> "spmfw"
 >> +
->> +#define DELAY_RESCAN_MTIME 1000
->> +#define RESCAN_RETRIES 35
+>> +$ devlink dev flash pci/0000:$bdf file sspm-verified.img component 
+>> "sspm_1"
 >> +
->> +struct remove_rescan_context {
->> +    struct work_struct service_task;
->> +    struct workqueue_struct *pcie_rescan_wq;
->> +    struct pci_dev *dev;
->> +    atomic_t rescan_done;
->> +};
+>> +$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component 
+>> "mcupm_1"
 >> +
->> +void t7xx_pci_dev_rescan(void);
->> +void t7xx_rescan_queue_work(struct pci_dev *pdev);
->> +int t7xx_rescan_init(void);
->> +void t7xx_rescan_deinit(void);
->> +void t7xx_rescan_done(void);
+>> +$ devlink dev flash pci/0000:$bdf file dpm-verified.img component 
+>> "dpm_1"
 >> +
->> +#endif    /* __T7XX_PCI_RESCAN_H__ */
+>> +$ devlink dev flash pci/0000:$bdf file boot-verified.img component 
+>> "boot"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file modem-verified.img component 
+>> "md1img"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component 
+>> "md1dsp"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
+>> +
+>> +Note: Component selects the partition type to be programmed.
+>> +
+>> +Regions
+>> +=======
+>> +
+>> +The ``t7xx`` driver supports core dump collection when device encounters
+>> +an exception. When wwan device encounters an exception, a snapshot of 
+>> device
+>> +internal data will be taken by the driver using fastboot commands.
+>> +
+>> +Following regions are accessed for device internal data.
+>> +
+>> +.. list-table:: Regions implemented
+>> +    :widths: 15 85
+>> +
+>> +    * - Name
+>> +      - Description
+>> +    * - ``mr_dump``
+>> +      - The detailed modem component logs are captured in this region
+>> +    * - ``lk_dump``
+>> +      - This region dumps the current snapshot of lk
+>> +
+>> +
+>> +Region commands
+>> +===============
+>> +
+>> +$ devlink region show
+>> +
+>> +
+>> +$ devlink region new mr_dump
+>> +
+>> +$ devlink region read mr_dump snapshot 0 address 0 length $len
+>> +
+>> +$ devlink region del mr_dump snapshot 0
+>> +
+>> +$ devlink region new lk_dump
+>> +
+>> +$ devlink region read lk_dump snapshot 0 address 0 length $len
+>> +
+>> +$ devlink region del lk_dump snapshot 0
+>> +
+>> +Note: $len is actual len to be dumped.
 > 
 
 -- 
