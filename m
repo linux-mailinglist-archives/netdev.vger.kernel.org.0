@@ -2,64 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB68F6632F6
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 22:33:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD915663372
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 22:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbjAIVdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 16:33:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
+        id S237514AbjAIVuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 16:50:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237838AbjAIVdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 16:33:36 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C51E1FF
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 13:33:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fm1MlWLSpUG1NuLCilrirA36h/5EAuNH/F/tsJkFXBs=; b=VRt3yruiR5GJQ5zLmKIIqvHpsW
-        aWI8ZDNtTN0X0ehu6GLgswQagfT4M2tqAUwFOiqWys8Lq/X97DZe+ei1h6ZiJiX8i1pRDc+7Txtpx
-        fZr0wgF+wb+TdNDC+7gp45WAsTTRo53PAMJ+Gugyva2Yk84mB8bHSAsjiidrzFowejjw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pEzlr-001cEW-Qz; Mon, 09 Jan 2023 22:33:31 +0100
-Date:   Mon, 9 Jan 2023 22:33:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Angelo Dureghello <angelo@kernel-space.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: mv88e6321, dual cpu port
-Message-ID: <Y7yIK4a8mfAUpQ2g@lunn.ch>
-References: <5a746f99-8ded-5ef1-6b82-91cd662f986a@kernel-space.org>
+        with ESMTP id S237588AbjAIVuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 16:50:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E783590C
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 13:50:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 482AF61382
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 21:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 635BEC433D2;
+        Mon,  9 Jan 2023 21:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673301016;
+        bh=8ExIuP1C5lkB/tLEu69tkqEWSl1Tyho4TwcR3biCE6c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r6vJCnRDk+CApiR3r3gLp0ahXpN0pBzZDTApPiZ/w8/tN0s0CyHpV1rWQDKxF3Q7v
+         4PwtTWvAedQ9k9E/HCgq/GLchtXTXA3UOGWzVagfoKNiTIN738Cr1jJmPUa+zR2rvX
+         7bPawu02BYCjmX54AduuRHWPGcA429bNMz74bgCiacHjKyia5MnWqDvPU7TM5Xtdjl
+         diLn8ig1Z5uru0Je5dYYzCSF0imE9eufwQOXA2N9hdrY/ABx1prpK1XaKmmjfsxPpp
+         NGSBQYK8G/pc/Tj9ETSjpiYzudUxgbKOXxfqM2zTOTQi5iq5zjGiCJJlO4R2XfgHGr
+         PhOMyXNrexVRA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 38EFAE21EE8;
+        Mon,  9 Jan 2023 21:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5a746f99-8ded-5ef1-6b82-91cd662f986a@kernel-space.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 iproute2 0/1] tc: Add JSON output to tc-class
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167330101622.28139.7353662408147216772.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 Jan 2023 21:50:16 +0000
+References: <20230109105316.204902-1-mtottenh@akamai.com>
+In-Reply-To: <20230109105316.204902-1-mtottenh@akamai.com>
+To:     Max Tottenham <mtottenh@akamai.com>
+Cc:     netdev@vger.kernel.org, johunt@akamai.com,
+        stephen@networkplumber.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 09:40:06PM +0100, Angelo Dureghello wrote:
-> Hi All,
-> 
-> using kernel 5.4.70,
-> just looking for confirmation this layout
-> can work:
-> 
->    eth0 -> cpu port (port5, mii)  bridging port3 and 4
->    eth1 -> cpu port (port6, rgmii)  bridging port0, 1, 2
-> 
-> My devicetree actaully defines 2 cpu ports, it seems
-> to work, but please let me know if you see any
-> possible issue.
+Hello:
 
-Dual CPU ports is not supported with 5.4.70. Everything will go over
-the first cpu port in DT.
+This patch was applied to iproute2/iproute2.git (main)
+by Stephen Hemminger <stephen@networkplumber.org>:
 
-    Andrew
+On Mon, 9 Jan 2023 05:53:15 -0500 you wrote:
+> Address comments from Stephen's review.
+> 
+> Max Tottenham (1):
+>   tc: Add JSON output to tc-class
+> 
+>  tc/q_htb.c    | 36 ++++++++++++++++++++----------------
+>  tc/tc_class.c | 28 +++++++++++++++++-----------
+>  2 files changed, 37 insertions(+), 27 deletions(-)
+
+Here is the summary with links:
+  - [v2,iproute2,1/1] tc: Add JSON output to tc-class
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=010a8388aea1
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
