@@ -2,55 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5196662E57
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 19:11:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA806662E54
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 19:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbjAISKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 13:10:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
+        id S237393AbjAISKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 13:10:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237384AbjAISJM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 13:09:12 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D795CE1F
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 10:08:45 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id c11-20020a056e020bcb00b0030be9d07d63so6575006ilu.0
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 10:08:45 -0800 (PST)
+        with ESMTP id S235414AbjAISJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 13:09:38 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9176938B4
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 10:09:02 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id bf43so14281591lfb.6
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 10:09:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EyRfyaZH1M6G0kKiVcGLUZdinkm1+ObPe8W3gbDZzJ0=;
+        b=u36X+8K1/GxKB/jjdjUwyPpwU0pc1hDSybOxB8FH7XK8E8rRRDlUwF6+VvPUAyAwuz
+         5Du6zCeddixaRIkc1aFKSCGgU94DHcWrWRojebe0DA4uc1dxjgehWPw/6iFJsIY6yCuw
+         1i1OaWQ5NxlDYdMDhNwHgopUvF/FFQy/Bk3CdZzUBd/28Y8HkXUYJ+wMobEr5BWloOvf
+         jEOW20xLhzcXw89IlaQNQFhsuba6Eji8qZ2Lz/nZXMTfRdIF9KMohbacWbnbsKsjjNEJ
+         EkkCuBSevKz0tybiH6CxNa6k0VaiEEk8JlcVZ9fP/ljZ8bsTcpmH6xSMfxrSS7osaBiA
+         OTIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NNbXfP3zZE+WclPy0AUqx7K6Aj2YoB9mgrIl7FBGaA8=;
-        b=oYuDfIFdqxtyfaySsGvFQTQl7qt4Az3Ve4i963Ac1iCWX4Zj8TLYiAPTGFJOk46AgE
-         4yxK2LKEuKn3ajq3OLQ3G2rR/Sk4Pfayx11tVPYG1kIJhVPuKTlN/5GL2yQFC2eiN9ei
-         mFNMuuInAM0LrbZsMsVMdQSxNhzjYtnye/LIMyZGKym4576/JUHBZ68zX6dqGNy9Wt9w
-         /jElE0eizBjR8Y8WmplGzzmU6m3Df+fRODmRnqyjIaSq/uwzZ2q94jsZp80SDll9v+Dw
-         jnl0SnV82DaMQVdQlgZbNf6eeobuiKgGZOb++ZF4Uiwkc54OM5hbQCLdhLjM8dbH9/lG
-         0wFQ==
-X-Gm-Message-State: AFqh2krWG1HYKR+9ATLUMeH4TvQ1QaRP6WVUgQArRKx4cEgAzgtLgkx1
-        KJEzh5tn6jKOaCKQQabxIx0+rfOIo60/iklY2AOGV/HUyv2h
-X-Google-Smtp-Source: AMrXdXvpkKHHLqMZbhOHmwj6pgsDhxLa3dTss5kkOXIwr7JIziW6loNqGp1TbGtJjDKT2ofkUqryDL9mwDzOK776WAYxRd+MtrtH
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EyRfyaZH1M6G0kKiVcGLUZdinkm1+ObPe8W3gbDZzJ0=;
+        b=32UsF5ZcVzQa/usXeDBkB133lipkoEsW9219dzuOC5tvS6u2JnJkriDMJ8ZQwE3BN9
+         LW1kW4sWQxCM6zC/5derQy5YT0j7LsImep5su1sxxeehEhQ+wOc8nri3e5q5g9kPtgqP
+         feF+H1nw1pdDLKdJFrPKSyl/scjaWOrMC9VkxH75KjjdU85oQK2vjUaMByKbNoCLV6Zv
+         RIxG1SMdHhYbCOONpwgls0E3znkwUagJhl42KAjNTVvTORY856k2bPRDf2szf3SWs22Y
+         Gx9zecoJ1peFY+uH3e5a8Z8svCvNNm8zTrI5ar8PUDSgleVj8NrfKhNAz7oQoHCRBgzX
+         NkpQ==
+X-Gm-Message-State: AFqh2koJ8j/7o1jXC6Bz0EHp7ANCOGrDirWDxt/RZ0PilYYZrIdmq16e
+        Hp3CUTUoYUYtPGyir8Wp6LbFdQ==
+X-Google-Smtp-Source: AMrXdXsR6KMMPzrNFNF8KEs+1B/T+SBDN5kzRbuKPZzK7AAlK5CPdahZc7pGcVIZozm/jJ0S1vFXug==
+X-Received: by 2002:a05:6512:3196:b0:4cc:7ff0:dd64 with SMTP id i22-20020a056512319600b004cc7ff0dd64mr2587059lfe.21.1673287740971;
+        Mon, 09 Jan 2023 10:09:00 -0800 (PST)
+Received: from [192.168.1.101] (abxi45.neoplus.adsl.tpnet.pl. [83.9.2.45])
+        by smtp.gmail.com with ESMTPSA id bi26-20020a0565120e9a00b004cc8620281csm367675lfb.62.2023.01.09.10.08.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Jan 2023 10:08:59 -0800 (PST)
+Message-ID: <7159fb0f-8dbc-c986-ac27-643070a4ab53@linaro.org>
+Date:   Mon, 9 Jan 2023 19:08:56 +0100
 MIME-Version: 1.0
-X-Received: by 2002:a6b:7a0a:0:b0:6e9:b3db:b5ce with SMTP id
- h10-20020a6b7a0a000000b006e9b3dbb5cemr5861411iom.179.1673287725171; Mon, 09
- Jan 2023 10:08:45 -0800 (PST)
-Date:   Mon, 09 Jan 2023 10:08:45 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000774b9205f1d8a80d@google.com>
-Subject: [syzbot] WARNING in bpf_xdp_adjust_tail (4)
-From:   syzbot <syzbot+f817490f5bd20541b90a@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        haoluo@google.com, hawk@kernel.org, john.fastabend@gmail.com,
-        jolsa@kernel.org, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, martin.lau@linux.dev,
-        netdev@vger.kernel.org, pabeni@redhat.com, sdf@google.com,
-        song@kernel.org, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 14/18] soc: qcom: rmphpd: add power domains for sa8775p
+Content-Language: en-US
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20230109174511.1740856-1-brgl@bgdev.pl>
+ <20230109174511.1740856-15-brgl@bgdev.pl>
+From:   Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20230109174511.1740856-15-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,83 +96,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    fe69230f0589 caif: fix memory leak in cfctrl_linkup_reques..
-git tree:       net
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=135e909a480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8ca07260bb631fb4
-dashboard link: https://syzkaller.appspot.com/bug?extid=f817490f5bd20541b90a
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11a3f770480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d48034480000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/50a413c711d8/disk-fe69230f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/7b754ff4c853/vmlinux-fe69230f.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/1cef7470412e/bzImage-fe69230f.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f817490f5bd20541b90a@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-Too BIG xdp->frame_sz = 131072
-WARNING: CPU: 1 PID: 5082 at net/core/filter.c:4065 ____bpf_xdp_adjust_tail net/core/filter.c:4065 [inline]
-WARNING: CPU: 1 PID: 5082 at net/core/filter.c:4065 bpf_xdp_adjust_tail+0x461/0x9a0 net/core/filter.c:4047
-Modules linked in:
-CPU: 1 PID: 5082 Comm: syz-executor157 Not tainted 6.1.0-syzkaller-04386-gfe69230f0589 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-RIP: 0010:____bpf_xdp_adjust_tail net/core/filter.c:4065 [inline]
-RIP: 0010:bpf_xdp_adjust_tail+0x461/0x9a0 net/core/filter.c:4047
-Code: ff 89 de e8 11 74 af f9 84 db 0f 85 59 fd ff ff e8 94 77 af f9 89 ee 48 c7 c7 c0 df 5b 8b c6 05 9c dc 8b 06 01 e8 9f 37 ed 01 <0f> 0b e9 38 fd ff ff e8 43 78 fd f9 e9 64 fc ff ff e8 39 78 fd f9
-RSP: 0018:ffffc90003baf8f0 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888029903a80 RSI: ffffffff8166721c RDI: fffff52000775f10
-RBP: 0000000000020000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000200 R11: 0000000000000000 R12: ffffffffffffffea
-R13: ffff888076aafeef R14: 0000000000000000 R15: ffffc90003bafaa8
-FS:  00005555573ed300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020011000 CR3: 000000007daac000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- bpf_prog_4add87e5301a4105+0x1a/0x1c
- __bpf_prog_run include/linux/filter.h:600 [inline]
- bpf_prog_run_xdp include/linux/filter.h:775 [inline]
- bpf_prog_run_generic_xdp+0x578/0x11e0 net/core/dev.c:4752
- netif_receive_generic_xdp+0x2e8/0x930 net/core/dev.c:4838
- do_xdp_generic net/core/dev.c:4897 [inline]
- do_xdp_generic+0x9a/0x1b0 net/core/dev.c:4890
- tun_get_user+0x21ae/0x3870 drivers/net/tun.c:1913
- tun_chr_write_iter+0xdf/0x200 drivers/net/tun.c:2029
- call_write_iter include/linux/fs.h:2186 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9ed/0xdd0 fs/read_write.c:584
- ksys_write+0x12b/0x250 fs/read_write.c:637
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f4723af0c33
-Code: 5d 41 5c 41 5d 41 5e e9 9b fd ff ff 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
-RSP: 002b:00007ffee97bbf18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007ffee97bbf40 RCX: 00007f4723af0c33
-RDX: 000000000000fdef RSI: 0000000020001600 RDI: 00000000000000c8
-RBP: 00007ffee97bbfa0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 00007ffee97bbf50 R14: 00007ffee97bbf70 R15: 00007ffee97bbf38
- </TASK>
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 9.01.2023 18:45, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> 
+> Add power domain description for sa8775p and a new compatible to match it.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> ---
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Konrad
+>  drivers/soc/qcom/rpmhpd.c | 34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+> 
+> diff --git a/drivers/soc/qcom/rpmhpd.c b/drivers/soc/qcom/rpmhpd.c
+> index 4c2d2c296790..f20e2a49a669 100644
+> --- a/drivers/soc/qcom/rpmhpd.c
+> +++ b/drivers/soc/qcom/rpmhpd.c
+> @@ -187,6 +187,16 @@ static struct rpmhpd nsp = {
+>  	.res_name = "nsp.lvl",
+>  };
+>  
+> +static struct rpmhpd nsp0 = {
+> +	.pd = { .name = "nsp0", },
+> +	.res_name = "nsp0.lvl",
+> +};
+> +
+> +static struct rpmhpd nsp1 = {
+> +	.pd = { .name = "nsp1", },
+> +	.res_name = "nsp1.lvl",
+> +};
+> +
+>  static struct rpmhpd qphy = {
+>  	.pd = { .name = "qphy", },
+>  	.res_name = "qphy.lvl",
+> @@ -212,6 +222,29 @@ static const struct rpmhpd_desc sa8540p_desc = {
+>  	.num_pds = ARRAY_SIZE(sa8540p_rpmhpds),
+>  };
+>  
+> +/* SA8775P RPMH power domains */
+> +static struct rpmhpd *sa8775p_rpmhpds[] = {
+> +	[SA8775P_CX] = &cx,
+> +	[SA8775P_CX_AO] = &cx_ao,
+> +	[SA8775P_EBI] = &ebi,
+> +	[SA8775P_GFX] = &gfx,
+> +	[SA8775P_LCX] = &lcx,
+> +	[SA8775P_LMX] = &lmx,
+> +	[SA8775P_MMCX] = &mmcx,
+> +	[SA8775P_MMCX_AO] = &mmcx_ao,
+> +	[SA8775P_MXC] = &mxc,
+> +	[SA8775P_MXC_AO] = &mxc_ao,
+> +	[SA8775P_MX] = &mx,
+> +	[SA8775P_MX_AO] = &mx_ao,
+> +	[SA8775P_NSP0] = &nsp0,
+> +	[SA8775P_NSP1] = &nsp1,
+> +};
+> +
+> +static const struct rpmhpd_desc sa8775p_desc = {
+> +	.rpmhpds = sa8775p_rpmhpds,
+> +	.num_pds = ARRAY_SIZE(sa8775p_rpmhpds),
+> +};
+> +
+>  /* SDM670 RPMH powerdomains */
+>  static struct rpmhpd *sdm670_rpmhpds[] = {
+>  	[SDM670_CX] = &cx_w_mx_parent,
+> @@ -487,6 +520,7 @@ static const struct rpmhpd_desc sc8280xp_desc = {
+>  static const struct of_device_id rpmhpd_match_table[] = {
+>  	{ .compatible = "qcom,qdu1000-rpmhpd", .data = &qdu1000_desc },
+>  	{ .compatible = "qcom,sa8540p-rpmhpd", .data = &sa8540p_desc },
+> +	{ .compatible = "qcom,sa8775p-rpmhpd", .data = &sa8775p_desc },
+>  	{ .compatible = "qcom,sc7180-rpmhpd", .data = &sc7180_desc },
+>  	{ .compatible = "qcom,sc7280-rpmhpd", .data = &sc7280_desc },
+>  	{ .compatible = "qcom,sc8180x-rpmhpd", .data = &sc8180x_desc },
