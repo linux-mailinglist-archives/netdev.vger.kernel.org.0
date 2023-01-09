@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5526630B9
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 20:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFF46630C2
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 20:50:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbjAITnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 14:43:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
+        id S237463AbjAITuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 14:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237600AbjAITnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 14:43:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F5F77D18
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 11:43:10 -0800 (PST)
+        with ESMTP id S237453AbjAITty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 14:49:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E5727C
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 11:49:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C5B7B80E00
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 19:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5090DC433EF;
-        Mon,  9 Jan 2023 19:43:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B013B80F79
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 19:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C776C433D2;
+        Mon,  9 Jan 2023 19:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673293387;
-        bh=rKRsKGZ5mi7jnepcGflrOmKHPucbDqYbcgVTvz4DPVM=;
+        s=k20201202; t=1673293790;
+        bh=MWnmCjcTUxKxP7MKj9oXq9t26zrMWaec9oOIfu7a5DI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=poNBbVjPKSguu4whkDl7lAoRl43W1WxDIhj48P09zwCD6cVT72wbC6A2Mzts36o4Q
-         AL+Ippm/woKM6vEI+mVUPiuGU8aoYhIy+PSFRA2nXrawLF1yVaOKC7KbbmrJlwnIXW
-         FjN+N4rOjTOLI2UUlFAhuH0KIfKis22tUYmYFOV8KgAdO/gPuoLOiBVEhpMV1tj5mb
-         33L8d7rBAB/iXCuhU53e40hlmv/6J+376V9OnECtGlWZsfCxWWXn+MxeUoSW8BO+ur
-         ERd2aLg94PcSkcSx9FZ4gi4kmgQ41/oaxpJqRyTT23TIMAC38ZhXvAeHCbCTgE6YcG
-         kAtMwRBYQEIpA==
-Date:   Mon, 9 Jan 2023 11:43:06 -0800
+        b=leVKXH8uXEJ3mMbj6Tdw4fYInsNhNdZpCopEC31L97HbQJpplvEc/QLfx51ONYS8B
+         FaivPZ3lHqq/okG4fRIIiQL64LdDEahUmTHxYbpV8fZgU8+qayuBh/3HvLBSeAOKY5
+         7FbJjZaODPdJ/I9pEKlYtvaJTrNNPjZwDgwg9D/OMT2EkErVD7Xq0u4nTYTiUz/t6M
+         K+hdUr//gRQhm8yuEzfW/bUN9SJWfJZdmCri/UmfzivcVfrSeuk43zvc98DfDfXKUs
+         WlSqfvZkiH1QAGN01Wt4ZiRjoXbRfLgz/jh8nNCOvkYhlWeuHiMyvGuKZXb8nrpDBA
+         AOQja5DmBY2ig==
+Date:   Mon, 9 Jan 2023 11:49:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: Re: [PATCHv3 net-next] sched: multicast sched extack messages
-Message-ID: <20230109114306.07d81e76@kernel.org>
-In-Reply-To: <CAM0EoMkw8GA=KA_FXV8v4a-RKYCibK64ngp9hRQeT1UzXY4LCg@mail.gmail.com>
-References: <20230104091608.1154183-1-liuhangbin@gmail.com>
-        <20230104200113.08112895@kernel.org>
-        <Y7ail5Ta+OgMXCeh@Laptop-X1>
-        <CAM0EoMkw8GA=KA_FXV8v4a-RKYCibK64ngp9hRQeT1UzXY4LCg@mail.gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jacob.e.keller@intel.com
+Subject: Re: [PATCH net-next 13/14] devlink: add by-instance dump infra
+Message-ID: <20230109114949.547f5c9e@kernel.org>
+In-Reply-To: <Y7k6JLAiqMQFKtWt@nanopsycho>
+References: <20230104041636.226398-1-kuba@kernel.org>
+        <20230104041636.226398-14-kuba@kernel.org>
+        <Y7WuWd2jfifQ3E8A@nanopsycho>
+        <20230104194604.545646c5@kernel.org>
+        <Y7aSPuRPQxxQKQGN@nanopsycho>
+        <20230105102437.0d2bf14e@kernel.org>
+        <Y7fiRHoucfua+Erz@nanopsycho>
+        <20230106131214.79abb95c@kernel.org>
+        <Y7k6JLAiqMQFKtWt@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,17 +60,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Jan 2023 10:56:00 -0500 Jamal Hadi Salim wrote:
-> IMO the feature is useful. The idea of using a single tool to get the
-> details improves the operational experience.
-> And in this case this is a valid event (someone tried to add an entry to
-> hardware and s/ware and it worked for
-> one and not the other).
-> I think Jakub's objection is in the approach.
+On Sat, 7 Jan 2023 10:23:48 +0100 Jiri Pirko wrote:
+> Hmm.
+> 1) What is wrong of having:
+>    .dumpit = devlink_instance_iter_dumpit
+>    instead of
+>    .dumpit = devlink_instance_iter_dump
+>    ?
+>    How exactly that decreases readability?
 
-Right.
+The "it" at the end of the function name is there because do is a C
+keyword, so we can't call the do callback do, we must call it doit.
 
-> Jakub, would  using specific attributes restricted to
-> just QDISC/FILTER/ACTION work for you?
-
-Yes, specific attr to wrap the extack seems acceptable.
+The further from netlink core we get the more this is an API wart 
+and the less it makes sense. 
+instance iter dump is closer to plain English.
