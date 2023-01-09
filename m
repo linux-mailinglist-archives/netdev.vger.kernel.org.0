@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FD5661F51
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:37:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF7FF661F52
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:37:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236477AbjAIHhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 02:37:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        id S236332AbjAIHhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 02:37:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236479AbjAIHgs (ORCPT
+        with ESMTP id S236325AbjAIHgs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:36:48 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265AA13CCA
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 23:36:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31721CE03
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 23:36:45 -0800 (PST)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 308Nq3gO032247;
-        Sun, 8 Jan 2023 23:36:37 -0800
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 308Mvts7028929;
+        Sun, 8 Jan 2023 23:36:40 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=H3n4mngFffvhQwSvaC5r1UX99YdZT3eZQWuAFZW+VWM=;
- b=UT7b3bMAMkIx1YRmhgATcLwnVsHnDzEzEJdytM9qtsUmkZOOMLgXlQVmJtHXPyBVWlhl
- sjjRWcsR8jV7QCJh0gkDAGYXkPZXY5GEt68oiwZnORaHsURZsg2Jo9INJ/Y/98mmueku
- kF5UQkPCdWomVLJeLQNXOe7OUUr7FFaC2BgQWyJdBTUEqUH71JzfsfJjlWKFBWR6zaU+
- kDE8rmWdwc339l4OeQvxfaDsRRUtA3UcapcElwc7f5ruDEDsNnA2nANWo+1gN7CI+0uS
- SvB2/mOb+N5+bp1tih2lvfB+9uybED7ZsVeP3HFDsPRLpeXxDjfljgawUfamrWRoElCJ 8w== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tmmn1-1
+ bh=f4ckf/fecBmW83tOtnsw+TSxcEkY7gTojjBwvNJ5b5Y=;
+ b=WMlHOz/vgBKF2RcIBdjwtpd7EyXznWVz/ka5Jua0AbfR3uU8jEuyYI9B8EVzJ0cbsBc6
+ 7VfBA+qpc8V7h9XjcMeo5xVDwyGldQptTTiBEpR5JRUmUFjBillIKb0whW5tjIqTOCTO
+ 4eVcL0cwuNH+vIw2l9Iau8VFYJVdJJUhkOAB5sQCDmEgAdvXF5G5l4JMawgXeSxmMcj1
+ XxXUD/waadFGkIparMOa758g3RP4rkkufvDyCcIUES3REFDfMXTO5SqvmE/FbRrR5oAJ
+ W0jJnANTA23Tga1MNYFKTdx5qE8YdaqQgGjIMPsLC9dmHOqiPQrfHC7VI1qmdpHcPfoy Fw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tmmn7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 08 Jan 2023 23:36:37 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sun, 8 Jan
- 2023 23:36:35 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Sun, 8 Jan 2023 23:36:35 -0800
+        Sun, 08 Jan 2023 23:36:40 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sun, 8 Jan
+ 2023 23:36:38 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Sun, 8 Jan 2023 23:36:38 -0800
 Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 3D2B53F7065;
-        Sun,  8 Jan 2023 23:36:32 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 940C93F7048;
+        Sun,  8 Jan 2023 23:36:35 -0800 (PST)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <jerinj@marvell.com>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [PATCH net-next,8/9] octeontx2-af: add ctx ilen to cpt lf alloc mailbox
-Date:   Mon, 9 Jan 2023 13:06:02 +0530
-Message-ID: <20230109073603.861043-9-schalla@marvell.com>
+Subject: [PATCH net-next,9/9] octeontx2-af: add mbox to return CPT_AF_FLT_INT info
+Date:   Mon, 9 Jan 2023 13:06:03 +0530
+Message-ID: <20230109073603.861043-10-schalla@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230109073603.861043-1-schalla@marvell.com>
 References: <20230109073603.861043-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Na0YDWo7gZ5mkHKVVCXofo1DahYsYQQx
-X-Proofpoint-GUID: Na0YDWo7gZ5mkHKVVCXofo1DahYsYQQx
+X-Proofpoint-ORIG-GUID: yQBUE1srt5XFX6x6bSt33X1LBJm6A9_T
+X-Proofpoint-GUID: yQBUE1srt5XFX6x6bSt33X1LBJm6A9_T
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2023-01-09_02,2023-01-06_01,2022-06-22_01
@@ -68,56 +68,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds ctx_ilen to CPT_LF_ALLOC mailbox to provide
-the provison to user to give CPT_AF_LFX_CTL:ctx_ilen.
+Adds a new mailbox to return CPT faulted engines bitmap
+and recovered engines bitmap.
 
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h    |  2 ++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c | 10 +++++++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  | 17 ++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  4 +++
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 34 +++++++++++++++++++
+ 3 files changed, 55 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 9eac73bfc9cb..abe86778b064 100644
+index abe86778b064..5727d67e0259 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -1614,6 +1614,8 @@ struct cpt_lf_alloc_req_msg {
- 	u16 sso_pf_func;
- 	u16 eng_grpmsk;
- 	int blkaddr;
-+	u8 ctx_ilen_valid : 1;
-+	u8 ctx_ilen : 7;
+@@ -196,6 +196,8 @@ M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
+ 			       msg_rsp)                                 \
+ M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
+ M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
++M(CPT_FLT_ENG_INFO,     0xA09, cpt_flt_eng_info, cpt_flt_eng_info_req,	\
++			       cpt_flt_eng_info_rsp)			\
+ /* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
+ M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
+ M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
+@@ -1706,6 +1708,21 @@ struct cpt_lf_rst_req {
+ 	u32 rsvd;
  };
  
- #define CPT_INLINE_INBOUND      0
++/* Mailbox message format to request for CPT faulted engines */
++struct cpt_flt_eng_info_req {
++	struct mbox_msghdr hdr;
++	int blkaddr;
++	bool reset;
++	u32 rsvd;
++};
++
++struct cpt_flt_eng_info_rsp {
++	struct mbox_msghdr hdr;
++	u64 flt_eng_map[CPT_10K_AF_INT_VEC_RVU];
++	u64 rcvrd_eng_map[CPT_10K_AF_INT_VEC_RVU];
++	u64 rsvd;
++};
++
+ struct sdp_node_info {
+ 	/* Node to which this PF belons to */
+ 	u8 node_id;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 2f480c73ef55..5eea2b6cf6bd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -108,6 +108,8 @@ struct rvu_block {
+ 	u64  lfreset_reg;
+ 	unsigned char name[NAME_SIZE];
+ 	struct rvu *rvu;
++	u64 cpt_flt_eng_map[3];
++	u64 cpt_rcvrd_eng_map[3];
+ };
+ 
+ struct nix_mcast {
+@@ -526,6 +528,8 @@ struct rvu {
+ 	struct list_head	mcs_intrq_head;
+ 	/* mcs interrupt queue lock */
+ 	spinlock_t		mcs_intrq_lock;
++	/* CPT interrupt lock */
++	spinlock_t		cpt_intr_lock;
+ };
+ 
+ static inline void rvu_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index 302ff549284e..d7ca7e953683 100644
+index d7ca7e953683..7cc1efa603ce 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -17,7 +17,7 @@
- #define	PCI_DEVID_OTX2_CPT10K_PF 0xA0F2
+@@ -70,6 +70,13 @@ static irqreturn_t cpt_af_flt_intr_handler(int vec, void *ptr)
  
- /* Length of initial context fetch in 128 byte words */
--#define CPT_CTX_ILEN    2ULL
-+#define CPT_CTX_ILEN    1ULL
+ 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), grp);
+ 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val | 1ULL);
++
++		spin_lock(&rvu->cpt_intr_lock);
++		block->cpt_flt_eng_map[vec] |= BIT_ULL(i);
++		val = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_STS(eng));
++		if ((val & 0x2) || (!(val & 0x2) && (val & 0x1)))
++			block->cpt_rcvrd_eng_map[vec] |= BIT_ULL(i);
++		spin_unlock(&rvu->cpt_intr_lock);
+ 	}
+ 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(vec), reg);
  
- #define cpt_get_eng_sts(e_min, e_max, rsp, etype)                   \
- ({                                                                  \
-@@ -421,8 +421,12 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
+@@ -899,6 +906,31 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
+ 	return 0;
+ }
  
- 		/* Set CPT LF group and priority */
- 		val = (u64)req->eng_grpmsk << 48 | 1;
--		if (!is_rvu_otx2(rvu))
--			val |= (CPT_CTX_ILEN << 17);
-+		if (!is_rvu_otx2(rvu)) {
-+			if (req->ctx_ilen_valid)
-+				val |= (req->ctx_ilen << 17);
-+			else
-+				val |= (CPT_CTX_ILEN << 17);
++int rvu_mbox_handler_cpt_flt_eng_info(struct rvu *rvu, struct cpt_flt_eng_info_req *req,
++				      struct cpt_flt_eng_info_rsp *rsp)
++{
++	struct rvu_block *block;
++	unsigned long flags;
++	int blkaddr, vec;
++
++	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
++	if (blkaddr < 0)
++		return blkaddr;
++
++	block = &rvu->hw->block[blkaddr];
++	for (vec = 0; vec < CPT_10K_AF_INT_VEC_RVU; vec++) {
++		spin_lock_irqsave(&rvu->cpt_intr_lock, flags);
++		rsp->flt_eng_map[vec] = block->cpt_flt_eng_map[vec];
++		rsp->rcvrd_eng_map[vec] = block->cpt_rcvrd_eng_map[vec];
++		if (req->reset) {
++			block->cpt_flt_eng_map[vec] = 0x0;
++			block->cpt_rcvrd_eng_map[vec] = 0x0;
 +		}
- 
- 		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
- 
++		spin_unlock_irqrestore(&rvu->cpt_intr_lock, flags);
++	}
++	return 0;
++}
++
+ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ {
+ 	struct cpt_rxc_time_cfg_req req, prev;
+@@ -1182,5 +1214,7 @@ int rvu_cpt_init(struct rvu *rvu)
+ {
+ 	/* Retrieve CPT PF number */
+ 	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
++	spin_lock_init(&rvu->cpt_intr_lock);
++
+ 	return 0;
+ }
 -- 
 2.25.1
 
