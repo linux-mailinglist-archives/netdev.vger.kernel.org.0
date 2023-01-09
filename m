@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B849662D55
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 18:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C39F2662D59
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 18:48:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237336AbjAIRrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 12:47:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        id S237398AbjAIRrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 12:47:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237337AbjAIRqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 12:46:03 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81083AB26
+        with ESMTP id S237354AbjAIRqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 12:46:04 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB003D1F0
         for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 09:45:44 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id j16-20020a05600c1c1000b003d9ef8c274bso3245818wms.0
+Received: by mail-wr1-x430.google.com with SMTP id az7so9012074wrb.5
         for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 09:45:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=RwVG2zKJ/ATnKV1RRIAAcFC3q+IIg4nUTLy7Tj+MQpo=;
-        b=jRcoui9r2/TGb5E06Pt08Dc+Uc1+mBd6LO0MBj+k26OeFa3jjK0cIDHD8/8XsoPAqI
-         3LP+MQD2XnrLYwYhvGUc8UynxOBJ+dHP/ud8CJzu4gORQbmMFWFF6QYKwC7A+YNmHN75
-         Nfo+oaYvI9qCW1HtIi6tTF+cKfl9cPksZLNLFu5JIvjQtfUZiLsPFTk0ZTFwn2pTXVJq
-         MYNGJslfzjz73lu0a2hRti5ckCpuYlA47/QI/w5l6c1A2ERT0lJt1gtHv5LJbUdCcDGk
-         w/l2gRaAINL0s1Ml9gkebFIXoQOqm94NEl41Rk0FGJd2fs+bWpbkCXtsiDMINvG9+WGL
-         7Bfg==
+        bh=DamfAyxua5mOcNQnTJRbUr6W6QeiRHppYu+u0Db1wlo=;
+        b=mFzj4OcfLJnOiHKd0q2loV+psMgX08PCZxutS6vuglxJuguCw/Q7yP9wFVJPuCtAsT
+         x/h/m88PtFCFgAaHANzCRVpskH3c1OfL0ELbDvdsJEfrRCBPj7nZ7PixwHV6FFLLhJw1
+         +htIOwqum6c2wJ2xztGC++OVdJZYhnFPp6FMbappOyp0JhnaR3ebdMWdoDKG1lXoHcrA
+         /cI0Nh8eVa2HNbGiBhNc0HJNn88C6CTV3t/H2JqO2jO8Jw+MhOGIILUjHztS19J/a1hA
+         ODkSfIRoc/9ZqWTM44oKgPoywNt3SQR+YJDw71Us4+Ky+q9T/FJgGWD7jmphu8WTh6nn
+         2Rug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=RwVG2zKJ/ATnKV1RRIAAcFC3q+IIg4nUTLy7Tj+MQpo=;
-        b=IBITwfU5pP26Q5MoeMhwOFrPv8fQB87J4riOPEiB2UPs2xa3P/NfAcQvCZCABAGcHw
-         8XreCxtrdiNY67GhmFqT5lWicV1UbR8j3nONZQh2Y1usk2NwN1IjUNYTYZOlYyxUOVio
-         jN4cUgft4l356HNXj5EAfTP7gFHTpwuBwP/kt+yi0p011EriqEn6vVoYJwUKqf2XVA1C
-         47rBDOPVdCj32RaIEYSKHyXCHDQk3ZMfIB1S7Sv6iBMei+Gv94ib00C47tgrb7I8Yz3W
-         O/EGpWDq2rQKqhyXerpaDKyP626QoRQIKtE0nFkl/MJ1EW4QRIyaEh1dRHyyPPA5GJlj
-         DeAQ==
-X-Gm-Message-State: AFqh2kqK2En6DVEBxBDcKtSdUNg6RGUyGfryaagtb1qnPxoV9T2K1uqF
-        SBaTzOOCku8KKNhR/reBWv2XyQ==
-X-Google-Smtp-Source: AMrXdXsd7xg1OeqEz9aF8XERiC/uKepz+bzckxBY0KixGFQPabm7W0wOVPMTz5D1vkIcHHcNUj0TnA==
-X-Received: by 2002:a05:600c:4e90:b0:3cf:894f:964b with SMTP id f16-20020a05600c4e9000b003cf894f964bmr48650187wmq.16.1673286343174;
-        Mon, 09 Jan 2023 09:45:43 -0800 (PST)
+        bh=DamfAyxua5mOcNQnTJRbUr6W6QeiRHppYu+u0Db1wlo=;
+        b=W6tpFzEcQ7Y1t24Vs/1inP3v/7DsowQDCzZwFD0+lRYT8Dckp6OZznjRVXKNv4DUmu
+         YCCp+2kIhG0kJwZWgFDoAYGD7H9MIaW2Iwzbm8W+92AhdzmMGQ938ki2KZTZsE2Qs/JB
+         WRm4zDHmU24GCydk0PE3ogrzYi2H/GBs40u//pNRvCe7lvfMDsJAcHw6wNamaz68Py+M
+         fFTIUyaQkkG2ZsQcKhtgwkrMKNyuqU6UdrrZim5/z4U2hCD3dr76Ya55+TR549l7Fji3
+         8UfLzrL5QN1zLEXLrBVtIl8DyKMY9juXHFM5FV2EISmVsERfwqRJN26AvFkT1rylgxWP
+         UqMg==
+X-Gm-Message-State: AFqh2kpPEZL8Mnwb8OcARadGTc2OgbkyXu7z7K1NRePWnJo043tY+T2q
+        a1RKwuOAUhBfIwrNmDryHuQnLA==
+X-Google-Smtp-Source: AMrXdXtbtgRdBsH/+sciepnd1MkSiEwiKfLfhoVrimAWC9bDndBxSzIYf7ZexwvdSpk/yOtS6wfb3g==
+X-Received: by 2002:a5d:5d10:0:b0:242:5b1f:3dcf with SMTP id ch16-20020a5d5d10000000b002425b1f3dcfmr56541214wrb.63.1673286344466;
+        Mon, 09 Jan 2023 09:45:44 -0800 (PST)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:c88:901e:c74c:8e80])
-        by smtp.gmail.com with ESMTPSA id m1-20020a5d6241000000b002bbdaf21744sm6142902wrv.113.2023.01.09.09.45.41
+        by smtp.gmail.com with ESMTPSA id m1-20020a5d6241000000b002bbdaf21744sm6142902wrv.113.2023.01.09.09.45.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jan 2023 09:45:42 -0800 (PST)
+        Mon, 09 Jan 2023 09:45:44 -0800 (PST)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -74,9 +74,9 @@ Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
         netdev@vger.kernel.org,
         Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH 08/18] arm64: defconfig: enable the interconnect driver for Qualcomm SA8775P
-Date:   Mon,  9 Jan 2023 18:45:01 +0100
-Message-Id: <20230109174511.1740856-9-brgl@bgdev.pl>
+Subject: [PATCH 09/18] dt-bindings: pinctrl: sa8775p: add bindings for qcom,sa8775p-tlmm
+Date:   Mon,  9 Jan 2023 18:45:02 +0100
+Message-Id: <20230109174511.1740856-10-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230109174511.1740856-1-brgl@bgdev.pl>
 References: <20230109174511.1740856-1-brgl@bgdev.pl>
@@ -93,27 +93,162 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Enable the Qualcomm SA8775P interconnect driver for arm64 builds. It's
-required to be built-in for QUPv3 to work early which in turn is needed
-for the console.
+Add DT bindings for the TLMM controller on sa8775p platforms.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 ---
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ .../bindings/pinctrl/qcom,sa8775p-tlmm.yaml   | 142 ++++++++++++++++++
+ 1 file changed, 142 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 1cb586125c46..d5c938adbd2d 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1332,6 +1332,7 @@ CONFIG_INTERCONNECT_QCOM_MSM8916=m
- CONFIG_INTERCONNECT_QCOM_MSM8996=m
- CONFIG_INTERCONNECT_QCOM_OSM_L3=m
- CONFIG_INTERCONNECT_QCOM_QCS404=m
-+CONFIG_INTERCONNECT_QCOM_SA8775P=y
- CONFIG_INTERCONNECT_QCOM_SC7180=y
- CONFIG_INTERCONNECT_QCOM_SC7280=y
- CONFIG_INTERCONNECT_QCOM_SC8180X=y
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+new file mode 100644
+index 000000000000..44abf83b1358
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+@@ -0,0 +1,142 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pinctrl/qcom,sa8775p-tlmm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Technologies, Inc. SA8775P TLMM block
++
++maintainers:
++  - Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
++
++description: |
++  Top Level Mode Multiplexer pin controller in Qualcomm SA8775P SoC.
++
++allOf:
++  - $ref: /schemas/pinctrl/qcom,tlmm-common.yaml#
++
++properties:
++  compatible:
++    const: qcom,sa8775p-tlmm
++
++  reg:
++    maxItems: 1
++
++  interrupts: true
++  interrupt-controller: true
++  "#interrupt-cells": true
++  gpio-controller: true
++  "#gpio-cells": true
++  gpio-ranges: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++patternProperties:
++  "-state$":
++    oneOf:
++      - $ref: "#/$defs/qcom-sa8775p-tlmm-state"
++      - patternProperties:
++          "-pins$":
++            $ref: "#/$defs/qcom-sa8775p-tlmm-state"
++        additionalProperties: false
++
++$defs:
++  qcom-sa8775p-tlmm-state:
++    type: object
++    description:
++      Pinctrl node's client devices use subnodes for desired pin configuration.
++      Client device subnodes use below standard properties.
++    $ref: qcom,tlmm-common.yaml#/$defs/qcom-tlmm-state
++
++    properties:
++      pins:
++        description:
++          List of gpio pins affected by the properties specified in this
++          subnode.
++        items:
++          oneOf:
++            - pattern: "^gpio([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-1][0-9]|22[0-7])$"
++            - enum: [ sdc1_rclk, sdc1_clk, sdc1_cmd, sdc1_data, ufs_reset ]
++        minItems: 1
++        maxItems: 16
++
++      function:
++        description:
++          Specify the alternative function to be configured for the specified
++          pins.
++
++        enum: [ atest_char, atest_char0, atest_char1, atest_char2,
++                atest_char3, atest_usb2, atest_usb20, atest_usb21, atest_usb22,
++                atest_usb23, audio_ref, cam_mclk, cci_async, cci_i2c,
++                cci_timer0, cci_timer1, cci_timer2, cci_timer3, cci_timer4,
++                cci_timer5, cci_timer6, cci_timer7, cci_timer8, cci_timer9,
++                cri_trng, cri_trng0, cri_trng1, dbg_out, ddr_bist, ddr_pxi0,
++                ddr_pxi1, ddr_pxi2, ddr_pxi3, ddr_pxi4, ddr_pxi5, edp0_hot,
++                edp0_lcd, edp1_hot, edp1_lcd, edp2_hot, edp2_lcd, edp3_hot,
++                edp3_lcd, emac0_mcg0, emac0_mcg1, emac0_mcg2, emac0_mcg3,
++                emac0_mdc, emac0_mdio, emac0_ptp, emac1_mcg0, emac1_mcg1,
++                emac1_mcg2, emac1_mcg3, emac1_mdc, emac1_mdio, emac1_ptp,
++                gcc_gp1, gcc_gp2, gcc_gp3, gcc_gp4, gcc_gp5, hs0_mi2s, hs1_mi2s,
++                hs2_mi2s, ibi_i3c, jitter_bist, mdp0_vsync0, mdp0_vsync1,
++                mdp0_vsync2, mdp0_vsync3, mdp0_vsync4, mdp0_vsync5, mdp0_vsync6,
++                mdp0_vsync7, mdp0_vsync8, mdp1_vsync0, mdp1_vsync1, mdp1_vsync2,
++                mdp1_vsync3, mdp1_vsync4, mdp1_vsync5, mdp1_vsync6, mdp1_vsync7,
++                mdp1_vsync8, mdp_vsync, mi2s1_data0, mi2s1_data1, mi2s1_sck,
++                mi2s1_ws, mi2s2_data0, mi2s2_data1, mi2s2_sck, mi2s2_ws,
++                mi2s_mclk0, mi2s_mclk1, pcie0_clkreq, pcie1_clkreq, phase_flag0,
++                phase_flag1, phase_flag10, phase_flag11, phase_flag12,
++                phase_flag13, phase_flag14, phase_flag15, phase_flag16,
++                phase_flag17, phase_flag18, phase_flag19, phase_flag2,
++                phase_flag20, phase_flag21, phase_flag22, phase_flag23,
++                phase_flag24, phase_flag25, phase_flag26, phase_flag27,
++                phase_flag28, phase_flag29, phase_flag3, phase_flag30,
++                phase_flag31, phase_flag4, phase_flag5, phase_flag6,
++                phase_flag7, phase_flag8, phase_flag9, pll_bist, pll_clk,
++                prng_rosc0, prng_rosc1, prng_rosc2, prng_rosc3, qdss_cti,
++                qdss_gpio, qdss_gpio0, qdss_gpio1, qdss_gpio10, qdss_gpio11,
++                qdss_gpio12, qdss_gpio13, qdss_gpio14, qdss_gpio15, qdss_gpio2,
++                qdss_gpio3, qdss_gpio4, qdss_gpio5, qdss_gpio6, qdss_gpio7,
++                qdss_gpio8, qdss_gpio9, qup0_se0, qup0_se1, qup0_se2, qup0_se3,
++                qup0_se4, qup0_se5, qup1_se0, qup1_se1, qup1_se2, qup1_se3,
++                qup1_se4, qup1_se5, qup1_se6, qup2_se0, qup2_se1, qup2_se2,
++                qup2_se3, qup2_se4, qup2_se5, qup2_se6, qup3_se0, sail_top,
++                sailss_emac0, sailss_ospi, sgmii_phy, tb_trig, tgu_ch0, tgu_ch1,
++                tgu_ch2, tgu_ch3, tgu_ch4, tgu_ch5, tsense_pwm1, tsense_pwm2,
++                tsense_pwm3, tsense_pwm4, usb2phy_ac, vsense_trigger]
++
++      bias-disable: true
++      bias-pull-down: true
++      bias-pull-up: true
++      drive-strength: true
++      input-enable: true
++      output-high: true
++      output-low: true
++
++    required:
++      - pins
++
++    additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    tlmm: pinctrl@f000000 {
++        compatible = "qcom,sa8775p-pinctrl";
++        reg = <0xf000000 0x1000000>;
++        interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
++        gpio-controller;
++        #gpio-cells = <2>;
++        interrupt-controller;
++        #interrupt-cells = <2>;
++        gpio-ranges = <&tlmm 0 0 149>;
++
++        qup_uart10_state {
++            pins = "gpio46", "gpio47";
++            function = "qup1_se3";
++        };
++    };
++...
 -- 
 2.37.2
 
