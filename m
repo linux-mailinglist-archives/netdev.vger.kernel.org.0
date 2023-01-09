@@ -2,82 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0AC8661BDA
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 02:18:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E05661C68
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 03:42:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233912AbjAIBRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 20:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        id S234118AbjAICmP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 8 Jan 2023 21:42:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233682AbjAIBRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 20:17:37 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC08BEA;
-        Sun,  8 Jan 2023 17:17:35 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NqwxY5RdGznVHt;
-        Mon,  9 Jan 2023 09:16:01 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 9 Jan
- 2023 09:17:33 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <brian.gix@intel.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH] Bluetooth: hci_sync: fix memory leak in hci_update_adv_data()
-Date:   Mon, 9 Jan 2023 09:26:51 +0800
-Message-ID: <20230109012651.3127529-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234088AbjAICmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 21:42:14 -0500
+Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0373FE038
+        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 18:42:11 -0800 (PST)
+X-QQ-mid: bizesmtp65t1673232049txz3ifwd
+Received: from smtpclient.apple ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 09 Jan 2023 10:40:47 +0800 (CST)
+X-QQ-SSF: 00400000000000M0N000000A0000000
+X-QQ-FEAT: pI6bUghcKwP+j8ub+ypoPXnKY7tjbVmCLlaVjhvirFsNFUSJEko6KONvHVvNA
+        CxwN/3s0CeZmzFm9BtMG6TKhwT33sCHqBQF/JsL63TVTCJ5f1WIeEecWjLuwvzx/yA3k4gP
+        ViEiNfhNhtOlGZNaGXmF3ehk/vUdFReYXg432mXOmlsTjon6EHUDrQ1XnOY89ZQwFoypdsI
+        wcYL//j+Vl036K8gjOeLoG+xy9ZpjRzyG+yE0vQfoTaO9vnBFX7gqlIZvvMToFmkOS59+mL
+        QHLdOZvKo62Ksl8d9PNzA1lxHrP9rxlQ3mTAB8GQ51YDfnPrIgaUUMpQbkT3tpXfhlEC4SC
+        IqDsp2kSMhV7xxuQgjCgr3pMCYUaAe48NKEqeZGWaDTpBt4YP4bkCVyPUib28TFGadYFKw0
+X-QQ-GoodBg: 2
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.300.51\))
+Subject: Re: [PATCH net-next v6] net: ngbe: Add ngbe mdio bus driver.
+From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
+In-Reply-To: <Y7roqgyjDN91hSIH@lunn.ch>
+Date:   Mon, 9 Jan 2023 10:40:37 +0800
+Cc:     netdev@vger.kernel.org, jiawenwu@net-swift.com
+Content-Transfer-Encoding: 8BIT
+Message-Id: <6A65AA55-3962-4E48-A778-7D1EF0820D89@net-swift.com>
+References: <20230108093903.27054-1-mengyuanlou@net-swift.com>
+ <Y7roqgyjDN91hSIH@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3731.300.51)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When hci_cmd_sync_queue() failed in hci_update_adv_data(), inst_ptr is
-not freed, which will cause memory leak. Add release process to error
-path.
 
-Fixes: 651cd3d65b0f ("Bluetooth: convert hci_update_adv_data to hci_sync")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/bluetooth/hci_sync.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 9e2d7e4b850c..1485501bd72f 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -6197,10 +6197,15 @@ static int _update_adv_data_sync(struct hci_dev *hdev, void *data)
- int hci_update_adv_data(struct hci_dev *hdev, u8 instance)
- {
- 	u8 *inst_ptr = kmalloc(1, GFP_KERNEL);
-+	int ret;
- 
- 	if (!inst_ptr)
- 		return -ENOMEM;
- 
- 	*inst_ptr = instance;
--	return hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
-+	ret = hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
-+	if (ret)
-+		kfree(inst_ptr);
-+
-+	return ret;
- }
--- 
-2.34.1
+> 2023年1月9日 00:00，Andrew Lunn <andrew@lunn.ch> 写道：
+> 
+>> +static int ngbe_phy_read_reg_internal(struct mii_bus *bus, int phy_addr, int regnum)
+>> +{
+>> + struct wx *wx = bus->priv;
+>> +
+>> + if (regnum & MII_ADDR_C45)
+>> + return -EOPNOTSUPP;
+>> + return (u16)rd32(wx, NGBE_PHY_CONFIG(regnum));
+> 
+> You ignore phy_addr. Which suggests you only allow one internal
+> PHY. Best practice here is to put the internal PHY on phy_addr 0, and
+> return 0xffff for all other phy_addr values. If phylib probes the full
+> range, or userspace tries to access the full range, it will look like
+> there is no PHY at these other addresses.
+> 
+>> +}
+>> +
+>> +static int ngbe_phy_write_reg_internal(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
+>> +{
+>> + struct wx *wx = bus->priv;
+>> +
+>> + if (regnum & MII_ADDR_C45)
+>> + return -EOPNOTSUPP;
+>> + wr32(wx, NGBE_PHY_CONFIG(regnum), value);
+>> + return 0;
+> 
+> Here, silently ignore writes to phy_addr != 0.
+> 
+>> + /* wait to complete */
+>> + ret = read_poll_timeout(rd32, val, !(val & NGBE_MSCC_BUSY), 1000,
+>> + 100000, false, wx, NGBE_MSCC);
+>> + if (ret) {
+>> + wx_err(wx, "PHY address command did not complete.\n");
+>> + return ret;
+>> + }
+>> +
+>> + return (u16)rd32(wx, NGBE_MSCC);
+>> +}
+>> +
+>> + /* wait to complete */
+>> + ret = read_poll_timeout(rd32, val, !(val & NGBE_MSCC_BUSY), 1000,
+>> + 100000, false, wx, NGBE_MSCC);
+>> + if (ret)
+>> + wx_err(wx, "PHY address command did not complete.\n");
+> 
+> You have the exact same error message. When you see such an error in
+> the log, it can sometimes be useful to know was it a read or a write
+> which failed. So i would suggest you put read/write into the message.
+> 
+>> +static void ngbe_phy_fixup(struct wx *wx)
+>> +{
+>> + struct phy_device *phydev = wx->phydev;
+>> + struct ethtool_eee eee;
+>> +
+>> + if (wx->mac_type != em_mac_type_mdi)
+>> + return;
+> 
+> Does this mean that if using the internal PHY the MAC does support EEE
+> and half duplex?
+
+
+1) The MAC does not support half duplex. 
+   Internal phy and external phys all need to close half duplex.
+
+2) The internal phy does not support eee. 
+   When using the internal phy, we disable eee.
+> 
+>> + /* disable EEE, EEE not supported by mac */
+>> + memset(&eee, 0, sizeof(eee));
+>> + phy_ethtool_set_eee(phydev, &eee);
+>> +
+>> + phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
+>> + phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
+>> + phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+>> +}
+>> +
+>> +int ngbe_mdio_init(struct wx *wx)
+>> +{
+>> + struct pci_dev *pdev = wx->pdev;
+>> + struct mii_bus *mii_bus;
+>> + int ret;
+>> +
+>> + mii_bus = devm_mdiobus_alloc(&pdev->dev);
+>> + if (!mii_bus)
+>> + return -ENOMEM;
+>> +
+>> + mii_bus->name = "ngbe_mii_bus";
+>> + mii_bus->read = ngbe_phy_read_reg;
+>> + mii_bus->write = ngbe_phy_write_reg;
+>> + mii_bus->phy_mask = GENMASK(31, 4);
+>> + mii_bus->probe_capabilities = MDIOBUS_C22_C45;
+> 
+> That is not strictly true. The internal MDIO bus does not suport
+> C45. In practice, it probably does not matter.
+
+>> mii_bus->probe_capabilities = MDIOBUS_C22_C45;
+So, it is not necessary?
+If I correct handling in read/write.
+> 
+>     Andrew
+> 
 
