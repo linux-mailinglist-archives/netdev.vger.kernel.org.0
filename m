@@ -2,134 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 001436627BD
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 14:51:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A806627C4
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 14:55:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbjAINva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 08:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
+        id S234111AbjAINzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 08:55:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236605AbjAINvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 08:51:22 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7823474E
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 05:51:21 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id bp44so7953329qtb.0
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 05:51:21 -0800 (PST)
+        with ESMTP id S233297AbjAINza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 08:55:30 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3362EDD7
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 05:55:28 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id k26-20020a05600c1c9a00b003d972646a7dso9066745wms.5
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 05:55:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=lMVp4DBzPEHbESC24TX/tZtXHFYFxaQ3aEbKjvID1W4=;
-        b=dKynSNqusmOgSgsJ6qwW0bE7cZpOLP0KpccYzgB3jQGTU3Auam7E9yUKTrf2GeHRee
-         8NQWnisSS44QSDiLccsgxAS7vJ5k+SAQU9F6HxrvY4E5eT8YkML63yP2x+3rz34XRy9T
-         1gONFV8pTX+s6YF9+eMR6mIbmEEsnXfVsoXI/Ud9ZAuaEPLdT3LlVYOTSHW1cId72xFR
-         GOiO4tzpCpU7HtTNQyjD0l0ltNnL6U+5/1yGqS71TSbz5/nNIvR02BcSBAUbxzrQWzLR
-         5Dx5hmIYZt63cYZRr1foLknDeU9pGvLXCP+dVHyDT1z9Qn0Chqo0VwYlB4ajwsibWnPY
-         rxMg==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=va66QghiVwE6QiiPu9+UqCbbyrDyyXt5x9KLmndYxL8=;
+        b=GCbpLCPt03bLfCX0hIfUstelzWW82socA5TVed6Mkkf687r2qcXjySW9kXEgKlOGPh
+         Yd84hbnwYZ0varuAkWdq5mkmPYo1LeTM1WOPEdCabTFA5OzEoHgwvobs6yETn5oR6ssa
+         4sXLgkDJwyG5Udg/ASYQLx2fCJNwjYVEC+xJMxsZssLoAsOxK/u5g30vas2PR7TQ9mZZ
+         hUv+qR+nKFQORVbXoOov4LDvFkWBxrHxrbDNum90W4WjwcAI/SkuYXTut8RxoldH1Xtn
+         VHtL+/c+xw3BjMGKcelvN1WMF7unrtQUZlcVEskL0HUO14pQT8S8ZljO0k3hViyhcSQX
+         hfHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lMVp4DBzPEHbESC24TX/tZtXHFYFxaQ3aEbKjvID1W4=;
-        b=JvxRZ904++wnWZNvz9VHnvEl9G79goAh+XqWHFmyIgS04+cfO9aAVqcWYEnsrNOW/d
-         NzMY2aJpd5ire8zjCtld4IZRO0RlxwxywYky0rwl/1ACEd36YDIy21Qy4HTJd/bqQdN6
-         M2JKNgLTk7au6v9rx2LfqsNMQTmuEJtRRvSxqiLIBRG52rYjTPaO+adi62Ss1rGYcf7s
-         tgIWJXmDuDX/bqVuVw+UnCkrRdvf6Sc6YJ8hrtOapRUc9/LKlF6sxcl0cnppfk8W1BSr
-         Ovp8MiZ3NwKerZOzkvlvToXs+JAWV/ANZ5xQ4Kwut+9ydXxObGlCBL55M/iGJXGZfbNf
-         P0iA==
-X-Gm-Message-State: AFqh2krPjlV+I6f7009MrXugQYs8HL/hj68IQDfiVZWXBjngSPhN6c0/
-        tLfgI62M+8giuZ6jqeEyeUQR5A==
-X-Google-Smtp-Source: AMrXdXsLCQFPQV4atO2Q0j1JNG+UBuuiWvuPu+0Twc1T3PNxBJsf65n8ZRlgngIhIvLkHoNZqRx61w==
-X-Received: by 2002:ac8:7601:0:b0:3a8:199b:dcac with SMTP id t1-20020ac87601000000b003a8199bdcacmr83516511qtq.15.1673272280462;
-        Mon, 09 Jan 2023 05:51:20 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-50-193.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.50.193])
-        by smtp.gmail.com with ESMTPSA id f26-20020ac8499a000000b003ae450e43acsm515663qtq.12.2023.01.09.05.51.19
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=va66QghiVwE6QiiPu9+UqCbbyrDyyXt5x9KLmndYxL8=;
+        b=YoXK1hWVKmP9bVtaTWQfxr3OUAz/hBNtYVnVNdRYZ04OSwspobNhaVQB6vWHF5nycC
+         36nLM+WiayFCXXQ9soh5JusekxUZCDjMrPp11+bHtEsfVIrK5uG5J1U1vPArdmDTW+vt
+         pshmrah8H/qpz+M9wBw9DFRSiOBKybfgg9jaq05wWrk/NeRHEk9SjEQTWc3PHrIokAn0
+         yxbq/SA4CcM3z8Dyu1JHn2ihsAcm4hbZIwV1GzxMUK6OmThw6bvamSmhJLdXHVLqz3hw
+         rc6hJBlB5oT49EOtH/M8bCLZN1D1l/KT5AvsRVGyqMn2w/M+o7V+hTiPnBRixXKDiWi0
+         Y+ZA==
+X-Gm-Message-State: AFqh2koyhhONWXuViSqfHTyIocdGZnAjk7kJrqki6sNY6qVBXR+koXLU
+        jx+zfDj1yHbjqh4WeVO8rlcgDg==
+X-Google-Smtp-Source: AMrXdXv2WN4wMVGdDkBhjE+UWpSu6saJ98AIITLU1NrEhKekqQlPlT+EBUtwJNXfeVDh6ZJgMatH0g==
+X-Received: by 2002:a7b:c3c9:0:b0:3d2:e28:647f with SMTP id t9-20020a7bc3c9000000b003d20e28647fmr55927989wmj.15.1673272526694;
+        Mon, 09 Jan 2023 05:55:26 -0800 (PST)
+Received: from blmsp ([2001:4091:a245:805c:8713:84e4:2a9e:cbe8])
+        by smtp.gmail.com with ESMTPSA id o21-20020a1c7515000000b003d995a704fdsm11487570wmc.33.2023.01.09.05.55.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jan 2023 05:51:19 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1pEsYY-007h8N-V5;
-        Mon, 09 Jan 2023 09:51:18 -0400
-Date:   Mon, 9 Jan 2023 09:51:18 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Yupeng Li <liyupeng@zbhlos.com>, Kees Cook <keescook@chromium.org>
-Cc:     tariqt@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Caicai <caizp2008@163.com>
-Subject: Re: [PATCH 1/1] net/mlx4: Fix build error use array_size() helper in
- copy_to_user()
-Message-ID: <Y7wb1hCpJiGEdbav@ziepe.ca>
-References: <20230107072725.673064-1-liyupeng@zbhlos.com>
+        Mon, 09 Jan 2023 05:55:26 -0800 (PST)
+Date:   Mon, 9 Jan 2023 14:55:20 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/18] can: m_can: Optimizations for m_can/tcan part 2
+Message-ID: <20230109135520.6dt3p7wvo3zoygmi@blmsp>
+References: <20221221152537.751564-1-msp@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230107072725.673064-1-liyupeng@zbhlos.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221221152537.751564-1-msp@baylibre.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 07, 2023 at 03:27:25PM +0800, Yupeng Li wrote:
-> When CONFIG_64BIT was disabled, check_copy_size() was declared with
-> attribute error: copy source size is too small, array_size() for 32BIT
-> was wrong size, some compiled msg with error like:
-> 
->   CALL    scripts/checksyscalls.sh
->   CC [M]  drivers/net/ethernet/mellanox/mlx4/cq.o
-> In file included from ./arch/x86/include/asm/preempt.h:7,
->                  from ./include/linux/preempt.h:78,
->                  from ./include/linux/percpu.h:6,
->                  from ./include/linux/context_tracking_state.h:5,
->                  from ./include/linux/hardirq.h:5,
->                  from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
-> In function ‘check_copy_size’,
->     inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:168:6,
->     inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
->     inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
-> ./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
->   228 |    __bad_copy_from();
->       |    ^~~~~~~~~~~~~~~~~
-> make[6]: *** [scripts/Makefile.build:250：drivers/net/ethernet/mellanox/mlx4/cq.o] 错误 1
-> make[5]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox/mlx4] 错误 2
-> make[5]: *** 正在等待未完成的任务....
-> make[4]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox] 错误 2
-> make[3]: *** [scripts/Makefile.build:500：drivers/net/ethernet] 错误 2
-> make[3]: *** 正在等待未完成的任务....
-> make[2]: *** [scripts/Makefile.build:500：drivers/net] 错误 2
-> make[2]: *** 正在等待未完成的任务....
-> make[1]: *** [scripts/Makefile.build:500：drivers] 错误 2
-> make: *** [Makefile:1992：.] 错误 2
-> 
-> Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-> Reviewed-by: Caicai <caizp2008@163.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx4/cq.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> index 4d4f9cf9facb..7dadd7227480 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> @@ -315,7 +315,11 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
->  		}
->  	} else {
->  		err = copy_to_user((void __user *)buf, init_ents,
-> +#ifdef CONFIG_64BIT
->  				   array_size(entries, cqe_size)) ?
-> +#else
-> +				   entries * cqe_size) ?
-> +#endif
->  			-EFAULT : 0;
+Hi everyone,
 
-This can't possibly make sense, Kees?
+On Wed, Dec 21, 2022 at 04:25:19PM +0100, Markus Schneider-Pargmann wrote:
+> Hi Marc and everyone,
+> 
+> this is the second part now. I know it is the merge window right now but
+> I am quite sure this won't be merged immediately anyways, so if you have
+> some time for some comments I would appreciate it. So it is still based
+> on v6.1-rc8 + the patches that got applied.
+> 
+> I tried to do as small patches as possible so it is easier to
+> understand. The series changed a lot compared to v1 I sent so I didn't
+> call it v2. There are a lot of new patches as well.
+> 
+> The series contains a few small fixes and optimizations at the
+> beginning, then adding coalescing support and at the end removing the
+> restrictions on the number of parallel transmits in flight.
+> 
+> Note that the last patch 'Implement transmit submission coalescing' does
+> not perform well for me in a loopback testing setup. However I think it
+> may work well in normal testcases. I attached this mechanism to the
+> tx-frames coalescing option, let me know if this is the correct option.
 
-Jason
+I introduced a bug in this series in the internal m_can driver (not
+peripheral) and maybe for older m_can versions as well. No need to
+review at the moment, I will send a new version once they are fixed.
+
+Best,
+Markus
+
+> 
+> Best,
+> Markus
+> 
+> part 1:
+> v1 - https://lore.kernel.org/lkml/20221116205308.2996556-1-msp@baylibre.com
+> v2 - https://lore.kernel.org/lkml/20221206115728.1056014-1-msp@baylibre.com
+> 
+> Markus Schneider-Pargmann (18):
+>   can: tcan4x5x: Remove reserved register 0x814 from writable table
+>   can: tcan4x5x: Check size of mram configuration
+>   can: m_can: Remove repeated check for is_peripheral
+>   can: m_can: Always acknowledge all interrupts
+>   can: m_can: Remove double interrupt enable
+>   can: m_can: Disable unused interrupts
+>   can: m_can: Keep interrupts enabled during peripheral read
+>   can: m_can: Write transmit header and data in one transaction
+>   can: m_can: Implement receive coalescing
+>   can: m_can: Implement transmit coalescing
+>   can: m_can: Add rx coalescing ethtool support
+>   can: m_can: Add tx coalescing ethtool support
+>   can: m_can: Cache tx putidx
+>   can: m_can: Use the workqueue as queue
+>   can: m_can: Introduce a tx_fifo_in_flight counter
+>   can: m_can: Use tx_fifo_in_flight for netif_queue control
+>   can: m_can: Implement BQL
+>   can: m_can: Implement transmit submission coalescing
+> 
+>  drivers/net/can/m_can/m_can.c           | 498 ++++++++++++++++++------
+>  drivers/net/can/m_can/m_can.h           |  36 +-
+>  drivers/net/can/m_can/tcan4x5x-core.c   |   5 +
+>  drivers/net/can/m_can/tcan4x5x-regmap.c |   1 -
+>  4 files changed, 418 insertions(+), 122 deletions(-)
+> 
+> -- 
+> 2.38.1
+> 
