@@ -2,65 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3DC66328A
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 22:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A71F9663298
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 22:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238109AbjAIVOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 16:14:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
+        id S238246AbjAIVSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 16:18:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238285AbjAIVOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 16:14:00 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D2E25FD;
-        Mon,  9 Jan 2023 13:11:58 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id bt23so15018227lfb.5;
-        Mon, 09 Jan 2023 13:11:58 -0800 (PST)
+        with ESMTP id S238215AbjAIVRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 16:17:41 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C64413E36
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 13:16:15 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id h16so9598605wrz.12
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 13:16:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NKI+/xQWA7SbrtTO+8CzLU5bh5dwJN+z24fvwTgujQ8=;
-        b=HXE78xFTBHbG6aTml/Qnb+MP2ASgAmNY+iow5VEBoZkKRJ6pXJhxazmkgtioFl7eAR
-         Hd9+eOyLGnWke353lv5D2tXbaLJ9s1rs22Tollb9Bq7PwiMwPu2S++6raY69bsJwkXjP
-         TQ5zNYQIRs3F5CEiGZXYc6KH9P9MDjSHSdSHVCqFirA7//heIVehu5aj4uHwT29FVcV3
-         b5R+e2QKqBM891cIkR81EgMpRG+dTyPChbJilVXtc2Ra/RSkiQKjbkwyo6zj5oWwKMQ7
-         J2NACwFiMpQV/IZYIu7zU6lpLtB+Mfg0GXKOaya0udqys70TJzLXyAznPO6qggchxynT
-         L/cw==
+        d=arista.com; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=J9KM35Fv2Dw9JmJ+2t7GGA9jMoE7j/7O85W6URim/jg=;
+        b=jUHKr9R1sQwJJ2bJxAnapKyyeWwjbh0ONbLgUVCE3TuUCBEiAKy24tFJxSxhrS04oE
+         1pSA3H6dh/OY00v7xUleL9fx9CNo5u1hHUFeGOdx/9GOaARQDKglqB0LosYGGysuZP2A
+         Ui7TFTmuyIvjIl3kJ0xumIr94MUKJLZb7rFkih9v2xYi0G7aIJpHzeos75blvPUOLW7w
+         da1Hu4JZdKjqM4YcqlHqV0FRsAgOc3PIVh6IGWzHxDNBexNUHnKkYIHMY/Rppd/PI6Uv
+         Uve+ynbBFDpRLFtrcLQr2ZQfruqmfREKhqmKmXL4VwdGZKl0Y/zsS7kxK3LSfTir9e+h
+         Igow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NKI+/xQWA7SbrtTO+8CzLU5bh5dwJN+z24fvwTgujQ8=;
-        b=E5xJXlf6aBagvXWhEF6FLO3IOhAa5sey6E469U1TrYPeWT99eYCa+RH9ckG6pK2GmG
-         YEBVjDnWo7vU+IwbBxmXObFXdsguDOc1mf8WISvEQqij6BQgRUI2CT+al3mhb3qStNqW
-         KmC1y84z3FTGbklitbNTWMrvkHUOykWQiN1+rMtkaJMRNc3vxnDlNwCPpt5KElIgjaOu
-         OAi8+UxPNgvyRTFXxl3/u25Jq3e0GvyCe4vPQNosbnYbpFHJqIZeQZkwaq0FEqWVLNt5
-         6rEiniuEpdYB//B5/729hLvNkdwrOgfONar1gh6niQ+o5FrDgNnVRXGZbO4thvaOwN31
-         Bc6w==
-X-Gm-Message-State: AFqh2krE1ucuqULv5uFoV/NGyzCyd5APUeYixif4t0fOWls2F1EaWjRu
-        VrCr3YOt8JhuolVldrXc1PJm76rnJoSpSbG3PmM=
-X-Google-Smtp-Source: AMrXdXuDqWNV4lk+aI5qjgknlUk6cMgYfrI9bFFWSJPbY0MCem9UD0SD/QzQNjDHSEbJYJ2SnZxtlDqPF58sy6qSCig=
-X-Received: by 2002:ac2:597a:0:b0:4cb:22ab:ce08 with SMTP id
- h26-20020ac2597a000000b004cb22abce08mr1373247lfp.251.1673298717049; Mon, 09
- Jan 2023 13:11:57 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=J9KM35Fv2Dw9JmJ+2t7GGA9jMoE7j/7O85W6URim/jg=;
+        b=BiZ5VqfUzaZSxReQSFIf4cCKOJUYeIiG8XEIfuuODoOF7LrswP0xkxEYTPx77sqFLL
+         c07CJYuaPeqnYMvyFc8AU6WR4W/ixO0yysSA2XRjAwspCgsmc78OlnigHka0+y5a34ej
+         lpcctyCBtMkBhGR6nEWTmJGeDwN0MroQojW+iFd4hM8pB3u56M4vEZGLVaeq9Q65XWQq
+         4TwmAuOO6q8gGvXiF6fRCL+hPMwtILO0yuk3qTImKfYNHXgdrJ0L9vL5mr0lRpwZEuW0
+         r0qwr6w8EFLdz+HMWbQpEMc8khiB8ZEizF5ybU59M/fq2+0GuwtgxZAfWtb76SUd8tut
+         dR8Q==
+X-Gm-Message-State: AFqh2kr8mdCLGmoLi7H8Sv9qe/5zzW9V1b9zu4/cipr0/DEzIQ1S7nmK
+        iQK1qjyuFHC+T88J0EsgoNav1A==
+X-Google-Smtp-Source: AMrXdXv/cm6IaIy2SIh+NbQ31mBw1A15x3wThIGG/18avpBuj1g5CAbRI4qwwLVQyj0JSlJYYytNTA==
+X-Received: by 2002:a05:6000:383:b0:242:5a80:79b8 with SMTP id u3-20020a056000038300b002425a8079b8mr43660704wrf.20.1673298974073;
+        Mon, 09 Jan 2023 13:16:14 -0800 (PST)
+Received: from [10.83.37.24] ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id t10-20020a5d534a000000b00272c0767b4asm9430012wrv.109.2023.01.09.13.16.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Jan 2023 13:16:13 -0800 (PST)
+Message-ID: <fd00d15c-e131-c0c5-9836-36887e12b44f@arista.com>
+Date:   Mon, 9 Jan 2023 21:16:12 +0000
 MIME-Version: 1.0
-References: <20230109012651.3127529-1-shaozhengchao@huawei.com>
-In-Reply-To: <20230109012651.3127529-1-shaozhengchao@huawei.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 9 Jan 2023 13:11:45 -0800
-Message-ID: <CABBYNZK=GXHO3QrEF2ZXWohnYkyPsfo0K9ZPxe0aMK_wuK1myQ@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_sync: fix memory leak in hci_update_adv_data()
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        brian.gix@intel.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 3/5] crypto/net/tcp: Use crypto_pool for TCP-MD5
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Bob Gilligan <gilligan@arista.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
+References: <20230103184257.118069-1-dima@arista.com>
+ <20230103184257.118069-4-dima@arista.com>
+ <20230106180526.6e65b54d@kernel.org>
+From:   Dmitry Safonov <dima@arista.com>
+In-Reply-To: <20230106180526.6e65b54d@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,50 +86,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Zhengchao,
+On 1/7/23 02:05, Jakub Kicinski wrote:
+> On Tue,  3 Jan 2023 18:42:55 +0000 Dmitry Safonov wrote:
+>> Use crypto_pool API that was designed with tcp_md5sig_pool in mind.
+>> The conversion to use crypto_pool will allow:
+>> - to reuse ahash_request(s) for different users
+>> - to allocate only one per-CPU scratch buffer rather than a new one for
+>>   each user
+>> - to have a common API for net/ users that need ahash on RX/TX fast path
+> 
+>>  config TCP_MD5SIG
+>>  	bool "TCP: MD5 Signature Option support (RFC2385)"
+>> -	select CRYPTO
+>> +	select CRYPTO_POOL
+> 
+> Are you sure we don't need to select CRYPTO any more?
+> select does not resolve dependencies.
 
-On Sun, Jan 8, 2023 at 5:17 PM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->
-> When hci_cmd_sync_queue() failed in hci_update_adv_data(), inst_ptr is
-> not freed, which will cause memory leak. Add release process to error
-> path.
->
-> Fixes: 651cd3d65b0f ("Bluetooth: convert hci_update_adv_data to hci_sync")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
->  net/bluetooth/hci_sync.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 9e2d7e4b850c..1485501bd72f 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -6197,10 +6197,15 @@ static int _update_adv_data_sync(struct hci_dev *hdev, void *data)
->  int hci_update_adv_data(struct hci_dev *hdev, u8 instance)
->  {
->         u8 *inst_ptr = kmalloc(1, GFP_KERNEL);
-> +       int ret;
->
->         if (!inst_ptr)
->                 return -ENOMEM;
->
->         *inst_ptr = instance;
-> -       return hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
-> +       ret = hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
-> +       if (ret)
-> +               kfree(inst_ptr);
-> +
-> +       return ret;
->  }
+Yeah, stumbled into it when I was rebasing TCP-AO patches on the top:
+they select both and I think you're right that it still needs to select
+CRYPTO here as well (noticed only after sending v2).
 
-While this is correct I do wonder why we haven't used ERR_PTR/PTR_ERR
-like we did with the likes of abort_conn_sync, that way we don't have
-to allocate anything which makes things a lot simpler.
+> 
+>>  	select CRYPTO_MD5
+>>  	help
+>>  	  RFC2385 specifies a method of giving MD5 protection to TCP sessions.
+> 
+>> @@ -749,29 +746,27 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
+>>  		daddr = &ip6h->daddr;
+>>  	}
+>>  
+>> -	hp = tcp_get_md5sig_pool();
+>> -	if (!hp)
+>> +	if (crypto_pool_get(tcp_md5_crypto_pool_id, (struct crypto_pool *)&hp))
+> 
+> &hp.base ? To avoid the cast
 
-> --
-> 2.34.1
->
+Oh, that's nice, will do!
 
-
--- 
-Luiz Augusto von Dentz
+Thanks,
+          Dmitry
