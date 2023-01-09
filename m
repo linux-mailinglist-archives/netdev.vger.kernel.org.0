@@ -2,118 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B2336625B4
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F13566625BB
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233482AbjAIMfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 07:35:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        id S234407AbjAIMi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 07:38:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233434AbjAIMfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:35:32 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456F064FA;
-        Mon,  9 Jan 2023 04:35:31 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 8B6369FB;
-        Mon,  9 Jan 2023 13:35:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673267729;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JQKaBY79GF+RPE6e93Lg/pYFuxmQLdWNgR8P0RjYoXg=;
-        b=YNe7fL7/NvBT9L6Xe/XKhfiU4deYF+rMcnn0PVQjmP8JXnWJnnkS3k45Axw3ZrVlF835dG
-        mLQILtHhuY/HO+jJTzAgjUYhpeNtQpcwWN3MfskBvly/QmSEDqqw4/g7+wlSqEgBvOWchV
-        r5PnpMP2Ns6mUH0K7HHTxw2Iq3PkYc2/rWu0/FbdurUrmvBL+HOvPeVKDO6aEXB9Rr9GpL
-        AqwASKCUxfm5ylURZ2inKalD18ZZ3BBDbJ2Z/NXdJFJhxakGyaQc0F0cDijDQON8ESHwMG
-        bE99WMg1fhqML2j2+JM6JoPXwjLGUIbtjFqNGWVIEh3KD4iV/aJ4aYBSEOdx9A==
+        with ESMTP id S231591AbjAIMiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:38:54 -0500
+Received: from smtp-bc09.mail.infomaniak.ch (smtp-bc09.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc09])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B593B84A
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 04:38:52 -0800 (PST)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NrD5Q0S5szMqPPp;
+        Mon,  9 Jan 2023 13:38:50 +0100 (CET)
+Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NrD5P2FVvz56x;
+        Mon,  9 Jan 2023 13:38:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1673267929;
+        bh=DAq3H/PfK63E2FyFaJJLogrLzdC0URy2vyo3srDWRWQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HL7jnvWf6nqIxDrcmuzRrpRf8xW7iIZ21iLIdMJDGM1umIbo7rJhETntwXRrsO4c4
+         9HQIpZrt7rF5ydvfRpcOq27o4l6V7QGz/8pF5aqh5tWu9mBurD1GBjH5nlyprtx6Mb
+         fD0Nswl4ZFEznNQgNb8T+2TFA65kaeSAj7J57hos=
+Message-ID: <ae75cb3c-2b08-2260-041a-36ee643996ad@digikod.net>
+Date:   Mon, 9 Jan 2023 13:38:48 +0100
 MIME-Version: 1.0
-Date:   Mon, 09 Jan 2023 13:35:29 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH RFC net-next v2 03/12] net: mdio: mdiobus_register: update
- validation test
-In-Reply-To: <Y7SqCRkYkhQCLs8z@shell.armlinux.org.uk>
-References: <20221227-v6-2-rc1-c45-seperation-v2-0-ddb37710e5a7@walle.cc>
- <20221227-v6-2-rc1-c45-seperation-v2-3-ddb37710e5a7@walle.cc>
- <Y7P/45Owf2IezIpO@shell.armlinux.org.uk>
- <37247c17e5e555dddbc37c3c63a2cadb@walle.cc>
- <Y7SqCRkYkhQCLs8z@shell.armlinux.org.uk>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <0584195b863b361a4f5c1e27e6c270b3@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH v8 08/12] landlock: Implement TCP network hooks
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
+        netdev@vger.kernel.org, linux-api@vger.kernel.org,
+        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-9-konstantin.meskhidze@huawei.com>
+ <3452964b-04d3-b297-92a1-1220e087323e@digikod.net>
+ <258ba4aa-6b12-abda-75b9-ffa196fba683@huawei.com>
+ <ec54eb66-ed9f-035c-1301-644f93873e5f@digikod.net>
+ <38f4e2ac-0cd4-e205-bff1-a859e0855731@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <38f4e2ac-0cd4-e205-bff1-a859e0855731@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
 
-Am 2023-01-03 23:19, schrieb Russell King (Oracle):
-> On Tue, Jan 03, 2023 at 11:21:08AM +0100, Michael Walle wrote:
->> Am 2023-01-03 11:13, schrieb Russell King (Oracle):
->> > On Wed, Dec 28, 2022 at 12:07:19AM +0100, Michael Walle wrote:
->> > > +	if (!bus || !bus->name)
->> > > +		return -EINVAL;
->> > > +
->> > > +	/* An access method always needs both read and write operations */
->> > > +	if ((bus->read && !bus->write) ||
->> > > +	    (!bus->read && bus->write) ||
->> > > +	    (bus->read_c45 && !bus->write_c45) ||
->> > > +	    (!bus->read_c45 && bus->write_c45))
->> >
->> > I wonder whether the following would be even more readable:
->> >
->> > 	if (!bus->read != !bus->write || !bus->read_c45 != !bus->write_c45)
->> 
->> That's what Andrew had originally. But there was a comment from Sergey 
->> [1]
->> which I agree with. I had a hard time wrapping my head around that, so 
->> I
->> just listed all the possible bad cases.
+On 09/01/2023 09:07, Konstantin Meskhidze (A) wrote:
 > 
-> The only reason I suggested it was because when looked at your code,
-> it also took several reads to work out what it was trying to do!
 > 
-> Would using !!bus->read != !!bus->write would help or make it worse,
-> !!ptr being the more normal way to convert something to a boolean?
+> 1/6/2023 10:30 PM, Mickaël Salaün пишет:
+>>
+>> On 05/01/2023 09:57, Konstantin Meskhidze (A) wrote:
+>>>
+>>>
+>>> 11/17/2022 9:43 PM, Mickaël Salaün пишет:
+>>>>
+>>>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
+>>>>> This patch adds support of socket_bind() and socket_connect() hooks.
+>>>>> It's possible to restrict binding and connecting of TCP sockets to
+>>>>> particular ports.
+>>>>
+>>>> Implement socket_bind() and socket_connect LSM hooks, which enable to
+>>>> restrict TCP socket binding and connection to specific ports.
+>>>>
+>>>>
+>>>>>
+>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>> ---
+>>>>>
+>>>>> Changes since v7:
+>>>>> * Minor fixes.
+>>>>> * Refactors commit message.
+>>>>>
+>>>>> Changes since v6:
+>>>>> * Updates copyright.
+>>>>> * Refactors landlock_append_net_rule() and check_socket_access()
+>>>>>      functions with landlock_id type.
+>>>>>
+>>>>> Changes since v5:
+>>>>> * Fixes some logic errors.
+>>>>> * Formats code with clang-format-14.
+>>>>>
+>>>>> Changes since v4:
+>>>>> * Factors out CONFIG_INET into make file.
+>>>>> * Refactors check_socket_access().
+>>>>> * Adds helper get_port().
+>>>>> * Adds CONFIG_IPV6 in get_port(), hook_socket_bind/connect
+>>>>> functions to support AF_INET6 family.
+>>>>> * Adds AF_UNSPEC family support in hook_socket_bind/connect
+>>>>> functions.
+>>>>> * Refactors add_rule_net_service() and landlock_add_rule
+>>>>> syscall to support network rule inserting.
+>>>>> * Refactors init_layer_masks() to support network rules.
+>>>>>
+>>>>> Changes since v3:
+>>>>> * Splits commit.
+>>>>> * Adds SECURITY_NETWORK in config.
+>>>>> * Adds IS_ENABLED(CONFIG_INET) if a kernel has no INET configuration.
+>>>>> * Adds hook_socket_bind and hook_socket_connect hooks.
+>>>>>
+>>>>> ---
+>>>>>     security/landlock/Kconfig    |   1 +
+>>>>>     security/landlock/Makefile   |   2 +
+>>>>>     security/landlock/net.c      | 164 +++++++++++++++++++++++++++++++++++
+>>>>>     security/landlock/net.h      |  26 ++++++
+>>>>>     security/landlock/setup.c    |   2 +
+>>>>>     security/landlock/syscalls.c |  59 ++++++++++++-
+>>>>>     6 files changed, 251 insertions(+), 3 deletions(-)
+>>>>>     create mode 100644 security/landlock/net.c
+>>>>>     create mode 100644 security/landlock/net.h
+>>>>>
+>>>>> diff --git a/security/landlock/Kconfig b/security/landlock/Kconfig
+>>>>> index 8e33c4e8ffb8..10c099097533 100644
+>>>>> --- a/security/landlock/Kconfig
+>>>>> +++ b/security/landlock/Kconfig
+>>>>> @@ -3,6 +3,7 @@
+>>>>>     config SECURITY_LANDLOCK
+>>>>>     	bool "Landlock support"
+>>>>>     	depends on SECURITY && !ARCH_EPHEMERAL_INODES
+>>>>> +	select SECURITY_NETWORK
+>>>>>     	select SECURITY_PATH
+>>>>>     	help
+>>>>>     	  Landlock is a sandboxing mechanism that enables processes to restrict
+>>>>> diff --git a/security/landlock/Makefile b/security/landlock/Makefile
+>>>>> index 7bbd2f413b3e..53d3c92ae22e 100644
+>>>>> --- a/security/landlock/Makefile
+>>>>> +++ b/security/landlock/Makefile
+>>>>> @@ -2,3 +2,5 @@ obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
+>>>>>
+>>>>>     landlock-y := setup.o syscalls.o object.o ruleset.o \
+>>>>>     	cred.o ptrace.o fs.o
+>>>>> +
+>>>>> +landlock-$(CONFIG_INET) += net.o
+>>>>> \ No newline at end of file
+>>>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
+>>>>> new file mode 100644
+>>>>> index 000000000000..39e8a156a1f4
+>>>>> --- /dev/null
+>>>>> +++ b/security/landlock/net.c
+>>>>> @@ -0,0 +1,164 @@
+>>>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>>>> +/*
+>>>>> + * Landlock LSM - Network management and hooks
+>>>>> + *
+>>>>> + * Copyright © 2022 Huawei Tech. Co., Ltd.
+>>>>> + * Copyright © 2022 Microsoft Corporation
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/in.h>
+>>>>> +#include <linux/net.h>
+>>>>> +#include <linux/socket.h>
+>>>>> +#include <net/ipv6.h>
+>>>>> +
+>>>>> +#include "common.h"
+>>>>> +#include "cred.h"
+>>>>> +#include "limits.h"
+>>>>> +#include "net.h"
+>>>>> +#include "ruleset.h"
+>>>>> +
+>>>>> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
+>>>>> +			     const u16 port, access_mask_t access_rights)
+>>>>> +{
+>>>>> +	int err;
+>>>>> +	const struct landlock_id id = {
+>>>>> +		.key.data = port,
+>>>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>>>> +	};
+>>>>> +	BUILD_BUG_ON(sizeof(port) > sizeof(id.key.data));
+>>>>> +
+>>>>> +	/* Transforms relative access rights to absolute ones. */
+>>>>> +	access_rights |= LANDLOCK_MASK_ACCESS_NET &
+>>>>> +			 ~landlock_get_net_access_mask(ruleset, 0);
+>>>>> +
+>>>>> +	mutex_lock(&ruleset->lock);
+>>>>> +	err = landlock_insert_rule(ruleset, id, access_rights);
+>>>>> +	mutex_unlock(&ruleset->lock);
+>>>>> +
+>>>>> +	return err;
+>>>>> +}
+>>>>> +
+>>>>> +static int check_socket_access(const struct landlock_ruleset *const domain,
+>>>>> +			       u16 port, access_mask_t access_request)
+>>>>> +{
+>>>>> +	bool allowed = false;
+>>>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>>>>> +	const struct landlock_rule *rule;
+>>>>> +	access_mask_t handled_access;
+>>>>> +	const struct landlock_id id = {
+>>>>> +		.key.data = port,
+>>>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>>>> +	};
+>>>>> +
+>>>>> +	if (WARN_ON_ONCE(!domain))
+>>>>> +		return 0;
+>>>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>>>>> +		return -EACCES;
+>>>>> +
+>>>>> +	rule = landlock_find_rule(domain, id);
+>>>>> +	handled_access = init_layer_masks(domain, access_request, &layer_masks,
+>>>>> +					  LANDLOCK_KEY_NET_PORT);
+>>>>> +	allowed = unmask_layers(rule, handled_access, &layer_masks,
+>>>>> +				ARRAY_SIZE(layer_masks));
+>>>>> +
+>>>>> +	return allowed ? 0 : -EACCES;
+>>>>> +}
+>>>>> +
+>>>>> +static u16 get_port(const struct sockaddr *const address)
+>>>>
+>>>> get_port() should return a __be16 type. This enables to avoid converting
+>>>> port when checking a rule.
+>>>
+>>>      In this case a user must do a coverting port into __be16:
+>>>
+>>>      struct landlock_net_service_attr net_service = {
+>>>                    .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
+>>>
+>>>                    .port = htons(sock_port),
+>>>            };
+>>>     I think that a user should not think about this conversion cause it
+>>> makes UAPI more complex to use. Lets do this under kernel's hood and let
+>>> it as it is now -> u16 port.
+>>>
+>>> What do you think?
+>>
+>> BE and LE conversions may be error prone without strong typing, but the
+>> current Linux network UAPI uses this convention (see related syscalls),
+>> so developers already use htons() in their applications. I think it is
+>> less hazardous to use the same convention. It would be nice to have the
+>> point of view of network and API folks though.
+> 
+>     Ok. Thanks. Let ports be in BE format like in network packets.
+> 
+>     What should a selftest with port conversion be like?
+> 
+>     1. Set a port with a Landlock rule with no conversion. get an error
+> wit bind/connect actions.
+>     2. Convert a port with htons(sock_port). get no error.
+> 
+>     What do you think?
 
-IMHO that makes it even harder. But I doubt we will find an expression
-that will work for everyone. I'll go with your suggestion/Andrew's first
-version in the next iteration.
-
--michael
+Right, you can do both on a LE architecture (that must be checked in the 
+test or it should be skipped), test with a port value that has different 
+representation in LE and BE.
