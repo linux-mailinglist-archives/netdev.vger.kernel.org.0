@@ -2,227 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EEB7662554
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:19:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E91066255C
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236902AbjAIMS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 07:18:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
+        id S234198AbjAIMUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 07:20:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbjAIMSp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:18:45 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CE51AD9C;
-        Mon,  9 Jan 2023 04:18:40 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4NrCXN4MnNz6HJRn;
-        Mon,  9 Jan 2023 20:13:40 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Mon, 9 Jan 2023 12:18:36 +0000
-Message-ID: <8eed91ae-3a2e-4367-f68b-76c2f5125828@huawei.com>
-Date:   Mon, 9 Jan 2023 15:18:35 +0300
+        with ESMTP id S234538AbjAIMUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:20:09 -0500
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37D81A828;
+        Mon,  9 Jan 2023 04:20:07 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3AF0E5C017C;
+        Mon,  9 Jan 2023 07:20:07 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 09 Jan 2023 07:20:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1673266807; x=1673353207; bh=BoRrhg2qoLX8AzR5nlod213O8Dn0
+        cuabW6bstFyKh6g=; b=DFepMdIDoB+mlolDcbW2KqnE5pmmpY+RdAochu7RfvCA
+        9oc+Bv2B0P8Dg4MCtPhAY3VvbvVNwAVqI62ZqJsY5fE0bZmyJ62KC9TA2OhnxS01
+        InOGx5C8ZAmsKMmOJBsN4qNUud9CcI0iWUYZ+qD8plQ2AxLmmLtniJggTgFuK8mg
+        YVFYYonVCZ2uRj3qXJ+AkeDxlA5Lr0I/2PX00UNM5cKrK/8+25ehqQ4g76akEOBV
+        cd/l23v3UYN/q+CfUEeyGKnQrrVktiHsgbO1d9iP+5+VrT0WG7TOQuBJBBuBt1nj
+        6hsAQCXix7tobllTf1RJqzut1NlyA8f8Z/+geLEmUg==
+X-ME-Sender: <xms:dga8Yz1ReIIltK9pzTLj6bSSZTehDwu7jHAVCQF2QrX-6UlDQK8_KQ>
+    <xme:dga8YyGBabh3yyPSPb0evluedcIrvgg2VPuCz6onLDpjhbXfZP4xm2mF-SRww4FcN
+    TJ6p3Y5abwPV4Q>
+X-ME-Received: <xmr:dga8Yz75u-6TDPL8G-VLd72loWskqy_DS7rlTVCv3AfMoaUTRDuGVRKn1HDp>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrkeeigdeffecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
+    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:dga8Y40_AlbgasMdsRg9ai2Jgl9gABwOzVTiiuBbugagczAGwTzVsQ>
+    <xmx:dga8Y2GBTbx74x3id7r1CWI4XSpg9mtX5AiKb7sd-geQ1mc3nUql7Q>
+    <xmx:dga8Y5_Yj7M9ABOA_XR31RpF_dsE6QyvbckO_k0iwKiG4lWNWlQuUQ>
+    <xmx:dwa8Y0U6TOsJAr_nsPB5UsXPtKrZN19XANsBv4f6zuAPyjfFtseUhQ>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 9 Jan 2023 07:20:05 -0500 (EST)
+Date:   Mon, 9 Jan 2023 14:20:02 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v5 net-next 01/15] net: bridge: mst: Multiple Spanning
+ Tree (MST) mode
+Message-ID: <Y7wGct6VWmbuWs5F@shredder>
+References: <20220316150857.2442916-1-tobias@waldekranz.com>
+ <20220316150857.2442916-2-tobias@waldekranz.com>
+ <Y7vK4T18pOZ9KAKE@shredder>
+ <20230109100236.euq7iaaorqxrun7u@skbuf>
+ <Y7v98s8lC1WUvsSO@shredder>
+ <20230109115653.6yjijaj63n2v35lw@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
-Content-Language: ru
-To:     Dan Carpenter <error27@gmail.com>
-CC:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        <linux-sparse@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
-        <gnoack3000@gmail.com>, <linux-security-module@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <artem.kuzin@huawei.com>, Linux API <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
- <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
- <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
- <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
- <4aa29433-e7f9-f225-5bdf-c80638c936e8@huawei.com> <Y7vXSAGHf08p2Zbm@kadam>
- <af0d7337-3a92-5eca-7d7c-cc09d5713589@huawei.com> <Y7vqdgvxQVNvu6AY@kadam>
- <0dab9d74-6a41-9cf3-58fb-9fbb265efdd0@huawei.com> <Y7wAITZ/Ae/SwH9m@kadam>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <Y7wAITZ/Ae/SwH9m@kadam>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230109115653.6yjijaj63n2v35lw@skbuf>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-1/9/2023 2:53 PM, Dan Carpenter пишет:
-> On Mon, Jan 09, 2023 at 02:39:36PM +0300, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 1/9/2023 1:20 PM, Dan Carpenter пишет:
->> > On Mon, Jan 09, 2023 at 12:26:52PM +0300, Konstantin Meskhidze (A) wrote:
->> > > 
->> > > 
->> > > 1/9/2023 11:58 AM, Dan Carpenter пишет:
->> > > > These warnings seem like something I have seen before.  Maybe it was an
->> > > > issue with _Generic() support?
->> > > > > Are you really sure you're running the latest git version of
->> > > Sparse?
->> > > > > I tested this patch with the latest version of Sparse on my
->> > > system and
->> > > > it worked fine.
->> > > 
->> > >  Hi Dan,
->> > > 
->> > >  git is on the master branch now - hash ce1a6720 (dated 27 June 2022)
->> > > 
->> > >  Is this correct version?
->> > 
->> > Yes, that's correct.  What is your .config?
->> 
->>   What parameters do I need to check in .config?
+On Mon, Jan 09, 2023 at 01:56:53PM +0200, Vladimir Oltean wrote:
+> On Mon, Jan 09, 2023 at 01:43:46PM +0200, Ido Schimmel wrote:
+> > OK, thanks for confirming. Will send a patch later this week if Tobias
+> > won't take care of it by then. First patch will probably be [1] to make
+> > sure we dump the correct MST state to user space. It will also make it
+> > easier to show the problem and validate the fix.
+> > 
+> > [1]
+> > diff --git a/net/bridge/br.c b/net/bridge/br.c
+> > index 4f5098d33a46..f02a1ad589de 100644
+> > --- a/net/bridge/br.c
+> > +++ b/net/bridge/br.c
+> > @@ -286,7 +286,7 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
+> >  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+> >  		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
+> >  	case BR_BOOLOPT_MST_ENABLE:
+> > -		return br_opt_get(br, BROPT_MST_ENABLED);
+> > +		return br_mst_is_enabled(br);
 > 
-> I don't know.  I was hoping you could just email me the whole thing
-> and/or the results from make security/landlock/ruleset.i.  That way
-> we could see what line was making Sparse complain.
+> Well, this did report the correct MST state despite the incorrect static
+> branch state, no? The users of br_mst_is_enabled(br) are broken, not
+> those of br_opt_get(br, BROPT_MST_ENABLED).
 
-   here is the whole error message:
-
-   make C=2 security/landlock/
-   CHECK   scripts/mod/empty.c
-   CALL    scripts/checksyscalls.sh
-   DESCEND objtool
-   DESCEND bpf/resolve_btfids
-   CHECK   security/landlock/setup.c
-./include/asm-generic/rwonce.h:67:16: error: typename in expression
-./include/asm-generic/rwonce.h:67:16: error: Expected ) in function call
-./include/asm-generic/rwonce.h:67:16: error: got :
-./include/linux/list.h:292:16: error: typename in expression
-./include/linux/list.h:292:16: error: Expected ) in function call
-./include/linux/list.h:292:16: error: got :
-./include/linux/list.h:328:34: error: typename in expression
-./include/linux/list.h:328:34: error: Expected ) in function call
-./include/linux/list.h:328:34: error: got :
-./include/linux/list.h:329:53: error: typename in expression
-./include/linux/list.h:329:53: error: Expected ) in function call
-./include/linux/list.h:329:53: error: got :
-./include/linux/list.h:867:17: error: typename in expression
-./include/linux/list.h:867:17: error: Expected ) in function call
-./include/linux/list.h:867:17: error: got :
-./include/linux/list.h:876:17: error: typename in expression
-./include/linux/list.h:876:17: error: Expected ) in function call
-./include/linux/list.h:876:17: error: got :
-./arch/x86/include/asm/atomic.h:29:16: error: typename in expression
-./arch/x86/include/asm/atomic.h:29:16: error: Expected ) in function call
-./arch/x86/include/asm/atomic.h:29:16: error: got :
-./arch/x86/include/asm/atomic64_64.h:22:16: error: typename in expression
-./arch/x86/include/asm/atomic64_64.h:22:16: error: Expected ) in 
-function call
-./arch/x86/include/asm/atomic64_64.h:22:16: error: got :
-./include/linux/atomic/atomic-arch-fallback.h:227:23: error: typename in 
-expression
-./include/linux/atomic/atomic-arch-fallback.h:227:23: error: Expected ) 
-in function call
-./include/linux/atomic/atomic-arch-fallback.h:227:23: error: got :
-./include/linux/atomic/atomic-arch-fallback.h:1348:23: error: typename 
-in expression
-./include/linux/atomic/atomic-arch-fallback.h:1348:23: error: Expected ) 
-in function call
-./include/linux/atomic/atomic-arch-fallback.h:1348:23: error: got :
-./include/linux/jump_label.h:286:9: error: Expected ; at end of statement
-./include/linux/jump_label.h:286:9: error: got __flags
-./include/linux/jump_label.h:302:9: error: Expected ; at end of statement
-./include/linux/jump_label.h:302:9: error: got __flags
-./include/linux/jump_label.h:319:9: error: Expected ; at end of statement
-./include/linux/jump_label.h:319:9: error: got __flags
-./include/linux/jump_label.h:322:17: error: Expected ; at end of statement
-./include/linux/jump_label.h:322:17: error: got __flags
-./include/linux/jump_label.h:330:9: error: Expected ; at end of statement
-./include/linux/jump_label.h:330:9: error: got __flags
-./include/linux/jump_label.h:333:17: error: Expected ; at end of statement
-./include/linux/jump_label.h:333:17: error: got __flags
-./include/asm-generic/bitops/generic-non-atomic.h:140:23: error: 
-typename in expression
-./include/asm-generic/bitops/generic-non-atomic.h:140:23: error: 
-Expected ) in function call
-./include/asm-generic/bitops/generic-non-atomic.h:140:23: error: got :
-./include/linux/bitmap.h:268:17: error: Expected ; at end of statement
-./include/linux/bitmap.h:268:17: error: got __flags
-./include/linux/thread_info.h:127:16: error: typename in expression
-./include/linux/thread_info.h:127:16: error: Expected ) in function call
-./include/linux/thread_info.h:127:16: error: got :
-./include/linux/thread_info.h:233:13: error: Expected ; at end of statement
-./include/linux/thread_info.h:233:13: error: got __flags
-./include/linux/llist.h:191:16: error: typename in expression
-./include/linux/llist.h:191:16: error: Expected ) in function call
-./include/linux/llist.h:191:16: error: got :
-./include/linux/rcupdate.h:1073:31: error: typename in expression
-./include/linux/rcupdate.h:1073:31: error: Expected ) in function call
-./include/linux/rcupdate.h:1073:31: error: got :
-./include/linux/rcupdate.h:1077:9: error: Expected ; at end of statement
-./include/linux/rcupdate.h:1077:9: error: got __flags
-./include/linux/key.h:453:16: error: typename in expression
-./include/linux/key.h:453:16: error: Expected ) in function call
-./include/linux/key.h:453:16: error: got :
-./include/linux/list_bl.h:74:33: error: typename in expression
-./include/linux/list_bl.h:74:33: error: Expected ) in function call
-./include/linux/list_bl.h:74:33: error: got :
-./include/linux/rculist_bl.h:24:33: error: typename in expression
-./include/linux/rculist_bl.h:24:33: error: Expected ) in function call
-./include/linux/rculist_bl.h:24:33: error: got :
-./include/linux/seqlock.h:259:16: error: typename in expression
-./include/linux/seqlock.h:259:16: error: Expected ) in function call
-./include/linux/seqlock.h:259:16: error: got :
-./include/linux/seqlock.h:274:1: error: typename in expression
-./include/linux/seqlock.h:274:1: error: Expected ) in function call
-./include/linux/seqlock.h:274:1: error: got :
-./include/linux/seqlock.h:274:1: error: typename in expression
-./include/linux/seqlock.h:274:1: error: Expected ) in function call
-./include/linux/seqlock.h:274:1: error: got :
-./include/linux/seqlock.h:275:1: error: typename in expression
-./include/linux/seqlock.h:275:1: error: Expected ) in function call
-./include/linux/seqlock.h:275:1: error: got :
-./include/linux/seqlock.h:275:1: error: typename in expression
-./include/linux/seqlock.h:275:1: error: Expected ) in function call
-./include/linux/seqlock.h:275:1: error: got :
-./include/linux/seqlock.h:276:1: error: typename in expression
-./include/linux/seqlock.h:276:1: error: Expected ) in function call
-./include/linux/seqlock.h:276:1: error: got :
-./include/linux/seqlock.h:276:1: error: typename in expression
-./include/linux/seqlock.h:276:1: error: Expected ) in function call
-./include/linux/seqlock.h:276:1: error: got :
-./include/linux/seqlock.h:277:1: error: typename in expression
-./include/linux/seqlock.h:277:1: error: Expected ) in function call
-./include/linux/seqlock.h:277:1: error: got :
-./include/linux/seqlock.h:277:1: error: typename in expression
-./include/linux/seqlock.h:277:1: error: Expected ) in function call
-./include/linux/seqlock.h:277:1: error: got :
-./include/linux/seqlock.h:429:16: error: typename in expression
-./include/linux/seqlock.h:429:16: error: Expected ) in function call
-./include/linux/seqlock.h:429:16: error: got :
-./include/linux/seqlock.h:682:16: error: typename in expression
-./include/linux/seqlock.h:682:16: error: Expected ) in function call
-./include/linux/seqlock.h:682:16: error: too many errors
-Segmentation fault (core dumped)
-make[3]: *** [scripts/Makefile.build:251: security/landlock/setup.o] 
-Error 139
-make[2]: *** [scripts/Makefile.build:502: security/landlock] Error 2
-make[1]: *** [scripts/Makefile.build:502: security] Error 2
-make: *** [Makefile:1994: .] Error 2
-
-Please tell me if you need some more info.
-
-regards,
-Konstantin
+I should have said "actual"/"effective" instead of "correct". IMO, it's
+better to use the same conditional in the both the data and control
+paths to eliminate discrepancies. Without the patch, a user will see
+that MST is supposedly enabled when it is actually disabled in the data
+path.
 
 > 
-> regards,
-> dan carpenter
+> Anyway, I see there's a br_mst_is_enabled() and also a br_mst_enabled()?!
+> One is used in the fast path and the other in the slow path. They should
+> probably be merged, I guess. They both exist probably because somebody
+> thought that the "if (!netif_is_bridge_master(dev))" test is redundant
+> in the fast path.
+
+The single user of br_mst_enabled() (DSA) is not affected by the bug
+(only the SW data path is), so I suggest making this consolidation in
+net-next after the bug is fixed. OK?
+
 > 
-> .
+> >  	default:
+> >  		/* shouldn't be called with unsupported options */
+> >  		WARN_ON(1);
+> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> > index 75aff9bbf17e..7f0475f62d45 100644
+> > --- a/net/bridge/br_private.h
+> > +++ b/net/bridge/br_private.h
+> > @@ -1827,7 +1827,7 @@ static inline bool br_vlan_state_allowed(u8 state, bool learn_allow)
+> >  /* br_mst.c */
+> >  #ifdef CONFIG_BRIDGE_VLAN_FILTERING
+> >  DECLARE_STATIC_KEY_FALSE(br_mst_used);
+> > -static inline bool br_mst_is_enabled(struct net_bridge *br)
+> > +static inline bool br_mst_is_enabled(const struct net_bridge *br)
+> >  {
+> >  	return static_branch_unlikely(&br_mst_used) &&
+> >  		br_opt_get(br, BROPT_MST_ENABLED);
+> > @@ -1845,7 +1845,7 @@ int br_mst_fill_info(struct sk_buff *skb,
+> >  int br_mst_process(struct net_bridge_port *p, const struct nlattr *mst_attr,
+> >  		   struct netlink_ext_ack *extack);
+> >  #else
+> > -static inline bool br_mst_is_enabled(struct net_bridge *br)
+> > +static inline bool br_mst_is_enabled(const struct net_bridge *br)
+> >  {
+> >  	return false;
+> >  }
