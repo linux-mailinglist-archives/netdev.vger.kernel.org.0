@@ -2,237 +2,381 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9473C662AB7
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 17:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5270E662AD3
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 17:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236518AbjAIQAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 11:00:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        id S229619AbjAIQIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 11:08:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbjAIQAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 11:00:05 -0500
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151FA3B91F
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 08:00:01 -0800 (PST)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-4c15c4fc8ccso118690557b3.4
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 08:00:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=8QRKXVay7oYbHWFY1AHt9Sv8WGiMcY+HM7EfYXYh3P4=;
-        b=PCvtZxlIu3lSYykT0CmR19KYcdxMIZwKMLFZzKtz/zfJqjDJMpp0i6nGVTp1lB9UY2
-         5DNPwPD8WtLyKGLKuxIlBDPAHDN5Ourk33amibzJNHPH0Pjt/xVPo+2+SWVZgqiCqo8b
-         FnLIt92K66g9KsiM79iYYLcEa/tEJyRWLQlLU03DBQciHMx7SCpzq15/yeTjeKzIGW5I
-         /9oH+0lkLe+Ey5RWjajDjEyCqZXUGo38U2q6XtyyXo5tGnpKuPT+/3LG5xVsrECD22ZD
-         B2XQCf1/WDyJJQZlaQ4pqOxvqw9XxZMIKSqZ6sPRDdy+T+0idhxxMor26/RtIMQ+v+wo
-         OUsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8QRKXVay7oYbHWFY1AHt9Sv8WGiMcY+HM7EfYXYh3P4=;
-        b=HBHh/bgxVE9ZRcLnycmTsw3P6HVD8aFARVBhlg++uoAzpphBtppuX91cTC/XJkT+2j
-         6UpbWLIdlghWKe+kT0UWI4unAGQpfgjQr7ZsNqX/jWJHDV3JU29QpxBcCdHSmkpALHjq
-         agGsCnXe8On3RpJd2sHY6OHVxtMFZ9qp38STCAGtVOwHchWOmspWisWFBkuRIvbm2kKI
-         bFrPzBA6rG+k4/WkT92213Do+LYpH36Vr5j02fii8qRdXkO0gELX1PAcYvCqIYVw22qj
-         T0s6N+0MlRVjNXHbSM0TosQQPhJr5DdQbXzw8P/wPdmroly5joJZDeWQyB06W0ph/HXP
-         zvjg==
-X-Gm-Message-State: AFqh2kooPDlRe4I0YW4P7BxRTvLTtSnFZY1fmdS0zjLDPV7ZVaY++m8P
-        v5pBOJOsrJo+e6sAr6hk4aGD2hd3ZmaB4eby0WwzzgrIitGc01t+
-X-Google-Smtp-Source: AMrXdXtMg42zlEc31WW+ErOI1v6nIH/4ou2EF1CZhhEHQhIlM9v2QcP+Hj4f8vCzotngn1UcnqVHRUf0QYxSHeWX9FY=
-X-Received: by 2002:a81:4e4f:0:b0:3ba:721f:b37c with SMTP id
- c76-20020a814e4f000000b003ba721fb37cmr2447814ywb.457.1673280000275; Mon, 09
- Jan 2023 08:00:00 -0800 (PST)
+        with ESMTP id S230192AbjAIQIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 11:08:00 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372B93AAAC;
+        Mon,  9 Jan 2023 08:07:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673280479; x=1704816479;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=U2wZo7YImjw8iGThsIb1GjeZZAAZ6xxiPbQ0GHK+dAU=;
+  b=YcExn20Iyxo/5H0V5inRlzjAlHIS4P38Lp0uD8vCTMtkXb0ZzTOmzM9e
+   wTvKdoGSSuOc++LD5ku/5WRCmSi5n/VRErNxq+/vdkVsTUhbAutJZoQ/M
+   h2US8flTumEYu6iwa8VFoRGtO0sN17GyCrOSCLWdBBzITtAK2XHYs4sfA
+   REom55OUTVwbS2+SAnVTFkcD8n6CB34FTKLeMbZvzmKVdGw3ph1N9GqQe
+   pvBcmkU1oFh4h7TPDFy9vbb1TJSRocVqWjqRnETIVm/f0uLfgPl5bLZ++
+   fG32POzJSKavFO1u/sK2qpGd/locMNv1NxpdcRCj+2w18qee/sllrLfnD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="306424950"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="306424950"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:07:39 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="658646531"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="658646531"
+Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.215.194.243]) ([10.215.194.243])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:07:33 -0800
+Message-ID: <c7bd8511-7d4f-526a-28b9-215edc6e7c7f@linux.intel.com>
+Date:   Mon, 9 Jan 2023 21:37:30 +0530
 MIME-Version: 1.0
-References: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
- <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
- <CAM0EoMnJeb3QsfxgsggEMjTACdu0hq6mb3O+uGOfVzG2RZ-hkw@mail.gmail.com> <20230105170812.zeq6fd2t2iwwr3fj@t14s.localdomain>
-In-Reply-To: <20230105170812.zeq6fd2t2iwwr3fj@t14s.localdomain>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Mon, 9 Jan 2023 10:59:49 -0500
-Message-ID: <CAM0EoMkSqNAvuNSce=f5bmmy4ZRnteJ6CQZpSmUiZ+UKTUL27A@mail.gmail.com>
-Subject: Re: [RFC net-next 2/2] act_mirred: use the backlog for nested calls
- to mirred ingress
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
-        jiri@resnulli.us, pabeni@redhat.com, wizhao@redhat.com,
-        xiyou.wangcong@gmail.com, lucien.xin@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v3 net-next 5/5] net: wwan: t7xx: Devlink documentation
+Content-Language: en-US
+To:     Bagas Sanjaya <bagasdotme@gmail.com>, netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
+        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-doc@vger.kernel.org,
+        jiri@nvidia.com, corbet@lwn.net
+References: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
+ <500a41cb400b4cdedd6df414b40200a5211965f5.1673016069.git.m.chetan.kumar@linux.intel.com>
+ <Y7uOcBRN0Awn5xAb@debian.me>
+From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+In-Reply-To: <Y7uOcBRN0Awn5xAb@debian.me>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, I thought it was addressing the issue we discussed last time.
-Lets discuss in our monthly meeting.
+Hi Bagas,
+Thank you for the feedback.
 
-cheers,
-jamal
+On 1/9/2023 9:18 AM, Bagas Sanjaya wrote:
+> On Fri, Jan 06, 2023 at 09:58:06PM +0530, m.chetan.kumar@linux.intel.com wrote:
+>> Refer to t7xx.rst file for details.
+> 
+> Above line is unnecessary.
 
-On Thu, Jan 5, 2023 at 12:08 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> Hi Jamal,
->
-> On Mon, Dec 26, 2022 at 11:03:34AM -0500, Jamal Hadi Salim wrote:
-> > Davide,
->
-> He's on PTO, so please let me try to answer it here.
->
-> > So this would fix the false positive you are seeing i believe;
-> > however, will it fix a real loop?
-> > In particular I am not sure if the next packet grabbed from the
-> > backlog will end up in the
-> > same CPU.
->
-> This series is not changing, functionally speaking, any about that.
-> As explained on the first patch, this "loop protection" already
-> doesn't work when RFS or skb timestamps are used. The idea on that
-> protection was different from the beginning already - to actually
-> protect from stack growth, and not packet loop. So the first patch
-> here amends the wording on it to something closer to reality.
->
-> Makes sense?
->
-> Cheers,
-> Marcelo
->
-> >
-> > cheers,
-> > jamal
-> >
-> > On Tue, Dec 20, 2022 at 1:25 PM Davide Caratti <dcaratti@redhat.com> wrote:
-> > >
-> > > William reports kernel soft-lockups on some OVS topologies when TC mirred
-> > > egress->ingress action is hit by local TCP traffic [1].
-> > > The same can also be reproduced with SCTP (thanks Xin for verifying), when
-> > > client and server reach themselves through mirred egress to ingress, and
-> > > one of the two peers sends a "heartbeat" packet (from within a timer).
-> > >
-> > > Enqueueing to backlog proved to fix this soft lockup; however, as Cong
-> > > noticed [2], we should preserve - when possible - the current mirred
-> > > behavior that counts as "overlimits" any eventual packet drop subsequent to
-> > > the mirred forwarding action [3]. A compromise solution might use the
-> > > backlog only when tcf_mirred_act() has a nest level greater than one:
-> > > change tcf_mirred_forward() accordingly.
-> > >
-> > > Also, add a kselftest that can reproduce the lockup and verifies TC mirred
-> > > ability to account for further packet drops after TC mirred egress->ingress
-> > > (when the nest level is 1).
-> > >
-> > >  [1] https://lore.kernel.org/netdev/33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com/
-> > >  [2] https://lore.kernel.org/netdev/Y0w%2FWWY60gqrtGLp@pop-os.localdomain/
-> > >  [3] such behavior is not guaranteed: for example, if RPS or skb RX
-> > >      timestamping is enabled on the mirred target device, the kernel
-> > >      can defer receiving the skb and return NET_RX_SUCCESS inside
-> > >      tcf_mirred_forward().
-> > >
-> > > Reported-by: William Zhao <wizhao@redhat.com>
-> > > CC: Xin Long <lucien.xin@gmail.com>
-> > > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> > > ---
-> > >  net/sched/act_mirred.c                        |  7 +++
-> > >  .../selftests/net/forwarding/tc_actions.sh    | 49 ++++++++++++++++++-
-> > >  2 files changed, 55 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-> > > index c8abb5136491..8037ec9b1d31 100644
-> > > --- a/net/sched/act_mirred.c
-> > > +++ b/net/sched/act_mirred.c
-> > > @@ -206,12 +206,19 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
-> > >         return err;
-> > >  }
-> > >
-> > > +static bool is_mirred_nested(void)
-> > > +{
-> > > +       return unlikely(__this_cpu_read(mirred_nest_level) > 1);
-> > > +}
-> > > +
-> > >  static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
-> > >  {
-> > >         int err;
-> > >
-> > >         if (!want_ingress)
-> > >                 err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
-> > > +       else if (is_mirred_nested())
-> > > +               err = netif_rx(skb);
-> > >         else
-> > >                 err = netif_receive_skb(skb);
-> > >
-> > > diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
-> > > index 1e0a62f638fe..919c0dd9fe4b 100755
-> > > --- a/tools/testing/selftests/net/forwarding/tc_actions.sh
-> > > +++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
-> > > @@ -3,7 +3,8 @@
-> > >
-> > >  ALL_TESTS="gact_drop_and_ok_test mirred_egress_redirect_test \
-> > >         mirred_egress_mirror_test matchall_mirred_egress_mirror_test \
-> > > -       gact_trap_test mirred_egress_to_ingress_test"
-> > > +       gact_trap_test mirred_egress_to_ingress_test \
-> > > +       mirred_egress_to_ingress_tcp_test"
-> > >  NUM_NETIFS=4
-> > >  source tc_common.sh
-> > >  source lib.sh
-> > > @@ -198,6 +199,52 @@ mirred_egress_to_ingress_test()
-> > >         log_test "mirred_egress_to_ingress ($tcflags)"
-> > >  }
-> > >
-> > > +mirred_egress_to_ingress_tcp_test()
-> > > +{
-> > > +       local tmpfile=$(mktemp) tmpfile1=$(mktemp)
-> > > +
-> > > +       RET=0
-> > > +       dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$tmpfile
-> > > +       tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
-> > > +               $tcflags ip_proto tcp src_ip 192.0.2.1 dst_ip 192.0.2.2 \
-> > > +                       action ct commit nat src addr 192.0.2.2 pipe \
-> > > +                       action ct clear pipe \
-> > > +                       action ct commit nat dst addr 192.0.2.1 pipe \
-> > > +                       action ct clear pipe \
-> > > +                       action skbedit ptype host pipe \
-> > > +                       action mirred ingress redirect dev $h1
-> > > +       tc filter add dev $h1 protocol ip pref 101 handle 101 egress flower \
-> > > +               $tcflags ip_proto icmp \
-> > > +                       action mirred ingress redirect dev $h1
-> > > +       tc filter add dev $h1 protocol ip pref 102 handle 102 ingress flower \
-> > > +               ip_proto icmp \
-> > > +                       action drop
-> > > +
-> > > +       ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $tmpfile1  &
-> > > +       local rpid=$!
-> > > +       ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$tmpfile
-> > > +       wait -n $rpid
-> > > +       cmp -s $tmpfile $tmpfile1
-> > > +       check_err $? "server output check failed"
-> > > +
-> > > +       $MZ $h1 -c 10 -p 64 -a $h1mac -b $h1mac -A 192.0.2.1 -B 192.0.2.1 \
-> > > +               -t icmp "ping,id=42,seq=5" -q
-> > > +       tc_check_packets "dev $h1 egress" 101 10
-> > > +       check_err $? "didn't mirred redirect ICMP"
-> > > +       tc_check_packets "dev $h1 ingress" 102 10
-> > > +       check_err $? "didn't drop mirred ICMP"
-> > > +       local overlimits=$(tc_rule_stats_get ${h1} 101 egress .overlimits)
-> > > +       test ${overlimits} = 10
-> > > +       check_err $? "wrong overlimits, expected 10 got ${overlimits}"
-> > > +
-> > > +       tc filter del dev $h1 egress protocol ip pref 100 handle 100 flower
-> > > +       tc filter del dev $h1 egress protocol ip pref 101 handle 101 flower
-> > > +       tc filter del dev $h1 ingress protocol ip pref 102 handle 102 flower
-> > > +
-> > > +       rm -f $tmpfile $tmpfile1
-> > > +       log_test "mirred_egress_to_ingress_tcp ($tcflags)"
-> > > +}
-> > > +
-> > >  setup_prepare()
-> > >  {
-> > >         h1=${NETIFS[p1]}
-> > > --
-> > > 2.38.1
-> > >
-> >
+Ok. Will drop it.
+
+> 
+>> +The wwan device is put into fastboot mode via devlink reload command, by
+>> +passing "driver_reinit" action.
+>> +
+>> +$ devlink dev reload pci/0000:$bdf action driver_reinit
+>> +
+>> +Upon completion of fw flashing or coredump collection the wwan device is
+>> +reset to normal mode using devlink reload command, by passing "fw_activate"
+>> +action.
+>> +
+>> +$ devlink dev reload pci/0000:$bdf action fw_activate
+> 
+> Personally I prefer to put command-line explanations below the actual
+> command:
+
+Sure. Will keep explanation under the command.
+
+> 
+> ---- >8 ----
+> 
+> diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
+> index de220878ad7649..24f9e0ee69bffb 100644
+> --- a/Documentation/networking/devlink/t7xx.rst
+> +++ b/Documentation/networking/devlink/t7xx.rst
+> @@ -74,17 +74,21 @@ The supported list of firmware image types is described below.
+>   procedure, fastboot command & response are exchanged between driver and wwan
+>   device.
+>   
+> +::
+> +
+> +  $ devlink dev reload pci/0000:$bdf action driver_reinit
+> +
+>   The wwan device is put into fastboot mode via devlink reload command, by
+>   passing "driver_reinit" action.
+>   
+> -$ devlink dev reload pci/0000:$bdf action driver_reinit
+> +::
+> +
+> +  $ devlink dev reload pci/0000:$bdf action fw_activate
+>   
+>   Upon completion of fw flashing or coredump collection the wwan device is
+>   reset to normal mode using devlink reload command, by passing "fw_activate"
+>   action.
+>   
+> -$ devlink dev reload pci/0000:$bdf action fw_activate
+> -
+>   Flash Commands:
+>   ===============
+>   
+> 
+> However, I find it's odd to jump from firmware image type list directly to
+> devlink usage. Perhaps the latter should be put into the following section
+> below?
+
+Ok. Will move image type list under Flash Commands.
+
+> 
+> I also find that there is minor inconsistency of keyword formatting, so I
+> have to inline-code the uninlined remainings:
+
+Ok. Will correct it.
+
+> 
+> ---- >8 ----
+> 
+> diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
+> index 24f9e0ee69bffb..d8feefe116c978 100644
+> --- a/Documentation/networking/devlink/t7xx.rst
+> +++ b/Documentation/networking/devlink/t7xx.rst
+> @@ -29,7 +29,7 @@ Flash Update
+>   The ``t7xx`` driver implements the flash update using the ``devlink-flash``
+>   interface.
+>   
+> -The driver uses DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT to identify the type of
+> +The driver uses ``DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT`` to identify the type of
+>   firmware image that need to be programmed upon the request by user space application.
+>   
+>   The supported list of firmware image types is described below.
+> @@ -79,14 +79,14 @@ device.
+>     $ devlink dev reload pci/0000:$bdf action driver_reinit
+>   
+>   The wwan device is put into fastboot mode via devlink reload command, by
+> -passing "driver_reinit" action.
+> +passing ``driver_reinit`` action.
+>   
+>   ::
+>   
+>     $ devlink dev reload pci/0000:$bdf action fw_activate
+>   
+>   Upon completion of fw flashing or coredump collection the wwan device is
+> -reset to normal mode using devlink reload command, by passing "fw_activate"
+> +reset to normal mode using devlink reload command, by passing ``fw_activate``
+>   action.
+>   
+>   Flash Commands:
+>   
+>> +
+>> +Flash Commands:
+>> +===============
+> 
+> Trim the unneeded trailing colon on the section title.
+
+Ok. will drop it.
+
+> 
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
+>> +
+>> +$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
+>> +
+>> <snipped>...
+>> +Region commands
+>> +===============
+>> +
+>> +$ devlink region show
+>> +
+>> +
+>> +$ devlink region new mr_dump
+>> +
+>> +$ devlink region read mr_dump snapshot 0 address 0 length $len
+>> +
+>> +$ devlink region del mr_dump snapshot 0
+>> +
+>> +$ devlink region new lk_dump
+>> +
+>> +$ devlink region read lk_dump snapshot 0 address 0 length $len
+>> +
+>> +$ devlink region del lk_dump snapshot 0
+>> +
+>> +Note: $len is actual len to be dumped.
+> 
+> Please briefly describe these devlink commands.
+
+Ok. Will add some explanations.
+
+> 
+> Also, wrap them in literal code blocks:
+> 
+> ---- >8 ----
+> 
+> diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
+> index d8feefe116c978..1ba3ba4680e721 100644
+> --- a/Documentation/networking/devlink/t7xx.rst
+> +++ b/Documentation/networking/devlink/t7xx.rst
+> @@ -92,35 +92,65 @@ action.
+>   Flash Commands:
+>   ===============
+>   
+> -$ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
+> +  $ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
+>   
+> -$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
+> +  $ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
+>   
+> -$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
+> +  $ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
+>   
+> -$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
+> +  $ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
+>   
+> -$ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
+> +  $ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
+>   
+> -$ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
+> +  $ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
+>   
+> -$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
+> +::
+>   
+> -$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
+> +  $ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
+>   
+> -$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
+> +
+> +::
+> +
+> +  $ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
+>   
+>   Note: Component selects the partition type to be programmed.
+>   
+> @@ -147,19 +177,31 @@ Following regions are accessed for device internal data.
+>   Region commands
+>   ===============
+>   
+> -$ devlink region show
+> +::
+> +  $ devlink region show
+>   
+> +::
+>   
+> -$ devlink region new mr_dump
+> +  $ devlink region new mr_dump
+>   
+> -$ devlink region read mr_dump snapshot 0 address 0 length $len
+> +::
+>   
+> -$ devlink region del mr_dump snapshot 0
+> +  $ devlink region read mr_dump snapshot 0 address 0 length $len
+>   
+> -$ devlink region new lk_dump
+> +::
+>   
+> -$ devlink region read lk_dump snapshot 0 address 0 length $len
+> +  $ devlink region del mr_dump snapshot 0
+>   
+> -$ devlink region del lk_dump snapshot 0
+> +::
+> +
+> +  $ devlink region new lk_dump
+> +
+> +::
+> +
+> +  $ devlink region read lk_dump snapshot 0 address 0 length $len
+> +
+> +::
+> +
+> +  $ devlink region del lk_dump snapshot 0
+>   
+>   Note: $len is actual len to be dumped.
+> 
+> Thanks.
+> 
+
+Thanks for the inline-code. Will follow the suggested format for 
+documentation.
+
+-- 
+Chetan
