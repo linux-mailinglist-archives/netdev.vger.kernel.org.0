@@ -2,230 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 810C8663245
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 22:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C4866325E
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 22:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238011AbjAIVID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 16:08:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
+        id S238017AbjAIVLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 16:11:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237681AbjAIVHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 16:07:42 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E75A2A9F
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 13:00:03 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id k26-20020a05600c1c9a00b003d972646a7dso10141728wms.5
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 13:00:03 -0800 (PST)
+        with ESMTP id S237862AbjAIVK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 16:10:59 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B523BEB4
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 13:03:31 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id cf42so15038773lfb.1
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 13:03:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=UzZy04Ic2aUdzTgSub/+D+guuDt6qN2zJBC1MOCj0FE=;
-        b=PqmeRotaVpMJ4ujbDvAsrYaWBCkhC6Jo70nSAeNd9xslWsIzbDzbW0yNfoaF5r0yy9
-         F+MucbQxhBNAcGKweocHMmo5+KVIWsTmMv1VyPryn3dmpjL0F2VYdwCfyesz+ZpCFaGi
-         KEk4mw/VMVZZPxy4aVfVw8r3evMBAusP+9egBmEdInB+Gv95brlZUof60RG9aUl7JPRk
-         x72PxbuvIEETojjxnoPpsGNznAT3PvrJz8w4RfYe6jAOQlqiWrlxJHkkEA5/WRSZaG7E
-         VvP3ive0Pw6jKLya2jeoZuM6mKqhC41IZVpmOJxbxkvp2b9YWDbrTzZWNPuvbrrzITwM
-         BRpQ==
+        bh=xvbOJwJCDvAVe4Ypk6TWCIgsg3158YUlrEMw2YNb0Mo=;
+        b=J/52Y5D40ZyVHCKzboYRyiaw0gGNjlAz3UGYLftraJb/Js04jRHSkbpc11vqBhJkLY
+         b4C0zTCHweLcchOlRsBh01CsYClhxIQQzkMmjDMw1QHCZfbvnFZxkESOW8oiOCsnxXKq
+         rWyTPeRhQQX+x+oVnsUSxI/KruU4N+uvaJf5THOLNLhRhuvnjCg79IKXFF66GrW/0Wc+
+         mmsUswGH67RNx2OuO0F2OcmuUJXHOBSE0VO6gW3PGZloL7zlZOwmZCKZHr0na50oGjIN
+         IsCJX2Zb0bSyKP31k9pPVMwhC0uIEfTDb3T6litAsRybOc4ILP9d+PWWJi4g/A6+tGUH
+         HgXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UzZy04Ic2aUdzTgSub/+D+guuDt6qN2zJBC1MOCj0FE=;
-        b=43BRxQFeAQac8pye1kizX8gBw9rrcjrHqdmv+6fBvuTP18np1Q8Vly4a5bR2FFvXc7
-         G0W4hYXso+sVn7CXqodEUpBIzdAaDZr3/TBlikvkihdJJxDyJlAVRd1B6SCCIBwebIls
-         Qa2AgnSWe0RlqSFUkv/lEhPdGUPZ4JIGRm92DkYAn8asdoyjjJ+blv5cOInEt+swNWPU
-         B1XclbMFge+wSjHap4+XYTQY1btlBEdjVno+4ZBcKUH2gGdYk/6Ah7QGAQr6LaKUXPJz
-         eU7qQgwXVEvcGh2qnf8cDiTzEGij53mxqyo4hELjJJPmsObDXB2bZz/Yukymwo95Ymhj
-         dNGw==
-X-Gm-Message-State: AFqh2komHE8LGN5n462YjyLLce1aIZc7RZ4uBsUk+XQv8XHIMBjx75lS
-        d0r3uw2wlgHHZSCin7EMO1zbBQ==
-X-Google-Smtp-Source: AMrXdXu07Z6MDFh4ZEgcrX9Q3LqIJ4zJVrDOP82VKKfk8W315cyXZsXXbi88iyE0M9V8CvQMVxKb/Q==
-X-Received: by 2002:a05:600c:1d28:b0:3d2:1d51:246e with SMTP id l40-20020a05600c1d2800b003d21d51246emr50762581wms.9.1673298002065;
-        Mon, 09 Jan 2023 13:00:02 -0800 (PST)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id p21-20020a7bcc95000000b003c65c9a36dfsm12229340wma.48.2023.01.09.13.00.00
+        bh=xvbOJwJCDvAVe4Ypk6TWCIgsg3158YUlrEMw2YNb0Mo=;
+        b=MSWLGdOtu9++P81fw4IMReNRKms7idVA35xp5keaCAQJPkPi+YsPkZCNEmW2FFJ1y/
+         3XYkxIXvW8Ya2XSRxHee/YnDfJULmqavpYjMq/eqLRN7XMO5EuoFIBolMYvuJ8aC3tGl
+         60La7wQNOYrsDxruwyAJ1N77CXfX6tEAoZ5gGPUjx526Jin/RiQnUWqX8AYFltgMI1dB
+         lyMWL5VL+NMn6mcNePra7Swbm+E44M3bU8Jeuo1mtkSSzIPNMjbOzIOWmDEiP21U/S49
+         9n77de92ItD88qrU9vcQXKasVEtrQclHtNHiG26DZfvciTEXetEDSSj3jXPuWujfWqyg
+         FezA==
+X-Gm-Message-State: AFqh2kq8yNlO+Os11JYlnlyMzvFw7Ay+905JDI+CduLH1vWPHNcGMbla
+        ix3zVhdBOZAJW3sVONzn+GHTEA==
+X-Google-Smtp-Source: AMrXdXsbI5uSFJDymeTgphPOV5Fli5DX46O6F/LKDz4NKUeOQVAI8vZ1Os79nbfg1VaDx1h2TGA5vQ==
+X-Received: by 2002:a05:6512:6d4:b0:4cb:1e1:f380 with SMTP id u20-20020a05651206d400b004cb01e1f380mr17575366lff.40.1673298209192;
+        Mon, 09 Jan 2023 13:03:29 -0800 (PST)
+Received: from ?IPV6:2001:14ba:a085:4d00::8a5? (dzccz6yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a085:4d00::8a5])
+        by smtp.gmail.com with ESMTPSA id u6-20020a05651220c600b004cc865fdfdfsm383653lfr.89.2023.01.09.13.03.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 13:00:01 -0800 (PST)
-Message-ID: <00e43ac2-6238-79a2-d9cb-8c42208594d8@arista.com>
-Date:   Mon, 9 Jan 2023 20:59:54 +0000
+        Mon, 09 Jan 2023 13:03:28 -0800 (PST)
+Message-ID: <a185b4e3-011c-c7f2-d18b-5c7486b121eb@linaro.org>
+Date:   Mon, 9 Jan 2023 23:03:28 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 1/5] crypto: Introduce crypto_pool
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-References: <20230103184257.118069-1-dima@arista.com>
- <20230103184257.118069-2-dima@arista.com>
- <20230106175326.2d6a4dcd@kernel.org>
-Content-Language: en-US
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <20230106175326.2d6a4dcd@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+ Thunderbird/102.6.0
+Subject: Re: [PATCH 00/18] arm64: qcom: add support for sa8775p-ride
+Content-Language: en-GB
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20230109174511.1740856-1-brgl@bgdev.pl>
+ <bca87233-ae9d-00f8-07d3-07afef2cb92c@linaro.org>
+ <59835841-654a-0ef2-6c79-1ba62ff00928@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <59835841-654a-0ef2-6c79-1ba62ff00928@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-Thanks for taking a look and your review,
-
-On 1/7/23 01:53, Jakub Kicinski wrote:
-[..]
->> +config CRYPTO_POOL
->> +	tristate "Per-CPU crypto pool"
->> +	default n
->> +	help
->> +	  Per-CPU pool of crypto requests ready for usage in atomic contexts.
+On 09/01/2023 22:59, Konrad Dybcio wrote:
 > 
-> Let's make it a hidden symbol? It seems like a low-level library
-> which gets select'ed, so no point bothering users with questions.
 > 
-> config CRYPTO_POOL
-> 	tristate
-> 
-> that's it.
+> On 9.01.2023 21:13, Dmitry Baryshkov wrote:
+>> On 09/01/2023 19:44, Bartosz Golaszewski wrote:
+>>> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+>>>
+>>> This adds basic support for the Qualcomm sa8775p platform and its reference
+>>> board: sa8775p-ride. The dtsi contains basic SoC description required for
+>>> a simple boot-to-shell. The dts enables boot-to-shell with UART on the
+>>> sa8775p-ride board. There are three new drivers required to boot the board:
+>>> pinctrl, interconnect and GCC clock. Other patches contain various tweaks
+>>> to existing code. More support is coming up.
+>>>
+>>> Bartosz Golaszewski (15):
+>>>     dt-bindings: clock: sa8775p: add bindings for Qualcomm gcc-sa8775p
+>>>     arm64: defconfig: enable the clock driver for Qualcomm SA8775P
+>>>       platforms
+>>>     dt-bindings: clock: qcom-rpmhcc: document the clock for sa8775p
+>>>     clk: qcom: rpmh: add clocks for sa8775p
+>>>     dt-bindings: interconnect: qcom: document the interconnects for
+>>>       sa8775p
+>>>     arm64: defconfig: enable the interconnect driver for Qualcomm SA8775P
+>>>     dt-bindings: pinctrl: sa8775p: add bindings for qcom,sa8775p-tlmm
+>>>     arm64: defconfig: enable the pinctrl driver for Qualcomm SA8775P
+>>>       platforms
+>>>     dt-bindings: mailbox: qcom-ipcc: document the sa8775p platform
+>>>     dt-bindings: power: qcom,rpmpd: document sa8775p
+>>>     soc: qcom: rmphpd: add power domains for sa8775p
+>>>     dt-bindings: arm-smmu: document the smmu on Qualcomm SA8775P
+>>>     iommu: arm-smmu: qcom: add support for sa8775p
+>>>     dt-bindings: arm: qcom: document the sa8775p reference board
+>>>     arm64: dts: qcom: add initial support for qcom sa8775p-ride
+>>>
+>>> Shazad Hussain (2):
+>>>     clk: qcom: add the GCC driver for sa8775p
+>>
+>> This patch didn't make it to the list. Please check if you can fix or split it somehow?
+> It's a known issue with lists clipping messages that are too long.
+> I'll forward it to you.
 
-Sounds good
+Thank you!
 
->> +static int crypto_pool_scratch_alloc(void)
-> 
-> This isn't called by anything in this patch..
-> crypto_pool_alloc_ahash() should call it I'm guessing?
-
-Ah, this is little historical left-over: in the beginning, I used
-constant-sized area as "scratch" buffer, the way TCP-MD5 does it.
-Later, while converting users to crypto_pool, I found that it would be
-helpful to support simple resizing as users have different size
-requirement to the temporary buffer, i.e. looking at xfrm_ipcomp, if
-later it would be converted to use the same API, rather than its own:
-IPCOMP_SCRATCH_SIZE is huge (which may help to save quite some memory if
-shared with other crypto_pool users: as the buffer is as well protected
-by bh-disabled section, the usage pattern is quite the same).
-
-In patch 2 I rewrote it for crypto_pool_reserve_scratch(). The purpose
-of patch 2 was to only add dynamic up-sizing of this buffer to make it
-easier to review the change. So, here are 2 options:
-- I can move scratch area allocation/resizing/freeing to patch2 for v3
-- Or I can keep patch 2 for only adding the resizing functionality, but
-in patch 1 make crypto_pool_scratch_alloc() non-static and to the header
-API.
-
-What would you prefer?
-
-[..]
->> +out_free:
->> +	if (!IS_ERR_OR_NULL(hash) && e->needs_key)
->> +		crypto_free_ahash(hash);
->> +
->> +	for_each_possible_cpu(cpu) {
->> +		if (*per_cpu_ptr(e->req, cpu) == NULL)
->> +			break;
->> +		hash = crypto_ahash_reqtfm(*per_cpu_ptr(e->req, cpu));
-> 
-> Could you use a local variable here instead of @hash?
-> That way you won't need the two separate free_ahash()
-> one before and one after the loop..
-
-Good idea, will do
-
-> 
->> +		ahash_request_free(*per_cpu_ptr(e->req, cpu));
-> 
-> I think using @req here would be beneficial as well :S
-> 
->> +		if (e->needs_key) {
->> +			crypto_free_ahash(hash);
->> +			hash = NULL;
->> +		}
->> +	}
->> +
->> +	if (hash)
->> +		crypto_free_ahash(hash);
-> 
-> This error handling is tricky as hell, please just add a separate
-> variable to hold the 
-
-Agree, will do for v3
-
->> +out_free_req:
->> +	free_percpu(e->req);
->> +out_free_alg:
->> +	kfree(e->alg);
->> +	e->alg = NULL;
->> +	return ret;
->> +}
->> +
->> +/**
->> + * crypto_pool_alloc_ahash - allocates pool for ahash requests
->> + * @alg: name of async hash algorithm
->> + */
->> +int crypto_pool_alloc_ahash(const char *alg)
->> +{
->> +	int i, ret;
->> +
->> +	/* slow-path */
->> +	mutex_lock(&cpool_mutex);
->> +
->> +	for (i = 0; i < cpool_populated; i++) {
->> +		if (cpool[i].alg && !strcmp(cpool[i].alg, alg)) {
->> +			if (kref_read(&cpool[i].kref) > 0) {
-> 
-> In the current design we can as well resurrect a pool waiting to 
-> be destroyed, right? Just reinit the ref and we're good.
-> 
-> Otherwise the read() + get() looks quite suspicious to a reader.
-
-Yes, unsure why I haven't done it from the beginning
-
-[..]
->> +/**
->> + * crypto_pool_add - increases number of users (refcounter) for a pool
->> + * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
->> + */
->> +void crypto_pool_add(unsigned int id)
->> +{
->> +	if (WARN_ON_ONCE(id > cpool_populated || !cpool[id].alg))
->> +		return;
->> +	kref_get(&cpool[id].kref);
->> +}
->> +EXPORT_SYMBOL_GPL(crypto_pool_add);
->> +
->> +/**
->> + * crypto_pool_get - disable bh and start using crypto_pool
->> + * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
->> + * @c: returned crypto_pool for usage (uninitialized on failure)
->> + */
->> +int crypto_pool_get(unsigned int id, struct crypto_pool *c)
-> 
-> Is there a precedent somewhere for the _add() and _get() semantics
-> you're using here? I don't think I've seen _add() for taking a
-> reference, maybe _get() -> start(), _add() -> _get()?
-
-Yeah, I presume I took not the best-fitting naming from
-tcp_get_md5sig_pool()/tcp_put_md5sig_pool().
-Will do the renaming.
-
-Thanks,
-          Dmitry
+-- 
+With best wishes
+Dmitry
 
