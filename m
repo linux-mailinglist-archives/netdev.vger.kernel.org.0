@@ -2,76 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 365EF6620EE
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 10:06:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D1BE6620FC
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 10:08:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236968AbjAIJGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 04:06:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
+        id S230491AbjAIJIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 04:08:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbjAIJGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 04:06:22 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3821B1403C;
-        Mon,  9 Jan 2023 00:58:53 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id ay40so5735726wmb.2;
-        Mon, 09 Jan 2023 00:58:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=X8k43ejWCwSThPb14PyffH1MScgx/Rj8NmhWD2SvdR8=;
-        b=qYdZpujy0uVAYU5aoX/jiSqNOwL8KUnFkssUr33i8+mTMUEldErpeyp3EA4eZmQpwH
-         J6+l5f+4aetzGce3oT8RXX2QvORNZXnLMrI0GKsy6oJ1LIhn5s2/H4WETzHb+9i3hJW3
-         qWoaMUSBspPV91UI6GfJd23WNSF12pd28RlJ/2sOYd4TFDkSbPxpXMpxXVjm/zZHb0LA
-         34Nqxkm0Stl8zXFcMHyNExwKxhyaEhL30yncVL0uzBlXd1F5qdVUwd6447TjAuSaDPeU
-         Ito66XcGc5q0Filrno99M/0XZcZVfqBYVZ0+qYgM9D8inhjN9xaeB0F+P6soCrI79WAN
-         B3yw==
+        with ESMTP id S234471AbjAIJHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 04:07:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF98D1AD96
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 01:00:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673254831;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ciW9YYwTiwLOjY3s3cXAhwyZejxqMBoqkbNB9AuORqI=;
+        b=GL5T2hJAMT6tm6J4LtCbIY1Dt8j3X9QpqEqscvLNPpc7sMyaUpC7oYPknKpLF8NdvvO/nM
+        Chjfws+BNsFqCUoHfl6vuy7W6L/ZV4c65LpYPfSKqQq+b2ExLZO25KBDwCCRjt69yC2Zs+
+        9R5Svk6rT/W7od4ArDGhVxIvjosMdBc=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-280-d532LJ3wPVGcg__T5dOQ4A-1; Mon, 09 Jan 2023 04:00:29 -0500
+X-MC-Unique: d532LJ3wPVGcg__T5dOQ4A-1
+Received: by mail-ot1-f71.google.com with SMTP id x26-20020a9d629a000000b0066ea531ed32so4094260otk.6
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 01:00:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=X8k43ejWCwSThPb14PyffH1MScgx/Rj8NmhWD2SvdR8=;
-        b=rCOWaSs73lizjAIWjpqN6sIxXl6C8noBqGndysz6lFMZO4be3nMzMrXr9ZHkR7mda7
-         iILdcJ0ioWWn2f6yv98rO8MY4MJPuHjZkuo1aGtyEpqQFRdiaa37qD7bFkyzKyuXC+2U
-         DYnOv6+/zr9/gcWT68/9gKWD2iAlo9ME2IjSrNAVGSSsElaJhCtbB0GiQOSHw0TD8Liq
-         q5S3ezhU0N+tT5BTFFZ0Itrw3YDqV1QxF3IcxxuM1G9QThb4HTLtR0vWJ4mpS5U3TSMg
-         MV3U6tLStK0gdP2nCaLThAsNpcE+kslHc3QHC9xPXLkfazt4n3IISZ0n93SJ6WV25Rew
-         Y2TQ==
-X-Gm-Message-State: AFqh2kq6rjbEb0I6Y6JnYq45D/JN/RE+MVRLCUptPxDVg7SzSZ5xDx9e
-        e4pLUrbUXct92rKw/JWAxgI=
-X-Google-Smtp-Source: AMrXdXvJ/4X9WqA/3/op5IY4we4OL8jRADxlfOD2HPLUY30gMVw3fnauVEfNMHdhnNUKytb34Ch7PQ==
-X-Received: by 2002:a05:600c:35cc:b0:3d3:3c93:af34 with SMTP id r12-20020a05600c35cc00b003d33c93af34mr55836411wmq.2.1673254731784;
-        Mon, 09 Jan 2023 00:58:51 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id e10-20020adfe38a000000b002bc7fcf08ddsm611698wrm.103.2023.01.09.00.58.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jan 2023 00:58:51 -0800 (PST)
-Date:   Mon, 9 Jan 2023 11:58:48 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-Cc:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
-        linux-sparse@vger.kernel.org, willemdebruijn.kernel@gmail.com,
-        gnoack3000@gmail.com, linux-security-module@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        artem.kuzin@huawei.com, Linux API <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
-Message-ID: <Y7vXSAGHf08p2Zbm@kadam>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
- <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
- <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
- <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
- <4aa29433-e7f9-f225-5bdf-c80638c936e8@huawei.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ciW9YYwTiwLOjY3s3cXAhwyZejxqMBoqkbNB9AuORqI=;
+        b=21Z7KjQF2LZsMayavKMNz3mRniw+MCiVPkc/i0mFaxU1+6uILkdm5HzNP1mBzNIeRT
+         EfuUK5BpmPN/Kluyf45KuegmpR0jD56muLI2bnP9p1w+pZYD5fD+XBZbz8G8T5uBaBkf
+         2zHn1zDWEVhcAbSvz9bNUp/gII4C6SAswE5qqjdr5czu+PoSOCC9oj+PCnBdvhR5N35g
+         EkA/n2Nhj1fn2D0zTmeKwAkbmIn0NAt00TZXau2EXoLrAS5QShlyFlWDqJfm4T3PPafF
+         AetRf3QEZ+WGKrAV/kpC2ZB4jG+XnfWt8Y7u/iUBMhNFkAx3JR/p61wCGLpt7v7oRrO3
+         Kcbw==
+X-Gm-Message-State: AFqh2kpg0Z0LiBIZvRMQCLR3WomOKVRuHmDvus4iUyiKD4Q1t6weWZ/W
+        0t7GIRsfGCgfL7+apmy0Hxx17CFWzwF8bpBN5+lhNifI1CBZa6Ka+xXVZwmXpAGhnOEJf2vm/ad
+        Xfv92vN7sBWVq37nUWYJZVZ+SFXMOXBTu
+X-Received: by 2002:a05:6870:4413:b0:144:a97b:1ae2 with SMTP id u19-20020a056870441300b00144a97b1ae2mr3397919oah.35.1673254829168;
+        Mon, 09 Jan 2023 01:00:29 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXs3r6xZeYmx2QyOOAm/OSF4k+rcH2P78FK/uye9bebpGs3wKFdyeXk7nf1guSipnglxm3zqQ43faxDfLHs0f1A=
+X-Received: by 2002:a05:6870:4413:b0:144:a97b:1ae2 with SMTP id
+ u19-20020a056870441300b00144a97b1ae2mr3397915oah.35.1673254828989; Mon, 09
+ Jan 2023 01:00:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4aa29433-e7f9-f225-5bdf-c80638c936e8@huawei.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230105070357.274-1-liming.wu@jaguarmicro.com>
+In-Reply-To: <20230105070357.274-1-liming.wu@jaguarmicro.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 9 Jan 2023 17:00:17 +0800
+Message-ID: <CACGkMEtOAiV4v=-d1SA-wAVvD2WJyes3wWghpAJ9q0baG_aKGg@mail.gmail.com>
+Subject: Re: [PATCH] vhost-test: remove meaningless debug info
+To:     liming.wu@jaguarmicro.com
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 398776277@qq.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,14 +73,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These warnings seem like something I have seen before.  Maybe it was an
-issue with _Generic() support?
+On Thu, Jan 5, 2023 at 3:04 PM <liming.wu@jaguarmicro.com> wrote:
+>
+> From: Liming Wu <liming.wu@jaguarmicro.com>
+>
+> remove printk as it is meaningless.
+>
+> Signed-off-by: Liming Wu <liming.wu@jaguarmicro.com>
 
-Are you really sure you're running the latest git version of Sparse?
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-I tested this patch with the latest version of Sparse on my system and
-it worked fine.
+Thanks
 
-regards,
-dan carpenter
+> ---
+>  drivers/vhost/test.c | 3 ---
+>  1 file changed, 3 deletions(-)
+>
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index bc8e7fb1e635..42c955a5b211 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -333,13 +333,10 @@ static long vhost_test_ioctl(struct file *f, unsigned int ioctl,
+>                         return -EFAULT;
+>                 return 0;
+>         case VHOST_SET_FEATURES:
+> -               printk(KERN_ERR "1\n");
+>                 if (copy_from_user(&features, featurep, sizeof features))
+>                         return -EFAULT;
+> -               printk(KERN_ERR "2\n");
+>                 if (features & ~VHOST_FEATURES)
+>                         return -EOPNOTSUPP;
+> -               printk(KERN_ERR "3\n");
+>                 return vhost_test_set_features(n, features);
+>         case VHOST_RESET_OWNER:
+>                 return vhost_test_reset_owner(n);
+> --
+> 2.25.1
+>
 
