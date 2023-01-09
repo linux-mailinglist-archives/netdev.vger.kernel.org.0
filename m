@@ -2,67 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 069666626A0
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 14:14:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4BB46626DA
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 14:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236534AbjAINOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 08:14:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59368 "EHLO
+        id S237010AbjAINVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 08:21:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237161AbjAINNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 08:13:46 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1A41409C
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 05:13:18 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id ay12-20020a05600c1e0c00b003d9ea12bafcso3566268wmb.3
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 05:13:18 -0800 (PST)
+        with ESMTP id S237177AbjAINVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 08:21:43 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C5613F14;
+        Mon,  9 Jan 2023 05:21:37 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id c6so9490568pls.4;
+        Mon, 09 Jan 2023 05:21:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jaDFDl2+tN5Hl1ZB51fHbi1FKciauyhT9UPo+kncU3I=;
-        b=gySwzbXAEvFLlHHx2GUBE1PzOsbvzm54w/4Hoe3q+0MuYeNv/IouoUwbFIcR1OlLQU
-         8HHFfwUuG5Ejs8cXpK1Rvhg2DFXq9lvaomJmlBCnW3LXOM78ITVmfg+aHNpy13jbymSo
-         7p2/7kd/0yCcDsw2eZ2Gip3LF4r3qYJHCB+iGzH8mc7B0j1JDNIdswwqnetIixd4ss9p
-         R0FNGPqDOx1eSPe3qMt/2UNDxo8PJiTHa6Ylk5JZ8qEc7N2EmZeq9sKRn4woqfLsEFBg
-         vj8g1MxAKqH9JtEh1PSwoG73zEf+4k3szGPQSQ+fkF90yFtgYD9omG93WrcAp9e/kRBK
-         +zLQ==
+        bh=55cpmeYHA7DCtU0PqJDR9yhzjmXYqv18FD85Rkv9woI=;
+        b=FK6l095MUD0scUeQQVsycfqA8gu9K77WOSdijrpoIOCh5uTZHEOZzosXBEot0ZobeI
+         7H+TRpqL78YqAh9D5XVgQkrWpWkZtuejaJorhoXE+W8nU7gAuxJ6XXE3JHaI2mXJ+eJh
+         30ObtdKJWlgQ1HuYmtG/c+6gJnJ6dRDwC9GrR90jAwS6zRkpZwM4xjg1OZ1o4JQhTtmr
+         xdckMIMZ9rzOdO1zv/O+dvyi9hwy9jbyD3eFfyxCoL3n0yxMyjayxfcQIr+22pvOmlZJ
+         P1wHshyYjqLp7HlnNqZzcysTM/PWuIOFqnvoiRtobV0Wbt38cbrX7keSHP0H1e5bwooP
+         6lVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=jaDFDl2+tN5Hl1ZB51fHbi1FKciauyhT9UPo+kncU3I=;
-        b=3GolMqijFZxXgm4Do1DeLc5gnAu/Z2KgiBu7CuMdWED/eIgIsUJi9+C+CUJv9ly2gt
-         YuANrdz6MxUfADsC8xW7qbzFOCHEJ2pnFYsQC775D0rGdCc0s9LExsrPZ98wAXlzfDPm
-         1q4JyPuL0t5U3djHnvJHGKO+jGjmDBazoJ+OUxOF6cY5E6IPSamki9/ftexeuL6pCTKv
-         nzXzhM0whrgPhrEa101PuhWY6qHLsNg6r+vf5LUy3FZlh4AYJF4aW6D6soqASuyc0uIz
-         StXHVsuuPWPohLR2uKPpfd1rOfWNX7MjWhnXeCSpWZVSHhddRVX2od0YK+BXB8lQPwLQ
-         iMSA==
-X-Gm-Message-State: AFqh2kpOjy8JKI52PtInCjF8am9h3ubxKG0Pa01xfB7UFWKH+7iv6R8H
-        gFZEz2DsA+N7g8zKBR5eE7k2drExoPILzcEqWW0dHQ==
-X-Google-Smtp-Source: AMrXdXszznt1RWlKaQKelt5nu0PuVTLm2drhi7RWKiIHCPFAA8P0uPu4W+bkdKD8nSJe0q214pg/4m4iIx6XHR48m5s=
-X-Received: by 2002:a7b:c5d6:0:b0:3cf:70a0:f689 with SMTP id
- n22-20020a7bc5d6000000b003cf70a0f689mr3221956wmk.161.1673269997007; Mon, 09
- Jan 2023 05:13:17 -0800 (PST)
-MIME-Version: 1.0
-References: <20230108025545.338-1-cuiyunhui@bytedance.com> <CANn89i+W__5-jDUdM=_97jzQy9Wq+n9KBEuOGjUi=Fxe_ntqbg@mail.gmail.com>
-In-Reply-To: <CANn89i+W__5-jDUdM=_97jzQy9Wq+n9KBEuOGjUi=Fxe_ntqbg@mail.gmail.com>
-From:   =?UTF-8?B?6L+Q6L6J5bSU?= <cuiyunhui@bytedance.com>
-Date:   Mon, 9 Jan 2023 21:13:06 +0800
-Message-ID: <CAEEQ3wnoKqN+uTmMmUDJ9pp+YVaLmKnv42RApzPbNOGg6CRmnA@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v4] sock: add tracepoint for send recv length
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     rostedt@goodmis.org, mhiramat@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, kuniyu@amazon.com,
-        xiyou.wangcong@gmail.com, duanxiongchun@bytedance.com,
-        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        bh=55cpmeYHA7DCtU0PqJDR9yhzjmXYqv18FD85Rkv9woI=;
+        b=mjhEZZPwpfkBgp53bLlBRORtESb9m8ExyyOM6W3PO7+zZ/XpIdbfTRvdOskfGjwCn1
+         t6MLLGrjXSi70H/pfOEFw70dBTgsqKrdS9Fo151/13yBK9KpSD+Euo8yTSZ+jjZARixn
+         Yh6eFnoOMwNAJ6GaiDL84KwQAQuae/0yTq9CP5hOyPrRpPRJgUYJ3EUg41/JTGaxH2q3
+         uwUnnfGMVVfqXGmg03CDH9yy4dPDhLQDZEssqL4PmZ4jENgfpBDCyXVQAclGlqA68cwg
+         k6Cq0UKyRqtWA7BEg4FCN3Ko/q2Cquo9yIDUm2tD/WYzg1AfiDsZDJMzUl5YnBa9Jf3a
+         1MnQ==
+X-Gm-Message-State: AFqh2kp1KhkVCvQ6TVL85yas9/vHJqWAP+i5Psj4dAW/chbss+J7YdXM
+        DArCNzFjfb+ORisw2gC/Ig==
+X-Google-Smtp-Source: AMrXdXvAYrPKulRkWDMDkwUh/XI/kD/WRdk/GJnFImKeGNuyE74rB44oQYKXTl1ohOR1xXeocb2aeg==
+X-Received: by 2002:a05:6a20:d68f:b0:9d:efbf:48e7 with SMTP id it15-20020a056a20d68f00b0009defbf48e7mr82635536pzb.43.1673270496686;
+        Mon, 09 Jan 2023 05:21:36 -0800 (PST)
+Received: from smtpclient.apple (n119236129232.netvigator.com. [119.236.129.232])
+        by smtp.gmail.com with ESMTPSA id x9-20020aa79569000000b00581f8965116sm5987111pfq.202.2023.01.09.05.21.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 Jan 2023 05:21:36 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.300.101.1.3\))
+Subject: Re: KASAN: use-after-free Read in ___bpf_prog_run
+From:   Hao Sun <sunhao.th@gmail.com>
+In-Reply-To: <501fb848-5211-7706-aee2-4eac6310f1ae@meta.com>
+Date:   Mon, 9 Jan 2023 21:21:22 +0800
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Message-Id: <933A445C-725E-4BC2-8860-2D0A92C34C58@gmail.com>
+References: <CACkBjsbS0jeOUFzxWH-bBay9=cTQ_S2JbMnAa7V2sHpp_19PPw@mail.gmail.com>
+ <52379286-960e-3fcd-84a2-3cab4d3b7c4e@meta.com>
+ <5B270DBF-E305-4C86-B246-F5C8A5D942CA@gmail.com>
+ <501fb848-5211-7706-aee2-4eac6310f1ae@meta.com>
+To:     Yonghong Song <yhs@meta.com>
+X-Mailer: Apple Mail (2.3731.300.101.1.3)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,68 +88,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 9, 2023 at 5:56 PM Eric Dumazet <edumazet@google.com> wrote:
-
->
-> Note: At least for CONFIG_RETPOLINE=3Dy and gcc 12.2, compiler adds many
-> additional instructions (and additional memory reads),
-> even when the trace point is not enabled.
->
-> Contrary to some belief, adding a tracepoint is not always 'free'.
-> tail calls for example are replaced with normal calls.
->
 
 
->         .popsection
->
-> # 0 "" 2
-> #NO_APP
-> .L106:
-> # net/socket.c:1008: }
->         movl    %ebx, %eax      # <retval>,
->         popq    %rbx    #
->         popq    %rbp    #
->         popq    %r12    #
->         ret
-> .L111:
-> # ./include/trace/events/sock.h:308: DEFINE_EVENT(sock_msg_length,
-> sock_recv_length,
->
+Yonghong Song <yhs@meta.com> =E4=BA=8E2022=E5=B9=B412=E6=9C=8818=E6=97=A5=E5=
+=91=A8=E6=97=A5 00:57=E5=86=99=E9=81=93=EF=BC=9A
+>=20
+>=20
+>=20
+> On 12/16/22 10:54 PM, Hao Sun wrote:
+>>=20
+>>=20
+>>> On 17 Dec 2022, at 1:07 PM, Yonghong Song <yhs@meta.com> wrote:
+>>>=20
+>>>=20
+>>>=20
+>>> On 12/14/22 11:49 PM, Hao Sun wrote:
+>>>> Hi,
+>>>> The following KASAN report can be triggered by loading and test
+>>>> running this simple BPF prog with a random data/ctx:
+>>>> 0: r0 =3D bpf_get_current_task_btf      ;
+>>>> R0_w=3Dtrusted_ptr_task_struct(off=3D0,imm=3D0)
+>>>> 1: r0 =3D *(u32 *)(r0 +8192)       ;
+>>>> R0_w=3Dscalar(umax=3D4294967295,var_off=3D(0x0; 0xffffffff))
+>>>> 2: exit
+>>>> I've simplified the C reproducer but didn't find the root cause.
+>>>> JIT was disabled, and the interpreter triggered UAF when executing
+>>>> the load insn. A slab-out-of-bound read can also be triggered:
+>>>> https://pastebin.com/raw/g9zXr8jU
+>>>> This can be reproduced on:
+>>>> HEAD commit: b148c8b9b926 selftests/bpf: Add few corner cases to =
+test
+>>>> padding handling of btf_dump
+>>>> git tree: bpf-next
+>>>> console log: https://pastebin.com/raw/1EUi9tJe
+>>>> kernel config: https://pastebin.com/raw/rgY3AJDZ
+>>>> C reproducer: https://pastebin.com/raw/cfVGuCBm
+>>>=20
+>>> I I tried with your above kernel config and C reproducer and cannot =
+reproduce the kasan issue you reported.
+>>>=20
+>>> [root@arch-fb-vm1 bpf-next]# ./a.out
+>>> func#0 @0
+>>> 0: R1=3Dctx(off=3D0,imm=3D0) R10=3Dfp0
+>>> 0: (85) call bpf_get_current_task_btf#158     ; =
+R0_w=3Dtrusted_ptr_task_struct(off=3D0,imm=3D0)
+>>> 1: (61) r0 =3D *(u32 *)(r0 +8192)       ; =
+R0_w=3Dscalar(umax=3D4294967295,var_off=3D(0x0; 0xffffffff))
+>>> 2: (95) exit
+>>> processed 3 insns (limit 1000000) max_states_per_insn 0 total_states =
+0 peak_states 0 mark_read 0
+>>>=20
+>>> prog fd: 3
+>>> [root@arch-fb-vm1 bpf-next]#
+>>>=20
+>>> Your config indeed has kasan on.
+>>=20
+>> Hi,
+>>=20
+>> I can still reproduce this on a latest bpf-next build: 0e43662e61f25
+>> (=E2=80=9Ctools/resolve_btfids: Use pkg-config to locate libelf=E2=80=9D=
+).
+>> The simplified C reproducer sometime need to be run twice to trigger
+>> the UAF. Also note that interpreter is required. Here is the original
+>> C reproducer that loads and runs the BPF prog continuously for your
+>> convenience:
+>> https://pastebin.com/raw/WSJuNnVU
+>>=20
+>=20
+> I still cannot reproduce with more than 10 runs. The config has jit =
+off
+> so it already uses interpreter. It has kasan on as well.
+> # CONFIG_BPF_JIT is not set
+>=20
+> Since you can reproduce it, I guess it would be great if you can
+> continue to debug this.
+>=20
 
-Hi Eric,  Thanks for your reply,  In fact, it is because the
-definition of the tracepoint function is inline,
-Not just these two tracepoints=EF=BC=8Cright?
+The load insn =E2=80=98r0 =3D *(u32*) (current + 8192)=E2=80=99 is OOB, =
+because sizeof(task_struct)
+is 7240 as shown in KASAN report. The issue is that struct task_struct =
+is special,
+its runtime size is actually smaller than it static type size. In X86:
 
-#define __DECLARE_TRACE(name, proto, args, cond, data_proto)            \
-      ...
-      static inline void trace_##name(proto)
+task_struct->thread_struct->fpu->fpstate->union fpregs_state is
+/*
+* ...
+* The size of the structure is determined by the largest
+* member - which is the xsave area. The padding is there
+* to ensure that statically-allocated task_structs (just
+* the init_task today) have enough space.
+*/
+union fpregs_state {
+	struct fregs_state fsave;
+	struct fxregs_state fxsave;
+	struct swregs_state soft;
+	struct xregs_state xsave;
+	u8 __padding[PAGE_SIZE];
+};
 
-Regarding the above issue, I plan to optimize it like this:
+In btf_struct_access(), the resolved size for task_struct is 10496, much =
+bigger
+than its runtime size, so the prog in reproducer passed the verifier and =
+leads
+to the oob. This can happen to all similar types, whose runtime size is =
+smaller
+than its static size.
 
-static noinline void call_trace_sock_send_length(struct sock *sk, __u16 fam=
-ily,
-                                            __u16 protocol, int ret, int fl=
-ags)
-{
-        trace_sock_send_length(sk, family, protocol, ret, 0);
-}
+Not sure how many similar cases are there, maybe special check to =
+task_struct
+is enough. Any hint on how this should be addressed?
 
-static inline int sock_sendmsg_nosec(struct socket *sock, struct msghdr *ms=
-g)
-{
-        int ret =3D INDIRECT_CALL_INET(sock->ops->sendmsg, inet6_sendmsg,
-                                     inet_sendmsg, sock, msg,
-                                     msg_data_left(msg));
-        BUG_ON(ret =3D=3D -EIOCBQUEUED);
 
-        if (trace_sock_send_length_enabled()) {
-                call_trace_sock_send_length(sock->sk, sock->sk->sk_family,
-                                            sock->sk->sk_protocol, ret, 0);
-        }
-        return ret;
-}
-
-What do you think?
-
-Thanks,
-Yunhui
