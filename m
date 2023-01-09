@@ -2,137 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3970E661E89
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 07:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D4F7661E9D
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 07:13:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbjAIGAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 01:00:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36416 "EHLO
+        id S233096AbjAIGNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 01:13:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbjAIGAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 01:00:35 -0500
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BE5E003
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 22:00:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1673244034; x=1704780034;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ay8fDA3vkLdd1THsiMpVxoF/tUS+irAz+8dTGXTD+y8=;
-  b=MqPJqQ8Gy9AJCUIB0kg2NVYgL6eIyBekfgMkLT428jJ/5HBxdbb45Z1V
-   5IX2Oe1pa/HixP66ufBDDETAjYVgxCMH60ODSAKVCZMQqdhrKKdksNMMM
-   aVwXCyHBmjqpXeePK60nHPP/jHd8S4kYS7vFDalaLLzZVdAl5AqUN6fB1
-   E=;
-X-IronPort-AV: E=Sophos;i="5.96,311,1665446400"; 
-   d="scan'208";a="298094965"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 06:00:29 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com (Postfix) with ESMTPS id 4BF80A2DCE;
-        Mon,  9 Jan 2023 06:00:29 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Mon, 9 Jan 2023 06:00:28 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.114) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
- Mon, 9 Jan 2023 06:00:23 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <darinzon@amazon.com>
-CC:     <akiyano@amazon.com>, <alisaidi@amazon.com>, <davem@davemloft.net>,
-        <itzko@amazon.com>, <kuba@kernel.org>, <matua@amazon.com>,
-        <nafea@amazon.com>, <ndagan@amazon.com>, <netdev@vger.kernel.org>,
-        <osamaabb@amazon.com>, <saeedb@amazon.com>, <shayagr@amazon.com>,
-        <zorik@amazon.com>, <kuniyu@amazon.com>
-Subject: Re: [PATCH V1 net-next 5/5] net: ena: Add devlink documentation
-Date:   Mon, 9 Jan 2023 15:00:15 +0900
-Message-ID: <20230109060015.30921-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230108103533.10104-6-darinzon@amazon.com>
-References: <20230108103533.10104-6-darinzon@amazon.com>
+        with ESMTP id S230458AbjAIGNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 01:13:45 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217AEA197;
+        Sun,  8 Jan 2023 22:13:44 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 308McDcN018600;
+        Sun, 8 Jan 2023 22:13:31 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=0oXfUSucqDnprNu/xjDfCXx1MiNwuNLq5i0naIl8Ado=;
+ b=eKIFupSz/vaiFF0HGQIZpg3G3SVaivFMcIqb6Z+zyWVYh76DmJ7aN6Gd3RM4h8Bz7z8S
+ +lg6gI7CTteNj9ZRohtn4f27yjuWcN+84I5wVokqmf77OEXXmg9J6q7u5tlXnJSSgUIK
+ uS3WpWHsYhyHTFE3swfWuOvJLm79R2AdOmWRzrAYiMUxS/iLftNFwT7MdnDqaeZji5zV
+ 8szZ9ER6PDK6KUkEkRs+tEq1I4H0rVNlIRDUPNLf1U4IwivWBqYbi49AluA3TnBOGiGE
+ b4FmuHkgUTQqsAazjmmuDQvWroq2iF776uRdUu84hOlFKcd3qnpGS6gbPPAiZUZ6r2bu Xw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tmbgf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 08 Jan 2023 22:13:31 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sun, 8 Jan
+ 2023 22:13:29 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Sun, 8 Jan 2023 22:13:29 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 6D7E93F7090;
+        Sun,  8 Jan 2023 22:13:26 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <sgoutham@marvell.com>,
+        <gakula@marvell.com>, <sbhatta@marvell.com>
+Subject: [net PATCH] octeontx2-pf: Fix resource leakage in VF driver unbind
+Date:   Mon, 9 Jan 2023 11:43:25 +0530
+Message-ID: <20230109061325.21395-1-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.161.114]
-X-ClientProxiedBy: EX13D32UWB003.ant.amazon.com (10.43.161.220) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-ORIG-GUID: D2BdtYno9FprCMkB1oCNyC5ZRHhCIqe_
+X-Proofpoint-GUID: D2BdtYno9FprCMkB1oCNyC5ZRHhCIqe_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-09_02,2023-01-06_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   David Arinzon <darinzon@amazon.com>
-Date:   Sun, 8 Jan 2023 10:35:33 +0000
-> Update the documentation with a devlink section, the
-> added files, as well as large LLQ enablement.
-> 
-> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
-> Signed-off-by: David Arinzon <darinzon@amazon.com>
-> ---
->  .../device_drivers/ethernet/amazon/ena.rst    | 30 +++++++++++++++++++
+resources allocated like mcam entries to support the Ntuple feature
+and hash tables for the tc feature are not getting freed in driver
+unbind. This patch fixes the issue.
 
-Each driver's devlink doc exists under Documentation/networking/devlink/ and
-linked from index.html there.
+Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-We should duplicate this doc under Documentation/networking/devlink/ or link from
-the index.html ?
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index 86653bb8e403..7f8ffbf79cf7 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -758,6 +758,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
+ 	if (vf->otx2_wq)
+ 		destroy_workqueue(vf->otx2_wq);
+ 	otx2_ptp_destroy(vf);
++	otx2_mcam_flow_del(vf);
++	otx2_shutdown_tc(vf);
+ 	otx2vf_disable_mbox_intr(vf);
+ 	otx2_detach_resources(&vf->mbox);
+ 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+-- 
+2.17.1
 
-
->  1 file changed, 30 insertions(+)
-> 
-> diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
-> index 8bcb173e0353..1229732a8c91 100644
-> --- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
-> +++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
-> @@ -53,6 +53,7 @@ ena_common_defs.h   Common definitions for ena_com layer.
->  ena_regs_defs.h     Definition of ENA PCI memory-mapped (MMIO) registers.
->  ena_netdev.[ch]     Main Linux kernel driver.
->  ena_ethtool.c       ethtool callbacks.
-> +ena_devlink.[ch]    devlink files (see `devlink support`_ for more info)
->  ena_pci_id_tbl.h    Supported device IDs.
->  =================   ======================================================
->  
-> @@ -253,6 +254,35 @@ RSS
->  - The user can provide a hash key, hash function, and configure the
->    indirection table through `ethtool(8)`.
->  
-> +.. _`devlink support`:
-> +DEVLINK SUPPORT
-> +===============
-> +.. _`devlink`: https://www.kernel.org/doc/html/latest/networking/devlink/index.html
-> +
-> +`devlink`_ supports toggling LLQ entry size between the default 128 bytes and 256
-> +bytes.
-> +A 128 bytes entry size allows for a maximum of 96 bytes of packet header size
-> +which sometimes is not enough (e.g. when using tunneling).
-> +Increasing LLQ entry size to 256 bytes, allows a maximum header size of 224
-> +bytes. This comes with the penalty of reducing the number of LLQ entries in the
-> +TX queue by 2 (i.e. from 1024 to 512).
-> +
-> +The entry size can be toggled by enabling/disabling the large_llq_header devlink
-> +param and reloading the driver to make it take effect, e.g.
-> +
-> +.. code-block:: shell
-> +
-> +  sudo devlink dev param set pci/0000:00:06.0 name large_llq_header value true cmode driverinit
-> +  sudo devlink dev reload pci/0000:00:06.0
-> +
-> +One way to verify that the TX queue entry size has indeed increased is to check
-> +that the maximum TX queue depth is 512. This can be checked, for example, by
-> +using:
-> +
-> +.. code-block:: shell
-> +
-> +  ethtool -g [interface]
-> +
->  DATA PATH
->  =========
->  
-> -- 
-> 2.38.1
