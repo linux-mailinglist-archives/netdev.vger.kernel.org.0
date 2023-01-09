@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B833662A0F
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 16:34:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4273662A0E
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 16:34:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237330AbjAIPcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 10:32:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44342 "EHLO
+        id S236108AbjAIPcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 10:32:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237225AbjAIPbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 10:31:45 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594D79598;
-        Mon,  9 Jan 2023 07:30:57 -0800 (PST)
+        with ESMTP id S237165AbjAIPbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 10:31:50 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867151C12F;
+        Mon,  9 Jan 2023 07:31:07 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 0282E1654;
+        by mail.3ffe.de (Postfix) with ESMTPSA id 9C6CD16AB;
         Mon,  9 Jan 2023 16:30:55 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673278255;
@@ -26,20 +26,19 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail20220821
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cwldWyFf7CaFTxQBOBymigKCBxPFmfPQFSYXECFA1MQ=;
-        b=oBe/wDiEGzYu9Fc30RDGqfOtePnx+5N67Jc8XWAwViJATJbP5JciHihYt08LZ2CPnqoGXm
-        uZArpFXb8LGFjfjAjXXX7S79M2PS+79KJbqSZO69qsWKd3bzRrrLYAYIXYg6ql+KNj6eYf
-        QFLV/7qysP76I17N9ZXUkpM8Co/fADHz8zTv8pRK0+sadsWUa23hOO8F8/TFqbhkDxEDNV
-        Kh4IJzK9xvXaw84ecISSaMUBh90vtEkIuwjqMygFfeNX7aQTRJKU3bGSi62Qh3a0YIRJXQ
-        PD2iEEB36IH2lBcrduXuSgnBMlXDpiUEHLj2BemVjPRj+aiM8jY7HGIZ/J1pvg==
+        bh=EEZ/v6UcgF8jAd9Bq5O3tQtWCx116rW0omeP9KEiKw0=;
+        b=Bs1T9rGnPcNDWGuFneTdy9igWqlryNH1KCei2Uj5Hkn+hyn/4RcpTKfU5FxN+9mkG0cItk
+        oDcds7yka4Lo+6kYx8uuPk4A0MDiBqmXlj/ZUA3vClyZzU5J3kR71Ok9e9N03qilXOsPSP
+        ARccQ562l4Dldsb2GNPyUmNozYRDv86gZoQLd0nDdlQTarGJfWAz3OSk2BxATqry9WUcA8
+        Byq3GMfp/V4KZ2J5A1+8REH//6yOfOgOlitmD775vxeXssp3hnJjUhwBEUxXKu5Ch6GHeu
+        /63A9MmC2yeADSKKXUhbO+Fj8KVunDK4Gil1rRpugZ1ahPqyNpa1kshAACvF9Q==
 From:   Michael Walle <michael@walle.cc>
-Date:   Mon, 09 Jan 2023 16:30:44 +0100
-Subject: [PATCH net-next v3 04/11] net: mdio: C22 is now optional, EOPNOTSUPP
- if not provided
+Date:   Mon, 09 Jan 2023 16:30:45 +0100
+Subject: [PATCH net-next v3 05/11] net: mdio: Move mdiobus_c45_addr() next to users
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20221227-v6-2-rc1-c45-seperation-v3-4-ade1deb438da@walle.cc>
+Message-Id: <20221227-v6-2-rc1-c45-seperation-v3-5-ade1deb438da@walle.cc>
 References: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
 In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -79,44 +78,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-When performing a C22 operation, check that the bus driver actually
-provides the methods, and return -EOPNOTSUPP if not. C45 only busses
-do exist, and in future their C22 methods will be NULL.
+Now that mdiobus_c45_addr() is only used within the MDIO code during
+fallback, move the function next to its only users. This function
+should not be used any more in drivers, the c45 helpers should be used
+in its place, so hiding it away will prevent any new users from being
+added.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/phy/mdio_bus.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/phy/mdio_bus.c | 5 +++++
+ include/linux/mdio.h       | 5 -----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index c992a9fd8b01..f71ba6ab85a7 100644
+index f71ba6ab85a7..522cbe6a0b23 100644
 --- a/drivers/net/phy/mdio_bus.c
 +++ b/drivers/net/phy/mdio_bus.c
-@@ -766,7 +766,10 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
+@@ -839,6 +839,11 @@ int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
+ }
+ EXPORT_SYMBOL_GPL(__mdiobus_modify_changed);
  
- 	lockdep_assert_held_once(&bus->mdio_lock);
++static u32 mdiobus_c45_addr(int devad, u16 regnum)
++{
++	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
++}
++
+ /**
+  * __mdiobus_c45_read - Unlocked version of the mdiobus_c45_read function
+  * @bus: the mii_bus struct
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index 1e78c8410b21..97b49765e8b5 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -459,11 +459,6 @@ static inline int mdiodev_modify_changed(struct mdio_device *mdiodev,
+ 				      mask, set);
+ }
  
--	retval = bus->read(bus, addr, regnum);
-+	if (bus->read)
-+		retval = bus->read(bus, addr, regnum);
-+	else
-+		retval = -EOPNOTSUPP;
- 
- 	trace_mdio_access(bus, 1, addr, regnum, retval, retval);
- 	mdiobus_stats_acct(&bus->stats[addr], true, retval);
-@@ -792,7 +795,10 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
- 
- 	lockdep_assert_held_once(&bus->mdio_lock);
- 
--	err = bus->write(bus, addr, regnum, val);
-+	if (bus->write)
-+		err = bus->write(bus, addr, regnum, val);
-+	else
-+		err = -EOPNOTSUPP;
- 
- 	trace_mdio_access(bus, 0, addr, regnum, val, err);
- 	mdiobus_stats_acct(&bus->stats[addr], false, err);
+-static inline u32 mdiobus_c45_addr(int devad, u16 regnum)
+-{
+-	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
+-}
+-
+ static inline u16 mdiobus_c45_regad(u32 regnum)
+ {
+ 	return FIELD_GET(MII_REGADDR_C45_MASK, regnum);
 
 -- 
 2.30.2
