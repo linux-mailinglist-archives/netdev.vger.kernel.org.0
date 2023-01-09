@@ -2,53 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8810D661FAD
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 09:07:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE69661FAF
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 09:08:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233833AbjAIIHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 03:07:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
+        id S230502AbjAIIIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 03:08:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236440AbjAIIHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 03:07:24 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776D76359;
-        Mon,  9 Jan 2023 00:07:15 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Nr5y95jnWz6HJVg;
-        Mon,  9 Jan 2023 16:02:09 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Mon, 9 Jan 2023 08:07:05 +0000
-Message-ID: <38f4e2ac-0cd4-e205-bff1-a859e0855731@huawei.com>
-Date:   Mon, 9 Jan 2023 11:07:04 +0300
+        with ESMTP id S236470AbjAIIIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 03:08:09 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2092.outbound.protection.outlook.com [40.107.94.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966A06352
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 00:08:08 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DZcs9LlNPyXc5hFsnGeOWnm3e88gm4SWQOCULMhNLFFZZPhjFRVuOrVYpnt9XdGauolOa7Nf6BRDVJDVMGG/eaxSmAuQMLm5tfcJomSMkO9kt7f7wHpJfeCL39vQ53WECC2LWwqQdcsojKtVkmm6Ym+QIagfkMMdD7yreQQZK6i1QJoYcUOXHT3nYBKhEqIGgLx56+o+cF6hvgGoyWQdoGl4xZBL8v6g3VY3OUcyeEzV37jrBVdXseqO8KwKGseGaC+5QF9/2cfaZjxsyQC1ojhRniV7lX8abKIfBkpsZONRc+XmVSx8yHxrMUZTmblK8NADnBu415zo5I0Od/EKWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rURDRV+Wtk3vMttkWXrKDQi3A5jy9v+DnIXiGkh7p8c=;
+ b=hZx5n4ayPuq4JF0QCzgppCCrBr1T/VyArKu3jE3atKaPYISUFxcvglm7Bl7r2JUI/jmtWbGP9fpZWK8j5Ur32uRw5In72rgDQZsSjaDJW/ildb2EGrrA+GpYxdGUzlfw29FQOolAv1vKthExDZCSPUnoVrGXY4u5tTCc1yRwhVPZk6Qxw4DFLfujSA+81ZM9CS4KTqT6vHL10rJAkMwpxaALmPDnaN1jdt3uZUmzmg3ImTyBuaR7xe5AeTjCP62kltGm+HJo2m/KgGYTQinsvzNZiN7nETGm24GaoeWy19ixLtMq/7b5ob0Nlc7a8VCpfJFJDbl3T+zAoPieMAvxsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rURDRV+Wtk3vMttkWXrKDQi3A5jy9v+DnIXiGkh7p8c=;
+ b=n9f8NOhU+ClvkvcUtTY3FYJCZ8fvdNyc6iqDNv/uuJdqh1W6h8theFULVgATZBJIs8ovWUi5Go3kS00/QsocMRz83CaoKYC7UizZD5GEvYpq4qDred1iMwhHU4aQwgbIEJxtmyfqD44JSJ/JO14VkMviQfn7SmzvIV1kvivz15A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB4942.namprd13.prod.outlook.com (2603:10b6:806:1a5::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Mon, 9 Jan
+ 2023 08:08:07 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.5986.018; Mon, 9 Jan 2023
+ 08:08:06 +0000
+Date:   Mon, 9 Jan 2023 09:08:00 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Max Georgiev <glipus@gmail.com>
+Cc:     mkubecek@suse.cz, netdev@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH ethtool-next] Fixing boolean value output for Netlink
+ reported values in JSON format
+Message-ID: <Y7vLYMhQKtdL7rSH@corigine.com>
+References: <20221227173620.6577-1-glipus@gmail.com>
+ <Y7a+dS2Ga5fdPJ1Y@corigine.com>
+ <CAP5jrPGXVKsSNm=9M-7du4zB0errcmR9qHuu_GO=bvTZtccaRA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP5jrPGXVKsSNm=9M-7du4zB0errcmR9qHuu_GO=bvTZtccaRA@mail.gmail.com>
+X-ClientProxiedBy: AM0PR02CA0036.eurprd02.prod.outlook.com
+ (2603:10a6:208:3e::49) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v8 08/12] landlock: Implement TCP network hooks
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        <netdev@vger.kernel.org>, <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <artem.kuzin@huawei.com>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-9-konstantin.meskhidze@huawei.com>
- <3452964b-04d3-b297-92a1-1220e087323e@digikod.net>
- <258ba4aa-6b12-abda-75b9-ffa196fba683@huawei.com>
- <ec54eb66-ed9f-035c-1301-644f93873e5f@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <ec54eb66-ed9f-035c-1301-644f93873e5f@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB4942:EE_
+X-MS-Office365-Filtering-Correlation-Id: e358a973-1d70-4dfa-f3f3-08daf218a3a2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CuOYQbmJrYOM+8PxAULaSdEHIJSMw/k132ZKdEct17Kpizj94gsSoeZ89kpTDEC3wEN92C+xhE1os5DsiJ99ThwMeEpEbB/9/Ll7V0X/NSj8eLnj5jHCDfYikJspBwQRhFCWPq8qBjDUBTT2wLxUtGSrZpU4ZT7MCSRaaYZM7Zsnemp2abnhjAT8f9zUJ/onAHXRCmgNMJnFPs8qDGNltXKz/uEC9Cmv0jdiBzzCPEf1QaUCiEKCDCLGPTYxU9nNJyO1iCruiCP3FtPbTji9zSlWuLz2hRg4crD3+HYFTVcM8k9QdDi4o/01fKQ1fVqsUgMrjVsC0PAswg8uOoD+TRBH3GLBXuAHaAUvGuj/TeMcN005zJ7HVJVB/DlP4/q/axBF32ZIq6Zj4DAiXo35vdeH1VCtTwOMTJPt+j5nGb0l/DybSlsEORC5C3HGcWBTs/d+EE8wPKTM6jgVSr23zFXvGNUgj4nRyu8jCplCSMkGHM9hJrfaEmwY0iNiCwLThWtfXq+1pH3k1Z4CDldrC1BbuEIcbQtpRjiQlgY2udRq3BO3rPyDf/3J0/ifPMUWyeMkzlByCG6bG6CbOFpIXzaDT/a5a/0oK64jtlzQyu0kbb+Borpl5c1J5+rDRfZBV971JV13aFXsFGuILV0y6FKC7CNWdFlYwfgcXIW9TnF+AyJlyD72AoGpnkjxDSYHgIHHbmuVlFyE863DIQ2jyQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(366004)(376002)(39830400003)(346002)(451199015)(2906002)(8936002)(44832011)(5660300002)(36756003)(41300700001)(6666004)(8676002)(66946007)(66476007)(66556008)(316002)(4326008)(6486002)(966005)(478600001)(53546011)(6506007)(186003)(6512007)(6916009)(2616005)(86362001)(83380400001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ejL8L7VjxLYXYXuuXnPpeL7zYrcVlWLBlNTEmtloXc4A5g48436yPe2RdO0V?=
+ =?us-ascii?Q?h8nFOAGerwB/OUWHPxurjz4Sxaxi/NYeYRtp48qCWFtXPIwbTB+XAcJFPP4b?=
+ =?us-ascii?Q?kyFaFTNYuySR9QOge7iQt6zVM2KUpMmIksAFR0pvjVyiUwNV3xL3PEnN1xHt?=
+ =?us-ascii?Q?SxzNZGOhUM94nCrH2KcB1jYdwgdm7oDEZAWO4YBAt38rCMwdGOF/yxrkrglZ?=
+ =?us-ascii?Q?ynMqSQfs32SNkd3UPwHulk06PjFRqm+H9VJm6xe0K+9EsRU4bKubQ/vdRy36?=
+ =?us-ascii?Q?b7CUkPOW6DZpulDmKqqHRh5v7Ukn3ZKEbJB4DFf9zSTJ13boDsLW8LvFdzfV?=
+ =?us-ascii?Q?vA+DON0WdcCqQN4ngkrXEGSOskH0UkBscv5YFEI4SN2QiXZysgkxAlmPBmz0?=
+ =?us-ascii?Q?RvgGNY95o+mOQJpB7h7CGaRJsKq7inGXVbnRK8sdZaKIggPHwcvecPc/IsHI?=
+ =?us-ascii?Q?zmv46tn8Ra8MCqSr46t9IuSdVZabMlWp9gIxs4CFWdLdTIm1//UFpxn7Q2HN?=
+ =?us-ascii?Q?/nETjhhMVQtv/21ON+23hSpU94bXHiyViq0a/dzmqwqxm6oVXHNc2MOA3+7r?=
+ =?us-ascii?Q?OtUJqcvAvpMWeuEFPQFK1BjLS2AQb8v3Io+psEUJxOXtut4ipy7SK8A7W9fa?=
+ =?us-ascii?Q?Tx/Z26IP+ZcUzIqrVi4fm6PsJXpECGIUiwOHblrrzjHBo5cQ7XcD8BIbiau5?=
+ =?us-ascii?Q?55FEdxFFeLQZjjnolyWlAezFh7iDvEPvp4NYpCTRqzx8Oe2vzVmLIrvKD9Jk?=
+ =?us-ascii?Q?e2KniokL/X0pN+B7MVeMA8MvvIwiB1+maD+LoZUWDi//zgc3yzKn9/Vp/2cW?=
+ =?us-ascii?Q?nTuvGow4TX/fFz30iJMW44vg5wg2GENc/x5sRHaxiUqyGfwZkVmSGHR7/Lg4?=
+ =?us-ascii?Q?9Pu0u+hRie8yhLhJyTuu+nFN51nWca8yiKBusd5/aBSMhaEGgpRmhUJqUJnu?=
+ =?us-ascii?Q?c3eGj8rzhGNfUv3E9VfYDPkt46ogWJDO2MkyT1e+/Fk35eC/CituuUGkYBKK?=
+ =?us-ascii?Q?OGSpinjNgIfKN3m3CXzkU/Zq4LbfAaIsdyXglcIFZI8c2kSLLuItKWQbLS9B?=
+ =?us-ascii?Q?AL9nRM9mpcVWtGIdd0GrDyEEmnrHiNCH5MjSBU+Qm+oNC4j7boYV3R3Br3Jt?=
+ =?us-ascii?Q?6bexSt/JY19K3jB3TkiA0tRmudg8/hBpN9ApYZcgj62SpHb+Gxy3xXvUs7DC?=
+ =?us-ascii?Q?7ZpZSgoLtr1+lHQpIDENgKADmJgpdObEpFSZKEBc59nBa8zTWj+7DUEG3SEr?=
+ =?us-ascii?Q?sL5wZxd7aU9aXiktR6Tp+I+fEgy2wB6xB1KXHFnrCb97f0ltEEk2LCU1svRC?=
+ =?us-ascii?Q?vJqffMsH27R5HG5DoQ0dVrYAIphTlxoLWRQuyfE6xtx+06Fceamombp404Uy?=
+ =?us-ascii?Q?1nI+IwyWkxztFlPXrf+tiOdhkBfGyFqmFlHzOJq/H3eqrw1ah/fM1odIHbTt?=
+ =?us-ascii?Q?Lkio3o/iCQ9yh2cvgpXrlDkI6n70DehFyzMuw77NUuQgKNSzsrnIrEdhEB8Q?=
+ =?us-ascii?Q?CNg4vVEfzMOAxVcZ/9xbVXlZB2k2ZmaEgKpmKSLSzzpsX9ms3EsT97m2gPIb?=
+ =?us-ascii?Q?Zt54exbI54jIYMmAOzACB729LD8RlupQvBRYAmZwN2vVB7L51u3oCkg6TZ8+?=
+ =?us-ascii?Q?k20wog60aYAe9tMC1PNCMoIgJ8En9R/RqAdZ69MxWgbCw3iRF3tayHg8Qm5t?=
+ =?us-ascii?Q?30MDZA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e358a973-1d70-4dfa-f3f3-08daf218a3a2
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2023 08:08:06.7348
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8ioN6KAPo8lxXwvMeXkfvc6A+NEJT9cTD1Bl2PxoZEOT2MqY8g16qA1iHj7PcADW+pPwPI310yhP89xllflNEBkNkfWJQI1LXlm295HKLoc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB4942
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,196 +115,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-1/6/2023 10:30 PM, Mickaël Salaün пишет:
+On Fri, Jan 06, 2023 at 03:16:30PM -0700, Max Georgiev wrote:
+> On Thu, Jan 5, 2023 at 5:11 AM Simon Horman <simon.horman@corigine.com> wrote:
+> >
+> > On Tue, Dec 27, 2022 at 10:36:20AM -0700, Maxim Georgiev wrote:
+> > > Current implementation of show_bool_val() passes "val" parameter of pointer
+> > > type as a last parameter to print_bool():
+> > > https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/tree/netlink/netlink.h#n131
+> > > ...
+> > > static inline void show_bool_val(const char *key, const char *fmt, uint8_t *val)
+> > > {
+> > >       if (is_json_context()) {
+> > >               if (val)
+> > > >                     print_bool(PRINT_JSON, key, NULL, val);
+> > >       } else {
+> > > ...
+> > > print_bool() expects the last parameter to be bool:
+> > > https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/tree/json_print.c#n153
+> > > ...
+> > > void print_bool(enum output_type type,
+> > >               const char *key,
+> > >               const char *fmt,
+> > >               bool value)
+> > > {
+> > > ...
+> > > Current show_bool_val() implementation converts "val" pointer to bool while
+> > > calling show_bool_val(). As a result show_bool_val() always prints the value
+> > > as "true" as long as it gets a non-null pointer to the boolean value, even if
+> > > the referred boolean value is false.
+> > >
+> > > Fixes: 7e5c1ddbe67d ("pause: add --json support")
+> > > Signed-off-by: Maxim Georgiev <glipus@gmail.com>
+> >
+> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> >
+> > I'm assuming that val is never NULL :)
 > 
-> On 05/01/2023 09:57, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 11/17/2022 9:43 PM, Mickaël Salaün пишет:
->>>
->>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
->>>> This patch adds support of socket_bind() and socket_connect() hooks.
->>>> It's possible to restrict binding and connecting of TCP sockets to
->>>> particular ports.
->>>
->>> Implement socket_bind() and socket_connect LSM hooks, which enable to
->>> restrict TCP socket binding and connection to specific ports.
->>>
->>>
->>>>
->>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>> ---
->>>>
->>>> Changes since v7:
->>>> * Minor fixes.
->>>> * Refactors commit message.
->>>>
->>>> Changes since v6:
->>>> * Updates copyright.
->>>> * Refactors landlock_append_net_rule() and check_socket_access()
->>>>     functions with landlock_id type.
->>>>
->>>> Changes since v5:
->>>> * Fixes some logic errors.
->>>> * Formats code with clang-format-14.
->>>>
->>>> Changes since v4:
->>>> * Factors out CONFIG_INET into make file.
->>>> * Refactors check_socket_access().
->>>> * Adds helper get_port().
->>>> * Adds CONFIG_IPV6 in get_port(), hook_socket_bind/connect
->>>> functions to support AF_INET6 family.
->>>> * Adds AF_UNSPEC family support in hook_socket_bind/connect
->>>> functions.
->>>> * Refactors add_rule_net_service() and landlock_add_rule
->>>> syscall to support network rule inserting.
->>>> * Refactors init_layer_masks() to support network rules.
->>>>
->>>> Changes since v3:
->>>> * Splits commit.
->>>> * Adds SECURITY_NETWORK in config.
->>>> * Adds IS_ENABLED(CONFIG_INET) if a kernel has no INET configuration.
->>>> * Adds hook_socket_bind and hook_socket_connect hooks.
->>>>
->>>> ---
->>>>    security/landlock/Kconfig    |   1 +
->>>>    security/landlock/Makefile   |   2 +
->>>>    security/landlock/net.c      | 164 +++++++++++++++++++++++++++++++++++
->>>>    security/landlock/net.h      |  26 ++++++
->>>>    security/landlock/setup.c    |   2 +
->>>>    security/landlock/syscalls.c |  59 ++++++++++++-
->>>>    6 files changed, 251 insertions(+), 3 deletions(-)
->>>>    create mode 100644 security/landlock/net.c
->>>>    create mode 100644 security/landlock/net.h
->>>>
->>>> diff --git a/security/landlock/Kconfig b/security/landlock/Kconfig
->>>> index 8e33c4e8ffb8..10c099097533 100644
->>>> --- a/security/landlock/Kconfig
->>>> +++ b/security/landlock/Kconfig
->>>> @@ -3,6 +3,7 @@
->>>>    config SECURITY_LANDLOCK
->>>>    	bool "Landlock support"
->>>>    	depends on SECURITY && !ARCH_EPHEMERAL_INODES
->>>> +	select SECURITY_NETWORK
->>>>    	select SECURITY_PATH
->>>>    	help
->>>>    	  Landlock is a sandboxing mechanism that enables processes to restrict
->>>> diff --git a/security/landlock/Makefile b/security/landlock/Makefile
->>>> index 7bbd2f413b3e..53d3c92ae22e 100644
->>>> --- a/security/landlock/Makefile
->>>> +++ b/security/landlock/Makefile
->>>> @@ -2,3 +2,5 @@ obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
->>>>
->>>>    landlock-y := setup.o syscalls.o object.o ruleset.o \
->>>>    	cred.o ptrace.o fs.o
->>>> +
->>>> +landlock-$(CONFIG_INET) += net.o
->>>> \ No newline at end of file
->>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
->>>> new file mode 100644
->>>> index 000000000000..39e8a156a1f4
->>>> --- /dev/null
->>>> +++ b/security/landlock/net.c
->>>> @@ -0,0 +1,164 @@
->>>> +// SPDX-License-Identifier: GPL-2.0-only
->>>> +/*
->>>> + * Landlock LSM - Network management and hooks
->>>> + *
->>>> + * Copyright © 2022 Huawei Tech. Co., Ltd.
->>>> + * Copyright © 2022 Microsoft Corporation
->>>> + */
->>>> +
->>>> +#include <linux/in.h>
->>>> +#include <linux/net.h>
->>>> +#include <linux/socket.h>
->>>> +#include <net/ipv6.h>
->>>> +
->>>> +#include "common.h"
->>>> +#include "cred.h"
->>>> +#include "limits.h"
->>>> +#include "net.h"
->>>> +#include "ruleset.h"
->>>> +
->>>> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
->>>> +			     const u16 port, access_mask_t access_rights)
->>>> +{
->>>> +	int err;
->>>> +	const struct landlock_id id = {
->>>> +		.key.data = port,
->>>> +		.type = LANDLOCK_KEY_NET_PORT,
->>>> +	};
->>>> +	BUILD_BUG_ON(sizeof(port) > sizeof(id.key.data));
->>>> +
->>>> +	/* Transforms relative access rights to absolute ones. */
->>>> +	access_rights |= LANDLOCK_MASK_ACCESS_NET &
->>>> +			 ~landlock_get_net_access_mask(ruleset, 0);
->>>> +
->>>> +	mutex_lock(&ruleset->lock);
->>>> +	err = landlock_insert_rule(ruleset, id, access_rights);
->>>> +	mutex_unlock(&ruleset->lock);
->>>> +
->>>> +	return err;
->>>> +}
->>>> +
->>>> +static int check_socket_access(const struct landlock_ruleset *const domain,
->>>> +			       u16 port, access_mask_t access_request)
->>>> +{
->>>> +	bool allowed = false;
->>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
->>>> +	const struct landlock_rule *rule;
->>>> +	access_mask_t handled_access;
->>>> +	const struct landlock_id id = {
->>>> +		.key.data = port,
->>>> +		.type = LANDLOCK_KEY_NET_PORT,
->>>> +	};
->>>> +
->>>> +	if (WARN_ON_ONCE(!domain))
->>>> +		return 0;
->>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
->>>> +		return -EACCES;
->>>> +
->>>> +	rule = landlock_find_rule(domain, id);
->>>> +	handled_access = init_layer_masks(domain, access_request, &layer_masks,
->>>> +					  LANDLOCK_KEY_NET_PORT);
->>>> +	allowed = unmask_layers(rule, handled_access, &layer_masks,
->>>> +				ARRAY_SIZE(layer_masks));
->>>> +
->>>> +	return allowed ? 0 : -EACCES;
->>>> +}
->>>> +
->>>> +static u16 get_port(const struct sockaddr *const address)
->>>
->>> get_port() should return a __be16 type. This enables to avoid converting
->>> port when checking a rule.
->> 
->>     In this case a user must do a coverting port into __be16:
->> 
->>     struct landlock_net_service_attr net_service = {
->>                   .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
->> 
->>                   .port = htons(sock_port),
->>           };
->>    I think that a user should not think about this conversion cause it
->> makes UAPI more complex to use. Lets do this under kernel's hood and let
->> it as it is now -> u16 port.
->> 
->> What do you think?
-> 
-> BE and LE conversions may be error prone without strong typing, but the
-> current Linux network UAPI uses this convention (see related syscalls),
-> so developers already use htons() in their applications. I think it is
-> less hazardous to use the same convention. It would be nice to have the
-> point of view of network and API folks though.
+> Simon, thank you for taking a look!
+> Yes, the "if (val)" check on line 130 guarantees that "print_bool()"
+> on line 131 is called only if val is not null.
 
-   Ok. Thanks. Let ports be in BE format like in network packets.
+Thanks, that is pretty obvious now you point it out.
+Looks good to me :)
 
-   What should a selftest with port conversion be like?
-
-   1. Set a port with a Landlock rule with no conversion. get an error 
-wit bind/connect actions.
-   2. Convert a port with htons(sock_port). get no error.
-
-   What do you think?
-> .
+> > > ---
+> > >  netlink/netlink.h | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/netlink/netlink.h b/netlink/netlink.h
+> > > index 3240fca..1274a3b 100644
+> > > --- a/netlink/netlink.h
+> > > +++ b/netlink/netlink.h
+> > > @@ -128,7 +128,7 @@ static inline void show_bool_val(const char *key, const char *fmt, uint8_t *val)
+> > >  {
+> > >       if (is_json_context()) {
+> > >               if (val)
+> > > -                     print_bool(PRINT_JSON, key, NULL, val);
+> > > +                     print_bool(PRINT_JSON, key, NULL, *val);
+> > >       } else {
+> > >               print_string(PRINT_FP, NULL, fmt, u8_to_bool(val));
+> > >       }
+> > > --
+> > > 2.38.1
+> > >
