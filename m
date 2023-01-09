@@ -2,147 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D328D66247E
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D08662486
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbjAILoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 06:44:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58980 "EHLO
+        id S234044AbjAILqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 06:46:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237239AbjAILny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:43:54 -0500
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686982DFC;
-        Mon,  9 Jan 2023 03:43:53 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id A5BC23200564;
-        Mon,  9 Jan 2023 06:43:50 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Mon, 09 Jan 2023 06:43:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1673264630; x=1673351030; bh=bboapEA3vdgSLWm56a8XSVtdTYNt
-        0MFJHdjnyOsqZws=; b=Wx0NqN6ygqqa2SxoxoROtpr3/Hkbs+nwqruUtIS5aAHG
-        16wXZLBSnARXMXgHHSxdbG2ij4c9Yya9lLt1jOBREFxoQh+M3NJgjcj27pGEzhcn
-        YIJcw3o8XqWiGakmWB90s0YiZI0zZ4T9wPRsSy0A1niEpuI+uuIyViMCFnYfZ6/x
-        BYDqMF4Up7zindbrNkHZcZqD1Y+38daStRBtr7/c0VBgcoo3PEfHqcC/rXda5Fov
-        wom76CULKqAEh5HbBGGHmMuhxiEZYKaKz8kDKDE1osJPHqDf5tqP5/fgHj4K7ddA
-        AmEbhnuCFUHqqcH6a0HTR7Hk+6HvVQ3n1TezoqHh6A==
-X-ME-Sender: <xms:9f27Y-TjfLmKYEwVPyf2MPXgO0X59RDge9gbLFPDRjO20rjSuFa4Bg>
-    <xme:9f27Yzz8EUV86Udz3xr2ExsWh2Hqe8eZO3VUUh_-oKpww-S0t8oOQ6wMWKjEaChYb
-    IRkzfJle96-znI>
-X-ME-Received: <xmr:9f27Y72l9hfsrMUtSPQkmYY56zIFmOVQU3R-5fzla3puwtsjVeCZWcd6Us2u>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrkeeigddviecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:9f27Y6DLC8IVapo5aEDWg9K6uHY2f1iZSGQ1En9ZpFjfCWEW_X-IDA>
-    <xmx:9f27Y3g3u-t3wQGNUhzNM-ofVwQzrPHgYZFsFmYKX7mqJPC9oNxM2Q>
-    <xmx:9f27Y2oKE0bBx-1oDQdvRu-UyCRKYXdPqB2yKLu0jBQMyGGHxukX6g>
-    <xmx:9v27Y2RtKMsY481dORoYQwVAFlLZwbc9_S1Sg15uvYJgNp4tQrKP1g>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 9 Jan 2023 06:43:48 -0500 (EST)
-Date:   Mon, 9 Jan 2023 13:43:46 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v5 net-next 01/15] net: bridge: mst: Multiple Spanning
- Tree (MST) mode
-Message-ID: <Y7v98s8lC1WUvsSO@shredder>
-References: <20220316150857.2442916-1-tobias@waldekranz.com>
- <20220316150857.2442916-2-tobias@waldekranz.com>
- <Y7vK4T18pOZ9KAKE@shredder>
- <20230109100236.euq7iaaorqxrun7u@skbuf>
+        with ESMTP id S234041AbjAILqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:46:17 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96415A467
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 03:46:16 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id m21so12111516edc.3
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 03:46:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D+muiZeRodWSdkGCQbmoSfuYJGII8UbIeUoLS/b6C+I=;
+        b=Ko611mylRP+u+n9GKoJjXB5WjWuyXhCN6znGhD3ifhT+bb3P66tvUnW92lps9qIrVv
+         wsIRS3bP0+GFLE8GKK4U623KGsd4Spe9MMCitcgWinq019sms/afeUIEdlao4Spaft9k
+         wUC4oFoRROEkHlPvUnxSj+bCsJTkBfh6GQ2MkoUZIp9oDn6iuNitXywxtfvloRXon9Sn
+         gviMd2axNbEt5P0hGP5NssEY8Yp5SGA+UmkWfvSHVWqe9ZOw+uMMR8QUnUoFzdTCGiwX
+         zshF9n0jmLgUpbm4CTuyUBq4vy3dYsErtmslQUsZ/Cy8tS972SGVOHfiMBaqC/aQedgE
+         SLmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=D+muiZeRodWSdkGCQbmoSfuYJGII8UbIeUoLS/b6C+I=;
+        b=UnJ5ZsoV04Dizk2nJ7SeHh+DtqeRpDFda8mD1Q+dsp+8T36YYpLZdL1geMmDd+N086
+         26T7BjFwfT2DZtQyPQvP6REWrcCxr9gU9b+eFwiyB+pEczFRGok40RUGiwQMPqtDL3BZ
+         T8S5fYGX9LObT6t2YnB+8j7peD9hek3BcwYRAUvg2f7QEgF3v7Pc+XO9T6YLn/+7FoEo
+         IX7eHZKl4HU/bpoC4pdlC7kfpmrfVwW600iv4yc9PoCo02CKPkrp3vrv3tEGZfI0NTdJ
+         ZK1gf6kGzOdXL4N3X0ZTXT5+6MYrX1c///4WfIiNkS0nrjP+5Quz0ak25r9miWbTcbo4
+         iQ4w==
+X-Gm-Message-State: AFqh2kpt34XWwUSN257NT+Q5/jLgIDoNXEvhMpO2/raXnLUPgZDz8f0d
+        qn8YSg8SIC9G59LvuMdVCGw=
+X-Google-Smtp-Source: AMrXdXsvpl54//VKNGLg1WYd0fr576hTC2kKgjV2gAQCjdqSWcucTid0NkpQ/sdfp+n2SPm7wT43ww==
+X-Received: by 2002:a05:6402:b31:b0:497:948b:e8 with SMTP id bo17-20020a0564020b3100b00497948b00e8mr7710306edb.6.1673264775197;
+        Mon, 09 Jan 2023 03:46:15 -0800 (PST)
+Received: from [10.158.37.55] ([193.47.165.251])
+        by smtp.gmail.com with ESMTPSA id u9-20020aa7d889000000b00457b5ba968csm3644898edq.27.2023.01.09.03.46.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Jan 2023 03:46:14 -0800 (PST)
+Message-ID: <3d2db7f2-9e3c-929c-de41-c3f0011839b8@gmail.com>
+Date:   Mon, 9 Jan 2023 13:46:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230109100236.euq7iaaorqxrun7u@skbuf>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 24/24] mlx5: Convert to netmem
+Content-Language: en-US
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>, gal@nvidia.com,
+        Dragos Tatulea <dtatulea@nvidia.com>
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Saeed Mahameed <saeed@kernel.org>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-25-willy@infradead.org>
+ <6ebfda57-3a01-7fe2-4a95-65108a02e887@redhat.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <6ebfda57-3a01-7fe2-4a95-65108a02e887@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 12:02:36PM +0200, Vladimir Oltean wrote:
-> On Mon, Jan 09, 2023 at 10:05:53AM +0200, Ido Schimmel wrote:
-> > > +	if (on)
-> > > +		static_branch_enable(&br_mst_used);
-> > > +	else
-> > > +		static_branch_disable(&br_mst_used);
-> > 
-> > Hi,
-> > 
-> > I'm not actually using MST, but I ran into this code and was wondering
-> > if the static key usage is correct. The static key is global (not
-> > per-bridge), so what happens when two bridges have MST enabled and then
-> > it is disabled on one? I believe it would be disabled for both. If so,
-> > maybe use static_branch_inc() / static_branch_dec() instead?
+
+
+On 06/01/2023 18:31, Jesper Dangaard Brouer wrote:
 > 
-> Sounds about right. FWIW, br_switchdev_tx_fwd_offload does use
-> static_branch_inc() / static_branch_dec().
+> To Saeed and Tariq, please review.
+> 
 
-OK, thanks for confirming. Will send a patch later this week if Tobias
-won't take care of it by then. First patch will probably be [1] to make
-sure we dump the correct MST state to user space. It will also make it
-easier to show the problem and validate the fix.
+Adding Dragos, Gal.
 
-[1]
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index 4f5098d33a46..f02a1ad589de 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -286,7 +286,7 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
- 	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
- 		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
- 	case BR_BOOLOPT_MST_ENABLE:
--		return br_opt_get(br, BROPT_MST_ENABLED);
-+		return br_mst_is_enabled(br);
- 	default:
- 		/* shouldn't be called with unsupported options */
- 		WARN_ON(1);
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 75aff9bbf17e..7f0475f62d45 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1827,7 +1827,7 @@ static inline bool br_vlan_state_allowed(u8 state, bool learn_allow)
- /* br_mst.c */
- #ifdef CONFIG_BRIDGE_VLAN_FILTERING
- DECLARE_STATIC_KEY_FALSE(br_mst_used);
--static inline bool br_mst_is_enabled(struct net_bridge *br)
-+static inline bool br_mst_is_enabled(const struct net_bridge *br)
- {
- 	return static_branch_unlikely(&br_mst_used) &&
- 		br_opt_get(br, BROPT_MST_ENABLED);
-@@ -1845,7 +1845,7 @@ int br_mst_fill_info(struct sk_buff *skb,
- int br_mst_process(struct net_bridge_port *p, const struct nlattr *mst_attr,
- 		   struct netlink_ext_ack *extack);
- #else
--static inline bool br_mst_is_enabled(struct net_bridge *br)
-+static inline bool br_mst_is_enabled(const struct net_bridge *br)
- {
- 	return false;
- }
+Hi Jesper,
+Thanks for the ping. I'm on it.
+
+> This reminds me, that IMHO we/nvidia/mellanox should remove the local
+> mlx5e_page_cache functionality, as SKBs can now recycle page_pool pages.
+> This should simplify the driver and we get rid of the head-of-line
+> blocking issue with the local page cache (refcnt elevation tricks).
+
+Totally agree.
+Dragos is currently working on this task. This should clean up 
+significant amount of code, and improve performance. We target this for 
+the next submission window, to kernel v6.4.
+
+> It might look good in microbencmarks, but my experience from prod
+> systems are that this local cache isn't utilized.  And I believe we
+> should be able to get good/similar microbenchmark with page_pool, which
+> will continue to recycle and have no HoL issues for prod use-cases.
+> 
+
+100%.
+
+Thanks,
+Tariq
