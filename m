@@ -2,91 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B63BA6628F9
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 15:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AA98662921
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 15:55:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbjAIOuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 09:50:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
+        id S234937AbjAIOyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 09:54:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234828AbjAIOto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 09:49:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024A4564DA
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 06:46:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E06426117C
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 14:46:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB993C433EF;
-        Mon,  9 Jan 2023 14:46:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673275607;
-        bh=EmOVkzlU7ALZ3DZIFhrkztKi0+T3ULZN6/ycwPPekvA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=LZlRvXJ1BgE5tJnz4FwiUi0YqhHCruKA+nv2wy+mVUS06ybb8mgbkj4KduI6Y9LSO
-         omsYpoHsI0I+RKCB1Kc4NVmFhquJ3vWNuCeea27jLktnxK1B0fpX/7/z3jmUPywwkl
-         F5B4w7EvSuTsLOzrfUafgRoKcOozyO4HkFnAXb91S5b2wOjVnsKJ0xf7QevlB9a274
-         fZkQknZouls7JLu02dr+lYS5tXX5zGgCG2PGlBmElVxIWPPiM3TTr4Oj+j77qd+ohH
-         iMTcuu9Btw5axgrQ+9FT7nKqVVl0gJukUHNjkcyf1RU6OmOwjslIUR4CYwko33B2KP
-         iX6ZastHNS4dg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        lorenzo.bianconi@redhat.com, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        sujuan.chen@mediatek.com, daniel@makrotopia.org
-Subject: Re: [PATCH v2 net-next 5/5] net: ethernet: mtk_wed: add reset/reset_complete callbacks
-References: <cover.1672840858.git.lorenzo@kernel.org>
-        <3145529a2588bba0ded16fc3c1c93ae799024442.1672840859.git.lorenzo@kernel.org>
-        <Y7WKcdWap3SrLAp3@unreal> <Y7WURTK70778grfD@lore-desk>
-        <Y7aW3k4xZVfDb6oh@unreal> <Y7a5XeLjTj1MNCDz@lore-desk>
-        <20230105214832.7a73d6ed@kernel.org>
-Date:   Mon, 09 Jan 2023 16:46:39 +0200
-In-Reply-To: <20230105214832.7a73d6ed@kernel.org> (Jakub Kicinski's message of
-        "Thu, 5 Jan 2023 21:48:32 -0800")
-Message-ID: <87y1qbhik0.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S234750AbjAIOyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 09:54:52 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BFFE50
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 06:54:51 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id o75so8764907yba.2
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 06:54:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YIgOk2vZYUEppuqaUX7d/zLpPOAJZJ2Q2hrbqGB8Xww=;
+        b=iAttVXlqOJBUULuAIBDupT8wsqo+pj8RZgiE+4viHriW0AennRfmWsZ43ZooCRNpou
+         31Sy35//2Zb7i7wliONLBc53yLMAJId9WUGpfFQD/2wEv47+FNyJhfABkEG2TQ4vKMc+
+         ISoQNxvxAtCFNy0W+OrJ+0deXe48HbNKVpnYCdJ7ExtyPTbur0G1Jbzp5C92kh8OqYtm
+         ksKqa8uhCiXljYR//eDX0Y5UeM8Iu3wUiVK4Jz/+tZfk++nv4cK4gFuQE0dX7Fh+g3mD
+         uZvmJ4rHHHZogCyUiraugNLsPyvY16xJYz6NCBMiEdo4vZ+tZfKUTQ8ViP+mBeg668wB
+         fg6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YIgOk2vZYUEppuqaUX7d/zLpPOAJZJ2Q2hrbqGB8Xww=;
+        b=w5VU4c+2GVh5XFv4dfdgXQcs7Tj29D5qMbbI8oCw3+fjSXoJCW0+l8RUF+86fKeLE3
+         +F+U3aMjOJQlQ4azA29shi62fmeiMWgxiykMCeRogsnDbSsRyyGlSFuq9eOHjBm4CCmb
+         XBE3J7nrd1oemH7Ri/k/QZiXJDi3pmCzEKOt3GAj1jwISynMk9HRrZpMTjNCnbiqiosA
+         M1niRJSHETQa899E/qCdWphz164X7BmAB1t8L0gfqJH4+WyX11qxEHF8SD6+Kfbpv1R1
+         LWdf5ZWV04zMW7ibYHYE60FcAakwPu2eT0uQgeGajRjqkQ1GvmQCC+6Z11eBovJ640mA
+         rFPQ==
+X-Gm-Message-State: AFqh2krMsyD3IJ6wr1ZAR9sKo1pYaK7myE/a6SxoPmK9IEc1ZZz01An7
+        6CBCxHu6OO78zrXlmOZkQ4YpMrJT5TD8m7QsnXxk7Q==
+X-Google-Smtp-Source: AMrXdXs1tg6BtCNjD4l/XSKxtuExUHllGzNESTqihwz7aJH4NbrzysLwBZYZ4UQ392n611o1b+kvnMIRIDw+GqPcMus=
+X-Received: by 2002:a25:8f89:0:b0:7b3:bb8:9daf with SMTP id
+ u9-20020a258f89000000b007b30bb89dafmr1083040ybl.427.1673276089915; Mon, 09
+ Jan 2023 06:54:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230108025545.338-1-cuiyunhui@bytedance.com> <CANn89i+W__5-jDUdM=_97jzQy9Wq+n9KBEuOGjUi=Fxe_ntqbg@mail.gmail.com>
+ <CAEEQ3wnoKqN+uTmMmUDJ9pp+YVaLmKnv42RApzPbNOGg6CRmnA@mail.gmail.com>
+In-Reply-To: <CAEEQ3wnoKqN+uTmMmUDJ9pp+YVaLmKnv42RApzPbNOGg6CRmnA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 9 Jan 2023 15:54:38 +0100
+Message-ID: <CANn89iKY5gOC97NobXkhYv6d9ik=ks5ZEwVe=6H-VTwux=BwGQ@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v4] sock: add tracepoint for send recv length
+To:     =?UTF-8?B?6L+Q6L6J5bSU?= <cuiyunhui@bytedance.com>
+Cc:     rostedt@goodmis.org, mhiramat@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, kuniyu@amazon.com,
+        xiyou.wangcong@gmail.com, duanxiongchun@bytedance.com,
+        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(now back from vacation)
-
-Jakub Kicinski <kuba@kernel.org> writes:
-
-> On Thu, 5 Jan 2023 12:49:49 +0100 Lorenzo Bianconi wrote:
->> > > These callbacks are implemented in the mt76 driver. I have not added these
->> > > patches to the series since mt76 patches usually go through Felix/Kalle's
->> > > trees (anyway I am fine to add them to the series if they can go into net-next
->> > > directly).  
->> > 
->> > Usually patches that use specific functionality are submitted together
->> > with API changes.  
->> 
->> I would say it is better mt76 patches go through Felix/Kalle's tree in order to avoid
->> conflicts.
->> 
->> @Felix, Kalle: any opinions?
+On Mon, Jan 9, 2023 at 2:13 PM =E8=BF=90=E8=BE=89=E5=B4=94 <cuiyunhui@byted=
+ance.com> wrote:
 >
-> FWIW as long as the implementation is in net-next before the merge
-> window I'm fine either way. But it would be good to see the
-> implementation, a co-posted RFC maybe?
+> On Mon, Jan 9, 2023 at 5:56 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> >
+> > Note: At least for CONFIG_RETPOLINE=3Dy and gcc 12.2, compiler adds man=
+y
+> > additional instructions (and additional memory reads),
+> > even when the trace point is not enabled.
+> >
+> > Contrary to some belief, adding a tracepoint is not always 'free'.
+> > tail calls for example are replaced with normal calls.
+> >
+>
+>
+> >         .popsection
+> >
+> > # 0 "" 2
+> > #NO_APP
+> > .L106:
+> > # net/socket.c:1008: }
+> >         movl    %ebx, %eax      # <retval>,
+> >         popq    %rbx    #
+> >         popq    %rbp    #
+> >         popq    %r12    #
+> >         ret
+> > .L111:
+> > # ./include/trace/events/sock.h:308: DEFINE_EVENT(sock_msg_length,
+> > sock_recv_length,
+> >
+>
+> Hi Eric,  Thanks for your reply,  In fact, it is because the
+> definition of the tracepoint function is inline,
+> Not just these two tracepoints=EF=BC=8Cright?
+>
+> #define __DECLARE_TRACE(name, proto, args, cond, data_proto)            \
+>       ...
+>       static inline void trace_##name(proto)
+>
+> Regarding the above issue, I plan to optimize it like this:
+>
+> static noinline void call_trace_sock_send_length(struct sock *sk, __u16 f=
+amily,
+>                                             __u16 protocol, int ret, int =
+flags)
+> {
+>         trace_sock_send_length(sk, family, protocol, ret, 0);
+> }
+>
+> static inline int sock_sendmsg_nosec(struct socket *sock, struct msghdr *=
+msg)
+> {
+>         int ret =3D INDIRECT_CALL_INET(sock->ops->sendmsg, inet6_sendmsg,
+>                                      inet_sendmsg, sock, msg,
+>                                      msg_data_left(msg));
+>         BUG_ON(ret =3D=3D -EIOCBQUEUED);
+>
+>         if (trace_sock_send_length_enabled()) {
 
-FWIW I agree with Lorenzo, it would be good to get mt76 patches via
-Felix's tree. Otherwise the conflicts might be annoying to fix.
+A barrier() is needed here, with the current state of affairs.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+IMO, ftrace/x86 experts should take care of this generic issue ?
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+
+>                 call_trace_sock_send_length(sock->sk, sock->sk->sk_family=
+,
+>                                             sock->sk->sk_protocol, ret, 0=
+);
+>         }
+>         return ret;
+> }
+>
+> What do you think?
+>
+> Thanks,
+> Yunhui
