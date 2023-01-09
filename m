@@ -2,240 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FF3663028
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 20:16:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD0866303A
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 20:24:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbjAITPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 14:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        id S236468AbjAITYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 14:24:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237313AbjAITPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 14:15:36 -0500
-Received: from mx14lb.world4you.com (mx14lb.world4you.com [81.19.149.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BE711C2C
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 11:15:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=swB9W0iJUZ5mVohITM5ska0qjuOouZwKiEflwaKLXMk=; b=JvVu6Omfi3JInXdOB33zO4GCLD
-        VOELItKbDFJgH1x39Tuo1Un2Ab6dmXskilRLXcbm+x5HK4J33hEJVUBupXj2wb8ktDKx3uYtMR8cV
-        mP3/7PQPmHhPMwf6w+P3mGhPldvAQ9M9ZK8b3HttGwrdDy9Ixsb+G7PC1lWqIYeNBpgU=;
-Received: from 88-117-53-243.adsl.highway.telekom.at ([88.117.53.243] helo=hornet.engleder.at)
-        by mx14lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pExcL-0007WQ-JD; Mon, 09 Jan 2023 20:15:33 +0100
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v4 10/10] tsnep: Support XDP BPF program setup
-Date:   Mon,  9 Jan 2023 20:15:23 +0100
-Message-Id: <20230109191523.12070-11-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230109191523.12070-1-gerhard@engleder-embedded.com>
-References: <20230109191523.12070-1-gerhard@engleder-embedded.com>
+        with ESMTP id S231310AbjAITYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 14:24:45 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE22C6CFE3
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 11:24:43 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id g11-20020a056e021a2b00b0030da3e7916fso3149059ile.18
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 11:24:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4G+nn586MoMOEdXui/K9NuTcQCpvCpCfnjgOACJsTcE=;
+        b=nL9saLXWl5ThmbNGE6Dy/OL7WEA2WlMT9Ahwsb7SD8cQYNhALxkJzEtCqcven+s10I
+         zIIFEfzkgDGUg8gH7rjL4bgBGFfoR67RYC6sL0fcbEgZZgWiTRCpmCBjtQi7h8hOwjBu
+         w5ryt1Vtsd0OfYh4RkYH7WCTp7N02ArEvxUpzYO2VMX1qFqjX38QJaB4FcjXUpaQZeU7
+         PlgVy5SmoZRzy3iJIRShpYcOJafsHdC7v3ij7D5PUUu0PSDOnSDub9W+abhKclJt9h2u
+         4mSYws0zimWTttmyTDNbhDKoBZmBc09mTcvt4oyiTSAnYJQ5hLP4IW8LYaYVk3ZyJx0X
+         WRNw==
+X-Gm-Message-State: AFqh2kpAzSRHTFai1NwQQZfWyALBZVJ+AOuDS9Fre46Y2HS0AS7u1tAf
+        zcUo9l+3xorPZgqD5BqEygu5zckaSK3Q8n+jZcgxk9wlMtcP
+X-Google-Smtp-Source: AMrXdXvgIJAgqDKdneS9KofPg1uBFo3yxVFySdycwir++YgWUuPGfGIlIT21gY09Mn+fYQPzP2a0w7Y0I7c/rxMyjNqTiJesdJX1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:b70e:0:b0:303:7637:ff67 with SMTP id
+ k14-20020a92b70e000000b003037637ff67mr8299849ili.298.1673292283169; Mon, 09
+ Jan 2023 11:24:43 -0800 (PST)
+Date:   Mon, 09 Jan 2023 11:24:43 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000024d6fc05f1d9b858@google.com>
+Subject: [syzbot] kernel BUG in rxrpc_put_call
+From:   syzbot <syzbot+4bb6356bb29d6299360e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement setup of BPF programs for XDP RX path with command
-XDP_SETUP_PROG of ndo_bpf(). This is the final step for XDP RX path
-support.
+Hello,
 
-tsnep_netdev_close() is called directly during BPF program setup. Add
-netif_carrier_off() and netif_tx_stop_all_queues() calls to signal to
-network stack that device is down. Otherwise network stack would
-continue transmitting pakets.
+syzbot found the following issue on:
 
-Return value of tsnep_netdev_open() is not checked during BPF program
-setup like in other drivers. Forwarding the return value would result in
-a bpf_prog_put() call in dev_xdp_install(), which would make removal of
-BPF program necessary.
+HEAD commit:    60ea6f00c57d net: ipa: correct IPA v4.7 IMEM offset
+git tree:       net
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=160bb222480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=46221e8203c7aca6
+dashboard link: https://syzkaller.appspot.com/bug?extid=4bb6356bb29d6299360e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=141826f6480000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15a8642c480000
 
-If tsnep_netdev_open() fails during BPF program setup, then the network
-stack would call tsnep_netdev_close() anyway. Thus, tsnep_netdev_close()
-checks now if device is already down.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/2b709f657c2d/disk-60ea6f00.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/c5daf24c2f8f/vmlinux-60ea6f00.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/0af656112648/bzImage-60ea6f00.xz
 
-Additionally remove $(tsnep-y) from $(tsnep-objs) because it is added
-automatically.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4bb6356bb29d6299360e@syzkaller.appspotmail.com
 
-Test results with A53 1.2GHz:
+rxrpc: Assertion failed - 1(0x1) == 11(0xb) is false
+------------[ cut here ]------------
+kernel BUG at net/rxrpc/call_object.c:645!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 5073 Comm: syz-executor233 Not tainted 6.2.0-rc2-syzkaller-00227-g60ea6f00c57d #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+RIP: 0010:rxrpc_put_call.cold+0x3c/0x3e net/rxrpc/call_object.c:645
+Code: 0b e8 82 51 7e f7 89 de 41 b9 0b 00 00 00 41 b8 0b 00 00 00 48 c7 c1 20 45 76 8b 48 89 f2 48 c7 c7 60 45 76 8b e8 35 06 bd ff <0f> 0b e8 57 51 7e f7 48 c7 c7 80 4f 76 8b e8 22 06 bd ff 0f 0b e8
+RSP: 0018:ffffc90003c4f9e8 EFLAGS: 00010282
+RAX: 0000000000000034 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff8880209657c0 RSI: ffffffff8166721c RDI: fffff52000789f2f
+RBP: ffff8880760576c0 R08: 0000000000000034 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000000 R12: 0000000000000012
+R13: 0000000000000026 R14: ffff888076057a10 R15: ffff888027b18000
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2cf9db1840 CR3: 000000002b803000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ rxrpc_release_calls_on_socket+0x217/0x2f0 net/rxrpc/call_object.c:624
+ rxrpc_release_sock net/rxrpc/af_rxrpc.c:886 [inline]
+ rxrpc_release+0x1ca/0x560 net/rxrpc/af_rxrpc.c:917
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x1c/0x20 net/socket.c:1365
+ __fput+0x27c/0xa90 fs/file_table.c:320
+ task_work_run+0x16f/0x270 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xaa8/0x2950 kernel/exit.c:867
+ do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+ get_signal+0x21c3/0x2450 kernel/signal.c:2859
+ arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+ exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+ exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+ do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2cf9d57149
+Code: Unable to access opcode bytes at 0x7f2cf9d5711f.
+RSP: 002b:00007ffc2b195818 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: fffffffffffffe00 RBX: 0000000000000002 RCX: 00007f2cf9d57149
+RDX: 0000000000000000 RSI: 0000000020000180 RDI: 0000000000000003
+RBP: 00007ffc2b195830 R08: 0000000000000002 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:rxrpc_put_call.cold+0x3c/0x3e net/rxrpc/call_object.c:645
+Code: 0b e8 82 51 7e f7 89 de 41 b9 0b 00 00 00 41 b8 0b 00 00 00 48 c7 c1 20 45 76 8b 48 89 f2 48 c7 c7 60 45 76 8b e8 35 06 bd ff <0f> 0b e8 57 51 7e f7 48 c7 c7 80 4f 76 8b e8 22 06 bd ff 0f 0b e8
+RSP: 0018:ffffc90003c4f9e8 EFLAGS: 00010282
+RAX: 0000000000000034 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff8880209657c0 RSI: ffffffff8166721c RDI: fffff52000789f2f
+RBP: ffff8880760576c0 R08: 0000000000000034 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000000 R12: 0000000000000012
+R13: 0000000000000026 R14: ffff888076057a10 R15: ffff888027b18000
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2cf9db1840 CR3: 000000002b803000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-XDP_DROP (samples/bpf/xdp1)
-proto 17:     883878 pkt/s
 
-XDP_TX (samples/bpf/xdp2)
-proto 17:     255693 pkt/s
-
-XDP_REDIRECT (samples/bpf/xdpsock)
- sock0@eth2:0 rxdrop xdp-drv
-                   pps            pkts           1.00
-rx                 855,582        5,404,523
-tx                 0              0
-
-XDP_REDIRECT (samples/bpf/xdp_redirect)
-eth2->eth1         613,267 rx/s   0 err,drop/s   613,272 xmit/s
-
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/Makefile     |  2 +-
- drivers/net/ethernet/engleder/tsnep.h      |  6 +++++
- drivers/net/ethernet/engleder/tsnep_main.c | 25 ++++++++++++++++---
- drivers/net/ethernet/engleder/tsnep_xdp.c  | 29 ++++++++++++++++++++++
- 4 files changed, 58 insertions(+), 4 deletions(-)
- create mode 100644 drivers/net/ethernet/engleder/tsnep_xdp.c
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/engleder/Makefile b/drivers/net/ethernet/engleder/Makefile
-index b6e3b16623de..b98135f65eb7 100644
---- a/drivers/net/ethernet/engleder/Makefile
-+++ b/drivers/net/ethernet/engleder/Makefile
-@@ -6,5 +6,5 @@
- obj-$(CONFIG_TSNEP) += tsnep.o
- 
- tsnep-objs := tsnep_main.o tsnep_ethtool.o tsnep_ptp.o tsnep_tc.o \
--	      tsnep_rxnfc.o $(tsnep-y)
-+	      tsnep_rxnfc.o tsnep_xdp.o
- tsnep-$(CONFIG_TSNEP_SELFTESTS) += tsnep_selftests.o
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 2268ff793edf..550aae24c8b9 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -197,6 +197,9 @@ struct tsnep_adapter {
- 	struct tsnep_queue queue[TSNEP_MAX_QUEUES];
- };
- 
-+int tsnep_netdev_open(struct net_device *netdev);
-+int tsnep_netdev_close(struct net_device *netdev);
-+
- extern const struct ethtool_ops tsnep_ethtool_ops;
- 
- int tsnep_ptp_init(struct tsnep_adapter *adapter);
-@@ -220,6 +223,9 @@ int tsnep_rxnfc_add_rule(struct tsnep_adapter *adapter,
- int tsnep_rxnfc_del_rule(struct tsnep_adapter *adapter,
- 			 struct ethtool_rxnfc *cmd);
- 
-+int tsnep_xdp_setup_prog(struct tsnep_adapter *adapter, struct bpf_prog *prog,
-+			 struct netlink_ext_ack *extack);
-+
- #if IS_ENABLED(CONFIG_TSNEP_SELFTESTS)
- int tsnep_ethtool_get_test_count(void);
- void tsnep_ethtool_get_test_strings(u8 *data);
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 002c879639db..57c35c74dc08 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -1373,7 +1373,7 @@ static void tsnep_free_irq(struct tsnep_queue *queue, bool first)
- 	memset(queue->name, 0, sizeof(queue->name));
- }
- 
--static int tsnep_netdev_open(struct net_device *netdev)
-+int tsnep_netdev_open(struct net_device *netdev)
- {
- 	struct tsnep_adapter *adapter = netdev_priv(netdev);
- 	int tx_queue_index = 0;
-@@ -1436,6 +1436,8 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 		tsnep_enable_irq(adapter, adapter->queue[i].irq_mask);
- 	}
- 
-+	netif_tx_start_all_queues(adapter->netdev);
-+
- 	clear_bit(__TSNEP_DOWN, &adapter->state);
- 
- 	return 0;
-@@ -1457,12 +1459,16 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 	return retval;
- }
- 
--static int tsnep_netdev_close(struct net_device *netdev)
-+int tsnep_netdev_close(struct net_device *netdev)
- {
- 	struct tsnep_adapter *adapter = netdev_priv(netdev);
- 	int i;
- 
--	set_bit(__TSNEP_DOWN, &adapter->state);
-+	if (test_and_set_bit(__TSNEP_DOWN, &adapter->state))
-+		return 0;
-+
-+	netif_carrier_off(netdev);
-+	netif_tx_stop_all_queues(netdev);
- 
- 	tsnep_disable_irq(adapter, ECM_INT_LINK);
- 	tsnep_phy_close(adapter);
-@@ -1627,6 +1633,18 @@ static ktime_t tsnep_netdev_get_tstamp(struct net_device *netdev,
- 	return ns_to_ktime(timestamp);
- }
- 
-+static int tsnep_netdev_bpf(struct net_device *dev, struct netdev_bpf *bpf)
-+{
-+	struct tsnep_adapter *adapter = netdev_priv(dev);
-+
-+	switch (bpf->command) {
-+	case XDP_SETUP_PROG:
-+		return tsnep_xdp_setup_prog(adapter, bpf->prog, bpf->extack);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int tsnep_netdev_xdp_xmit(struct net_device *dev, int n,
- 				 struct xdp_frame **xdp, u32 flags)
- {
-@@ -1677,6 +1695,7 @@ static const struct net_device_ops tsnep_netdev_ops = {
- 	.ndo_set_features = tsnep_netdev_set_features,
- 	.ndo_get_tstamp = tsnep_netdev_get_tstamp,
- 	.ndo_setup_tc = tsnep_tc_setup,
-+	.ndo_bpf = tsnep_netdev_bpf,
- 	.ndo_xdp_xmit = tsnep_netdev_xdp_xmit,
- };
- 
-diff --git a/drivers/net/ethernet/engleder/tsnep_xdp.c b/drivers/net/ethernet/engleder/tsnep_xdp.c
-new file mode 100644
-index 000000000000..5ced32cd9bb7
---- /dev/null
-+++ b/drivers/net/ethernet/engleder/tsnep_xdp.c
-@@ -0,0 +1,29 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2022 Gerhard Engleder <gerhard@engleder-embedded.com> */
-+
-+#include <linux/if_vlan.h>
-+#include <net/xdp_sock_drv.h>
-+
-+#include "tsnep.h"
-+
-+int tsnep_xdp_setup_prog(struct tsnep_adapter *adapter, struct bpf_prog *prog,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct net_device *dev = adapter->netdev;
-+	struct bpf_prog *old_prog;
-+	bool need_reset, running;
-+
-+	running = netif_running(dev);
-+	need_reset = !!adapter->xdp_prog != !!prog;
-+	if (running && need_reset)
-+		tsnep_netdev_close(dev);
-+
-+	old_prog = xchg(&adapter->xdp_prog, prog);
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
-+
-+	if (running && need_reset)
-+		tsnep_netdev_open(dev);
-+
-+	return 0;
-+}
--- 
-2.30.2
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
