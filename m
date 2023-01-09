@@ -2,152 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C48D3663107
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 21:11:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95571663121
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 21:13:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237658AbjAIUKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 15:10:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
+        id S237305AbjAIUNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 15:13:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237264AbjAIUKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 15:10:49 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1BC1BEBF
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 12:10:46 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id v25so14759065lfe.12
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 12:10:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RYv8YtklJYFSBnqUzDCKD0SPZFw1ONkumQGMVniPZaI=;
-        b=GDxTuQIRJgtel7vfxfPwHsWCDWNukZE5tnLZKPy88rB461vEjbSal8xpgOdpnmO8mR
-         8MXuox/tp4GMowtxnXwz5/9sR24YuckCV8aVg/7CXnBelhfZArB6J/3PXs6HaxP5utyz
-         ishkVfpqOLz+qWIHZDUQWnnhmzPN1pxcDLZACLj3xU4mC+QONy2/KX+Ih7BVP4VGtcrC
-         0A+9Qk4CQxKHmwzHKEaGxQa0tcideu/IhvLfA2P45c8+UP7qveelrvsoEGNunkJvenog
-         sxO1WnOY+FQgee1ZogSpSmbVWfOt7RfizZO61l63u38iIwheNeHQclE/ElOcrwE20xrf
-         YpQQ==
+        with ESMTP id S237370AbjAIUNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 15:13:09 -0500
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549FC2F7;
+        Mon,  9 Jan 2023 12:13:08 -0800 (PST)
+Received: by mail-ot1-f44.google.com with SMTP id p17-20020a9d6951000000b00678306ceb94so5808435oto.5;
+        Mon, 09 Jan 2023 12:13:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RYv8YtklJYFSBnqUzDCKD0SPZFw1ONkumQGMVniPZaI=;
-        b=ezpkgk89BTQa4JrJT79ux111ML3PHy6HBP7sMqzZj0ALUu8skUKF4aw0zfriqEz6n1
-         fVfYLQH1A08RUXQPyUuyBFyWltDElvKV2KUBJOSS3Ya8PCKJAvF82S9ysGv4+4FajUdi
-         U56/OYco0dDbI98W7TGgrAnkMAKxYfjjwGLyxWtUcZRrVhRkpiKsXT4M4omIMO2UZSOy
-         QJouuskXWfHVITndXLAEOw2NrqGP3NEai/Ps1Ty+jFk64EpF0iSO8odn07X9LfuUmrIC
-         +2S7/RWVCEendeqwuKycrHfNJxA9QZ1C73V4hFcaXwzHGZVE8QSSOehc9WMPnlpUaI4c
-         bVCg==
-X-Gm-Message-State: AFqh2koZw+WbydJnN6VxVmt2Mp97xiRoE+cBUuCSOWMRuoBvYexdRH51
-        BUcRwlaR59oXaR3rtiS0PgIW8A==
-X-Google-Smtp-Source: AMrXdXtPrpj6UYPWG3GXi/KKEUU8tcapTSxME54rfgaBkTDH5LSK/GVpX5mevXKdB2D1xY0QRN5y6A==
-X-Received: by 2002:a05:6512:3b0e:b0:4cb:4362:381d with SMTP id f14-20020a0565123b0e00b004cb4362381dmr8105304lfv.62.1673295045061;
-        Mon, 09 Jan 2023 12:10:45 -0800 (PST)
-Received: from ?IPV6:2001:14ba:a085:4d00::8a5? (dzccz6yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a085:4d00::8a5])
-        by smtp.gmail.com with ESMTPSA id x4-20020a056512078400b004cc548b35fbsm1769736lfr.71.2023.01.09.12.10.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 12:10:44 -0800 (PST)
-Message-ID: <01baab80-4332-542e-e080-affb441f9c97@linaro.org>
-Date:   Mon, 9 Jan 2023 22:10:43 +0200
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=/Dd+49/GslLom8JrkYqQTgzORoaBAb8RY4Tf7RLsiJw=;
+        b=MEucHtD0LXYXgRvRv08aAkKyoYo0yMKnsvBXn1/fuiMTMUs7/epYV+dffXn9iv1z22
+         8N4zOTOREq1/bKwP9TYNeXemrrFSMH9uy7PrgpY774tP13Aup0lrpOBtRPh7ufHDuQVE
+         zV/ZhcExQb3mLL/sG2fOegKE9B94Dg1JaAElldCAcbvLPmVtdCSu/NBdE5RB/af+vOaK
+         BIXbMrHJ3jqJETYcj4wqNV3NpG6YbN/OBd4MW2v+O2i2UOGnzM31Hbtl4BnQoPi+wzz0
+         yqrvMoaKot3Bv4p9ZZHuETl5y7PKVfdU2rwN+3/dQTtMA31mCE3w7J8c/pRWoGiw2A6Z
+         vMBg==
+X-Gm-Message-State: AFqh2koWXnzZRDg+vVR5w2wm5leDEglfBjRgHOiieEZK2xYwC9hpEcIM
+        7E9gqnQ0fd6TKIyEHcbRzw==
+X-Google-Smtp-Source: AMrXdXsqGGm5UfV6qInsHPAPYf+IKd1w7nmRejg4gEoDHU+6l769MnAo6YkgkE/qpAwc4M3S4Blu1w==
+X-Received: by 2002:a05:6830:cb:b0:66c:dd2b:e1ad with SMTP id x11-20020a05683000cb00b0066cdd2be1admr44971742oto.23.1673295187503;
+        Mon, 09 Jan 2023 12:13:07 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r7-20020a056830418700b006706e4f6863sm4965699otu.75.2023.01.09.12.13.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Jan 2023 12:13:07 -0800 (PST)
+Received: (nullmailer pid 11353 invoked by uid 1000);
+        Mon, 09 Jan 2023 20:13:05 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 14/18] soc: qcom: rmphpd: add power domains for sa8775p
-Content-Language: en-GB
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+From:   Rob Herring <robh@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-gpio@vger.kernel.org, Andy Gross <agross@kernel.org>,
         Richard Cochran <richardcochran@gmail.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Alex Elder <elder@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Will Deacon <will@kernel.org>, netdev@vger.kernel.org,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, Georgi Djakov <djakov@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>,
+        Manivannan Sadhasivam <mani@kernel.org>
+In-Reply-To: <20230109174511.1740856-2-brgl@bgdev.pl>
 References: <20230109174511.1740856-1-brgl@bgdev.pl>
- <20230109174511.1740856-15-brgl@bgdev.pl>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20230109174511.1740856-15-brgl@bgdev.pl>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+ <20230109174511.1740856-2-brgl@bgdev.pl>
+Message-Id: <167329506223.7347.1097731761808411140.robh@kernel.org>
+Subject: Re: [PATCH 01/18] dt-bindings: clock: sa8775p: add bindings for
+ Qualcomm gcc-sa8775p
+Date:   Mon, 09 Jan 2023 14:13:05 -0600
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/01/2023 19:45, Bartosz Golaszewski wrote:
+
+On Mon, 09 Jan 2023 18:44:54 +0100, Bartosz Golaszewski wrote:
 > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Add power domain description for sa8775p and a new compatible to match it.
+> Add DT bindings for the GCC clock on SA8775P platforms. Add relevant
+> DT include definitions as well.
 > 
 > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > ---
->   drivers/soc/qcom/rpmhpd.c | 34 ++++++++++++++++++++++++++++++++++
->   1 file changed, 34 insertions(+)
+>  .../bindings/clock/qcom,gcc-sa8775p.yaml      |  77 +++++
+>  include/dt-bindings/clock/qcom,gcc-sa8775p.h  | 320 ++++++++++++++++++
+>  2 files changed, 397 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-sa8775p.yaml
+>  create mode 100644 include/dt-bindings/clock/qcom,gcc-sa8775p.h
+> 
 
-[skipped]
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> +/* SA8775P RPMH power domains */
-> +static struct rpmhpd *sa8775p_rpmhpds[] = {
-> +	[SA8775P_CX] = &cx,
-> +	[SA8775P_CX_AO] = &cx_ao,
-> +	[SA8775P_EBI] = &ebi,
-> +	[SA8775P_GFX] = &gfx,
-> +	[SA8775P_LCX] = &lcx,
-> +	[SA8775P_LMX] = &lmx,
-> +	[SA8775P_MMCX] = &mmcx,
-> +	[SA8775P_MMCX_AO] = &mmcx_ao,
-> +	[SA8775P_MXC] = &mxc,
-> +	[SA8775P_MXC_AO] = &mxc_ao,
+yamllint warnings/errors:
 
-Is there any parent/child relationship between mmcx/mxc and other domains?
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/clock/qcom,gcc-sa8775p.example.dtb: clock-controller@100000: clocks: [[4294967295, 0], [4294967295, 0, 0, 0, 0, 0, 0, 0, 0], [4294967295, 0, 0, 0, 0]] is too short
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/clock/qcom,gcc-sa8775p.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/clock/qcom,gcc-sa8775p.example.dtb: clock-controller@100000: Unevaluated properties are not allowed ('clocks' was unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/clock/qcom,gcc-sa8775p.yaml
 
-> +	[SA8775P_MX] = &mx,
-> +	[SA8775P_MX_AO] = &mx_ao,
-> +	[SA8775P_NSP0] = &nsp0,
-> +	[SA8775P_NSP1] = &nsp1,
-> +};
-> +
-> +static const struct rpmhpd_desc sa8775p_desc = {
-> +	.rpmhpds = sa8775p_rpmhpds,
-> +	.num_pds = ARRAY_SIZE(sa8775p_rpmhpds),
-> +};
-> +
->   /* SDM670 RPMH powerdomains */
->   static struct rpmhpd *sdm670_rpmhpds[] = {
->   	[SDM670_CX] = &cx_w_mx_parent,
-> @@ -487,6 +520,7 @@ static const struct rpmhpd_desc sc8280xp_desc = {
->   static const struct of_device_id rpmhpd_match_table[] = {
->   	{ .compatible = "qcom,qdu1000-rpmhpd", .data = &qdu1000_desc },
->   	{ .compatible = "qcom,sa8540p-rpmhpd", .data = &sa8540p_desc },
-> +	{ .compatible = "qcom,sa8775p-rpmhpd", .data = &sa8775p_desc },
->   	{ .compatible = "qcom,sc7180-rpmhpd", .data = &sc7180_desc },
->   	{ .compatible = "qcom,sc7280-rpmhpd", .data = &sc7280_desc },
->   	{ .compatible = "qcom,sc8180x-rpmhpd", .data = &sc8180x_desc },
+doc reference errors (make refcheckdocs):
 
--- 
-With best wishes
-Dmitry
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230109174511.1740856-2-brgl@bgdev.pl
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
