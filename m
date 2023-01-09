@@ -2,108 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4392C662124
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 10:14:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD9766214F
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 10:20:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237221AbjAIJNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 04:13:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46158 "EHLO
+        id S233827AbjAIJUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 04:20:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237037AbjAIJMN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 04:12:13 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E07EBE26
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 01:08:55 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id z5so6382296wrt.6
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 01:08:55 -0800 (PST)
+        with ESMTP id S234253AbjAIJUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 04:20:32 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8DF32F
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 01:17:45 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id qk9so18456564ejc.3
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 01:17:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ySav9Bwf7eUcjJDjyl8LNzlx8CQeDpJMWO+9GzDKsMs=;
-        b=loJEKRBc+ooZRediBKvPji/o7zWGOADwBBrzGbjf37uQ1kXMFxyvNzRCrMAfwOPmS3
-         QanmAC51m9gqkA1x6KzL6KYJEvyCoxFFjOwRmZ7sFKYP66DuDj2QqbiXuKIWvWqCK02u
-         g3RlYDFL1w7KZaTMTA+LXEjvOOgtH2vPGU52bJnw+OpB416Dx3PFXlOBfQe7vkD/7I7T
-         A842JLL6qVWNUKifcstILAIXQ1NQvWDU7RA9/Srw1iEJ/+9eHkOuWxxYv3BQKGUarAf1
-         pO5kI/AeDri5l4KFgmJFqd1wKHyaIpXAMWh76/y8z1ytH5j96wCcwxRrfAcLfVOF95NH
-         PjIQ==
+        d=gooddata.com; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LeOTgenvbkmcRvMT4UZ6wPxbUX/9wsirYPZTEw+d2jg=;
+        b=P87r5rwXwY7o3tIlGHN3esQOqJ4O8hUXy4tbiSfvV+g77VRYk/UFXnyN2H0JSrXFaZ
+         1ay3hgLsNA8MwFW9v0xQk4+qXCCwBwzXZVlTuBtfyLVKCieT+nsJAe3DyoqmHVeqFoxT
+         CDKBx6Wg5L8EJOJmi4YlL4+XXQckVJuZoz/9Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ySav9Bwf7eUcjJDjyl8LNzlx8CQeDpJMWO+9GzDKsMs=;
-        b=5guMyZLAc+RzpQbUOkJgZufaSZOcgracRoSp+AEtrUcyv+SKciUJ/AMbNfae5r56QY
-         sYM/gz1762P1tVPgKz1jk3IOZnAIDJY4I2lL5uPvGR+LeJslL7xmEMoaRLVLrvCehtsV
-         IJpOwdbvsC04qY2NcwLRyvj/nBCahYeE8U5S/pAoScq4hLW8dO9CAhn4gn+p03FkR7kN
-         vT/VTO1SggKlCaJE5p9MadUPG37LTiyoC6abIM+J1Qd5cIRnwDaWEY/1LuIbawI2Wp3b
-         W5KvX2x8pYKCOiMTXk+prfppKKcBJUYxZ6CJig8w7SVHsnY6A3CHJ78sMowpnVBFwcTl
-         ViFg==
-X-Gm-Message-State: AFqh2kpMqj8RfnPaJLaTPjS3Z9ZEuSwytEPEhIoCmQVUzB9i0Ll2AF5f
-        098PeGBABGf9IqE1aUd0LaINmAtaK6aomec+HS8=
-X-Google-Smtp-Source: AMrXdXtRWkXYgr2ma4Cc0D3yGLHBteaSiGLTicjPVLkLFQGKm51OUW6rJojKmuGKZxiIs4DxPqXhDhLjhsbZtv+SkWE=
-X-Received: by 2002:a5d:688c:0:b0:2bb:329c:8b83 with SMTP id
- h12-20020a5d688c000000b002bb329c8b83mr335909wru.649.1673255333598; Mon, 09
- Jan 2023 01:08:53 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LeOTgenvbkmcRvMT4UZ6wPxbUX/9wsirYPZTEw+d2jg=;
+        b=rBq+yABsjZPLOHbkkWzUCPEbBYXZfh1zoPOU69iUSVd6Fw+ZRhNMu7iYoFqP9mgINL
+         +HwwcwzZFnoMlohSyH2S1atUsYZogYfdyvqzfmqPWQ7xMz0YG+ZDE//O7yvkBRmg5whS
+         GGmyDtMQdw5gM+/UhQBlE2CX+E5oIa7yumfEwrmY0c12hgAnGzHHuKLbBlFFmKSafecz
+         sN6MX27rthsaLiOMz1Gggq8xHGy6SYC/1XPcYwbnZnwmDVk8gdP2Q6pbqg9CTKQRFeZz
+         O6iHsAEu22P6OE7tllud5kGGBdRKIYsBEmPhw75X1H97yHzF2NhSwgiVtA5fGTv1fWH2
+         FZ1g==
+X-Gm-Message-State: AFqh2kqgpj4OpezdcZl9gBrhHjscCch8DDyxqLuD3Xe4QvRU6sLsL6cf
+        tvC+LBuyv2PJivhN2+mO3K9uajO4J5e71K6HjrTnJQ==
+X-Google-Smtp-Source: AMrXdXtYS8N31ZR7tM0udmkekH6MtKeZ5JS2QT+cWxrKzFgVIkymc1KgLL+RNbpg1Fa+uCNHW8gfZglCmxfbpOFtq9s=
+X-Received: by 2002:a17:906:910:b0:7c1:136d:b841 with SMTP id
+ i16-20020a170906091000b007c1136db841mr4417414ejd.216.1673255864286; Mon, 09
+ Jan 2023 01:17:44 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:a5d:6c6f:0:0:0:0:0 with HTTP; Mon, 9 Jan 2023 01:08:52 -0800 (PST)
-Reply-To: christharmonyloanfund@gmail.com
-From:   "Mr. Christ Harmony" <daphinekimuli@gmail.com>
-Date:   Mon, 9 Jan 2023 01:08:52 -0800
-Message-ID: <CABRxmTzE+oC=02XTOx2a9H2Vx9ELH5NX=Pz9SEe-GhjFzYXfSQ@mail.gmail.com>
-Subject: URGENT LOAN OFFER
-To:     undisclosed-recipients:;
+References: <CAK8fFZ6A_Gphw_3-QMGKEFQk=sfCw1Qmq0TVZK3rtAi7vb621A@mail.gmail.com>
+ <Y7hJJ5hIxDolYIAV@ziepe.ca>
+In-Reply-To: <Y7hJJ5hIxDolYIAV@ziepe.ca>
+From:   Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Date:   Mon, 9 Jan 2023 10:17:17 +0100
+Message-ID: <CAK8fFZ7P_JmgpZ6DCUUimQ+31GF8E+Cw8Baf1jiVZFwDw=G1+Q@mail.gmail.com>
+Subject: Re: Network do not works with linux >= 6.1.2. Issue bisected to
+ "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the correct
+ link speed)
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     kamalheib1@gmail.com, shiraz.saleem@intel.com, leon@kernel.org,
+        sashal@kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Igor Raits <igor.raits@gooddata.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        LOTS_OF_MONEY,MONEY_FORM_SHORT,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,T_FILL_THIS_FORM_SHORT,
-        T_HK_NAME_FM_MR_MRS,UNDISC_FREEM,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:436 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5487]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [daphinekimuli[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  0.3 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
-        *      information
-        *  0.0 MONEY_FORM_SHORT Lots of money if you fill out a short form
-        *  2.7 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-DO YOU NEED A PERSONAL LOAN, OR BUSINESS LOAN, LOAN OF $5000 to
-$90,000,000.00 IN DOLLARS OR EURO? IF YES US CONTACT VIA EMAIL:
-christharmonyloanfund@gmail.com WITH THE BELOW INFO.
+Hello Jason
 
-Your fullName: ...
-Amount needed:...
-Duration: ..
-Phone: ....
-Country: ..
-contact via: christharmonyloanfund@gmail.com
+about:
+
+> We talked about this already - wasn't it on this series?
+
+Nope, we do not talk about this. Shall not be someone else in the
+email "TO" section?
+
+Best,
+Jaroslav P.
+
+
+p=C3=A1 6. 1. 2023 v 17:15 odes=C3=ADlatel Jason Gunthorpe <jgg@ziepe.ca> n=
+apsal:
+>
+> On Fri, Jan 06, 2023 at 08:55:29AM +0100, Jaroslav Pulchart wrote:
+> > [  257.967099] task:NetworkManager  state:D stack:0     pid:3387
+> > ppid:1      flags:0x00004002
+> > [  257.975446] Call Trace:
+> > [  257.977901]  <TASK>
+> > [  257.980004]  __schedule+0x1eb/0x630
+> > [  257.983498]  schedule+0x5a/0xd0
+> > [  257.986641]  schedule_timeout+0x11d/0x160
+> > [  257.990654]  __wait_for_common+0x90/0x1e0
+> > [  257.994666]  ? usleep_range_state+0x90/0x90
+> > [  257.998854]  __flush_workqueue+0x13a/0x3f0
+> > [  258.002955]  ? __kernfs_remove.part.0+0x11e/0x1e0
+> > [  258.007661]  ib_cache_cleanup_one+0x1c/0xe0 [ib_core]
+> > [  258.012721]  __ib_unregister_device+0x62/0xa0 [ib_core]
+> > [  258.017959]  ib_unregister_device+0x22/0x30 [ib_core]
+> > [  258.023024]  irdma_remove+0x1a/0x60 [irdma]
+> > [  258.027223]  auxiliary_bus_remove+0x18/0x30
+> > [  258.031414]  device_release_driver_internal+0x1aa/0x230
+> > [  258.036643]  bus_remove_device+0xd8/0x150
+> > [  258.040654]  device_del+0x18b/0x3f0
+> > [  258.044149]  ice_unplug_aux_dev+0x42/0x60 [ice]
+>
+> We talked about this already - wasn't it on this series?
+>
+> Don't hold locks when removing aux devices.
+>
+> > [  258.048707]  ice_lag_changeupper_event+0x287/0x2a0 [ice]
+> > [  258.054038]  ice_lag_event_handler+0x51/0x130 [ice]
+> > [  258.058930]  raw_notifier_call_chain+0x41/0x60
+> > [  258.063381]  __netdev_upper_dev_link+0x1a0/0x370
+> > [  258.068008]  netdev_master_upper_dev_link+0x3d/0x60
+> > [  258.072886]  bond_enslave+0xd16/0x16f0 [bonding]
+> > [  258.077517]  ? nla_put+0x28/0x40
+> > [  258.080756]  do_setlink+0x26c/0xc10
+> > [  258.084249]  ? avc_alloc_node+0x27/0x180
+> > [  258.088173]  ? __nla_validate_parse+0x141/0x190
+> > [  258.092708]  __rtnl_newlink+0x53a/0x620
+> > [  258.096549]  rtnl_newlink+0x44/0x70
+>
+> Especially not the rtnl.
+>
+> Jason
