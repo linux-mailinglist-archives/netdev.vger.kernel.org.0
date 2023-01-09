@@ -2,156 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E91066255C
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8792366257B
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:25:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234198AbjAIMUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 07:20:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
+        id S234169AbjAIMZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 07:25:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234538AbjAIMUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:20:09 -0500
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37D81A828;
-        Mon,  9 Jan 2023 04:20:07 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3AF0E5C017C;
-        Mon,  9 Jan 2023 07:20:07 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 09 Jan 2023 07:20:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1673266807; x=1673353207; bh=BoRrhg2qoLX8AzR5nlod213O8Dn0
-        cuabW6bstFyKh6g=; b=DFepMdIDoB+mlolDcbW2KqnE5pmmpY+RdAochu7RfvCA
-        9oc+Bv2B0P8Dg4MCtPhAY3VvbvVNwAVqI62ZqJsY5fE0bZmyJ62KC9TA2OhnxS01
-        InOGx5C8ZAmsKMmOJBsN4qNUud9CcI0iWUYZ+qD8plQ2AxLmmLtniJggTgFuK8mg
-        YVFYYonVCZ2uRj3qXJ+AkeDxlA5Lr0I/2PX00UNM5cKrK/8+25ehqQ4g76akEOBV
-        cd/l23v3UYN/q+CfUEeyGKnQrrVktiHsgbO1d9iP+5+VrT0WG7TOQuBJBBuBt1nj
-        6hsAQCXix7tobllTf1RJqzut1NlyA8f8Z/+geLEmUg==
-X-ME-Sender: <xms:dga8Yz1ReIIltK9pzTLj6bSSZTehDwu7jHAVCQF2QrX-6UlDQK8_KQ>
-    <xme:dga8YyGBabh3yyPSPb0evluedcIrvgg2VPuCz6onLDpjhbXfZP4xm2mF-SRww4FcN
-    TJ6p3Y5abwPV4Q>
-X-ME-Received: <xmr:dga8Yz75u-6TDPL8G-VLd72loWskqy_DS7rlTVCv3AfMoaUTRDuGVRKn1HDp>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrkeeigdeffecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:dga8Y40_AlbgasMdsRg9ai2Jgl9gABwOzVTiiuBbugagczAGwTzVsQ>
-    <xmx:dga8Y2GBTbx74x3id7r1CWI4XSpg9mtX5AiKb7sd-geQ1mc3nUql7Q>
-    <xmx:dga8Y5_Yj7M9ABOA_XR31RpF_dsE6QyvbckO_k0iwKiG4lWNWlQuUQ>
-    <xmx:dwa8Y0U6TOsJAr_nsPB5UsXPtKrZN19XANsBv4f6zuAPyjfFtseUhQ>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 9 Jan 2023 07:20:05 -0500 (EST)
-Date:   Mon, 9 Jan 2023 14:20:02 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v5 net-next 01/15] net: bridge: mst: Multiple Spanning
- Tree (MST) mode
-Message-ID: <Y7wGct6VWmbuWs5F@shredder>
-References: <20220316150857.2442916-1-tobias@waldekranz.com>
- <20220316150857.2442916-2-tobias@waldekranz.com>
- <Y7vK4T18pOZ9KAKE@shredder>
- <20230109100236.euq7iaaorqxrun7u@skbuf>
- <Y7v98s8lC1WUvsSO@shredder>
- <20230109115653.6yjijaj63n2v35lw@skbuf>
+        with ESMTP id S233658AbjAIMZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:25:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F351AA3F
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 04:25:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673267100;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=047AVottjqaPKMmy/qTEXod9E2E5rMO4NCUZPc/fm8o=;
+        b=KuIAtz0VdGBjtAIU1LDsvLuftAEtXrok95AVoLAC0zNOkIoklegCHNozeS0dUOV9Gdba1u
+        os2XNXli/KzmoqzSCxU0ry2lIjLfp8dXEXOs7MR9rM0PZJOjl42Us55ItjGZ3eX6u6c3Ya
+        37t9RkympBhOofxP0KI2Nc8Fy+tS8qI=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-646-AStMbaU7MqWq047b25SY_Q-1; Mon, 09 Jan 2023 07:24:57 -0500
+X-MC-Unique: AStMbaU7MqWq047b25SY_Q-1
+Received: by mail-ed1-f71.google.com with SMTP id z8-20020a056402274800b0048a31c1746aso5095550edd.0
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 04:24:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=047AVottjqaPKMmy/qTEXod9E2E5rMO4NCUZPc/fm8o=;
+        b=iIxGLzxcdFzHeA9T/Jeg+ljerhhwhbnJ7AAAJROJydniZ5A9tCRgAHcHtKUTdWwdw6
+         tIDaa65kA/dUJLRnoGOd46CyacfUYEYXbcYCaCUiM35KBTiQjA3YYXoilPGw8JmOobw7
+         63W/RvHVR6wAonnZFLd6sEvkalIJ+dnvh3uXLpH9wkAbzkF6REOpf4pvcLmGnMCRYKmg
+         DewYlOebrQwFuNVNgyyYylUH8M7oijBMosbA9sd40EtrBU8/iLzMaseoO62h8xCW+8Wq
+         HpRUBHHSrDfS4HTOIPARiKoZzkOnPMaWghVC8LtGZUa2hn9fugdsi+S35vAepBIVg9DO
+         8gSg==
+X-Gm-Message-State: AFqh2kp0EfBT64VqnqGOpx9OkD3XsAbm9Jdj/RmV6VIP2n3vT+oDZ+oT
+        dmdrXUGVFUGH1L+/QLmJ9dTL8fZC3ixHUhDdqcKGRzAjkEtbTSM4o5hToLK3/UCesy6291H7bIG
+        ks68cZ3XSkz9Tybaj
+X-Received: by 2002:a17:907:2a06:b0:84d:12db:fd23 with SMTP id fd6-20020a1709072a0600b0084d12dbfd23mr10020528ejc.71.1673267096426;
+        Mon, 09 Jan 2023 04:24:56 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXu2WwxNmXUhy5g/cCORo7Fu+dWeppJy3ZSSkrKlE8Kjf/wdU5t5cFMxgfwdwDEJAjrrmRAa+Q==
+X-Received: by 2002:a17:907:2a06:b0:84d:12db:fd23 with SMTP id fd6-20020a1709072a0600b0084d12dbfd23mr10020518ejc.71.1673267096235;
+        Mon, 09 Jan 2023 04:24:56 -0800 (PST)
+Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id c8-20020aa7df08000000b0046c4553010fsm3656686edy.1.2023.01.09.04.24.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Jan 2023 04:24:55 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <fa1c57de-52f6-719f-7298-c606c119d1ab@redhat.com>
+Date:   Mon, 9 Jan 2023 13:24:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230109115653.6yjijaj63n2v35lw@skbuf>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        pabeni@redhat.com
+Subject: Re: [PATCH net-next 2/2] net: kfree_skb_list use kmem_cache_free_bulk
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+References: <167293333469.249536.14941306539034136264.stgit@firesoul>
+ <167293336786.249536.14237439594457105125.stgit@firesoul>
+ <20230106143310.699197bd@kernel.org>
+In-Reply-To: <20230106143310.699197bd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 01:56:53PM +0200, Vladimir Oltean wrote:
-> On Mon, Jan 09, 2023 at 01:43:46PM +0200, Ido Schimmel wrote:
-> > OK, thanks for confirming. Will send a patch later this week if Tobias
-> > won't take care of it by then. First patch will probably be [1] to make
-> > sure we dump the correct MST state to user space. It will also make it
-> > easier to show the problem and validate the fix.
-> > 
-> > [1]
-> > diff --git a/net/bridge/br.c b/net/bridge/br.c
-> > index 4f5098d33a46..f02a1ad589de 100644
-> > --- a/net/bridge/br.c
-> > +++ b/net/bridge/br.c
-> > @@ -286,7 +286,7 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
-> >  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
-> >  		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
-> >  	case BR_BOOLOPT_MST_ENABLE:
-> > -		return br_opt_get(br, BROPT_MST_ENABLED);
-> > +		return br_mst_is_enabled(br);
+
+On 06/01/2023 23.33, Jakub Kicinski wrote:
+> Hi!
 > 
-> Well, this did report the correct MST state despite the incorrect static
-> branch state, no? The users of br_mst_is_enabled(br) are broken, not
-> those of br_opt_get(br, BROPT_MST_ENABLED).
+> Would it not be better to try to actually defer them (queue to
+> the deferred free list and try to ship back to the NAPI cache of
+> the allocating core)? 
+> Is the spin lock on the defer list problematic
+> for fowarding cases (which I'm assuming your target)?
 
-I should have said "actual"/"effective" instead of "correct". IMO, it's
-better to use the same conditional in the both the data and control
-paths to eliminate discrepancies. Without the patch, a user will see
-that MST is supposedly enabled when it is actually disabled in the data
-path.
+We might be talking past each-other.  As the NAPI cache for me
+is the per CPU napi_alloc_cache (this_cpu_ptr(&napi_alloc_cache);)
+
+This napi_alloc_cache doesn't use a spin_lock, but depend on being
+protected by NAPI context.  The code in this patch closely resembles how
+the napi_alloc_cache works.  See code: napi_consume_skb() and
+__kfree_skb_defer().
+
+
+> Also the lack of perf numbers is a bit of a red flag.
+>
+
+I have run performance tests, but as I tried to explain in the
+cover letter, for the qdisc use-case this code path is only activated
+when we have overflow at enqueue.  Thus, this doesn't translate directly
+into a performance numbers, as TX-qdisc is 100% full caused by hardware
+device being backed up, and this patch makes us use less time on freeing
+memory.
+
+I have been using pktgen script ./pktgen_bench_xmit_mode_queue_xmit.sh
+which can inject packets at the qdisc layer (invoking __dev_queue_xmit).
+And then used perf-record to see overhead of SLUB (__slab_free is top#4)
+is reduced.
+
+
+> On Thu, 05 Jan 2023 16:42:47 +0100 Jesper Dangaard Brouer wrote:
+>> +static void kfree_skb_defer_local(struct sk_buff *skb,
+>> +				  struct skb_free_array *sa,
+>> +				  enum skb_drop_reason reason)
+> 
+> If we wanna keep the implementation as is - I think we should rename
+> the thing to say "bulk" rather than "defer" to avoid confusion with
+> the TCP's "defer to allocating core" scheme..
+
+I named it "defer" because the NAPI cache uses "defer" specifically func
+name __kfree_skb_defer() why I choose kfree_skb_defer_local(), as this
+patch uses similar scheme.
+
+I'm not sure what is meant by 'TCP's "defer to allocating core" scheme'.
+Looking at code I guess you are referring to skb_attempt_defer_free()
+and skb_defer_free_flush().
+
+It would be too high cost calling skb_attempt_defer_free() for every SKB
+because of the expensive spin_lock_irqsave() (+ restore).  I see the
+skb_defer_free_flush() can be improved to use spin_lock_irq() (avoiding
+mangling CPU flags).  And skb_defer_free_flush() (which gets called from
+RX-NAPI/net_rx_action) end up calling napi_consume_skb() that endup
+calling kmem_cache_free_bulk() (which I also do, just more directly).
 
 > 
-> Anyway, I see there's a br_mst_is_enabled() and also a br_mst_enabled()?!
-> One is used in the fast path and the other in the slow path. They should
-> probably be merged, I guess. They both exist probably because somebody
-> thought that the "if (!netif_is_bridge_master(dev))" test is redundant
-> in the fast path.
+> kfree_skb_list_bulk() ?
 
-The single user of br_mst_enabled() (DSA) is not affected by the bug
-(only the SW data path is), so I suggest making this consolidation in
-net-next after the bug is fixed. OK?
+Hmm, IMHO not really worth changing the function name.  The
+kfree_skb_list() is called in more places, (than qdisc enqueue-overflow
+case), which automatically benefits if we keep the function name
+kfree_skb_list().
 
-> 
-> >  	default:
-> >  		/* shouldn't be called with unsupported options */
-> >  		WARN_ON(1);
-> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> > index 75aff9bbf17e..7f0475f62d45 100644
-> > --- a/net/bridge/br_private.h
-> > +++ b/net/bridge/br_private.h
-> > @@ -1827,7 +1827,7 @@ static inline bool br_vlan_state_allowed(u8 state, bool learn_allow)
-> >  /* br_mst.c */
-> >  #ifdef CONFIG_BRIDGE_VLAN_FILTERING
-> >  DECLARE_STATIC_KEY_FALSE(br_mst_used);
-> > -static inline bool br_mst_is_enabled(struct net_bridge *br)
-> > +static inline bool br_mst_is_enabled(const struct net_bridge *br)
-> >  {
-> >  	return static_branch_unlikely(&br_mst_used) &&
-> >  		br_opt_get(br, BROPT_MST_ENABLED);
-> > @@ -1845,7 +1845,7 @@ int br_mst_fill_info(struct sk_buff *skb,
-> >  int br_mst_process(struct net_bridge_port *p, const struct nlattr *mst_attr,
-> >  		   struct netlink_ext_ack *extack);
-> >  #else
-> > -static inline bool br_mst_is_enabled(struct net_bridge *br)
-> > +static inline bool br_mst_is_enabled(const struct net_bridge *br)
-> >  {
-> >  	return false;
-> >  }
+--Jesper
+
