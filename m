@@ -2,197 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7FF661F52
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB0FA661F5B
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236332AbjAIHhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 02:37:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        id S233260AbjAIHka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 02:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236325AbjAIHgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:36:48 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31721CE03
-        for <netdev@vger.kernel.org>; Sun,  8 Jan 2023 23:36:45 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 308Mvts7028929;
-        Sun, 8 Jan 2023 23:36:40 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=f4ckf/fecBmW83tOtnsw+TSxcEkY7gTojjBwvNJ5b5Y=;
- b=WMlHOz/vgBKF2RcIBdjwtpd7EyXznWVz/ka5Jua0AbfR3uU8jEuyYI9B8EVzJ0cbsBc6
- 7VfBA+qpc8V7h9XjcMeo5xVDwyGldQptTTiBEpR5JRUmUFjBillIKb0whW5tjIqTOCTO
- 4eVcL0cwuNH+vIw2l9Iau8VFYJVdJJUhkOAB5sQCDmEgAdvXF5G5l4JMawgXeSxmMcj1
- XxXUD/waadFGkIparMOa758g3RP4rkkufvDyCcIUES3REFDfMXTO5SqvmE/FbRrR5oAJ
- W0jJnANTA23Tga1MNYFKTdx5qE8YdaqQgGjIMPsLC9dmHOqiPQrfHC7VI1qmdpHcPfoy Fw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tmmn7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 08 Jan 2023 23:36:40 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sun, 8 Jan
- 2023 23:36:38 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Sun, 8 Jan 2023 23:36:38 -0800
-Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 940C93F7048;
-        Sun,  8 Jan 2023 23:36:35 -0800 (PST)
-From:   Srujana Challa <schalla@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <jerinj@marvell.com>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [PATCH net-next,9/9] octeontx2-af: add mbox to return CPT_AF_FLT_INT info
-Date:   Mon, 9 Jan 2023 13:06:03 +0530
-Message-ID: <20230109073603.861043-10-schalla@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230109073603.861043-1-schalla@marvell.com>
-References: <20230109073603.861043-1-schalla@marvell.com>
+        with ESMTP id S233238AbjAIHkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:40:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D7612AE5;
+        Sun,  8 Jan 2023 23:40:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD304B80D1A;
+        Mon,  9 Jan 2023 07:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4BA77C433F1;
+        Mon,  9 Jan 2023 07:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673250016;
+        bh=TN07+vD/SnTIBZSHGqRC3RoFx+3nZk0Ja9sAyNZBimU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sCjHjg72NoNCkg67Awqex1+Il9Q0GkgKy5kLHFgoLa6qWqpQ2Yp8H0YrwK52xwxbf
+         knMk6S5K0+f3Q4r/ZSPvN+y7f3nRAloQPX47yHb86KcquKtuEZD+BRS7Xx9GMotCqk
+         zznVtKn2/4mQ5KdkApMcW/eyJXp7u4pOLFF7t2SpGLNg4kX09d+15+6Ags+XKDvdzc
+         edukG8cMMg24uFO3L/G1JRfUplhse+hhfIQBRX6K7hqbhkiiIRk8U/8xkf9rUxp9jg
+         htGLI+7gQZXIV64wlsDUUywglBomsFVWqfcVAqz/vZiUFrtedThL6/O3gcN1cmis6R
+         U+i4v90locjsA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2B73EE21EEA;
+        Mon,  9 Jan 2023 07:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: yQBUE1srt5XFX6x6bSt33X1LBJm6A9_T
-X-Proofpoint-GUID: yQBUE1srt5XFX6x6bSt33X1LBJm6A9_T
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-09_02,2023-01-06_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH] mlxsw: spectrum_router: Replace 0-length array with flexible
+ array
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167325001617.30057.7118452714297454499.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 Jan 2023 07:40:16 +0000
+References: <20230105232224.never.150-kees@kernel.org>
+In-Reply-To: <20230105232224.never.150-kees@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     idosch@nvidia.com, petrm@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gustavoars@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a new mailbox to return CPT faulted engines bitmap
-and recovered engines bitmap.
+Hello:
 
-Signed-off-by: Srujana Challa <schalla@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/mbox.h  | 17 ++++++++++
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  4 +++
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 34 +++++++++++++++++++
- 3 files changed, 55 insertions(+)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index abe86778b064..5727d67e0259 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -196,6 +196,8 @@ M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
- 			       msg_rsp)                                 \
- M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
- M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
-+M(CPT_FLT_ENG_INFO,     0xA09, cpt_flt_eng_info, cpt_flt_eng_info_req,	\
-+			       cpt_flt_eng_info_rsp)			\
- /* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
- M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
- M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
-@@ -1706,6 +1708,21 @@ struct cpt_lf_rst_req {
- 	u32 rsvd;
- };
- 
-+/* Mailbox message format to request for CPT faulted engines */
-+struct cpt_flt_eng_info_req {
-+	struct mbox_msghdr hdr;
-+	int blkaddr;
-+	bool reset;
-+	u32 rsvd;
-+};
-+
-+struct cpt_flt_eng_info_rsp {
-+	struct mbox_msghdr hdr;
-+	u64 flt_eng_map[CPT_10K_AF_INT_VEC_RVU];
-+	u64 rcvrd_eng_map[CPT_10K_AF_INT_VEC_RVU];
-+	u64 rsvd;
-+};
-+
- struct sdp_node_info {
- 	/* Node to which this PF belons to */
- 	u8 node_id;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 2f480c73ef55..5eea2b6cf6bd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -108,6 +108,8 @@ struct rvu_block {
- 	u64  lfreset_reg;
- 	unsigned char name[NAME_SIZE];
- 	struct rvu *rvu;
-+	u64 cpt_flt_eng_map[3];
-+	u64 cpt_rcvrd_eng_map[3];
- };
- 
- struct nix_mcast {
-@@ -526,6 +528,8 @@ struct rvu {
- 	struct list_head	mcs_intrq_head;
- 	/* mcs interrupt queue lock */
- 	spinlock_t		mcs_intrq_lock;
-+	/* CPT interrupt lock */
-+	spinlock_t		cpt_intr_lock;
- };
- 
- static inline void rvu_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index d7ca7e953683..7cc1efa603ce 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -70,6 +70,13 @@ static irqreturn_t cpt_af_flt_intr_handler(int vec, void *ptr)
- 
- 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), grp);
- 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val | 1ULL);
-+
-+		spin_lock(&rvu->cpt_intr_lock);
-+		block->cpt_flt_eng_map[vec] |= BIT_ULL(i);
-+		val = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_STS(eng));
-+		if ((val & 0x2) || (!(val & 0x2) && (val & 0x1)))
-+			block->cpt_rcvrd_eng_map[vec] |= BIT_ULL(i);
-+		spin_unlock(&rvu->cpt_intr_lock);
- 	}
- 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(vec), reg);
- 
-@@ -899,6 +906,31 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
- 	return 0;
- }
- 
-+int rvu_mbox_handler_cpt_flt_eng_info(struct rvu *rvu, struct cpt_flt_eng_info_req *req,
-+				      struct cpt_flt_eng_info_rsp *rsp)
-+{
-+	struct rvu_block *block;
-+	unsigned long flags;
-+	int blkaddr, vec;
-+
-+	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	block = &rvu->hw->block[blkaddr];
-+	for (vec = 0; vec < CPT_10K_AF_INT_VEC_RVU; vec++) {
-+		spin_lock_irqsave(&rvu->cpt_intr_lock, flags);
-+		rsp->flt_eng_map[vec] = block->cpt_flt_eng_map[vec];
-+		rsp->rcvrd_eng_map[vec] = block->cpt_rcvrd_eng_map[vec];
-+		if (req->reset) {
-+			block->cpt_flt_eng_map[vec] = 0x0;
-+			block->cpt_rcvrd_eng_map[vec] = 0x0;
-+		}
-+		spin_unlock_irqrestore(&rvu->cpt_intr_lock, flags);
-+	}
-+	return 0;
-+}
-+
- static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
- {
- 	struct cpt_rxc_time_cfg_req req, prev;
-@@ -1182,5 +1214,7 @@ int rvu_cpt_init(struct rvu *rvu)
- {
- 	/* Retrieve CPT PF number */
- 	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
-+	spin_lock_init(&rvu->cpt_intr_lock);
-+
- 	return 0;
- }
+On Thu,  5 Jan 2023 15:22:29 -0800 you wrote:
+> Zero-length arrays are deprecated[1]. Replace struct
+> mlxsw_sp_nexthop_group_info's "nexthops" 0-length array with a flexible
+> array. Detected with GCC 13, using -fstrict-flex-arrays=3:
+> 
+> drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c: In function 'mlxsw_sp_nexthop_group_hash_obj':
+> drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c:3278:38: warning: array subscript i is outside array bounds of 'struct mlxsw_sp_nexthop[0]' [-Warray-bounds=]
+>  3278 |                         val ^= jhash(&nh->ifindex, sizeof(nh->ifindex), seed);
+>       |                                      ^~~~~~~~~~~~
+> drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c:2954:33: note: while referencing 'nexthops'
+>  2954 |         struct mlxsw_sp_nexthop nexthops[0];
+>       |                                 ^~~~~~~~
+> 
+> [...]
+
+Here is the summary with links:
+  - mlxsw: spectrum_router: Replace 0-length array with flexible array
+    https://git.kernel.org/netdev/net/c/2ab6478d1266
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
