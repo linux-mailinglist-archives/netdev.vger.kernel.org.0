@@ -2,91 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D4F7661E9D
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 07:13:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DBFB661EF6
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:04:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233096AbjAIGNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 01:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
+        id S234287AbjAIHEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 02:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230458AbjAIGNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 01:13:45 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217AEA197;
-        Sun,  8 Jan 2023 22:13:44 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 308McDcN018600;
-        Sun, 8 Jan 2023 22:13:31 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=0oXfUSucqDnprNu/xjDfCXx1MiNwuNLq5i0naIl8Ado=;
- b=eKIFupSz/vaiFF0HGQIZpg3G3SVaivFMcIqb6Z+zyWVYh76DmJ7aN6Gd3RM4h8Bz7z8S
- +lg6gI7CTteNj9ZRohtn4f27yjuWcN+84I5wVokqmf77OEXXmg9J6q7u5tlXnJSSgUIK
- uS3WpWHsYhyHTFE3swfWuOvJLm79R2AdOmWRzrAYiMUxS/iLftNFwT7MdnDqaeZji5zV
- 8szZ9ER6PDK6KUkEkRs+tEq1I4H0rVNlIRDUPNLf1U4IwivWBqYbi49AluA3TnBOGiGE
- b4FmuHkgUTQqsAazjmmuDQvWroq2iF776uRdUu84hOlFKcd3qnpGS6gbPPAiZUZ6r2bu Xw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tmbgf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 08 Jan 2023 22:13:31 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Sun, 8 Jan
- 2023 22:13:29 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Sun, 8 Jan 2023 22:13:29 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 6D7E93F7090;
-        Sun,  8 Jan 2023 22:13:26 -0800 (PST)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <sgoutham@marvell.com>,
-        <gakula@marvell.com>, <sbhatta@marvell.com>
-Subject: [net PATCH] octeontx2-pf: Fix resource leakage in VF driver unbind
-Date:   Mon, 9 Jan 2023 11:43:25 +0530
-Message-ID: <20230109061325.21395-1-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S233735AbjAIHE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:04:29 -0500
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD881209F;
+        Sun,  8 Jan 2023 23:04:28 -0800 (PST)
+Received: by mail-wr1-f42.google.com with SMTP id d17so7172691wrs.2;
+        Sun, 08 Jan 2023 23:04:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wYsLuw/5810Zy5eTIZ7iJqDyeo47uMIQ6w06dFLUs+Q=;
+        b=sAewqlyPfF/tYbLsIM2FVlgzIG7BjDCLgtQ9ugaEgH8k8gwvTWBRfaj201PWt7yPVN
+         hwuwAtdkTF7yzoPn2QJKGw145ncqj3htgtDy8NZ9GKoknprlncA+wgLbqJP0uJ2OA0TM
+         AWudzCprDqvdOPjR+fMsAXZgF1Oii4RlHuayRmXlsvtFs1JFjBPRTKP+xZppdNOuEjdV
+         QNX4wlOn7L71+9maTMik1nvGyYi5IoUs1yyMn2yiiwOvMUuCBFRkHoPiQUs+QMUIS5rU
+         ZreC0PyS8TKWfb5UqSXGWTX1DRv8aG1m7/aQbTVRoUWFzc0WZ3m8f2GwVK/VmpGt2Wet
+         MJiA==
+X-Gm-Message-State: AFqh2kpj5Noxj8G4JUyVZHARTpp/jngq9tZ/h5M8X4j33DQOCNRUmqls
+        53uuDuWFJVC9PXMBOmOszmw=
+X-Google-Smtp-Source: AMrXdXsEyHJGnZLB96JH3rcVegZBjOFlVPnyGgXG2g9g13hBlhCt3SpTnjtaAmK/XwGxmzdpSoCmAQ==
+X-Received: by 2002:a05:6000:38d:b0:2b5:90e:cfa5 with SMTP id u13-20020a056000038d00b002b5090ecfa5mr10255103wrf.29.1673247866783;
+        Sun, 08 Jan 2023 23:04:26 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id f3-20020adfdb43000000b00236883f2f5csm7846356wrj.94.2023.01.08.23.04.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Jan 2023 23:04:26 -0800 (PST)
+Message-ID: <07786498-2209-3af0-8d68-c34427049947@kernel.org>
+Date:   Mon, 9 Jan 2023 08:04:23 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: D2BdtYno9FprCMkB1oCNyC5ZRHhCIqe_
-X-Proofpoint-GUID: D2BdtYno9FprCMkB1oCNyC5ZRHhCIqe_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-09_02,2023-01-06_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net-next] Remove DECnet support from kernel
+Content-Language: en-US
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, Borislav Petkov <bp@suse.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>,
+        Antoine Tenart <atenart@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Juergen Gross <jgross@suse.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Nathan Fontenot <nathan.fontenot@amd.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Suma Hegde <suma.hegde@amd.com>, Chen Yu <yu.c.chen@intel.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kees Cook <keescook@chromium.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wang Qing <wangqing@vivo.com>, Yu Zhe <yuzhe@nfschina.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>
+References: <20220818004357.375695-1-stephen@networkplumber.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220818004357.375695-1-stephen@networkplumber.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-resources allocated like mcam entries to support the Ntuple feature
-and hash tables for the tc feature are not getting freed in driver
-unbind. This patch fixes the issue.
+On 18. 08. 22, 2:43, Stephen Hemminger wrote:
+> DECnet is an obsolete network protocol that receives more attention
+> from kernel janitors than users. It belongs in computer protocol
+> history museum not in Linux kernel.
+> 
+> It has been "Orphaned" in kernel since 2010. The iproute2 support
+> for DECnet was dropped in 5.0 release. The documentation link on
+> Sourceforge says it is abandoned there as well.
+> 
+> Leave the UAPI alone to keep userspace programs compiling.
+> This means that there is still an empty neighbour table
+> for AF_DECNET.
+> 
+> The table of /proc/sys/net entries was updated to match
+> current directories and reformatted to be alphabetical.
+> 
+> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+> Acked-by: David Ahern <dsahern@kernel.org>
 
-Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
- 1 file changed, 2 insertions(+)
+...
+>   include/uapi/linux/dn.h                       |  149 -
+>   include/uapi/linux/netfilter_decnet.h         |   72 -
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 86653bb8e403..7f8ffbf79cf7 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -758,6 +758,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
- 	if (vf->otx2_wq)
- 		destroy_workqueue(vf->otx2_wq);
- 	otx2_ptp_destroy(vf);
-+	otx2_mcam_flow_del(vf);
-+	otx2_shutdown_tc(vf);
- 	otx2vf_disable_mbox_intr(vf);
- 	otx2_detach_resources(&vf->mbox);
- 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+Hi,
+
+this breaks userspace. Some projects include linux/dn.h:
+
+   https://codesearch.debian.net/search?q=include.*linux%2Fdn.h&literal=0
+
+
+I found Trinity fails to build:
+  net/proto-decnet.c:5:10: fatal error: linux/dn.h: No such file or 
+directory
+      5 | #include <linux/dn.h>
+
+
+
+Should we provide the above as empty files?
+
+thanks,
 -- 
-2.17.1
+js
+suse labs
 
