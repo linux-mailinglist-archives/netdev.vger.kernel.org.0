@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D848F6629FB
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 16:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B833662A0F
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 16:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237324AbjAIPcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 10:32:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        id S237330AbjAIPcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 10:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237198AbjAIPbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 10:31:44 -0500
+        with ESMTP id S237225AbjAIPbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 10:31:45 -0500
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A968FEA;
-        Mon,  9 Jan 2023 07:30:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594D79598;
+        Mon,  9 Jan 2023 07:30:57 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 956E51648;
-        Mon,  9 Jan 2023 16:30:54 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 0282E1654;
+        Mon,  9 Jan 2023 16:30:55 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673278254;
+        t=1673278255;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PGv46D7gQHbV4r2vFEsGvofuAnLH9RGfLHYlLw3z8As=;
-        b=PEgilRI8e8JgdbuJQlHSPKC7r/+jM46S7CttuPFSSJawqdOtgJyWhQdqSpjc8umRy7gM20
-        kuLjsvumC9haW/kVQpCk5ytFhfPC5x3fT6OmUlYEhyHapN/wtI4W3pJBwjCVfwQMg3S4az
-        O/R18+9lE3qitUNvrdOuZLWpBllChpF7m2J3BeDiweuvsbmNAgmCTu9wbs8SVq2QNAYKVp
-        nHf7K7xdPsWLQilsfn67AhFXl1KDYorglkatvcyicKqJ0Imn40zokcPU4IhK9PPrxVtJOh
-        lF3zavJWb/CV29dp/1kCYdmI/CDhu/licg2Tuv3oo5uwjcTIekVmJHwYljnppQ==
+        bh=cwldWyFf7CaFTxQBOBymigKCBxPFmfPQFSYXECFA1MQ=;
+        b=oBe/wDiEGzYu9Fc30RDGqfOtePnx+5N67Jc8XWAwViJATJbP5JciHihYt08LZ2CPnqoGXm
+        uZArpFXb8LGFjfjAjXXX7S79M2PS+79KJbqSZO69qsWKd3bzRrrLYAYIXYg6ql+KNj6eYf
+        QFLV/7qysP76I17N9ZXUkpM8Co/fADHz8zTv8pRK0+sadsWUa23hOO8F8/TFqbhkDxEDNV
+        Kh4IJzK9xvXaw84ecISSaMUBh90vtEkIuwjqMygFfeNX7aQTRJKU3bGSi62Qh3a0YIRJXQ
+        PD2iEEB36IH2lBcrduXuSgnBMlXDpiUEHLj2BemVjPRj+aiM8jY7HGIZ/J1pvg==
 From:   Michael Walle <michael@walle.cc>
-Date:   Mon, 09 Jan 2023 16:30:43 +0100
-Subject: [PATCH net-next v3 03/11] net: mdio: mdiobus_register: update validation test
+Date:   Mon, 09 Jan 2023 16:30:44 +0100
+Subject: [PATCH net-next v3 04/11] net: mdio: C22 is now optional, EOPNOTSUPP
+ if not provided
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20221227-v6-2-rc1-c45-seperation-v3-3-ade1deb438da@walle.cc>
+Message-Id: <20221227-v6-2-rc1-c45-seperation-v3-4-ade1deb438da@walle.cc>
 References: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
 In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -78,46 +79,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-Now that C45 uses its own read/write methods, the validation performed
-when a bus is registers needs updating. All combinations of C22 and
-C45 are supported, but both read and write methods must be provided,
-read only busses are not supported etc.
+When performing a C22 operation, check that the bus driver actually
+provides the methods, and return -EOPNOTSUPP if not. C45 only busses
+do exist, and in future their C22 methods will be NULL.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-v2:
- - [al] be consistent with other checks
- - [mw] make the test a bit easier to read
-v3:
- - [mw] use the original validation test style again but with double
-   negation
----
- drivers/net/phy/mdio_bus.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/phy/mdio_bus.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index bde195864c17..c992a9fd8b01 100644
+index c992a9fd8b01..f71ba6ab85a7 100644
 --- a/drivers/net/phy/mdio_bus.c
 +++ b/drivers/net/phy/mdio_bus.c
-@@ -526,8 +526,15 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 	int i, err;
- 	struct gpio_desc *gpiod;
+@@ -766,7 +766,10 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
  
--	if (NULL == bus || NULL == bus->name ||
--	    NULL == bus->read || NULL == bus->write)
-+	if (!bus || !bus->name)
-+		return -EINVAL;
-+
-+	/* An access method always needs both read and write operations */
-+	if (!!bus->read != !!bus->write || !!bus->read_c45 != !!bus->write_c45)
-+		return -EINVAL;
-+
-+	/* At least one method is mandatory */
-+	if (!bus->read && !bus->read_c45)
- 		return -EINVAL;
+ 	lockdep_assert_held_once(&bus->mdio_lock);
  
- 	if (bus->parent && bus->parent->of_node)
+-	retval = bus->read(bus, addr, regnum);
++	if (bus->read)
++		retval = bus->read(bus, addr, regnum);
++	else
++		retval = -EOPNOTSUPP;
+ 
+ 	trace_mdio_access(bus, 1, addr, regnum, retval, retval);
+ 	mdiobus_stats_acct(&bus->stats[addr], true, retval);
+@@ -792,7 +795,10 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ 
+ 	lockdep_assert_held_once(&bus->mdio_lock);
+ 
+-	err = bus->write(bus, addr, regnum, val);
++	if (bus->write)
++		err = bus->write(bus, addr, regnum, val);
++	else
++		err = -EOPNOTSUPP;
+ 
+ 	trace_mdio_access(bus, 0, addr, regnum, val, err);
+ 	mdiobus_stats_acct(&bus->stats[addr], false, err);
 
 -- 
 2.30.2
