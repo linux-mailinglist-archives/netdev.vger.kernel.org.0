@@ -2,155 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 679326624AA
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:52:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6F66624B5
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:54:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236781AbjAILwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 06:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S233808AbjAILxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 06:53:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236585AbjAILvq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:51:46 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A96B5F5A
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 03:51:45 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id fy8so19321829ejc.13
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 03:51:45 -0800 (PST)
+        with ESMTP id S234365AbjAILxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:53:22 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372181A05D;
+        Mon,  9 Jan 2023 03:53:12 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id g19-20020a05600c4ed300b003d9eb1dbc0aso3507600wmq.3;
+        Mon, 09 Jan 2023 03:53:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ozl2+3CNbOGcFgir3rEQ41Ac/ijTRZdlB8u+sHLq/PU=;
-        b=q26NSJL3gz3bQkxp9t5GOIbI1B65qBaA4F8ov68W9DczLzoPzO9DY+3slzVvSPMCT/
-         nrqt8Go4OQ1zJE9Mv5eBhQLGs8/NRIqim0vDW/cZSkIlarBF8dHxwJ5aGHBjSP7s9Dik
-         oTTQ1mrmPQoaFHgycujHEu/he05ymJraISQm5s+yR2koTXX6OCfnWNTipdrhuyBIB1IX
-         U7xOtjuoL613xYIITDwipJGCFqnAC3hpJU3XICBkq308qnjSHnyOZ5q9IoERCu06kDu1
-         U8LZLFHLxVHBUP7wysgQJpR1Ykbzv5arkJyfI8RXKMIIfdvm/M4m6gi16ArzJUVQR0Tc
-         jWVA==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=yuo8pU7AP5RWR4z47Dmbosa4tCF1KJOtJvLB5VnQJDk=;
+        b=NePZKS/LU6deDhfl4q3T9A2bzw8JNjbfqbDewCPREEgQG+/qDa/2vqP0G85lCYr89c
+         s/6ReJN73fH5VHATtyvAc3dFk8+viTqT+CsDIGSYOqmvdJcFDeUqKkI5GNR+NTtPRdkg
+         PVuwHUGjPOcO50mFY/70H5f8vOy5Hcnt+M4T/CBvcdvsmLRD++VFPRP6m9oMQ4zM4ovJ
+         xzFkwrjXBB36zV9jhWJof6Up4zpr3kFKl4V1/Lxx/lHBCbVP9JT9LPI5weBHUVejkClD
+         vfjcdRtocIVhQ/eJ0EbMf29tPkVW/Me1UxFAFgO0s/IDH+vIewDqDStEQmr7YYYUoye2
+         Nmcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ozl2+3CNbOGcFgir3rEQ41Ac/ijTRZdlB8u+sHLq/PU=;
-        b=byN+Z8hl6tlVc88pawqEPfnXsDiDc3XdFepnamRUGs+MF9rkQDzm6W039+uFcFAvbM
-         0/7u9XI3qynH6bCiN4Kc8Wed2fJ0Aw5yy6B4ZRXLEXrEED5iU/LpP9VrIeV+lvVjPNZI
-         64Bq2tbg0AAvYfdkHfKHRtps9Str6s34ddhkecjGlXyvpb+OG+qDR/Nx2J3g/7AsSyj7
-         4XlfFrKjYe+dAV/9mwSVCUEvs4bvwq4voBjI+MtdpJ/MogxFA/h7xGC0UV9Kb29pnW6y
-         7VFaGbAo1bKQs2eTTmdVL9vSL89b2r2CxoDsCql7zvWc2soA41Fyv+Vso/Ao8Ls+wGKN
-         8UiA==
-X-Gm-Message-State: AFqh2kqepWHf/BtWysaqSmK4jmEJeuP1LG84Sm/TstQwMZHFJK+ZKLlP
-        GTtIHwAzvvJv+HkBkaeHWMdXpQ==
-X-Google-Smtp-Source: AMrXdXtsaeyZlGTv/luap7T8pJe4YCKPzx42PwHQd4av3DZicesWp5D6xfw5sNzQkMLcggymi1JGZw==
-X-Received: by 2002:a17:906:9e06:b0:84d:35e1:2781 with SMTP id fp6-20020a1709069e0600b0084d35e12781mr5356332ejc.46.1673265103679;
-        Mon, 09 Jan 2023 03:51:43 -0800 (PST)
-Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id y10-20020a170906070a00b0084ca4277a81sm3722993ejb.95.2023.01.09.03.51.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 03:51:43 -0800 (PST)
-Message-ID: <95f8b774-0b00-88dd-b890-2737d8a70592@blackwall.org>
-Date:   Mon, 9 Jan 2023 13:51:41 +0200
+        bh=yuo8pU7AP5RWR4z47Dmbosa4tCF1KJOtJvLB5VnQJDk=;
+        b=Y5tHfQyUbsFzz0unuLfyYw/So//oPP6IYP8NpRiPzCmuBga3ItskLO8Fo8HPyiX1nA
+         ZDdmzQGnkzMoGmrJ6Oa02ztWA9jg48t3VUR+PIgfny15eGhXjAjQy7oRXEBkkOwJ2x2S
+         Sb9HuKYZCMByRo3g6IZ9beLCV34LZsn0xydQxFD1IVQvasu3/pFRfQBYJG+dcmEhRh1m
+         P64+wJgzWqLqgFsINuv3+FEbRVFK1Uic1cUtoTIJkEzM/QBOuJLH4Sr9fNbfzCp/YOl5
+         s+VBjk9J6TdzaL0j3qa7ljR8CwBQD1tKhEryJ9HwumudpS1tfW8/aU4S5fXkeBOPoSOo
+         an1w==
+X-Gm-Message-State: AFqh2kp887vS/Y2s5aQ74Z7N6EObg6MjtfA47RhjkvfvEuGuogYe0Tjr
+        PitcQFioWRP2yzihQniHXIA=
+X-Google-Smtp-Source: AMrXdXu2FtPLas2GBP+AZnRW1vg8obTldiySVi7o/t8Z2F02hU7rv9DNG7gflx2nzKIlXRg/udXecA==
+X-Received: by 2002:a05:600c:18a3:b0:3d6:b71c:117a with SMTP id x35-20020a05600c18a300b003d6b71c117amr56340271wmp.31.1673265190764;
+        Mon, 09 Jan 2023 03:53:10 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id m18-20020a05600c4f5200b003c71358a42dsm20628619wmq.18.2023.01.09.03.53.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Jan 2023 03:53:10 -0800 (PST)
+Date:   Mon, 9 Jan 2023 14:53:05 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
+        linux-sparse@vger.kernel.org, willemdebruijn.kernel@gmail.com,
+        gnoack3000@gmail.com, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        artem.kuzin@huawei.com, Linux API <linux-api@vger.kernel.org>,
+        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
+Message-ID: <Y7wAITZ/Ae/SwH9m@kadam>
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
+ <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
+ <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
+ <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
+ <4aa29433-e7f9-f225-5bdf-c80638c936e8@huawei.com>
+ <Y7vXSAGHf08p2Zbm@kadam>
+ <af0d7337-3a92-5eca-7d7c-cc09d5713589@huawei.com>
+ <Y7vqdgvxQVNvu6AY@kadam>
+ <0dab9d74-6a41-9cf3-58fb-9fbb265efdd0@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v5 net-next 01/15] net: bridge: mst: Multiple Spanning
- Tree (MST) mode
-Content-Language: en-US
-To:     Ido Schimmel <idosch@idosch.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20220316150857.2442916-1-tobias@waldekranz.com>
- <20220316150857.2442916-2-tobias@waldekranz.com> <Y7vK4T18pOZ9KAKE@shredder>
- <20230109100236.euq7iaaorqxrun7u@skbuf> <Y7v98s8lC1WUvsSO@shredder>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <Y7v98s8lC1WUvsSO@shredder>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0dab9d74-6a41-9cf3-58fb-9fbb265efdd0@huawei.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/01/2023 13:43, Ido Schimmel wrote:
-> On Mon, Jan 09, 2023 at 12:02:36PM +0200, Vladimir Oltean wrote:
->> On Mon, Jan 09, 2023 at 10:05:53AM +0200, Ido Schimmel wrote:
->>>> +	if (on)
->>>> +		static_branch_enable(&br_mst_used);
->>>> +	else
->>>> +		static_branch_disable(&br_mst_used);
->>>
->>> Hi,
->>>
->>> I'm not actually using MST, but I ran into this code and was wondering
->>> if the static key usage is correct. The static key is global (not
->>> per-bridge), so what happens when two bridges have MST enabled and then
->>> it is disabled on one? I believe it would be disabled for both. If so,
->>> maybe use static_branch_inc() / static_branch_dec() instead?
->>
->> Sounds about right. FWIW, br_switchdev_tx_fwd_offload does use
->> static_branch_inc() / static_branch_dec().
+On Mon, Jan 09, 2023 at 02:39:36PM +0300, Konstantin Meskhidze (A) wrote:
 > 
-> OK, thanks for confirming. Will send a patch later this week if Tobias
-> won't take care of it by then. First patch will probably be [1] to make
-> sure we dump the correct MST state to user space. It will also make it
-> easier to show the problem and validate the fix.
 > 
-> [1]
-> diff --git a/net/bridge/br.c b/net/bridge/br.c
-> index 4f5098d33a46..f02a1ad589de 100644
-> --- a/net/bridge/br.c
-> +++ b/net/bridge/br.c
-> @@ -286,7 +286,7 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
->  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
->  		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
->  	case BR_BOOLOPT_MST_ENABLE:
-> -		return br_opt_get(br, BROPT_MST_ENABLED);
-> +		return br_mst_is_enabled(br);
->  	default:
->  		/* shouldn't be called with unsupported options */
->  		WARN_ON(1);
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index 75aff9bbf17e..7f0475f62d45 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -1827,7 +1827,7 @@ static inline bool br_vlan_state_allowed(u8 state, bool learn_allow)
->  /* br_mst.c */
->  #ifdef CONFIG_BRIDGE_VLAN_FILTERING
->  DECLARE_STATIC_KEY_FALSE(br_mst_used);
-> -static inline bool br_mst_is_enabled(struct net_bridge *br)
-> +static inline bool br_mst_is_enabled(const struct net_bridge *br)
->  {
->  	return static_branch_unlikely(&br_mst_used) &&
->  		br_opt_get(br, BROPT_MST_ENABLED);
-> @@ -1845,7 +1845,7 @@ int br_mst_fill_info(struct sk_buff *skb,
->  int br_mst_process(struct net_bridge_port *p, const struct nlattr *mst_attr,
->  		   struct netlink_ext_ack *extack);
->  #else
-> -static inline bool br_mst_is_enabled(struct net_bridge *br)
-> +static inline bool br_mst_is_enabled(const struct net_bridge *br)
->  {
->  	return false;
->  }
+> 1/9/2023 1:20 PM, Dan Carpenter пишет:
+> > On Mon, Jan 09, 2023 at 12:26:52PM +0300, Konstantin Meskhidze (A) wrote:
+> > > 
+> > > 
+> > > 1/9/2023 11:58 AM, Dan Carpenter пишет:
+> > > > These warnings seem like something I have seen before.  Maybe it was an
+> > > > issue with _Generic() support?
+> > > > > Are you really sure you're running the latest git version of
+> > > Sparse?
+> > > > > I tested this patch with the latest version of Sparse on my
+> > > system and
+> > > > it worked fine.
+> > > 
+> > >  Hi Dan,
+> > > 
+> > >  git is on the master branch now - hash ce1a6720 (dated 27 June 2022)
+> > > 
+> > >  Is this correct version?
+> > 
+> > Yes, that's correct.  What is your .config?
+> 
+>   What parameters do I need to check in .config?
 
-Ack, good catch. This should've been _inc/_dec indeed.
+I don't know.  I was hoping you could just email me the whole thing
+and/or the results from make security/landlock/ruleset.i.  That way
+we could see what line was making Sparse complain.
 
-Thanks,
- Nik
+regards,
+dan carpenter
 
