@@ -2,79 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D08662486
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 429C1662498
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbjAILqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 06:46:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
+        id S234309AbjAILsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 06:48:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234041AbjAILqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:46:17 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96415A467
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 03:46:16 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id m21so12111516edc.3
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 03:46:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D+muiZeRodWSdkGCQbmoSfuYJGII8UbIeUoLS/b6C+I=;
-        b=Ko611mylRP+u+n9GKoJjXB5WjWuyXhCN6znGhD3ifhT+bb3P66tvUnW92lps9qIrVv
-         wsIRS3bP0+GFLE8GKK4U623KGsd4Spe9MMCitcgWinq019sms/afeUIEdlao4Spaft9k
-         wUC4oFoRROEkHlPvUnxSj+bCsJTkBfh6GQ2MkoUZIp9oDn6iuNitXywxtfvloRXon9Sn
-         gviMd2axNbEt5P0hGP5NssEY8Yp5SGA+UmkWfvSHVWqe9ZOw+uMMR8QUnUoFzdTCGiwX
-         zshF9n0jmLgUpbm4CTuyUBq4vy3dYsErtmslQUsZ/Cy8tS972SGVOHfiMBaqC/aQedgE
-         SLmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=D+muiZeRodWSdkGCQbmoSfuYJGII8UbIeUoLS/b6C+I=;
-        b=UnJ5ZsoV04Dizk2nJ7SeHh+DtqeRpDFda8mD1Q+dsp+8T36YYpLZdL1geMmDd+N086
-         26T7BjFwfT2DZtQyPQvP6REWrcCxr9gU9b+eFwiyB+pEczFRGok40RUGiwQMPqtDL3BZ
-         T8S5fYGX9LObT6t2YnB+8j7peD9hek3BcwYRAUvg2f7QEgF3v7Pc+XO9T6YLn/+7FoEo
-         IX7eHZKl4HU/bpoC4pdlC7kfpmrfVwW600iv4yc9PoCo02CKPkrp3vrv3tEGZfI0NTdJ
-         ZK1gf6kGzOdXL4N3X0ZTXT5+6MYrX1c///4WfIiNkS0nrjP+5Quz0ak25r9miWbTcbo4
-         iQ4w==
-X-Gm-Message-State: AFqh2kpt34XWwUSN257NT+Q5/jLgIDoNXEvhMpO2/raXnLUPgZDz8f0d
-        qn8YSg8SIC9G59LvuMdVCGw=
-X-Google-Smtp-Source: AMrXdXsvpl54//VKNGLg1WYd0fr576hTC2kKgjV2gAQCjdqSWcucTid0NkpQ/sdfp+n2SPm7wT43ww==
-X-Received: by 2002:a05:6402:b31:b0:497:948b:e8 with SMTP id bo17-20020a0564020b3100b00497948b00e8mr7710306edb.6.1673264775197;
-        Mon, 09 Jan 2023 03:46:15 -0800 (PST)
-Received: from [10.158.37.55] ([193.47.165.251])
-        by smtp.gmail.com with ESMTPSA id u9-20020aa7d889000000b00457b5ba968csm3644898edq.27.2023.01.09.03.46.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 03:46:14 -0800 (PST)
-Message-ID: <3d2db7f2-9e3c-929c-de41-c3f0011839b8@gmail.com>
-Date:   Mon, 9 Jan 2023 13:46:13 +0200
+        with ESMTP id S237046AbjAILsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:48:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBF3C767;
+        Mon,  9 Jan 2023 03:48:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 765E66102F;
+        Mon,  9 Jan 2023 11:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58A0BC433D2;
+        Mon,  9 Jan 2023 11:48:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673264920;
+        bh=XVe9ZIsJBVYmm1apnGM4DzZt37qBYjqTL/4caPg0IAg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lVZc/+FUPE8QcOrtnqRxXZlRXAOoREyaa9a/YMj1p/937Jkdo4VD7sxKuUkywRPud
+         /CQwgBnnwxe/WI6ITNCs4su1aWMNLUBDMzxbtXibosPINEJjleTHHTaPnIwoclkEDx
+         FqdGooILgLdKBG5ZMYs/4b229Q5vLkODS3wEX8CB/xuEpgbxtSNsbA1iI1RHaHZRZ8
+         wblCgYzhTOYw9f/w7fZNaPKiAkMwgZcix5uGnrcYaGULE/CT6L74nV/fC3tdllM/au
+         NXcRy/6tu2DAo+fHpkGQWxFNb8AzEYlf+2T3jmzo7kHg8ghYhjh5G/zpai30iHhjfk
+         4J6u7Ni/xo71A==
+Date:   Mon, 9 Jan 2023 12:48:37 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH RFC v2 0/2] Add I2C fwnode lookup/get interfaces
+Message-ID: <Y7v/FWpjt1MFLafG@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <Y6Az235wsnRWFYWA@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 24/24] mlx5: Convert to netmem
-Content-Language: en-US
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>, gal@nvidia.com,
-        Dragos Tatulea <dtatulea@nvidia.com>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Saeed Mahameed <saeed@kernel.org>
-References: <20230105214631.3939268-1-willy@infradead.org>
- <20230105214631.3939268-25-willy@infradead.org>
- <6ebfda57-3a01-7fe2-4a95-65108a02e887@redhat.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <6ebfda57-3a01-7fe2-4a95-65108a02e887@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qLZiiXAOcTg86yPW"
+Content-Disposition: inline
+In-Reply-To: <Y6Az235wsnRWFYWA@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -82,34 +70,70 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--qLZiiXAOcTg86yPW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 06/01/2023 18:31, Jesper Dangaard Brouer wrote:
-> 
-> To Saeed and Tariq, please review.
-> 
+Hi Russell,
 
-Adding Dragos, Gal.
+thank you for this series!
 
-Hi Jesper,
-Thanks for the ping. I'm on it.
+> This RFC series is intended for the next merge window, but we will need
+> to decide how to merge it as it is split across two subsystems. These
+> patches have been generated against the net-next, since patch 2 depends
+> on a recently merged patch in that tree (which is now in mainline.)
 
-> This reminds me, that IMHO we/nvidia/mellanox should remove the local
-> mlx5e_page_cache functionality, as SKBs can now recycle page_pool pages.
-> This should simplify the driver and we get rid of the head-of-line
-> blocking issue with the local page cache (refcnt elevation tricks).
+I'd prefer to apply it all to my I2C tree then. I can also provide an
+immutable branch for net if that is helpful.
 
-Totally agree.
-Dragos is currently working on this task. This should clean up 
-significant amount of code, and improve performance. We target this for 
-the next submission window, to kernel v6.4.
+> In order to reduce this complexity, this series adds fwnode interfaces
+> to the I2C subsystem to allow I2C adapters to be looked up. I also
+> accidentally also converted the I2C clients to also be looked up, so
+> I've left that in patch 1 if people think that could be useful - if
+> not, I'll remove it.
 
-> It might look good in microbencmarks, but my experience from prod
-> systems are that this local cache isn't utilized.  And I believe we
-> should be able to get good/similar microbenchmark with page_pool, which
-> will continue to recycle and have no HoL issues for prod use-cases.
-> 
+Because you also converted I2C ACPI to use the new function, I'd say
+let's keep it.
 
-100%.
+> We could also convert the of_* functions to be inline in i2c.h and
+> remove the stub of_* functions and exports.
 
-Thanks,
-Tariq
+I'd like that.
+
+> Do we want these to live in i2c-core-fwnode.c ? I don't see a Kconfig
+
+I don't think this is enough fwnode-specific code yet for a seperate
+source file. I also don't think the helper functions are so large that
+there should be an option to compile them out. I am open for other
+opinions, but IMHO that part looks good as it is.
+
+> symbol that indicates whether we want fwnode support, and I know there
+> are people looking to use software nodes to lookup the SFP I2C bus
+> (which is why the manual firmware-specific code in sfp.c is a problem.)
+
+All the best,
+
+   Wolfram
+
+
+--qLZiiXAOcTg86yPW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmO7/xIACgkQFA3kzBSg
+KbbKPQ/+IGwwAtYwJ64XvFGN53u6K7rCs//39Vxd6VIDaUZi3XR17sefWTLnTCMU
+CI/wYx5es+KKPSNrtbS+oUt1pdfjK2diCm/p8Y5AhUHPJUlHYISgaCrOk5SwtWGn
+Y9w+xfoN4cKrvl8mvJYJ8dseap86n3+fdYBamcaSsF+5R5qmuunzFhgTzuQgDnei
+OF3jYAj1wUj5umG6R8uF+3oMTaJPvsNOlJZlQW31DEBHrUuelcm9pD/wLzXINaBu
+yT3M80zgOR30O4s9LzE059/BuGu14nYZI52UdO8EoL/s02Ugn7rLegdpjymWof8/
+lGEcyVwioNJ3lqkeKHEchBHthT385MrAHxnWlY6SJ6WayATgOFwkwBlXDaYD6P9M
+FMrL1nCTWnI+XQlHcaj6Cpz1BWw1eVY75R4WdSnIoAEz21eRWlXlLGy7ttGc2wOD
+vie4ieJyWRyzsjobw3DJBDdLYGWsq5ARMdJuMWx8HG8uVmrisb4aKTUmpq/0SO1i
+GyiA8V2WCdJQ2Ne4zePMrIt00uSWoHuFr1muVikbkJSLkrIhV0wurbDHknuxuZ2P
+x9/Zrapz+13qYY4Z+8qDIeQSTjSGsfWbRhn9SJlihPUdvJp+/V6ikBP0WfFXpNGu
+JweZ46FeTsV3Yki+mZHu97+MVEh+UJ37Lz6+BWWnDXrSFW0S7lI=
+=Xfqm
+-----END PGP SIGNATURE-----
+
+--qLZiiXAOcTg86yPW--
