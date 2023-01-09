@@ -2,90 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4180C661F72
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:50:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41BDE661F87
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:57:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233590AbjAIHuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 02:50:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
+        id S229473AbjAIH5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 02:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233238AbjAIHuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:50:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A434E13D22;
-        Sun,  8 Jan 2023 23:50:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B30D60EEE;
-        Mon,  9 Jan 2023 07:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 958C5C433F1;
-        Mon,  9 Jan 2023 07:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673250616;
-        bh=KMU3USBLJiUqc0o+ccLoYu/1Idu2u/gFbF5Orb4wo00=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pn8j01jMOOy0xM++9msby+0i2T4M9h9uBZtzWRPLnfHtR04DT0h+/1+VIPJHBGzzD
-         vOapuRksHN+/yQB+AJRFkAonrjim8orUNCEiKk9dqjClJBo1QC5WCiby3HmB9Ly+1G
-         KKxLyR/dhuV4Xtu2kRUTcDMM4UhUP3c9aWiLYo5+fgoVL8mXvycr1WBIbD6VKSDLRg
-         hTyEJvjPE/GYY7nGQf0keyGhw8noe0JUZSdlshwdNvlNdREk71lN8/cSpqq0MMK1Z2
-         5crlCh4QySATVPLLvpCUs5+qdpZZuUSiDDitNv9je5gYR7GhVadVVhpWUnUuXcXYpm
-         1kz2CyW0Qbzzw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64CE7E4D005;
-        Mon,  9 Jan 2023 07:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S236526AbjAIH5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:57:17 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB80913DDF;
+        Sun,  8 Jan 2023 23:57:10 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Nr5nW543bz67bpd;
+        Mon,  9 Jan 2023 15:54:39 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Mon, 9 Jan 2023 07:57:07 +0000
+Message-ID: <885a23b1-78d2-1e62-8d07-91ff33863cbf@huawei.com>
+Date:   Mon, 9 Jan 2023 10:57:06 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v8 11/12] samples/landlock: Add network demo
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <artem.kuzin@huawei.com>
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-12-konstantin.meskhidze@huawei.com>
+ <2ff97355-18ef-e539-b4c1-720cd83daf1d@digikod.net>
+ <94a8ef89-b59e-d218-77a1-bf2f9d4096c7@huawei.com>
+ <5c941be9-ac6a-d259-997e-13fdff09aeb4@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <5c941be9-ac6a-d259-997e-13fdff09aeb4@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] r8152: allow firmwares with NCM support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167325061640.1839.15796258098196650486.git-patchwork-notify@kernel.org>
-Date:   Mon, 09 Jan 2023 07:50:16 +0000
-References: <20230106160739.100708-1-bjorn@mork.no>
-In-Reply-To: <20230106160739.100708-1-bjorn@mork.no>
-To:     =?utf-8?b?QmrDuHJuIE1vcmsgPGJqb3JuQG1vcmsubm8+?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, hayeswang@realtek.com,
-        linux-usb@vger.kernel.org, oliver@neukum.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100002.china.huawei.com (7.191.160.241) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
 
-On Fri,  6 Jan 2023 17:07:37 +0100 you wrote:
-> Some device and firmware combinations with NCM support will
-> end up using the cdc_ncm driver by default.  This is sub-
-> optimal for the same reasons we've previously accepted the
-> blacklist hack in cdc_ether.
+1/6/2023 10:34 PM, Mickaël Salaün пишет:
 > 
-> The recent support for subclassing the generic USB device
-> driver allows us to create a very slim driver with the same
-> functionality.  This patch set uses that to implement a
-> device specific configuration default which is independent
-> of any USB interface drivers.  This means that it works
-> equally whether the device initially ends up in NCM or ECM
-> mode, without depending on any code in the respective class
-> drivers.
+> On 05/01/2023 04:46, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 11/16/2022 5:25 PM, Mickaël Salaün пишет:
 > 
 > [...]
+> 
+>>>
+>>>>    		fprintf(stderr,
+>>>>    			"Hint: You should update the running kernel "
+>>>>    			"to leverage Landlock features "
+>>>> @@ -259,16 +342,36 @@ int main(const int argc, char *const argv[], char *const *const envp)
+>>>>    	access_fs_ro &= ruleset_attr.handled_access_fs;
+>>>>    	access_fs_rw &= ruleset_attr.handled_access_fs;
+>>>>
+>>>> +	/* Removes bind access attribute if not supported by a user. */
+>>>> +	env_port_name = getenv(ENV_TCP_BIND_NAME);
+>>>> +	if (!env_port_name) {
+>>>
+>>> You can move this logic at the populate_ruleset_net() call site and
+>>> update this helper to not call getenv() twice for the same variable.
+>> 
+>>     But here I exclude ruleset attributes, not rule itself. It will break
+>>     the logic: creating a ruleset then applying rules.
+>>     I suggest to leave here as its.
+> 
+> Right, but you can still avoid the duplicate getenv() calls.
 
-Here is the summary with links:
-  - [1/2] r8152: add USB device driver for config selection
-    https://git.kernel.org/netdev/net-next/c/ec51fbd1b8a2
-  - [2/2] cdc_ether: no need to blacklist any r8152 devices
-    https://git.kernel.org/netdev/net-next/c/69649ef84053
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+   OK. Will fix it.
+> 
+> 
+>>>
+>>>
+>>>> +		access_net_tcp &= ~LANDLOCK_ACCESS_NET_BIND_TCP;
+>>>> +	}
+>>>> +	/* Removes connect access attribute if not supported by a user. */
+>>>> +	env_port_name = getenv(ENV_TCP_CONNECT_NAME);
+>>>> +	if (!env_port_name) {
+>>>> +		access_net_tcp &= ~LANDLOCK_ACCESS_NET_CONNECT_TCP;
+>>>> +	}
+>>>> +	ruleset_attr.handled_access_net &= access_net_tcp;
+> .
