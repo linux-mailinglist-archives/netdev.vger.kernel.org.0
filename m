@@ -2,381 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5270E662AD3
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 17:08:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BA2D662B1A
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 17:25:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbjAIQIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 11:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S232040AbjAIQZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 11:25:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbjAIQIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 11:08:00 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372B93AAAC;
-        Mon,  9 Jan 2023 08:07:59 -0800 (PST)
+        with ESMTP id S231586AbjAIQY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 11:24:58 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC844FDE
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 08:24:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673280479; x=1704816479;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=U2wZo7YImjw8iGThsIb1GjeZZAAZ6xxiPbQ0GHK+dAU=;
-  b=YcExn20Iyxo/5H0V5inRlzjAlHIS4P38Lp0uD8vCTMtkXb0ZzTOmzM9e
-   wTvKdoGSSuOc++LD5ku/5WRCmSi5n/VRErNxq+/vdkVsTUhbAutJZoQ/M
-   h2US8flTumEYu6iwa8VFoRGtO0sN17GyCrOSCLWdBBzITtAK2XHYs4sfA
-   REom55OUTVwbS2+SAnVTFkcD8n6CB34FTKLeMbZvzmKVdGw3ph1N9GqQe
-   pvBcmkU1oFh4h7TPDFy9vbb1TJSRocVqWjqRnETIVm/f0uLfgPl5bLZ++
-   fG32POzJSKavFO1u/sK2qpGd/locMNv1NxpdcRCj+2w18qee/sllrLfnD
+  t=1673281497; x=1704817497;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gWEh9JInpyICmN/mACKJ1SdTrhSsBTj5xlolcqaJyrs=;
+  b=BmKFaJZhPqqMOPhB1ZGxK5vDVSUOmcJ67nHox35OUX4iFY+GhygTNj55
+   inCKNmTsFDvV3EsIWS4Q+cPmoUd3sfzdCDmcwRzFeTFS3qEuIuj20dLOA
+   kYxeUECQeZhOVpbmor9+RvwQDeDazyiABuei7dteaSHvSYNU9eAVvQDRu
+   9bBMZ94NWFbICcBZNdFsrfuo9tBykuJrG07BhMHHT2a4zsNcU7BoJpR0Y
+   AQH3+Ctpzr/TK3YzVDrlhHzMI8IgeVscIThSPSdL5L4D2yILSQ0AT0Ne2
+   qoa0gXg4EwFP5C0HaE1WIE6/VTDFdMRcBZjIEOns/Iz5WTq09t5AAdyZI
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="306424950"
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="324918485"
 X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="306424950"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:07:39 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="658646531"
+   d="scan'208";a="324918485"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:24:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="687258117"
 X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="658646531"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.215.194.243]) ([10.215.194.243])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:07:33 -0800
-Message-ID: <c7bd8511-7d4f-526a-28b9-215edc6e7c7f@linux.intel.com>
-Date:   Mon, 9 Jan 2023 21:37:30 +0530
+   d="scan'208";a="687258117"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga008.jf.intel.com with ESMTP; 09 Jan 2023 08:24:56 -0800
+Received: from baltimore.igk.intel.com (baltimore.igk.intel.com [10.102.21.1])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 309GOtqu023933;
+        Mon, 9 Jan 2023 16:24:55 GMT
+From:   Pawel Chmielewski <pawel.chmielewski@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     intel-wired-lan@osuosl.org,
+        Pawel Chmielewski <pawel.chmielewski@intel.com>
+Subject: [PATCH 1/1] ice: WiP support for BIG TCP packets
+Date:   Mon,  9 Jan 2023 17:18:33 +0100
+Message-Id: <20230109161833.223510-1-pawel.chmielewski@intel.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v3 net-next 5/5] net: wwan: t7xx: Devlink documentation
-Content-Language: en-US
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        edumazet@google.com, pabeni@redhat.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com, chandrashekar.devegowda@intel.com,
-        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-doc@vger.kernel.org,
-        jiri@nvidia.com, corbet@lwn.net
-References: <cover.1673016069.git.m.chetan.kumar@linux.intel.com>
- <500a41cb400b4cdedd6df414b40200a5211965f5.1673016069.git.m.chetan.kumar@linux.intel.com>
- <Y7uOcBRN0Awn5xAb@debian.me>
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <Y7uOcBRN0Awn5xAb@debian.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bagas,
-Thank you for the feedback.
+This patch is a proof of concept for testing BIG TCP feature in ice driver.
+Please see letter below.
 
-On 1/9/2023 9:18 AM, Bagas Sanjaya wrote:
-> On Fri, Jan 06, 2023 at 09:58:06PM +0530, m.chetan.kumar@linux.intel.com wrote:
->> Refer to t7xx.rst file for details.
-> 
-> Above line is unnecessary.
+Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+---
+Hi All
+I'm writing on the list, as you may be able to provide me some feedback.
+I want to enable BIG TCP feature in intel ice drive, but I think I'm 
+missing something.
+In the code itself, I've set 128k as a maximum tso size for the netif,
+and added stripping the HBH option from the header.
+For testing purposes, gso_max_size & gro_max_size were set to 128k and 
+mtu to 9000.
+I've assumed that the ice tso offload will do the rest of the job.
+However- while running netperf TCP_RR and TCP_STREAM tests,
+I saw that only up to ~20% of the transmitted test packets have 
+the specified size. 
+Other packets to be transmitted, appear from the stack as splitted.
 
-Ok. Will drop it.
+I've been running the following testcases:
+netperf -t TCP_RR -H 2001:db8:0:f101::1  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT
+netperf -l-1 -t TCP_STREAM -H 2001:db8:0:f101::1  -- -m 128K -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT
+I suspected a shrinking tcp window size, but sniffing with tcpdump showed rather big scaling factor (usually 128x).
+Apart from using netperf, I also tried a simple IPv6 user space application
+(with SO_SNDBUF option set to 192k and TCP_WINDOW_CLAMP to 96k) - similar results.
 
-> 
->> +The wwan device is put into fastboot mode via devlink reload command, by
->> +passing "driver_reinit" action.
->> +
->> +$ devlink dev reload pci/0000:$bdf action driver_reinit
->> +
->> +Upon completion of fw flashing or coredump collection the wwan device is
->> +reset to normal mode using devlink reload command, by passing "fw_activate"
->> +action.
->> +
->> +$ devlink dev reload pci/0000:$bdf action fw_activate
-> 
-> Personally I prefer to put command-line explanations below the actual
-> command:
+I'd be very grateful for any feedback/suggestions
 
-Sure. Will keep explanation under the command.
+Pawel
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 4 ++++
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 9 +++++++++
+ 2 files changed, 13 insertions(+)
 
-> 
-> ---- >8 ----
-> 
-> diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
-> index de220878ad7649..24f9e0ee69bffb 100644
-> --- a/Documentation/networking/devlink/t7xx.rst
-> +++ b/Documentation/networking/devlink/t7xx.rst
-> @@ -74,17 +74,21 @@ The supported list of firmware image types is described below.
->   procedure, fastboot command & response are exchanged between driver and wwan
->   device.
->   
-> +::
-> +
-> +  $ devlink dev reload pci/0000:$bdf action driver_reinit
-> +
->   The wwan device is put into fastboot mode via devlink reload command, by
->   passing "driver_reinit" action.
->   
-> -$ devlink dev reload pci/0000:$bdf action driver_reinit
-> +::
-> +
-> +  $ devlink dev reload pci/0000:$bdf action fw_activate
->   
->   Upon completion of fw flashing or coredump collection the wwan device is
->   reset to normal mode using devlink reload command, by passing "fw_activate"
->   action.
->   
-> -$ devlink dev reload pci/0000:$bdf action fw_activate
-> -
->   Flash Commands:
->   ===============
->   
-> 
-> However, I find it's odd to jump from firmware image type list directly to
-> devlink usage. Perhaps the latter should be put into the following section
-> below?
-
-Ok. Will move image type list under Flash Commands.
-
-> 
-> I also find that there is minor inconsistency of keyword formatting, so I
-> have to inline-code the uninlined remainings:
-
-Ok. Will correct it.
-
-> 
-> ---- >8 ----
-> 
-> diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
-> index 24f9e0ee69bffb..d8feefe116c978 100644
-> --- a/Documentation/networking/devlink/t7xx.rst
-> +++ b/Documentation/networking/devlink/t7xx.rst
-> @@ -29,7 +29,7 @@ Flash Update
->   The ``t7xx`` driver implements the flash update using the ``devlink-flash``
->   interface.
->   
-> -The driver uses DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT to identify the type of
-> +The driver uses ``DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT`` to identify the type of
->   firmware image that need to be programmed upon the request by user space application.
->   
->   The supported list of firmware image types is described below.
-> @@ -79,14 +79,14 @@ device.
->     $ devlink dev reload pci/0000:$bdf action driver_reinit
->   
->   The wwan device is put into fastboot mode via devlink reload command, by
-> -passing "driver_reinit" action.
-> +passing ``driver_reinit`` action.
->   
->   ::
->   
->     $ devlink dev reload pci/0000:$bdf action fw_activate
->   
->   Upon completion of fw flashing or coredump collection the wwan device is
-> -reset to normal mode using devlink reload command, by passing "fw_activate"
-> +reset to normal mode using devlink reload command, by passing ``fw_activate``
->   action.
->   
->   Flash Commands:
->   
->> +
->> +Flash Commands:
->> +===============
-> 
-> Trim the unneeded trailing colon on the section title.
-
-Ok. will drop it.
-
-> 
->> +
->> +$ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
->> +
->> +$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
->> +
->> +$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
->> +
->> +$ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
->> +
->> +$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
->> +
->> +$ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
->> +
->> +$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
->> +
->> +$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
->> +
->> +$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
->> +
->> +$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
->> +
->> <snipped>...
->> +Region commands
->> +===============
->> +
->> +$ devlink region show
->> +
->> +
->> +$ devlink region new mr_dump
->> +
->> +$ devlink region read mr_dump snapshot 0 address 0 length $len
->> +
->> +$ devlink region del mr_dump snapshot 0
->> +
->> +$ devlink region new lk_dump
->> +
->> +$ devlink region read lk_dump snapshot 0 address 0 length $len
->> +
->> +$ devlink region del lk_dump snapshot 0
->> +
->> +Note: $len is actual len to be dumped.
-> 
-> Please briefly describe these devlink commands.
-
-Ok. Will add some explanations.
-
-> 
-> Also, wrap them in literal code blocks:
-> 
-> ---- >8 ----
-> 
-> diff --git a/Documentation/networking/devlink/t7xx.rst b/Documentation/networking/devlink/t7xx.rst
-> index d8feefe116c978..1ba3ba4680e721 100644
-> --- a/Documentation/networking/devlink/t7xx.rst
-> +++ b/Documentation/networking/devlink/t7xx.rst
-> @@ -92,35 +92,65 @@ action.
->   Flash Commands:
->   ===============
->   
-> -$ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
-> +  $ devlink dev flash pci/0000:$bdf file preloader_k6880v1_mdot2_datacard.bin component "preloader"
->   
-> -$ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
-> +  $ devlink dev flash pci/0000:$bdf file loader_ext-verified.img component "loader_ext1"
->   
-> -$ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
-> +  $ devlink dev flash pci/0000:$bdf file tee-verified.img component "tee1"
->   
-> -$ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
-> +  $ devlink dev flash pci/0000:$bdf file lk-verified.img component "lk"
->   
-> -$ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
-> +  $ devlink dev flash pci/0000:$bdf file spmfw-verified.img component "spmfw"
->   
-> -$ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
-> +  $ devlink dev flash pci/0000:$bdf file sspm-verified.img component "sspm_1"
->   
-> -$ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
-> +::
->   
-> -$ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
-> +  $ devlink dev flash pci/0000:$bdf file mcupm-verified.img component "mcupm_1"
->   
-> -$ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file dpm-verified.img component "dpm_1"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file boot-verified.img component "boot"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file root.squashfs component "rootfs"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file modem-verified.img component "md1img"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file dsp-verified.bin component "md1dsp"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file OP_OTA.img component "mcf1"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file OEM_OTA.img component "mcf2"
-> +
-> +::
-> +
-> +  $ devlink dev flash pci/0000:$bdf file DEV_OTA.img component "mcf3"
->   
->   Note: Component selects the partition type to be programmed.
->   
-> @@ -147,19 +177,31 @@ Following regions are accessed for device internal data.
->   Region commands
->   ===============
->   
-> -$ devlink region show
-> +::
-> +  $ devlink region show
->   
-> +::
->   
-> -$ devlink region new mr_dump
-> +  $ devlink region new mr_dump
->   
-> -$ devlink region read mr_dump snapshot 0 address 0 length $len
-> +::
->   
-> -$ devlink region del mr_dump snapshot 0
-> +  $ devlink region read mr_dump snapshot 0 address 0 length $len
->   
-> -$ devlink region new lk_dump
-> +::
->   
-> -$ devlink region read lk_dump snapshot 0 address 0 length $len
-> +  $ devlink region del mr_dump snapshot 0
->   
-> -$ devlink region del lk_dump snapshot 0
-> +::
-> +
-> +  $ devlink region new lk_dump
-> +
-> +::
-> +
-> +  $ devlink region read lk_dump snapshot 0 address 0 length $len
-> +
-> +::
-> +
-> +  $ devlink region del lk_dump snapshot 0
->   
->   Note: $len is actual len to be dumped.
-> 
-> Thanks.
-> 
-
-Thanks for the inline-code. Will follow the suggested format for 
-documentation.
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 2b23b4714a26..4e657820e55d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -48,6 +48,8 @@ static DEFINE_IDA(ice_aux_ida);
+ DEFINE_STATIC_KEY_FALSE(ice_xdp_locking_key);
+ EXPORT_SYMBOL(ice_xdp_locking_key);
+ 
++#define ICE_MAX_TSO_SIZE 131072
++
+ /**
+  * ice_hw_to_dev - Get device pointer from the hardware structure
+  * @hw: pointer to the device HW structure
+@@ -3422,6 +3424,8 @@ static void ice_set_netdev_features(struct net_device *netdev)
+ 	 * be changed at runtime
+ 	 */
+ 	netdev->hw_features |= NETIF_F_RXFCS;
++
++	netif_set_tso_max_size(netdev, ICE_MAX_TSO_SIZE);
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 086f0b3ab68d..7e0ac483cad9 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -23,6 +23,9 @@
+ #define FDIR_DESC_RXDID 0x40
+ #define ICE_FDIR_CLEAN_DELAY 10
+ 
++#define HBH_HDR_SIZE sizeof(struct hop_jumbo_hdr)
++#define HBH_OFFSET ETH_HLEN + sizeof(struct ipv6hdr)
++
+ /**
+  * ice_prgm_fdir_fltr - Program a Flow Director filter
+  * @vsi: VSI to send dummy packet
+@@ -2300,6 +2303,12 @@ ice_xmit_frame_ring(struct sk_buff *skb, struct ice_tx_ring *tx_ring)
+ 
+ 	ice_trace(xmit_frame_ring, tx_ring, skb);
+ 
++	if (ipv6_has_hopopt_jumbo(skb)) {
++		memmove(skb->data + HBH_HDR_SIZE, skb->data, HBH_OFFSET);
++		__skb_pull(skb, HBH_HDR_SIZE);
++		skb_reset_mac_header(skb);
++	}
++
+ 	count = ice_xmit_desc_count(skb);
+ 	if (ice_chk_linearize(skb, count)) {
+ 		if (__skb_linearize(skb))
 -- 
-Chetan
+2.37.3
+
