@@ -2,221 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18506661BC7
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 02:13:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52BD2661BD4
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 02:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233641AbjAIBNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 20:13:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37122 "EHLO
+        id S230166AbjAIBPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 20:15:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbjAIBNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 20:13:38 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DD0E4;
-        Sun,  8 Jan 2023 17:13:33 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 792FB24E0FC;
-        Mon,  9 Jan 2023 09:13:30 +0800 (CST)
-Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 9 Jan
- 2023 09:13:30 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
- (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 9 Jan
- 2023 09:13:28 +0800
-Message-ID: <cfa385a6-50d4-a2c3-907a-0bc0647467ec@starfivetech.com>
-Date:   Mon, 9 Jan 2023 09:13:27 +0800
+        with ESMTP id S230219AbjAIBPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 20:15:36 -0500
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD31A9FC3;
+        Sun,  8 Jan 2023 17:15:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1673226936; x=1704762936;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Tzdk/KaJxyH01KkCF6YkesSdqVT3pEjQXiFVNSArzuQ=;
+  b=IAeNi3FjCMe5/kplEn2adbJZ407IGhaLHRlzbKuuY7ovP9kTp5KSCVXH
+   slIdVQfIHt4cJi1oCWSDLQBo7Pcpslgfbwwz+s6vxGVV00Bep/2qYcwH4
+   69N6Q8plLVtIZbZH1GFY9D5H4yuDJDMQeDihRp1deABwgqdGcISo/RN3A
+   U=;
+X-IronPort-AV: E=Sophos;i="5.96,311,1665446400"; 
+   d="scan'208";a="286283629"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 01:15:33 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com (Postfix) with ESMTPS id 9506881178;
+        Mon,  9 Jan 2023 01:15:29 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Mon, 9 Jan 2023 01:15:28 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
+ Mon, 9 Jan 2023 01:15:24 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <mirsad.todorovac@alu.hr>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <fw@strlen.de>,
+        <kuba@kernel.org>, <kuniyu@amazon.co.jp>, <kuniyu@amazon.com>,
+        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <mirsad.todorovac@alu.unizg.hr>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <shuah@kernel.org>
+Subject: Re: [PATCH net v4] af_unix: selftest: Fix the size of the parameter to connect()
+Date:   Mon, 9 Jan 2023 10:15:12 +0900
+Message-ID: <20230109011512.15267-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <alpine.DEB.2.21.2301070437400.26826@domac.alu.hr>
+References: <alpine.DEB.2.21.2301070437400.26826@domac.alu.hr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v3 5/7] net: stmmac: Add glue layer for StarFive JH7110
- SoCs
-To:     <Arun.Ramadoss@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <robh+dt@kernel.org>, <pgwipeout@gmail.com>,
-        <kernel@esmil.dk>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <richardcochran@gmail.com>,
-        <krzysztof.kozlowski+dt@linaro.org>, <davem@davemloft.net>,
-        <hkallweit1@gmail.com>
-References: <20230106030001.1952-1-yanhong.wang@starfivetech.com>
- <20230106030001.1952-6-yanhong.wang@starfivetech.com>
- <720bffcd0dde99d6a87aea6baa8b5ccefe65a178.camel@microchip.com>
-Content-Language: en-US
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <720bffcd0dde99d6a87aea6baa8b5ccefe65a178.camel@microchip.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX173.cuchost.com
- (172.16.6.93)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.43.160.120]
+X-ClientProxiedBy: EX13D34UWA004.ant.amazon.com (10.43.160.177) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2023/1/8 19:11, Arun.Ramadoss@microchip.com wrote:
-> Hi Yanhong,
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.hr>
+Date:   Sat, 7 Jan 2023 04:40:20 +0100 (CET)
+> From: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
 > 
-> On Fri, 2023-01-06 at 10:59 +0800, Yanhong Wang wrote:
->> This adds StarFive dwmac driver support on the StarFive JH7110 SoCs.
->> 
->> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
->> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
->> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
->> ---
->>  MAINTAINERS                                   |   1 +
->>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
->>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
->>  .../stmicro/stmmac/dwmac-starfive-plat.c      | 123
->> ++++++++++++++++++
->>  4 files changed, 137 insertions(+)
->>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-
->> starfive-plat.c
->> 
->> 
->> 
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-
->> plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
->> new file mode 100644
->> index 000000000000..910095b10fe4
->> --- /dev/null
->> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
->> @@ -0,0 +1,123 @@
->> +// SPDX-License-Identifier: GPL-2.0+
->> +/*
->> + * StarFive DWMAC platform driver
->> + *
->> + * Copyright(C) 2022 StarFive Technology Co., Ltd.
->> + *
->> + */
->> +
->> +#include <linux/of_device.h>
+> Adjust size parameter in connect() to match the type of the parameter, to
+> fix "No such file or directory" error in selftests/net/af_unix/
+> test_oob_unix.c:127.
 > 
-> Blank line between header with <  > and " "
+> The existing code happens to work provided that the autogenerated pathname
+> is shorter than sizeof (struct sockaddr), which is why it hasn't been
+> noticed earlier.
 > 
-
-Thanks, i will fix.
-
->> +#include "stmmac_platform.h"
->> +
->> +struct starfive_dwmac {
->> +	struct device *dev;
->> +	struct clk *clk_tx;
->> +	struct clk *clk_gtx;
->> +	struct clk *clk_gtxc;
->> +};
->> +
->> +static void starfive_eth_plat_fix_mac_speed(void *priv, unsigned int
->> speed)
->> +{
->> +	struct starfive_dwmac *dwmac = priv;
->> +	unsigned long rate;
->> +	int err;
->> +
->> +	switch (speed) {
->> +	case SPEED_1000:
->> +		rate = 125000000;
->> +		break;
->> +	case SPEED_100:
->> +		rate = 25000000;
->> +		break;
->> +	case SPEED_10:
->> +		rate = 2500000;
->> +		break;
->> +	default:
->> +		dev_err(dwmac->dev, "invalid speed %u\n", speed);
->> +		return;
+> Visible from the trace excerpt:
 > 
-> Do we need to return value, since it is invalid speed. But the return
-> value of function is void.
+> bind(3, {sa_family=AF_UNIX, sun_path="unix_oob_453059"}, 110) = 0
+> clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fa6a6577a10) = 453060
+> [pid <child>] connect(6, {sa_family=AF_UNIX, sun_path="unix_oob_45305"}, 16) = -1 ENOENT (No such file or directory)
 > 
-
-I will fix.
-
->> +	}
->> +
->> +	err = clk_set_rate(dwmac->clk_gtx, rate);
->> +	if (err)
->> +		dev_err(dwmac->dev, "failed to set tx rate %lu\n",
->> rate);
->> +}
->> +
->> +static int starfive_eth_plat_probe(struct platform_device *pdev)
->> +{
->> +	struct plat_stmmacenet_data *plat_dat;
->> +	struct stmmac_resources stmmac_res;
->> +	struct starfive_dwmac *dwmac;
->> +	int (*syscon_init)(struct device *dev);
+> BUG: The filename is trimmed to sizeof (struct sockaddr).
 > 
-> Reverse christmas tree.
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Shuah Khan <shuah@kernel.org>
+> Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Cc: Florian Westphal <fw@strlen.de>
+> Reviewed-by: Florian Westphal <fw@strlen.de>
+> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+> Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+
+You can check the current status here.
+https://patchwork.kernel.org/project/netdevbpf/patch/alpine.DEB.2.21.2301070437400.26826@domac.alu.hr/
+
+PS: you may want to check config not to send a mail as multipart next time.
+
+Thank you,
+Kuniyuki
+
+
+> ---
 > 
-
-I will delete the unused variable syscon_init.
-
->> +	int err;
->> +
->> +	err = stmmac_get_platform_resources(pdev, &stmmac_res);
->> +	if (err)
->> +		return err;
->> +
->> +	plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
->> +	if (IS_ERR(plat_dat)) {
->> +		dev_err(&pdev->dev, "dt configuration failed\n");
->> +		return PTR_ERR(plat_dat);
->> +	}
->> +
->> +	dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
->> +	if (!dwmac)
->> +		return -ENOMEM;
->> +
->> +	syscon_init = of_device_get_match_data(&pdev->dev);
->> +	if (syscon_init) {
->> +		err = syscon_init(&pdev->dev);
->> +		if (err)
->> +			return err;
->> +	}
->> +
->> +	dwmac->clk_tx = devm_clk_get_enabled(&pdev->dev, "tx");
->> +	if (IS_ERR(dwmac->clk_tx))
->> +		return dev_err_probe(&pdev->dev, PTR_ERR(dwmac-
->> >clk_tx),
->> +						"error getting tx
->> clock\n");
->> +
->> +	dwmac->clk_gtx = devm_clk_get_enabled(&pdev->dev, "gtx");
->> +	if (IS_ERR(dwmac->clk_gtx))
->> +		return dev_err_probe(&pdev->dev, PTR_ERR(dwmac-
->> >clk_gtx),
->> +						"error getting gtx
->> clock\n");
->> +
->> +	dwmac->clk_gtxc = devm_clk_get_enabled(&pdev->dev, "gtxc");
->> +	if (IS_ERR(dwmac->clk_gtxc))
->> +		return dev_err_probe(&pdev->dev, PTR_ERR(dwmac-
->> >clk_gtxc),
->> +						"error getting gtxc
->> clock\n");
->> +
->> +	dwmac->dev = &pdev->dev;
->> +	plat_dat->fix_mac_speed = starfive_eth_plat_fix_mac_speed;
->> +	plat_dat->init = NULL;
->> +	plat_dat->bsp_priv = dwmac;
->> +	plat_dat->dma_cfg->dche = true;
->> +
->> +	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
->> +	if (err) {
->> +		stmmac_remove_config_dt(pdev, plat_dat);
->> +		return err;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
+> The patch is generated against the "vanilla" Torvalds mainline tree 6.2-rc2.
+> (Tested and applies against the net.git tree.)
+> 
+> 
+>  tools/testing/selftests/net/af_unix/test_unix_oob.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+> index b57e91e1c3f2..532459a15067 100644
+> --- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
+> +++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+> @@ -124,7 +124,7 @@ void producer(struct sockaddr_un *consumer_addr)
+>  
+>  	wait_for_signal(pipefd[0]);
+>  	if (connect(cfd, (struct sockaddr *)consumer_addr,
+> -		     sizeof(struct sockaddr)) != 0) {
+> +		     sizeof(*consumer_addr)) != 0) {
+>  		perror("Connect failed");
+>  		kill(0, SIGTERM);
+>  		exit(1);
+> 
+> --
+> Mirsad Goran Todorovac
+> Sistem inženjer
+> Grafički fakultet | Akademija likovnih umjetnosti
+> Sveučilište u Zagrebu
+> 
+> System engineer
+> Faculty of Graphic Arts | Academy of Fine Arts
+> University of Zagreb, Republic of Croatia
+> The European Union
