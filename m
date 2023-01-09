@@ -2,148 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C4AA661F90
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 08:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC4F661FA5
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 09:06:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233620AbjAIH7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 02:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
+        id S236181AbjAIIGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 03:06:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbjAIH7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 02:59:48 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8986DE8D;
-        Sun,  8 Jan 2023 23:59:46 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Nr5rX4tJDz67lSM;
-        Mon,  9 Jan 2023 15:57:16 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Mon, 9 Jan 2023 07:59:44 +0000
-Message-ID: <4aa29433-e7f9-f225-5bdf-c80638c936e8@huawei.com>
-Date:   Mon, 9 Jan 2023 10:59:43 +0300
+        with ESMTP id S236497AbjAIIGb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 03:06:31 -0500
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943ABBA4;
+        Mon,  9 Jan 2023 00:06:03 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id CD49832006F5;
+        Mon,  9 Jan 2023 03:05:58 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 09 Jan 2023 03:06:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1673251558; x=1673337958; bh=hObozgfzpCa4NJkSvRz0TIjGKTPe
+        jFUvHPU4Z0aahqk=; b=mzxOVgnYUmn1wqkvAoWZNnNN7BUjMblm39y8OWSvfmWq
+        v3yc/JIaIn8ehELmCz5BW/SbUKx2+l3nl8SWKpCptAqZMqDNQOm3f7oWtNk0fnIf
+        cECuWF/EThU6YipnukTdmxsSz4VKplC3izMcBUceGP/Y+gmYAb0yTWaYYCRDi2eL
+        CBxayCahGbY3xW9Sc9ZabOZ/mg4/DS3OoljyhOOBV6f+mqAvs5BXAtWy8Y2X4Xtc
+        QlKNITAK0OyTqIPwNTH9e8rLr/t+Drpov8608l6NgFpFHyn4X885BThpWUDNMXDU
+        izE8b3OI056CdOZBeSGeMDY5JT72dwD9sWtT/qp7/Q==
+X-ME-Sender: <xms:5Mq7YytZlZplwJfDtbuesa0O1WMdYg9q1hSK1tzIPxXWw2zcUFRYng>
+    <xme:5Mq7Y3e1TcWXAtFD5O-sa8ur2aJ4bCItOOgngqx9vVXykQ8kKrNDqu5RUb30Xh-zs
+    ga-jVxc0wNdSvA>
+X-ME-Received: <xmr:5Mq7Y9yFM0anXC5ynhOYYZdvVEsg8Q3ShghOBOs1Ep4geYGynfpScqz3lnOR>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrkeehgdduudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhepvddufeevkeehueegfedtvdevfefgudeifeduieefgfelkeehgeelgeejjeeg
+    gefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:5cq7Y9MS56HIeTtcom6nUJDwXQVJU62rwPO_h14v5NtK2e3yfC79UQ>
+    <xmx:5cq7Yy9aFBuFoxaZ7_hPj9br6SV9K75kb8mo2HfNGlgQJAxOKeiWKw>
+    <xmx:5cq7Y1U86zafTr0ETPOgPY9kWu7bz2hrt80zVUNGzy9QnY0dghiB-A>
+    <xmx:5sq7YyPQTkniyAfP52LwE0OQzIiQ77B9SCBqJ37sHX9yRlTePTo4RQ>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 9 Jan 2023 03:05:56 -0500 (EST)
+Date:   Mon, 9 Jan 2023 10:05:53 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v5 net-next 01/15] net: bridge: mst: Multiple Spanning
+ Tree (MST) mode
+Message-ID: <Y7vK4T18pOZ9KAKE@shredder>
+References: <20220316150857.2442916-1-tobias@waldekranz.com>
+ <20220316150857.2442916-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        <linux-sparse@vger.kernel.org>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <artem.kuzin@huawei.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
- <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
- <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
- <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316150857.2442916-2-tobias@waldekranz.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 16, 2022 at 04:08:43PM +0100, Tobias Waldekranz wrote:
+> +DEFINE_STATIC_KEY_FALSE(br_mst_used);
 
+[...]
 
-1/6/2023 10:22 PM, Mickaël Salaün пишет:
-> 
-> On 04/01/2023 12:41, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 11/17/2022 9:43 PM, Mickaël Salaün пишет:
-> 
-> [...]
-> 
->>>>    /**
->>>> @@ -79,6 +91,24 @@ struct landlock_path_beneath_attr {
->>>>    	 */
->>>>    } __attribute__((packed));
->>>>
->>>> +/**
->>>> + * struct landlock_net_service_attr - TCP subnet definition
->>>> + *
->>>> + * Argument of sys_landlock_add_rule().
->>>> + */
->>>> +struct landlock_net_service_attr {
->>>> +	/**
->>>> +	 * @allowed_access: Bitmask of allowed access network for services
->>>> +	 * (cf. `Network flags`_).
->>>> +	 */
->>>> +	__u64 allowed_access;
->>>> +	/**
->>>> +	 * @port: Network port.
->>>> +	 */
->>>> +	__u16 port;
->>>
->>>    From an UAPI point of view, I think the port field should be __be16, as
->>> for sockaddr_in->port and other network-related APIs. This will require
->>> some kernel changes to please sparse: make C=2 security/landlock/ must
->>> not print any warning.
->> 
->>     I have this errors trying to launch sparse checking:
->> 
->>     DESCEND objtool
->>     DESCEND bpf/resolve_btfids
->>     CALL    scripts/checksyscalls.sh
->>     CHK     kernel/kheaders_data.tar.xz
->>     CC      security/landlock/setup.o
->>     CHECK   security/landlock/setup.c
->> ./include/asm-generic/rwonce.h:67:16: error: typename in expression
->> ./include/asm-generic/rwonce.h:67:16: error: Expected ) in function call
->> ./include/asm-generic/rwonce.h:67:16: error: got :
->> ./include/linux/list.h:292:16: error: typename in expression
->> ./include/linux/list.h:292:16: error: Expected ) in function call
->> ./include/linux/list.h:292:16: error: got :
->> 
->> ....
->> 
->> ./include/linux/seqlock.h:682:16: error: Expected ) in function call
->> ./include/linux/seqlock.h:682:16: error: got :
->> ./include/linux/seqlock.h:695:16: error: typename in expression
->> ./include/linux/seqlock.h:695:16: error: Expected ) in function call
->> ./include/linux/seqlock.h:695:16: error: too many errors
->> Segmentation fault (core dumped)
->> make[3]: *** [scripts/Makefile.build:250: security/landlock/setup.o]
->> Error 139
->> make[3]: *** Deleting file 'security/landlock/setup.o'
->> make[3]: *** Waiting for unfinished jobs....
->> Segmentation fault (core dumped)
->> make[3]: *** [scripts/Makefile.build:250: security/landlock/syscalls.o]
->> Error 139
->> make[3]: *** Deleting file 'security/landlock/syscalls.o'
->> make[2]: *** [scripts/Makefile.build:502: security/landlock] Error 2
->> make[1]: *** [scripts/Makefile.build:502: security] Error 2
->> make[1]: *** Waiting for unfinished jobs....
->> make: *** [Makefile:1994: .] Error 2
-> 
-> I don't know about this error. Did you follow the documentation?
-> https://docs.kernel.org/dev-tools/sparse.html#getting-sparse
-> 
-   Yes, I did as in the documentation. that's strange.
-If you dont mind can you please check it when I sent a new patch?
+> +int br_mst_set_enabled(struct net_bridge *br, bool on,
+> +		       struct netlink_ext_ack *extack)
+> +{
+> +	struct net_bridge_vlan_group *vg;
+> +	struct net_bridge_port *p;
+> +
+> +	list_for_each_entry(p, &br->port_list, list) {
+> +		vg = nbp_vlan_group(p);
+> +
+> +		if (!vg->num_vlans)
+> +			continue;
+> +
+> +		NL_SET_ERR_MSG(extack,
+> +			       "MST mode can't be changed while VLANs exist");
+> +		return -EBUSY;
+> +	}
+> +
+> +	if (br_opt_get(br, BROPT_MST_ENABLED) == on)
+> +		return 0;
+> +
+> +	if (on)
+> +		static_branch_enable(&br_mst_used);
+> +	else
+> +		static_branch_disable(&br_mst_used);
+> +
+> +	br_opt_toggle(br, BROPT_MST_ENABLED, on);
+> +	return 0;
+> +}
 
-> 
-> 
->>>
->>> Using big-endian values as keys (casted to uintptr_t, not strictly
->>> __be16) in the rb-tree should not be an issue because there is no port
->>> range ordering (for now).
->>>
->>> A dedicated test should check that endianness is correct, e.g. by using
->>> different port encoding. This should include passing and failing tests,
->>> but they should work on all architectures (i.e. big or little endian).
-> .
+Hi,
+
+I'm not actually using MST, but I ran into this code and was wondering
+if the static key usage is correct. The static key is global (not
+per-bridge), so what happens when two bridges have MST enabled and then
+it is disabled on one? I believe it would be disabled for both. If so,
+maybe use static_branch_inc() / static_branch_dec() instead?
+
+Thanks
