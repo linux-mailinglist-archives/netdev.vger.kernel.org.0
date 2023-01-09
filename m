@@ -2,143 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52BD2661BD4
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 02:16:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0AC8661BDA
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 02:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbjAIBPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Jan 2023 20:15:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
+        id S233912AbjAIBRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Jan 2023 20:17:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbjAIBPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 20:15:36 -0500
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD31A9FC3;
-        Sun,  8 Jan 2023 17:15:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1673226936; x=1704762936;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Tzdk/KaJxyH01KkCF6YkesSdqVT3pEjQXiFVNSArzuQ=;
-  b=IAeNi3FjCMe5/kplEn2adbJZ407IGhaLHRlzbKuuY7ovP9kTp5KSCVXH
-   slIdVQfIHt4cJi1oCWSDLQBo7Pcpslgfbwwz+s6vxGVV00Bep/2qYcwH4
-   69N6Q8plLVtIZbZH1GFY9D5H4yuDJDMQeDihRp1deABwgqdGcISo/RN3A
-   U=;
-X-IronPort-AV: E=Sophos;i="5.96,311,1665446400"; 
-   d="scan'208";a="286283629"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 01:15:33 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com (Postfix) with ESMTPS id 9506881178;
-        Mon,  9 Jan 2023 01:15:29 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Mon, 9 Jan 2023 01:15:28 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.7;
- Mon, 9 Jan 2023 01:15:24 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <mirsad.todorovac@alu.hr>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <fw@strlen.de>,
-        <kuba@kernel.org>, <kuniyu@amazon.co.jp>, <kuniyu@amazon.com>,
-        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <mirsad.todorovac@alu.unizg.hr>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <shuah@kernel.org>
-Subject: Re: [PATCH net v4] af_unix: selftest: Fix the size of the parameter to connect()
-Date:   Mon, 9 Jan 2023 10:15:12 +0900
-Message-ID: <20230109011512.15267-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <alpine.DEB.2.21.2301070437400.26826@domac.alu.hr>
-References: <alpine.DEB.2.21.2301070437400.26826@domac.alu.hr>
+        with ESMTP id S233682AbjAIBRh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Jan 2023 20:17:37 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC08BEA;
+        Sun,  8 Jan 2023 17:17:35 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NqwxY5RdGznVHt;
+        Mon,  9 Jan 2023 09:16:01 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 9 Jan
+ 2023 09:17:33 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <brian.gix@intel.com>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH] Bluetooth: hci_sync: fix memory leak in hci_update_adv_data()
+Date:   Mon, 9 Jan 2023 09:26:51 +0800
+Message-ID: <20230109012651.3127529-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13D34UWA004.ant.amazon.com (10.43.160.177) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.hr>
-Date:   Sat, 7 Jan 2023 04:40:20 +0100 (CET)
-> From: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-> 
-> Adjust size parameter in connect() to match the type of the parameter, to
-> fix "No such file or directory" error in selftests/net/af_unix/
-> test_oob_unix.c:127.
-> 
-> The existing code happens to work provided that the autogenerated pathname
-> is shorter than sizeof (struct sockaddr), which is why it hasn't been
-> noticed earlier.
-> 
-> Visible from the trace excerpt:
-> 
-> bind(3, {sa_family=AF_UNIX, sun_path="unix_oob_453059"}, 110) = 0
-> clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fa6a6577a10) = 453060
-> [pid <child>] connect(6, {sa_family=AF_UNIX, sun_path="unix_oob_45305"}, 16) = -1 ENOENT (No such file or directory)
-> 
-> BUG: The filename is trimmed to sizeof (struct sockaddr).
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Shuah Khan <shuah@kernel.org>
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> Cc: Florian Westphal <fw@strlen.de>
-> Reviewed-by: Florian Westphal <fw@strlen.de>
-> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-> Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+When hci_cmd_sync_queue() failed in hci_update_adv_data(), inst_ptr is
+not freed, which will cause memory leak. Add release process to error
+path.
 
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Fixes: 651cd3d65b0f ("Bluetooth: convert hci_update_adv_data to hci_sync")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/bluetooth/hci_sync.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-You can check the current status here.
-https://patchwork.kernel.org/project/netdevbpf/patch/alpine.DEB.2.21.2301070437400.26826@domac.alu.hr/
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 9e2d7e4b850c..1485501bd72f 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -6197,10 +6197,15 @@ static int _update_adv_data_sync(struct hci_dev *hdev, void *data)
+ int hci_update_adv_data(struct hci_dev *hdev, u8 instance)
+ {
+ 	u8 *inst_ptr = kmalloc(1, GFP_KERNEL);
++	int ret;
+ 
+ 	if (!inst_ptr)
+ 		return -ENOMEM;
+ 
+ 	*inst_ptr = instance;
+-	return hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
++	ret = hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
++	if (ret)
++		kfree(inst_ptr);
++
++	return ret;
+ }
+-- 
+2.34.1
 
-PS: you may want to check config not to send a mail as multipart next time.
-
-Thank you,
-Kuniyuki
-
-
-> ---
-> 
-> The patch is generated against the "vanilla" Torvalds mainline tree 6.2-rc2.
-> (Tested and applies against the net.git tree.)
-> 
-> 
->  tools/testing/selftests/net/af_unix/test_unix_oob.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-> index b57e91e1c3f2..532459a15067 100644
-> --- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
-> +++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-> @@ -124,7 +124,7 @@ void producer(struct sockaddr_un *consumer_addr)
->  
->  	wait_for_signal(pipefd[0]);
->  	if (connect(cfd, (struct sockaddr *)consumer_addr,
-> -		     sizeof(struct sockaddr)) != 0) {
-> +		     sizeof(*consumer_addr)) != 0) {
->  		perror("Connect failed");
->  		kill(0, SIGTERM);
->  		exit(1);
-> 
-> --
-> Mirsad Goran Todorovac
-> Sistem inženjer
-> Grafički fakultet | Akademija likovnih umjetnosti
-> Sveučilište u Zagrebu
-> 
-> System engineer
-> Faculty of Graphic Arts | Academy of Fine Arts
-> University of Zagreb, Republic of Croatia
-> The European Union
