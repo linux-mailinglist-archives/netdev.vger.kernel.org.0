@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 276E1662599
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAC066259C
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:31:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234802AbjAIMa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 07:30:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
+        id S237021AbjAIMbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 07:31:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237273AbjAIMaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:30:25 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124561BCB4;
+        with ESMTP id S237279AbjAIMa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:30:27 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702F11BE9C;
         Mon,  9 Jan 2023 04:30:24 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 0614F16A5;
+        by mail.3ffe.de (Postfix) with ESMTPSA id 8C27216AB;
         Mon,  9 Jan 2023 13:30:22 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673267422;
@@ -26,12 +26,12 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail20220821
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+pGsNIHjitpKn7MDw9fSh//e+FCcst6QZrjhQXHPk7c=;
-        b=dDYFZ1ouWPdjgrngTgusZbE+C5ahWILXMIQtW8byw1W0TAmH6iyRgWUA/7vYCYpmBFL2RD
-        xcHW8P7Z9Tjf1Unz0qCYYf94jzehULbi/cNdCR2OBC8FnnVZmz+UiuVIevl31EhhyF38g8
-        RphRHhBnoYZ5fHBS6RZsNYOjSewmbw9WlEHWngW7ZEItH2Mf6OhCuhnM2Id0MSj9HFmDJ0
-        qvP2Puv1UejJNH9JgsdbYAyK2uxtiNVyqTzyMn6vcXukGCFfGVtXzi0hpv9gnCvz6s/r0g
-        h+dAaDArPKW+WDQQ0fkLiDe39/q09eqJ3UN/MRPZRpH9TFARlkwoLI9efrnM6g==
+        bh=08E5qi8vxqr6+TC+1BFlozXvA3KflPEceb13Px12www=;
+        b=dOKdBQ8uqyyE6MBH9TUYo+iQ0CRxnYEg0ja4lXvoXxM77ndF1zyiCeiRMzeWAzt1/8LkiP
+        iClmXZfFVWzDP+xAIQ/H2g9OMYPEQKzVng1NF/F1jWIBnlfgtUiDkXAC4fLVEBQbC2bwLZ
+        SqV4qdP6XbcJ6ZBPYfAYIUuc9N7582EIW3di8KxxpvzJqlMq9NQMKZO/YA1aB+ucjdunu0
+        lA6SL1hn2Ljz3YXTTSfMrW954MjrpDAky4QjBGEH6ZuIQDeujX3mw7g9TQUlkrc6zgtpTJ
+        UITrnQSr366XXiF7uhXE9LtQzTsp1W5NjMvkAM/loHXBWJzyGNVtZwPdHTJHSA==
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,9 +44,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 3/4] net: phy: allow a phy to opt-out of interrupt handling
-Date:   Mon,  9 Jan 2023 13:30:12 +0100
-Message-Id: <20230109123013.3094144-4-michael@walle.cc>
+Subject: [PATCH net-next v3 4/4] net: phy: mxl-gpy: disable interrupts on GPY215 by default
+Date:   Mon,  9 Jan 2023 13:30:13 +0100
+Message-Id: <20230109123013.3094144-5-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230109123013.3094144-1-michael@walle.cc>
 References: <20230109123013.3094144-1-michael@walle.cc>
@@ -62,55 +62,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until now, it is not possible for a PHY driver to disable interrupts
-during runtime. If a driver offers the .config_intr() as well as the
-.handle_interrupt() ops, it is eligible for interrupt handling.
-Introduce a new flag for the dev_flags property of struct phy_device, which
-can be set by PHY driver to skip interrupt setup and fall back to polling
-mode.
-
-At the moment, this is used for the MaxLinear PHY which has broken
-interrupt handling and there is a need to disable interrupts in some
-cases.
+The interrupts on the GPY215B and GPY215C are broken and the only viable
+fix is to disable them altogether. There is still the possibilty to
+opt-in via the device tree.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/phy/phy_device.c | 7 +++++++
- include/linux/phy.h          | 3 +++
- 2 files changed, 10 insertions(+)
+ drivers/net/phy/mxl-gpy.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 716870a4499c..e4562859ac00 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1487,6 +1487,13 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
+index 147d7a5a9b35..e5972b4ef6e8 100644
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -12,6 +12,7 @@
+ #include <linux/mutex.h>
+ #include <linux/phy.h>
+ #include <linux/polynomial.h>
++#include <linux/property.h>
+ #include <linux/netdevice.h>
  
- 	phydev->interrupts = PHY_INTERRUPT_DISABLED;
+ /* PHY ID */
+@@ -292,6 +293,10 @@ static int gpy_probe(struct phy_device *phydev)
+ 	phydev->priv = priv;
+ 	mutex_init(&priv->mbox_lock);
  
-+	/* PHYs can request to use poll mode even though they have an
-+	 * associated interrupt line. This could be the case if they
-+	 * detect a broken interrupt handling.
-+	 */
-+	if (phydev->dev_flags & PHY_F_NO_IRQ)
-+		phydev->irq = PHY_POLL;
++	if (gpy_has_broken_mdint(phydev) &&
++	    !device_property_present(dev, "maxlinear,use-broken-interrupts"))
++		phydev->dev_flags |= PHY_F_NO_IRQ;
 +
- 	/* Port is set to PORT_TP by default and the actual PHY driver will set
- 	 * it to different value depending on the PHY configuration. If we have
- 	 * the generic PHY driver we can't figure it out, thus set the old
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 6378c997ded5..742754d72fc0 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -739,6 +739,9 @@ struct phy_device {
- #endif
- };
- 
-+/* Generic phy_device::dev_flags */
-+#define PHY_F_NO_IRQ		0x80000000
-+
- static inline struct phy_device *to_phy_device(const struct device *dev)
- {
- 	return container_of(to_mdio_device(dev), struct phy_device, mdio);
+ 	fw_version = phy_read(phydev, PHY_FWV);
+ 	if (fw_version < 0)
+ 		return fw_version;
 -- 
 2.30.2
 
