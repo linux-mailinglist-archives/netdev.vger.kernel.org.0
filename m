@@ -2,123 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76036662CFD
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 18:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FBB662D19
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 18:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237211AbjAIRj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 12:39:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
+        id S233994AbjAIRpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 12:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237167AbjAIRj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 12:39:27 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DE32BC6
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 09:39:26 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id bk2-20020a056a02028200b004a7e2a790d2so3948280pgb.18
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 09:39:26 -0800 (PST)
+        with ESMTP id S235012AbjAIRpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 12:45:34 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18D43591B
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 09:45:33 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id m7so8997327wrn.10
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 09:45:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6EYMc5+vcvT6f31eLJLkK3p4u36cmy2i+T+Mh/4Q6NA=;
-        b=FLs67g0QQc461pVpmVYzv4JE42HcNJbYVaVQb86HYVjfvccG7Wve5dzAONsJVLjl3l
-         Kd3Bh3ROGfbudVrMmXU/eCnEBE/znoDln/DcgPLDeNgaUBkIUZ2UaJIOS8wMi0LSERgh
-         wgcWtKCgu98ayOkdDY+ifxqZaqtzjM77Ap2i0oWMKI3/QDdgQxt/4YeSOMnUXBhWwboY
-         lDBBvTaUxZNKyxLnC59v7GRd8us3KBx7ycMpLaVTANgMMVPtWo7T2xttqbrm6jvXxc61
-         8No1JfurnmCn4sAx7utqc+O0kjvC4lQU7OM0FpAApLY6DTU0t6x3ImBrnGVUo1N/07Ea
-         1GFw==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=48ftCATxHgOiOe6xbKGx2ZiY6n3+BUStS7/be/RWXjo=;
+        b=uIyVlkZMW/HK5vBfVUvOkqrToPfP556HNThca4pQQfYpADbQsZh5bnOZnXrlQfuh/x
+         OJTgZXPMIBFwIfeEC5Ekj8YBKMs5TNSSH+vlvtRMzYbi3ZiyT7ik8GFNE/Q02NRjJJ80
+         oUhRleC0eXkskPsDGH4RiF43IlSg8LaEJfGCM8orW5aCQvFkjxGmSC2OpKBNJ+/LAbcb
+         nWe8Yj304C1lxFOJrm4q+sRmQjgXnQ6ocZBohOnptfyNLB0MEOoaa5gyTd8A2NmJCuPA
+         Wa7Ix6RAJXjybmvcDRC0hM1dcXhlF7c6AdvnlRAXYCY4Enr8AoxyphhTL46nl07TPwbU
+         kpdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6EYMc5+vcvT6f31eLJLkK3p4u36cmy2i+T+Mh/4Q6NA=;
-        b=hMhwVbqNKQcAskiffzzqqq4RFk3sjaDbS5dTjNsJsWfMVtg/OjhGkZz0TxeEmcGxAl
-         DLKIZT13LG2kqMzPiHzgPa6Oto8CYHUXZLWllTPknBUFOrsbYu4FXVD7F2mgg+AN76pu
-         tqbOcq/QIc1l9MjKXUyGa9V/GJk9VH2iW0NJmJMyEpM87tVHhZjiSwRCR2K87+IQHaZg
-         pJOyJg+skHpJEWs1e109QqTnn4n5X2p37kgrLvV0GgOdXSycKFN2kigdSpnF0hnbEEmH
-         mjuIrCVXFpG5kSGCdYhlgtAkGGq1N28LLPRPuYDZao1LMAPqfRFfqp3KwooRBitkGCN4
-         Aewg==
-X-Gm-Message-State: AFqh2konbGGn1cmie2J04FmdJ70+whGKyqkJUo4DqK2l9GN/KsxLGwg2
-        f/z1FGeOiNbovMuTYEuQ0KlKeEU=
-X-Google-Smtp-Source: AMrXdXtvgn68FFnPUvQB/BnPtGld7g/pBzpiV+iqx7hVRMVQJmOFIdrSn3NeWo6eBus19cbmn3qcZTA=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:903:451:b0:192:821b:dbda with SMTP id
- iw17-20020a170903045100b00192821bdbdamr3361160plb.58.1673285965987; Mon, 09
- Jan 2023 09:39:25 -0800 (PST)
-Date:   Mon, 9 Jan 2023 09:39:24 -0800
-In-Reply-To: <20230108151258.96570-1-haiyue.wang@intel.com>
-Mime-Version: 1.0
-References: <20230108151258.96570-1-haiyue.wang@intel.com>
-Message-ID: <Y7xRLsOD1l9FpnC5@google.com>
-Subject: Re: [PATCH bpf-next v1] bpf: Remove the unnecessary insn buffer comparison
-From:   sdf@google.com
-To:     Haiyue Wang <haiyue.wang@intel.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=48ftCATxHgOiOe6xbKGx2ZiY6n3+BUStS7/be/RWXjo=;
+        b=DvW6PPr2cewr1oZE3ZxVOiGcMoOktaNIRVRAyNF6FPKFTUyOjUKMzc7G4tYSlqOK4b
+         rNztuhISW0TyEZIeoxrWPKS67vzkRfEQib3V3ZfKkmq6b7rxVOGffmlY33LtO+czPdzK
+         E819QChDR6E1UAENqwEp+g+uYPohFJArUVyLfNP75Bx1yPMNj8bSztOURAFM5+CpxFOx
+         621Ng2V/dikp0rlDyUY6RoPxqFvcAiomFhISnEAbLPu6LvpqPPwqIfVqvPzCJYxlKYxP
+         2fWcheGn0XwJLmg0YyYVyqbfQTKPU9MqVT7BnvKoftBudpZqT2x10bsRgYK3o4liH0Iu
+         ZHDg==
+X-Gm-Message-State: AFqh2krnGxkDlH8zitG/pw0i/9IL7TZwWAwu4Z1cFwEGkFvER5ixCtPy
+        rneMUGhKLTMUHmYyX7oJR9SbVQ==
+X-Google-Smtp-Source: AMrXdXu9JkiYxSufEml13EpQTB0wBLF4UHrsBsfZhlYDworiPjQZ/MQb2g6EnCJfiC/KysHLez8NFg==
+X-Received: by 2002:a05:6000:1e1a:b0:290:968:f1ac with SMTP id bj26-20020a0560001e1a00b002900968f1acmr25786641wrb.33.1673286332425;
+        Mon, 09 Jan 2023 09:45:32 -0800 (PST)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:c88:901e:c74c:8e80])
+        by smtp.gmail.com with ESMTPSA id m1-20020a5d6241000000b002bbdaf21744sm6142902wrv.113.2023.01.09.09.45.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Jan 2023 09:45:32 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH 00/18] arm64: qcom: add support for sa8775p-ride
+Date:   Mon,  9 Jan 2023 18:44:53 +0100
+Message-Id: <20230109174511.1740856-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/08, Haiyue Wang wrote:
-> The variable 'insn' is initialized to 'insn_buf' without being changed,
-> only some helper macros are defined, so the insn buffer comparison is
-> unnecessary, just remove it.
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+This adds basic support for the Qualcomm sa8775p platform and its reference
+board: sa8775p-ride. The dtsi contains basic SoC description required for
+a simple boot-to-shell. The dts enables boot-to-shell with UART on the
+sa8775p-ride board. There are three new drivers required to boot the board:
+pinctrl, interconnect and GCC clock. Other patches contain various tweaks
+to existing code. More support is coming up.
 
-Acked-by: Stanislav Fomichev <sdf@google.com>
+Bartosz Golaszewski (15):
+  dt-bindings: clock: sa8775p: add bindings for Qualcomm gcc-sa8775p
+  arm64: defconfig: enable the clock driver for Qualcomm SA8775P
+    platforms
+  dt-bindings: clock: qcom-rpmhcc: document the clock for sa8775p
+  clk: qcom: rpmh: add clocks for sa8775p
+  dt-bindings: interconnect: qcom: document the interconnects for
+    sa8775p
+  arm64: defconfig: enable the interconnect driver for Qualcomm SA8775P
+  dt-bindings: pinctrl: sa8775p: add bindings for qcom,sa8775p-tlmm
+  arm64: defconfig: enable the pinctrl driver for Qualcomm SA8775P
+    platforms
+  dt-bindings: mailbox: qcom-ipcc: document the sa8775p platform
+  dt-bindings: power: qcom,rpmpd: document sa8775p
+  soc: qcom: rmphpd: add power domains for sa8775p
+  dt-bindings: arm-smmu: document the smmu on Qualcomm SA8775P
+  iommu: arm-smmu: qcom: add support for sa8775p
+  dt-bindings: arm: qcom: document the sa8775p reference board
+  arm64: dts: qcom: add initial support for qcom sa8775p-ride
 
-Looks like these should have been removed as part of commit 2377b81de527
-("bpf: split shared bpf_tcp_sock and bpf_sock_ops implementation").
+Shazad Hussain (2):
+  clk: qcom: add the GCC driver for sa8775p
+  interconnect: qcom: add a driver for sa8775p
 
-> ---
->   net/core/filter.c | 6 ------
->   1 file changed, 6 deletions(-)
+Yadu MG (1):
+  pinctrl: qcom: sa8775p: add the pinctrl driver for the sa8775p
+    platform
 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index ab811293ae5d..d9befa6ba04e 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -6847,9 +6847,6 @@ u32 bpf_tcp_sock_convert_ctx_access(enum  
-> bpf_access_type type,
->   					FIELD));			\
->   	} while (0)
+ .../devicetree/bindings/arm/qcom.yaml         |    5 +
+ .../bindings/clock/qcom,gcc-sa8775p.yaml      |   77 +
+ .../bindings/clock/qcom,rpmhcc.yaml           |    1 +
+ .../bindings/interconnect/qcom,rpmh.yaml      |   14 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |    1 +
+ .../bindings/mailbox/qcom-ipcc.yaml           |    1 +
+ .../bindings/pinctrl/qcom,sa8775p-tlmm.yaml   |  142 +
+ .../devicetree/bindings/power/qcom,rpmpd.yaml |    1 +
+ arch/arm64/boot/dts/qcom/Makefile             |    1 +
+ arch/arm64/boot/dts/qcom/sa8775p-ride.dts     |   39 +
+ arch/arm64/boot/dts/qcom/sa8775p.dtsi         |  841 +++
+ arch/arm64/configs/defconfig                  |    3 +
+ drivers/clk/qcom/Kconfig                      |    9 +
+ drivers/clk/qcom/Makefile                     |    1 +
+ drivers/clk/qcom/clk-rpmh.c                   |   17 +
+ drivers/clk/qcom/gcc-sa8775p.c                | 4806 +++++++++++++++++
+ drivers/interconnect/qcom/Kconfig             |    9 +
+ drivers/interconnect/qcom/Makefile            |    2 +
+ drivers/interconnect/qcom/sa8775p.c           | 2542 +++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    |    1 +
+ drivers/pinctrl/qcom/Kconfig                  |    9 +
+ drivers/pinctrl/qcom/Makefile                 |    1 +
+ drivers/pinctrl/qcom/pinctrl-sa8775p.c        | 1649 ++++++
+ drivers/soc/qcom/rpmhpd.c                     |   34 +
+ include/dt-bindings/clock/qcom,gcc-sa8775p.h  |  320 ++
+ .../dt-bindings/interconnect/qcom,sa8775p.h   |  231 +
+ include/dt-bindings/power/qcom-rpmpd.h        |   19 +
+ 27 files changed, 10776 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-sa8775p.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8775p-ride.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8775p.dtsi
+ create mode 100644 drivers/clk/qcom/gcc-sa8775p.c
+ create mode 100644 drivers/interconnect/qcom/sa8775p.c
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sa8775p.c
+ create mode 100644 include/dt-bindings/clock/qcom,gcc-sa8775p.h
+ create mode 100644 include/dt-bindings/interconnect/qcom,sa8775p.h
 
-> -	if (insn > insn_buf)
-> -		return insn - insn_buf;
-> -
->   	switch (si->off) {
->   	case offsetof(struct bpf_tcp_sock, rtt_min):
->   		BUILD_BUG_ON(sizeof_field(struct tcp_sock, rtt_min) !=
-> @@ -10147,9 +10144,6 @@ static u32 sock_ops_convert_ctx_access(enum  
-> bpf_access_type type,
->   			SOCK_OPS_GET_FIELD(BPF_FIELD, OBJ_FIELD, OBJ);	      \
->   	} while (0)
-
-> -	if (insn > insn_buf)
-> -		return insn - insn_buf;
-> -
->   	switch (si->off) {
->   	case offsetof(struct bpf_sock_ops, op):
->   		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_sock_ops_kern,
-> --
-> 2.39.0
+-- 
+2.37.2
 
