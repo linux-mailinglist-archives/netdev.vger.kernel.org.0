@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D065C662598
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 276E1662599
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:31:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234159AbjAIMaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 07:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
+        id S234802AbjAIMa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 07:30:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237271AbjAIMaZ (ORCPT
+        with ESMTP id S237273AbjAIMaZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:30:25 -0500
 Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7835D1ADB9;
-        Mon,  9 Jan 2023 04:30:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124561BCB4;
+        Mon,  9 Jan 2023 04:30:24 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 5DF19164B;
-        Mon,  9 Jan 2023 13:30:21 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 0614F16A5;
+        Mon,  9 Jan 2023 13:30:22 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673267421;
+        t=1673267422;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XZ7Vzky1BdtRbR9tf/hknfjGnQGFjK6uHVN2tAqUR48=;
-        b=RTuO1odZs0w2M76H1FEFV3eKQe4v7gCl+bT2ZnjEt5Qsgwg0U+Y08UHRB4sFCq3Afoc5zm
-        yFsMW9hmL7gCwSWYrB7duIRSnOkTCUxqKlH5hfC4lio1b9KPqGd7FEEmLunkIXDQHkJiKV
-        sOujvZpTEM4svfbe+haAMl1RWfVV4v7sg5etKaJwDhq0fmfmCcGXgU/EgadIKnSOGejs8+
-        u+rZVfqze4ZR1Rh1q8V2uap/lx2zWSgQcsuCHr7S/d3E6oYISzuQTcMMld3k/mCs1sa0Zm
-        jUR0hMtuCdDrevOGSw9JLWPl89hP5ST4fKBk1xBwVf638Z4yCzs33kr47q830g==
+        bh=+pGsNIHjitpKn7MDw9fSh//e+FCcst6QZrjhQXHPk7c=;
+        b=dDYFZ1ouWPdjgrngTgusZbE+C5ahWILXMIQtW8byw1W0TAmH6iyRgWUA/7vYCYpmBFL2RD
+        xcHW8P7Z9Tjf1Unz0qCYYf94jzehULbi/cNdCR2OBC8FnnVZmz+UiuVIevl31EhhyF38g8
+        RphRHhBnoYZ5fHBS6RZsNYOjSewmbw9WlEHWngW7ZEItH2Mf6OhCuhnM2Id0MSj9HFmDJ0
+        qvP2Puv1UejJNH9JgsdbYAyK2uxtiNVyqTzyMn6vcXukGCFfGVtXzi0hpv9gnCvz6s/r0g
+        h+dAaDArPKW+WDQQ0fkLiDe39/q09eqJ3UN/MRPZRpH9TFARlkwoLI9efrnM6g==
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,9 +44,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 2/4] dt-bindings: net: phy: add MaxLinear GPY2xx bindings
-Date:   Mon,  9 Jan 2023 13:30:11 +0100
-Message-Id: <20230109123013.3094144-3-michael@walle.cc>
+Subject: [PATCH net-next v3 3/4] net: phy: allow a phy to opt-out of interrupt handling
+Date:   Mon,  9 Jan 2023 13:30:12 +0100
+Message-Id: <20230109123013.3094144-4-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230109123013.3094144-1-michael@walle.cc>
 References: <20230109123013.3094144-1-michael@walle.cc>
@@ -62,80 +62,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the device tree bindings for the MaxLinear GPY2xx PHYs, which
-essentially adds just one flag: maxlinear,use-broken-interrupts.
+Until now, it is not possible for a PHY driver to disable interrupts
+during runtime. If a driver offers the .config_intr() as well as the
+.handle_interrupt() ops, it is eligible for interrupt handling.
+Introduce a new flag for the dev_flags property of struct phy_device, which
+can be set by PHY driver to skip interrupt setup and fall back to polling
+mode.
 
-One might argue, that if interrupts are broken, just don't use
-the interrupt property in the first place. But it needs to be more
-nuanced. First, this interrupt line is also used to wake up systems by
-WoL, which has nothing to do with the (broken) PHY interrupt handling.
-
-Second and more importantly, there are devicetrees which have this
-property set. Thus, within the driver we have to switch off interrupt
-handling by default as a workaround. But OTOH, a systems designer who
-knows the hardware and knows there are no shared interrupts for example,
-can use this new property as a hint to the driver that it can enable the
-interrupt nonetheless.
+At the moment, this is used for the MaxLinear PHY which has broken
+interrupt handling and there is a need to disable interrupts in some
+cases.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- .../bindings/net/maxlinear,gpy2xx.yaml        | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
+ drivers/net/phy/phy_device.c | 7 +++++++
+ include/linux/phy.h          | 3 +++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml b/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
-new file mode 100644
-index 000000000000..d71fa9de2b64
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/maxlinear,gpy2xx.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/maxlinear,gpy2xx.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 716870a4499c..e4562859ac00 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1487,6 +1487,13 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 
+ 	phydev->interrupts = PHY_INTERRUPT_DISABLED;
+ 
++	/* PHYs can request to use poll mode even though they have an
++	 * associated interrupt line. This could be the case if they
++	 * detect a broken interrupt handling.
++	 */
++	if (phydev->dev_flags & PHY_F_NO_IRQ)
++		phydev->irq = PHY_POLL;
 +
-+title: MaxLinear GPY2xx PHY
+ 	/* Port is set to PORT_TP by default and the actual PHY driver will set
+ 	 * it to different value depending on the PHY configuration. If we have
+ 	 * the generic PHY driver we can't figure it out, thus set the old
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 6378c997ded5..742754d72fc0 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -739,6 +739,9 @@ struct phy_device {
+ #endif
+ };
+ 
++/* Generic phy_device::dev_flags */
++#define PHY_F_NO_IRQ		0x80000000
 +
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+  - Michael Walle <michael@walle.cc>
-+
-+allOf:
-+  - $ref: ethernet-phy.yaml#
-+
-+properties:
-+  maxlinear,use-broken-interrupts:
-+    description: |
-+      Interrupts are broken on some GPY2xx PHYs in that they keep the
-+      interrupt line asserted even after the interrupt status register is
-+      cleared. Thus it is blocking the interrupt line which is usually bad
-+      for shared lines. By default interrupts are disabled for this PHY and
-+      polling mode is used. If one can live with the consequences, this
-+      property can be used to enable interrupt handling.
-+
-+      Affected PHYs (as far as known) are GPY215B and GPY215C.
-+    type: boolean
-+
-+dependencies:
-+  maxlinear,use-broken-interrupts: [ interrupts ]
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    ethernet {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ethernet-phy@0 {
-+            reg = <0>;
-+            interrupts-extended = <&intc 0>;
-+            maxlinear,use-broken-interrupts;
-+        };
-+    };
-+
-+...
+ static inline struct phy_device *to_phy_device(const struct device *dev)
+ {
+ 	return container_of(to_mdio_device(dev), struct phy_device, mdio);
 -- 
 2.30.2
 
