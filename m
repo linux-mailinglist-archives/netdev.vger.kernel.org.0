@@ -2,73 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF156662094
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 09:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0E866209F
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 09:53:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234070AbjAIIvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 03:51:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S234262AbjAIIxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 03:53:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234147AbjAIIuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 03:50:18 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC31175B8
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 00:44:25 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id d9so8745349pll.9
-        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 00:44:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=C3ut7IeFEVyxT8k+RiaqPVnHnGMcfIVVOFwK2EZxKLc=;
-        b=h7aOg1RUuewuLfXfUMRYJmS+slA9z/Sg6ZWyr4DMhUqYTyqd+fj/iDCFunDTGiTIOr
-         FHmSkNbOOi4BR+GTpkidh0Pk4WFh4vecNDR9d0WfphTAuL67Vcf3emdFCpjhPuI+pkL0
-         ibzllDsZgLLPyMl2apyReLU1ldY51BmIkWAp3DFMprV1YiQ0VDO2NxRf/Kphgnb1MgE1
-         ElySEyFeKLIJ5WHgoHzSjEz6gk9b/ZM6uh5zeRREn4gYfH6zFtq3mQY0U5j6Syf2u7Ka
-         FEBlgGzroGmyBUxh5wbLeBsWKMJbhxXLn82uDLhh2184L5MQmZ9G/7l0ibshmB74R6nS
-         f1FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=C3ut7IeFEVyxT8k+RiaqPVnHnGMcfIVVOFwK2EZxKLc=;
-        b=1p9voKhg155fBz3cBXzIVfeVQyrDJcxw8TZ/TTXeOsEUWRt9Jp7D8Y1xFOM4rNuhRQ
-         8YFFxq1osgCexgUnFaoYvI2ej2oGdgdzko2xoEewEdS8FfQ4nOrNudoDueCTAUxpYbyY
-         XURdburydB20kfLj/nTSQJfXs8dwfXjKYcW0aRb3hqI8C9WDJoY6tFMzxNPQXhuhOr5G
-         e8jkDVAMYq2A0G56Cqopx4tV550CX+/UcaAfFlEBNwj2J+zAgHr0839m+y5EZ5JZzO2w
-         CNIA1rUlweOHx38177rxCcniIvC/dBgVlFw/vBGznQtzLbz7Jh1V4sisgPt91XejsDPQ
-         lYiw==
-X-Gm-Message-State: AFqh2kpztbzTdGoJDQepf35dFdtCsu1HnkBlhPWLRx+0S+oBjhy0ZqZB
-        OnEA9Yo9fTUROVoJeAia3zkd9Q==
-X-Google-Smtp-Source: AMrXdXsbqRanJ6uypQHYfoG+zca4lzjeuKaVaND7yFuK9rXJxtnYIE8lSkDlC2fbKY4Yk9n8Cxd+qA==
-X-Received: by 2002:a17:902:7488:b0:193:27da:e61d with SMTP id h8-20020a170902748800b0019327dae61dmr5079064pll.68.1673253851823;
-        Mon, 09 Jan 2023 00:44:11 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id q6-20020a17090311c600b00186985198a4sm5507829plh.169.2023.01.09.00.44.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jan 2023 00:44:11 -0800 (PST)
-Date:   Mon, 9 Jan 2023 09:44:08 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, michael.chan@broadcom.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: Re: [patch net-next v2 4/9] devlink: remove reporters_lock
-Message-ID: <Y7vT2IwhmJ5PK6F1@nanopsycho>
-References: <20230107101151.532611-1-jiri@resnulli.us>
- <20230107101151.532611-5-jiri@resnulli.us>
- <Y7rvQkoatRhKMwGI@shredder>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7rvQkoatRhKMwGI@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        with ESMTP id S236827AbjAIIwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 03:52:35 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF56F13F4B;
+        Mon,  9 Jan 2023 00:45:10 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id C26E05C0105;
+        Mon,  9 Jan 2023 03:44:59 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Mon, 09 Jan 2023 03:44:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1673253899; x=1673340299; bh=L1F91mJJga
+        KEg4dA8VxYJyoEo2s3t1TaV8Gb51DrVJU=; b=c+yD51YQT1KcIPDSyG+sEiRosP
+        SOi1ni3XbV0xomqi04Ch8TVCuQJ3B/QItBmlGAOAQwu5KzimWGwhc2srPMKvACX6
+        N7ax/LAtlIhf+znFdLRoiR6StDyX54QVHS6p9hH+MMk33PEmgZQIUNx5xfbIPu6H
+        /uLR6lHuxn2KTV4tz01v++x8nZm0mReVXtw1eM1dRXVQjZibM9vK7zuhzewdG9nT
+        VleYvpbxIxt3zZxc1SEd6pYjuV/JamyD0glpFtwB2F9Z+SrWW5HNitBaoCIOYUaZ
+        g3BUYm7Dlc0OPVjHXbIyjvNLY5htnPQSQqIVPJZSufXEzPkByLv+JtvMcaeg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1673253899; x=1673340299; bh=L1F91mJJgaKEg4dA8VxYJyoEo2s3
+        t1TaV8Gb51DrVJU=; b=ZiKrV3MFCykUfVE8xmG3AHGV8oJHU/cBsh2dQ40lItqJ
+        AidADxCuYx0p5qzZEyIodeCHoN6lc713IUjk3jnLTGuzH1Hlm1gVsUbuMxqr/N9J
+        thttf859jCtUzYZdzmCt957Ya5B/oJbkdQ5u9QjNWEpWLpHqLwZvT4PZ+dD0YuXc
+        hfMoz8AmVz1enhCbxcbBuB4S2NbhTrblbrSp5tzDRMCanVxO0PY5fTsPC5kHc+39
+        6g1K1nhu8+Ulzx1TPPUmLaiIX+rUqTC+jLmTbsIAVsgkgR1ucXhQM+oettAmpCiG
+        rJ/ifu3rwbSR6gRf3x1FC5FuZhQg2FIFnCJLX/nobA==
+X-ME-Sender: <xms:CtS7YxoHtx6hBDXGY9xaHF_cIlwngqsvDWAsLZJJWrft_oFWFH6oyw>
+    <xme:CtS7Yzp-PeQ6HfG3PFv6SEZ73GXpK74SOS-VjsY_J9RFz59kV6XFtDFuQHlgm9QCg
+    MT35paLjK3qxb5yGdc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrkeehgdduvdejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:C9S7Y-Mybw79_IvAt8yeEtEICRMgaJCiN4CxUNL0SxccioUi9oWXZg>
+    <xmx:C9S7Y84IOBXkKL72V9YA6SAa7SSyk5TXTUeeVAtk9kFnasWxkwAgGg>
+    <xmx:C9S7Yw6Y8F7TwRXetSPyFlfjwvI57X9X7WZfhuhBfTlyKN1GvfPN9A>
+    <xmx:C9S7Y_YKS1MRRAkDIclVe8aoNSkHStLU1FA1zSPRCNJJ9zXhOux08Q>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id E992AB60086; Mon,  9 Jan 2023 03:44:58 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
+Mime-Version: 1.0
+Message-Id: <c44bd7e8-68ff-44f8-b50b-4d27b4fe29dc@app.fastmail.com>
+In-Reply-To: <ad6efc07-1706-a8e2-1478-45124838a043@kernel.org>
+References: <20220818004357.375695-1-stephen@networkplumber.org>
+ <07786498-2209-3af0-8d68-c34427049947@kernel.org>
+ <po9s7-9snp-9so3-n6r5-qs217ss1633o@vanv.qr>
+ <ad6efc07-1706-a8e2-1478-45124838a043@kernel.org>
+Date:   Mon, 09 Jan 2023 09:44:38 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jiri Slaby" <jirislaby@kernel.org>,
+        "Jan Engelhardt" <jengelh@inai.de>
+Cc:     "Stephen Hemminger" <stephen@networkplumber.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "David Ahern" <dsahern@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
+        "Michael Ellerman" <mpe@ellerman.id.au>,
+        "Nicholas Piggin" <npiggin@gmail.com>,
+        "Christophe Leroy" <christophe.leroy@csgroup.eu>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        "Jozsef Kadlecsik" <kadlec@netfilter.org>,
+        "Florian Westphal" <fw@strlen.de>, "Borislav Petkov" <bp@suse.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Neeraj Upadhyay" <quic_neeraju@quicinc.com>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        "Damien Le Moal" <damien.lemoal@opensource.wdc.com>,
+        "Muchun Song" <songmuchun@bytedance.com>,
+        "Akhmat Karakotov" <hmukos@yandex-team.ru>,
+        "Antoine Tenart" <atenart@kernel.org>,
+        "Xin Long" <lucien.xin@gmail.com>,
+        "Juergen Gross" <jgross@suse.com>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        "Nathan Fontenot" <nathan.fontenot@amd.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Suma Hegde" <suma.hegde@amd.com>, "Chen Yu" <yu.c.chen@intel.com>,
+        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
+        "Xie Yongji" <xieyongji@bytedance.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        "Alexandre Ghiti" <alexandre.ghiti@canonical.com>,
+        "Chuck Lever" <chuck.lever@oracle.com>,
+        "Jeff Layton" <jlayton@kernel.org>,
+        "Paul Gortmaker" <paul.gortmaker@windriver.com>,
+        "Nikolay Aleksandrov" <razor@blackwall.org>,
+        "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>,
+        "Menglong Dong" <imagedong@tencent.com>,
+        "Petr Machata" <petrm@nvidia.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Roopa Prabhu" <roopa@nvidia.com>,
+        "Yuwei Wang" <wangyuweihx@gmail.com>,
+        "Shakeel Butt" <shakeelb@google.com>,
+        "Kuniyuki Iwashima" <kuniyu@amazon.com>,
+        "Kees Cook" <keescook@chromium.org>,
+        "Stefano Garzarella" <sgarzare@redhat.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Wang Qing" <wangqing@vivo.com>, "Yu Zhe" <yuzhe@nfschina.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list" <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>
+Subject: Re: [PATCH net-next] Remove DECnet support from kernel
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,42 +140,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jan 08, 2023 at 05:28:50PM CET, idosch@nvidia.com wrote:
->On Sat, Jan 07, 2023 at 11:11:45AM +0100, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
->> 
->> Similar to other devlink objects, convert the reporters list to be
->> protected by devlink instance lock. Alongside add unlocked versions
->> of health reporter create functions and remove port-specific destroy
->> function which is no longer needed.
->> 
->> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->> ---
->>  .../ethernet/mellanox/mlx5/core/en/health.c   |  12 ++
->>  .../mellanox/mlx5/core/en/reporter_rx.c       |   6 +-
->>  .../mellanox/mlx5/core/en/reporter_tx.c       |   6 +-
->>  drivers/net/ethernet/mellanox/mlxsw/core.c    |   8 +-
->>  drivers/net/netdevsim/health.c                |  20 +--
->>  include/net/devlink.h                         |  20 +--
->>  net/devlink/core.c                            |   2 -
->>  net/devlink/devl_internal.h                   |   1 -
->>  net/devlink/leftover.c                        | 131 +++++++-----------
->>  9 files changed, 96 insertions(+), 110 deletions(-)
+On Mon, Jan 9, 2023, at 09:34, Jiri Slaby wrote:
+> On 09. 01. 23, 9:14, Jan Engelhardt wrote:
+>> On Monday 2023-01-09 08:04, Jiri Slaby wrote:
 >
->This is quite difficult to review because there are multiple changes
->squashed into one patch:
+> Right, we used to keep providing also defines and structs in uapi 
+> headers of removed functionality. So that the above socket would 
+> compile, but fail during runtime.
 >
->1. Addition of locked versions of both device and port health reporter
->while refactoring the code to share code paths.
->
->2. Removal of the reporters mutex.
->
->3. Partial conversion of drivers to use the locked APIs. The conversion
->of mlxsw and netdevsim is trivial because they hold the instance lock
->during probe, but the conversion of mlx5 is less trivial. I would split
->it into a separate patch.
+> I am not biased to any solution. In fact, I found out trinity was fixed 
+> already. So either path networking takes, it's fine by me. I'm not sure 
+> about the chromium users, though (and I don't care).
 
-Yeah, I was thinking about splitting this, however since the new lock
-needs to be used on locked path with different helpers, it is not easy
-to find a good split, was a bit lazy to do that. Anyway, let me think
-and try again. Thanks!
+Chromium and some of the others look like automatically generated
+lists of files and the rest seem to have compile-time checks.
+
+From a brief look at all the packages in the debian codesearch
+link you provided, I don't see any that are likely to cause
+problems aside from trinity.
+
+    Arnd
