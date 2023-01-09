@@ -2,447 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A986625D5
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FFD66625F3
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 13:54:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230316AbjAIMvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 07:51:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
+        id S234419AbjAIMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 07:54:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236733AbjAIMtZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:49:25 -0500
-Received: from smtp-42ab.mail.infomaniak.ch (smtp-42ab.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0F35F9A
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 04:46:35 -0800 (PST)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NrDGH2NgbzMrfR4;
-        Mon,  9 Jan 2023 13:46:31 +0100 (CET)
-Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NrDGG446qz570;
-        Mon,  9 Jan 2023 13:46:30 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1673268391;
-        bh=ezo1wn4d9NkSYN5LV+l84opcixBGp5MaUENfqEsDKZg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=mRWGFcK7JGIbN10CQPESNJq9j2zWI9a1PbZtNBVabZ3ouW1LXgAf8PpQstWLTuz5C
-         OCe7sGL5wDEKa52fe+V6THrYRT5vRmN2Cm5IZiKD1a5+Dq2aN9D+ze8D4ijOtOruZh
-         YRlsxbMX3yDenvu3xW6JQwpLALgDx3eDOkcPSgSY=
-Message-ID: <5f8ed609-17bc-f8fc-4316-ceec9ad0f3b2@digikod.net>
-Date:   Mon, 9 Jan 2023 13:46:29 +0100
+        with ESMTP id S233336AbjAIMxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 07:53:33 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A795238D
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 04:53:31 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id ay40so6190155wmb.2
+        for <netdev@vger.kernel.org>; Mon, 09 Jan 2023 04:53:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ETbCko9qvHlQPPwFTCR8+/m7LxLG307onSAOdNo242Q=;
+        b=Qyz1Z0LIS2Jjd0OfSqrclssV2XihZGsbKAIMXdraJ4UGqC8prh3IzWrrMraz6FKtlO
+         h1+gsufUj33b4wMU/wDPXNt4nWGKA5DuS0x8K1Syb6jMnem0JN74Nkxv9ql8KNEMvFp5
+         TvBvXC6Sf89Jtnb11VzSXs37YUAVOGeUHUm4pbmco0duMZDB42EaHwneYbe0p7ei0J0k
+         WadqQP/xlKYM1KU9KdCkBDclMsnJc0AyLOtbHmh80W616whqVHD1xuVytTlyiPxF+l+U
+         xcGo+5ELgdNp5uWfv1JAf0CZlctSd4tACHyL/yir8zYzU1hwZ+iBjzkrkGK0tw6Fa7u6
+         oIVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ETbCko9qvHlQPPwFTCR8+/m7LxLG307onSAOdNo242Q=;
+        b=ab68MVANf6W3L7jdZP6tR0LrKAjELGkXaRhppfiVXN3855f6uB/up5+kKfzS5+fdkK
+         cS12JW84AJJyXqTY3IkZVw9duc8zz4ZtQRhpsY+1Wf2UOUvMFIC99kgA4pBBxNaravxr
+         VYfgFuKITEdIxQCz6ZAAyzNKZODNBgSMWt/SbUnQThyc6LB3YjpJ2MuLYyaNLKHrbA9Z
+         0bGOaf8O4wZOlB4a0wM94a6wQV3UZOfB4BSE1I7XnkNIoCdVQfl+X/5Ta6jIvl8AElac
+         UMyZv9bHmdotWOOpjjy1i7ckhgwPepDVvs4dwXNmjABnzthv2/WpKKyZ2ew1v5b2n3FI
+         gNkA==
+X-Gm-Message-State: AFqh2krbuvoQXFUAWYH0i3SJFsFFVxYmYmC5pa+kkABqWQGYX/02Zw/4
+        j9PKd54Pj89XiNbSYYgD4RiiGA==
+X-Google-Smtp-Source: AMrXdXtFjNw0AODLPqkFELj3Dfl8HXIbCZr81K/+a33HvQyZvXTG1A9oQwKgopu8UN2gnYr6Gscf7w==
+X-Received: by 2002:a05:600c:3509:b0:3c6:e60f:3f6f with SMTP id h9-20020a05600c350900b003c6e60f3f6fmr45593896wmq.38.1673268810220;
+        Mon, 09 Jan 2023 04:53:30 -0800 (PST)
+Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
+        by smtp.gmail.com with ESMTPSA id y7-20020a7bcd87000000b003d997e5e679sm12805667wmj.14.2023.01.09.04.53.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Jan 2023 04:53:29 -0800 (PST)
+From:   Neil Armstrong <neil.armstrong@linaro.org>
+Subject: [PATCH v2 00/11] dt-bindings: first batch of dt-schema conversions
+ for Amlogic Meson bindings
+Date:   Mon, 09 Jan 2023 13:53:25 +0100
+Message-Id: <20221117-b4-amlogic-bindings-convert-v2-0-36ad050bb625@linaro.org>
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v8 10/12] selftests/landlock: Add 10 new test suites
- dedicated to network
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-11-konstantin.meskhidze@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20221021152644.155136-11-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAEYOvGMC/42NOwrDMBAFr2JUZ4Ol+F/lHiGFfpYXlBWsHEEwv
+ ntETpDqMa+YOUT2jD6LpTkE+4IZE1VQl0bYTVPwgK6yUK1SUsoRTAf6FVNACwbJIYUMNlHxvMPk
+ V+nG3nVqcKIajM4eDGuyW3XQO8Z6bpj3xJ9fscg6j//kRUILt7VVfT/PZh6me0TSnK6Jg3ie5/k
+ FLFBWF8wAAAA=
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org, Neil Armstrong <neil.armstrong@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.11.1
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Batch conversion of the following bindings:
+- meson_sm.txt
+- amlogic-efuse.txt
+- amlogic-meson-mx-efuse.txt
+- meson-wdt.txt
+- meson-ir.txt
+- rtc-meson.txt
+- amlogic,meson6-timer.txt
+- meson-gxl-usb2-phy.txt
+- amlogic,meson-gx.txt
+- amlogic,meson-pcie.txt
+- mdio-mux-meson-g12a.txt
 
-On 21/10/2022 17:26, Konstantin Meskhidze wrote:
-> These test suites try to check edge cases for TCP sockets
-> bind() and connect() actions.
-> 
-> socket:
-> * bind_no_restrictions: Tests with non-landlocked ipv4 and ipv6 sockets.
-> * bind_with_restrictions: Tests with mixed landlock rules for ipv4 and
-> ipv6 sockets.
-> * connect_no_restrictions: Tests with non-landlocked ipv4 and ipv6 sockets.
-> * connect_with_restrictions: Tests with mixed landlock rules for ipv4 and
-> ipv6 sockets.
-> * connect_afunspec_no_restrictions: Tests with no landlock restrictions
-> allowing to disconnect already connected socket with AF_UNSPEC socket
-> family.
-> * connect_afunspec_with_restrictions: Tests with landlocked process
-> refusing to disconnect already connected socket.
-> * ruleset_overlap: Tests with overlapping rules for one port.
-> * ruleset_expanding: Tests with expanding rulesets in which rules are
-> gradually added one by one, restricting sockets' connections.
-> * inval: Tests with invalid user space supplied data:
->      - out of range ruleset attribute;
->      - unhandled allowed access;
->      - zero port value;
->      - zero access value;
->      - legitimate access values;
-> 
-> layout1:
-> * with_net: Tests with network bind() socket action within
-> filesystem directory access test.
-> 
-> Test coverage for security/landlock is 94.3% of 920 lines according
-> to gcc/gcov-11.
-> 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> ---
-> 
-> Changes since v7:
-> * Squashes all selftest commits.
-> * Adds fs test with network bind() socket action.
-> * Minor fixes.
-> 
-> ---
->   security/landlock/ruleset.h                 |   2 -
->   tools/testing/selftests/landlock/config     |   4 +
->   tools/testing/selftests/landlock/fs_test.c  |  65 ++
->   tools/testing/selftests/landlock/net_test.c | 823 ++++++++++++++++++++
->   4 files changed, 892 insertions(+), 2 deletions(-)
->   create mode 100644 tools/testing/selftests/landlock/net_test.c
-> 
-> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
-> index f272d2cd518c..ee1a02a404ce 100644
-> --- a/security/landlock/ruleset.h
-> +++ b/security/landlock/ruleset.h
-> @@ -264,7 +264,6 @@ landlock_add_fs_access_mask(struct landlock_ruleset *const ruleset,
-> 
->   	/* Should already be checked in sys_landlock_create_ruleset(). */
->   	WARN_ON_ONCE(fs_access_mask != fs_mask);
-> -	// TODO: Add tests to check "|=" and not "="
->   	ruleset->access_masks[layer_level] |=
->   		(fs_mask << LANDLOCK_SHIFT_ACCESS_FS);
->   }
-> @@ -278,7 +277,6 @@ landlock_add_net_access_mask(struct landlock_ruleset *const ruleset,
-> 
->   	/* Should already be checked in sys_landlock_create_ruleset(). */
->   	WARN_ON_ONCE(net_access_mask != net_mask);
-> -	// TODO: Add tests to check "|=" and not "="
->   	ruleset->access_masks[layer_level] |=
->   		(net_mask << LANDLOCK_SHIFT_ACCESS_NET);
->   }
-> diff --git a/tools/testing/selftests/landlock/config b/tools/testing/selftests/landlock/config
-> index 0f0a65287bac..71f7e9a8a64c 100644
-> --- a/tools/testing/selftests/landlock/config
-> +++ b/tools/testing/selftests/landlock/config
-> @@ -1,3 +1,7 @@
-> +CONFIG_INET=y
-> +CONFIG_IPV6=y
-> +CONFIG_NET=y
-> +CONFIG_NET_NS=y
->   CONFIG_OVERLAY_FS=y
->   CONFIG_SECURITY_LANDLOCK=y
->   CONFIG_SECURITY_PATH=y
-> diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
-> index 20c1ac8485f1..5c52da1a5a69 100644
-> --- a/tools/testing/selftests/landlock/fs_test.c
-> +++ b/tools/testing/selftests/landlock/fs_test.c
-> @@ -8,14 +8,17 @@
->    */
-> 
->   #define _GNU_SOURCE
-> +#include <arpa/inet.h>
->   #include <fcntl.h>
->   #include <linux/landlock.h>
-> +#include <netinet/in.h>
->   #include <sched.h>
->   #include <string.h>
->   #include <sys/capability.h>
->   #include <sys/mount.h>
->   #include <sys/prctl.h>
->   #include <sys/sendfile.h>
-> +#include <sys/socket.h>
->   #include <sys/stat.h>
->   #include <sys/sysmacros.h>
->   #include <unistd.h>
-> @@ -4366,4 +4369,66 @@ TEST_F_FORK(layout2_overlay, same_content_different_file)
->   	}
->   }
-> 
-> +#define IP_ADDRESS "127.0.0.1"
-> +
-> +TEST_F_FORK(layout1, with_net)
-> +{
-> +	int sockfd;
-> +	int sock_port = 15000;
-> +	struct sockaddr_in addr4;
-> +
-> +	addr4.sin_family = AF_INET;
-> +	addr4.sin_port = htons(sock_port);
-> +	addr4.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-> +	memset(&addr4.sin_zero, '\0', 8);
-> +
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = dir_s1d2,
-> +			.access = ACCESS_RO,
-> +		},
-> +		{},
-> +	};
-> +
-> +	struct landlock_ruleset_attr ruleset_attr_net = {
-> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +	};
-> +	struct landlock_net_service_attr net_service = {
-> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
-> +
-> +		.port = sock_port,
-> +	};
-> +
-> +	/* Creates ruleset for network access. */
-> +	const int ruleset_fd_net = landlock_create_ruleset(
-> +		&ruleset_attr_net, sizeof(ruleset_attr_net), 0);
-> +	ASSERT_LE(0, ruleset_fd_net);
-> +
-> +	/* Adds a network rule. */
-> +	ASSERT_EQ(0,
-> +		  landlock_add_rule(ruleset_fd_net, LANDLOCK_RULE_NET_SERVICE,
-> +				    &net_service, 0));
-> +
-> +	enforce_ruleset(_metadata, ruleset_fd_net);
-> +	ASSERT_EQ(0, close(ruleset_fd_net));
-> +
-> +	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	/* Tests on a directory with the network rule loaded. */
-> +	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY));
-> +	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
-> +
-> +	sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port 15000. */
-> +	ASSERT_EQ(0, bind(sockfd, &addr4, sizeof(addr4)));
-> +
-> +	/* Closes bounded socket. */
-> +	ASSERT_EQ(0, close(sockfd));
-> +}
-> +
->   TEST_HARNESS_MAIN
-> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
-> new file mode 100644
-> index 000000000000..d1548bd7ab60
-> --- /dev/null
-> +++ b/tools/testing/selftests/landlock/net_test.c
-> @@ -0,0 +1,823 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Landlock tests - Network
-> + *
-> + * Copyright (C) 2022 Huawei Tech. Co., Ltd.
-> + */
-> +
-> +#define _GNU_SOURCE
-> +#include <arpa/inet.h>
-> +#include <errno.h>
-> +#include <fcntl.h>
-> +#include <linux/landlock.h>
-> +#include <netinet/in.h>
-> +#include <sched.h>
-> +#include <string.h>
-> +#include <sys/prctl.h>
-> +#include <sys/socket.h>
-> +#include <sys/types.h>
-> +
-> +#include "common.h"
-> +
-> +#define MAX_SOCKET_NUM 10
-> +
-> +#define SOCK_PORT_START 3470
-> +#define SOCK_PORT_ADD 10
-> +
-> +#define IP_ADDRESS "127.0.0.1"
-> +
-> +/* Number pending connections queue to be hold. */
-> +#define BACKLOG 10
-> +
-> +const struct sockaddr addr_unspec = { .sa_family = AF_UNSPEC };
-> +
-> +/* Invalid attribute, out of landlock network access range. */
-> +#define LANDLOCK_INVAL_ATTR 7
-> +
-> +FIXTURE(socket)
-> +{
-> +	uint port[MAX_SOCKET_NUM];
-> +	struct sockaddr_in addr4[MAX_SOCKET_NUM];
-> +	struct sockaddr_in6 addr6[MAX_SOCKET_NUM];
-> +};
-> +
-> +/* struct _fixture_variant_socket */
-> +FIXTURE_VARIANT(socket)
-> +{
-> +	const bool is_ipv4;
-> +};
-> +
-> +/* clang-format off */
-> +FIXTURE_VARIANT_ADD(socket, ipv4) {
-> +	/* clang-format on */
-> +	.is_ipv4 = true,
-> +};
-> +
-> +/* clang-format off */
-> +FIXTURE_VARIANT_ADD(socket, ipv6) {
-> +	/* clang-format on */
-> +	.is_ipv4 = false,
-> +};
-> +
-> +static int
-> +create_socket_variant(const struct _fixture_variant_socket *const variant,
-> +		      const int type)
-> +{
-> +	if (variant->is_ipv4)
-> +		return socket(AF_INET, type | SOCK_CLOEXEC, 0);
-> +	else
-> +		return socket(AF_INET6, type | SOCK_CLOEXEC, 0);
-> +}
-> +
-> +static int bind_variant(const struct _fixture_variant_socket *const variant,
-> +			const int sockfd,
-> +			const struct _test_data_socket *const self,
-> +			const size_t index)
-> +{
-> +	if (variant->is_ipv4)
-> +		return bind(sockfd, &self->addr4[index],
-> +			    sizeof(self->addr4[index]));
-> +	else
-> +		return bind(sockfd, &self->addr6[index],
-> +			    sizeof(self->addr6[index]));
-> +}
-> +
-> +static int connect_variant(const struct _fixture_variant_socket *const variant,
-> +			   const int sockfd,
-> +			   const struct _test_data_socket *const self,
-> +			   const size_t index)
-> +{
-> +	if (variant->is_ipv4)
-> +		return connect(sockfd, &self->addr4[index],
-> +			       sizeof(self->addr4[index]));
-> +	else
-> +		return connect(sockfd, &self->addr6[index],
-> +			       sizeof(self->addr6[index]));
-> +}
-> +
-> +FIXTURE_SETUP(socket)
-> +{
-> +	int i;
-> +
-> +	/* Creates IPv4 socket addresses. */
-> +	for (i = 0; i < MAX_SOCKET_NUM; i++) {
-> +		self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD * i;
-> +		self->addr4[i].sin_family = AF_INET;
-> +		self->addr4[i].sin_port = htons(self->port[i]);
-> +		self->addr4[i].sin_addr.s_addr = inet_addr(IP_ADDRESS);
-> +		memset(&(self->addr4[i].sin_zero), '\0', 8);
-> +	}
-> +
-> +	/* Creates IPv6 socket addresses. */
-> +	for (i = 0; i < MAX_SOCKET_NUM; i++) {
-> +		self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD * i;
-> +		self->addr6[i].sin6_family = AF_INET6;
-> +		self->addr6[i].sin6_port = htons(self->port[i]);
-> +		inet_pton(AF_INET6, IP_ADDRESS, &(self->addr6[i].sin6_addr));
-> +	}
-> +
-> +	set_cap(_metadata, CAP_SYS_ADMIN);
-> +	ASSERT_EQ(0, unshare(CLONE_NEWNET));
-> +	ASSERT_EQ(0, system("ip link set dev lo up"));
-> +	clear_cap(_metadata, CAP_SYS_ADMIN);
-> +}
-> +
-> +FIXTURE_TEARDOWN(socket)
-> +{
-> +}
-> +
-> +TEST_F_FORK(socket, bind_no_restrictions)
-> +{
-> +	int sockfd;
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +
-> +	/* Binds a socket to port[0]. */
-> +	ASSERT_EQ(0, bind_variant(variant, sockfd, self, 0));
-> +
-> +	ASSERT_EQ(0, close(sockfd));
-> +}
-> +
-> +TEST_F_FORK(socket, bind_with_restrictions)
-> +{
-> +	int sockfd;
-> +
-> +	struct landlock_ruleset_attr ruleset_attr = {
-> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +	};
-> +	struct landlock_net_service_attr net_service_1 = {
-> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
-> +				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +		.port = self->port[0],
-> +	};
-> +	struct landlock_net_service_attr net_service_2 = {
-> +		.allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +		.port = self->port[1],
-> +	};
-> +	struct landlock_net_service_attr net_service_3 = {
-> +		.allowed_access = 0,
-> +		.port = self->port[2],
-> +	};
-> +
-> +	const int ruleset_fd =
-> +		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-> +	ASSERT_LE(0, ruleset_fd);
-> +
-> +	/* Allows connect and bind operations to the port[0] socket. */
-> +	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-> +				       &net_service_1, 0));
-> +	/* Allows connect and deny bind operations to the port[1] socket. */
-> +	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-> +				       &net_service_2, 0));
-> +	/*
-> +	 * Empty allowed_access (i.e. deny rules) are ignored in network actions
-> +	 * for port[2] socket.
-> +	 */
-> +	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-> +					&net_service_3, 0));
-> +	ASSERT_EQ(ENOMSG, errno);
-> +
-> +	/* Enforces the ruleset. */
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port[0]. */
-> +	ASSERT_EQ(0, bind_variant(variant, sockfd, self, 0));
-> +
-> +	/* Closes bounded socket. */
-> +	ASSERT_EQ(0, close(sockfd));
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port[1]. */
-> +	ASSERT_EQ(-1, bind_variant(variant, sockfd, self, 1));
-> +	ASSERT_EQ(EACCES, errno);
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port[2]. */
-> +	ASSERT_EQ(-1, bind_variant(variant, sockfd, self, 2));
-> +	ASSERT_EQ(EACCES, errno);
+The amlogic,meson-gx-pwrc.txt is removed since deprecated and unused 
+for a few releases now.
 
-This is inconsistent with the bind_no_restrictions test. If you 
-deduplicate the tests with and without restrictions (i.e. only one 
-"bind" test, and another "connect"…), you can extend 
-FIXTURE_VARIANT(socket) with a new const bool enforce_landlock, and 
-check that in all tests to either do Landlock syscalls or not. You can 
-still initialize most variable whatever Landlock should be enforced or 
-not (e.g. ruleset_attr, net_service_1…) to make it easiear to read.
+Martin Blumenstingl was also added as bindings maintainer for Meson6/8/8b
+related bindings.
 
+Remaining conversions:
+- meson,pinctrl.txt
+- pwm-meson.txt
+- amlogic,meson-gpio-intc.txt
+- amlogic,meson-mx-sdio.txt
+- rtc-meson-vrtc.txt
+- amlogic,axg-sound-card.txt
+- amlogic,axg-fifo.txt
+- amlogic,axg-pdm.txt
+- amlogic,axg-spdifout.txt
+- amlogic,axg-tdm-formatters.txt
+- amlogic,axg-spdifin.txt
+- amlogic,axg-tdm-iface.txt
+- amlogic,g12a-tohdmitx.txt
+- amlogic,axg-audio-clkc.txt
+- amlogic,gxbb-clkc.txt
+- amlogic,gxbb-aoclkc.txt
+- amlogic,meson8b-clkc.txt
 
-> +}
-> +
-> +TEST_F_FORK(socket, connect_no_restrictions)
+To: Rob Herring <robh+dt@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To: Kevin Hilman <khilman@baylibre.com>
+To: Jerome Brunet <jbrunet@baylibre.com>
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To: Wim Van Sebroeck <wim@linux-watchdog.org>
+To: Guenter Roeck <linux@roeck-us.net>
+To: Mauro Carvalho Chehab <mchehab@kernel.org>
+To: Alessandro Zummo <a.zummo@towertech.it>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+To: Vinod Koul <vkoul@kernel.org>
+To: Kishon Vijay Abraham I <kishon@kernel.org>
+To: Ulf Hansson <ulf.hansson@linaro.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: Eric Dumazet <edumazet@google.com>
+To: Jakub Kicinski <kuba@kernel.org>
+To: Paolo Abeni <pabeni@redhat.com>
+To: Andrew Lunn <andrew@lunn.ch>
+To: Heiner Kallweit <hkallweit1@gmail.com>
+To: Russell King <linux@armlinux.org.uk>
+Cc: devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-amlogic@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-watchdog@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-rtc@vger.kernel.org
+Cc: linux-phy@lists.infradead.org
+Cc: linux-mmc@vger.kernel.org
+Cc: linux-pci@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+
+---
+Changes in v2:
+- rebased on v6.2-rc1
+- patch 1: fixed power-controller, added const: amlogic,meson-gx-sm
+- patch 2: added const: amlogic,meson-gx-efuse, fixed secure-monitor type
+- patch 3: updated example subnodes to match reality
+- patch 4: added reviewed-by, added interrupts, added const: amlogic,meson8m2-wdt
+- patch 5: added reviewed-by, added const: amlogic,meson-gx-ir
+- patch 6: dropped applied
+- patch 7: dropped patch, replaced with deprecated in the title of the TXt bindings
+- patch 8: fixed title, added reviewed-by, added interrupt description
+- patch 9: fixed example indent, added reviewed-by
+- patch 10: fixed const: amlogic,meson-gx-mmc case, fixed indentation
+- patch 11: added reviewed-by, fixed title, fixed bindings after rebase, added clocks/clock-names as required
+- patch 12: added reviewed-by
+- Link to v1: https://lore.kernel.org/r/20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org
+
+---
+Neil Armstrong (11):
+      dt-bindings: firmware: convert meson_sm.txt to dt-schema
+      dt-bindings: nvmem: convert amlogic-efuse.txt to dt-schema
+      dt-bindings: nvmem: convert amlogic-meson-mx-efuse.txt to dt-schema
+      dt-bindings: watchdog: convert meson-wdt.txt to dt-schema
+      dt-bindings: media: convert meson-ir.txt to dt-schema
+      dt-bindings: power: amlogic,meson-gx-pwrc: mark bindings as deprecated
+      dt-bindings: timer: convert timer/amlogic,meson6-timer.txt to dt-schema
+      dt-bindings: phy: convert meson-gxl-usb2-phy.txt to dt-schema
+      dt-bindings: mmc: convert amlogic,meson-gx.txt to dt-schema
+      dt-bindings: PCI: convert amlogic,meson-pcie.txt to dt-schema
+      dt-bindings: net: convert mdio-mux-meson-g12a.txt to dt-schema
+
+ .../bindings/firmware/amlogic,meson-gxbb-sm.yaml   |  39 ++++++
+ .../bindings/firmware/meson/meson_sm.txt           |  15 ---
+ .../bindings/media/amlogic,meson6-ir.yaml          |  47 ++++++++
+ .../devicetree/bindings/media/meson-ir.txt         |  20 ---
+ .../bindings/mmc/amlogic,meson-gx-mmc.yaml         |  75 ++++++++++++
+ .../devicetree/bindings/mmc/amlogic,meson-gx.txt   |  39 ------
+ .../bindings/net/amlogic,g12a-mdio-mux.yaml        |  80 ++++++++++++
+ .../bindings/net/mdio-mux-meson-g12a.txt           |  48 --------
+ .../bindings/nvmem/amlogic,meson-gxbb-efuse.yaml   |  57 +++++++++
+ .../bindings/nvmem/amlogic,meson6-efuse.yaml       |  60 +++++++++
+ .../devicetree/bindings/nvmem/amlogic-efuse.txt    |  48 --------
+ .../bindings/nvmem/amlogic-meson-mx-efuse.txt      |  22 ----
+ .../devicetree/bindings/pci/amlogic,axg-pcie.yaml  | 134 +++++++++++++++++++++
+ .../devicetree/bindings/pci/amlogic,meson-pcie.txt |  70 -----------
+ .../bindings/phy/amlogic,meson-gxl-usb2-phy.yaml   |  56 +++++++++
+ .../devicetree/bindings/phy/meson-gxl-usb2-phy.txt |  21 ----
+ .../bindings/power/amlogic,meson-gx-pwrc.txt       |   4 +-
+ .../bindings/timer/amlogic,meson6-timer.txt        |  22 ----
+ .../bindings/timer/amlogic,meson6-timer.yaml       |  54 +++++++++
+ .../bindings/watchdog/amlogic,meson6-wdt.yaml      |  50 ++++++++
+ .../devicetree/bindings/watchdog/meson-wdt.txt     |  21 ----
+ 21 files changed, 654 insertions(+), 328 deletions(-)
+---
+base-commit: 1b929c02afd37871d5afb9d498426f83432e71c2
+change-id: 20221117-b4-amlogic-bindings-convert-8ef1d75d426d
+
+Best regards,
+-- 
+Neil Armstrong <neil.armstrong@linaro.org>
