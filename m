@@ -2,119 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6F66624B5
-	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:54:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F08246624BA
+	for <lists+netdev@lfdr.de>; Mon,  9 Jan 2023 12:54:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbjAILxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 06:53:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
+        id S234714AbjAILyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 06:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234365AbjAILxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:53:22 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372181A05D;
-        Mon,  9 Jan 2023 03:53:12 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id g19-20020a05600c4ed300b003d9eb1dbc0aso3507600wmq.3;
-        Mon, 09 Jan 2023 03:53:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=yuo8pU7AP5RWR4z47Dmbosa4tCF1KJOtJvLB5VnQJDk=;
-        b=NePZKS/LU6deDhfl4q3T9A2bzw8JNjbfqbDewCPREEgQG+/qDa/2vqP0G85lCYr89c
-         s/6ReJN73fH5VHATtyvAc3dFk8+viTqT+CsDIGSYOqmvdJcFDeUqKkI5GNR+NTtPRdkg
-         PVuwHUGjPOcO50mFY/70H5f8vOy5Hcnt+M4T/CBvcdvsmLRD++VFPRP6m9oMQ4zM4ovJ
-         xzFkwrjXBB36zV9jhWJof6Up4zpr3kFKl4V1/Lxx/lHBCbVP9JT9LPI5weBHUVejkClD
-         vfjcdRtocIVhQ/eJ0EbMf29tPkVW/Me1UxFAFgO0s/IDH+vIewDqDStEQmr7YYYUoye2
-         Nmcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yuo8pU7AP5RWR4z47Dmbosa4tCF1KJOtJvLB5VnQJDk=;
-        b=Y5tHfQyUbsFzz0unuLfyYw/So//oPP6IYP8NpRiPzCmuBga3ItskLO8Fo8HPyiX1nA
-         ZDdmzQGnkzMoGmrJ6Oa02ztWA9jg48t3VUR+PIgfny15eGhXjAjQy7oRXEBkkOwJ2x2S
-         Sb9HuKYZCMByRo3g6IZ9beLCV34LZsn0xydQxFD1IVQvasu3/pFRfQBYJG+dcmEhRh1m
-         P64+wJgzWqLqgFsINuv3+FEbRVFK1Uic1cUtoTIJkEzM/QBOuJLH4Sr9fNbfzCp/YOl5
-         s+VBjk9J6TdzaL0j3qa7ljR8CwBQD1tKhEryJ9HwumudpS1tfW8/aU4S5fXkeBOPoSOo
-         an1w==
-X-Gm-Message-State: AFqh2kp887vS/Y2s5aQ74Z7N6EObg6MjtfA47RhjkvfvEuGuogYe0Tjr
-        PitcQFioWRP2yzihQniHXIA=
-X-Google-Smtp-Source: AMrXdXu2FtPLas2GBP+AZnRW1vg8obTldiySVi7o/t8Z2F02hU7rv9DNG7gflx2nzKIlXRg/udXecA==
-X-Received: by 2002:a05:600c:18a3:b0:3d6:b71c:117a with SMTP id x35-20020a05600c18a300b003d6b71c117amr56340271wmp.31.1673265190764;
-        Mon, 09 Jan 2023 03:53:10 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id m18-20020a05600c4f5200b003c71358a42dsm20628619wmq.18.2023.01.09.03.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jan 2023 03:53:10 -0800 (PST)
-Date:   Mon, 9 Jan 2023 14:53:05 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-Cc:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
-        linux-sparse@vger.kernel.org, willemdebruijn.kernel@gmail.com,
-        gnoack3000@gmail.com, linux-security-module@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        artem.kuzin@huawei.com, Linux API <linux-api@vger.kernel.org>,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Subject: Re: [PATCH v8 07/12] landlock: Add network rules support
-Message-ID: <Y7wAITZ/Ae/SwH9m@kadam>
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-8-konstantin.meskhidze@huawei.com>
- <49391484-7401-e7c7-d909-3bd6bd024731@digikod.net>
- <9a6ea6ac-525d-e058-5867-0794a99b19a3@huawei.com>
- <47fedda8-a13c-b62f-251f-b62508964bb0@digikod.net>
- <4aa29433-e7f9-f225-5bdf-c80638c936e8@huawei.com>
- <Y7vXSAGHf08p2Zbm@kadam>
- <af0d7337-3a92-5eca-7d7c-cc09d5713589@huawei.com>
- <Y7vqdgvxQVNvu6AY@kadam>
- <0dab9d74-6a41-9cf3-58fb-9fbb265efdd0@huawei.com>
+        with ESMTP id S236585AbjAILyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 06:54:06 -0500
+X-Greylist: delayed 305 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 Jan 2023 03:54:04 PST
+Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1FBBC4;
+        Mon,  9 Jan 2023 03:54:04 -0800 (PST)
+Received: from mx0.infotecs-nt (localhost [127.0.0.1])
+        by mx0.infotecs.ru (Postfix) with ESMTP id 9906B115A6D0;
+        Mon,  9 Jan 2023 14:54:02 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru 9906B115A6D0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
+        t=1673265242; bh=ZXSwrerDkXcdQ+WWtvdH5WrD8pokhX2bGkxfVSiTOuA=;
+        h=From:To:CC:Subject:Date:From;
+        b=CS9j6l5TWg9+Ga6JM9yDos8KAzAPKbUaZu78AJjGkHMMoRGojxOEqZ5gs2PSAKpP0
+         8+83VAl2swHBEa7O78b6wrUc4mxXO+jCUMffcUW52wvTpirD0bJFQWkVVTlZWXQ5dS
+         PM51tFwMj0HrGCFN31Of85Z+8CdZZEOg5XRtLdvM=
+Received: from msk-exch-01.infotecs-nt (msk-exch-01.infotecs-nt [10.0.7.191])
+        by mx0.infotecs-nt (Postfix) with ESMTP id 968D130D0A0A;
+        Mon,  9 Jan 2023 14:54:02 +0300 (MSK)
+Received: from msk-exch-01.infotecs-nt (10.0.7.191) by msk-exch-01.infotecs-nt
+ (10.0.7.191) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.12; Mon, 9 Jan
+ 2023 14:54:02 +0300
+Received: from msk-exch-01.infotecs-nt ([fe80::89df:c35f:46be:fd07]) by
+ msk-exch-01.infotecs-nt ([fe80::89df:c35f:46be:fd07%14]) with mapi id
+ 15.02.1118.012; Mon, 9 Jan 2023 14:54:02 +0300
+From:   Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
+Subject: [PATCH] netfilter: ipset: Fix overflow before widen in the
+ bitmap_ip_create() function.
+Thread-Topic: [PATCH] netfilter: ipset: Fix overflow before widen in the
+ bitmap_ip_create() function.
+Thread-Index: AQHZJCER6ItbAfvk9EO+bS1fujtoFQ==
+Date:   Mon, 9 Jan 2023 11:54:02 +0000
+Message-ID: <20230109115432.3001636-1-Ilia.Gavrilov@infotecs.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.17.0.10]
+x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0dab9d74-6a41-9cf3-58fb-9fbb265efdd0@huawei.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 174564 [Jan 09 2023]
+X-KLMS-AntiSpam-Version: 5.9.59.0
+X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
+X-KLMS-AntiSpam-Rate: 0
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_from_domain_doesnt_match_to}, infotecs.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2023/01/09 09:37:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/01/09 09:04:00 #20749700
+X-KLMS-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 02:39:36PM +0300, Konstantin Meskhidze (A) wrote:
-> 
-> 
-> 1/9/2023 1:20 PM, Dan Carpenter пишет:
-> > On Mon, Jan 09, 2023 at 12:26:52PM +0300, Konstantin Meskhidze (A) wrote:
-> > > 
-> > > 
-> > > 1/9/2023 11:58 AM, Dan Carpenter пишет:
-> > > > These warnings seem like something I have seen before.  Maybe it was an
-> > > > issue with _Generic() support?
-> > > > > Are you really sure you're running the latest git version of
-> > > Sparse?
-> > > > > I tested this patch with the latest version of Sparse on my
-> > > system and
-> > > > it worked fine.
-> > > 
-> > >  Hi Dan,
-> > > 
-> > >  git is on the master branch now - hash ce1a6720 (dated 27 June 2022)
-> > > 
-> > >  Is this correct version?
-> > 
-> > Yes, that's correct.  What is your .config?
-> 
->   What parameters do I need to check in .config?
+When first_ip is 0, last_ip is 0xFFFFFFF, and netmask is 31, the value of
+an arithmetic expression 2 << (netmask - mask_bits - 1) is subject
+to overflow due to a failure casting operands to a larger data type
+before performing the arithmetic.
 
-I don't know.  I was hoping you could just email me the whole thing
-and/or the results from make security/landlock/ruleset.i.  That way
-we could see what line was making Sparse complain.
+Note that it's harmless since the value will be checked at the next step.
 
-regards,
-dan carpenter
+Found by InfoTeCS on behalf of Linux Verification Center
+(linuxtesting.org) with SVACE.
 
+Fixes: b9fed748185a ("netfilter: ipset: Check and reject crazy /0 input par=
+ameters")
+Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
+---
+ net/netfilter/ipset/ip_set_bitmap_ip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/netfilter/ipset/ip_set_bitmap_ip.c b/net/netfilter/ipset/i=
+p_set_bitmap_ip.c
+index a8ce04a4bb72..b8f0fb37378f 100644
+--- a/net/netfilter/ipset/ip_set_bitmap_ip.c
++++ b/net/netfilter/ipset/ip_set_bitmap_ip.c
+@@ -309,7 +309,7 @@ bitmap_ip_create(struct net *net, struct ip_set *set, s=
+truct nlattr *tb[],
+=20
+ 		pr_debug("mask_bits %u, netmask %u\n", mask_bits, netmask);
+ 		hosts =3D 2 << (32 - netmask - 1);
+-		elements =3D 2 << (netmask - mask_bits - 1);
++		elements =3D 2UL << (netmask - mask_bits - 1);
+ 	}
+ 	if (elements > IPSET_BITMAP_MAX_RANGE + 1)
+ 		return -IPSET_ERR_BITMAP_RANGE_SIZE;
+--=20
+2.30.2
