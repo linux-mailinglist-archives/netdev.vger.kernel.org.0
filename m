@@ -2,160 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC63466468E
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 17:52:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9799D6646AC
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 17:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238664AbjAJQv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 11:51:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S233851AbjAJQ4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 11:56:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238962AbjAJQvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 11:51:45 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C82140D5;
-        Tue, 10 Jan 2023 08:51:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673369504; x=1704905504;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=9/10tpWO4XHgRk/3bVa4GfsOrwejWtMWSVcnxB+f0LI=;
-  b=Re/6JDkYXx9s4OIChl9A6Bbh6r7KAMdjK987QbdWb7R1jQfLrA/N6zCb
-   /mDIfZiFyy7LkjabWj1nlO86hdmGTrDyQMMp+GWViOa/Mvco+S0/EWdv2
-   ByD+t+wiz7+paqZRnCW41h7nn9m7V3i+uC3EiSbL2qJ3ueg8m6w83GPE+
-   8rU/gy13BaTceYZMoDFPQO0qhoPMMrb0bYjFgErM7ISVAiOHNYMC5V66p
-   nxFRi/SJWSsbpGJdHUyfeSV+gafGEZZ96aVsvQlICQj4dMVjuRpV1xc2A
-   Isg6JTsuGLOCCIUmeftwybmIDi/PuWej/BCs3sZG6Jmn03Lku4W3reAhJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="321898378"
-X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="321898378"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 08:51:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="902435300"
-X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="902435300"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Jan 2023 08:51:40 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 10 Jan 2023 08:51:39 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 10 Jan 2023 08:51:39 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 10 Jan 2023 08:51:39 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 10 Jan 2023 08:51:38 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sk4deuk1/FjqqTaWGE4HWEfLVGwODv/tgdzx0azxj4rifyJgZsw8eszzCAa4C835G64DImVoSt2U9sl+nq0M08zYfbFTac6e0AbICkqhnzfqEyparmPWKmiZMQYC3qLd7UaCzwL2gfhDmecKhrhzJVCDyU2HnGERKjA+a73HcTurCwCXB5XovOZVP3fEVVjbX2XPheDh6Fzhm7c3sAkWPpztWCoaPCrteI/IJL6Ougxsj5JGb8BUNuQCyZWUKMr4+H+bi0WjrBGZC5e7y1oP3She3pfx7iHAg+fOeHSMMG9+EnxeE542EJ6q8yBwczi6CON1EFKdkaL5vHfzduHtnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bVazBTJwsKYyVVYpaefKUuf2hmc2xCF1wYDvBrro/Hk=;
- b=W6VvdVR+fqwomgLJRmHJpuH1Qm9H/HEZQCI6OkcBtOnrpMG1z2hicPLAhm4J/hPi371X/BquvXfzK1A8wdonV5//A5eB1ChQ6Hfepu6ei2CMMzbfosQRawpTbRt/+JDnPfxcgN4yQr62W86kae8Azv+LxfPQAhylbDDf21qb6PmRED1GfFXX7nYaIZ2lYkMIu13pSEYYz5wAIoE8d1szVKSkOnZaawaa2pNf1nGKcSOUcptWqZHsSg4KutielQVEaMGrlkrBpcFvHNF7A5+LLo3Gdws10k5+cvcU7FpkgDfhfKgy4YOCda7bo3etnrjA6GYeWn1MrX7cIH/LKNgMQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
- by BN9PR11MB5385.namprd11.prod.outlook.com (2603:10b6:408:11a::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
- 2023 16:51:37 +0000
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::c1e:cae6:7636:43b8]) by MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::c1e:cae6:7636:43b8%2]) with mapi id 15.20.5986.018; Tue, 10 Jan 2023
- 16:51:37 +0000
-Message-ID: <28077568-075d-b0a5-2be6-b2d7f5e4557c@intel.com>
-Date:   Tue, 10 Jan 2023 08:51:34 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 2/7] PCI: Remove PCI IDs used by the Sun Cassini
- driver
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <linux-mips@vger.kernel.org>,
-        <linux-trace-kernel@vger.kernel.org>, <sparclinux@vger.kernel.org>,
-        "Leon Romanovsky" <leon@kernel.org>
-References: <20230110152606.GA1504608@bhelgaas>
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-In-Reply-To: <20230110152606.GA1504608@bhelgaas>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR20CA0036.namprd20.prod.outlook.com
- (2603:10b6:a03:1f4::49) To MW3PR11MB4764.namprd11.prod.outlook.com
- (2603:10b6:303:5a::16)
+        with ESMTP id S238987AbjAJQ4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 11:56:17 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43F332A
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 08:56:15 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id o8-20020a17090a9f8800b00223de0364beso17149204pjp.4
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 08:56:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=cxdoX03GewIn67gOMNZh8jauq3SOQv6rkF+O37rR2O4=;
+        b=cvR8rk+bliQkpgqz3Vz1brX6CRzdeeyVtYxwEclVupzX4iiv0vVvHhLg1/8psrYgas
+         0a8mdC3kaFSflnmFoJdWsr5GX1p/9AsCy10tGiysck/ApxLFVc509Ld0o2UgeKfqkrc3
+         3sOy9IeUuQCMYlwyPTgJgO0Qw3TO0/oH0TmFwljr1fxhf7QMRDDf3wHtx9/NHNLDyIj9
+         jqNUFmMghN7NMWVll6OC05ZOxNi2MD83kBP9+2YiOF2isok4j59VafKej2ukL0PuCpD/
+         +lJblxGUfNPgKqbJbZ7XGSU68eIgF0jI9lzOc/Y2dx4QLCyx9J5O2JghlYWtCWACDavI
+         yN9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cxdoX03GewIn67gOMNZh8jauq3SOQv6rkF+O37rR2O4=;
+        b=LsiDsqdvYgGcuKNbh80mPsLYQpCA9oSfAfpDKMpsCZwV47iA4U5OPMs7auQVuQktCg
+         3hS2wO46wHOGHqj/sSd1Hu+wBcOyzevyEFjb2XE/y28G+sTS7JK3IZdE9qaHFTzE5ULr
+         JE4nqXD8bZozqA+Nn9OcbYIwDtOQMROnW+R70jU7NR4AgUh++CBdfGUi//eZvVtvgrfi
+         8laM8Uen5pgcOQRjunx73YmRQVo4PxCglaRQUa81cjGZXNWS3gG/8Wol8Hb8stc09/5o
+         gN+JRh0JmXGRKTNOwAq7+pusaijKmc6JFSjVcK9m9K9XN/+T1Lm+uZ6gBTK0DS7WsmHD
+         8mKg==
+X-Gm-Message-State: AFqh2kqf1F1lSNxEKbdeekUhb4F7ONusgaQ2qowHwOHyD811tNXX7FMf
+        9OU/kcbMyz0DGdRhgS37gxk=
+X-Google-Smtp-Source: AMrXdXtCRdSmtoXuEymD0E5gPyQnBBBr+8YHKmININUQMyiAK26D2kDC6aIJWekIQbMnsLNSHJJEXw==
+X-Received: by 2002:a17:90b:3704:b0:226:a12e:b07c with SMTP id mg4-20020a17090b370400b00226a12eb07cmr25338299pjb.48.1673369774750;
+        Tue, 10 Jan 2023 08:56:14 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.37.136])
+        by smtp.googlemail.com with ESMTPSA id s6-20020a17090a2f0600b00226156cf039sm9176472pjd.44.2023.01.10.08.56.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jan 2023 08:56:14 -0800 (PST)
+Message-ID: <f8b1b2afcdaef61c4adb8972e18cb40ad5a4787c.camel@gmail.com>
+Subject: Re: [PATCH net-next v4 05/10] tsnep: Add XDP TX support
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+Date:   Tue, 10 Jan 2023 08:56:12 -0800
+In-Reply-To: <20230109191523.12070-6-gerhard@engleder-embedded.com>
+References: <20230109191523.12070-1-gerhard@engleder-embedded.com>
+         <20230109191523.12070-6-gerhard@engleder-embedded.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|BN9PR11MB5385:EE_
-X-MS-Office365-Filtering-Correlation-Id: 720f124e-6eee-42a4-ccf6-08daf32af037
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SznPthfhR9wtkndxHB53pzOGMdkaZcqtweGCrsu2gEB6t7GT0OuRagnlSe/zvHogFquSyNcMapmgTm1eZtmNL1tfY+6Po6gdybw0rY2Km3/365PEy6GfHwOanBqJaJ3Uo5xmSBx6Vx6sJYcx+V1+XtKeb2gGgP2f4i9fJCAVXVnuYYAfzI7q4RnlHleDZBlxRY3USYwA67Mi8MZ+CdjY/1xbr3+6OYXQ0hI5oi7RU7MKYrPLWOQwu9MGd115TEDFLniPZzdOZU28O+kFVbk4e4FpFrq8mr63BHubvUogR7eBKDmJ3tRtE2PlhyuzUigIdVZSb8tVz2R+SJYgZ5lhXPhrk0oV/YlFioh1YfKfts8HPz4cN3h8oLj5+XhOx8kWyTizWEBHrRry5uaZZaJMUdZbibPcrFHFuzaIGpcSYybOY9knIb6Tc9Cwa+jb8Fkc3IVQpSY+l0rQ+fE4B7F3FS6WchGUMgeRb2z2jlo0OVDkwUsCkVcEyXpUWPaQ0STFGQYRF/KCuLWBCgK9Ta9hiDwj0PHeN+tZ+6238IuSgj7wyFkWF8ckZLcFdZgIbfL9G9eyyw0eMztR/VODohuqWqN9CA+Ebk567cG321WW3bO43sRe17tFTbv52bNoKAen11+ZYwN3suWqz/tZv56nfvLzhduWAqEmiz2TYWahVCDrO+9RcscvLZ+8vEF4u2QWD1YzhcPOfDTOJBXTZOA0NF8wWpEDAo/yICP0GV++efQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(366004)(39860400002)(396003)(376002)(136003)(451199015)(8936002)(2906002)(5660300002)(41300700001)(4326008)(316002)(6916009)(8676002)(66556008)(66476007)(66946007)(44832011)(26005)(6512007)(2616005)(38100700002)(31686004)(86362001)(186003)(83380400001)(31696002)(36756003)(53546011)(478600001)(82960400001)(6506007)(6486002)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dzA1MWIxS1V4Q3dBVDZqSGpGb0V4WWRvNzVQUWJ3S0JIekNmdnh3OVBIZ2dz?=
- =?utf-8?B?MWtzZW0xdHdKSnJyV2xaUXltbGJ4WWI1cThYb1F1bGpsdzNMVjVHM3ozbXBi?=
- =?utf-8?B?RnVaUWJaSy9sS2FGeEVCOUZmWTU0ZUhULzV4aVNwa3lPMFB6b1MwdEtDdWE1?=
- =?utf-8?B?NjFpWWZrWWdxK3BuTS9Db25oZ0xiYi9pMG5sU3h5ZjBxMHkxaTNjc0J0d283?=
- =?utf-8?B?S0ZZSGhnV3NLR3ZadnZ5dFJNSHcvSHQrTUdXS25hWlZiRkhPd1pUeGxRcW5U?=
- =?utf-8?B?UWJGaTVkclAwQ1ltZ2ZKTVRjRkoxQVpVTFB6MVNFWXRLZzBKR28xWlFUbk15?=
- =?utf-8?B?cXNWKzNrRXI2bDgwUHllc3dQanhtbWNiTjNYUzNxUDN4bjNvWnA4aVJVVk9D?=
- =?utf-8?B?a0xtcEVjZWd0ZzdBMERIR3dvY0Zocm1MSUNkcHZsT1Nxdzd3TGZycDBmWUVn?=
- =?utf-8?B?c3lUejVZeWhBK3ppRGg0YkNtWFlYSE4zb1dtTE94YXFHcnNUSCtKN0dvME5u?=
- =?utf-8?B?aHdtbHJvd0laUnh0RHVQOG5DbEx0b2drUzBmY3prQXg3N2FHRVBYd3BhQkpw?=
- =?utf-8?B?bHlPVG5zZWRKdUhKbVYwZXU3NU9Sb2d2a2tyUG94cElEOVhZdUNjSTJMa3NF?=
- =?utf-8?B?TTdnVno2bmJWVHZZRVZ5ejk0aXpnbmI4ZFFGbUpVOHdVV3ppTWVCNWR3ekNE?=
- =?utf-8?B?cnhxbk42WVNOVFVwYkFRQzk2Q3lJd2lteG5tUWVta1VlOFVkdi8wdzUvaFUr?=
- =?utf-8?B?NE0xQUJYWjNkTG05MS9DK3JTc2I3RjZqbXkvNGgrSnBPYWd3QS9GZ3kxamlp?=
- =?utf-8?B?YlhtV2Q4TnNwUGZiQ3QxOUg5SlcyR0xyWFBaQUJVL3c1bkpPVnRGQlRzUHV4?=
- =?utf-8?B?L0ZkTFU2UTNVMXlNSnkrSldKT0I2NFZuTEVPcktiU0doeU1ub0YrSnJXMW9E?=
- =?utf-8?B?TytuZnczZEx4RXFyVnlVYmJaRnRubXhyR3V0a1pMc0hGOElUM1pINmZFWlMz?=
- =?utf-8?B?OFQwSE9MTXdjcUwrZ3hMUXd6ckxjbVNqRDNOUjI4K3RhQVEzWXhCR0NFZ0xN?=
- =?utf-8?B?ZGFTS2l1d3lrNVBUeGt4d2JHWEdQN2daLzByd0VibWZ2WXJheWNkOCtNNEJV?=
- =?utf-8?B?WW9saWNRWjVQM1M1RGxMYmM2Z3JZYzhqSGUyU09aSTZ1KzBxdEZ3ajRJQTZp?=
- =?utf-8?B?bFJIcXEvNEdhU2xYdmpIa04yWUtaMVZEK3dJeHV5emZ2aU5XcGtvd0lvRU8r?=
- =?utf-8?B?ekEwVUNwMXQzdE1pT0NuaHVvK2RJTk5pSEcxZHhJTFRrWFBNZzBMV2REQUN2?=
- =?utf-8?B?THBFd3Z5RVJvendXMkdqaU1jc1VEZE44bDNTKzM5SEUvZ2Y0ejhlVVk4R2J5?=
- =?utf-8?B?NXRRMXlPMDI1SlhkTVhySk8vWERrQWlPM0I0Ly81MTRNVVU5V0NmSTlxSDdq?=
- =?utf-8?B?R29RZHZJVFBlMFdKVDV5OUsvcVlJRUpZdlNYUEZ5aEtmQ0hCZ1M3a1o3YXYr?=
- =?utf-8?B?dWVnVG82Z2ZwSm85SUVWTHpGR1IyaldhWS9YK0ZGVmQxOE53TzZxcmpLSFlR?=
- =?utf-8?B?ZFNMeFd5Z0dWekIrNTlMb0hFT014M1J6STJMbkwyYTFzODJiM0dDTUM1SEQy?=
- =?utf-8?B?ZnpXdlNmdlVsZHQ5UXAxdE9xZmJNZUhyNCs3cW9TdHIwOW5jbnpXSVFaVVRx?=
- =?utf-8?B?dElSb3FvN2RKMjBjTXlnNTlCSzI4OHRhbkhjQnNOclIrNkhod2p2N0djeXRI?=
- =?utf-8?B?MmFxY2FIeVIzcGZ5ZkM5YnlkcWFzajZkT2JjOFBYVEUrR3pjYUtIK3pMenI3?=
- =?utf-8?B?TVBTNGR0QzZFYWxDQ1Q0OGFRbVVNNjRoVHRPejFXeG1LRDFYeHYxS3NrVVV5?=
- =?utf-8?B?YTVFcHlsaUxEWEgyU3krcVNoVmM2cS9KdjJWNnJpY1diK1dFS2pNb3dsQ0RH?=
- =?utf-8?B?VERDSUNQbndUN2VpUUh6V2E4LzNORmdCRExSZXdqVjBTbk96dzFMNDJRVkty?=
- =?utf-8?B?VS9ZVk02bnZsRnF0bEw0QmUzdWkzWnB4amp0Z2pzL3JJci9aWmg2TlVxbzRx?=
- =?utf-8?B?ZXBobjZmcS81dmg4STk1Qnk4RmlaQi9la2oxUnBlK0RxTm9Na1JnK1pHbE1w?=
- =?utf-8?B?bi9iaGF4TVhrUU1EcE5WWnlrVGQ2YTJWZnJrc3FqSUUxVk5WdytEYmZUYWNt?=
- =?utf-8?Q?Pz+dQarA/eYvweLluwqkfHg=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 720f124e-6eee-42a4-ccf6-08daf32af037
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2023 16:51:37.2273
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: K4l/kXw2M8r6ywAvsFRdHej14Xr0/hDIrk9Vap3j0nS+/oPe1ijq4BteTQ9R/oBafS3K1eXwrnfup3V6D4rX3dvHZAcxTx5Fe0o1CLRgv8Eao/s46ewBdDscSkNcvehv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5385
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -163,39 +74,439 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/10/2023 7:26 AM, Bjorn Helgaas wrote:
-> On Fri, Jan 06, 2023 at 02:00:15PM -0800, Anirudh Venkataramanan wrote:
->> The previous patch removed the Cassini driver (drivers/net/ethernet/sun).
->> With this, PCI_DEVICE_ID_NS_SATURN and PCI_DEVICE_ID_SUN_CASSINI are
->> unused. Remove them.
->>
->> Cc: Leon Romanovsky <leon@kernel.org>
->> Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
->> ---
->>   include/linux/pci_ids.h | 2 --
->>   1 file changed, 2 deletions(-)
->>
->> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
->> index b362d90..eca2340 100644
->> --- a/include/linux/pci_ids.h
->> +++ b/include/linux/pci_ids.h
->> @@ -433,7 +433,6 @@
->>   #define PCI_DEVICE_ID_NS_CS5535_AUDIO	0x002e
->>   #define PCI_DEVICE_ID_NS_CS5535_USB	0x002f
->>   #define PCI_DEVICE_ID_NS_GX_VIDEO	0x0030
->> -#define PCI_DEVICE_ID_NS_SATURN		0x0035
->>   #define PCI_DEVICE_ID_NS_SCx200_BRIDGE	0x0500
->>   #define PCI_DEVICE_ID_NS_SCx200_SMI	0x0501
->>   #define PCI_DEVICE_ID_NS_SCx200_IDE	0x0502
->> @@ -1047,7 +1046,6 @@
->>   #define PCI_DEVICE_ID_SUN_SABRE		0xa000
->>   #define PCI_DEVICE_ID_SUN_HUMMINGBIRD	0xa001
->>   #define PCI_DEVICE_ID_SUN_TOMATILLO	0xa801
->> -#define PCI_DEVICE_ID_SUN_CASSINI	0xabba
-> 
-> I don't think there's value in removing these definitions.  I would
-> just leave them alone.
+nOn Mon, 2023-01-09 at 20:15 +0100, Gerhard Engleder wrote:
+> Implement ndo_xdp_xmit() for XDP TX support. Support for fragmented XDP
+> frames is included.
+>=20
+> Also some const, braces and logic clean ups are done in normal TX path
+> to keep both TX paths in sync.
+>=20
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> ---
+>  drivers/net/ethernet/engleder/tsnep.h      |  12 +-
+>  drivers/net/ethernet/engleder/tsnep_main.c | 211 +++++++++++++++++++--
+>  2 files changed, 210 insertions(+), 13 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet=
+/engleder/tsnep.h
+> index d658413ceb14..9cb267938794 100644
+> --- a/drivers/net/ethernet/engleder/tsnep.h
+> +++ b/drivers/net/ethernet/engleder/tsnep.h
+> @@ -57,6 +57,12 @@ struct tsnep_rxnfc_rule {
+>  	int location;
+>  };
+> =20
+> +enum tsnep_tx_type {
+> +	TSNEP_TX_TYPE_SKB,
+> +	TSNEP_TX_TYPE_XDP_TX,
+> +	TSNEP_TX_TYPE_XDP_NDO,
+> +};
+> +
 
-This whole series was NACK'd so this patch isn't getting applied.
+I'm more a fan of using a bitmap rather than an enum for these type of
+things since otherwise you are having to check for 3 possible values
+for everything.
 
-Ani
+Also you may want to reorder this so that SKB is the last option. With
+that 0/1 would be your two XDP values and 2 would be your SKB value. It
+should make it easier for this to be treated more as a decision tree.
+
+>  struct tsnep_tx_entry {
+>  	struct tsnep_tx_desc *desc;
+>  	struct tsnep_tx_desc_wb *desc_wb;
+> @@ -65,7 +71,11 @@ struct tsnep_tx_entry {
+> =20
+>  	u32 properties;
+> =20
+> -	struct sk_buff *skb;
+> +	enum tsnep_tx_type type;
+> +	union {
+> +		struct sk_buff *skb;
+> +		struct xdp_frame *xdpf;
+> +	};
+>  	size_t len;
+>  	DEFINE_DMA_UNMAP_ADDR(dma);
+>  };
+> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/eth=
+ernet/engleder/tsnep_main.c
+> index 943de5a09693..1ae73c706c9e 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_main.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
+> @@ -310,10 +310,12 @@ static void tsnep_tx_activate(struct tsnep_tx *tx, =
+int index, int length,
+>  	struct tsnep_tx_entry *entry =3D &tx->entry[index];
+> =20
+>  	entry->properties =3D 0;
+> +	/* xdpf is union with skb */
+>  	if (entry->skb) {
+>  		entry->properties =3D length & TSNEP_DESC_LENGTH_MASK;
+>  		entry->properties |=3D TSNEP_DESC_INTERRUPT_FLAG;
+> -		if (skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS)
+> +		if (entry->type =3D=3D TSNEP_TX_TYPE_SKB &&
+> +		    (skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS))
+>  			entry->properties |=3D TSNEP_DESC_EXTENDED_WRITEBACK_FLAG;
+> =20
+>  		/* toggle user flag to prevent false acknowledge
+> @@ -370,7 +372,8 @@ static int tsnep_tx_desc_available(struct tsnep_tx *t=
+x)
+>  		return tx->read - tx->write - 1;
+>  }
+> =20
+> -static int tsnep_tx_map(struct sk_buff *skb, struct tsnep_tx *tx, int co=
+unt)
+> +static int tsnep_tx_map(const struct sk_buff *skb, struct tsnep_tx *tx,
+> +			int count)
+>  {
+
+This change to const doesn't add anything since this is a static
+function. You could probably just skip making this change since the
+function will likely be inlined anyway.
+
+>  	struct device *dmadev =3D tx->adapter->dmadev;
+>  	struct tsnep_tx_entry *entry;
+> @@ -382,7 +385,7 @@ static int tsnep_tx_map(struct sk_buff *skb, struct t=
+snep_tx *tx, int count)
+>  	for (i =3D 0; i < count; i++) {
+>  		entry =3D &tx->entry[(tx->write + i) % TSNEP_RING_SIZE];
+> =20
+> -		if (i =3D=3D 0) {
+> +		if (!i) {
+>  			len =3D skb_headlen(skb);
+>  			dma =3D dma_map_single(dmadev, skb->data, len,
+>  					     DMA_TO_DEVICE);
+> @@ -400,6 +403,8 @@ static int tsnep_tx_map(struct sk_buff *skb, struct t=
+snep_tx *tx, int count)
+> =20
+>  		entry->desc->tx =3D __cpu_to_le64(dma);
+> =20
+> +		entry->type =3D TSNEP_TX_TYPE_SKB;
+> +
+>  		map_len +=3D len;
+>  	}
+> =20
+
+I wonder if it wouldn't be better to change this so that you have a 4th
+type for just "PAGE" or "FRAGMENT" since you only really need to
+identify this as SKB or XDP on the first buffer, and then all the rest
+are just going to be unmapped as page regardless of if it is XDP or
+SKB.
+
+> @@ -417,12 +422,13 @@ static int tsnep_tx_unmap(struct tsnep_tx *tx, int =
+index, int count)
+>  		entry =3D &tx->entry[(index + i) % TSNEP_RING_SIZE];
+> =20
+>  		if (entry->len) {
+> -			if (i =3D=3D 0)
+> +			if (!i && entry->type =3D=3D TSNEP_TX_TYPE_SKB)
+>  				dma_unmap_single(dmadev,
+>  						 dma_unmap_addr(entry, dma),
+>  						 dma_unmap_len(entry, len),
+>  						 DMA_TO_DEVICE);
+> -			else
+> +			else if (entry->type =3D=3D TSNEP_TX_TYPE_SKB ||
+> +				 entry->type =3D=3D TSNEP_TX_TYPE_XDP_NDO)
+>  				dma_unmap_page(dmadev,
+>  					       dma_unmap_addr(entry, dma),
+>  					       dma_unmap_len(entry, len),
+
+Rather than perform 2 checks here you could just verify type !=3D
+TYPE_XDP_TX which would save you a check.
+
+> @@ -482,7 +488,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_bu=
+ff *skb,
+> =20
+>  	for (i =3D 0; i < count; i++)
+>  		tsnep_tx_activate(tx, (tx->write + i) % TSNEP_RING_SIZE, length,
+> -				  i =3D=3D (count - 1));
+> +				  i =3D=3D count - 1);
+>  	tx->write =3D (tx->write + count) % TSNEP_RING_SIZE;
+> =20
+>  	skb_tx_timestamp(skb);
+> @@ -502,12 +508,133 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk=
+_buff *skb,
+>  	return NETDEV_TX_OK;
+>  }
+> =20
+> +static int tsnep_xdp_tx_map(const struct xdp_frame *xdpf, struct tsnep_t=
+x *tx,
+> +			    const struct skb_shared_info *shinfo, int count,
+> +			    enum tsnep_tx_type type)
+
+Again the const here isn't adding any value since this is a static
+function and will likely be inlined into the function below which calls
+it.
+
+> +{
+> +	struct device *dmadev =3D tx->adapter->dmadev;
+> +	struct tsnep_tx_entry *entry;
+> +	const skb_frag_t *frag;
+> +	struct page *page;
+> +	unsigned int len;
+> +	int map_len =3D 0;
+> +	dma_addr_t dma;
+> +	void *data;
+> +	int i;
+> +
+> +	frag =3D NULL;
+> +	len =3D xdpf->len;
+> +	for (i =3D 0; i < count; i++) {
+> +		entry =3D &tx->entry[(tx->write + i) % TSNEP_RING_SIZE];
+> +		if (type =3D=3D TSNEP_TX_TYPE_XDP_NDO) {
+> +			data =3D unlikely(frag) ? skb_frag_address(frag) :
+> +						xdpf->data;
+> +			dma =3D dma_map_single(dmadev, data, len, DMA_TO_DEVICE);
+> +			if (dma_mapping_error(dmadev, dma))
+> +				return -ENOMEM;
+> +
+> +			entry->type =3D TSNEP_TX_TYPE_XDP_NDO;
+> +		} else {
+> +			page =3D unlikely(frag) ? skb_frag_page(frag) :
+> +						virt_to_page(xdpf->data);
+> +			dma =3D page_pool_get_dma_addr(page);
+> +			if (unlikely(frag))
+> +				dma +=3D skb_frag_off(frag);
+> +			else
+> +				dma +=3D sizeof(*xdpf) + xdpf->headroom;
+> +			dma_sync_single_for_device(dmadev, dma, len,
+> +						   DMA_BIDIRECTIONAL);
+> +
+> +			entry->type =3D TSNEP_TX_TYPE_XDP_TX;
+> +		}
+> +
+> +		entry->len =3D len;
+> +		dma_unmap_addr_set(entry, dma, dma);
+> +
+> +		entry->desc->tx =3D __cpu_to_le64(dma);
+> +
+> +		map_len +=3D len;
+> +
+> +		if (i + 1 < count) {
+> +			frag =3D &shinfo->frags[i];
+> +			len =3D skb_frag_size(frag);
+> +		}
+> +	}
+> +
+> +	return map_len;
+> +}
+> +
+> +/* This function requires __netif_tx_lock is held by the caller. */
+> +static bool tsnep_xdp_xmit_frame_ring(struct xdp_frame *xdpf,
+> +				      struct tsnep_tx *tx,
+> +				      enum tsnep_tx_type type)
+> +{
+> +	const struct skb_shared_info *shinfo =3D
+> +		xdp_get_shared_info_from_frame(xdpf);
+> +	struct tsnep_tx_entry *entry;
+> +	int count, length, retval, i;
+> +
+> +	count =3D 1;
+> +	if (unlikely(xdp_frame_has_frags(xdpf)))
+> +		count +=3D shinfo->nr_frags;
+> +
+> +	spin_lock_bh(&tx->lock);
+> +
+> +	/* ensure that TX ring is not filled up by XDP, always MAX_SKB_FRAGS
+> +	 * will be available for normal TX path and queue is stopped there if
+> +	 * necessary
+> +	 */
+> +	if (tsnep_tx_desc_available(tx) < (MAX_SKB_FRAGS + 1 + count)) {
+> +		spin_unlock_bh(&tx->lock);
+> +
+> +		return false;
+> +	}
+> +
+> +	entry =3D &tx->entry[tx->write];
+> +	entry->xdpf =3D xdpf;
+> +
+> +	retval =3D tsnep_xdp_tx_map(xdpf, tx, shinfo, count, type);
+> +	if (retval < 0) {
+> +		tsnep_tx_unmap(tx, tx->write, count);
+> +		entry->xdpf =3D NULL;
+> +
+> +		tx->dropped++;
+> +
+> +		spin_unlock_bh(&tx->lock);
+> +
+> +		return false;
+> +	}
+> +	length =3D retval;
+> +
+> +	for (i =3D 0; i < count; i++)
+> +		tsnep_tx_activate(tx, (tx->write + i) % TSNEP_RING_SIZE, length,
+> +				  i =3D=3D count - 1);
+> +	tx->write =3D (tx->write + count) % TSNEP_RING_SIZE;
+> +
+> +	/* descriptor properties shall be valid before hardware is notified */
+> +	dma_wmb();
+> +
+> +	spin_unlock_bh(&tx->lock);
+> +
+> +	return true;
+> +}
+> +
+> +static void tsnep_xdp_xmit_flush(struct tsnep_tx *tx)
+> +{
+> +	iowrite32(TSNEP_CONTROL_TX_ENABLE, tx->addr + TSNEP_CONTROL);
+> +}
+> +
+>  static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+>  {
+> -	int budget =3D 128;
+>  	struct tsnep_tx_entry *entry;
+> -	int count;
+> +	struct xdp_frame_bulk bq;
+> +	int budget =3D 128;
+>  	int length;
+> +	int count;
+> +
+> +	xdp_frame_bulk_init(&bq);
+> +
+> +	rcu_read_lock(); /* need for xdp_return_frame_bulk */
+> =20
+
+You should be able to get rid of both of these. See comments below.
+
+>  	spin_lock_bh(&tx->lock);
+> =20
+> @@ -527,12 +654,17 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int =
+napi_budget)
+>  		dma_rmb();
+> =20
+>  		count =3D 1;
+> -		if (skb_shinfo(entry->skb)->nr_frags > 0)
+> +		if (entry->type =3D=3D TSNEP_TX_TYPE_SKB &&
+> +		    skb_shinfo(entry->skb)->nr_frags > 0)
+>  			count +=3D skb_shinfo(entry->skb)->nr_frags;
+> +		else if (entry->type !=3D TSNEP_TX_TYPE_SKB &&
+> +			 xdp_frame_has_frags(entry->xdpf))
+> +			count +=3D xdp_get_shared_info_from_frame(entry->xdpf)->nr_frags;
+> =20
+>  		length =3D tsnep_tx_unmap(tx, tx->read, count);
+> =20
+> -		if ((skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+> +		if (entry->type =3D=3D TSNEP_TX_TYPE_SKB &&
+> +		    (skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+>  		    (__le32_to_cpu(entry->desc_wb->properties) &
+>  		     TSNEP_DESC_EXTENDED_WRITEBACK_FLAG)) {
+>  			struct skb_shared_hwtstamps hwtstamps;
+> @@ -552,7 +684,18 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int n=
+api_budget)
+>  			skb_tstamp_tx(entry->skb, &hwtstamps);
+>  		}
+> =20
+> -		napi_consume_skb(entry->skb, napi_budget);
+> +		switch (entry->type) {
+> +		case TSNEP_TX_TYPE_SKB:
+> +			napi_consume_skb(entry->skb, napi_budget);
+> +			break;
+> +		case TSNEP_TX_TYPE_XDP_TX:
+> +			xdp_return_frame_rx_napi(entry->xdpf);
+> +			break;
+> +		case TSNEP_TX_TYPE_XDP_NDO:
+> +			xdp_return_frame_bulk(entry->xdpf, &bq);
+> +			break;
+> +		}
+> +		/* xdpf is union with skb */
+>  		entry->skb =3D NULL;
+> =20
+>  		tx->read =3D (tx->read + count) % TSNEP_RING_SIZE;
+
+If I am not mistaken I think you can use xdp_return_frame_rx_napi for
+both of these without having to resort to the bulk approach since the
+tsnep_tx_poll is operating in the NAPI polling context.
+
+When you free the buffers outside of polling context you would then
+want to use the xdp_return_frame_bulk. So for example if you have any
+buffers that weren't transmitted when you get to the point of
+tsnep_tx_ring_cleanup then you would want to unmap and free them there
+using something like the xdp_return_frame or xdp_return_frame_bulk.
+
+> @@ -570,7 +713,11 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int n=
+api_budget)
+> =20
+>  	spin_unlock_bh(&tx->lock);
+> =20
+> -	return (budget !=3D 0);
+> +	xdp_flush_frame_bulk(&bq);
+> +
+> +	rcu_read_unlock();
+> +
+> +	return budget !=3D 0;
+>  }
+> =20
+>  static bool tsnep_tx_pending(struct tsnep_tx *tx)
+> @@ -1330,6 +1477,45 @@ static ktime_t tsnep_netdev_get_tstamp(struct net_=
+device *netdev,
+>  	return ns_to_ktime(timestamp);
+>  }
+> =20
+> +static int tsnep_netdev_xdp_xmit(struct net_device *dev, int n,
+> +				 struct xdp_frame **xdp, u32 flags)
+> +{
+> +	struct tsnep_adapter *adapter =3D netdev_priv(dev);
+> +	u32 cpu =3D smp_processor_id();
+> +	struct netdev_queue *nq;
+> +	int nxmit, queue;
+> +	bool xmit;
+> +
+> +	if (unlikely(test_bit(__TSNEP_DOWN, &adapter->state)))
+> +		return -ENETDOWN;
+> +
+
+Again, here you are better off probably checking for netif_carrier_ok
+rather than adding a new flag.
+
+> +	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
+> +		return -EINVAL;
+> +
+> +	queue =3D cpu % adapter->num_tx_queues;
+
+Modulo math here unconditionally will be expensive. Take a look at
+using reciprocal_scale like we do in skb_tx_hash.
+
+> +	nq =3D netdev_get_tx_queue(adapter->netdev, queue);
+> +
+> +	__netif_tx_lock(nq, cpu);
+> +
+> +	/* Avoid transmit queue timeout since we share it with the slow path */
+> +	txq_trans_cond_update(nq);
+> +
+
+Doing this here may not be the right spot. It might make more sense to
+do this after the call to xmit_frame_ring after the break case in order
+to guarantee that you actually put something on the ring before
+updating the state otherwise you can stall the Tx ring without
+triggering the watchdog by just hammering this.
+
+> +	for (nxmit =3D 0; nxmit < n; nxmit++) {
+> +		xmit =3D tsnep_xdp_xmit_frame_ring(xdp[nxmit],
+> +						 &adapter->tx[queue],
+> +						 TSNEP_TX_TYPE_XDP_NDO);
+> +		if (!xmit)
+> +			break;
+
+So move txq_trans_cond_update(nq) here.
+
+> +	}
+> +
+> +	if (flags & XDP_XMIT_FLUSH)
+> +		tsnep_xdp_xmit_flush(&adapter->tx[queue]);
+> +
+> +	__netif_tx_unlock(nq);
+> +
+> +	return nxmit;
+> +}
+> +
+>  static const struct net_device_ops tsnep_netdev_ops =3D {
+>  	.ndo_open =3D tsnep_netdev_open,
+>  	.ndo_stop =3D tsnep_netdev_close,
+> @@ -1341,6 +1527,7 @@ static const struct net_device_ops tsnep_netdev_ops=
+ =3D {
+>  	.ndo_set_features =3D tsnep_netdev_set_features,
+>  	.ndo_get_tstamp =3D tsnep_netdev_get_tstamp,
+>  	.ndo_setup_tc =3D tsnep_tc_setup,
+> +	.ndo_xdp_xmit =3D tsnep_netdev_xdp_xmit,
+>  };
+> =20
+>  static int tsnep_mac_init(struct tsnep_adapter *adapter)
+
