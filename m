@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFD6E663CDD
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 10:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8A93663CE7
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 10:31:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbjAJJaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 04:30:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
+        id S231946AbjAJJbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 04:31:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238206AbjAJJ3j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 04:29:39 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78DEA44D
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 01:29:32 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id 194so8925657ybf.8
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 01:29:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bxMVb6+fkslwFRfFIc3jz4kt9BLmOFSWtIO9OneUyMM=;
-        b=DsnZKuoI2mF4gr/chUmgRBszKtb1xCzEkvOaFw83R6CgCgcjBxYBCJ85GkVSVo3pMW
-         zssMTQtFTZmzUR2TeUlTLKsnAyLwqReqLCHFW+DrOfqCNkIC6Ib/l868mkLdLqTDVyM9
-         iy9CGfKjtBaRgJNGziHMD/+8eMWtvB1sKg3pqgrcluGmpF9pwx0ixgSdml6LOOxeIQBC
-         NVG/5XguK+j0n5y5JfuynqBj9orsHQTIHYjJcYRXdj1wzfKHJZJ2PDJUglZzxM+NwjOm
-         mmnELdex34f6a8WlyW/PnmvNIr2l0w5+HtrQv/HTWpEBYEan1blZnyjGpTOv5UfmtM+Y
-         S6ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bxMVb6+fkslwFRfFIc3jz4kt9BLmOFSWtIO9OneUyMM=;
-        b=jAbQb/r80p9Q/hfc/JePEEIsJYpq1oHXB66Ynb6fZ++ipJEzBdLf2yF2Ps3b5x992n
-         OR1UgU73elbFcztc85yWFpyuloJXoQ1RgLqZRM9PuaTIa6+sC2wN84PD/scK2IxY5t9p
-         dIHA2EphliHTjPkbIn7CIF44Dh8NZ3H2iagx0jAMNAUBoWluEzFFpA8cH4TPlfW6AFcy
-         WgMgUMDLBCulN4/mHV/HSVd9TsBuizqPob0HVnRI6G5e8QDbHx757RKo1Tbsa7++J/EK
-         OfmXQXXRP4gDR2EyEpRi4KBj9mvZT1B4Ecl8K+WzDDez6pLGapPSqKIpIoIhxcsxIq5a
-         Jz9g==
-X-Gm-Message-State: AFqh2kqNwzn6uYXFLrfpgWDnnB3FUUGDCh+Lt8jn47xerSs0axzsOwfD
-        tsRoB7ZkVEKmr091UWHFE4EDTcdEQQ1K8ThgzfbwjQ==
-X-Google-Smtp-Source: AMrXdXvOyGXV47Ajx3feNBOuyggwcRBTTArd3N4S7J+LfML/U162pOUMXjLZ5j8eHB7vUo0V3pqpDOStT71S+N10Ihs=
-X-Received: by 2002:a25:b78b:0:b0:703:657f:9c91 with SMTP id
- n11-20020a25b78b000000b00703657f9c91mr5471246ybh.387.1673342971790; Tue, 10
- Jan 2023 01:29:31 -0800 (PST)
+        with ESMTP id S238196AbjAJJaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 04:30:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA77BF52;
+        Tue, 10 Jan 2023 01:30:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 746B6B81158;
+        Tue, 10 Jan 2023 09:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C39D0C433EF;
+        Tue, 10 Jan 2023 09:30:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673343020;
+        bh=f4QTHvAm0bJlaNyG1w8X8LGEBVJeXQa6+G99Td7DxwI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aY4fBdAaomONwO++R8UD6H+R7x45b665OzF7DKR1xkD9r6SoNNvxT4j8vUi+zbC7z
+         X6QMo/gpUwX6FVE9fIw1bI4FDd6qlxxXoBliLy3j6trkYN1CGmHf0kvnNH0qs/dC/0
+         7/q69AvkVxqJ5IZtE0C6iAVfMPZTj0apG+z9+dE7gfa2rWmc1WmbbGbxRP4zlJZWio
+         uU3ewTV6OEaatqicE2xYJ7a7ItputSyg7PhqNyKNKmQ3pac7zT7AIgbgKAqNtcJl/I
+         QM+puWNBK8fKCN6Om5EyNPoFNIvMPixu1kb3aBrn7yIpoaplqcc9VJT9UFFHzCwNgt
+         ExQXg1QL8LHhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B0E77E21EEA;
+        Tue, 10 Jan 2023 09:30:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20230110091409.2962-1-sensor1010@163.com>
-In-Reply-To: <20230110091409.2962-1-sensor1010@163.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 10 Jan 2023 10:29:20 +0100
-Message-ID: <CANn89iL0EYuGASWaXPwKN+E6mZvFicbDKOoZVA8N+BXFQV7e2A@mail.gmail.com>
-Subject: Re: [PATCH v1] net/dev.c : Remove redundant state settings after
- waking up
-To:     =?UTF-8?B?5p2O5ZOy?= <sensor1010@163.com>,
-        Wei Wang <weiwan@google.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] selftests/net: Isolate l2_tos_ttl_inherit.sh in its
+ own netns.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167334302072.30821.3386784278245230829.git-patchwork-notify@kernel.org>
+Date:   Tue, 10 Jan 2023 09:30:20 +0000
+References: <cover.1673191942.git.gnault@redhat.com>
+In-Reply-To: <cover.1673191942.git.gnault@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        bigeasy@linutronix.de, imagedong@tencent.com, kuniyu@amazon.com,
-        petrm@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        edumazet@google.com, netdev@vger.kernel.org, shuah@kernel.org,
+        matthias.may@westermo.com, linux-kselftest@vger.kernel.org,
+        mirsad.todorovac@alu.unizg.hr
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 10:15 AM =E6=9D=8E=E5=93=B2 <sensor1010@163.com> wr=
-ote:
->
-> the task status has been set to TASK_RUNNING in shcedule(),
-> no need to set again here
+Hello:
 
-Changelog is rather confusing, this does not match the patch, which
-removes one set_current_state(TASK_INTERRUPTIBLE);
+This series was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-TASK_INTERRUPTIBLE !=3D TASK_RUNNING
+On Sun, 8 Jan 2023 16:45:31 +0100 you wrote:
+> l2_tos_ttl_inherit.sh uses a veth pair to run its tests, but only one
+> of the veth interfaces runs in a dedicated netns. The other one remains
+> in the initial namespace where the existing network configuration can
+> interfere with the setup used for the tests.
+> 
+> Isolate both veth devices in their own netns and ensure everything gets
+> cleaned up when the script exits.
+> 
+> [...]
 
-Patch itself looks okay (but has nothing to do with thread state after
-schedule()),
-you should have CC Wei Wang because she
-authored commit cb038357937e net: fix race between napi kthread mode
-and busy poll
+Here is the summary with links:
+  - [net,1/3] selftests/net: l2_tos_ttl_inherit.sh: Set IPv6 addresses with "nodad".
+    https://git.kernel.org/netdev/net/c/e59370b2e96e
+  - [net,2/3] selftests/net: l2_tos_ttl_inherit.sh: Run tests in their own netns.
+    https://git.kernel.org/netdev/net/c/c53cb00f7983
+  - [net,3/3] selftests/net: l2_tos_ttl_inherit.sh: Ensure environment cleanup on failure.
+    https://git.kernel.org/netdev/net/c/d68ff8ad3351
 
->
-> Signed-off-by: =E6=9D=8E=E5=93=B2 <sensor1010@163.com>
-> ---
->  net/core/dev.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index b76fb37b381e..4bd2d4b954c9 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6580,7 +6580,6 @@ static int napi_thread_wait(struct napi_struct *nap=
-i)
->                 schedule();
->                 /* woken being true indicates this thread owns this napi.=
- */
->                 woken =3D true;
-> -               set_current_state(TASK_INTERRUPTIBLE);
->         }
->         __set_current_state(TASK_RUNNING);
->
-> --
-> 2.17.1
->
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
