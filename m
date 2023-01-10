@@ -2,102 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DADC9663F15
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 12:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0C4663F28
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 12:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232969AbjAJLMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 06:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        id S232878AbjAJLRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 06:17:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233194AbjAJLLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 06:11:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBDD1583C;
-        Tue, 10 Jan 2023 03:11:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12308615E1;
-        Tue, 10 Jan 2023 11:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4F8C433D2;
-        Tue, 10 Jan 2023 11:11:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673349099;
-        bh=8cN4Br15XlXNlsj7EXzb4jkI/RpDLhUFi9ylXgLyakQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QOcxtjh7Qojg4D3UoH7XNHMGW5mbX2Fec056qGx5aQE2yTxk+Z7eNYKLTwfW6jou5
-         moX/OyiQTykiD5BPdS5DhmssBXTf9Xk706TiK0y+dfC9atb6tqWO9NMFV2BGBwZwfh
-         m5ULBAQ37QZxcGNH7iZ89YBSRx7J0XW03iP2FB5BVxCvWYr1sZbEu1yMRdBhmnj59E
-         vVS1CTLygownMOq/vaID9387jjYfDasoIgSPc+GkeKi0GSx7z5oguutjvQpRa7R5ET
-         wdmpRqTSKUWB278WEDtjdd7ILZRUaVUXizCF1DrewAVhfKmWYve1NHcVgMo9sEanSs
-         7VdhFJ7JeSqtg==
-Date:   Tue, 10 Jan 2023 13:11:34 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Hariprasad Kelam <hkelam@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com
-Subject: Re: [net PATCH] octeontx2-pf: Fix resource leakage in VF driver
- unbind
-Message-ID: <Y71H5ub5K+9GlGTm@unreal>
-References: <20230109061325.21395-1-hkelam@marvell.com>
- <167334601536.23804.3249818012090319433.git-patchwork-notify@kernel.org>
- <Y7098K4iMjPyAWww@unreal>
- <79108835e679706d138afc33a19a96ed4a1f71ea.camel@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <79108835e679706d138afc33a19a96ed4a1f71ea.camel@redhat.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232812AbjAJLRs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 06:17:48 -0500
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4CD121B5;
+        Tue, 10 Jan 2023 03:17:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=uypHTRqIWHEuGCn4N8
+        mdtJ44b2Q/Vg4/vbE4Vrge/BA=; b=YyAeY4tfim19XSymdWmVRPVMcNiyIkV8eo
+        yL85/D+w1FlgN61dqVyZc26aZrknh+BSTN1WtdboYPT6OSBxZDd/pB7yYhjYQkmD
+        OrAW6KJRlQ3Ca6xqNB1dbiUV8hYbw1f6OCUh+9VVMqTAeQ7bNBkbnHQJg8zB6c8u
+        F6dLSLK5U=
+Received: from localhost.localdomain (unknown [114.107.205.23])
+        by zwqz-smtp-mta-g2-3 (Coremail) with SMTP id _____wAXDXqHSL1ji3RdAA--.41461S4;
+        Tue, 10 Jan 2023 19:14:50 +0800 (CST)
+From:   Lizhe <sensor1010@163.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
+        kuniyu@amazon.com, petrm@nvidia.com, weiwan@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lizhe <sensor1010@163.com>
+Subject: [PATCH v2] net/core.c : remove redundant state settings after waking up
+Date:   Tue, 10 Jan 2023 03:14:13 -0800
+Message-Id: <20230110111413.3747-1-sensor1010@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: _____wAXDXqHSL1ji3RdAA--.41461S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JF4ruryDJr45GF48tF18Xwb_yoW3WrbE9a
+        yvyF48Zr18ZF1Uur15C3y5Jry0grs5AFn7Xw42yFW8J345GFyDZ3s5Wr9rJr4fW39xZr15
+        ua9xXF4YkrWa9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRKpnQ7UUUUU==
+X-Originating-IP: [114.107.205.23]
+X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/xtbBohDyq1aEHG08twAAsD
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 11:43:28AM +0100, Paolo Abeni wrote:
-> Hello,
-> 
-> On Tue, 2023-01-10 at 12:29 +0200, Leon Romanovsky wrote:
-> > On Tue, Jan 10, 2023 at 10:20:15AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
-> > > Hello:
-> > > 
-> > > This patch was applied to netdev/net.git (master)
-> > > by Paolo Abeni <pabeni@redhat.com>:
-> > > 
-> > > On Mon, 9 Jan 2023 11:43:25 +0530 you wrote:
-> > > > resources allocated like mcam entries to support the Ntuple feature
-> > > > and hash tables for the tc feature are not getting freed in driver
-> > > > unbind. This patch fixes the issue.
-> > > > 
-> > > > Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
-> > > > Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-> > > > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> > > > 
-> > > > [...]
-> > > 
-> > > Here is the summary with links:
-> > >   - [net] octeontx2-pf: Fix resource leakage in VF driver unbind
-> > >     https://git.kernel.org/netdev/net/c/53da7aec3298
-> > 
-> > I don't think that this patch should be applied.
-> > 
-> > It looks like wrong Fixes to me and I don't see clearly how structures
-> > were allocated on VF which were cleared in this patch.
-> 
-> My understanding is that the resource allocation happens via:
-> 
-> otx2_dl_mcam_count_set()
-> 
-> which is registered as the devlink parameter write operation on the vf
-> by the fixes commit - the patch looks legit to me.
-> 
-> Did I miss something?
+when schedule() returns, the current state is TASK_RUNNING, no
+need to set its status to TASK_INTERRUPTIBLE, and after jumping
+out of the wile loop, its status will be set to TASK_RUNNING,
+so, set_current_state(TASK_INTERRUPTIBLE) is redundant
 
-No, you are right. I'm not sure if I would be able to see that OTX2_FLAG_MCAM_ENTRIES_ALLOC
-flag without your hint.
+Signed-off-by: Lizhe <sensor1010@163.com>
+---
+ net/core/dev.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thanks
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b76fb37b381e..4bd2d4b954c9 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6580,7 +6580,6 @@ static int napi_thread_wait(struct napi_struct *napi)
+ 		schedule();
+ 		/* woken being true indicates this thread owns this napi. */
+ 		woken = true;
+-		set_current_state(TASK_INTERRUPTIBLE);
+ 	}
+ 	__set_current_state(TASK_RUNNING);
+ 
+-- 
+2.17.1
+
