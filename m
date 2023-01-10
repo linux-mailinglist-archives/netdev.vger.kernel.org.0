@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCEF66475B
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:25:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA65664764
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:26:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233462AbjAJRZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 12:25:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
+        id S233250AbjAJR0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 12:26:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233634AbjAJRZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:25:01 -0500
-Received: from smtp-190f.mail.infomaniak.ch (smtp-190f.mail.infomaniak.ch [IPv6:2001:1600:3:17::190f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9FE71A23B
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:24:57 -0800 (PST)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NryP30lL3zMqjS9;
-        Tue, 10 Jan 2023 18:24:55 +0100 (CET)
-Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NryP22Vx5z56N;
-        Tue, 10 Jan 2023 18:24:54 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1673371494;
-        bh=SSjxj+GrTWuKr+uPow4eL9sD8im1N9Jm2LsElNhe/gQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=nCq6Vc9ZFCzclEKmOwg6nqM3O+4ZOGiOnxXnH3G08+ddg3ugnQGYfrYisFIfPPE57
-         JX0qlQ6EXzl076bcrqDlxi7QEkYTM8Vu3I43PPHg6jL18TLsvz1Tc/yKoKvbM3TKXN
-         Zh9FjNyeiGoJ389qnikA38prk05OVe2QUGFNo5ug=
-Message-ID: <87b69819-00af-ecb6-079e-97fa11a7a70c@digikod.net>
-Date:   Tue, 10 Jan 2023 18:24:53 +0100
+        with ESMTP id S232941AbjAJR0v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:26:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320121120;
+        Tue, 10 Jan 2023 09:26:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8E4E6182E;
+        Tue, 10 Jan 2023 17:26:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CE3FC433EF;
+        Tue, 10 Jan 2023 17:26:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673371609;
+        bh=qIMUHEEcxEFfEbsuapq6m8UyQ8u7bBrd1f5qfus81vM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dWyQOYB751j90pvk6Be/N7sAgq8S/NdKvGo/Pq2IDrJqjFRcd8WnRYiAeB2CbdIBX
+         PITITR+KfDlhRYo5Nw1srNwDh74Pt76tjHudW8N7HIOqk/VPc0ZAT45XHOhshPmt8j
+         dJnDfjxZMtytRAdM7/kfzrtTBzDZUd/Hhx+Ohg8/hW4StQBgh3uqYFG908DIEFDJSy
+         3+MHv9rINr7sNPbZtzjWZgw6IjGRy+L5rmq5qmdEPtXjVLoBrzkQhauov1Y3jRkTNd
+         PQxX3XiUUF5rV2bJDbRzwLyYtV/S6IB7p2sTL85OTn4Qcvff22DYtsq9gw2oSON908
+         8Vrts9C9Ma5IQ==
+Date:   Tue, 10 Jan 2023 18:26:45 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, grygorii.strashko@ti.com, mst@redhat.com,
+        bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [RFC bpf-next 6/8] libbpf: add API to get XDP/XSK supported
+ features
+Message-ID: <Y72f1U2/dw8jo0/0@lore-desk>
+References: <cover.1671462950.git.lorenzo@kernel.org>
+ <6cce9b15a57345402bb94366434a5ac5609583b8.1671462951.git.lorenzo@kernel.org>
+ <CAEf4BzbOF-S3kjbNVXCZR-K=TGarfi06ZwG1cbNF=HSSodwEfg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v8 08/12] landlock: Implement TCP network hooks
-Content-Language: en-US
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
-        netdev@vger.kernel.org, linux-api@vger.kernel.org,
-        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com
-References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
- <20221021152644.155136-9-konstantin.meskhidze@huawei.com>
- <3452964b-04d3-b297-92a1-1220e087323e@digikod.net>
- <258ba4aa-6b12-abda-75b9-ffa196fba683@huawei.com>
- <ec54eb66-ed9f-035c-1301-644f93873e5f@digikod.net>
- <38f4e2ac-0cd4-e205-bff1-a859e0855731@huawei.com>
- <ae75cb3c-2b08-2260-041a-36ee643996ad@digikod.net>
- <f67a9dc0-2f41-8848-3539-6fd981fd150d@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <f67a9dc0-2f41-8848-3539-6fd981fd150d@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="aGzNKNmdiT3FYYot"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbOF-S3kjbNVXCZR-K=TGarfi06ZwG1cbNF=HSSodwEfg@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -61,215 +67,97 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 10/01/2023 05:45, Konstantin Meskhidze (A) wrote:
-> 
-> 
-> 1/9/2023 3:38 PM, Mickaël Salaün пишет:
->>
->> On 09/01/2023 09:07, Konstantin Meskhidze (A) wrote:
->>>
->>>
->>> 1/6/2023 10:30 PM, Mickaël Salaün пишет:
->>>>
->>>> On 05/01/2023 09:57, Konstantin Meskhidze (A) wrote:
->>>>>
->>>>>
->>>>> 11/17/2022 9:43 PM, Mickaël Salaün пишет:
->>>>>>
->>>>>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
->>>>>>> This patch adds support of socket_bind() and socket_connect() hooks.
->>>>>>> It's possible to restrict binding and connecting of TCP sockets to
->>>>>>> particular ports.
->>>>>>
->>>>>> Implement socket_bind() and socket_connect LSM hooks, which enable to
->>>>>> restrict TCP socket binding and connection to specific ports.
->>>>>>
->>>>>>
->>>>>>>
->>>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>>>>> ---
->>>>>>>
->>>>>>> Changes since v7:
->>>>>>> * Minor fixes.
->>>>>>> * Refactors commit message.
->>>>>>>
->>>>>>> Changes since v6:
->>>>>>> * Updates copyright.
->>>>>>> * Refactors landlock_append_net_rule() and check_socket_access()
->>>>>>>       functions with landlock_id type.
->>>>>>>
->>>>>>> Changes since v5:
->>>>>>> * Fixes some logic errors.
->>>>>>> * Formats code with clang-format-14.
->>>>>>>
->>>>>>> Changes since v4:
->>>>>>> * Factors out CONFIG_INET into make file.
->>>>>>> * Refactors check_socket_access().
->>>>>>> * Adds helper get_port().
->>>>>>> * Adds CONFIG_IPV6 in get_port(), hook_socket_bind/connect
->>>>>>> functions to support AF_INET6 family.
->>>>>>> * Adds AF_UNSPEC family support in hook_socket_bind/connect
->>>>>>> functions.
->>>>>>> * Refactors add_rule_net_service() and landlock_add_rule
->>>>>>> syscall to support network rule inserting.
->>>>>>> * Refactors init_layer_masks() to support network rules.
->>>>>>>
->>>>>>> Changes since v3:
->>>>>>> * Splits commit.
->>>>>>> * Adds SECURITY_NETWORK in config.
->>>>>>> * Adds IS_ENABLED(CONFIG_INET) if a kernel has no INET configuration.
->>>>>>> * Adds hook_socket_bind and hook_socket_connect hooks.
->>>>>>>
->>>>>>> ---
->>>>>>>      security/landlock/Kconfig    |   1 +
->>>>>>>      security/landlock/Makefile   |   2 +
->>>>>>>      security/landlock/net.c      | 164 +++++++++++++++++++++++++++++++++++
->>>>>>>      security/landlock/net.h      |  26 ++++++
->>>>>>>      security/landlock/setup.c    |   2 +
->>>>>>>      security/landlock/syscalls.c |  59 ++++++++++++-
->>>>>>>      6 files changed, 251 insertions(+), 3 deletions(-)
->>>>>>>      create mode 100644 security/landlock/net.c
->>>>>>>      create mode 100644 security/landlock/net.h
->>>>>>>
->>>>>>> diff --git a/security/landlock/Kconfig b/security/landlock/Kconfig
->>>>>>> index 8e33c4e8ffb8..10c099097533 100644
->>>>>>> --- a/security/landlock/Kconfig
->>>>>>> +++ b/security/landlock/Kconfig
->>>>>>> @@ -3,6 +3,7 @@
->>>>>>>      config SECURITY_LANDLOCK
->>>>>>>      	bool "Landlock support"
->>>>>>>      	depends on SECURITY && !ARCH_EPHEMERAL_INODES
->>>>>>> +	select SECURITY_NETWORK
->>>>>>>      	select SECURITY_PATH
->>>>>>>      	help
->>>>>>>      	  Landlock is a sandboxing mechanism that enables processes to restrict
->>>>>>> diff --git a/security/landlock/Makefile b/security/landlock/Makefile
->>>>>>> index 7bbd2f413b3e..53d3c92ae22e 100644
->>>>>>> --- a/security/landlock/Makefile
->>>>>>> +++ b/security/landlock/Makefile
->>>>>>> @@ -2,3 +2,5 @@ obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
->>>>>>>
->>>>>>>      landlock-y := setup.o syscalls.o object.o ruleset.o \
->>>>>>>      	cred.o ptrace.o fs.o
->>>>>>> +
->>>>>>> +landlock-$(CONFIG_INET) += net.o
->>>>>>> \ No newline at end of file
->>>>>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
->>>>>>> new file mode 100644
->>>>>>> index 000000000000..39e8a156a1f4
->>>>>>> --- /dev/null
->>>>>>> +++ b/security/landlock/net.c
->>>>>>> @@ -0,0 +1,164 @@
->>>>>>> +// SPDX-License-Identifier: GPL-2.0-only
->>>>>>> +/*
->>>>>>> + * Landlock LSM - Network management and hooks
->>>>>>> + *
->>>>>>> + * Copyright © 2022 Huawei Tech. Co., Ltd.
->>>>>>> + * Copyright © 2022 Microsoft Corporation
->>>>>>> + */
->>>>>>> +
->>>>>>> +#include <linux/in.h>
->>>>>>> +#include <linux/net.h>
->>>>>>> +#include <linux/socket.h>
->>>>>>> +#include <net/ipv6.h>
->>>>>>> +
->>>>>>> +#include "common.h"
->>>>>>> +#include "cred.h"
->>>>>>> +#include "limits.h"
->>>>>>> +#include "net.h"
->>>>>>> +#include "ruleset.h"
->>>>>>> +
->>>>>>> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
->>>>>>> +			     const u16 port, access_mask_t access_rights)
->>>>>>> +{
->>>>>>> +	int err;
->>>>>>> +	const struct landlock_id id = {
->>>>>>> +		.key.data = port,
->>>>>>> +		.type = LANDLOCK_KEY_NET_PORT,
->>>>>>> +	};
->>>>>>> +	BUILD_BUG_ON(sizeof(port) > sizeof(id.key.data));
->>>>>>> +
->>>>>>> +	/* Transforms relative access rights to absolute ones. */
->>>>>>> +	access_rights |= LANDLOCK_MASK_ACCESS_NET &
->>>>>>> +			 ~landlock_get_net_access_mask(ruleset, 0);
->>>>>>> +
->>>>>>> +	mutex_lock(&ruleset->lock);
->>>>>>> +	err = landlock_insert_rule(ruleset, id, access_rights);
->>>>>>> +	mutex_unlock(&ruleset->lock);
->>>>>>> +
->>>>>>> +	return err;
->>>>>>> +}
->>>>>>> +
->>>>>>> +static int check_socket_access(const struct landlock_ruleset *const domain,
->>>>>>> +			       u16 port, access_mask_t access_request)
->>>>>>> +{
->>>>>>> +	bool allowed = false;
->>>>>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
->>>>>>> +	const struct landlock_rule *rule;
->>>>>>> +	access_mask_t handled_access;
->>>>>>> +	const struct landlock_id id = {
->>>>>>> +		.key.data = port,
->>>>>>> +		.type = LANDLOCK_KEY_NET_PORT,
->>>>>>> +	};
->>>>>>> +
->>>>>>> +	if (WARN_ON_ONCE(!domain))
->>>>>>> +		return 0;
->>>>>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
->>>>>>> +		return -EACCES;
->>>>>>> +
->>>>>>> +	rule = landlock_find_rule(domain, id);
->>>>>>> +	handled_access = init_layer_masks(domain, access_request, &layer_masks,
->>>>>>> +					  LANDLOCK_KEY_NET_PORT);
->>>>>>> +	allowed = unmask_layers(rule, handled_access, &layer_masks,
->>>>>>> +				ARRAY_SIZE(layer_masks));
->>>>>>> +
->>>>>>> +	return allowed ? 0 : -EACCES;
->>>>>>> +}
->>>>>>> +
->>>>>>> +static u16 get_port(const struct sockaddr *const address)
->>>>>>
->>>>>> get_port() should return a __be16 type. This enables to avoid converting
->>>>>> port when checking a rule.
->>>>>
->>>>>       In this case a user must do a coverting port into __be16:
->>>>>
->>>>>       struct landlock_net_service_attr net_service = {
->>>>>                     .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
->>>>>
->>>>>                     .port = htons(sock_port),
->>>>>             };
->>>>>      I think that a user should not think about this conversion cause it
->>>>> makes UAPI more complex to use. Lets do this under kernel's hood and let
->>>>> it as it is now -> u16 port.
->>>>>
->>>>> What do you think?
->>>>
->>>> BE and LE conversions may be error prone without strong typing, but the
->>>> current Linux network UAPI uses this convention (see related syscalls),
->>>> so developers already use htons() in their applications. I think it is
->>>> less hazardous to use the same convention. It would be nice to have the
->>>> point of view of network and API folks though.
->>>
->>>      Ok. Thanks. Let ports be in BE format like in network packets.
->>>
->>>      What should a selftest with port conversion be like?
->>>
->>>      1. Set a port with a Landlock rule with no conversion. get an error
->>> wit bind/connect actions.
->>>      2. Convert a port with htons(sock_port). get no error.
->>>
->>>      What do you think?
->>
->> Right, you can do both on a LE architecture (that must be checked in the
->> test or it should be skipped), test with a port value that has different
->> representation in LE and BE.
-> 
->     Do you mean to check architecture in a test first and then port
-> representaton? What about BE architectures? My current VM is X86-64
-> architecture a LE one. I can test just it now.
+--aGzNKNmdiT3FYYot
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It's just that tests should pass whatever architecture they are run on. 
-So we need to check that the current architecture is LE to check against 
-an LE result but not against a BE one, and vice versa. In fact no test 
-should be skipped, just the result to compare with adjusted (i.e. either 
-it pass or it failed).
+> On Mon, Dec 19, 2022 at 7:42 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> >
+> > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> >
+> > Add functions to get XDP/XSK supported function of netdev over route
+> > netlink interface. These functions provide functionalities that are
+> > going to be used in upcoming change.
+> >
+> > The newly added bpf_xdp_query_features takes a fflags_cnt parameter,
+> > which denotes the number of elements in the output fflags array. This
+> > must be at least 1 and maybe greater than XDP_FEATURES_WORDS. The
+> > function only writes to words which is min of fflags_cnt and
+> > XDP_FEATURES_WORDS.
+> >
+> > Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > Co-developed-by: Marek Majtyka <alardam@gmail.com>
+> > Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > ---
+> >  tools/lib/bpf/libbpf.h   |  1 +
+> >  tools/lib/bpf/libbpf.map |  1 +
+> >  tools/lib/bpf/netlink.c  | 62 ++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 64 insertions(+)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > index eee883f007f9..9d102eb5007e 100644
+> > --- a/tools/lib/bpf/libbpf.h
+> > +++ b/tools/lib/bpf/libbpf.h
+> > @@ -967,6 +967,7 @@ LIBBPF_API int bpf_xdp_detach(int ifindex, __u32 fl=
+ags,
+> >                               const struct bpf_xdp_attach_opts *opts);
+> >  LIBBPF_API int bpf_xdp_query(int ifindex, int flags, struct bpf_xdp_qu=
+ery_opts *opts);
+> >  LIBBPF_API int bpf_xdp_query_id(int ifindex, int flags, __u32 *prog_id=
+);
+> > +LIBBPF_API int bpf_xdp_query_features(int ifindex, __u32 *fflags, __u3=
+2 *fflags_cnt);
+>=20
+> no need to add new API, just extend bpf_xdp_query()?
+
+Hi Andrii,
+
+AFAIK libbpf supports just NETLINK_ROUTE protocol. In order to connect with=
+ the
+genl family code shared by Jakub we need to add NETLINK_GENERIC protocol su=
+pport
+to libbf. Is it ok to introduce a libmnl or libnl dependency in libbpf or d=
+o you
+prefer to add open code to just what we need?
+I guess we should have a dedicated API to dump xdp features in this case si=
+nce
+all the other code relies on NETLINK_ROUTE protocol. What do you think?
+
+Regards,
+Lorenzo
+
+>=20
+> >
+> >  /* TC related API */
+> >  enum bpf_tc_attach_point {
+> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> > index 71bf5691a689..9c2abb58fa4b 100644
+> > --- a/tools/lib/bpf/libbpf.map
+> > +++ b/tools/lib/bpf/libbpf.map
+> > @@ -362,6 +362,7 @@ LIBBPF_1.0.0 {
+> >                 bpf_program__set_autoattach;
+> >                 btf__add_enum64;
+> >                 btf__add_enum64_value;
+> > +               bpf_xdp_query_features;
+> >                 libbpf_bpf_attach_type_str;
+> >                 libbpf_bpf_link_type_str;
+> >                 libbpf_bpf_map_type_str;
+>=20
+> [...]
+
+--aGzNKNmdiT3FYYot
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY72f1QAKCRA6cBh0uS2t
+rGtIAQD9CU+tItECNI3dIRiliqYGAXnkOOl6g7JU3GkonqJsxAD9EbSrhAp9DY7o
+++BFm5/bt/xOJUm02tX2yaQq43S72gQ=
+=/rJB
+-----END PGP SIGNATURE-----
+
+--aGzNKNmdiT3FYYot--
