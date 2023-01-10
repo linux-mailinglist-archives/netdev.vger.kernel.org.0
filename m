@@ -2,120 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4996646E2
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:00:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB756646EC
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbjAJRAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 12:00:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
+        id S233674AbjAJRDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 12:03:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbjAJRAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:00:00 -0500
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E14A380;
-        Tue, 10 Jan 2023 08:59:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1673370000; x=1704906000;
-  h=references:from:to:cc:subject:date:in-reply-to:
-   message-id:mime-version;
-  bh=v0FHnqz++7WAyCUdZ4a39D9ZNS9Mj+/iD1X/Rx7tWI4=;
-  b=hOSplJKNcnwv7w8M77WMlrFQXDw/P49OpFHcgkmX0OiGLuoGFvCo1Q2T
-   WeEkScKgEccpX538NKE2xFObQt7EiLzl2LhmwlloPHIl+ZDRqxsY+ug62
-   qx9/LmmIaJ41fRXlofc0/ff5CQGjyZbQ9QDeVqNw0/ib0bSSuqo6tNIWt
-   s=;
-X-IronPort-AV: E=Sophos;i="5.96,315,1665446400"; 
-   d="scan'208";a="285208024"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-189d700f.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 16:59:53 +0000
-Received: from EX13D48EUB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-m6i4x-189d700f.us-west-2.amazon.com (Postfix) with ESMTPS id 6920741664;
-        Tue, 10 Jan 2023 16:59:51 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX13D48EUB001.ant.amazon.com (10.43.166.179) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Tue, 10 Jan 2023 16:59:50 +0000
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.120) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.1118.7; Tue, 10 Jan 2023 16:59:40 +0000
-References: <20230108143843.2987732-1-trix@redhat.com>
- <CANn89iLFtrQm-E5BRwgKFw4xRZiOOdWg-WTFi5eZsg7ycq2szg@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.0.91
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Eric Dumazet <edumazet@google.com>
-CC:     Tom Rix <trix@redhat.com>, <akiyano@amazon.com>,
-        <darinzon@amazon.com>, <ndagan@amazon.com>, <saeedb@amazon.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <nathan@kernel.org>, <ndesaulniers@google.com>, <khalasa@piap.pl>,
-        <wsa+renesas@sang-engineering.com>, <yuancan@huawei.com>,
-        <tglx@linutronix.de>, <42.hyeyoo@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <llvm@lists.linux.dev>
-Subject: Re: [PATCH] net: ena: initialize dim_sample
-Date:   Tue, 10 Jan 2023 18:58:37 +0200
-In-Reply-To: <CANn89iLFtrQm-E5BRwgKFw4xRZiOOdWg-WTFi5eZsg7ycq2szg@mail.gmail.com>
-Message-ID: <pj41zlpmbmba16.fsf@u570694869fb251.ant.amazon.com>
+        with ESMTP id S238716AbjAJRDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:03:48 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25F613E0F7
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:03:46 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 30AH2cxL6013056, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 30AH2cxL6013056
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 11 Jan 2023 01:02:38 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Wed, 11 Jan 2023 01:03:36 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 11 Jan 2023 01:03:35 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Wed, 11 Jan 2023 01:03:35 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: RE: [PATCH net] r8169: fix rtl8168h wol fail
+Thread-Topic: [PATCH net] r8169: fix rtl8168h wol fail
+Thread-Index: AQHZITAeQEw7+pbiWEKyObvpj0H4U66PsbSAgAAedICAARt84IAASKWAgAayTHA=
+Date:   Tue, 10 Jan 2023 17:03:35 +0000
+Message-ID: <6ff876a66e154bb4b357b31465c86741@realtek.com>
+References: <20230105180408.2998-1-hau@realtek.com>
+ <714782c5-b955-4511-23c0-9688224bba84@gmail.com> <Y7dAbxSPeaMnW/ly@lunn.ch>
+ <9ee2f626bab3481697b71c58091e7def@realtek.com>
+ <4014d243-8f8a-f273-fba8-2ae5a3844ea5@gmail.com>
+In-Reply-To: <4014d243-8f8a-f273-fba8-2ae5a3844ea5@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.228.56]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIzLzEvMTAg5LiL5Y2IIDAyOjAwOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13D45UWA002.ant.amazon.com (10.43.160.38) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Eric Dumazet <edumazet@google.com> writes:
-
-> On Sun, Jan 8, 2023 at 3:38 PM Tom Rix <trix@redhat.com> wrote:
->>
->> clang static analysis reports this problem
->> drivers/net/ethernet/amazon/ena/ena_netdev.c:1821:2: warning: 
->> Passed-by-value struct
->>   argument contains uninitialized data (e.g., field: 
->>   'comp_ctr') [core.CallAndMessage]
->>         net_dim(&ena_napi->dim, dim_sample);
->>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> net_dim can call dim_calc_stats() which uses the comp_ctr 
->> element,
->> so it must be initialized.
->
-> This seems to be a dim_update_sample() problem really, when 
-> comp_ctr
-> has been added...
->
-> Your patch works, but we could avoid pre-initializing dim_sample 
-> in all callers,
-> then re-writing all but one field...
->
-> diff --git a/include/linux/dim.h b/include/linux/dim.h
-> index 
-> 6c5733981563eadf5f06c59c5dc97df961692b02..4604ced4517268ef8912cd8053ac8f4d2630f977
-> 100644
-> --- a/include/linux/dim.h
-> +++ b/include/linux/dim.h
-> @@ -254,6 +254,7 @@ dim_update_sample(u16 event_ctr, u64 
-> packets, u64
-> bytes, struct dim_sample *s)
->         s->pkt_ctr   = packets;
->         s->byte_ctr  = bytes;
->         s->event_ctr = event_ctr;
-> +       s->comp_ctr  = 0;
->  }
->
->  /**
-
-Hi,
-
-I'd rather go with Eric's solution to this issue than zero the 
-whole struct in ENA
-
-Thanks,
-Shay
+PiBPbiAwNi4wMS4yMDIzIDA3OjUzLCBIYXUgd3JvdGU6DQo+ID4+Pj4gcnRsODE2OGggaGFzIGFu
+IGFwcGxpY2F0aW9uIHRoYXQgaXQgd2lsbCBjb25uZWN0IHRvIHJ0bDgyMTFmcw0KPiA+Pj4+IHRo
+cm91Z2ggbWRpIGludGVyZmFjZS4gQW5kIHJ0bDgyMTFmcyB3aWxsIGNvbm5lY3QgdG8gZmliZXIg
+dGhyb3VnaA0KPiA+Pj4+IHNlcmRlcw0KPiA+PiBpbnRlcmZhY2UuDQo+ID4+Pj4gSW4gdGhpcyBh
+cHBsaWNhdGlvbiwgcnRsODE2OGggcmV2aXNpb24gaWQgd2lsbCBiZSBzZXQgdG8gMHgyYS4NCj4g
+Pj4+Pg0KPiA+Pj4+IEJlY2F1c2UgcnRsODIxMWZzJ3MgZmlybXdhcmUgd2lsbCBzZXQgbGluayBj
+YXBhYmlsaXR5IHRvIDEwME0gYW5kDQo+ID4+Pj4gR0lHQSB3aGVuIGxpbmsgaXMgZnJvbSBvZmYg
+dG8gb24uIFNvIHdoZW4gc3lzdGVtIHN1c3BlbmQgYW5kIHdvbCBpcw0KPiA+Pj4+IGVuYWJsZWQs
+IHJ0bDgxNjhoIHdpbGwgc3BlZWQgZG93biB0byAxMDBNIChiZWNhdXNlIHJ0bDgyMTFmcw0KPiA+
+Pj4+IGFkdmVydGlzZSAxMDBNIGFuZCBHSUdBIHRvIHJ0bDgxNjhoKS4gSWYgdGhlIGxpbmsgc3Bl
+ZWQgYmV0d2Vlbg0KPiA+PiBydGw4MTIxMWZzIGFuZCBmaWJlciBpcyBHSUdBLg0KPiA+Pj4+IFRo
+ZSBsaW5rIHNwZWVkIGJldHdlZW4gcnRsODE2OGggYW5kIGZpYmVyIHdpbGwgbWlzbWF0Y2guIFRo
+YXQgd2lsbA0KPiA+Pj4+IGNhdXNlIHdvbCBmYWlsLg0KPiA+Pj4+DQo+ID4+Pj4gSW4gdGhpcyBw
+YXRjaCwgaWYgcnRsODE2OGggaXMgaW4gdGhpcyBraW5kIG9mIGFwcGxpY2F0aW9uLCBkcml2ZXIN
+Cj4gPj4+PiB3aWxsIG5vdCBzcGVlZCBkb3duIHBoeSB3aGVuIHdvbCBpcyBlbmFibGVkLg0KPiA+
+Pj4+DQo+ID4+PiBJIHRoaW5rIHRoZSBwYXRjaCB0aXRsZSBpcyBpbmFwcHJvcHJpYXRlIGJlY2F1
+c2UgV29MIHdvcmtzIG5vcm1hbGx5DQo+ID4+PiBvbiBSVEw4MTY4aCBpbiB0aGUgc3RhbmRhcmQg
+c2V0dXAuDQo+ID4+PiBXaGF0IHlvdSBhZGQgaXNuJ3QgYSBmaXggYnV0IGEgd29ya2Fyb3VuZCBm
+b3IgYSBmaXJtd2FyZSBidWcgaW4NCj4gUlRMODIxMUZTLg0KPiA+Pj4gQXMgbWVudGlvbmVkIGlu
+IGEgcHJldmlvdXMgcmV2aWV3IGNvbW1lbnQ6IGlmIHNwZWVkIG9uIGZpYnJlIHNpZGUgaXMNCj4g
+Pj4+IDFHYnBzIHRoZW4gUlRMODIxMUZTIHNob3VsZG4ndCBhZHZlcnRpc2UgMTAwTWJwcyBvbiBN
+REkvVVRQIHNpZGUuDQo+ID4+PiBMYXN0IGJ1dCBub3QgbGVhc3QgdGhlIHVzZXIgY2FuIHN0aWxs
+IHVzZSBlLmcuIGV0aHRvb2wgdG8gY2hhbmdlIHRoZQ0KPiA+Pj4gc3BlZWQgdG8gMTAwTWJwcyB0
+aHVzIGJyZWFraW5nIHRoZSBsaW5rLg0KPiA+Pg0KPiA+PiBJIGFncmVlIHdpdGggSGVpbmVyIGhl
+cmUuIEkgYXNzdW1lIHlvdSBjYW5ub3QgZml4IHRoZSBmaXJtd2FyZT8NCj4gPj4NCj4gPj4gU28g
+Y2FuIHdlIGRldGVjdCB0aGUgYnJva2VuIGZpcm13YXJlIGFuZCBjb3JyZWN0bHkgc2V0DQo+ID4+
+IHBoeWRldi0+YWR2ZXJ0aXNpbmc/IFRoYXQgd2lsbCBmaXggV29MIGFuZCBzaG91bGQgcHJldmVu
+dCB0aGUgdXNlcg0KPiA+PiBmcm9tIHVzaW5nIGV0aHRvb2wgdG8gc2VsZWN0IGEgc2xvd2VyIHNw
+ZWVkLg0KPiA+Pg0KPiA+IEl0IGlzIGEgcnRsODIxMWZzJ3MgZmlybXdhcmUgYnVnLiBCZWNhdXNl
+IGluIHRoaXMgYXBwbGljYXRpb24gaXQgd2lsbA0KPiA+IHN1cHBvcnQgYm90aCAxMDBNIGFuZCBH
+SUdBIGZpYmVyIG1vZHVsZSwgc28gaXQgY2Fubm90IGp1c3Qgc2V0DQo+ID4gcGh5ZGV2LT5hZHZl
+cnRpc2luZyB0byAxMDBNIG9yIEdJR0EuIFdlICBtYXkgbmVlZCB0byB1c2UgYml0LWJhbmcNCj4g
+TURJTw0KPiA+IHRvIGRldGVjdCBmaWJlciBsaW5rIHNwZWVkIGFuZCBzZXQgcGh5ZGV2LT5hZHZl
+cnRpc2luZyBwcm9wZXJseS4gQnV0IGl0IHdpbGwNCj4gbGV0IHRoaXMgcGF0Y2ggYmVjb21lIG1v
+cmUgY29tcGxpY2F0ZWQuDQo+ID4NCj4gSSB0aGluayB0aGVyZSdzIGFsc28gYSB1c2Vyc3BhY2Ug
+d29ya2Fyb3VuZCBmb3IgeW91ciBwcm9ibGVtLg0KPiBZb3UgY2FuIHVzZSAiZXRodG9vbCAtcyA8
+aWY+IGFkdmVydGlzZSAuLiIgdG8gYWRqdXN0IHdoYXQgdGhlIGludGVybmFsIFBIWQ0KPiBhZHZl
+cnRpc2VzLg0KPiBwaHlfc3BlZWRfZG93bigpIGNvbnNpZGVycyBvbmx5IG1vZGVzIHRoYXQgYXJl
+IGN1cnJlbnRseSBhZHZlcnRpc2VkLg0KPiANCj4gSW4geW91ciBjYXNlIHdpdGggYSAxR2JwcyBm
+aWJyZSBtb2R1bGUgeW91IGNvdWxkIHNldCB0aGUgYWR2ZXJ0aXNlbWVudCB0bw0KPiAxR2Jwcy9m
+dWxsIG9ubHkuDQo+IFRoZW4gcGh5X3NwZWVkX2Rvd24oKSB3b3VsZG4ndCBjaGFuZ2UgdGhlIHNw
+ZWVkLg0KPiANCkluIHRoaXMgYXBwbGljYXRpb24ocnRsODE2OGggKyBydGw4MjExZnMpIGl0IGFs
+c28gc3VwcG9ydHMgMTAwTWJwcyBmaWJlciBtb2R1bGUuDQpTbyB1c2Vyc3BhY2Ugd29ya2Fyb3Vu
+ZCBpcyBnb29kIGJ1dCBpdCBtYXkgbm90IGFsd2F5cyB3b3JrIGZvciB0aGlzIGlzc3VlLg0KTm90
+IHNwZWVkIGRvd24gZHVyaW5nIHN5c3RlbSBzdXNwZW5kIG1heSBiZSB0aGUgc2ltcGxlc3Qgd29y
+a2Fyb3VuZCBmb3IgdGhpcyBpc3N1ZS4NCg0KLS0tLS0tUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZp
+cm9ubWVudCBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlLW1haWwuDQo=
