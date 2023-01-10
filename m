@@ -2,183 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD90466464D
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 17:40:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E11C664658
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 17:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbjAJQkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 11:40:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        id S238551AbjAJQlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 11:41:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbjAJQkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 11:40:03 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C231C11A
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 08:40:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673368801; x=1704904801;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8A41p5ebqdjjMuMs7ux6knUnt8QGuiTuRTEJDYNiNZ4=;
-  b=QaJ47ZH4osDlrN/2wM24Mw2PaFHS4cASQXYYFZtKAauELML0FaPVZalP
-   ceYtPnoM8mZSO+g2TlRnTm+vZ+QeNym4JMBrDzw8gz2elmlo+QFrJ05rd
-   a/Xl+ycdwVYkITRsptTaKOzvu4BHB9ox08YCwktnmLpYq+U8mCIg9dazO
-   tnfyn9eCqXvt6mIUlRn3Pazwpq7x1bWsWYdOdNtYaOs/Zsty0xNkfHEAl
-   KkrV7LEPqebSkO3WqGgXQmR8B9ZSr05ZMXQR6nmRYUJNCl1jDRjFYx/VY
-   Zqh3wL6zeRn9k4QxaoWaN6N06EZverDoOzXNvgU+WHpImi8fJcNikLTVO
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="385499050"
-X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="385499050"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 08:40:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="831057482"
-X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="831057482"
-Received: from lkp-server02.sh.intel.com (HELO f1920e93ebb5) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 10 Jan 2023 08:39:59 -0800
-Received: from kbuild by f1920e93ebb5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pFHfK-0008Cf-1k;
-        Tue, 10 Jan 2023 16:39:58 +0000
-Date:   Wed, 11 Jan 2023 00:39:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 435bf71af3a0aa8067f3b87ff9febf68b564dbb6
-Message-ID: <63bd94d5.zAfv1hV4mqWQkqiI%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S234189AbjAJQlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 11:41:09 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7965133B
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 08:41:04 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id p1-20020a05600c1d8100b003d8c9b191e0so10542873wms.4
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 08:41:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Th4XS3ExnJps+ejGgAt+lEc+wt5pkhQaMhYYIYNJy0U=;
+        b=a2RI/NAz23mB851gzvwuv+p7hExudFo71Jz2+0oDw0T1EhzC7jwPZqmqwBS3mZ7Pk5
+         XN+mp23UWm76WcYPMr+2b0ss91RHKvx5Q3bTO6u/8pXjO8pCxW5ph1dwoq/P9vV/hU8P
+         uotbWX0UA1lJXNzp/yuQyd+Lybnq+sTqqt4Wu8jG1aiinRxynfX9xOUkrXVM8KlULoUd
+         8fO+I6pUurdwv+JnjMTH1bjinN+feq4bT35Uf3/Uy+IpzcgzqQ7JahwDt2J12PTMjSky
+         UqYsIc6fT9oEA/mGd0GtJKQnrOVgfM4z/YU/ABm/7341rcFsAxWKw8PKuZUveZxmvBsH
+         2hHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Th4XS3ExnJps+ejGgAt+lEc+wt5pkhQaMhYYIYNJy0U=;
+        b=xlsGEk8i93zevua1KJhMVh+VapqV1znmY0mxujt/1dEwG+b5KmtLc0RqOYKxEMh59O
+         ndcljUQhqdW6ILuG8JiOyXkPlaHcUE/nu2ZCY1kwv4nerRfWx6TurCls9xy70qrYMnog
+         QhQJ7k364yrKZhevET0eNXI2HTnRjeiH7FzQWLf83EuEXiYGu63JS9e34GxLYZ9LGMvt
+         2dSKR3sPE8BJQdAKwW5LdpoXo+CjbMsP13hkYMe4org74LXGt8qRbaqs6z07+9/iwWJO
+         iXG527Cd7iFV+Dm1zXwAX1BR2lo8nPJioLag4Q7WjrETmGt17kjEIEdbkdlo8nLZmi2b
+         4O7Q==
+X-Gm-Message-State: AFqh2kq2Yv6mVGPU2cU4DwTIoL6u5sxvz05BqDiqrpr6L1O/dPfErb0J
+        IabS3+x5VW3FmxnZ2DgS1YBA9A==
+X-Google-Smtp-Source: AMrXdXskmZw3ugW9Pk8CVGZsMZh1RbFbAqdASFjBu3L9/SbBgfi3fYgfSX8zXMjI3EW8xExE+p+a9Q==
+X-Received: by 2002:a05:600c:46c7:b0:3d9:ee3d:2f54 with SMTP id q7-20020a05600c46c700b003d9ee3d2f54mr6883493wmo.13.1673368863486;
+        Tue, 10 Jan 2023 08:41:03 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id he12-20020a05600c540c00b003d9ddc82450sm15086035wmb.45.2023.01.10.08.41.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Jan 2023 08:41:03 -0800 (PST)
+Message-ID: <9640d2a0-7245-285e-0e7a-d75bfe3f88ac@linaro.org>
+Date:   Tue, 10 Jan 2023 17:40:59 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 09/11] dt-bindings: mmc: convert amlogic,meson-gx.txt
+ to dt-schema
+Content-Language: en-US
+To:     neil.armstrong@linaro.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20221117-b4-amlogic-bindings-convert-v2-0-36ad050bb625@linaro.org>
+ <20221117-b4-amlogic-bindings-convert-v2-9-36ad050bb625@linaro.org>
+ <e3d32fe1-9f2b-09fb-d7e0-2c8f42e5365c@linaro.org>
+ <2037156d-5113-4b96-8f86-c8ef1c1fdf96@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <2037156d-5113-4b96-8f86-c8ef1c1fdf96@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 435bf71af3a0aa8067f3b87ff9febf68b564dbb6  Add linux-next specific files for 20230110
+On 10/01/2023 15:17, Neil Armstrong wrote:
+> On 10/01/2023 11:17, Krzysztof Kozlowski wrote:
+>> On 09/01/2023 13:53, Neil Armstrong wrote:
+>>> Convert the Amlogic SD / eMMC controller for S905/GXBB family SoCs
+>>> to dt-schema.
+>>>
+>>> Take in account the used variant with amlogic,meson-gx-mmc.
+>>>
+>>> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+>>> ---
+>>>   .../bindings/mmc/amlogic,meson-gx-mmc.yaml         | 75 ++++++++++++++++++++++
+>>>   .../devicetree/bindings/mmc/amlogic,meson-gx.txt   | 39 -----------
+>>>   2 files changed, 75 insertions(+), 39 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mmc/amlogic,meson-gx-mmc.yaml b/Documentation/devicetree/bindings/mmc/amlogic,meson-gx-mmc.yaml
+>>> new file mode 100644
+>>> index 000000000000..30228964fd9c
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/mmc/amlogic,meson-gx-mmc.yaml
+>>> @@ -0,0 +1,75 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/mmc/amlogic,meson-gx-mmc.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Amlogic SD / eMMC controller for S905/GXBB family SoCs
+>>> +
+>>> +description:
+>>> +  The MMC 5.1 compliant host controller on Amlogic provides the
+>>> +  interface for SD, eMMC and SDIO devices
+>>> +
+>>> +maintainers:
+>>> +  - Neil Armstrong <neil.armstrong@linaro.org>
+>>> +
+>>> +allOf:
+>>> +  - $ref: mmc-controller.yaml#
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    oneOf:
+>>> +      - enum:
+>>> +          - amlogic,meson-gx-mmc
+>>> +          - amlogic,meson-axg-mmc
+>>> +      - items:
+>>> +          - const: amlogic,meson-gx-mmc
+>>
+>> This does not look correct. Either gx is alone (not compatible with
+>> gxbb) or it is compatible with gxbb. Cannot be both.
+> 
+> This ishow it's used in DT:
+> 
+> arch/arm64/boot/dts/amlogic/meson-gx.dtsi:                              compatible = "amlogic,meson-gx-mmc", "amlogic,meson-gxbb-mmc";
+> arch/arm64/boot/dts/amlogic/meson-axg.dtsi:                             compatible = "amlogic,meson-axg-mmc";
+> arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi:                      compatible = "amlogic,meson-axg-mmc";
+> 
+> So I'll drop the amlogic,meson-gx-mmc in the first enum to have :
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - const: amlogic,meson-axg-mmc
+> +      - items:
+> +          - const: amlogic,meson-gx-mmc
+> +          - const: amlogic,meson-gxbb-mmc
+> 
+> It's right ?
 
-Error/Warning reports:
+Yes.
 
-https://lore.kernel.org/oe-kbuild-all/202301102024.acWVRfFq-lkp@intel.com
+Best regards,
+Krzysztof
 
-Error/Warning: (recently discovered and may have been fixed)
-
-Warning: Documentation/arm/samsung/gpio.rst references a file that doesn't exist: Documentation/arm/samsung-s3c24xx/gpio.rst
-aarch64-linux-ld: ID map text too big or misaligned
-drivers/gpu/drm/ttm/ttm_bo_util.c:364:32: error: implicit declaration of function 'vmap'; did you mean 'kmap'? [-Werror=implicit-function-declaration]
-drivers/gpu/drm/ttm/ttm_bo_util.c:429:17: error: implicit declaration of function 'vunmap'; did you mean 'kunmap'? [-Werror=implicit-function-declaration]
-
-Unverified Error/Warning (likely false positive, please contact us if interested):
-
-net/devlink/leftover.c:7608 devlink_fmsg_prepare_skb() error: uninitialized symbol 'err'.
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- arm64-allyesconfig
-|   `-- aarch64-linux-ld:ID-map-text-too-big-or-misaligned
-|-- mips-allyesconfig
-|   |-- drivers-gpu-drm-ttm-ttm_bo_util.c:error:implicit-declaration-of-function-vmap
-|   `-- drivers-gpu-drm-ttm-ttm_bo_util.c:error:implicit-declaration-of-function-vunmap
-|-- x86_64-allnoconfig
-|   `-- Warning:Documentation-arm-samsung-gpio.rst-references-a-file-that-doesn-t-exist:Documentation-arm-samsung-s3c24xx-gpio.rst
-`-- x86_64-randconfig-m001-20230109
-    `-- net-devlink-leftover.c-devlink_fmsg_prepare_skb()-error:uninitialized-symbol-err-.
-
-elapsed time: 723m
-
-configs tested: 76
-configs skipped: 6
-
-gcc tested configs:
-x86_64                            allnoconfig
-arc                                 defconfig
-s390                             allmodconfig
-alpha                               defconfig
-x86_64               randconfig-a011-20230109
-i386                 randconfig-a014-20230109
-x86_64               randconfig-a013-20230109
-i386                 randconfig-a011-20230109
-s390                                defconfig
-x86_64               randconfig-a012-20230109
-i386                 randconfig-a016-20230109
-i386                                defconfig
-i386                 randconfig-a015-20230109
-x86_64               randconfig-a014-20230109
-i386                 randconfig-a013-20230109
-x86_64               randconfig-a016-20230109
-x86_64               randconfig-a015-20230109
-x86_64                              defconfig
-s390                             allyesconfig
-i386                 randconfig-a012-20230109
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-ia64                             allmodconfig
-i386                             allyesconfig
-arm                                 defconfig
-riscv                randconfig-r042-20230109
-s390                 randconfig-r044-20230109
-arm64                            allyesconfig
-arm                  randconfig-r046-20230108
-arc                  randconfig-r043-20230108
-arm                              allyesconfig
-arc                  randconfig-r043-20230109
-sh                          sdk7780_defconfig
-xtensa                  audio_kc705_defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-powerpc                           allnoconfig
-x86_64                          rhel-8.3-func
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-bpf
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-arm64                               defconfig
-alpha                            allyesconfig
-sh                               allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-m68k                                defconfig
-mips                           gcw0_defconfig
-powerpc                      ppc40x_defconfig
-
-clang tested configs:
-i386                 randconfig-a004-20230109
-i386                 randconfig-a002-20230109
-i386                 randconfig-a003-20230109
-i386                 randconfig-a006-20230109
-i386                 randconfig-a001-20230109
-i386                 randconfig-a005-20230109
-hexagon              randconfig-r045-20230109
-arm                  randconfig-r046-20230109
-riscv                randconfig-r042-20230108
-hexagon              randconfig-r041-20230108
-x86_64               randconfig-a003-20230109
-hexagon              randconfig-r041-20230109
-x86_64               randconfig-a002-20230109
-hexagon              randconfig-r045-20230108
-x86_64               randconfig-a004-20230109
-x86_64               randconfig-a005-20230109
-x86_64               randconfig-a001-20230109
-s390                 randconfig-r044-20230108
-x86_64               randconfig-a006-20230109
-powerpc               mpc834x_itxgp_defconfig
-x86_64                          rhel-8.3-rust
-powerpc                       ebony_defconfig
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
