@@ -2,87 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C48663D7B
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 11:05:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34E47663D96
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 11:11:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231152AbjAJKF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 05:05:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
+        id S231207AbjAJKL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 05:11:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbjAJKF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:05:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA63D89
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:04:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673345077;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1oSeVU9ewoRTMDNTtzATyBMRUBuwdDAzXDzbPyCwHOU=;
-        b=dqBctDP1KQkq+U2n7P6XHOUOBtkRmodnXSyANcDF9oHhCHm/qFuvZW6+H4tRL95i2NlHI7
-        l/JU/zWyxWOWFuxi0IXUPhOKwBv+m5S9vk3badr8tcA3SUxktJ+Zt+SDIp+jFeGk8N4Nbl
-        9umsk1QnfVatmwbsb79OAEB9y5MXv+c=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-7-ueAlAvIjPKa9f1CxGoQB9A-1; Tue, 10 Jan 2023 05:04:36 -0500
-X-MC-Unique: ueAlAvIjPKa9f1CxGoQB9A-1
-Received: by mail-ej1-f72.google.com with SMTP id hp2-20020a1709073e0200b0084d47e3fe82so3502926ejc.8
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:04:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1oSeVU9ewoRTMDNTtzATyBMRUBuwdDAzXDzbPyCwHOU=;
-        b=ujpqcRBcFWhSlB71g4oCw0wT8VmWU0sr0N+y5keFAKqJ54iccxRwzTaGOTVckGSwfW
-         HMaY3CcJDXwexOXyUSe9XlOZleksq+unaL/5MM7i48gQwb6U4M8WJOz1qM50nnrcfWeK
-         keU0opkIDd7bZbsoCsdfk9FkQ5sU5KlfEIdvORnYyT+1NZwBkujrKWPwjuAvNy+/Uhhk
-         C23mjjvFwWfZzpJQvyJ4spt2rcIBsCD7X3b4BDKBVVyCyfUC32ds1leQMXQfydTilpOy
-         Vm0SL7QS4QjmbXdRgC7CPuy2c8TyfOire6bnPQawQGrWyLhVvZDNW6+SntFRxiDItHv5
-         pB2w==
-X-Gm-Message-State: AFqh2koL21pdz6Ccq6RLkontjByGSlPZ4IUytD2v9VFxdB7dqpgb+OI5
-        LgGgoQ2L0MhjFWBY+EVcOm/XB47+Lxd5lmnSSE0mebwewUBazyNrV0xZCD5lghAEsbPHO0N4qV/
-        shqXcf8dPV/jnISCp
-X-Received: by 2002:a05:6402:e87:b0:461:b8bf:ce1b with SMTP id h7-20020a0564020e8700b00461b8bfce1bmr61960027eda.34.1673345074954;
-        Tue, 10 Jan 2023 02:04:34 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtVgVLvkT9o6+p8kfSEIwPVyyh/Hb4X1vxs6dffku0/UNnpLb5Ve+IZOnsSLuA3pZtYGaakBw==
-X-Received: by 2002:a05:6402:e87:b0:461:b8bf:ce1b with SMTP id h7-20020a0564020e8700b00461b8bfce1bmr61960006eda.34.1673345074676;
-        Tue, 10 Jan 2023 02:04:34 -0800 (PST)
-Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id b2-20020a0564021f0200b0048c85c5ad30sm4691745edb.83.2023.01.10.02.04.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Jan 2023 02:04:34 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <67d60543-2f3c-b0ff-b7fb-e44518cf325b@redhat.com>
-Date:   Tue, 10 Jan 2023 11:04:32 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Cc:     brouer@redhat.com, Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: [PATCH v2 17/24] page_pool: Convert page_pool_return_skb_page()
- to use netmem
+        with ESMTP id S229812AbjAJKLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:11:25 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E55FD3;
+        Tue, 10 Jan 2023 02:11:20 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 1990D5FD07;
+        Tue, 10 Jan 2023 13:11:18 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1673345478;
+        bh=rGO+eXbbMPkogfCSqha1CEJhrgwVzAJGibNwnmlMTZ0=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=jalOpYEWXLzwB6O7WkQh7LD8+XCsBO3xR/mp2aRDW9sqeQxtya/fksVXKKLmxmphY
+         YN1z1ZL7W0JUwZzQQGoPNFp/LPEKug1HZCgbJiubTdeXDy5QGHi1ebE5bjA3U55eoO
+         DespztdZ6Ky9SUBjP9gb6fTdlD0CxQC74ezTRn66+cKSW6ly49nUWMehCJukZkwSUj
+         WJfZgly89c2429jRreRxaQDcFadxYUwnLCYXPQsTe1c/eB+Lkc/loC7H8b5Gjm6waW
+         s8i+eXwFi2wInVDl7ERq9tNmrkgAbQ0hfYnVfYmW+DG67XJu9NbSZE0g+UMpmG8Q+1
+         sP5h0tz1uAlew==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Tue, 10 Jan 2023 13:11:14 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        kernel <kernel@sberdevices.ru>
+Subject: [PATCH net-next v7 0/4] vsock: update tools and error handling
+Thread-Topic: [PATCH net-next v7 0/4] vsock: update tools and error handling
+Thread-Index: AQHZJNvfxqdYAcvFmUqSe8SxAChgng==
+Date:   Tue, 10 Jan 2023 10:11:14 +0000
+Message-ID: <67cd2d0a-1c58-baac-7b39-b8d4ea44f719@sberdevices.ru>
+Accept-Language: en-US, ru-RU
 Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <20230105214631.3939268-1-willy@infradead.org>
- <20230105214631.3939268-18-willy@infradead.org>
- <1545f7e7-3c2c-435a-b597-0824decf571c@redhat.com>
- <Y7hR7KAzsOPsXrA1@casper.infradead.org>
- <c0f53cee-aaa7-2fe8-ff5b-0853085b6514@redhat.com>
- <Y7xexniPnKSgCMVE@casper.infradead.org>
-In-Reply-To: <Y7xexniPnKSgCMVE@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <ABC4517479812048B140714F758D738B@sberdevices.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/01/10 08:25:00 #20754977
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,140 +74,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 09/01/2023 19.36, Matthew Wilcox wrote:
-> On Fri, Jan 06, 2023 at 09:16:25PM +0100, Jesper Dangaard Brouer wrote:
->>
->>
->> On 06/01/2023 17.53, Matthew Wilcox wrote:
->>> On Fri, Jan 06, 2023 at 04:49:12PM +0100, Jesper Dangaard Brouer wrote:
->>>> On 05/01/2023 22.46, Matthew Wilcox (Oracle) wrote:
->>>>> This function accesses the pagepool members of struct page directly,
->>>>> so it needs to become netmem.  Add page_pool_put_full_netmem() and
->>>>> page_pool_recycle_netmem().
->>>>>
->>>>> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->>>>> ---
->>>>>     include/net/page_pool.h | 14 +++++++++++++-
->>>>>     net/core/page_pool.c    | 13 ++++++-------
->>>>>     2 files changed, 19 insertions(+), 8 deletions(-)
->>>>>
->>>>> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
->>>>> index fbb653c9f1da..126c04315929 100644
->>>>> --- a/include/net/page_pool.h
->>>>> +++ b/include/net/page_pool.h
->>>>> @@ -464,10 +464,16 @@ static inline void page_pool_put_page(struct page_pool *pool,
->>>>>     }
->>>>>     /* Same as above but will try to sync the entire area pool->max_len */
->>>>> +static inline void page_pool_put_full_netmem(struct page_pool *pool,
->>>>> +		struct netmem *nmem, bool allow_direct)
->>>>> +{
->>>>> +	page_pool_put_netmem(pool, nmem, -1, allow_direct);
->>>>> +}
->>>>> +
->>>>>     static inline void page_pool_put_full_page(struct page_pool *pool,
->>>>>     					   struct page *page, bool allow_direct)
->>>>>     {
->>>>> -	page_pool_put_page(pool, page, -1, allow_direct);
->>>>> +	page_pool_put_full_netmem(pool, page_netmem(page), allow_direct);
->>>>>     }
->>>>>     /* Same as above but the caller must guarantee safe context. e.g NAPI */
->>>>> @@ -477,6 +483,12 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
->>>>>     	page_pool_put_full_page(pool, page, true);
->>>>>     }
->>>>> +static inline void page_pool_recycle_netmem(struct page_pool *pool,
->>>>> +					    struct netmem *nmem)
->>>>> +{
->>>>> +	page_pool_put_full_netmem(pool, nmem, true);
->>>>                                                 ^^^^
->>>>
->>>> It is not clear in what context page_pool_recycle_netmem() will be used,
->>>> but I think the 'true' (allow_direct=true) might be wrong here.
->>>>
->>>> It is only in limited special cases (RX-NAPI context) we can allow
->>>> direct return to the RX-alloc-cache.
->>>
->>> Mmm.  It's a c'n'p of the previous function:
->>>
->>> static inline void page_pool_recycle_direct(struct page_pool *pool,
->>>                                               struct page *page)
->>> {
->>>           page_pool_put_full_page(pool, page, true);
->>> }
->>>
->>> so perhaps it's just badly named?
->>
->> Yes, I think so.
->>
->> Can we name it:
->>   page_pool_recycle_netmem_direct
->>
->> And perhaps add a comment with a warning like:
->>   /* Caller must guarantee safe context. e.g NAPI */
->>
->> Like the page_pool_recycle_direct() function has a comment.
-> 
-> I don't really like the new name you're proposing here.  Really,
-> page_pool_recycle_direct() is the perfect name, it just has the wrong
-> type.
-> 
-> I considered the attached megapatch, but I don't think that's a great
-> idea.
-> 
-> So here's what I'm planning instead:
-
-I do like below patch.
-I must admit I had to lookup _Generic() when I started reviewing this
-patchset.  I think it makes a lot of sense to use here as it allow us to
-easier convert drivers over.
-
-We have 22 call spots in drivers:
-
-  $ git grep page_pool_recycle_direct drivers/net/ethernet/ | wc -l
-  22
-
-But approx 9 drivers doing this (as each driver calls it in multiple 
-places).
-
-
-> 
->      page_pool: Allow page_pool_recycle_direct() to take a netmem or a page
-> 
->      With no better name for a variant of page_pool_recycle_direct() which
->      takes a netmem instead of a page, use _Generic() to allow it to take
->      either a page or a netmem argument.  It's a bit ugly, but maybe not
->      the worst alternative?
-> 
->      Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> 
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index abe3822a1125..1eed8ed2dcc1 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -477,12 +477,22 @@ static inline void page_pool_put_full_page(struct page_pool *pool,
->   }
-> 
->   /* Same as above but the caller must guarantee safe context. e.g NAPI */
-> -static inline void page_pool_recycle_direct(struct page_pool *pool,
-> +static inline void __page_pool_recycle_direct(struct page_pool *pool,
-> +                                           struct netmem *nmem)
-> +{
-> +       page_pool_put_full_netmem(pool, nmem, true);
-> +}
-> +
-> +static inline void __page_pool_recycle_page_direct(struct page_pool *pool,
->                                              struct page *page)
->   {
-> -       page_pool_put_full_page(pool, page, true);
-> +       page_pool_put_full_netmem(pool, page_netmem(page), true);
->   }
-> 
-> +#define page_pool_recycle_direct(pool, mem)    _Generic((mem),         \
-> +       struct netmem *: __page_pool_recycle_direct(pool, (struct netmem *)mem),                \
-> +       struct page *:   __page_pool_recycle_page_direct(pool, (struct page *)mem))
-> +
->   #define PAGE_POOL_DMA_USE_PP_FRAG_COUNT        \
->                  (sizeof(dma_addr_t) > sizeof(unsigned long))
-> 
-> 
-
+UGF0Y2hzZXQgY29uc2lzdHMgb2YgdHdvIHBhcnRzOg0KDQoxKSBLZXJuZWwgcGF0Y2gNCk9uZSBw
+YXRjaCBmcm9tIEJvYmJ5IEVzaGxlbWFuLiBJIHRvb2sgc2luZ2xlIHBhdGNoIGZyb20gQm9iYnk6
+DQpodHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sL2Q4MTgxOGI4NjgyMTZjNzc0NjEzZGQwMzY0
+MWZjZmU2M2NjNTVhNDUNCi4xNjYwMzYyNjY4LmdpdC5ib2JieS5lc2hsZW1hbkBieXRlZGFuY2Uu
+Y29tLyBhbmQgdXNlIG9ubHkgcGFydCBmb3INCmFmX3Zzb2NrLmMsIGFzIFZNQ0kgYW5kIEh5cGVy
+LVYgcGFydHMgd2VyZSByZWplY3RlZC4NCg0KSSB1c2VkIGl0LCBiZWNhdXNlIGZvciBTT0NLX1NF
+UVBBQ0tFVCBiaWcgbWVzc2FnZXMgaGFuZGxpbmcgd2FzIGJyb2tlbiAtDQpFTk9NRU0gd2FzIHJl
+dHVybmVkIGluc3RlYWQgb2YgRU1TR1NJWkUuIEFuZCBhbnl3YXksIGN1cnJlbnQgbG9naWMgd2hp
+Y2gNCmFsd2F5cyByZXBsYWNlcyBhbnkgZXJyb3IgY29kZSByZXR1cm5lZCBieSB0cmFuc3BvcnQg
+dG8gRU5PTUVNIGxvb2tzDQpzdHJhbmdlIGZvciBtZSBhbHNvKGZvciBleGFtcGxlIGluIEVNU0dT
+SVpFIGNhc2UgaXQgd2FzIGNoYW5nZWQgdG8NCkVOT01FTSkuDQoNCjIpIFRvb2wgcGF0Y2hlcw0K
+U2luY2UgdGhlcmUgaXMgd29yayBvbiBzZXZlcmFsIHNpZ25pZmljYW50IHVwZGF0ZXMgZm9yIHZz
+b2NrKHZpcnRpby8NCnZzb2NrIGVzcGVjaWFsbHkpOiBza2J1ZmYsIERHUkFNLCB6ZXJvY29weSBy
+eC90eCwgc28gSSB0aGluayB0aGF0IHRoaXMNCnBhdGNoc2V0IHdpbGwgYmUgdXNlZnVsLg0KDQpU
+aGlzIHBhdGNoc2V0IHVwZGF0ZXMgdnNvY2sgdGVzdHMgYW5kIHRvb2xzIGEgbGl0dGxlIGJpdC4g
+Rmlyc3Qgb2YgYWxsDQppdCB1cGRhdGVzIHRlc3Qgc3VpdGU6IHR3byBuZXcgdGVzdHMgYXJlIGFk
+ZGVkLiBPbmUgdGVzdCBpcyByZXdvcmtlZA0KbWVzc2FnZSBib3VuZCB0ZXN0LiBOb3cgaXQgaXMg
+bW9yZSBjb21wbGV4LiBJbnN0ZWFkIG9mIHNlbmRpbmcgMSBieXRlDQptZXNzYWdlcyB3aXRoIG9u
+ZSBNU0dfRU9SIGJpdCwgaXQgc2VuZHMgbWVzc2FnZXMgb2YgcmFuZG9tIGxlbmd0aChvbmUNCmhh
+bGYgb2YgbWVzc2FnZXMgYXJlIHNtYWxsZXIgdGhhbiBwYWdlIHNpemUsIHNlY29uZCBoYWxmIGFy
+ZSBiaWdnZXIpDQp3aXRoIHJhbmRvbSBudW1iZXIgb2YgTVNHX0VPUiBiaXRzIHNldC4gUmVjZWl2
+ZXIgYWxzbyBkb24ndCBrbm93IHRvdGFsDQpudW1iZXIgb2YgbWVzc2FnZXMuIE1lc3NhZ2UgYm91
+bmRzIGNvbnRyb2wgaXMgbWFpbnRhaW5lZCBieSBoYXNoIHN1bQ0Kb2YgbWVzc2FnZXMgbGVuZ3Ro
+IGNhbGN1bGF0aW9uLiBTZWNvbmQgdGVzdCBpcyBmb3IgU09DS19TRVFQQUNLRVQgLSBpdA0KdHJp
+ZXMgdG8gc2VuZCBtZXNzYWdlIHdpdGggbGVuZ3RoIG1vcmUgdGhhbiBhbGxvd2VkLiBJIHRoaW5r
+IGJvdGggdGVzdHMNCndpbGwgYmUgdXNlZnVsIGZvciBER1JBTSBzdXBwb3J0IGFsc28uDQoNClRo
+aXJkIHRoaW5nIHRoYXQgdGhpcyBwYXRjaHNldCBhZGRzIGlzIHNtYWxsIHV0aWxpdHkgdG8gdGVz
+dCB2c29jaw0KcGVyZm9ybWFuY2UgZm9yIGJvdGggcnggYW5kIHR4LiBJIHRoaW5rIHRoaXMgdXRp
+bCBjb3VsZCBiZSB1c2VmdWwgYXMNCidpcGVyZicvJ3VwZXJmJywgYmVjYXVzZToNCjEpIEl0IGlz
+IHNtYWxsIGNvbXBhcmluZyB0byAnaXBlcmYnIG9yICd1cGVyZicsIHNvIGl0IHZlcnkgZWFzeSB0
+byBhZGQNCiAgIG5ldyBtb2RlIG9yIGZlYXR1cmUgdG8gaXQoZXNwZWNpYWxseSB2c29jayBzcGVj
+aWZpYykuDQoyKSBJdCBhbGxvd3MgdG8gc2V0IFNPX1JDVkxPV0FUIGFuZCBTT19WTV9TT0NLRVRT
+X0JVRkZFUl9TSVpFIG9wdGlvbi4NCiAgIFdob2xlIHRocm91Z2h0cHV0IGRlcGVuZHMgb24gYm90
+aCBwYXJhbWV0ZXJzLg0KMykgSXQgaXMgbG9jYXRlZCBpbiB0aGUga2VybmVsIHNvdXJjZSB0cmVl
+LCBzbyBpdCBjb3VsZCBiZSB1cGRhdGVkIGJ5DQogICB0aGUgc2FtZSBwYXRjaHNldCB3aGljaCBj
+aGFuZ2VzIHJlbGF0ZWQga2VybmVsIGZ1bmN0aW9uYWxpdHkgaW4gdnNvY2suDQoNCkkgdXNlZCB0
+aGlzIHV0aWwgdmVyeSBvZnRlbiB0byBjaGVjayBwZXJmb3JtYW5jZSBvZiBteSByeCB6ZXJvY29w
+eQ0Kc3VwcG9ydCh0aGlzIHRvb2wgaGFzIHJ4IHplcm9jb3B5IHN1cHBvcnQsIGJ1dCBub3QgaW4g
+dGhpcyBwYXRjaHNldCkuDQoNCkhlcmUgaXMgY29tcGFyaXNvbiBvZiBvdXRwdXRzIGZyb20gdGhy
+ZWUgdXRpbHM6ICdpcGVyZicsICd1cGVyZicgYW5kDQondnNvY2tfcGVyZicuIEluIGFsbCB0aHJl
+ZSBjYXNlcyBzZW5kZXIgd2FzIGF0IGd1ZXN0IHNpZGUuIHJ4IGFuZA0KdHggYnVmZmVycyB3ZXJl
+IGFsd2F5cyA2NEtiKGJlY2F1c2UgYnkgZGVmYXVsdCAndXBlcmYnIHVzZXMgOEspLg0KDQppcGVy
+ZjoNCg0KICAgWyBJRF0gSW50ZXJ2YWwgICAgICAgICAgIFRyYW5zZmVyICAgICBCaXRyYXRlDQog
+ICBbICA1XSAgIDAuMDAtMTAuMDAgIHNlYyAgMTIuOCBHQnl0ZXMgIDExLjAgR2JpdHMvc2VjIHNl
+bmRlcg0KICAgWyAgNV0gICAwLjAwLTEwLjAwICBzZWMgIDEyLjggR0J5dGVzICAxMS4wIEdiaXRz
+L3NlYyByZWNlaXZlcg0KDQp1cGVyZjoNCg0KICAgVG90YWwgICAgIDE2LjI3R0IgLyAgMTEuMzYo
+cykgPSAgICAxMi4zMEdiL3MgICAgICAgMjM0NTVvcC9zDQoNCnZzb2NrX3BlcmY6DQoNCiAgIHR4
+IHBlcmZvcm1hbmNlOiAxMi4zMDE1MjkgR2JpdHMvcw0KICAgcnggcGVyZm9ybWFuY2U6IDEyLjI4
+ODAxMSBHYml0cy9zDQoNClJlc3VsdHMgYXJlIGFsbW9zdCBzYW1lIGluIGFsbCB0aHJlZSBjYXNl
+cy4NCg0KUGF0Y2hzZXQgd2FzIHJlYmFzZWQgYW5kIHRlc3RlZCBvbiBza2J1ZmYgdjkgcGF0Y2gg
+ZnJvbSBCb2JieSBFc2hsZW1hbjoNCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL25ldGRldi8yMDIz
+MDEwNzAwMjkzNy44OTk2MDUtMS1ib2JieS5lc2hsZW1hbkBieXRlZGFuY2UuY29tLw0KDQpDaGFu
+Z2Vsb2c6DQogdjYgLT4gdjc6DQogLSB2c29ja19wZXJmOg0KICAgLSBSZW1vdmUgJ2lubGluZScg
+ZnJvbSBmdW5jdGlvbiBkZWNsDQogICAtIFJlcGxhY2UgcGFpcnMgb2YgJ3BlcnJvcigpICsgZXhp
+dCgpJyB0byBzaW5nbGUgJ2Vycm9yKCknDQogICAtIFItYiByZW1vdmVkIGR1ZSB0byBmaXhlcyBh
+Ym92ZQ0KDQogdjUgLT4gdjY6DQogLSBSRkMgLT4gbmV0LW5leHQgdGFnDQogLSB2c29ja19wZXJm
+Og0KICAgLSBmb3JnZXQgdG8gdXBkYXRlIFJFQURNRTogR2IvcyAtPiBHQml0cy9zDQoNCiB2NCAt
+PiB2NToNCiAtIEtlcm5lbCBwYXRjaDogdXBkYXRlIGNvbW1pdCBtZXNzYWdlDQogLSB2c29ja19w
+ZXJmOg0KICAgLSBGaXggdHlwbyBpbiBjb21taXQgbWVzc2FnZQ0KICAgLSBVc2UgImZwcmludGYo
+c3RkZXJyLCIgaW5zdGVhZCBvZiAicHJpbnRmKCIgZm9yIGVycm9ycw0KICAgLSBNb3JlIHN0YXRz
+IGZvciB0eDogdG90YWwgYnl0ZXMgc2VudCBhbmQgdGltZSBpbiB0eCBsb29wDQogICAtIFByaW50
+IHRocm91Z2hwdXQgaW4gJ2dpZ2FiaXRzJyBpbnN0ZWFkIG9mICdnaWdhYnl0ZXMnKGFzIGluDQog
+ICAgICdpcGVyZicgYW5kICd1cGVyZicpDQogICAtIE91dHB1dCBjb21wYXJpc29ucyBiZXR3ZWVu
+ICdpcGVyZicsICd1cGVyZicgYW5kICd2c29ja19wZXJmJw0KICAgICBhZGRlZCB0byBDVi4NCg0K
+IHYzIC0+IHY0Og0KIC0gS2VybmVsIHBhdGNoOiB1cGRhdGUgY29tbWl0IG1lc3NhZ2UgYnkgYWRk
+aW5nIGVycm9yIGNhc2UgZGVzY3JpcHRpb24NCiAtIE1lc3NhZ2UgYm91bmRzIHRlc3Q6DQogICAt
+IFR5cG8gZml4OiBzL2NvbnRvbHMvY29udHJvbHMNCiAgIC0gRml4IGVycm9yIG91dHB1dCBvbiAn
+c2V0c29ja29wdCgpJ3MNCiAtIHZzb2NrX3BlcmY6DQogICAtIEFkZCAndnNvY2tfcGVyZicgdGFy
+Z2V0IHRvICdhbGwnIGluIE1ha2VmaWxlDQogICAtIEZpeCBlcnJvciBvdXRwdXQgb24gJ3NldHNv
+Y2tvcHQoKSdzDQogICAtIFN3YXAgc2VuZGVyL3JlY2VpdmVyIHJvbGVzOiBub3cgc2VuZGVyIGRv
+ZXMgJ2Nvbm5lY3QoKScgYW5kIHNlbmRzDQogICAgIGRhdGEsIHdoaWxlIHJlY2VpdmVyIGFjY2Vw
+dHMgY29ubmVjdGlvbi4NCiAgIC0gVXBkYXRlIGFyZ3VtZW50cyBuYW1lczogcy9tYi9ieXRlcywg
+cy9zb19yY3Zsb3dhdC9yY3Zsb3dhdA0KICAgLSBVcGRhdGUgdXNhZ2Ugb3V0cHV0IGFuZCBkZXNj
+cmlwdGlvbiBpbiBSRUFETUUNCg0KIHYyIC0+IHYzOg0KIC0gUGF0Y2hlcyBmb3IgVk1DSSBhbmQg
+SHlwZXItViB3ZXJlIHJlbW92ZWQgZnJvbSBwYXRjaHNldChjb21tZW50ZWQgYnkNCiAgIFZpc2hu
+dSBEYXNhIGFuZCBEZXh1YW4gQ3VpKQ0KIC0gSW4gbWVzc2FnZSBib3VuZHMgdGVzdCBoYXNoIGlz
+IGNvbXB1dGVkIGZyb20gZGF0YSBidWZmZXIgd2l0aCByYW5kb20NCiAgIGNvbnRlbnQoaW4gdjIg
+aXQgd2FzIHNpemUgb25seSkuIFRoaXMgYXBwcm9hY2ggY29udHJvbHMgYm90aCBkYXRhDQogICBp
+bnRlZ3JpdHkgYW5kIG1lc3NhZ2UgYm91bmRzLg0KIC0gdnNvY2tfcGVyZjoNCiAgIC0gZ3JhbW1h
+ciBmaXhlcw0KICAgLSBvbmx5IGxvbmcgcGFyYW1ldGVycyBzdXBwb3J0ZWQoaW5zdGVhZCBvZiBv
+bmx5IHNob3J0KQ0KDQogdjEgLT4gdjI6DQogLSBUaHJlZSBuZXcgcGF0Y2hlcyBmcm9tIEJvYmJ5
+IEVzaGxlbWFuIHRvIGtlcm5lbCBwYXJ0DQogLSBNZXNzYWdlIGJvdW5kcyB0ZXN0OiBzb21lIHJl
+ZmFjdG9yaW5nIGFuZCBhZGQgY29tbWVudCB0byBkZXNjcmliZQ0KICAgaGFzaGluZyBwdXJwb3Nl
+DQogLSBCaWcgbWVzc2FnZSB0ZXN0OiBjaGVjayAnZXJybm8nIGZvciBFTVNHU0laRSBhbmQgIG1v
+dmUgbmV3IHRlc3QgdG8NCiAgIHRoZSBlbmQgb2YgdGVzdHMgYXJyYXkNCiAtIHZzb2NrX3BlcmY6
+DQogICAtIHVwZGF0ZSBSRUFETUUgZmlsZQ0KICAgLSBhZGQgc2ltcGxlIHVzYWdlIGV4YW1wbGUg
+dG8gY29tbWl0IG1lc3NhZ2UNCiAgIC0gdXBkYXRlICctaCcgKGhlbHApIG91dHB1dA0KICAgLSB1
+c2UgJ3N0ZG91dCcgZm9yIG91dHB1dCBpbnN0ZWFkIG9mICdzdGRlcnInDQogICAtIHVzZSAnc3Ry
+dG9sJyBpbnN0ZWFkIG9mICdhdG9pJw0KDQpCb2JieSBFc2hsZW1hbigxKToNCiB2c29jazogcmV0
+dXJuIGVycm9ycyBvdGhlciB0aGFuIC1FTk9NRU0gdG8gc29ja2V0DQoNCkFyc2VuaXkgS3Jhc25v
+digzKToNCiB0ZXN0L3Zzb2NrOiByZXdvcmsgbWVzc2FnZSBib3VuZCB0ZXN0DQogdGVzdC92c29j
+azogYWRkIGJpZyBtZXNzYWdlIHRlc3QNCiB0ZXN0L3Zzb2NrOiB2c29ja19wZXJmIHV0aWxpdHkN
+Cg0KIG5ldC92bXdfdnNvY2svYWZfdnNvY2suYyAgICAgICAgIHwgICAzICstDQogdG9vbHMvdGVz
+dGluZy92c29jay9NYWtlZmlsZSAgICAgfCAgIDMgKy0NCiB0b29scy90ZXN0aW5nL3Zzb2NrL1JF
+QURNRSAgICAgICB8ICAzNCArKysrDQogdG9vbHMvdGVzdGluZy92c29jay9jb250cm9sLmMgICAg
+fCAgMjggKysrDQogdG9vbHMvdGVzdGluZy92c29jay9jb250cm9sLmggICAgfCAgIDIgKw0KIHRv
+b2xzL3Rlc3RpbmcvdnNvY2svdXRpbC5jICAgICAgIHwgIDEzICsrDQogdG9vbHMvdGVzdGluZy92
+c29jay91dGlsLmggICAgICAgfCAgIDEgKw0KIHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfcGVy
+Zi5jIHwgNDI3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KIHRvb2xz
+L3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIHwgMTk3ICsrKysrKysrKysrKysrKystLQ0KIDkg
+ZmlsZXMgY2hhbmdlZCwgNjkxIGluc2VydGlvbnMoKyksIDE3IGRlbGV0aW9ucygtKQ0KDQotLSAN
+CjIuMjUuMQ0K
