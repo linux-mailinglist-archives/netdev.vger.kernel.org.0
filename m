@@ -2,108 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46047664E1F
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 22:38:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB4E664E1E
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 22:38:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232166AbjAJViv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 16:38:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
+        id S231391AbjAJViO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 16:38:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233700AbjAJVil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 16:38:41 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D335301
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 13:38:39 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id jo4so32157688ejb.7
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 13:38:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=r7ikDppQ7RdDEQSrD7fYVfkXrO2NW7K7ExuXj9r2CeE=;
-        b=MP4MTVPp4Q3YymAw6U69kBDJz0BAqKxH7ZKCFjnk9zC0asOZKYPElo5qGCzclSRK7f
-         LFWDSFTg/2Y/EChU08fZ9VXKss+gG5mqfHkc9MfVx7g6cX3v+nE2XpLlcFWLM63AKeGF
-         rs5moYdt6/h/cpB+rVFrz1XJF5aMS5BVcMU24=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=r7ikDppQ7RdDEQSrD7fYVfkXrO2NW7K7ExuXj9r2CeE=;
-        b=SNLEI8j5fQnjGpN680xsBAt8asJv9akNMxkx7XpYt+Qelr7orYhS3RmjR1DIodbFzU
-         QgPuz3KXNj6ov/nnxtH3dycKRgwdkxyL9CnRGsfRDPBT2Q4/LT1SENjCk8NRGgau6HVn
-         ciXZFDP9+5dFxBmBKvpeA23y9mDCgeqURNmgoUGnPdtIPfJJH4V8E5dEZyazYjdBSavr
-         ynsE9yP7vvYnaCfFh1pqGLpE1IvSYFVDK7m39uZrR6PPLtuBOoYE0Dl4kQQMI9BO+Saf
-         n+O6T6jMt9cgKr5iUoBrVKbL0HpjcrtCRqO3H4BgBup1EtFY/kq+9fSNPM7rtrjHakUX
-         ERtg==
-X-Gm-Message-State: AFqh2kr8Fjk21FxEvZ9f3jHTz1XkGtvT0C0MlU16fqJam2i38KCGKYVF
-        09TysTBggZ2XnPz0XhqmfDGixQ==
-X-Google-Smtp-Source: AMrXdXt6Rx6nLUJu0WU7xEFEfCAJlmAe0gos+69BOzj2nmRf3MR8OoQq/QKsEesz6Ri7q/K+/T47yg==
-X-Received: by 2002:a17:907:8b11:b0:81b:fbff:a7cc with SMTP id sz17-20020a1709078b1100b0081bfbffa7ccmr60157169ejc.18.1673386717902;
-        Tue, 10 Jan 2023 13:38:37 -0800 (PST)
-Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
-        by smtp.gmail.com with ESMTPSA id w13-20020a170906184d00b00838e7e0354asm5295118eje.85.2023.01.10.13.38.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 13:38:37 -0800 (PST)
-References: <20221221-sockopt-port-range-v2-0-1d5f114bf627@cloudflare.com>
- <20221221-sockopt-port-range-v2-1-1d5f114bf627@cloudflare.com>
- <CANn89iJmmENm6DTP4qjkN23j_KT7ZS_hweR5qks4VETsUzA_eQ@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        kernel-team@cloudflare.com, Marek Majkowski <marek@cloudflare.com>
-Subject: Re: [PATCH net-next v2 1/2] inet: Add IP_LOCAL_PORT_RANGE socket
- option
-Date:   Tue, 10 Jan 2023 22:36:33 +0100
-In-reply-to: <CANn89iJmmENm6DTP4qjkN23j_KT7ZS_hweR5qks4VETsUzA_eQ@mail.gmail.com>
-Message-ID: <871qo2dq8z.fsf@cloudflare.com>
+        with ESMTP id S233464AbjAJViI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 16:38:08 -0500
+Received: from mx24lb.world4you.com (mx24lb.world4you.com [81.19.149.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3767C109C
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 13:38:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=q32ARSYGiX9uuPZe+2ZeD5erSL4GUWo01v1ru7ZfMzs=; b=IlB+wUkN5UGCIwJ93RVVcjgYt2
+        WRhZlPt8xJCJhNko4wJO+K4wVHePYYYSgaeDJ8+B/LeszF/ll+mQ6KpfF2fdYVx6TbAoMDJklpLFj
+        OwWSyRqFfL0wWNlExM6cN9v3HhvaBHJaTp0jDkyqoULR4VIZHU9Rjfeg3ZhOqC7JIHuM=;
+Received: from [88.117.53.243] (helo=[10.0.0.160])
+        by mx24lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1pFMJp-0002O0-03; Tue, 10 Jan 2023 22:38:05 +0100
+Message-ID: <3d0bc2ad-2c4a-527a-be09-b9746c87b2a8@engleder-embedded.com>
+Date:   Tue, 10 Jan 2023 22:38:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v4 10/10] tsnep: Support XDP BPF program setup
+Content-Language: en-US
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+References: <20230109191523.12070-1-gerhard@engleder-embedded.com>
+ <20230109191523.12070-11-gerhard@engleder-embedded.com>
+ <336b9f28bca980813310dd3007c862e9f738279e.camel@gmail.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <336b9f28bca980813310dd3007c862e9f738279e.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 03:28 PM +01, Eric Dumazet wrote:
-> On Tue, Jan 10, 2023 at 2:37 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On 10.01.23 18:33, Alexander H Duyck wrote:
+> On Mon, 2023-01-09 at 20:15 +0100, Gerhard Engleder wrote:
+>> Implement setup of BPF programs for XDP RX path with command
+>> XDP_SETUP_PROG of ndo_bpf(). This is the final step for XDP RX path
+>> support.
 >>
->> Users who want to share a single public IP address for outgoing connections
->> between several hosts traditionally reach for SNAT. However, SNAT requires
->> state keeping on the node(s) performing the NAT.
+>> tsnep_netdev_close() is called directly during BPF program setup. Add
+>> netif_carrier_off() and netif_tx_stop_all_queues() calls to signal to
+>> network stack that device is down. Otherwise network stack would
+>> continue transmitting pakets.
 >>
->
->> v1 -> v2:
->>  * Fix the corner case when the per-socket range doesn't overlap with the
->>    per-netns range. Fallback correctly to the per-netns range. (Kuniyuki)
+>> Return value of tsnep_netdev_open() is not checked during BPF program
+>> setup like in other drivers. Forwarding the return value would result in
+>> a bpf_prog_put() call in dev_xdp_install(), which would make removal of
+>> BPF program necessary.
 >>
->> Reviewed-by: Marek Majkowski <marek@cloudflare.com>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> If tsnep_netdev_open() fails during BPF program setup, then the network
+>> stack would call tsnep_netdev_close() anyway. Thus, tsnep_netdev_close()
+>> checks now if device is already down.
+>>
+>> Additionally remove $(tsnep-y) from $(tsnep-objs) because it is added
+>> automatically.
+>>
+>> Test results with A53 1.2GHz:
+>>
+>> XDP_DROP (samples/bpf/xdp1)
+>> proto 17:     883878 pkt/s
+>>
+>> XDP_TX (samples/bpf/xdp2)
+>> proto 17:     255693 pkt/s
+>>
+>> XDP_REDIRECT (samples/bpf/xdpsock)
+>>   sock0@eth2:0 rxdrop xdp-drv
+>>                     pps            pkts           1.00
+>> rx                 855,582        5,404,523
+>> tx                 0              0
+>>
+>> XDP_REDIRECT (samples/bpf/xdp_redirect)
+>> eth2->eth1         613,267 rx/s   0 err,drop/s   613,272 xmit/s
+>>
+>> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 >> ---
->>  include/net/inet_sock.h         |  4 ++++
->>  include/net/ip.h                |  3 ++-
->>  include/uapi/linux/in.h         |  1 +
->>  net/ipv4/inet_connection_sock.c | 25 +++++++++++++++++++++++--
->>  net/ipv4/inet_hashtables.c      |  2 +-
->>  net/ipv4/ip_sockglue.c          | 18 ++++++++++++++++++
->>  net/ipv4/udp.c                  |  2 +-
->>  7 files changed, 50 insertions(+), 5 deletions(-)
->
->
-> Being an INET option, I think net/sctp/socket.c should also be changed.
+>>   drivers/net/ethernet/engleder/Makefile     |  2 +-
+>>   drivers/net/ethernet/engleder/tsnep.h      |  6 +++++
+>>   drivers/net/ethernet/engleder/tsnep_main.c | 25 ++++++++++++++++---
+>>   drivers/net/ethernet/engleder/tsnep_xdp.c  | 29 ++++++++++++++++++++++
+>>   4 files changed, 58 insertions(+), 4 deletions(-)
+>>   create mode 100644 drivers/net/ethernet/engleder/tsnep_xdp.c
+>>
+>>
+> 
+> <...>
+> 
+>> --- a/drivers/net/ethernet/engleder/tsnep_main.c
+>> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
+>> @@ -1373,7 +1373,7 @@ static void tsnep_free_irq(struct tsnep_queue *queue, bool first)
+>>   	memset(queue->name, 0, sizeof(queue->name));
+>>   }
+>>   
+>> -static int tsnep_netdev_open(struct net_device *netdev)
+>> +int tsnep_netdev_open(struct net_device *netdev)
+>>   {
+>>   	struct tsnep_adapter *adapter = netdev_priv(netdev);
+>>   	int tx_queue_index = 0;
+>> @@ -1436,6 +1436,8 @@ static int tsnep_netdev_open(struct net_device *netdev)
+>>   		tsnep_enable_irq(adapter, adapter->queue[i].irq_mask);
+>>   	}
+>>   
+>> +	netif_tx_start_all_queues(adapter->netdev);
+>> +
+>>   	clear_bit(__TSNEP_DOWN, &adapter->state);
+>>   
+>>   	return 0;
+>> @@ -1457,12 +1459,16 @@ static int tsnep_netdev_open(struct net_device *netdev)
+>>   	return retval;
+>>   }
+>>   
+>> -static int tsnep_netdev_close(struct net_device *netdev)
+>> +int tsnep_netdev_close(struct net_device *netdev)
+>>   {
+>>   	struct tsnep_adapter *adapter = netdev_priv(netdev);
+>>   	int i;
+>>   
+>> -	set_bit(__TSNEP_DOWN, &adapter->state);
+>> +	if (test_and_set_bit(__TSNEP_DOWN, &adapter->state))
+>> +		return 0;
+>> +
+>> +	netif_carrier_off(netdev);
+>> +	netif_tx_stop_all_queues(netdev);
+>>   
+> 
+> As I called out earlier the __TSNEP_DOWN is just !IFF_UP so you don't
+> need that bit.
+> 
+> The fact that netif_carrier_off is here also points out the fact that
+> the code in the Tx path isn't needed regarding __TSNEP_DOWN and you can
+> probably just check netif_carrier_ok if you need the check.
 
-Will do. Should be a one-liner + test coverage.
+tsnep_netdev_close() is called directly during bpf prog setup (see
+tsnep_xdp_setup_prog() in this commit). If the following
+tsnep_netdev_open() call fails, then this flag signals that the device
+is already down and nothing needs to be cleaned up if
+tsnep_netdev_close() is called later (because IFF_UP is still set).
 
-> Not clear if selinux_socket_bind() needs any change, I would CC
-> SELINUX maintainers for advice.
+Thanks for the review!
 
-I will start a thread.
-
-Thank you for taking a look.
+Gerhard
