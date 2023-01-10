@@ -2,186 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D4A663C36
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 10:06:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EDF3663C46
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 10:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231621AbjAJJF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 04:05:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        id S237536AbjAJJIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 04:08:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234527AbjAJJFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 04:05:41 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2040.outbound.protection.outlook.com [40.107.223.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0AF217
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 01:05:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jym3LrKSTF43YXrfsuBmd0ILuqnhmWEhnqov3sZAG2U7uGWD0BNCYEzmYkaXja0zeDCtPpOHQJxwotqtr7uhorLgjs68eslDsZt4oNu2OfmUGyebKalvex6ASoaGWpreL7JszWJbyvViVjmJiWca9yTu5oDgdZryRPQ/e3ulA4Dd8BN7/979P2kwAyXCjmr28P/k+nBUosjOgoBcquU2/XveE1x8jt4Q5/LXC3gRdbK1XJE+bcK3j+Ad736J45DZiYIEbDFjnj7/FPccRgj+8a6X1z7zG1ZthdShTAwwePzdul4ja7emgZvJVms9h0//ZcVWXKghUJL/mZadtpDI6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aOPGN1MMc37bYdUB/QGXzPTF1HdSg/E0cF1BeTaKDyk=;
- b=c/+Bu+vjaz69FlP77oZW9yzs8jTVxrClqboCU2+7LatW6Rg9vRlibnb2mn6MUcpVA3buj4B2ql+/Mv/Jyrk7XhBzoyKykc98tQ1WZHDjcOTPJaOUJ7eM3qFg2uDjyNShfLJ7tHzwLAai3Zgw3XDiw+7ragoDgiYY70ShWj5iJk2YlCygdn9HknWySNLk1MLz+RC4Wy9N/Poz/io3VABOiGZO2Q6Lxy5dzvew/vuJodF3KY8mIQ/loPAFiXsJ9urMl0c5uh8HcIQU3N0dHUbvuCqWRVsJ0cCZ/NywRmnmuZcmsV4+gKPEhFFd4+xvHgQRMuNpF9w74GJMFbzwmSRgBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aOPGN1MMc37bYdUB/QGXzPTF1HdSg/E0cF1BeTaKDyk=;
- b=RRq0GQIoHMX8OaglMLio1qZku3TZcNtU7Wg3Dpl064jwc6Ssl9HIfbOanYtdnYYtzTIXod5+w1t0n7wfXTRHd5uFFzThUjxgIG0sGYor/lNcjKF2k6iJ+KXHwcMKiWvn+1FCGQ6iZTep7A8lt3+L4CciSta2g4RQh3A9IAoJ5pE3q+loatkgAcp6F09M901Eiu/GzpRF7w/1FT77W1eeJX/kyz2/pYFbNk4L52wPcWQAPA5QQJca+52g4m2es/cWQ1tbqTJK4ND1maj6WDT1VSPJ0D8bGHr+A0mjbs//UqPkSZmenssX4O5M2LcgmcTQIHvsLw+fCnajQRHH1a4RQQ==
-Received: from IA1PR12MB6353.namprd12.prod.outlook.com (2603:10b6:208:3e3::9)
- by DM6PR12MB4467.namprd12.prod.outlook.com (2603:10b6:5:2a8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
- 2023 09:05:36 +0000
-Received: from IA1PR12MB6353.namprd12.prod.outlook.com
- ([fe80::9d53:4213:d937:514e]) by IA1PR12MB6353.namprd12.prod.outlook.com
- ([fe80::9d53:4213:d937:514e%7]) with mapi id 15.20.5986.018; Tue, 10 Jan 2023
- 09:05:36 +0000
-From:   Emeel Hakim <ehakim@nvidia.com>
-To:     Antoine Tenart <atenart@kernel.org>,
-        Sabrina Dubroca <sd@queasysnail.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Raed Salem <raeds@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: RE: [PATCH net-next v7 1/2] macsec: add support for
- IFLA_MACSEC_OFFLOAD in macsec_changelink
-Thread-Topic: [PATCH net-next v7 1/2] macsec: add support for
- IFLA_MACSEC_OFFLOAD in macsec_changelink
-Thread-Index: AQHZJAhJyueBLm2iTkmPls9erLR5/66WMhYAgAElHICAAAXEUA==
-Date:   Tue, 10 Jan 2023 09:05:36 +0000
-Message-ID: <IA1PR12MB6353C7C5FA91CAB18B267444ABFF9@IA1PR12MB6353.namprd12.prod.outlook.com>
-References: <20230109085557.10633-1-ehakim@nvidia.com>
- <20230109085557.10633-2-ehakim@nvidia.com> <Y7wvWOZYL1t7duV/@hog>
- <167334021775.17820.2386827809582589477@kwain.local>
-In-Reply-To: <167334021775.17820.2386827809582589477@kwain.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR12MB6353:EE_|DM6PR12MB4467:EE_
-x-ms-office365-filtering-correlation-id: 5131b12f-b6f4-43e8-19ac-08daf2e9d640
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dRrzDeLkJjl1eXqx2fCcWzeb9+LZa9gEd2hr2TMeY/2ueKxdDGP8A98fCo1uE/u+PQEUqLGFpx3JgtjIVNrOMW0lHcqE4VQR5iJr2Qqdn53lcHGiA402OvBY3CBKNcMbY0TYH8TOkVuEP6vexU8n9R3kWJtxYys6obpyJgft7aCxbCvzzyoXKMsvQT9tc5/67DSJ4XR9+D+gUypz3VmD25R+bUYTER7o6UM72vU7Pb2pAv5b9Fh75ETRisfsvXop4m0JzLrqjmNoTObLVA3zbb9eY/GT/KwkdvSdLGFGRj4naYYNpbgsBXKI8Mx6e/mThkwXeGOTy5qHEBlvAJKzp4NYHvbLFZeS8dyXjVp5rjx/SpGuj/i5xtrcCCQYLNzsy2wpcHQK2ShA/bsnQGzNbbvkXjvbA5BBLXCRqgBitsKSHmaIpGE1CLGU7bdoJN+DpdV0FBlBPDXuQ1QAtFW4hp5CEGoUkGZ6HVZwix5QOHHyf+5uB7k0m9LPepywtJakE5G4qMMzqTwwMaZKLsZAXL7srVL1pn04vbAFua4QvXNY9E32mVu+rGtIU1isVfrSiKgykS2KXAD40TDy9QcjZum5jUfN269dmdLYwR8MudKUFpkQ17byBon7q4QujQW1tAL+sfBsWGNbq1gNPBdjep67Afbad6WrzcFvfcWLPi58Ek+CWxT4aCOiXqbQOzR9hrGJgMoKzZo2zu6u2omm+Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6353.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(376002)(136003)(39860400002)(346002)(451199015)(5660300002)(186003)(26005)(8936002)(9686003)(7696005)(38100700002)(8676002)(478600001)(52536014)(83380400001)(38070700005)(2906002)(54906003)(110136005)(64756008)(66476007)(55016003)(66556008)(316002)(66446008)(66946007)(71200400001)(76116006)(33656002)(4326008)(6506007)(41300700001)(86362001)(53546011)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QmNIMUtjQzJTQlJWcnc3aUp6L2Q5WUl0R3ZiYVNJbWt0MWV4aFJpMTNsdnNl?=
- =?utf-8?B?cmdzQjE3UW1PaGZGOE1QOXBlS2x1KzMyUm04Mm55ejRjMjVmTWRjY0hpZGww?=
- =?utf-8?B?WHNSMDNVY1puZVNlRmROREp4N3hHaFdZWUw0NE1VTXFyTGRuUTdTUno0R3o5?=
- =?utf-8?B?WWFjeGZmSkZmK1c3QVByQTl4V3J4QVhRdGxZcjFKNjk4STVpUWZPbzNxd09I?=
- =?utf-8?B?NkhMZURVYS91OWlDNWFQYmVxL2R0Ky9FTmU5a1FoZ1hrMEQrZzhBQ3hlZk1H?=
- =?utf-8?B?Zm9mY3FNK2hTZ1JqbEpCQ1N6YnNWNnZrVnJ0VzJycE9SSXBGN0pGZnJUYUpm?=
- =?utf-8?B?eGFiby9GelNaL2hDUU9mTStOMTJybVJXK0N0OFpwM0lsTG0yUmUrRW1GVWhk?=
- =?utf-8?B?MVN6bFpsQ0NEL3NuS1Mrb3VNdXN3SWRXTWYya0wxQ01jblZNelRBc0Y4N2My?=
- =?utf-8?B?NC9VaXdlM0RpampCeFNXUTZYYkNFZkVTWlNUai9FajhxR3IxL1BWWGlSdElW?=
- =?utf-8?B?UmpyNEhQamNkUXE0VUNJV2RvRjEwK0hYemVlK3hYRkhzKy9PWXVSWEhsTUpL?=
- =?utf-8?B?UlNYeklDRy9ITUoyQ1RIRERrb2lTdDRDUDl0SXVDenRsOWx6cjdWQUtkckZh?=
- =?utf-8?B?dlA2eGV1Q0g2YllEUWliQTNCV1FYTW0rcUR6Q0pGT25ib0dDdUgvcUZmOER2?=
- =?utf-8?B?NmpObFdhTks0aDFhTmdtKzNqeXpsSWkyR291bmlodnlhUlF4MWNuQ2tqSmwz?=
- =?utf-8?B?S3JGUGFDSmxPNmpJYStSYlpDeWpZNEY0dnBVc1R1em1nTnlmUmhPdXRrcEty?=
- =?utf-8?B?aStRdWs1QnUxSHMzZzB1T2FyaEg0RGdRL21oYnBFOTZjTzFLQWFQeis3akhJ?=
- =?utf-8?B?N0FGVlFnaWgyS3hPM3llQjJOL3JJcHpLSXU3bTdXa3FyZUFxZlBDQlJiZ3R5?=
- =?utf-8?B?b0pKcHk1U29xN1p2Z3VlZFBBeDBhQlMrVHl6c2VHa0lwSmsrSEJqMC9lV2Vh?=
- =?utf-8?B?VHM5NFRQczRTVnUvNVVQbGRiMm14bHRGb0s1TW4veDZHanRkNEltQzl5ZVF5?=
- =?utf-8?B?Q0JKTEhzaDd3MnFkeXVPQkdaWDdsWHhacGI5TjFXMDE2UUhMaGVTU3NYL0x1?=
- =?utf-8?B?NkpIUmlHb2FGWEZCQXZzY2ZxTzdNd0s0ck0xSjRUSHlwVDRoZCs4VmVUcGJJ?=
- =?utf-8?B?ZnNQaGFGbk1qcEViL0F4K3BzdVJJQ2ZzYXc0aXdJYWtxdTVob0IrdlBtMkVX?=
- =?utf-8?B?ckwzaGMrSkJHZlh3VlA0RDhya1M1WVlZRFpWT1hrb2hCb0QxTnNFd2ZZSW1Y?=
- =?utf-8?B?WXNLcXJkdzBmbmM0MUorV0VxVmdCTVREM1BUMzAwYzMvVCtBd0VBRmY3dzNG?=
- =?utf-8?B?QnJUdHpHdXY3M2gvTlNoV2lxRG5lay9MWUNCNmI5MEp4czVmNGtCdUxuUG4x?=
- =?utf-8?B?ZWt5bnk2a05FS3NKNS81aVhoYk1EYmdnQ0dwODBISXVDMktJYmdtSHc2MHFQ?=
- =?utf-8?B?dVZyWDEramVIWXNEUXBkZGpzTlFLeVhRUWQ2VXh5WGsyd0I5ME5PR3hIRldV?=
- =?utf-8?B?OWFGWE14cXViVUkyMnlPU0J5NTFWcDhRYmwvbUV6dTRDNnE3dzhLSzgySldz?=
- =?utf-8?B?a2lOeW91UWlqazBiSFJkRlZEaU9jWFY2bzhLcmtkT3V5SGdBVWl6SjU1L092?=
- =?utf-8?B?VHR4ZThoREFlRVhFclJ6WVY2UUJMVW9jd3lDODRTbXBHZ3RNdzNNUnM2QXZI?=
- =?utf-8?B?MDZwL1JvanhwWnVOZitocHNwMk9DQnNTL09sYzZtZDdCREtrcFBFcDRta1U0?=
- =?utf-8?B?ai8zZitYNlh0Y3k4T3FqV2o1bVAxanF4eGptM0hrV0cwNTZMVXBYd09lcllF?=
- =?utf-8?B?b2JXRklITWM1RE5JZWdMeVI1bGpsdm5aZ2gybGVrWGc1RFB0SFJRTTRiM2Nz?=
- =?utf-8?B?WDJBdit4cmFYY1RTQThkMnNyWjBpVzBDbUh5MlFFR3FFWHpGR2dPNmJUYjNG?=
- =?utf-8?B?N000dCtJc2M3MEJGRjE1MSt4VlJxUHQwNzRmVXhod0FBTGlheHdXemhFYUI0?=
- =?utf-8?B?R2NWV1h3c1MvZXorSnZjMmtkMUhweHArN1p0QVBEQXBualhoS1VUNGJJUjNN?=
- =?utf-8?Q?ABTBjOCO1A+0ktd4YZ1GA+OA1?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S237922AbjAJJHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 04:07:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE9E4C739;
+        Tue, 10 Jan 2023 01:07:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58E61B8112D;
+        Tue, 10 Jan 2023 09:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D89AC433F0;
+        Tue, 10 Jan 2023 09:07:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673341666;
+        bh=bydlxIiYqFm92QgjzPjbgJ6nklrDM5WMkDMRR/zHkhg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F76PBBerOR1couM2faeUnx+KG1+7nOUx3bNUzmIVyq68g+BH0ZG4KrYuhFF8Q6xX1
+         a+0WgnMmn78TOfgNNSf3jEryrEeMI8m3JwSUHN3bnK76PLUQ/xvTtUzzvSEGsLcxX4
+         KLhomi+eJyy48HHao3skwUOsfJGdOLFzEtZhh82/MheGx6KMIRyENXh3h44AF2Dr15
+         75XHhJQps9kQpecv3+o7rKe4BblgTf6jTgVkFAV2c+4Wr2Rr88IkQvjXtsJxGAenp1
+         1T4x4Ew/7VqLeazstlBoqmhwXsrZPwlFTpcaGtzuWtktfglG+EEODYM5SkvZ+ggBwF
+         U0xLOI5HMO7Pw==
+Date:   Tue, 10 Jan 2023 01:07:45 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Ying Hsu <yinghsu@chromium.org>, linux-bluetooth@vger.kernel.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] Bluetooth: Fix possible deadlock in
+ rfcomm_sk_state_change
+Message-ID: <Y70q4ZsdQNP9GIbF@x130>
+References: <20230103111221.1.I1f29bb547a03e9adfe2e6754212f9d14a2e39c4b@changeid>
+ <Y7UiDn3Gi5YdNIoC@unreal>
+ <Y7dqKnQe8UUeQ/CD@x130>
+ <Y7qXIZNsju8dCzqu@unreal>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6353.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5131b12f-b6f4-43e8-19ac-08daf2e9d640
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2023 09:05:36.2016
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0a/xZWb5ibZTWgSdKEV5+8l50ztzwGIGqBl7yB2YrlaRigiZcKpxgBzUyt7fnzGakFGizEl2sHT18P95v1oiqQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4467
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Y7qXIZNsju8dCzqu@unreal>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQW50b2luZSBUZW5hcnQg
-PGF0ZW5hcnRAa2VybmVsLm9yZz4NCj4gU2VudDogVHVlc2RheSwgMTAgSmFudWFyeSAyMDIzIDEw
-OjQ0DQo+IFRvOiBTYWJyaW5hIER1YnJvY2EgPHNkQHF1ZWFzeXNuYWlsLm5ldD47IEVtZWVsIEhh
-a2ltIDxlaGFraW1AbnZpZGlhLmNvbT4NCj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IFJh
-ZWQgU2FsZW0gPHJhZWRzQG52aWRpYS5jb20+Ow0KPiBkYXZlbUBkYXZlbWxvZnQubmV0OyBlZHVt
-YXpldEBnb29nbGUuY29tOyBrdWJhQGtlcm5lbC5vcmc7DQo+IHBhYmVuaUByZWRoYXQuY29tDQo+
-IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjcgMS8yXSBtYWNzZWM6IGFkZCBzdXBwb3J0
-IGZvcg0KPiBJRkxBX01BQ1NFQ19PRkZMT0FEIGluIG1hY3NlY19jaGFuZ2VsaW5rDQo+IA0KPiBF
-eHRlcm5hbCBlbWFpbDogVXNlIGNhdXRpb24gb3BlbmluZyBsaW5rcyBvciBhdHRhY2htZW50cw0K
-PiANCj4gDQo+IFF1b3RpbmcgU2FicmluYSBEdWJyb2NhICgyMDIzLTAxLTA5IDE2OjE0OjMyKQ0K
-PiA+IDIwMjMtMDEtMDksIDEwOjU1OjU2ICswMjAwLCBlaGFraW1AbnZpZGlhLmNvbSB3cm90ZToN
-Cj4gPiA+IEBAIC0zODQwLDYgKzM4MzUsMTIgQEAgc3RhdGljIGludCBtYWNzZWNfY2hhbmdlbGlu
-ayhzdHJ1Y3QgbmV0X2RldmljZQ0KPiAqZGV2LCBzdHJ1Y3QgbmxhdHRyICp0YltdLA0KPiA+ID4g
-ICAgICAgaWYgKHJldCkNCj4gPiA+ICAgICAgICAgICAgICAgZ290byBjbGVhbnVwOw0KPiA+ID4N
-Cj4gPiA+ICsgICAgIGlmIChkYXRhW0lGTEFfTUFDU0VDX09GRkxPQURdKSB7DQo+ID4gPiArICAg
-ICAgICAgICAgIHJldCA9IG1hY3NlY191cGRhdGVfb2ZmbG9hZChkZXYsDQo+IG5sYV9nZXRfdTgo
-ZGF0YVtJRkxBX01BQ1NFQ19PRkZMT0FEXSkpOw0KPiA+ID4gKyAgICAgICAgICAgICBpZiAocmV0
-KQ0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIGdvdG8gY2xlYW51cDsNCj4gPiA+ICsgICAg
-IH0NCj4gPiA+ICsNCj4gPiA+ICAgICAgIC8qIElmIGgvdyBvZmZsb2FkaW5nIGlzIGF2YWlsYWJs
-ZSwgcHJvcGFnYXRlIHRvIHRoZSBkZXZpY2UgKi8NCj4gPiA+ICAgICAgIGlmIChtYWNzZWNfaXNf
-b2ZmbG9hZGVkKG1hY3NlYykpIHsNCj4gPiA+ICAgICAgICAgICAgICAgY29uc3Qgc3RydWN0IG1h
-Y3NlY19vcHMgKm9wczsNCj4gPg0KPiA+IFRoZXJlJ3MgYSBtaXNzaW5nIHJvbGxiYWNrIG9mIHRo
-ZSBvZmZsb2FkaW5nIHN0YXR1cyBpbiB0aGUgKHByb2JhYmx5DQo+ID4gcXVpdGUgdW5saWtlbHkp
-IGNhc2UgdGhhdCBtZG9fdXBkX3NlY3kgZmFpbHMsIG5vPyBXZSBjYW4ndCBmYWlsDQo+ID4gbWFj
-c2VjX2dldF9vcHMgYmVjYXVzZSBtYWNzZWNfdXBkYXRlX29mZmxvYWQgd291bGQgaGF2ZSBmYWls
-ZWQNCj4gPiBhbHJlYWR5LCBidXQgSSBndWVzcyB0aGUgZHJpdmVyIGNvdWxkIGZhaWwgaW4gbWRv
-X3VwZF9zZWN5LCBhbmQgdGhlbg0KPiA+ICJnb3RvIGNsZWFudXAiIGRvZXNuJ3QgcmVzdG9yZSB0
-aGUgb2ZmbG9hZGluZyBzdGF0ZS4gIFNvcnJ5IEkgZGlkbid0DQo+ID4gbm90aWNlIHRoaXMgZWFy
-bGllci4NCj4gPg0KPiA+IEluIGNhc2UgdGhlIElGTEFfTUFDU0VDX09GRkxPQUQgYXR0cmlidXRl
-IGlzIHByb3ZpZGVkIGFuZCB3ZSdyZQ0KPiA+IGVuYWJsaW5nIG9mZmxvYWQsIHdlIGFsc28gZW5k
-IHVwIGNhbGxpbmcgdGhlIGRyaXZlcidzIG1kb19hZGRfc2VjeSwNCj4gPiBhbmQgdGhlbiBpbW1l
-ZGlhdGVseSBhZnRlcndhcmRzIG1kb191cGRfc2VjeSwgd2hpY2ggcHJvYmFibHkgZG9lc24ndA0K
-PiA+IG1ha2UgbXVjaCBzZW5zZS4NCj4gPg0KPiA+IE1heWJlIHdlIGNvdWxkIHR1cm4gdGhhdCBp
-bnRvOg0KPiA+DQo+ID4gICAgIGlmIChkYXRhW0lGTEFfTUFDU0VDX09GRkxPQURdKSB7DQo+IA0K
-PiBJZiBkYXRhW0lGTEFfTUFDU0VDX09GRkxPQURdIGlzIHByb3ZpZGVkIGJ1dCBkb2Vzbid0IGNo
-YW5nZSB0aGUgb2ZmbG9hZGluZw0KPiBzdGF0ZSwgdGhlbiBtYWNzZWNfdXBkYXRlX29mZmxvYWQg
-d2lsbCByZXR1cm4gZWFybHkgYW5kIG1kb191cGRfc2VjeSB3b24ndCBiZQ0KPiBjYWxsZWQuDQo+
-IA0KPiA+ICAgICAgICAgLi4uIG1hY3NlY191cGRhdGVfb2ZmbG9hZA0KPiA+ICAgICB9IGVsc2Ug
-aWYgKG1hY3NlY19pc19vZmZsb2FkZWQobWFjc2VjKSkgew0KPiA+ICAgICAgICAgLyogSWYgaC93
-IG9mZmxvYWRpbmcgaXMgYXZhaWxhYmxlLCBwcm9wYWdhdGUgdG8gdGhlIGRldmljZSAqLw0KPiA+
-ICAgICAgICAgLi4uIG1kb191cGRfc2VjeQ0KPiA+ICAgICB9DQo+ID4NCj4gPiBBbnRvaW5lLCBk
-b2VzIHRoYXQgbG9vayByZWFzb25hYmxlIHRvIHlvdT8NCj4gDQo+IEJ1dCB5ZXMgSSBhZ3JlZSB3
-ZSBjYW4gaW1wcm92ZSB0aGUgbG9naWMuIE1heWJlIHNvbWV0aGluZyBsaWtlOg0KDQpBY2sgLCBJ
-IGNhbiBkbyB0aGUgY2hhbmdlDQoNCj4gICBwcmV2X29mZmxvYWQgPSBtYWNzZWMtPm9mZmxvYWQ7
-DQo+ICAgb2ZmbG9hZCA9IGRhdGFbSUZMQV9NQUNTRUNfT0ZGTE9BRF07DQo+IA0KPiAgIGlmIChw
-cmV2X29mZmxvYWQgIT0gb2ZmbG9hZCkgew0KPiAgICAgICBtYWNzZWNfdXBkYXRlX29mZmxvYWQo
-Li4uKQ0KPiAgIH0gZWxzZSBpZiAobWFjc2VjX2lzX29mZmxvYWRlZChtYWNzZWMpKSB7DQo+ICAg
-ICAgIC4uLg0KPiAgICAgICBwcmV2X29mZmxvYWQgY2FuIGJlIHVzZWQgdG8gcmVzdG9yZSB0aGUg
-b2ZmbG9hZGluZyBzdGF0ZSBvbg0KPiAgICAgICBmYWlsdXJlIGhlcmUuDQoNCndoeSBkbyB3ZSBu
-ZWVkIHRvIHJlc3RvcmUgb2ZmbG9hZGluZyBzdGF0ZSBoZXJlIGluIGNhc2Ugb2YgZmFpbHVyZT8N
-CndlIGdldCB0byB0aGlzIGNhc2Ugd2hlbiBwcmV2X29mZmxvYWQgPT0gb2ZmbG9hZC4NCg0KPiAg
-IH0NCj4gDQo+IFRoYW5rcywNCj4gQW50b2luZQ0K
+On 08 Jan 12:12, Leon Romanovsky wrote:
+>On Thu, Jan 05, 2023 at 04:24:10PM -0800, Saeed Mahameed wrote:
+>> On 04 Jan 08:51, Leon Romanovsky wrote:
+>> > On Tue, Jan 03, 2023 at 11:12:46AM +0000, Ying Hsu wrote:
+>> > > There's a possible deadlock when two processes are connecting
+>> > > and closing concurrently:
+>> > >   + CPU0: __rfcomm_dlc_close locks rfcomm and then calls
+>> > >   rfcomm_sk_state_change which locks the sock.
+>> > >   + CPU1: rfcomm_sock_connect locks the socket and then calls
+>> > >   rfcomm_dlc_open which locks rfcomm.
+>> > >
+>> > > Here's the call trace:
+>> > >
+>> > > -> #2 (&d->lock){+.+.}-{3:3}:
+>> > >        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>> > >        __mutex_lock0x12f/0x1360 kernel/locking/mutex.c:747
+>> > >        __rfcomm_dlc_close+0x15d/0x890 net/bluetooth/rfcomm/core.c:487
+>> > >        rfcomm_dlc_close+1e9/0x240 net/bluetooth/rfcomm/core.c:520
+>> > >        __rfcomm_sock_close+0x13c/0x250 net/bluetooth/rfcomm/sock.c:220
+>> > >        rfcomm_sock_shutdown+0xd8/0x230 net/bluetooth/rfcomm/sock.c:907
+>> > >        rfcomm_sock_release+0x68/0x140 net/bluetooth/rfcomm/sock.c:928
+>> > >        __sock_release+0xcd/0x280 net/socket.c:650
+>> > >        sock_close+0x1c/0x20 net/socket.c:1365
+>> > >        __fput+0x27c/0xa90 fs/file_table.c:320
+>> > >        task_work_run+0x16f/0x270 kernel/task_work.c:179
+>> > >        exit_task_work include/linux/task_work.h:38 [inline]
+>> > >        do_exit+0xaa8/0x2950 kernel/exit.c:867
+>> > >        do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+>> > >        get_signal+0x21c3/0x2450 kernel/signal.c:2859
+>> > >        arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+>> > >        exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+>> > >        exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+>> > >        __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+>> > >        syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+>> > >        do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+>> > >        entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>> > >
+>> > > -> #1 (rfcomm_mutex){+.+.}-{3:3}:
+>> > >        __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+>> > >        __mutex_lock+0x12f/0x1360 kernel/locking/mutex.c:747
+>> > >        rfcomm_dlc_open+0x93/0xa80 net/bluetooth/rfcomm/core.c:425
+>> > >        rfcomm_sock_connect+0x329/0x450 net/bluetooth/rfcomm/sock.c:413
+>> > >        __sys_connect_file+0x153/0x1a0 net/socket.c:1976
+>> > >        __sys_connect+0x165/0x1a0 net/socket.c:1993
+>> > >        __do_sys_connect net/socket.c:2003 [inline]
+>> > >        __se_sys_connect net/socket.c:2000 [inline]
+>> > >        __x64_sys_connect+0x73/0xb0 net/socket.c:2000
+>> > >        do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>> > >        do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+>> > >        entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>> > >
+>> > > -> #0 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}:
+>> > >        check_prev_add kernel/locking/lockdep.c:3097 [inline]
+>> > >        check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+>> > >        validate_chain kernel/locking/lockdep.c:3831 [inline]
+>> > >        __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5055
+>> > >        lock_acquire kernel/locking/lockdep.c:5668 [inline]
+>> > >        lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
+>> > >        lock_sock_nested+0x3a/0xf0 net/core/sock.c:3470
+>> > >        lock_sock include/net/sock.h:1725 [inline]
+>> > >        rfcomm_sk_state_change+0x6d/0x3a0 net/bluetooth/rfcomm/sock.c:73
+>> > >        __rfcomm_dlc_close+0x1b1/0x890 net/bluetooth/rfcomm/core.c:489
+>> > >        rfcomm_dlc_close+0x1e9/0x240 net/bluetooth/rfcomm/core.c:520
+>> > >        __rfcomm_sock_close+0x13c/0x250 net/bluetooth/rfcomm/sock.c:220
+>> > >        rfcomm_sock_shutdown+0xd8/0x230 net/bluetooth/rfcomm/sock.c:907
+>> > >        rfcomm_sock_release+0x68/0x140 net/bluetooth/rfcomm/sock.c:928
+>> > >        __sock_release+0xcd/0x280 net/socket.c:650
+>> > >        sock_close+0x1c/0x20 net/socket.c:1365
+>> > >        __fput+0x27c/0xa90 fs/file_table.c:320
+>> > >        task_work_run+0x16f/0x270 kernel/task_work.c:179
+>> > >        exit_task_work include/linux/task_work.h:38 [inline]
+>> > >        do_exit+0xaa8/0x2950 kernel/exit.c:867
+>> > >        do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+>> > >        get_signal+0x21c3/0x2450 kernel/signal.c:2859
+>> > >        arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
+>> > >        exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+>> > >        exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
+>> > >        __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+>> > >        syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+>> > >        do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+>> > >        entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>> > >
+>> > > Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+>> > > ---
+>> > > This commit has been tested with a C reproducer on qemu-x86_64.
+>> > >
+>> > >  net/bluetooth/rfcomm/sock.c | 2 ++
+>> > >  1 file changed, 2 insertions(+)
+>> > >
+>> > > diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+>> > > index 21e24da4847f..29f9a88a3dc8 100644
+>> > > --- a/net/bluetooth/rfcomm/sock.c
+>> > > +++ b/net/bluetooth/rfcomm/sock.c
+>> > > @@ -410,8 +410,10 @@ static int rfcomm_sock_connect(struct socket *sock, struct sockaddr *addr, int a
+>> > >  	d->sec_level = rfcomm_pi(sk)->sec_level;
+>> > >  	d->role_switch = rfcomm_pi(sk)->role_switch;
+>> > >
+>> > > +	release_sock(sk);
+>> > >  	err = rfcomm_dlc_open(d, &rfcomm_pi(sk)->src, &sa->rc_bdaddr,
+>> >                                           ^^^^
+>> > Are you sure that "sk" still exists here after you called to release_sock(sk)?
+>> > What prevents from use-after-free here?
+>> >
+>>
+>> sk must be valid to be locked in first place.
+>
+>It is, but after it is released it won't.
+>
+
+the code is symmetric: 
+you hold the sk lock then do your thing and then release it.
+
+if you claim that sk can be freed by another process after you released it,
+then due to symmetry it also can be freed before you locked it, unless 
+
+>> release_sock() has mutex unlock semantics so it doesn't free anything..
+>
+>What do you mean?
+>
+>I see a lot of magic release calls.
+>
+>  3481 void release_sock(struct sock *sk)
+>  3482 {
+>  3483         spin_lock_bh(&sk->sk_lock.slock);
+>  3484         if (sk->sk_backlog.tail)
+>  3485                 __release_sock(sk);
+>  3486
+>  3487         /* Warning : release_cb() might need to release sk ownership,
+>  3488          * ie call sock_release_ownership(sk) before us.
+>  3489          */
+>  3490         if (sk->sk_prot->release_cb)
+>  3491                 sk->sk_prot->release_cb(sk);
+>  3492
+>  3493         sock_release_ownership(sk);
+>  3494         if (waitqueue_active(&sk->sk_lock.wq))
+>  3495                 wake_up(&sk->sk_lock.wq);
+          sk must b  still valid here :), so there was no free to sk object
+>  3496         spin_unlock_bh(&sk->sk_lock.slock);
+>  3497 }
+>  3498 EXPORT_SYMBOL(release_sock);
+>
+>Thanks
+
