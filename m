@@ -2,146 +2,360 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9983A664F0B
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 23:49:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C8E664F2A
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 23:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbjAJWtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 17:49:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
+        id S234574AbjAJWyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 17:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233314AbjAJWsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 17:48:12 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C79860CE6;
-        Tue, 10 Jan 2023 14:48:11 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id k44-20020a9d19af000000b00683e176ab01so7845295otk.13;
-        Tue, 10 Jan 2023 14:48:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=X4n23XR3NPSoUWtOFf1oEMDvlErMkPtHsfDcOuQ7A9k=;
-        b=fMOQJ3ZyIAnSU+gnVhzMnJgRoAJmu5pDBilZFPFx64gWk1kFul26sGk+r0jkVTDFCY
-         M6ZSKMQuoiH/cNBLgZkJEWSKOCiUK4wJ8xEdy825o7S0K4qEA2/9Y0QI4kgMNFnybrEC
-         XRFKfmdPk1a/j/EjF/p/gtp5+4EN8RCkl3f5wrFvitTr9n9y46PGo9yn0AnL61gEp2DB
-         VBwNHoqaBBpu+Vu2a0qcbf9S3Y9YPP6But9kWmWLkBzzxsbSge+2zjeM1SOhGP6d8V28
-         sJCvWN5SVp/C74yYUeGLo5GfhQtkhtDtfV86TD3epHBRVYjTQ3UoIw/LU3LAi2/fja6x
-         6UIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=X4n23XR3NPSoUWtOFf1oEMDvlErMkPtHsfDcOuQ7A9k=;
-        b=dLMJ1Tne1vgzkpcIlWUc1ivDbc4dKH+XifinP9CVaXbZUnOU5X6ubJPuDu1vfxgDL8
-         CgrBtsE8FBC+wpL5KK7iEzsyEqsz/jFSARRYv86+NUpI/+f0wzMK/02Pf6LKG/oFB56F
-         dhN3niXsvaDEFf+M6b+nD3Q0fm+TRS1jl9RmsoUycBdmqKUuEHaZvOvgdjld3sR/4PU8
-         8BZb+tSfZJARJ15j74sfA4EZpVfGTQlJGcBqGRK/vYKAG7s3F1zRu0vTjsoj6DO1JUk3
-         Vumjqn5+CaMdBzKyrq5YzLFehOecAOERymbo2vFyFpsD3vL/bKBl8tDIyM+72IX0z/bI
-         hOtw==
-X-Gm-Message-State: AFqh2krmyFvWnHT5lYnMEgYi7YBDjwVtGCDPbJMgeOhFV2WKH7UarihC
-        u2MZsVi44DUF/vKgJKa7huGy733PjuvL1+mHw/0=
-X-Google-Smtp-Source: AMrXdXtUcrMQCTX3Y1NgJ9zb5AvrGYWjcUaXT6OIQKZSaarknxARw+DaAdEdV/jF0cjSsdeIlnHvhBlHWMubfzBFNSc=
-X-Received: by 2002:a05:6830:1052:b0:676:c98a:e8cf with SMTP id
- b18-20020a056830105200b00676c98ae8cfmr3815629otp.376.1673390890542; Tue, 10
- Jan 2023 14:48:10 -0800 (PST)
+        with ESMTP id S235433AbjAJWxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 17:53:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A2363F6B;
+        Tue, 10 Jan 2023 14:51:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 158CB6191F;
+        Tue, 10 Jan 2023 22:51:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10461C433F1;
+        Tue, 10 Jan 2023 22:51:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673391114;
+        bh=o9OeEHKSFKlahP4meTr0ckJWyKeB9yjaFvMZ1lhRkqI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nbd32xmaW9WdO1u/PWOjdJdb+26FTqJao9Sn4v2we5M1eMT3ytIkI5Igxv8PCj6yS
+         H15ViKsK868VH+nPmcUJSG2Rbo5Z8kdSph/JdIGd4sXha9RSQXF6IzjhVijbuF1+6/
+         DOMRusZi9N0mLE0xl7dRLeHHAvc4qGVNw9IjZQ0+2ssQ7L02GFqnXRp+NKk/dASYRt
+         3NU8rFp6CgBdGGYMqTDmQcVf1MQb79lC35/ViyDG0Z85vNNMUqcARAr3oJymwV51VN
+         sUazuUJZrXJvraztzR9CdoWtiCR8j952ZkAw69LLawbwa9H2523ldrw0z+Sx7ukXQM
+         lHMeS5k4au/tg==
+Date:   Tue, 10 Jan 2023 14:51:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
+Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, jgg@ziepe.ca, leon@kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        michael.chan@broadcom.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, selvin.xavier@broadcom.com
+Subject: Re: [PATCH 1/8] bnxt_en: Add auxiliary driver support
+Message-ID: <20230110145152.3029bd2a@kernel.org>
+In-Reply-To: <20230108030208.26390-2-ajit.khaparde@broadcom.com>
+References: <20230108030208.26390-1-ajit.khaparde@broadcom.com>
+        <20230108030208.26390-2-ajit.khaparde@broadcom.com>
 MIME-Version: 1.0
-References: <20221123124620.1387499-1-gregkh@linuxfoundation.org>
- <9b78783297db1ebb1a7cd922be7eef0bf33b75b9.camel@sipsolutions.net>
- <Y342oUJu9CFHNmlW@kroah.com> <d397e09df8bfd1286ed3e652fbba37ec7fe02f32.camel@sipsolutions.net>
-In-Reply-To: <d397e09df8bfd1286ed3e652fbba37ec7fe02f32.camel@sipsolutions.net>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Tue, 10 Jan 2023 15:47:59 -0700
-Message-ID: <CADvTj4q3mMyymD1wDCFv6djJ1SGOLaikWnTsNVJJEPf7GdoUvw@mail.gmail.com>
-Subject: Re: [PATCH] USB: disable all RNDIS protocol drivers
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        Ilja Van Sprundel <ivansprundel@ioactive.com>,
-        Joseph Tartaro <joseph.tartaro@ioactive.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 3:32 PM Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> On Wed, 2022-11-23 at 16:05 +0100, Greg Kroah-Hartman wrote:
-> > On Wed, Nov 23, 2022 at 03:20:36PM +0100, Johannes Berg wrote:
-> > > On Wed, 2022-11-23 at 13:46 +0100, Greg Kroah-Hartman wrote:
-> > > > The Microsoft RNDIS protocol is, as designed, insecure and vulnerable on
-> > > > any system that uses it with untrusted hosts or devices.  Because the
-> > > > protocol is impossible to make secure, just disable all rndis drivers to
-> > > > prevent anyone from using them again.
-> > > >
-> > >
-> > > Not that I mind disabling these, but is there any more detail available
-> > > on this pretty broad claim? :)
-> >
-> > I don't want to get into specifics in public any more than the above.
->
-> Fair.
+On Sat,  7 Jan 2023 19:02:01 -0800 Ajit Khaparde wrote:
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+> index 2e54bf4fc7a7..6c697172f042 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+> @@ -25,32 +25,37 @@
+>  #include "bnxt_hwrm.h"
+>  #include "bnxt_ulp.h"
+>  
+> +static DEFINE_IDA(bnxt_aux_dev_ids);
+> +
+>  static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
+>  			     struct bnxt_ulp_ops *ulp_ops, void *handle)
+>  {
+>  	struct net_device *dev = edev->net;
+>  	struct bnxt *bp = netdev_priv(dev);
+>  	struct bnxt_ulp *ulp;
+> +	int rc = 0;
+>  
+> -	ASSERT_RTNL();
+>  	if (ulp_id >= BNXT_MAX_ULP)
+>  		return -EINVAL;
+>  
+>  	ulp = &edev->ulp_tbl[ulp_id];
+>  	if (rcu_access_pointer(ulp->ulp_ops)) {
+>  		netdev_err(bp->dev, "ulp id %d already registered\n", ulp_id);
+> -		return -EBUSY;
+> +		rc = -EBUSY;
+> +		goto exit;
 
-I would guess it's related to?:
-https://github.com/torvalds/linux/commit/c7dd13805f8b8fc1ce3b6d40f6aff47e66b72ad2
+The change to jump to the return statement rater than return directly
+seems unrelated to the rest of the patch, and wrong.
 
->
-> > The protocol was never designed to be used with untrusted devices.  It
-> > was created, and we implemented support for it, when we trusted USB
-> > devices that we plugged into our systems, AND we trusted the systems we
-> > plugged our USB devices into.  So at the time, it kind of made sense to
-> > create this, and the USB protocol class support that replaced it had not
-> > yet been released.
-> >
-> > As designed, it really can not work at all if you do not trust either
-> > the host or the device, due to the way the protocol works.  And I can't
-> > see how it could be fixed if you wish to remain compliant with the
-> > protocol (i.e. still work with Windows XP systems.)
+>  	}
+>  	if (ulp_id == BNXT_ROCE_ULP) {
+>  		unsigned int max_stat_ctxs;
+>  
+>  		max_stat_ctxs = bnxt_get_max_func_stat_ctxs(bp);
+>  		if (max_stat_ctxs <= BNXT_MIN_ROCE_STAT_CTXS ||
+> -		    bp->cp_nr_rings == max_stat_ctxs)
+> -			return -ENOMEM;
+> +		    bp->cp_nr_rings == max_stat_ctxs) {
+> +			rc = -ENOMEM;
+> +			goto exit;
+> +		}
+>  	}
+>  
+> -	atomic_set(&ulp->ref_count, 0);
+> +	atomic_set(&ulp->ref_count, 1);
+>  	ulp->handle = handle;
+>  	rcu_assign_pointer(ulp->ulp_ops, ulp_ops);
+>  
+> @@ -59,7 +64,8 @@ static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
+>  			bnxt_hwrm_vnic_cfg(bp, 0);
+>  	}
+>  
+> -	return 0;
+> +exit:
+> +	return rc;
+>  }
+>  
+>  static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
+> @@ -69,10 +75,11 @@ static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
+>  	struct bnxt_ulp *ulp;
+>  	int i = 0;
+>  
+> -	ASSERT_RTNL();
+>  	if (ulp_id >= BNXT_MAX_ULP)
+>  		return -EINVAL;
+>  
+> +	edev->flags |= BNXT_EN_FLAG_ULP_STOPPED;
+> +
+>  	ulp = &edev->ulp_tbl[ulp_id];
+>  	if (!rcu_access_pointer(ulp->ulp_ops)) {
+>  		netdev_err(bp->dev, "ulp id %d not registered\n", ulp_id);
+> @@ -126,7 +133,6 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
+>  	int total_vecs;
+>  	int rc = 0;
+>  
+> -	ASSERT_RTNL();
+>  	if (ulp_id != BNXT_ROCE_ULP)
+>  		return -EINVAL;
+>  
+> @@ -149,6 +155,7 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
+>  		max_idx = min_t(int, bp->total_irqs, max_cp_rings);
+>  		idx = max_idx - avail_msix;
+>  	}
+> +
+>  	edev->ulp_tbl[ulp_id].msix_base = idx;
+>  	edev->ulp_tbl[ulp_id].msix_requested = avail_msix;
+>  	hw_resc = &bp->hw_resc;
+> @@ -156,8 +163,10 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
+>  	if (bp->total_irqs < total_vecs ||
+>  	    (BNXT_NEW_RM(bp) && hw_resc->resv_irqs < total_vecs)) {
+>  		if (netif_running(dev)) {
+> +			rtnl_lock();
 
-Can it be fixed in a way that most RNDIS based modems devices like
-RNDIS based android tethering work with Linux based hosts still?
+What prevents the device from going down after you check running 
+but before you take the lock?
 
->
-> I guess I just don't see how a USB-based protocol can be fundamentally
-> insecure (to the host), when the host is always in control over messages
-> and parses their content etc.?
->
-> I can see this with e.g. firewire which must allow DMA access, and now
-> with Thunderbolt we have the same and ended up with boltd, but USB?
->
-> > Today, with untrusted hosts and devices, it's time to just retire this
-> > protcol.  As I mentioned in the patch comments, Android disabled this
-> > many years ago in their devices, with no loss of functionality.
->
-> I'm not sure Android counts that much, FWIW, at least for WiFi there
-> really is no good reason to plug in a USB WiFi dongle into an Android
-> phone, and quick googling shows that e.g. Android TV may - depending on
-> build - support/permit RNDIS Ethernet?
->
-> Anyway, there was probably exactly one RNDIS WiFi dongle from Broadcom
-> (for some kind of console IIRC), so it's not a huge loss. Just having
-> issues with the blanket statement that a USB protocol can be designed as
-> inscure :)
->
-> johannes
->
+>  			bnxt_close_nic(bp, true, false);
+>  			rc = bnxt_open_nic(bp, true, false);
+> +			rtnl_unlock();
+>  		} else {
+>  			rc = bnxt_reserve_rings(bp, true);
+>  		}
+
+> @@ -475,6 +467,143 @@ static const struct bnxt_en_ops bnxt_en_ops_tbl = {
+>  	.bnxt_register_fw_async_events	= bnxt_register_async_events,
+>  };
+>  
+> +void bnxt_aux_dev_free(struct bnxt *bp)
+> +{
+> +	kfree(bp->aux_dev);
+> +	bp->aux_dev = NULL;
+> +}
+> +
+> +static struct bnxt_aux_dev *bnxt_aux_dev_alloc(struct bnxt *bp)
+> +{
+> +	struct bnxt_aux_dev *bnxt_adev;
+> +
+> +	bnxt_adev =  kzalloc(sizeof(*bnxt_adev), GFP_KERNEL);
+
+double space
+
+> +	if (!bnxt_adev)
+> +		return NULL;
+> +
+> +	return bnxt_adev;
+
+This entire function is rather pointless.
+
+If you really want it - it can be simply written as:
+
+static struct bnxt_aux_dev *bnxt_aux_dev_alloc(struct bnxt *bp)
+{
+	return kzalloc(sizeof(struct bnxt_aux_dev), GFP_KERNEL);
+}
+
+> +}
+> +
+> +void bnxt_rdma_aux_device_uninit(struct bnxt *bp)
+> +{
+> +	struct bnxt_aux_dev *bnxt_adev;
+> +	struct auxiliary_device *adev;
+> +
+> +	/* Skip if no auxiliary device init was done. */
+> +	if (!(bp->flags & BNXT_FLAG_ROCE_CAP))
+> +		return;
+> +
+> +	bnxt_adev = bp->aux_dev;
+> +	adev = &bnxt_adev->aux_dev;
+> +	auxiliary_device_delete(adev);
+
+auxiliary_device_delete() waits for all the references to disappear?
+The lifetime rules between adev and "edev" seem a little odd to me,
+maybe I'm not familiar enough with auxdev.
+
+> +	auxiliary_device_uninit(adev);
+> +	if (bnxt_adev->id >= 0)
+> +		ida_free(&bnxt_aux_dev_ids, bnxt_adev->id);
+> +}
+> +
+> +void bnxt_rdma_aux_device_init(struct bnxt *bp)
+> +{
+> +	int rc;
+> +
+> +	if (bp->flags & BNXT_FLAG_ROCE_CAP) {
+
+flip the condition and return early, don't indent an entire function.
+
+> +		bp->aux_dev = bnxt_aux_dev_alloc(bp);
+> +		if (!bp->aux_dev)
+> +			goto skip_ida_init;
+> +
+> +		bp->aux_dev->id = ida_alloc(&bnxt_aux_dev_ids, GFP_KERNEL);
+> +		if (bp->aux_dev->id < 0) {
+> +			netdev_warn(bp->dev,
+> +				    "ida alloc failed for ROCE auxiliary device\n");
+> +			goto skip_aux_init;
+> +		}
+> +
+> +		/* If aux bus init fails, continue with netdev init. */
+> +		rc = bnxt_rdma_aux_device_add(bp);
+> +		if (rc) {
+> +			netdev_warn(bp->dev,
+> +				    "Failed to add auxiliary device for ROCE\n");
+> +			goto aux_add_failed;
+> +		}
+> +	}
+> +	return;
+> +
+> +aux_add_failed:
+> +	ida_free(&bnxt_aux_dev_ids, bp->aux_dev->id);
+> +	bp->aux_dev->id = -1;
+> +skip_aux_init:
+> +	bnxt_aux_dev_free(bp);
+> +skip_ida_init:
+> +	bp->flags &= ~BNXT_FLAG_ROCE_CAP;
+> +}
+
+> +static inline void bnxt_set_edev_info(struct bnxt_en_dev *edev, struct bnxt *bp)
+
+Please don't use inline for no good reason.
+
+> +{
+> +	edev->en_ops = &bnxt_en_ops_tbl;
+> +	edev->net = bp->dev;
+> +	edev->pdev = bp->pdev;
+> +	edev->l2_db_size = bp->db_size;
+> +	edev->l2_db_size_nc = bp->db_size;
+> +
+> +	if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
+> +		edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
+> +	if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
+> +		edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
+> +}
+> +
+> +int bnxt_rdma_aux_device_add(struct bnxt *bp)
+> +{
+> +	struct bnxt_aux_dev *bnxt_adev = bp->aux_dev;
+> +	struct bnxt_en_dev *edev = bnxt_adev->edev;
+> +	struct auxiliary_device *aux_dev;
+> +	int ret;
+> +
+> +	edev = kzalloc(sizeof(*edev), GFP_KERNEL);
+> +	if (!edev) {
+> +		ret = -ENOMEM;
+> +		goto cleanup_edev_failure;
+> +	}
+> +
+> +	aux_dev = &bnxt_adev->aux_dev;
+> +	aux_dev->id = bnxt_adev->id;
+> +	aux_dev->name = "rdma";
+> +	aux_dev->dev.parent = &bp->pdev->dev;
+> +	aux_dev->dev.release = bnxt_aux_dev_release;
+> +
+> +	bnxt_adev->edev = edev;
+> +	bp->edev = edev;
+> +	bnxt_set_edev_info(edev, bp);
+> +
+> +	ret = auxiliary_device_init(aux_dev);
+> +	if (ret)
+> +		goto cleanup_init_failure;
+> +
+> +	ret = auxiliary_device_add(aux_dev);
+> +	if (ret)
+> +		goto cleanup_add_failure;
+> +
+> +	return 0;
+> +
+> +cleanup_add_failure:
+
+Name your labels after what you clean up, not what failed.
+
+> +	auxiliary_device_uninit(aux_dev);
+> +cleanup_init_failure:
+> +	kfree(edev);
+> +	bp->edev = NULL;
+> +cleanup_edev_failure:
+
+Don't jump to the return statement, just return.
+
+> +	return ret;
+> +}
+> +
+>  struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
+>  {
+>  	struct bnxt *bp = netdev_priv(dev);
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+> index 42b50abc3e91..647147a68554 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+> @@ -17,6 +17,7 @@
+>  #define BNXT_MIN_ROCE_STAT_CTXS	1
+>  
+>  struct hwrm_async_event_cmpl;
+> +struct bnxt_aux_dev;
+
+This forward declaration is not needed, at least in this patch.
+
+>  struct bnxt;
+>  
+>  struct bnxt_msix_entry {
+> @@ -102,10 +103,14 @@ int bnxt_get_ulp_stat_ctxs(struct bnxt *bp);
+>  void bnxt_ulp_stop(struct bnxt *bp);
+>  void bnxt_ulp_start(struct bnxt *bp, int err);
+>  void bnxt_ulp_sriov_cfg(struct bnxt *bp, int num_vfs);
+> -void bnxt_ulp_shutdown(struct bnxt *bp);
+>  void bnxt_ulp_irq_stop(struct bnxt *bp);
+>  void bnxt_ulp_irq_restart(struct bnxt *bp, int err);
+>  void bnxt_ulp_async_events(struct bnxt *bp, struct hwrm_async_event_cmpl *cmpl);
+> +void bnxt_aux_dev_release(struct device *dev);
+> +int bnxt_rdma_aux_device_add(struct bnxt *bp);
+
+This is only used in bnxt_ulp.c, please remove the declaration and make
+it static. Please check other functions for the same problem.
+
+> +void bnxt_rdma_aux_device_uninit(struct bnxt *bp);
+> +void bnxt_rdma_aux_device_init(struct bnxt *bp);
+> +void bnxt_aux_dev_free(struct bnxt *bp);
+
