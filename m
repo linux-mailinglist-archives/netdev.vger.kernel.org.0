@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E95606647A4
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:49:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1802C6647A5
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:49:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbjAJRtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 12:49:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
+        id S233829AbjAJRtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 12:49:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbjAJRtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:49:41 -0500
+        with ESMTP id S233597AbjAJRtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:49:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AB75F4B5
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:49:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB5A5F4B5
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:49:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE3B3B818F9
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 17:49:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB7B8C433D2;
-        Tue, 10 Jan 2023 17:49:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 911BFB818FC
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 17:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D64C5C43392;
+        Tue, 10 Jan 2023 17:49:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673372978;
-        bh=MRs1rHhGp92jsVIX8FWZCrYsPZq5D7L/9rIww5w5Lr0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ELZTv08c2o7gShHjw0UKNEACq/7+aozAVI6E2sSkBFKiqxV9L78YCtcPkplv3pxTG
-         ymWs7BKKdOKlP4ETtuAs+EST2s8ZEj+JN57mvnkWLwZ1rPdipluOSKhOS4yFg37+uR
-         iUEmry7ohLUit7wOY6stRcf7H41b9ghA8YXwOxCYCesFOoVPbvNXsGLYSh/IF3ioAm
-         zlak1AwsJ+9IBM0C9B5Ch0XAU08ITJ04uiknhpyMJhzP5+U0YP9uj5tjh83Qgrk2Gc
-         GL5TIj8w5NgkhN1yfJhZXI7ItPl2BMSbiSJxmyHsGLMBdzlZrmTe+KkCdTYdWGjL/o
-         u5Pyp11nF1Mdw==
+        s=k20201202; t=1673372982;
+        bh=gEgkVP9zXhiOLP611SS/8EvUx6jDg8if63lwIwWboz0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qglmv/MV/SCoDspRYnmT/PJUmnDudxnNzFF1EWHUMlmY+wkclU7LWYFbhsWyaGbEO
+         pJQbgFN2tkHBttbIq6UfOkVkM4Vp8Bb5K75f7Tjh1qXj5CHuG4pQO6n+KQsrK8HG7Z
+         21KvKOVx9c4Tnn7DeRTNsv8JlBXKMFy6FjEqnN8pGhgRqAjziKNzOX9gQgD5VVcTqM
+         GTVx/xxtfi6z13VTHy90kCDryapP5g8nt1qA2+kED2ObMg/tfaDdq9rt5BbnVg1sd1
+         olnxLaZwWHAqQqnd1DHzuLm76eUu9JfSOV8GwnnyUPRymY/Lq3NPc0ogtQD63Ksr6z
+         fYIZqUelYaLAQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, lorenzo.bianconi@redhat.com, nbd@nbd.name,
         john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
         sujuan.chen@mediatek.com, daniel@makrotopia.org, leon@kernel.org
-Subject: [PATCH v4 net-next 0/5] net: ethernet: mtk_wed: introduce reset support
-Date:   Tue, 10 Jan 2023 18:49:20 +0100
-Message-Id: <cover.1673372414.git.lorenzo@kernel.org>
+Subject: [PATCH v4 net-next 1/5] net: ethernet: mtk_eth_soc: introduce mtk_hw_reset utility routine
+Date:   Tue, 10 Jan 2023 18:49:21 +0100
+Message-Id: <d2d3bba0d3eae38a227a7044bb4446ada5cce30d.1673372414.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <cover.1673372414.git.lorenzo@kernel.org>
+References: <cover.1673372414.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -52,40 +54,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce proper reset integration between ethernet and wlan drivers in order
-to schedule wlan driver reset when ethernet/wed driver is resetting.
-Introduce mtk_hw_reset_monitor work in order to detect possible DMA hangs.
+This is a preliminary patch to add Wireless Ethernet Dispatcher reset
+support.
 
-Changes since v3:
-- rely on msleep() utility instead of mdelay() in mtk_hw_init() and
-  usleep_range() in mtk_ppe_prepare_reset() since the code runs in
-  non-atomic context
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Tested-by: Daniel Golle <daniel@makrotopia.org>
+Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 36 +++++++++++++--------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
 
-Changes since v2:
-- rebase on top of net-next
-- move rtnl_lock/rtnl_unlock in reset callback
-- re-run mtk_prepare_for_reset() after mtk_wed_fe_reset() acquiring RTNL lock
-
-Changes since v1:
-- rebase on top of net-next
-
-Lorenzo Bianconi (5):
-  net: ethernet: mtk_eth_soc: introduce mtk_hw_reset utility routine
-  net: ethernet: mtk_eth_soc: introduce mtk_hw_warm_reset support
-  net: ethernet: mtk_eth_soc: align reset procedure to vendor sdk
-  net: ethernet: mtk_eth_soc: add dma checks to mtk_hw_reset_check
-  net: ethernet: mtk_wed: add reset/reset_complete callbacks
-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c  | 297 ++++++++++++++++---
- drivers/net/ethernet/mediatek/mtk_eth_soc.h  |  38 +++
- drivers/net/ethernet/mediatek/mtk_ppe.c      |  27 ++
- drivers/net/ethernet/mediatek/mtk_ppe.h      |   1 +
- drivers/net/ethernet/mediatek/mtk_ppe_regs.h |   6 +
- drivers/net/ethernet/mediatek/mtk_wed.c      |  40 +++
- drivers/net/ethernet/mediatek/mtk_wed.h      |   8 +
- include/linux/soc/mediatek/mtk_wed.h         |   2 +
- 8 files changed, 379 insertions(+), 40 deletions(-)
-
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index e3de9a53b2d9..ce429deea389 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -3471,6 +3471,27 @@ static void mtk_set_mcr_max_rx(struct mtk_mac *mac, u32 val)
+ 		mtk_w32(mac->hw, mcr_new, MTK_MAC_MCR(mac->id));
+ }
+ 
++static void mtk_hw_reset(struct mtk_eth *eth)
++{
++	u32 val;
++
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
++		regmap_write(eth->ethsys, ETHSYS_FE_RST_CHK_IDLE_EN, 0);
++		val = RSTCTRL_PPE0_V2;
++	} else {
++		val = RSTCTRL_PPE0;
++	}
++
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
++		val |= RSTCTRL_PPE1;
++
++	ethsys_reset(eth, RSTCTRL_ETH | RSTCTRL_FE | val);
++
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
++		regmap_write(eth->ethsys, ETHSYS_FE_RST_CHK_IDLE_EN,
++			     0x3ffffff);
++}
++
+ static int mtk_hw_init(struct mtk_eth *eth)
+ {
+ 	u32 dma_mask = ETHSYS_DMA_AG_MAP_PDMA | ETHSYS_DMA_AG_MAP_QDMA |
+@@ -3510,22 +3531,9 @@ static int mtk_hw_init(struct mtk_eth *eth)
+ 		return 0;
+ 	}
+ 
+-	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+-		regmap_write(eth->ethsys, ETHSYS_FE_RST_CHK_IDLE_EN, 0);
+-		val = RSTCTRL_PPE0_V2;
+-	} else {
+-		val = RSTCTRL_PPE0;
+-	}
+-
+-	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
+-		val |= RSTCTRL_PPE1;
+-
+-	ethsys_reset(eth, RSTCTRL_ETH | RSTCTRL_FE | val);
++	mtk_hw_reset(eth);
+ 
+ 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+-		regmap_write(eth->ethsys, ETHSYS_FE_RST_CHK_IDLE_EN,
+-			     0x3ffffff);
+-
+ 		/* Set FE to PDMAv2 if necessary */
+ 		val = mtk_r32(eth, MTK_FE_GLO_MISC);
+ 		mtk_w32(eth,  val | BIT(4), MTK_FE_GLO_MISC);
 -- 
 2.39.0
 
