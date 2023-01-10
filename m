@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CAA3663ECE
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 12:01:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07287663EDE
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 12:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232615AbjAJLBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 06:01:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S230097AbjAJLCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 06:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238367AbjAJK7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:59:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0841105
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:56:55 -0800 (PST)
+        with ESMTP id S238637AbjAJLAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 06:00:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B352010
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 03:00:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4A70B80FEF
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 10:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74214C433D2;
-        Tue, 10 Jan 2023 10:56:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D756C615D2
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 11:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3DC92C433F0;
+        Tue, 10 Jan 2023 11:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673348206;
-        bh=y7IkjovMikYy6QnCCUcTXYeaVgnPCl7i3o0rQJWIdkQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dg3Sygdoqv0jnowzomfmr7eiKFvMmQejFVrhbpp+oVB7zsZIsR4zXWGO16OsckTXL
-         cSG685T2awn2E6/R9X87HwfZ+D6KMcICMum95YBWNo7tyjSkFBUf1VJ/5u3s76y30n
-         Pd05vvMVmXd6zuUHca3TidihQZwvUGN/6cqQV8YZL2/2S8G7UC+MtxxF2FcPBVQasL
-         9p+ZRyf8uC8YAGXcfpo63xvKVk7yyy/+MhTOxDtP27Yq5Nx5LLTEThD6hbGMlp4cuI
-         29v5WNND1lCTRibHSrB3Z2M0RuP3vY1bFOAgghsMrO9s+C+5bZjeD4ohGgr1cIwxcW
-         rm01BKbdUeLkw==
-Date:   Tue, 10 Jan 2023 12:56:41 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net 2/2] ice: Add check for kzalloc
-Message-ID: <Y71EaQkwvw2OMVHC@unreal>
-References: <20230109225358.3478060-1-anthony.l.nguyen@intel.com>
- <20230109225358.3478060-3-anthony.l.nguyen@intel.com>
+        s=k20201202; t=1673348416;
+        bh=7bIBNidZuV77f3/t0t48Xtu5pYR5aRUKMJdbUS1m5kM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Yhxs015ux3292fQG0vdxkZec2dbD8Q0xsQPeYUazuWuUoKRl8BAcm/EEGE32CndUr
+         ZSUD5CczaH3WmsWtvedYjCC8k0F3nD5YKvNU80zCOvHGlVpiw25HBA2AdbI2qw+NhL
+         ARZXcUR1dq+e8nlsbXtyagxlzW4Z9c91nR7RHURjcleCbEM4hDHJTPVCj4K/rRx4L2
+         jwspvjitvDFkNgQgLrK7Vs8N1XtUev2nCMXMYXECryVxVp027ZKeywYJuMelW5SDfU
+         b6TSmFc1Yi/SsrKsMqsBWNiIdaf86SEhcffNr8gOtEj1boKLuduqLVxjSTPzNCrI7l
+         qfpkWFF1EUuTA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23D69E21EEA;
+        Tue, 10 Jan 2023 11:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230109225358.3478060-3-anthony.l.nguyen@intel.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] amd-xgbe: Add support for 10 Mbps speed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167334841614.12595.5065567272812979396.git-patchwork-notify@kernel.org>
+Date:   Tue, 10 Jan 2023 11:00:16 +0000
+References: <20230109101819.747572-1-Raju.Rangoju@amd.com>
+In-Reply-To: <20230109101819.747572-1-Raju.Rangoju@amd.com>
+To:     Raju Rangoju <Raju.Rangoju@amd.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, thomas.lendacky@amd.com,
+        Shyam-sundar.S-k@amd.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,22 +56,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 02:53:58PM -0800, Tony Nguyen wrote:
-> From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> 
-> Add the check for the return value of kzalloc in order to avoid
-> NULL pointer dereference.
-> Moreover, use the goto-label to share the clean code.
-> 
-> Fixes: d6b98c8d242a ("ice: add write functionality for GNSS TTY")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_gnss.c | 23 ++++++++++++++---------
->  1 file changed, 14 insertions(+), 9 deletions(-)
-> 
+Hello:
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 9 Jan 2023 15:48:19 +0530 you wrote:
+> Add the necessary changes to support 10 Mbps speed for BaseT and SFP
+> port modes. This is supported in MAC ver >= 30H.
+> 
+> Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+> ---
+>  drivers/net/ethernet/amd/xgbe/xgbe-dev.c    |   3 +
+>  drivers/net/ethernet/amd/xgbe/xgbe-mdio.c   |  24 +++++
+>  drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 107 ++++++++++++++++++--
+>  drivers/net/ethernet/amd/xgbe/xgbe.h        |   2 +
+>  4 files changed, 126 insertions(+), 10 deletions(-)
+
+Here is the summary with links:
+  - [net-next] amd-xgbe: Add support for 10 Mbps speed
+    https://git.kernel.org/netdev/net-next/c/07445f3c7ca1
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
