@@ -2,50 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F18C26637E7
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 04:46:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A6686637EA
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 04:48:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjAJDqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 22:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
+        id S230077AbjAJDsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 22:48:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbjAJDqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 22:46:32 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF135117B
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 19:46:31 -0800 (PST)
+        with ESMTP id S229559AbjAJDsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 22:48:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37AE3892;
+        Mon,  9 Jan 2023 19:48:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 42692CE091D
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 03:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B197EC433EF;
-        Tue, 10 Jan 2023 03:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 731B5614D0;
+        Tue, 10 Jan 2023 03:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41766C433D2;
+        Tue, 10 Jan 2023 03:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673322388;
-        bh=zY8HYL3kAdk17E6dqD9+bwfiGth7S6djjmSVBECXj+s=;
+        s=k20201202; t=1673322515;
+        bh=k0oxUAg3YrKMFiDeGEKXfTN+oirhrrPZOBzv4qz4G3U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UlXKc/BehVabkC3O8Nt5hIr5YUqGDiTNpGzUr5xHq4LEgVueT5oDrtcY8Uw1m/oCC
-         7fZ7HEOB1Ldr+p7tHOrl052oLpBsoPW9zwvCeKeKBbqGAaryOv0CjGXbq8F4OL6jo2
-         XBusIa2U24UnKc0dVHZLGxl2k0PCrGWh4X6MGL8DZHCRx2xK4hGLhiFyks3f/fw5dY
-         1SX99Sv7Gb3Cst83HhjqFc+5wXdYkPRBtU6dpWGHodv4bGZR5EfSPHoiTUANxdwmgV
-         X/JvnH1aEc+mXndtW8j5/VJU92OvgxRHMRfySJ2cUlVvt6/XudxguOlvvIcqn0inS2
-         A3EhkJFfp+UCQ==
-Date:   Mon, 9 Jan 2023 19:46:26 -0800
+        b=TebNgjhwXV4rK4gud4NX6oOD9b43IzZZzbI6TTND1KHLjTQj82pm7zY6x7avwmF8n
+         fga6Lwtc0etfXzgyAi6JyZNavfYiQRA0SsqODGOL2ADmgosQDOLHf6yYmnBZ7A2c+E
+         T0vUZgee1+uz1ExL9F3TyI56XD1VEvnP+FvxFPYq1FMj5fsVeSs2E/bJCGzwehAMrQ
+         tgazYHyo/zTI9mPUSd3TCrYii1CYYUYJm4D+BebAqCvHXkIM29DDDr3ppou1J0a8Ar
+         ZrLzANVIW40tcrB/XhjHUNheRnRnodMi2PECFHIonHHdv+sOWumd7a4lsSbeu2y6Dw
+         nBr3VM7MxBrzQ==
+Date:   Mon, 9 Jan 2023 19:48:34 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Srujana Challa <schalla@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>,
-        "Dave Kleikamp" <dave.kleikamp@oracle.com>,
-        Henry Willard <henry.willard@oracle.com>
-Subject: Re: [PATCH net-next,1/9] octeontx2-af: Fix interrupt name strings
- completely
-Message-ID: <20230109194626.6d6fac04@kernel.org>
-In-Reply-To: <20230109073603.861043-2-schalla@marvell.com>
-References: <20230109073603.861043-1-schalla@marvell.com>
-        <20230109073603.861043-2-schalla@marvell.com>
+To:     <yang.yang29@zte.com.cn>
+Cc:     <santosh.shilimkar@oracle.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <rds-devel@oss.oracle.com>, <linux-kernel@vger.kernel.org>,
+        <xu.panda@zte.com.cn>
+Subject: Re: [PATCH net-next] net/rds: use strscpy() to instead of strncpy()
+Message-ID: <20230109194834.24e06def@kernel.org>
+In-Reply-To: <202301091948433010050@zte.com.cn>
+References: <202301091948433010050@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,12 +55,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Jan 2023 13:05:55 +0530 Srujana Challa wrote:
-> From: Dave Kleikamp <dave.kleikamp@oracle.com>
-> 
-> The earlier commit: ("octeontx2-af: Fix interrupt name strings") fixed
->
-> one instance of a stack address being saved as if it were static.
-> This patch fixes another instance.
+On Mon, 9 Jan 2023 19:48:43 +0800 (CST) yang.yang29@zte.com.cn wrote:
+>  		BUG_ON(strlen(names[i]) >= sizeof(ctr.name));
+> -		strncpy(ctr.name, names[i], sizeof(ctr.name) - 1);
+> -		ctr.name[sizeof(ctr.name) - 1] = '\0';
+> +		strscpy(ctr.name, names[i], sizeof(ctr.name));
 
-This is a fix, fixes need to be posted for net and with the Fixes tag.
+You can make use of the fact that strscpy returns useful information
+and the copy and the preceding BUG_ON() together. 
