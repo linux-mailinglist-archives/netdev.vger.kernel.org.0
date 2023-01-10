@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FA83663942
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 07:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196D4663944
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 07:23:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbjAJGXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 01:23:37 -0500
+        id S231271AbjAJGXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 01:23:42 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230506AbjAJGXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 01:23:25 -0500
+        with ESMTP id S231443AbjAJGX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 01:23:28 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E017264E
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 22:23:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0FD2F7BC
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 22:23:27 -0800 (PST)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30A2wAmE014570;
-        Mon, 9 Jan 2023 22:23:14 -0800
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30A2RIvN015458;
+        Mon, 9 Jan 2023 22:23:20 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=QbyOzCAGtlZfAwujj3c5wFMCTSoi9jLOix7Ii/F5Zjk=;
- b=Dx9MLdJkrqAMZJIXCQtPgQEL76AddsZ5EN0H2Jfe7FF7WD61osFz7m2zT2YOHGFxevwE
- 3UkMi4hPxM45KneY3PTKqOkwhBTdJBUhN8eBkW0/auaie7Q7qJ8poNRGCKx3xmince89
- jfYucKh4yO+mOTtzmwN63as13FuyDs3bJ4xgq7NJ/NHT1ZLILXcbMUN4OOJt2boXWsdF
- pE3MEKRe7rEJSftixd7ewtvBgGgqBiEC44zHLUI08Kmtj8NjKRMmhESS8Iu1P0SSo35r
- e2mk4sWwzJteBvxL6qF3iAH/eDE81Len64HvcDrXjAuEM3rw0lr/EWuGvBpCOIjZf2/C kg== 
+ bh=/35c2QeSbSMt6xz2IFgJwlXXYchxsUj568CJo59exX0=;
+ b=eSt04aWD2n30VkxbSg5NsDHG8KzUXnTV8ti7p911Hoy/CLGTEPdtvOst1dv6wNUZ5YsP
+ ctKDRFpN1F4YeLNfN4GTvJkfy0iq1FDe0ANew4ku8hEknN4xlKk5fU1JVuJnf+eW0lv7
+ xmX/VLe74MlgFv7aok0VbUQyFqav3tztczXR6EUm3/VL+jRUmgNxNDOPHHAPDVv+54S5
+ msewOiIfmMVbeg/cXrraNRhX0Vr5As0strAj9s8/UVqjszqCVY1VeHCgzMq7hq8kdWJ8
+ VkkfMK4otWhBCQLZ2LSy9pLUPgnlMp6pq+ijsnufgYDVrbrHVjeXJgOjvxrbGBCB6GSt bA== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tsnd8-1
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3my94tsndp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 09 Jan 2023 22:23:14 -0800
+        Mon, 09 Jan 2023 22:23:20 -0800
 Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 9 Jan
- 2023 22:23:12 -0800
+ 2023 22:23:18 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Mon, 9 Jan 2023 22:23:12 -0800
+ Transport; Mon, 9 Jan 2023 22:23:18 -0800
 Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id BF9893F7085;
-        Mon,  9 Jan 2023 22:23:08 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 192183F7087;
+        Mon,  9 Jan 2023 22:23:12 -0800 (PST)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
-Subject: [PATCH v1 net-next,2/8] octeontx2-af: add mbox for CPT LF reset
-Date:   Tue, 10 Jan 2023 11:52:52 +0530
-Message-ID: <20230110062258.892887-3-schalla@marvell.com>
+Subject: [PATCH v1 net-next,3/8] octeontx2-af: modify FLR sequence for CPT
+Date:   Tue, 10 Jan 2023 11:52:53 +0530
+Message-ID: <20230110062258.892887-4-schalla@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230110062258.892887-1-schalla@marvell.com>
 References: <20230110062258.892887-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: q1KhT1dA6MnwlhTtSoMrgM57zDNl7ucc
-X-Proofpoint-GUID: q1KhT1dA6MnwlhTtSoMrgM57zDNl7ucc
+X-Proofpoint-ORIG-GUID: ounpZeeta4DuQzIu_e1f86S9OQ84v_Eq
+X-Proofpoint-GUID: ounpZeeta4DuQzIu_e1f86S9OQ84v_Eq
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2023-01-10_01,2023-01-09_02,2022-06-22_01
@@ -68,84 +68,208 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a new mailbox to reset a requested CPT LF.
+The existing FLR sequence mentioned in HRM requires a dummy LMTST to CPT
+but LMTST can't be submitted through BAR2 ALIAS registers. So, HW team
+provided a new sequence to avoid dummy LMTST. This patch adds code for
+the same.
 
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  8 +++++
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 33 +++++++++++++++++++
- 2 files changed, 41 insertions(+)
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   | 12 +++
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 86 +++++++++----------
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  2 +
+ 3 files changed, 53 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index d2584ebb7a70..b121e3d9f561 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -195,6 +195,7 @@ M(CPT_STATS,            0xA05, cpt_sts, cpt_sts_req, cpt_sts_rsp)	\
- M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
- 			       msg_rsp)                                 \
- M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
-+M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
- /* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
- M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
- M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
-@@ -1692,6 +1693,13 @@ struct cpt_inst_lmtst_req {
- 	u64 rsvd;
- };
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 7f0a64731c67..20c75d7c962e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -459,6 +459,7 @@ struct rvu {
+ 	struct rvu_pfvf		*pf;
+ 	struct rvu_pfvf		*hwvf;
+ 	struct mutex		rsrc_lock; /* Serialize resource alloc/free */
++	struct mutex		alias_lock; /* Serialize bar2 alias access */
+ 	int			vfs; /* Number of VFs attached to RVU */
+ 	int			nix_blkaddr[MAX_NIX_BLKS];
  
-+/* Mailbox message format to request for CPT LF reset */
-+struct cpt_lf_rst_req {
-+	struct mbox_msghdr hdr;
-+	u32 slot;
-+	u32 rsvd;
-+};
-+
- struct sdp_node_info {
- 	/* Node to which this PF belons to */
- 	u8 node_id;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index 1ed16ce515bb..1cd34914cb86 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -851,6 +851,39 @@ int rvu_mbox_handler_cpt_ctx_cache_sync(struct rvu *rvu, struct msg_req *req,
- 	return rvu_cpt_ctx_flush(rvu, req->hdr.pcifunc);
+@@ -546,6 +547,17 @@ static inline u64 rvupf_read64(struct rvu *rvu, u64 offset)
+ 	return readq(rvu->pfreg_base + offset);
  }
  
-+int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
-+				  struct msg_rsp *rsp)
++static inline void rvu_bar2_sel_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
 +{
-+	u16 pcifunc = req->hdr.pcifunc;
-+	struct rvu_block *block;
-+	int cptlf, blkaddr, ret;
-+	u16 actual_slot;
-+	u64 ctl, ctl2;
-+
-+	blkaddr = rvu_get_blkaddr_from_slot(rvu, BLKTYPE_CPT, pcifunc,
-+					    req->slot, &actual_slot);
-+	if (blkaddr < 0)
-+		return CPT_AF_ERR_LF_INVALID;
-+
-+	block = &rvu->hw->block[blkaddr];
-+
-+	cptlf = rvu_get_lf(rvu, block, pcifunc, actual_slot);
-+	if (cptlf < 0)
-+		return CPT_AF_ERR_LF_INVALID;
-+	ctl = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
-+	ctl2 = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
-+
-+	ret = rvu_lf_reset(rvu, block, cptlf);
-+	if (ret)
-+		dev_err(rvu->dev, "Failed to reset blkaddr %d LF%d\n",
-+			block->addr, cptlf);
-+
-+	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), ctl);
-+	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), ctl2);
-+
-+	return 0;
++	/* HW requires read back of RVU_AF_BAR2_SEL register to make sure completion of
++	 * write operation.
++	 */
++	rvu_write64(rvu, block, offset, val);
++	rvu_read64(rvu, block, offset);
++	/* Barrier to ensure read completes before accessing LF registers */
++	mb();
 +}
 +
- static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ /* Silicon revisions */
+ static inline bool is_rvu_pre_96xx_C0(struct rvu *rvu)
  {
- 	struct cpt_rxc_time_cfg_req req;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+index 1cd34914cb86..e8973294c4f8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+@@ -930,68 +930,63 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ 		dev_warn(rvu->dev, "Poll for RXC zombie count hits hard loop counter\n");
+ }
+ 
+-#define INPROG_INFLIGHT(reg)    ((reg) & 0x1FF)
+-#define INPROG_GRB_PARTIAL(reg) ((reg) & BIT_ULL(31))
+-#define INPROG_GRB(reg)         (((reg) >> 32) & 0xFF)
+-#define INPROG_GWB(reg)         (((reg) >> 40) & 0xFF)
++#define INFLIGHT   GENMASK_ULL(8, 0)
++#define GRB_CNT    GENMASK_ULL(39, 32)
++#define GWB_CNT    GENMASK_ULL(47, 40)
++#define XQ_XOR     GENMASK_ULL(63, 63)
++#define DQPTR      GENMASK_ULL(19, 0)
++#define NQPTR      GENMASK_ULL(51, 32)
+ 
+ static void cpt_lf_disable_iqueue(struct rvu *rvu, int blkaddr, int slot)
+ {
+-	int i = 0, hard_lp_ctr = 100000;
+-	u64 inprog, grp_ptr;
+-	u16 nq_ptr, dq_ptr;
++	int timeout = 1000000;
++	u64 inprog, inst_ptr;
++	u64 qsize, pending;
++	int i = 0;
+ 
+ 	/* Disable instructions enqueuing */
+ 	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_CTL), 0x0);
+ 
+-	/* Disable executions in the LF's queue */
+ 	inprog = rvu_read64(rvu, blkaddr,
+ 			    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
+-	inprog &= ~BIT_ULL(16);
++	inprog |= BIT_ULL(16);
+ 	rvu_write64(rvu, blkaddr,
+ 		    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG), inprog);
+ 
+-	/* Wait for CPT queue to become execution-quiescent */
++	qsize = rvu_read64(rvu, blkaddr,
++			   CPT_AF_BAR2_ALIASX(slot, CPT_LF_Q_SIZE)) & 0x7FFF;
+ 	do {
+-		inprog = rvu_read64(rvu, blkaddr,
+-				    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
+-		if (INPROG_GRB_PARTIAL(inprog)) {
+-			i = 0;
+-			hard_lp_ctr--;
+-		} else {
+-			i++;
+-		}
+-
+-		grp_ptr = rvu_read64(rvu, blkaddr,
+-				     CPT_AF_BAR2_ALIASX(slot,
+-							CPT_LF_Q_GRP_PTR));
+-		nq_ptr = (grp_ptr >> 32) & 0x7FFF;
+-		dq_ptr = grp_ptr & 0x7FFF;
+-
+-	} while (hard_lp_ctr && (i < 10) && (nq_ptr != dq_ptr));
++		inst_ptr = rvu_read64(rvu, blkaddr,
++				      CPT_AF_BAR2_ALIASX(slot, CPT_LF_Q_INST_PTR));
++		pending = (FIELD_GET(XQ_XOR, inst_ptr) * qsize * 40) +
++			  FIELD_GET(NQPTR, inst_ptr) -
++			  FIELD_GET(DQPTR, inst_ptr);
++		udelay(1);
++		timeout--;
++	} while ((pending != 0) && (timeout != 0));
+ 
+-	if (hard_lp_ctr == 0)
+-		dev_warn(rvu->dev, "CPT FLR hits hard loop counter\n");
++	if (timeout == 0)
++		dev_warn(rvu->dev, "TIMEOUT: CPT poll on pending instructions\n");
+ 
+-	i = 0;
+-	hard_lp_ctr = 100000;
++	timeout = 1000000;
++	/* Wait for CPT queue to become execution-quiescent */
+ 	do {
+ 		inprog = rvu_read64(rvu, blkaddr,
+ 				    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
+ 
+-		if ((INPROG_INFLIGHT(inprog) == 0) &&
+-		    (INPROG_GWB(inprog) < 40) &&
+-		    ((INPROG_GRB(inprog) == 0) ||
+-		     (INPROG_GRB((inprog)) == 40))) {
++		if ((FIELD_GET(INFLIGHT, inprog) == 0) &&
++		    (FIELD_GET(GRB_CNT, inprog) == 0)) {
+ 			i++;
+ 		} else {
+ 			i = 0;
+-			hard_lp_ctr--;
++			timeout--;
+ 		}
+-	} while (hard_lp_ctr && (i < 10));
++	} while ((timeout != 0) && (i < 10));
+ 
+-	if (hard_lp_ctr == 0)
+-		dev_warn(rvu->dev, "CPT FLR hits hard loop counter\n");
++	if (timeout == 0)
++		dev_warn(rvu->dev, "TIMEOUT: CPT poll on inflight count\n");
++	/* Wait for 2 us to flush all queue writes to memory */
++	udelay(2);
+ }
+ 
+ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf, int slot)
+@@ -1001,18 +996,15 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf, int s
+ 	if (is_cpt_pf(rvu, pcifunc) || is_cpt_vf(rvu, pcifunc))
+ 		cpt_rxc_teardown(rvu, blkaddr);
+ 
++	mutex_lock(&rvu->alias_lock);
+ 	/* Enable BAR2 ALIAS for this pcifunc. */
+ 	reg = BIT_ULL(16) | pcifunc;
+-	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
++	rvu_bar2_sel_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
+ 
+ 	cpt_lf_disable_iqueue(rvu, blkaddr, slot);
+ 
+-	/* Set group drop to help clear out hardware */
+-	reg = rvu_read64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
+-	reg |= BIT_ULL(17);
+-	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG), reg);
+-
+-	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, 0);
++	rvu_bar2_sel_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, 0);
++	mutex_unlock(&rvu->alias_lock);
+ 
+ 	return 0;
+ }
+@@ -1147,7 +1139,7 @@ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc)
+ 
+ 	/* Enable BAR2 ALIAS for this pcifunc. */
+ 	reg = BIT_ULL(16) | pcifunc;
+-	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
++	rvu_bar2_sel_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
+ 
+ 	for (i = 0; i < max_ctx_entries; i++) {
+ 		cam_data = rvu_read64(rvu, blkaddr, CPT_AF_CTX_CAM_DATA(i));
+@@ -1160,7 +1152,7 @@ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc)
+ 				    reg);
+ 		}
+ 	}
+-	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, 0);
++	rvu_bar2_sel_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, 0);
+ 
+ unlock:
+ 	mutex_unlock(&rvu->rsrc_lock);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 0e0d536645ac..5437bd20c719 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -545,6 +545,8 @@
+ 
+ #define CPT_LF_CTL                      0x10
+ #define CPT_LF_INPROG                   0x40
++#define CPT_LF_Q_SIZE                   0x100
++#define CPT_LF_Q_INST_PTR               0x110
+ #define CPT_LF_Q_GRP_PTR                0x120
+ #define CPT_LF_CTX_FLUSH                0x510
+ 
 -- 
 2.25.1
 
