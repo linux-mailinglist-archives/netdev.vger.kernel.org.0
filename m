@@ -2,112 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB49663E64
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 11:38:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 553F9663E75
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 11:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbjAJKiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 05:38:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
+        id S232258AbjAJKoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 05:44:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237994AbjAJKiL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:38:11 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB5A40C28
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:38:10 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id ud5so27456726ejc.4
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:38:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jxCk+INuJb5IJ/Jm7iY7t6eqb9Zqw0Ms0o9owTWQx6c=;
-        b=Ozcy5qrVAdybUnBO/t4N5enJX/gO+c+PJm50JjhTZ8P+9dvH3I0k3iF6I3sHneLZK3
-         xmNfWdnuMAzXZiW1h9pHrcnIziWmhywED1TBzGkQb8hxwZLc6EGkqcMLFzouc9pXg57d
-         DK5SWFs/kMjxsSYLOBDk6rzWzlgVsJcjKa4NDXbqMJqRDTvgpLZICk0Nbd5xBmnz95e4
-         kUfFfLQ+YU8m3KfSvilDDlrEw2sE66am1jI1i+Z9whsL//3JvJWmr2vu7K75YKz9JNiv
-         vRbzUradoZP7TmIBofl9IfZv+RqCv9lvE+EQrfolw2KWItvTZqHfLNtj7mXYe4MEhx1J
-         jrgA==
+        with ESMTP id S231138AbjAJKoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:44:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A04011C03
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:43:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673347414;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fZBKvQMceZgcl0dsKrtIvBjnZJTQHen6mKpSsPs1Jyw=;
+        b=MrWM3dKcpWnyqRgrIytCBON7tT6whM6I0CbVtOpkSzVYXdU8m7HZ2KhHuQ8aAeRyJ57h7E
+        17XpfcD1AsEdxhjhheugKJP9de4LjhCNXDR+/MoL/YhyzTx1XqzT8lUv5FlhHUYvX91fUk
+        SrtTlbM8LlS9uGE2kW9XViUPwKqGDrQ=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-664-FsHh_50fNSOj_KpBzuRRGQ-1; Tue, 10 Jan 2023 05:43:33 -0500
+X-MC-Unique: FsHh_50fNSOj_KpBzuRRGQ-1
+Received: by mail-qk1-f199.google.com with SMTP id bi3-20020a05620a318300b00702545f73d5so8389239qkb.8
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:43:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jxCk+INuJb5IJ/Jm7iY7t6eqb9Zqw0Ms0o9owTWQx6c=;
-        b=wHh5oY4gzdfYfFN5iI3bfYIOPxIvvKXWwKODJWUF05oTp3XWOiweObLLiGRpq/KJfW
-         ng93odL0VuO/VcbkCQ9pcj/xjo3O7CQjCRi04DGjOjVQbo7+BScJC2j3N52FEdqQi4wG
-         PNTxiw15WXtUfjPZ/RStbCagUV1Sas7J+v9H4l8NvLGHh/oDQw7j5EMWFBjNl186AtzT
-         Ft0lc7DryaWYfx+vH+MfPfdBxLYWoTflh5L6jtCH72yVUByPulhDjmm5mAVc+YBtuSwp
-         tpWRPsXZGiqx62nzqWwVCdHHF1UP4Ah3nTgo/7fo5+tN5L/femzZs5pFbje0G4npEQoI
-         tUJQ==
-X-Gm-Message-State: AFqh2krZbUYMmpOVupbikEWzeyWf5n9u8IGKLkrWmzQ+1Hc8FxXChsx8
-        Cpm92W6BEjBZa3OO5ea8s8XmzQ==
-X-Google-Smtp-Source: AMrXdXsgCobzUc3EKdZGLCr2B4sXcO22He4oOjTtG7Gu7aYFQ91amylkt6owbhhqhVXzpT24Gl/mTg==
-X-Received: by 2002:a17:907:d68b:b0:7c1:691a:6d2c with SMTP id wf11-20020a170907d68b00b007c1691a6d2cmr78467457ejc.7.1673347089210;
-        Tue, 10 Jan 2023 02:38:09 -0800 (PST)
-Received: from hera (ppp079167090036.access.hol.gr. [79.167.90.36])
-        by smtp.gmail.com with ESMTPSA id f1-20020a17090631c100b007aea1dc1840sm4781510ejf.111.2023.01.10.02.38.08
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fZBKvQMceZgcl0dsKrtIvBjnZJTQHen6mKpSsPs1Jyw=;
+        b=gnNk7Pi3GolAKKXgI8P+/KOW++B7ZBgFxwU3BFub5WGiSmjSdN5C812g1L1YnHRWiX
+         MGTjMr4CapHCXlQVTg4DWGuiGG2e5c2ntz3pmRmtPScdAH40jBiZlL4QN4F9coDG+8+L
+         7sSlH4x7DJ/aESZE+9JA4Ls5ga9polQbhENKAdC8ylKU3OtB2Ct3CbZ9oRkyXyNUL3KG
+         L84OCCIVfTJTLX6mnhWvbSC09lLm4tQM1u+IQWGcb/r2BpVUJhliBX1G2u9Z7pu3+qQR
+         GjjTpCY2rNnuyVi2vpHrDZ5LUVhH+xz1pg/LzUzvA2P0yVaR2EVaofPY977+4IdpWFvK
+         emHA==
+X-Gm-Message-State: AFqh2krvov6D57rbTsVf2so/CQZh+HRNs88t+wIh1AT62KSrYMy5B8Ii
+        SdN5bKJ74sRUWCJqLWyyXZf/dzhgO4bF4EVDYDoRYbY+ap3mR+/HPlWB38I1/a3YRAy5421Fuvu
+        DU4bvMBCjh2DMpheu
+X-Received: by 2002:ac8:1249:0:b0:3a8:270:c0b8 with SMTP id g9-20020ac81249000000b003a80270c0b8mr2982710qtj.15.1673347412590;
+        Tue, 10 Jan 2023 02:43:32 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXv00NOahDtg8Y9/N2J83JwBSjdxkH/YXNcyXRvFHAxWKvlH5MFlX0naAaYvKaG/tVYx9GXE0w==
+X-Received: by 2002:ac8:1249:0:b0:3a8:270:c0b8 with SMTP id g9-20020ac81249000000b003a80270c0b8mr2982690qtj.15.1673347412360;
+        Tue, 10 Jan 2023 02:43:32 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-128.dyn.eolo.it. [146.241.120.128])
+        by smtp.gmail.com with ESMTPSA id o5-20020a05620a2a0500b006fcc437c2e8sm7011883qkp.44.2023.01.10.02.43.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 02:38:08 -0800 (PST)
-Date:   Tue, 10 Jan 2023 12:38:06 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>, netdev@vger.kernel.org,
-        linux-mm@kvack.org, Shakeel Butt <shakeelb@google.com>
-Subject: Re: [PATCH v2 11/24] page_pool: Convert page_pool_empty_ring() to
- use netmem
-Message-ID: <Y71ADsqT13215XX0@hera>
-References: <20230105214631.3939268-1-willy@infradead.org>
- <20230105214631.3939268-12-willy@infradead.org>
+        Tue, 10 Jan 2023 02:43:31 -0800 (PST)
+Message-ID: <79108835e679706d138afc33a19a96ed4a1f71ea.camel@redhat.com>
+Subject: Re: [net PATCH] octeontx2-pf: Fix resource leakage in VF driver
+ unbind
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Hariprasad Kelam <hkelam@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com
+Date:   Tue, 10 Jan 2023 11:43:28 +0100
+In-Reply-To: <Y7098K4iMjPyAWww@unreal>
+References: <20230109061325.21395-1-hkelam@marvell.com>
+         <167334601536.23804.3249818012090319433.git-patchwork-notify@kernel.org>
+         <Y7098K4iMjPyAWww@unreal>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230105214631.3939268-12-willy@infradead.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 09:46:18PM +0000, Matthew Wilcox (Oracle) wrote:
-> Retrieve a netmem from the ptr_ring instead of a page.
->
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  net/core/page_pool.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index e727a74504c2..0212244e07e7 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -755,16 +755,16 @@ EXPORT_SYMBOL(page_pool_alloc_frag);
->
->  static void page_pool_empty_ring(struct page_pool *pool)
->  {
-> -	struct page *page;
-> +	struct netmem *nmem;
->
->  	/* Empty recycle ring */
-> -	while ((page = ptr_ring_consume_bh(&pool->ring))) {
-> +	while ((nmem = ptr_ring_consume_bh(&pool->ring)) != NULL) {
->  		/* Verify the refcnt invariant of cached pages */
-> -		if (!(page_ref_count(page) == 1))
-> +		if (netmem_ref_count(nmem) != 1)
->  			pr_crit("%s() page_pool refcnt %d violation\n",
-> -				__func__, page_ref_count(page));
-> +				__func__, netmem_ref_count(nmem));
->
-> -		page_pool_return_page(pool, page);
-> +		page_pool_return_netmem(pool, nmem);
->  	}
->  }
->
-> --
-> 2.35.1
->
+Hello,
 
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+On Tue, 2023-01-10 at 12:29 +0200, Leon Romanovsky wrote:
+> On Tue, Jan 10, 2023 at 10:20:15AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
+> > Hello:
+> > 
+> > This patch was applied to netdev/net.git (master)
+> > by Paolo Abeni <pabeni@redhat.com>:
+> > 
+> > On Mon, 9 Jan 2023 11:43:25 +0530 you wrote:
+> > > resources allocated like mcam entries to support the Ntuple feature
+> > > and hash tables for the tc feature are not getting freed in driver
+> > > unbind. This patch fixes the issue.
+> > > 
+> > > Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
+> > > Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+> > > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> > > 
+> > > [...]
+> > 
+> > Here is the summary with links:
+> >   - [net] octeontx2-pf: Fix resource leakage in VF driver unbind
+> >     https://git.kernel.org/netdev/net/c/53da7aec3298
+> 
+> I don't think that this patch should be applied.
+> 
+> It looks like wrong Fixes to me and I don't see clearly how structures
+> were allocated on VF which were cleared in this patch.
+
+My understanding is that the resource allocation happens via:
+
+otx2_dl_mcam_count_set()
+
+which is registered as the devlink parameter write operation on the vf
+by the fixes commit - the patch looks legit to me.
+
+Did I miss something?
+
+Thanks!
+
+Paolo
 
