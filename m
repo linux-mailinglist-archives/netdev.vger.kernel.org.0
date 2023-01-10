@@ -2,99 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A21664348
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 15:31:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD24664361
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 15:35:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238310AbjAJObo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 09:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
+        id S238025AbjAJOf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 09:35:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238618AbjAJObZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 09:31:25 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFEF1788C
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 06:31:24 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id d9so13328512pll.9
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 06:31:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7djpQYuEQ4rutFY3aCumcUbXeK4jm4WEKYMSgQ9wfMc=;
-        b=8TmJZuAH3X7R8qMXAkO0Mj7ON3o4/LjwW6PwSMlxs9ko4RIejtKuU/qM1xLpzKL6Ne
-         Ho/le0CrNNyb0yAHrrCjTa5hAqJOoJn2QpiTecF81G91OB/7kxuQhn4LlvD6FmZlqlDs
-         k6pa9r1iSD7WmhkDjv6EYu0hJGC9jUyyUmfpR1/OycNjMIKAmok+llBXwPOF1cUd3vsX
-         mu53OaORbrTL4YdQDW8ugS4Sr0hgf0mljQ0vAuO107FbopzTjo9vAdlC/AETF0AqIVBL
-         SZjWxghfAzJAgD1zgYf33HBV5rn0gYHJSWhkRFlFFAFTfQg/HegMFUeIXXv1CNORMegR
-         +Jrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7djpQYuEQ4rutFY3aCumcUbXeK4jm4WEKYMSgQ9wfMc=;
-        b=sIOvVPPvLVMEV+IE1fNu+iWtp5O8T2vyq1tr8tv7V1arsGxIgGPKqrCR4A8I9gN0A7
-         WnyEjLYN7F3xRSah7MgRwUNVXyBrVzmze+kH2JkCY2T3oEqOtfeY3dgrTte69CWbutbx
-         +6VjvGtRNUL2S2B5TL3X0Kiwf196J8O0STyLgslI5iX9rAndZfjvpmMzAwYklPvfng+f
-         /ozY7ERcxAZqNF0z4mChKvqpnMUMsqfMr+rpYCvPs0wey0+4KduDYaDymugeOzsNBJct
-         sk813tiwR1kEBQ50QpAxs3jGRqgsZH6qqCDmYi9DfGac7NYi1T9LhAPVbfLrw4th6sGN
-         2/Ng==
-X-Gm-Message-State: AFqh2kp/oUriM1rVyQjXVJIkFDPpCJDkaNe9mjuk9+39ihKsZiOiUhGO
-        0CLyqvCOLMJNsXgxIrfVpUpX8fGemJ/K30GaYriiBg==
-X-Google-Smtp-Source: AMrXdXv0OLHn5s+JOegsbBUw9y6zO6hCeYEtoqhF5VT3Ii3AhJsJn2+QalPYW1qVrLSo2nrSqWBUGA==
-X-Received: by 2002:a17:903:22c7:b0:192:ee6c:e28d with SMTP id y7-20020a17090322c700b00192ee6ce28dmr30801112plg.38.1673361083802;
-        Tue, 10 Jan 2023 06:31:23 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id x6-20020a170902a38600b001782aab6318sm8218308pla.68.2023.01.10.06.31.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 06:31:23 -0800 (PST)
-Date:   Tue, 10 Jan 2023 15:31:20 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next 13/14] devlink: add by-instance dump infra
-Message-ID: <Y712uDIgr/f1vveL@nanopsycho>
-References: <20230104041636.226398-1-kuba@kernel.org>
- <20230104041636.226398-14-kuba@kernel.org>
- <Y7WuWd2jfifQ3E8A@nanopsycho>
- <20230104194604.545646c5@kernel.org>
- <Y7aSPuRPQxxQKQGN@nanopsycho>
- <20230105102437.0d2bf14e@kernel.org>
- <Y7fiRHoucfua+Erz@nanopsycho>
- <20230106131214.79abb95c@kernel.org>
- <Y7k6JLAiqMQFKtWt@nanopsycho>
- <20230109114949.547f5c9e@kernel.org>
+        with ESMTP id S231974AbjAJOf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 09:35:56 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C556559E;
+        Tue, 10 Jan 2023 06:35:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=aqD2quvdZgIGSvM6kr0jwHm7KAbVSryagby37QcM+h0=; b=AO6EhsT1rp3Bp10qSHkkATixda
+        53bTiogOzDF8BISdBPnI0dyxKRniju29hLxQSi8JN2U6jBVghGa5uEbhNQETruZZJhHPttv78eWi8
+        1zX7FOE82ggYhik2EHcpWAjh+K2RWhDM0RAMBuNlLk8yfQAD0GlgwPSv/IvAS/R+OSxIUhRzk7TIN
+        jjCsxJQqxz5k+OCFsfpPRF657bQmCMyTwfsivLzC8q0dQ5tEp5VACHbmYKg+Uz/K11Fy7lpavRqDK
+        C3ax68HmPpWnArSjSTwfW0zbK2wUr7Zx7LOhFmC1I1GrsOOyBZiFnS8c3x7bN05cuInmycyfHjPs6
+        Bzignt+g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36038)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pFFj7-00043g-Hs; Tue, 10 Jan 2023 14:35:45 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pFFj4-0000NN-8X; Tue, 10 Jan 2023 14:35:42 +0000
+Date:   Tue, 10 Jan 2023 14:35:42 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/4] net: ethernet: renesas: rswitch: Modify
+ initialization for SERDES and PHY
+Message-ID: <Y713vpQLosOkfeey@shell.armlinux.org.uk>
+References: <20230110050206.116110-1-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230109114949.547f5c9e@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230110050206.116110-1-yoshihiro.shimoda.uh@renesas.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jan 09, 2023 at 08:49:49PM CET, kuba@kernel.org wrote:
->On Sat, 7 Jan 2023 10:23:48 +0100 Jiri Pirko wrote:
->> Hmm.
->> 1) What is wrong of having:
->>    .dumpit = devlink_instance_iter_dumpit
->>    instead of
->>    .dumpit = devlink_instance_iter_dump
->>    ?
->>    How exactly that decreases readability?
->
->The "it" at the end of the function name is there because do is a C
->keyword, so we can't call the do callback do, we must call it doit.
->
->The further from netlink core we get the more this is an API wart 
->and the less it makes sense. 
->instance iter dump is closer to plain English.
+On Tue, Jan 10, 2023 at 02:02:02PM +0900, Yoshihiro Shimoda wrote:
+> The patch [1/4] sets phydev->host_interfaces by phylink for Marvell PHY
+> driver (marvell10g) to initialize the MACTYPE.
 
-Hmm, I guess if you are not happy about the callback name, you should
-change it, to ".dump" in this case. My point the the naming consistency
-between the callback name and the function assigned. But nevermind.
+I don't yet understand the "why" behind the need for this. Doesn't your
+platform strap the 88x3310 correctly, so MACTYPE is properly set?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
