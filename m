@@ -2,148 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA776643A2
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 15:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C324B6643B9
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 15:54:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238554AbjAJOuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 09:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
+        id S238704AbjAJOxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 09:53:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238733AbjAJOtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 09:49:24 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2043.outbound.protection.outlook.com [40.107.94.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB15A56896
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 06:49:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FpoU6drr+VU38QlWeQbmk2QOrsSU93SUuzWGxLHQkxfM8CirHwi/cyvexkOu1ejXeKUNAfsBcmrHIRj4u0tMYPIJxudE7EwQXyQUks7EXe3adb4fkjMnTrQjOU7TmgUU6P1EnUghnGCN/HvixxzQUqA52UF0sVC8Nm7thnn/cG+zkZqTNFQDL0Qhaa1ZsODIN6Mi4al/36fhEJLT/ABmFjD7LWWwXNSPWy9VfVRL9WXtDMMeH6euieEyLpetZsT0txab+qjWd6AyDRseF9FOPMlP1zndKhlW+CXUc/dQXP1g6ydNl9mukX52aKlsG1bTIzJj2d0tWEp9ex1pBIs02A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iDRnoJmslYl41Hp69fQ1m6KcK/Ni0x3KXDKYvr+gOBM=;
- b=U3zh/FcsbSOKvii+W9cuJp/kpIN8NVqk+1ibaUeLheWBfxklIPcRKc6UT54NTpmQ3JL8W352/hLjXFwfJyIS2KcQnSv6/cpcKBXphj3+Kn2Ng6Xi/vllX5+77/gO2T+3KubcOdnrFQgF9m6Uv8bcb1xpZy6Nd3Ruqq6n2YT9r+94wRVo/YIE/zRv9guQa3StGUU2b5Z3vUOKLUPIGH0+a51af7ucC7fnR+w9Xrj3jhF+Bs5ozVq7I9XJ+Dm7mSm1cQ0mxxboflvQmyrIofK2B1dbcY1lEOw0fo2TpXqt/HcaTSYRto5wuhv8Pw2/lq19YxTUME+o7q6G4+rrcYY8Cw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=queasysnail.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iDRnoJmslYl41Hp69fQ1m6KcK/Ni0x3KXDKYvr+gOBM=;
- b=Uxw9najxJ6Wapj+sYefwb7qya/03ghk/REJiggaCRwXKsYOXCREH2wLwrndprfXpINwzTkpiciyyio12i0RzXP0iS7hnlKNr1eC1fXiY9qGSO35umQipofUpCpiWM+U53Ipa3pydtmaP1hW2KtrWyWFCpWTdYwAjgDBvXrkP+NnaxoTo919tnJx621RBUaoSCzOJPzdU/+oevZxcNNUvHSohJ2LCnQohciqiPPlQ3I7hMjWnkHwYSekjdDgfDi4TH8E+X/HsYMoHukNaPSgd2zREr74BaefludTlKX8dbcwd5pB/freTPuKDb/QrLZTKHcj5o5PZ9fytGL1tLDwSWQ==
-Received: from BN9PR03CA0485.namprd03.prod.outlook.com (2603:10b6:408:130::10)
- by IA1PR12MB8520.namprd12.prod.outlook.com (2603:10b6:208:44d::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
- 2023 14:49:20 +0000
-Received: from BN8NAM11FT101.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:130:cafe::92) by BN9PR03CA0485.outlook.office365.com
- (2603:10b6:408:130::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18 via Frontend
- Transport; Tue, 10 Jan 2023 14:49:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN8NAM11FT101.mail.protection.outlook.com (10.13.177.126) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5986.18 via Frontend Transport; Tue, 10 Jan 2023 14:49:19 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 10 Jan
- 2023 06:49:08 -0800
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Tue, 10 Jan 2023 06:49:08 -0800
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Tue, 10 Jan
- 2023 06:49:06 -0800
-From:   <ehakim@nvidia.com>
-To:     <sd@queasysnail.net>
-CC:     <dsahern@kernel.org>, <netdev@vger.kernel.org>,
-        Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH main v2 1/1] macsec: Fix Macsec replay protection
-Date:   Tue, 10 Jan 2023 16:49:01 +0200
-Message-ID: <20230110144901.31826-1-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
+        with ESMTP id S238768AbjAJOxj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 09:53:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B80F5F56
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 06:52:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673362374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6ZR2hH/Og2tvA2Z2IH1AQ+s93oJzoUdJTRBIrVY65Ns=;
+        b=e/vOx7SUVzqeO6nAPrrBOJceQGyfdSC/AD9qBaiBwleKK/je4YC4m1bW10PyEQ9DmMBi7v
+        eiIxwRQYi3WqwFtHbsRAuhkHgnNjAkcoYop9/TiLvYECTF4wMq+ZlQIZ09eCQhn0qNeilX
+        GK6kHP6XJBVTC1gA+qzq1O1bzhBnHpw=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-217-Uyi6jHqUONi2lCF5FHE0Ig-1; Tue, 10 Jan 2023 09:52:52 -0500
+X-MC-Unique: Uyi6jHqUONi2lCF5FHE0Ig-1
+Received: by mail-ej1-f71.google.com with SMTP id dr5-20020a170907720500b00808d17c4f27so7858338ejc.6
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 06:52:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6ZR2hH/Og2tvA2Z2IH1AQ+s93oJzoUdJTRBIrVY65Ns=;
+        b=M2OcK0Jc0/kMLwbXnxUlcYHIoNIjGJE5JKSceay5znvxCbMy/HjwqlE8Hi57KAdEF4
+         qZW0Pih8sL2ByCCgbYu+yi/X/IEYgxvZyndf5htJsBvf2j92/SuwRIlC5M9tqTZh6efk
+         PeDkfWzPECBdip3eBz7iQi1lkC0//qZDklBczQ5NCoABRnBTPC046UEINsgwY3pg12rz
+         z9fETAdzIsslIn7TqAl6ktr1GSvD4KilrgB0qOjGTcM1uypnOPsZRDCZSFqLnHredGU1
+         7EOL1ZpNYjNTU2Oyo+CsefUPhQRn5kFtLIF8M+jHKGmXP/QDS+x0bQUqplhaKDv4e36s
+         Pnxw==
+X-Gm-Message-State: AFqh2ko0g6HXxT0rU2651MdSAw4Q5MrH9tLU2WHDZijPjQImEd8VUCc5
+        ODDe50+tL9UHQ50OKYdv7X5uw0/dgt7aVYpIsIoqWm9JAtmKbmHXxW2eTHDbotVQToTO4AhJS4Y
+        YEr8if6airR1ip07O
+X-Received: by 2002:a17:906:99d0:b0:84d:43e4:479b with SMTP id s16-20020a17090699d000b0084d43e4479bmr8258866ejn.36.1673362370397;
+        Tue, 10 Jan 2023 06:52:50 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvpk9DH71wrB/jCg88UIDlL5Y3koA2eYKcPpFDPRgzxtSAilEpClJoQM/+BrQJvd3X/3naIJQ==
+X-Received: by 2002:a17:906:99d0:b0:84d:43e4:479b with SMTP id s16-20020a17090699d000b0084d43e4479bmr8258849ejn.36.1673362370121;
+        Tue, 10 Jan 2023 06:52:50 -0800 (PST)
+Received: from [192.168.42.222] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906210a00b007c0f2d051f4sm5016237ejt.203.2023.01.10.06.52.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Jan 2023 06:52:49 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <adf92243-689e-6013-293f-5464af317594@redhat.com>
+Date:   Tue, 10 Jan 2023 15:52:48 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT101:EE_|IA1PR12MB8520:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0cb66d0b-c134-49ba-b67e-08daf319dafc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 55SFwTx0X8Y1z6Ijqtfbf2K7lS7HgWgqizK+7Z7PYaxCqCtefBlTOy57pvCYgXSBDE75332cyx6h7WAeQpmL2f7qy+8OaAP+yiaVkH+RsJZOaRDEXajnztnaqK0WvVyZ2bKDWxgKEo4EQz2AiH9bDz9pqw+LD3mEzZiV04hFdCeAfjVGFGOOW72kVHGapKPqSOff8cr+jolj+VCeYJcIW1+nTTe3nmxESo1BECLnd5k44pFHEzI/pjPsJ/IOE0MzWLGXjE+5rWomNlLVySBUFFazN2qGVC4GndjgC0ve2Tk/PIjI2fMxWR3XZhikV2IX3i9BNOAjIiGPd3rt3l3+ynrY+Y184MPuhVbX9cZmPLrrPoG2Hvq2yUlNaLBlXaPR613FSGPPokc1/UVrDQXI82UlbA+uPqsVE7kHLPA3ZeoWZ3ZQFk6Ugkgj5lMQV6F8C5/rPCBk6Zbck3wLkEF22PRWQEW1tQ17ITOGwghTa0sKecGvdvnXC3rMqd3Vk8gg/dq1dFZzMDKMIIjpuK3ldMvNsdk8K1jkqTd+QS6tFqQo4jl01FV0ZuErEGBEgVs8iKS8s/7f2lbHqZWySOyDQDkvFy6jzJAsr1oUxt4XfI4KeJvZhkdCW8MNz84dcuPRY4dyEiuVTkiSwmibVaxafDkFGZwOVX1hHlJZCqgweIJnc/0+md8+ZzSiJi0TDHJ7QfI4jmE0ZLvXHOBdXGlpnQ==
-X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(376002)(346002)(451199015)(46966006)(40470700004)(36840700001)(2906002)(7696005)(478600001)(26005)(107886003)(186003)(6666004)(83380400001)(70206006)(2616005)(4326008)(54906003)(336012)(1076003)(70586007)(6916009)(426003)(36756003)(8676002)(316002)(47076005)(40460700003)(41300700001)(40480700001)(5660300002)(82740400003)(2876002)(36860700001)(8936002)(82310400005)(86362001)(356005)(7636003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2023 14:49:19.8042
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0cb66d0b-c134-49ba-b67e-08daf319dafc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT101.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8520
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        pabeni@redhat.com
+Subject: Re: [PATCH net-next 2/2] net: kfree_skb_list use kmem_cache_free_bulk
+Content-Language: en-US
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <167293333469.249536.14941306539034136264.stgit@firesoul>
+ <167293336786.249536.14237439594457105125.stgit@firesoul>
+ <20230106143310.699197bd@kernel.org>
+ <fa1c57de-52f6-719f-7298-c606c119d1ab@redhat.com>
+ <20230109113409.2d5fab44@kernel.org>
+ <fa307736d5448733f08a5a700bc9c647b383a553.camel@gmail.com>
+In-Reply-To: <fa307736d5448733f08a5a700bc9c647b383a553.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emeel Hakim <ehakim@nvidia.com>
 
-Currently when configuring macsec with replay protection,
-replay protection and window gets a default value of -1,
-the above is leading to passing replay protection and
-replay window attributes to the kernel while replay is
-explicitly set to off, leading for an invalid argument
-error when configured with extended packet number (XPN).
-since the default window value which is 0xFFFFFFFF is
-passed to the kernel and while XPN is configured the above
-value is an invalid window value.
+On 09/01/2023 23.10, Alexander H Duyck wrote:
+> On Mon, 2023-01-09 at 11:34 -0800, Jakub Kicinski wrote:
+>> On Mon, 9 Jan 2023 13:24:54 +0100 Jesper Dangaard Brouer wrote:
+>>>> Also the lack of perf numbers is a bit of a red flag.
+>>>>   
+>>>
+>>> I have run performance tests, but as I tried to explain in the
+>>> cover letter, for the qdisc use-case this code path is only activated
+>>> when we have overflow at enqueue.  Thus, this doesn't translate directly
+>>> into a performance numbers, as TX-qdisc is 100% full caused by hardware
+>>> device being backed up, and this patch makes us use less time on freeing
+>>> memory.
+>>
+>> I guess it's quite subjective, so it'd be good to get a third opinion.
+>> To me that reads like a premature optimization. Saeed asked for perf
+>> numbers, too.
+>>
+>> Does anyone on the list want to cast the tie-break vote?
+> 
+> I'd say there is some value to be gained by this. Basically it means
+> less overhead for dropping packets if we picked a backed up Tx path.
+> 
 
-Example:
-ip link add link eth2 macsec0 type macsec sci 1 cipher
-gcm-aes-xpn-128 replay off
+Thanks.
 
-RTNETLINK answers: Invalid argument
+I have microbenchmarks[1] of kmem_cache bulking, which I use to assess 
+what is the (best-case) expected gain of using the bulk APIs.
 
-Fix by passing the window attribute to the kernel only if replay is on
+The module 'slab_bulk_test01' results at bulk 16 element:
 
-Fixes: b26fc590ce62 ("ip: add MACsec support")
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
----
-V1 -> V2: - Dont use boolean variable for replay protect since it will
-            silently break disabling replay protection on an existing device.
-          - Update commit message.
- ip/ipmacsec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+  kmem-in-loop Per elem: 109 cycles(tsc) 30.532 ns (step:16)
+  kmem-bulk    Per elem: 64 cycles(tsc) 17.905 ns (step:16)
 
-diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
-index 6dd73827..d96d69f1 100644
---- a/ip/ipmacsec.c
-+++ b/ip/ipmacsec.c
-@@ -1517,7 +1517,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 			  &cipher.icv_len, sizeof(cipher.icv_len));
- 
- 	if (replay_protect != -1) {
--		addattr32(n, MACSEC_BUFLEN, IFLA_MACSEC_WINDOW, window);
-+		if (replay_protect)
-+			addattr32(n, MACSEC_BUFLEN, IFLA_MACSEC_WINDOW, window);
- 		addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_REPLAY_PROTECT,
- 			 replay_protect);
- 	}
--- 
-2.21.3
+Thus, best-case expected gain is: 45 cycles(tsc) 12.627 ns.
+  - With usual microbenchmarks caveats
+  - Notice this is both bulk alloc and free
+
+[1] https://github.com/netoptimizer/prototype-kernel/tree/master/kernel/mm
+
+>>> I have been using pktgen script ./pktgen_bench_xmit_mode_queue_xmit.sh
+>>> which can inject packets at the qdisc layer (invoking __dev_queue_xmit).
+>>> And then used perf-record to see overhead of SLUB (__slab_free is top#4)
+>>> is reduced.
+>>
+>> Right, pktgen wasting time while still delivering line rate is not of
+>> practical importance.
+> 
+
+I better explain how I cause the push-back without hitting 10Gbit/s line
+rate (as we/Linux cannot allocated SKBs fast enough for this).
+
+I'm testing this on a 10Gbit/s interface (driver ixgbe). The challenge 
+is that I need to overload the qdisc enqueue layer as that is triggering 
+the call to kfree_skb_list().
+
+Linux with SKBs and qdisc injecting with pktgen is limited to producing 
+packets at (measured) 2,205,588 pps with a single TX-queue (and scaling 
+up 1,951,771 pps per queue or 512 ns per pkt). Reminder 10Gbit/s at 64 
+bytes packets is 14.8 Mpps (or 67.2 ns per pkt).
+
+The trick to trigger the qdisc push-back way earlier is Ethernet
+flow-control (which is on by default).
+
+I was a bit surprised to see, but using pktgen_bench_xmit_mode_queue_xmit.sh
+on my testlab the remote host was pushing back a lot, resulting in only
+256Kpps being actually sent on wire. Monitored with ethtool stats script[2].
+
+
+[2] 
+https://github.com/netoptimizer/network-testing/blob/master/bin/ethtool_stats.pl
+
+> I suspect there are probably more real world use cases out there.
+> Although to test it you would probably have to have a congested network
+> to really be able to show much of a benefit.
+> 
+> With the pktgen I would be interested in seeing the Qdisc dropped
+> numbers for with vs without this patch. I would consider something like
+> that comparable to us doing an XDP_DROP test since all we are talking
+> about is a synthetic benchmark.
+
+The pktgen script output how many packets it have transmitted, but from
+above we know that this most of these packets are actually getting
+dropped as only 256Kpps are reaching the wire.
+
+Result line from pktgen script: count 100000000 (60byte,0frags)
+  - Unpatched kernel: 2396594pps 1150Mb/sec (1150365120bps) errors: 1417469
+  - Patched kernel  : 2479970pps 1190Mb/sec (1190385600bps) errors: 1422753
+
+Difference:
+  * +83376 pps faster (2479970-2396594)
+  * -14 nanosec faster (1/2479970-1/2396594)*10^9
+
+The patched kernel is faster. Around the expected gain from using the
+kmem_cache bulking API (slightly more actually).
+
+More raw data and notes for this email avail in [3]:
+
+  [3] 
+https://github.com/xdp-project/xdp-project/blob/master/areas/mem/kfree_skb_list01.org
+
+
+>>
+>>>> kfree_skb_list_bulk() ?
+>>>
+>>> Hmm, IMHO not really worth changing the function name.  The
+>>> kfree_skb_list() is called in more places, (than qdisc enqueue-overflow
+>>> case), which automatically benefits if we keep the function name
+>>> kfree_skb_list().
+>>
+>> To be clear - I was suggesting a simple
+>>    s/kfree_skb_defer_local/kfree_skb_list_bulk/
+>> on the patch, just renaming the static helper.
+>>
+
+Okay, I get it now. But I disagree with same argument as Alex makes below.
+
+>> IMO now that we have multiple freeing optimizations using "defer" for
+>> the TCP scheme and "bulk" for your prior slab bulk optimizations would
+>> improve clarity.
+> 
+> Rather than defer_local would it maybe make more sense to look at
+> naming it something like "kfree_skb_add_bulk"? Basically we are
+> building onto the list of buffers to free so I figure something like an
+> "add" or "append" would make sense.
+> 
+
+I agree with Alex, that we are building up buffers to be freed *later*,
+thus we should somehow reflect that in the naming.
+
+--Jesper
 
