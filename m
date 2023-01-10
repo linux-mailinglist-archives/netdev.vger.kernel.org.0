@@ -2,39 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3568663F40
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 12:31:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE0B663F45
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 12:32:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232853AbjAJLbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 06:31:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S232761AbjAJLcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 06:32:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232718AbjAJLaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 06:30:35 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE65C48CE2;
-        Tue, 10 Jan 2023 03:30:28 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 56AB2200230;
-        Tue, 10 Jan 2023 12:30:27 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1F6FD2001EE;
-        Tue, 10 Jan 2023 12:30:27 +0100 (CET)
-Received: from lsv03267.swis.in-blr01.nxp.com (lsv03267.swis.in-blr01.nxp.com [92.120.147.107])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 23BCB180031E;
-        Tue, 10 Jan 2023 19:30:26 +0800 (+08)
-From:   nikhil.gupta@nxp.com
-To:     linux-arm-kernel@lists.infradead.org,
-        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     vakul.garg@nxp.com, rajan.gupta@nxp.com,
-        Nikhil Gupta <nikhil.gupta@nxp.com>
-Subject: [PATCH] ptp_qoriq: fix latency in ptp_qoriq_adjtime() operation.
-Date:   Tue, 10 Jan 2023 17:00:24 +0530
-Message-Id: <20230110113024.7558-1-nikhil.gupta@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        with ESMTP id S232988AbjAJLcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 06:32:07 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26C350148
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 03:32:06 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id fc4so27733147ejc.12
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 03:32:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5qiv/JLLYkHcqOBIKvuqBd6ea5glLyyaQWfxWXjA4/w=;
+        b=Tq1VlylbbFTlgjSkX8Q+9jPefU/4Rh2+PThmpSY8g+9Y2LqKNxBboJiVi+Y+gqtfH7
+         xgfzjEcHhDKIVx2GP1MtjYvk8tG64DYXdxye5W5bOu0TZM6UB0vPsjNpe0TuEPaM3KbV
+         fTJbZvzCCUzqYxgtXj8dkQrOVHwbdjabmLwBqp6T+l9uIV1WIi+VQbcnAsi/mOWyOxoi
+         UqculsqF6Ydk6EhdyL0BktXzxRc9okjg4lxZno5mTMQ508paQyYVOsma+o9zxRZV0UA6
+         W4TT1Qp5AahAyQ5IzPDsktaKPCBO539f4KDj0ly64pHjEE+OwF1da6gSxRKS2gQ48Jzc
+         x5eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5qiv/JLLYkHcqOBIKvuqBd6ea5glLyyaQWfxWXjA4/w=;
+        b=aknBhOEKX9TiFcqQ0juUixooxYjY0y07K5NVzN8Oz9cVkvSO0cMu/lLVNxD4yX3zZF
+         yU0IocSeb2dLKOqGlDPRmbR4LomPaga8OnrfxGMZRY633uP2k9zxxEHRAcJX8n13GqVX
+         Rn7EGRdstDIAWaDFmn/sWmwFgmhYdmipg5vMh3bDKW4dk0rK6aCANQcBTQCN5L04SFrG
+         et3zY17XKEgkLToWptqd/RlFLOl/Qgz8bd7C+FveT3IG86VJyx6Zp502qh2KzyY/8aux
+         Niw8GNpicujkPwWiU8IFekH9fcOOAsXCqYtZze83YfoMG6YRNRfC9D0XQPsYKmBMdXCt
+         yoOg==
+X-Gm-Message-State: AFqh2kpzCCGCo0a5w1r+Rd1a+e8ajnfTXMgOvVZIrQSwyoqNddvJHRFZ
+        HgdDi6cpdNBS6KAZfQXpCTL0D0WZnFR6iNdC
+X-Google-Smtp-Source: AMrXdXufLSAPWJ64Vd/dBx3BWFnbyUq0u55ryQha6rwXXJXzzc1rFO5rFVi3UvNsV+PAYQkPbpBZzQ==
+X-Received: by 2002:a17:907:c516:b0:7c1:e78:11ed with SMTP id tq22-20020a170907c51600b007c10e7811edmr61904228ejc.0.1673350325323;
+        Tue, 10 Jan 2023 03:32:05 -0800 (PST)
+Received: from hera (ppp079167090036.access.hol.gr. [79.167.90.36])
+        by smtp.gmail.com with ESMTPSA id ov38-20020a170906fc2600b0084d4733c428sm2382496ejb.88.2023.01.10.03.32.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jan 2023 03:32:04 -0800 (PST)
+Date:   Tue, 10 Jan 2023 13:32:02 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     Jesper Dangaard Brouer <hawk@kernel.org>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, Shakeel Butt <shakeelb@google.com>
+Subject: Re: [PATCH v2 21/24] page_pool: Pass a netmem to init_callback()
+Message-ID: <Y71MsumlyUMMz6sY@hera>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-22-willy@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230105214631.3939268-22-willy@infradead.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -42,104 +70,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikhil Gupta <nikhil.gupta@nxp.com>
-
-1588 driver loses about 1us in adjtime operation at PTP slave.
-This is because adjtime operation uses a slow non-atomic tmr_cnt_read()
-followed by tmr_cnt_write() operation.
-In the above sequence, since the timer counter operation loses about 1us.
-Instead, tmr_offset register should be programmed with the delta
-nanoseconds This won't lead to timer counter stopping and losing time
-while tmr_cnt_write() is being done.
-This Patch adds api for tmr_offset_read/write to program the
-delta nanoseconds in the Timer offset Register.
-
-Signed-off-by: Nikhil Gupta <nikhil.gupta@nxp.com>
-Reviewed-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/ptp/ptp_qoriq.c | 36 ++++++++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-index 08f4cf0ad9e3..5b6ea6d590be 100644
---- a/drivers/ptp/ptp_qoriq.c
-+++ b/drivers/ptp/ptp_qoriq.c
-@@ -48,6 +48,29 @@ static void tmr_cnt_write(struct ptp_qoriq *ptp_qoriq, u64 ns)
- 	ptp_qoriq->write(&regs->ctrl_regs->tmr_cnt_h, hi);
- }
- 
-+static void tmr_offset_write(struct ptp_qoriq *ptp_qoriq, u64 delta_ns)
-+{
-+	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
-+	u32 hi = delta_ns >> 32;
-+	u32 lo = delta_ns & 0xffffffff;
-+
-+	ptp_qoriq->write(&regs->ctrl_regs->tmroff_l, lo);
-+	ptp_qoriq->write(&regs->ctrl_regs->tmroff_h, hi);
-+}
-+
-+static u64 tmr_offset_read(struct ptp_qoriq *ptp_qoriq)
-+{
-+	struct ptp_qoriq_registers *regs = &ptp_qoriq->regs;
-+	u64 ns;
-+	u32 lo, hi;
-+
-+	lo = ptp_qoriq->read(&regs->ctrl_regs->tmroff_l);
-+	hi = ptp_qoriq->read(&regs->ctrl_regs->tmroff_h);
-+	ns = ((u64) hi) << 32;
-+	ns |= lo;
-+	return ns;
-+}
-+
- /* Caller must hold ptp_qoriq->lock. */
- static void set_alarm(struct ptp_qoriq *ptp_qoriq)
- {
-@@ -55,7 +78,9 @@ static void set_alarm(struct ptp_qoriq *ptp_qoriq)
- 	u64 ns;
- 	u32 lo, hi;
- 
--	ns = tmr_cnt_read(ptp_qoriq) + 1500000000ULL;
-+	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq)
-+				     + 1500000000ULL;
-+
- 	ns = div_u64(ns, 1000000000UL) * 1000000000ULL;
- 	ns -= ptp_qoriq->tclk_period;
- 	hi = ns >> 32;
-@@ -207,15 +232,12 @@ EXPORT_SYMBOL_GPL(ptp_qoriq_adjfine);
- 
- int ptp_qoriq_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
--	s64 now;
- 	unsigned long flags;
- 	struct ptp_qoriq *ptp_qoriq = container_of(ptp, struct ptp_qoriq, caps);
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
--	now = tmr_cnt_read(ptp_qoriq);
--	now += delta;
--	tmr_cnt_write(ptp_qoriq, now);
-+	tmr_offset_write(ptp_qoriq, delta);
- 	set_fipers(ptp_qoriq);
- 
- 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
-@@ -232,7 +254,7 @@ int ptp_qoriq_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
--	ns = tmr_cnt_read(ptp_qoriq);
-+	ns = tmr_cnt_read(ptp_qoriq) + tmr_offset_read(ptp_qoriq);
- 
- 	spin_unlock_irqrestore(&ptp_qoriq->lock, flags);
- 
-@@ -251,6 +273,8 @@ int ptp_qoriq_settime(struct ptp_clock_info *ptp,
- 
- 	ns = timespec64_to_ns(ts);
- 
-+	tmr_offset_write(ptp_qoriq, 0);
-+
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
- 	tmr_cnt_write(ptp_qoriq, ns);
--- 
-2.17.1
+On Thu, Jan 05, 2023 at 09:46:28PM +0000, Matthew Wilcox (Oracle) wrote:
+> Convert the only user of init_callback.
+>
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>  include/net/page_pool.h | 2 +-
+>  net/bpf/test_run.c      | 4 ++--
+>  net/core/page_pool.c    | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index c607d67c96dc..d2f98b9dce13 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -181,7 +181,7 @@ struct page_pool_params {
+>  	enum dma_data_direction dma_dir; /* DMA mapping direction */
+>  	unsigned int	max_len; /* max DMA sync memory size */
+>  	unsigned int	offset;  /* DMA addr offset */
+> -	void (*init_callback)(struct page *page, void *arg);
+> +	void (*init_callback)(struct netmem *nmem, void *arg);
+>  	void *init_arg;
+>  };
+>
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index 2723623429ac..bd3c64e69f6e 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -116,9 +116,9 @@ struct xdp_test_data {
+>  #define TEST_XDP_FRAME_SIZE (PAGE_SIZE - sizeof(struct xdp_page_head))
+>  #define TEST_XDP_MAX_BATCH 256
+>
+> -static void xdp_test_run_init_page(struct page *page, void *arg)
+> +static void xdp_test_run_init_page(struct netmem *nmem, void *arg)
+>  {
+> -	struct xdp_page_head *head = phys_to_virt(page_to_phys(page));
+> +	struct xdp_page_head *head = netmem_to_virt(nmem);
+>  	struct xdp_buff *new_ctx, *orig_ctx;
+>  	u32 headroom = XDP_PACKET_HEADROOM;
+>  	struct xdp_test_data *xdp = arg;
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 5624cdae1f4e..a1e404a7397f 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -334,7 +334,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
+>  	nmem->pp = pool;
+>  	nmem->pp_magic |= PP_SIGNATURE;
+>  	if (pool->p.init_callback)
+> -		pool->p.init_callback(netmem_page(nmem), pool->p.init_arg);
+> +		pool->p.init_callback(nmem, pool->p.init_arg);
+>  }
+>
+>  static void page_pool_clear_pp_info(struct netmem *nmem)
+> --
+> 2.35.1
+>
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
