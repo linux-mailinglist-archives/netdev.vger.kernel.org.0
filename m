@@ -2,149 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 275CC663E7B
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 11:45:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75C9A663E7C
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 11:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238056AbjAJKpv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Jan 2023 05:45:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
+        id S238082AbjAJKqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 05:46:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238059AbjAJKpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:45:45 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B60DE92
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:45:45 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-486-yku-WrMtP0uD7s8VMIN2pA-1; Tue, 10 Jan 2023 05:45:38 -0500
-X-MC-Unique: yku-WrMtP0uD7s8VMIN2pA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 402B585CBE8;
-        Tue, 10 Jan 2023 10:45:38 +0000 (UTC)
-Received: from hog (unknown [10.39.192.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E7DA22166B26;
-        Tue, 10 Jan 2023 10:45:36 +0000 (UTC)
-Date:   Tue, 10 Jan 2023 11:44:13 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     ehakim@nvidia.com, netdev@vger.kernel.org, raeds@nvidia.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Subject: Re: [PATCH net-next v7 1/2] macsec: add support for
- IFLA_MACSEC_OFFLOAD in macsec_changelink
-Message-ID: <Y71BfSFAtZJoker5@hog>
-References: <20230109085557.10633-1-ehakim@nvidia.com>
- <20230109085557.10633-2-ehakim@nvidia.com>
- <Y7wvWOZYL1t7duV/@hog>
- <167334021775.17820.2386827809582589477@kwain.local>
+        with ESMTP id S238059AbjAJKqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 05:46:08 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BF41572E
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:46:02 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id i9so16919635edj.4
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 02:46:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RVT3HuAU7d5TyEdRMwNaOkxi/0LTusx0lkgJayOmf3E=;
+        b=ZjU4kfBmg+KcuZSuDmAT1bRE2ERqP6clJ7gUSagyhTw791YIRfjWpM2/M/bUnPJNXJ
+         LwgnthjFqsBN0miIT87jX+nwbxmhokPmAOpOPXTXSwV1v+eUk3V5gcqqLqhJBe3heSsE
+         V31otLrldfTwGeAlmUXHpcrWbP41GiIOsBjsc4H3X2tIMBQhEk5F3uc7CdycLp07n6d/
+         SCCS416hn8nPqzIQAl1JpUR+fKvkkUqEjrMeleGUAhoEGOyruPyoLAXnfUHThG+TSqvb
+         JkdeM+Z4uqcNr+IkKr26JuTtb+8rX2yNdQaOe+IAmAhrI3W4a7D7E1Y9fIDquaC2wpVL
+         DszQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RVT3HuAU7d5TyEdRMwNaOkxi/0LTusx0lkgJayOmf3E=;
+        b=xk2Hp0cOeZlpQonSSwl31kDQj7Q4YrFPmlkQ6hf2SXH6U3rYq9yxAOMv7Nss2Grd9i
+         gitbepm9v/jeA3zywBlDlKHhhZAtTqqVlJHwtTyxcqbTljuHGR3RQRxHaQ4VRbPPro56
+         xnXQxqNZ/rhVTfoA+eoL85+6ARNc2MnLZgJzO1jkLuZOdonozh6YEZFad8sI4m3bXF56
+         QnU6Jzvy3eubJeOISQIm4pSAQlm+etSpGgFOBNNLd3mT5+G+6dCEnn+JP7KWD7dwMygv
+         PBXtc/tOMHNHHEzTppGvgLzFSygG9WBBYsrClmNF3pZqEoVBoQ6TJZiGZXKqudjZx3g7
+         DK+g==
+X-Gm-Message-State: AFqh2kpDmdr3pSz4t4z56nuZXUU11wdqAk002XNQ+dLTTK3daUiAM/Oo
+        b/3HPh/9XKr7USUGQGJ/kdt9QA==
+X-Google-Smtp-Source: AMrXdXsYew0IjHk2hmF42p44/tSPB9zxgWq/QsXtosbapLoAyRxNMaUfLVjzTDP3UvykuKkVMqt+Kw==
+X-Received: by 2002:a05:6402:528b:b0:499:b672:ee39 with SMTP id en11-20020a056402528b00b00499b672ee39mr5221190edb.11.1673347560617;
+        Tue, 10 Jan 2023 02:46:00 -0800 (PST)
+Received: from hera (ppp079167090036.access.hol.gr. [79.167.90.36])
+        by smtp.gmail.com with ESMTPSA id eg49-20020a05640228b100b00488117821ffsm4805912edb.31.2023.01.10.02.45.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jan 2023 02:46:00 -0800 (PST)
+Date:   Tue, 10 Jan 2023 12:45:58 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     Jesper Dangaard Brouer <hawk@kernel.org>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, Shakeel Butt <shakeelb@google.com>
+Subject: Re: [PATCH v2 12/24] page_pool: Convert page_pool_alloc_pages() to
+ page_pool_alloc_netmem()
+Message-ID: <Y71B5qIiqfITQ7mA@hera>
+References: <20230105214631.3939268-1-willy@infradead.org>
+ <20230105214631.3939268-13-willy@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <167334021775.17820.2386827809582589477@kwain.local>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230105214631.3939268-13-willy@infradead.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-01-10, 09:43:37 +0100, Antoine Tenart wrote:
-> Quoting Sabrina Dubroca (2023-01-09 16:14:32)
-> > 2023-01-09, 10:55:56 +0200, ehakim@nvidia.com wrote:
-> > > @@ -3840,6 +3835,12 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
-> > >       if (ret)
-> > >               goto cleanup;
-> > >  
-> > > +     if (data[IFLA_MACSEC_OFFLOAD]) {
-> > > +             ret = macsec_update_offload(dev, nla_get_u8(data[IFLA_MACSEC_OFFLOAD]));
-> > > +             if (ret)
-> > > +                     goto cleanup;
-> > > +     }
-> > > +
-> > >       /* If h/w offloading is available, propagate to the device */
-> > >       if (macsec_is_offloaded(macsec)) {
-> > >               const struct macsec_ops *ops;
-> > 
-> > There's a missing rollback of the offloading status in the (probably
-> > quite unlikely) case that mdo_upd_secy fails, no? We can't fail
-> > macsec_get_ops because macsec_update_offload would have failed
-> > already, but I guess the driver could fail in mdo_upd_secy, and then
-> > "goto cleanup" doesn't restore the offloading state.  Sorry I didn't
-> > notice this earlier.
-> > 
-> > In case the IFLA_MACSEC_OFFLOAD attribute is provided and we're
-> > enabling offload, we also end up calling the driver's mdo_add_secy,
-> > and then immediately afterwards mdo_upd_secy, which probably doesn't
-> > make much sense.
-> > 
-> > Maybe we could turn that into:
-> > 
-> >     if (data[IFLA_MACSEC_OFFLOAD]) {
-> 
-> If data[IFLA_MACSEC_OFFLOAD] is provided but doesn't change the
-> offloading state, then macsec_update_offload will return early and
-> mdo_upd_secy won't be called.
+On Thu, Jan 05, 2023 at 09:46:19PM +0000, Matthew Wilcox (Oracle) wrote:
+> Add wrappers for page_pool_alloc_pages() and
+> page_pool_dev_alloc_netmem().  Also convert __page_pool_alloc_pages_slow()
+> to __page_pool_alloc_netmem_slow() and __page_pool_alloc_page_order()
+> to __page_pool_alloc_netmem().  __page_pool_get_cached() now returns
+> a netmem.
+>
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>  include/net/page_pool.h | 13 ++++++++++++-
+>  net/core/page_pool.c    | 39 +++++++++++++++++++--------------------
+>  2 files changed, 31 insertions(+), 21 deletions(-)
+>
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 8b826da3b8b0..fbb653c9f1da 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -314,7 +314,18 @@ struct page_pool {
+>  	u64 destroy_cnt;
+>  };
+>
+> -struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
+> +struct netmem *page_pool_alloc_netmem(struct page_pool *pool, gfp_t gfp);
+> +
+> +static inline struct netmem *page_pool_dev_alloc_netmem(struct page_pool *pool)
+> +{
+> +	return page_pool_alloc_netmem(pool, GFP_ATOMIC | __GFP_NOWARN);
+> +}
+> +
+> +static inline
+> +struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
+> +{
+> +	return netmem_page(page_pool_alloc_netmem(pool, gfp));
+> +}
+>
+>  static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+>  {
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 0212244e07e7..c7ea487acbaa 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -282,7 +282,7 @@ static struct netmem *page_pool_refill_alloc_cache(struct page_pool *pool)
+>  }
+>
+>  /* fast path */
+> -static struct page *__page_pool_get_cached(struct page_pool *pool)
+> +static struct netmem *__page_pool_get_cached(struct page_pool *pool)
+>  {
+>  	struct netmem *nmem;
+>
+> @@ -295,7 +295,7 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
+>  		nmem = page_pool_refill_alloc_cache(pool);
+>  	}
+>
+> -	return netmem_page(nmem);
+> +	return nmem;
+>  }
+>
+>  static void page_pool_dma_sync_for_device(struct page_pool *pool,
+> @@ -349,8 +349,8 @@ static void page_pool_clear_pp_info(struct netmem *nmem)
+>  	nmem->pp = NULL;
+>  }
+>
+> -static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+> -						 gfp_t gfp)
+> +static
+> +struct netmem *__page_pool_alloc_netmem(struct page_pool *pool, gfp_t gfp)
+>  {
+>  	struct netmem *nmem;
+>
+> @@ -371,27 +371,27 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+>  	/* Track how many pages are held 'in-flight' */
+>  	pool->pages_state_hold_cnt++;
+>  	trace_page_pool_state_hold(pool, nmem, pool->pages_state_hold_cnt);
+> -	return netmem_page(nmem);
+> +	return nmem;
+>  }
+>
+>  /* slow path */
+>  noinline
+> -static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> +static struct netmem *__page_pool_alloc_netmem_slow(struct page_pool *pool,
+>  						 gfp_t gfp)
+>  {
+>  	const int bulk = PP_ALLOC_CACHE_REFILL;
+>  	unsigned int pp_flags = pool->p.flags;
+>  	unsigned int pp_order = pool->p.order;
+> -	struct page *page;
+> +	struct netmem *nmem;
+>  	int i, nr_pages;
+>
+>  	/* Don't support bulk alloc for high-order pages */
+>  	if (unlikely(pp_order))
+> -		return __page_pool_alloc_page_order(pool, gfp);
+> +		return __page_pool_alloc_netmem(pool, gfp);
+>
+>  	/* Unnecessary as alloc cache is empty, but guarantees zero count */
+>  	if (unlikely(pool->alloc.count > 0))
+> -		return netmem_page(pool->alloc.cache[--pool->alloc.count]);
+> +		return pool->alloc.cache[--pool->alloc.count];
+>
+>  	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
+>  	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
+> @@ -422,34 +422,33 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>
+>  	/* Return last page */
+>  	if (likely(pool->alloc.count > 0)) {
+> -		page = netmem_page(pool->alloc.cache[--pool->alloc.count]);
+> +		nmem = pool->alloc.cache[--pool->alloc.count];
+>  		alloc_stat_inc(pool, slow);
+>  	} else {
+> -		page = NULL;
+> +		nmem = NULL;
+>  	}
+>
+>  	/* When page just allocated it should have refcnt 1 (but may have
+>  	 * speculative references) */
+> -	return page;
+> +	return nmem;
+>  }
+>
+>  /* For using page_pool replace: alloc_pages() API calls, but provide
+>   * synchronization guarantee for allocation side.
+>   */
+> -struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
+> +struct netmem *page_pool_alloc_netmem(struct page_pool *pool, gfp_t gfp)
+>  {
+> -	struct page *page;
+> +	struct netmem *nmem;
+>
+>  	/* Fast-path: Get a page from cache */
+> -	page = __page_pool_get_cached(pool);
+> -	if (page)
+> -		return page;
+> +	nmem = __page_pool_get_cached(pool);
+> +	if (nmem)
+> +		return nmem;
+>
+>  	/* Slow-path: cache empty, do real allocation */
+> -	page = __page_pool_alloc_pages_slow(pool, gfp);
+> -	return page;
+> +	return __page_pool_alloc_netmem_slow(pool, gfp);
+>  }
+> -EXPORT_SYMBOL(page_pool_alloc_pages);
+> +EXPORT_SYMBOL(page_pool_alloc_netmem);
+>
+>  /* Calculate distance between two u32 values, valid if distance is below 2^(31)
+>   *  https://en.wikipedia.org/wiki/Serial_number_arithmetic#General_Solution
+> --
+> 2.35.1
+>
 
-Ouch, thanks for catching this.
-
-> 
-> >         ... macsec_update_offload
-> >     } else if (macsec_is_offloaded(macsec)) {
-> >         /* If h/w offloading is available, propagate to the device */
-> >         ... mdo_upd_secy
-> >     }
-> > 
-> > Antoine, does that look reasonable to you?
-> 
-> But yes I agree we can improve the logic. Maybe something like:
-> 
->   prev_offload = macsec->offload;
->   offload = data[IFLA_MACSEC_OFFLOAD];
-
-That needs to be under if (data[IFLA_MACSEC_OFFLOAD]) and then the
-rest gets a bit messy.
-
-> 
->   if (prev_offload != offload) {
->       macsec_update_offload(...)
->   } else if (macsec_is_offloaded(macsec)) {
->       ...
->       prev_offload can be used to restore the offloading state on
->       failure here.
->   }
-
-We also have a prev != new test at the start of macsec_update_offload,
-the duplication is a bit ugly. We could move it out and then only call
-macsec_update_offload when there is a change to do, both from
-macsec_changelink and macsec_upd_offload.
-
-Since we don't need to restore in the second branch, and we can only
-fetch IFLA_MACSEC_OFFLOAD when it's present, maybe:
-
-    change = false;
-    if (data[IFLA_MACSEC_OFFLOAD]) {
-        offload = nla_get_u8(data[IFLA_MACSEC_OFFLOAD]);
-        if (macsec->offload != offload) {
-            change = true;
-            macsec_update_offload ...cleanup
-        }
-    }
-    
-    if (!change && macsec_is_offloaded(macsec)) {
-        ...
-    }
-
-Or let macsec_update_offload do the macsec->offload != offload test
-and pass &change so that changelink can know what to do next.
-
--- 
-Sabrina
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
