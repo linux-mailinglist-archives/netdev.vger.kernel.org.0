@@ -2,81 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3526B663854
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 05:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FED766385C
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 05:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbjAJEuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Jan 2023 23:50:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S229605AbjAJE7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Jan 2023 23:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjAJEuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 23:50:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1343FC92
-        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 20:50:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD5FBB8110F
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 04:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F310C433F0;
-        Tue, 10 Jan 2023 04:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673326216;
-        bh=J4BDly/Jwu5b22Yw2FWBnYrjhGDPoh1Ty8ZG+ET7BWw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tKcxGvjk1gg7K0P7HNCVqKB1DKNYu+LPiPhFXyW2n5wd8xUgkU+Ae40qD+XDuuHBZ
-         TK0HH6x3Z99kwSfO+FofMJRryAeJMFza4WjNIVcESLYKefL9R1nRb61Ts5g0sRUwrT
-         LBmQLzMjTjMRgnT39Fei7oKMsVGbV4BSjKn4cDAKu6gDQ5EmI/zyAxacen3pBKEgcx
-         WgJG/JYtaiUN0tuyqhrZSR90J1g9GSq68Fmk1XOEHYYwtS65MfqmQTF5J2IDIOf2f0
-         cYixwD49JLECRNpclc/nN20efT4RnKqwwbqbiK6LlFOiixM5t+iIAjgydordSw6W96
-         VSa3DFnubDeUQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2596FE524ED;
-        Tue, 10 Jan 2023 04:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229526AbjAJE7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Jan 2023 23:59:09 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB6940867
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 20:59:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673326747; x=1704862747;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iMgtZo0QRsYT+FGkYCYH43au4jQZcZ/jhD8CvdYbCPY=;
+  b=XQHxy7jqby7K36mzgcV0vrMFC+158nKRDHZLdB28MIEy+DTZ00iBeiQT
+   AudotsWzF6NVEVTSJnLod1Q1IL1yAjKIo0JVIJ5qncubz81Ucwbvh1Khy
+   2iymrAV8cBBhzGzK1cbmQPzLNQKczdTRpfUhiCbUWJaXd0cQdplh1zegD
+   kTTkvmNoeOVBziUOWazkBC7qkQyfqA8kHGSwRo8tdk+EI+kXwzlVCHHOJ
+   avsJugvWRwoCZriTlQ7qwoJJNGoW/MFMucIXvO4fyVy7GerI/yHzzTVEY
+   GGdhKlEM2wJW8wAmYzfKaA0+q0P87Usg+wLWokhWwdnRvaqD4fzoVXXpw
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="306574980"
+X-IronPort-AV: E=Sophos;i="5.96,314,1665471600"; 
+   d="scan'208";a="306574980"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 20:59:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="985636150"
+X-IronPort-AV: E=Sophos;i="5.96,314,1665471600"; 
+   d="scan'208";a="985636150"
+Received: from msu-dell.jf.intel.com ([10.166.233.5])
+  by fmsmga005.fm.intel.com with ESMTP; 09 Jan 2023 20:59:06 -0800
+From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
+        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
+Subject: [PATCH ethtool-next v5 0/2] add netlink support for rss get
+Date:   Mon,  9 Jan 2023 20:52:43 -0800
+Message-Id: <20230110045245.3571556-1-sudheer.mogilappagari@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "r8169: disable detection of chip version 36"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167332621614.19916.13262258406705014864.git-patchwork-notify@kernel.org>
-Date:   Tue, 10 Jan 2023 04:50:16 +0000
-References: <42e9674c-d5d0-a65a-f578-e5c74f244739@gmail.com>
-In-Reply-To: <42e9674c-d5d0-a65a-f578-e5c74f244739@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+These patches add netlink based handler to fetch RSS information
+using "ethtool -x <eth> [context %d]" command.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Output without --json option
+$ethtool -x eno2
+RX flow hash indirection table for eno2 with 8 RX ring(s):
+    0:      0     0     0     0     0     0     0     0
+    8:      1     1     1     1     1     1     1     1
+   ...skip similar lines...
+  120:      7     7     7     7     7     7     7     7
+RSS hash key:
+be:c3:13:a6:59:9a:c3:c5:d8:60:75:2b:4c:b2:12:cc:5c:4e:34:
+8a:f9:ab:16:c7:19:5d:ab:1d:b5:c1:c7:57:c7:a2:e1:2b:e3:ea:
+02:60:88:8e:96:ef:2d:64:d2:de:2c:16:72:b6
+RSS hash function:
+    toeplitz: on
+    xor: off
+    crc32: off
 
-On Sun, 8 Jan 2023 20:37:53 +0100 you wrote:
-> This reverts commit 42666b2c452ce87894786aae05e3fad3cfc6cb59.
-> 
-> This chip version seems to be very rare, but it exits in consumer
-> devices, see linked report.
-> 
-> https://stackoverflow.com/questions/75049473/cant-setup-a-wired-network-in-archlinux-fresh-install
-> 
-> [...]
+Sample output with json option:
+$ethtool --json -x eno2
+[ {
+    "ifname": "eno2",
+    "rss-indirection-table": [ 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,
+    ...skip similar lines...
+    7,7,7,7,7,7,7,7 ],
+    "rss-hash-key": [ 190,195,19,166,..],
+    "rss-hash-function": "toeplitz"
+    } ]
 
-Here is the summary with links:
-  - [net] Revert "r8169: disable detection of chip version 36"
-    https://git.kernel.org/netdev/net/c/2ea26b4de6f4
+Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+---
+v5:
+- Fixed use of same socket for fetching rings info and RSS info
+- Added checks to test if a field exists before accessing reply message
+- Refactor print functions and avoid use of ethtool_rxfh structure
 
-You are awesome, thank you!
+v4: 
+-Fixed hash function values in example output of commit message.
+
+v3:
+-Made hash key as an array of ints.
+-Skip json field when not supported.
+-Made hash function values as true/false instead of on/off
+-Formatted key strings as per review comments. 
+
+v2:
+-Added json support
+---
+Sudheer Mogilappagari (2):
+  Move code that print rss info into common file
+  netlink: add netlink handler for get rss (-x)
+
+ Makefile.am            |   2 +-
+ common.c               |  36 +++++++
+ common.h               |   6 +-
+ ethtool.c              |  43 ++------
+ netlink/desc-ethtool.c |  11 ++
+ netlink/extapi.h       |   2 +
+ netlink/rss.c          | 228 +++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 291 insertions(+), 37 deletions(-)
+ create mode 100644 netlink/rss.c
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
