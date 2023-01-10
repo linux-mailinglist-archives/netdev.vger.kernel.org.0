@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E702666476A
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8A366476E
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:30:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbjAJR3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 12:29:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        id S233400AbjAJRan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 12:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbjAJR3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:29:43 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450B318B09
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:29:42 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id dw9so11698777pjb.5
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:29:42 -0800 (PST)
+        with ESMTP id S231901AbjAJRam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:30:42 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB6F57929;
+        Tue, 10 Jan 2023 09:30:41 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id m6so19567628lfj.11;
+        Tue, 10 Jan 2023 09:30:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=emWQGeW/C5OIcC0l1LjYUxsng7sswHzCLcGm9B8puB0=;
-        b=MkKR3JXF7E+p1eM4aCtzq5DabBlKrTqh64QWgtnPmndnB8uVDzc0zkkP14XA4cCzoP
-         5X0FF4POPkNaAreLtKBIGU1HCTeiJ08pGM5nHRuhdfNbgwTJcopSt1Ow7jNHFfByA0ax
-         kPcOJDzkHoiVpXLRLsJALwWEn5zjMfTQMd35kdRrd9qvGTlg9ITMm1LjadMw0frW8Z8F
-         rwTJItqJdQinsgp788dZYesCDgdNB5UGDfuLoHBx4DWpIMmo3EzqBAeBG0DIjV1S3Bbj
-         8H7wiI1h10kdhcfuJBNcmrViTK9b/E7Wps2w4Wsyv1T9633oY0LYOU6UxRLUxn6sItGs
-         8Vuw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=J5rZ8/tNfpG3TEwcidbczu4hDRSvpGy5F76n5awGo8o=;
+        b=T6GwdqnJLjArN3uFAv+O1gTybIISG2qQBlxbIafRhcmrJ/YLmI/XtaYMW9KKTZthqg
+         w5hKNmGSWQRLWpmz+poUOycy3rVflWhVaghFVdbHWThjhOqcdnNQlfG3a2FUBruUUnrR
+         FIhj6xOBSKSit0ng31l5Q0EQg8VqBEjeuBPxLH+l3R5mCsMb1FOlmQZYVXvnc18zjvQ8
+         xZkvfmgeKgU/cOLfIlE0aAim9ZG1ZGPsO4G/2CclZox6n6nXDAOeqMXWyw4so5NKSDr5
+         rXM9/HcTsGHlZ4NiXIeCt4Vz2WCNOqXJ9MajLGZtqQJ87e4ZYgT58R1VKbhbUUeGvmuc
+         KhnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=emWQGeW/C5OIcC0l1LjYUxsng7sswHzCLcGm9B8puB0=;
-        b=ZgqjeZZF/MdRYoY4FrgHfGUuZBO+nBVdBcxibqnTps/IKxdf1owfDnsV/6OLo7C+rn
-         xU9lruFrkqzMiE8s1jwYXEl42/yhzU5KqcglrFWIg9xbmDsqtXguYNIAiIsMl15FhsbN
-         XbtSuPY/Y8UZdojZ6H7kly79w3HeJo6SAi4xWxNlZptJ+6dJVyDzjuJCEYtoABuclaDr
-         vbovDK5G84s/thrsnAE9G8nauQRubuAqiWjZR4+6wVSUFoj3M/wHyNYz9xFDg3e/7CNG
-         Nl813kRX1lhlgjMqkzZw07zI2ZxCDcdDUGG6kY3H3mo4dX5Odd1xx0GqiYQ4aURaR7FX
-         YvXw==
-X-Gm-Message-State: AFqh2kqUSkvNAgIAZ1FeolWFMLB9EeKIAsXpgJj/Bjg+oWrAbciTaxPB
-        sUMcE4jUpk+0UhrwOQUFeJ4=
-X-Google-Smtp-Source: AMrXdXs4iy8YOz5qj9tqT3tcHOfw0GeCEBTZ4uh2DY5Hh7wjiXZXfTS3Ria8tYwVoC1OeeGGLPIQpQ==
-X-Received: by 2002:a05:6a20:12ca:b0:ab:e8a7:6137 with SMTP id v10-20020a056a2012ca00b000abe8a76137mr100073268pzg.3.1673371781581;
-        Tue, 10 Jan 2023 09:29:41 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.37.136])
-        by smtp.googlemail.com with ESMTPSA id r23-20020a17090b051700b002271f55157bsm3329866pjz.9.2023.01.10.09.29.40
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=J5rZ8/tNfpG3TEwcidbczu4hDRSvpGy5F76n5awGo8o=;
+        b=rgY3c1sQBqa8oIjh+Ebq9BrZJx4ki8tQKZGvfJV0FZFcnDrD0t/czuBrM81pkAkxOO
+         w7IAn270dN1y0kNvqqdgDu1h2D7mrgrUzitvyXwu6xUvcFjlXg8hUhmysME0jutW9G2E
+         mOhfBkQYT00cqbs6ubd0RvtI105aGE1c0gspyZrbvZDeV6acXW2I3MG33Fuo32pom34i
+         ifUmSSurg82AOa3ynZTvhUebidemxp8PwR1PcCa55850/dLynOjt1S3/Y/4qugpsy6Z7
+         oYoU3xTuJMPuiWWAGW/8OIRp2NKOvgKwnfOnF7kUKeAGpNZAlYfVhmYVRBe0W624N5Q+
+         DdzQ==
+X-Gm-Message-State: AFqh2krf8Cxhzkl1p9GCvOYmkFJ1oDFfnoQzA+11+dSwLzZDh1eSo83c
+        /A3GzqPPTfmYx9bWGqZwJ9U=
+X-Google-Smtp-Source: AMrXdXtrRuuwihn11CDfXbGo3Sb3ualVTvefUHOm5bJTCXH3EiMVo93xbvKu4nmxDPIqYgPq7PtqAQ==
+X-Received: by 2002:ac2:5b41:0:b0:4a4:68b8:9c5b with SMTP id i1-20020ac25b41000000b004a468b89c5bmr19056278lfp.67.1673371839263;
+        Tue, 10 Jan 2023 09:30:39 -0800 (PST)
+Received: from localhost.localdomain (077222238029.warszawa.vectranet.pl. [77.222.238.29])
+        by smtp.googlemail.com with ESMTPSA id p20-20020a056512235400b004cb430b5b38sm2264272lfu.185.2023.01.10.09.30.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 09:29:41 -0800 (PST)
-Message-ID: <464fd490273bf0df9f0725a69aa1c890705d0513.camel@gmail.com>
-Subject: Re: [PATCH net-next v4 08/10] tsnep: Add RX queue info for XDP
- support
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Saeed Mahameed <saeed@kernel.org>
-Date:   Tue, 10 Jan 2023 09:29:39 -0800
-In-Reply-To: <20230109191523.12070-9-gerhard@engleder-embedded.com>
-References: <20230109191523.12070-1-gerhard@engleder-embedded.com>
-         <20230109191523.12070-9-gerhard@engleder-embedded.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Tue, 10 Jan 2023 09:30:38 -0800 (PST)
+From:   Szymon Heidrich <szymon.heidrich@gmail.com>
+To:     kvalo@kernel.org, jussi.kivilinna@iki.fi, davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        szymon.heidrich@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rndis_wlan: Prevent buffer overflow in rndis_query_oid
+Date:   Tue, 10 Jan 2023 18:30:07 +0100
+Message-Id: <20230110173007.57110-1-szymon.heidrich@gmail.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -75,187 +69,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2023-01-09 at 20:15 +0100, Gerhard Engleder wrote:
-> Register xdp_rxq_info with page_pool memory model. This is needed for
-> XDP buffer handling.
->=20
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-> Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-> ---
->  drivers/net/ethernet/engleder/tsnep.h      |  2 ++
->  drivers/net/ethernet/engleder/tsnep_main.c | 39 ++++++++++++++++------
->  2 files changed, 31 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet=
-/engleder/tsnep.h
-> index 855738d31d73..2268ff793edf 100644
-> --- a/drivers/net/ethernet/engleder/tsnep.h
-> +++ b/drivers/net/ethernet/engleder/tsnep.h
-> @@ -134,6 +134,8 @@ struct tsnep_rx {
->  	u32 dropped;
->  	u32 multicast;
->  	u32 alloc_failed;
-> +
-> +	struct xdp_rxq_info xdp_rxq;
->  };
-> =20
+Since resplen and respoffs are signed integers sufficiently
+large values of unsigned int len and offset members of RNDIS
+response will result in negative values of prior variables.
+This may be utilized to bypass implemented security checks
+to either extract memory contents by manipulating offset or
+overflow the data buffer via memcpy by manipulating both
+offset and len.
 
-Rather than placing it in your Rx queue structure it might be better to
-look at placing it in the tsnep_queue struct. The fact is this is more
-closely associated with the napi struct then your Rx ring so changing
-it to that might make more sense as you can avoid a bunch of extra
-overhead with having to pull napi to it.
+Additionally assure that sum of resplen and respoffs does not
+overflow so buffer boundaries are kept.
 
-Basically what it comes down it is that it is much easier to access
-queue[i].rx than it is for the rx to get access to queue[i].napi.
+Fixes: 80f8c5b434f9 ("rndis_wlan: copy only useful data from rndis_command respond")
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+---
+ drivers/net/wireless/rndis_wlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->  struct tsnep_queue {
-> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/eth=
-ernet/engleder/tsnep_main.c
-> index 0c9669edb2dd..451ad1849b9d 100644
-> --- a/drivers/net/ethernet/engleder/tsnep_main.c
-> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-> @@ -792,6 +792,9 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx=
-)
->  		entry->page =3D NULL;
->  	}
-> =20
-> +	if (xdp_rxq_info_is_reg(&rx->xdp_rxq))
-> +		xdp_rxq_info_unreg(&rx->xdp_rxq);
-> +
->  	if (rx->page_pool)
->  		page_pool_destroy(rx->page_pool);
-> =20
-> @@ -807,7 +810,7 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx=
-)
->  	}
->  }
-> =20
-> -static int tsnep_rx_ring_init(struct tsnep_rx *rx)
-> +static int tsnep_rx_ring_init(struct tsnep_rx *rx, unsigned int napi_id)
->  {
->  	struct device *dmadev =3D rx->adapter->dmadev;
->  	struct tsnep_rx_entry *entry;
-> @@ -850,6 +853,15 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
->  		goto failed;
->  	}
-> =20
-> +	retval =3D xdp_rxq_info_reg(&rx->xdp_rxq, rx->adapter->netdev,
-> +				  rx->queue_index, napi_id);
-> +	if (retval)
-> +		goto failed;
-> +	retval =3D xdp_rxq_info_reg_mem_model(&rx->xdp_rxq, MEM_TYPE_PAGE_POOL,
-> +					    rx->page_pool);
-> +	if (retval)
-> +		goto failed;
-> +
->  	for (i =3D 0; i < TSNEP_RING_SIZE; i++) {
->  		entry =3D &rx->entry[i];
->  		next_entry =3D &rx->entry[(i + 1) % TSNEP_RING_SIZE];
-> @@ -1104,7 +1116,8 @@ static bool tsnep_rx_pending(struct tsnep_rx *rx)
->  }
-> =20
->  static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *ad=
-dr,
-> -			 int queue_index, struct tsnep_rx *rx)
-> +			 unsigned int napi_id, int queue_index,
-> +			 struct tsnep_rx *rx)
->  {
->  	dma_addr_t dma;
->  	int retval;
-> @@ -1118,7 +1131,7 @@ static int tsnep_rx_open(struct tsnep_adapter *adap=
-ter, void __iomem *addr,
->  	else
->  		rx->offset =3D TSNEP_SKB_PAD;
-> =20
-> -	retval =3D tsnep_rx_ring_init(rx);
-> +	retval =3D tsnep_rx_ring_init(rx, napi_id);
->  	if (retval)
->  		return retval;
-> =20
-> @@ -1245,14 +1258,19 @@ static void tsnep_free_irq(struct tsnep_queue *qu=
-eue, bool first)
->  static int tsnep_netdev_open(struct net_device *netdev)
->  {
->  	struct tsnep_adapter *adapter =3D netdev_priv(netdev);
-> -	int i;
-> -	void __iomem *addr;
->  	int tx_queue_index =3D 0;
->  	int rx_queue_index =3D 0;
-> -	int retval;
-> +	unsigned int napi_id;
-> +	void __iomem *addr;
-> +	int i, retval;
-> =20
->  	for (i =3D 0; i < adapter->num_queues; i++) {
->  		adapter->queue[i].adapter =3D adapter;
-> +
-> +		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
-> +			       tsnep_poll);
-> +		napi_id =3D adapter->queue[i].napi.napi_id;
-> +
-
-This is a good example of what I am referring to.
-
->  		if (adapter->queue[i].tx) {
->  			addr =3D adapter->addr + TSNEP_QUEUE(tx_queue_index);
->  			retval =3D tsnep_tx_open(adapter, addr, tx_queue_index,
-> @@ -1263,7 +1281,7 @@ static int tsnep_netdev_open(struct net_device *net=
-dev)
->  		}
->  		if (adapter->queue[i].rx) {
->  			addr =3D adapter->addr + TSNEP_QUEUE(rx_queue_index);
-> -			retval =3D tsnep_rx_open(adapter, addr,
-> +			retval =3D tsnep_rx_open(adapter, addr, napi_id,
->  					       rx_queue_index,
->  					       adapter->queue[i].rx);
->  			if (retval)
-> @@ -1295,8 +1313,6 @@ static int tsnep_netdev_open(struct net_device *net=
-dev)
->  		goto phy_failed;
-> =20
->  	for (i =3D 0; i < adapter->num_queues; i++) {
-> -		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
-> -			       tsnep_poll);
->  		napi_enable(&adapter->queue[i].napi);
-> =20
->  		tsnep_enable_irq(adapter, adapter->queue[i].irq_mask);
-
-What you could do here is look at making all the napi_add/napi_enable
-and xdp_rxq_info items into one function to handle all the enabling.
-
-> @@ -1317,6 +1333,8 @@ static int tsnep_netdev_open(struct net_device *net=
-dev)
->  			tsnep_rx_close(adapter->queue[i].rx);
->  		if (adapter->queue[i].tx)
->  			tsnep_tx_close(adapter->queue[i].tx);
-> +
-> +		netif_napi_del(&adapter->queue[i].napi);
->  	}
->  	return retval;
->  }
-> @@ -1335,7 +1353,6 @@ static int tsnep_netdev_close(struct net_device *ne=
-tdev)
->  		tsnep_disable_irq(adapter, adapter->queue[i].irq_mask);
-> =20
->  		napi_disable(&adapter->queue[i].napi);
-> -		netif_napi_del(&adapter->queue[i].napi);
-> =20
->  		tsnep_free_irq(&adapter->queue[i], i =3D=3D 0);
-> =20
-
-Likewise here you could take care of all the same items with the page
-pool being freed after you have already unregistered and freed the napi
-instance.
-
-> @@ -1343,6 +1360,8 @@ static int tsnep_netdev_close(struct net_device *ne=
-tdev)
->  			tsnep_rx_close(adapter->queue[i].rx);
->  		if (adapter->queue[i].tx)
->  			tsnep_tx_close(adapter->queue[i].tx);
-> +
-> +		netif_napi_del(&adapter->queue[i].napi);
->  	}
-> =20
->  	return 0;
+diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
+index 82a7458e0..d7fc05328 100644
+--- a/drivers/net/wireless/rndis_wlan.c
++++ b/drivers/net/wireless/rndis_wlan.c
+@@ -697,7 +697,7 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
+ 		struct rndis_query_c	*get_c;
+ 	} u;
+ 	int ret, buflen;
+-	int resplen, respoffs, copylen;
++	u32 resplen, respoffs, copylen;
+ 
+ 	buflen = *len + sizeof(*u.get);
+ 	if (buflen < CONTROL_BUFFER_SIZE)
+@@ -740,7 +740,7 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
+ 			goto exit_unlock;
+ 		}
+ 
+-		if ((resplen + respoffs) > buflen) {
++		if (resplen > (buflen - respoffs)) {
+ 			/* Device would have returned more data if buffer would
+ 			 * have been big enough. Copy just the bits that we got.
+ 			 */
+-- 
+2.38.2
 
