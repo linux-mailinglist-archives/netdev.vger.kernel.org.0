@@ -2,129 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE08E664091
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 13:34:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD48866409F
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 13:36:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238387AbjAJMek convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Jan 2023 07:34:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
+        id S238463AbjAJMgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 07:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233172AbjAJMei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 07:34:38 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C153C382
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 04:34:35 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-319-CqCJCDyUO0CLmH1_J02gWQ-1; Tue, 10 Jan 2023 12:34:32 +0000
-X-MC-Unique: CqCJCDyUO0CLmH1_J02gWQ-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 10 Jan
- 2023 12:34:31 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.044; Tue, 10 Jan 2023 12:34:31 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kalle Valo' <kvalo@kernel.org>
-CC:     'Martin Blumenstingl' <martin.blumenstingl@googlemail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tehuang@realtek.com" <tehuang@realtek.com>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-Thread-Topic: [PATCH 1/4] rtw88: Add packed attribute to the eFuse structs
-Thread-Index: AQHZJOt8b7TA8qgUUEi14rUuSBslva6Xj6GQ
-Date:   Tue, 10 Jan 2023 12:34:31 +0000
-Message-ID: <7f75a99604394c47bd646c6a024cb27a@AcuMS.aculab.com>
-References: <20221228133547.633797-1-martin.blumenstingl@googlemail.com>
-        <20221228133547.633797-2-martin.blumenstingl@googlemail.com>
-        <92eb7dfa8b7d447e966a2751e174b642@realtek.com>
-        <87da8c82dec749dc826b5a1b4c4238aa@AcuMS.aculab.com>
-        <eee17e2f4e44a2f38021a839dc39fedc1c1a4141.camel@realtek.com>
-        <a86893f11fe64930897473a38226a9a8@AcuMS.aculab.com>
-        <5c0c77240e7ddfdffbd771ee7e50d36ef3af9c84.camel@realtek.com>
-        <CAFBinCC+1jGJx1McnBY+kr3RTQ-UpxW6JYNpHzStUTredDuCug@mail.gmail.com>
-        <ec6a0988f3f943128e0122d50959185a@AcuMS.aculab.com>
- <87r0w2fvgz.fsf@kernel.org>
-In-Reply-To: <87r0w2fvgz.fsf@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S238474AbjAJMgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 07:36:31 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2112.outbound.protection.outlook.com [40.107.243.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3C8167E6
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 04:36:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X57Hl0Tmx6Mn0nOG5C1ftD6Mce9izHz33tg3U0qry/hr2t3X6yncXrHDqUXUIDcmVuBBP1VH7lumaBIY43WwR5t7xnxepOCqdhGodEGzrsAKMbv0sVA31LmtBK+0Tkhgmb4RMXr0rcJVNxDvHZJD2eJNIF5SkMoqatLhnZqCFVk81zC3Y0XNlscHPr+AVvgUt/ju0ZPA2bbJizm0Q3YVxbaFxJF97tnt+YxTe/sU15oH6nGa9epPIAJsuc4rjO9ixK2KTkW0krKsWdaq4eahWP/mOq/jN1YeTwu/gjNlWevwZdPigIZnQ3Yl78KVZ6/gV0PvTe7fbvxq8Ilbt3RNkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XboUjGxehPv4lq2TKwK5Mbkhorn8Mc9YkRXfQ5AErhk=;
+ b=NL5LXKgiCXB72sqdiw+SSEWazdQaT7zzFtAX62oZvCLe2qy+nFccAFDYgMs9m/ks/VOShYqAXh+TfLulL1BJ8KSV/liqga2IrRpKa2hPOTDPTyGtasKwOAv5vWWS1lgmysyRyQ7TEss6ZwTLT5c5s+mDxRt+1mOP/wjrWRd8c4HAL2CZnITiv1KDa+E9G1SFgILdSVKuDjVQcD7HSi4ZwUx1UKKMTx5ticFfBLQdqnAmMvNkELmBM2DBHhXLG67KDc77xsQmNbWIHatXgei0VZumNn00N7EYwjD6CJHQBT81RQG2M/peFYyqdQ4wo6B67g8ZDMzIS1aROIQXSodPYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XboUjGxehPv4lq2TKwK5Mbkhorn8Mc9YkRXfQ5AErhk=;
+ b=gnAN5AUgSgGUJ5O6wUpbqiTK9HC8jl6hLl01NB3GwhJ0yZrIW+/OEy/ma1pVqMfvmUzRqEOOEaXFaDZ+OxX02X5C2x9eiJqyi+S/VbDN9+hdjbSYyNWqifRXed/QVSv0N6i8HmA9Kr0VPu00GF7hQ6NwtTqfGHfeXN2oK2wQtt0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB5609.namprd13.prod.outlook.com (2603:10b6:806:230::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
+ 2023 12:35:59 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.5986.018; Tue, 10 Jan 2023
+ 12:35:59 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Bin Chen <bin.chen@corigine.com>,
+        Xingfeng Hu <xingfeng.hu@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next 0/2] nfp: add DCB IEEE support
+Date:   Tue, 10 Jan 2023 13:35:40 +0100
+Message-Id: <20230110123542.46924-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AS4P192CA0001.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5da::15) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5609:EE_
+X-MS-Office365-Filtering-Correlation-Id: d880648d-46d5-47ed-72a3-08daf30739e6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MJq2ST8INfrbddJFNtE3ixnllbowB9+diS727W2IMpTRdZaW57I6zQv2v+PX9PZbz1CotptoOClq8IthTwbnKinwCmKCGtNML86CZ3nwO4QT38yasBC/sKgYZSQZU9SJRKCPK/JTRuMQiyvbGoHFdjlZWpYEtayEwPSvZqXXOp5nPT/vcffv5XubfTKS2rV9jeUOem8HLVnv9ZnPNH81QOG/JrcdyHGyB9lQ6rKrsY9e8WXdfX60hVlppUg4Sor68P/9AqkjoFvvsmJoU/e1Si4TKFe1mtdYRsh+x3h+oHPyoPPhjIIeO6ap2b6OiTADnhAzBSaPTEqIK4YHEYiGkbGQ+RJ4szjSLVEJ6wqQMkb5NOJO396gCFjRHW0jpSikHFsZfMO4uAcXAKsjRAzphUSgREcg4HJYQoepzacw7UY5pEp8TsZhehGrQAwTyA52+4EBmtO3TIpVUGC6CsqY7EpyjtJVqkhpnsalYW8xWk6BrbAc/p+JzaTW6Pdd9Qt42ogZ1+tHG6NkB/fNELRhufJ3NPesm5enAP66s0URAh2I6BtEIuAllKTvkf/YcCQdF3eEqgCC4FMNR2DqvsV546iukTexSzUYoXc6Q6UWxRyFpccb1nwE9mry6Warwl8Ao3CzDNDikLoRhDYTHHlj8Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39830400003)(376002)(366004)(346002)(136003)(396003)(451199015)(8676002)(66476007)(66946007)(66556008)(316002)(52116002)(4326008)(110136005)(54906003)(44832011)(4744005)(2906002)(5660300002)(8936002)(41300700001)(36756003)(83380400001)(107886003)(6666004)(478600001)(6486002)(6506007)(1076003)(2616005)(38100700002)(6512007)(186003)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?O6UfE1AtkiB/O22XbO7YYjUlnFvfP1DTkSS742FXRLNffBJA1/vbiNBKRKIg?=
+ =?us-ascii?Q?w4g3Fm0QCo+QFVqiEEcFLaD4LBB3JERV9qC4lHWFnlfjlAICxOjT/B7iRCtl?=
+ =?us-ascii?Q?WUlhIC6IvWbOkXvgP5F2535AxIh3kasz64ecFnGBfJmx5t0XqfEoZrxYKTl4?=
+ =?us-ascii?Q?NijK8Br2o77mK/xqbr9lodjOcc/uvxcbtSOY7KlHILqBdD9JtlftxlVadwXz?=
+ =?us-ascii?Q?xNugWXH43GKE+osi66n5nHq/ipbCn76is7iXvC+YGsNek5for0XMxfF99C+m?=
+ =?us-ascii?Q?HPYgKYp2fhXVHuMcSTgAn4kDqxhx+qnQGOHXrcKadQoMjO+RpeRd5uH+EMI7?=
+ =?us-ascii?Q?IlIni0LPNFepmVUNHja75dawxy7V+V02HvgcPDlqaNfehlIBfLmw2pRqC/i3?=
+ =?us-ascii?Q?PtFbSHpXEDlft6EeuLQXSlzvUPw2pm5WBZiiPcwG+Ps7ubUwcM/42PjjeZnC?=
+ =?us-ascii?Q?pPWU1cCS2M8t88BARUyqIAo2m3QOV2m54ZaQ5mbIutwJKgG9kmATcDkqBdUm?=
+ =?us-ascii?Q?n0/rIi+YIh10uPmE+6slXp0FBFEfGCqN+t6IA5XMF0Iob5jsfYNwVpi/hoWo?=
+ =?us-ascii?Q?pCmHr+GSNOHlkzdfh+4ERKRAPk3I6OkJUpMkhVDEzy3v4QbafpD6LTrMmsNz?=
+ =?us-ascii?Q?7TU6SyYbx2Ulj25WOSo0iljeWDrP6+P99i6l8zFX1ijR0bqgv7JKXhInvXGV?=
+ =?us-ascii?Q?VlUuLqdFoGRHeq99YnwzJTspB/vXiZKtgsiUn/PNvsMXp2pjyedcfUoSkRGV?=
+ =?us-ascii?Q?Bp/5oeo5ot+YiQlN7YH4/j3PDNJS7oC07omt/QgPnPN/2sJHrO4VNQZrnyxV?=
+ =?us-ascii?Q?zlu+jGxC8D01XyuTRFZ8OLRNMJxhnGTlueWgkDMXY5/pUEEHSU6xmc9sFjwH?=
+ =?us-ascii?Q?F+nHi+UNbKHF/vfS9oK8y/vlLbx0Rqyo5Ec9JWSIe6DKc5zEUjhXpDlTZPdm?=
+ =?us-ascii?Q?aBOJOKjekaqW8mcIFn7c/6kHXN0ddxFuMaD0UKxGAE/kv1jommjreRX+oC5r?=
+ =?us-ascii?Q?i1aZAbWUOmy5dmzi+KIm9OxB4HOae5gHLX5QDHfSz/F7OhrIoIGFClGnkvbP?=
+ =?us-ascii?Q?X/QvBjB0kIaIOO5nt3ivqaA9HJe/WWi9PW61B0gf0auB7MSs34XtQStazAVX?=
+ =?us-ascii?Q?UxjiXcMn1QQZ1npDJC4TeWcsmwdWZjCcMNgAPDsjv9ZwAeIsfjln+wB/CrfW?=
+ =?us-ascii?Q?fY4Id0Mjh5xe/NOPCgkjbI6myEdAPcTvWuFZyBEdJVkgIKzt7IwOlvEaSxkY?=
+ =?us-ascii?Q?RQlzrqcjgoCpf81SNBZPA31ZpSUn5zmW6lUwa1h250aPnVHXfN4KthSyOa4J?=
+ =?us-ascii?Q?x8wHF2bbMbuT6kRRYIuOFRAE7iNAbCjs9waTKL+ddz7+o0zNsdzEK9PpLdFA?=
+ =?us-ascii?Q?L6jDt88pG9mjqGogmsm4Vh5/Ujo6R+V6woJW5b1rHWO1myxU/Xk9bABWeB2A?=
+ =?us-ascii?Q?808RTotB6vhosc1O0Qovo/Cz4wFIBoKdqxj8dRZZvAzv+JZIEJhTjVt+/GXV?=
+ =?us-ascii?Q?cEv1rR8ogUgYU5WVg5+ntz7NkNZ95Xt/Z7OQvUcc2BifLiir2uSwuMJs7eyP?=
+ =?us-ascii?Q?82voZ4DtpKHpsdlUmzFo6tfwuXTI2fYzZxywdZorl7XXxLvRNeNhD9x879pe?=
+ =?us-ascii?Q?efSkoGWzSgtci7B6SXNkj7UsueRvuejBRPkpwPPZts5CfJT04IQRJIbyLVLw?=
+ =?us-ascii?Q?K6p5RQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d880648d-46d5-47ed-72a3-08daf30739e6
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2023 12:35:59.1814
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T12fcGNgEiZ2RTLi00Q1V+cEpbilOFBnCug5t3ro4lStoWK7fB2brkt4BXCv+AzIcibNkmZRZfU+VVUwxcb75wx98lC1dogeeF7MMD26t6M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5609
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kalle Valo
-> Sent: 10 January 2023 12:03
-...
-> > Most hardware definitions align everything.
-> >
-> > What you may want to do is add compile-time asserts for the
-> > sizes of the structures.
-> >
-> > Remember that if you have 16/32 bit fields in packed structures
-> > on some architectures the compile has to generate code that does
-> > byte loads and shifts.
-> >
-> > The 'misaligned' property is lost when you take the address - so
-> > you can easily generate a fault.
-> >
-> > Adding __packed to a struct is a sledgehammer you really shouldn't need.
-> 
-> Avoiding use of __packed is news to me, but is this really a safe rule?
-> Most of the wireless engineers are no compiler experts (myself included)
-> so I'm worried. For example, in ath10k and ath11k I try to use __packed
-> for all structs which are accessing hardware or firmware just to make
-> sure that the compiler is not changing anything.
+Hi,
 
-What may wish to do is get the compiler to generate an error if
-it would add any padding - but that isn't what __packed is for
-or what it does.
+this series adds basic DCB support, including ETS, to the NFP driver.
 
-The compiler will only ever add padding to ensure that fields
-are correctly aligned (usually a multiple of their size).
-There can also be padding at the end of a structure so that arrays
-are aligned.
-There are some unusual ABI that align all structures on 4 byte
-boundaries - but i don't think Linux has any of them.
-In any case this rarely matters.
+Patch 1/1: Add stub implementation of relevant callbacks.
+Patch 2/2: Fill-out implementation of callbacks.
 
-All structures that hardware/firmware access are very likely
-to have everything on its natural alignment unless you have a very
-old structure hat might have a 16bit aligned 32bit value that
-was assumed to be two words.
+Bin Chen (1):
+  nfp: add DCB IEEE configuration process
 
-Now if you have:
-struct {
-	char	a[4];
-	int	b;
-} __packed foo;
-whenever you access foo.b the compiler might have to generate
-4 separate byte memory accesses and a load of shift/and/or
-instructions in order to avoid a misaligned address trap.
-So you don't want to use __packed unless the field is actually
-expected to be misaligned.
-For most hardware/firmware structures this isn't true.
+Xingfeng Hu (1):
+  nfp: Add stub implementation of DCB IEEE callbacks
 
-	David
+ drivers/net/ethernet/netronome/nfp/Makefile   |   2 +
+ drivers/net/ethernet/netronome/nfp/bpf/main.c |   1 +
+ .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |   1 +
+ drivers/net/ethernet/netronome/nfp/nic/dcb.c  | 572 ++++++++++++++++++
+ drivers/net/ethernet/netronome/nfp/nic/main.c |  39 +-
+ drivers/net/ethernet/netronome/nfp/nic/main.h |  46 ++
+ 6 files changed, 659 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/netronome/nfp/nic/dcb.c
+ create mode 100644 drivers/net/ethernet/netronome/nfp/nic/main.h
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+-- 
+2.30.2
 
