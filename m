@@ -2,165 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F33A16641EF
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 14:32:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 548E566420F
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 14:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238585AbjAJNcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 08:32:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        id S231403AbjAJNiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 08:38:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238564AbjAJNbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 08:31:46 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2071.outbound.protection.outlook.com [40.107.93.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A9B395EE;
-        Tue, 10 Jan 2023 05:31:43 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KR2egUJ2sUhjaPsaycKFfm5vPuEj63oS/qINYjdixh7WBrxUsVzjq69ZpuMjIF2+xNp+87z3vsPeprnvyeGsJkpOFQGKiQm+Qlia//idY/flinOQquI3Rt5oPNnXu9VX1JaYeoJHgq3ngdMeEhnaCUBcGXdd3S3GR72JHzmPzQI33uu6/jrT3vDSU1B1oLE9EdWiJlQ0/p9NZNaqJxkj9XT4psiBmgbFGQDGidnMxCdFupbnph/+FR+oG30zQ82W7YPZ8IcatdIUpJm+9NdABegK4Jm2GehceTMlHIMo8pOZZaS4Yt8LaarkzzVSv2ZqLxF+t9N9qouLd+nY76vkqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JLcQDuTm7f0BQbsr+DZXqTDP8Fsw23ph80Ixl7U15/8=;
- b=geTTWUTIV+v2uahBK7gHliXpeFOQSO+6GqBO0jmkcXc/Vv9sGxJFu168E9z3xTfd3g/5K1tDhgLinoVcWh/YuReUmyqUxmOhjKcly+Jn6nwjVaFuo6vBZeUx6dlCHV8PNQgIAFBufPMWXc1ZgIeqhxOqq5oBfdfmoRxHxzfZS4WF5yU15qgZUDlC/xkHzWf/BM+v377vCRmuRi3CRy+STxmaPx9zV0g3CGuNaFw5mBu6O+MSwl7Puj25O4+A19r2TZYk8DJmTF30p91mSOon9KEB++aLRUQn+Cs59g4DSKp56xpNaXsC6L7wTNjIM81lb9HrYZIuYAHRQZ4Cot+KPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JLcQDuTm7f0BQbsr+DZXqTDP8Fsw23ph80Ixl7U15/8=;
- b=gfoPIMDd7z/T7Aq2giIUx7DtSB4X5Ac+5lDHqPTaO9fX5hxQ+x61BCMgFAfDgaTT3/opzWAv3oNx4HCYtom1xC0PSYYEUR7qd1Vz59nYuZs5f85nP4EsGQMld0PlYWPWK/UvsFgsXDmE0c5bCcO6YNOV9ATtAsp9Ph1EJKfaM86ic+EEThdgsFSqIwbQN7bpE24D8pQJNw44Aq3T3cnk7aP/FNfIm0+3Fg/yRlji6HcVerqpJumNtJ4yX/d5G5RGX24nLDoc2tf8E8PYFtpdybD3Cy9N27YM8fxxvUJjSqy03pFaX6wb83cX0lc9pFNu+y20IT/vI1N8oCf3kM1FGQ==
-Received: from DS7PR05CA0069.namprd05.prod.outlook.com (2603:10b6:8:57::21) by
- SJ0PR12MB8166.namprd12.prod.outlook.com (2603:10b6:a03:4e2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
- 2023 13:31:41 +0000
-Received: from DM6NAM11FT011.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:57:cafe::2a) by DS7PR05CA0069.outlook.office365.com
- (2603:10b6:8:57::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.12 via Frontend
- Transport; Tue, 10 Jan 2023 13:31:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT011.mail.protection.outlook.com (10.13.172.108) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5986.18 via Frontend Transport; Tue, 10 Jan 2023 13:31:40 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 10 Jan
- 2023 05:31:24 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 10 Jan
- 2023 05:31:24 -0800
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Tue, 10 Jan
- 2023 05:31:21 -0800
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <pablo@netfilter.org>
-CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <ozsh@nvidia.com>, <marcelo.leitner@gmail.com>,
-        <simon.horman@corigine.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next v1 7/7] netfilter: nf_conntrack: allow early drop of offloaded UDP conns
-Date:   Tue, 10 Jan 2023 14:30:23 +0100
-Message-ID: <20230110133023.2366381-8-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230110133023.2366381-1-vladbu@nvidia.com>
-References: <20230110133023.2366381-1-vladbu@nvidia.com>
+        with ESMTP id S233423AbjAJNhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 08:37:50 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4884463D0C
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 05:37:34 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id c34so17648675edf.0
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 05:37:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ApiMzkUYlEVgABehh96Rp2PgM+rBFqxlX1OkniJnIk0=;
+        b=KHXakhjhLvEgaDbpPHEtgRPu5NluHgmJrMH8/Yfb5G3X23xzECuGtbymJuYCgjg4qG
+         NfAXLHf7Y6kQNM8ttmrzXyEfjcBt7EEfDdrFy2FwFEB7yskj0hOuVROpJZ2DDEiHA6Wc
+         +PM37yny2SRiQKOntxhS2txcnfFufEsmPyaSM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ApiMzkUYlEVgABehh96Rp2PgM+rBFqxlX1OkniJnIk0=;
+        b=xNFfM9aV87YjpG7Ub+R7sRt1kg2R1WNtVe44p8QApXnXhIFd9BOdkrbANJqFsRYqkW
+         EyHwQ30x6hceS2X1VJbf8242fRle6gFtznQfHuvBXvvAFOXSnWHoJWqjSdfUx3+rwRwZ
+         vv5fCPU8ykVGV/vaUWC1O50tcqepJahdmwEPAQk62upOQPub2stf430GTYwMtCfXq6cD
+         ceJSUbnDto7kqR3zUf0Iqwnqne4W3uJ785KZpCI4H9hXUAULUqnOUjhcKTGeThKY7jK4
+         yj7IULmdOfVaFn9FlTzlfqp3oXnAek1VqOdZkg73+URaTlNbzSSG7X7LPqkLuNu9eDDg
+         f4PA==
+X-Gm-Message-State: AFqh2kqIbp6X6BjO3OsIfpJncHd6ROZ9xBgGE2Agwczuktd635BNMUre
+        1mY9IgxHPAw3jbdb5H0IY3fGdNDBLRL2Sc6y
+X-Google-Smtp-Source: AMrXdXubJWBsl24QxgDfYLIYf0aTClwpplT6lLZXVikpVjFqy2nSr6nqSpGgATwn4H0UPgSLSqiLUg==
+X-Received: by 2002:a05:6402:150b:b0:493:a6eb:874e with SMTP id f11-20020a056402150b00b00493a6eb874emr19057567edw.5.1673357852302;
+        Tue, 10 Jan 2023 05:37:32 -0800 (PST)
+Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
+        by smtp.gmail.com with ESMTPSA id n10-20020aa7d04a000000b0048eba29c3a0sm4939762edo.51.2023.01.10.05.37.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jan 2023 05:37:31 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        kernel-team@cloudflare.com
+Subject: [PATCH net-next v2 0/2] Add IP_LOCAL_PORT_RANGE socket option
+Date:   Tue, 10 Jan 2023 14:37:28 +0100
+Message-Id: <20221221-sockopt-port-range-v2-0-1d5f114bf627@cloudflare.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT011:EE_|SJ0PR12MB8166:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ab66c2c-280d-465e-7998-08daf30f01d1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LY9Zpw5FBqU+8lLXqNhzbU3pLBJmItt2356MoFq4fxpMz9DoxY6QkEoZszoI1/IXpBlzXgl8sYUcAqF36VP6dRM1q+eodpLt0HPYRJ7nWXAdiqHEGFYmczqKzb54skKeHE9MU9T6mPnrdtBQ3PiqaUnMggX6BJYDQfyVhGWrfDR0ylw+3PRMDDTK82g44pX2xa7F6l855e4Cnso/ZYzXPSaFfial1yC/8Ce+Y23a2ljarQKucE4GcRaCyir22goWTpK1VQH2wF0Pnj3aCWQHOPupQUTmtZ9szC0BC1ZtUSpU3GFguB1elrU8GwNztpHX1Et2dPYTykYabcvAKfvl32kkk2Z1jLp2fqOz3DohoQxBwluhbD+Pu4buOZLBjImWGLJEPn33VbfjurF93ZN6WVhrISJTpOMriMuJKi9s2ldNN7rQ+uHonofVERdBiD9INenJMzRZZ0wquHVgH5n60VGfSaD3YgvIYDZ3G8kkSljtAqP/EP2ZvdVwf5caC5xrzlFDPN1LYaWyHpGuyYBVMOpFnDZJLUCYpUcKzskKzpG4Iag/QclbFYJIyW4B7KIfpyxnYDHHWj3EKd32lttrQOKiltDVM+28yBzRG3Phr/iSvgdYOr0RdqyljHgeJpP5GrXQdDD1wXncJ27TussyWh0Sk29H6pnc9mWvp0iUc4/HEWfrgD/XvVhcMGrmiIPCR6yvB0vmvDMWrswCV+LI9J4JjUZEGfG43zUeqWZJ4zc=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(136003)(396003)(346002)(451199015)(36840700001)(46966006)(40470700004)(2906002)(82310400005)(47076005)(83380400001)(336012)(36860700001)(426003)(2616005)(1076003)(7696005)(7416002)(5660300002)(40480700001)(107886003)(8936002)(26005)(186003)(36756003)(478600001)(7636003)(70586007)(110136005)(70206006)(54906003)(8676002)(41300700001)(356005)(86362001)(4326008)(316002)(40460700003)(82740400003)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2023 13:31:40.5348
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ab66c2c-280d-465e-7998-08daf30f01d1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT011.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8166
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both synchronous early drop algorithm and asynchronous gc worker completely
-ignore connections with IPS_OFFLOAD_BIT status bit set. With new
-functionality that enabled UDP NEW connection offload in action CT
-malicious user can flood the conntrack table with offloaded UDP connections
-by just sending a single packet per 5tuple because such connections can no
-longer be deleted by early drop algorithm.
+This patch set is a follow up to the "How to share IPv4 addresses by
+partitioning the port space" talk given at LPC 2022 [1].
 
-To mitigate the issue allow both early drop and gc to consider offloaded
-UDP connections for deletion.
+Please see patch #1 for the motivation & the use case description.
+Patch #2 adds tests exercising the new option in various scenarios.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Documentation
+-------------
+
+Proposed update to the ip(7) man-page:
+
+       IP_LOCAL_PORT_RANGE (since Linux X.Y)
+              Set or get the per-socket default local port range. This
+              option  can  be used to clamp down the global local port
+              range, defined by the ip_local_port_range  /proc  inter‐
+              face described below, for a given socket.
+
+              The option takes an uint32_t value with the high 16 bits
+              set to the upper range bound, and the low 16 bits set to
+              the lower range bound. Range bounds are inclusive.
+
+              The lower bound has to be less than the upper bound when
+              both bounds are not zero. Otherwise, setting the  option
+              fails with EINVAL.
+
+              If  either  bound  is  outside  of the global local port
+              range, or is zero, then that bound has no effect.
+
+              To reset the setting, pass zero as both  the  upper  and
+              the lower bound.
+
+Changelog:
+---------
+
+v1 -> v2:
+v1: https://lore.kernel.org/netdev/20221221-sockopt-port-range-v1-0-e2b094b60ffd@cloudflare.com/
+
+ * Fix the corner case when the per-socket range doesn't overlap with the
+   per-netns range. Fallback correctly to the per-netns range. (Kuniyuki)
+
+ * selftests: Instead of iterating over socket families (ip4, ip6) and types
+   (tcp, udp), generate tests for each combo from a template. This keeps the
+   code indentation level down and makes tests more granular.
+
+ * Rewrite man-page prose:
+   - explain how to unset the option,
+   - document when EINVAL is returned.
+
+RFC -> v1
+RFC: https://lore.kernel.org/netdev/20220912225308.93659-1-jakub@cloudflare.com/
+
+ * Allow either the high bound or the low bound, or both, to be zero
+ * Add getsockopt support
+ * Add selftests
+
+Links:
+------
+
+[1]: https://lpc.events/event/16/contributions/1349/
+
+To: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: kernel-team@cloudflare.com
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+
 ---
- net/netfilter/nf_conntrack_core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Jakub Sitnicki (2):
+      inet: Add IP_LOCAL_PORT_RANGE socket option
+      selftests/net: Cover the IP_LOCAL_PORT_RANGE socket option
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 496c4920505b..52b824a60176 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1374,9 +1374,6 @@ static unsigned int early_drop_list(struct net *net,
- 	hlist_nulls_for_each_entry_rcu(h, n, head, hnnode) {
- 		tmp = nf_ct_tuplehash_to_ctrack(h);
- 
--		if (test_bit(IPS_OFFLOAD_BIT, &tmp->status))
--			continue;
--
- 		if (nf_ct_is_expired(tmp)) {
- 			nf_ct_gc_expired(tmp);
- 			continue;
-@@ -1446,11 +1443,14 @@ static bool gc_worker_skip_ct(const struct nf_conn *ct)
- static bool gc_worker_can_early_drop(const struct nf_conn *ct)
- {
- 	const struct nf_conntrack_l4proto *l4proto;
-+	u8 protonum = nf_ct_protonum(ct);
- 
-+	if (test_bit(IPS_OFFLOAD_BIT, &ct->status) && protonum != IPPROTO_UDP)
-+		return false;
- 	if (!test_bit(IPS_ASSURED_BIT, &ct->status))
- 		return true;
- 
--	l4proto = nf_ct_l4proto_find(nf_ct_protonum(ct));
-+	l4proto = nf_ct_l4proto_find(protonum);
- 	if (l4proto->can_early_drop && l4proto->can_early_drop(ct))
- 		return true;
- 
-@@ -1507,7 +1507,8 @@ static void gc_worker(struct work_struct *work)
- 
- 			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
- 				nf_ct_offload_timeout(tmp);
--				continue;
-+				if (!nf_conntrack_max95)
-+					continue;
- 			}
- 
- 			if (expired_count > GC_SCAN_EXPIRED_MAX) {
+ include/net/inet_sock.h                            |   4 +
+ include/net/ip.h                                   |   3 +-
+ include/uapi/linux/in.h                            |   1 +
+ net/ipv4/inet_connection_sock.c                    |  25 +-
+ net/ipv4/inet_hashtables.c                         |   2 +-
+ net/ipv4/ip_sockglue.c                             |  18 +
+ net/ipv4/udp.c                                     |   2 +-
+ tools/testing/selftests/net/Makefile               |   2 +
+ tools/testing/selftests/net/ip_local_port_range.c  | 439 +++++++++++++++++++++
+ tools/testing/selftests/net/ip_local_port_range.sh |   5 +
+ 10 files changed, 496 insertions(+), 5 deletions(-)
+---
+base-commit: a3ae16030a0320229df10cedfeff1f80df26ee76
+change-id: 20221221-sockopt-port-range-e142de700f4d
+
+Best regards,
 -- 
-2.38.1
-
+Jakub Sitnicki <jakub@cloudflare.com>
