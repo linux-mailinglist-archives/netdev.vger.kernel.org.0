@@ -2,289 +2,541 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD2666478F
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:40:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0BFE664792
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 18:41:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234533AbjAJRkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 12:40:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60132 "EHLO
+        id S234619AbjAJRlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 12:41:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234559AbjAJRkr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:40:47 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B832050F69
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:40:46 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id o7-20020a17090a0a0700b00226c9b82c3aso14286074pjo.3
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:40:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=zDfgM88C15kKyc65k4zA5bm8TNZtGPWYUj1+vyPD3oI=;
-        b=Zn4qX+F18ydOkCqBO1DdHh3m2skVtIjh1MmlyXWA0ZCYJA6q6UGAVUlHrOhNln4iXD
-         XaOA9Zt0wCIiD8sKGtxULXYnQoiBC0x5y45b1ymwyhtq9lYyB33yS0Ir3hQZNFUtxKiG
-         g4gY96C9JuHNez7HNIF4k+1nPLOkLA8Fh0GwWbCsfx7oH5rdY5c+V2RcBTQ1ONETYoaF
-         04qdJ89ZC1c8kQJjC8DzLilois2xWa+J6YN6thu6oq1AcNdu+mchzj2HC24BZ/sr5pih
-         FUQvnGeDNvEnsbdOvRijfC5yMlYBMhSsS18DQh2CPZVlWZ5GcZ2xNu42xi7OrDNrxlJ8
-         1n2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zDfgM88C15kKyc65k4zA5bm8TNZtGPWYUj1+vyPD3oI=;
-        b=56kOBq9RoxWAZbQAMmtV6wkDZ7CqTRTvvJpGH2eFqF5TEL6/FNobKNqgfBDPIq8iGd
-         /1IscZTzZSmA8nw7s2LV/ON+1t1EKLvGIpDraqRt5mheOFolZLy0kjdxuTQzyDMQdNqu
-         JvyQOj31Yg6E4tQivnmHjRfY6EydZ4REDIP0G0xgK0FWjgdKJdihiZlejq6P2EjiArSL
-         i9YGynevM+fqAfhdcRrpnpSHw3ONrah+DAY4DSYjpT6N9hDOFrY8VQ6RByoE5R+avqyP
-         SpFqm97KiyGutRMZ8xb57UAKgCio9jS+na2zLLYRzD04QD4YS4sbtlet9j9vuIoInFtt
-         mynQ==
-X-Gm-Message-State: AFqh2kozCGWV7DLzQo4EUz39sS54+CXyXqpDUVFnUjVm+ftcFsRcGw92
-        j/zgClnUP3VCSrzDyS5obyg=
-X-Google-Smtp-Source: AMrXdXutEwoz44c3LWYGLXY1wyr2u8Sy3bhFOlJX9th/Cw1JFp9VGbookjvm/J8szFbEoANJiG4Ung==
-X-Received: by 2002:a17:90a:2d7:b0:226:711d:6e4a with SMTP id d23-20020a17090a02d700b00226711d6e4amr31534847pjd.6.1673372446144;
-        Tue, 10 Jan 2023 09:40:46 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.37.136])
-        by smtp.googlemail.com with ESMTPSA id k13-20020a17090a3ccd00b00219025945dcsm9208001pjd.19.2023.01.10.09.40.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 09:40:45 -0800 (PST)
-Message-ID: <c5e39384f185fcb8788e7723498702b0235e367e.camel@gmail.com>
-Subject: Re: [PATCH net-next v4 09/10] tsnep: Add XDP RX support
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com
-Date:   Tue, 10 Jan 2023 09:40:44 -0800
-In-Reply-To: <20230109191523.12070-10-gerhard@engleder-embedded.com>
-References: <20230109191523.12070-1-gerhard@engleder-embedded.com>
-         <20230109191523.12070-10-gerhard@engleder-embedded.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        with ESMTP id S234759AbjAJRlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 12:41:09 -0500
+Received: from smtp-8fac.mail.infomaniak.ch (smtp-8fac.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fac])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B90A1706D
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 09:41:03 -0800 (PST)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NrylY3bczzMq6HN;
+        Tue, 10 Jan 2023 18:40:57 +0100 (CET)
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4NrylX4xTZzMpyCg;
+        Tue, 10 Jan 2023 18:40:56 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1673372457;
+        bh=diGcq8eg1NhRizbZwFCJFWz0fBFP12VQVZ4Mgsbbbig=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=UuCas2T7C4TMYf3pSWoId2oRcddxZfcnd+Ai4g/8Vf8pBL5fCxzKpUSCLruIEvR1n
+         CLNXSfkBEXVgniQA7fS39tFBaX+m5W5JDw8Uida0k/E2kuH8oBUWOsESt2VRSXpzwe
+         c5ehoSzbZ0bItIG6KzloncttVM9K5rw8S129GLbk=
+Message-ID: <9ccc9ab7-a78d-f910-5c73-a53a637431fe@digikod.net>
+Date:   Tue, 10 Jan 2023 18:40:56 +0100
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH v8 10/12] selftests/landlock: Add 10 new test suites
+ dedicated to network
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-11-konstantin.meskhidze@huawei.com>
+ <5f8ed609-17bc-f8fc-4316-ceec9ad0f3b2@digikod.net>
+ <1038177a-4f59-6018-0ded-650e032b4b9e@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <1038177a-4f59-6018-0ded-650e032b4b9e@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2023-01-09 at 20:15 +0100, Gerhard Engleder wrote:
-> If BPF program is set up, then run BPF program for every received frame
-> and execute the selected action.
->=20
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-> ---
->  drivers/net/ethernet/engleder/tsnep_main.c | 122 ++++++++++++++++++++-
->  1 file changed, 120 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/eth=
-ernet/engleder/tsnep_main.c
-> index 451ad1849b9d..002c879639db 100644
-> --- a/drivers/net/ethernet/engleder/tsnep_main.c
-> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-> @@ -27,6 +27,7 @@
->  #include <linux/phy.h>
->  #include <linux/iopoll.h>
->  #include <linux/bpf.h>
-> +#include <linux/bpf_trace.h>
-> =20
->  #define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
->  #define TSNEP_HEADROOM ALIGN(max(TSNEP_SKB_PAD, XDP_PACKET_HEADROOM), 4)
-> @@ -44,6 +45,9 @@
->  #define TSNEP_COALESCE_USECS_MAX     ((ECM_INT_DELAY_MASK >> ECM_INT_DEL=
-AY_SHIFT) * \
->  				      ECM_INT_DELAY_BASE_US + ECM_INT_DELAY_BASE_US - 1)
-> =20
-> +#define TSNEP_XDP_TX		BIT(0)
-> +#define TSNEP_XDP_REDIRECT	BIT(1)
-> +
->  enum {
->  	__TSNEP_DOWN,
->  };
-> @@ -625,6 +629,28 @@ static void tsnep_xdp_xmit_flush(struct tsnep_tx *tx=
-)
->  	iowrite32(TSNEP_CONTROL_TX_ENABLE, tx->addr + TSNEP_CONTROL);
->  }
-> =20
-> +static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
-> +				struct xdp_buff *xdp,
-> +				struct netdev_queue *tx_nq, struct tsnep_tx *tx)
-> +{
-> +	struct xdp_frame *xdpf =3D xdp_convert_buff_to_frame(xdp);
-> +	bool xmit;
-> +
-> +	if (unlikely(!xdpf))
-> +		return false;
-> +
-> +	__netif_tx_lock(tx_nq, smp_processor_id());
-> +
-> +	/* Avoid transmit queue timeout since we share it with the slow path */
-> +	txq_trans_cond_update(tx_nq);
-> +
-> +	xmit =3D tsnep_xdp_xmit_frame_ring(xdpf, tx, TSNEP_TX_TYPE_XDP_TX);
-> +
 
-Again the trans_cond_update should be after the xmit and only if it is
-not indicating it completed the transmit.
+On 10/01/2023 06:03, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 1/9/2023 3:46 PM, Mickaël Salaün пишет:
+>>
+>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
+>>> These test suites try to check edge cases for TCP sockets
+>>> bind() and connect() actions.
+>>>
+>>> socket:
+>>> * bind_no_restrictions: Tests with non-landlocked ipv4 and ipv6 sockets.
+>>> * bind_with_restrictions: Tests with mixed landlock rules for ipv4 and
+>>> ipv6 sockets.
+>>> * connect_no_restrictions: Tests with non-landlocked ipv4 and ipv6 sockets.
+>>> * connect_with_restrictions: Tests with mixed landlock rules for ipv4 and
+>>> ipv6 sockets.
+>>> * connect_afunspec_no_restrictions: Tests with no landlock restrictions
+>>> allowing to disconnect already connected socket with AF_UNSPEC socket
+>>> family.
+>>> * connect_afunspec_with_restrictions: Tests with landlocked process
+>>> refusing to disconnect already connected socket.
+>>> * ruleset_overlap: Tests with overlapping rules for one port.
+>>> * ruleset_expanding: Tests with expanding rulesets in which rules are
+>>> gradually added one by one, restricting sockets' connections.
+>>> * inval: Tests with invalid user space supplied data:
+>>>       - out of range ruleset attribute;
+>>>       - unhandled allowed access;
+>>>       - zero port value;
+>>>       - zero access value;
+>>>       - legitimate access values;
+>>>
+>>> layout1:
+>>> * with_net: Tests with network bind() socket action within
+>>> filesystem directory access test.
+>>>
+>>> Test coverage for security/landlock is 94.3% of 920 lines according
+>>> to gcc/gcov-11.
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>> ---
+>>>
+>>> Changes since v7:
+>>> * Squashes all selftest commits.
+>>> * Adds fs test with network bind() socket action.
+>>> * Minor fixes.
+>>>
+>>> ---
+>>>    security/landlock/ruleset.h                 |   2 -
+>>>    tools/testing/selftests/landlock/config     |   4 +
+>>>    tools/testing/selftests/landlock/fs_test.c  |  65 ++
+>>>    tools/testing/selftests/landlock/net_test.c | 823 ++++++++++++++++++++
+>>>    4 files changed, 892 insertions(+), 2 deletions(-)
+>>>    create mode 100644 tools/testing/selftests/landlock/net_test.c
+>>>
+>>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>>> index f272d2cd518c..ee1a02a404ce 100644
+>>> --- a/security/landlock/ruleset.h
+>>> +++ b/security/landlock/ruleset.h
+>>> @@ -264,7 +264,6 @@ landlock_add_fs_access_mask(struct landlock_ruleset *const ruleset,
+>>>
+>>>    	/* Should already be checked in sys_landlock_create_ruleset(). */
+>>>    	WARN_ON_ONCE(fs_access_mask != fs_mask);
+>>> -	// TODO: Add tests to check "|=" and not "="
+>>>    	ruleset->access_masks[layer_level] |=
+>>>    		(fs_mask << LANDLOCK_SHIFT_ACCESS_FS);
+>>>    }
+>>> @@ -278,7 +277,6 @@ landlock_add_net_access_mask(struct landlock_ruleset *const ruleset,
+>>>
+>>>    	/* Should already be checked in sys_landlock_create_ruleset(). */
+>>>    	WARN_ON_ONCE(net_access_mask != net_mask);
+>>> -	// TODO: Add tests to check "|=" and not "="
+>>>    	ruleset->access_masks[layer_level] |=
+>>>    		(net_mask << LANDLOCK_SHIFT_ACCESS_NET);
+>>>    }
+>>> diff --git a/tools/testing/selftests/landlock/config b/tools/testing/selftests/landlock/config
+>>> index 0f0a65287bac..71f7e9a8a64c 100644
+>>> --- a/tools/testing/selftests/landlock/config
+>>> +++ b/tools/testing/selftests/landlock/config
+>>> @@ -1,3 +1,7 @@
+>>> +CONFIG_INET=y
+>>> +CONFIG_IPV6=y
+>>> +CONFIG_NET=y
+>>> +CONFIG_NET_NS=y
+>>>    CONFIG_OVERLAY_FS=y
+>>>    CONFIG_SECURITY_LANDLOCK=y
+>>>    CONFIG_SECURITY_PATH=y
+>>> diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
+>>> index 20c1ac8485f1..5c52da1a5a69 100644
+>>> --- a/tools/testing/selftests/landlock/fs_test.c
+>>> +++ b/tools/testing/selftests/landlock/fs_test.c
+>>> @@ -8,14 +8,17 @@
+>>>     */
+>>>
+>>>    #define _GNU_SOURCE
+>>> +#include <arpa/inet.h>
+>>>    #include <fcntl.h>
+>>>    #include <linux/landlock.h>
+>>> +#include <netinet/in.h>
+>>>    #include <sched.h>
+>>>    #include <string.h>
+>>>    #include <sys/capability.h>
+>>>    #include <sys/mount.h>
+>>>    #include <sys/prctl.h>
+>>>    #include <sys/sendfile.h>
+>>> +#include <sys/socket.h>
+>>>    #include <sys/stat.h>
+>>>    #include <sys/sysmacros.h>
+>>>    #include <unistd.h>
+>>> @@ -4366,4 +4369,66 @@ TEST_F_FORK(layout2_overlay, same_content_different_file)
+>>>    	}
+>>>    }
+>>>
+>>> +#define IP_ADDRESS "127.0.0.1"
+>>> +
+>>> +TEST_F_FORK(layout1, with_net)
+>>> +{
+>>> +	int sockfd;
+>>> +	int sock_port = 15000;
+>>> +	struct sockaddr_in addr4;
+>>> +
+>>> +	addr4.sin_family = AF_INET;
+>>> +	addr4.sin_port = htons(sock_port);
+>>> +	addr4.sin_addr.s_addr = inet_addr(IP_ADDRESS);
+>>> +	memset(&addr4.sin_zero, '\0', 8);
+>>> +
+>>> +	const struct rule rules[] = {
+>>> +		{
+>>> +			.path = dir_s1d2,
+>>> +			.access = ACCESS_RO,
+>>> +		},
+>>> +		{},
+>>> +	};
+>>> +
+>>> +	struct landlock_ruleset_attr ruleset_attr_net = {
+>>> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +	};
+>>> +	struct landlock_net_service_attr net_service = {
+>>> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
+>>> +
+>>> +		.port = sock_port,
+>>> +	};
+>>> +
+>>> +	/* Creates ruleset for network access. */
+>>> +	const int ruleset_fd_net = landlock_create_ruleset(
+>>> +		&ruleset_attr_net, sizeof(ruleset_attr_net), 0);
+>>> +	ASSERT_LE(0, ruleset_fd_net);
+>>> +
+>>> +	/* Adds a network rule. */
+>>> +	ASSERT_EQ(0,
+>>> +		  landlock_add_rule(ruleset_fd_net, LANDLOCK_RULE_NET_SERVICE,
+>>> +				    &net_service, 0));
+>>> +
+>>> +	enforce_ruleset(_metadata, ruleset_fd_net);
+>>> +	ASSERT_EQ(0, close(ruleset_fd_net));
+>>> +
+>>> +	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+>>> +	ASSERT_LE(0, ruleset_fd);
+>>> +	enforce_ruleset(_metadata, ruleset_fd);
+>>> +	ASSERT_EQ(0, close(ruleset_fd));
+>>> +
+>>> +	/* Tests on a directory with the network rule loaded. */
+>>> +	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY));
+>>> +	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
+>>> +
+>>> +	sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+>>> +	ASSERT_LE(0, sockfd);
+>>> +	/* Binds a socket to port 15000. */
+>>> +	ASSERT_EQ(0, bind(sockfd, &addr4, sizeof(addr4)));
+>>> +
+>>> +	/* Closes bounded socket. */
+>>> +	ASSERT_EQ(0, close(sockfd));
+>>> +}
+>>> +
+>>>    TEST_HARNESS_MAIN
+>>> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
+>>> new file mode 100644
+>>> index 000000000000..d1548bd7ab60
+>>> --- /dev/null
+>>> +++ b/tools/testing/selftests/landlock/net_test.c
+>>> @@ -0,0 +1,823 @@
+>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>> +/*
+>>> + * Landlock tests - Network
+>>> + *
+>>> + * Copyright (C) 2022 Huawei Tech. Co., Ltd.
+>>> + */
+>>> +
+>>> +#define _GNU_SOURCE
+>>> +#include <arpa/inet.h>
+>>> +#include <errno.h>
+>>> +#include <fcntl.h>
+>>> +#include <linux/landlock.h>
+>>> +#include <netinet/in.h>
+>>> +#include <sched.h>
+>>> +#include <string.h>
+>>> +#include <sys/prctl.h>
+>>> +#include <sys/socket.h>
+>>> +#include <sys/types.h>
+>>> +
+>>> +#include "common.h"
+>>> +
+>>> +#define MAX_SOCKET_NUM 10
+>>> +
+>>> +#define SOCK_PORT_START 3470
+>>> +#define SOCK_PORT_ADD 10
+>>> +
+>>> +#define IP_ADDRESS "127.0.0.1"
+>>> +
+>>> +/* Number pending connections queue to be hold. */
+>>> +#define BACKLOG 10
+>>> +
+>>> +const struct sockaddr addr_unspec = { .sa_family = AF_UNSPEC };
+>>> +
+>>> +/* Invalid attribute, out of landlock network access range. */
+>>> +#define LANDLOCK_INVAL_ATTR 7
+>>> +
+>>> +FIXTURE(socket)
+>>> +{
+>>> +	uint port[MAX_SOCKET_NUM];
+>>> +	struct sockaddr_in addr4[MAX_SOCKET_NUM];
+>>> +	struct sockaddr_in6 addr6[MAX_SOCKET_NUM];
+>>> +};
+>>> +
+>>> +/* struct _fixture_variant_socket */
+>>> +FIXTURE_VARIANT(socket)
+>>> +{
+>>> +	const bool is_ipv4;
+>>> +};
+>>> +
+>>> +/* clang-format off */
+>>> +FIXTURE_VARIANT_ADD(socket, ipv4) {
+>>> +	/* clang-format on */
+>>> +	.is_ipv4 = true,
+>>> +};
+>>> +
+>>> +/* clang-format off */
+>>> +FIXTURE_VARIANT_ADD(socket, ipv6) {
+>>> +	/* clang-format on */
+>>> +	.is_ipv4 = false,
+>>> +};
+>>> +
+>>> +static int
+>>> +create_socket_variant(const struct _fixture_variant_socket *const variant,
+>>> +		      const int type)
+>>> +{
+>>> +	if (variant->is_ipv4)
+>>> +		return socket(AF_INET, type | SOCK_CLOEXEC, 0);
+>>> +	else
+>>> +		return socket(AF_INET6, type | SOCK_CLOEXEC, 0);
+>>> +}
+>>> +
+>>> +static int bind_variant(const struct _fixture_variant_socket *const variant,
+>>> +			const int sockfd,
+>>> +			const struct _test_data_socket *const self,
+>>> +			const size_t index)
+>>> +{
+>>> +	if (variant->is_ipv4)
+>>> +		return bind(sockfd, &self->addr4[index],
+>>> +			    sizeof(self->addr4[index]));
+>>> +	else
+>>> +		return bind(sockfd, &self->addr6[index],
+>>> +			    sizeof(self->addr6[index]));
+>>> +}
+>>> +
+>>> +static int connect_variant(const struct _fixture_variant_socket *const variant,
+>>> +			   const int sockfd,
+>>> +			   const struct _test_data_socket *const self,
+>>> +			   const size_t index)
+>>> +{
+>>> +	if (variant->is_ipv4)
+>>> +		return connect(sockfd, &self->addr4[index],
+>>> +			       sizeof(self->addr4[index]));
+>>> +	else
+>>> +		return connect(sockfd, &self->addr6[index],
+>>> +			       sizeof(self->addr6[index]));
+>>> +}
+>>> +
+>>> +FIXTURE_SETUP(socket)
+>>> +{
+>>> +	int i;
+>>> +
+>>> +	/* Creates IPv4 socket addresses. */
+>>> +	for (i = 0; i < MAX_SOCKET_NUM; i++) {
+>>> +		self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD * i;
+>>> +		self->addr4[i].sin_family = AF_INET;
+>>> +		self->addr4[i].sin_port = htons(self->port[i]);
+>>> +		self->addr4[i].sin_addr.s_addr = inet_addr(IP_ADDRESS);
+>>> +		memset(&(self->addr4[i].sin_zero), '\0', 8);
+>>> +	}
+>>> +
+>>> +	/* Creates IPv6 socket addresses. */
+>>> +	for (i = 0; i < MAX_SOCKET_NUM; i++) {
+>>> +		self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD * i;
+>>> +		self->addr6[i].sin6_family = AF_INET6;
+>>> +		self->addr6[i].sin6_port = htons(self->port[i]);
+>>> +		inet_pton(AF_INET6, IP_ADDRESS, &(self->addr6[i].sin6_addr));
+>>> +	}
+>>> +
+>>> +	set_cap(_metadata, CAP_SYS_ADMIN);
+>>> +	ASSERT_EQ(0, unshare(CLONE_NEWNET));
+>>> +	ASSERT_EQ(0, system("ip link set dev lo up"));
+>>> +	clear_cap(_metadata, CAP_SYS_ADMIN);
+>>> +}
+>>> +
+>>> +FIXTURE_TEARDOWN(socket)
+>>> +{
+>>> +}
+>>> +
+>>> +TEST_F_FORK(socket, bind_no_restrictions)
+>>> +{
+>>> +	int sockfd;
+>>> +
+>>> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
+>>> +	ASSERT_LE(0, sockfd);
+>>> +
+>>> +	/* Binds a socket to port[0]. */
+>>> +	ASSERT_EQ(0, bind_variant(variant, sockfd, self, 0));
+>>> +
+>>> +	ASSERT_EQ(0, close(sockfd));
+>>> +}
+>>> +
+>>> +TEST_F_FORK(socket, bind_with_restrictions)
+>>> +{
+>>> +	int sockfd;
+>>> +
+>>> +	struct landlock_ruleset_attr ruleset_attr = {
+>>> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +	};
+>>> +	struct landlock_net_service_attr net_service_1 = {
+>>> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +		.port = self->port[0],
+>>> +	};
+>>> +	struct landlock_net_service_attr net_service_2 = {
+>>> +		.allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +		.port = self->port[1],
+>>> +	};
+>>> +	struct landlock_net_service_attr net_service_3 = {
+>>> +		.allowed_access = 0,
+>>> +		.port = self->port[2],
+>>> +	};
+>>> +
+>>> +	const int ruleset_fd =
+>>> +		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
+>>> +	ASSERT_LE(0, ruleset_fd);
+>>> +
+>>> +	/* Allows connect and bind operations to the port[0] socket. */
+>>> +	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>>> +				       &net_service_1, 0));
+>>> +	/* Allows connect and deny bind operations to the port[1] socket. */
+>>> +	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>>> +				       &net_service_2, 0));
+>>> +	/*
+>>> +	 * Empty allowed_access (i.e. deny rules) are ignored in network actions
+>>> +	 * for port[2] socket.
+>>> +	 */
+>>> +	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>>> +					&net_service_3, 0));
+>>> +	ASSERT_EQ(ENOMSG, errno);
+>>> +
+>>> +	/* Enforces the ruleset. */
+>>> +	enforce_ruleset(_metadata, ruleset_fd);
+>>> +
+>>> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
+>>> +	ASSERT_LE(0, sockfd);
+>>> +	/* Binds a socket to port[0]. */
+>>> +	ASSERT_EQ(0, bind_variant(variant, sockfd, self, 0));
+>>> +
+>>> +	/* Closes bounded socket. */
+>>> +	ASSERT_EQ(0, close(sockfd));
+>>> +
+>>> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
+>>> +	ASSERT_LE(0, sockfd);
+>>> +	/* Binds a socket to port[1]. */
+>>> +	ASSERT_EQ(-1, bind_variant(variant, sockfd, self, 1));
+>>> +	ASSERT_EQ(EACCES, errno);
+>>> +
+>>> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
+>>> +	ASSERT_LE(0, sockfd);
+>>> +	/* Binds a socket to port[2]. */
+>>> +	ASSERT_EQ(-1, bind_variant(variant, sockfd, self, 2));
+>>> +	ASSERT_EQ(EACCES, errno);
+>>
+>> This is inconsistent with the bind_no_restrictions test. If you
+>> deduplicate the tests with and without restrictions (i.e. only one
+>> "bind" test, and another "connect"…), you can extend
+>> FIXTURE_VARIANT(socket) with a new const bool enforce_landlock, and
+>> check that in all tests to either do Landlock syscalls or not. You can
+>> still initialize most variable whatever Landlock should be enforced or
+>> not (e.g. ruleset_attr, net_service_1…) to make it easiear to read.
+>>
+> 
+>     I think it's not a deduplication. Tests enforeced with landlock are
+> more various regarding port and net_service attributes used. The number
+> of landlock atributes vary from test ot test. I'dont see how to unify it
+> with FIXTURE_VARIANT and enforce_landlock const will it make harder
+> merging tests.
+> Please your opinion and suggestions?
 
-> +	__netif_tx_unlock(tx_nq);
-> +
-> +	return xmit;
-> +}
-> +
->  static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
->  {
->  	struct tsnep_tx_entry *entry;
-> @@ -983,6 +1009,62 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int=
- count, bool reuse)
->  	return i;
->  }
-> =20
-> +static bool tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *pro=
-g,
-> +			       struct xdp_buff *xdp, int *status,
-> +			       struct netdev_queue *tx_nq, struct tsnep_tx *tx)
-> +{
-> +	unsigned int length;
-> +	unsigned int sync;
-> +	u32 act;
-> +
-> +	length =3D xdp->data_end - xdp->data_hard_start - XDP_PACKET_HEADROOM;
-> +
-> +	act =3D bpf_prog_run_xdp(prog, xdp);
-> +
-> +	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
-> +	sync =3D xdp->data_end - xdp->data_hard_start - XDP_PACKET_HEADROOM;
-> +	sync =3D max(sync, length);
-> +
-> +	switch (act) {
-> +	case XDP_PASS:
-> +		return false;
-> +	case XDP_TX:
-> +		if (!tsnep_xdp_xmit_back(rx->adapter, xdp, tx_nq, tx))
-> +			goto out_failure;
-> +		*status |=3D TSNEP_XDP_TX;
-> +		return true;
-> +	case XDP_REDIRECT:
-> +		if (xdp_do_redirect(rx->adapter->netdev, xdp, prog) < 0)
-> +			goto out_failure;
-> +		*status |=3D TSNEP_XDP_REDIRECT;
-> +		return true;
-> +	default:
-> +		bpf_warn_invalid_xdp_action(rx->adapter->netdev, prog, act);
-> +		fallthrough;
-> +	case XDP_ABORTED:
-> +out_failure:
-> +		trace_xdp_exception(rx->adapter->netdev, prog, act);
-> +		fallthrough;
-> +	case XDP_DROP:
-> +		page_pool_put_page(rx->page_pool, virt_to_head_page(xdp->data),
-> +				   sync, true);
-> +		return true;
-> +	}
-> +}
-> +
-> +static void tsnep_finalize_xdp(struct tsnep_adapter *adapter, int status=
-,
-> +			       struct netdev_queue *tx_nq, struct tsnep_tx *tx)
-> +{
-> +	if (status & TSNEP_XDP_TX) {
-> +		__netif_tx_lock(tx_nq, smp_processor_id());
-> +		tsnep_xdp_xmit_flush(tx);
-> +		__netif_tx_unlock(tx_nq);
-> +	}
-> +
-> +	if (status & TSNEP_XDP_REDIRECT)
-> +		xdp_do_flush();
-> +}
-> +
->  static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page =
-*page,
->  				       int length)
->  {
-> @@ -1018,15 +1100,29 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, str=
-uct napi_struct *napi,
->  			 int budget)
->  {
->  	struct device *dmadev =3D rx->adapter->dmadev;
-> -	int desc_available;
-> -	int done =3D 0;
->  	enum dma_data_direction dma_dir;
->  	struct tsnep_rx_entry *entry;
-> +	struct netdev_queue *tx_nq;
-> +	struct bpf_prog *prog;
-> +	struct xdp_buff xdp;
->  	struct sk_buff *skb;
-> +	struct tsnep_tx *tx;
-> +	int desc_available;
-> +	int xdp_status =3D 0;
-> +	int done =3D 0;
->  	int length;
-> =20
->  	desc_available =3D tsnep_rx_desc_available(rx);
->  	dma_dir =3D page_pool_get_dma_dir(rx->page_pool);
-> +	prog =3D READ_ONCE(rx->adapter->xdp_prog);
-> +	if (prog) {
-> +		int queue =3D smp_processor_id() % rx->adapter->num_tx_queues;
-> +
+What about that?
 
-As I mentioned before. Take a look at how this was addressed in
-skb_tx_hash. The modulus division is really expensive.
+TEST_F_FORK(socket, bind)
+{
+	int sockfd;
 
-Also does this make sense. I am assuming you have a 1:1 Tx to Rx
-mapping for your queues don't you? If so it might make more sense to
-use the Tx queue that you clean in this queue pair.
+	struct landlock_ruleset_attr ruleset_attr = {
+		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
+				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
+	};
+	struct landlock_net_service_attr net_service_1 = {
+		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
+				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
+		.port = self->port[0],
+	};
+	struct landlock_net_service_attr net_service_2 = {
+		.allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
+		.port = self->port[1],
+	};
+	struct landlock_net_service_attr net_service_3 = {
+		.allowed_access = 0,
+		.port = self->port[2],
+	};
+	int ruleset_fd, ret;
 
-> +		tx_nq =3D netdev_get_tx_queue(rx->adapter->netdev, queue);
-> +		tx =3D &rx->adapter->tx[queue];
-> +
-> +		xdp_init_buff(&xdp, PAGE_SIZE, &rx->xdp_rxq);
-> +	}
-> =20
->  	while (likely(done < budget) && (rx->read !=3D rx->write)) {
->  		entry =3D &rx->entry[rx->read];
-> @@ -1076,6 +1172,25 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, stru=
-ct napi_struct *napi,
->  		rx->read =3D (rx->read + 1) % TSNEP_RING_SIZE;
->  		desc_available++;
-> =20
-> +		if (prog) {
-> +			bool consume;
-> +
-> +			xdp_prepare_buff(&xdp, page_address(entry->page),
-> +					 XDP_PACKET_HEADROOM + TSNEP_RX_INLINE_METADATA_SIZE,
-> +					 length, false);
-> +
-> +			consume =3D tsnep_xdp_run_prog(rx, prog, &xdp,
-> +						     &xdp_status, tx_nq, tx);
-> +			if (consume) {
-> +				rx->packets++;
-> +				rx->bytes +=3D length;
-> +
-> +				entry->page =3D NULL;
-> +
-> +				continue;
-> +			}
-> +		}
-> +
->  		skb =3D tsnep_build_skb(rx, entry->page, length);
->  		if (skb) {
->  			page_pool_release_page(rx->page_pool, entry->page);
-> @@ -1094,6 +1209,9 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struc=
-t napi_struct *napi,
->  		entry->page =3D NULL;
->  	}
-> =20
-> +	if (xdp_status)
-> +		tsnep_finalize_xdp(rx->adapter, xdp_status, tx_nq, tx);
-> +
->  	if (desc_available)
->  		tsnep_rx_refill(rx, desc_available, false);
-> =20
+	if (variant->is_sandboxed) {
+		ruleset_fd = landlock_create_ruleset(&ruleset_attr,
+						     sizeof(ruleset_attr), 0);
+		ASSERT_LE(0, ruleset_fd);
 
+		/* Allows connect and bind operations to the port[0] socket. */
+		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
+					       LANDLOCK_RULE_NET_SERVICE,
+					       &net_service_1, 0));
+
+		/* Allows connect and deny bind operations to the port[1] socket. */
+		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
+					       LANDLOCK_RULE_NET_SERVICE,
+					       &net_service_2, 0));
+
+		/*
+		 * Empty allowed_access (i.e. deny rules) are ignored in network actions
+		 * for port[2] socket.
+		 */
+		ASSERT_EQ(-1, landlock_add_rule(ruleset_fd,
+						LANDLOCK_RULE_NET_SERVICE,
+						&net_service_3, 0));
+		ASSERT_EQ(ENOMSG, errno);
+
+		enforce_ruleset(_metadata, ruleset_fd);
+		ASSERT_EQ(0, close(ruleset_fd));
+	}
+
+	sockfd = create_socket_variant(variant, SOCK_STREAM);
+	ASSERT_LE(0, sockfd);
+	/* Binds a socket to port[0]. */
+	ASSERT_EQ(0, bind_variant(variant, sockfd, self, 0));
+
+	/* Closes bounded socket. */
+	ASSERT_EQ(0, close(sockfd));
+
+	sockfd = create_socket_variant(variant, SOCK_STREAM);
+	ASSERT_LE(0, sockfd);
+	/* Binds a socket to port[1]. */
+	ret = bind_variant(variant, sockfd, self, 1);
+	if (variant->is_sandboxed) {
+		ASSERT_EQ(-1, ret);
+		ASSERT_EQ(EACCES, errno);
+	} else {
+		ASSERT_EQ(0, ret);
+	}
+
+	sockfd = create_socket_variant(variant, SOCK_STREAM);
+	ASSERT_LE(0, sockfd);
+	/* Binds a socket to port[2]. */
+	ret = bind_variant(variant, sockfd, self, 2);
+	if (variant->is_sandboxed) {
+		ASSERT_EQ(-1, ret);
+		ASSERT_EQ(EACCES, errno);
+	} else {
+		ASSERT_EQ(0, ret);
+	}
+}
