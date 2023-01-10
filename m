@@ -2,177 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1FB3663D5A
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 10:56:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A80663D61
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 10:58:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbjAJJ43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 04:56:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59242 "EHLO
+        id S238286AbjAJJ5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 04:57:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbjAJJ42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 04:56:28 -0500
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12EA93E0CC;
-        Tue, 10 Jan 2023 01:56:26 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.96,314,1665414000"; 
-   d="scan'208";a="148842826"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 10 Jan 2023 18:56:26 +0900
-Received: from localhost.localdomain (unknown [10.166.15.32])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 657AC4237EB9;
-        Tue, 10 Jan 2023 18:56:26 +0900 (JST)
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH net] net: ethernet: renesas: rswitch: Fix ethernet-ports handling
-Date:   Tue, 10 Jan 2023 18:55:59 +0900
-Message-Id: <20230110095559.314429-1-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S238264AbjAJJ5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 04:57:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009C74F13E;
+        Tue, 10 Jan 2023 01:57:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0B84B80FED;
+        Tue, 10 Jan 2023 09:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ACA6C433F0;
+        Tue, 10 Jan 2023 09:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673344648;
+        bh=LBzK5nBoEJR99O8wtGXtQYNy7sxo8GbARbZALPMRedE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=alOcSdHooOHjkSRa7MVR7vCKkWouHEMYcEZaVYgctLSo8NTAbtJOqY/ErgWZnKpAn
+         /MLCea1OLBJAc/aGbS08IW8htZaeTJU7nFp08YoZXLtHQDJaK02Vt6WffpuMZ8sDDy
+         mfek+6pBd15fe44oS9EBZh0Slkbjusw46D/g860Fx+YsJi+vB/4LzvjHeglGpC1H95
+         wc1Z3NPCBV2LsZuOoM+5YgEdfuZcY1vlmNF526CpzJ8WfrtYF7RWx48x5eoRHt0RmZ
+         K2ogr8PAG5rGhg0090WBsHDoSphbo2gJD5TeVIt7dRUDwZ6WbV2vTG2j2odMt8+Mkd
+         PiuVLzefFGhig==
+Date:   Tue, 10 Jan 2023 11:57:24 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Hariprasad Kelam <hkelam@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com
+Subject: Re: [net PATCH] octeontx2-pf: Fix resource leakage in VF driver
+ unbind
+Message-ID: <Y702hDZk3veZzt+b@unreal>
+References: <20230109061325.21395-1-hkelam@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230109061325.21395-1-hkelam@marvell.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If one of ports in the ethernet-ports was disabled, this driver
-failed to probe all ports. So, fix it.
+On Mon, Jan 09, 2023 at 11:43:25AM +0530, Hariprasad Kelam wrote:
+> resources allocated like mcam entries to support the Ntuple feature
+> and hash tables for the tc feature are not getting freed in driver
+> unbind. This patch fixes the issue.
 
-Fixes: 3590918b5d07 ("net: ethernet: renesas: Add support for "Ethernet Switch"")
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- The checkpatch.pl reports the following ERROR:
+It is not clear where in otx2vf_probe() these resource are allocated.
+Please add the stack trace to the commit message.
 
-    Macros with multiple statements should be enclosed in a do - while loop
+Thanks
 
- However, include/linux/cpufreq.h has similar macros and the same ERROR
- happened. So, I assume that the ERROR can be ignored.
-
- drivers/net/ethernet/renesas/rswitch.c | 22 +++++++++++++---------
- drivers/net/ethernet/renesas/rswitch.h | 12 ++++++++++++
- 2 files changed, 25 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
-index 6441892636db..6818216212df 100644
---- a/drivers/net/ethernet/renesas/rswitch.c
-+++ b/drivers/net/ethernet/renesas/rswitch.c
-@@ -1074,8 +1074,11 @@ static struct device_node *rswitch_get_port_node(struct rswitch_device *rdev)
- 			port = NULL;
- 			goto out;
- 		}
--		if (index == rdev->etha->index)
-+		if (index == rdev->etha->index) {
-+			if (!of_device_is_available(port))
-+				port = NULL;
- 			break;
-+		}
- 	}
- 
- out:
-@@ -1106,7 +1109,7 @@ static int rswitch_etha_get_params(struct rswitch_device *rdev)
- 
- 	port = rswitch_get_port_node(rdev);
- 	if (!port)
--		return -ENODEV;
-+		return 0;	/* ignored */
- 
- 	err = of_get_phy_mode(port, &rdev->etha->phy_interface);
- 	of_node_put(port);
-@@ -1324,13 +1327,13 @@ static int rswitch_ether_port_init_all(struct rswitch_private *priv)
- {
- 	int i, err;
- 
--	for (i = 0; i < RSWITCH_NUM_PORTS; i++) {
-+	rswitch_for_each_enabled_port(priv, i) {
- 		err = rswitch_ether_port_init_one(priv->rdev[i]);
- 		if (err)
- 			goto err_init_one;
- 	}
- 
--	for (i = 0; i < RSWITCH_NUM_PORTS; i++) {
-+	rswitch_for_each_enabled_port(priv, i) {
- 		err = rswitch_serdes_init(priv->rdev[i]);
- 		if (err)
- 			goto err_serdes;
-@@ -1339,12 +1342,12 @@ static int rswitch_ether_port_init_all(struct rswitch_private *priv)
- 	return 0;
- 
- err_serdes:
--	for (i--; i >= 0; i--)
-+	rswitch_for_each_enabled_port_reverse(priv, i)
- 		rswitch_serdes_deinit(priv->rdev[i]);
- 	i = RSWITCH_NUM_PORTS;
- 
- err_init_one:
--	for (i--; i >= 0; i--)
-+	rswitch_for_each_enabled_port_reverse(priv, i)
- 		rswitch_ether_port_deinit_one(priv->rdev[i]);
- 
- 	return err;
-@@ -1608,6 +1611,7 @@ static int rswitch_device_alloc(struct rswitch_private *priv, int index)
- 	netif_napi_add(ndev, &rdev->napi, rswitch_poll);
- 
- 	port = rswitch_get_port_node(rdev);
-+	rdev->disabled = !port;
- 	err = of_get_ethdev_address(port, ndev);
- 	of_node_put(port);
- 	if (err) {
-@@ -1707,16 +1711,16 @@ static int rswitch_init(struct rswitch_private *priv)
- 	if (err)
- 		goto err_ether_port_init_all;
- 
--	for (i = 0; i < RSWITCH_NUM_PORTS; i++) {
-+	rswitch_for_each_enabled_port(priv, i) {
- 		err = register_netdev(priv->rdev[i]->ndev);
- 		if (err) {
--			for (i--; i >= 0; i--)
-+			rswitch_for_each_enabled_port_reverse(priv, i)
- 				unregister_netdev(priv->rdev[i]->ndev);
- 			goto err_register_netdev;
- 		}
- 	}
- 
--	for (i = 0; i < RSWITCH_NUM_PORTS; i++)
-+	rswitch_for_each_enabled_port(priv, i)
- 		netdev_info(priv->rdev[i]->ndev, "MAC address %pM\n",
- 			    priv->rdev[i]->ndev->dev_addr);
- 
-diff --git a/drivers/net/ethernet/renesas/rswitch.h b/drivers/net/ethernet/renesas/rswitch.h
-index edbdd1b98d3d..628bd5b0b3de 100644
---- a/drivers/net/ethernet/renesas/rswitch.h
-+++ b/drivers/net/ethernet/renesas/rswitch.h
-@@ -13,6 +13,17 @@
- #define RSWITCH_MAX_NUM_QUEUES	128
- 
- #define RSWITCH_NUM_PORTS	3
-+#define rswitch_for_each_enabled_port(priv, i)		\
-+	for (i = 0; i < RSWITCH_NUM_PORTS; i++)		\
-+		if (priv->rdev[i]->disabled)		\
-+			continue;			\
-+		else
-+
-+#define rswitch_for_each_enabled_port_reverse(priv, i)	\
-+	for (i--; i >= 0; i--)				\
-+		if (priv->rdev[i]->disabled)		\
-+			continue;			\
-+		else
- 
- #define TX_RING_SIZE		1024
- #define RX_RING_SIZE		1024
-@@ -938,6 +949,7 @@ struct rswitch_device {
- 	struct rswitch_gwca_queue *tx_queue;
- 	struct rswitch_gwca_queue *rx_queue;
- 	u8 ts_tag;
-+	bool disabled;
- 
- 	int port;
- 	struct rswitch_etha *etha;
--- 
-2.25.1
-
+> 
+> Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
+> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> index 86653bb8e403..7f8ffbf79cf7 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> @@ -758,6 +758,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
+>  	if (vf->otx2_wq)
+>  		destroy_workqueue(vf->otx2_wq);
+>  	otx2_ptp_destroy(vf);
+> +	otx2_mcam_flow_del(vf);
+> +	otx2_shutdown_tc(vf);
+>  	otx2vf_disable_mbox_intr(vf);
+>  	otx2_detach_resources(&vf->mbox);
+>  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+> -- 
+> 2.17.1
+> 
