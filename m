@@ -2,91 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEF52664E73
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 23:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AB69664E75
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 23:03:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234333AbjAJWCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 17:02:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57696 "EHLO
+        id S232746AbjAJWDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 17:03:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234236AbjAJWBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 17:01:37 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C93183A4;
-        Tue, 10 Jan 2023 14:01:36 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id z11so19724815ede.1;
-        Tue, 10 Jan 2023 14:01:36 -0800 (PST)
+        with ESMTP id S231727AbjAJWDX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 17:03:23 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13464436C
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 14:03:22 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id v2so2220829wrw.10
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 14:03:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1zojtUlTJ41SuWrZfC5EvKnzTTlRKFzqNeYYEkay3v4=;
-        b=cddZySA12Yq1swNWNYpIqK5JVInCajEv34dtVRX5iLyqxr5N3PemsxVXbnYOYIAGnr
-         gKqEW06tcOHsUR8VcFS7DQXlbibMgWFmmH7wYHUh2NL0DKearGTJxtoM93CdEr7jbMDa
-         O9ctWwjV5w20+4FuPz2Hrf6A4e+2EkHV+2R1k7gHfAtogBaDtnsVgEfWmQRtkix/YR5s
-         5XEKKjiSszvnbWScuBp9OOtkHUJmcyyUHP0ylIIYBERyQsHDrotlg+UBh5g0M8HCQsQV
-         oDCEclTpfv1WZWvEXDWC9pZsmAAQIsOWKCMhRAz34wryF5FxONHePBLWOopXe29o2SPe
-         Ybkg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:cc:to:subject:from
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+lNKae9t6mWSaeByyy6AHKVDkMguSH2xhzFAmnmHaTw=;
+        b=Dcw/63UyrUD0baTvq8Sx82p/J5Cz5cghMEPzNRJ92CeKmpgeDvewYLuuZrtohh+mrZ
+         hlyA7HmKnHM/i12NnWyVr7lY9q9Oam+f3XBTOAgkJNqYbaQzVB6tnv2ct1wPLRii5MOc
+         We/pu0DRS6pTe30lfz3oQZnwuXJrHt34KreL7n16NiopigUHl71N9eIhPDWDntVdy1pZ
+         dOyCAlY+QxVbl6knQzzzW+JlZViQDh4xFZPwXZZil83xO8BB5AHauO9DQqgxFgciyJUd
+         VBApUwON6keoG5Y4B5SMaDiExtdw0fKAXbR/zejN/D3E+3yV19OXfDcr/1kz6r3DSJAL
+         o13A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1zojtUlTJ41SuWrZfC5EvKnzTTlRKFzqNeYYEkay3v4=;
-        b=7dw73EJDXx730ot1K6TWeHa9Wbq0hKZ7qnUccOWXvPEQJNfyRTj4kqaKOwcADozyW3
-         WYdZWUQJZLsXsnsQPoB6/TxRCw4ipRyiF8NxMCdnNla9C25fE8Wgp7/bjPh69cTjdyGl
-         9RA/0QCxtueKbp+Skl51+qw5V/BMaq6+zmqPaLR2fj00229F4C/j0hxddFuQ/1UGxjam
-         7394Lp35Oh4sbS1jcqc2kCaerjjv5+/ECKjTa1lYcobuFNWy8ffXRaRs6/kJPOn2pQn2
-         MgnTPLqvgyBwL8rrfm6MxnHKihGQlXqCFaTAKdEfDkprHa18X28ZMcKRabo/FDJT3uQ6
-         ZVYQ==
-X-Gm-Message-State: AFqh2koy8tNQSDrKkywW4qV/S74epUpgSvYlMaGsD3uA2RfnckEp8kOn
-        mmWk1rX/fV+shNVoW2CvCLKhSrqR0xLTqGKwey8=
-X-Google-Smtp-Source: AMrXdXs/xAROFlmP1Z6gsP4nU76Fz9ohlobY7nC70UqqJ6A94oT0iQ6simlwUiEPavrP8bBYALj6XMxx0kprOzT+6D8=
-X-Received: by 2002:a05:6402:4290:b0:498:61f5:5734 with SMTP id
- g16-20020a056402429000b0049861f55734mr1027278edc.238.1673388094576; Tue, 10
- Jan 2023 14:01:34 -0800 (PST)
+        h=content-transfer-encoding:content-language:cc:to:subject:from
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+lNKae9t6mWSaeByyy6AHKVDkMguSH2xhzFAmnmHaTw=;
+        b=ArWLOODqG2Tbb9uyI3Q7dPJ3Hbayv98hwNeLBbjX2kbqB7EQqj9RInZ3DFEPSlmiIq
+         ARsiB1biIEHBeNaqjabIN+7bhlZDw11JLRTVD4R4XFeqTTTOENuAc+7G3Cu3V3JoTQTq
+         9zwh16Jr/pDl+vQzWw+QK5R0UIvHYOeCp1i9vryFce1BP1OP+B971GAspVorsv6afVih
+         HaRSGfFX/R9ToYtiA5cryHwVbRip1dAbrINOXjXQqQHxf3OfI1HEt3GhJndd1daFwB6i
+         aiTgE21MkHVyBvk/YX1ttcl5HVSipjdq2e9Ek//0YQJKs4ZyPPHP1LxJ0kQ/3CAdMZL8
+         OgPg==
+X-Gm-Message-State: AFqh2kry6gOblGF1WOVWQwGigX1OqowsYMwXje13QuBG7bRY8/am0lrZ
+        ez7yHSYSXebfDWBJpy6QlDs=
+X-Google-Smtp-Source: AMrXdXtZjvMGLEljL/uzJCGMuBmHejuanQCnqT9vGdFDJkmKZrioghWovtueQHbbVYknGr5i8EktgQ==
+X-Received: by 2002:adf:e703:0:b0:242:15af:27f with SMTP id c3-20020adfe703000000b0024215af027fmr45742027wrm.28.1673388201076;
+        Tue, 10 Jan 2023 14:03:21 -0800 (PST)
+Received: from ?IPV6:2a01:c23:c404:0:f91c:b55f:3d6c:d5bd? (dynamic-2a01-0c23-c404-0000-f91c-b55f-3d6c-d5bd.c23.pool.telefonica.de. [2a01:c23:c404:0:f91c:b55f:3d6c:d5bd])
+        by smtp.googlemail.com with ESMTPSA id bw28-20020a0560001f9c00b002421888a011sm11965150wrb.69.2023.01.10.14.03.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Jan 2023 14:03:20 -0800 (PST)
+Message-ID: <92369a92-dc32-4529-0509-11459ba0e391@gmail.com>
+Date:   Tue, 10 Jan 2023 23:03:18 +0100
 MIME-Version: 1.0
-References: <20221117-b4-amlogic-bindings-convert-v2-0-36ad050bb625@linaro.org>
- <20221117-b4-amlogic-bindings-convert-v2-2-36ad050bb625@linaro.org>
-In-Reply-To: <20221117-b4-amlogic-bindings-convert-v2-2-36ad050bb625@linaro.org>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Tue, 10 Jan 2023 23:01:23 +0100
-Message-ID: <CAFBinCCP7xyFEa9GhRQ3NBhfSkn1WSP_qyoLKfaMPpqUTe11bA@mail.gmail.com>
-Subject: Re: [PATCH v2 02/11] dt-bindings: nvmem: convert amlogic-efuse.txt to dt-schema
-To:     Neil Armstrong <neil.armstrong@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next resubmit v2] r8169: disable ASPM in case of tx
+ timeout
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-mmc@vger.kernel.org, linux-pci@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,23 +77,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 9, 2023 at 1:53 PM Neil Armstrong <neil.armstrong@linaro.org> wrote:
->
-> Convert the  Amlogic Meson GX eFuse bindings to dt-schema.
->
-> Take in account the used variant with amlogic,meson-gx-efuse.
->
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+There are still single reports of systems where ASPM incompatibilities
+cause tx timeouts. It's not clear whom to blame, so let's disable
+ASPM in case of a tx timeout.
 
-This will cause a warning in
-arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-though (which is an existing issue, this patch just makes it visible).
-I sent a fix for that: [0]
+v2:
+- add one-time warning for informing the user
 
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-Best regards,
-Martin
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a9dcc98b6..49c124d8e 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -576,6 +576,7 @@ struct rtl8169_tc_offsets {
+ enum rtl_flag {
+ 	RTL_FLAG_TASK_ENABLED = 0,
+ 	RTL_FLAG_TASK_RESET_PENDING,
++	RTL_FLAG_TASK_TX_TIMEOUT,
+ 	RTL_FLAG_MAX
+ };
+ 
+@@ -3931,7 +3932,7 @@ static void rtl8169_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ {
+ 	struct rtl8169_private *tp = netdev_priv(dev);
+ 
+-	rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
++	rtl_schedule_task(tp, RTL_FLAG_TASK_TX_TIMEOUT);
+ }
+ 
+ static int rtl8169_tx_map(struct rtl8169_private *tp, const u32 *opts, u32 len,
+@@ -4525,6 +4526,7 @@ static void rtl_task(struct work_struct *work)
+ {
+ 	struct rtl8169_private *tp =
+ 		container_of(work, struct rtl8169_private, wk.work);
++	int ret;
+ 
+ 	rtnl_lock();
+ 
+@@ -4532,7 +4534,17 @@ static void rtl_task(struct work_struct *work)
+ 	    !test_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags))
+ 		goto out_unlock;
+ 
++	if (test_and_clear_bit(RTL_FLAG_TASK_TX_TIMEOUT, tp->wk.flags)) {
++		/* ASPM compatibility issues are a typical reason for tx timeouts */
++		ret = pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_L1 |
++							  PCIE_LINK_STATE_L0S);
++		if (!ret)
++			netdev_warn_once(tp->dev, "ASPM disabled on Tx timeout\n");
++		goto reset;
++	}
++
+ 	if (test_and_clear_bit(RTL_FLAG_TASK_RESET_PENDING, tp->wk.flags)) {
++reset:
+ 		rtl_reset_work(tp);
+ 		netif_wake_queue(tp->dev);
+ 	}
+-- 
+2.39.0
 
-
-[0] https://lore.kernel.org/linux-amlogic/20230110215926.1296650-1-martin.blumenstingl@googlemail.com/T/#u
