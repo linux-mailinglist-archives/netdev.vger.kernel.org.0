@@ -2,108 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE41266392D
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 07:18:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E31663933
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 07:20:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230280AbjAJGSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 01:18:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S230155AbjAJGUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 01:20:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231177AbjAJGSe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 01:18:34 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16C01C927;
-        Mon,  9 Jan 2023 22:18:32 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NrgZH3Fp2znV8B;
-        Tue, 10 Jan 2023 14:16:55 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Tue, 10 Jan 2023 14:18:28 +0800
-Message-ID: <d773f69b-855f-d679-9e4c-c0a260411687@huawei.com>
-Date:   Tue, 10 Jan 2023 14:18:28 +0800
+        with ESMTP id S230310AbjAJGUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 01:20:32 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4E71CB11
+        for <netdev@vger.kernel.org>; Mon,  9 Jan 2023 22:20:31 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30A5MCYq024207;
+        Mon, 9 Jan 2023 22:20:25 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=dAW/s9/uhxyuaH0kD+BmnHZPIaTRhJJpSj5rWQ2+yTk=;
+ b=lCFVWghQeYDXXZObnOXmuFfzS9o+nUjwiqcKtJawYWK+DCldFFTgtapl/dzjXWnFuGni
+ n06XihhlqYCpBDI+l54/XRdj9aqrnzOWNLZC79dbKfYNRLQyx+2GoMGd7G3fACSlDDqz
+ zDkBmewnaeAbRzjXyEr/RBHC1UpYA3rfi+Sg/UQgNOrduUwc1UBcrYlFau3aFmFzmtM+
+ eOdihlj8hDjSvzJqXHhGvLGAPRssPVW0WsncJVjhKQ75W54RZeTsfa8yCxTWjAQ/RJ52
+ m9a1T4aJGQJsGS5arsw1VBhg4PDVU+PkeqXovkiJiiYN+jhAmhWqTIkrz00/Mr9Vg9xO fg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n108mr7yy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 09 Jan 2023 22:20:25 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 9 Jan
+ 2023 22:20:23 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Mon, 9 Jan 2023 22:20:23 -0800
+Received: from localhost.localdomain (unknown [10.28.36.175])
+        by maili.marvell.com (Postfix) with ESMTP id 8C1943F7081;
+        Mon,  9 Jan 2023 22:20:20 -0800 (PST)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
+Subject: [PATCH v1 net-next,0/8] octeontx2-af: Miscellaneous changes for CPT
+Date:   Tue, 10 Jan 2023 11:50:11 +0530
+Message-ID: <20230110062019.892719-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH] Bluetooth: hci_sync: fix memory leak in
- hci_update_adv_data()
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-CC:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <brian.gix@intel.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-References: <20230109012651.3127529-1-shaozhengchao@huawei.com>
- <CABBYNZK=GXHO3QrEF2ZXWohnYkyPsfo0K9ZPxe0aMK_wuK1myQ@mail.gmail.com>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <CABBYNZK=GXHO3QrEF2ZXWohnYkyPsfo0K9ZPxe0aMK_wuK1myQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: tABbw7gMM2W7mulNjGEZjNdGYNR-7BXQ
+X-Proofpoint-ORIG-GUID: tABbw7gMM2W7mulNjGEZjNdGYNR-7BXQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-10_01,2023-01-09_02,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset consists of miscellaneous changes for CPT.
+- Adds a new mailbox to reset the requested CPT LF.
+- Modify FLR sequence as per HW team suggested.
+- Adds support to recover CPT engines when they gets fault.
+- Updates CPT inbound inline IPsec configuration mailbox,
+  as per new generation of the OcteonTX2 chips.
+- Adds a new mailbox to retuen CPT FLT Interrupt info.
 
+---
+v1:
+- Dropped patch "octeontx2-af: Fix interrupt name strings completely"
+  to submit to net.
+---
 
-On 2023/1/10 5:11, Luiz Augusto von Dentz wrote:
-> Hi Zhengchao,
-> 
-> On Sun, Jan 8, 2023 at 5:17 PM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->>
->> When hci_cmd_sync_queue() failed in hci_update_adv_data(), inst_ptr is
->> not freed, which will cause memory leak. Add release process to error
->> path.
->>
->> Fixes: 651cd3d65b0f ("Bluetooth: convert hci_update_adv_data to hci_sync")
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> ---
->>   net/bluetooth/hci_sync.c | 7 ++++++-
->>   1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
->> index 9e2d7e4b850c..1485501bd72f 100644
->> --- a/net/bluetooth/hci_sync.c
->> +++ b/net/bluetooth/hci_sync.c
->> @@ -6197,10 +6197,15 @@ static int _update_adv_data_sync(struct hci_dev *hdev, void *data)
->>   int hci_update_adv_data(struct hci_dev *hdev, u8 instance)
->>   {
->>          u8 *inst_ptr = kmalloc(1, GFP_KERNEL);
->> +       int ret;
->>
->>          if (!inst_ptr)
->>                  return -ENOMEM;
->>
->>          *inst_ptr = instance;
->> -       return hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
->> +       ret = hci_cmd_sync_queue(hdev, _update_adv_data_sync, inst_ptr, NULL);
->> +       if (ret)
->> +               kfree(inst_ptr);
->> +
->> +       return ret;
->>   }
-> 
-> While this is correct I do wonder why we haven't used ERR_PTR/PTR_ERR
-> like we did with the likes of abort_conn_sync, that way we don't have
-> to allocate anything which makes things a lot simpler.
-> 
+Nithin Dabilpuram (1):
+  octeontx2-af: restore rxc conf after teardown sequence
 
-Hi Luiz:
-	Thank you for your advice. I think it is better to use
-ERR_PTR/PTR_ERR to replace allocation. I will send V2.
+Srujana Challa (7):
+  octeontx2-af: recover CPT engine when it gets fault
+  octeontx2-af: add mbox for CPT LF reset
+  octeontx2-af: modify FLR sequence for CPT
+  octeontx2-af: optimize cpt pf identification
+  octeontx2-af: update CPT inbound inline IPsec config mailbox
+  octeontx2-af: add ctx ilen to cpt lf alloc mailbox
+  octeontx2-af: add mbox to return CPT_AF_FLT_INT info
 
-Zhengchao Shao
->> --
->> 2.34.1
->>
-> 
-> 
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  33 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   8 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  18 ++
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 305 +++++++++++++-----
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  46 ++-
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   2 +
+ 6 files changed, 322 insertions(+), 90 deletions(-)
+
+-- 
+2.25.1
+
