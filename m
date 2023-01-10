@@ -2,573 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0162664210
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 14:38:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB25664213
+	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 14:39:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232529AbjAJNiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 08:38:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
+        id S238421AbjAJNjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 08:39:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238385AbjAJNhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 08:37:53 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DD77D9CC
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 05:37:37 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id vm8so28652801ejc.2
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 05:37:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5/a/Y6lmqrPNZM8fJ+zYklwxBEKfhRnqLMWT9gG1zkc=;
-        b=l8gQDdJEM1JT+aqBGn6qWX9m+qmOXjcMS6MpztjGrtwGR0KI/6Y5t/Ph/fo722ty1u
-         EQiLemMsTjXBRhpsxU7aOB4XeUzzn2cYjlw/gHUKFljdc2FJIfUVnyUzHCc/Ijys9gtz
-         vRmSQ6yyDzD+9Qbsok4xlDPuLjA6fnkm/s+ys=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5/a/Y6lmqrPNZM8fJ+zYklwxBEKfhRnqLMWT9gG1zkc=;
-        b=LfFkLTZXL+RDC/o5FhxSi6KOZ7IYiXIfFL9MP90I2AQuWsYdkAxucHxMdTyiIUfZMH
-         hnwiBpnvHSksgeVBhkh+K48wAw+K+9PTrbESeOU3OWnURqfjDXSmRM2wvwF839QOUCMk
-         sZZOApmxVklRHTfFcHT5ZWjAofJjs536fGM35rbANxeJdibTpw9a+/PkEwrjjdYaWEsY
-         JYoqu8Kq5Tyg+eyJ7xCtk1jrVF0sYkPb0ROI2bDHd2JcxouDB4eZTCuQ5+iS23II+gse
-         egMPbbBxyzM0CyfFuu/mP2B1tRUITS8BKgYzU2+VQhWW//7zgqbUTxfF0vsArlQkqLVM
-         Rk9A==
-X-Gm-Message-State: AFqh2kqgGz7B1lynfKcrI6wx8Rf2gMJaCRbruyNKhNvSkOO1vm9PCpCH
-        ckA1qFPojzHl4/6IXEvcxJzBCM4AFZf1AJef
-X-Google-Smtp-Source: AMrXdXsk8oKdahRaaM/flnTa8IXgJJjgS/oAm6kAMD6uIAP8Ov+TLZmC6rOtq+B3K2uikz9HV+xFVQ==
-X-Received: by 2002:a17:906:a14c:b0:7c0:b4bb:919 with SMTP id bu12-20020a170906a14c00b007c0b4bb0919mr64852733ejb.10.1673357855415;
-        Tue, 10 Jan 2023 05:37:35 -0800 (PST)
-Received: from cloudflare.com (79.184.151.107.ipv4.supernova.orange.pl. [79.184.151.107])
-        by smtp.gmail.com with ESMTPSA id qw25-20020a1709066a1900b007ae1e528390sm4900285ejc.163.2023.01.10.05.37.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 05:37:35 -0800 (PST)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        kernel-team@cloudflare.com
-Subject: [PATCH net-next v2 2/2] selftests/net: Cover the IP_LOCAL_PORT_RANGE socket option
-Date:   Tue, 10 Jan 2023 14:37:30 +0100
-Message-Id: <20221221-sockopt-port-range-v2-2-1d5f114bf627@cloudflare.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20221221-sockopt-port-range-v2-0-1d5f114bf627@cloudflare.com>
-References: <20221221-sockopt-port-range-v2-0-1d5f114bf627@cloudflare.com>
-MIME-Version: 1.0
+        with ESMTP id S229457AbjAJNiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 08:38:51 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on20627.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::627])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01808DD0
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 05:38:51 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xpyp2KoD2GEGLwERqFXo8E772tXoQwJ9ExWCLybFLF9lRM8KCLp82lzkLkdhDSTV1cdFBTEXQgVfCmE23ZXiWZzJUVjncGp8FCUDdzfztye99C50JVdIyNiLJh6mVKyvhINhR5RzmOCbe5TgIstNCyxb+4V+KnHte34QCOnTZi9pLGFc1/qKDaYR63q+PPO8iWyRw1apn9d3+PMjcKr40HXkROhwuNuDEoAkg/UBwSYPecSuKcV3DY9xFXVy7qmhUaguipMSLy+occtmy0k6IavO4pWUVVNpTMudcBM1qEJNu7hibrlLICnx2kPEkl7rb27W4Q/ClISphDOG65EmKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1BUmJp1dUdchuhS4gue8iVMNvAX/V6sKMyUop4KiJrw=;
+ b=VZl7LI8pa+8bPE096uNKLXjz5GyfDt3dEcWuWqoSgVZKxxM2MKlj9770w+s1dbMQBM/iPxx/VxQliAr66AUU5XGmdlz8s7J3J2ck65emoLdD541PjM1M8BHA/5CQCrD7DP6k6mEpqUuPIdIeR+oEQI5M3UBeZ7nhwyzvUOSaC5kRvrtFHE1wfmRZxp3tOTaToLwtcvIywiuxM/xdAi9QJcfHz+SgXpZtEH345TWA0nSMpjWLkGgEAf7mtvB972Zz1qBJSuYZo5iNpzsalOguRO5flG5f1hAM+zdb0rV6xFT6ZxOQy0TUoXa6he+LGyifJkjLu/yPMQjeePN45jtEJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1BUmJp1dUdchuhS4gue8iVMNvAX/V6sKMyUop4KiJrw=;
+ b=jBwAKvQVhwf/94ZZaTlVMdG8cUohbRAuokWbPh7WyKt0Ps2SXEnYfavUaQJB67Ya2e0dsiiBCabNtbENcHCYBzcx0pOfTfuYwWHPoJhsElGDQ2+kZiNrUlZO4VCHBo+oC8w/4WSnz+eZk+4QWnutTztH6JfOluUFihbxMek/RuFXEgPOnWREX8nDzZH+DfhIOPmklXEiNrgGJsfsKvXuGN4KoNgFy8uEiPUpcRRDvwOpnq46rS/xi3VuERPGEtFeZHCLVbb7n9xH1h0+PuEhKzcyldEeRaREcwp9Q9lXBd3DsIO5Rr3SRyxWyF/aqMn7/w6hDCI5I0ZqlQCijYIyBQ==
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com (2603:10b6:208:3e3::9)
+ by CY5PR12MB6372.namprd12.prod.outlook.com (2603:10b6:930:e::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
+ 2023 13:38:48 +0000
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::9d53:4213:d937:514e]) by IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::9d53:4213:d937:514e%7]) with mapi id 15.20.5986.018; Tue, 10 Jan 2023
+ 13:38:48 +0000
+From:   Emeel Hakim <ehakim@nvidia.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+CC:     "dsahern@kernel.org" <dsahern@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>
+Subject: RE: [PATCH main 1/1] macsec: Fix Macsec replay protection
+Thread-Topic: [PATCH main 1/1] macsec: Fix Macsec replay protection
+Thread-Index: AQHZJMo4IObyE0HZYEC1M2UkECCch66Xa5iAgAAVavCAAAx5AIAAFrhQ
+Date:   Tue, 10 Jan 2023 13:38:48 +0000
+Message-ID: <IA1PR12MB63532F95E8921422D982220CABFF9@IA1PR12MB6353.namprd12.prod.outlook.com>
+References: <20230110080218.18799-1-ehakim@nvidia.com> <Y703mx5EEjQyH8Fu@hog>
+ <IA1PR12MB635369F750521C87790D328AABFF9@IA1PR12MB6353.namprd12.prod.outlook.com>
+ <Y71UCProYz73JVCW@hog>
+In-Reply-To: <Y71UCProYz73JVCW@hog>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR12MB6353:EE_|CY5PR12MB6372:EE_
+x-ms-office365-filtering-correlation-id: 84d6196b-752d-430c-21be-08daf31000b3
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GzfL4nos56Gvzocd1bTF+7UJJutHpMRxj3e/OT/TwcUndJAeUvICp6JWqUwY73Y0dNZtEkcUpWEbdIwHL0sJ06Z64E8iHkz8+quWpyEve4KU0h3IXPnlAITmBRH5FJfNB0dsUBIoXooYEhtgiWDcncGlz5sNWbOpPuyHHb3xYy9Km8mvAKDVLPvGUby1Kz31h3403fzF/y8XOMCSpbb9M7PbhfhiiZ9e7ALYLsfnE4WCqI8kJYNd83fPHQKutIPPt1GfARwIeBoaapgLesKjMNDEwzJtU/JtgUNWB6X7HrF/LLur9e/NQwxoD/5BuEgcXGAsgu+kvH22Mm8jxidPn8WMCW9NI2/evCbksGPqaV8T68ykZKplf1jnuPtF9mLapBC2+lXCdn4yrA1Wi03tKE2euxJL9vzvH1xc8wxY8gPHXmEJoGl35JeuOxGAdFeJv3nZcKiOm9JmqGiwbtTnS40uh0tfR0Pi1QSgoVqy6+xK/dpa1Zx1bukAtvZB59OJInEss2EEKWCtdJtp6aWl31ZsT74vubqzdVQeYRcltvydXg/Frk/G7aomEYIad3c23GZBHhh5gBYvZkw9xdqFrRu9zgjcmcAG0DLslbCzgmCUHneLuCSf4yVw6JqxIJyoN4DmcT4hjeIqT2xQLDd+aCN2/ZIMZYP/3oSpN6Fv0dlhPz4o0isDlYIY6p3yZ1dMdk4BgdJRspqaZ6kEFXbTrA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6353.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(366004)(376002)(346002)(451199015)(66946007)(52536014)(41300700001)(2906002)(8936002)(5660300002)(8676002)(6916009)(66476007)(66446008)(76116006)(66556008)(64756008)(316002)(7696005)(107886003)(71200400001)(54906003)(478600001)(53546011)(6506007)(33656002)(186003)(4326008)(55016003)(26005)(9686003)(83380400001)(86362001)(38100700002)(122000001)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UEZkWEYwMTRFVDZNQXIzTzc3THhZcEM3MExEZE5rUXpMRjgrL1BlUVpsenVI?=
+ =?utf-8?B?ektsZEdnc2l0SmFkREhVTUdVZllLN1RFTjEySVJWaXVsaDVXbmxtVEd5YUZW?=
+ =?utf-8?B?cDl6eTY0TTFRNW1US3ExWHB5WnB5NklWMU5wM3FsMTkwaW85WGpXcDFwSXM0?=
+ =?utf-8?B?WU5wRzFneWhFMHZNZy9senNBUnRYczFwSUtpa0o0ZkpnRWhxZXk3ZExmb2Nu?=
+ =?utf-8?B?eU1vM0trSU43ejQwNVBPaTN2aHUxS1dWVTVDQy9TMlI3OGhPalo4SzlSMjZj?=
+ =?utf-8?B?bFRRWFdJQzA0NW1TTzlSUzRaODJlR29IYW96eHdqaUFyUWtEUWZLcVJQYWxC?=
+ =?utf-8?B?K1NhVVlNV3J1ZEE4TzU5UWpJcUNlL095RncrWUY3dUR0ZlJKYUR2aUdJbVly?=
+ =?utf-8?B?NEFKN2tLRFNLRytRQ2FJelR2R1lHYVpPcHJWSnoxemFKUmVhU2ZCVm1LRnor?=
+ =?utf-8?B?dHoyT0hESTlJdnBDSlkxNkhuaSt1S2hWZFVnOTU3VVdaSWpqc3NFMVN3S04y?=
+ =?utf-8?B?bXpXZENQMnZ6ek9MZTArVmJRWkJQRnhYaGhaSlJ1UVJ3VDNibG9LU0dXQzRh?=
+ =?utf-8?B?QmhSZG1lY3RNYWR3bDA1M2pxaGErUkhzL2hNZC9rWkVUU09jRmFNTHM2YkxF?=
+ =?utf-8?B?dy9wYjJaLzg2em9VMHp3Wmh0bmI1MkxWL1FBVzloN2pwc1d5aUYwajlzb1Qr?=
+ =?utf-8?B?T0R3Z3crZkJFSFZQRGI4Y1NoblJEWmxUUzhxSFhDQjN1WldIWFd5RzQvT1RO?=
+ =?utf-8?B?eU5Pek02NDNXOXV0MTVnMnJYc29tdXFlcDJzTFNNUUNsVWUwVGNQUFlGL0VJ?=
+ =?utf-8?B?SjB2alg4bmhaMzcvTnZnZUVKN0Q2d3NTM0FHWmI4MUZ5bEpDVTZ4WldrQ3Bz?=
+ =?utf-8?B?TlpwN05Vdkl1YVkwUForS3JHNUIyTUZvSGdSMWpURStURlp0NTc0dHNYTzZM?=
+ =?utf-8?B?RjU5RmVmdzNwQTBwZGJ3U05ibVl3SVpOQnRrUVNuVnpmWFdwMHJ6akN4WmFB?=
+ =?utf-8?B?dktNVy9aU0lhendKajFWMmVDV0J6WGhIRzNpakVzQ0VSbXMxaWpPQ2FRSExT?=
+ =?utf-8?B?eWxQamNicUdiYzk5a1FadEtHWmFVKzF2YWNlWlZrRGxwVVlpSEhpU3dlWTlT?=
+ =?utf-8?B?QzAwVWZ2djBZQWtWVUZuQldQWXJEdDNHWXdrNmdQdllIemVyMUhFVDNrekw3?=
+ =?utf-8?B?VGRqS2c4TGw2ZWtsK3hKSmRWMHROVE1oRFkxeXBTak5LVS8rRzdFSjRYdG9K?=
+ =?utf-8?B?VWNKb09WalBKczBzTkNsKzk4UWJsUUNPdEhlaDlLanNrZFFFMHRhWXl0Zmx5?=
+ =?utf-8?B?VERoKzZRdGkzUVdxbHEyWUQ3MVBKVHBxSi9ENVBaMjBjMWphQUMvWmF2OWpk?=
+ =?utf-8?B?cVZ1NHowUHE1bmFmS0I1NEk1YXQxOTM5STVDRmgzZmR4TjVGbUVKM3RPNi9z?=
+ =?utf-8?B?MFM0THVpZVZmc2tKemJNUldJUEpCbGtmSkZNSzhXaGtsdUFmSkNONDRuTU11?=
+ =?utf-8?B?NWZ6R3ZUSGlocVF4Q2xLdmJQMklXZFNOOUxxbXo3TkRRM3UrellFeTYzeHVE?=
+ =?utf-8?B?UkFXbWFRVG5IVllLenpRVVJCbk9ONUFGcEZqMGVDWXIwa0IzL29WRU80cjRS?=
+ =?utf-8?B?RWJ5dzlQTzl6eXZwV3d5QnUvbnQ0bW9GWmVidzBqNlFxZmlDdDJtNVQwcE9D?=
+ =?utf-8?B?NG4yNkxHM3J5R0VtRVJ5amZabWdoUnMvSHozakZVZGVaQytoOXFPeGk5Nmw2?=
+ =?utf-8?B?ZHZadnIxUDU5SStSbDZTYjBDVjFFL3lDNzRWSW8ydFpNWXA3UmJ3STBIdXhD?=
+ =?utf-8?B?U0hjYmJ5dFBIaXBCcm5XbDduR29MbkkvYU9UdzcrMDVUcXNXaDRYVGhaNWR6?=
+ =?utf-8?B?b0FBUFJwbEhpRytVRC9jMmNkbGtrc2QyUm9pUWQ3WWticnltOTE0LzhWcWM5?=
+ =?utf-8?B?dmZSb3A5RFo4UmJKMm9UaHowNW9HYlk1U3RqaGNBVEJkVzZnckYyV2VBZmdV?=
+ =?utf-8?B?cWhuZjRvV3dOaGkrTGJneUVTSnM2NisxUWwzYng0M3pNNUJJMGgvUFJ5dVBz?=
+ =?utf-8?B?dE41d1N2dE9oZ0ptaW5VK21lSDJLbXhHcVJpUEt4UnRuMzN5bFpHcjk5RDZr?=
+ =?utf-8?Q?TgUgRTAvJ5RnU1GgM1FRvjpVe?=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6353.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84d6196b-752d-430c-21be-08daf31000b3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2023 13:38:48.2643
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 17+8F+2ICTIBPhDtgVkRoHpyDcOkLsnv0Wd0JqvpikZMoaGsZBeLs/IZ4KX6UAE+koBGi9HoFG0muKvm1/Hjfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6372
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Exercise IP_LOCAL_PORT_RANGE socket option in various scenarios:
-
-1. pass invalid values to setsockopt
-2. pass a range outside of the per-netns port range
-3. configure a single-port range
-4. exhaust a configured multi-port range
-5. check interaction with late-bind (IP_BIND_ADDRESS_NO_PORT)
-6. set then get the per-socket port range
-
-v1 -> v2:
- * selftests: Instead of iterating over socket families (ip4, ip6) and types
-   (tcp, udp), generate tests for each combo from a template. This keeps the
-   code indentation level down and makes tests more granular.
-
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- tools/testing/selftests/net/Makefile               |   2 +
- tools/testing/selftests/net/ip_local_port_range.c  | 439 +++++++++++++++++++++
- tools/testing/selftests/net/ip_local_port_range.sh |   5 +
- 3 files changed, 446 insertions(+)
-
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3007e98a6d64..51b0b49ecd3b 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -45,6 +45,7 @@ TEST_PROGS += arp_ndisc_untracked_subnets.sh
- TEST_PROGS += stress_reuseport_listen.sh
- TEST_PROGS += l2_tos_ttl_inherit.sh
- TEST_PROGS += bind_bhash.sh
-+TEST_PROGS += ip_local_port_range.sh
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
-@@ -75,6 +76,7 @@ TEST_GEN_PROGS += so_incoming_cpu
- TEST_PROGS += sctp_vrf.sh
- TEST_GEN_FILES += sctp_hello
- TEST_GEN_FILES += csum
-+TEST_GEN_FILES += ip_local_port_range
- 
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/net/ip_local_port_range.c b/tools/testing/selftests/net/ip_local_port_range.c
-new file mode 100644
-index 000000000000..8bbb32b47527
---- /dev/null
-+++ b/tools/testing/selftests/net/ip_local_port_range.c
-@@ -0,0 +1,439 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+// Copyright (c) 2023 Cloudflare
-+
-+/* Test IP_LOCAL_PORT_RANGE socket option: IPv4 + IPv6, TCP + UDP.
-+ *
-+ * Tests assume that net.ipv4.ip_local_port_range is [40000, 49999].
-+ * Don't run these directly but with ip_local_port_range.sh script.
-+ */
-+
-+#ifndef TEMPLATE
-+
-+#include <fcntl.h>
-+#include <netinet/ip.h>
-+
-+#include "../kselftest_harness.h"
-+
-+#ifndef IP_LOCAL_PORT_RANGE
-+#define IP_LOCAL_PORT_RANGE 51
-+#endif
-+
-+static __u32 pack_port_range(__u16 lo, __u16 hi)
-+{
-+	return (hi << 16) | (lo << 0);
-+}
-+
-+static void unpack_port_range(__u32 range, __u16 *lo, __u16 *hi)
-+{
-+	*lo = range & 0xffff;
-+	*hi = range >> 16;
-+}
-+
-+static int get_so_domain(int fd)
-+{
-+	int domain, err;
-+	socklen_t len;
-+
-+	len = sizeof(domain);
-+	err = getsockopt(fd, SOL_SOCKET, SO_DOMAIN, &domain, &len);
-+	if (err)
-+		return -1;
-+
-+	return domain;
-+}
-+
-+static int bind_to_loopback_any_port(int fd)
-+{
-+	union {
-+		struct sockaddr sa;
-+		struct sockaddr_in v4;
-+		struct sockaddr_in6 v6;
-+	} addr;
-+	socklen_t addr_len;
-+
-+	memset(&addr, 0, sizeof(addr));
-+	switch (get_so_domain(fd)) {
-+	case AF_INET:
-+		addr.v4.sin_family = AF_INET;
-+		addr.v4.sin_port = htons(0);
-+		addr.v4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-+		addr_len = sizeof(addr.v4);
-+		break;
-+	case AF_INET6:
-+		addr.v6.sin6_family = AF_INET6;
-+		addr.v6.sin6_port = htons(0);
-+		addr.v6.sin6_addr = in6addr_loopback;
-+		addr_len = sizeof(addr.v6);
-+		break;
-+	default:
-+		return -1;
-+	}
-+
-+	return bind(fd, &addr.sa, addr_len);
-+}
-+
-+static int get_sock_port(int fd)
-+{
-+	union {
-+		struct sockaddr sa;
-+		struct sockaddr_in v4;
-+		struct sockaddr_in6 v6;
-+	} addr;
-+	socklen_t addr_len;
-+	int err;
-+
-+	addr_len = sizeof(addr);
-+	memset(&addr, 0, sizeof(addr));
-+	err = getsockname(fd, &addr.sa, &addr_len);
-+	if (err)
-+		return -1;
-+
-+	switch (addr.sa.sa_family) {
-+	case AF_INET:
-+		return ntohs(addr.v4.sin_port);
-+	case AF_INET6:
-+		return ntohs(addr.v6.sin6_port);
-+	default:
-+		errno = EAFNOSUPPORT;
-+		return -1;
-+	}
-+}
-+
-+static int get_ip_local_port_range(int fd, __u32 *range)
-+{
-+	socklen_t len;
-+	__u32 val;
-+	int err;
-+
-+	len = sizeof(val);
-+	err = getsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val, &len);
-+	if (err)
-+		return -1;
-+
-+	*range = val;
-+	return 0;
-+}
-+
-+#else  /* TEMPLATE */
-+
-+T(invalid_option_value)
-+{
-+	__u16 val16;
-+	__u32 val32;
-+	__u64 val64;
-+	int fd, err;
-+
-+	fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+	ASSERT_GE(fd, 0) TH_LOG("socket failed");
-+
-+	/* Too few bytes */
-+	val16 = 40000;
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val16, sizeof(val16));
-+	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	/* Empty range: low port > high port */
-+	val32 = pack_port_range(40222, 40111);
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val32, sizeof(val32));
-+	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	/* Too many bytes */
-+	val64 = pack_port_range(40333, 40444);
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val64, sizeof(val64));
-+	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	err = close(fd);
-+	ASSERT_TRUE(!err) TH_LOG("close failed");
-+}
-+
-+T(sock_port_range_out_of_netns_range)
-+{
-+	const struct test {
-+		__u16 range_lo;
-+		__u16 range_hi;
-+	} tests[] = {
-+		{ 30000, 39999 }, /* socket range below netns range */
-+		{ 50000, 59999 }, /* socket range above netns range */
-+	};
-+	const struct test *t;
-+
-+	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-+		/* Bind a couple of sockets, not just one, to check
-+		 * that the range wasn't clamped to a single port from
-+		 * the netns range. That is [40000, 40000] or [49999,
-+		 * 49999], respectively for each test case.
-+		 */
-+		int fds[2], i;
-+
-+		TH_LOG("lo %5hu, hi %5hu", t->range_lo, t->range_hi);
-+
-+		for (i = 0; i < ARRAY_SIZE(fds); i++) {
-+			int fd, err, port;
-+			__u32 range;
-+
-+			fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+			ASSERT_GE(fd, 0) TH_LOG("#%d: socket failed", i);
-+
-+			range = pack_port_range(t->range_lo, t->range_hi);
-+			err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+			ASSERT_TRUE(!err) TH_LOG("#%d: setsockopt(IP_LOCAL_PORT_RANGE) failed", i);
-+
-+			err = bind_to_loopback_any_port(fd);
-+			ASSERT_TRUE(!err) TH_LOG("#%d: bind failed", i);
-+
-+			/* Check that socket port range outside of ephemeral range is ignored */
-+			port = get_sock_port(fd);
-+			ASSERT_GE(port, 40000) TH_LOG("#%d: expected port within netns range", i);
-+			ASSERT_LE(port, 49999) TH_LOG("#%d: expected port within netns range", i);
-+
-+			fds[i] = fd;
-+		}
-+
-+		for (i = 0; i < ARRAY_SIZE(fds); i++)
-+			ASSERT_TRUE(close(fds[i]) == 0) TH_LOG("#%d: close failed", i);
-+	}
-+}
-+
-+T(single_port_range)
-+{
-+	const struct test {
-+		__u16 range_lo;
-+		__u16 range_hi;
-+		__u16 expected;
-+	} tests[] = {
-+		/* single port range within ephemeral range */
-+		{ 45000, 45000, 45000 },
-+		/* first port in the ephemeral range (clamp from above) */
-+		{ 0, 40000, 40000 },
-+		/* last port in the ephemeral range (clamp from below)  */
-+		{ 49999, 0, 49999 },
-+	};
-+	const struct test *t;
-+
-+	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-+		int fd, err, port;
-+		__u32 range;
-+
-+		TH_LOG("lo %5hu, hi %5hu, expected %5hu",
-+		       t->range_lo, t->range_hi, t->expected);
-+
-+		fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+		ASSERT_GE(fd, 0) TH_LOG("socket failed");
-+
-+		range = pack_port_range(t->range_lo, t->range_hi);
-+		err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+		ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+		err = bind_to_loopback_any_port(fd);
-+		ASSERT_TRUE(!err) TH_LOG("bind failed");
-+
-+		port = get_sock_port(fd);
-+		ASSERT_EQ(port, t->expected) TH_LOG("unexpected local port");
-+
-+		err = close(fd);
-+		ASSERT_TRUE(!err) TH_LOG("close failed");
-+	}
-+}
-+
-+T(exhaust_8_port_range)
-+{
-+	__u8 port_set = 0;
-+	int i, fd, err;
-+	__u32 range;
-+	__u16 port;
-+	int fds[8];
-+
-+	for (i = 0; i < ARRAY_SIZE(fds); i++) {
-+		fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+		ASSERT_GE(fd, 0) TH_LOG("socket failed");
-+
-+		range = pack_port_range(40000, 40007);
-+		err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+		ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+		err = bind_to_loopback_any_port(fd);
-+		ASSERT_TRUE(!err) TH_LOG("bind failed");
-+
-+		port = get_sock_port(fd);
-+		ASSERT_GE(port, 40000) TH_LOG("expected port within sockopt range");
-+		ASSERT_LE(port, 40007) TH_LOG("expected port within sockopt range");
-+
-+		port_set |= 1 << (port - 40000);
-+		fds[i] = fd;
-+	}
-+
-+	/* Check that all every port from the test range is in use */
-+	ASSERT_EQ(port_set, 0xff) TH_LOG("expected all ports to be busy");
-+
-+	/* Check that bind() fails because the whole range is busy */
-+	fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+	ASSERT_GE(fd, 0) TH_LOG("socket failed");
-+
-+	range = pack_port_range(40000, 40007);
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	err = bind_to_loopback_any_port(fd);
-+	ASSERT_TRUE(err) TH_LOG("expected bind to fail");
-+	ASSERT_EQ(errno, EADDRINUSE);
-+
-+	err = close(fd);
-+	ASSERT_TRUE(!err) TH_LOG("close failed");
-+
-+	for (i = 0; i < ARRAY_SIZE(fds); i++) {
-+		err = close(fds[i]);
-+		ASSERT_TRUE(!err) TH_LOG("close failed");
-+	}
-+}
-+
-+T(late_bind)
-+{
-+	union {
-+		struct sockaddr sa;
-+		struct sockaddr_in v4;
-+		struct sockaddr_in6 v6;
-+	} addr;
-+	socklen_t addr_len;
-+	const int one = 1;
-+	int fd, err;
-+	__u32 range;
-+	__u16 port;
-+
-+	fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+	ASSERT_GE(fd, 0) TH_LOG("socket failed");
-+
-+	range = pack_port_range(40100, 40199);
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	err = setsockopt(fd, SOL_IP, IP_BIND_ADDRESS_NO_PORT, &one, sizeof(one));
-+	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_BIND_ADDRESS_NO_PORT) failed");
-+
-+	err = bind_to_loopback_any_port(fd);
-+	ASSERT_TRUE(!err) TH_LOG("bind failed");
-+
-+	port = get_sock_port(fd);
-+	ASSERT_EQ(port, 0) TH_LOG("getsockname failed");
-+
-+	/* Invalid destination */
-+	memset(&addr, 0, sizeof(addr));
-+	switch (T_SO_DOMAIN) {
-+	case AF_INET:
-+		addr.v4.sin_family = AF_INET;
-+		addr.v4.sin_port = htons(0);
-+		addr.v4.sin_addr.s_addr = htonl(INADDR_ANY);
-+		addr_len = sizeof(addr.v4);
-+		break;
-+	case AF_INET6:
-+		addr.v6.sin6_family = AF_INET6;
-+		addr.v6.sin6_port = htons(0);
-+		addr.v6.sin6_addr = in6addr_any;
-+		addr_len = sizeof(addr.v6);
-+		break;
-+	default:
-+		ASSERT_TRUE(false) TH_LOG("unsupported socket domain");
-+	}
-+
-+	/* connect() doesn't need to succeed for late bind to happen */
-+	connect(fd, &addr.sa, addr_len);
-+
-+	port = get_sock_port(fd);
-+	ASSERT_GE(port, 40100);
-+	ASSERT_LE(port, 40199);
-+
-+	err = close(fd);
-+	ASSERT_TRUE(!err) TH_LOG("close failed");
-+}
-+
-+T(get_port_range)
-+{
-+	__u16 lo, hi;
-+	__u32 range;
-+	int fd, err;
-+
-+	fd = socket(T_SO_DOMAIN, T_SO_TYPE, 0);
-+	ASSERT_GE(fd, 0) TH_LOG("socket failed");
-+
-+	/* Get range before it will be set */
-+	err = get_ip_local_port_range(fd, &range);
-+	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	unpack_port_range(range, &lo, &hi);
-+	ASSERT_EQ(lo, 0) TH_LOG("unexpected low port");
-+	ASSERT_EQ(hi, 0) TH_LOG("unexpected high port");
-+
-+	range = pack_port_range(12345, 54321);
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	/* Get range after it has been set */
-+	err = get_ip_local_port_range(fd, &range);
-+	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	unpack_port_range(range, &lo, &hi);
-+	ASSERT_EQ(lo, 12345) TH_LOG("unexpected low port");
-+	ASSERT_EQ(hi, 54321) TH_LOG("unexpected high port");
-+
-+	/* Unset the port range  */
-+	range = pack_port_range(0, 0);
-+	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
-+	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	/* Get range after it has been unset */
-+	err = get_ip_local_port_range(fd, &range);
-+	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
-+
-+	unpack_port_range(range, &lo, &hi);
-+	ASSERT_EQ(lo, 0) TH_LOG("unexpected low port");
-+	ASSERT_EQ(hi, 0) TH_LOG("unexpected high port");
-+
-+	err = close(fd);
-+	ASSERT_TRUE(!err) TH_LOG("close failed");
-+}
-+
-+#endif  /* TEMPLATE */
-+
-+#ifndef TEMPLATE
-+#define TEMPLATE
-+
-+#define T(name)			_T(name, T_SUFFIX)
-+#define _T(name, suffix)	__T(name, suffix)
-+#define __T(name, suffix)	TEST(name ## _ ## suffix)
-+
-+#define T_SUFFIX	ip4_tcp
-+#define T_SO_DOMAIN	AF_INET
-+#define T_SO_TYPE	SOCK_STREAM
-+#include __FILE__
-+#undef T_SUFFIX
-+#undef T_SO_DOMAIN
-+#undef T_SO_TYPE
-+
-+#define T_SUFFIX	ip4_udp
-+#define T_SO_DOMAIN	AF_INET
-+#define T_SO_TYPE	SOCK_DGRAM
-+#include __FILE__
-+#undef T_SUFFIX
-+#undef T_SO_DOMAIN
-+#undef T_SO_TYPE
-+
-+#define T_SUFFIX	ip6_tcp
-+#define T_SO_DOMAIN	AF_INET
-+#define T_SO_TYPE	SOCK_STREAM
-+#include __FILE__
-+#undef T_SUFFIX
-+#undef T_SO_DOMAIN
-+#undef T_SO_TYPE
-+
-+#define T_SUFFIX	ip6_udp
-+#define T_SO_DOMAIN	AF_INET
-+#define T_SO_TYPE	SOCK_DGRAM
-+#include __FILE__
-+#undef T_SUFFIX
-+#undef T_SO_DOMAIN
-+#undef T_SO_TYPE
-+
-+TEST_HARNESS_MAIN
-+
-+#endif	/* TEMPLATE */
-diff --git a/tools/testing/selftests/net/ip_local_port_range.sh b/tools/testing/selftests/net/ip_local_port_range.sh
-new file mode 100755
-index 000000000000..6c6ad346eaa0
---- /dev/null
-+++ b/tools/testing/selftests/net/ip_local_port_range.sh
-@@ -0,0 +1,5 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+
-+./in_netns.sh \
-+  sh -c 'sysctl -q -w net.ipv4.ip_local_port_range="40000 49999" && ./ip_local_port_range'
-
--- 
-2.39.0
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2FicmluYSBEdWJyb2Nh
+IDxzZEBxdWVhc3lzbmFpbC5uZXQ+DQo+IFNlbnQ6IFR1ZXNkYXksIDEwIEphbnVhcnkgMjAyMyAx
+NDowMw0KPiBUbzogRW1lZWwgSGFraW0gPGVoYWtpbUBudmlkaWEuY29tPg0KPiBDYzogZHNhaGVy
+bkBrZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBSYWVkIFNhbGVtDQo+IDxyYWVk
+c0BudmlkaWEuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG1haW4gMS8xXSBtYWNzZWM6IEZp
+eCBNYWNzZWMgcmVwbGF5IHByb3RlY3Rpb24NCj4gDQo+IEV4dGVybmFsIGVtYWlsOiBVc2UgY2F1
+dGlvbiBvcGVuaW5nIGxpbmtzIG9yIGF0dGFjaG1lbnRzDQo+IA0KPiANCj4gMjAyMy0wMS0xMCwg
+MTE6MjM6MjYgKzAwMDAsIEVtZWVsIEhha2ltIHdyb3RlOg0KPiA+DQo+ID4NCj4gPiA+IC0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBTYWJyaW5hIER1YnJvY2EgPHNkQHF1
+ZWFzeXNuYWlsLm5ldD4NCj4gPiA+IFNlbnQ6IFR1ZXNkYXksIDEwIEphbnVhcnkgMjAyMyAxMjow
+Mg0KPiA+ID4gVG86IEVtZWVsIEhha2ltIDxlaGFraW1AbnZpZGlhLmNvbT4NCj4gPiA+IENjOiBk
+c2FoZXJuQGtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IFJhZWQgU2FsZW0NCj4g
+PiA+IDxyYWVkc0BudmlkaWEuY29tPg0KPiA+ID4gU3ViamVjdDogUmU6IFtQQVRDSCBtYWluIDEv
+MV0gbWFjc2VjOiBGaXggTWFjc2VjIHJlcGxheSBwcm90ZWN0aW9uDQo+ID4gPg0KPiA+ID4gRXh0
+ZXJuYWwgZW1haWw6IFVzZSBjYXV0aW9uIG9wZW5pbmcgbGlua3Mgb3IgYXR0YWNobWVudHMNCj4g
+PiA+DQo+ID4gPg0KPiA+ID4gMjAyMy0wMS0xMCwgMTA6MDI6MTkgKzAyMDAsIGVoYWtpbUBudmlk
+aWEuY29tIHdyb3RlOg0KPiA+ID4gPiBAQCAtMTUxNiw3ICsxNTE1LDcgQEAgc3RhdGljIGludCBt
+YWNzZWNfcGFyc2Vfb3B0KHN0cnVjdCBsaW5rX3V0aWwNCj4gPiA+ID4gKmx1LCBpbnQNCj4gPiA+
+IGFyZ2MsIGNoYXIgKiphcmd2LA0KPiA+ID4gPiAgICAgICAgICAgICAgIGFkZGF0dHJfbChuLCBN
+QUNTRUNfQlVGTEVOLCBJRkxBX01BQ1NFQ19JQ1ZfTEVOLA0KPiA+ID4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAmY2lwaGVyLmljdl9sZW4sIHNpemVvZihjaXBoZXIuaWN2X2xlbikpOw0KPiA+
+ID4gPg0KPiA+ID4gPiAtICAgICBpZiAocmVwbGF5X3Byb3RlY3QgIT0gLTEpIHsNCj4gPiA+ID4g
+KyAgICAgaWYgKHJlcGxheV9wcm90ZWN0KSB7DQo+ID4gPg0KPiA+ID4gVGhpcyB3aWxsIHNpbGVu
+dGx5IGJyZWFrIGRpc2FibGluZyByZXBsYXkgcHJvdGVjdGlvbiBvbiBhbiBleGlzdGluZyBkZXZp
+Y2UuIFRoaXM6DQo+ID4gPg0KPiA+DQo+ID4gVGhhbmtzIGZvciBjYXRjaGluZyB0aGF0Lg0KPiA+
+DQo+ID4gPiAgICAgaXAgbGluayBzZXQgbWFjc2VjMCB0eXBlIG1hY3NlYyByZXBsYXkgb2ZmDQo+
+ID4gPg0KPiA+ID4gd291bGQgbm93IGFwcGVhciB0byBzdWNjZWVkIGJ1dCB3aWxsIG5vdCBkbyBh
+bnl0aGluZy4gVGhhdCdzIHdoeSBJDQo+ID4gPiB1c2VkIGFuIGludCB3aXRoDQo+ID4gPiAtMSBp
+biBpcHJvdXRlLCBhbmQgYSBVOCBuZXRsaW5rIGF0dHJpYnV0ZSByYXRoZXIgYSBmbGFnLg0KPiA+
+ID4NCj4gPiA+IEkgdGhpbmsgdGhpcyB3b3VsZCBiZSBhIGJldHRlciBmaXg6DQo+ID4gPg0KPiA+
+ID4gICAgICAgICBpZiAocmVwbGF5X3Byb3RlY3QgIT0gLTEpIHsNCj4gPiA+IC0gICAgICAgICAg
+ICAgICBhZGRhdHRyMzIobiwgTUFDU0VDX0JVRkxFTiwgSUZMQV9NQUNTRUNfV0lORE9XLCB3aW5k
+b3cpOw0KPiA+ID4gKyAgICAgICAgICAgICAgIGlmIChyZXBsYXlfcHJvdGVjdCkNCj4gPiA+ICsg
+ICAgICAgICAgICAgICAgICAgICAgIGFkZGF0dHIzMihuLCBNQUNTRUNfQlVGTEVOLA0KPiA+ID4g
+KyBJRkxBX01BQ1NFQ19XSU5ET1csIHdpbmRvdyk7DQo+ID4gPiAgICAgICAgICAgICAgICAgYWRk
+YXR0cjgobiwgTUFDU0VDX0JVRkxFTiwgSUZMQV9NQUNTRUNfUkVQTEFZX1BST1RFQ1QsDQo+ID4g
+PiAgICAgICAgICAgICAgICAgICAgICAgICAgcmVwbGF5X3Byb3RlY3QpOw0KPiA+ID4gICAgICAg
+ICB9DQo+ID4gPg0KPiA+ID4gRG9lcyB0aGF0IHdvcmsgZm9yIGFsbCB5b3VyIHRlc3QgY2FzZXM/
+DQo+ID4NCj4gPiBUaGUgbWFpbiB0ZXN0IGNhc2Ugd29ya3MgaG93ZXZlciBJIHdvbmRlciBpZiBp
+dCBzaG91bGQgYmUgYWxsb3dlZCB0bw0KPiA+IHBhc3MgYSB3aW5kb3cgd2l0aCByZXBsYXkgb2Zm
+IGZvciBleGFtcGxlOg0KPiA+IGlwIGxpbmsgc2V0IG1hY3NlYzAgdHlwZSBtYWNzZWMgcmVwbGF5
+IG9mZiB3aW5kb3cgMzINCj4gPg0KPiA+IGJlY2F1c2Ugbm93IHRoaXMgd2lsbCBzaWxlbnRseSBp
+Z25vcmUgdGhlIHdpbmRvdyBhdHRyaWJ1dGUNCj4gPg0KPiA+IGEgcG9zc2libGUgc2NlbmFyaW86
+DQo+ID4gd2Ugc3RhcnQgd2l0aCBhIG1hY3NlYyBkZXZpY2Ugd2l0aCByZXBsYXkgZW5hYmxlZCBh
+bmQgd2luZG93IHNldCB0byA2NA0KPiA+IG5vdyB3ZSBwZXJmb3JtOg0KPiA+IGlwIGxpbmsgc2V0
+IG1hY3NlYzAgdHlwZSBtYWNzZWMgcmVwbGF5IG9mZiB3aW5kb3cgMzIgaXAgbGluayBzZXQNCj4g
+PiBtYWNzZWMwIHR5cGUgbWFjc2VjIHJlcGxheSBvbg0KPiA+DQo+ID4gd2UgZXhwZWN0IHRvIG1v
+dmUgdG8gYSAzMi1iaXQgd2luZG93IGJ1dCB3ZSBzaWxlbnRseSBmYWlsZWQgdG8gZG8gc28uDQo+
+ID4NCj4gPiB3aGF0IGRvIHlvdSB0aGluaz8NCj4gDQo+IFRoZSBrZXJuZWwgY3VycmVudGx5IGRv
+ZXNuJ3QgYWxsb3cgdGhhdC4gRnJvbSBtYWNzZWNfdmFsaWRhdGVfYXR0cjoNCj4gDQo+ICAgICAg
+ICAgaWYgKChkYXRhW0lGTEFfTUFDU0VDX1JFUExBWV9QUk9URUNUXSAmJg0KPiAgICAgICAgICAg
+ICAgbmxhX2dldF91OChkYXRhW0lGTEFfTUFDU0VDX1JFUExBWV9QUk9URUNUXSkpICYmDQo+ICAg
+ICAgICAgICAgICFkYXRhW0lGTEFfTUFDU0VDX1dJTkRPV10pDQo+ICAgICAgICAgICAgICAgICBy
+ZXR1cm4gLUVJTlZBTDsNCj4gDQo+IFNvIHdlIGNhbiBzZXQgdGhlIHNpemUgb2YgdGhlIHJlcGxh
+eSB3aW5kb3csIGJ1dCBpdCdzIGlnbm9yZWQgYW5kIHdpbGwgYmUgb3ZlcndyaXR0ZW4NCj4gd2hl
+biB3ZSBlbmFibGUgcmVwbGF5IHByb3RlY3Rpb24uDQo+IA0KPiBXZSBjb3VsZCBjaGVjayBmb3Ig
+d2luZG93ICE9IC0xIGluc3RlYWQgb2YgcmVwbGF5X3Byb3RlY3QgYmVmb3JlIGFkZGluZw0KPiBJ
+RkxBX01BQ1NFQ19XSU5ET1csIGFuZCBJIHRoaW5rIHRoYXQgc2hvdWxkIHRha2UgY2FyZSBvZiBi
+b3RoIGNhc2VzLg0KDQpBY2ssIHRoZSBpbml0aWFsIHByb3Bvc2VkIGZpeCBpcyBnb29kIGVub3Vn
+aCBzaW5jZSB3ZSBjYW4ndCByZS1zZXQgcmVwbGF5IHRvIG9uIHdpdGhvdXQNCnByb3ZpZGluZyBh
+IHdpbmRvdywgd2Ugd2lsbCBmYWxsIG9uIHRoZSB0ZXN0Og0KDQplbHNlIGlmICh3aW5kb3cgPT0g
+LTEgJiYgcmVwbGF5X3Byb3RlY3QgPT0gMSkgeyANCiAgICAgICAgICAgICAgICBmcHJpbnRmKHN0
+ZGVyciwNCiAgICAgICAgICAgICAgICAgICAgICAgICJyZXBsYXkgcHJvdGVjdGlvbiBlbmFibGVk
+LCBidXQgbm8gd2luZG93IHNldC4gZGlkIHlvdSBtZWFuICdyZXBsYXkgb24gd2luZG93IFZBTFVF
+Jz9cbiIpOw0KICAgICAgICAgICAgICAgIHJldHVybiAtMTsNCn0NCg0KSSB3aWxsIHNlbmQgYSBW
+MiB3aXRoIHRoZSBwcm9wb3NlZCBmaXguDQoNCj4gPg0KPiA+ID4NCj4gPiA+ID4gICAgICAgICAg
+ICAgICBhZGRhdHRyMzIobiwgTUFDU0VDX0JVRkxFTiwgSUZMQV9NQUNTRUNfV0lORE9XLCB3aW5k
+b3cpOw0KPiA+ID4gPiAgICAgICAgICAgICAgIGFkZGF0dHI4KG4sIE1BQ1NFQ19CVUZMRU4sIElG
+TEFfTUFDU0VDX1JFUExBWV9QUk9URUNULA0KPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAg
+IHJlcGxheV9wcm90ZWN0KTsNCj4gPiA+DQo+ID4gPiAtLQ0KPiA+ID4gU2FicmluYQ0KPiA+DQo+
+IA0KPiAtLQ0KPiBTYWJyaW5hDQoNCg==
