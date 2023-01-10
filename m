@@ -2,360 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92C8E664F2A
-	for <lists+netdev@lfdr.de>; Tue, 10 Jan 2023 23:54:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69F2F664F87
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 00:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234574AbjAJWyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 17:54:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
+        id S232498AbjAJXAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 18:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235433AbjAJWxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 17:53:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A2363F6B;
-        Tue, 10 Jan 2023 14:51:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 158CB6191F;
-        Tue, 10 Jan 2023 22:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10461C433F1;
-        Tue, 10 Jan 2023 22:51:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673391114;
-        bh=o9OeEHKSFKlahP4meTr0ckJWyKeB9yjaFvMZ1lhRkqI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nbd32xmaW9WdO1u/PWOjdJdb+26FTqJao9Sn4v2we5M1eMT3ytIkI5Igxv8PCj6yS
-         H15ViKsK868VH+nPmcUJSG2Rbo5Z8kdSph/JdIGd4sXha9RSQXF6IzjhVijbuF1+6/
-         DOMRusZi9N0mLE0xl7dRLeHHAvc4qGVNw9IjZQ0+2ssQ7L02GFqnXRp+NKk/dASYRt
-         3NU8rFp6CgBdGGYMqTDmQcVf1MQb79lC35/ViyDG0Z85vNNMUqcARAr3oJymwV51VN
-         sUazuUJZrXJvraztzR9CdoWtiCR8j952ZkAw69LLawbwa9H2523ldrw0z+Sx7ukXQM
-         lHMeS5k4au/tg==
-Date:   Tue, 10 Jan 2023 14:51:52 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, jgg@ziepe.ca, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        michael.chan@broadcom.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, selvin.xavier@broadcom.com
-Subject: Re: [PATCH 1/8] bnxt_en: Add auxiliary driver support
-Message-ID: <20230110145152.3029bd2a@kernel.org>
-In-Reply-To: <20230108030208.26390-2-ajit.khaparde@broadcom.com>
-References: <20230108030208.26390-1-ajit.khaparde@broadcom.com>
-        <20230108030208.26390-2-ajit.khaparde@broadcom.com>
+        with ESMTP id S233973AbjAJXAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 18:00:45 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F99B6332
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 15:00:44 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id h7-20020a17090aa88700b00225f3e4c992so18117013pjq.1
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 15:00:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=QU89/JGZJyaCYlVZ271CEmB67eqyUq7j7cVtJKJxXqU=;
+        b=BfIjl7hhTJJ5vCsAXyF/+jhL5DnjDWMHCf+NIc8bb7QVEt3UdjtR7fVEKx8QTAnSxi
+         qN946iW94LTgI0SzbtlZQerObZovErBOV6wlJYR//XqFkaZUJG2K9TpnQt7MWkUx1b7Y
+         DDNQzUFEVOKx/FgQABWFs400Vcudr3sI/QbJDIa73ZaMZRYDJVJaKa/mMkcdg1F2Br++
+         weVeWJszh62e0lhFfwKUgKqvbEBopyghDBDa6cU1SRMBivozDBuOwue+aGzqLTdW0zo4
+         flNGDRP9qt1osWLcNrMNizNBtlpgit81yUfSdbvV+7zCdaGbC1RFt6DC71ITtGw/mSGd
+         8udg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QU89/JGZJyaCYlVZ271CEmB67eqyUq7j7cVtJKJxXqU=;
+        b=akvB8SykkDNXGjogHjVqigcoKMBzo7ZDQsN86IwnLFA301flIBnYE5eBa3RZxE508h
+         lhZ7fRAxRYOpsbpeNGqt+W426c3m7FeZ89C2AcSZqoWhTR4HJ9jUzKFAwv1deNFvVqAf
+         WATY9W61nvhIsWgdqI59UD9qMR78K6l7Cn9fHn3vZ8g/b8JmoM3TL0G2yU5JQi/Lyaf6
+         Wp1RXPxRcngpOBMVkv+wXXCjvIroSHvqJHs82JNajp+7hkJR2+g9ViEfvsWUL7Q2gOcn
+         YVoJb8RxQsMTUbA1GApavJAhK9jNNscG87rdaxiFQaIeHXcgJZ/IT6aeKZ/x/Nz6kK/o
+         rlWQ==
+X-Gm-Message-State: AFqh2krnc5WmqrmIhhoSCdg0WyWm6rdTwD1vxFTN+t9d51bPmLtNrbtz
+        7nMeO5AZpn3aNONLC6Coqj8=
+X-Google-Smtp-Source: AMrXdXsolzVagVe0KHX5y6IpH5Lf4PBDnAisOw8NxKxq5IpNHW/hVHV4vGIzk8rQChyDmf/4KFK/Ew==
+X-Received: by 2002:a17:902:f813:b0:193:39c4:cf55 with SMTP id ix19-20020a170902f81300b0019339c4cf55mr539576plb.17.1673391643963;
+        Tue, 10 Jan 2023 15:00:43 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.37.136])
+        by smtp.googlemail.com with ESMTPSA id k11-20020a170902c40b00b001894198d0ebsm8686011plk.24.2023.01.10.15.00.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jan 2023 15:00:43 -0800 (PST)
+Message-ID: <cb2057cf002611c58ee109d9f250bf43f0b15b01.camel@gmail.com>
+Subject: Re: [PATCH net-next v4 10/10] tsnep: Support XDP BPF program setup
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+Date:   Tue, 10 Jan 2023 15:00:42 -0800
+In-Reply-To: <3d0bc2ad-2c4a-527a-be09-b9746c87b2a8@engleder-embedded.com>
+References: <20230109191523.12070-1-gerhard@engleder-embedded.com>
+         <20230109191523.12070-11-gerhard@engleder-embedded.com>
+         <336b9f28bca980813310dd3007c862e9f738279e.camel@gmail.com>
+         <3d0bc2ad-2c4a-527a-be09-b9746c87b2a8@engleder-embedded.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  7 Jan 2023 19:02:01 -0800 Ajit Khaparde wrote:
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-> index 2e54bf4fc7a7..6c697172f042 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-> @@ -25,32 +25,37 @@
->  #include "bnxt_hwrm.h"
->  #include "bnxt_ulp.h"
->  
-> +static DEFINE_IDA(bnxt_aux_dev_ids);
-> +
->  static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
->  			     struct bnxt_ulp_ops *ulp_ops, void *handle)
->  {
->  	struct net_device *dev = edev->net;
->  	struct bnxt *bp = netdev_priv(dev);
->  	struct bnxt_ulp *ulp;
-> +	int rc = 0;
->  
-> -	ASSERT_RTNL();
->  	if (ulp_id >= BNXT_MAX_ULP)
->  		return -EINVAL;
->  
->  	ulp = &edev->ulp_tbl[ulp_id];
->  	if (rcu_access_pointer(ulp->ulp_ops)) {
->  		netdev_err(bp->dev, "ulp id %d already registered\n", ulp_id);
-> -		return -EBUSY;
-> +		rc = -EBUSY;
-> +		goto exit;
+On Tue, 2023-01-10 at 22:38 +0100, Gerhard Engleder wrote:
+> On 10.01.23 18:33, Alexander H Duyck wrote:
+> > On Mon, 2023-01-09 at 20:15 +0100, Gerhard Engleder wrote:
+> > > Implement setup of BPF programs for XDP RX path with command
+> > > XDP_SETUP_PROG of ndo_bpf(). This is the final step for XDP RX path
+> > > support.
+> > >=20
+> > > tsnep_netdev_close() is called directly during BPF program setup. Add
+> > > netif_carrier_off() and netif_tx_stop_all_queues() calls to signal to
+> > > network stack that device is down. Otherwise network stack would
+> > > continue transmitting pakets.
+> > >=20
+> > > Return value of tsnep_netdev_open() is not checked during BPF program
+> > > setup like in other drivers. Forwarding the return value would result=
+ in
+> > > a bpf_prog_put() call in dev_xdp_install(), which would make removal =
+of
+> > > BPF program necessary.
+> > >=20
+> > > If tsnep_netdev_open() fails during BPF program setup, then the netwo=
+rk
+> > > stack would call tsnep_netdev_close() anyway. Thus, tsnep_netdev_clos=
+e()
+> > > checks now if device is already down.
+> > >=20
+> > > Additionally remove $(tsnep-y) from $(tsnep-objs) because it is added
+> > > automatically.
+> > >=20
+> > > Test results with A53 1.2GHz:
+> > >=20
+> > > XDP_DROP (samples/bpf/xdp1)
+> > > proto 17:     883878 pkt/s
+> > >=20
+> > > XDP_TX (samples/bpf/xdp2)
+> > > proto 17:     255693 pkt/s
+> > >=20
+> > > XDP_REDIRECT (samples/bpf/xdpsock)
+> > >   sock0@eth2:0 rxdrop xdp-drv
+> > >                     pps            pkts           1.00
+> > > rx                 855,582        5,404,523
+> > > tx                 0              0
+> > >=20
+> > > XDP_REDIRECT (samples/bpf/xdp_redirect)
+> > > eth2->eth1         613,267 rx/s   0 err,drop/s   613,272 xmit/s
+> > >=20
+> > > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> > > ---
+> > >   drivers/net/ethernet/engleder/Makefile     |  2 +-
+> > >   drivers/net/ethernet/engleder/tsnep.h      |  6 +++++
+> > >   drivers/net/ethernet/engleder/tsnep_main.c | 25 ++++++++++++++++---
+> > >   drivers/net/ethernet/engleder/tsnep_xdp.c  | 29 +++++++++++++++++++=
++++
+> > >   4 files changed, 58 insertions(+), 4 deletions(-)
+> > >   create mode 100644 drivers/net/ethernet/engleder/tsnep_xdp.c
+> > >=20
+> > >=20
+> >=20
+> > <...>
+> >=20
+> > > --- a/drivers/net/ethernet/engleder/tsnep_main.c
+> > > +++ b/drivers/net/ethernet/engleder/tsnep_main.c
+> > > @@ -1373,7 +1373,7 @@ static void tsnep_free_irq(struct tsnep_queue *=
+queue, bool first)
+> > >   	memset(queue->name, 0, sizeof(queue->name));
+> > >   }
+> > >  =20
+> > > -static int tsnep_netdev_open(struct net_device *netdev)
+> > > +int tsnep_netdev_open(struct net_device *netdev)
+> > >   {
+> > >   	struct tsnep_adapter *adapter =3D netdev_priv(netdev);
+> > >   	int tx_queue_index =3D 0;
+> > > @@ -1436,6 +1436,8 @@ static int tsnep_netdev_open(struct net_device =
+*netdev)
+> > >   		tsnep_enable_irq(adapter, adapter->queue[i].irq_mask);
+> > >   	}
+> > >  =20
+> > > +	netif_tx_start_all_queues(adapter->netdev);
+> > > +
+> > >   	clear_bit(__TSNEP_DOWN, &adapter->state);
+> > >  =20
+> > >   	return 0;
+> > > @@ -1457,12 +1459,16 @@ static int tsnep_netdev_open(struct net_devic=
+e *netdev)
+> > >   	return retval;
+> > >   }
+> > >  =20
+> > > -static int tsnep_netdev_close(struct net_device *netdev)
+> > > +int tsnep_netdev_close(struct net_device *netdev)
+> > >   {
+> > >   	struct tsnep_adapter *adapter =3D netdev_priv(netdev);
+> > >   	int i;
+> > >  =20
+> > > -	set_bit(__TSNEP_DOWN, &adapter->state);
+> > > +	if (test_and_set_bit(__TSNEP_DOWN, &adapter->state))
+> > > +		return 0;
+> > > +
+> > > +	netif_carrier_off(netdev);
+> > > +	netif_tx_stop_all_queues(netdev);
+> > >  =20
+> >=20
+> > As I called out earlier the __TSNEP_DOWN is just !IFF_UP so you don't
+> > need that bit.
+> >=20
+> > The fact that netif_carrier_off is here also points out the fact that
+> > the code in the Tx path isn't needed regarding __TSNEP_DOWN and you can
+> > probably just check netif_carrier_ok if you need the check.
+>=20
+> tsnep_netdev_close() is called directly during bpf prog setup (see
+> tsnep_xdp_setup_prog() in this commit). If the following
+> tsnep_netdev_open() call fails, then this flag signals that the device
+> is already down and nothing needs to be cleaned up if
+> tsnep_netdev_close() is called later (because IFF_UP is still set).
 
-The change to jump to the return statement rater than return directly
-seems unrelated to the rest of the patch, and wrong.
+If the call to close was fouled up you should probably be blocking
+access to the device via at least a netif_device_detach. I susppose you
+could use the __LINK_STATE_PRESENT bit as the inverse of the
+__TSNEP_DOWN bit. If your open fails you clean up, detatch the device,
+and in the close path you only run through it if the device is present.
 
->  	}
->  	if (ulp_id == BNXT_ROCE_ULP) {
->  		unsigned int max_stat_ctxs;
->  
->  		max_stat_ctxs = bnxt_get_max_func_stat_ctxs(bp);
->  		if (max_stat_ctxs <= BNXT_MIN_ROCE_STAT_CTXS ||
-> -		    bp->cp_nr_rings == max_stat_ctxs)
-> -			return -ENOMEM;
-> +		    bp->cp_nr_rings == max_stat_ctxs) {
-> +			rc = -ENOMEM;
-> +			goto exit;
-> +		}
->  	}
->  
-> -	atomic_set(&ulp->ref_count, 0);
-> +	atomic_set(&ulp->ref_count, 1);
->  	ulp->handle = handle;
->  	rcu_assign_pointer(ulp->ulp_ops, ulp_ops);
->  
-> @@ -59,7 +64,8 @@ static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
->  			bnxt_hwrm_vnic_cfg(bp, 0);
->  	}
->  
-> -	return 0;
-> +exit:
-> +	return rc;
->  }
->  
->  static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
-> @@ -69,10 +75,11 @@ static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
->  	struct bnxt_ulp *ulp;
->  	int i = 0;
->  
-> -	ASSERT_RTNL();
->  	if (ulp_id >= BNXT_MAX_ULP)
->  		return -EINVAL;
->  
-> +	edev->flags |= BNXT_EN_FLAG_ULP_STOPPED;
-> +
->  	ulp = &edev->ulp_tbl[ulp_id];
->  	if (!rcu_access_pointer(ulp->ulp_ops)) {
->  		netdev_err(bp->dev, "ulp id %d not registered\n", ulp_id);
-> @@ -126,7 +133,6 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
->  	int total_vecs;
->  	int rc = 0;
->  
-> -	ASSERT_RTNL();
->  	if (ulp_id != BNXT_ROCE_ULP)
->  		return -EINVAL;
->  
-> @@ -149,6 +155,7 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
->  		max_idx = min_t(int, bp->total_irqs, max_cp_rings);
->  		idx = max_idx - avail_msix;
->  	}
-> +
->  	edev->ulp_tbl[ulp_id].msix_base = idx;
->  	edev->ulp_tbl[ulp_id].msix_requested = avail_msix;
->  	hw_resc = &bp->hw_resc;
-> @@ -156,8 +163,10 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
->  	if (bp->total_irqs < total_vecs ||
->  	    (BNXT_NEW_RM(bp) && hw_resc->resv_irqs < total_vecs)) {
->  		if (netif_running(dev)) {
-> +			rtnl_lock();
+Basically what we want to avoid is adding a bunch of extra state as
+what we tend to see is that it will start to create a snarl as you add
+more and more layers.
 
-What prevents the device from going down after you check running 
-but before you take the lock?
-
->  			bnxt_close_nic(bp, true, false);
->  			rc = bnxt_open_nic(bp, true, false);
-> +			rtnl_unlock();
->  		} else {
->  			rc = bnxt_reserve_rings(bp, true);
->  		}
-
-> @@ -475,6 +467,143 @@ static const struct bnxt_en_ops bnxt_en_ops_tbl = {
->  	.bnxt_register_fw_async_events	= bnxt_register_async_events,
->  };
->  
-> +void bnxt_aux_dev_free(struct bnxt *bp)
-> +{
-> +	kfree(bp->aux_dev);
-> +	bp->aux_dev = NULL;
-> +}
-> +
-> +static struct bnxt_aux_dev *bnxt_aux_dev_alloc(struct bnxt *bp)
-> +{
-> +	struct bnxt_aux_dev *bnxt_adev;
-> +
-> +	bnxt_adev =  kzalloc(sizeof(*bnxt_adev), GFP_KERNEL);
-
-double space
-
-> +	if (!bnxt_adev)
-> +		return NULL;
-> +
-> +	return bnxt_adev;
-
-This entire function is rather pointless.
-
-If you really want it - it can be simply written as:
-
-static struct bnxt_aux_dev *bnxt_aux_dev_alloc(struct bnxt *bp)
-{
-	return kzalloc(sizeof(struct bnxt_aux_dev), GFP_KERNEL);
-}
-
-> +}
-> +
-> +void bnxt_rdma_aux_device_uninit(struct bnxt *bp)
-> +{
-> +	struct bnxt_aux_dev *bnxt_adev;
-> +	struct auxiliary_device *adev;
-> +
-> +	/* Skip if no auxiliary device init was done. */
-> +	if (!(bp->flags & BNXT_FLAG_ROCE_CAP))
-> +		return;
-> +
-> +	bnxt_adev = bp->aux_dev;
-> +	adev = &bnxt_adev->aux_dev;
-> +	auxiliary_device_delete(adev);
-
-auxiliary_device_delete() waits for all the references to disappear?
-The lifetime rules between adev and "edev" seem a little odd to me,
-maybe I'm not familiar enough with auxdev.
-
-> +	auxiliary_device_uninit(adev);
-> +	if (bnxt_adev->id >= 0)
-> +		ida_free(&bnxt_aux_dev_ids, bnxt_adev->id);
-> +}
-> +
-> +void bnxt_rdma_aux_device_init(struct bnxt *bp)
-> +{
-> +	int rc;
-> +
-> +	if (bp->flags & BNXT_FLAG_ROCE_CAP) {
-
-flip the condition and return early, don't indent an entire function.
-
-> +		bp->aux_dev = bnxt_aux_dev_alloc(bp);
-> +		if (!bp->aux_dev)
-> +			goto skip_ida_init;
-> +
-> +		bp->aux_dev->id = ida_alloc(&bnxt_aux_dev_ids, GFP_KERNEL);
-> +		if (bp->aux_dev->id < 0) {
-> +			netdev_warn(bp->dev,
-> +				    "ida alloc failed for ROCE auxiliary device\n");
-> +			goto skip_aux_init;
-> +		}
-> +
-> +		/* If aux bus init fails, continue with netdev init. */
-> +		rc = bnxt_rdma_aux_device_add(bp);
-> +		if (rc) {
-> +			netdev_warn(bp->dev,
-> +				    "Failed to add auxiliary device for ROCE\n");
-> +			goto aux_add_failed;
-> +		}
-> +	}
-> +	return;
-> +
-> +aux_add_failed:
-> +	ida_free(&bnxt_aux_dev_ids, bp->aux_dev->id);
-> +	bp->aux_dev->id = -1;
-> +skip_aux_init:
-> +	bnxt_aux_dev_free(bp);
-> +skip_ida_init:
-> +	bp->flags &= ~BNXT_FLAG_ROCE_CAP;
-> +}
-
-> +static inline void bnxt_set_edev_info(struct bnxt_en_dev *edev, struct bnxt *bp)
-
-Please don't use inline for no good reason.
-
-> +{
-> +	edev->en_ops = &bnxt_en_ops_tbl;
-> +	edev->net = bp->dev;
-> +	edev->pdev = bp->pdev;
-> +	edev->l2_db_size = bp->db_size;
-> +	edev->l2_db_size_nc = bp->db_size;
-> +
-> +	if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
-> +		edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
-> +	if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
-> +		edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
-> +}
-> +
-> +int bnxt_rdma_aux_device_add(struct bnxt *bp)
-> +{
-> +	struct bnxt_aux_dev *bnxt_adev = bp->aux_dev;
-> +	struct bnxt_en_dev *edev = bnxt_adev->edev;
-> +	struct auxiliary_device *aux_dev;
-> +	int ret;
-> +
-> +	edev = kzalloc(sizeof(*edev), GFP_KERNEL);
-> +	if (!edev) {
-> +		ret = -ENOMEM;
-> +		goto cleanup_edev_failure;
-> +	}
-> +
-> +	aux_dev = &bnxt_adev->aux_dev;
-> +	aux_dev->id = bnxt_adev->id;
-> +	aux_dev->name = "rdma";
-> +	aux_dev->dev.parent = &bp->pdev->dev;
-> +	aux_dev->dev.release = bnxt_aux_dev_release;
-> +
-> +	bnxt_adev->edev = edev;
-> +	bp->edev = edev;
-> +	bnxt_set_edev_info(edev, bp);
-> +
-> +	ret = auxiliary_device_init(aux_dev);
-> +	if (ret)
-> +		goto cleanup_init_failure;
-> +
-> +	ret = auxiliary_device_add(aux_dev);
-> +	if (ret)
-> +		goto cleanup_add_failure;
-> +
-> +	return 0;
-> +
-> +cleanup_add_failure:
-
-Name your labels after what you clean up, not what failed.
-
-> +	auxiliary_device_uninit(aux_dev);
-> +cleanup_init_failure:
-> +	kfree(edev);
-> +	bp->edev = NULL;
-> +cleanup_edev_failure:
-
-Don't jump to the return statement, just return.
-
-> +	return ret;
-> +}
-> +
->  struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
->  {
->  	struct bnxt *bp = netdev_priv(dev);
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-> index 42b50abc3e91..647147a68554 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-> @@ -17,6 +17,7 @@
->  #define BNXT_MIN_ROCE_STAT_CTXS	1
->  
->  struct hwrm_async_event_cmpl;
-> +struct bnxt_aux_dev;
-
-This forward declaration is not needed, at least in this patch.
-
->  struct bnxt;
->  
->  struct bnxt_msix_entry {
-> @@ -102,10 +103,14 @@ int bnxt_get_ulp_stat_ctxs(struct bnxt *bp);
->  void bnxt_ulp_stop(struct bnxt *bp);
->  void bnxt_ulp_start(struct bnxt *bp, int err);
->  void bnxt_ulp_sriov_cfg(struct bnxt *bp, int num_vfs);
-> -void bnxt_ulp_shutdown(struct bnxt *bp);
->  void bnxt_ulp_irq_stop(struct bnxt *bp);
->  void bnxt_ulp_irq_restart(struct bnxt *bp, int err);
->  void bnxt_ulp_async_events(struct bnxt *bp, struct hwrm_async_event_cmpl *cmpl);
-> +void bnxt_aux_dev_release(struct device *dev);
-> +int bnxt_rdma_aux_device_add(struct bnxt *bp);
-
-This is only used in bnxt_ulp.c, please remove the declaration and make
-it static. Please check other functions for the same problem.
-
-> +void bnxt_rdma_aux_device_uninit(struct bnxt *bp);
-> +void bnxt_rdma_aux_device_init(struct bnxt *bp);
-> +void bnxt_aux_dev_free(struct bnxt *bp);
 
