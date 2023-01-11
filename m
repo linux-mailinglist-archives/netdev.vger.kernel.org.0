@@ -2,198 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B215665B51
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 13:25:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24925665BA1
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 13:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238117AbjAKMY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 07:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
+        id S238846AbjAKMlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 07:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235829AbjAKMY0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 07:24:26 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04477E0BC
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:24:26 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30B15Z7a023925;
-        Wed, 11 Jan 2023 04:24:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=mS1TBG1Sfcd9WuRJ72+xsPDz8LuxPBVXNKgaF/9HwBU=;
- b=KTltq2Dom8TBp79Sf+odl6APPDKvTlnQbIsn+0QI0E+WzCHCLUhFJscyopmPFapucKIz
- wb9gzdBQ7wbOSA85ngWjW1MVSM1Y24Z7B6KDxw4EN1PTf2M7sFnyEspPNEwka579U9UK
- TZ6pbXH4YZcx/sjHjw9RLfGcsfasxy7uTdA8O0p77dYdbGt6YiFiqZY5JUinMwrDk+G1
- EwrNTbWuB+FxeGN6g7Q22TbK3pbv1kOGG96CDooGF6FPHAklhHWjfoH70f7UkDXM4c2t
- bidbqNOHxD+RmZ59X3RLenW++AkZkaOOoJzxCgoUiE8d29FfRDfnR5xxHbhHjNekqFcr EQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n1k55hgv4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Jan 2023 04:24:21 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 11 Jan
- 2023 04:24:19 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Wed, 11 Jan 2023 04:24:19 -0800
-Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 917483F7078;
-        Wed, 11 Jan 2023 04:24:15 -0800 (PST)
-From:   Srujana Challa <schalla@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
-Subject: [PATCH v2 net-next,8/8] octeontx2-af: add mbox to return CPT_AF_FLT_INT info
-Date:   Wed, 11 Jan 2023 17:53:43 +0530
-Message-ID: <20230111122343.928694-9-schalla@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230111122343.928694-1-schalla@marvell.com>
-References: <20230111122343.928694-1-schalla@marvell.com>
+        with ESMTP id S239237AbjAKMkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 07:40:33 -0500
+Received: from mail-oa1-x43.google.com (mail-oa1-x43.google.com [IPv6:2001:4860:4864:20::43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE5119C26
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:39:19 -0800 (PST)
+Received: by mail-oa1-x43.google.com with SMTP id 586e51a60fabf-15eaa587226so688330fac.8
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:39:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=baxoHBp4nwp+eSIfz7bow0djtitpVsI8N+RYIADhEnk=;
+        b=VxHhkq0tOwwDHE1x7XWcccXsm0E+YZW3rs2tfplGrQB0vdUfGc9xJ1VvoPIIhS7e0T
+         U+6SIqMDlwGZWh7sGjxLhjxe8ZSXcFS5OObCKhSS3EADBRuRq4hCIVhsgr952Lwala+f
+         C7vLU8pBOta6tLX/3bVH55hFUKr65YXNCHkdXoyig9n2q8M9as6169+XnFEeIrGkASsE
+         tTtsCB8a0reIjWmy4B6gk6KKIgbJa01/6c+VLwO+erDbwYgkvU+lqTeNYo3IgkHUosVj
+         4SA/8s7hjNh5YSH6+y2bTFjKLt7NTaeKPxLN/a1EjsdN6oIMA/YfbhbZL7l51HIAVHuk
+         Of8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=baxoHBp4nwp+eSIfz7bow0djtitpVsI8N+RYIADhEnk=;
+        b=TxfJGVtjtn8Ryka6Mt/zeGUqIxJOFG3BqTSyLI/jMQV21bLktPlMww/Fb6lLfkxEnT
+         RXvtgDT7Rymtluux+OEm6YgOg/3V6uBeRITPSHyS49k/MHMu435KGX4fw/LoRNiRzbIv
+         +OqAyoQWZ8rpzFR2pBBTlmcDI+yPr8TRBLPcd71IjVISnsLQ6Hr6uBXXc/aCwwWMd34Y
+         02xSDH6aUdbaik/oFZz+0Wc1JJsFaD2viNQm+wRzZMZ9gKZ7vaDl7+ht8CbyQlbu7j0Z
+         qd6IT3cqGbFReXSilrL0adB8C9GMCOP54hcnvdqZXhjj5ZYijvA/sDq7t7w6f7WiZSf7
+         so2A==
+X-Gm-Message-State: AFqh2kpgpcgp7DDjUH8RIEtP6VlZMyxxU4JG6WFqy2ysl8GypI2kn0QG
+        YVmydd+Wo5ZhnwP6d7pDqauEzymGxIIUqBfytbo=
+X-Google-Smtp-Source: AMrXdXuPf97zXfDDhcHvJ6uqRcZxUdNW2pW0jUdFrJayOwm8HiOdwD+ONG3FzQL3dfQ+3K0IvrPMeN66H6rKQyLGAjE=
+X-Received: by 2002:a05:6871:81f:b0:150:4b74:efbc with SMTP id
+ q31-20020a056871081f00b001504b74efbcmr2860885oap.277.1673440758760; Wed, 11
+ Jan 2023 04:39:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: u7d3_AS5LQr349R4AjbdkZJNaKkqXB3y
-X-Proofpoint-ORIG-GUID: u7d3_AS5LQr349R4AjbdkZJNaKkqXB3y
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-11_05,2023-01-11_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:ac9:684b:0:b0:48f:9b83:b750 with HTTP; Wed, 11 Jan 2023
+ 04:39:18 -0800 (PST)
+Reply-To: mrslorencegonzalez@gmail.com
+From:   "Mrs.lorence gonzalez" <deaskuiveariety@gmail.com>
+Date:   Wed, 11 Jan 2023 04:39:18 -0800
+Message-ID: <CAN9KCYFC-DB0MomdQBVB7T6EsOCFjau3F_ex1YP1BxJzHLDFqA@mail.gmail.com>
+Subject: God Bless You As You Read This Message
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a new mailbox to return CPT faulted engines bitmap
-and recovered engines bitmap.
+Hello,
 
-Signed-off-by: Srujana Challa <schalla@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/mbox.h  | 17 +++++++++
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  4 +++
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 35 +++++++++++++++++++
- 3 files changed, 56 insertions(+)
+Am a dying woman here in the hospital, i was diagnose as a Cancer
+patient over  2 Years ago. I am A business woman how dealing with Gold
+Exportation. I Am from Us California
+I have a charitable and unfulfilled project that am about to handover
+to you, if you are interested please reply
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index abe86778b064..5727d67e0259 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -196,6 +196,8 @@ M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
- 			       msg_rsp)                                 \
- M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
- M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
-+M(CPT_FLT_ENG_INFO,     0xA09, cpt_flt_eng_info, cpt_flt_eng_info_req,	\
-+			       cpt_flt_eng_info_rsp)			\
- /* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
- M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
- M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
-@@ -1706,6 +1708,21 @@ struct cpt_lf_rst_req {
- 	u32 rsvd;
- };
- 
-+/* Mailbox message format to request for CPT faulted engines */
-+struct cpt_flt_eng_info_req {
-+	struct mbox_msghdr hdr;
-+	int blkaddr;
-+	bool reset;
-+	u32 rsvd;
-+};
-+
-+struct cpt_flt_eng_info_rsp {
-+	struct mbox_msghdr hdr;
-+	u64 flt_eng_map[CPT_10K_AF_INT_VEC_RVU];
-+	u64 rcvrd_eng_map[CPT_10K_AF_INT_VEC_RVU];
-+	u64 rsvd;
-+};
-+
- struct sdp_node_info {
- 	/* Node to which this PF belons to */
- 	u8 node_id;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 2f480c73ef55..5eea2b6cf6bd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -108,6 +108,8 @@ struct rvu_block {
- 	u64  lfreset_reg;
- 	unsigned char name[NAME_SIZE];
- 	struct rvu *rvu;
-+	u64 cpt_flt_eng_map[3];
-+	u64 cpt_rcvrd_eng_map[3];
- };
- 
- struct nix_mcast {
-@@ -526,6 +528,8 @@ struct rvu {
- 	struct list_head	mcs_intrq_head;
- 	/* mcs interrupt queue lock */
- 	spinlock_t		mcs_intrq_lock;
-+	/* CPT interrupt lock */
-+	spinlock_t		cpt_intr_lock;
- };
- 
- static inline void rvu_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index d7ca7e953683..f047185f38e0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -70,6 +70,14 @@ static irqreturn_t cpt_af_flt_intr_handler(int vec, void *ptr)
- 
- 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), grp);
- 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val | 1ULL);
-+
-+		spin_lock(&rvu->cpt_intr_lock);
-+		block->cpt_flt_eng_map[vec] |= BIT_ULL(i);
-+		val = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_STS(eng));
-+		val = val & 0x3;
-+		if (val == 0x1 || val == 0x2)
-+			block->cpt_rcvrd_eng_map[vec] |= BIT_ULL(i);
-+		spin_unlock(&rvu->cpt_intr_lock);
- 	}
- 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(vec), reg);
- 
-@@ -899,6 +907,31 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
- 	return 0;
- }
- 
-+int rvu_mbox_handler_cpt_flt_eng_info(struct rvu *rvu, struct cpt_flt_eng_info_req *req,
-+				      struct cpt_flt_eng_info_rsp *rsp)
-+{
-+	struct rvu_block *block;
-+	unsigned long flags;
-+	int blkaddr, vec;
-+
-+	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	block = &rvu->hw->block[blkaddr];
-+	for (vec = 0; vec < CPT_10K_AF_INT_VEC_RVU; vec++) {
-+		spin_lock_irqsave(&rvu->cpt_intr_lock, flags);
-+		rsp->flt_eng_map[vec] = block->cpt_flt_eng_map[vec];
-+		rsp->rcvrd_eng_map[vec] = block->cpt_rcvrd_eng_map[vec];
-+		if (req->reset) {
-+			block->cpt_flt_eng_map[vec] = 0x0;
-+			block->cpt_rcvrd_eng_map[vec] = 0x0;
-+		}
-+		spin_unlock_irqrestore(&rvu->cpt_intr_lock, flags);
-+	}
-+	return 0;
-+}
-+
- static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
- {
- 	struct cpt_rxc_time_cfg_req req, prev;
-@@ -1182,5 +1215,7 @@ int rvu_cpt_init(struct rvu *rvu)
- {
- 	/* Retrieve CPT PF number */
- 	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
-+	spin_lock_init(&rvu->cpt_intr_lock);
-+
- 	return 0;
- }
--- 
-2.25.1
+Hope to hear from you.
+Regard
 
+mrslorencegonzalez@gmail.com
+
+Mrs.lorence Gonzalez
