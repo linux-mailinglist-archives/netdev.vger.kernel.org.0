@@ -2,154 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 466BA6661F2
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 18:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED9BE6661EE
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 18:31:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235437AbjAKRap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 12:30:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
+        id S238792AbjAKRan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 12:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239662AbjAKR2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 12:28:47 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0D03D9F3
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 09:25:00 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id g23so1896389plq.12
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 09:25:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NByx23y/6WTDoeQQrsJysazVpw5VoP9tpFdnTA2g30g=;
-        b=KKINuB57md1UtsZPCKcATf+egXFYsn+AioXnK8YTrnnhcF4rRNoV4hRgAe/xHVg4HB
-         QkoujQ+l86IfIpIhwWxnzdSdAlRi8pcuqgNuPOH6Hg4FpC0KsI+GIQJacJRMpVLUnlm5
-         AgGMuIOwoL7q+kfvUTXOFhDaxB3xS5R9ZAOoHzdUfZEunC6dNkiOem0H1Qk9kZ0sLZYi
-         rBK071pbaLtE2lYDJEHXm0h4kqPicKP8YDud3534Y2TbfZUtsPb3qmcUtWDqGBeBpdO6
-         Tu0qGps8XvNdLqyHjT9cWXBqD0QUt7fjMGGMneHd3l7X5YbVOwuLAGDjSmEJA7rI5+kD
-         wtsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NByx23y/6WTDoeQQrsJysazVpw5VoP9tpFdnTA2g30g=;
-        b=HIfFcJS0+Btpe2B73jzLW1nEJagEn6jlwpvo1l9d2JW+MmhCKkQsbaf250RxmFMKS+
-         atdek5RJeZvzTSgFlBhJlwZw5ygF4GoEmzS2l84mhOI2WekYASwazd9Rlcn4lvpcov2d
-         A2rm0kQpdnoldMkpNDrjrW1FSdZFK0IxyA2aNndq8Olvj15F8Urkt5ddb1hpel68g+Rn
-         fD/bcCfsIWryC2bS/mfLlX7FdtvEbJ08mYbZVtSRLuRWy+aoosr5GnmDtKlnGvgoO8Mx
-         2eYG7HH18lmiZcfDJh8KKG+rhJZYuZdMJVF2lNIv5NMNKH6TcKuwM7V95xyTGley+m0v
-         g+hQ==
-X-Gm-Message-State: AFqh2kpDabNYuJBbTkbOabViLhrBtW7RwRYSj0KBkBRqUR/OlpwXSs9v
-        ZtoEWDyhQ42z9qm4079IgjowCLx6j8JshOIvWc4=
-X-Google-Smtp-Source: AMrXdXs33kCf5RuQM2En+SqY72OhTdwdHD9V2SE7l3q/Ih0SILfsTXt+N4b+SgAUQBEppvrNGbWVig==
-X-Received: by 2002:a17:90b:264d:b0:213:18f3:68d1 with SMTP id pa13-20020a17090b264d00b0021318f368d1mr74169906pjb.29.1673457900181;
-        Wed, 11 Jan 2023 09:25:00 -0800 (PST)
-Received: from archl-hc1b.. ([45.112.3.15])
-        by smtp.gmail.com with ESMTPSA id rm14-20020a17090b3ece00b00218fa115f83sm11110722pjb.57.2023.01.11.09.24.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 09:24:59 -0800 (PST)
-From:   Anand Moon <anand@edgeble.ai>
-To:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Johan Jonker <jbx6244@gmail.com>, Anand Moon <anand@edgeble.ai>,
-        Jagan Teki <jagan@edgeble.ai>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5 linux-next 3/4] ARM: dts: Add Ethernet GMAC node for RV1126 SoC
-Date:   Wed, 11 Jan 2023 17:24:33 +0000
-Message-Id: <20230111172437.5295-3-anand@edgeble.ai>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230111172437.5295-1-anand@edgeble.ai>
-References: <20230111172437.5295-1-anand@edgeble.ai>
+        with ESMTP id S239669AbjAKR2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 12:28:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CAB3AA9A;
+        Wed, 11 Jan 2023 09:25:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A715461DA8;
+        Wed, 11 Jan 2023 17:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D301C433F0;
+        Wed, 11 Jan 2023 17:25:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673457902;
+        bh=DVZXWm+6uZXTGUquageewQdNitAS0dZ/Rv0HUi2X+jA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DPY8nHsUYUyB1FMkKMK5P8AKgMQ9KX2B6f247PvJ+riiRDiQoqC/5OzHrzDJ/Vl1P
+         1UCrywVZq6EVIa8yMp/Du7Rec5ZCul8/WdqXUQfJm37zgP/MNHnH93azniNI3/rVXx
+         JKKKrg/yVcOa+w+hxVOEuMn84V+9VByHs+tKbf+o5cVdHYnFE0tlH2u0Ijl9t9Vj0s
+         9m7y2y55yRrNes8naqVEoTmKvUBBRJVkmIzPCN1k/cZTmMONERW9vmSYAW07lKNVS3
+         Wdg41E/mJeGERYO6QM58xc3RtY0Z4fSp909QhAK3H+x5ZZ0xLItWwz4oxSB4nDhied
+         fWU9/PViL4aPg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1pFeqT-00045s-AT; Wed, 11 Jan 2023 18:25:02 +0100
+Date:   Wed, 11 Jan 2023 18:25:01 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Samuel Iglesias =?utf-8?Q?Gons=C3=A1lvez?= 
+        <siglesias@igalia.com>, Rodolfo Giometti <giometti@enneenne.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-usb@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 06/13] tty: Convert ->carrier_raised() and callchains
+ to bool
+Message-ID: <Y77w7aUX4f/f6kFV@hovoldconsulting.com>
+References: <20230111142331.34518-1-ilpo.jarvinen@linux.intel.com>
+ <20230111142331.34518-7-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230111142331.34518-7-ilpo.jarvinen@linux.intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
+On Wed, Jan 11, 2023 at 04:23:24PM +0200, Ilpo Järvinen wrote:
+> Return boolean from ->carrier_raised() instead of 0 and 1. Make the
+> return type change also to tty_port_carrier_raised() that makes the
+> ->carrier_raised() call (+ cd variable in moxa into which its return
+> value is stored).
+> 
+> Also cleans up a few unnecessary constructs related to this change:
+> 
+> 	return xx ? 1 : 0;
+> 	-> return xx;
+> 
+> 	if (xx)
+> 		return 1;
+> 	return 0;
+> 	-> return xx;
+> 
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/char/pcmcia/synclink_cs.c | 8 +++-----
+>  drivers/mmc/core/sdio_uart.c      | 7 +++----
+>  drivers/tty/amiserial.c           | 2 +-
+>  drivers/tty/moxa.c                | 4 ++--
+>  drivers/tty/mxser.c               | 5 +++--
+>  drivers/tty/n_gsm.c               | 8 ++++----
+>  drivers/tty/serial/serial_core.c  | 9 ++++-----
+>  drivers/tty/synclink_gt.c         | 7 ++++---
+>  drivers/tty/tty_port.c            | 4 ++--
+>  drivers/usb/serial/ch341.c        | 7 +++----
+>  drivers/usb/serial/f81232.c       | 6 ++----
+>  drivers/usb/serial/pl2303.c       | 7 ++-----
+>  drivers/usb/serial/spcp8x5.c      | 7 ++-----
+>  drivers/usb/serial/usb-serial.c   | 4 ++--
+>  include/linux/tty_port.h          | 6 +++---
+>  include/linux/usb/serial.h        | 2 +-
+>  net/bluetooth/rfcomm/tty.c        | 2 +-
+>  17 files changed, 42 insertions(+), 53 deletions(-)
 
-Co-Developed-by: Jagan Teki <jagan@edgeble.ai>
-Signed-off-by: Anand Moon <anand@edgeble.ai>
-Signed-off-by: Jagan Teki <jagan@edgeble.ai>
----
-v5: Fix the $subject and add CoD of Jagan
-v4: sort the node as reg adds. update the commit message.
-v3: drop the gmac_clkin_m0 & gmac_clkin_m1 fix clock node which are not
-    used, Add SoB of Jagan Teki.
-v2: drop SoB of Jagan Teki.
----
- arch/arm/boot/dts/rv1126.dtsi | 49 +++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+Same here, please split out the USB serial changes except for the
+actual tty-port op change in usb-serial.c.
 
-diff --git a/arch/arm/boot/dts/rv1126.dtsi b/arch/arm/boot/dts/rv1126.dtsi
-index 1cb43147e90b..1f07d0a4fa73 100644
---- a/arch/arm/boot/dts/rv1126.dtsi
-+++ b/arch/arm/boot/dts/rv1126.dtsi
-@@ -332,6 +332,55 @@ timer0: timer@ff660000 {
- 		clock-names = "pclk", "timer";
- 	};
- 
-+	gmac: ethernet@ffc40000 {
-+		compatible = "rockchip,rv1126-gmac", "snps,dwmac-4.20a";
-+		reg = <0xffc40000 0x4000>;
-+		interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "macirq", "eth_wake_irq";
-+		rockchip,grf = <&grf>;
-+		clocks = <&cru CLK_GMAC_SRC>, <&cru CLK_GMAC_TX_RX>,
-+			 <&cru CLK_GMAC_TX_RX>, <&cru CLK_GMAC_REF>,
-+			 <&cru ACLK_GMAC>, <&cru PCLK_GMAC>,
-+			 <&cru CLK_GMAC_TX_RX>, <&cru CLK_GMAC_PTPREF>;
-+		clock-names = "stmmaceth", "mac_clk_rx",
-+			      "mac_clk_tx", "clk_mac_ref",
-+			      "aclk_mac", "pclk_mac",
-+			      "clk_mac_speed", "ptp_ref";
-+		resets = <&cru SRST_GMAC_A>;
-+		reset-names = "stmmaceth";
-+
-+		snps,mixed-burst;
-+		snps,tso;
-+
-+		snps,axi-config = <&stmmac_axi_setup>;
-+		snps,mtl-rx-config = <&mtl_rx_setup>;
-+		snps,mtl-tx-config = <&mtl_tx_setup>;
-+		status = "disabled";
-+
-+		mdio: mdio {
-+			compatible = "snps,dwmac-mdio";
-+			#address-cells = <0x1>;
-+			#size-cells = <0x0>;
-+		};
-+
-+		stmmac_axi_setup: stmmac-axi-config {
-+			snps,wr_osr_lmt = <4>;
-+			snps,rd_osr_lmt = <8>;
-+			snps,blen = <0 0 0 0 16 8 4>;
-+		};
-+
-+		mtl_rx_setup: rx-queues-config {
-+			snps,rx-queues-to-use = <1>;
-+			queue0 {};
-+		};
-+
-+		mtl_tx_setup: tx-queues-config {
-+			snps,tx-queues-to-use = <1>;
-+			queue0 {};
-+		};
-+	};
-+
- 	emmc: mmc@ffc50000 {
- 		compatible = "rockchip,rv1126-dw-mshc", "rockchip,rk3288-dw-mshc";
- 		reg = <0xffc50000 0x4000>;
--- 
-2.39.0
+You can submit a follow-up series for USB serial as those changes are
+otherwise unrelated to the changed tty-port interface.
 
+Johan
