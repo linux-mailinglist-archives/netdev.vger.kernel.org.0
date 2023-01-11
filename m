@@ -2,47 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B73566516E
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 03:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B21DA66519D
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 03:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231883AbjAKCCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 21:02:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S232195AbjAKCTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 21:19:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235192AbjAKCCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 21:02:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C970A470
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 18:01:36 -0800 (PST)
+        with ESMTP id S235236AbjAKCTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 21:19:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA5EC05
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 18:19:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2B18619B2
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:01:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB16C433EF;
-        Wed, 11 Jan 2023 02:01:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14867619F6
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:19:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F355C433EF;
+        Wed, 11 Jan 2023 02:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673402495;
-        bh=Gy7DpCzyBMDZAwMzayBk4obFYNHuJ8QKeYdxCdr4QIM=;
+        s=k20201202; t=1673403548;
+        bh=QXSoLVticgbS2yqndMr7OxVDMtt9w1dkgisfe/DRvXg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LQFxX6spCKtOe8cQGaACEv/s1LGzKe3oVDwsyIhKKR6JyJKF7YfftT0c8tBZ4BDyy
-         9yFk7/GrYEcLTAjKg5Ekdqs7GU27k8SHuA34zl0F1YGnPYU6OY96+UrivOpM/60Re2
-         wbNikwH+sN5ACWJFfuq96IrPiCnRGQCPrpzg6N0UsHEzHhxcdsLOeD5VzRsVVHI2I7
-         YfhZOJdxX9pVb6Fnb/40LQWEqk6YykiIVivATl6hIl4fVuhnj7tDqyvl3VqcdTGYqH
-         Vz1+rTEOBaOPXEwPey+uO7jt2hmqswoJfoNQN2K9BCoF6LtFSf9QDhEMJuiY84azPE
-         nP7SdvCPrrYmQ==
-Date:   Tue, 10 Jan 2023 18:01:33 -0800
+        b=Jncl4D4JxEj87aGwZxtKmUEotwUGxWrNAhQSu+X+fJ5VTTnTNFCqoz+xyFJ6LUpjk
+         t3GxtFVOGns9l0nK3Oyoa9E4ALU+3GQD8IUJWWcqD7rNChKItsFSjy7sVk5Ub6nu5e
+         XV4cSVRvkHzCKkRonDQBOPak8+YYhUAlK0AWqD1nUbhtVivLSm82xqFlB99Av2pleH
+         KYhSwfolBNxXKPgOUM6XINdhjHaEPagb3GE+Ieb1PG+kvMsydOpKaO8cbRvCFwK7Lz
+         qv8UT8I5Bf4dXafzL0wPkAPSGsqBjJjRH86bnpJ017rAAepmF5+jBnoyx7jz7X70fU
+         Mc2i6oyZF9Rlw==
+Date:   Tue, 10 Jan 2023 18:19:07 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [pull request][net 00/16] mlx5 fixes 2023-01-09
-Message-ID: <20230110180133.5899ae9b@kernel.org>
-In-Reply-To: <20230110061123.338427-1-saeed@kernel.org>
-References: <20230110061123.338427-1-saeed@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Mengyuan Lou <mengyuanlou@net-swift.com>, netdev@vger.kernel.org,
+        jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next v7] net: ngbe: Add ngbe mdio bus driver.
+Message-ID: <20230110181907.5e4abbcd@kernel.org>
+In-Reply-To: <Y7xFiNoTS6FdQa97@lunn.ch>
+References: <20230109153508.37084-1-mengyuanlou@net-swift.com>
+        <Y7xFiNoTS6FdQa97@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,12 +53,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  9 Jan 2023 22:11:07 -0800 Saeed Mahameed wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
+On Mon, 9 Jan 2023 17:49:12 +0100 Andrew Lunn wrote:
+> On Mon, Jan 09, 2023 at 11:35:08PM +0800, Mengyuan Lou wrote:
+> > Add mdio bus register for ngbe.
+> > The internal phy and external phy need to be handled separately.
+> > Add phy changed event detection.
+> > 
+> > Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>  
 > 
-> This series provides bug fixes to mlx5 driver.
-> Please pull and let me know if there is any problem.
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Posted too late in the day for me to pull so FWIW:
+Any preference on this getting merged as is vs Mengyuan implementing
+the c45 support via separate callbacks? I just applied the patches
+adding the new callbacks to net-next:
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=ef1757ef58467310a285e57e6dbf6cf8314e5080
