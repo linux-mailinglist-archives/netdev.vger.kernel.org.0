@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9F2665B4C
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 13:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973CA665B4E
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 13:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232269AbjAKMYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 07:24:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
+        id S236789AbjAKMYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 07:24:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232942AbjAKMYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 07:24:11 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257956376
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:24:11 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30B9Zi4D016451;
-        Wed, 11 Jan 2023 04:24:05 -0800
+        with ESMTP id S233279AbjAKMYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 07:24:15 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928BDE0BC
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:24:14 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30B16r7N027948;
+        Wed, 11 Jan 2023 04:24:09 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=8cazZwH9Kvf5whLyyU7u9nMqVXJ/n7UwztgCWNBTuLc=;
- b=X/KL04gpBYEEVBOHzQ0INlJoBTyRjzVZwpWCLRR5FRAo4G4FXaYlP4iHdPUC/MTibIot
- GxOk2QeS/rBxNkO4IsLSg3xihf+i8S0ZoRTP5EMgkTHEpNIM3ljqY25XhyDtmtGT8F2t
- Ppo+Uis0QIV4fHWa+VPVw7xgGAHNbMtud+ItZkBGpVmEyw4Rdifo920tAWQkst0HVM56
- dd86p22bG8Ja2Q07dDXePIa6B50HAR+8mF8txYId89tE8oZb4VXWHBb23Rklwh/N9SE8
- ddkX6qPE86TDL4GeZXoFgpUzwz/Wkja5gfE443AnreP9RrY/Bz4F7Idrc54Y6PzSzNzB Wg== 
+ bh=sEqiRpmSJHk+r/mLJ0syfwGrgE/Xez82s9VTJeYLOGg=;
+ b=BvgUERr5HN+agyyfZNv5lWZWq6a8oCohwlldFMLGvMeuyW4I5qOh7N9fPRdUUUbB4pWa
+ mVW/CSPedGGV9EXwzju+ph6pAsfPKRORbeFLp6Qn5dy10jBF4WNOia9XQjzH8Y809PtX
+ 8ZS5c4+7QcEQSuinUvWYBxBCS1WsoujK8kXkjnPmTQEdS0KVgKo6D4Xyv8DKtR0aFUso
+ WHS/msbpmW/IAFKPckAt+X+fp/5C5De29emStxa7acyEyOMIMpEtVmka96be1MVSbpB5
+ mR1LX+zC2ULfkUyGTCnmbx/q/2BMwkHP9LFg0IA//qozw6QG1euc3AbUFIQf4cTGgW8r Lw== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3n1k56t553-2
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n1k55hgus-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Jan 2023 04:24:05 -0800
+        Wed, 11 Jan 2023 04:24:09 -0800
 Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 11 Jan
- 2023 04:24:03 -0800
+ 2023 04:24:07 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Wed, 11 Jan 2023 04:24:03 -0800
+ Transport; Wed, 11 Jan 2023 04:24:07 -0800
 Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 0444F3F7040;
-        Wed, 11 Jan 2023 04:23:59 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id D11D63F704A;
+        Wed, 11 Jan 2023 04:24:03 -0800 (PST)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
-Subject: [PATCH v2 net-next,4/8] octeontx2-af: optimize cpt pf identification
-Date:   Wed, 11 Jan 2023 17:53:39 +0530
-Message-ID: <20230111122343.928694-5-schalla@marvell.com>
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>,
+        Nithin Dabilpuram <ndabilpuram@marvell.com>
+Subject: [PATCH v2 net-next,5/8] octeontx2-af: restore rxc conf after teardown sequence
+Date:   Wed, 11 Jan 2023 17:53:40 +0530
+Message-ID: <20230111122343.928694-6-schalla@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230111122343.928694-1-schalla@marvell.com>
 References: <20230111122343.928694-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Yey2nt-mBzAj8fmUw0EjaW5Rva90jOiG
-X-Proofpoint-GUID: Yey2nt-mBzAj8fmUw0EjaW5Rva90jOiG
+X-Proofpoint-GUID: wAEGkO38zxi7XQ2agHMbFZpXSD26tcU6
+X-Proofpoint-ORIG-GUID: wAEGkO38zxi7XQ2agHMbFZpXSD26tcU6
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2023-01-11_05,2023-01-11_01,2022-06-22_01
@@ -68,100 +69,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Optimize CPT PF identification in mbox handling for faster
-mbox response by doing it at AF driver probe instead of
-every mbox message.
+From: Nithin Dabilpuram <ndabilpuram@marvell.com>
 
-Signed-off-by: Srujana Challa <schalla@marvell.com>
+Restore rxc timeout and threshold config after teardown
+sequence is complete as it is global config and not
+per CPT LF.
+
+Signed-off-by: Nithin Dabilpuram <ndabilpuram@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |  8 ++++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h     |  2 ++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c | 13 ++++++++++---
- 3 files changed, 20 insertions(+), 3 deletions(-)
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 22 +++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 3f5e09b77d4b..8683ce57ed3f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -1164,8 +1164,16 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
- 		goto nix_err;
- 	}
- 
-+	err = rvu_cpt_init(rvu);
-+	if (err) {
-+		dev_err(rvu->dev, "%s: Failed to initialize cpt\n", __func__);
-+		goto mcs_err;
-+	}
-+
- 	return 0;
- 
-+mcs_err:
-+	rvu_mcs_exit(rvu);
- nix_err:
- 	rvu_nix_freemem(rvu);
- npa_err:
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 20c75d7c962e..2f480c73ef55 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -511,6 +511,7 @@ struct rvu {
- 	struct ptp		*ptp;
- 
- 	int			mcs_blk_cnt;
-+	int			cpt_pf_num;
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct rvu_debugfs	rvu_dbg;
-@@ -877,6 +878,7 @@ void rvu_cpt_unregister_interrupts(struct rvu *rvu);
- int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf,
- 			int slot);
- int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc);
-+int rvu_cpt_init(struct rvu *rvu);
- 
- /* CN10K RVU */
- int rvu_set_channels_base(struct rvu *rvu);
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index e8973294c4f8..f970cb9b0bff 100644
+index f970cb9b0bff..302ff549284e 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -340,7 +340,7 @@ static int get_cpt_pf_num(struct rvu *rvu)
+@@ -812,10 +812,21 @@ int rvu_mbox_handler_cpt_sts(struct rvu *rvu, struct cpt_sts_req *req,
+ #define RXC_ZOMBIE_COUNT  GENMASK_ULL(60, 48)
  
- static bool is_cpt_pf(struct rvu *rvu, u16 pcifunc)
+ static void cpt_rxc_time_cfg(struct rvu *rvu, struct cpt_rxc_time_cfg_req *req,
+-			     int blkaddr)
++			     int blkaddr, struct cpt_rxc_time_cfg_req *save)
  {
--	int cpt_pf_num = get_cpt_pf_num(rvu);
-+	int cpt_pf_num = rvu->cpt_pf_num;
+ 	u64 dfrg_reg;
  
- 	if (rvu_get_pf(pcifunc) != cpt_pf_num)
- 		return false;
-@@ -352,7 +352,7 @@ static bool is_cpt_pf(struct rvu *rvu, u16 pcifunc)
++	if (save) {
++		/* Save older config */
++		dfrg_reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_DFRG);
++		save->zombie_thres = FIELD_GET(RXC_ZOMBIE_THRES, dfrg_reg);
++		save->zombie_limit = FIELD_GET(RXC_ZOMBIE_LIMIT, dfrg_reg);
++		save->active_thres = FIELD_GET(RXC_ACTIVE_THRES, dfrg_reg);
++		save->active_limit = FIELD_GET(RXC_ACTIVE_LIMIT, dfrg_reg);
++
++		save->step = rvu_read64(rvu, blkaddr, CPT_AF_RXC_TIME_CFG);
++	}
++
+ 	dfrg_reg = FIELD_PREP(RXC_ZOMBIE_THRES, req->zombie_thres);
+ 	dfrg_reg |= FIELD_PREP(RXC_ZOMBIE_LIMIT, req->zombie_limit);
+ 	dfrg_reg |= FIELD_PREP(RXC_ACTIVE_THRES, req->active_thres);
+@@ -840,7 +851,7 @@ int rvu_mbox_handler_cpt_rxc_time_cfg(struct rvu *rvu,
+ 	    !is_cpt_vf(rvu, req->hdr.pcifunc))
+ 		return CPT_AF_ERR_ACCESS_DENIED;
  
- static bool is_cpt_vf(struct rvu *rvu, u16 pcifunc)
- {
--	int cpt_pf_num = get_cpt_pf_num(rvu);
-+	int cpt_pf_num = rvu->cpt_pf_num;
- 
- 	if (rvu_get_pf(pcifunc) != cpt_pf_num)
- 		return false;
-@@ -1015,7 +1015,7 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf, int s
- static int cpt_inline_inb_lf_cmd_send(struct rvu *rvu, int blkaddr,
- 				      int nix_blkaddr)
- {
--	int cpt_pf_num = get_cpt_pf_num(rvu);
-+	int cpt_pf_num = rvu->cpt_pf_num;
- 	struct cpt_inst_lmtst_req *req;
- 	dma_addr_t res_daddr;
- 	int timeout = 3000;
-@@ -1159,3 +1159,10 @@ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc)
+-	cpt_rxc_time_cfg(rvu, req, blkaddr);
++	cpt_rxc_time_cfg(rvu, req, blkaddr, NULL);
  
  	return 0;
  }
+@@ -886,7 +897,7 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
+ 
+ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ {
+-	struct cpt_rxc_time_cfg_req req;
++	struct cpt_rxc_time_cfg_req req, prev;
+ 	int timeout = 2000;
+ 	u64 reg;
+ 
+@@ -902,7 +913,7 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ 	req.active_thres = 1;
+ 	req.active_limit = 1;
+ 
+-	cpt_rxc_time_cfg(rvu, &req, blkaddr);
++	cpt_rxc_time_cfg(rvu, &req, blkaddr, &prev);
+ 
+ 	do {
+ 		reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_ACTIVE_STS);
+@@ -928,6 +939,9 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
+ 
+ 	if (timeout == 0)
+ 		dev_warn(rvu->dev, "Poll for RXC zombie count hits hard loop counter\n");
 +
-+int rvu_cpt_init(struct rvu *rvu)
-+{
-+	/* Retrieve CPT PF number */
-+	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
-+	return 0;
-+}
++	/* Restore config */
++	cpt_rxc_time_cfg(rvu, &prev, blkaddr, NULL);
+ }
+ 
+ #define INFLIGHT   GENMASK_ULL(8, 0)
 -- 
 2.25.1
 
