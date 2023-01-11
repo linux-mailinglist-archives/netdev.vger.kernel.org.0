@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C95B366602E
+	by mail.lfdr.de (Postfix) with ESMTP id 0D21266602C
 	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 17:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235451AbjAKQRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 11:17:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
+        id S235411AbjAKQRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 11:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234474AbjAKQRc (ORCPT
+        with ESMTP id S234496AbjAKQRc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 11:17:32 -0500
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2053.outbound.protection.outlook.com [40.107.14.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0356C1C921;
+Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2080.outbound.protection.outlook.com [40.107.247.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722131C939;
         Wed, 11 Jan 2023 08:17:20 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P9LI8IFEIpUFzuOTAGZ/RnJVP6E5NsDYAIAy5fr0F2utMQPSpCi9wgjNLhIbz3UBxDPctMPmlmpCztVSX+tMVWEiyvm4/0XutDTDh+CzxQUWi3M5PXyKYHlHne8mcymbETfVjyx1E+4FnrE845nUhDc6jK0kaFqATM9gFQ61cH3pa2/ehhyq9IUuP0GwoN1os25cQjiMNkizqNyjsJuFrs3DUZWjxGvWeUgXRM4D89zLazLo1mPgmksNUsJyldzrXd+Y0SkUUedEIThtzKF3K8bz9s/yuGgk8Baif2/6ljgJSoqTP6doQUPtAUaVDZzVqxzbfqeqohoofHrv0owyGg==
+ b=gHRagcAPQCvv6bd3Ns5SBaBib3ppGY6hXsiLEna3wq95y4qnWqnb5nZ6Q7SURri/MZocr1U37BaZ/DAOxGSsoCm7PYt1js1ngP7iX+vcM0xfiPunnS6qrKitH1bPWZGFKQ+mYceaoBt7LIDXVLzNR5lE3jfTcrqfXKcp5MClg79afFRCKu+LRYvhUFFA+3ijeabBDwzGed8bUZeAQBWPJyuwXDvMYlL592ZqAK5ImZVYM5DXomVjgLzLjvNTxHhIHnvdqDXTJ/BLKiJTLjZJkvDkuPtW0ubRejulO4oue2T8nSS1UOtuXQZr2RA5GQcygz7+PbetF4UZSFwRVyyzjg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wOq/BfDDC/v6g5kKEr5MBnUn6KefkNGrzfjf5oYBVv8=;
- b=KG7+TVqxjWAvsFWvIdE2OhotN9jbp0yEbv/bfjZn9/kRJKa6FB8RcMWDNsqmEAvppaekYXhB5vHmzgHkknGSc3Yh1s8x0jWxdYhoSv33c8M+ZA5gCczJIwLZqGDzVoB/CUWGop8h5e2NETYtlOy8oCnsbK6t6Wz4PahTtxInY3+7oUwU9xwK7Ck3VQnMCWgUw94VGJDJiUCGGQhoLCNHmq6TCX7KNbWqSwVYWizxw+a8qRevUpxAuvP4eYF0w3LacsI9ZQgp7nM561z6Ck7F38RRIKVDH3I7jPtTQWyyviE2QVjpQdU3uc0lIw3wx2oI3q+DPzIxMMEg+aBk/15vdQ==
+ bh=U+K3mCrI0dzl3Y0k6y6S7df61prpHK+2vgLIdLHOEW0=;
+ b=GiN/H2yMbmE3vGRLS38S7VZ7ywt4RILVu4WAraQQLXP4YJfqq2vMpon5ToB8bHgd6tlE8YyDM45oBUPy/K8il5qKGUgtLth3DmH/aaQncZtp787VBKfHez3394Zz426jO13Ji8IslD+gcB8VAPEf9ZqpSNFQtt2B49irVQgX+4/VfpVn0+iA1JXpPKmNk+ksNpZ1w5bqPONhMp6njUdSWQkEU38VnJEYEFF5ViHXqtGofXcGJIByvGh458gdmIvUVzbMb7SywdCjPA8cGbLlijse3O8jVp/u2ovPWjUFUicQzLgqpgEVouhdek7Cc7L4RZKMVpUUsnyoEuXo0P6+BQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wOq/BfDDC/v6g5kKEr5MBnUn6KefkNGrzfjf5oYBVv8=;
- b=aSs8+GnwdQX1rsz5uQ6AWucvISLSAPOUMd7kMXQBzzhHtfMHlJZD8NiOCiepjhEnpOqpYFFdPIVM2wXnW9wuoFrP+hBmRngtAM1KIMgDmwrbuEmilmGIhr2QkM8Rr42hISOWDxABzBUGSce40OXaBuPuWPTuT77G6Q5nficdkcE=
+ bh=U+K3mCrI0dzl3Y0k6y6S7df61prpHK+2vgLIdLHOEW0=;
+ b=PfsOzVCgme38DLwSzVtlNWfEH+Zm9CXVHxpqPbEduOFpwjzBV7ZAktisuZAEtVgMR6tgeeABd0MV/nD459U9lgZ0cazwMsi3OyEelGMRqOf7Ofll4H+xKs4dalLYF1EL6BngyDW9lUH+x4aMvuRqOVee9vCbq0nS/5znq2WAH9c=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB7168.eurprd04.prod.outlook.com (2603:10a6:800:129::8) with
+ by DB9PR04MB8462.eurprd04.prod.outlook.com (2603:10a6:10:2cd::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 11 Jan
- 2023 16:17:16 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Wed, 11 Jan
+ 2023 16:17:18 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.5986.018; Wed, 11 Jan 2023
- 16:17:16 +0000
+ 16:17:18 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -60,10 +60,12 @@ Cc:     linux-kernel@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH v2 net-next 00/12] ethtool support for IEEE 802.3 MAC Merge layer
-Date:   Wed, 11 Jan 2023 18:16:54 +0200
-Message-Id: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 01/12] net: ethtool: netlink: introduce ethnl_update_bool()
+Date:   Wed, 11 Jan 2023 18:16:55 +0200
+Message-Id: <20230111161706.1465242-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
+References: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BE1P281CA0163.DEUP281.PROD.OUTLOOK.COM
@@ -71,53 +73,53 @@ X-ClientProxiedBy: BE1P281CA0163.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|VI1PR04MB7168:EE_
-X-MS-Office365-Filtering-Correlation-Id: f00cb562-bfff-4b4d-33c3-08daf3ef4e47
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB9PR04MB8462:EE_
+X-MS-Office365-Filtering-Correlation-Id: ca3d3772-e488-4dad-c386-08daf3ef4f1d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dwwREjBzwS+odJMxmBky+PDp5onnkaPSmcyuiQYhLCsmA3bDt4LFyDnoo+2jGlZKFW+AYIfvmic537d6mOflIQS2FFaHFI/8Hh856T0sry8FhemNJpfUBF+KzCcaCEeyfHe4HH53wJwsaBpc+XaHzDYohxsMMmdHo7FfgBaJTJpmoOb4wjTUyCGNN2F3kMaGw5TwYm2+dx6OLoSIrE3u8LOcGol8Qd9OQ+/daTtKR7fzYYNQznNhKXfuWUvfstrRoD5HuS3Rc/OKukwPZeWu2Jf0zACYhX+zmGv8O8l2aQtjXXhQdpTgYdSWavej9Czk+tUS2+kQZavuQYlt5/sz3/GgxbVzEvXV6geFPFNeXaS3BaMjFGStp2BG5VjjT4MVXgkXk/LddqagrNXLEEEGxxm+dRtb2+Zn9gmh5Gg/qY9yOWd2YZtvyjJoNeN3hCwkW0tTVmGQAPinTzfdbNNnK+AcHz9I1yFuOryTTEcMvoBPa5bqJFoC1eM6FxXwdcHu1lA5NXZPLTOZ4dq/hSP9b37ews4u1mnyhCZq46qX5xtNLm91Kcmb2yZ8IvVMI3Dw4bMmv/JFIHEaJq1eY0ATN86A/+tCnqbs6ST4O1R+6NtfxUDI1O8gL5Q5rvwS68rnqClFoD8jNPrdgaK5YWvOcPJjjfCX2Oke/mEEBUt1IsU5H7jI9v04kiU4Gn3PheSUYje8SmuDpJPMXqz4tspaykdlOWaJwcNYeVf0r+m/8kFVTkX6G/xHFNCGHQd4CAskubC/EdnBFwrQAODVbLb7UPfBgRXvm8M4g8CuwaQx8P8MqdM3m4YwYyRtMr9VK4DJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(396003)(346002)(136003)(451199015)(478600001)(966005)(6486002)(41300700001)(38100700002)(38350700002)(6512007)(1076003)(86362001)(54906003)(316002)(2616005)(52116002)(26005)(66476007)(66946007)(66556008)(186003)(4326008)(8676002)(6916009)(36756003)(5660300002)(6666004)(6506007)(7416002)(2906002)(44832011)(8936002)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: tsx1WU9uDnhYv6TkuzAvPBxtrv/BO9E/bbvkHOloGVDTWGNe5+B83L/PAp7bGqcTAa3w5PqDLZV04TQ0GU1AXltPrbdckaWSvTFzWnD6rxv+nFWNMdKaauxkJrYNManDD0qFWwyipNemF20ShB9Z89i/kl1ZrNAVZhBXAaihx6NZT5bp/QXqv/VDah61zJAdopR1vNBpJ/7PuLaIQTzqOeF2VfueZdriEenRUXInb29LI3VagvnruDLwQVHAwVgiH6mEq/wrABqMrg7vjV57sGEKWp312zKb3lDLjV4JVF/8JBJy5kI9ivzfjPQB692TLdX7lJum8F5cqmQXJK2D3tN+3K9AjELdSecxnFDzj5V0eeZGqAFtxOyPtib6GrKSTW66+XRouUozvOKAVBveHO3oJmkXX199XdDyMZfd7cBjbAPAqB4s4OfdCDK9QfV0Kl1D6DvdFreB3SGLAgpiCJofGF93/w2M925qju5K6Vbf6SBDrXFp/BezC3F0m4kHEKKtZ2wdNSdJAnECE1z0q/t+ZDc1Pnq4tX5kwew7UYKTmRTyP21dqQ/cI658bjNMNqXwJ3tRYJ1rFOnZgL0f4greXyXfABL7PArE9k3dUOCY9BkrsGA17v3/1oEyjHUcW6G6z06yoQKgtZe2kHRNQmI69U1pOReiAl/NrtHq8occo2h0soIiEY4THOFH1KhWKi2jIWOPAEMvG3ZQRvNiyv05T8y3B9cEaN54siItCAw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(451199015)(36756003)(26005)(186003)(8936002)(6666004)(6512007)(6486002)(6506007)(1076003)(2616005)(66946007)(5660300002)(66476007)(66556008)(52116002)(7416002)(6916009)(316002)(4326008)(86362001)(41300700001)(38100700002)(38350700002)(478600001)(54906003)(8676002)(83380400001)(44832011)(2906002)(309714004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?n1o3JNqXjBEvZ6XWZE28Y5OzuiJtgqXu8AfTbsBEUkZUU42z5qSpAZDgATlD?=
- =?us-ascii?Q?jePDdVcKi4w0KbrGQf5qk7flpMV/DRAgTX/KEUPqGAsp94Fzv78UabC5KZ6s?=
- =?us-ascii?Q?tGcgrjPylPvdcBbtJtqpvEfIxxdcAmt9K3HFx+930AjGovoeTjy5bjgjQbRz?=
- =?us-ascii?Q?haVNQ/KAckyrPSYxurrdwiv+oC+jZnzZMu86gu3xlR+4ywrpNpdl6szy8D4r?=
- =?us-ascii?Q?Cjr1mfBxs/w/TLxgnlbGfl/9MqdWn1P9vrpG5NgjHUXNgNMlaQc5T9c7u2W7?=
- =?us-ascii?Q?IsAFvYC9JmQ7irxIFzcHrG08dyI+ptnQgq+odZm2GufvSIxSkahXGs+71R4P?=
- =?us-ascii?Q?vQSyRcD7p1QHWt3Z7Yxb+0s/OPMZpCJUvnBtFVW4RuZXuQyh+05IA8sRW5H+?=
- =?us-ascii?Q?hVgE4q00Zk0CO42LqD+a8OOcdxNtbtJr8vnGLed9wwj6admCa1nvnS/ss7iv?=
- =?us-ascii?Q?3TnYgH2EeGvNkLPJA8Y9X12PuqFG2nDAHpXlGXwZOZLFXWi8oYM0KYi/+mvS?=
- =?us-ascii?Q?/7ba18FrCtEMZTKu9Dkxo7EHMTjjJ6flhPzkFKuoMGZePQY3a8dufIyq6/UB?=
- =?us-ascii?Q?ZrvVt5iWcpKETYdTTfn2s2rIZDcEsPSVof0kTlwopauSeB3qNcAikXfK1E7A?=
- =?us-ascii?Q?KxvdzNK/YvJYuECQ6XsaJeBnaAaEvI1jENqTJwp8VbSEV8/qMNC3CAaxl5f6?=
- =?us-ascii?Q?Obe4ghpxo7+oWFC2Kj7gKR54XPq9OGlOFsJWmglvAMxQ/NpeJbYYk19NEZul?=
- =?us-ascii?Q?btdfQQW7stbus3QMx1tjC7LGerUpEft5Y+p785rJ5QkwV7lyMuhcAHbZoIkb?=
- =?us-ascii?Q?aC81zniQj6TwQLXg4kkxzsCR8LsISOI9/E3Q7w86XRFp7qngxOHSeQH34Tio?=
- =?us-ascii?Q?uV1o1/x9FlvSYGAbLWx9U3kHT9BuWzj5pDjGLbwMIsuOcproyrudeiJmGBWh?=
- =?us-ascii?Q?bUNmB0AYBNcR/NtYIOkl771KHep4HJC8leYGwsl/Q4xQg6qRPM4yPotEfvwe?=
- =?us-ascii?Q?ppJoCBBvhitl4zTOAP3xaMXvBuYPzeWVg1RaCCNVc68FqozjNBRSe7NJq0gn?=
- =?us-ascii?Q?jLvLc28UO+sY7hK8PSdE33aB1XFvHlG8/umoZDclmir8dn+Lg6zwnWzqXQW7?=
- =?us-ascii?Q?KSSBPVldOro3ovLWWlwr+Ic/J/qeHBNfVkF0qusk1PTHl6HCTqTIr6Fvpc//?=
- =?us-ascii?Q?PCmW5nSd7zWzFxXDhTR7sepg/LxI+oKKG6mJMHaASlm34MDJGk1oBvY0O1w5?=
- =?us-ascii?Q?PRC3XdL6IcSW+eoxSsmhxphPCM1VEkwrgYxZoYWYWEaRfW0gcQkJrGGqqvyJ?=
- =?us-ascii?Q?NDobcvqpwuEKCfvDkhm/QxU6/uEzOI01TD1P06tmuaRZwHn7Jx1XFZyQfStm?=
- =?us-ascii?Q?FovTLz4XGRC3P9m2MozVPPqDMjCbExy+42miUBcsb1Y5NxUfEJisxW+fCWtT?=
- =?us-ascii?Q?1vroeKR/mzsuAJFKC+wIh4QkajNV/jiold54FmN9suIY21BpHLyRSNsKsi2e?=
- =?us-ascii?Q?dNbHV3oTumzeOm4cyjddE5oNx2sxoqC2YydBY5O/X759OhLQcQLlcukvwCAN?=
- =?us-ascii?Q?42Ueh/gIQhhqHtsaP0nFnDwV68g6dthoeJaNauXzRPIBJ4RiNnLA/sIZnAfu?=
- =?us-ascii?Q?sg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w+4mAdpHXDDBP1v9b3ZK0SVWAaXNiX2a2AflQbYcBlYwrJt9cZVSNL+ftELw?=
+ =?us-ascii?Q?EOEK7mR3ihN6LJu0ES3KYwBYmCYwsVgiH18KjINj51lxAfs6TqvvvUY3Zi/N?=
+ =?us-ascii?Q?zCTRAIJd9GX8JPs7J9GA/eY0S4WoCyLrnOiOjxqKho6dxKipri3gK20oA6n5?=
+ =?us-ascii?Q?TOQwDparZavZpoyaD/DwBFn9AsYFprdaRjeg/P55HuCgo8y1gxyhTXwrtfUQ?=
+ =?us-ascii?Q?PbJfc57Or9+8ErRFo0FJjsL3knw/MwolwFtYeqNVPTz9tpkB6uyAWOTF0b3H?=
+ =?us-ascii?Q?MLSWvu6HzJIetexLJUjUJroROtlRCMTkymlEPVzh7lIJtVZK/1EyF53DFwj9?=
+ =?us-ascii?Q?L9LmFvc0W5b5tkFOt5UUjCPawdulcy7RUwlW3PagsiHvxKEPKK9T8k3wFIeW?=
+ =?us-ascii?Q?EDtTOKE/b/tfV4IJadPRkYRXalOSjmRU8HUUhncX1Y1AeptY6AFgzuQd0hC/?=
+ =?us-ascii?Q?YD4UozBjfJ7IibeOeDDb08/xKd30FdzGDk8dsnN3/1bkSAMgIGmiAdPztWU4?=
+ =?us-ascii?Q?4Q17I8bIOhAwRSxBmlyhi9v0QcathYJ1BAC5cstXXRttqnonQr1F+ahPo/VT?=
+ =?us-ascii?Q?Phml0VZx6r7hY2Ir8rL+L6OzFwukLgcxI5ZvRx4mPFtNRAeDogvd4gB+hvd+?=
+ =?us-ascii?Q?gkGhGcNrccp58BmP0Ijp0+Akg/o825oog63d2GqRx47UH4aZXE93iXY/Bm+3?=
+ =?us-ascii?Q?Y93Srl4rdiHsEvu1bVdwpFo7f0/fEgonfXvnVJzH9rx90DFi3NlClwJrKPf8?=
+ =?us-ascii?Q?JRH2quJ5tvAswYrW90xDGnFzk77ggTZbAwP7Fa03A990gcgS/ZQErkSAx0hH?=
+ =?us-ascii?Q?onYyNEj0pocLOzp7XjXVyw4ceuhT/XcRkeHjsHtTkoWoVkJIKbJRisRSKNZD?=
+ =?us-ascii?Q?UstXKCFwwB/oE1VSojlU2DXMX0/xGipeu8kP/pjbA4iGc0QKL+B634arO6ls?=
+ =?us-ascii?Q?dDY9p0OIMGgSWduenmnZr9PsLbai4WqnjTGdQXElqfFrT+ETqUZt9ohLfsUN?=
+ =?us-ascii?Q?HjQ+Wl4Gj88zcOyPzpc4eOzUG08i3e5mDu0qc5ZWHB8LMU58H7WWslk4bRrv?=
+ =?us-ascii?Q?M9I6ib1eY73WdJVYesy8yuQAKJOtN9igxFcpT4B6v06r8HtceBH9yVkjJ4te?=
+ =?us-ascii?Q?tWw/Vxaajo9nVN+j0CguKjR3HnO5YyA669NL2btDfnfuxllxnPJwtUgXNyR7?=
+ =?us-ascii?Q?dj2WjXlbxgYxpvwSI6b7Zeabpoy4FPWWclMGm7GPmHDvVtUbBgGEFNPNFjPq?=
+ =?us-ascii?Q?CKgNz7V3MTM7fN9fws7P9f4Q+D2xtpeSjY1lJedOqfW8ZvsTwaqFyZV29PHO?=
+ =?us-ascii?Q?7mC9za33J+uoriQMoYkW3AbnLP2dujc/IeCwEZSaDCsU7T1HFe5sHO2qYDzW?=
+ =?us-ascii?Q?70Jw5abS5DoBNkdu401D2VdjPQBNPbn5xriSmBppakh/PL8ov6mV4ZcbLH0J?=
+ =?us-ascii?Q?Dp6EvFyynbDXF/k7CwSnT8Ulk+6xUkNCMk1Wp/MF84SXpfCLuhCjevdqi111?=
+ =?us-ascii?Q?72fpGTCcz4Drf/gmi5LEFifuKqIiFM1g0bWYhOunJJWXpJHPMHxhvT9mzBKz?=
+ =?us-ascii?Q?TsuFVWAjXQtUZoWFC53sfQe2E0l6v+YTmj9jg8fEY3pY8JorUPB6M1rhF9rP?=
+ =?us-ascii?Q?1A=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f00cb562-bfff-4b4d-33c3-08daf3ef4e47
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca3d3772-e488-4dad-c386-08daf3ef4f1d
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 16:17:16.3775
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 16:17:18.0336
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: erSViiAqgDD54YWSGEz97fzW0pkUs8daqN4iWKd3UR9CQqNc6+E3tawIFJZ+jwDqkWIS4x3Q1RkwTaekcCmS8w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7168
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7ZBHiy6hh7y34iz/Np0qtGXW5T86mfjciLPfbYcAeBome53HKQceG0Sinr6Cf627rZgIPlJVo80lTIgakKVbtQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8462
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -128,131 +130,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a continuation of my work started here:
-https://patchwork.kernel.org/project/netdevbpf/cover/20220816222920.1952936-1-vladimir.oltean@nxp.com/
+Due to the fact that the kernel-side data structures have been carried
+over from the ioctl-based ethtool, we are now in the situation where we
+have an ethnl_update_bool32() function, but the plain function that
+operates on a boolean value kept in an actual u8 netlink attribute
+doesn't exist.
 
-I've decided to focus just on the MAC Merge layer for now, which is why
-I am able to submit this patch set as non-RFC.
+With new ethtool features that are exposed solely over netlink, the
+kernel data structures will use the "bool" type, so we will need this
+kind of helper. Introduce it now; it's needed for things like
+verify-disabled for the MAC merge configuration.
 
-What is being introduced
-------------------------
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v1->v2: rewrite commit message
 
-TL;DR: a MAC Merge layer as defined by IEEE 802.3-2018, clause 99
-(interspersing of express traffic). This is controlled through ethtool
-netlink (ETHTOOL_MSG_MM_GET, ETHTOOL_MSG_MM_SET). The raw ethtool
-commands are posted here:
-https://patchwork.kernel.org/project/netdevbpf/cover/20230111153638.1454687-1-vladimir.oltean@nxp.com/
+ net/ethtool/netlink.h | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-The MAC Merge layer has its own statistics counters
-(ethtool --include-statistics --show-mm swp0) as well as two member
-MACs, the statistics of which can be queried individually, through a new
-ethtool netlink attribute, corresponding to:
-
-$ ethtool -I --show-pause eno2 --src aggregate
-$ ethtool -S eno2 --groups eth-mac eth-phy eth-ctrl rmon -- --src pmac
-
-The core properties of the MAC Merge layer are described in great detail
-in patches 02/12 and 03/12. They can be viewed in "make htmldocs" format.
-
-Devices for which the API is supported
---------------------------------------
-
-I decided to start with the Ethernet switch on NXP LS1028A (Felix)
-because of the smaller patch set. I also have support for the ENETC
-controller pending.
-
-I would like to get confirmation that the UAPI being proposed here will
-not restrict any use cases known by other hardware vendors.
-
-Why is support for preemptible traffic classes not here?
---------------------------------------------------------
-
-There is legitimate concern whether the 802.1Q portion of the standard
-(which traffic classes go to the eMAC and which to the pMAC) should be
-modeled in Linux using tc or using another UAPI. I think that is
-stalling the entire series, but should be discussed separately instead.
-Removing FP adminStatus support makes me confident enough to submit this
-patch set without an RFC tag (meaning: I wouldn't mind if it was merged
-as is).
-
-What is submitted here is sufficient for an LLDP daemon to do its job.
-I've patched openlldp to advertise and configure frame preemption:
-https://github.com/vladimiroltean/openlldp/tree/frame-preemption-v3
-
-In case someone wants to try it out, here are some commands I've used.
-
- # Configure the interfaces to receive and transmit LLDP Data Units
- lldptool -L -i eno0 adminStatus=rxtx
- lldptool -L -i swp0 adminStatus=rxtx
- # Enable the transmission of certain TLVs on switch's interface
- lldptool -T -i eno0 -V addEthCap enableTx=yes
- lldptool -T -i swp0 -V addEthCap enableTx=yes
- # Query LLDP statistics on switch's interface
- lldptool -S -i swp0
- # Query the received neighbor TLVs
- lldptool -i swp0 -t -n -V addEthCap
- Additional Ethernet Capabilities TLV
-         Preemption capability supported
-         Preemption capability enabled
-         Preemption capability active
-         Additional fragment size: 60 octets
-
-So using this patch set, lldpad will be able to advertise and configure
-frame preemption, but still, no data packet will be sent as preemptible
-over the link, because there is no UAPI to control which traffic classes
-are sent as preemptible and which as express.
-
-Preemptable or preemptible?
----------------------------
-
-IEEE 802.3 uses "preemptable" throughout. IEEE 802.1Q uses "preemptible"
-throughout. Because the definition of "preemptible" falls under 802.1Q's
-jurisdiction and 802.3 just references it, I went with the 802.1Q naming
-even where supporting an 802.3 feature. Also, checkpatch agrees with this.
-
-Vladimir Oltean (12):
-  net: ethtool: netlink: introduce ethnl_update_bool()
-  net: ethtool: add support for MAC Merge layer
-  docs: ethtool-netlink: document interface for MAC Merge layer
-  net: ethtool: netlink: retrieve stats from multiple sources (eMAC,
-    pMAC)
-  docs: ethtool: document ETHTOOL_A_STATS_SRC and
-    ETHTOOL_A_PAUSE_STATS_SRC
-  net: ethtool: add helpers for aggregate statistics
-  net: ethtool: add helpers for MM addFragSize translation
-  net: dsa: add plumbing for changing and getting MAC merge layer state
-  net: mscc: ocelot: allow ocelot_stat_layout elements with no name
-  net: mscc: ocelot: hide access to ocelot_stats_layout behind a helper
-  net: mscc: ocelot: export ethtool MAC Merge stats for Felix VSC9959
-  net: mscc: ocelot: add MAC Merge layer support for VSC9959
-
- Documentation/networking/ethtool-netlink.rst | 123 +++++++
- Documentation/networking/statistics.rst      |   1 +
- drivers/net/dsa/ocelot/felix.c               |  28 ++
- drivers/net/dsa/ocelot/felix_vsc9959.c       |  57 +++-
- drivers/net/ethernet/mscc/Makefile           |   1 +
- drivers/net/ethernet/mscc/ocelot.c           |  18 +-
- drivers/net/ethernet/mscc/ocelot.h           |   2 +
- drivers/net/ethernet/mscc/ocelot_mm.c        | 213 ++++++++++++
- drivers/net/ethernet/mscc/ocelot_stats.c     | 331 +++++++++++++++++--
- include/linux/ethtool.h                      | 245 +++++++++++---
- include/net/dsa.h                            |  11 +
- include/soc/mscc/ocelot.h                    |  58 ++++
- include/soc/mscc/ocelot_dev.h                |  23 ++
- include/uapi/linux/ethtool.h                 |  43 +++
- include/uapi/linux/ethtool_netlink.h         |  50 +++
- net/dsa/slave.c                              |  35 ++
- net/ethtool/Makefile                         |   4 +-
- net/ethtool/common.h                         |   2 +
- net/ethtool/mm.c                             | 273 +++++++++++++++
- net/ethtool/netlink.c                        |  19 ++
- net/ethtool/netlink.h                        |  34 +-
- net/ethtool/pause.c                          |  47 +++
- net/ethtool/stats.c                          | 158 ++++++++-
- 23 files changed, 1697 insertions(+), 79 deletions(-)
- create mode 100644 drivers/net/ethernet/mscc/ocelot_mm.c
- create mode 100644 net/ethtool/mm.c
-
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 3753787ba233..744b3ab966b0 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -111,6 +111,32 @@ static inline void ethnl_update_u8(u8 *dst, const struct nlattr *attr,
+ 	*mod = true;
+ }
+ 
++/**
++ * ethnl_update_bool() - update bool from NLA_U8 attribute
++ * @dst:  value to update
++ * @attr: netlink attribute with new value or null
++ * @mod:  pointer to bool for modification tracking
++ *
++ * Use the u8 value from NLA_U8 netlink attribute @attr to set bool variable
++ * pointed to by @dst to false (if zero) or 1 (if not); do nothing if @attr is
++ * null. Bool pointed to by @mod is set to true if this function changed the
++ * logical value of *dst, otherwise it is left as is.
++ */
++static inline void ethnl_update_bool(bool *dst, const struct nlattr *attr,
++				     bool *mod)
++{
++	u8 val;
++
++	if (!attr)
++		return;
++	val = !!nla_get_u8(attr);
++	if (*dst == val)
++		return;
++
++	*dst = val;
++	*mod = true;
++}
++
+ /**
+  * ethnl_update_bool32() - update u32 used as bool from NLA_U8 attribute
+  * @dst:  value to update
 -- 
 2.34.1
 
