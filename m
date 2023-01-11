@@ -2,194 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F21D76665A1
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 22:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A31646665A5
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 22:34:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbjAKV3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 16:29:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        id S234959AbjAKVeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 16:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235628AbjAKV3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 16:29:14 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7C8633C
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 13:29:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673472551; x=1705008551;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=S8LQfv6VEjtcc6+sgSsqPOtxheMgAxbLQVVS/Bo61Yc=;
-  b=JexM/0Tk2tJJPuxtaoPIHUSTSuSfFQ6ZIGJVwlCK0w9iGe7T4gPVRs9t
-   Am0zB+8IPtIYQhE7ObLPgIcGIIjBRtzWvTrMg0GaQperkEhp6g+BVs63X
-   GmX6qZB5fPyj84iwbEnbe0psTnHG06FGT4B1vtzqL1X40taz6XpEogCwB
-   RmUcDCK7IO+scoLsnFkeEQDEQjs96Zoy2yKrHelpWtxiShUNghtC4EUla
-   tc1gOhTU9byR7qoCwkLSCY4hvTcazV+SulCfxuClI4plnKEg7dGENUi21
-   WYNACKQa0A9eqve3oYE6w8CnAqSkP9WMelwk18QLkU9T9URAV6iOMH7r2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="307063217"
-X-IronPort-AV: E=Sophos;i="5.96,318,1665471600"; 
-   d="scan'208";a="307063217"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2023 13:29:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="659529902"
-X-IronPort-AV: E=Sophos;i="5.96,318,1665471600"; 
-   d="scan'208";a="659529902"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Jan 2023 13:29:10 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 11 Jan 2023 13:29:09 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Wed, 11 Jan 2023 13:29:09 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Wed, 11 Jan 2023 13:29:09 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EG9SIUeXZFmVDR/Atu+sXsTrw29SQO/9LLxt3LXt8j5/NPjFQfejbnqMGQoAvaKlRdbmEBz46EISTVwp4+Lrdj5BF3of/iwClAXsrnd2t7DQlNHBDNB8YCpjam3tlKuVk1t+3QmZA0GjLJPwMvsFEA+nLbRi3Vx8Cj7oXtiQ/O4YrmHaDUpPfTftolYwCIk/orhDdfRzNpfNl97nqouMT4GzdTnOq8kLfzu80kVRvwZZvRxAackTR/6u/SrrN17YoTEhGL0LvA8O5TTE1aT979lcGd+rwY7u9igowssO8PaPVGxtWc3SgGqwnGp3l863koUw1Om0z5kocfhzrOta4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=150JUDrB7QsAYQrkZk59UZWHbdfZf7cOsQbX+ZtE3e8=;
- b=Nam5R0KtxtNrIcVsCvnuESKbENh/qIFPCdtANCIzNBmH+O+gKh5GzpNVERfZbaVa/V7l/H19yVF4DbSfOM30fgYXKdDbB/2QaLuxvZCPHCdlJg66RF1BIEw1TSWBSnNLzeSTcehYv1QS7qNGicM42vXdEm1ceFbsTk+myhbvRJzdXZPnOCU157DKSGoEUfFBwfvBPbjPu6UCRS+hJg1HYKiCdS8QlmgCX/bxkH7PyKEaEV2lP3GsZN1c0enmZUzwmr/JTIJVrq1RPWoq/xp7617u5kmefmDBoj748cawchy/aGZlSffh1Zvq8YmKWsVUkkX5ZdLffgbncZSy7kS5rA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com (2603:10b6:510:3b::14)
- by SA2PR11MB5035.namprd11.prod.outlook.com (2603:10b6:806:116::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 11 Jan
- 2023 21:29:06 +0000
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::ef17:4bdc:4fdd:9ac8]) by PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::ef17:4bdc:4fdd:9ac8%6]) with mapi id 15.20.5986.018; Wed, 11 Jan 2023
- 21:29:05 +0000
-Message-ID: <f5d9201b-fb73-ebfe-3ad3-4172164a33f3@intel.com>
-Date:   Wed, 11 Jan 2023 13:29:03 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters after
- the instance
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-References: <20230106063402.485336-1-kuba@kernel.org>
- <20230106063402.485336-8-kuba@kernel.org> <Y7gaWTGHTwL5PIWn@nanopsycho>
- <20230106132251.29565214@kernel.org>
- <14cdb494-1823-607a-2952-3c316a9f1212@intel.com>
- <Y72T11cDw7oNwHnQ@nanopsycho> <20230110122222.57b0b70e@kernel.org>
- <Y76CHc18xSlcXdWJ@nanopsycho> <20230111084549.258b32fb@kernel.org>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20230111084549.258b32fb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR03CA0001.namprd03.prod.outlook.com
- (2603:10b6:a03:39a::6) To PH0PR11MB5095.namprd11.prod.outlook.com
- (2603:10b6:510:3b::14)
+        with ESMTP id S235500AbjAKVeC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 16:34:02 -0500
+Received: from rpt-cro-asav5.external.tpg.com.au (rpt-cro-asav5.external.tpg.com.au [60.241.0.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4685D13B;
+        Wed, 11 Jan 2023 13:33:58 -0800 (PST)
+X-Ironport-Abuse: host=202-168-35-241.tpgi.com.au, ip=202.168.35.241, date=01/12/23 08:33:56
+X-SMTP-MATCH: 0
+X-IPAS-Result: =?us-ascii?q?A2HJAwBbKr9j//EjqMpagRKBRoUMlW6DFogNMAKTaA8BA?=
+ =?us-ascii?q?wEBAQEBTQQBAT4BhEaFGSY3Bg4BAQEEAQEBAQECBQEBAQEBAQMBAQEFAQIBA?=
+ =?us-ascii?q?QEEBQEBAQKBGYUvRoI4KQGEASsLASkdJlwCTYJ+gm4BAzGvfxYFAhaBAZ4YC?=
+ =?us-ascii?q?hkoDWgDgWSBQYRSUIIThChXhzyBFYE8giyCIIhiBIEIjAiMMQEDAgIDAgIDB?=
+ =?us-ascii?q?gMBAgICBQMDAgEDBAIOBA4DAQECAgEBAgQIAgIDAwICCA8VAwcCAQYFAQMBA?=
+ =?us-ascii?q?gYEAgQBCwICBQIBCgECBAECAgIBBQkBAgMBAwELAgIGAgIDBQYEAgMEBgICB?=
+ =?us-ascii?q?QIBAQMCAgINAwIDAgQBBQUBAQIQAgYECQEGAwsCBQEEAwECBQcBAwcDAgICA?=
+ =?us-ascii?q?ggEEgIDAgIEBQICAgECBAUCBwIGAgECAgIEAgEDAgQCAgQCAgQDEQoCAwUDD?=
+ =?us-ascii?q?gICAgICAQkLAgICAgIHBAIDAwEHAgICAQwBAx0DAgICAgICAgIBAwkDBAUKG?=
+ =?us-ascii?q?QMDAiADCQMHBUkCCQMjDwMLCQgHDAEWKAYDAQoHDCUEBAwoAQoMBwUBAgIBB?=
+ =?us-ascii?q?wMDBQUCBw8DBAIBAwMCBQ8DAQYFAQIBAgICBAIIAgQFAgUDAgQCAwICCAMCA?=
+ =?us-ascii?q?wECAQcEAwQBBAIEAw0EAwQCAwICBQICAgICBQICAwECAgICAgIFAgMCAQUBA?=
+ =?us-ascii?q?gIBAgICBAECAgcEAgMBAwQOBAMCAgcBAgIBBgIHAwECAQQDAQEEAgQBAgUCB?=
+ =?us-ascii?q?AEDBgIDAQMKAgMCAQECAwMFAwICCAgCAwUCBAEBAgQDBAICCwEGAgcCAgMCA?=
+ =?us-ascii?q?gQEBAEBAgEEBQIDAQIDAwkCAgMCBAICCgEBAQECAQcCBAUGAgUCAgIDAQICA?=
+ =?us-ascii?q?QMCAQICChEBAQIDAwMEBgUDAwMCARUFAgEBAgIDAwIGAgECCAIEAQQFAgECA?=
+ =?us-ascii?q?QECAgQBCAICAQEBAgECAgMDAgECAgIEAwMBAgECAgMCAgIDAgIBDQIGBgECA?=
+ =?us-ascii?q?gICAgICAgIGAQIBAgMBAgcCBAMCAQICBQICAgMBAQYCBAsBAwICAgIBCAEBA?=
+ =?us-ascii?q?gUBAgICAwEBAwMEAwMFBgMCDAgBBQEDAR8DAgIIAgcCAQYDAgEPAwICAwICA?=
+ =?us-ascii?q?QQKAgMFAgQCAQQIBwIEAQIJAwIGAgYFGAECAgcEDAoBAgIFBgQBAQIDAQIBA?=
+ =?us-ascii?q?QIDAwIDAgQFAQUCAQIEAgICAQECBQ0BAQMEAgQCBwICAgMBBAIBAgEDAwIDA?=
+ =?us-ascii?q?QEBAwYGAgQEAgMDBwICAwECAgMEDQEEAgIGAwQBDQUGBQQDAggBAgEBBwIEA?=
+ =?us-ascii?q?gcJDgIBAgQBBQICAwICAQMCAgECBAMBAgICAgUHBQMEAQQDCgkDAQEEAwIBA?=
+ =?us-ascii?q?gECAwIDBwMCBAIDAQIDBAYGAQkEBgQBDQMEAgIBAgEBAwQEBAICAQICAwEEA?=
+ =?us-ascii?q?gIBAQMDAwICAgMEAgMDCwQKBwMDAgEFCwICAgMCAQEDBwQFBAICBgECBAICA?=
+ =?us-ascii?q?gICAgIDAQEDCgQCAQMCAgQDBgIBAgEJBQIBCQMBAgEDBAEDCQECAgQJAgMHB?=
+ =?us-ascii?q?QoCAgICCAICDgMDAgEBBAICBAMCCQECBwIFAQEDBQcCAgECAgEEAwEJBAECA?=
+ =?us-ascii?q?wIBAQMSAwMBBAICBQMDDQkGAgIBAwIBDQMBAgECAwEEAQUXAwgHFAMFAgIEB?=
+ =?us-ascii?q?AEIAgIDAwMCAQIJBgEDAQUCDgMCAgMDBgECAQECAxACAwEBAQEXAQMEAgMBB?=
+ =?us-ascii?q?AMBAQIBAgMCDgQBBAUMAwECEQwCBAEGAggCAgICAwEDAwUBAgMEAgEIBgQCA?=
+ =?us-ascii?q?gICAQkCCgMCAwECAQUBAwIJAwEFAQIHAgQCAQEBAgIIAggCAwsBAwIDBgIBA?=
+ =?us-ascii?q?gIBBQIBAgIFAwUCAgICBA0CBQICAgYBAgcEAgICAwECAgYCBQECBwcCBQICA?=
+ =?us-ascii?q?gMDCgQEAgoEAQMBAQUBAgEDBAECBAECAQIFAwYCAgICAQICAQIBAQgCAgICA?=
+ =?us-ascii?q?gICAwQCBQOeBgF6FBM4QHEsNoEaAQGUcKwuRCEJAQYCW4FXfBopml2FbRoyq?=
+ =?us-ascii?q?SctlxuRNZEMhXyBQ4IATSOBAW2BSVIZD44sFo5CYTsCBwsBAQMJjCMBAQ?=
+IronPort-PHdr: A9a23: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
+ zLQAw7vbJGS4dyImsKb4aiFXGW7W8gWKHGzpb4=
+IronPort-Data: A9a23:PT3B7K5rj1Qh88U33vJpSQxRtFTHchMFZxGqfqrLsTDasY5as4F+v
+ mAZCGHQOqyMZWqkLYhzbo2x/BtQ78fRmtBjSgdlrSlnEysa+MHILOrCIxarNUt+DCFioGGLT
+ Sk6QoOdRCzhZiaE/n9BCpC48T8mk/jgqoPUUIbsIjp2SRJvVBAvgBdin/9RqoNziLBVOSvU0
+ T/Ji5CZaQHNNwJcaDpOsPra8Uo355wehRtB1rAATaAT1LPhvyRNZH4vDfnZB2f1RIBSAtm7S
+ 47rpF1u1jqEl/uFIorNfofTKiXmcJaLVeS9oiM+t5yZv/R3jndaPpDXlhYrQRw/Zz2hx7idw
+ f0R7sboEV9B0qfkwIzxWDEAe81y0DEvFBYq7hFTvOTKp3AqfUcAzN1zJmcEIrJDvdpWLn0Q7
+ c40AjRdQhW60rfeLLKTEoGAh+whKcD7I44bvjdryjSx4fQOG8iZBfyUtZkDgXFq2pkm8fX2P
+ qL1bRJtaR3QfBBLPgxIIJ07leaswHL4dlW0rXrP//prujGCklAZPL7FFPHfcPKSYs9vjmGph
+ iXA/E3oJS8oK4nKodaC2jf27gPVpgv3UZwfEZW0/+BnhVmUyHBVDhAKPXO2reS8g1yzR/pQL
+ Esb/idopq83nGSoU9P0dx61uniJulgbQdU4O/Uz4gyLy4LO7gqZD3RCRTlEAPQ3s9Q2SyEo1
+ 3eNntX0FXluqKPLD3WH+d+8oSi7OSUPK0cBaDUCQA9D5MPsyKk2hwjTT9AlFKeopt74Azf9x
+ 3aNtidWr7cUgMoj1aK2+V7KmTSloJTEVUgy/Aq/dnqs8wd8b42NZIGy71Xfq/FaI+6xQ0iIu
+ D4OmtKR4fomApSElSjLS+IIdJmv6uqJPSP0n1FiBd8i+i6r9nrleppfiBl6JUF0IoMHdCXvb
+ Uv7pwxc/tlQMWGsYKsxZJi+Y+woyKHwCtnhUquLRtVLa5l1MgSA+UlGbEicxW3k1k0lgKwlE
+ YqdcNyrCH9AT6V7pAdaXM9HieVun35ugDiOAMqnllK7ybWfInWSTPEMLTNic9wE0U9Nmy2Nm
+ /43CidA40o3vDHWCsUczWLfwZ3m45T26VAaZvG7rtK+Hzc=
+IronPort-HdrOrdr: A9a23:86xGFahVOu9kSlXfYFznU9WFt3BQXsMji2hC6mlwRA09TyVXra
+ 2TdZMgpHzJYVkqN03I9erqBEDiexPhHOBOj7X5VI3KNDUO01HFEGgN1+HfKkXbehHDyg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="5.96,318,1665406800"; 
+   d="scan'208";a="228411964"
+Received: from 202-168-35-241.tpgi.com.au (HELO jmaxwell.com) ([202.168.35.241])
+  by rpt-cro-asav5.external.tpg.com.au with ESMTP; 12 Jan 2023 08:33:55 +1100
+From:   Jon Maxwell <jmaxwell37@gmail.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, martin.lau@kernel.org,
+        joel@joelfernandes.org, paulmck@kernel.org, eyal.birger@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jon Maxwell <jmaxwell37@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net-next] ipv6: remove max_size check inline with ipv4
+Date:   Thu, 12 Jan 2023 08:33:06 +1100
+Message-Id: <20230111213306.265239-1-jmaxwell37@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5095:EE_|SA2PR11MB5035:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9605acd-6631-4b63-a23b-08daf41ade0c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QyL6OirBBjoChQXoYdlWH422FWZcz2PSSTmTTeLmg4eaQsntTDVFXNX1zRBgUNfCnBvh/OZ6QPmrd6MvoJNWtYCTEuczKRwzWeKf8PAptRPBkwyrSxIJmBjcd9xyyKP3O42OIlK6BVmSXj39ApYgCc65/D9AURO7CzvIN9gQ942nh/wx0Y2gmno/Orcs2K0smVjYbkndbCbfAR7+hN1/8eIN77ux2Zp0MQPrxOJI5SS+gDoo1/qnmVwUpWQ9mT3vMNi95+dqKt+XuPI7wQpocTFwlDVGCu56B9max8ldwdj+4Z73g7BgZLtVROAP99R7uGOD+kNedICdmOVlk7aIiADldISUOM3dmYmlLwleu53wPOdvgXE3GNY9Pcg2OmlYg9LayRYgRKrhOGQJWxGmLuZ8YJG2hjTOHiCxonWPm3aDFw1NYDA/BJGiC5ci++gzvuPuKUe9pRgxwta1igkHdWF0+5yML8Bqu4hlz2lx7q4La0mXwvUjnVrc+CJ+YVfS+r3wL2TkkQ7TILcQrA8eeU86KDYQtq9FqhUYv7QGFKRccOxO+2iOSVXw+DAXgkqx570Wh3hspw+4YwXENIY5LfV+kZZYLzEY6cWaJP77fLbGERY2ukhtvMPXwQjD/0QCbOkLTRj4qs0StxUSnrhRqFHJ38MU6uGon9WRWbWIzLdLkCe1SKh9IYrpJ4do19+D9Ldf17v1iKhawuXLxgQtlorYbfpjWX4oX9Wt0rld6wc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(346002)(136003)(376002)(39860400002)(451199015)(36756003)(31696002)(86362001)(110136005)(316002)(66946007)(66556008)(66476007)(41300700001)(4326008)(8676002)(38100700002)(82960400001)(31686004)(6506007)(53546011)(2906002)(8936002)(5660300002)(26005)(6486002)(478600001)(6512007)(186003)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N05sQTJZVXdRSlp6eTMzOEE2aC9JOTRGWm9jMVlHUFVUSGNtOTlBVXA5QjJj?=
- =?utf-8?B?Y0Y2L0Y2bmR2WHZBYk9DN3NCTityRVpLTHZUOWdJeXUxSEVyS3BHNXNvTktv?=
- =?utf-8?B?QU9yWFQvdG5GTWlORllHUElKMTZFcnJjbWJVaVV0U3c4emkzWnl6NG9uRk9D?=
- =?utf-8?B?SVBRRGcrOFVnNVJpWGN5VXVqUVR3MjB6aERPU2NYUjV0dks1VGlyRGlNaTNK?=
- =?utf-8?B?WGQySU9vVVQ5M2pocStzcVJwS1dyNU1yZEFLSTEyaHA0R091VkNBc0VJN1FU?=
- =?utf-8?B?RFh6ZnhnbGMvNnd1QmdaVjRwWCsrQzNtY1U4S3NjbUhpU28xK0djRmNlZzNq?=
- =?utf-8?B?S25sb09lRXkzNGRWMFM0aXJqdUdwMXhlYmErVmJjbU53NlJDT25PdmNDY1Iv?=
- =?utf-8?B?UW10cTRKTnFVMmhPc2pjM2tCeUhDYzNXKzNWMjcrOTNpaHFLSE5kc0N3eXhx?=
- =?utf-8?B?YlE0ZlY4ZWZPWEdCMzQranZUVnI3OFp6S0gvYWNUNTJrc3NTU05BS0VZcDhC?=
- =?utf-8?B?NEhyZEtSR1h6aDQ2eVhBT1kwYTFoSHhJUVRnb2VQWDVLL0FzZWxuK0FLZWhV?=
- =?utf-8?B?NytYMEJlanU0Q2JvN01zZ2o5ZDJFS2c3N2hHYXJuZnhhZHJwTGFsaXl4NWlI?=
- =?utf-8?B?Mm1ndWdPZ3E1dUFDdFQ0elZLKzhqaWIxbjN3STZ2ZDdTNFM2SVRIM2w0UnY5?=
- =?utf-8?B?RGU3ZHhUL3RaSys0SWJpN013cUk2clFWRjJmQ3JTSVNoTmdYTXlIOVlkYStk?=
- =?utf-8?B?QXJZY3NhWFhZNXdjNTFqY0pZTEQycER3K0xhZDFYSzlEWE43VW9iWkpqRmNU?=
- =?utf-8?B?MXE0K1haQUYxbnFrWG1kOG94NVVvYWxEbnFqKzNVeXd2WFFPTVFnUElzOVY2?=
- =?utf-8?B?eGp6MGprWWtIa3l5dVI5ZG5BaCtIQTYvdEs2dkVuZDA1Y2ZzZXZyeFBFKzBH?=
- =?utf-8?B?QkRZNEVVVXQ0a21SaVd1aDFQL2lNelJ6RFV0dnhUYkt1ZC9JQ2EvemZoZnB4?=
- =?utf-8?B?dkJCTEtzVzZwb3BQUVdMR3F5K1pWWmNEVHZnTW5qVW5xZS9xcEdXczFQVER5?=
- =?utf-8?B?bHdoMjJMM0x3UVM5SzlDYnhKWjcwOGkrR1MvYytoUVJQdmVHZ2pxQTk3b1Qz?=
- =?utf-8?B?VHNQVXRXQ2hRWW5EbEJnVWdMQ09zUDNqbVo5Q2hDc2RBcWpVbm1pQnM5eEJW?=
- =?utf-8?B?S29kNmFLWlV4SldmQTU2c2FQZUNpU1BEa1d6K24yU29aQWd2Ni9qS1AyZWJN?=
- =?utf-8?B?QWJTV2REMGtUdjVBWEZWdzFtMGcwODQxejZjbTlUOVplOUtBVjNhOWRaREMr?=
- =?utf-8?B?Skc4WUZrYXQwVEU1d0dDSjkzRUtRQ3dPSHEvY0hJS1IvNWFSandmTzlzNlJI?=
- =?utf-8?B?ZHVkMTY4eHFXZEJTNGZTcStxZkxhVFQ4c2NzS2xic0Jmck9VQjR5ZWc5NFZB?=
- =?utf-8?B?SGE5ZFhobGFLYzhHaEtMa1pjY3poSlBXd1YzYlRFbmFnK2ZqQVN2VDQ3eU5B?=
- =?utf-8?B?dFg1Nk1ZendqV2lTV1c4ZzkvM3U3ZEhXMlpjQnNBRk1paFBGcXdpMjB6aVlv?=
- =?utf-8?B?U3N3Y21BWFEzem1rOGVtM2tpM1U4S3JlZytxT082bmVOck9pZWt0YllpNVQv?=
- =?utf-8?B?NTFyVlVIdnRRSDdUSjdaWjNMVnc0NnZOYlhSa01rbnl6SEFGSFBpV2tsOHJV?=
- =?utf-8?B?VDZ4WjVyUUFvRXNubmxRbGkzQnUzWkZHQjMwdE10eVQ0N1FpVUxKUEdMV1VW?=
- =?utf-8?B?c29pVzdURytjUFlZSzMycWRHWkpGcGVEd0RmTzhPREtmOElWWnJ4Q1lEbGl0?=
- =?utf-8?B?aFNEQWhsNmJFRy9UWDdOSXpVWHZMZm05QmkyM1BtcXVnZEZWRnF3TDBmZ3RL?=
- =?utf-8?B?WGxkaDE2R0x6cUhLZkJ3T3RyTmxVYTFVY0RFZUt0R1NLMkVuVkFnanRWc2Fz?=
- =?utf-8?B?ckNXU2Q3VkVoMkJSU1F1bUNNUzBpTXBOT3JKZGxZZkpmck9WeVNaclJmT25o?=
- =?utf-8?B?UlNuYlQ1SWNvM1g5eG9nRkhCNGRzT3pSUzFxMUt2V29NcTBUeWVnVDRQUFZH?=
- =?utf-8?B?K3BJancxQ1BQWXduL3ZQazNGUVNpUnBGbUY2YzYrNkJSQlVGN21tOGpoQlBW?=
- =?utf-8?B?azhUc0I4cHRTc3VGVjNkbXczYTRHaWhtbGl0Rk14RjBTdGNTc3FBQUc4Z0Rz?=
- =?utf-8?B?bGc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9605acd-6631-4b63-a23b-08daf41ade0c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5095.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 21:29:05.9136
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aa/cck8750QbpUPk2UfVttjWY0QL+vzr3ETyu1W/biFu4TOSyGLdpX3A4JkJQMWv6EOgwhK1/BMAMl18SiIynSBpJat/qq7NaPbFpSXOAgY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5035
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,
+        SPOOF_GMAIL_MID autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sending Ipv6 packets in a loop via a raw socket triggers an issue where a 
+route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly 
+consumes the Ipv6 max_size threshold which defaults to 4096 resulting in 
+these warnings:
 
+[1]   99.187805] dst_alloc: 7728 callbacks suppressed
+[2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+.
+.
+[300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
 
-On 1/11/2023 8:45 AM, Jakub Kicinski wrote:
-> On Wed, 11 Jan 2023 10:32:13 +0100 Jiri Pirko wrote:
->>>> I'm confused. You want to register objects after instance register?  
->>>
->>> +1, I think it's an anti-pattern.  
->>
->> Could you elaborate a bit please?
-> 
-> Mixing registering sub-objects before and after the instance is a bit
-> of an anti-pattern. Easy to introduce bugs during reload and reset /
-> error recovery. I thought that's what you were saying as well.
+When this happens the packet is dropped and sendto() gets a network is 
+unreachable error:
 
-I was thinking of a case where an object is dynamic and might get added
-based on events occurring after the devlink was registered.
+# ./a.out -s 
 
-But the more I think about it the less that makes sense. What events
-would cause a whole subobject to be registerd which we wouldn't already
-know about during initialization of devlink?
+remaining pkt 200557 errno 101
+remaining pkt 196462 errno 101
+.
+.
+remaining pkt 126821 errno 101
 
-We do need some dynamic support because situations like "add port" will
-add a port and then the ports subresources after the main devlink, but I
-think that is already supported well and we'd add the port sub-resources
-at the same time as the port.
+Implement David Aherns suggestion to remove max_size check seeing that Ipv6 
+has a GC to manage memory usage. Ipv4 already does not check max_size.
 
-But thinking more on this, there isn't really another good example since
-we'd register things like health reporters, regions, resources, etc all
-during initialization. Each of these sub objects may have dynamic
-portions (ex: region captures, health events, etc) but the need for the
-object should be known about during init time if its supported by the
-device driver.
+Here are some memory comparisons for Ipv4 vs Ipv6 with the patch:
+
+Test by running 5 instances of a program that sends UDP packets to a raw 
+socket 5000000 times. Compare Ipv4 and Ipv6 performance with a similar 
+program.
+
+Ipv4: 
+
+Before test:
+
+# grep -e Slab -e Free /proc/meminfo
+MemFree:        29427108 kB
+Slab:             237612 kB
+
+# grep dst_cache /proc/slabinfo
+ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+ip_dst_cache        2881   3990    192   42    2 : tunables    0    0    0 
+
+During test:
+
+# grep -e Slab -e Free /proc/meminfo
+MemFree:        29417608 kB
+Slab:             247712 kB
+
+# grep dst_cache /proc/slabinfo
+ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+ip_dst_cache       44394  44394    192   42    2 : tunables    0    0    0 
+
+After test:
+
+# grep -e Slab -e Free /proc/meminfo
+MemFree:        29422308 kB
+Slab:             238104 kB
+
+# grep dst_cache /proc/slabinfo
+ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0 
+
+Ipv6 with patch:
+
+Errno 101 errors are not observed anymore with the patch.
+
+Before test:
+
+# grep -e Slab -e Free /proc/meminfo
+MemFree:        29422308 kB
+Slab:             238104 kB
+
+# grep dst_cache /proc/slabinfo
+ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0 
+
+During Test:
+
+# grep -e Slab -e Free /proc/meminfo
+MemFree:        29431516 kB
+Slab:             240940 kB
+
+# grep dst_cache /proc/slabinfo
+ip6_dst_cache      11980  12064    256   32    2 : tunables    0    0    0
+xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0
+ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0
+
+After Test:
+
+# grep -e Slab -e Free /proc/meminfo
+MemFree:        29441816 kB
+Slab:             238132 kB
+
+# grep dst_cache /proc/slabinfo
+ip6_dst_cache       1902   2432    256   32    2 : tunables    0    0    0
+xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0
+ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0
+
+Tested-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+---
+ include/net/dst_ops.h |  2 +-
+ net/core/dst.c        |  8 ++------
+ net/ipv6/route.c      | 13 +++++--------
+ 3 files changed, 8 insertions(+), 15 deletions(-)
+
+diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+index 88ff7bb2bb9b..632086b2f644 100644
+--- a/include/net/dst_ops.h
++++ b/include/net/dst_ops.h
+@@ -16,7 +16,7 @@ struct dst_ops {
+ 	unsigned short		family;
+ 	unsigned int		gc_thresh;
+ 
+-	int			(*gc)(struct dst_ops *ops);
++	void			(*gc)(struct dst_ops *ops);
+ 	struct dst_entry *	(*check)(struct dst_entry *, __u32 cookie);
+ 	unsigned int		(*default_advmss)(const struct dst_entry *);
+ 	unsigned int		(*mtu)(const struct dst_entry *);
+diff --git a/net/core/dst.c b/net/core/dst.c
+index 6d2dd03dafa8..31c08a3386d3 100644
+--- a/net/core/dst.c
++++ b/net/core/dst.c
+@@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+ 
+ 	if (ops->gc &&
+ 	    !(flags & DST_NOCOUNT) &&
+-	    dst_entries_get_fast(ops) > ops->gc_thresh) {
+-		if (ops->gc(ops)) {
+-			pr_notice_ratelimited("Route cache is full: consider increasing sysctl net.ipv6.route.max_size.\n");
+-			return NULL;
+-		}
+-	}
++	    dst_entries_get_fast(ops) > ops->gc_thresh)
++		ops->gc(ops);
+ 
+ 	dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+ 	if (!dst)
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index e74e0361fd92..53b09de61a4a 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct dst_entry *);
+ static void		ip6_dst_destroy(struct dst_entry *);
+ static void		ip6_dst_ifdown(struct dst_entry *,
+ 				       struct net_device *dev, int how);
+-static int		 ip6_dst_gc(struct dst_ops *ops);
++static void		 ip6_dst_gc(struct dst_ops *ops);
+ 
+ static int		ip6_pkt_discard(struct sk_buff *skb);
+ static int		ip6_pkt_discard_out(struct net *net, struct sock *sk, struct sk_buff *skb);
+@@ -3284,11 +3284,10 @@ struct dst_entry *icmp6_dst_alloc(struct net_device *dev,
+ 	return dst;
+ }
+ 
+-static int ip6_dst_gc(struct dst_ops *ops)
++static void ip6_dst_gc(struct dst_ops *ops)
+ {
+ 	struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
+ 	int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
+-	int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
+ 	int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+ 	int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+ 	unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+@@ -3296,11 +3295,10 @@ static int ip6_dst_gc(struct dst_ops *ops)
+ 	int entries;
+ 
+ 	entries = dst_entries_get_fast(ops);
+-	if (entries > rt_max_size)
++	if (entries > gc_thresh)
+ 		entries = dst_entries_get_slow(ops);
+ 
+-	if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+-	    entries <= rt_max_size)
++	if (time_after(rt_last_gc + rt_min_interval, jiffies))
+ 		goto out;
+ 
+ 	fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
+@@ -3310,7 +3308,6 @@ static int ip6_dst_gc(struct dst_ops *ops)
+ out:
+ 	val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
+ 	atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
+-	return entries > rt_max_size;
+ }
+ 
+ static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
+@@ -6512,7 +6509,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+ #endif
+ 
+ 	net->ipv6.sysctl.flush_delay = 0;
+-	net->ipv6.sysctl.ip6_rt_max_size = 4096;
++	net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
+ 	net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
+ 	net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
+ 	net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
+-- 
+2.31.1
+
