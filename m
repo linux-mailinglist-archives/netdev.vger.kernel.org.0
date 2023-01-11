@@ -2,74 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56700665854
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:57:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 626326658BD
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 11:14:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236041AbjAKJ5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 04:57:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
+        id S238190AbjAKKNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 05:13:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239252AbjAKJ46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:56:58 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D79BA5;
-        Wed, 11 Jan 2023 01:54:25 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id y25so22681931lfa.9;
-        Wed, 11 Jan 2023 01:54:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=plPA7numXSMIevYBGv3jTp9r4/qWe6lfogjrVU3jpVE=;
-        b=bfdQtXmw6Le6iVD4QMNn4bzk7pkbJfFKWCuFlRBg850zP73YHdU4QZ7FtIW4txtkuv
-         tuxQvUx/aDBdeUcQntRHGhZFG4IDs5G+IzXeweIr3++Nfkn2n5S4IHRz8dIGWjCqoT8R
-         RB3KeTBd9UGj/B38DBwvpHKg+Xxdwl4/vtKhXqwnb+IrH75RFxxr3kSyiShva1X02mzr
-         Ixr/i0jWXHYgCCfR/8/aW74qT1FZIAiIchPhEmJcC0PsrvxHn12wkimY4veIC3Lybo9W
-         +4mn+0XizNnbc8Ojt+Yv7u2tCA5kPq8JeqLEWLRtGDzws4BcnnigiaDRiUovffWnjhCC
-         b+cw==
+        with ESMTP id S239042AbjAKKM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 05:12:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74845233
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:10:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673431823;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ab2T4X7uK9fotwvUe5iK/l1jUo4Z6arsl3GYiaGQgIA=;
+        b=M4X2l4BFMCIlF+zjV7yZ3Ma8InVsGHTSnYw50/ChVhMEj51/82gT74Fy3A/+NTgHSDvStX
+        98qJnCcfSCYVrc5GeILHQdMTCFo/49wSkim2+3V6m0MlCiWyGXbhXOiL7YSoZzkeso2+dH
+        IsZYt0smjq51UBFfB9BmrZH4poHYf1A=
+Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
+ [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-385-v-RWskmzPcWPcsvoc8ENmA-1; Wed, 11 Jan 2023 05:10:22 -0500
+X-MC-Unique: v-RWskmzPcWPcsvoc8ENmA-1
+Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-4597b0ff5e9so158194297b3.10
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:10:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=plPA7numXSMIevYBGv3jTp9r4/qWe6lfogjrVU3jpVE=;
-        b=BpXqUxNSgI9zwpMxtSnbenQt0WPAVvnK4bRYa3YPoyJlvRHqTwGPIzWbsPKGBh29na
-         MuMj5Rgxw71Wz7W0rysGi3089tMvoaI13tOT3SLVt5XCpm4UVzQrd3h4l03VxPy467HH
-         nzNlygr+bu1nTzT9QjlD/9WSGlz1tFpA1prdR0l4GRw4kujfYeXto7o+0HJQQ1eumNPr
-         lJuP6Xqc8iAL2gEnJ/gczTaMj0Pvf9Yi3hAC5wVU6UNegbY4V2pbJT3w+7UxxxboBsKc
-         vn3P6mVPXPvHVf79yNQwpRlnSRMXPzV+hcCoW2CPCo6wR1xqmVhgRWBFOeSh58wrrSXq
-         U4xQ==
-X-Gm-Message-State: AFqh2koZtTBXFmQ4Q9gXyytz0wMLwoDssnh+mHUOhgqG19lMxgyRQp6r
-        OC1oRCQWDahGgbld1Hpauoo=
-X-Google-Smtp-Source: AMrXdXsPsTib4x2S9bTDc/0F5FlwI0r2swSgEcG4X5I9NGkrhNc3oz9slQbHTlCUn5uOdpverUbE5w==
-X-Received: by 2002:a05:6512:130c:b0:4ca:f9ec:eee2 with SMTP id x12-20020a056512130c00b004caf9eceee2mr21626636lfu.20.1673430864038;
-        Wed, 11 Jan 2023 01:54:24 -0800 (PST)
-Received: from [192.168.50.20] (077222238029.warszawa.vectranet.pl. [77.222.238.29])
-        by smtp.gmail.com with ESMTPSA id f14-20020a0565123b0e00b004b7033da2d7sm2647067lfv.128.2023.01.11.01.54.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Jan 2023 01:54:23 -0800 (PST)
-Message-ID: <d06d2e44-7403-7e7e-1936-588139bf448e@gmail.com>
-Date:   Wed, 11 Jan 2023 10:54:21 +0100
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ab2T4X7uK9fotwvUe5iK/l1jUo4Z6arsl3GYiaGQgIA=;
+        b=GWpaJ6FGpMlczD1VMs0sqEpJKRp3EgQ1BeuZS+j1uTM5H746dRZ/6OCZ5vkV4D9NXC
+         qhQCJQf+m96ZUkU3oh0kdnX7AgrniCxgsEONHm046mJK39tfHTTzOw+5WHE+k0axjggu
+         nTSHIAdLAJpZD/rEIpwemd1MAFDGINGHBMer1hPZRRp5mjza4z38Z54gP1FbP+/z7DOI
+         9Z46pvO17h2H0Wf03K2ozO8dVYwzK3OhyrHkXKGuj2vsItsnCs0PEGdi1ZCaJqjhjEjt
+         LJWbw6nsC1TyxHAPDfSSQBNrSAk9/eI4K9NVPF5WDLUQ5kfLtz13SRlgLZ1lLsgKaWwa
+         F+/Q==
+X-Gm-Message-State: AFqh2kp/hH+DdDLOe0XXYjV6LlKJvOsMMZZjwRx0FSctWjDkCNZpASS2
+        YIpSjfLBULF+CSQCFFwjelk1cO6k/rM1+Y+NxcddwV7mVU9poV9DDu2ZoAV50VTc0sKgdbxqFrw
+        VfIV5awmfR0oaHof/IIzjxgOCQB7N2rsP
+X-Received: by 2002:a81:5292:0:b0:483:813:c70f with SMTP id g140-20020a815292000000b004830813c70fmr272930ywb.266.1673431821539;
+        Wed, 11 Jan 2023 02:10:21 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXut4p3VM0yD8/5Y4e83a1nRa6qrlSf+k+n4EPYQisWAsKUOCyCccCCErr1GqDDIKIaj6eC/6aeEH21xladYy/s=
+X-Received: by 2002:a81:5292:0:b0:483:813:c70f with SMTP id
+ g140-20020a815292000000b004830813c70fmr272918ywb.266.1673431821306; Wed, 11
+ Jan 2023 02:10:21 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH] rndis_wlan: Prevent buffer overflow in rndis_query_oid
-To:     Alexander H Duyck <alexander.duyck@gmail.com>, kvalo@kernel.org,
-        jussi.kivilinna@iki.fi, davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Greg KH <greg@kroah.com>
-References: <20230110173007.57110-1-szymon.heidrich@gmail.com>
- <ece5f6a7fad9eb55d0fbf97c6227571e887c2c33.camel@gmail.com>
-Content-Language: en-US
-From:   Szymon Heidrich <szymon.heidrich@gmail.com>
-In-Reply-To: <ece5f6a7fad9eb55d0fbf97c6227571e887c2c33.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230110024445.303-1-liming.wu@jaguarmicro.com>
+In-Reply-To: <20230110024445.303-1-liming.wu@jaguarmicro.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 11 Jan 2023 11:09:45 +0100
+Message-ID: <CAJaqyWeuZtx8mUB+jTPVcuiryXpjo09sbvv2QQA2C1-ASMWE1g@mail.gmail.com>
+Subject: Re: [PATCH] vhost: remove unused paramete
+To:     liming.wu@jaguarmicro.com
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 398776277@qq.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,93 +76,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/01/2023 20:39, Alexander H Duyck wrote:
-> On Tue, 2023-01-10 at 18:30 +0100, Szymon Heidrich wrote:
->> Since resplen and respoffs are signed integers sufficiently
->> large values of unsigned int len and offset members of RNDIS
->> response will result in negative values of prior variables.
->> This may be utilized to bypass implemented security checks
->> to either extract memory contents by manipulating offset or
->> overflow the data buffer via memcpy by manipulating both
->> offset and len.
->>
->> Additionally assure that sum of resplen and respoffs does not
->> overflow so buffer boundaries are kept.
->>
->> Fixes: 80f8c5b434f9 ("rndis_wlan: copy only useful data from rndis_command respond")
->> Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
->> ---
->>  drivers/net/wireless/rndis_wlan.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
->> index 82a7458e0..d7fc05328 100644
->> --- a/drivers/net/wireless/rndis_wlan.c
->> +++ b/drivers/net/wireless/rndis_wlan.c
->> @@ -697,7 +697,7 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
->>  		struct rndis_query_c	*get_c;
->>  	} u;
->>  	int ret, buflen;
->> -	int resplen, respoffs, copylen;
->> +	u32 resplen, respoffs, copylen;
-> 
-> Rather than a u32 why not just make it an size_t? The advantage is that
-> is the native type for all the memory allocation and copying that takes
-> place in the function so it would avoid having to cast between u32 and
-> size_t.
- 
-My sole intention with this patch was to address the exploitable overflow
-with minimal chance of introducing any extra issues.
-Sure some things probably could be done differently, but I would stick to
-the choices made by original authors of this driver, especially since Greg
-mentioned that RNDIS support generally should be dropped at some point.
+On Tue, Jan 10, 2023 at 3:46 AM <liming.wu@jaguarmicro.com> wrote:
+>
+> From: Liming Wu <liming.wu@jaguarmicro.com>
+>
+> "enabled" is defined in vhost_init_device_iotlb,
+> but it is never used. Let's remove it.
+>
+> Signed-off-by: Liming Wu <liming.wu@jaguarmicro.com>
 
-> Also why not move buflen over to the unsigned integer category with the
-> other values you stated were at risk of overflow?
-> 
->>  
->>  	buflen = *len + sizeof(*u.get);
->>  	if (buflen < CONTROL_BUFFER_SIZE)
-> 
-> For example, this line here is comparing buflen to a fixed constant. If
-> we are concerned about overflows this could be triggering an integer
-> overflow resulting in truncation assuming *len is close to the roll-
-> over threshold.
+Reviewed-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
 
-I'm not sure how this would be exploitable since len is controlled by the
-developer rather than potential attacker, at least in existing code. Please
-correct me in case I'm wrong.
- 
-> By converting to a size_t we would most likely end up blowing up on the
-> kmalloc and instead returning an -ENOMEM.
-> 
->> @@ -740,7 +740,7 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
-> 
-> Also with any type change such as this I believe you would also need to
-> update the netdev_dbg statement that displays respoffs and the like to
-> account for the fact that you are now using an unsigned value.
-> Otherwise I believe %d will display the value as a signed integer
-> value.
-> 
->>  			goto exit_unlock;
->>  		}
->>  
->> -		if ((resplen + respoffs) > buflen) {
->> +		if (resplen > (buflen - respoffs)) {
->>  			/* Device would have returned more data if buffer would
->>  			 * have been big enough. Copy just the bits that we got.
->>  			 */
-> 
-> Actually you should be able to simplfy this further. Assuming resplen,
-> buflen and respoffs all the same type this entire if statement could be
-> broken down into:
-> 		copylen = min(resplen, buflen - respoffs);
-> 
-> 
+Thanks!
 
-Agree, yet I would prefer to avoid any non-essential changes to keep the risk
-of introducing errors as low as possible. I intentionally refrained from any
-additional modifications. Is this acceptable?
-
-Thank you for your review, I really appreciate all the suggestions.
+> ---
+>  drivers/vhost/net.c   | 2 +-
+>  drivers/vhost/vhost.c | 2 +-
+>  drivers/vhost/vhost.h | 2 +-
+>  drivers/vhost/vsock.c | 2 +-
+>  4 files changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index 9af19b0cf3b7..135e23254a26 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -1642,7 +1642,7 @@ static int vhost_net_set_features(struct vhost_net =
+*n, u64 features)
+>                 goto out_unlock;
+>
+>         if ((features & (1ULL << VIRTIO_F_ACCESS_PLATFORM))) {
+> -               if (vhost_init_device_iotlb(&n->dev, true))
+> +               if (vhost_init_device_iotlb(&n->dev))
+>                         goto out_unlock;
+>         }
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index cbe72bfd2f1f..34458e203716 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -1729,7 +1729,7 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigne=
+d int ioctl, void __user *arg
+>  }
+>  EXPORT_SYMBOL_GPL(vhost_vring_ioctl);
+>
+> -int vhost_init_device_iotlb(struct vhost_dev *d, bool enabled)
+> +int vhost_init_device_iotlb(struct vhost_dev *d)
+>  {
+>         struct vhost_iotlb *niotlb, *oiotlb;
+>         int i;
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index d9109107af08..4bfa10e52297 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -221,7 +221,7 @@ ssize_t vhost_chr_read_iter(struct vhost_dev *dev, st=
+ruct iov_iter *to,
+>                             int noblock);
+>  ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
+>                              struct iov_iter *from);
+> -int vhost_init_device_iotlb(struct vhost_dev *d, bool enabled);
+> +int vhost_init_device_iotlb(struct vhost_dev *d);
+>
+>  void vhost_iotlb_map_free(struct vhost_iotlb *iotlb,
+>                           struct vhost_iotlb_map *map);
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index a2b374372363..1ffa36eb3efb 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -829,7 +829,7 @@ static int vhost_vsock_set_features(struct vhost_vsoc=
+k *vsock, u64 features)
+>         }
+>
+>         if ((features & (1ULL << VIRTIO_F_ACCESS_PLATFORM))) {
+> -               if (vhost_init_device_iotlb(&vsock->dev, true))
+> +               if (vhost_init_device_iotlb(&vsock->dev))
+>                         goto err;
+>         }
+>
+> --
+> 2.25.1
+>
 
