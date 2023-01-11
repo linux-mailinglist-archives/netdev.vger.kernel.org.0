@@ -2,129 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF3A6652BB
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:22:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9C1E6652D3
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:29:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbjAKEWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 23:22:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
+        id S231432AbjAKE3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 23:29:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbjAKEWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:22:12 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D8B8FCF
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:22:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=X98r58MbAgZPQ4+1bekghvQ632iWN8JTQMfdSkUSkNQ=; b=OLOZYsZtuOdqFm6rh9vApicxj0
-        YxilqtkFg9Oh9hVGvdjGPAkPwtg4tAD4191gQ0FFNvHAdZ8D2XHfJ6nJKRaRMvGX9/z0/B7g6CiuB
-        az34Nlwn8x88CPEvBaFmpfp5RAKZavkYXw2fzPbniaDcv7rPqRS16OQ9XTWya5w3QhoCPL5dQ1K4a
-        h3o5Lx/F3vdVmKlJkPkrcQbxKozqoxXwCwxulplEzCamliGZNoNpqpVWdx6MGYCASYobcsUs6gRnK
-        LEWmQdjZTnBWjx7eBp+ML3uT/eHQsbSqAiyFiO6/LRRsLXNP+aRLHOYD78Q//HFE4JfkoQIWT6cJ2
-        0ShX1ejA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pFSd0-003nzY-LT; Wed, 11 Jan 2023 04:22:18 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>
-Subject: [PATCH v3 26/26] hns3: Convert to netmem
-Date:   Wed, 11 Jan 2023 04:22:14 +0000
-Message-Id: <20230111042214.907030-27-willy@infradead.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20230111042214.907030-1-willy@infradead.org>
-References: <20230111042214.907030-1-willy@infradead.org>
+        with ESMTP id S235792AbjAKE2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:28:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9744D1A8
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:25:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4007AB81AD6
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9464FC433EF;
+        Wed, 11 Jan 2023 04:25:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673411149;
+        bh=bdlhi0OWTPPaL5C3KR3ZudY6qtZb61l/fy7oS/4tMKc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gOm8fkkGpVCjUyRv9ims4hVFm9zkwvbRQb/NcisMzYU9RwLdsCH61WA6sZsGbG1VJ
+         JdPyUGfvuRvLFrlkSqqGYJ1gKoccKyOAjDAAwYHXe2+e5QA5SwRPXw7JanqiqdNk18
+         e/PxXQwcX7JinQAREoa7WM9/QdpouFbJYi5FfuDNng/DC4+pdXA4c9Ly4utXGVE+Yb
+         HXpX8Zq8hWG0dHKwvXgDyZGCZqHCl5AfHFM2GuhtrhbzFhpd3IUSrsKEmhBiq1Cjx9
+         2kLtUbJdWanh75ezFl8wcTA/+Gj/Eh5/3dCncHrxWLDcCsSlr2F4pMJvetwmLDou2c
+         1dq2tk3zLcCAQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        somnath.kotur@broadcom.com, andrew.gospodarek@broadcom.com,
+        michael.chan@broadcom.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] bnxt: make sure we return pages to the pool
+Date:   Tue, 10 Jan 2023 20:25:47 -0800
+Message-Id: <20230111042547.987749-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new netmem APIs in the hns3 driver.  Convert
-page_pool_dev_alloc_frag() to return a netmem as this is the only user
-of the API.
+Before the commit under Fixes the page would have been released
+from the pool before the napi_alloc_skb() call, so normal page
+freeing was fine (released page == no longer in the pool).
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+After the change we just mark the page for recycling so it's still
+in the pool if the skb alloc fails, we need to recycle.
+
+Same commit added the same bug in the new bnxt_rx_multi_page_skb().
+
+Fixes: 1dc4c557bfed ("bnxt: adding bnxt_xdp_build_skb to build skb from multibuffer xdp_buff")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 16 ++++++++--------
- include/net/page_pool.h                         |  7 +++----
- 2 files changed, 11 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index b4c4fb873568..ca0dc201bd47 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -3355,15 +3355,15 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
- 	struct page *p;
- 
- 	if (ring->page_pool) {
--		p = page_pool_dev_alloc_frag(ring->page_pool,
-+		struct netmem *nmem = page_pool_dev_alloc_frag(ring->page_pool,
- 					     &cb->page_offset,
- 					     hns3_buf_size(ring));
--		if (unlikely(!p))
-+		if (unlikely(!nmem))
- 			return -ENOMEM;
- 
--		cb->priv = p;
--		cb->buf = page_address(p);
--		cb->dma = page_pool_get_dma_addr(p);
-+		cb->priv = nmem;
-+		cb->buf = netmem_address(nmem);
-+		cb->dma = netmem_get_dma_addr(nmem);
- 		cb->type = DESC_TYPE_PP_FRAG;
- 		cb->reuse_flag = 0;
- 		return 0;
-@@ -3395,7 +3395,7 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
- 		if (cb->type & DESC_TYPE_PAGE && cb->pagecnt_bias)
- 			__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
- 		else if (cb->type & DESC_TYPE_PP_FRAG)
--			page_pool_put_full_page(ring->page_pool, cb->priv,
-+			page_pool_put_full_netmem(ring->page_pool, cb->priv,
- 						false);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 16ce7a90610c..240a7e8a7652 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -993,7 +993,7 @@ static struct sk_buff *bnxt_rx_multi_page_skb(struct bnxt *bp,
+ 			     DMA_ATTR_WEAK_ORDERING);
+ 	skb = build_skb(page_address(page), PAGE_SIZE);
+ 	if (!skb) {
+-		__free_page(page);
++		page_pool_recycle_direct(rxr->page_pool, page);
+ 		return NULL;
  	}
- 	memset(cb, 0, sizeof(*cb));
-@@ -4043,8 +4043,8 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		if (dev_page_is_reusable(desc_cb->priv))
- 			desc_cb->reuse_flag = 1;
- 		else if (desc_cb->type & DESC_TYPE_PP_FRAG)
--			page_pool_put_full_page(ring->page_pool, desc_cb->priv,
--						false);
-+			page_pool_put_full_netmem(ring->page_pool,
-+						desc_cb->priv, false);
- 		else /* This page cannot be reused so discard it */
- 			__page_frag_cache_drain(desc_cb->priv,
- 						desc_cb->pagecnt_bias);
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index af8ba8a0dd05..0a2588e6a0f3 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -334,13 +334,12 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
- struct netmem *page_pool_alloc_frag(struct page_pool *pool,
- 		unsigned int *offset, unsigned int size, gfp_t gfp);
+ 	skb_mark_for_recycle(skb);
+@@ -1031,7 +1031,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
  
--static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
--						    unsigned int *offset,
--						    unsigned int size)
-+static inline struct netmem *page_pool_dev_alloc_frag(struct page_pool *pool,
-+		unsigned int *offset, unsigned int size)
- {
- 	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
+ 	skb = napi_alloc_skb(&rxr->bnapi->napi, payload);
+ 	if (!skb) {
+-		__free_page(page);
++		page_pool_recycle_direct(rxr->page_pool, page);
+ 		return NULL;
+ 	}
  
--	return netmem_page(page_pool_alloc_frag(pool, offset, size, gfp));
-+	return page_pool_alloc_frag(pool, offset, size, gfp);
- }
- 
- /* get the stored dma direction. A driver might decide to treat this locally and
 -- 
-2.35.1
+2.38.1
 
