@@ -2,136 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E07665538
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 08:37:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0E5A665640
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:39:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbjAKHhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 02:37:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
+        id S232017AbjAKIjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 03:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbjAKHhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 02:37:38 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA059FF0
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 23:37:37 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id c11-20020a056e020bcb00b0030be9d07d63so10206366ilu.0
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 23:37:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=k63yZNPt76OpraTnKp5kn1vZ8b3gPRGwLKruVEw/acY=;
-        b=TW2miW/i6bgaWWbahdcBDE6g/y8rM5WpvReahzEffzXZt6i2q/G4SAqEy0MiqF9mBA
-         TqHRlnY7uO9cz3W1Qqkg7mhbybtqTdpV7qgG4puYNQQfLCLdv/MARJEIBTsJ4FrPKNnJ
-         ilH2AT9fajKrhP420NyEyM180lALOMzBLMqaGG5ozfJboa3+RsGpQADEcbbVR9mW7lWb
-         m9767es50hlOmfJXnCOhZ4iN3/gJjaqWZ7bGDaINKZIcdmfY1MzPn+Fug5qGv/Kw1e4j
-         aF9elmbyWAPnsRO+uNutP4reiXAUbUM45gJyBy64pAt2WXILOz2LcTUmRnAvua4wFuJ8
-         MVuQ==
-X-Gm-Message-State: AFqh2kqCVw8X2bsxg4qZ/lgwfeG9VLGLFnQdAo6beneTfCtKahMh1QpZ
-        eKThb3z+9JFsbYjB5AzxI5tc+bH+ZKW8hZhVYYEmUkojVuoA
-X-Google-Smtp-Source: AMrXdXtkserdAL266aVvjdSA3W9/5aHT8I3zKgEjNxpHGiaRI1u1k0yibhK5roxog4vdgoennrKIuG/buJh8YM1FdYi0cCdEVN6b
-MIME-Version: 1.0
-X-Received: by 2002:a02:9a0a:0:b0:38a:b479:86f with SMTP id
- b10-20020a029a0a000000b0038ab479086fmr8745816jal.116.1673422656987; Tue, 10
- Jan 2023 23:37:36 -0800 (PST)
-Date:   Tue, 10 Jan 2023 23:37:36 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000076ab405f1f8134a@google.com>
-Subject: [syzbot] WARNING in devlink_free
-From:   syzbot <syzbot+9f0dd863b87113935acf@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jiri@nvidia.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229905AbjAKIj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:39:29 -0500
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65247CE01
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:39:25 -0800 (PST)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20230111083921epoutp02082773173eb58f5320a9960699cde845~5NGjU446N2552925529epoutp02h
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 08:39:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20230111083921epoutp02082773173eb58f5320a9960699cde845~5NGjU446N2552925529epoutp02h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1673426361;
+        bh=B3TS1rkuqLCLHXTax7VaPalrznXw22OvtyJ1ylhbsRs=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=AiD/brVU00Hpb9Yu2+y6jj/w15S0X5aEpYagklSDYcb56plWXbw8x3uB9cDT7pu9j
+         JgEguRdlwdgoepWSZKkyxwN2YqZl8NNt3tWTLaoHoj3d/6K8o8qcjUTUkDNhhfTnXN
+         mwhwT78Q9z3L/3dLa6uztwLjC9nk8ZdLXCVpmx4s=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20230111083920epcas5p100a0165ed8760b3b5660d2e102799d3c~5NGit-Cgt2765327653epcas5p1C;
+        Wed, 11 Jan 2023 08:39:20 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.175]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4NsLh65q9Bz4x9QF; Wed, 11 Jan
+        2023 08:39:18 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        25.CE.02301.6B57EB36; Wed, 11 Jan 2023 17:39:18 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20230111075438epcas5p44ac566fdedff7c59bd416b7de28f3922~5MfgXPnn01062510625epcas5p4T;
+        Wed, 11 Jan 2023 07:54:38 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20230111075438epsmtrp2c14f9bb26ad7066b50b2a30d852b3778~5MfgWH3vO0511105111epsmtrp2J;
+        Wed, 11 Jan 2023 07:54:38 +0000 (GMT)
+X-AuditID: b6c32a49-201ff700000108fd-31-63be75b67e7d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        6D.16.02211.D3B6EB36; Wed, 11 Jan 2023 16:54:37 +0900 (KST)
+Received: from cheetah.sa.corp.samsungelectronics.net (unknown
+        [107.109.115.53]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20230111075435epsmtip1f26d49d1cf61d7c302365369f0d9f7f1~5MfeE7A4B2668326683epsmtip1j;
+        Wed, 11 Jan 2023 07:54:35 +0000 (GMT)
+From:   Sriranjani P <sriranjani.p@samsung.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, alexandre.torgue@foss.st.com,
+        peppe.cavallaro@st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pankaj.dubey@samsung.com,
+        alim.akhtar@samsung.com, ravi.patel@samsung.com,
+        Sriranjani P <sriranjani.p@samsung.com>
+Subject: [PATCH v2 0/4] net: stmmac: dwc-qos: Add FSD EQoS support
+Date:   Wed, 11 Jan 2023 13:24:18 +0530
+Message-Id: <20230111075422.107173-1-sriranjani.p@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMJsWRmVeSWpSXmKPExsWy7bCmlu620n3JBvsb9Cx+vpzGaPFg3jY2
+        iznnW1gs5h85x2rx9Ngjdot7i96xWvS9eMhscWFbH6vF5V1z2Czm/V3LanFsgZjFt9NvGC0W
+        bf3CbvH/9VZGi4cf9rBbtO49wm5x+806VgdBjy0rbzJ5PO3fyu6xc9Zddo8Fm0o9Nq3qZPO4
+        c20Pm8f7fVfZPPq2rGL0ePpjL7PHlv2fGT0+b5IL4I7KtslITUxJLVJIzUvOT8nMS7dV8g6O
+        d443NTMw1DW0tDBXUshLzE21VXLxCdB1y8wBekpJoSwxpxQoFJBYXKykb2dTlF9akqqQkV9c
+        YquUWpCSU2BSoFecmFtcmpeul5daYmVoYGBkClSYkJ0x+e8iloJtPBV/3s1nbGDs5Opi5OSQ
+        EDCRmHZwN2sXIxeHkMBuRokTO2axQzifGCVOn+xjAqkSEvjGKPFinw5Mx5kn+6CK9jJKfPkw
+        gQ3CaWWSOHX2LTNIFZuArkTrtc9MIAkRgS+MEtfXdIC1MAucY5RY966PDaRKWMBJ4uON36wg
+        NouAqkTL0X/sIDavgJ3E67eTmSD2yUus3nCAGaRZQmAhh8SjjVegEi4S83d3sUDYwhKvjm9h
+        h7ClJD6/28sGYadLbD6ymRXCzpHoaGpmhrDtJQ5cmQPUywF0kabE+l36EGFZiamn1oGNZxbg
+        k+j9/QRqFa/EjnkwtprE4kedULaMxNpHn6DGe0i8ONzDCAmvWIlzC5exTWCUnYWwYQEj4ypG
+        ydSC4tz01GLTAsO81HJ4VCXn525iBKdWLc8djHcffNA7xMjEwXiIUYKDWUmEdyXnnmQh3pTE
+        yqrUovz4otKc1OJDjKbAMJvILCWanA9M7nkl8YYmlgYmZmZmJpbGZoZK4rypW+cnCwmkJ5ak
+        ZqemFqQWwfQxcXBKNTDFHZh9xftuScO9Ne/7Qx/X5hcV/vkz5zTbgVt1TzcE2ngsPBsQ0ha7
+        ds3Gz/0sDlVWZ8Juuyz9tHb5kTnT9zzV8BScfGum6Kl7Hvlvlt2d9zhs3cnDTLL/TT8Y57M9
+        TqyfcnDTtAePap3aV0eyTDP0WBz0YtpdOWYd04ijxvme2fNmlzjYZT8U/BwpkfPKJOV35Iqz
+        WRZKUnf8AreKbJhzRdjOomC1vPPReJvs9ctOGYnfvRBl4mttecT36gHj68FfLR5aLvBZevSo
+        5PawH3eWOy8WUs+8s/4h16Wgjap3/KpDv5eGmgQFHLRlM/JVz51tNGPRtaUBl7fsdLx4Ybni
+        pNotbr3Gq7Um9F94VvfukBJLcUaioRZzUXEiALbEz+42BAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrDLMWRmVeSWpSXmKPExsWy7bCSnK5d9r5kg0UpFj9fTmO0eDBvG5vF
+        nPMtLBbzj5xjtXh67BG7xb1F71gt+l48ZLa4sK2P1eLyrjlsFvP+rmW1OLZAzOLb6TeMFou2
+        fmG3+P96K6PFww972C1a9x5ht7j9Zh2rg6DHlpU3mTye9m9l99g56y67x4JNpR6bVnWyedy5
+        tofN4/2+q2wefVtWMXo8/bGX2WPL/s+MHp83yQVwR3HZpKTmZJalFunbJXBlTP67iKVgG0/F
+        n3fzGRsYO7m6GDk5JARMJM482cfexcjFISSwm1Fi05UN7BAJGYmTD5YwQ9jCEiv/PYcqamaS
+        2Hy5gxUkwSagK9F67TMTiC0i0MAkMX92NojNLHCFUeLIMxkQW1jASeLjjd9g9SwCqhItR/+B
+        LeAVsJN4/XYyE8QCeYnVGw4wT2DkWcDIsIpRMrWgODc9t9iwwDAvtVyvODG3uDQvXS85P3cT
+        IzjAtTR3MG5f9UHvECMTB+MhRgkOZiUR3pWce5KFeFMSK6tSi/Lji0pzUosPMUpzsCiJ817o
+        OhkvJJCeWJKanZpakFoEk2Xi4JRqYLILFLiow52T6XDdVtONo+MhZ5miZ43SQTY1kRr12k2X
+        J7m8P7dqvn+HYr5HUg9b6lf5h69N3Tr2bbTo3uyxYrGB3upHs+U8fhwyumZ5dKvrZuG09ewl
+        YvdmJGbtsXb4Ovunr3yy863UlDM7fOYVSucEhh06+rPKbU0Lx33nbSvVc1/01L/+d6Fv+4RA
+        i+eNt/+rKSzc0+3cm6svfNTH/YLollXLkkv5Jms+mP7NQ6ZTbb/fhdyXbt8q9SINlDzefV78
+        IZPT72LOXM6vszpPW++6lGPlJvG2adap0yy7ou88c3y557b3T/ZYR8Ydhz+z2K84ondv1ZfM
+        HXa++2ed1Jl3bkeWtfLs23/fWN90PqjEUpyRaKjFXFScCABbrkQU3wIAAA==
+X-CMS-MailID: 20230111075438epcas5p44ac566fdedff7c59bd416b7de28f3922
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20230111075438epcas5p44ac566fdedff7c59bd416b7de28f3922
+References: <CGME20230111075438epcas5p44ac566fdedff7c59bd416b7de28f3922@epcas5p4.samsung.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+FSD platform has two instances of EQoS IP, one is in FSYS0 block and
+another one is in PERIC block. This patch series add required DT binding,
+DT file modifications and platform driver specific changes for the same.
 
-syzbot found the following issue on:
+This series needs following two patches [1,2] posted as part of SYSREG
+controller support for FSD platform.
 
-HEAD commit:    6d0c4b11e743 libbpf: Poison strlcpy()
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=17b1945a480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46221e8203c7aca6
-dashboard link: https://syzkaller.appspot.com/bug?extid=9f0dd863b87113935acf
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+[1]: https://git.kernel.org/krzk/linux/c/7e03ca7429b23105b740eb79364dc410f214848b
+[2]: https://git.kernel.org/krzk/linux/c/beaf55952d46fb14387d92de280bed7985ea85e5
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Changes since v1:
+1. Addressed all the review comments suggested by Krzysztof with respect to
+DT files.
+2. Updated dwc_eqos_setup_rxclock() function as per the review comments
+given by Andrew.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/83567aa48724/disk-6d0c4b11.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/6047fdb8660e/vmlinux-6d0c4b11.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/a94d1047d7b7/bzImage-6d0c4b11.xz
+Sriranjani P (4):
+  dt-bindings: net: Add FSD EQoS device tree bindings
+  net: stmmac: dwc-qos: Add FSD EQoS support
+  arm64: dts: fsd: Add Ethernet support for FSYS0 Block of FSD SoC
+  arm64: dts: fsd: Add Ethernet support for PERIC Block of FSD SoC
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9f0dd863b87113935acf@syzkaller.appspotmail.com
+ .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
+ .../net/tesla,dwc-qos-ethernet-4.21.yaml      | 103 ++++++++
+ arch/arm64/boot/dts/tesla/fsd-evb.dts         |  18 ++
+ arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi    | 112 +++++++++
+ arch/arm64/boot/dts/tesla/fsd.dtsi            |  51 ++++
+ .../stmicro/stmmac/dwmac-dwc-qos-eth.c        | 227 ++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  20 ++
+ include/linux/stmmac.h                        |   1 +
+ 8 files changed, 533 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/tesla,dwc-qos-ethernet-4.21.yaml
 
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(mutex_is_locked(lock))
-WARNING: CPU: 1 PID: 14225 at kernel/locking/mutex-debug.c:102 mutex_destroy+0xc1/0x100 kernel/locking/mutex-debug.c:102
-Modules linked in:
-CPU: 1 PID: 14225 Comm: syz-executor.5 Not tainted 6.2.0-rc2-syzkaller-00302-g6d0c4b11e743 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-RIP: 0010:mutex_destroy+0xc1/0x100 kernel/locking/mutex-debug.c:102
-Code: 03 0f b6 14 11 38 d0 7c 04 84 d2 75 3f 8b 05 ee 21 10 0d 85 c0 75 92 48 c7 c6 00 47 4c 8a 48 c7 c7 40 47 4c 8a e8 af 7f 5c 08 <0f> 0b e9 78 ff ff ff 48 c7 c7 00 8a c0 91 e8 2c 64 6c 00 e9 5d ff
-RSP: 0018:ffffc900030efa20 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: ffff88807ca752d0 RCX: 0000000000000000
-RDX: ffff88802749d7c0 RSI: ffffffff8166724c RDI: fffff5200061df36
-RBP: ffff88807ca75000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000080000000 R11: 0000000000000001 R12: ffff88807ca73000
-R13: ffff88807ca73078 R14: ffffffff8d7af3c0 R15: 0000000000000000
-FS:  0000555556d5f400(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055a9c409d950 CR3: 000000004f7a2000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- devlink_free+0x83/0x510 net/devlink/core.c:262
- nsim_drv_remove+0x158/0x1d0 drivers/net/netdevsim/dev.c:1688
- device_remove+0xc8/0x170 drivers/base/dd.c:548
- __device_release_driver drivers/base/dd.c:1253 [inline]
- device_release_driver_internal+0x4a5/0x700 drivers/base/dd.c:1279
- bus_remove_device+0x2e7/0x5a0 drivers/base/bus.c:529
- device_del+0x4f7/0xc80 drivers/base/core.c:3666
- device_unregister+0x1e/0xc0 drivers/base/core.c:3698
- nsim_bus_dev_del drivers/net/netdevsim/bus.c:310 [inline]
- del_device_store+0x34e/0x470 drivers/net/netdevsim/bus.c:219
- bus_attr_store+0x76/0xa0 drivers/base/bus.c:122
- sysfs_kf_write+0x114/0x170 fs/sysfs/file.c:136
- kernfs_fop_write_iter+0x3f1/0x600 fs/kernfs/file.c:334
- call_write_iter include/linux/fs.h:2186 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9ed/0xdd0 fs/read_write.c:584
- ksys_write+0x12b/0x250 fs/read_write.c:637
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fcfd903de4f
-Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 99 fd ff ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 cc fd ff ff 48
-RSP: 002b:00007ffcd827a1d0 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fcfd903de4f
-RDX: 0000000000000001 RSI: 00007ffcd827a220 RDI: 0000000000000005
-RBP: 0000000000000005 R08: 0000000000000000 R09: 00007ffcd827a170
-R10: 0000000000000000 R11: 0000000000000293 R12: 00007fcfd90e76fe
-R13: 00007ffcd827a220 R14: 0000000000000000 R15: 00007ffcd827a8f0
- </TASK>
+-- 
+2.17.1
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
