@@ -2,105 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1A8B66570E
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:12:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA6C665718
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238432AbjAKJMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 04:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
+        id S232016AbjAKJOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 04:14:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238433AbjAKJLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:11:54 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FAB18B16
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:08:26 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id q64so15220456pjq.4
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:08:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=W6EY9adrD63KRn8BZcOqI9Bj+3V9vlRyGorkRdpRCnM=;
-        b=uMXkqx4TRf5x65jbcbPdvnVzmpJ18C642Rzp6EVAX3Df7TEUX+J9ijZycXqpEFY6vj
-         e9d5JA0n0o2Mpb/j7CF3os0Tj9hZqnrWtUUYRduOsVRRTot2t6x3nJp9Z6nAsRYIH5ke
-         dgDI2LgrCAIW2yGAeahd5VH7kf+SObnr9mA9kDPuLLDtrk9nY+Ih+dde41dkLCy10Hi+
-         PoXtN/w09g4jO9zN5iZxrGxFJqAWHmJt0lgk4k0SpeaVZMyGbpkRJnkH2PH7pqUbGMZr
-         4DK77mi9F+BKGJgsKALvdTTBnwEkj4aZHOlhMQq6QuBpnjN6rgACqA8gbi52mt8JrI8j
-         ruwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=W6EY9adrD63KRn8BZcOqI9Bj+3V9vlRyGorkRdpRCnM=;
-        b=19deHstY+c7iOwA1AxKvGtKmb5npbvhDC4FdWdng2LqcjubfEDXJDRP4XZJY08mvyj
-         qRlMw3lJwmHI6H8zL4g+eSPMoY3FAcnqCYzaL2MqOGXQRPviTG9q/ZBp5UVKVpgoMPeF
-         g/6YeVJPB28ZZhN5q+Goq18DhHDJZ8LVRzQ1vWGT4BL+LpHxfQF4CHPu5tdAwOy0Y1ue
-         j8tAppgoAMZF+0vdQ3fDV4wH8z20RVZhcNgAIwIvfqd3oSbwfEHxYN4cIruFIilbjfbY
-         j+RRIvU48lxfMepAPJCHqDVPwV6VuucTCwntlfgdgHEmO1m1sp2VGeIgsQHsg11qjQum
-         7Jrg==
-X-Gm-Message-State: AFqh2kqLTSjmuR3BYV9HP8sVn4jat+t6EWyhokXT3PBmgJp6yAUdWjEN
-        Nq+xG6D2Eo8Uu7bt+OfK2yyfKJ9D1ihibotJz5KCqQ==
-X-Google-Smtp-Source: AMrXdXs6CGNtbils8jL/9i7+iS2FCpFPQSeg0pjUvWcm4DFCNzU/50N77ySRdf8ZLTxYbXfjpLecKw==
-X-Received: by 2002:a17:902:ebc6:b0:194:4fb3:65a6 with SMTP id p6-20020a170902ebc600b001944fb365a6mr584437plg.18.1673428105943;
-        Wed, 11 Jan 2023 01:08:25 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id a14-20020a170902710e00b00194516b2d88sm318206pll.260.2023.01.11.01.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 01:08:25 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, michael.chan@broadcom.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: [patch net-next v4 10/10] devlink: add instance lock assertion in devl_is_registered()
-Date:   Wed, 11 Jan 2023 10:07:48 +0100
-Message-Id: <20230111090748.751505-11-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230111090748.751505-1-jiri@resnulli.us>
-References: <20230111090748.751505-1-jiri@resnulli.us>
+        with ESMTP id S238425AbjAKJOJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:14:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC137BE28;
+        Wed, 11 Jan 2023 01:10:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F929B81ACE;
+        Wed, 11 Jan 2023 09:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F1F7EC433EF;
+        Wed, 11 Jan 2023 09:10:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673428219;
+        bh=42gL1q+GkZgt9fX2//DcHxxejEgYJTpJAhZ1nV5h5cc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ma5uFwIY9ynUxhmWaSUEHFE+DmL43KU8WXadcjMenbmQ+Ny4etnC46SRobdPbvKoI
+         O9q7dYY2OKOh03hdkScppXcgwuIrx/u4ygbMXV47PqhVO7n3KXYnWs+OQlj5fy4xn0
+         RewEUvrZpYZ6TKUfam7+Epk7jEd1Y3s2Kcmat/LWzbRlvJJz7fkpBNQEvMUxXRFH5x
+         Iy8E9zuBbJYQCLJCgE4BJKJ9Qn2FTu676sBDC9qn2d1hRT4BjA/TcqKo4qnIsZfoOk
+         peS9PALxHGd6u8woa8VxqcHmQBsSjPAQqbbRqw8RGPGIVuXMMGExoksMYhlnXq80ht
+         66YD0XBaBcSGQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB594E45233;
+        Wed, 11 Jan 2023 09:10:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH v4 net-next 0/5] add PLCA RS support and onsemi NCN26000
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167342821882.24876.7581626078662045769.git-patchwork-notify@kernel.org>
+Date:   Wed, 11 Jan 2023 09:10:18 +0000
+References: <cover.1673282912.git.piergiorgio.beruto@gmail.com>
+In-Reply-To: <cover.1673282912.git.piergiorgio.beruto@gmail.com>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, o.rempel@pengutronix.de,
+        mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
+        sbhatta@marvell.com, linux-doc@vger.kernel.org,
+        wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
+        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+Hello:
 
-After region and linecard lock removals, this helper is always supposed
-to be called with instance lock held. So put the assertion here and
-remove the comment which is no longer accurate.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- net/devlink/devl_internal.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Mon, 9 Jan 2023 17:59:25 +0100 you wrote:
+> This patchset adds support for getting/setting the Physical Layer
+> Collision Avoidace (PLCA) Reconciliation Sublayer (RS) configuration and
+> status on Ethernet PHYs that supports it.
+> 
+> PLCA is a feature that provides improved media-access performance in terms
+> of throughput, latency and fairness for multi-drop (P2MP) half-duplex PHYs.
+> PLCA is defined in Clause 148 of the IEEE802.3 specifications as amended
+> by 802.3cg-2019. Currently, PLCA is supported by the 10BASE-T1S single-pair
+> Ethernet PHY defined in the same standard and related amendments. The OPEN
+> Alliance SIG TC14 defines additional specifications for the 10BASE-T1S PHY,
+> including a standard register map for PHYs that embeds the PLCA RS (see
+> PLCA management registers at https://www.opensig.org/about/specifications/).
+> 
+> [...]
 
-diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
-index b61e522321ac..02097c09ab80 100644
---- a/net/devlink/devl_internal.h
-+++ b/net/devlink/devl_internal.h
-@@ -84,9 +84,7 @@ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp);
- 
- static inline bool devl_is_registered(struct devlink *devlink)
- {
--	/* To prevent races the caller must hold the instance lock
--	 * or another lock taken during unregistration.
--	 */
-+	devl_assert_locked(devlink);
- 	return xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
- }
- 
+Here is the summary with links:
+  - [v4,net-next,1/5] net/ethtool: add netlink interface for the PLCA RS
+    https://git.kernel.org/netdev/net-next/c/8580e16c28f3
+  - [v4,net-next,2/5] drivers/net/phy: add the link modes for the 10BASE-T1S Ethernet PHY
+    https://git.kernel.org/netdev/net-next/c/16178c8ef53d
+  - [v4,net-next,3/5] drivers/net/phy: add connection between ethtool and phylib for PLCA
+    https://git.kernel.org/netdev/net-next/c/a23a1e57a677
+  - [v4,net-next,4/5] drivers/net/phy: add helpers to get/set PLCA configuration
+    https://git.kernel.org/netdev/net-next/c/493323416fed
+  - [v4,net-next,5/5] drivers/net/phy: add driver for the onsemi NCN26000 10BASE-T1S PHY
+    https://git.kernel.org/netdev/net-next/c/b53e7e8d8557
+
+You are awesome, thank you!
 -- 
-2.39.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
