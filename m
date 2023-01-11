@@ -2,72 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C7B3665028
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 01:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34F1B66503A
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 01:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235251AbjAKAAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 19:00:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
+        id S235505AbjAKAKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 19:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235398AbjAKAAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 19:00:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B32555663;
-        Tue, 10 Jan 2023 16:00:01 -0800 (PST)
+        with ESMTP id S235452AbjAKAKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 19:10:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5E33C0CF;
+        Tue, 10 Jan 2023 16:10:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3830B81A1F;
-        Tue, 10 Jan 2023 23:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6CF2C433EF;
-        Tue, 10 Jan 2023 23:59:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B4AC61995;
+        Wed, 11 Jan 2023 00:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 040FBC433D2;
+        Wed, 11 Jan 2023 00:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673395198;
-        bh=duw0LjoikfQ0dZpYavFL/CIJ3PpYay+YHMc35jB+yLo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Aen/XKrrrdot2L0nFNnJCVlRWaJjhMlTHgIfEE1bbtMoW43S39iE0JCLaLqLKmF9u
-         TLPWIaHzAUVbS8wujgQKuIow1cMsFjMEnclzMKQkkKbLm6uz/qt/iwB7Mo/9mLiHc/
-         LPb/51M2Rbsg4mIiNQrGuaoHuSnn0vSrdUv14oCJ9+BjCHxfqwDrfxYACZ3PZSl4Rd
-         lyMxy1YIBwAD8tylGlaE5Mt/zmnXxeSsr/vlMdCJSOKP5Bng0knu45jVXImBZM7hbo
-         akZkuRcIljdPYnQR8lCJXw9KW447AB0/JgPZKvLxjyPVTg7IXF1MLR0Eb1WuvkTW+2
-         5x4iV4a7gUB8w==
-Date:   Tue, 10 Jan 2023 15:59:56 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        s=k20201202; t=1673395818;
+        bh=2Oz4hwPxPjuMAf/Gd82dMOKnsmuaokvLtGpniKKLwKI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JS2WpUu9gPQdnTU2OpkuanwmDXxgqopFsvBaVkwuAfiDkEwh3ehmVPeZ/eFAX1yW6
+         Y8citpTQmvbBzwvyKjKQ3H21VtntINErqkGmmEXxVV/0puFOHVjEZ6r+fdpUvDR6xO
+         MyML7rGVE7h5UdftG1t/zwiroly+RSDBZrgGKyx5k1Y1WN9k75WdvZvRnlfLUyZoIc
+         MUC7STUe/MWmtMU4OssdGSBm7muUMFMi/IbZf1ar8SVA+PnGibG7Ku4EPhfMm9oVcH
+         YIeOfCeTgFKNbWpIqO5yKRq7uO9R+zGstoQ1xnPC9M2X515DXJ4N7R4xvZm0ZcJfnQ
+         /amxNjrvOTEdw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DAFDEE21EE8;
+        Wed, 11 Jan 2023 00:10:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3 00/11] net: mdio: Start separating C22 and C45
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167339581789.32183.5441523442987743331.git-patchwork-notify@kernel.org>
+Date:   Wed, 11 Jan 2023 00:10:17 +0000
+References: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
+In-Reply-To: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Jose.Abreu@synopsys.com, s.shtylyov@omp.ru, wei.fang@nxp.com,
+        shenwei.wang@nxp.com, xiaoning.wang@nxp.com, linux-imx@nxp.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com, dqfext@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, matthias.bgg@gmail.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next v3 01/11] net: mdio: Add dedicated C45 API to
- MDIO bus drivers
-Message-ID: <20230110155956.06941ea8@kernel.org>
-In-Reply-To: <161fdffccb78fca2f16f1f5c78390420f60817b3.camel@redhat.com>
-References: <20221227-v6-2-rc1-c45-seperation-v3-0-ade1deb438da@walle.cc>
-        <20221227-v6-2-rc1-c45-seperation-v3-1-ade1deb438da@walle.cc>
-        <5bd7ee34ead313785951defbf3069b64d4338a45.camel@redhat.com>
-        <161fdffccb78fca2f16f1f5c78390420f60817b3.camel@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        linux-mediatek@lists.infradead.org, andrew@lunn.ch,
+        geert+renesas@glider.be, vladimir.oltean@nxp.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -77,30 +64,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Jan 2023 13:49:28 +0100 Paolo Abeni wrote:
-> On Tue, 2023-01-10 at 12:16 +0100, Paolo Abeni wrote:
-> > On Mon, 2023-01-09 at 16:30 +0100, Michael Walle wrote:  
-> > > diff --git a/include/linux/phy.h b/include/linux/phy.h
-> > > index 6378c997ded5..65844f0a7fb3 100644
-> > > --- a/include/linux/phy.h
-> > > +++ b/include/linux/phy.h
-> > > @@ -364,6 +364,11 @@ struct mii_bus {
-> > >  	int (*read)(struct mii_bus *bus, int addr, int regnum);
-> > >  	/** @write: Perform a write transfer on the bus */
-> > >  	int (*write)(struct mii_bus *bus, int addr, int regnum, u16 val);
-> > > +	/** @read: Perform a C45 read transfer on the bus */  
-> > 
-> > Minor nit: s/@read/@read_c45/ 
-> >   
-> > > +	int (*read_c45)(struct mii_bus *bus, int addr, int devnum, int regnum);
-> > > +	/** @write: Perform a C45 write transfer on the bus */  
-> > 
-> > Mutatis mutandis, same thing here.  
-> 
-> Otherwise the series LGTM. I think it would be preferable avoiding
-> reposting a largish series like this for such a minor change. I think
-> the series can be merged as-is and the above can be addressed with a
-> follow-up patch.
+Hello:
 
-Hmmm if we're doing special treatment I guess can as well fix this 
-when applying. Save people who report warnings potential work.
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 09 Jan 2023 16:30:41 +0100 you wrote:
+> I've picked this older series from Andrew up and rebased it onto
+> v6.2-rc1.
+> 
+> This patch set starts the separation of C22 and C45 MDIO bus
+> transactions at the API level to the MDIO Bus drivers. C45 read and
+> write ops are added to the MDIO bus driver structure, and the MDIO
+> core will try to use these ops if requested to perform a C45
+> transfer. If not available a fallback to the older API is made, to
+> allow backwards compatibility until all drivers are converted.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v3,01/11] net: mdio: Add dedicated C45 API to MDIO bus drivers
+    (no matching commit)
+  - [net-next,v3,02/11] net: pcs: pcs-xpcs: Use C45 MDIO API
+    https://git.kernel.org/netdev/net-next/c/3a65e5f91780
+  - [net-next,v3,03/11] net: mdio: mdiobus_register: update validation test
+    https://git.kernel.org/netdev/net-next/c/555d64c6d8e5
+  - [net-next,v3,04/11] net: mdio: C22 is now optional, EOPNOTSUPP if not provided
+    https://git.kernel.org/netdev/net-next/c/b063b1924fd9
+  - [net-next,v3,05/11] net: mdio: Move mdiobus_c45_addr() next to users
+    https://git.kernel.org/netdev/net-next/c/ce30fa56cbf0
+  - [net-next,v3,06/11] net: mdio: mdio-bitbang: Separate C22 and C45 transactions
+    https://git.kernel.org/netdev/net-next/c/002dd3de097c
+  - [net-next,v3,07/11] net: mdio: mvmdio: Convert XSMI bus to new API
+    https://git.kernel.org/netdev/net-next/c/b3c84ae5ff99
+  - [net-next,v3,08/11] net: mdio: xgmac_mdio: Separate C22 and C45 transactions
+    https://git.kernel.org/netdev/net-next/c/c0fc8e6dcee4
+  - [net-next,v3,09/11] net: fec: Separate C22 and C45 transactions
+    https://git.kernel.org/netdev/net-next/c/8d03ad1ab0b0
+  - [net-next,v3,10/11] net: mdio: add mdiobus_c45_read/write_nested helpers
+    https://git.kernel.org/netdev/net-next/c/1d914d51f03c
+  - [net-next,v3,11/11] net: dsa: mv88e6xxx: Separate C22 and C45 transactions
+    https://git.kernel.org/netdev/net-next/c/743a19e38d02
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
