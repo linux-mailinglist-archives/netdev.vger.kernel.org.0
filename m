@@ -2,69 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4085665F9F
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 16:49:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF2FD665FC9
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 16:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239423AbjAKPtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 10:49:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
+        id S235106AbjAKPxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 10:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239713AbjAKPsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 10:48:50 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F50335920
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:48:22 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id 188so15410302ybi.9
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:48:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=oWXiKk5N76ghcPrYpnrhpW08LqZySwOUdbWXIWHxWBc=;
-        b=qR342MVgAspa6C1TGx9WVz/1cYTR+YeR9HoTjGffZVND8qcg0OHq1J72TpetAu/HNB
-         2+THEqpRejnwna90MXpyOp+3/Fq5W3DoyrAJXBN8J5ZKYln64yVWUF+e+sCKAAQOA9FS
-         Y8oRW47E3kdekVshbys8cs51Aqrvo0DHbYOJIUC77x9un0wFiOlZNPemabshL4Uw/Efa
-         DnD3DpuEsWOuFNLaJHV6GMdqfeTOBbbhOT3+yMY8eMnNKIMN5odanWwDQ4VVdUg6g+rM
-         9N45sETfK9LWUw9RKUly2uvsCuKP+eTCDjm8juuwwOpDcWz9unkBXfM1cRdQ1qzufKTs
-         Dn5g==
+        with ESMTP id S234684AbjAKPx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 10:53:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D48265FC
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:52:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673452355;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=ryrrVULoscZ1riSGOM9SabdXBEw/UV56TVFRHhdk8Hk=;
+        b=Mg7V5IDeq1Iy9l42HeBRvKHdxhZ6GPpL6T3ZwOomFgWFTNZO0/fDwb0QLdbguleunoiq9R
+        JjDGlLuqI3T05p/PZk4LvDmiFHGvAK/2h0dm0YaYsE2ojXFHdi9rItVp09ac1LPg6cEWcM
+        Z+ElWaXniZAzIOZWwIR5nBA2FNS9YPU=
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
+ [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-66-G3162ZKNMna3yrkB1NRdVA-1; Wed, 11 Jan 2023 10:52:34 -0500
+X-MC-Unique: G3162ZKNMna3yrkB1NRdVA-1
+Received: by mail-yb1-f198.google.com with SMTP id v9-20020a259d89000000b007b515f139e0so16621910ybp.17
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:52:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oWXiKk5N76ghcPrYpnrhpW08LqZySwOUdbWXIWHxWBc=;
-        b=V6/QZtoQrOw9aLRHjiYoweOQRpPQmMSSbA2Fww1pR/Lxxb5PfQnruCExzy4PvilbQc
-         4hPtr7GUrZ0B0oSiAPl+Yo7M/IRhgZLel4DZnrLsT0JC24qK4m5gcxNUmUMUZZyTkKYk
-         M6CAbUJNJDHHQCysMuUdg5HiZap3CWkUN/uDwV/PRPXH8rcCcQe/mxjd1BM8diQwkshx
-         0jzt6vlGtrNRyoqFGL8cJHQ4KYxIprQv5fwVRlpw+cO2de7czhkj/IAuQ/saLPuzIiuE
-         cClCWcfyTydUt8u9ZpkE8ERPgCThoOWzWUOF94IFcxT9UsNo3c6UAgIplvLQ+4V4YbHQ
-         OKBA==
-X-Gm-Message-State: AFqh2ko5iFr2DVd43m5nkKZCdRcEJFIWG6zXO6lfN4I0Ja3uWSQ7svic
-        sc1RrQ84UmkkAbyELvDPgWnZM45EG1KTIcODnQYMsw==
-X-Google-Smtp-Source: AMrXdXuLnT+5i/eyQN5Bm5ScZRY47Yc3QKQd7ZWRW6c++xS955xVHS85ngwXh95gH7UiKLtX+r+Hq3+gByBM2HOGy9w=
-X-Received: by 2002:a25:7288:0:b0:78e:9ffb:6421 with SMTP id
- n130-20020a257288000000b0078e9ffb6421mr5641227ybc.95.1673452101328; Wed, 11
- Jan 2023 07:48:21 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ryrrVULoscZ1riSGOM9SabdXBEw/UV56TVFRHhdk8Hk=;
+        b=cAv4+h55B1YuHURGEtkSL8HymPG4fKs4RQSEnoZyxRYvwzD2L8iPJ6JJ0iPZx41XH+
+         QQcIWJ2en/7iX8S0tSIcXiTFUn2aM5AcsMskc0oxFFDmHPw/cDMbznMNiAS89Ivo4Cft
+         TfEoXwVgSIkN71S7yVc8pcwQ1tjifehqjQSEcQ8/BeDOtSsMBnMR3BHZRS/+AR4jY8f1
+         pnWxVq2j+gT7lBvODXuDK5gNWOI/9Imsc30t7CsT5WnsDIJu9dcFQo+V38q2Rub0WSji
+         7fDcYi8jOIML6/L5G7vsdkfMwxG3QIkCYzPhK1aCp5NvrdYWBlzL2+l87LNxHhOsZlLy
+         uQKg==
+X-Gm-Message-State: AFqh2kpanOnHmeKKgFmbgdjzvzphpdPImjlhoQsjVctmJgQqU2q6Rl3m
+        mjJ95BGE12LHLrnikHhr9qkyKG8WwuE030vFyk7GfqH1ZAoJvnFc+ADFZFpD+J/1Bzozb58MZDG
+        f4T+gkpzdFu94cAR7A/UkDEByYohE4+JS
+X-Received: by 2002:a05:690c:fd5:b0:4a4:7135:9214 with SMTP id dg21-20020a05690c0fd500b004a471359214mr6355350ywb.378.1673452352787;
+        Wed, 11 Jan 2023 07:52:32 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtStWXR+38RfXxzFTVMcf7hzA0i9hXKSpLyfi0CZB2+pYusTRUJDWvXhu+YWgsAtexBs1T/Ku+QZ43JZuHtbu8=
+X-Received: by 2002:a05:690c:fd5:b0:4a4:7135:9214 with SMTP id
+ dg21-20020a05690c0fd500b004a471359214mr6355349ywb.378.1673452352610; Wed, 11
+ Jan 2023 07:52:32 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1673423199.git.william.xuanziyang@huawei.com> <ec692898c848256540d146b76a3e239914453293.1673423199.git.william.xuanziyang@huawei.com>
-In-Reply-To: <ec692898c848256540d146b76a3e239914453293.1673423199.git.william.xuanziyang@huawei.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Wed, 11 Jan 2023 10:47:44 -0500
-Message-ID: <CA+FuTSe+YJcyDV8S-PAzceLe4kNe-ZTZ+JpqpFkSmYfASv27Ug@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: add ipip6 and ip6ip decap
- to test_tc_tunnel
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org
+From:   Paul Holzinger <pholzing@redhat.com>
+Date:   Wed, 11 Jan 2023 16:52:21 +0100
+Message-ID: <CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com>
+Subject: [Regression] 6.0.16-6.0.18 kernel no longer return EADDRINUSE from bind
+To:     stable@vger.kernel.org
+Cc:     regressions@lists.linux.dev, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,30 +67,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 3:02 AM Ziyang Xuan
-<william.xuanziyang@huawei.com> wrote:
->
-> Add ipip6 and ip6ip decap testcases. Verify that bpf_skb_adjust_room()
-> correctly decapsulate ipip6 and ip6ip tunnel packets.
->
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->  .../selftests/bpf/progs/test_tc_tunnel.c      | 91 ++++++++++++++++++-
->  tools/testing/selftests/bpf/test_tc_tunnel.sh | 15 +--
->  2 files changed, 98 insertions(+), 8 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/test_tc_tunnel.c b/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
-> index a0e7762b1e5a..e6e678aa9874 100644
-> --- a/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
-> +++ b/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
-> @@ -38,6 +38,10 @@ static const int cfg_udp_src = 20000;
->  #define        VXLAN_FLAGS     0x8
->  #define        VXLAN_VNI       1
->
-> +#ifndef NEXTHDR_DEST
-> +#define NEXTHDR_DEST   60
-> +#endif
+Hi all,
 
-Should not be needed if including the right header? include/net/ipv6.h
+Since updating to 6.0.16 the bind() system call no longer fails with
+EADDRINUSE when the address is already in use.
+Instead bind() returns 1 in such a case, which is not a valid return
+value for this system call.
 
-Otherwise very nice extension. Thanks for expanding the test.
+It works with the 6.0.15 kernel and earlier, 6.1.4 and 6.2-rc3 also
+seem to work.
+
+Fedora bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2159066
+
+To reproduce you can just run `ncat -l 5000` two times, the second one
+should fail. However it just uses a random port instead.
+
+As far as I can tell this problem is caused by
+https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
+which did not backport commit 7a7160edf1bf properly.
+The line `int ret = -EADDRINUSE, port = snum, l3mdev;` is missing in
+net/ipv4/inet_connection_sock.c.
+This is the working 6.1 patch:
+https://lore.kernel.org/all/20221228144339.969733443@linuxfoundation.org/
+
+Best regards,
+Paul
+
