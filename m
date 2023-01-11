@@ -2,75 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D7266560B
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978C0665607
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:27:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231192AbjAKI1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 03:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42784 "EHLO
+        id S231631AbjAKI1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 03:27:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238045AbjAKI1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:27:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1D29FE8
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:25:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673425520;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z9BqbleyIskxpRXIgDkvfJFpA17h9Qu7BSswmKTjpxs=;
-        b=Vp011uveWAFidbpxSQeikU0aUoLMQDXzeHzV9YnDW10AFzZnYisWLkZCAkHFsyTQ2BKb7I
-        X08wKZtGA4zSb5bMM8AwzaUiQ6eFSagl+06OLST1hyi5ZEmBhWHU4gNSGQdqlNfZqKEn+a
-        vhqRB04VUqPK/ER2V4qgD/62H1D2mek=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-150-XZ8ZiyuxP3iGGHJkujwsyw-1; Wed, 11 Jan 2023 03:25:19 -0500
-X-MC-Unique: XZ8ZiyuxP3iGGHJkujwsyw-1
-Received: by mail-qk1-f198.google.com with SMTP id i4-20020a05620a248400b006febc1651bbso10439983qkn.4
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:25:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z9BqbleyIskxpRXIgDkvfJFpA17h9Qu7BSswmKTjpxs=;
-        b=7PWkz+IVQDN7b/erBH9CGk0Dm72jpYg/LvOiC8mMsQPHBuA/5riy7ItQbQG6LdkTZ3
-         E+E6ZCopbBVX4vdTjY8xMva7nJbCc829/RMuVHTob43qC6j7AlelXzsxd3AmeY9ofnDJ
-         Gr4NyUY2veUOX6CTAI8FwogNu3UPdxxvUEybApNMDvMECvVarKQxXwsZ49idoqohHQ9w
-         +zh3f9oZoAm14cdg9IuZbr49BtLCrjju212oL6lgrfrMCo32k9/ltlzYoR/tYiWLzE3R
-         cjHty5xMXpe5js0jIZEYtqlo8nUYImWwArefEDjBsNzcOKEZjhSj3tkxgeo86ehxl0Os
-         GFWg==
-X-Gm-Message-State: AFqh2komIU1R9maQ6Mb445pKDWC3lP546I6XmhF+dhUaY6yQZXqMdHCf
-        lwpDWTv7Fi8JfWIvlcS28e7sOCi5idlM+g128FskaqiZY2BHO0uXpuIhvMMZR8KeP3LTodRFqB0
-        wD4Vk0ln6Wstv/24M
-X-Received: by 2002:ac8:6f19:0:b0:3a9:84bd:7cc5 with SMTP id bs25-20020ac86f19000000b003a984bd7cc5mr109481135qtb.39.1673425518776;
-        Wed, 11 Jan 2023 00:25:18 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvypWklvz3km9uYoBB0qv32xq21YlcTjpjh3KzgK6avNFjv4jYlLRNPx/BLDFKbo966A5oWEQ==
-X-Received: by 2002:ac8:6f19:0:b0:3a9:84bd:7cc5 with SMTP id bs25-20020ac86f19000000b003a984bd7cc5mr109481108qtb.39.1673425518406;
-        Wed, 11 Jan 2023 00:25:18 -0800 (PST)
-Received: from sgarzare-redhat (host-79-46-200-244.retail.telecomitalia.it. [79.46.200.244])
-        by smtp.gmail.com with ESMTPSA id c8-20020ac86608000000b003a4f435e381sm7226084qtp.18.2023.01.11.00.25.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 00:25:17 -0800 (PST)
-Date:   Wed, 11 Jan 2023 09:25:13 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     liming.wu@jaguarmicro.com
-Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, 398776277@qq.com
-Subject: Re: [PATCH] vhost: remove unused paramete
-Message-ID: <20230111082513.weu6go5k2nyfvkjh@sgarzare-redhat>
-References: <20230110024445.303-1-liming.wu@jaguarmicro.com>
+        with ESMTP id S236212AbjAKI0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:26:30 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA3DEF
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:25:50 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NsLM05dJZzJrBb;
+        Wed, 11 Jan 2023 16:24:28 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 11 Jan
+ 2023 16:25:46 +0800
+Subject: Re: [PATCH v3 00/26] Split netmem from struct page
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+CC:     <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>
+References: <20230111042214.907030-1-willy@infradead.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <e9bb4841-6f9d-65c2-0f78-b307615b009a@huawei.com>
+Date:   Wed, 11 Jan 2023 16:25:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20230110024445.303-1-liming.wu@jaguarmicro.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+In-Reply-To: <20230111042214.907030-1-willy@infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,26 +51,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 10:44:45AM +0800, liming.wu@jaguarmicro.com wrote:
->From: Liming Wu <liming.wu@jaguarmicro.com>
->
->"enabled" is defined in vhost_init_device_iotlb,
->but it is never used. Let's remove it.
->
->Signed-off-by: Liming Wu <liming.wu@jaguarmicro.com>
->---
-> drivers/vhost/net.c   | 2 +-
-> drivers/vhost/vhost.c | 2 +-
-> drivers/vhost/vhost.h | 2 +-
-> drivers/vhost/vsock.c | 2 +-
-> 4 files changed, 4 insertions(+), 4 deletions(-)
+On 2023/1/11 12:21, Matthew Wilcox (Oracle) wrote:
+> The MM subsystem is trying to reduce struct page to a single pointer.
+> The first step towards that is splitting struct page by its individual
+> users, as has already been done with folio and slab.  This patchset does
+> that for netmem which is used for page pools.
 
-Little typo in the title s/paramete/parameter.
+As page pool is only used for rx side in the net stack depending on the
+driver, a lot more memory for the net stack is from page_frag_alloc_align(),
+kmem cache, etc.
+naming it netmem seems a little overkill, perhaps a more specific name for
+the page pool? such as pp_cache.
 
-A part of that, the patch LGTM:
+@Jesper & Ilias
+Any better idea?
+And it seem some API may need changing too, as we are not pooling 'pages'
+now.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> 
+> There are some relatively significant reductions in kernel text size
+> from these changes.  They don't appear to affect performance at all,
+> but it's nice to save a bit of memory.
+> 
+> v3:
+>  - Rebase to next-20230110
+>  - Add received Acked-by and Reviewed-by tags (thanks!)
+>  - Mark compat functions in page_pool.h (Ilias)
+>  - Correct a patch title
+>  - Convert hns3 driver (and page_pool_dev_alloc_frag())
+>  - Make page_pool_recycle_direct() accept a netmem or page pointer
+> 
+> Matthew Wilcox (Oracle) (26):
+>   netmem: Create new type
+>   netmem: Add utility functions
+>   page_pool: Add netmem_set_dma_addr() and netmem_get_dma_addr()
+>   page_pool: Convert page_pool_release_page() to
+>     page_pool_release_netmem()
+>   page_pool: Start using netmem in allocation path.
+                                                    ^
+nit: there is a '.' at the end of patch titile.
 
-Thanks,
-Stefano
-
+>   page_pool: Convert page_pool_return_page() to
+>     page_pool_return_netmem()
+>   page_pool: Convert __page_pool_put_page() to __page_pool_put_netmem()
+>   page_pool: Convert pp_alloc_cache to contain netmem
+>   page_pool: Convert page_pool_defrag_page() to
+>     page_pool_defrag_netmem()
+>   page_pool: Convert page_pool_put_defragged_page() to netmem
+>   page_pool: Convert page_pool_empty_ring() to use netmem
+>   page_pool: Convert page_pool_alloc_pages() to page_pool_alloc_netmem()
+>   page_pool: Convert page_pool_dma_sync_for_device() to take a netmem
+>   page_pool: Convert page_pool_recycle_in_cache() to netmem
+>   page_pool: Remove __page_pool_put_page()
+>   page_pool: Use netmem in page_pool_drain_frag()
+>   page_pool: Convert page_pool_return_skb_page() to use netmem
+>   page_pool: Allow page_pool_recycle_direct() to take a netmem or a page
+>   page_pool: Convert frag_page to frag_nmem
+>   xdp: Convert to netmem
+>   mm: Remove page pool members from struct page
+>   page_pool: Pass a netmem to init_callback()
+>   net: Add support for netmem in skb_frag
+>   mvneta: Convert to netmem
+>   mlx5: Convert to netmem
+>   hns3: Convert to netmem
+> 
+>  Documentation/networking/page_pool.rst        |   5 +
+>  .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  16 +-
+>  drivers/net/ethernet/marvell/mvneta.c         |  48 +--
+>  drivers/net/ethernet/mellanox/mlx5/core/en.h  |  10 +-
+>  .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   4 +-
+>  .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  24 +-
+>  .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |   2 +-
+>  .../net/ethernet/mellanox/mlx5/core/en_main.c |  12 +-
+>  .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 130 +++++----
+>  include/linux/mm_types.h                      |  22 --
+>  include/linux/skbuff.h                        |  11 +
+>  include/net/page_pool.h                       | 228 ++++++++++++---
+>  include/trace/events/page_pool.h              |  28 +-
+>  net/bpf/test_run.c                            |   4 +-
+>  net/core/page_pool.c                          | 274 +++++++++---------
+>  net/core/xdp.c                                |   7 +-
+>  16 files changed, 493 insertions(+), 332 deletions(-)
+> 
