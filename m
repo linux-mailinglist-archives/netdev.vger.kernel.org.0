@@ -2,118 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0FBB665DE4
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6923F665E13
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235356AbjAKO3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 09:29:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
+        id S234805AbjAKOeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 09:34:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234941AbjAKO17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:27:59 -0500
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1806D1E3D9
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:26:22 -0800 (PST)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-150b06cb1aeso15661876fac.11
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:26:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lNJKp8eN9YcpqHUc7FUpzUV0cIQqcj0Dzk7VBsEq1E0=;
-        b=VUZS5SBAZ9+/6wMISJpdGOxRMPQjyp3S1zwtMPA6W74eKRqj0QrerGX6ktZtcYPSI2
-         BM+QXxmRhtNEovZzrr7RtS2TzvB62vr83g0zMGccLEC170RwtobidqKslq83EiPit3WI
-         jw7QXVg9BLEEwo0wf+NkwBu+Zr+/eWoIT4TSPSmte5Prz+V50bntH9IZYDW9Jn44JGEH
-         edqKDHbGw2Q4+xexuCxXsN0FoChj48MeUOjUi0VRKkz8H+/b+5qpnMvjPjOrzyxlqjuH
-         AAirZz71M5PwMo0NCePA6Cegnz3ebcahm58ijkBvS133oPqqmjpwqE5DP58tfyI7gfCD
-         Qztw==
+        with ESMTP id S239297AbjAKOcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:32:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366C030542
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:30:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673447399;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dsSTrNIRFbZiv8kfvwsD4ZTbADoW+ucjY/egJOCNNtQ=;
+        b=gbFYpsFRVd0vSEJKpyF4kzAFujz0fp5Z/WL3zh33vUz8GXIGhjP1kav3w4OhJcFb4Vqc5J
+        JmfTyE8AcvVvCvZD6f3H/tx5khT26lf+Hs2NLPVxltzhu4PpUt61+4ojLCRjq1FIueei1/
+        geruWGBV5kqFLab0zAEj79tI4NLrfIg=
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
+ [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-670-tZCjYZm4NieEn57zPLGGtg-1; Wed, 11 Jan 2023 09:29:58 -0500
+X-MC-Unique: tZCjYZm4NieEn57zPLGGtg-1
+Received: by mail-pg1-f200.google.com with SMTP id 84-20020a630257000000b00477f88d334eso6728210pgc.11
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:29:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lNJKp8eN9YcpqHUc7FUpzUV0cIQqcj0Dzk7VBsEq1E0=;
-        b=XQQt/+inOvjaQgHYx1ShCWC+OVF42nY2dV/dEJpgYb1krZP5BVeSH3hQInugpNwttx
-         gByDjsb8v352c2ydBaJAN470Rl8vqNKVeHUOA+7m/GMVQK0lbRsVMVQfR5+v1S5KVKTr
-         eAlr3bwFDkOl/gMhaMNKC4rFCt/46kKq9RANVYvjwRrDCAGeYQx9L/WI4IzIgCKdaxEV
-         6LHQ6m/4io/Odb4Jp7AIq1rHOefz9TPiWmoIDKZDsEsMU8X/8lTBetqI66xCmV5E32C3
-         H0P5hgzrelWWcne1xQ9ELTO7zrE7i94Pab7b4u96fXI60/6hHfW5hZxVUIPkdZ9o5sOt
-         1cYw==
-X-Gm-Message-State: AFqh2kohaz1KmbHVaNf8BMsdeWkSCGEaBnRfJzJFUd1yaXaUzavU0cHc
-        occoJ4d8SztX/eL9CYOViGk=
-X-Google-Smtp-Source: AMrXdXuRjHWxAcV4F+uYlnZ8N2baMhfbNKbfYqY88h7t+fTbkxZP65pPvPf+jb0D9Geqe3qAt/8jDQ==
-X-Received: by 2002:a05:6870:d0f:b0:150:4547:bcec with SMTP id mk15-20020a0568700d0f00b001504547bcecmr20647148oab.57.1673447180933;
-        Wed, 11 Jan 2023 06:26:20 -0800 (PST)
-Received: from t14s.localdomain ([2001:1284:f013:bc85:5bbd:a506:76a0:5c22])
-        by smtp.gmail.com with ESMTPSA id k18-20020a056870959200b0011d02a3fa63sm7329956oao.14.2023.01.11.06.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 06:26:20 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 8CF004ABB82; Wed, 11 Jan 2023 11:26:18 -0300 (-03)
-Date:   Wed, 11 Jan 2023 11:26:18 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, xiyou.wangcong@gmail.com,
-        Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
-        jiri@resnulli.us, pabeni@redhat.com, wizhao@redhat.com,
-        lucien.xin@gmail.com
-Subject: Re: [RFC net-next 2/2] act_mirred: use the backlog for nested calls
- to mirred ingress
-Message-ID: <Y77HCg39bWRJIPw/@t14s.localdomain>
-References: <ae44a3c9e42476d3a0f6edd87873fbea70b520bf.1671560567.git.dcaratti@redhat.com>
- <840dbfccffa9411a5e0f804885cbb7df66a22e78.1671560567.git.dcaratti@redhat.com>
- <CAM0EoMnJeb3QsfxgsggEMjTACdu0hq6mb3O+uGOfVzG2RZ-hkw@mail.gmail.com>
- <20230105170812.zeq6fd2t2iwwr3fj@t14s.localdomain>
- <CAM0EoMkSqNAvuNSce=f5bmmy4ZRnteJ6CQZpSmUiZ+UKTUL27A@mail.gmail.com>
- <20230109103940.52e6bf42@kernel.org>
- <CAM0EoMkbgyokMAbvyyjHRCKu42OT1Wp6F_FajtvPQXrCGRZYCw@mail.gmail.com>
+        h=content-language:content-transfer-encoding:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dsSTrNIRFbZiv8kfvwsD4ZTbADoW+ucjY/egJOCNNtQ=;
+        b=xnD8t5YNRlOgpI9fHUVHVflNFOnVPQlMp9JqPVSRgM6VwXhwnUIhmqRx2pBDgD8Fc8
+         snfD7kOvh4U3SZZz2OhkMugfWc/WbyxJeCYoVyDg9WWw4JqYIIG+m7nzgvGgLJg/Uaqq
+         FG8ML0wCxw/Lb+MZJWKwr3p1r1a11Ucmaz3Km41jmpBhibFGr4RkPTc5gU10DR4QCXcZ
+         rnb14zP+xS5aKJ0Kjo4l8L+rHkDT5KcLoloCq88hZcdCJamQajfi0NMpv3cfz9/KMLlc
+         4+bkCd4bzbRdnS9VpxjGZR36L8eewky+iguGPd8rxbeSfSlvsR2IOQAlNwRl1xqm2LSj
+         WDWQ==
+X-Gm-Message-State: AFqh2kqC6e2Z0Io9I8e/kSHvmFIVT1H/eBuwQisUxN7ta6DrwIjdFD8Q
+        o8h/WpL9sxu/RYchwgxwoIH4mKzZJ4bHCiN0TnbVwpoPNFy9pfH/MDTEuMW8sI8JFfdSMAxU6/y
+        Z9mROfMv7APf04X97
+X-Received: by 2002:a17:90a:5791:b0:227:1c85:f5f4 with SMTP id g17-20020a17090a579100b002271c85f5f4mr9128903pji.5.1673447396926;
+        Wed, 11 Jan 2023 06:29:56 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuzxWKbwqGBpXQocCXlLeRIi2BkJQlAdtwtg8OMzT49+l1gAOPM2skXKEppTEx/Xozm+TfCYg==
+X-Received: by 2002:a17:90a:5791:b0:227:1c85:f5f4 with SMTP id g17-20020a17090a579100b002271c85f5f4mr9128879pji.5.1673447396616;
+        Wed, 11 Jan 2023 06:29:56 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id r60-20020a17090a43c200b002271b43e528sm5105448pjg.33.2023.01.11.06.29.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Jan 2023 06:29:56 -0800 (PST)
+Subject: Re: [PATCH] net: ena: initialize dim_sample
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     Eric Dumazet <edumazet@google.com>, akiyano@amazon.com,
+        darinzon@amazon.com, ndagan@amazon.com, saeedb@amazon.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        nathan@kernel.org, ndesaulniers@google.com, khalasa@piap.pl,
+        wsa+renesas@sang-engineering.com, yuancan@huawei.com,
+        tglx@linutronix.de, 42.hyeyoo@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20230108143843.2987732-1-trix@redhat.com>
+ <CANn89iLFtrQm-E5BRwgKFw4xRZiOOdWg-WTFi5eZsg7ycq2szg@mail.gmail.com>
+ <pj41zlpmbmba16.fsf@u570694869fb251.ant.amazon.com>
+ <db824c89-13f2-3349-9dd0-0fb7559c6273@redhat.com>
+ <pj41zllem9bglr.fsf@u570694869fb251.ant.amazon.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <010f0cef-0f6e-1d4e-47ec-29a3c667b97a@redhat.com>
+Date:   Wed, 11 Jan 2023 06:29:53 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM0EoMkbgyokMAbvyyjHRCKu42OT1Wp6F_FajtvPQXrCGRZYCw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <pj41zllem9bglr.fsf@u570694869fb251.ant.amazon.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 03:46:10PM -0500, Jamal Hadi Salim wrote:
-> On Mon, Jan 9, 2023 at 1:39 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Mon, 9 Jan 2023 10:59:49 -0500 Jamal Hadi Salim wrote:
-> > > Sorry, I thought it was addressing the issue we discussed last time.
-> > > Lets discuss in our monthly meeting.
-> >
-> > When is your meeting? One could consider this patch as a fix and it
-> > looks kinda "obviously correct", so the need for delays and discussions
-> > is a bit lost on me.
 
-Long story short, this fix is 3 months old by now. Cong has been very
-hesitant to it.
+On 1/11/23 12:46 AM, Shay Agroskin wrote:
+>
+> Tom Rix <trix@redhat.com> writes:
+>
+>> On 1/10/23 8:58 AM, Shay Agroskin wrote:
+>>>
+>>> Eric Dumazet <edumazet@google.com> writes:
+>>>
+>>>> On Sun, Jan 8, 2023 at 3:38 PM Tom Rix <trix@redhat.com> wrote:
+>>>>>
+>>>>> clang static analysis reports this problem
+>>>>> drivers/net/ethernet/amazon/ena/ena_netdev.c:1821:2: warning:
+>>>>> Passed-by-value struct
+>>>>>   argument contains uninitialized data (e.g., field: 'comp_ctr')
+>>>>> [core.CallAndMessage]
+>>>>>         net_dim(&ena_napi->dim, dim_sample);
+>>>>>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>>
+>>>>> net_dim can call dim_calc_stats() which uses the comp_ctr element,
+>>>>> so it must be initialized.
+>>>>
+>>>> This seems to be a dim_update_sample() problem really, when comp_ctr
+>>>> has been added...
+>>>>
+>>>> Your patch works, but we could avoid pre-initializing dim_sample in
+>>>> all callers,
+>>>> then re-writing all but one field...
+>>>>
+>>>> diff --git a/include/linux/dim.h b/include/linux/dim.h
+>>>> index
+>>>> 6c5733981563eadf5f06c59c5dc97df961692b02..4604ced4517268ef8912cd8053ac8f4d2630f977 
+>>>>
+>>>> 100644
+>>>> --- a/include/linux/dim.h
+>>>> +++ b/include/linux/dim.h
+>>>> @@ -254,6 +254,7 @@ dim_update_sample(u16 event_ctr, u64 packets, u64
+>>>> bytes, struct dim_sample *s)
+>>>>         s->pkt_ctr   = packets;
+>>>>         s->byte_ctr  = bytes;
+>>>>         s->event_ctr = event_ctr;
+>>>> +       s->comp_ctr  = 0;
+>>>>  }
+>>>>
+>>>>  /**
+>>>
+>>> Hi,
+>>>
+>>> I'd rather go with Eric's solution to this issue than zero the whole
+>>> struct in ENA
+>>
+>> Please look at the other callers of dim_update_sample.  The common
+>> pattern is to initialize the struct.
+>>
+>> This alternative will work, but the pattern of initializing the struct
+>> the other (~20) callers should be refactored.
+>>
+>> Tom
+>>
+>
+> While Eric's patch might be bigger if you also remove the 
+> pre-initialization in the other drivers, the Linux code itself would 
+> be smaller (granted not significantly) and
+> it make less room for pitfalls in adding DIM support in other drivers.
+>
+> Is there a good argument against using Eric's patch other than 'the 
+> other patch would be bigger' ?
 
-> 
-> The original issue was discussed in our meetup and the monthly meetup was
-> today - where we agreed this patch solves the outstanding issue.
+No, I think it a better approach and if Eric can take it forward that 
+would be great.
 
-Unfortunatelly Cong didn't attend the mtg, though. Not sure if he is
-on PTO or what. We do believe, though, that the patch is now
-addressing all his concerns.
+However when you start refactoring, it may grow larger than the single fix.
 
-  Marcelo
+For instance, passing the structure by value could be changed to passing 
+by reference.
 
-> 
-> No idea what is going on with the stoopid mail client; i gave up on thunderbird
-> but possibly the OP used html and this thing is acting in kind. I will double
-> check next time...
-> 
-> 
-> cheers,
-> jamal
-> 
-> > Cong, WDYT?
-> >
-> > Reminder: please don't top post and trim your replies.
+Tom
+
+>
+> Shay
+>
+>>>
+>>> Thanks,
+>>> Shay
+>>>
+>
+
