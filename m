@@ -2,110 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA0D665B01
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 13:06:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E25665B48
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 13:24:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbjAKMFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 07:05:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
+        id S232689AbjAKMYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 07:24:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233820AbjAKME4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 07:04:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F1695A5
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:04:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4AC7B81BAC
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 12:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC705C433D2;
-        Wed, 11 Jan 2023 12:04:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673438686;
-        bh=C96ha8iUIT6U7b0IJ5SUlUqe3UrAU6hGl/9JBqpIwuE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gp/rBZwnKBsZzt7DVk/sY1dsYbemHfRQQOb34OUj9lkbM/t5fFTrQicpWWHr8gwG3
-         RUTkXO/BS8chwB+Bv2d4AJlkSo1DmtZgMV/QprQpCwbcq9RDAv3ETuNsmAnKbQqlHm
-         rQQ8xYlO1jpXScqsAVHg6F0ed32xIIbxmp7IJxdrp6UsTP4t19p1wtG15cGZi7FR8i
-         KCqp4TAj4+x2G9lgQQoA/My+2lFmSn83r0M4dnphtKZbkOaIr2T4PSH+mtcCUA1rVC
-         UBjUjh51Q2iIgGliJr0Wy0TEp1VswlCkRh64pEkXtMhm7lqSdMfMUMf7CSEBPCxXVG
-         g/TFmjY2h+T2w==
-Date:   Wed, 11 Jan 2023 14:04:41 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        michael.chan@broadcom.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: Re: [patch net-next v3 01/11] devlink: remove devlink features
-Message-ID: <Y76l2egGm//4Qe5i@unreal>
-References: <20230109183120.649825-1-jiri@resnulli.us>
- <20230109183120.649825-2-jiri@resnulli.us>
- <20230109165500.3bebda0a@kernel.org>
- <Y70PyuHXJZ3gD8dG@nanopsycho>
- <20230110125915.62d428fb@kernel.org>
- <Y75nBEpxIWrDj9mF@unreal>
- <Y75x+1+z4VzBx/ip@nanopsycho>
+        with ESMTP id S232053AbjAKMYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 07:24:01 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291956376
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:24:01 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30B15u6w024740;
+        Wed, 11 Jan 2023 04:23:50 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=EgMTpDPS/aUxHv+052Wosji40nDkHXXG6wCPzQ5R1KY=;
+ b=D1kxFkTO2Jh94d/rmLH4Se0HaPQZmPNWadW719e9QNXjRqFFj7cQc6xLTDVyvh33BZGi
+ 2IxFKVJU3IIXYIlxyHe6upsilzda2m+SK7OXneoQIIBpzCv+mqN8iRMVbiTlXblMo5eZ
+ 8o9rBZwh3MOI3O91ytuSoWPv/XIKRDvt9fyR0cI5r8E5PTw79ehB66aNTLWp8NUBxmQj
+ 9HNuAb5fX8OgQ0809f1KI+zz5qiVRJ5WUw7hYwH/bFhLr/6OvEqu//UdyWFrSUbdmxr6
+ tW/TJpNF5fOsRgxd2Lk8oy6UEIOYwyTbTXSSnkHy4Z04Y7LldgvYutyFbBatImiva/zu KQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n1k55hgtu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 11 Jan 2023 04:23:49 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 11 Jan
+ 2023 04:23:48 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Wed, 11 Jan 2023 04:23:48 -0800
+Received: from localhost.localdomain (unknown [10.28.36.175])
+        by maili.marvell.com (Postfix) with ESMTP id 9E4E63F704A;
+        Wed, 11 Jan 2023 04:23:44 -0800 (PST)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
+Subject: [PATCH v2 net-next,0/8] octeontx2-af: Miscellaneous changes for CPT
+Date:   Wed, 11 Jan 2023 17:53:35 +0530
+Message-ID: <20230111122343.928694-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y75x+1+z4VzBx/ip@nanopsycho>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: bN9gHoWv4gvNQ6OdwFE30_0oLv3DKY9Y
+X-Proofpoint-ORIG-GUID: bN9gHoWv4gvNQ6OdwFE30_0oLv3DKY9Y
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-11_05,2023-01-11_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 09:23:23AM +0100, Jiri Pirko wrote:
-> Wed, Jan 11, 2023 at 08:36:36AM CET, leon@kernel.org wrote:
-> >On Tue, Jan 10, 2023 at 12:59:15PM -0800, Jakub Kicinski wrote:
-> >> On Tue, 10 Jan 2023 08:12:10 +0100 Jiri Pirko wrote:
-> >> >> Right, but this is not 100% equivalent because we generate the
-> >> >> notifications _before_ we try to reload_down:
-> >> >>
-> >> >>	devlink_ns_change_notify(devlink, dest_net, curr_net, false);
-> >> >>	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
-> >> >>	if (err)
-> >> >>		return err;
-> >> >>
-> >> >> IDK why, I haven't investigated.  
-> >> > 
-> >> > Right, but that is done even in other cases where down can't be done. I
-> >> > I think there's a bug here, down DEL notification is sent before calling
-> >> > down which can potentially fail. I think the notification call should be
-> >> > moved after reload_down() call. Then the bahaviour would stay the same
-> >> > for the features case and will get fixed for the reload_down() reject
-> >> > cases. What do you think?
-> >> 
-> >> I was gonna say that it sounds reasonable, and that maybe we should 
-> >> be in fact using devlink_notify_register() instead of the custom
-> >> instance-and-params-only devlink_ns_change_notify().
-> >> 
-> >> But then I looked at who added this counter-intuitive code
-> >> and found out it's for a reason - see 05a7f4a8dff19.
-> >> 
-> >> So you gotta check if mlx5 still has this problem...
-> >
-> >I don't see anything in the tree what will prevent the issue
-> >which I wrote in 05a7f4a8dff19.
-> 
-> Okay. I will remove this patch from the set and address this in a
-> separate patchset. Thanks!
+This patchset consists of miscellaneous changes for CPT.
+- Adds a new mailbox to reset the requested CPT LF.
+- Modify FLR sequence as per HW team suggested.
+- Adds support to recover CPT engines when they gets fault.
+- Updates CPT inbound inline IPsec configuration mailbox,
+  as per new generation of the OcteonTX2 chips.
+- Adds a new mailbox to return CPT FLT Interrupt info.
 
-BTW, I tried your v3 series and it caused to tests which changes
-switchdev mode to stuck.
+---
+v2:
+- Addressed a review comment.
+v1:
+- Dropped patch "octeontx2-af: Fix interrupt name strings completely"
+  to submit to net.
+---
 
-I'll try v4 now.
+Nithin Dabilpuram (1):
+  octeontx2-af: restore rxc conf after teardown sequence
 
-Thanks
+Srujana Challa (7):
+  octeontx2-af: recover CPT engine when it gets fault
+  octeontx2-af: add mbox for CPT LF reset
+  octeontx2-af: modify FLR sequence for CPT
+  octeontx2-af: optimize cpt pf identification
+  octeontx2-af: update CPT inbound inline IPsec config mailbox
+  octeontx2-af: add ctx ilen to cpt lf alloc mailbox
+  octeontx2-af: add mbox to return CPT_AF_FLT_INT info
 
-> 
-> >
-> >Thanks
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  33 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   8 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  18 +
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 309 +++++++++++++-----
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  46 ++-
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   2 +
+ 6 files changed, 324 insertions(+), 92 deletions(-)
+
+-- 
+2.25.1
+
