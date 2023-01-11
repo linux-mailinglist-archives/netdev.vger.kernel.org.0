@@ -2,75 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B74C2666349
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 20:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 028FE66636D
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 20:19:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235616AbjAKTMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 14:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
+        id S232271AbjAKTTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 14:19:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231972AbjAKTMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 14:12:50 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F709F5B5;
-        Wed, 11 Jan 2023 11:12:48 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id bt23so24981970lfb.5;
-        Wed, 11 Jan 2023 11:12:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8EiI9R96gCdmCFi5CyO8T9qRDKhT2cs8fqWKf1z80Mk=;
-        b=mzP921o8SwxZAZEKBG9QuzQEM4g4HTRqQDGWD4Vvl3pIdF397Tspd5R6U95sNohcI8
-         q/6G2gGVJmOcxtpKysysfTOLz/6C4+6L1BnMZ3tkSck7mz6F+FgsTbB0Ohq/6Z4Nf0D4
-         F6ZJi2yDRRh1Eww9vuARHHI3KHG4fli1oWQtI4EXzQeslYlt9HzXKC/4XZw1LXGMKa42
-         RlQj1YFfC+HRTIOYHb6PZXn20IhxjxeY9LLEwiPC9oh1TY+lacjhYV7m7eKE0ab4hxnV
-         EW6XFKwWKpM1fY+T98H1uhQx8dOHNhfmKi1rOs8d6F4MygvO42BRgUhLTttJ6ocGw+wG
-         xk/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8EiI9R96gCdmCFi5CyO8T9qRDKhT2cs8fqWKf1z80Mk=;
-        b=dIzgBPFo0WncW90A2cBuvctgpQVevNLC9PmKd+GENH9uh0LIh1w2S8HO6cSNv+x2H9
-         I4oroIhCgqcDhAsLqvuCqsZR5pr4X/h8y4cOOCqWYTCeVb2QKmlmC4EKf6tRhZXCewOw
-         UxbyxE0uIsf35mY+dCF8VWJKzHxCHknOq4+yOGx+BqfwYbmIepqeps0/fOo6cZIFn4ST
-         exBg622BtPN6yO8VGCKKTyVB76c8nChvYRnrni0fd6gypkFtZ9UttKINeTda4vEvMe5h
-         8jaFWkg4zJ4UM+bXFojgLWec/CsbLAMFpz/gimRIzJLJFKybjnGE80hVXPxyITE/Elhc
-         RKsA==
-X-Gm-Message-State: AFqh2kr8uutLbTeMY0qc7m7qf7C9y7kucuQ9sinSwsVhVnvdyZoFOoU+
-        gWAPKG2z9/mPBIjRtT09uXU=
-X-Google-Smtp-Source: AMrXdXs3/hbAhL+hlD/dNGWChGW0aOZpS9pbfNrVsjqJj+ib+NAPcZVYUPYFwJ4N128WPlpSgS67RQ==
-X-Received: by 2002:a05:6512:3901:b0:4c7:d0ed:9605 with SMTP id a1-20020a056512390100b004c7d0ed9605mr19183485lfu.6.1673464366599;
-        Wed, 11 Jan 2023 11:12:46 -0800 (PST)
-Received: from [192.168.50.20] (077222238029.warszawa.vectranet.pl. [77.222.238.29])
-        by smtp.gmail.com with ESMTPSA id s28-20020a056512203c00b004cb0e527515sm2831407lfs.249.2023.01.11.11.12.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Jan 2023 11:12:45 -0800 (PST)
-Message-ID: <f8471471-3b9f-526c-b8d0-88bd3de6d409@gmail.com>
-Date:   Wed, 11 Jan 2023 20:12:44 +0100
+        with ESMTP id S230417AbjAKTTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 14:19:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB41247
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 11:18:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673464707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Oyq1cAuiRkcIyx+LUf/FiaMWtoF37RWR3j4qGvj0nJ8=;
+        b=TfU11OvOS0885R0/zfWdKfR9KMVJFbIL+IGfXeLL+5k2Hntef+aMnhScEq/No52QPZnAI4
+        fpIly0iVamBNJPhEwNjdADX2K7L+ALozfO4U3hzu1Z1R1AuGJwhn0d2ICrpab9KfLQ1KDf
+        Ke3JcMdYozAXIx1tsJuR20nVvC7RoNo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-298-ThhyS1cnN-uvNodAlrCC3g-1; Wed, 11 Jan 2023 14:18:25 -0500
+X-MC-Unique: ThhyS1cnN-uvNodAlrCC3g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BBDEF802C1C;
+        Wed, 11 Jan 2023 19:18:24 +0000 (UTC)
+Received: from localhost (unknown [10.39.192.68])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 27C34422A9;
+        Wed, 11 Jan 2023 19:18:23 +0000 (UTC)
+Date:   Wed, 11 Jan 2023 14:18:22 -0500
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, pbonzini@redhat.com, bcodding@redhat.com,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nicholas Bellinger <nab@linux-iscsi.org>
+Subject: Re: [PATCH] vhost-scsi: unbreak any layout for response
+Message-ID: <Y78Lfmzr6s1BU3ri@fedora>
+References: <20230111060730.24779-1-jasowang@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH v2] rndis_wlan: Prevent buffer overflow in rndis_query_oid
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     kvalo@kernel.org, jussi.kivilinna@iki.fi, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        greg@kroah.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <CAKgT0UePq+Gg5mpvD7ag=ern9JN5JyAFv5RPc05Zn9jSh4W+0g@mail.gmail.com>
- <20230111175031.7049-1-szymon.heidrich@gmail.com>
- <CAKgT0UeiFGyttyQg_yWHA5L6ZPy9W8__b6DFSQe0-CNnLEvY7w@mail.gmail.com>
-Content-Language: en-US
-From:   Szymon Heidrich <szymon.heidrich@gmail.com>
-In-Reply-To: <CAKgT0UeiFGyttyQg_yWHA5L6ZPy9W8__b6DFSQe0-CNnLEvY7w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="4Qtv/3AwdjsKJJhu"
+Content-Disposition: inline
+In-Reply-To: <20230111060730.24779-1-jasowang@redhat.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,75 +63,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/01/2023 19:28, Alexander Duyck wrote:
-> On Wed, Jan 11, 2023 at 9:51 AM Szymon Heidrich
-> <szymon.heidrich@gmail.com> wrote:
->>
->> Since resplen and respoffs are signed integers sufficiently
->> large values of unsigned int len and offset members of RNDIS
->> response will result in negative values of prior variables.
->> This may be utilized to bypass implemented security checks
->> to either extract memory contents by manipulating offset or
->> overflow the data buffer via memcpy by manipulating both
->> offset and len.
->>
->> Additionally assure that sum of resplen and respoffs does not
->> overflow so buffer boundaries are kept.
->>
->> Fixes: 80f8c5b434f9 ("rndis_wlan: copy only useful data from rndis_command respond")
->> Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
->> ---
->> V1 -> V2: Use size_t and min macro, fix netdev_dbg format
->>
->>  drivers/net/wireless/rndis_wlan.c | 19 ++++++-------------
->>  1 file changed, 6 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
->> index 82a7458e0..bf72e5fd3 100644
->> --- a/drivers/net/wireless/rndis_wlan.c
->> +++ b/drivers/net/wireless/rndis_wlan.c
->> @@ -696,8 +696,8 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
->>                 struct rndis_query      *get;
->>                 struct rndis_query_c    *get_c;
->>         } u;
->> -       int ret, buflen;
->> -       int resplen, respoffs, copylen;
->> +       int ret;
->> +       size_t buflen, resplen, respoffs, copylen;
->>
->>         buflen = *len + sizeof(*u.get);
->>         if (buflen < CONTROL_BUFFER_SIZE)
->> @@ -732,22 +732,15 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
->>
->>                 if (respoffs > buflen) {
->>                         /* Device returned data offset outside buffer, error. */
->> -                       netdev_dbg(dev->net, "%s(%s): received invalid "
->> -                               "data offset: %d > %d\n", __func__,
->> -                               oid_to_string(oid), respoffs, buflen);
->> +                       netdev_dbg(dev->net,
->> +                                  "%s(%s): received invalid data offset: %zu > %zu\n",
->> +                                  __func__, oid_to_string(oid), respoffs, buflen);
->>
->>                         ret = -EINVAL;
->>                         goto exit_unlock;
->>                 }
->>
->> -               if ((resplen + respoffs) > buflen) {
->> -                       /* Device would have returned more data if buffer would
->> -                        * have been big enough. Copy just the bits that we got.
->> -                        */
->> -                       copylen = buflen - respoffs;
->> -               } else {
->> -                       copylen = resplen;
->> -               }
->> +               copylen = min(resplen, buflen - respoffs);
->>
->>                 if (copylen > *len)
->>                         copylen = *len;
-> 
-> Looks good to me.
-> 
-> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
-Awesome, thank you very much.
+--4Qtv/3AwdjsKJJhu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Jan 11, 2023 at 02:07:30PM +0800, Jason Wang wrote:
+> Al Viro said:
+>=20
+> """
+> Since "vhost/scsi: fix reuse of &vq->iov[out] in response"
+> we have this:
+>                 cmd->tvc_resp_iov =3D vq->iov[vc.out];
+>                 cmd->tvc_in_iovs =3D vc.in;
+> combined with
+>                 iov_iter_init(&iov_iter, ITER_DEST, &cmd->tvc_resp_iov,
+>                               cmd->tvc_in_iovs, sizeof(v_rsp));
+> in vhost_scsi_complete_cmd_work().  We used to have ->tvc_resp_iov
+> _pointing_ to vq->iov[vc.out]; back then iov_iter_init() asked to
+> set an iovec-backed iov_iter over the tail of vq->iov[], with
+> length being the amount of iovecs in the tail.
+>=20
+> Now we have a copy of one element of that array.  Fortunately, the members
+> following it in the containing structure are two non-NULL kernel pointers,
+> so copy_to_iter() will not copy anything beyond the first iovec - kernel
+> pointer is not (on the majority of architectures) going to be accepted by
+> access_ok() in copyout() and it won't be skipped since the "length" (in
+> reality - another non-NULL kernel pointer) won't be zero.
+>=20
+> So it's not going to give a guest-to-qemu escalation, but it's definitely
+> a bug.  Frankly, my preference would be to verify that the very first iov=
+ec
+> is long enough to hold rsp_size.  Due to the above, any users that try to
+> give us vq->iov[vc.out].iov_len < sizeof(struct virtio_scsi_cmd_resp)
+> would currently get a failure in vhost_scsi_complete_cmd_work()
+> anyway.
+> """
+>=20
+> However, the spec doesn't say anything about the legacy descriptor
+> layout for the respone. So this patch tries to not assume the response
+> to reside in a single separate descriptor which is what commit
+> 79c14141a487 ("vhost/scsi: Convert completion path to use") tries to
+> achieve towards to ANY_LAYOUT.
+>=20
+> This is done by allocating and using dedicate resp iov in the
+> command. To be safety, start with UIO_MAXIOV to be consistent with the
+> vhost core.
+>=20
+> Testing with the hacked virtio-scsi driver that use 1 descriptor for 1
+> byte in the response.
+>=20
+> Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: Benjamin Coddington <bcodding@redhat.com>
+> Cc: Nicholas Bellinger <nab@linux-iscsi.org>
+> Fixes: a77ec83a5789 ("vhost/scsi: fix reuse of &vq->iov[out] in response")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/vhost/scsi.c | 21 +++++++++++++++++----
+>  1 file changed, 17 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+> index dca6346d75b3..7d6d70072603 100644
+> --- a/drivers/vhost/scsi.c
+> +++ b/drivers/vhost/scsi.c
+> @@ -80,7 +80,7 @@ struct vhost_scsi_cmd {
+>  	struct scatterlist *tvc_prot_sgl;
+>  	struct page **tvc_upages;
+>  	/* Pointer to response header iovec */
+> -	struct iovec tvc_resp_iov;
+> +	struct iovec *tvc_resp_iov;
+>  	/* Pointer to vhost_scsi for our device */
+>  	struct vhost_scsi *tvc_vhost;
+>  	/* Pointer to vhost_virtqueue for the cmd */
+> @@ -563,7 +563,7 @@ static void vhost_scsi_complete_cmd_work(struct vhost=
+_work *work)
+>  		memcpy(v_rsp.sense, cmd->tvc_sense_buf,
+>  		       se_cmd->scsi_sense_length);
+> =20
+> -		iov_iter_init(&iov_iter, ITER_DEST, &cmd->tvc_resp_iov,
+> +		iov_iter_init(&iov_iter, ITER_DEST, cmd->tvc_resp_iov,
+>  			      cmd->tvc_in_iovs, sizeof(v_rsp));
+>  		ret =3D copy_to_iter(&v_rsp, sizeof(v_rsp), &iov_iter);
+>  		if (likely(ret =3D=3D sizeof(v_rsp))) {
+> @@ -594,6 +594,7 @@ vhost_scsi_get_cmd(struct vhost_virtqueue *vq, struct=
+ vhost_scsi_tpg *tpg,
+>  	struct vhost_scsi_cmd *cmd;
+>  	struct vhost_scsi_nexus *tv_nexus;
+>  	struct scatterlist *sg, *prot_sg;
+> +	struct iovec *tvc_resp_iov;
+>  	struct page **pages;
+>  	int tag;
+> =20
+> @@ -613,6 +614,7 @@ vhost_scsi_get_cmd(struct vhost_virtqueue *vq, struct=
+ vhost_scsi_tpg *tpg,
+>  	sg =3D cmd->tvc_sgl;
+>  	prot_sg =3D cmd->tvc_prot_sgl;
+>  	pages =3D cmd->tvc_upages;
+> +	tvc_resp_iov =3D cmd->tvc_resp_iov;
+>  	memset(cmd, 0, sizeof(*cmd));
+>  	cmd->tvc_sgl =3D sg;
+>  	cmd->tvc_prot_sgl =3D prot_sg;
+> @@ -625,6 +627,7 @@ vhost_scsi_get_cmd(struct vhost_virtqueue *vq, struct=
+ vhost_scsi_tpg *tpg,
+>  	cmd->tvc_data_direction =3D data_direction;
+>  	cmd->tvc_nexus =3D tv_nexus;
+>  	cmd->inflight =3D vhost_scsi_get_inflight(vq);
+> +	cmd->tvc_resp_iov =3D tvc_resp_iov;
+> =20
+>  	memcpy(cmd->tvc_cdb, cdb, VHOST_SCSI_MAX_CDB_SIZE);
+> =20
+> @@ -935,7 +938,7 @@ vhost_scsi_handle_vq(struct vhost_scsi *vs, struct vh=
+ost_virtqueue *vq)
+>  	struct iov_iter in_iter, prot_iter, data_iter;
+>  	u64 tag;
+>  	u32 exp_data_len, data_direction;
+> -	int ret, prot_bytes, c =3D 0;
+> +	int ret, prot_bytes, i, c =3D 0;
+>  	u16 lun;
+>  	u8 task_attr;
+>  	bool t10_pi =3D vhost_has_feature(vq, VIRTIO_SCSI_F_T10_PI);
+> @@ -1092,7 +1095,8 @@ vhost_scsi_handle_vq(struct vhost_scsi *vs, struct =
+vhost_virtqueue *vq)
+>  		}
+>  		cmd->tvc_vhost =3D vs;
+>  		cmd->tvc_vq =3D vq;
+> -		cmd->tvc_resp_iov =3D vq->iov[vc.out];
+> +		for (i =3D 0; i < vc.in ; i++)
+> +			cmd->tvc_resp_iov[i] =3D vq->iov[vc.out + i];
+
+Where is the guarantee that vc.in < UIO_MAXIOV?
+
+>  		cmd->tvc_in_iovs =3D vc.in;
+> =20
+>  		pr_debug("vhost_scsi got command opcode: %#02x, lun: %d\n",
+> @@ -1461,6 +1465,7 @@ static void vhost_scsi_destroy_vq_cmds(struct vhost=
+_virtqueue *vq)
+>  		kfree(tv_cmd->tvc_sgl);
+>  		kfree(tv_cmd->tvc_prot_sgl);
+>  		kfree(tv_cmd->tvc_upages);
+> +		kfree(tv_cmd->tvc_resp_iov);
+>  	}
+> =20
+>  	sbitmap_free(&svq->scsi_tags);
+> @@ -1508,6 +1513,14 @@ static int vhost_scsi_setup_vq_cmds(struct vhost_v=
+irtqueue *vq, int max_cmds)
+>  			goto out;
+>  		}
+> =20
+> +		tv_cmd->tvc_resp_iov =3D kcalloc(UIO_MAXIOV,
+> +					       sizeof(struct page *),
+> +					       GFP_KERNEL);
+
+Should sizeof(struct page *) be sizeof(struct iovec)?
+
+> +		if (!tv_cmd->tvc_resp_iov) {
+> +			pr_err("Unable to allocate tv_cmd->tvc_resp_iov\n");
+> +			goto out;
+> +		}
+> +
+>  		tv_cmd->tvc_prot_sgl =3D kcalloc(VHOST_SCSI_PREALLOC_PROT_SGLS,
+>  					       sizeof(struct scatterlist),
+>  					       GFP_KERNEL);
+> --=20
+> 2.25.1
+>=20
+
+--4Qtv/3AwdjsKJJhu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmO/C34ACgkQnKSrs4Gr
+c8jt+QgAmg0TQX1GaVjVKw6Zu9PNbJ2eQ4otUWDYPHj/IRnUkTMBfWI/pRSDnhKz
+R3//0ptO0nSzkLELF1z73yy0QhrfMX4xOlrMOyQNItRymzc9FVhHHdQoydqMZRIJ
+rHcnWf3JU5KKM/NrMah2CovL2IXA4g574luMnKLFyKUbyOfHptSedc9Eyj6dpKP5
+byNxUm8La172hFUObxKCy/rpIHjuOQ6Hol6VPWFZ2nFyAr5tpFVMQafzgXXJ5wOy
+imhg0Q4grOiSTSComWKBZ7cFg/1H6OSw/j/uUzxD8AwWpwGkT1I2v/208XMMeG+Z
+igB9SmtLfoROwWu8zZ5D1aT3P5awNA==
+=rerp
+-----END PGP SIGNATURE-----
+
+--4Qtv/3AwdjsKJJhu--
 
