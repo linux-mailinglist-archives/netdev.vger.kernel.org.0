@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BA76657A9
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A986657AC
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:38:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236661AbjAKJiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 04:38:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
+        id S238257AbjAKJiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 04:38:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235868AbjAKJhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:37:19 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6EC6142;
-        Wed, 11 Jan 2023 01:36:00 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id w1so14415791wrt.8;
-        Wed, 11 Jan 2023 01:36:00 -0800 (PST)
+        with ESMTP id S235915AbjAKJhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:37:20 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E115FCA;
+        Wed, 11 Jan 2023 01:36:02 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id bs20so14416648wrb.3;
+        Wed, 11 Jan 2023 01:36:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=FFiukE0krVg+8r1ykvsDR/QkWY0EexPf6HWIJaxy92k=;
-        b=qHi8ocWVAGMVCWsJxlB23RLjkqNBDbSuScphrBAA1inlsHryeSKWiEXxPwVCOBXITx
-         dXs1cfxmMx2X9kbUy7nqrOQt93VWDyNYTZj7Wl5q/E71B+iKA54kSHFId/Uv6B4i5WT5
-         Zuzxp0F+iB36k1wcU4G/iaBjrD4fpYyquYwyqbJ6vAhni2oxi5WKWm75yu09RROpNx1/
-         ILKG6JmL8sQp2FM7FGRgJ4ry+SpsCYwMOEwW7QgOVSjYg5zTnRTyt29S8MDWIT7ZorcQ
-         2PNwNEvIQh/FxLBIIvy+9u51u35c0x3yrLp+tSSVhdMjNfix20iZ/SnHNO3C+Oy8YC4/
-         BIQg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UxYyG1qoCtU6q6CHSuAlYxv5sFnMz8aGPPPyKfwBER4=;
+        b=nBONqyay9jM4gr2b5iDxKwJDUAisqj0iA3GvGwyQpdkSX2P7vr0RpWTGyQP3Om6HPX
+         LL11jfRSGto61N3QkpJzi5ZwqAyAKCT6DyUSc4s4jbBZoeuB7xW6Ar78f9b2eZeHxwP7
+         kUavckTvpBlCsx5StfF5EOAsXrMh+O3UNhANBJ29BUcAmv30bHDaLioVosKsqET5R1DZ
+         jYKBoRUPOMO4pwd2Qh9ZHQGRY2+fJpBzXLrhrcdSor/vLXbYdP6fFe9oi5rQiVmN/z9S
+         L/ycMpqL5pUyQIOILhc0vifdiKg+z7no0UaPY8uq3m+OH7zihayovdz7ERPXNSDGcfqO
+         VDaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FFiukE0krVg+8r1ykvsDR/QkWY0EexPf6HWIJaxy92k=;
-        b=Gyt7nscXV6mkq2+MbvVNaAHt4YyeYf6k7pi87/lgeSeQlUWv54LxjOjswxOm+5SG07
-         u/HHfSDeTIR/y66iijxIJN9SK2oa1TA1kDY6dEZKfKkEV5Bd17Czj45DWYO1+GS57mLh
-         Sc7szM02vhiaf3fsuh36v9n5jtH6K9iv7LbwDjbS/qPOKWlYf21iAkSqlRMiPJHJP9mD
-         bUS6wR7mn6AvwQnddErpi7D4HWPL8JjJCLAGuwqZj+DEtpmZJRKHuKcTfhkc29+bHYd8
-         6/besbevyEIY4ckl/VeLLdrAWC9kMlAxFe8aefF4Q6HbuAdE1BKNOXIRzC5YE/E6+5po
-         kV5A==
-X-Gm-Message-State: AFqh2koSWxMiUKxmuRmlBW34xuOtKQOWW0hebO7KVCmzH3YKv9DNd3uj
-        rX22YDNjStnPEd/l7rNHFiI=
-X-Google-Smtp-Source: AMrXdXudfuXqi8QAwEG5zaImoWDf1u+vGrPC6T1zJOjDIDESs5a44Szc9EHFShGsqLxNwIJYIe7syg==
-X-Received: by 2002:a5d:4842:0:b0:2bb:62bf:f5d1 with SMTP id n2-20020a5d4842000000b002bb62bff5d1mr11391504wrs.29.1673429758882;
-        Wed, 11 Jan 2023 01:35:58 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UxYyG1qoCtU6q6CHSuAlYxv5sFnMz8aGPPPyKfwBER4=;
+        b=v5fU019HEqSp//d0Qi6Y+hVlf3fqKA4oQY2XIFvdkeHO+QQ2EJYXTgciKADlQ6Fj5h
+         iZ76EWT4vfN++tRCFHNgeoiXFIMlSpYERsIZa/u2/ATjCaJD/+XwWX+hf+Ibga57dvN/
+         yv2pCRBUkmztL4urfMA4rsnvnuoC5fd8UgCdXrdEfyYgZFu7GWLU8x/LeobhXxkaUSAR
+         Ohsi+j4RvyvrB5udQ/Q0M0B3hd5+06cYp+sXXj1u04QN10vYkITE05poUz1p4vHsb4EM
+         cXt7cgrWDA5mkY6cDnFSrri6Oy43++VY6AhRbjglmnfDOMuZisQ8qn9ibrHVkIcYKAUI
+         ILPw==
+X-Gm-Message-State: AFqh2kqNwqx26gLv6dz7zKibk3T/wuhmYPA2mYyCFMjMOQjBztrEEsG6
+        84oAli40syPnW9MxwEHOFQo=
+X-Google-Smtp-Source: AMrXdXvpf6lwRDvB/vFvpk6F/GWN5g5V1xRX4cXxhGA89PG+1lsx98G/yhvmtf3qYcanloTW8CzoTg==
+X-Received: by 2002:adf:a1cc:0:b0:2b4:e5e:c0a3 with SMTP id v12-20020adfa1cc000000b002b40e5ec0a3mr6131619wrv.21.1673429760716;
+        Wed, 11 Jan 2023 01:36:00 -0800 (PST)
 Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
-        by smtp.gmail.com with ESMTPSA id c18-20020adffb52000000b0025e86026866sm15553069wrs.0.2023.01.11.01.35.56
+        by smtp.gmail.com with ESMTPSA id c18-20020adffb52000000b0025e86026866sm15553069wrs.0.2023.01.11.01.35.58
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 Jan 2023 01:35:58 -0800 (PST)
+        Wed, 11 Jan 2023 01:36:00 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -55,14 +56,14 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
         john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
         haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next v3 00/15] selftests/xsk: speed-ups, fixes, and new XDP programs
-Date:   Wed, 11 Jan 2023 10:35:11 +0100
-Message-Id: <20230111093526.11682-1-magnus.karlsson@gmail.com>
+Cc:     jonathan.lemon@gmail.com
+Subject: [PATCH bpf-next v3 01/15] selftests/xsk: print correct payload for packet dump
+Date:   Wed, 11 Jan 2023 10:35:12 +0100
+Message-Id: <20230111093526.11682-2-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230111093526.11682-1-magnus.karlsson@gmail.com>
+References: <20230111093526.11682-1-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,106 +75,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a patch set of various performance improvements, fixes, and
-the introduction of more than one XDP program to the xsk selftests
-framework so we can test more things in the future such as upcoming
-multi-buffer and metadata support for AF_XDP. The new programs just
-reuse the framework that all the other eBPF selftests use. The new
-feature is used to implement one new test that does XDP_DROP on every
-other packet. More tests using this will be added in future commits.
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Contents:
+Print the correct payload when the packet dump option is selected. The
+network to host conversion was forgotten and the payload was
+erronously declared to be an int instead of an unsigned int.
 
-* The run-time of the test suite is cut by 10x when executing the
-  tests on a real NIC, by only attaching the XDP program once per mode
-  tested, instead of once per test program.
+Fixes: facb7cb2e909 ("selftests/bpf: Xsk selftests - SKB POLL, NOPOLL")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ tools/testing/selftests/bpf/xskxceiver.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-* Over 700 lines of code have been removed. The xsk.c control file was
-  moved straight over from libbpf when the xsk support was deprecated
-  there. As it is now not used as library code that has to work with
-  all kinds of versions of Linux, a lot of code could be dropped or
-  simplified.
-
-* Add a new command line option "-d" that can be used when a test
-  fails and you want to debug it with gdb or some other debugger. The
-  option creates the two veth netdevs and prints them to the screen
-  without deleting them afterwards. This way these veth netdevs can be
-  used when running xskxceiver in a debugger.
-
-* Implemented the possibility to load external XDP programs so we can
-  have more than the default one. This feature is used to implement a
-  test where every other packet is dropped. Good exercise for the
-  recycling mechanism of the xsk buffer pool used in zero-copy mode.
-
-* Various clean-ups and small fixes in patches 1 to 5. None of these
-  fixes has any impact on the correct execution of the tests when they
-  pass, though they can be irritating when a test fails. IMHO, they do
-  not need to go to bpf as they will not fix anything there. The first
-  version of patches 1, 2, and 4 where previously sent to bpf, but has
-  now been included here.
-
-v2 -> v3:
-* Fixed compilation error for llvm [David]
-* Made the function xsk_is_in_drv_mode(ifobj) more generic by changing
-  it to xsk_is_in_mode(ifobj, xdp_mode) [Maciej]
-* Added Maciej's acks to all the patches
-
-v1 -> v2:
-* Fixed spelling error in commit message of patch #6 [Björn]
-* Added explanation on why it is safe to use C11 atomics in patch #7
-  [Daniel]
-* Put all XDP programs in the same file so that adding more XDP
-  programs to xskxceiver.c becomes more scalable in patches #11 and
-  #12 [Maciej]
-* Removed more dead code in patch #8 [Maciej]
-* Removed stale %s specifier in error print, patch #9 [Maciej]
-* Changed name of XDP_CONSUMES_SOME_PACKETS to XDP_DROP_HALF to
-  hopefully make it clearer [Maciej]
-* ifobj_rx and ifobj_tx name changes in patch #13 [Maciej]
-* Simplified XDP attachment code in patch #15 [Maciej]
-
-Patches:
-1-5:   Small fixes and clean-ups
-6:     New convenient debug option when using a debugger such as gdb
-7-8:   Removal of unnecessary code
-9:     Add the ability to load external XDP programs
-10-11: Removal of more unnecessary code
-12:    Implement a new test where every other packet is XDP_DROP:ed
-13:    Unify the thread dispatching code
-14-15: Simplify the way tests are written when using custom packet_streams
-       or custom XDP programs
-
-Thanks: Magnus
-
-Magnus Karlsson (15):
-  selftests/xsk: print correct payload for packet dump
-  selftests/xsk: do not close unused file descriptors
-  selftests/xsk: submit correct number of frames in populate_fill_ring
-  selftests/xsk: print correct error codes when exiting
-  selftests/xsk: remove unused variable outstanding_tx
-  selftests/xsk: add debug option for creating netdevs
-  selftests/xsk: replace asm acquire/release implementations
-  selftests/xsk: remove namespaces
-  selftests/xsk: load and attach XDP program only once per mode
-  selftests/xsk: remove unnecessary code in control path
-  selftests/xsk: get rid of built-in XDP program
-  selftests/xsk: add test when some packets are XDP_DROPed
-  selftests/xsk: merge dual and single thread dispatchers
-  selftests/xsk: automatically restore packet stream
-  selftests/xsk: automatically switch XDP programs
-
- tools/testing/selftests/bpf/Makefile          |   6 +-
- .../selftests/bpf/progs/xsk_xdp_progs.c       |  30 +
- tools/testing/selftests/bpf/test_xsk.sh       |  42 +-
- tools/testing/selftests/bpf/xsk.c             | 677 +-----------------
- tools/testing/selftests/bpf/xsk.h             |  97 +--
- tools/testing/selftests/bpf/xsk_prereqs.sh    |  12 +-
- tools/testing/selftests/bpf/xskxceiver.c      | 382 +++++-----
- tools/testing/selftests/bpf/xskxceiver.h      |  17 +-
- 8 files changed, 316 insertions(+), 947 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/xsk_xdp_progs.c
-
-
-base-commit: 6920b08661e3ad829206078b5c9879b24aea8dfc
---
+diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+index 162d3a516f2c..2ff43b22180f 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.c
++++ b/tools/testing/selftests/bpf/xskxceiver.c
+@@ -767,7 +767,7 @@ static void pkt_dump(void *pkt, u32 len)
+ 	struct ethhdr *ethhdr;
+ 	struct udphdr *udphdr;
+ 	struct iphdr *iphdr;
+-	int payload, i;
++	u32 payload, i;
+ 
+ 	ethhdr = pkt;
+ 	iphdr = pkt + sizeof(*ethhdr);
+@@ -792,7 +792,7 @@ static void pkt_dump(void *pkt, u32 len)
+ 	fprintf(stdout, "DEBUG>> L4: udp_hdr->src: %d\n", ntohs(udphdr->source));
+ 	fprintf(stdout, "DEBUG>> L4: udp_hdr->dst: %d\n", ntohs(udphdr->dest));
+ 	/*extract L5 frame */
+-	payload = *((uint32_t *)(pkt + PKT_HDR_SIZE));
++	payload = ntohl(*((u32 *)(pkt + PKT_HDR_SIZE)));
+ 
+ 	fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
+ 	fprintf(stdout, "---------------------------------------\n");
+-- 
 2.34.1
+
