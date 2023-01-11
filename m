@@ -2,62 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4509B6657E5
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:46:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C772E6657E7
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:46:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236636AbjAKJqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 04:46:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43314 "EHLO
+        id S232433AbjAKJq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 04:46:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236583AbjAKJpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:45:41 -0500
+        with ESMTP id S232486AbjAKJp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:45:56 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955A21089
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:42:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF45D25DD
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:42:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673430119;
+        s=mimecast20190719; t=1673430167;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=23frM+Y1pnQ4OmYCY5s/xUgP5I+Ztd6+mGkHg1PGHfY=;
-        b=HJHoWdHMUQROkGkSzwS44/oRbYrD+/FAvGDH3C+WX/68Gp0KifT/jKRyOcG74DeERfJfr8
-        0YgJ6y/fulJpBZzXuVyCC93uoj9fl0PBBqGxKbiZwyxN5RspsruwOoQMBdEVyYVpGIjk2e
-        7v1AQjaXMO+d4kDwvWXcLpZEHzevAaI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-278--8z8u06zPjWsJTBnM-wspg-1; Wed, 11 Jan 2023 04:41:56 -0500
-X-MC-Unique: -8z8u06zPjWsJTBnM-wspg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09A9D80234E;
-        Wed, 11 Jan 2023 09:41:56 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C578643FBA;
-        Wed, 11 Jan 2023 09:41:54 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <00000000000024d6fc05f1d9b858@google.com>
-References: <00000000000024d6fc05f1d9b858@google.com>
-To:     syzbot <syzbot+4bb6356bb29d6299360e@syzkaller.appspotmail.com>
-Cc:     dhowells@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] kernel BUG in rxrpc_put_call
+        bh=+mXlqHLDOLyFJjraZrLr0BXsWr/xXhYE6HGBmC7wCe0=;
+        b=dzLMD2ICLGzZzY75ArSnkoVZk5wrv7ioQ9zpfcVJLrkwvAYw8IHyv1OqLHivM5NL1dR8pM
+        W8CjwkLzgPviOtCUp6bc4rz+erqJ4BSHwD6qKzuJokVSInO861IYc26oPV0JPeqOn88066
+        Kv0Zn4o43eGONgF7FfzxdZfkerumZPM=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-26-UkgtnA56N1a34RVUtfWBmg-1; Wed, 11 Jan 2023 04:42:45 -0500
+X-MC-Unique: UkgtnA56N1a34RVUtfWBmg-1
+Received: by mail-ed1-f71.google.com with SMTP id r14-20020a05640251ce00b0047d67ab2019so9518280edd.12
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:42:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+mXlqHLDOLyFJjraZrLr0BXsWr/xXhYE6HGBmC7wCe0=;
+        b=BNLTnG6MtSu+rXVCkEbaONHPVu7aO+2L3XaoNbUEJORIZaBFo1LY/IPPyzAs8BHfFt
+         akXF82COkIPgXuNFmzIh6Tv8MyTNVcnSlBtPb4fQzCeMI++rPc4gA6F469AC6RjYelBV
+         Ub/TJkJVPvoOp7rm4AOtPM9SLHW6yoWVPfBK5NQ7kjYoC23AXkgmx7KsX/VYCuuwXrtm
+         SdKcCoCqACCkWEATcM3Upzr6Udn3jZhPtwnTdCuO3S7OQSokxZqNJQNtlmBbCgh+WcCu
+         +VqUpJxMRG/R58ItFgJk4j8EZccgvVJp9e8KznWLT6XGcYnl3w4+/0enj5rOKtgmcfz3
+         kbXg==
+X-Gm-Message-State: AFqh2koa1E5sHb0ceFrjVtkrIjvniiDJogqXvnPvQzGdRRzooaJeI1eE
+        07smOh9w9m9n+M+X5UgRaJmIFvHVuAOd8L+3MfkwknYQ5vSL9cM1N3g73RT7y1K4YtgkHmc3l8e
+        Ap33epvU7NhyYJt5AOkAassdVsCVQVp/f
+X-Received: by 2002:a17:906:f218:b0:828:75be:fd81 with SMTP id gt24-20020a170906f21800b0082875befd81mr7274786ejb.360.1673430163957;
+        Wed, 11 Jan 2023 01:42:43 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtpXNHT4W4d5mnoYX9i6t0hHg6a7iscVqYz7rIF7qFPWDkZ14oPFi5o8iBEJ9v/6qp+913JljQ931hxedkpl78=
+X-Received: by 2002:a17:906:f218:b0:828:75be:fd81 with SMTP id
+ gt24-20020a170906f21800b0082875befd81mr7274785ejb.360.1673430163746; Wed, 11
+ Jan 2023 01:42:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2265389.1673430114.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 11 Jan 2023 09:41:54 +0000
-Message-ID: <2265390.1673430114@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+References: <20230110080018.2838769-1-sassmann@redhat.com>
+In-Reply-To: <20230110080018.2838769-1-sassmann@redhat.com>
+From:   Michal Schmidt <mschmidt@redhat.com>
+Date:   Wed, 11 Jan 2023 10:42:32 +0100
+Message-ID: <CADEbmW2LLTfZ6h=Cdkbc70Z61BuBKYMbaLYq-c=STP03VJ_O2g@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH net-queue] iavf: schedule watchdog
+ immediately when changing primary MAC
+To:     Stefan Assmann <sassmann@redhat.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        patryk.piotrowski@intel.com, anthony.l.nguyen@intel.com,
+        sassmann@kpanic.de
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -68,23 +74,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git =
-master
+On Tue, Jan 10, 2023 at 9:01 AM Stefan Assmann <sassmann@redhat.com> wrote:
+>
+> From: Stefan Assmann <sassmann@kpanic.de>
+>
+> iavf_replace_primary_mac() utilizes queue_work() to schedule the
+> watchdog task but that only ensures that the watchdog task is queued
+> to run. To make sure the watchdog is executed asap use
+> mod_delayed_work().
+>
+> Without this patch it may take up to 2s until the watchdog task gets
+> executed, which may cause long delays when setting the MAC address.
+>
+> Fixes: a3e839d539e0 ("iavf: Add usage of new virtchnl format to set default MAC")
+> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+> ---
+> Depends on net-queue patch
+> ca7facb6602f iavf: fix temporary deadlock and failure to set MAC address
+>
+>  drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> index fff06f876c2c..1d3aa740caea 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> @@ -1033,7 +1033,7 @@ int iavf_replace_primary_mac(struct iavf_adapter *adapter,
+>
+>         /* schedule the watchdog task to immediately process the request */
+>         if (f) {
+> -               queue_work(adapter->wq, &adapter->watchdog_task.work);
+> +               mod_delayed_work(adapter->wq, &adapter->watchdog_task, 0);
+>                 return 0;
+>         }
+>         return -ENOMEM;
+> --
+> 2.38.1
 
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 3ded5a24627c..f3c9f0201c15 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -294,7 +294,7 @@ static void rxrpc_put_call_slot(struct rxrpc_call *cal=
-l)
- static int rxrpc_connect_call(struct rxrpc_call *call, gfp_t gfp)
- {
- 	struct rxrpc_local *local =3D call->local;
--	int ret =3D 0;
-+	int ret =3D -ENOMEM;
- =
+Reviewed-by: Michal Schmidt <mschmidt@redhat.com>
+Tested-by: Michal Schmidt <mschmidt@redhat.com>
 
- 	_enter("{%d,%lx},", call->debug_id, call->user_call_ID);
- =
-
+Beautiful! On my test machine, this takes the time needed to bring up
+64 VFs from 92 s down to 7 s.
+Michal
 
