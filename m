@@ -2,71 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54EEF66624B
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 18:51:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B838666281
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 19:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232412AbjAKRvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 12:51:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45120 "EHLO
+        id S234782AbjAKSI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 13:08:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbjAKRvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 12:51:40 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226EA55AB;
-        Wed, 11 Jan 2023 09:51:39 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id m6so24698388lfj.11;
-        Wed, 11 Jan 2023 09:51:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rCPqy95C6Ull1wAoxhY/6/ppbJBtfCJsPETF3WTR/qM=;
-        b=JXouJcKGqRGXex2GF1mRZOeE2BvpKEr56XxDdtewRXWzaWfoUbjaMpCx6HReF3qCXZ
-         UJTj9PEkMIWvH0T8IWGnJ7iBOGSnhDavXUgGotmUL2A1CbN5m3dYj/7qEUjr/4diCvec
-         ZF9pFIRX4ZwAJhQAfwLwyZVlQdcYGnadRYvHCPKFt97gRzyHde48HGvP3vKbK8bnmOV/
-         zOL8B490gdPzWsjEVbfSeogsg1cEsD0aPkaAwloKOSqOZM3xWyOrwPca9OXFKd8ReUP8
-         iJ9fjMKgbNbt9NIQ6jXUAs87TvuCFn7LSQMnAr2NBk2t0vLLxvcuUY7uT6kicmd8fzml
-         u+3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rCPqy95C6Ull1wAoxhY/6/ppbJBtfCJsPETF3WTR/qM=;
-        b=TA81zgqMzvZTDEgJknB4GKmxiHRotkneKdpQPHIouEA9XwjfKLmxELUMAOPlV+EKnR
-         tIF/3A/oHILza/fNgTeMLr/jGkuV39E5duD1tKehdq9Exy8o3Npx2SbmLDfoQ0oQEY/J
-         WbQGtWcAGUEDdWPewzHjJDTt+45ORT6AORepDRIZFrNvyvqiJQpyceGY8kKVrUIcEejY
-         FQ4eXQKlWVwBowraqfBapQsP06skj9FAVszxWEQnJPaLj0mjehgA0ekECqcCip66zA75
-         IAy0Z3gD8i7JIF2GYNnzCKD0phDXgB3bc1tuC6BNCLOCWyimKKKHX5/baFJ0fhUSy733
-         2yxw==
-X-Gm-Message-State: AFqh2kpmWxrDuesQcJND6JKANxALGmar9PLzXd9WPppmVV3JEaNhHCk0
-        aETAVidsITlDbmxBPz9jrvQ=
-X-Google-Smtp-Source: AMrXdXsMLWhBweFdqHouGzNOfy2FLpER7WmQEJnvZO69e/RhuTihl8FAgTinoHWUAeuExYNdhUwTQA==
-X-Received: by 2002:a05:6512:6d4:b0:4cb:1e1:f380 with SMTP id u20-20020a05651206d400b004cb01e1f380mr19853095lff.40.1673459497379;
-        Wed, 11 Jan 2023 09:51:37 -0800 (PST)
-Received: from localhost.localdomain (077222238029.warszawa.vectranet.pl. [77.222.238.29])
-        by smtp.googlemail.com with ESMTPSA id x2-20020a056512130200b004a8f824466bsm2817098lfu.188.2023.01.11.09.51.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 09:51:36 -0800 (PST)
-From:   Szymon Heidrich <szymon.heidrich@gmail.com>
-To:     alexander.duyck@gmail.com
-Cc:     kvalo@kernel.org, jussi.kivilinna@iki.fi, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        greg@kroah.com, szymon.heidrich@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] rndis_wlan: Prevent buffer overflow in rndis_query_oid
-Date:   Wed, 11 Jan 2023 18:50:31 +0100
-Message-Id: <20230111175031.7049-1-szymon.heidrich@gmail.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <CAKgT0UePq+Gg5mpvD7ag=ern9JN5JyAFv5RPc05Zn9jSh4W+0g@mail.gmail.com>
-References: <CAKgT0UePq+Gg5mpvD7ag=ern9JN5JyAFv5RPc05Zn9jSh4W+0g@mail.gmail.com>
+        with ESMTP id S235523AbjAKSIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 13:08:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19AE1CB13
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 10:07:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673460439;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=yxfvzi7ko8kdyYzY9LacDIBfrhli3maSflL+CABqguA=;
+        b=OaUSaK6qVz8P+fon7zZMAk8eLjCCulITFVIyw5SSJJLe5Idqygh34gwISF4OFBM3MuUFut
+        2Em1LHd/y5Y+aic3l4wYZFOmjqpYwlUUMP5dX9ubd27THYvDyjg2RYPNZxOJSKr8uAc42Y
+        Wg/+U54XCoUp53P8bWH8pBocCI4eulk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-74-e480U5-6Pzagq-cn2QxsPw-1; Wed, 11 Jan 2023 13:07:17 -0500
+X-MC-Unique: e480U5-6Pzagq-cn2QxsPw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 380FA1C0040B;
+        Wed, 11 Jan 2023 18:07:17 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.87])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3BC3A4078904;
+        Wed, 11 Jan 2023 18:07:16 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+cc:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
+        Dan Carpenter <error27@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        syzbot+4bb6356bb29d6299360e@syzkaller.appspotmail.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] rxrpc: Fix wrong error return in rxrpc_connect_call()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2438404.1673460435.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 11 Jan 2023 18:07:15 +0000
+Message-ID: <2438405.1673460435@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,67 +65,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since resplen and respoffs are signed integers sufficiently
-large values of unsigned int len and offset members of RNDIS
-response will result in negative values of prior variables.
-This may be utilized to bypass implemented security checks
-to either extract memory contents by manipulating offset or
-overflow the data buffer via memcpy by manipulating both
-offset and len.
+    =
 
-Additionally assure that sum of resplen and respoffs does not
-overflow so buffer boundaries are kept.
+Fix rxrpc_connect_call() to return -ENOMEM rather than 0 if it fails to
+look up a peer.
 
-Fixes: 80f8c5b434f9 ("rndis_wlan: copy only useful data from rndis_command respond")
-Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+This generated a smatch warning:
+        net/rxrpc/call_object.c:303 rxrpc_connect_call() warn: missing err=
+or code 'ret'
+
+I think this also fixes a syzbot-found bug:
+
+        rxrpc: Assertion failed - 1(0x1) =3D=3D 11(0xb) is false
+        ------------[ cut here ]------------
+        kernel BUG at net/rxrpc/call_object.c:645!
+
+where the call being put is in the wrong state - as would be the case if w=
+e
+failed to clear up correctly after the error in rxrpc_connect_call().
+
+Fixes: 9d35d880e0e4 ("rxrpc: Move client call connection to the I/O thread=
+")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Reported-and-tested-by: syzbot+4bb6356bb29d6299360e@syzkaller.appspotmail.=
+com
+Signed-off-by: David Howells <dhowells@redhat.com>
+Link: https://lore.kernel.org/r/202301111153.9eZRYLf1-lkp@intel.com/
 ---
-V1 -> V2: Use size_t and min macro, fix netdev_dbg format
+ net/rxrpc/call_object.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/net/wireless/rndis_wlan.c | 19 ++++++-------------
- 1 file changed, 6 insertions(+), 13 deletions(-)
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 3ded5a24627c..f3c9f0201c15 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -294,7 +294,7 @@ static void rxrpc_put_call_slot(struct rxrpc_call *cal=
+l)
+ static int rxrpc_connect_call(struct rxrpc_call *call, gfp_t gfp)
+ {
+ 	struct rxrpc_local *local =3D call->local;
+-	int ret =3D 0;
++	int ret =3D -ENOMEM;
+ =
 
-diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
-index 82a7458e0..bf72e5fd3 100644
---- a/drivers/net/wireless/rndis_wlan.c
-+++ b/drivers/net/wireless/rndis_wlan.c
-@@ -696,8 +696,8 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
- 		struct rndis_query	*get;
- 		struct rndis_query_c	*get_c;
- 	} u;
--	int ret, buflen;
--	int resplen, respoffs, copylen;
-+	int ret;
-+	size_t buflen, resplen, respoffs, copylen;
- 
- 	buflen = *len + sizeof(*u.get);
- 	if (buflen < CONTROL_BUFFER_SIZE)
-@@ -732,22 +732,15 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
- 
- 		if (respoffs > buflen) {
- 			/* Device returned data offset outside buffer, error. */
--			netdev_dbg(dev->net, "%s(%s): received invalid "
--				"data offset: %d > %d\n", __func__,
--				oid_to_string(oid), respoffs, buflen);
-+			netdev_dbg(dev->net,
-+				   "%s(%s): received invalid data offset: %zu > %zu\n",
-+				   __func__, oid_to_string(oid), respoffs, buflen);
- 
- 			ret = -EINVAL;
- 			goto exit_unlock;
- 		}
- 
--		if ((resplen + respoffs) > buflen) {
--			/* Device would have returned more data if buffer would
--			 * have been big enough. Copy just the bits that we got.
--			 */
--			copylen = buflen - respoffs;
--		} else {
--			copylen = resplen;
--		}
-+		copylen = min(resplen, buflen - respoffs);
- 
- 		if (copylen > *len)
- 			copylen = *len;
--- 
-2.39.0
+ 	_enter("{%d,%lx},", call->debug_id, call->user_call_ID);
+ =
 
