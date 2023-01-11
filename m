@@ -2,87 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 311D8665280
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 04:53:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17EEE665285
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 04:53:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbjAKDw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 22:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
+        id S230475AbjAKDxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 22:53:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbjAKDw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 22:52:56 -0500
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7772AFCDD
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:52:55 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1673409173; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=R8kZvVXuN9fP11Ib6RnFJVaMhc3sQUe19YUcR6us1K7oLPMBaD/jZGkaOVGNUMiBFV5ApjZisMNrXNks+qdbMljaBlWOJ6OnzfOvZgvTSTcDrXQBdcHwOhWWF0YpnVw3OznysUCn8Pgg81gKAFXpKoyarBY48vTA0qow+RmWdHE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1673409173; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=v3AkkuDxxFkR41AuHZlo2tH0Ei+w+p6a8ujMLEGm6Qk=; 
-        b=ReqfdHUWYTk/lRIdGggtBeIleJ280M+1PT6NuO5nZ5WyT7wot4nYUAlhB4IVCpsEEX0opRDmJSVwOsS1SxkIOVvSzWCRfAXW21mfDu/3gyIRz7trCxr8+7ak6wpuWt8JRevTCSVxrXE/oPibB/xmuLAlm7wXOzgDsjQRDo+vPt4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=mcqueen.au;
-        spf=pass  smtp.mailfrom=craig@mcqueen.au;
-        dmarc=pass header.from=<craig@mcqueen.au>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1673409173;
-        s=zmail; d=mcqueen.au; i=craig@mcqueen.au;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To:Cc;
-        bh=v3AkkuDxxFkR41AuHZlo2tH0Ei+w+p6a8ujMLEGm6Qk=;
-        b=bzD3CJRshDxX7M0lhK1sM7sAxy67tja6wYAGJpmGzhNjBu3E+r6ge1koKECei4xK
-        vq+NahW5w13VCCnY8e7P+phptreTxje43U7OU/9+A+hBsZwyLdjq1UAaTUE+RiUnpmS
-        VoluKe2QGwABh9tArGyvskxNFwyVOIGkbScVAmJE=
-Received: from [172.17.17.238] (159-196-145-163.9fc491.syd.nbn.aussiebb.net [159.196.145.163]) by mx.zohomail.com
-        with SMTPS id 1673409172231915.0435362264313; Tue, 10 Jan 2023 19:52:52 -0800 (PST)
-Message-ID: <506f2c24-6bad-b378-741f-42c13b079526@mcqueen.au>
-Date:   Wed, 11 Jan 2023 14:52:50 +1100
+        with ESMTP id S229713AbjAKDxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 22:53:38 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F9BFD29
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:53:36 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id bk16so13791875wrb.11
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:53:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VQOEXukn20hgpPjJ+OLqtGzuCJHE3pnunV9JohjE5Tc=;
+        b=XkN9DGFQRtzmQXS8sE2gm0e69v1OxxFkqEZ2dZbFKJxPhuYhDSk3Rzj4nxJqgDP/x4
+         mFvqA32CcyapU+ZKOhga2o7c/v3i+vdOT2rY6ev2S2U96Fx9EqqxF29ijBvVgFt3rnjf
+         LsJIakdCBeJoaAT2Gi9NmI3t1AeB7PgAeQMiX0GTSYYdMVhFEoPxyMsSx96i1uVW/Xgs
+         thaM0wIFAvYZ0/aueVXBOnKrDtY5q91WQ0IowrBit1xnGTpjtbFhwRgjiF+Pu47W6uBL
+         eQ/bne9H7fNYjqZByJizcovVpvPWC+QZydxhOxzOsMxsZdS80DrW755B3H5VBu4vJ1Tt
+         M+sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VQOEXukn20hgpPjJ+OLqtGzuCJHE3pnunV9JohjE5Tc=;
+        b=QxU6YmjMwf85tg6mKE+ii8jIkUf0nKuNvcVbgukz4KAN21YPVX11QYPwZ7dlBzJXSL
+         yKWWqPDPJwx2ri/z57BIokUvA77IIbTsUKGHQmUQgWXTRKqK7VbSsnU1fZTXXwcQ+zFj
+         WwB+rGr8Zr04VRNuApKIfWO4yPZMtc3MRdpV3rgoyaF7H7jSZAraNppqaGfOq/881Crq
+         pim4Z5yrzl+4dDjHBJWDdZqEhFhlpdxBlrTF1V4j/TkrVFJa4k4YR6LFoDOQpixUmNYA
+         hEk4/E39Mq+igA+qE17CbNRJ4jMc+Qkl1f3b2jwR3gZWhG05nNYTRXvpGSGegDOtB0Z1
+         ACuw==
+X-Gm-Message-State: AFqh2kp2gOuo5aK4h2x9s6ZbLPqKWHzqTqLdhDJMjwlPnpLgmkl8QKAs
+        Jam93nxu6Gj2PqjhTxhvhHpW6mioFx3RkWTwTdakMA==
+X-Google-Smtp-Source: AMrXdXtnOF6DYyWFuiXwm86I3OwtS9EwrrNE5SzwEC3i4dBVo641rdM1fvMb8XqwDiyWnTX/4nS9yOzzL5Ri7E1tpdc=
+X-Received: by 2002:a5d:6207:0:b0:242:2748:be7a with SMTP id
+ y7-20020a5d6207000000b002422748be7amr4436775wru.116.1673409215323; Tue, 10
+ Jan 2023 19:53:35 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: KSZ8795 incorrect bit definitions for static MAC table
-Content-Language: en-US
-From:   Craig McQueen <craig@mcqueen.au>
-To:     netdev <netdev@vger.kernel.org>
-References: <09bf9abc-4a43-f1e9-d5f7-5b034c9812eb@mcqueen.au>
-In-Reply-To: <09bf9abc-4a43-f1e9-d5f7-5b034c9812eb@mcqueen.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230110091356.1524-1-cuiyunhui@bytedance.com>
+ <CANn89i+Wh2krOy4YFWvBsEx-s_JgQ0HixHAVJwGw18dVPeyiqw@mail.gmail.com> <20230110104419.67294691@gandalf.local.home>
+In-Reply-To: <20230110104419.67294691@gandalf.local.home>
+From:   =?UTF-8?B?6L+Q6L6J5bSU?= <cuiyunhui@bytedance.com>
+Date:   Wed, 11 Jan 2023 11:53:24 +0800
+Message-ID: <CAEEQ3w=aU3siD-ubhPB3+Wv10ARfUeR=cUHmvdEp2q+y105vAw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v5] sock: add tracepoint for send recv length
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Eric Dumazet <edumazet@google.com>, mhiramat@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        kuniyu@amazon.com, xiyou.wangcong@gmail.com,
+        duanxiongchun@bytedance.com, linux-kernel@vger.kernel.org,
+        linux-trace-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        dust.li@linux.alibaba.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In my previous message, I said
+On Tue, Jan 10, 2023 at 11:44 PM Steven Rostedt <rostedt@goodmis.org> wrote=
+:
+>
+>
+>         TP_printk("sk address =3D %p, family =3D %s protocol =3D %s, leng=
+th =3D %d, error =3D %d, flags =3D 0x%x",
+>                   __entry->sk, show_family_name(__entry->family),
+>                   show_inet_protocol_name(__entry->protocol),
+>                   __entry->ret > 0 ? ret : 0, __entry->ret < 0 ? ret : 0,
+>                   __entry->flags)
+> );
+>
+> DEFINE_EVENT(sock_msg_length, sock_send_length,
+>         TP_PROTO(struct sock *sk, int ret, int flags),
+>
+>         TP_ARGS(sk, ret, flags)
+> );
+>
+> DEFINE_EVENT_PRINT(sock_msg_length, sock_recv_length,
+>         TP_PROTO(struct sock *sk, int ret, int flags),
+>
+>         TP_ARGS(sk, ret, flags)
+>
+>         TP_printk("sk address =3D %p, family =3D %s protocol =3D %s, leng=
+th =3D %d, error =3D %d, flags =3D 0x%x",
+>                   __entry->sk, show_family_name(__entry->family),
+>                   show_inet_protocol_name(__entry->protocol),
+>                   !(__entry->flags & MSG_PEEK) ? __entry->ret : __entry->=
+ret > 0 ? ret : 0,
+>                   __entry->ret < 0 ? ret : 0,
+>                   __entry->flags)
+> );
+> #endif /* _TRACE_SOCK_H */
+>
+> As DEFINE_EVENT_PRINT() uses the class template, but overrides the
+> TP_printk() portion (still saving memory).
+>
 
- > Note that the ksz8863_masks[] change has not been tested, but it 
-looks right from a read of the data sheet.
+Hi Steve, Based on your suggestion, can we use the following code
+instead of using DEFINE_EVENT_PRINT =EF=BC=9F
 
-However, I didn't actually include the change for that. Reading the data 
-sheets, it looks as though it would need:
+DECLARE_EVENT_CLASS(sock_msg_length,
+
+        TP_PROTO(struct sock *sk, int ret, int flags),
+
+        TP_ARGS(sk, ret, flags),
+
+        TP_STRUCT__entry(
+                __field(void *, sk)
+                __field(__u16, family)
+                __field(__u16, protocol)
+                __field(int, ret)
+                __field(int, flags)
+        ),
+
+        TP_fast_assign(
+                __entry->sk =3D sk;
+                __entry->family =3D sk->sk_family;
+                __entry->protocol =3D sk->sk_protocol;
+                __entry->ret =3D ret;
+                __entry->flags =3D flags;
+        ),
+
+        TP_printk("sk address =3D %p, family =3D %s protocol =3D %s, length
+=3D %d, error =3D %d, flags =3D 0x%x",
+                  __entry->sk, show_family_name(__entry->family),
+                  show_inet_protocol_name(__entry->protocol),
+                  !(__entry->flags & MSG_PEEK) ?
+                  (__entry->ret > 0 ? __entry->ret : 0) : 0,
+                  __entry->ret < 0 ? __entry->ret : 0,
+                  __entry->flags)
+);
+
+DEFINE_EVENT(sock_msg_length, sock_send_length,
+        TP_PROTO(struct sock *sk, int ret, int flags),
+
+        TP_ARGS(sk, ret, flags)
+);
+
+DEFINE_EVENT(sock_msg_length, sock_recv_length,
+        TP_PROTO(struct sock *sk, int ret, int flags),
+
+        TP_ARGS(sk, ret, flags)
+);
 
 
+> And then both calls can just do:
+>
+>         trace_sock_send_length(sk, ret, 0);
+>
+>         trace_sock_recv_length(sock->sk, ret, flags);
+>
+> And I bet that will also solve all the gcc being smart waste.
+>
+> -- Steve
+>
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c 
-b/drivers/net/dsa/microchip/ksz8795.c
-index 16b546ad0cd3..3c6fee9db038 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -105,8 +105,8 @@ static const u32 ksz8863_masks[] = {
-         [STATIC_MAC_TABLE_VALID]        = BIT(19),
-         [STATIC_MAC_TABLE_USE_FID_R]    = BIT(21),
-         [STATIC_MAC_TABLE_USE_FID_W]    = BIT(21),
--       [STATIC_MAC_TABLE_FID_R]        = GENMASK(29, 26),
--       [STATIC_MAC_TABLE_FID_W]        = GENMASK(29, 26),
-+       [STATIC_MAC_TABLE_FID_R]        = GENMASK(25, 22),
-+       [STATIC_MAC_TABLE_FID_W]        = GENMASK(25, 22),
-         [STATIC_MAC_TABLE_OVERRIDE]     = BIT(20),
-         [STATIC_MAC_TABLE_FWD_PORTS]    = GENMASK(18, 16),
-         [DYNAMIC_MAC_TABLE_ENTRIES_H]   = GENMASK(5, 0),
+Btw,  we still need noinline helpers, right?
+Otherwise the following code would be inlined into sock_recvmsg:
+mov    0x18(%r13),%rsi
+mov    %gs:0x7e832d87(%rip),%eax        # 0x2e68c <pcpu_hot+12>
+mov    %eax,%eax
+bt     %rax,0xdca591(%rip)        # 0xffffffff825c5ea0 <__cpu_online_mask>
 
 
+Thanks,
+Yunhui
