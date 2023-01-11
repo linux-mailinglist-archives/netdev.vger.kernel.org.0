@@ -2,175 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A159C66569F
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B351F6656B0
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:01:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235800AbjAKI7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 03:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        id S236311AbjAKJBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 04:01:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237809AbjAKI6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:58:52 -0500
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B63210543
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:58:51 -0800 (PST)
+        with ESMTP id S232241AbjAKJA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:00:56 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D2A3B3
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:00:54 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id j16-20020a05600c1c1000b003d9ef8c274bso7711685wms.0
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 01:00:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1673427531; x=1704963531;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=0gRZckzxKig1scliFkHAG+oLY/p3C3q0ICYjYgDl7gM=;
-  b=l//szxmAO+5rIMbsL/4gExfDF1JIGdgFXPPe8uhMZZoMzDDItkNZ6AV+
-   REsthSqA3GbIm120CcsZlHIx3UuLY1wC7xiJXB8O3jR9jz1yAplhT07fu
-   SZ+q4VFgdz0cbY50gC/YeF7GtypFVeyFMkLNIsv5u7ioXRsTcX/p/ZYaV
-   E=;
-X-IronPort-AV: E=Sophos;i="5.96,315,1665446400"; 
-   d="scan'208";a="281621017"
-Subject: RE: [PATCH V1 net-next 0/5] Add devlink support to ena
-Thread-Topic: [PATCH V1 net-next 0/5] Add devlink support to ena
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-a65ebc6e.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2023 08:58:48 +0000
-Received: from EX13D31EUB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-m6i4x-a65ebc6e.us-east-1.amazon.com (Postfix) with ESMTPS id B8C53614F7;
-        Wed, 11 Jan 2023 08:58:47 +0000 (UTC)
-Received: from EX19D028EUB004.ant.amazon.com (10.252.61.32) by
- EX13D31EUB001.ant.amazon.com (10.43.166.210) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Wed, 11 Jan 2023 08:58:47 +0000
-Received: from EX19D047EUB004.ant.amazon.com (10.252.61.5) by
- EX19D028EUB004.ant.amazon.com (10.252.61.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.7; Wed, 11 Jan 2023 08:58:46 +0000
-Received: from EX19D047EUB004.ant.amazon.com ([fe80::e4ef:7b7e:20b2:9c20]) by
- EX19D047EUB004.ant.amazon.com ([fe80::e4ef:7b7e:20b2:9c20%3]) with mapi id
- 15.02.1118.020; Wed, 11 Jan 2023 08:58:46 +0000
-From:   "Arinzon, David" <darinzon@amazon.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>
-Thread-Index: AQHZJIzV+wAfc6WK6kuI0VjEEkTbvK6YFPoQgAAKigCAAKbkgA==
-Date:   Wed, 11 Jan 2023 08:58:46 +0000
-Message-ID: <865255fd30cd4339966425ea1b1bd8f9@amazon.com>
-References: <20230108103533.10104-1-darinzon@amazon.com>
-        <20230109164500.7801c017@kernel.org>
-        <574f532839dd4e93834dbfc776059245@amazon.com>
- <20230110124418.76f4b1f8@kernel.org>
-In-Reply-To: <20230110124418.76f4b1f8@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.85.143.179]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
+         :content-language:subject:reply-to:from:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=UIgNk4h0ykNf4W9R10f+g8s9MtlXPDlZWGID0CLp804=;
+        b=ACz2pUEAplUyKMwahar14IEYYnawh0ar2G+KL0+AdO+fXKDb6L1+7Aq1cR/JhRxMxF
+         mptt0m7OE+hHLEPyv2GGxmbq78+4PKJIg2OU+Et0ss+4vM4s35EB+0jdnp7VOr0n3o4Y
+         sVNrXDS1NCtl4llNRycijVOG7GqCqJE9sTXrkMnrFCkCNHARqK/VingD2ZFf2CaIyh5R
+         BkUyz70LPfPlxaoLoSrL9Eyv1OPob/snhvTSgSee+4oBHoO28UzKBMYs7qZmo3PKc7Oj
+         TZY7YEEZvny5IzPNF2MZFoR+8B8dExdbws1pT2JocEc7BXwbvR4fsYcDcyxTp6JjTglr
+         yNAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
+         :content-language:subject:reply-to:from:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UIgNk4h0ykNf4W9R10f+g8s9MtlXPDlZWGID0CLp804=;
+        b=ABV4l6ji6umohE7+ZBVc9dqRnnzGO+mRVewyz2qz55kgSa/prucC9RTl5iGG6h+HH3
+         eExncPQx8834BvI1MLncXlwzkm3zjjOlL4LfPA2FVMmpO05kSQqOAY5D64nSdBoadFDl
+         GXTmbfMx2Xg0bGIZms3yOPKwSPWDjWXzUKOIRIaUefHGyO6596zE0FlSTWyJ+nqh0Xg5
+         lJVy4xFt3FXz7S6BrvK6xGjRrR0ODFMrjiQAVQ33ldOsIWVrjYTSNkutsI1UUXx/Aojl
+         j87J2prm1UTSmwBYp62kFSdsQB1k7Ug1XOa5ChBAS02/nGPinmHuz3l4B+OSZOjqE3gZ
+         EJuQ==
+X-Gm-Message-State: AFqh2krWWrraVrEPtrxBct93SnknX1UTwgjZAUzXwsLpwcpnyb50OR2u
+        ukubIzzUKIDdTkhltwXMKYv/vw==
+X-Google-Smtp-Source: AMrXdXu50nuURvF/uZXf+xmLuSwesdnOY8E4IcaZoYRp8Au4jWUve2YDc0RJ8X2U2aelNYBfkHhv2g==
+X-Received: by 2002:a05:600c:34d0:b0:3d6:b691:b80d with SMTP id d16-20020a05600c34d000b003d6b691b80dmr50949988wmq.21.1673427652953;
+        Wed, 11 Jan 2023 01:00:52 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:982:cbb0:d95d:43b7:d6a9:39a5? ([2a01:e0a:982:cbb0:d95d:43b7:d6a9:39a5])
+        by smtp.gmail.com with ESMTPSA id o21-20020a1c7515000000b003d995a704fdsm17507540wmc.33.2023.01.11.01.00.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Jan 2023 01:00:52 -0800 (PST)
+Message-ID: <08698c06-49b0-1cf7-efd3-1038104972cf@linaro.org>
+Date:   Wed, 11 Jan 2023 10:00:51 +0100
 MIME-Version: 1.0
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+From:   Neil Armstrong <neil.armstrong@linaro.org>
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH v2 00/11] dt-bindings: first batch of dt-schema
+ conversions for Amlogic Meson bindings
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+References: <20221117-b4-amlogic-bindings-convert-v2-0-36ad050bb625@linaro.org>
+ <20230110152324.1e19974d@kernel.org>
+Organization: Linaro Developer Services
+In-Reply-To: <20230110152324.1e19974d@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiBUdWUsIDEwIEphbiAyMDIzIDIwOjExOjIzICswMDAwIEFyaW56b24sIERhdmlkIHdyb3Rl
-Og0KPiA+ID4gT24gU3VuLCA4IEphbiAyMDIzIDEwOjM1OjI4ICswMDAwIERhdmlkIEFyaW56b24g
-d3JvdGU6DQo+ID4gPiA+IFRoaXMgcGF0Y2hzZXQgYWRkcyBkZXZsaW5rIHN1cHBvcnQgdG8gdGhl
-IGVuYSBkcml2ZXIuDQo+ID4gPg0KPiA+ID4gV3JvbmcgcGxhY2UsIHBsZWFzZSB0YWtlIGEgbG9v
-ayBhdA0KPiA+ID4NCj4gPiA+ICAgICAgICAgc3RydWN0IGtlcm5lbF9ldGh0b29sX3JpbmdwYXJh
-bTo6dHhfcHVzaA0KPiA+ID4NCj4gPiA+IGFuZCBFVEhUT09MX0FfUklOR1NfVFhfUFVTSC4gSSB0
-aGluayB5b3UganVzdCB3YW50IHRvIGNvbmZpZ3VyZQ0KPiB0aGUNCj4gPiA+IG1heCBzaXplIG9m
-IHRoZSBUWCBwdXNoLCByaWdodD8NCj4gPg0KPiA+IFdlJ3JlIG5vdCBjb25maWd1cmluZyB0aGUg
-bWF4IHNpemUgb2YgdGhlIFRYIHB1c2gsIGJ1dCBlZmZlY3RpdmVseSB0aGUNCj4gPiBtYXhpbWFs
-IHBhY2tldCBoZWFkZXIgc2l6ZSB0byBiZSBwdXNoZWQgdG8gdGhlIGRldmljZS4NCj4gPiBUaGlz
-IGlzIG5vdGVkIGluIHRoZSBkb2N1bWVudGF0aW9uIG9uIHBhdGNoIDUvNSBpbiB0aGlzIHBhdGNo
-c2V0Lg0KPiA+IEFGQUlLLCB0aGVyZSdzIG5vIHJlbGV2YW50IGV0aHRvb2wgcGFyYW1ldGVyIGZv
-ciB0aGlzIGNvbmZpZ3VyYXRpb24uDQo+IA0KPiBQZXJoYXBzIEkgc2hvdWxkIGhhdmUgY29tcGxh
-aW5lZCBhYm91dCB0aGUgbG93IHF1YWxpdHkgb2YgdGhhdA0KPiBkb2N1bWVudGF0aW9uIHRvIG1h
-a2UgaXQgY2xlYXIgdGhhdCBJIGhhdmUgaW4gZmFjdCByZWFkIGl0IDovDQo+IA0KDQpOb3RlZCwg
-d2Ugd2lsbCBzZWUgaG93IHRvIGltcHJvdmUgZG9jdW1lbnRhdGlvbiBnb2luZyBmb3J3YXJkLg0K
-DQo+IEkgcmVhZCBpdCBhZ2FpbiAtIGFuZCBJIHN0aWxsIGRvbid0IGtub3cgd2hhdCB5b3UncmUg
-ZG9pbmcuDQo+IEkgc291bmRzIGxpa2UgaW5saW5lIGhlYWRlciBsZW5ndGggY29uZmlndXJhdGlv
-biB5ZXQgeW91IGFsc28gdXNlIExMUSBhbGwNCj4gb3ZlciB0aGUgcGxhY2UuIEFuZCBMTFEgZm9y
-IEVOQSBpcyBkb2N1bWVudGVkIGFzIGJhc2ljYWxseSB0eF9wdXNoOg0KPiANCj4gICAtICoqTG93
-IExhdGVuY3kgUXVldWUgKExMUSkgbW9kZSBvciAicHVzaC1tb2RlIjoqKg0KPiANCj4gUGxlYXNl
-IGV4cGxhaW4gdGhpcyBpbiBhIHdheSB3aGljaCBhc3N1bWVzIHplcm8gQW1hem9uLXNwZWNpZmlj
-DQo+IGtub3dsZWRnZSA6KA0KPiANCg0KTG93IExhdGVuY3kgUXVldWVzIChMTFEpIGlzIGEgbW9k
-ZSBvZiBvcGVyYXRpb24gd2hlcmUgdGhlIHBhY2tldCBoZWFkZXJzDQoodXAgdG8gYSBkZWZpbmVk
-IGxlbmd0aCkgYXJlIGJlaW5nIHdyaXR0ZW4gZGlyZWN0bHkgdG8gdGhlIGRldmljZSBtZW1vcnku
-DQpUaGVyZWZvcmUsIHlvdSBhcmUgcmlnaHQsIHRoZSBkZXNjcmlwdGlvbiBpcyBzaW1pbGFyIHRv
-IHR4X3B1c2guIEhvd2V2ZXIsDQpUaGlzIGlzIG5vdCBhIGNvbmZpZ3VyYWJsZSBvcHRpb24gd2hp
-bGUgRVRIVE9PTF9BX1JJTkdTX1RYX1BVU0gNCmNvbmZpZ3VyZXMgd2hldGhlciB0byB3b3JrIGlu
-IGEgbW9kZSBvciBub3QuDQpJZiBJJ20gdW5kZXJzdGFuZGluZyB0aGUgaW50ZW50IGJlaGluZCBF
-VEhUT09MX0FfUklOR1NfVFhfUFVTSA0KYW5kIHRoZSBpbXBsZW1lbnRhdGlvbiBpbiB0aGUgZHJp
-dmVyIHRoYXQgaW50cm9kdWNlZCB0aGUgZmVhdHVyZSwgaXQNCnJlZmVycyB0byBhIHB1c2ggb2Yg
-dGhlIHBhY2tldCBhbmQgbm90IGp1c3QgdGhlIGhlYWRlcnMsIHdoaWNoIGlzIG5vdCB3aGF0DQp0
-aGUgZW5hIGRyaXZlciBkb2VzLg0KDQpJbiB0aGlzIHBhdGNoc2V0LCB3ZSBhbGxvdyB0aGUgY29u
-ZmlndXJhdGlvbiBvZiBhbiBleHRlbmRlZCBzaXplIG9mIHRoZQ0KTG93IExhdGVuY3kgUXVldWUs
-IG1lYW5pbmcsIGFsbG93IGVuYWJsZWQgYW5vdGhlciwgbGFyZ2VyLCBwcmUtZGVmaW5lZA0Kc2l6
-ZSB0byBiZSB1c2VkIGFzIGEgbWF4IHNpemUgb2YgdGhlIHBhY2tldCBoZWFkZXIgdG8gYmUgcHVz
-aGVkIGRpcmVjdGx5IHRvDQpkZXZpY2UgbWVtb3J5LiBJdCBpcyBub3QgY29uZmlndXJhYmxlIGlu
-IHZhbHVlLCB0aGVyZWZvcmUsIGl0IHdhcyBkZWZpbmVkIGFzDQpsYXJnZSBMTFEuDQoNCkkgaG9w
-ZSB0aGlzIHByb3ZpZGVzIG1vcmUgY2xhcmlmaWNhdGlvbiwgaWYgbm90LCBJJ2xsIGJlIGhhcHB5
-IHRvIGVsYWJvcmF0ZSBmdXJ0aGVyLg0KDQo+ID4gPiBUaGUgcmVsb2FkIGlzIGFsc28gYW4gb3Zl
-cmtpbGwsIHJlbG9hZCBzaG91bGQgcmUtcmVnaXN0ZXIgYWxsIGRyaXZlcg0KPiA+ID4gb2JqZWN0
-cyBidXQgdGhlIGRldmxpbmsgaW5zdGFuY2UsIElJUkMuIFlvdSdyZSBub3QgZXZlbiB1bnJlZ2lz
-dGVyaW5nDQo+IHRoZSBuZXRkZXYuDQo+ID4gPiBZb3Ugc2hvdWxkIGhhbmRsZSB0aGlzIGNoYW5n
-ZSB0aGUgc2FtZSB3YXkgeW91IGhhbmRsZSBhbnkgcmluZyBzaXplDQo+ID4gPiBjaGFuZ2VzLg0K
-PiA+DQo+ID4gVGhlIExMUSBjb25maWd1cmF0aW9uIGlzIGRpZmZlcmVudCBmcm9tIG90aGVyIGNv
-bmZpZ3VyYXRpb25zIHNldCB2aWENCj4gPiBldGh0b29sIChsaWtlIHF1ZXVlIHNpemUgYW5kIG51
-bWJlciBvZiBxdWV1ZXMpLiBMTFEgcmVxdWlyZXMNCj4gPiByZS1uZWdvdGlhdGlvbiB3aXRoIHRo
-ZSBkZXZpY2UgYW5kIHJlcXVpcmVzIGEgcmVzZXQsIHdoaWNoIGlzIG5vdA0KPiA+IHBlcmZvcm1l
-ZCBpbiB0aGUgZXRodG9vbCBjb25maWd1cmF0aW9ucyBjYXNlLg0KPiANCj4gV2hhdCBkbyB5b3Ug
-bWVhbiB3aGVuIHlvdSBzYXkgdGhhdCByZXNldCBpcyBub3QgcmVxdWlyZWQgaW4gdGhlIGV0aG9v
-bA0KPiBjb25maWd1cmF0aW9uIGNhc2U/DQo+IA0KPiBBRkFJSyBldGh0b29sIGNvbmZpZyBzaG91
-bGQgbm90IChhbHRob3VnaCBzYWRseSB2ZXJ5IG9mdGVuIGl0IGRvZXMpIGNhdXNlDQo+IGFueSBs
-b3NzIG9mIHVucmVsYXRlZCBjb25maWd1cmF0aW9uLiBCdXQgeW91IGNhbiBjZXJ0YWlubHkgcmVz
-ZXQgSFcgYmxvY2tzDQo+IG9yIHJlbmVnIGZlYXR1cmVzIHdpdGggRlcgb3Igd2hhdGV2ZXIgZWxz
-ZS4uLg0KPiANCg0KVGhlIGVuYSBkcml2ZXIgY3VycmVudGx5IHN1cHBvcnRzIHZhcmlvdXMgY29u
-ZmlndXJhdGlvbnMgdmlhIGV0aHRvb2wsDQpmb3IgZXhhbXBsZSwgY2hhbmdpbmcgdGhlIG51bWJl
-ciBvZiBxdWV1ZXMvY2hhbm5lbHMgYW5kIHRoZQ0KcXVldWUvY2hhbm5lbCBzaXplLiBUaGVzZSBv
-cHRpb25zLCBmb3IgZXhhbXBsZSwgcmVxdWlyZSBjaGFuZ2VzIGluIHRoZQ0KbmV0ZGV2IGFuZCB0
-aGUgaW50ZXJmYWNlcyB3aXRoIHRoZSBrZXJuZWwsIHRoZXJlZm9yZSwgd2UgcGVyZm9ybSBhDQpy
-ZWNvbmZpZ3VyYXRpb24gb24gdGhpcyBsZXZlbC4gQnV0LCB0aGVzZSBjb25maWd1cmF0aW9ucyBk
-byBub3QgcmVxdWlyZQ0KdGhlIGludGVyZmFjZSBiZXR3ZWVuIHRoZSBkcml2ZXIgYW5kIGRldmlj
-ZSB0byBiZSByZXNldC4NCkxvdyBMYXRlbmN5IFF1ZXVlIG1vZGUgY2hhbmdlIGZyb20gc3RhbmRh
-cmQgdG8gbGFyZ2UgKHdoYXQncyBiZWluZw0KY29uZmlndXJlZCBpbiB0aGlzIHBhdGhzZXQpIGlz
-IG1vcmUgc2lnbmlmaWNhbnQgZnVuY3Rpb25hbGl0eSBjaGFuZ2UgYW5kDQpyZXF1aXJlcyB0aGlz
-IHJlc2V0Lg0KDQo+ID4gSXQgbWF5IGJlIHBvc3NpYmxlIHRvIHVucmVnaXN0ZXIvcmVnaXN0ZXIg
-dGhlIG5ldGRldiwgYnV0IGl0IGlzDQo+ID4gdW5uZWNlc3NhcnkgaW4gdGhpcyBjYXNlLCBhcyBt
-b3N0IG9mIHRoZSBjaGFuZ2VzIGFyZSByZWZsZWN0ZWQgaW4gdGhlDQo+ID4gaW50ZXJmYWNlIGFu
-ZCBzdHJ1Y3R1cmVzIGJldHdlZW4gdGhlIGRyaXZlciBhbmQgdGhlIGRldmljZS4NCj4gPg0KPiA+
-ID4gRm9yIGZ1dHVyZSByZWZlcmVuY2UgLSBpZiB5b3UgZXZlciBfYWN0dWFsbHlfIG5lZWQgZGV2
-bGluayBwbGVhc2UNCj4gPiA+IHVzZSB0aGUNCj4gPiA+IGRldmxfKiBBUElzIGFuZCB0YWtlIHRo
-ZSBpbnN0YW5jZSBsb2NrcyBleHBsaWNpdGx5LiBUaGVyZSBoYXMgbm90DQo+ID4gPiBiZWVuIGEg
-c2luZ2xlIGRldmxpbmsgcmVsb2FkIGltcGxlbWVudGF0aW9uIHdoaWNoIHdvdWxkIGdldCBsb2Nr
-aW5nDQo+ID4gPiByaWdodCB1c2luZyB0aGUgZGV2bGlua18qIEFQSXMg8J+YlO+4jw0KPiA+DQo+
-ID4gVGhpcyBvcGVyYXRpb24gY2FuIGhhcHBlbiBpbiBwYXJhbGxlbCB0byBhIHJlc2V0IG9mIHRo
-ZSBkZXZpY2UgZnJvbSBhDQo+ID4gZGlmZmVyZW50IGNvbnRleHQgd2hpY2ggaXMgdW5yZWxhdGVk
-IHRvIGRldmxpbmsuIE91ciBpbnRlbnRpb24gaXMgdG8NCj4gPiBhdm9pZCBzdWNoIGNhc2VzLCB0
-aGVyZWZvcmUsIGhvbGRpbmcgdGhlIGRldmxpbmsgbG9jayB1c2luZyBkZXZsX2xvY2sgQVBJcw0K
-PiB3aWxsIG5vdCBiZSBzdWZmaWNpZW50Lg0KPiA+IFRoZSBkcml2ZXIgaG9sZHMgdGhlIFJUTkxf
-TE9DSyBpbiBrZXkgcGxhY2VzLCBlaXRoZXIgZXhwbGljaXRseSBvcg0KPiA+IGltcGxpY2l0bHks
-IGFzIGluIGV0aHRvb2wgY29uZmlndXJhdGlvbiBjaGFuZ2VzIGZvciBleGFtcGxlLg0KPiANCj4g
-WWVhaCwgd2hpY2ggaXMgd2h5IHlvdSBzaG91bGQgbm90IGJlIHVzaW5nIGRldmxpbmsgZm9yIHRo
-aXMuDQoNClRob3VnaCB1c2luZyBldGh0b29sIHdvdWxkJ3ZlIGJlZW4gbW9yZSBjb252ZW5pZW50
-IGFzIFJUTkxfTE9DSyBpcyBiZWluZw0KaGVsZCB3aGlsZSB0aGUgY29tbWFuZCB0YWtlcyBwbGFj
-ZSwgdGhpcyBmdW5jdGlvbmFsaXR5IGlzIHNwZWNpZmljIHRvIEFtYXpvbiBhbmQNCmFkZGluZyBh
-IHByaXZhdGUgZmxhZywgZm9yIGV4YW1wbGUsIGlzIG5vdCBkZXNpcmFibGUuIENyZWF0aW5nIGEg
-bmV3IGV0aHRvb2wgb3INCnVwZGF0aW5nIGFuIGV4aXN0aW5nIG9uZSB3b3VsZCBiZSBzcGVjaWZp
-YyBvbmx5IGZvciBBbWF6b24gYXMgd2VsbC4NClBlciBvdXIgdW5kZXJzdGFuZGluZywgZXRodG9v
-bCBpcyB1c2VkIGZvciBpbnRlcmZhY2Ugb3BlcmF0aW9ucywgd2hpbGUgZGV2bGluaw0KaXMgdXNl
-ZCBmb3IgZGV2aWNlIG9wZXJhdGlvbnMuIFBlcmZvcm1pbmcgdGhlIGRpc2N1c3NlZCBjb25maWd1
-cmF0aW9uIGNoYW5nZQ0KaXMgYSBkZXZpY2UgY29uZmlndXJhdGlvbiwgYXMgaXQgYWZmZWN0cyB0
-aGUgd2F5IHRoZSBkZXZpY2UgY29uZmlndXJlcyBpdHMgb3duIG1lbW9yeS4NCg0KDQoNCg==
+Hi,
+
+On 11/01/2023 00:23, Jakub Kicinski wrote:
+> On Mon, 09 Jan 2023 13:53:25 +0100 Neil Armstrong wrote:
+>> - patch 12: added reviewed-by
+>> - Link to v1: https://lore.kernel.org/r/20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org
+> 
+> I'm guessing patch 12 is patch 11 in this posting.
+> Should we take it via net-next? Looks acked & ready.
+
+Exact it's ready to be taken
+
+Thanks,
+Neil
+
