@@ -2,136 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DADF16655E8
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:22:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 784AD6655F7
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:24:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231610AbjAKIWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 03:22:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
+        id S232292AbjAKIX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 03:23:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbjAKIWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:22:18 -0500
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2123.outbound.protection.outlook.com [40.107.101.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251AC5FB6
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:22:17 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U/cY3ZY/zZxx5+GMSlfkpqANs/BASMRueumURgIjST1kjjJfykmUcTNLG7E3Pio2Cv6FzHt9N7x83JuCOhQ/xGtG+rZy+t2KAqlcdRnbSuokMn6EcMCEqVQZDb8Ij3bPiQgT5DC0Bdt6jOKJyL5G9FoyjvXUuYkYRVunf7C9MQcOzj2sE72PWPoE9P70lmTH0/uZwuXsDO656vpPZzM1HG66HzTR6XeDdJ4GjaJFrZ792pu9yIx6xVpOI2m0dM9rKLjFBrBXV20fFpZX4LodXQ1DEk8rM1Ubx0ab6skUrvGUuT5TxvDuJC8bfx29KxkVES33KKKPIPSFgJ9k/INlIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JJo4ZxoerhJlPaApS+jrdxJJkvwOpkGsVw+2JGn4A8g=;
- b=A+cQYd2kWCmHQ44dEBMOxsP+ZaETfbxFrZmdXasIHIflz7h0Z7FtUtwdiJhxdjUEpe655WOxll5XqXYXXtRm3IKEYkL3ao5KPNre0vQltx+7mLSwph30zYkPpThtUGSUdd9cgTgTNPC9GZHRYKN9qkpRg4T887OttiiNI5aUwfJIgzBbUlB74BbEQza9NvSZRnAhLvku+rOCjFcmL5lwTAdVNDUPpkM51uJbJOZRzPyI805EXbyrPhBDA8os/Kesm1O5ziih9gPC3uP0zTsMrT2sma53e6YOElIfO+a8mtTvPMobpaDbbbPi80emQtDnQCty5hHKRi/5cM9r6THzEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S232256AbjAKIX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:23:28 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE121000
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:23:27 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id c9so10831783pfj.5
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:23:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JJo4ZxoerhJlPaApS+jrdxJJkvwOpkGsVw+2JGn4A8g=;
- b=jeAUb64ju5PhbghMSF7wswmsKZ1KsrCEl0vqrz7IOUx3ao5DuauDNNi+FKw4fqSrvwXD92rhuBseJIxZ35x7hDJZw9qBpyaQfnuC5fpvNcwAEwoVOxo6d0sfiJTg+sB3xm2LXNzkXhJ24WaVcVOfd1FOnkEp8Ml0bwriUde92W4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5299.namprd13.prod.outlook.com (2603:10b6:510:f7::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 11 Jan
- 2023 08:22:15 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.5986.018; Wed, 11 Jan 2023
- 08:22:15 +0000
-Date:   Wed, 11 Jan 2023 09:22:08 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Bin Chen <bin.chen@corigine.com>,
-        Xingfeng Hu <xingfeng.hu@corigine.com>
-Subject: Re: [PATCH net-next 2/2] nfp: add DCB IEEE configuration process
-Message-ID: <Y75xsI18uWeWivJ7@corigine.com>
-References: <20230110123542.46924-1-simon.horman@corigine.com>
- <20230110123542.46924-3-simon.horman@corigine.com>
- <20230110203808.2952931d@kernel.org>
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/MzsfDCeDeadN331AwqKYc1pcPgQNKIBIX5x5onQ+6k=;
+        b=HK+0zB0aQm7Vu21wzVpHZH/NvVPe+s+ao9+Ifh9F0tNg3DCkb6z/nqe2A1msvxxgcT
+         SUUk3kGo3Ajr4xyj78dG6D/sjxM673cUj1g7Geei7vMItT/XuAabAVMCdHNxEG2RIDQ3
+         /v4P1bO5n15rCpbktkCaK/Zq2yJRTv7JKwJDtbECm2o79O7YkHU1m0L0VTZBzBuSqfxl
+         SMx76B45sco85TdirjjiBIqww/dkuHxPJTLrpJk1PfMXYVgUwa4qVeSnMWxgGkZAuoIK
+         OZJI868jIQrVaV3LDOqjuVorh/EmitKuxceojvYh2yhvPiNsZZjJRDS3cGm18SwW55DC
+         PLsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/MzsfDCeDeadN331AwqKYc1pcPgQNKIBIX5x5onQ+6k=;
+        b=KjNC76C3ZVuvrgO25RsVO3wVqts6eboESJMrAr3J+ePKsimQQisrFsWhn3NJJ/L+hN
+         O37FvOXtPuu1fSyNsGLU/4skN7aI35/cpHjUToGMkGBTeh4vEKYt+oOpXnZvaPfwyeGo
+         GX5Na8VH3KIDRvd8aq6oJjfJ/RHJl+JC8h2nbC4qfd7oyxprclKAxWChu9sjBBDFWghK
+         c004VF4fj4i1LeW+nvZqVQ79+GivpbAp/sSw+OE8Gt2JCECk/6nVE3f33mriWq1lrvOs
+         +f6Od44icJUNodiLzfGha1Kiwym7lGn9NfzWDwhM8BjdCbgMKav1ey9pXBZjxMY1FHLH
+         cEEA==
+X-Gm-Message-State: AFqh2kom+owG81pfvdSigvDhWQ0MZpEr/5kiCfSqcIQNW0yGq4ywJPIC
+        bDYjNE76JE9AnR6aKInLseKKZQ==
+X-Google-Smtp-Source: AMrXdXsyvFJYoCBTFyOWiBvcBUwZl7AVm+0OdUlsOMNXQYQz1UjFYGOaUKHpXKXaxhfEqrUPGhGHWw==
+X-Received: by 2002:a62:a514:0:b0:580:8c2c:d0ad with SMTP id v20-20020a62a514000000b005808c2cd0admr62429819pfm.13.1673425406496;
+        Wed, 11 Jan 2023 00:23:26 -0800 (PST)
+Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
+        by smtp.gmail.com with ESMTPSA id m190-20020a6258c7000000b005821c109cebsm4809842pfb.199.2023.01.11.00.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Jan 2023 00:23:26 -0800 (PST)
+Date:   Wed, 11 Jan 2023 09:23:23 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        michael.chan@broadcom.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, tariqt@nvidia.com, saeedm@nvidia.com,
+        idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
+        jacob.e.keller@intel.com, gal@nvidia.com
+Subject: Re: [patch net-next v3 01/11] devlink: remove devlink features
+Message-ID: <Y75x+1+z4VzBx/ip@nanopsycho>
+References: <20230109183120.649825-1-jiri@resnulli.us>
+ <20230109183120.649825-2-jiri@resnulli.us>
+ <20230109165500.3bebda0a@kernel.org>
+ <Y70PyuHXJZ3gD8dG@nanopsycho>
+ <20230110125915.62d428fb@kernel.org>
+ <Y75nBEpxIWrDj9mF@unreal>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230110203808.2952931d@kernel.org>
-X-ClientProxiedBy: AM0PR03CA0049.eurprd03.prod.outlook.com (2603:10a6:208::26)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5299:EE_
-X-MS-Office365-Filtering-Correlation-Id: 73dbbb7b-87ff-4f18-48ae-08daf3acf21f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w7Ick1022r8iZIrUpBQSUy3kJTLNhYry0D1vkw3vavDJ8SgedxhJuz6k17pAF0Qyhjx2dB0kNY4/s18jGrnfX4ufjKGwsFlgiX2Gwj2e0J3XgW35K3xXYWtdC7dhosNjDB/zIG1rG4UbgeRUbZOmo/V7xoT/o3VuR/MxnIdqN516qCKTvcwFZu6pShC0RvUp8AY+MnJGuBjHw+Ae+74aRFT9YlNJxfn792hWSFvmuSDV/8zOgVEi1i0a/LEKyZMRvT4LP5jPVhuc8SwvxymQYL3KSTX1WedCRqHNj6UcbFDE6j3lNfXuwf1UCXt55ifg8DXsmdZRhqL6xCA8MOS4AC1JmaUc5EATid9kyS1yZDi0BuBPgnGAyHzWE25wruhB3rwtEE8rEflmkDAKUOnyrRNTC4kjWamwjN+rMkkrwJEfJtw4QnNaJdhe8veYsfgCv2YlCJRS3Xxz/EWt8uJYr78X2mNYq/dBqTMwzXrvBmHWpEtt3Wa+Rrh1vhrPmtaKl7U6VPHUBw6BTc/nmCnMLqSEKXErSvSTrVTrMyOSjCSwBDSv9D2/tO2N6rlfEo9gsId8k6I8iA83pg0mwP7rN7CgLePjZ+VTIXnMuDQHPv9wDcM+RUDgiE4lhFYnDKRh9imLzR9VfYLQS3XdzeYsGQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39830400003)(396003)(346002)(136003)(451199015)(478600001)(6486002)(41300700001)(38100700002)(6512007)(86362001)(54906003)(316002)(2616005)(186003)(66556008)(66476007)(66946007)(8676002)(4326008)(6916009)(36756003)(5660300002)(6666004)(107886003)(6506007)(2906002)(4744005)(44832011)(8936002)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VRrWCcIa+7yzj4p8ToFgGC+FG8PBcHMA7NpaDXa/xPa40TcpNjnLvizmxzkS?=
- =?us-ascii?Q?MmdxGevGFFdORZV2UrRwGrUbl7KjO5sGRRxxMqTViS5kH38Pm9nz4L2B+BN5?=
- =?us-ascii?Q?pz+Tq1vvVjm3xJ0FCL8T/XwbwQhhshD1PoRpsXp4aXDs620wg5tQfTN52+b8?=
- =?us-ascii?Q?P6fHWbjvpApxuSDVNfCnX8Af77H/FhguErIfBt6gAauUsiJtiJFWJNefvB+v?=
- =?us-ascii?Q?YR6aoSZ5rY2UsjiSNRt1eBPYuyQv4R54SbT0kfkIqMtwTZo7Iz5OUYsjiVFr?=
- =?us-ascii?Q?Q+NpVgzCW22gnVIEbaJ2moDNcKIMhw0swD6Y3Sc+M/PMSOz7J59xjLmOu/7E?=
- =?us-ascii?Q?3BITiMoflTNP/5gUoWOrmxx5Mg5db927lY6iteXcdeH3Ml7iQCPAjou2fY1R?=
- =?us-ascii?Q?Av6dOtPSblwCXReYNBue9Mhe3H+BjGYK17gt+vqta8N4bjsoDu0M4T/Zz5mH?=
- =?us-ascii?Q?Skq1ah7QK4++d243DvY6keT5G4h+YDtIky3V+Z7g0Hyg+zQBfn4t18X+JPPO?=
- =?us-ascii?Q?qlWlTAPQnHEwPn4PUpGSn7JqzLiF4GtVwSExqApn2znCiwLHKE/Z7VYVVf5z?=
- =?us-ascii?Q?9OKTsHHpBn+rhJ8iIsgwF91DW4NYU67XOVunL5F6sZxkOZBDG8z0mVRiRVlI?=
- =?us-ascii?Q?sCLGifPd4lMP4jZuOB9iF2NM2DsUac8qTL/va3upeuaCYdbyiNKJEYrWjtlm?=
- =?us-ascii?Q?VuREeI39SMdIDy3qRGqgc2efYQJaw+T2KHR/5a6kwBgPIKUSrfPWX30kLgmw?=
- =?us-ascii?Q?BM8R8wB9k8KW6qr+P5leE5d5bcyI5AA7G6eQKo7uHO4mvh7mE8fVuMxa/Xdl?=
- =?us-ascii?Q?OvL0I4aroj24mnrPg4fBTqj14fB0auiRs6KYfGCYnTjnBvI+tNli3tRT6Wqj?=
- =?us-ascii?Q?gKzzDSEadGmlwETSpP4LGJfZuWLB8re/NR4tU34i/DlxtaR0vf7zM1X8iM6q?=
- =?us-ascii?Q?1j0GDyL1ytQd+309R7vfJyO5YZqiPmm2W+U1xWkeovMA2uR8ZKrKHJ7X9wXi?=
- =?us-ascii?Q?xvrgbZhlRaWH1SptUTLdTwXRayF2bIfnGyUgRrN6IvfVpzpNM6j4VlrOXehA?=
- =?us-ascii?Q?BuU0PgSDLN6gJET37iAJFzUucop42suiPWIMPsGjQK1imbQJnRNNdBU4eHxb?=
- =?us-ascii?Q?kwBr08az35alAuqPHxUR/wfvXRWvTNsiOFKa7Ng8eGXWHbMcE15NA4vFmG6l?=
- =?us-ascii?Q?R1IYaHd7zk1BKOr7OqiFhcBLD/Xk8P2GQU+vQsA1HNGT4WFsZ62nYU1zPt7Z?=
- =?us-ascii?Q?awH9feHmOLDudjBEGxWFL2WC7c8b5K8VsmRa557bEwBf/d1D78CmS9a7qoY1?=
- =?us-ascii?Q?W2z9k0VYev6AhWKwqWlZ7ZLqLDF2PSCUM+uJE7a4c102rkwq56pTXrUjfvZ7?=
- =?us-ascii?Q?haLxZ1Y3rNHLPSnBS8MdAvL/Lfo9TBqxDEU+UoE6Zi4rjgvI+GJiRJDmUgou?=
- =?us-ascii?Q?57qffWX4GVhG1p+PK8Hgg3qZrVy8PnZapA64+jPLdv2kWg+i87GPhRol4KjL?=
- =?us-ascii?Q?wNqO2OOjC7WN5LsTkRVbreZexW8FMFYoDw/vrL6KWVqRuJ0FLgzWCCQi5caJ?=
- =?us-ascii?Q?Xasj8nuxbV3ub+QPncaxFY0H/t7zLnOaeodHCa4aN7HhqGM1NagyW36e4HP5?=
- =?us-ascii?Q?yTiyJcMeLgseZ423gneSmFPCXtvngYStiu9kBj4w7/3QmKTcsiXJt5c9t2wp?=
- =?us-ascii?Q?xFfbEw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73dbbb7b-87ff-4f18-48ae-08daf3acf21f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 08:22:15.0125
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eD286PTplm2xaBCIelkR/8gqH+1XLN4QrfXccqp1yc27PSoMXmZw6FZS3IW4dYg8P25pG4+Hf4WoE0RvQIJtY5ZDD+YceKZVAE/iiwtwQvw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5299
+In-Reply-To: <Y75nBEpxIWrDj9mF@unreal>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 08:38:08PM -0800, Jakub Kicinski wrote:
-> On Tue, 10 Jan 2023 13:35:42 +0100 Simon Horman wrote:
-> > Basic completion of DCB support, including ETS and other functions.
-> > Implemented DCB IEEE callbacks in order to add or remove DSCP to
-> > user priority mapping and added DCB IEEE bandwidth percentage checks.
-> 
-> Can you say something about the use case? Some example configurations?
-> 
-> > /* Copyright (C) 2020 Netronome Systems, Inc. */
-> > /* Copyright (C) 2021 Corigine, Inc. */
-> 
-> Please sanitize the copyright.
-> 
-> Please squash the two patches. The first one is just noise.
+Wed, Jan 11, 2023 at 08:36:36AM CET, leon@kernel.org wrote:
+>On Tue, Jan 10, 2023 at 12:59:15PM -0800, Jakub Kicinski wrote:
+>> On Tue, 10 Jan 2023 08:12:10 +0100 Jiri Pirko wrote:
+>> >> Right, but this is not 100% equivalent because we generate the
+>> >> notifications _before_ we try to reload_down:
+>> >>
+>> >>	devlink_ns_change_notify(devlink, dest_net, curr_net, false);
+>> >>	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
+>> >>	if (err)
+>> >>		return err;
+>> >>
+>> >> IDK why, I haven't investigated.  
+>> > 
+>> > Right, but that is done even in other cases where down can't be done. I
+>> > I think there's a bug here, down DEL notification is sent before calling
+>> > down which can potentially fail. I think the notification call should be
+>> > moved after reload_down() call. Then the bahaviour would stay the same
+>> > for the features case and will get fixed for the reload_down() reject
+>> > cases. What do you think?
+>> 
+>> I was gonna say that it sounds reasonable, and that maybe we should 
+>> be in fact using devlink_notify_register() instead of the custom
+>> instance-and-params-only devlink_ns_change_notify().
+>> 
+>> But then I looked at who added this counter-intuitive code
+>> and found out it's for a reason - see 05a7f4a8dff19.
+>> 
+>> So you gotta check if mlx5 still has this problem...
+>
+>I don't see anything in the tree what will prevent the issue
+>which I wrote in 05a7f4a8dff19.
 
-Thanks Jakub,
+Okay. I will remove this patch from the set and address this in a
+separate patchset. Thanks!
 
-these patches have a bit of a history which has lead to the problems
-you've highlighted. We'll work on cleaning this up in v2.
+>
+>Thanks
