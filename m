@@ -2,85 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9C5A6651C9
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 03:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15BE66651EB
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 03:35:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235574AbjAKCaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 21:30:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
+        id S229887AbjAKCf3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Jan 2023 21:35:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235504AbjAKCaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 21:30:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDFA64FD
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 18:30:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B32061A01
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CF14AC433F1;
-        Wed, 11 Jan 2023 02:30:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673404216;
-        bh=XTDuFRL8ra//4WkPEuvPU5zhDMctx48fcI11o6x0sX8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EWJI8AW3qQv9L8uSSotJl/tiTYX3a04+IPHkcSorwnkycrbPfaif49k2x0WbiOKkM
-         JFRB8t+onuGF8Fx3h2d674N6Ymuwu7MMaoMHTEF++J6qmYTIE5M6o4ZZ2ZLf9BLRgt
-         DQuHRfJSjb1sGlIF46qbwcG9pEg02VFwVj7c1Ib5O9L7uZFN/SFHoP+HyfA6KR4Stq
-         XgthhEULDT6X9LQRcjbBsRSNo8lS4ulfvwfdEinoBpOmQx17NaHDPMcJlOA3+6YRa8
-         r2+h0W3SuHA9J76l0xz/pV5RP8IBWY5s2jw1nJEgk42tkUO+GN/Bftfx4r4jmcP7ut
-         bBgWRcAxShnCw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B0D25E524EE;
-        Wed, 11 Jan 2023 02:30:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates
- 2023-01-09 (ice)
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167340421671.10258.3370494239852030614.git-patchwork-notify@kernel.org>
-Date:   Wed, 11 Jan 2023 02:30:16 +0000
-References: <20230109225358.3478060-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20230109225358.3478060-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S235651AbjAKCe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 21:34:58 -0500
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B529360DC
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 18:34:24 -0800 (PST)
+X-QQ-mid: bizesmtp74t1673404428t33f83ck
+Received: from smtpclient.apple ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 11 Jan 2023 10:33:47 +0800 (CST)
+X-QQ-SSF: 00400000000000M0N000000A0000000
+X-QQ-FEAT: QityeSR92A3QjcraU8bmwYT+RX2FDb7CEAvXrePu3sghUdjXbsH6kPqbqgTe7
+        pAIpWUSYdWcTl1HWORC2gKBuMURa4Miq+K8yfLmSY2Igh7kFkZYPMfQibbvwjoyYLgub6qk
+        WOlDodg9lDVLsMxOGJ2/8BZPBTCGemnq8stqKtO0aiXzT1tSy3QJnEGmEul0MJ7lwiKHPdH
+        7mXaD8klgQM7zri3mZZma5KbIR4P+FjKwEiM1+cOIVVCwOa5wscucIM4ZumYkkOHeeTpYxb
+        fgz+W8PTGc6mZ/1UkpZQwyuFAcIusBe1dyI78hSGd7cu3ltVHjf1mtt+fEkeiG6Jr6AeU5A
+        KmOhUjc/n+w708KXISbtMkl1o3LwVSMKnW0Fx5ubUE6psbLKWKNdt8JIc1U1ejpyXwD3hMB
+X-QQ-GoodBg: 2
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.300.51\))
+Subject: Re: [PATCH net-next v7] net: ngbe: Add ngbe mdio bus driver.
+From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
+In-Reply-To: <Y74euxqQUpXR6OGZ@lunn.ch>
+Date:   Wed, 11 Jan 2023 10:33:36 +0800
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jiawen Wu <jiawenwu@trustnetic.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <1DCC7B2D-467D-4756-B2C5-6C57A3ABB673@net-swift.com>
+References: <20230109153508.37084-1-mengyuanlou@net-swift.com>
+ <Y7xFiNoTS6FdQa97@lunn.ch> <20230110181907.5e4abbcd@kernel.org>
+ <Y74euxqQUpXR6OGZ@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3731.300.51)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Thanks。
+I will spilt them.
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
-
-On Mon,  9 Jan 2023 14:53:56 -0800 you wrote:
-> This series contains updates to ice driver only.
+> 2023年1月11日 10:28，Andrew Lunn <andrew@lunn.ch> 写道：
 > 
-> Jiasheng Jiang frees allocated cmd_buf if write_buf allocation failed to
-> prevent memory leak.
+> Thanks for merging these patches. I forget how many patches there are
+> in total, something like 60, so there are a few more series to
+> come. Many more drivers still need splitting.
 > 
-> Yuan Can adds check, and proper cleanup, of gnss_tty_port allocation call
-> to avoid memory leaks.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,1/2] ice: Fix potential memory leak in ice_gnss_tty_write()
-    https://git.kernel.org/netdev/net/c/f58985620f55
-  - [net,2/2] ice: Add check for kzalloc
-    https://git.kernel.org/netdev/net/c/40543b3d9d2c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> If Mengyuan wants to split C22 and C45 that would be nice, but since
+> this is a new requirement, i would not insist on it.
 
 
