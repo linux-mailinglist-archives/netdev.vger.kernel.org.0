@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21CDF6657CC
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:39:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E786657C8
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 10:39:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbjAKJjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 04:39:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
+        id S231933AbjAKJjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 04:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238256AbjAKJhf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:37:35 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06B98FE1;
-        Wed, 11 Jan 2023 01:36:23 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id w1so14416861wrt.8;
-        Wed, 11 Jan 2023 01:36:23 -0800 (PST)
+        with ESMTP id S231344AbjAKJhk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 04:37:40 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0521A197;
+        Wed, 11 Jan 2023 01:36:26 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id t5so10005691wrq.1;
+        Wed, 11 Jan 2023 01:36:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ceU3BaOqyEvsRo0mtkcK52G8cv5p44x/vPfM9JGc0sQ=;
-        b=RP8Z9UceLo3KVhzFfaAbUZvHL5Ll7eYm6MFRhK3erGL11VvEl5JESXg9Wy4ZztCLhK
-         JNM9ihxDaEp3sOGten5vOr684kFsFHQsTeaKP5r5GSpPWxAE8e7dlYuqXtOo39yx6yv4
-         REht9E2LYok2Q4SzggjMgPTsQ+Nf7gOe7xrW9yqvzWzuGI13rpvPgpZD2hWQJLtEtJI4
-         zYiQA8izmJ2TEj1H4HXdEcMo6y4vxe8hY6halSM2ZrfnB6VP0HgIRwmdADgh9/wtYga5
-         RNpQvnmbXUTjXicqxtiqLhIA1gQgUtB2VCEmx0pPrq4rLfz6X43z81h8xUldMdUm/Epg
-         rgPA==
+        bh=N9WQnXLxAMYcqcOkxF19WA5j5RhbP2sqRguVHkWeBRM=;
+        b=n5QsgVjxdiKnTojiBJ2XEa3msbqIhe8Wsrm8GTKvI1UsjkRavOilVTuI4i+UcweF3V
+         yA+UupBpITGfmvFHvOsTHjZC2I4TgHQiXGun3LkNW3G/y5ZveEbKs/bfWR+DZVxmw2AH
+         JRSLkCD6T1XVhRsK0ffLDg+6/3+IHIXrjyG6dhs6YNOkirjDuTtjo/08pFcaVsJza+2T
+         s1uPlfWFLr8enUSZJUHKQm3xnN61ASm/aTAVXecwM7fK+S94FSMPN/CchcdbT/AuGCIU
+         zHZYR6/o8hukM2x3WW8OjGFM8cg4+rQDDeGUJdkO+nTPYCZeRqg+koKnktPFT3rt0HJ0
+         KHFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ceU3BaOqyEvsRo0mtkcK52G8cv5p44x/vPfM9JGc0sQ=;
-        b=Tq/4W3kOEW8Ek0oyfeumyCozF8MvosW2O3tUGcZk0Fedj2TjNzhZPNY/3i2YGGxDC/
-         otkSqC0lVW4+yZUOsMoyIu4CPfMaWdsDHKsgpDzppAB/IFR5Z6PVyyDq2OXtRk1p3YH2
-         eiNfku+Dl2Elx/gcGAXCSWjP6RnkHm42+f2+7qZyO28gfZFGDzeB18bjfkg1y4LiiiMr
-         oqQlNP5wGHAFUrGiWIqVKVIrMKaDbH736L6+di7mZVyFJ7oGR1+lwFCkvpLGbC1+265r
-         qKP1bLP8TvYNWmIgnqoV1uUH81hEEnY9U6VwaZbXCXcPdAmQlaAiilzqtwyz4VNAxKKr
-         wvxg==
-X-Gm-Message-State: AFqh2kpPEtAS975qVM4qadFbUJgoq6fDQZeYBgjwtDwzqOEjIzc7/Kj9
-        jU4RF2B1QaHjRrgqE0iI/lc5mAQsllIWD7/v
-X-Google-Smtp-Source: AMrXdXs4Uk9DLk4PJCNEajvrLHWZfJR2Z6vGwORMXT24icTWC0qCEnItjQPAHTi5eaFYVAClPR8y7g==
-X-Received: by 2002:a5d:620e:0:b0:242:7307:ae04 with SMTP id y14-20020a5d620e000000b002427307ae04mr40200094wru.57.1673429783351;
-        Wed, 11 Jan 2023 01:36:23 -0800 (PST)
+        bh=N9WQnXLxAMYcqcOkxF19WA5j5RhbP2sqRguVHkWeBRM=;
+        b=x2Sr1hCOOUwbhPryWG7kzpYPMG8WhxgbxzwlX4E2HqH6aN3ishUZfDVIC+rkSTaT8W
+         X0d8Hz5b2nk/mv5CRP3uaok3Rfyp70OAb+AUodPesFPOGsOz9vHck/Edy7rFn1kQIpMF
+         +41q9zyRYG6bmZ5Wkg4gJNmd15SUAJMDusWqPYb7Hf/KklPW59y9CBtS+/zGMRp+qMjp
+         URFfrSfoINkkYrlVfFHRF1xk+B5M3SXPWryOMbYo2F/9r3FK3CjiD3P8CrzXIVfN1f84
+         pDLaqaKFoHYlQuNcIJmuOrgzQqOHZRnnjm6zpmcKB5eoRGnRV/JfICAuopHg1Q4oPM8y
+         AKVg==
+X-Gm-Message-State: AFqh2kqk+61+WERY6CY/dsvdo7jLxyoZ4tvUb2vApRtROl1RytfVBLBD
+        OfUjLmlUYqqgloJkNMfL3rQ=
+X-Google-Smtp-Source: AMrXdXs5zN0Qw8wF0ZSGENV7ACKKaUT1d9NaPr4OKw7dFBuMFktBYoKK5wv2H9htgEba3pWitx9/7g==
+X-Received: by 2002:a05:6000:12c2:b0:2bc:5e1:6ff1 with SMTP id l2-20020a05600012c200b002bc05e16ff1mr7055541wrx.10.1673429785208;
+        Wed, 11 Jan 2023 01:36:25 -0800 (PST)
 Received: from localhost.localdomain (h-176-10-254-193.A165.priv.bahnhof.se. [176.10.254.193])
-        by smtp.gmail.com with ESMTPSA id c18-20020adffb52000000b0025e86026866sm15553069wrs.0.2023.01.11.01.36.21
+        by smtp.gmail.com with ESMTPSA id c18-20020adffb52000000b0025e86026866sm15553069wrs.0.2023.01.11.01.36.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 Jan 2023 01:36:22 -0800 (PST)
+        Wed, 11 Jan 2023 01:36:24 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -57,9 +57,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
         haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com
 Cc:     jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next v3 13/15] selftests/xsk: merge dual and single thread dispatchers
-Date:   Wed, 11 Jan 2023 10:35:24 +0100
-Message-Id: <20230111093526.11682-14-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v3 14/15] selftests/xsk: automatically restore packet stream
+Date:   Wed, 11 Jan 2023 10:35:25 +0100
+Message-Id: <20230111093526.11682-15-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230111093526.11682-1-magnus.karlsson@gmail.com>
 References: <20230111093526.11682-1-magnus.karlsson@gmail.com>
@@ -77,184 +77,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Make the thread dispatching code common by unifying the dual and
-single thread dispatcher code. This so we do not have to add code in
-two places in upcoming commits.
+Automatically restore the default packet stream if needed at the end
+of each test. This so that test writers do not forget to do this.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- tools/testing/selftests/bpf/xskxceiver.c | 120 ++++++++++-------------
- 1 file changed, 54 insertions(+), 66 deletions(-)
+ tools/testing/selftests/bpf/xskxceiver.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index a33f11b4c598..11e4f29d40f7 100644
+index 11e4f29d40f7..66863504c76a 100644
 --- a/tools/testing/selftests/bpf/xskxceiver.c
 +++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -1356,83 +1356,59 @@ static void handler(int signum)
- 	pthread_exit(NULL);
+@@ -1501,8 +1501,6 @@ static void testapp_stats_tx_invalid_descs(struct test_spec *test)
+ 	pkt_stream_replace_half(test, XSK_UMEM__INVALID_FRAME_SIZE, 0);
+ 	test->ifobj_tx->validation_func = validate_tx_invalid_descs;
+ 	testapp_validate_traffic(test);
+-
+-	pkt_stream_restore_default(test);
  }
  
--static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
--						  enum test_type type)
-+static int __testapp_validate_traffic(struct test_spec *test, struct ifobject *ifobj1,
-+				      struct ifobject *ifobj2)
- {
--	bool old_shared_umem = ifobj->shared_umem;
--	pthread_t t0;
-+	pthread_t t0, t1;
- 
--	if (pthread_barrier_init(&barr, NULL, 2))
--		exit_with_error(errno);
-+	if (ifobj2)
-+		if (pthread_barrier_init(&barr, NULL, 2))
-+			exit_with_error(errno);
- 
- 	test->current_step++;
--	if (type == TEST_TYPE_POLL_RXQ_TMOUT)
--		pkt_stream_reset(ifobj->pkt_stream);
-+	pkt_stream_reset(ifobj1->pkt_stream);
- 	pkts_in_flight = 0;
- 
--	test->ifobj_rx->shared_umem = false;
--	test->ifobj_tx->shared_umem = false;
+ static void testapp_stats_rx_full(struct test_spec *test)
+@@ -1518,8 +1516,6 @@ static void testapp_stats_rx_full(struct test_spec *test)
+ 	test->ifobj_rx->release_rx = false;
+ 	test->ifobj_rx->validation_func = validate_rx_full;
+ 	testapp_validate_traffic(test);
 -
- 	signal(SIGUSR1, handler);
--	/* Spawn thread */
--	pthread_create(&t0, NULL, ifobj->func_ptr, test);
-+	/*Spawn RX thread */
-+	pthread_create(&t0, NULL, ifobj1->func_ptr, test);
- 
--	if (type != TEST_TYPE_POLL_TXQ_TMOUT)
-+	if (ifobj2) {
- 		pthread_barrier_wait(&barr);
-+		if (pthread_barrier_destroy(&barr))
-+			exit_with_error(errno);
- 
--	if (pthread_barrier_destroy(&barr))
--		exit_with_error(errno);
-+		/*Spawn TX thread */
-+		pthread_create(&t1, NULL, ifobj2->func_ptr, test);
- 
--	pthread_kill(t0, SIGUSR1);
--	pthread_join(t0, NULL);
-+		pthread_join(t1, NULL);
-+	}
-+
-+	if (!ifobj2)
-+		pthread_kill(t0, SIGUSR1);
-+	else
-+		pthread_join(t0, NULL);
- 
- 	if (test->total_steps == test->current_step || test->fail) {
--		xsk_socket__delete(ifobj->xsk->xsk);
--		xsk_clear_xskmap(ifobj->xskmap);
--		testapp_clean_xsk_umem(ifobj);
-+		if (ifobj2)
-+			xsk_socket__delete(ifobj2->xsk->xsk);
-+		xsk_socket__delete(ifobj1->xsk->xsk);
-+		testapp_clean_xsk_umem(ifobj1);
-+		if (ifobj2 && !ifobj2->shared_umem)
-+			testapp_clean_xsk_umem(ifobj2);
- 	}
- 
--	test->ifobj_rx->shared_umem = old_shared_umem;
--	test->ifobj_tx->shared_umem = old_shared_umem;
--
- 	return !!test->fail;
+-	pkt_stream_restore_default(test);
  }
  
- static int testapp_validate_traffic(struct test_spec *test)
- {
--	struct ifobject *ifobj_tx = test->ifobj_tx;
--	struct ifobject *ifobj_rx = test->ifobj_rx;
--	pthread_t t0, t1;
+ static void testapp_stats_fill_empty(struct test_spec *test)
+@@ -1534,8 +1530,6 @@ static void testapp_stats_fill_empty(struct test_spec *test)
+ 	test->ifobj_rx->use_fill_ring = false;
+ 	test->ifobj_rx->validation_func = validate_fill_empty;
+ 	testapp_validate_traffic(test);
 -
--	if (pthread_barrier_init(&barr, NULL, 2))
--		exit_with_error(errno);
--
--	test->current_step++;
--	pkt_stream_reset(ifobj_rx->pkt_stream);
--	pkts_in_flight = 0;
--
--	/*Spawn RX thread */
--	pthread_create(&t0, NULL, ifobj_rx->func_ptr, test);
--
--	pthread_barrier_wait(&barr);
--	if (pthread_barrier_destroy(&barr))
--		exit_with_error(errno);
--
--	/*Spawn TX thread */
--	pthread_create(&t1, NULL, ifobj_tx->func_ptr, test);
--
--	pthread_join(t1, NULL);
--	pthread_join(t0, NULL);
--
--	if (test->total_steps == test->current_step || test->fail) {
--		xsk_socket__delete(ifobj_tx->xsk->xsk);
--		xsk_socket__delete(ifobj_rx->xsk->xsk);
--		testapp_clean_xsk_umem(ifobj_rx);
--		if (!ifobj_tx->shared_umem)
--			testapp_clean_xsk_umem(ifobj_tx);
--	}
-+	return __testapp_validate_traffic(test, test->ifobj_rx, test->ifobj_tx);
-+}
- 
--	return !!test->fail;
-+static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj)
-+{
-+	return __testapp_validate_traffic(test, ifobj, NULL);
+-	pkt_stream_restore_default(test);
  }
  
- static void testapp_teardown(struct test_spec *test)
-@@ -1674,6 +1650,26 @@ static void testapp_xdp_drop(struct test_spec *test)
- 	}
+ /* Simple test */
+@@ -1568,7 +1562,6 @@ static bool testapp_unaligned(struct test_spec *test)
+ 	test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
+ 	testapp_validate_traffic(test);
+ 
+-	pkt_stream_restore_default(test);
+ 	return true;
  }
  
-+static void testapp_poll_txq_tmout(struct test_spec *test)
-+{
-+	test_spec_set_name(test, "POLL_TXQ_FULL");
-+
-+	test->ifobj_tx->use_poll = true;
-+	/* create invalid frame by set umem frame_size and pkt length equal to 2048 */
-+	test->ifobj_tx->umem->frame_size = 2048;
-+	pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
-+	testapp_validate_traffic_single_thread(test, test->ifobj_tx);
-+
-+	pkt_stream_restore_default(test);
-+}
-+
-+static void testapp_poll_rxq_tmout(struct test_spec *test)
-+{
-+	test_spec_set_name(test, "POLL_RXQ_EMPTY");
-+	test->ifobj_rx->use_poll = true;
-+	testapp_validate_traffic_single_thread(test, test->ifobj_rx);
-+}
-+
- static int xsk_load_xdp_programs(struct ifobject *ifobj)
- {
- 	ifobj->xdp_progs = xsk_xdp_progs__open_and_load();
-@@ -1784,18 +1780,10 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+@@ -1578,7 +1571,6 @@ static void testapp_single_pkt(struct test_spec *test)
+ 
+ 	pkt_stream_generate_custom(test, pkts, ARRAY_SIZE(pkts));
+ 	testapp_validate_traffic(test);
+-	pkt_stream_restore_default(test);
+ }
+ 
+ static void testapp_invalid_desc(struct test_spec *test)
+@@ -1619,7 +1611,6 @@ static void testapp_invalid_desc(struct test_spec *test)
+ 
+ 	pkt_stream_generate_custom(test, pkts, ARRAY_SIZE(pkts));
+ 	testapp_validate_traffic(test);
+-	pkt_stream_restore_default(test);
+ }
+ 
+ static void testapp_xdp_drop(struct test_spec *test)
+@@ -1640,7 +1631,6 @@ static void testapp_xdp_drop(struct test_spec *test)
+ 	pkt_stream_receive_half(test);
+ 	testapp_validate_traffic(test);
+ 
+-	pkt_stream_restore_default(test);
+ 	xsk_detach_xdp_program(ifobj->ifindex, ifobj->xdp_flags);
+ 	err = xsk_attach_xdp_program(ifobj->xdp_progs->progs.xsk_def_prog, ifobj->ifindex,
+ 				     ifobj->xdp_flags);
+@@ -1659,8 +1649,6 @@ static void testapp_poll_txq_tmout(struct test_spec *test)
+ 	test->ifobj_tx->umem->frame_size = 2048;
+ 	pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
+ 	testapp_validate_traffic_single_thread(test, test->ifobj_tx);
+-
+-	pkt_stream_restore_default(test);
+ }
+ 
+ static void testapp_poll_rxq_tmout(struct test_spec *test)
+@@ -1766,8 +1754,6 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+ 		test->ifobj_rx->umem->frame_size = 2048;
+ 		pkt_stream_replace(test, DEFAULT_PKT_CNT, PKT_SIZE);
  		testapp_validate_traffic(test);
- 		break;
- 	case TEST_TYPE_POLL_TXQ_TMOUT:
--		test_spec_set_name(test, "POLL_TXQ_FULL");
--		test->ifobj_tx->use_poll = true;
--		/* create invalid frame by set umem frame_size and pkt length equal to 2048 */
--		test->ifobj_tx->umem->frame_size = 2048;
--		pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
--		testapp_validate_traffic_single_thread(test, test->ifobj_tx, type);
+-
 -		pkt_stream_restore_default(test);
-+		testapp_poll_txq_tmout(test);
  		break;
- 	case TEST_TYPE_POLL_RXQ_TMOUT:
--		test_spec_set_name(test, "POLL_RXQ_EMPTY");
--		test->ifobj_rx->use_poll = true;
--		testapp_validate_traffic_single_thread(test, test->ifobj_rx, type);
-+		testapp_poll_rxq_tmout(test);
- 		break;
- 	case TEST_TYPE_ALIGNED_INV_DESC:
- 		test_spec_set_name(test, "ALIGNED_INV_DESC");
+ 	case TEST_TYPE_RX_POLL:
+ 		test->ifobj_rx->use_poll = true;
+@@ -1822,6 +1808,7 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+ 	if (!test->fail)
+ 		ksft_test_result_pass("PASS: %s %s%s\n", mode_string(test), busy_poll_string(test),
+ 				      test->name);
++	pkt_stream_restore_default(test);
+ }
+ 
+ static struct ifobject *ifobject_create(void)
 -- 
 2.34.1
 
