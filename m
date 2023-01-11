@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 784AD6655F7
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:24:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0D7266560B
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:28:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232292AbjAKIX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 03:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
+        id S231192AbjAKI1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 03:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232256AbjAKIX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:23:28 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE121000
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:23:27 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id c9so10831783pfj.5
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:23:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/MzsfDCeDeadN331AwqKYc1pcPgQNKIBIX5x5onQ+6k=;
-        b=HK+0zB0aQm7Vu21wzVpHZH/NvVPe+s+ao9+Ifh9F0tNg3DCkb6z/nqe2A1msvxxgcT
-         SUUk3kGo3Ajr4xyj78dG6D/sjxM673cUj1g7Geei7vMItT/XuAabAVMCdHNxEG2RIDQ3
-         /v4P1bO5n15rCpbktkCaK/Zq2yJRTv7JKwJDtbECm2o79O7YkHU1m0L0VTZBzBuSqfxl
-         SMx76B45sco85TdirjjiBIqww/dkuHxPJTLrpJk1PfMXYVgUwa4qVeSnMWxgGkZAuoIK
-         OZJI868jIQrVaV3LDOqjuVorh/EmitKuxceojvYh2yhvPiNsZZjJRDS3cGm18SwW55DC
-         PLsQ==
+        with ESMTP id S238045AbjAKI1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:27:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1D29FE8
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:25:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673425520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z9BqbleyIskxpRXIgDkvfJFpA17h9Qu7BSswmKTjpxs=;
+        b=Vp011uveWAFidbpxSQeikU0aUoLMQDXzeHzV9YnDW10AFzZnYisWLkZCAkHFsyTQ2BKb7I
+        X08wKZtGA4zSb5bMM8AwzaUiQ6eFSagl+06OLST1hyi5ZEmBhWHU4gNSGQdqlNfZqKEn+a
+        vhqRB04VUqPK/ER2V4qgD/62H1D2mek=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-150-XZ8ZiyuxP3iGGHJkujwsyw-1; Wed, 11 Jan 2023 03:25:19 -0500
+X-MC-Unique: XZ8ZiyuxP3iGGHJkujwsyw-1
+Received: by mail-qk1-f198.google.com with SMTP id i4-20020a05620a248400b006febc1651bbso10439983qkn.4
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:25:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/MzsfDCeDeadN331AwqKYc1pcPgQNKIBIX5x5onQ+6k=;
-        b=KjNC76C3ZVuvrgO25RsVO3wVqts6eboESJMrAr3J+ePKsimQQisrFsWhn3NJJ/L+hN
-         O37FvOXtPuu1fSyNsGLU/4skN7aI35/cpHjUToGMkGBTeh4vEKYt+oOpXnZvaPfwyeGo
-         GX5Na8VH3KIDRvd8aq6oJjfJ/RHJl+JC8h2nbC4qfd7oyxprclKAxWChu9sjBBDFWghK
-         c004VF4fj4i1LeW+nvZqVQ79+GivpbAp/sSw+OE8Gt2JCECk/6nVE3f33mriWq1lrvOs
-         +f6Od44icJUNodiLzfGha1Kiwym7lGn9NfzWDwhM8BjdCbgMKav1ey9pXBZjxMY1FHLH
-         cEEA==
-X-Gm-Message-State: AFqh2kom+owG81pfvdSigvDhWQ0MZpEr/5kiCfSqcIQNW0yGq4ywJPIC
-        bDYjNE76JE9AnR6aKInLseKKZQ==
-X-Google-Smtp-Source: AMrXdXsyvFJYoCBTFyOWiBvcBUwZl7AVm+0OdUlsOMNXQYQz1UjFYGOaUKHpXKXaxhfEqrUPGhGHWw==
-X-Received: by 2002:a62:a514:0:b0:580:8c2c:d0ad with SMTP id v20-20020a62a514000000b005808c2cd0admr62429819pfm.13.1673425406496;
-        Wed, 11 Jan 2023 00:23:26 -0800 (PST)
-Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id m190-20020a6258c7000000b005821c109cebsm4809842pfb.199.2023.01.11.00.23.25
+        bh=Z9BqbleyIskxpRXIgDkvfJFpA17h9Qu7BSswmKTjpxs=;
+        b=7PWkz+IVQDN7b/erBH9CGk0Dm72jpYg/LvOiC8mMsQPHBuA/5riy7ItQbQG6LdkTZ3
+         E+E6ZCopbBVX4vdTjY8xMva7nJbCc829/RMuVHTob43qC6j7AlelXzsxd3AmeY9ofnDJ
+         Gr4NyUY2veUOX6CTAI8FwogNu3UPdxxvUEybApNMDvMECvVarKQxXwsZ49idoqohHQ9w
+         +zh3f9oZoAm14cdg9IuZbr49BtLCrjju212oL6lgrfrMCo32k9/ltlzYoR/tYiWLzE3R
+         cjHty5xMXpe5js0jIZEYtqlo8nUYImWwArefEDjBsNzcOKEZjhSj3tkxgeo86ehxl0Os
+         GFWg==
+X-Gm-Message-State: AFqh2komIU1R9maQ6Mb445pKDWC3lP546I6XmhF+dhUaY6yQZXqMdHCf
+        lwpDWTv7Fi8JfWIvlcS28e7sOCi5idlM+g128FskaqiZY2BHO0uXpuIhvMMZR8KeP3LTodRFqB0
+        wD4Vk0ln6Wstv/24M
+X-Received: by 2002:ac8:6f19:0:b0:3a9:84bd:7cc5 with SMTP id bs25-20020ac86f19000000b003a984bd7cc5mr109481135qtb.39.1673425518776;
+        Wed, 11 Jan 2023 00:25:18 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXvypWklvz3km9uYoBB0qv32xq21YlcTjpjh3KzgK6avNFjv4jYlLRNPx/BLDFKbo966A5oWEQ==
+X-Received: by 2002:ac8:6f19:0:b0:3a9:84bd:7cc5 with SMTP id bs25-20020ac86f19000000b003a984bd7cc5mr109481108qtb.39.1673425518406;
+        Wed, 11 Jan 2023 00:25:18 -0800 (PST)
+Received: from sgarzare-redhat (host-79-46-200-244.retail.telecomitalia.it. [79.46.200.244])
+        by smtp.gmail.com with ESMTPSA id c8-20020ac86608000000b003a4f435e381sm7226084qtp.18.2023.01.11.00.25.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 00:23:26 -0800 (PST)
-Date:   Wed, 11 Jan 2023 09:23:23 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        michael.chan@broadcom.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        idosch@nvidia.com, petrm@nvidia.com, mailhol.vincent@wanadoo.fr,
-        jacob.e.keller@intel.com, gal@nvidia.com
-Subject: Re: [patch net-next v3 01/11] devlink: remove devlink features
-Message-ID: <Y75x+1+z4VzBx/ip@nanopsycho>
-References: <20230109183120.649825-1-jiri@resnulli.us>
- <20230109183120.649825-2-jiri@resnulli.us>
- <20230109165500.3bebda0a@kernel.org>
- <Y70PyuHXJZ3gD8dG@nanopsycho>
- <20230110125915.62d428fb@kernel.org>
- <Y75nBEpxIWrDj9mF@unreal>
+        Wed, 11 Jan 2023 00:25:17 -0800 (PST)
+Date:   Wed, 11 Jan 2023 09:25:13 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     liming.wu@jaguarmicro.com
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 398776277@qq.com
+Subject: Re: [PATCH] vhost: remove unused paramete
+Message-ID: <20230111082513.weu6go5k2nyfvkjh@sgarzare-redhat>
+References: <20230110024445.303-1-liming.wu@jaguarmicro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <Y75nBEpxIWrDj9mF@unreal>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20230110024445.303-1-liming.wu@jaguarmicro.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,40 +78,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 11, 2023 at 08:36:36AM CET, leon@kernel.org wrote:
->On Tue, Jan 10, 2023 at 12:59:15PM -0800, Jakub Kicinski wrote:
->> On Tue, 10 Jan 2023 08:12:10 +0100 Jiri Pirko wrote:
->> >> Right, but this is not 100% equivalent because we generate the
->> >> notifications _before_ we try to reload_down:
->> >>
->> >>	devlink_ns_change_notify(devlink, dest_net, curr_net, false);
->> >>	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
->> >>	if (err)
->> >>		return err;
->> >>
->> >> IDK why, I haven't investigated.  
->> > 
->> > Right, but that is done even in other cases where down can't be done. I
->> > I think there's a bug here, down DEL notification is sent before calling
->> > down which can potentially fail. I think the notification call should be
->> > moved after reload_down() call. Then the bahaviour would stay the same
->> > for the features case and will get fixed for the reload_down() reject
->> > cases. What do you think?
->> 
->> I was gonna say that it sounds reasonable, and that maybe we should 
->> be in fact using devlink_notify_register() instead of the custom
->> instance-and-params-only devlink_ns_change_notify().
->> 
->> But then I looked at who added this counter-intuitive code
->> and found out it's for a reason - see 05a7f4a8dff19.
->> 
->> So you gotta check if mlx5 still has this problem...
+On Tue, Jan 10, 2023 at 10:44:45AM +0800, liming.wu@jaguarmicro.com wrote:
+>From: Liming Wu <liming.wu@jaguarmicro.com>
 >
->I don't see anything in the tree what will prevent the issue
->which I wrote in 05a7f4a8dff19.
-
-Okay. I will remove this patch from the set and address this in a
-separate patchset. Thanks!
-
+>"enabled" is defined in vhost_init_device_iotlb,
+>but it is never used. Let's remove it.
 >
->Thanks
+>Signed-off-by: Liming Wu <liming.wu@jaguarmicro.com>
+>---
+> drivers/vhost/net.c   | 2 +-
+> drivers/vhost/vhost.c | 2 +-
+> drivers/vhost/vhost.h | 2 +-
+> drivers/vhost/vsock.c | 2 +-
+> 4 files changed, 4 insertions(+), 4 deletions(-)
+
+Little typo in the title s/paramete/parameter.
+
+A part of that, the patch LGTM:
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Thanks,
+Stefano
+
