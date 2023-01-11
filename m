@@ -2,111 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A3666594D
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 11:47:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42DAB66599F
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 12:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238498AbjAKKrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 05:47:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        id S232136AbjAKLEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 06:04:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237980AbjAKKrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 05:47:25 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F4412AA2
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:47:23 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id 7so10262572pga.1
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:47:23 -0800 (PST)
+        with ESMTP id S229565AbjAKLET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 06:04:19 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FEA2BCC
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 03:04:18 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id k8so149707wrc.9
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 03:04:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GjitaCz/hk6YfV1W4HIZDAHa41L/xLHca2rqUeyrDp8=;
-        b=MjKTVmUUeXgoQSe88e85BwskYnR3J484S2tD0q6TtMMOscV//tk6F6fm/qWp0/iS0s
-         IfdMkLmbmMGZv7KtapSrco89tlsROXPE6aI7h7I8J5gtjVuDoedqep7TCe0MC1ZxtKfS
-         WUrf/1wx31DN8zCbKiCB7PmAWEPCc9rOZwf4xNtpLw1Gqnd2KATdjOAIxTv7gerRxsJ4
-         vIKPlwvqKzzXxsQDaDFSIc9iNDi8uQDrYWzm0EcS2offltZZE4K2sl6aqQq1Bu2UAuMI
-         b9RxP1eVogrPeicR135p9c4QhhRGOtE1P4Wv70NvOk/Ct83Z3ZNfarpCI38mg8DnhdCB
-         zhpA==
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PLPmlGGL/gTvueqKEBdKiHKfa75D3rcCxU1z3taEYt8=;
+        b=p7N6ghl3iQR/fqkHZtsSrX96lkNIZULPCCBYYGtuC8+rLLEpZLO79VTGUNoCp1n32v
+         4+sUzQj5YOzC1VoCF/o9e242gMA5PSbBFqCZ5y9Fo+w68OxgPzYmVRFE2Tqde5uyeqxj
+         FUciAypX+9nu0l5P+S+wTZx4Zc/Ah74hUhH+dNWjJ/LOMYJ55fgr4RDBDWup2jUgn+Xn
+         ILhEexr0oGvqPNeiGZ86gBo5TIwg4dRwtt/P+WIUQqgt65fXGMfdYhQDFQJr2I2RssIK
+         d9wsf3KmNe7IEnw0yIw4Pzzx43s6V93Qq6llIPDlA8gXL3vUQldKsIj+igCraDzZYxwf
+         GN5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GjitaCz/hk6YfV1W4HIZDAHa41L/xLHca2rqUeyrDp8=;
-        b=kXqQDmobR49yL3RV0K5LiV1EuoOBv+m/di9JfMM+LCmusaHM5RYlk8MvkowDgedqev
-         eBMAb1eqphe7TqSZJFIYnEjTWuJwlFWWIVOIQQok0wonZELMyCKuQaUqb0wXlwGA+XW6
-         9kczpzFoEvpmhTMNQLgRdPJo8gBRshneIapjurBQ0NUn7t2iBX3TsCVhARx/VdarZC6l
-         lU2DkfsyIlBXn5JpOcOCVKWt+bQDgCyUTjFerY1pXGarXQ6QjoMZuKTcnPLcKlyHqoFg
-         DEsGWbV++E32ZRH0DNhYzjQRXLMAk8nmUa88rDi1RAPLGW7shypdbBUUJ1hF0jaofHIg
-         xn6A==
-X-Gm-Message-State: AFqh2kq/cVi4rYoER44h11jjyFO9yvbvm4jl9ORwT5XdK51GeOisLI1q
-        8yxlKpSYDZ1qVOM0IZQhlMxy9Luzq8nIqPsyVem6PQ==
-X-Google-Smtp-Source: AMrXdXsKLd/a7djt6fm62b5uPSdYXm9jYzDZvmKt35kqXvcCsEgx//F7llRyFrDnBRvtY68bOcPjna9LtM8fNKoHPl4=
-X-Received: by 2002:a65:5b42:0:b0:489:88ed:9b28 with SMTP id
- y2-20020a655b42000000b0048988ed9b28mr4258688pgr.61.1673434043284; Wed, 11 Jan
- 2023 02:47:23 -0800 (PST)
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PLPmlGGL/gTvueqKEBdKiHKfa75D3rcCxU1z3taEYt8=;
+        b=lgjPEIBP56wZbk+z7E36BiReSbw4qPXQv0FrrRNrGcws4E80O4OhyGkZu9U6FzCt1v
+         zOXnVLaKGssSg/Wbs4hUIZldEkQy7gDp3IUvIAlDn3VYcOFhC/S0hiPxz3nq7g7Xg4zP
+         SchNoSZ6F5JHVh73/iZvBuej06+LYtYunFemyceLpo8w4fmCnzYod67FD5xtQrNAcW3+
+         Lm/jT1li3usEFzMqgmNCCb5bMmlcqAKYSzPRDTc2HSb7qgBDgErWHa975CRbW4s/vaFf
+         07uJHIkh95vXd/l1RfNPCu4SjkNTepDIcf++TRqWQuPEo0NWpGXONXPJF8l86U7LhL60
+         8rKQ==
+X-Gm-Message-State: AFqh2kpzceT1DtVZLZXXR33X7HE6qzlsqJNCQkMnP9A1cuFy6iCXSyUn
+        h2za3x+aihDVi2kx+mF5l2Vr0Zkdh1GLRG973UY=
+X-Google-Smtp-Source: AMrXdXtuYNe5TxAG4BCS8IUn9Z2LuJIG6ZIoY4U+KJLftzzvYJGe2x3rFVmMo0GbjJ88pngE/5h5Ax4abdDdOuEY5Q8=
+X-Received: by 2002:a5d:6f10:0:b0:29a:c15a:f6c0 with SMTP id
+ ay16-20020a5d6f10000000b0029ac15af6c0mr1486277wrb.498.1673435056764; Wed, 11
+ Jan 2023 03:04:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20230111064842.5322-1-anand@edgeble.ai> <7148963.18pcnM708K@diego>
- <CACF1qnd=o+QWuofgAb+YXOs1R_dOuCPxWrb-+YEhuN4z8OnTrA@mail.gmail.com> <2917690.KRxA6XjA2N@diego>
-In-Reply-To: <2917690.KRxA6XjA2N@diego>
-From:   Anand Moon <anand@edgeble.ai>
-Date:   Wed, 11 Jan 2023 16:17:13 +0530
-Message-ID: <CACF1qnffL-YFJeoeU1nNJueKdb86bDfP2TuR4h1jn8ZZgHfCWw@mail.gmail.com>
-Subject: Re: [PATCHv4 linux-next 3/4] Rockchip RV1126 has GMAC 10/100/1000M
- ethernet controller
-To:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Jagan Teki <jagan@edgeble.ai>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Received: by 2002:a05:6021:5216:b0:249:d53c:39b0 with HTTP; Wed, 11 Jan 2023
+ 03:04:16 -0800 (PST)
+Reply-To: richardwilson19091@gmail.com
+From:   Richard Wilson <peterwhite1723@gmail.com>
+Date:   Wed, 11 Jan 2023 11:04:16 +0000
+Message-ID: <CAP=iidmoo7sumbq2veaboZDV5uyTFPapWwHCCxW8QQWzuH5uqA@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: Yes, score=5.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,REPTO_419_FRAUD_GM,SPF_HELO_NONE,SPF_PASS,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:443 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5574]
+        *  1.0 REPTO_419_FRAUD_GM Reply-To is known advance fee fraud
+        *      collector mailbox
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [richardwilson19091[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [peterwhite1723[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [peterwhite1723[at]gmail.com]
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiko
+Dear,
+I am contacting you to assist retrieve his huge deposit Mr. Alexander
+left in the bank before its get confiscated by the bank. Get back to
+me for more detail's
 
-On Wed, 11 Jan 2023 at 16:13, Heiko St=C3=BCbner <heiko@sntech.de> wrote:
->
-> Am Mittwoch, 11. Januar 2023, 11:31:40 CET schrieb Anand Moon:
-> > Hi Heiko,
-> >
-> > Thanks for your review comments.
-> >
-> > On Wed, 11 Jan 2023 at 15:41, Heiko St=C3=BCbner <heiko@sntech.de> wrot=
-e:
-> > >
-> > > Hi,
-> > >
-> > > Am Mittwoch, 11. Januar 2023, 07:48:38 CET schrieb Anand Moon:
-> > > > Add Ethernet GMAC node for RV1126 SoC.
-> > > >
-> > > > Signed-off-by: Anand Moon <anand@edgeble.ai>
-> > > > Signed-off-by: Jagan Teki <jagan@edgeble.ai>
-> > >
-> > > patches 2-4 have this Signed-off-by from Jagan again where he is not
-> > > not the author but also not the sender.
-> >
-> > We both work to fix this patch hence Jagan's SoB was added.
->
-> ok, then I think the correct way to express that would be:
->
-> Co-Developed-by: Jagan Teki <jagan@edgeble.ai>
-> Signed-off-by: Jagan Teki <jagan@edgeble.ai>
-> Signed-off-by: Anand Moon <anand@edgeble.ai>
->
-Yes, you are right.
-
-Thanks
--Anand
+Barr. Richard Wilson
