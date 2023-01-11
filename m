@@ -2,69 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A79666333
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 20:00:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33A83666336
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 20:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbjAKS7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 13:59:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
+        id S235050AbjAKTBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 14:01:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234648AbjAKS7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 13:59:44 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107213D1C7
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 10:59:43 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id w14so6399565edi.5
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 10:59:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SzBlYeGeT15Xra75w9IZDBjQ7Da3XKSmRdlnDJDYrko=;
-        b=I0JA6d6UV2PSHLhm63X65leZmBU8x30oJ0jmNbaSxaKkMGdhnAmp0tn1TH4xQwRKS+
-         864cfYiLlDV0KvsRzqbIAODrhtjlFMTjeuHxVgyPtXfGZuxLnA1/s4i/c73T++nBBXqX
-         48Fa1IZ/ldwFPcYC+JTPZGla9D/5gHNi4k9maIVDBML+dsyBS0Yy6uMZrOvbNebrcmP7
-         AwLHDw+DIZMwu3eL7CL4knWB6ucjoO0lOXTcVSvTmobaz0DjaOBv803jKnx+BtAZKnn3
-         FycMKqxzuAfhrSbIHHmtSXToUtb7Ylrmi1T+q4CQCmuZ+hy/s27Q9/dXw+mAe+NPcjh/
-         QWSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SzBlYeGeT15Xra75w9IZDBjQ7Da3XKSmRdlnDJDYrko=;
-        b=fB/zHUBrsltklm7kfUGRklny9FLZWt6703fvNBCq92u2cVySloVAsiq0frlzbULpW3
-         oCL9A4UgaPsDlEj1QiL2hEgQr1Ru2rLAiKT4AxXaaHJgf5eVwN8XJAlAPDrAEAIfq9cs
-         +8vEv3HcvCDdzkAu8tL92E4FOgpl7u79RmuSwN0rqGWBINjd0SuC57xbpaxr+sCPobK0
-         eZ7yie4c5BYvm1ZVvaj0ymXFeKBxlStSdDur20FEhy+TovwDBeUh8BRtxmf0KD04lOK1
-         yWSQPuI+HJW1z60BGgLBshh3R7cDPjXT2096PZXoKOwKj8BFhqCzJB9DTSpdxHBcHEy+
-         sQDg==
-X-Gm-Message-State: AFqh2kpZOHCHNJfzcnW3QLBxix7RXOIr8t3XwZrGZdgtw/iNxWyfmGNk
-        uxFHqulHYwD4dfh5Ze4SIGjhaiQftOK1O0xJ1Mw=
-X-Google-Smtp-Source: AMrXdXtEM7QbE34KxODJHtPxdlDMPVaaVRTpm9raj60/ISRjulHv5KI6QmHwE2U+5O5oR2VqGGsWmhwxvOsu/octM+c=
-X-Received: by 2002:aa7:cd01:0:b0:498:f125:97a2 with SMTP id
- b1-20020aa7cd01000000b00498f12597a2mr1898381edw.109.1673463581580; Wed, 11
- Jan 2023 10:59:41 -0800 (PST)
+        with ESMTP id S235903AbjAKTAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 14:00:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52F183D1C7
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 11:00:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 123FCB81CB3
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 19:00:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A77C433F0;
+        Wed, 11 Jan 2023 19:00:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673463644;
+        bh=PKnov8yyRtlq3RP9jQyS44w79W6cmPQDxUR0IYs0Y7M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I3m+zcYegsjJz7rYa9g5itSywfapotStVtIISd5lbPSxyWOSfuUEy6x0aptwa6cWE
+         vNhUMjnpIEnJTN7VsPneTgCS9K+BrfFKtPjMzMUqut396Tu6eLIouw5JMQqkAsjEdM
+         uLoEQZawvXz8UafEOFW7bPukehRamDWoJICLrpSRMN5Tjw7LRc+SMJqoOj2OPaZ9XT
+         V6cpfhPzZ3JgdtRjrMVBbHBdjyfkuvaBq3c4BCHrtTdjAm+uma/GR0bUYHBTnUjEX/
+         DmpqOARn/Q9xW+FZVU2BxQvXGxt6HXRiqSNW1sSQE8hnrsduZOaSowLfU8LFBJqVEn
+         vQErQgl2/J1hg==
+Date:   Wed, 11 Jan 2023 11:00:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Arinzon, David" <darinzon@amazon.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: Re: [PATCH V1 net-next 0/5] Add devlink support to ena
+Message-ID: <20230111110043.036409d0@kernel.org>
+In-Reply-To: <865255fd30cd4339966425ea1b1bd8f9@amazon.com>
+References: <20230108103533.10104-1-darinzon@amazon.com>
+        <20230109164500.7801c017@kernel.org>
+        <574f532839dd4e93834dbfc776059245@amazon.com>
+        <20230110124418.76f4b1f8@kernel.org>
+        <865255fd30cd4339966425ea1b1bd8f9@amazon.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7208:9020:b0:61:2cef:f0bf with HTTP; Wed, 11 Jan 2023
- 10:59:41 -0800 (PST)
-Reply-To: mr.abraham022@gmail.com
-From:   "Mr.Abraham" <davidkekeli99@gmail.com>
-Date:   Wed, 11 Jan 2023 18:59:41 +0000
-Message-ID: <CANAp_-dh-_jopAi67i5jqzcTYvLTybbJAQOwRM_NdKgH4yzyHg@mail.gmail.com>
-Subject: Hi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Greeting, Did you receive the letter i sent to you. Please answer me.
-Regard, Mr.Abraham
+On Wed, 11 Jan 2023 08:58:46 +0000 Arinzon, David wrote:
+> > I read it again - and I still don't know what you're doing.
+> > I sounds like inline header length configuration yet you also use LLQ all
+> > over the place. And LLQ for ENA is documented as basically tx_push:
+> > 
+> >   - **Low Latency Queue (LLQ) mode or "push-mode":**
+> > 
+> > Please explain this in a way which assumes zero Amazon-specific
+> > knowledge :(
+> 
+> Low Latency Queues (LLQ) is a mode of operation where the packet headers
+> (up to a defined length) are being written directly to the device memory.
+> Therefore, you are right, the description is similar to tx_push. However,
+> This is not a configurable option while ETHTOOL_A_RINGS_TX_PUSH
+> configures whether to work in a mode or not.
+> If I'm understanding the intent behind ETHTOOL_A_RINGS_TX_PUSH
+> and the implementation in the driver that introduced the feature, it
+> refers to a push of the packet and not just the headers, which is not what
+> the ena driver does.
+> 
+> In this patchset, we allow the configuration of an extended size of the
+> Low Latency Queue, meaning, allow enabled another, larger, pre-defined
+> size to be used as a max size of the packet header to be pushed directly to
+> device memory. It is not configurable in value, therefore, it was defined as
+> large LLQ.
+> 
+> I hope this provides more clarification, if not, I'll be happy to elaborate further.
+
+Thanks, the large missing piece in my understanding is still what 
+the user visible impact of this change is. Without increasing 
+the LLQ entry size, a user who sends packet with long headers will:
+ a) see higher latency thru the NIC, but everything else is the same
+ b) see higher latency and lower overall throughput in terms of PPS
+ c) will have limited access to offloads, because the device requires
+    full access to headers via LLQ for some offloads
+
+which one of the three is the closest?
