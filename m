@@ -2,215 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DD6C6655B2
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:05:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9686D6655BF
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:11:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229450AbjAKIFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 03:05:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
+        id S230173AbjAKILj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 03:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231721AbjAKIF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:05:26 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDA6BEE
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:05:25 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1673424323;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ozuvmRheVB494UIpU2qw0ow0H021tS+BDG+QqqGobX4=;
-        b=Yu1xIMrHI1GVB89oAndCAilVgNHXhfK3K2iawQdrmIxJxNUXubDnvB/Z7bV+AJwT2GrQF3
-        1EWUiDZ4QIUE5Ij822BEP7QTQrHEpUgayzs/ADKAldxu0Rd8RtS6w8mqjAN0guHOvMr52p
-        eklhot4joPAlgVqb/dr1/IpLXDRZhQ+2klyAvNyOl1dje7RCPj+xqf0nlH6Mta9CwLPKM0
-        8U/sCCe1nuhC4AtOFbZOZFlLNMMkTrDIcztXSJGae98rs0hGOd/AclMVT9lgmI24aQaStR
-        +ve/BQ/CYVfSzDJcgnK68ZLq+Ppyu3xUCCwjZOKjyYov7mrLxoLl1NAUXbDS7w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1673424323;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ozuvmRheVB494UIpU2qw0ow0H021tS+BDG+QqqGobX4=;
-        b=w62LerRm/i2jzO5z1QvjzYbmVwoOhBEwMoXfe/7M0qO2xK03EF01/zRR7/VOYTNbM0on+K
-        OjMJhL3uop81rEAA==
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next] net: dsa: mv88e6xxx: Enable PTP receive for mv88e6390
-Date:   Wed, 11 Jan 2023 09:04:17 +0100
-Message-Id: <20230111080417.147231-1-kurt@linutronix.de>
+        with ESMTP id S229931AbjAKILh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:11:37 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2060.outbound.protection.outlook.com [40.107.244.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3334E10CD
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:11:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XuqIA/1C/Pewj3rVA4Uk16L6FOcwSo/34/51V0ayVyW94K7nz+/LuRXagqvtHBaAT+k+wh/hDakqJUtvecdemvGqbTcLOjyVzntTaS/MT4PLsB3u++DrAofSZwIaIc0hFLBTIYSqwpU3Yzi9HKtcfTKm0qOt3GchVg2tw+bPrAxP58NsSMaig3X60847qFPK6RjzJ/UXWWms2jfPsuVHiQQpyZdz9HzkG45Ig2zh5FOweNV473J0UgjNNHcsq3UIGp0RdICOijlPfCFgB1VSC1orYYFzoDImcAim3Pf1c6T7oYV7EiVrUN3BxkJ4fz/Va851dBpYe9xrCov4qho0pA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZtX415FX8zuUQF7GSuSDYUlXkT9UJEn4mg/ufByPJWU=;
+ b=kgveLZ7Xq6D7mN5Ylu+O0iWTinHE2Us/gz/XHhcYu2wUn2PSLEQ7uPSRhcPXlhfBeZEsTFJfEGThllfWBHSAp8svAqNOe4mpi0YbwpSSklsdiRoE8TwEZd2iCgb0ZW3d9WU86IVmZVRB/r7AJDuIzNYE7kTatJe0mDsoz71n9H5tydq70oELstVwjLWodlhDLIptk/m0oZDtoTd1kVFc9qGAcHJGTxpHph1AOP+TCNhjOYqPUbXL8PgC+KKRRDYknM0yTTvzUpah1jdGMNgayOw45vubSKkKKFqu5kABqqCbkEbNuGDiOhe+VJ1qtX2jseUpEhbaOAgYYyIEj3LoZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZtX415FX8zuUQF7GSuSDYUlXkT9UJEn4mg/ufByPJWU=;
+ b=UBqtaPep04a06yMxqMNQLvRYHbDgV2exNs2f/x+A4LfwDoj6Z9CIedmvNYMSzOy6y20qgtbCWVqBs8d9fdZX3L4/HO0Xn07FW1a2DFQPThiBruuuid9pEz7B+MIrGJcdTr8VFuw9D/wmSyfR+yqZ8k3rEYnISV6pLIcX7nxrzdyC+iyc3oT34Jec3zww+EKkKy4lVl4N10NMn5iKVXn7D5aPf7CZIVbRpoaty5ongHnVYtNKskphoQ+S/P7tPAndD8VvPuAY2douJu42V69b0oMndwLCnVB9ZNsXat06VTDgq+7dM5wDEiT7G1/E0Wm+sUXbnc0SqhWKQCFWLkl7Zg==
+Received: from MW4PR04CA0377.namprd04.prod.outlook.com (2603:10b6:303:81::22)
+ by BL1PR12MB5349.namprd12.prod.outlook.com (2603:10b6:208:31f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 11 Jan
+ 2023 08:11:34 +0000
+Received: from CO1NAM11FT082.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:81:cafe::14) by MW4PR04CA0377.outlook.office365.com
+ (2603:10b6:303:81::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18 via Frontend
+ Transport; Wed, 11 Jan 2023 08:11:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT082.mail.protection.outlook.com (10.13.175.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5986.18 via Frontend Transport; Wed, 11 Jan 2023 08:11:34 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 11 Jan
+ 2023 00:11:26 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 11 Jan
+ 2023 00:11:26 -0800
+Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Wed, 11 Jan
+ 2023 00:11:23 -0800
+From:   <ehakim@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <raeds@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <sd@queasysnail.net>,
+        <atenart@kernel.org>, Emeel Hakim <ehakim@nvidia.com>
+Subject: [PATCH net-next v8 0/2] Add support to offload macsec using netlink update
+Date:   Wed, 11 Jan 2023 10:11:10 +0200
+Message-ID: <20230111081112.21067-1-ehakim@nvidia.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT082:EE_|BL1PR12MB5349:EE_
+X-MS-Office365-Filtering-Correlation-Id: 17a76723-c0f7-4223-20d5-08daf3ab74a1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XE44IV1+5+rD+PskOnHfWbl9VvX6ljGW4KhM110Hgjo9zJxRAdy0qtbDyj6FdMQB7i1EDh+tUwOyZ++h3sosoGJUcegI0WZTxFdoXw/5x+d1x6Tcv6YdnFy+OlH5v0FNFKf9PScK/vz2ekJrBRxYnx9p1RT7m3Qt6tfAQk+cM+bpLkW336HxxlCvkZ+roNxKvpl5y3MKhiH2HKjEETK3Ah/j7H6vzrdPA4SZAVfk1lT6T8bxH7dpK6uzDF5NJ1uepC5mfwTax3CoDtKBUXNbxOT5MYtqAy3WwKiPGkIHTo0Y+aJOxh1Uiy0jjiklSzw2BspFo6gk6Fmc1zv/7ycTKNw7go80kEGfPEhT0ydHTqeABOefHctQPIt//rZXTmMhVi/xh++FaT8+ubaDj6xAO2ZNgb4Of6kmKBpMUqEQ+PvzYucEYidFVkdHdGlPvXBhl/CBGp/3G6bSz9FFs5izMY9ZkiirMFldnNBSpfGom8jdOSPX7rwi6G7PKc1+EXukWagvvdXAmapzYWdxcaSOunDIlp1bFjBMCrVnws212Z5NJshdIEYvgU8AnslIMUl2V/YUWrI8wW4nbtB/eh4RRL14WH2ki6JOZYDbqKW3ZbeI6dKbdyAjppTznFoGYA1JTA3Pmc7fqeemFAQMv9jp8U2Ztfqcb2KiooI1HE4ytUsMDTaH7RalGlR9h2y0j+BJk7rLJc7errou/hGD7XluIg==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(39860400002)(136003)(396003)(376002)(451199015)(46966006)(40470700004)(36840700001)(107886003)(6666004)(8936002)(70206006)(41300700001)(4326008)(6916009)(8676002)(70586007)(316002)(15650500001)(54906003)(2616005)(82310400005)(1076003)(36756003)(2876002)(40460700003)(2906002)(5660300002)(4744005)(40480700001)(7696005)(86362001)(478600001)(26005)(186003)(7636003)(82740400003)(356005)(83380400001)(36860700001)(336012)(426003)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 08:11:34.7082
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17a76723-c0f7-4223-20d5-08daf3ab74a1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT082.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5349
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch receives management traffic such as STP and LLDP. However, PTP
-messages are not received, only transmitted.
+From: Emeel Hakim <ehakim@nvidia.com>
 
-Ideally, the switch would trap all PTP messages to the management CPU. This
-particular switch has a PTP block which identifies PTP messages and traps them
-to a dedicated port. There is a register to program this destination. This is
-not used at the moment.
+This series adds support for offloading macsec as part of the netlink
+update routine, command example:
+ip link set link eth2 macsec0 type macsec offload mac
 
-Therefore, program it to the same port as the MGMT traffic is trapped to. This
-allows to receive PTP messages as soon as timestamping is enabled.
+The above is done using the IFLA_MACSEC_OFFLOAD attribute hence
+the second patch of dumping this attribute as part of the macsec
+dump.
 
-In addition, the datasheet mentions that this register is not valid e.g. for
-6190 variants. So, add a new cpu port method for 6390 which programs the MGTM
-and PTP destination.
+Emeel Hakim (2):
+  macsec: add support for IFLA_MACSEC_OFFLOAD in macsec_changelink
+  macsec: dump IFLA_MACSEC_OFFLOAD attribute as part of macsec dump
 
-Tested simply like this on Marvell 88E6390, revision 1:
+ drivers/net/macsec.c | 127 ++++++++++++++++++++++++-------------------
+ 1 file changed, 70 insertions(+), 57 deletions(-)
 
-|/ # ptp4l -2 -i lan4 --tx_timestamp_timeout=40 -m
-|[...]
-|ptp4l[147.450]: master offset         56 s2 freq   +1262 path delay       413
-|ptp4l[148.450]: master offset         22 s2 freq   +1244 path delay       434
-|ptp4l[149.450]: master offset          5 s2 freq   +1234 path delay       446
-|ptp4l[150.451]: master offset          3 s2 freq   +1233 path delay       451
-|ptp4l[151.451]: master offset          1 s2 freq   +1232 path delay       451
-|ptp4l[152.451]: master offset         -3 s2 freq   +1229 path delay       451
-|ptp4l[153.451]: master offset          9 s2 freq   +1240 path delay       451
-
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
-
-Note, This might be related:
-
-https://lore.kernel.org/netdev/CAFSKS=PJBpvtRJxrR4sG1hyxpnUnQpiHg4SrUNzAhkWnyt9ivg@mail.gmail.com/
-
- drivers/net/dsa/mv88e6xxx/chip.c    | 12 ++++++------
- drivers/net/dsa/mv88e6xxx/global1.c | 19 ++++++++++++++++++-
- drivers/net/dsa/mv88e6xxx/global1.h |  2 ++
- 3 files changed, 26 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 1168ea75f5f5..5762a24dc061 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4348,7 +4348,7 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
- 	.stats_get_strings = mv88e6320_stats_get_strings,
- 	.stats_get_stats = mv88e6390_stats_get_stats,
--	.set_cpu_port = mv88e6390_g1_set_cpu_port,
-+	.set_cpu_port = mv88e6190_g1_set_cpu_port,
- 	.set_egress_port = mv88e6390_g1_set_egress_port,
- 	.watchdog_ops = &mv88e6390_watchdog_ops,
- 	.mgmt_rsvd2cpu =  mv88e6390_g1_mgmt_rsvd2cpu,
-@@ -4753,7 +4753,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
- 	.stats_get_strings = mv88e6320_stats_get_strings,
- 	.stats_get_stats = mv88e6390_stats_get_stats,
--	.set_cpu_port = mv88e6390_g1_set_cpu_port,
-+	.set_cpu_port = mv88e6190_g1_set_cpu_port,
- 	.set_egress_port = mv88e6390_g1_set_egress_port,
- 	.watchdog_ops = &mv88e6390_watchdog_ops,
- 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
-@@ -4818,7 +4818,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
- 	.stats_get_strings = mv88e6320_stats_get_strings,
- 	.stats_get_stats = mv88e6390_stats_get_stats,
--	.set_cpu_port = mv88e6390_g1_set_cpu_port,
-+	.set_cpu_port = mv88e6190_g1_set_cpu_port,
- 	.set_egress_port = mv88e6390_g1_set_egress_port,
- 	.watchdog_ops = &mv88e6390_watchdog_ops,
- 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
-@@ -4881,7 +4881,7 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
- 	.stats_get_strings = mv88e6320_stats_get_strings,
- 	.stats_get_stats = mv88e6390_stats_get_stats,
--	.set_cpu_port = mv88e6390_g1_set_cpu_port,
-+	.set_cpu_port = mv88e6190_g1_set_cpu_port,
- 	.set_egress_port = mv88e6390_g1_set_egress_port,
- 	.watchdog_ops = &mv88e6390_watchdog_ops,
- 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
-@@ -5053,7 +5053,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
- 	.stats_get_strings = mv88e6320_stats_get_strings,
- 	.stats_get_stats = mv88e6390_stats_get_stats,
--	.set_cpu_port = mv88e6390_g1_set_cpu_port,
-+	.set_cpu_port = mv88e6190_g1_set_cpu_port,
- 	.set_egress_port = mv88e6390_g1_set_egress_port,
- 	.watchdog_ops = &mv88e6390_watchdog_ops,
- 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
-@@ -5214,7 +5214,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
- 	.stats_get_strings = mv88e6320_stats_get_strings,
- 	.stats_get_stats = mv88e6390_stats_get_stats,
--	.set_cpu_port = mv88e6390_g1_set_cpu_port,
-+	.set_cpu_port = mv88e6190_g1_set_cpu_port,
- 	.set_egress_port = mv88e6390_g1_set_egress_port,
- 	.watchdog_ops = &mv88e6390_watchdog_ops,
- 	.mgmt_rsvd2cpu =  mv88e6390_g1_mgmt_rsvd2cpu,
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
-index 5848112036b0..ad2d8d07fef5 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1.c
-@@ -391,7 +391,7 @@ int mv88e6390_g1_set_egress_port(struct mv88e6xxx_chip *chip,
- 	return mv88e6390_g1_monitor_write(chip, ptr, port);
- }
- 
--int mv88e6390_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port)
-+int mv88e6190_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port)
- {
- 	u16 ptr = MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST;
- 
-@@ -403,6 +403,23 @@ int mv88e6390_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port)
- 	return mv88e6390_g1_monitor_write(chip, ptr, port);
- }
- 
-+int mv88e6390_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port)
-+{
-+	u16 ptr = MV88E6390_G1_MONITOR_MGMT_CTL_PTR_PTP_CPU_DEST;
-+	int ret;
-+
-+	ret = mv88e6190_g1_set_cpu_port(chip, port);
-+	if (ret)
-+		return ret;
-+
-+	/* Use the default high priority for PTP frames sent to
-+	 * the CPU.
-+	 */
-+	port |= MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI;
-+
-+	return mv88e6390_g1_monitor_write(chip, ptr, port);
-+}
-+
- int mv88e6390_g1_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
- {
- 	u16 ptr;
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
-index 65958b2a0d3a..f0b303f38764 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.h
-+++ b/drivers/net/dsa/mv88e6xxx/global1.h
-@@ -214,6 +214,7 @@
- #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_INGRESS_DEST		0x2000
- #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_EGRESS_DEST		0x2100
- #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST		0x3000
-+#define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_PTP_CPU_DEST		0x3200
- #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI	0x00e0
- #define MV88E6390_G1_MONITOR_MGMT_CTL_DATA_MASK			0x00ff
- 
-@@ -302,6 +303,7 @@ int mv88e6390_g1_set_egress_port(struct mv88e6xxx_chip *chip,
- 				 enum mv88e6xxx_egress_direction direction,
- 				 int port);
- int mv88e6095_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port);
-+int mv88e6190_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port);
- int mv88e6390_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port);
- int mv88e6390_g1_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip);
- 
 -- 
-2.30.2
+2.21.3
 
