@@ -2,18 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 784DE665E62
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:51:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 070A8665E5F
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233770AbjAKOvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 09:51:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
+        id S233167AbjAKOvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 09:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229833AbjAKOvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:51:21 -0500
+        with ESMTP id S236446AbjAKOvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:51:19 -0500
+X-Greylist: delayed 997 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 Jan 2023 06:51:13 PST
 Received: from wizmail.org (wizmail.org [85.158.153.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C271306
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:51:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40A2CF
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:51:13 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
         d=wizmail.org; s=e202001; h=Content-Transfer-Encoding:MIME-Version:References
         :In-Reply-To:Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:
@@ -21,8 +22,8 @@ DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive:
-        Autocrypt; bh=+Lx7HYJi478KJgtP+7zZrGVWXuZIlQ0gr3NAaTCXY0k=; b=GSknYEHxOpwvV0d
-        VMoTUtRkzw149hQ6X2GCGy+nj7Am72affJ/SygOzfnT7HDn8cO7WH9LmpQCiL8sQ+M+vtCg==;
+        Autocrypt; bh=kTgSB7DgSORMdgkcjBIUj3TpvFS2V7UMaqSf15PL+uM=; b=oKRNrPYmozm2NX2
+        xjG1cfYOGPy53zdOFDuaPk5BURrKF72Au32W6SoB0M2EVZVi/HNUt16VUIf6aak2zLDgYDw==;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=wizmail.org
         ; s=r202001; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
@@ -30,26 +31,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=wizmail.org
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive:
-        Autocrypt; bh=+Lx7HYJi478KJgtP+7zZrGVWXuZIlQ0gr3NAaTCXY0k=; b=BTfKvT8J7R+Jclc
-        xoTG7xk4nvD3EuOyfAKD5czZeRFuKv6wztz7WOet/2aNmgi4Z+2Zj/7SAabRQauyU7878cEJH1Ao+
-        2Viqh7CgT8ePPXeIzfVxP/maDitgLbinGkYeTijbLT7Rh+4aBehL3BY88DRftHrpvdUFYBxryGah6
-        asta6juClEjBRLJPYjmccOBiqakpdX9Ec0bZ9tn8h/SL8J0t8DMHgDZI2WOANKFmAYpS8uVKT5fxn
-        Zc8mZsZ20ZxYCsXzxxUD3/f8NMPJQaApTSvcQZ9nuIhrFs9PqNnqEdvcRyMlF3bDipCex7zCmXYO6
-        oERP2WzD7wg7rr6BuqA==;
+        Autocrypt; bh=kTgSB7DgSORMdgkcjBIUj3TpvFS2V7UMaqSf15PL+uM=; b=QwsTzommlVhuB39
+        EgI4EqaL+vlE9ZIT/mLEWgwZJDsnHVxd/tZRFiTEB2+zk5uS3rivbHJyaB41qEWVlghmW45Vcb8jW
+        P36rkNO+zjBVGse0ra5iaWrLHnFuWxikeTNpoR8VdaS9LehnS4EgJUD9NsBkUb0ewZ/h3TEIE0MCw
+        ZYfPSxx6Uu5Wl5Nk4llF1WCQ2qjXILfxm048ell8ESQtP7E5z4J0G6vHA7ahCUOccf629zlU2UOGx
+        DYk7yP4///s0awzlRRovDdCgVgl7OvoVP1QZWSekQWSmLaO5Omyoqr7I6rqXop/sabxkjlK6IFOti
+        5dsSBj3Tg8WjAT2leoA==;
 Authentication-Results: wizmail.org;
         local=pass (non-smtp, wizmail.org) u=root
 Received: from root
         by [] (Exim 4.96.108)
         with local
-        id 1pFcBW-004jF9-0T
+        id 1pFcBW-004jFD-0u
         (return-path <root@w81.gulag.org.uk>);
         Wed, 11 Jan 2023 14:34:34 +0000
 From:   jgh@redhat.com
 To:     netdev@vger.kernel.org
 Cc:     Jeremy Harris <jgh@redhat.com>
-Subject: [RFC PATCH 1/7] net: NIC driver Rx ring ECN: skbuff and tcp support
-Date:   Wed, 11 Jan 2023 14:34:21 +0000
-Message-Id: <20230111143427.1127174-2-jgh@redhat.com>
+Subject: [RFC PATCH 2/7] net: NIC driver Rx ring ECN: stats counter
+Date:   Wed, 11 Jan 2023 14:34:22 +0000
+Message-Id: <20230111143427.1127174-3-jgh@redhat.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230111143427.1127174-1-jgh@redhat.com>
 References: <20230111143427.1127174-1-jgh@redhat.com>
@@ -66,68 +67,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jeremy Harris <jgh@redhat.com>
 
-This is the infrastructure and the primary information-consumer
-for the facility.
+Counters for IPv4 and IPv6 input packets for which skbs were
+marked by NIC drivers, modelled on those for IP packet markings.
 
 Signed-off-by: Jeremy Harris <jgh@redhat.com>
 ---
- include/linux/skbuff.h | 2 ++
- net/core/skbuff.c      | 1 +
- net/ipv4/tcp_input.c   | 8 +++++++-
- 3 files changed, 10 insertions(+), 1 deletion(-)
+ include/uapi/linux/snmp.h | 1 +
+ net/ipv4/ip_input.c       | 4 ++++
+ net/ipv4/proc.c           | 1 +
+ net/ipv6/ip6_input.c      | 5 +++++
+ net/ipv6/proc.c           | 1 +
+ 5 files changed, 12 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4c8492401a10..8bdf0049e1a3 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -804,6 +804,7 @@ typedef unsigned char *sk_buff_data_t;
-  *		the packet minus one that have been verified as
-  *		CHECKSUM_UNNECESSARY (max 3)
-  *	@scm_io_uring: SKB holds io_uring registered files
-+ *	@congestion_experienced: data-source or channel for SKB has congestion
-  *	@dst_pending_confirm: need to confirm neighbour
-  *	@decrypted: Decrypted SKB
-  *	@slow_gro: state present at GRO time, slower prepare step required
-@@ -983,6 +984,7 @@ struct sk_buff {
- 	__u8			slow_gro:1;
- 	__u8			csum_not_inet:1;
- 	__u8			scm_io_uring:1;
-+	__u8			congestion_experienced:1;
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 6600cb0164c2..f8f763b6af28 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -57,6 +57,7 @@ enum
+ 	IPSTATS_MIB_ECT0PKTS,			/* InECT0Pkts */
+ 	IPSTATS_MIB_CEPKTS,			/* InCEPkts */
+ 	IPSTATS_MIB_REASM_OVERLAPS,		/* ReasmOverlaps */
++	IPSTATS_MIB_INCONGPKTS,			/* InCongestionPkts */
+ 	__IPSTATS_MIB_MAX
+ };
  
- #ifdef CONFIG_NET_SCHED
- 	__u16			tc_index;	/* traffic control index */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 3a10387f9434..37940dd3dbe9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5548,6 +5548,7 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
- 	to->truesize += delta;
- 	to->len += len;
- 	to->data_len += len;
-+	to->congestion_experienced |= from->congestion_experienced;
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index e880ce77322a..fd0ec860a3f6 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -503,6 +503,10 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 		       IPSTATS_MIB_NOECTPKTS + (iph->tos & INET_ECN_MASK),
+ 		       max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
  
- 	*delta_truesize = delta;
- 	return true;
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index cc072d2cfcd8..217374eefe41 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -338,8 +338,14 @@ static void tcp_ecn_withdraw_cwr(struct tcp_sock *tp)
- static void __tcp_ecn_check_ce(struct sock *sk, const struct sk_buff *skb)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	__u8 ecn;
- 
--	switch (TCP_SKB_CB(skb)->ip_dsfield & INET_ECN_MASK) {
 +	if (unlikely(skb->congestion_experienced))
-+		ecn = INET_ECN_CE;
-+	else
-+		ecn = TCP_SKB_CB(skb)->ip_dsfield & INET_ECN_MASK;
++		__IP_ADD_STATS(net, IPSTATS_MIB_INCONGPKTS,
++			       max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
 +
-+	switch (ecn) {
- 	case INET_ECN_NOT_ECT:
- 		/* Funny extension: if ECT is not set on a segment,
- 		 * and we already seen ECT on a previous segment,
+ 	if (!pskb_may_pull(skb, iph->ihl*4))
+ 		goto inhdr_error;
+ 
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index f88daace9de3..fb6e82e86070 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
+ 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+ 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
++	SNMP_MIB_ITEM("InCongestionPkts", IPSTATS_MIB_INCONGPKTS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index e1ebf5e42ebe..f43d8af20831 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -203,6 +203,11 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 			IPSTATS_MIB_NOECTPKTS +
+ 				(ipv6_get_dsfield(hdr) & INET_ECN_MASK),
+ 			max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
++
++	if (unlikely(skb->congestion_experienced))
++		__IP6_ADD_STATS(net, idev, IPSTATS_MIB_INCONGPKTS,
++				max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
++
+ 	/*
+ 	 * RFC4291 2.5.3
+ 	 * The loopback address must not be used as the source address in IPv6
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index d6306aa46bb1..635ab1f99900 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
+ 	SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+ 	SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
++	SNMP_MIB_ITEM("Ip6InCongestionPkts", IPSTATS_MIB_INCONGPKTS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
 -- 
 2.39.0
 
