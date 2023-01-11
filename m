@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A82665ACA
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 12:49:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F88665AC9
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 12:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236364AbjAKLtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 06:49:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
+        id S233517AbjAKLtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 06:49:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbjAKLsX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 06:48:23 -0500
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225A5EE07;
-        Wed, 11 Jan 2023 03:45:14 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30BBiueR084032;
-        Wed, 11 Jan 2023 05:44:56 -0600
+        with ESMTP id S238743AbjAKLrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 06:47:43 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B221BEE00;
+        Wed, 11 Jan 2023 03:45:10 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30BBj19h030754;
+        Wed, 11 Jan 2023 05:45:01 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1673437496;
-        bh=6rrNV/bmN/qHkEqrG10OnZlsWexAy6lEPtK7YwqRgVY=;
+        s=ti-com-17Q1; t=1673437501;
+        bh=gsE4XZA6NpAH7Ib8hRW4+ivUA6rjtiQonN9LPKstIHs=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=POL6OX4URm8tdYs8Z4rKLmfyAq8R6tyevo3hlQbZTgB0Ad2VLkZ6UAXy2WRWJyc7A
-         N7QXTYL4rTdseg0PGkrpYo/R46QnIq6zQaHvG47JidRxbKSEGUQewy0T4AmABu/9ER
-         1A5CT9Z7Ax/q9zBCiuQQfbfYT6ER5R2PjKGothDY=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30BBiuV8066017
+        b=o6A4OWfA2BlLYuN78JCu1jXn99wM9zuxMvtfd9GFGv3jiRxQ4bAduHY1Ey5TJV+yL
+         RMdIoyXRKM30JDwVRtJH422pHH3QtQ42CHGTXRX2OuYlRUH8c8Ge6WUGPkQ1zh1eM1
+         7OMQsxg0/llmwMwzW1kRm+zPadvsetyhxVlN9634=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30BBj1xN079394
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 11 Jan 2023 05:44:56 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 11 Jan 2023 05:45:01 -0600
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 11
- Jan 2023 05:44:55 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ Jan 2023 05:45:00 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Wed, 11 Jan 2023 05:44:55 -0600
+ Frontend Transport; Wed, 11 Jan 2023 05:45:00 -0600
 Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30BBiUkL093892;
-        Wed, 11 Jan 2023 05:44:51 -0600
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30BBiUkM093892;
+        Wed, 11 Jan 2023 05:44:56 -0600
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -50,9 +50,9 @@ CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
         <s-vadapalli@ti.com>
-Subject: [PATCH net-next 4/5] arm64: dts: ti: k3-am62-main: Add timesync router node
-Date:   Wed, 11 Jan 2023 17:14:28 +0530
-Message-ID: <20230111114429.1297557-5-s-vadapalli@ti.com>
+Subject: [PATCH net-next 5/5] arm64: dts: ti: k3-am625-sk: Add cpsw3g cpts PPS support
+Date:   Wed, 11 Jan 2023 17:14:29 +0530
+Message-ID: <20230111114429.1297557-6-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230111114429.1297557-1-s-vadapalli@ti.com>
 References: <20230111114429.1297557-1-s-vadapalli@ti.com>
@@ -69,36 +69,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TI's AM62x SoC has a Time Sync Event Router, which enables routing a single
-input signal to multiple recipients. This facilitates syncing all the
-peripherals or processor cores to the input signal which acts as a master
-clock.
+The CPTS driver is capable of configuring GENFy (Periodic Signal Generator
+Function) present in the CPTS module, to generate periodic output signals
+with a custom time period. In order to generate a PPS signal on the GENFy
+output, the device-tree property "ti,pps" has to be used. The "ti,pps"
+property is used to declare the mapping between the CPTS HWx_TS_PUSH
+(Hardware Timestamp trigger) input and the GENFy output that is configured
+to generate a PPS signal. The mapping is of the form:
+<x-1 y>
+where the value x corresponds to HWx_TS_PUSH input (1-based indexing) and
+the value y corresponds to GENFy (0-based indexing).
+
+To verify that the signal is a PPS signal, the GENFy output signal is fed
+into the CPTS HWx_TS_PUSH input, which generates a timestamp event on the
+rising edge of the GENFy signal. The GENFy output signal can be routed to
+the HWx_TS_PUSH input by using the Time Sync Router. This is done by
+mentioning the mapping between the GENFy output and the HWx_TS_PUSH input
+within the "timesync_router" device-tree node.
+
+The Input Sources to the Time Sync Router are documented at: [1]
+The Output Destinations of the Time Sync Router are documented at: [2]
+
+The PPS signal can be verified using testptp and ppstest tools as follows:
+ # ./testptp -d /dev/ptp0 -P 1
+ pps for system time request okay
+ # ./ppstest /dev/pps0
+ trying PPS source "/dev/pps0"
+ found PPS source "/dev/pps0"
+ ok, found 1 source(s), now start fetching data...
+ source 0 - assert 48.000000013, sequence: 8 - clear  0.000000000, sequence: 0
+ source 0 - assert 49.000000013, sequence: 9 - clear  0.000000000, sequence: 0
+ source 0 - assert 50.000000013, sequence: 10 - clear  0.000000000, sequence: 0
+
+Add an example in the device-tree, enabling PPS generation on GENF1. The
+HW3_TS_PUSH Timestamp trigger input is used to verify the PPS signal.
+
+[1]
+Link: https://software-dl.ti.com/tisci/esd/latest/5_soc_doc/am62x/interrupt_cfg.html#timesync-event-router0-interrupt-router-input-sources
+[2]
+Link: https://software-dl.ti.com/tisci/esd/latest/5_soc_doc/am62x/interrupt_cfg.html#timesync-event-router0-interrupt-router-output-destinations
 
 Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 ---
- arch/arm64/boot/dts/ti/k3-am62-main.dtsi | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm64/boot/dts/ti/k3-am625-sk.dts | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-index 072903649d6e..4ce59170b6a7 100644
---- a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-@@ -649,6 +649,15 @@ cpts@3d000 {
+diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
+index 4f179b146cab..962a922cc94b 100644
+--- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
++++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
+@@ -366,6 +366,10 @@ &cpsw3g {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&main_rgmii1_pins_default
+ 		     &main_rgmii2_pins_default>;
++
++	cpts@3d000 {
++		ti,pps = <2 1>;
++	};
+ };
+ 
+ &cpsw_port1 {
+@@ -464,3 +468,19 @@ partition@3fc0000 {
  		};
  	};
- 
-+	timesync_router: pinctrl@a40000 {
-+		compatible = "pinctrl-single";
-+		reg = <0x0 0xa40000 0x0 0x800>;
-+		#pinctrl-cells = <1>;
-+		pinctrl-single,register-width = <32>;
-+		pinctrl-single,function-mask = <0x000107ff>;
-+		status = "disabled";
-+	};
+ };
 +
- 	hwspinlock: spinlock@2a000000 {
- 		compatible = "ti,am64-hwspinlock";
- 		reg = <0x00 0x2a000000 0x00 0x1000>;
++#define TS_OFFSET(pa, val)	(0x4+(pa)*4) (0x10000 | val)
++
++&timesync_router {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&cpsw_cpts>;
++
++	/* Example of the timesync routing */
++	cpsw_cpts: cpsw-cpts {
++		pinctrl-single,pins = <
++			/* pps [cpsw cpts genf1] in17 -> out12 [cpsw cpts hw3_push] */
++			TS_OFFSET(12, 17)
++			>;
++	};
++};
 -- 
 2.25.1
 
