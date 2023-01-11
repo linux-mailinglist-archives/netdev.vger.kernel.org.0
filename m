@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A378C665E61
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:51:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C27665E67
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237863AbjAKOve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 09:51:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56474 "EHLO
+        id S234495AbjAKOvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 09:51:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232216AbjAKOvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:51:20 -0500
+        with ESMTP id S234594AbjAKOv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:51:27 -0500
 Received: from wizmail.org (wizmail.org [85.158.153.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E44EF5A4
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:51:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2E1249
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:51:26 -0800 (PST)
 DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
         d=wizmail.org; s=e202001; h=Content-Transfer-Encoding:MIME-Version:References
         :In-Reply-To:Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:
@@ -21,8 +21,8 @@ DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive:
-        Autocrypt; bh=ok5czZbkkypXa0JaIzVeYiVljvx1YVL7uiV8dKrH0bM=; b=4muDTv1u3dSxsvL
-        OgQhw4cRiZL0D1e6jMjnXv3TlTZ0HJ9ThEalI/s/WPfRKvuujnZ3IhxUp6sJctYpF1jzmBQ==;
+        Autocrypt; bh=rqf6agDvqwajDbQa2zKXlIfGae4IljppVypyX2Wm74o=; b=xWqJpmgs/n5uVs8
+        gG2eTg4VlUlz6jVmaHS4aVsTB63I6JkEimTVaviyVEmgousrW0OYNvLqvpj6gPuKcqF0QDg==;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=wizmail.org
         ; s=r202001; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
@@ -30,26 +30,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=wizmail.org
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive:
-        Autocrypt; bh=ok5czZbkkypXa0JaIzVeYiVljvx1YVL7uiV8dKrH0bM=; b=RY8C3GeXh3BHQbZ
-        HgeM1/ayetue0F+guxv7sjg4jVD9d7rcT96inLPbn+olFR9fXGfFKPiLmY7AjBZxBbD7ZIW3fgVlX
-        FYo25755/75v3bsmGnxyxt98zfssKvilwemyXDX3EAyYbfJkx3O01H7dxyr6BLUN5VUra1qRil9QZ
-        8GFgRmoHOQykQ9esXeVyVZo/gNaX5gVaMovg3yBqf1Ka3zgH+60z6jhLSyiHetYcPnWKf5XY/mktE
-        UPtwdcxlU82BYn3IXhMpoeTwCTEwDHj5tm/z/T+2YKcTL1tMD4W5HGMXgBX5gt5OpBa1eKL2oKsFB
-        scuRnZfyum8HlVv9RMQ==;
+        Autocrypt; bh=rqf6agDvqwajDbQa2zKXlIfGae4IljppVypyX2Wm74o=; b=adsRGNnyNLbhXZY
+        cN8KvBp6mN0AYzmhk9QYNYCoDwP4fxLbYVGhzkRPK+0NwepRaBMLt1xOvmcQKb2qSBimSwtgrn5kr
+        jaziC610tt8Q/sEFU/zZ8M4CcMblt/fZLP0pDzXX/LPKCLF12HMlSvxshNmV7wwxgA6F7EmgkWsHq
+        kBSBKSEKplZXQrAWtheKxHz6cFGxKErroQv0r5FfzrxHva6asDSir6kZG5hcMANqAsgGTHTXP7Qwp
+        9W2TQt3luGPyCNiY/sROZR51EcadmmB9nrsSmM3T/E1ibh+gyX0GlTsFc+mhaqcHdjkvkwnGKLtxM
+        YG18+4/HkYisBstUtSg==;
 Authentication-Results: wizmail.org;
         local=pass (non-smtp, wizmail.org) u=root
 Received: from root
         by [] (Exim 4.96.108)
         with local
-        id 1pFcBW-004jFS-1k
+        id 1pFcBW-004jFX-28
         (return-path <root@w81.gulag.org.uk>);
         Wed, 11 Jan 2023 14:34:34 +0000
 From:   jgh@redhat.com
 To:     netdev@vger.kernel.org
 Cc:     Jeremy Harris <jgh@redhat.com>
-Subject: [RFC PATCH 4/7] drivers: net: bnx2x: NIC driver Rx ring ECN
-Date:   Wed, 11 Jan 2023 14:34:24 +0000
-Message-Id: <20230111143427.1127174-5-jgh@redhat.com>
+Subject: [RFC PATCH 5/7] drivers: net: bnx2x: NIC driver Rx ring ECN
+Date:   Wed, 11 Jan 2023 14:34:25 +0000
+Message-Id: <20230111143427.1127174-6-jgh@redhat.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230111143427.1127174-1-jgh@redhat.com>
 References: <20230111143427.1127174-1-jgh@redhat.com>
@@ -66,34 +66,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jeremy Harris <jgh@redhat.com>
 
-Reformat local variables as reverse-christmas-tree.
-No functional change.
+Sample NIC driver support.
+This is a less-preferred model, which will throttle based on the NAPI
+budget rather than the receive ring fill level.
 
 Signed-off-by: Jeremy Harris <jgh@redhat.com>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index 16c490692f42..145e338487b6 100644
+index 145e338487b6..62fff8f3499b 100644
 --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
 +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -880,12 +880,12 @@ void bnx2x_csum_validate(struct sk_buff *skb, union eth_rx_cqe *cqe,
- 
+@@ -881,6 +881,7 @@ void bnx2x_csum_validate(struct sk_buff *skb, union eth_rx_cqe *cqe,
  static int bnx2x_rx_int(struct bnx2x_fastpath *fp, int budget)
  {
--	struct bnx2x *bp = fp->bp;
  	u16 bd_cons, bd_prod, bd_prod_fw, comp_ring_cons;
-+	struct eth_fast_path_rx_cqe *cqe_fp;
++	int congestion_level = budget * 7 / 8;
+ 	struct eth_fast_path_rx_cqe *cqe_fp;
  	u16 sw_comp_cons, sw_comp_prod;
--	int rx_pkt = 0;
-+	struct bnx2x *bp = fp->bp;
- 	union eth_rx_cqe *cqe;
--	struct eth_fast_path_rx_cqe *cqe_fp;
-+	int rx_pkt = 0;
+ 	struct bnx2x *bp = fp->bp;
+@@ -1089,6 +1090,11 @@ static int bnx2x_rx_int(struct bnx2x_fastpath *fp, int budget)
+ 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+ 					       le16_to_cpu(cqe_fp->vlan_tag));
  
- #ifdef BNX2X_STOP_ON_ERROR
- 	if (unlikely(bp->panic))
++		/* We are congested if the napi budget is approached
++		 */
++		if (unlikely(rx_pkt > congestion_level))
++			skb->congestion_experienced = true;
++
+ 		napi_gro_receive(&fp->napi, skb);
+ next_rx:
+ 		rx_buf->data = NULL;
 -- 
 2.39.0
 
