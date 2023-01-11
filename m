@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9C1E6652D3
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA26E6652D9
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbjAKE3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 23:29:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
+        id S229957AbjAKEa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 23:30:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235792AbjAKE2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:28:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9744D1A8
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:25:51 -0800 (PST)
+        with ESMTP id S231270AbjAKE3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:29:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D65364D9
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:29:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4007AB81AD6
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9464FC433EF;
-        Wed, 11 Jan 2023 04:25:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C946195C
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 04:29:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1725C433EF;
+        Wed, 11 Jan 2023 04:29:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673411149;
-        bh=bdlhi0OWTPPaL5C3KR3ZudY6qtZb61l/fy7oS/4tMKc=;
+        s=k20201202; t=1673411352;
+        bh=basDxyzRuA4GteGLHasDDjMRYpPkd1j2GYrw44AvxUg=;
         h=From:To:Cc:Subject:Date:From;
-        b=gOm8fkkGpVCjUyRv9ims4hVFm9zkwvbRQb/NcisMzYU9RwLdsCH61WA6sZsGbG1VJ
-         JdPyUGfvuRvLFrlkSqqGYJ1gKoccKyOAjDAAwYHXe2+e5QA5SwRPXw7JanqiqdNk18
-         e/PxXQwcX7JinQAREoa7WM9/QdpouFbJYi5FfuDNng/DC4+pdXA4c9Ly4utXGVE+Yb
-         HXpX8Zq8hWG0dHKwvXgDyZGCZqHCl5AfHFM2GuhtrhbzFhpd3IUSrsKEmhBiq1Cjx9
-         2kLtUbJdWanh75ezFl8wcTA/+Gj/Eh5/3dCncHrxWLDcCsSlr2F4pMJvetwmLDou2c
-         1dq2tk3zLcCAQ==
+        b=C5qIIUBKdKtK2/Vj8bF5ZdW/i/GpAv24amDiAZOGfkZ92XGVKDTMKzBnRYp8mSyW7
+         TvjUEA/mwYjhAAbk9v5Q7VxJ9n70/NB2K1E8z32Dq/ewSBIUmpt3WXwhuiOmkPG+aT
+         H7euEcvggQSpAeCMiPsI7HNfm8kgLZ454Ot9cFwHBikk4PFPj9UsTu+Ba8EEXcenK6
+         nKugqR2dN5PUgmJmzQ07dIcfQisYOp+kZwtnQe9w/m7vWcN55BIbGph4Fr6Mm6894d
+         sF2g0xq2apn1XNAFSRcvltBeDZ719MqedgJxzrr8GWjYkFpXYW9M9UZG2hH6ZbjxNx
+         nZY8xY5zjiJNA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        somnath.kotur@broadcom.com, andrew.gospodarek@broadcom.com,
-        michael.chan@broadcom.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] bnxt: make sure we return pages to the pool
-Date:   Tue, 10 Jan 2023 20:25:47 -0800
-Message-Id: <20230111042547.987749-1-kuba@kernel.org>
+        jacob.e.keller@intel.com, jiri@resnulli.us,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot+d94d214ea473e218fc89@syzkaller.appspotmail.com
+Subject: [PATCH net-next] devlink: keep the instance mutex alive until references are gone
+Date:   Tue, 10 Jan 2023 20:29:08 -0800
+Message-Id: <20230111042908.988199-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -51,43 +52,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before the commit under Fixes the page would have been released
-from the pool before the napi_alloc_skb() call, so normal page
-freeing was fine (released page == no longer in the pool).
+The reference needs to keep the instance memory around, but also
+the instance lock must remain valid. Users will take the lock,
+check registration status and release the lock. mutex_destroy()
+etc. belong in the same place as the freeing of the memory.
 
-After the change we just mark the page for recycling so it's still
-in the pool if the skb alloc fails, we need to recycle.
+Unfortunately lockdep_unregister_key() sleeps so we need
+to switch the an rcu_work.
 
-Same commit added the same bug in the new bnxt_rx_multi_page_skb().
+Note that the problem is a bit hard to repro, because
+devlink_pernet_pre_exit() iterates over registered instances.
+AFAIU the instances must get devlink_free()d concurrently with
+the namespace getting deleted for the problem to occur.
 
-Fixes: 1dc4c557bfed ("bnxt: adding bnxt_xdp_build_skb to build skb from multibuffer xdp_buff")
+Reported-by: syzbot+d94d214ea473e218fc89@syzkaller.appspotmail.com
+Fixes: 9053637e0da7 ("devlink: remove the registration guarantee of references")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Jiri, this will likely conflict with your series, sorry :(
+---
+ net/devlink/core.c          | 16 +++++++++++++---
+ net/devlink/devl_internal.h |  3 ++-
+ 2 files changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 16ce7a90610c..240a7e8a7652 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -993,7 +993,7 @@ static struct sk_buff *bnxt_rx_multi_page_skb(struct bnxt *bp,
- 			     DMA_ATTR_WEAK_ORDERING);
- 	skb = build_skb(page_address(page), PAGE_SIZE);
- 	if (!skb) {
--		__free_page(page);
-+		page_pool_recycle_direct(rxr->page_pool, page);
- 		return NULL;
- 	}
- 	skb_mark_for_recycle(skb);
-@@ -1031,7 +1031,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
+diff --git a/net/devlink/core.c b/net/devlink/core.c
+index a31a317626d7..60beca2df7cc 100644
+--- a/net/devlink/core.c
++++ b/net/devlink/core.c
+@@ -83,10 +83,21 @@ struct devlink *__must_check devlink_try_get(struct devlink *devlink)
+ 	return NULL;
+ }
  
- 	skb = napi_alloc_skb(&rxr->bnapi->napi, payload);
- 	if (!skb) {
--		__free_page(page);
-+		page_pool_recycle_direct(rxr->page_pool, page);
- 		return NULL;
- 	}
++static void devlink_release(struct work_struct *work)
++{
++	struct devlink *devlink;
++
++	devlink = container_of(to_rcu_work(work), struct devlink, rwork);
++
++	mutex_destroy(&devlink->lock);
++	lockdep_unregister_key(&devlink->lock_key);
++	kfree(devlink);
++}
++
+ void devlink_put(struct devlink *devlink)
+ {
+ 	if (refcount_dec_and_test(&devlink->refcount))
+-		kfree_rcu(devlink, rcu);
++		queue_rcu_work(system_wq, &devlink->rwork);
+ }
  
+ struct devlink *devlinks_xa_find_get(struct net *net, unsigned long *indexp)
+@@ -231,6 +242,7 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	INIT_LIST_HEAD(&devlink->trap_list);
+ 	INIT_LIST_HEAD(&devlink->trap_group_list);
+ 	INIT_LIST_HEAD(&devlink->trap_policer_list);
++	INIT_RCU_WORK(&devlink->rwork, devlink_release);
+ 	lockdep_register_key(&devlink->lock_key);
+ 	mutex_init(&devlink->lock);
+ 	lockdep_set_class(&devlink->lock, &devlink->lock_key);
+@@ -259,8 +271,6 @@ void devlink_free(struct devlink *devlink)
+ 
+ 	mutex_destroy(&devlink->linecards_lock);
+ 	mutex_destroy(&devlink->reporters_lock);
+-	mutex_destroy(&devlink->lock);
+-	lockdep_unregister_key(&devlink->lock_key);
+ 	WARN_ON(!list_empty(&devlink->trap_policer_list));
+ 	WARN_ON(!list_empty(&devlink->trap_group_list));
+ 	WARN_ON(!list_empty(&devlink->trap_list));
+diff --git a/net/devlink/devl_internal.h b/net/devlink/devl_internal.h
+index 5d2bbe295659..e724e4c2a4ff 100644
+--- a/net/devlink/devl_internal.h
++++ b/net/devlink/devl_internal.h
+@@ -7,6 +7,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/notifier.h>
+ #include <linux/types.h>
++#include <linux/workqueue.h>
+ #include <linux/xarray.h>
+ #include <net/devlink.h>
+ #include <net/net_namespace.h>
+@@ -51,7 +52,7 @@ struct devlink {
+ 	struct lock_class_key lock_key;
+ 	u8 reload_failed:1;
+ 	refcount_t refcount;
+-	struct rcu_head rcu;
++	struct rcu_work rwork;
+ 	struct notifier_block netdevice_nb;
+ 	char priv[] __aligned(NETDEV_ALIGN);
+ };
 -- 
 2.38.1
 
