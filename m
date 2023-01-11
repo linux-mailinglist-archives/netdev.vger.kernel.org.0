@@ -2,92 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FC5666600
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 23:07:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D210666637
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 23:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbjAKWHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 17:07:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
+        id S236185AbjAKWa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 17:30:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235878AbjAKWHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 17:07:15 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5D525F7;
-        Wed, 11 Jan 2023 14:07:13 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id y1so18265322plb.2;
-        Wed, 11 Jan 2023 14:07:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DKDZkHWM2smJMOZlEjmgw+FPi9DH/Ye7FE5jdiOv7UA=;
-        b=EqoS9wneeY8UFpxoLM3a31qwexwRmaRRkM8F7kjxnOrQLJq0UkQDVJjWAUMM8jNzpN
-         IfVmv2Z9K+LFbWLOenThrjWGSkXLKYQqphSprbTHvApUDzhgDV2nNQKuGUFtQMUkOyK5
-         +qccmz1gzgFiXpu6Ihpw3kK4PZkEvxx0KI9ucfbpq6nxFhoaboNjj8h9z0scD3DyA/9j
-         w7+vjSFiRPvXcO5LH43+VVY8UzHmTavIwPIGrVZhk9zGHfConRLEI8mNLO2T4dCAV8Iz
-         Z181PMzoFXqqdNw1xosxT6/kL7IrW6I+ut9QQ0pVTk9q4QAFTIE4iMQIxRhvVc7nTjtT
-         p8Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DKDZkHWM2smJMOZlEjmgw+FPi9DH/Ye7FE5jdiOv7UA=;
-        b=jNLwJDaKfFcpmMsB/axCn5TbXs+rQVYxVXlMO/lJzZAJGfvYrZH4HgmaD7evEKozw8
-         iZbgi8R0JlKDsmN3Lln5SUfM4Pbn/c+EQC3qLbi9KVxuJnG5ac+NNQMhJ7cFMkx+B9yX
-         4nfiPEsyb7QxKXCbMk3EH4s45G2Gikyc7cIRXW7UQHtsoeShVfCAvznwolJJgQ/hUdQZ
-         HkZN9rKTrqLT1kZ+QjXjQTpSN4qqADRX5LQ0k739Nlin/3KPWKAuPH4kDb8OfnOmHqTM
-         16jBFLZqBnaU6hPwGwyNhre/5mapxL+7/eURop3T/ZA1Rrpea52EHkuse7K17X94Cyf7
-         DL+w==
-X-Gm-Message-State: AFqh2kojz2r5G8ed4MzeSIz/0HhJrO8EQ0zD2FMUxQ2nzxk8I1RjriGh
-        W0birJwf4nUQil++LIc8QxA=
-X-Google-Smtp-Source: AMrXdXvMvhc8KLaN8Ky1bSgkcOiM1suRRMo9cQqpPE6bLmQSoEvOYusvrwv1EFo7ke1/lB2hQLJzGQ==
-X-Received: by 2002:a05:6a20:8414:b0:b3:87f8:8386 with SMTP id c20-20020a056a20841400b000b387f88386mr94452202pzd.24.1673474833161;
-        Wed, 11 Jan 2023 14:07:13 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 127-20020a630985000000b004ba55bd69ddsm386562pgj.57.2023.01.11.14.07.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Jan 2023 14:07:12 -0800 (PST)
-Message-ID: <810695e9-e0ae-152f-c64e-2350339d4e3e@gmail.com>
-Date:   Wed, 11 Jan 2023 14:07:03 -0800
+        with ESMTP id S233181AbjAKWay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 17:30:54 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B991C76;
+        Wed, 11 Jan 2023 14:30:52 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 06414166C;
+        Wed, 11 Jan 2023 23:30:50 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1673476250;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AL3D6fuBAPLwBqIn3nADqpL5RfYmlL7iAJcDIl8hybk=;
+        b=UnslZtSR/5gXE7MrC0DSsUaff5dWD5BJ6Cdmi9jtr0d2z1ACC0wJbXBi5roXDUeAXEVeLv
+        8XWxCUZ0B+t5QrPPJkkvLdiJaGCynENs94/8if6RIrj2TdmNJIBLpPjB8YeZJRqOImMd2v
+        N7dbAt3aY1lD7IXV3adWN+iIO+8zmrnf2O95x5aP55ott4l7vfkD/1ZY+/MsXgnUttaI8M
+        ZS0AEDXXmFl4fmuHq0rAr0anb5gOnErC9GAjjXZH993opNbne1owcEvJDWhy0+LOPUXIe4
+        7Fc67tocND1rpACUoh+mlNxhEU7W68tgQi0M/GMgX2TXs9TN/PiM/w0KITlRNA==
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v6 1/6] dsa: lan9303: align dsa_switch_ops
- members
-Content-Language: en-US
-To:     Jerry Ray <jerry.ray@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Wed, 11 Jan 2023 23:30:49 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Rob Herring <robh@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>, jbe@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230109211849.32530-1-jerry.ray@microchip.com>
- <20230109211849.32530-2-jerry.ray@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230109211849.32530-2-jerry.ray@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Xu Liang <lxu@maxlinear.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/4] dt-bindings: net: phy: add MaxLinear
+ GPY2xx bindings
+In-Reply-To: <20230111202639.GA1236027-robh@kernel.org>
+References: <20230109123013.3094144-1-michael@walle.cc>
+ <20230109123013.3094144-3-michael@walle.cc>
+ <20230111202639.GA1236027-robh@kernel.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <73f8aad30e0d5c3badbd62030e545ef6@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/9/23 13:18, Jerry Ray wrote:
-> Whitespace preparatory patch, making the dsa_switch_ops table consistent.
-> No code is added or removed.
+Am 2023-01-11 21:26, schrieb Rob Herring:
+> On Mon, Jan 09, 2023 at 01:30:11PM +0100, Michael Walle wrote:
+>> Add the device tree bindings for the MaxLinear GPY2xx PHYs, which
+>> essentially adds just one flag: maxlinear,use-broken-interrupts.
+>> 
+>> One might argue, that if interrupts are broken, just don't use
+>> the interrupt property in the first place. But it needs to be more
+>> nuanced. First, this interrupt line is also used to wake up systems by
+>> WoL, which has nothing to do with the (broken) PHY interrupt handling.
 > 
-> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
+> I don't understand how this is useful. If the interrupt line is 
+> asserted
+> after the 1st interrupt, how is it ever deasserted later on to be
+> useful.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Nobody said, that the interrupt line will stay asserted. The broken
+behavior is that of the PHY doesn't respond *immediately* with a
+deassertion of the interrupt line after the its internal status
+register is cleared. Instead there is a random delay of up to 2ms.
 
+There is already a workaround to avoid an interrupt storm by delaying
+the ISR until the line is actually cleared. *But* if this line is
+a shared one. The line is blocked by these 2ms and important
+interrupts (like PTP timestaming) of other devices on this line
+will get delayed. Therefore, the only viabale option is to disable
+the interrupts handling in the broken PHY altogether. I.e. the line
+will never be asserted by the broken PHY.
+
+> In any case, you could use 'wakeup-source' if that's the functionality
+> you need. Then just ignore the interrupt if 'wakeup-source' is not
+> present.
+
+Right, that would work for the first case. But not if someone really
+wants to use interrupts with the PHY, which is still a valid scenario
+if it has a dedicated interrupt line.
+
+>> Second and more importantly, there are devicetrees which have this
+>> property set. Thus, within the driver we have to switch off interrupt
+>> handling by default as a workaround. But OTOH, a systems designer who
+>> knows the hardware and knows there are no shared interrupts for 
+>> example,
+>> can use this new property as a hint to the driver that it can enable 
+>> the
+>> interrupt nonetheless.
+> 
+> Pretty sure I said this already, but this schema has no effect. Add an
+> extra property to the example and see. No error despite your
+> 'unevaluatedProperties: false'. Or drop 'interrupts-extended' and no
+> dependency error...
+
+I know, I noticed this the first time I tested the schema. But then
+I've looked at all the other PHY binding and not one has a compatible.
+
+I presume if there is a compatible, the devicetrees also need a
+compatible. So basically, "required: compatible" in the schema, right?
+But that is where the PHY maintainers don't agree.
+
+> You won't get errors as there's no defined way to decide when to apply
+> this because it is based on node name or compatible unless you do a
+> custom select, but I don't see what you would key off of here...
+
+Actually, in the previous version I've asked why the custom select
+of ethernet-phy.yaml doesn't get applied here, when there is a
+"allOf: $ref ethernet-phy.yaml".
+
+-michael
+
+> The real answer here is add a compatible. But I'm tired of pointing 
+> this
+> out to the networking maintainers every damn time. Ethernet PHYs are 
+> not
+> special.
+> 
+> Rob
