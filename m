@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 542C46665B0
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 22:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2476665D2
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 22:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235697AbjAKVkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 16:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S235724AbjAKVre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 16:47:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235290AbjAKVkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 16:40:06 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988553F450
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 13:40:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wSOyb1psDnGnj9VTi++Znvjn3jjbzkXLjgBFZrunstg=; b=T77AAAEh/UvCymadkNzsF7CviQ
-        tyE6us4zh4sfFJ9PrEbPlFWiYmMTjYDpAmbNuo1OEGCOvXtwWFcbLvbTDsqTZGsTINNgu74qlux34
-        /lkJcy6HT2QUC/dAj9wvK/eL40XO9wm23k09HyntTZ3koHFt+GvF7QLQ1jdDp5sqFElc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pFipG-001oU0-Ru; Wed, 11 Jan 2023 22:40:02 +0100
-Date:   Wed, 11 Jan 2023 22:40:02 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Hau <hau@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: Re: [PATCH net] r8169: fix rtl8168h wol fail
-Message-ID: <Y78ssmMck/eZTpYz@lunn.ch>
-References: <20230105180408.2998-1-hau@realtek.com>
- <714782c5-b955-4511-23c0-9688224bba84@gmail.com>
- <Y7dAbxSPeaMnW/ly@lunn.ch>
- <9ee2f626bab3481697b71c58091e7def@realtek.com>
- <4014d243-8f8a-f273-fba8-2ae5a3844ea5@gmail.com>
- <6ff876a66e154bb4b357b31465c86741@realtek.com>
- <d28834dc-0426-5813-a24d-181839f23c38@gmail.com>
- <add32dc486bb4fc9abc283b2bb39efc3@realtek.com>
- <e201750b-f3be-b62d-4dc6-2a00f4834256@gmail.com>
+        with ESMTP id S231803AbjAKVrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 16:47:33 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72FB113F69;
+        Wed, 11 Jan 2023 13:47:32 -0800 (PST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net] uapi: linux: restore IPPROTO_MAX to 256
+Date:   Wed, 11 Jan 2023 22:47:19 +0100
+Message-Id: <20230111214719.194027-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e201750b-f3be-b62d-4dc6-2a00f4834256@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >>> In this application(rtl8168h + rtl8211fs) it also supports 100Mbps fiber
-> >> module.
-> >>
-> >> Does RTL8211FS advertise 100Mbps and 1Gbps on the UTP/MDI side in case
-> >> of a 100Mbps fiber module?
-> > Yes.
-> > 
-> I think in this case internal PHY and RTL8211FS would negotiate 1Gbps,
-> not matching the speed of the 100Mbps fiber module.
-> How does this work?
+IPPROTO_MAX used to be 256, but with the introduction of IPPROTO_MPTCP
+definition, IPPROTO_MAX was bumped to 263.
 
-Fibre line side has no autoneg. Both ends need to be using the same
-speed, or the SERDES does not synchronise and does not establish link.
+IPPROTO_MPTCP definition is used for the socket interface from
+userspace. It is never used in the layer 4 protocol field of
+IP headers.
 
-You can ask the SFP module what baud rate it supports, and then use
-anything up to that baud rate. I've got systems where the SFP is fast
-enough to support a 2.5Gbps link, so the MAC indicates both 2.5G and
-1G, defaults to 2.5G, and fails to connect to a 1G link peer. You need
-to use ethtool to force it to the lower speed before the link works.
+IPPROTO_* definitions are used anywhere in the kernel as well as in
+userspace to set the layer 4 protocol field in IP headers.
 
-But from what i understand, you cannot use a 1000Base-X SFP, set the
-MAC to 100Mbps, and expect it to connect to a 100Base-FX SFP. So for
-me, the RTL8211FS should not be advertise 100Mbps and 1Gbps, it needs
-to talk to the SFP figure out exactly what it is, and only advertise
-the one mode which is supported.
+At least in Netfilter, there is code in userspace that relies on
+IPPROTO_MAX (not inclusive) to check for the maximum layer 4 protocol.
 
-    Andrew
+This patch restores IPPROTO_MAX to 256.
+
+Fixes: faf391c3826c ("tcp: Define IPPROTO_MPTCP")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+Alternatively, I can also define an internal __IPPROTO_MAX to 256 in
+userspace.  I understand an update on uapi at this stage might be
+complicated. Another possibility is to add a new definition
+IPPROTO_FIELD_MAX to uapi and set it to 256 that userspace could start
+using.
+
+ include/uapi/linux/in.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index 07a4cb149305..0600b03b49ee 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -80,10 +80,10 @@ enum {
+   IPPROTO_ETHERNET = 143,	/* Ethernet-within-IPv6 Encapsulation	*/
+ #define IPPROTO_ETHERNET	IPPROTO_ETHERNET
+   IPPROTO_RAW = 255,		/* Raw IP packets			*/
++  IPPROTO_MAX = 256,
+ #define IPPROTO_RAW		IPPROTO_RAW
+   IPPROTO_MPTCP = 262,		/* Multipath TCP connection		*/
+ #define IPPROTO_MPTCP		IPPROTO_MPTCP
+-  IPPROTO_MAX
+ };
+ #endif
+ 
+-- 
+2.30.2
+
