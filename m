@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14FB66651A7
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 03:20:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 059BA6651BA
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 03:26:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230111AbjAKCUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 21:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
+        id S233498AbjAKC0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 21:26:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235826AbjAKCUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 21:20:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3298C05;
-        Tue, 10 Jan 2023 18:20:18 -0800 (PST)
+        with ESMTP id S234716AbjAKC0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 21:26:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E19F1168
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 18:26:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DB49B81AB1;
-        Wed, 11 Jan 2023 02:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 157C5C433D2;
-        Wed, 11 Jan 2023 02:20:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A1B5B81A9C
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 02:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C9B7C433EF;
+        Wed, 11 Jan 2023 02:26:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673403616;
-        bh=G3X9KR9XcUtuo40UIMjSYPmMKjBh9PsVlFE84QeF+ow=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dj8ZJjq8iWxU6qXxeVP5K6hVrLmimpT1mgTz+X5BdWm4cKxwle28R8309G/rCTytE
-         3IPnRzQtrRI9MGSlzJayrZRj6MNr0gsjMEAmgNRWxeXCKHerSDJxtcgMLeNn22U/3X
-         9GFDFKp67K0DisweKp8XW2MdlEMP+snEP7vhYw7Rd2LPeqmaKIIoVivQc6P6FxHJpS
-         2gn0Kb9MrMWHundskL7DBPEjkiFI/c+vDxCLCVXXXRQfz9I09oiip4Porl2TxSVnVy
-         USlpenaBrInz6lneBliDBzk0injx+TUp+Bz+jbSZYxdgyEQDL1X/oy61SgGkM+1E8b
-         ZJ6zkiFeOK8lg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EBE45E21EE8;
-        Wed, 11 Jan 2023 02:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1673403968;
+        bh=d5Nwk+cB3rbmhsM5YkZwZ3Z1FTo/sexZC/I5snZnaVc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BXkU72AHBTBpZ/+s/BlNuXTEulukVbMCY05hU0PMyZbZab5RGDjwnc/7rzb4R1Tqr
+         K0RZlxtHY+lHu/Hq2fd/vHuF6pZdccEQ1swTv5Tv/lnxYBGT3JZWLo8NEPwsEmkgoT
+         KKeKFi8dz/SNRq/QJ1BhwzhevPPpsNj9q4GBEB3BRomLKsRB9JdHa2Avp1rR1LFlSQ
+         cAz7AZa/px5Orhsgc11mx22qZLf9FbvNR3Cp5D32sP9fxOuXgO4mwUSQHdvCbZ9vSX
+         kCJyIuTudms/cJWJfYBCiIccnZf/yHumVlz6ms3Mk3dj4u6IilOiwwGMgGAUDPhzL+
+         lnIx6MikP/nEA==
+Date:   Tue, 10 Jan 2023 18:26:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net 2/2] ice: Add check for kzalloc
+Message-ID: <20230110182607.3a41ab85@kernel.org>
+In-Reply-To: <20230109225358.3478060-3-anthony.l.nguyen@intel.com>
+References: <20230109225358.3478060-1-anthony.l.nguyen@intel.com>
+        <20230109225358.3478060-3-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: =?utf-8?q?=5BPATCH_net-next=5D_qed=3A_fix_a_typo_in_comment?=
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167340361596.6139.6625577007589986294.git-patchwork-notify@kernel.org>
-Date:   Wed, 11 Jan 2023 02:20:15 +0000
-References: <202301091935262709751@zte.com.cn>
-In-Reply-To: <202301091935262709751@zte.com.cn>
-To:     Yang Yang <yang.yang29@zte.com.cn>
-Cc:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dai.shixin@zte.com.cn
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,28 +55,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon,  9 Jan 2023 14:53:58 -0800 Tony Nguyen wrote:
+> @@ -470,21 +473,23 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
+>  	err = tty_register_driver(tty_driver);
+>  	if (err) {
+>  		dev_err(dev, "Failed to register TTY driver err=%d\n", err);
+> -
+> -		for (i = 0; i < ICE_GNSS_TTY_MINOR_DEVICES; i++) {
+> -			tty_port_destroy(pf->gnss_tty_port[i]);
+> -			kfree(pf->gnss_tty_port[i]);
+> -		}
+> -		kfree(ttydrv_name);
+> -		tty_driver_kref_put(pf->ice_gnss_tty_driver);
+> -
+> -		return NULL;
+> +		goto err_out;
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+FTR I think that depending on i == ICE_GNSS_TTY_MINOR_DEVICES
+here is fragile. I can merge as is, since the code is technically
+correct, but what you should have done is crate a new label, say
+err_unreg_all_ports, do:
 
-On Mon, 9 Jan 2023 19:35:26 +0800 (CST) you wrote:
-> From: Dai Shixin <dai.shixin@zte.com.cn>
-> 
-> Fix a typo of "permision" which should be "permission".
-> 
-> Signed-off-by: Dai Shixin <dai.shixin@zte.com.cn>
-> Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-> 
-> [...]
+	goto err_unreg_all_ports;
 
-Here is the summary with links:
-  - [net-next] qed: fix a typo in comment
-    https://git.kernel.org/netdev/net-next/c/a6f536063b69
+>  	}
+>  
+>  	for (i = 0; i < ICE_GNSS_TTY_MINOR_DEVICES; i++)
+>  		dev_info(dev, "%s%d registered\n", ttydrv_name, i);
+>  
+>  	return tty_driver;
+> +
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+And here add:
 
-
+err_unreg_all_ports:
+	i = ICE_GNSS_TTY_MINOR_DEVICES;
+> +err_out:
+> +	while (i--) {
+> +		tty_port_destroy(pf->gnss_tty_port[i]);
+> +		kfree(pf->gnss_tty_port[i]);
+> +	}
+> +	kfree(ttydrv_name);
+> +	tty_driver_kref_put(pf->ice_gnss_tty_driver);
+> +
+> +	return NULL;
