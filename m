@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7C7665F40
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 16:37:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0B0665F41
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 16:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238723AbjAKPhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 10:37:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S235195AbjAKPhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 10:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235195AbjAKPhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 10:37:01 -0500
+        with ESMTP id S235237AbjAKPhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 10:37:02 -0500
 Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2075.outbound.protection.outlook.com [40.107.8.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26607193F1
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:37:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C978E19C2C
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:37:01 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hxixX0gORvq/wSQenz/IKuXB5oZukahYcIKalGyx6rYq6MgO6GPUjSgMFdY4Dd9ZcB/sQBbeyUT8CsqgUID8IzcXetY8g+7EKiTzIBGlWOpstzRL82jz0jlQc44tnXld5uM2WPXYMvxaMkYTcPQa0sW9Lv2AyXm3fl+vwaH/9h4GgwaKBMFOFIIJgueW5RautkQFQMKYnNGIoej3eyg2RUmlZ/3wiuNldP4Wi42oVmWGOZzjp7G1JMfDbyYl7dVgmKA2vj2e5wCnCaiamIM10Zuw2tc/AGWj8WwffRC51vhxpCgbuYFECXlu2WcS0oxgsCmLYEERxJr3+DYFXm2vsg==
+ b=bE7EfZI88eDezY+pgGiYixozzdOZxlNnvMu05bjpXtkxQ24LO1hE/KEYAP3qSRWIhTWDIw/yjl599jlUWsNW7al8tvYja9m8nJs2KkH6xkhpydWWpEhGq/LB5KfJq1bcIRDxVWGsMZQ7scc2xb8+sYFL+GTjxW6PW1ST5jRYncfZ7wiX3smElFXYCAfBeiIXTMEC/XhFbInhHGRLzSD27ISQpHMmgVXdTxhiKGEk4KwOJMB5iYjjl17gwoAYXhu22Pvzv2fevLStIGWh1ex284nhC5msH7Duy0eBWfyE+/xXzBpS/y773MA48jYDktaTWVjsapd4wH/w0LvSVFE3AQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7cg0uVqCpb36tO07GP8oAuwT/JfFoWSoHvPz1N/ONoM=;
- b=NlGKpUJ2mnjg5yzsAPMvY0bjX9bU9goh6nogJGM2p32LgGZsGRjdtObhAvAiNqIChp21Er0WT69XGSYFyxW4NjplmQBPLCSIYS75+ZI7PZ2SyhR14+7grstTD863VR+pMwkoiLQ0kmYH954JV5KeLyA28f/vpV9tklKbeKadWOfIVUy5YtFrebFJ71FyWPbTmmP2RnkTIUlO+OquT6d998nMd1AOHK2239tVKK6nrTFuTW5lSUrNXeRpnJMhNQ0ee0JJQwppUu5AJ5J7JXsbFeVa4zWZy+buYDqs/249LlPPxORSpppI7EFWtLV/cgvqu7L7CQ9Vhr3RkYxzAAkPqw==
+ bh=AekLAKrl9J57NY7uc0QdErekD74BFKp7GR4CtO/oJrg=;
+ b=PazNzWy12McDs4Hw/7riAAvH44NPI+MyEKCx5k9mY9XFRVAQRjHoxBdiOp+jRNkfUt0+DCQUawCUcQqggOfPh3dCr7JYBye9wuzLDd63+3Tul8JSDBNaKckKq8H3TFtE35VKTH8WNsIl2Up5GXnY2YAgZ++soYNckj14nlcUjkiFNGdpm4xuaWjtLsOruUGT+t2v4xtuMrXAxHxbR8i2Yjq0BIRR2jo7RhjqG6OqH5xAgj4UcWNXuaBiCnI5gEM+9ZGDnphl+K+jsdLCV7ULnw+mNkOrLYrSFnuMqcaD+sXgykc5x83//Pu6fvUoN9B+mjgrzwtv+mNVcnDnTOSmpg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7cg0uVqCpb36tO07GP8oAuwT/JfFoWSoHvPz1N/ONoM=;
- b=LU+SBDZpglJAcD1hrkRz+PAT1jGlFzWwsyDuFAsyBPxP8UtCsd0AuxXMulskWquSvkiERrD6+RA4CajUssKpAEwJt9ZBn4OUOZESVx1//PKG/KrBL04OKjL9HO8kvJ7Jxd6QDbpVVqn+tq/TC0gAHwGq5WXQ+XFIXSU0923lr6E=
+ bh=AekLAKrl9J57NY7uc0QdErekD74BFKp7GR4CtO/oJrg=;
+ b=oEZJqacbbqdCmCXn3DNjMmTQ3ZQxSNgfZ2OUm/HCiSv/89F7O9KzdV/ROofTyD34Qykn4qiOTKapwVN2NmxAt5q6+8jKB91qpeZ3eHu1uDHkSbh2e0UBrLd4xJYfm2IdbXS7NdLbenvXVckJpHrtIccFa1eZEUOPvYct6CR695M=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM8PR04MB7219.eurprd04.prod.outlook.com (2603:10a6:20b:1d3::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Wed, 11 Jan
- 2023 15:36:56 +0000
+ 2023 15:36:57 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.5986.018; Wed, 11 Jan 2023
- 15:36:56 +0000
+ 15:36:57 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Michal Kubecek <mkubecek@suse.cz>,
         Jakub Kicinski <kuba@kernel.org>,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: [PATCH ethtool 4/5] netlink: pass the source of statistics for port stats
-Date:   Wed, 11 Jan 2023 17:36:37 +0200
-Message-Id: <20230111153638.1454687-5-vladimir.oltean@nxp.com>
+Subject: [PATCH ethtool 5/5] ethtool.8: update documentation with MAC Merge related bits
+Date:   Wed, 11 Jan 2023 17:36:38 +0200
+Message-Id: <20230111153638.1454687-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230111153638.1454687-1-vladimir.oltean@nxp.com>
 References: <20230111153638.1454687-1-vladimir.oltean@nxp.com>
@@ -58,51 +58,51 @@ X-ClientProxiedBy: BE1P281CA0090.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB7219:EE_
-X-MS-Office365-Filtering-Correlation-Id: b13630ff-41db-437a-c9e7-08daf3e9abda
+X-MS-Office365-Filtering-Correlation-Id: 5c7673ab-12e8-453d-2645-08daf3e9ac3a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6aKaJ4owzFia/nqjWkxvcREpw2x5Opi0NQkfOLGgsmUMNumoWUTFofnUbfjQaU9AB+T6+sxxSQuCcyJKGzCkKAoRs0b2R0J6FodDSGaXHwmQxZVG8X4L5aFOGrDL+FBkCubCyG2qHAR2kKtGz9fZG4uxk+b/eJujouSqSsu42N7cs+CuZnusxnNPuQGKYvFCQZOaEa75PJj4gMzUgqhl/1qSkTzeaovouhM1kWBRDV1XwkjZcqw++w9qnnrOcznMC0G4202S36XBAbXnb0lId2FPlEOskWHKo/EmNgATFHYQCCmoL7QRzD5RmImbaLjlqPifJ2c3tqdNWP85hYD8QeAYkjjnLa7loVGdyXN+pnSh34rBU5FcnUoZOUKZxl0rzv2EnM4tGpQQh3ifeSHKt/xMEIOqXQkPvSoZvMFBcKFV4rn7tl/Z13dzNxoTUKmsYpiioCMNvFhok0fz7O8qEqGIG/eTZYS7nLowaykQNP5Z7puAH+NjeXc5YVm841Cxbvj5zI5vdATwCoxl+7VeWIq1zh2O9mwm3zuhl0UkWLEDaHaFmT7Bb/z3Awt24CDushaC1ay8y933BKyDy5URUhSuxh1LV+9o0Pe0awxpv5+1dWzF0eparIaEUiQRwNYpylRMVqXYvajtSjY17EcH6dJWo4kRey7/QRMVPURuWnF6pqvIylnA0Cs3L/IusdLS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(451199015)(8936002)(2906002)(5660300002)(41300700001)(44832011)(52116002)(4326008)(316002)(66556008)(8676002)(6916009)(66476007)(66946007)(54906003)(26005)(6512007)(1076003)(38100700002)(2616005)(86362001)(38350700002)(186003)(36756003)(6506007)(6666004)(478600001)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: JuCbUkNZzyU3KLqapeWfwO1AqFYbLt7fVUh8Bwx71DIARWY5vAJWnJmJ+/GgsVkQHHreFol5G0eHzuwmiEUj1yuBUhqC+nXxlfK4xXd7THkwDd7mqiMh3WlUf1YjQ8lxYqvewFlWjpWAkWUP4PkF03Kr6RaaxG1eQd1P6PmvTrZZjEIUbwnTbSZy4dTu0vCp2o49p4NkXR8CJhnj3JjWiGgpXpt2+iBkewucAWunmCIep8PQq5wG6Ulbqbjt9zSTUcv4soVYJZvYrfDRUJPycN/dVC6fN/WGM8p3vHaQbdAOWIANcO2nGQYTB/n4MtkzEBqsxpFrLoYfM3eeNGH5xa374g9h8IeJmb0besMDpXzb5SJOvQuGxgYi0b//p7nhA5E309vg9ysEHdv7JqzW6WzzGoBJ73V5qGrQHyy2j1wlfWYfzO1wB2JPn7m5maJ1n1kPSCmwHgF2M8BhKwqwLdX9qLVA92VrxdOCW43dFxmMiYKOSzzEqBRtz4IgfgIe0Rv0WcWC6x/1FTgLTXSTMx07Ue5PlampOchH2mDiD5RMHkfC8OobVHKuPnQuIu8PRguMrGYKZLpTBauzg6vTSmf9YtzooXRpS5AMJd8VKfBze4q+SsG8K2w4r7N+nJU+OO6J2GSBfOxiy5r+wb/VZUlj2zKClGEtnW4ZcdAecdoKDVmMiWDZxq7O5nFNn7xW1A/3k70mPbqtJGWCm3hpKg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(451199015)(8936002)(2906002)(5660300002)(41300700001)(44832011)(52116002)(4326008)(316002)(66556008)(8676002)(6916009)(66476007)(66946007)(15650500001)(54906003)(26005)(6512007)(1076003)(38100700002)(2616005)(86362001)(38350700002)(186003)(83380400001)(36756003)(6506007)(6666004)(478600001)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5rCZY1qT56tvBHA0xLERw2y+y4goFavATSPpuwvWuT/4xjqdYZ5mXPoWmeCE?=
- =?us-ascii?Q?7puGz0SXHRxKJp1Jaz6wD2COU/1aKR36lVvUCLXp7QkxIYspMWrP6I6+CWLo?=
- =?us-ascii?Q?To+PViwmoeAsdegASQ0eUJUUspYyo0CwiU9v0rBl6Zh9L+/WjXFzYwL4szUc?=
- =?us-ascii?Q?YwApv6hfips7+hQp/Nho5lwRr65sO3cdzw9mi4WS2twIUBBCsQkWUGLBINou?=
- =?us-ascii?Q?LmjiI19Kqs2zsVNGOpOehYm5RkYzRY8srqLCeX3ieAZroouHtS2Vd2DxoB+9?=
- =?us-ascii?Q?V/d8LqXIS+ifgibyO1KkbsJmh6ML07oQ4iQseIiry7yYubEitwqd0dkkDRu9?=
- =?us-ascii?Q?4Qe056FOspVjtodghfEkPL1m1pb3QFggdPvTHJJo1si3jAJrCilnhWi9TQJO?=
- =?us-ascii?Q?KXuei/Xn3Izi5weFjy9lkNPyhN/tOWSK0kEHFZJ7IcFR03HKn+3LM4pILD1G?=
- =?us-ascii?Q?JUw7td+qsQ9k5qTPOjIeJYjZDUXahJgjyWw2wK2A0suXrlMwJOPgVovDniYT?=
- =?us-ascii?Q?O2mXEqlT91oEm/RbywjlRMblgWn84lUqu30SomTkLHbp8Jx6At2s6nwgPQ2o?=
- =?us-ascii?Q?Ian5FPERJksDGnPqePEqHUWy+6VmEiEH1WzodSahYNhHk55GU21IhoEbyFsv?=
- =?us-ascii?Q?oDNARzyQX/NJ1G0uhnlSDs6BoR4bfaGB//aPjertUwYJ9BYzcE/i2K/CRaNm?=
- =?us-ascii?Q?kxYHyWHc5mW5GkBuL00MfL4MmzkubvTj3EEzcCtzOjs/QZQz5pP3kU5yQB5x?=
- =?us-ascii?Q?BFLZVzCDJF9yg0ECTEguOHdvMH4SPO99EJSq+Pd6BegSHqcWdb0Fyr4tQsyL?=
- =?us-ascii?Q?++M/xBqcpQCDULF6c2k2/YE3eo69E6YE6axQbCTnkGbfUUd9Uu2a9ZCSeeaW?=
- =?us-ascii?Q?wf3z8A5TqoJ+pKhuriUvbypO3bFybL00R3rjiQWADuoa/iTwjk4EE6MX8XSl?=
- =?us-ascii?Q?qk+Vcs2egPLyhJ2qHby0rzWyioPpalf1RTQtSL3dBm9HI2CxQ5BjsXriLZ8e?=
- =?us-ascii?Q?5Zp8PJvh8IOJhd7PC8Lrl9Gw5/y7einYOX769ceJE4jbU7jfg1rP5O8Tx5yo?=
- =?us-ascii?Q?gQqJjsEjCUCa/M3yauBXiZPmowsOMToOUhRAbM9fjmeKrWQfcaL3aGTfJGyf?=
- =?us-ascii?Q?AMQx9cpYNNOKKnu6iK6G51rFb+28goviAVPZ+rBEJZlB//e/ZVhgKGIHATWa?=
- =?us-ascii?Q?8nRXHoSVOtl/SMPOJ4NLKcPdo9ZwAkt0gqBLLAR+YZ19Vrpcu1Ff8biw4SMm?=
- =?us-ascii?Q?JkscUvVQ00UYu7L8bqMcd36mPmlLaRsF1FteeS83wfC28CVJEjUojl/pliVY?=
- =?us-ascii?Q?PIf9kVDIi/sEGnJYd1IAp6Nl+5f5hGuAvCxkzx89cZ4isEl37jZmGcd54zzV?=
- =?us-ascii?Q?tKBTyrXMDbOFC41T5bI5nS+xgzO0f50qyszxG8UgMLd+8MaZk2WQwHFhhtvf?=
- =?us-ascii?Q?RyNSHxP97G8A+MJyg3HLp+A+UTmdqfZkIh0TAByUxaHLQ0zfRv0Kvi4P5jTr?=
- =?us-ascii?Q?45Me5DuOc5AjKm0uZncuUVfl7JyT+jLNH7u+TvjeLCLcQY5VGXJAvS02r0rJ?=
- =?us-ascii?Q?nviBos1x/3v0n3Wjw2eo+QuLjy1Sq+iOkFq63E178w677xs7/gRn5N1fOxh4?=
- =?us-ascii?Q?Mg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?etkQI//hA35cU94+1tRgzA7737QYcXUlnG8os0kkyZMfe30mZVPOZmvAWjSV?=
+ =?us-ascii?Q?uKEPtj8bPu6yHf/1M/cFHcZAjAK0F58EHmDkm4TRPn8a732lWrygMdCcahRc?=
+ =?us-ascii?Q?jFvfo9dsq5cq5k+aAKQMnBRy0oQlUEZSMr07R4OAiC9mjrtBdRFDaQi83a5v?=
+ =?us-ascii?Q?2Dl4UH9eQpf0sNQoHWXscrm4JOn5MRnsp4Jhx+8oNWQQvYQVjp7GAowFm0pY?=
+ =?us-ascii?Q?foANcG8mgbJji/ySyDs8ulcf+3Kg1DbY7LrQDMO52J3XGyoE75JFSCR4Puxq?=
+ =?us-ascii?Q?JKJl8P5ypkmKmAnrz0D8T0WJFrQZhQ6p9PiyyP2upz3jjeBCaZS+ZjoKhkma?=
+ =?us-ascii?Q?mKD1dmE29UgW/IE1dwJrwgY0BCuOdUSAODZ0Q+uYmuqlb+uJEDPe7bN/4Zly?=
+ =?us-ascii?Q?+p3Can5t5E2oxVmeTS4QC59XN2cRxDn6FMKxkDxx6RJ+SbQOVCdrOVsgBmZm?=
+ =?us-ascii?Q?h0FYknce9INWjHVnvmYgocI9Gf9ci+wJhKv50jPSbjwujMtxM4Fe6GLsMHqn?=
+ =?us-ascii?Q?VVwiW17TkaPd+s2Xlsgi8DeJ556NS9fAb1hBqEAIJ7NANxijGGPDEmsV3syN?=
+ =?us-ascii?Q?qbSYJHqfe5CGVGeLfehsiSt9pEQkaVF4cIxLfwBkHIEXmAlHdi7i6vW00FSh?=
+ =?us-ascii?Q?4mcN0A8vnG6SAtB3IyZv7A9dZM32XuPcx0vZtvKmfE5SMaN/sAJxWm3U+zV/?=
+ =?us-ascii?Q?L8OQWP+xbdcGFOARfH9gqGpNLRPuoxKNoMyLp+7GJ8F6s5gIiglqD6eLCJT2?=
+ =?us-ascii?Q?LIaRkDSPJESy/wLQvLjd+IMPGhRbQRqrHBqLXrERv3DLyFBHSxDGFODs4LCT?=
+ =?us-ascii?Q?ujrfLagx5l82CEROAzsL3w4KbYARrv/zCXRz0cHl3Ar3bfFYMWOJ1nJVQ/Xw?=
+ =?us-ascii?Q?wfD/WGYT7tLRjdx/LFWb0VbyQC8QwZDB80iiJex2C0uhl5a6bDzDrtuNtH/2?=
+ =?us-ascii?Q?vSaBK5ezXZQBTetTIWXWEY8fppDAuVN0pE+oQzvkR68bquS/Ri5DR4nzSo+D?=
+ =?us-ascii?Q?xb8FLQdmCB11Av7kzJZaef2bWml8xQIacpRPClz1BbhXaPh5C0gPfsBQy7zh?=
+ =?us-ascii?Q?LFkKw5HF68spRxVmMwaABuq3xMfqJ2voNEGJy7ya/2UwPbSFOF/Q1C7+qnBe?=
+ =?us-ascii?Q?7Ychiu2MvP0seHOY3DGZ/uYIX49ZmQQTzOBJcwGxyY3paeyX527lwySalKaz?=
+ =?us-ascii?Q?eWynPVcFQ92psoVFL+xamrNH00CcqauT5rykhc3HJjrEKwDei2gxSCqSZwmv?=
+ =?us-ascii?Q?aoTC3DIVMfFgeKsog3Gh4G9XpMyxhYnURGo/mOVR4xm/bycwB6t3VkqnTN3a?=
+ =?us-ascii?Q?ZCAFtvu/uSI++jrKjqHNhv0gzi7YMRVgEmKWUxElk8TB1kbLvcqSNwhwh6lv?=
+ =?us-ascii?Q?pwga3g9IMPPouoZzavtddAfvV8418QII2j659pMH2/cY1czUC/5LGn1req1R?=
+ =?us-ascii?Q?7rZ61nm7DGP4dBIYr+iXGhWqiApAtm6JG2a0v4y6W76urodGbDsGJ6/w9WnM?=
+ =?us-ascii?Q?EHvEETAfjz3l6fq7T3pthrEQ5FTBRawNQbgxM11Lb6VrrTclp193/ncJwj9V?=
+ =?us-ascii?Q?7MPneyeiDRrDnqnD62jNGhF99jndD9gpUkr9LyMInmqTNQjqEZ//8WVNuNGK?=
+ =?us-ascii?Q?gg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b13630ff-41db-437a-c9e7-08daf3e9abda
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c7673ab-12e8-453d-2645-08daf3e9ac3a
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 15:36:56.4080
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 15:36:57.0486
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iGybWj290qx+wFh6hwx/Jc8L6n5KZq32WySYUFd/VZYoNxTN2mUDTY6Blfw9yyMWgon4SuRGX9PLGLD13Zniiw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: +SCrXx78U3REX+jHJgcaLMTYgCmHevU19XEppHNL39mNqrWWMtyiAfuxC6gjIPTEmli5YGkTxn/vndfDTz9bkw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7219
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -114,49 +114,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the ETHTOOL_STATS_SRC_AGGREGATE attribute for the following
-structured port groups, to allow looking at eMAC and pMAC counters
-individually:
-
-$ ethtool -S eno2 --groups eth-mac eth-phy eth-ctrl rmon -- --src pmac
+Update the man page with the new --src argument for --show-pause, as
+well as with the new --show-mm and --set-mm commands.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- netlink/stats.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ ethtool.8.in | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
 
-diff --git a/netlink/stats.c b/netlink/stats.c
-index 9f609a4ec550..029aad29a135 100644
---- a/netlink/stats.c
-+++ b/netlink/stats.c
-@@ -268,6 +268,13 @@ err_free:
- 	return ret;
- }
- 
-+static const struct lookup_entry_u32 stats_src_values[] = {
-+	{ .arg = "aggregate",	.val = ETHTOOL_STATS_SRC_AGGREGATE },
-+	{ .arg = "emac",	.val = ETHTOOL_STATS_SRC_EMAC },
-+	{ .arg = "pmac",	.val = ETHTOOL_STATS_SRC_PMAC },
-+	{}
-+};
-+
- static const struct param_parser stats_params[] = {
- 	{
- 		.arg		= "--groups",
-@@ -283,6 +290,13 @@ static const struct param_parser stats_params[] = {
- 		.handler	= stats_parse_all_groups,
- 		.alt_group	= 1,
- 	},
-+	{
-+		.arg		= "--src",
-+		.type		= ETHTOOL_A_STATS_SRC,
-+		.handler	= nl_parse_lookup_u32,
-+		.handler_data	= stats_src_values,
-+		.min_argc	= 1,
-+	},
- 	{}
- };
- 
+diff --git a/ethtool.8.in b/ethtool.8.in
+index e13229bc7b99..f032d8c56088 100644
+--- a/ethtool.8.in
++++ b/ethtool.8.in
+@@ -490,6 +490,22 @@ ethtool \- query or control network driver and hardware settings
+ .I devname
+ .RB [ power\-mode\-policy
+ .BR high | auto ]
++.HP
++.B ethtool \-\-show\-mm
++.I devname
++.HP
++.B ethtool \-\-set\-mm
++.I devname
++.RB [ verify\-enabled
++.BR on | off ]
++.RB [ verify\-time
++.BR N ]
++.RB [ tx\-enabled
++.BR on | off ]
++.RB [ pmac\-enabled
++.BR on | off ]
++.RB [ add\-frag\-size
++.BR N ]
+ .
+ .\" Adjust lines (i.e. full justification) and hyphenate.
+ .ad
+@@ -533,6 +549,15 @@ displaying relevant device statistics for selected get commands.
+ .TP
+ .B \-a \-\-show\-pause
+ Queries the specified Ethernet device for pause parameter information.
++.RS 4
++.TP
++.A3 \fB\-\-src \fBaggregate\fP \fBemac\fP \fBpmac\fP
++If the MAC Merge layer is supported, request a particular source of device
++statistics (eMAC or pMAC, or their aggregate). Only valid if ethtool was
++invoked with the
++.B \-I \-\-include\-statistics
++argument.
++.RE
+ .TP
+ .B \-A \-\-pause
+ Changes the pause parameters of the specified Ethernet device.
+@@ -698,6 +723,10 @@ naming of NIC- and driver-specific statistics across vendors.
+ .TP
+ .B \fB\-\-groups [\fBeth\-phy\fP] [\fBeth\-mac\fP] [\fBeth\-ctrl\fP] [\fBrmon\fP]
+ Request groups of standard device statistics.
++.TP
++.A3 \fB\-\-src \fBaggregate\fP \fBemac\fP \fBpmac\fP
++If the MAC Merge layer is supported, request a particular source of device
++statistics (eMAC or pMAC, or their aggregate).
+ .RE
+ .TP
+ .B \-\-phy\-statistics
+@@ -1511,6 +1540,34 @@ administratively up and to low power mode when the last port using it is put
+ administratively down. The power mode policy can be set before a module is
+ plugged-in.
+ .RE
++.TP
++.B \-\-show\-mm
++Show the MAC Merge layer state. The ethtool argument
++.B \-I \-\-include\-statistics
++can be used with this command, and MAC Merge layer statistics counters will
++also be retrieved.
++.RE
++.TP
++.B \-\-set\-mm
++Set the MAC Merge layer parameters.
++.RS 4
++.TP
++.A2 verify-enabled \ on off
++Enable or disable the verification state machine.
++.TP
++.B verify-time \ N
++Set the interval in ms between verification attempts.
++.TP
++.A2 tx-enabled \ on off
++Administatively enable transmission for the pMAC.
++.TP
++.A2 pmac-enabled \ on off
++Enable reception for the pMAC.
++.TP
++.B add-frag-size \ N
++Set the minimum size of transmitted non-final fragments which can be received
++by the link partner.
++.RE
+ .SH BUGS
+ Not supported (in part or whole) on all network drivers.
+ .SH AUTHOR
 -- 
 2.34.1
 
