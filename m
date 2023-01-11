@@ -2,110 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F156664D5
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 21:28:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AA4D6664EE
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 21:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbjAKU2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 15:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44888 "EHLO
+        id S231732AbjAKUnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 15:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239582AbjAKU1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 15:27:49 -0500
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1923F125;
-        Wed, 11 Jan 2023 12:26:41 -0800 (PST)
-Received: by mail-ot1-f42.google.com with SMTP id p17-20020a9d6951000000b00678306ceb94so9475690oto.5;
-        Wed, 11 Jan 2023 12:26:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GtUlkPBnTibbizf/H3Nw9CiF2dvWYJd3fBoMYMkkY6o=;
-        b=eJZXtNG9fmL2IgALzepTbFMLTTId2h7zcZC+568o4WnNFQB/oDtx8qM78sBA8vXrbs
-         DZhYBH1Fjs+Z+8cD19DDpZiAhjPdV+WIKlynHnXSMcYhrLS2p4DGt9VbtFgXSHqPaGW/
-         7zylxPZb0sZt2D9qFvkA+IbiC+tczsxS3iAF8oFSELq3hLbI86SYDetDGk0k0bNkDuYQ
-         BwbVvoYPRShaGEqNXBrHB+ITFenniAd0xDe/OlavEJXl8UYCQrmQFcp1FjUJwg3/9kgF
-         /LtUID0TMjVKdJDrw7M4hDMR2m+2dfdDIYViLdGKxNJjRpvjOCBLYnMqnbFI9oSdZogT
-         05OA==
-X-Gm-Message-State: AFqh2kqR13EbrVvKG7ZaPqNpruw5QUVkukuEskS8n0rE615yidCX8HBD
-        xqhA5mZxQo1kbV36Xc8Hlw==
-X-Google-Smtp-Source: AMrXdXvk+/Ain/i5yL9ul+PeQV5I/RK3qfqLYNdxxu4RWqGzhh535t4/xZ1jsbIuH7DIsftuVkCLfA==
-X-Received: by 2002:a9d:7e8a:0:b0:670:9684:404c with SMTP id m10-20020a9d7e8a000000b006709684404cmr42684143otp.28.1673468801076;
-        Wed, 11 Jan 2023 12:26:41 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v26-20020a9d605a000000b0066eab2ec808sm8077274otj.1.2023.01.11.12.26.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 12:26:40 -0800 (PST)
-Received: (nullmailer pid 1362478 invoked by uid 1000);
-        Wed, 11 Jan 2023 20:26:39 -0000
-Date:   Wed, 11 Jan 2023 14:26:39 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Xu Liang <lxu@maxlinear.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/4] dt-bindings: net: phy: add MaxLinear
- GPY2xx bindings
-Message-ID: <20230111202639.GA1236027-robh@kernel.org>
-References: <20230109123013.3094144-1-michael@walle.cc>
- <20230109123013.3094144-3-michael@walle.cc>
+        with ESMTP id S229575AbjAKUnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 15:43:20 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CA0193F5
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 12:43:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673469799; x=1705005799;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EtjizMr5E4iDgC9Ead7gPLuADL1iqk77QOs9ivFTdEw=;
+  b=fIch0umLbea/jCtFf1ufLCPK3Fg+fUxYnhpPwkrzRqZBSB2hKZjMBemT
+   mRlFp24+o00dB12Kb19MKlPZnmgH/YtwIE1IYpKPn9OkehZO6KdsBRfuB
+   hSNQoBVv7/KYdXw2HHaVYHJg09Lpa4oILmdA6L8nVMTepZRpPUa7u1pFt
+   vH4DSs0kuchkogtZuFDOauekdzi3RA6w350xt4MgdrEs72++Vrj44OB4n
+   WFxrrxxiD/O3tzUUHa8htMez+/dY0VgcpLzADCX+foid1sB7SyfnJjsV3
+   AsGJXfvzMgf9nFj7JCYAMiWCpXCOcIm4waiXL/OS0xiy2ZkX2HVvFsICP
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="323593504"
+X-IronPort-AV: E=Sophos;i="5.96,317,1665471600"; 
+   d="scan'208";a="323593504"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2023 12:43:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="726056879"
+X-IronPort-AV: E=Sophos;i="5.96,317,1665471600"; 
+   d="scan'208";a="726056879"
+Received: from msu-dell.jf.intel.com ([10.166.233.5])
+  by fmsmga004.fm.intel.com with ESMTP; 11 Jan 2023 12:43:18 -0800
+From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
+        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
+Subject: [PATCH ethtool-next v6 0/2] add netlink support for rss get
+Date:   Wed, 11 Jan 2023 12:36:42 -0800
+Message-Id: <20230111203644.1176186-1-sudheer.mogilappagari@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230109123013.3094144-3-michael@walle.cc>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 01:30:11PM +0100, Michael Walle wrote:
-> Add the device tree bindings for the MaxLinear GPY2xx PHYs, which
-> essentially adds just one flag: maxlinear,use-broken-interrupts.
-> 
-> One might argue, that if interrupts are broken, just don't use
-> the interrupt property in the first place. But it needs to be more
-> nuanced. First, this interrupt line is also used to wake up systems by
-> WoL, which has nothing to do with the (broken) PHY interrupt handling.
+These patches add netlink based handler to fetch RSS information
+using "ethtool -x <eth> [context %d]" command.
 
-I don't understand how this is useful. If the interrupt line is asserted 
-after the 1st interrupt, how is it ever deasserted later on to be 
-useful. 
+Output without --json option
+$ethtool -x eno2
+RX flow hash indirection table for eno2 with 8 RX ring(s):
+    0:      0     0     0     0     0     0     0     0
+    8:      1     1     1     1     1     1     1     1
+   ...skip similar lines...
+  120:      7     7     7     7     7     7     7     7
+RSS hash key:
+be:c3:13:a6:59:9a:c3:c5:d8:60:75:2b:4c:b2:12:cc:5c:4e:34:
+8a:f9:ab:16:c7:19:5d:ab:1d:b5:c1:c7:57:c7:a2:e1:2b:e3:ea:
+02:60:88:8e:96:ef:2d:64:d2:de:2c:16:72:b6
+RSS hash function:
+    toeplitz: on
+    xor: off
+    crc32: off
 
-In any case, you could use 'wakeup-source' if that's the functionality 
-you need. Then just ignore the interrupt if 'wakeup-source' is not 
-present.
+Sample output with json option:
+$ethtool --json -x eno2
+[ {
+    "ifname": "eno2",
+    "rss-indirection-table": [ 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,
+    ...skip similar lines...
+    7,7,7,7,7,7,7,7 ],
+    "rss-hash-key": [ 190,195,19,166,..],
+    "rss-hash-function": "toeplitz"
+    } ]
 
-> Second and more importantly, there are devicetrees which have this
-> property set. Thus, within the driver we have to switch off interrupt
-> handling by default as a workaround. But OTOH, a systems designer who
-> knows the hardware and knows there are no shared interrupts for example,
-> can use this new property as a hint to the driver that it can enable the
-> interrupt nonetheless.
+Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+---
+v5:
+- Fixed use of same socket for fetching rings info and RSS info
+- Added checks to test if a field exists before accessing reply message
+- Refactor print functions and avoid use of ethtool_rxfh structure
 
-Pretty sure I said this already, but this schema has no effect. Add an 
-extra property to the example and see. No error despite your 
-'unevaluatedProperties: false'. Or drop 'interrupts-extended' and no 
-dependency error... 
+v4: 
+-Fixed hash function values in example output of commit message.
 
-You won't get errors as there's no defined way to decide when to apply 
-this because it is based on node name or compatible unless you do a 
-custom select, but I don't see what you would key off of here...
+v3:
+-Made hash key as an array of ints.
+-Skip json field when not supported.
+-Made hash function values as true/false instead of on/off
+-Formatted key strings as per review comments. 
 
-The real answer here is add a compatible. But I'm tired of pointing this 
-out to the networking maintainers every damn time. Ethernet PHYs are not 
-special.
+v2:
+-Added json support
+---
+Sudheer Mogilappagari (2):
+  Move code that print rss info into common file
+  netlink: add netlink handler for get rss (-x)
 
-Rob
+ Makefile.am            |   2 +-
+ common.c               |  36 +++++++
+ common.h               |   6 +-
+ ethtool.c              |  44 ++------
+ netlink/desc-ethtool.c |  11 ++
+ netlink/extapi.h       |   2 +
+ netlink/rss.c          | 231 +++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 295 insertions(+), 37 deletions(-)
+ create mode 100644 netlink/rss.c
+
+-- 
+2.31.1
+
