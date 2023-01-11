@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8904D6653D1
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 06:39:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E82346653D0
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 06:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232938AbjAKFjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 00:39:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        id S235932AbjAKFjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 00:39:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236065AbjAKFiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 00:38:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A95C5D
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 21:30:56 -0800 (PST)
+        with ESMTP id S236064AbjAKFiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 00:38:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A539C32
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 21:30:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2455B819F0
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 05:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E124C433D2;
-        Wed, 11 Jan 2023 05:30:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3861361A1E
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 05:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE38C433F0;
+        Wed, 11 Jan 2023 05:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673415053;
-        bh=HSVN6KB6TPZ3ULfrT5oLVlN7ugPGXD4OshGBK9sOoNA=;
+        s=k20201202; t=1673415054;
+        bh=ku1Ww/Ek+f3xpdnY9ASCzuy/9VhUwVezH+hclS7WAdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fOmmsQM31quzTAL3rmC0ABEvTo9k+WlvTAOwueyrWM00DVy46oJ/Nlpf1xPMw5uZE
-         9Uq02nS4QoQPSV+DCcuFa6JA4pwlPRc+ftazM36BLac3D03HY4LhelTSu+TiQpIH8y
-         0wXT4TubJKYviOybHyiH1nc9d7iIZCbfOECdX/ZakLfhgji9L9xn9HAz6gwn4S5Udn
-         zw6d+YGR1bWiROgTVkSPEhN/3UwPcQ+YpWweoI2ra9oFKsH6axjTNS4q7oafMWdBxE
-         GiRFq6rE6pxDPfNY3p8WxAMsr5dWGXoU5QZfqIK1v49XLgZEPoe9FC9jxWxTqQHLGs
-         Viql4Va1qpyGg==
+        b=IjHT1YtFD8nI9LdsD2NkhoOFwt7X8VHpPhZhz+DbYoVrFEukk4a2lNFl2zNgEnZsF
+         v4SOnPJyFBYQfbGTrEXVzCfBgAP9moj6M7a3NHu6y1ltT3Qnz8fXbMPu22hYyMYoRo
+         WF+pCLVEIhvHX4Oz86xEshf23ZRchuC3hav0CXfIBVqpiuqwFOIQTOcIoDkKUVtOP6
+         dItgRbGaac1OUDUt6cgDAadhv7F+B7KkgJraEbAsSwJizLZ0F68wobn7ioHMrXHnzH
+         +/1qaGrTN+/qagNCmMaE1uG1AEFJX/aDP8kynE+ctLtnCZRcPUudKZrvY9WhtNfnPo
+         kQ7IdvHjJ0JBw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,9 +38,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
-Subject: [net-next 05/15] net/mlx5e: kTLS, Add debugfs
-Date:   Tue, 10 Jan 2023 21:30:35 -0800
-Message-Id: <20230111053045.413133-6-saeed@kernel.org>
+Subject: [net-next 06/15] net/mlx5e: Add hairpin params structure
+Date:   Tue, 10 Jan 2023 21:30:36 -0800
+Message-Id: <20230111053045.413133-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230111053045.413133-1-saeed@kernel.org>
 References: <20230111053045.413133-1-saeed@kernel.org>
@@ -55,162 +55,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Gal Pressman <gal@nvidia.com>
 
-Add TLS debugfs to improve observability by exposing the size of the tls
-TX pool.
+In preparation for downstream work to expose hairpin queues parameters,
+introduce a hairpin parameters struct as part of the tc structure.
 
-To observe the size of the TX pool:
-$ cat /sys/kernel/debug/mlx5/<pci>/nic/tls/tx/pool_size
-
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Co-developed-by: Gal Pressman <gal@nvidia.com>
 Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ktls.c        | 22 +++++++++++++++++++
- .../mellanox/mlx5/core/en_accel/ktls.h        |  8 +++++++
- .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 22 +++++++++++++++++++
- 3 files changed, 52 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 52 +++++++++++++------
+ 1 file changed, 37 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
-index da2184c94203..eb5b09f81dec 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- // Copyright (c) 2019 Mellanox Technologies.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 9af2aa2922f5..800442eaf9b4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -71,6 +71,12 @@
+ #define MLX5E_TC_TABLE_NUM_GROUPS 4
+ #define MLX5E_TC_TABLE_MAX_GROUP_SIZE BIT(18)
  
-+#include <linux/debugfs.h>
- #include "en.h"
- #include "lib/mlx5.h"
- #include "en_accel/ktls.h"
-@@ -177,6 +178,15 @@ void mlx5e_ktls_cleanup_rx(struct mlx5e_priv *priv)
- 	destroy_workqueue(priv->tls->rx_wq);
- }
- 
-+static void mlx5e_tls_debugfs_init(struct mlx5e_tls *tls,
-+				   struct dentry *dfs_root)
-+{
-+	if (IS_ERR_OR_NULL(dfs_root))
-+		return;
-+
-+	tls->debugfs.dfs = debugfs_create_dir("tls", dfs_root);
-+}
-+
- int mlx5e_ktls_init(struct mlx5e_priv *priv)
- {
- 	struct mlx5e_tls *tls;
-@@ -189,11 +199,23 @@ int mlx5e_ktls_init(struct mlx5e_priv *priv)
- 		return -ENOMEM;
- 
- 	priv->tls = tls;
-+	priv->tls->mdev = priv->mdev;
-+
-+	mlx5e_tls_debugfs_init(tls, priv->dfs_root);
-+
- 	return 0;
- }
- 
- void mlx5e_ktls_cleanup(struct mlx5e_priv *priv)
- {
-+	struct mlx5e_tls *tls = priv->tls;
-+
-+	if (!mlx5e_is_ktls_device(priv->mdev))
-+		return;
-+
-+	debugfs_remove_recursive(tls->debugfs.dfs);
-+	tls->debugfs.dfs = NULL;
-+
- 	kfree(priv->tls);
- 	priv->tls = NULL;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-index 1c35045e41fb..fccf995ee16d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-@@ -4,6 +4,7 @@
- #ifndef __MLX5E_KTLS_H__
- #define __MLX5E_KTLS_H__
- 
-+#include <linux/debugfs.h>
- #include <linux/tls.h>
- #include <net/tls.h>
- #include "en.h"
-@@ -72,10 +73,17 @@ struct mlx5e_tls_sw_stats {
- 	atomic64_t rx_tls_del;
- };
- 
-+struct mlx5e_tls_debugfs {
-+	struct dentry *dfs;
-+	struct dentry *dfs_tx;
++struct mlx5e_hairpin_params {
++	struct mlx5_core_dev *mdev;
++	u32 num_queues;
++	u32 queue_size;
 +};
 +
- struct mlx5e_tls {
-+	struct mlx5_core_dev *mdev;
- 	struct mlx5e_tls_sw_stats sw_stats;
- 	struct workqueue_struct *rx_wq;
- 	struct mlx5e_tls_tx_pool *tx_pool;
-+	struct mlx5e_tls_debugfs debugfs;
+ struct mlx5e_tc_table {
+ 	/* Protects the dynamic assignment of the t parameter
+ 	 * which is the nic tc root table.
+@@ -93,6 +99,7 @@ struct mlx5e_tc_table {
+ 
+ 	struct mlx5_tc_ct_priv         *ct;
+ 	struct mapping_ctx             *mapping;
++	struct mlx5e_hairpin_params    hairpin_params;
  };
  
- int mlx5e_ktls_init(struct mlx5e_priv *priv);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-index 78072bf93f3f..6db27062b765 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- // Copyright (c) 2019 Mellanox Technologies.
- 
-+#include <linux/debugfs.h>
- #include "en_accel/ktls.h"
- #include "en_accel/ktls_txrx.h"
- #include "en_accel/ktls_utils.h"
-@@ -886,8 +887,24 @@ bool mlx5e_ktls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
- 	return false;
- }
- 
-+static void mlx5e_tls_tx_debugfs_init(struct mlx5e_tls *tls,
-+				      struct dentry *dfs_root)
-+{
-+	if (IS_ERR_OR_NULL(dfs_root))
-+		return;
-+
-+	tls->debugfs.dfs_tx = debugfs_create_dir("tx", dfs_root);
-+	if (!tls->debugfs.dfs_tx)
-+		return;
-+
-+	debugfs_create_size_t("pool_size", 0400, tls->debugfs.dfs_tx,
-+			      &tls->tx_pool->size);
-+}
-+
- int mlx5e_ktls_init_tx(struct mlx5e_priv *priv)
- {
-+	struct mlx5e_tls *tls = priv->tls;
-+
- 	if (!mlx5e_is_ktls_tx(priv->mdev))
- 		return 0;
- 
-@@ -895,6 +912,8 @@ int mlx5e_ktls_init_tx(struct mlx5e_priv *priv)
- 	if (!priv->tls->tx_pool)
- 		return -ENOMEM;
- 
-+	mlx5e_tls_tx_debugfs_init(tls, tls->debugfs.dfs);
-+
+ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
+@@ -1016,6 +1023,26 @@ static int mlx5e_hairpin_get_prio(struct mlx5e_priv *priv,
  	return 0;
  }
  
-@@ -903,6 +922,9 @@ void mlx5e_ktls_cleanup_tx(struct mlx5e_priv *priv)
- 	if (!mlx5e_is_ktls_tx(priv->mdev))
- 		return;
- 
-+	debugfs_remove_recursive(priv->tls->debugfs.dfs_tx);
-+	priv->tls->debugfs.dfs_tx = NULL;
++static void
++mlx5e_hairpin_params_init(struct mlx5e_hairpin_params *hairpin_params,
++			  struct mlx5_core_dev *mdev)
++{
++	u64 link_speed64;
++	u32 link_speed;
 +
- 	mlx5e_tls_tx_pool_cleanup(priv->tls->tx_pool);
- 	priv->tls->tx_pool = NULL;
- }
++	hairpin_params->mdev = mdev;
++	/* set hairpin pair per each 50Gbs share of the link */
++	mlx5e_port_max_linkspeed(mdev, &link_speed);
++	link_speed = max_t(u32, link_speed, 50000);
++	link_speed64 = link_speed;
++	do_div(link_speed64, 50000);
++	hairpin_params->num_queues = link_speed64;
++
++	hairpin_params->queue_size =
++		BIT(min_t(u32, 16 - MLX5_MPWRQ_MIN_LOG_STRIDE_SZ(mdev),
++			  MLX5_CAP_GEN(mdev, log_max_hairpin_num_packets)));
++}
++
+ static int mlx5e_hairpin_flow_add(struct mlx5e_priv *priv,
+ 				  struct mlx5e_tc_flow *flow,
+ 				  struct mlx5e_tc_flow_parse_attr *parse_attr,
+@@ -1027,8 +1054,6 @@ static int mlx5e_hairpin_flow_add(struct mlx5e_priv *priv,
+ 	struct mlx5_core_dev *peer_mdev;
+ 	struct mlx5e_hairpin_entry *hpe;
+ 	struct mlx5e_hairpin *hp;
+-	u64 link_speed64;
+-	u32 link_speed;
+ 	u8 match_prio;
+ 	u16 peer_id;
+ 	int err;
+@@ -1081,21 +1106,16 @@ static int mlx5e_hairpin_flow_add(struct mlx5e_priv *priv,
+ 		 hash_hairpin_info(peer_id, match_prio));
+ 	mutex_unlock(&tc->hairpin_tbl_lock);
+ 
+-	params.log_data_size = clamp_t(u8, 16,
+-				       MLX5_CAP_GEN(priv->mdev, log_min_hairpin_wq_data_sz),
+-				       MLX5_CAP_GEN(priv->mdev, log_max_hairpin_wq_data_sz));
+-	params.log_num_packets = params.log_data_size -
+-				 MLX5_MPWRQ_MIN_LOG_STRIDE_SZ(priv->mdev);
+-	params.log_num_packets = min_t(u8, params.log_num_packets,
+-				       MLX5_CAP_GEN(priv->mdev, log_max_hairpin_num_packets));
++	params.log_num_packets = ilog2(tc->hairpin_params.queue_size);
++	params.log_data_size =
++		clamp_t(u32,
++			params.log_num_packets +
++				MLX5_MPWRQ_MIN_LOG_STRIDE_SZ(priv->mdev),
++			MLX5_CAP_GEN(priv->mdev, log_min_hairpin_wq_data_sz),
++			MLX5_CAP_GEN(priv->mdev, log_max_hairpin_wq_data_sz));
+ 
+ 	params.q_counter = priv->q_counter;
+-	/* set hairpin pair per each 50Gbs share of the link */
+-	mlx5e_port_max_linkspeed(priv->mdev, &link_speed);
+-	link_speed = max_t(u32, link_speed, 50000);
+-	link_speed64 = link_speed;
+-	do_div(link_speed64, 50000);
+-	params.num_channels = link_speed64;
++	params.num_channels = tc->hairpin_params.num_queues;
+ 
+ 	hp = mlx5e_hairpin_create(priv, &params, peer_ifindex);
+ 	hpe->hp = hp;
+@@ -5217,6 +5237,8 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
+ 	tc->ct = mlx5_tc_ct_init(priv, tc->chains, &tc->mod_hdr,
+ 				 MLX5_FLOW_NAMESPACE_KERNEL, tc->post_act);
+ 
++	mlx5e_hairpin_params_init(&tc->hairpin_params, dev);
++
+ 	tc->netdevice_nb.notifier_call = mlx5e_tc_netdev_event;
+ 	err = register_netdevice_notifier_dev_net(priv->netdev,
+ 						  &tc->netdevice_nb,
 -- 
 2.39.0
 
