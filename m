@@ -2,155 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 590DE665A17
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 12:29:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A99A665AB8
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 12:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbjAKL3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 06:29:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        id S231202AbjAKLrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 06:47:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231841AbjAKL3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 06:29:15 -0500
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89B73642B
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 03:29:13 -0800 (PST)
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 26465A7B8D;
-        Wed, 11 Jan 2023 11:29:11 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1673436551; bh=7VIN3OFFNZCriJpbEg3+soj/c0yDyL7eDI3QFUqcuHY=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Wed,=2011=20Jan=202023=2011:29:10=20+0000|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Cong=20Wang=20<xiyou.wangcong@
-         gmail.com>|Cc:=20netdev@vger.kernel.org,=20saeed@kernel.org,=20gna
-         ult@redhat.com,=0D=0A=09Cong=20Wang=20<cong.wang@bytedance.com>,=0
-         D=0A=09Tetsuo=20Handa=20<penguin-kernel@I-love.SAKURA.ne.jp>,=0D=0
-         A=09Jakub=20Sitnicki=20<jakub@cloudflare.com>,=0D=0A=09Eric=20Duma
-         zet=20<edumazet@google.com>|Subject:=20Re:=20[Patch=20net=20v2=201
-         /2]=20l2tp:=20convert=20l2tp_tunnel_list=20to=20idr|Message-ID:=20
-         <20230111112910.GA4173@katalix.com>|References:=20<20230110210030.
-         593083-1-xiyou.wangcong@gmail.com>=0D=0A=20<20230110210030.593083-
-         2-xiyou.wangcong@gmail.com>|MIME-Version:=201.0|Content-Dispositio
-         n:=20inline|In-Reply-To:=20<20230110210030.593083-2-xiyou.wangcong
-         @gmail.com>;
-        b=i7FifEblsGZyK49GDkIqmImQo6gnnPquI+H2R5o4VGUj+/Cbq6/zw1rORSNN4IfDi
-         irh+arjQIfouG8nHgslXVbXgQ3Y94v/lu+lpKnsrkVFEu9IV1drl4ZCPEi4v0+MZsV
-         De4Vi0Hgkstju7IUG13mBLOV0Ie/NyLlYTx51ovAjnzuKajZcPupZMlMunCZmC6fr6
-         7pANUzu+jqQKm+kBns8rF88zR7T2LO0y81+L7JA5ABQLfqXmjhXjKBTjuA6QL0jWtY
-         auabTCGKeSigXjEZ8KvW6TDcu6HxcENjsYcxmSUIWoancFz5qu44/XbZMzmF/T7Q5T
-         jNBxL+eS+A1Rw==
-Date:   Wed, 11 Jan 2023 11:29:10 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, saeed@kernel.org, gnault@redhat.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [Patch net v2 1/2] l2tp: convert l2tp_tunnel_list to idr
-Message-ID: <20230111112910.GA4173@katalix.com>
-References: <20230110210030.593083-1-xiyou.wangcong@gmail.com>
- <20230110210030.593083-2-xiyou.wangcong@gmail.com>
+        with ESMTP id S236364AbjAKLq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 06:46:26 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522B5192A1;
+        Wed, 11 Jan 2023 03:44:54 -0800 (PST)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 30BBiaDi030624;
+        Wed, 11 Jan 2023 05:44:36 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1673437476;
+        bh=j+h4JevHnwLFduKRSkeB5LMLLoTDYPUgl2/FrQXToy8=;
+        h=From:To:CC:Subject:Date;
+        b=n7jLSB52OEMEjjH8H89vZdiNEZYkKUuR8HDlUvY9KQTDZQgB+4+w6fuzU7F8Pi8Ro
+         LSkjs/fO1lT6sBhs19OuBJSHVlTKWT7EZUW13q3u8VJv4h8GdvDojWwi3/wZop+mzF
+         iWZQkNnv2SOvMMuA02D5fCC1asLrVVyTzGlPcaK0=
+Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 30BBiaIW011889
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 11 Jan 2023 05:44:36 -0600
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 11
+ Jan 2023 05:44:35 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 11 Jan 2023 05:44:35 -0600
+Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 30BBiUkH093892;
+        Wed, 11 Jan 2023 05:44:31 -0600
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nm@ti.com>,
+        <kristo@kernel.org>, <vigneshr@ti.com>, <rogerq@kernel.org>,
+        <nsekhar@ti.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH net-next 0/5] Add PPS support to am65-cpts driver
+Date:   Wed, 11 Jan 2023 17:14:24 +0530
+Message-ID: <20230111114429.1297557-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="X1bOJ3K7DJ5YkBrT"
-Content-Disposition: inline
-In-Reply-To: <20230110210030.593083-2-xiyou.wangcong@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The CPTS hardware doesn't support PPS signal generation. Using the GenFx
+(periodic signal generator) function, it is possible to model a PPS signal
+followed by routing it via the time sync router to the CPTS_HWy_TS_PUSH
+(hardware time stamp) input, in order to generate timestamps at 1 second
+intervals.
 
---X1bOJ3K7DJ5YkBrT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series adds driver support for enabling PPS signal generation.
+Additionally, the documentation for the am65-cpts driver is updated with
+the bindings for the "ti,pps" property, which is used to inform the
+pair [CPTS_HWy_TS_PUSH, GenFx] to the cpts driver. The PPS example is
+enabled for AM625-SK board by default, by adding the timesync_router node
+to the AM62x SoC, and configuring it for PPS in the AM625-SK board dts.
 
-On  Tue, Jan 10, 2023 at 13:00:29 -0800, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
->=20
-> l2tp uses l2tp_tunnel_list to track all registered tunnels and
-> to allocate tunnel ID's. IDR can do the same job.
->=20
-> More importantly, with IDR we can hold the ID before a successful
-> registration so that we don't need to worry about late error
-> handling, it is not easy to rollback socket changes.
->=20
-> This is a preparation for the following fix.
->=20
-> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Cc: Guillaume Nault <gnault@redhat.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/l2tp/l2tp_core.c | 85 ++++++++++++++++++++++----------------------
->  1 file changed, 42 insertions(+), 43 deletions(-)
->=20
-> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-> index 9a1415fe3fa7..894bc9ff0e71 100644
-> --- a/net/l2tp/l2tp_core.c
-> +++ b/net/l2tp/l2tp_core.c
-<snip>
-> @@ -1455,12 +1456,19 @@ static int l2tp_validate_socket(const struct sock=
- *sk, const struct net *net,
->  int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->  			 struct l2tp_tunnel_cfg *cfg)
->  {
-> -	struct l2tp_tunnel *tunnel_walk;
-> -	struct l2tp_net *pn;
-> +	struct l2tp_net *pn =3D l2tp_pernet(net);
-> +	u32 tunnel_id =3D tunnel->tunnel_id;
->  	struct socket *sock;
->  	struct sock *sk;
->  	int ret;
-> =20
-> +	spin_lock_bh(&pn->l2tp_tunnel_idr_lock);
-> +	ret =3D idr_alloc_u32(&pn->l2tp_tunnel_idr, NULL, &tunnel_id, tunnel_id,
-> +			    GFP_ATOMIC);
-> +	spin_unlock_bh(&pn->l2tp_tunnel_idr_lock);
-> +	if (ret)
-> +		return ret;
-> +
+Grygorii Strashko (3):
+  dt-binding: net: ti: am65x-cpts: add 'ti,pps' property
+  net: ethernet: ti: am65-cpts: add pps support
+  net: ethernet: ti: am65-cpts: adjust pps following ptp changes
 
-I believe idr_alloc_u32 will return one of ENOSPC or ENOMEM on
-failure, whereas previously this ID check explicitly returned EEXIST
-when there was an existing tunnel in the list with the specified ID.
+Siddharth Vadapalli (2):
+  arm64: dts: ti: k3-am62-main: Add timesync router node
+  arm64: dts: ti: k3-am625-sk: Add cpsw3g cpts PPS support
 
-The return code is directly reflected back to userspace in the
-pppol2tp case at least (via. the connect handler).
+ .../bindings/net/ti,k3-am654-cpts.yaml        |   8 +
+ arch/arm64/boot/dts/ti/k3-am62-main.dtsi      |   9 ++
+ arch/arm64/boot/dts/ti/k3-am625-sk.dts        |  20 +++
+ drivers/net/ethernet/ti/am65-cpts.c           | 144 ++++++++++++++++--
+ 4 files changed, 166 insertions(+), 15 deletions(-)
 
-I don't know whether the failure return code could be considered part
-of the userspace API or not, but should we be trying to return the
-same error code for the "that ID is already in use" case?
+-- 
+2.25.1
 
---=20
-Tom Parkin
-Katalix Systems Ltd
-https://katalix.com
-Catalysts for your Embedded Linux software development
-
---X1bOJ3K7DJ5YkBrT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmO+nYIACgkQlIwGZQq6
-i9BdtQgAgymapJZBHnLO2jW2U4HOgVTAKAFLWpa1EjYHXaHAUtCEQZAQW4IuNbeH
-5805SLXqR1NooaEOGhgAD31uyl8DHLHqF/L+THhFyEhQpE5bY29Obj3Lv2yAoq6V
-CzYSMSk/w57oplslxT2LavhkYzETObjwZ0NfTMhQdvS/cUpR94KJH63h2n6JdjV8
-EQL5kYCNuxoZk95XPG8MyCpizdjGVI3c5BQNmIipwDvSSR43NNGTCEC9CI68+URz
-j8UPluz0K/WSFYhn9Xc/nfK/wBPBp7D0FXhBfwoOQNOsnlReWxt1OP83Ccupo/l+
-suBCd9RCQfFZ1yBR1JepfJlyNUd9fg==
-=ilt7
------END PGP SIGNATURE-----
-
---X1bOJ3K7DJ5YkBrT--
