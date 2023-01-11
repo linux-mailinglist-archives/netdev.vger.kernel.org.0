@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B006652BD
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD9D6652B5
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:22:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235311AbjAKEWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 23:22:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
+        id S235059AbjAKEWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 23:22:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231596AbjAKEWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:22:14 -0500
+        with ESMTP id S231332AbjAKEWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:22:10 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87A810568
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AEC7646
         for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:22:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=V/N8ZDynthW5Fc5GLNsWK45Y4vcH+YJgVhAgrk4URbs=; b=bLXhO64CiVSYtCXYvg7dj2411b
-        6Ih8FOPtWZtKEy7IVmUOEV+d89FQF98GOFKAmZR5T2nQJuT7FwpgYskeYrGvUoeMD5okrfF/nvb6E
-        LhmdFmC3bh6g12Aiw3j6UkvGuG/nvKd2yYsr+9WxgpzjLwqQZc2/WgyJTgfyC3wmBBXPIU7s7zGYn
-        rcYEIkFAEW6rObiVuPRLo6SsZa6Eg0kfRfQMOwsoVux8qWYRO0Pb+U+BlNlMXIdf0CQSVf9LhqGFC
-        4xgvixNEoR1V298HVLSrUmHJza/v2FjW8e86Sh3iUVMd25nP7jAbSAouI1PlonCOZoIZam0yiuFMX
-        XIWR8J6w==;
+        bh=QoaAG2kAgAPkNcCiK7t3f4EkfcuvVTfPdM/eyK8Bayk=; b=LU13WSn36J9OyqWY+IaUSE1Z1a
+        Wievx5eQ/zQzEuLLnrGjXadW9SAJKWjA/DuQQCaUb3MVIhvqejVrFFFhudRXk4fXO2VNATzrniZA9
+        a0Sjzs/o5e7HT8brbzoy9sYz75dwKQtKY0M9RywnOjCKFqTpe2voPwqa61J9NGOLiBTFDikR82UIO
+        8lzQRpz4gCh1sA6sany3BfM5AZSwYjpoX7lUeRLHaVvuj3tVCE6olVaWGA/Hj/N0OG8NcUcjR8b4N
+        +B5yIlhOzDqUlINl/7yiVNKasqCb57RkNbj59aBCO7UQNaRPgwRcbGiIPTax2VE1kKtCS8sdoaEWL
+        IqPDGWXg==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pFSd0-003nz0-5e; Wed, 11 Jan 2023 04:22:18 +0000
+        id 1pFSd0-003nz7-A7; Wed, 11 Jan 2023 04:22:18 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     Jesper Dangaard Brouer <hawk@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         netdev@vger.kernel.org, linux-mm@kvack.org,
         Shakeel Butt <shakeelb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH v3 22/26] page_pool: Pass a netmem to init_callback()
-Date:   Wed, 11 Jan 2023 04:22:10 +0000
-Message-Id: <20230111042214.907030-23-willy@infradead.org>
+Subject: [PATCH v3 23/26] net: Add support for netmem in skb_frag
+Date:   Wed, 11 Jan 2023 04:22:11 +0000
+Message-Id: <20230111042214.907030-24-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230111042214.907030-1-willy@infradead.org>
 References: <20230111042214.907030-1-willy@infradead.org>
@@ -51,60 +50,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the only user of init_callback.
+Allow drivers to add netmem to skbs & retrieve them again.  If the
+VM_BUG_ON triggers, we can add a call to compound_head() either in
+this function or in page_netmem().
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- include/net/page_pool.h | 2 +-
- net/bpf/test_run.c      | 4 ++--
- net/core/page_pool.c    | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ include/linux/skbuff.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 2f0cd018b8f2..af8ba8a0dd05 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -181,7 +181,7 @@ struct page_pool_params {
- 	enum dma_data_direction dma_dir; /* DMA mapping direction */
- 	unsigned int	max_len; /* max DMA sync memory size */
- 	unsigned int	offset;  /* DMA addr offset */
--	void (*init_callback)(struct page *page, void *arg);
-+	void (*init_callback)(struct netmem *nmem, void *arg);
- 	void *init_arg;
- };
- 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 2723623429ac..bd3c64e69f6e 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -116,9 +116,9 @@ struct xdp_test_data {
- #define TEST_XDP_FRAME_SIZE (PAGE_SIZE - sizeof(struct xdp_page_head))
- #define TEST_XDP_MAX_BATCH 256
- 
--static void xdp_test_run_init_page(struct page *page, void *arg)
-+static void xdp_test_run_init_page(struct netmem *nmem, void *arg)
- {
--	struct xdp_page_head *head = phys_to_virt(page_to_phys(page));
-+	struct xdp_page_head *head = netmem_to_virt(nmem);
- 	struct xdp_buff *new_ctx, *orig_ctx;
- 	u32 headroom = XDP_PACKET_HEADROOM;
- 	struct xdp_test_data *xdp = arg;
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 5624cdae1f4e..a1e404a7397f 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -334,7 +334,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
- 	nmem->pp = pool;
- 	nmem->pp_magic |= PP_SIGNATURE;
- 	if (pool->p.init_callback)
--		pool->p.init_callback(netmem_page(nmem), pool->p.init_arg);
-+		pool->p.init_callback(nmem, pool->p.init_arg);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 4c8492401a10..4b04240385cc 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3346,6 +3346,12 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
+ 	return frag->bv_page;
  }
  
- static void page_pool_clear_pp_info(struct netmem *nmem)
++static inline struct netmem *skb_frag_netmem(const skb_frag_t *frag)
++{
++	VM_BUG_ON_PAGE(PageTail(frag->bv_page), frag->bv_page);
++	return page_netmem(frag->bv_page);
++}
++
+ /**
+  * __skb_frag_ref - take an addition reference on a paged fragment.
+  * @frag: the paged fragment
+@@ -3454,6 +3460,11 @@ static inline void __skb_frag_set_page(skb_frag_t *frag, struct page *page)
+ 	frag->bv_page = page;
+ }
+ 
++static inline void __skb_frag_set_netmem(skb_frag_t *frag, struct netmem *nmem)
++{
++	__skb_frag_set_page(frag, netmem_page(nmem));
++}
++
+ /**
+  * skb_frag_set_page - sets the page contained in a paged fragment of an skb
+  * @skb: the buffer
 -- 
 2.35.1
 
