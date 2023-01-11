@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88FCE665F97
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 16:48:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C622665F9B
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 16:49:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239398AbjAKPsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 10:48:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
+        id S235658AbjAKPs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 10:48:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239364AbjAKPrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 10:47:43 -0500
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A58E392EC
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:44:32 -0800 (PST)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-4d0f843c417so86310507b3.7
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 07:44:31 -0800 (PST)
+        with ESMTP id S239657AbjAKPsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 10:48:38 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F21C34774;
+        Wed, 11 Jan 2023 07:47:51 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id c8-20020a17090a4d0800b00225c3614161so20433439pjg.5;
+        Wed, 11 Jan 2023 07:47:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=jab6oIU+d7nh/HCG7p9Q+mV4z+9I+vSbLspe/IwR6NQ=;
-        b=TjXTbsX0RPFT5TKtVkfQVwXPGZ6XVErmSjqakRPrBadWJKp9lxPkTbM6HiJ5U1B9ki
-         hoWDpgd7bsmahjPfPKynzrS2D9yrmJIypcrGc2cp2mIdMkqbrIRCqYrucYYuBj6jSYrh
-         Onwguu+OFQfmhR8EclgcH2sDd3P57mkKXP5xxJqF+4QTP2oQzUzK+1DaCvnHA9yHtq2t
-         8xZxU+OC5hNKwomy8iCsAW7zcFdUgNHsLEeUvlFIOhZ67LFcpHAc6SK59ja9mZEZl23X
-         rF5F963wrFqUc660nKc8MjOcuYr1k3MgYf8uX3Vvflro2v08hJ6Z+iUpq6sNljR0Iqar
-         eW7Q==
+        bh=Gj+rHUQSHl08kG5q/y5nClhBM+nXgO1wjgjAshKqRk4=;
+        b=BA2MTP8TRivv5ERqEnO+FDXOnY5MGer/9WLPAKaw8wQUvIBNxsRh57uL9s8vhJ+qCy
+         Fxv4LGKl0dzupA/mFiJLV5n5+xaz7/oUy05rIzAPz7STFw4Ux0B1+zO37hSvsC1CmTcK
+         KUawJMgPgHd4ZqdnQSK24z2zfBI4u0R8kcqkmKKjnmaXgYRmm2TYPUbm6yNxKo7N/tC+
+         55QpGyiz+5yliIiBlZt/zss5KKUAJE/9I44xCllcy/POmvOH8Jj4Tpfl5UWD/IP0u/li
+         +fCvkAA7fC5op6sbxMc7KqGTF5ixYoVjf+MlkoJRSqMADNTAIs/tOP7pPKiQmL3pgtW8
+         /UlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jab6oIU+d7nh/HCG7p9Q+mV4z+9I+vSbLspe/IwR6NQ=;
-        b=0pOnwMv4a/U4IRoZPQPHkRXB5XvaIa3TaE1Yt5Hdy6DLRRM3F890PZViLzf+WaFCOr
-         y6mgk+Rg59dwKcm33D9WXDJZX/pkyHt7YG7Wq8wnfRjWzoH0Mzd6iFMvHSW1h46vjnhf
-         YemKO7XfhGNmKoT7hyBqn/c5lWBl3CJJ/n2pGsY4/xQC/GXE5Lbwvpumv6ficey+l0rQ
-         7qNgbxqOKgGJMAraiySKpO7XjEKJRJbi3WBX/MQWgUvFySGPW7stzUp6UMnoMfv+n+gk
-         i8MvC8VaxKlcnwixnivGGfl0oBSgFyO/DWbvmM+vUDMcUSqRS48unLfUehFURgYH8ZOh
-         fzKw==
-X-Gm-Message-State: AFqh2kr2PgqPBgqFZ3UkeP+Mww6iE+wNXyOWkINFpj+4ZwzmnkZ6j9Nu
-        JI+4IJRrMVsZplc7XfnAPOurHviuhQZUP3UGMhqY/b62aaMeLrX9
-X-Google-Smtp-Source: AMrXdXs2Es6S5GRw4U9xcdK05+efdlU/UK9pFU+J5jTfzQO1VhLoQb0vK24TXage0QJs4W7ahnonnsGdiTTD88dml20=
-X-Received: by 2002:a0d:f846:0:b0:3f6:489a:a06f with SMTP id
- i67-20020a0df846000000b003f6489aa06fmr15964ywf.470.1673451869354; Wed, 11 Jan
- 2023 07:44:29 -0800 (PST)
+        bh=Gj+rHUQSHl08kG5q/y5nClhBM+nXgO1wjgjAshKqRk4=;
+        b=4y9iAXoWzHKU/OBMqIjBNH5t9tQHgG6Pya412TS7CqLa2mLEcUrNoCY/gGBzoc2F+L
+         kywwS3/enEJC+95EP0Qs44Tazf+wZaeIZKaQ164ilAU2dNPdAe5nIWYAaB6IM5OmWh37
+         8Brc0I8o8UI8ufBkqDVD0QtFPOcNNpzT8Y+MAKa4zB19nb75iNo7k66UOaogsMMOgQgQ
+         UXGEoanN+Se4jTgKHJsfVZXcj9DlqPwOCs64A3X/FeR11VvT3KBGRYTe3x1MW62810Tz
+         KGwZ02akC4yyXPrjJLvWjQ0+8+fPqX/TG4k5ni3mpdFitQk9HUS0iWCWGUbSxQvnjn9s
+         pUYQ==
+X-Gm-Message-State: AFqh2kroQe2/2T5A/HpglP7rCi9uyWqs63kcIGzuHqZKjM5tE2yQwRkS
+        ckaqB5RWv2XaTS84dGSnEEAs9cwwY4YYHmcxKio=
+X-Google-Smtp-Source: AMrXdXugVy81scU/ovy38kPXgK2XTNp3pAqYobSDJPO7mipFqeXtmPEHSEe24ieDNYOyCaNvXpZLQPLAHrSNv76ck3E=
+X-Received: by 2002:a17:902:8a8f:b0:190:fc28:8cb6 with SMTP id
+ p15-20020a1709028a8f00b00190fc288cb6mr4195582plo.144.1673452070938; Wed, 11
+ Jan 2023 07:47:50 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1673423199.git.william.xuanziyang@huawei.com> <b231c7d0acacd702284158cd44734e72ef661a01.1673423199.git.william.xuanziyang@huawei.com>
-In-Reply-To: <b231c7d0acacd702284158cd44734e72ef661a01.1673423199.git.william.xuanziyang@huawei.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Wed, 11 Jan 2023 10:43:52 -0500
-Message-ID: <CA+FuTSfGDdXTGZsjK+NhZmzirawh+09HF4v-5Cr1+4boxfqnXQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] bpf: Add ipip6 and ip6ip decap support
- for bpf_skb_adjust_room()
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org
+References: <20230110173007.57110-1-szymon.heidrich@gmail.com>
+ <ece5f6a7fad9eb55d0fbf97c6227571e887c2c33.camel@gmail.com> <d06d2e44-7403-7e7e-1936-588139bf448e@gmail.com>
+In-Reply-To: <d06d2e44-7403-7e7e-1936-588139bf448e@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 11 Jan 2023 07:47:39 -0800
+Message-ID: <CAKgT0UePq+Gg5mpvD7ag=ern9JN5JyAFv5RPc05Zn9jSh4W+0g@mail.gmail.com>
+Subject: Re: [PATCH] rndis_wlan: Prevent buffer overflow in rndis_query_oid
+To:     Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc:     kvalo@kernel.org, jussi.kivilinna@iki.fi, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Greg KH <greg@kroah.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,83 +69,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 3:01 AM Ziyang Xuan
-<william.xuanziyang@huawei.com> wrote:
+On Wed, Jan 11, 2023 at 1:54 AM Szymon Heidrich
+<szymon.heidrich@gmail.com> wrote:
 >
-> Add ipip6 and ip6ip decap support for bpf_skb_adjust_room().
-> Main use case is for using cls_bpf on ingress hook to decapsulate
-> IPv4 over IPv6 and IPv6 over IPv4 tunnel packets.
+> On 10/01/2023 20:39, Alexander H Duyck wrote:
+> > On Tue, 2023-01-10 at 18:30 +0100, Szymon Heidrich wrote:
+> >> Since resplen and respoffs are signed integers sufficiently
+> >> large values of unsigned int len and offset members of RNDIS
+> >> response will result in negative values of prior variables.
+> >> This may be utilized to bypass implemented security checks
+> >> to either extract memory contents by manipulating offset or
+> >> overflow the data buffer via memcpy by manipulating both
+> >> offset and len.
+> >>
+> >> Additionally assure that sum of resplen and respoffs does not
+> >> overflow so buffer boundaries are kept.
+> >>
+> >> Fixes: 80f8c5b434f9 ("rndis_wlan: copy only useful data from rndis_command respond")
+> >> Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+> >> ---
+> >>  drivers/net/wireless/rndis_wlan.c | 4 ++--
+> >>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
+> >> index 82a7458e0..d7fc05328 100644
+> >> --- a/drivers/net/wireless/rndis_wlan.c
+> >> +++ b/drivers/net/wireless/rndis_wlan.c
+> >> @@ -697,7 +697,7 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
+> >>              struct rndis_query_c    *get_c;
+> >>      } u;
+> >>      int ret, buflen;
+> >> -    int resplen, respoffs, copylen;
+> >> +    u32 resplen, respoffs, copylen;
+> >
+> > Rather than a u32 why not just make it an size_t? The advantage is that
+> > is the native type for all the memory allocation and copying that takes
+> > place in the function so it would avoid having to cast between u32 and
+> > size_t.
 >
-> Add two new flags BPF_F_ADJ_ROOM_DECAP_L3_IPV{4,6} to indicate the
-> new IP header version after decapsulating the outer IP header.
->
-> Suggested-by: Willem de Bruijn <willemb@google.com>
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->  include/uapi/linux/bpf.h       |  8 ++++++++
->  net/core/filter.c              | 26 +++++++++++++++++++++++++-
->  tools/include/uapi/linux/bpf.h |  8 ++++++++
->  3 files changed, 41 insertions(+), 1 deletion(-)
->
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 464ca3f01fe7..dde1c2ea1c84 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2644,6 +2644,12 @@ union bpf_attr {
->   *               Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
->   *               L2 type as Ethernet.
->   *
-> + *              * **BPF_F_ADJ_ROOM_DECAP_L3_IPV4**,
-> + *                **BPF_F_ADJ_ROOM_DECAP_L3_IPV6**:
-> + *                Indicate the new IP header version after decapsulating the
-> + *                outer IP header. Mainly used in scenarios that the inner and
-> + *                outer IP versions are different.
-> + *
+> My sole intention with this patch was to address the exploitable overflow
+> with minimal chance of introducing any extra issues.
+> Sure some things probably could be done differently, but I would stick to
+> the choices made by original authors of this driver, especially since Greg
+> mentioned that RNDIS support generally should be dropped at some point.
 
-Nit (only since I have another comment below)
+My main concern was that your change will introduce a comparison
+between signed and unsigned integer expressions. If you build with W=3
+you should find that your changes add new warnings when they trigger
+the "-Wsign-compare" check. Based on the comment earlier that you were
+concerned about integer roll-over I thought that it might be good to
+address that as well.
 
-Indicate -> Set
-[Mainly used .. that] -> [Used when]
+Basically my initial thought was that buflen should be a u32, but I
+had opted to suggest size_t since that is the native type for the size
+of memory regions in the kernel.
 
->         if (skb_is_gso(skb)) {
->                 struct skb_shared_info *shinfo = skb_shinfo(skb);
+> > Also why not move buflen over to the unsigned integer category with the
+> > other values you stated were at risk of overflow?
+> >
+> >>
+> >>      buflen = *len + sizeof(*u.get);
+> >>      if (buflen < CONTROL_BUFFER_SIZE)
+> >
+> > For example, this line here is comparing buflen to a fixed constant. If
+> > we are concerned about overflows this could be triggering an integer
+> > overflow resulting in truncation assuming *len is close to the roll-
+> > over threshold.
 >
-> @@ -3596,6 +3609,10 @@ BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *, skb, s32, len_diff,
->         if (unlikely(proto != htons(ETH_P_IP) &&
->                      proto != htons(ETH_P_IPV6)))
->                 return -ENOTSUPP;
-> +       if (unlikely((shrink && ((flags & BPF_F_ADJ_ROOM_DECAP_L3_MASK) ==
-> +                     BPF_F_ADJ_ROOM_DECAP_L3_MASK)) || (!shrink &&
-> +                     flags & BPF_F_ADJ_ROOM_DECAP_L3_MASK)))
-> +               return -EINVAL;
+> I'm not sure how this would be exploitable since len is controlled by the
+> developer rather than potential attacker, at least in existing code. Please
+> correct me in case I'm wrong.
+
+The fact that w/ buflen signed and your other variables unsigned it
+can lead to mix-ups between the comparisons below as it has to promote
+one side or the other so that the types match before making the
+comparison.
+
+> > By converting to a size_t we would most likely end up blowing up on the
+> > kmalloc and instead returning an -ENOMEM.
+> >
+> >> @@ -740,7 +740,7 @@ static int rndis_query_oid(struct usbnet *dev, u32 oid, void *data, int *len)
+> >
+> > Also with any type change such as this I believe you would also need to
+> > update the netdev_dbg statement that displays respoffs and the like to
+> > account for the fact that you are now using an unsigned value.
+> > Otherwise I believe %d will display the value as a signed integer
+> > value.
+> >
+> >>                      goto exit_unlock;
+> >>              }
+> >>
+> >> -            if ((resplen + respoffs) > buflen) {
+> >> +            if (resplen > (buflen - respoffs)) {
+> >>                      /* Device would have returned more data if buffer would
+> >>                       * have been big enough. Copy just the bits that we got.
+> >>                       */
+> >
+> > Actually you should be able to simplfy this further. Assuming resplen,
+> > buflen and respoffs all the same type this entire if statement could be
+> > broken down into:
+> >               copylen = min(resplen, buflen - respoffs);
+> >
+> >
 >
->         off = skb_mac_header_len(skb);
->         switch (mode) {
-> @@ -3608,6 +3625,13 @@ BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *, skb, s32, len_diff,
->                 return -ENOTSUPP;
->         }
+> Agree, yet I would prefer to avoid any non-essential changes to keep the risk
+> of introducing errors as low as possible. I intentionally refrained from any
+> additional modifications. Is this acceptable?
 >
-> +       if (shrink) {
-> +               if (flags & BPF_F_ADJ_ROOM_DECAP_L3_IPV6)
-> +                       len_min = sizeof(struct ipv6hdr);
-> +               else if (flags & BPF_F_ADJ_ROOM_DECAP_L3_IPV4)
-> +                       len_min = sizeof(struct iphdr);
-> +       }
-> +
+> Thank you for your review, I really appreciate all the suggestions.
 
-How about combining this branch with the above:
+What I was getting at is that with this change the use of min should
+result in almost exactly the same assembler code. If you look at the
+min macro all it is doing is a comparison followed by an assignment,
+and in your case you are working with only the two values "resplen"
+and "buflen - respoffs" so it just saves space to make use of the
+macro.
 
-  if (flags & BPF_F_ADJ_ROOM_DECAP_L3_MASK) {
-    if (!shrink)
-      return -EINVAL;
-
-    switch (flags & BPF_F_ADJ_ROOM_DECAP_L3_MASK) {
-      case BPF_F_ADJ_ROOM_DECAP_L3_IPV4:
-        len_min = sizeof(struct iphdr);
-        break;
-      case BPF_F_ADJ_ROOM_DECAP_L3_IPV6:
-        len_min = sizeof(struct ipv6hdr);
-        break;
-      default:
-        return -EINVAL;
-    }
+If you opt to not use the macro at a minimum you can get rid of the
+parenthesis around "(buflen - respoffs)" since the order of operations
+will complete the subtraction first before the comparison.
