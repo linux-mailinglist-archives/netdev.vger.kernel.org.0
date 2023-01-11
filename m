@@ -2,330 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DCF6654B3
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 07:37:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A72226654CB
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 07:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbjAKGhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 01:37:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        id S231694AbjAKGs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 01:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230522AbjAKGhu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 01:37:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206126547
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 22:37:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673419022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DmMGT0gFhIvgeF5RxhN6fq6henUsowKYyfh5rgJDDOg=;
-        b=TbgCul9DTrnJR8rgmUXBAN3SrvKzVNt3dS0TPWFutprTtjVC+zUCtgS9/gGD6+uZOVY+yF
-        6RRTbk8r/r7DfwZ1+NMgaVSRiG+m8m7BwefZhhxCZwYRg9Fko5EQwYDRuV4R0/SHJME4SQ
-        +5CVCTYW8WDxJpk5AAehLU6ls8eT+3c=
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
- [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-205-ytJ_DpriPV-l98h42mq7nA-1; Wed, 11 Jan 2023 01:37:01 -0500
-X-MC-Unique: ytJ_DpriPV-l98h42mq7nA-1
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-1502de563fcso4631031fac.15
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 22:37:00 -0800 (PST)
+        with ESMTP id S231760AbjAKGsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 01:48:55 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28DDFD0C
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 22:48:53 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id jn22so15777415plb.13
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 22:48:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pOW8QelbsetPaHwWo+Ef2/hNHiC4Lmgaa/4OXCs14ak=;
+        b=FYK9Tf0ShQColaigpcJHOo7vFiMPFrdVqQnpDLTxcUh4Xiw5b+yQrfLKNI+aJt8WjO
+         5ARpsUqtaSG1xKKo0UtTbatYGpQA0mjHwYwtKQc22FtK9+z2rQjDDN/3FSHmPgfwvAH3
+         xaDw/EgKu0vB2GriFiDeWrPFRj3baJj/VLuNcsb7VoFFjaohvC2UX8TR5W2V+HesZZBe
+         /AQLQyP3CndA8SZopFkNjQD1ZyHih7NB0ClwyevKstmyQz3mOuRDZWiSwL4tRn1Fw0U/
+         ROh4d/UBy67bWvZZt3E6IM9gIGR0kFyc28NUMF542nowL4zXOXZzcifx2SOcxiF5bva6
+         QcCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=DmMGT0gFhIvgeF5RxhN6fq6henUsowKYyfh5rgJDDOg=;
-        b=4xjZDRHwDWeT+txJxtPrlUDSEkUDQLcgIwHYPe+J493+DcfoWEHmr4TM9iPZZwRyVx
-         dVG5M0LNN3AXWbAuQSGzn29rCJfHf7+Yb9PlvAFtOQ6wG1W1o0SMSGBFkJ4hezGd9/9M
-         jPQo30A65bncF7wfHTqvNMD4H633/wMiid8Aa/2JoP/6N+x8uaybBIPgAI86k2Kh/QRZ
-         3bjBJOYXF4mmklu5wMaGoLLti8sapYisbkHIPowDGI+/1UYnM9aI5IFBc/8Nsa10DtR0
-         8xTkvcNThtZcTVxfRiN8uggxfqoyd6Fr1g6+6M870fRjfei08TfpPLxgu32wgQKt5RFz
-         SsOA==
-X-Gm-Message-State: AFqh2kqwA6dLgzGnPNn8luhoeubLTAORb2wFzk62SZa8/u564N6qpBxj
-        ZTNKIhM0w0pgYUspX2iYhBhIkDOj63Vxn+8N4TEJXmhqtSGr5+ZE+UcPdTo0NaJ2xPjiFGqhz8k
-        C0xNOWiMCLV0OblY2rqH+lIB8ajGWpyCE
-X-Received: by 2002:a05:6870:9e9a:b0:15b:96b5:9916 with SMTP id pu26-20020a0568709e9a00b0015b96b59916mr682783oab.280.1673419020251;
-        Tue, 10 Jan 2023 22:37:00 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvvzfGpqTu1I2AWueNiQ0IddaA5S9HoP9ad1m3Z2b3k07pErV78HlcTd+Ww2F6J4T6YZi0jmQS52jAnU9dbPuM=
-X-Received: by 2002:a05:6870:9e9a:b0:15b:96b5:9916 with SMTP id
- pu26-20020a0568709e9a00b0015b96b59916mr682777oab.280.1673419019963; Tue, 10
- Jan 2023 22:36:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-9-gautam.dawar@amd.com>
- <CACGkMEtGCbUBZRFh7EUJyymuWZ9uxiAOeJHA6h-dGa9Y3pDZGw@mail.gmail.com> <c5956679-82c1-336b-3190-de32db1c0926@amd.com>
-In-Reply-To: <c5956679-82c1-336b-3190-de32db1c0926@amd.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 11 Jan 2023 14:36:48 +0800
-Message-ID: <CACGkMEvVnAQ2t4piV3U-hACELvUozRKJOiCCcQLp5ch2TQ9r4w@mail.gmail.com>
-Subject: Re: [PATCH net-next 08/11] sfc: implement device status related vdpa
- config operations
-To:     Gautam Dawar <gdawar@amd.com>
-Cc:     Gautam Dawar <gautam.dawar@amd.com>, linux-net-drivers@amd.com,
-        netdev@vger.kernel.org, eperezma@redhat.com, tanuj.kamde@amd.com,
-        Koushik.Dutta@amd.com, harpreet.anand@amd.com,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=pOW8QelbsetPaHwWo+Ef2/hNHiC4Lmgaa/4OXCs14ak=;
+        b=W4M1H3ReqddtYlLfZpq5F9nhvScoKxBUKG/9YJ0OkNPrDoK9XmeLeSGuB7+TzXYLRH
+         cSg/d5Kgi8QHrXWGY1Fjr2eXp1yFR8O/mP4AdRADUEi6+VxbJx2k9WBmlgy3wHkm4BEl
+         X9GaW+WJr8GLIQ5Aa0VrHUZ03NqIJtMNTD3mUVoP/YTW44/w0VIqNjL5yTqXGNvwrKzU
+         IeC85X916orcvY+TRKpzDm5Gq6UPQmTiLPp96nxTQ5KrmVXThKnLki2m9n6DXigOnX4X
+         7wjuY07CwQRLt+VIZOumAnKzhpOx9jWSeIJAxqQ1AU8UwnErgeSRTlXpzrWZ3ZMO/Vk7
+         w7yA==
+X-Gm-Message-State: AFqh2kriuuRHmruKXP0tMJzMH6gtqP1HEO74pA0inAmM/h1BdhX7yt50
+        q7kmDxt9LTZtgnXKLDhW0AdkQg==
+X-Google-Smtp-Source: AMrXdXuCGS2rYDB4jzJwTRppDihHyZElNqI24UqbsbR5HEpYSYpKgg00nyJo/KMf86fnvwCjNZiaAQ==
+X-Received: by 2002:a05:6a20:4b28:b0:aa:7d04:109b with SMTP id fp40-20020a056a204b2800b000aa7d04109bmr1480250pzb.40.1673419733390;
+        Tue, 10 Jan 2023 22:48:53 -0800 (PST)
+Received: from archl-hc1b.. ([45.112.3.15])
+        by smtp.gmail.com with ESMTPSA id m2-20020a170902db0200b001930e89f5f6sm9301861plx.98.2023.01.10.22.48.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jan 2023 22:48:52 -0800 (PST)
+From:   Anand Moon <anand@edgeble.ai>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        David Wu <david.wu@rock-chips.com>,
+        Anand Moon <anand@edgeble.ai>, Jagan Teki <jagan@edgeble.ai>
+Cc:     Johan Jonker <jbx6244@gmail.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCHv4 linux-next 1/4] dt-bindings: net: rockchip-dwmac: fix rv1126 compatible warning
+Date:   Wed, 11 Jan 2023 06:48:36 +0000
+Message-Id: <20230111064842.5322-1-anand@edgeble.ai>
+X-Mailer: git-send-email 2.39.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 9, 2023 at 6:21 PM Gautam Dawar <gdawar@amd.com> wrote:
->
->
-> On 12/14/22 12:15, Jason Wang wrote:
-> > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> >
-> >
-> > On Wed, Dec 7, 2022 at 10:57 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
-> >> vDPA config opertions to handle get/set device status and device
-> >> reset have been implemented.
-> >>
-> >> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
-> >> ---
-> >>   drivers/net/ethernet/sfc/ef100_vdpa.c     |   7 +-
-> >>   drivers/net/ethernet/sfc/ef100_vdpa.h     |   1 +
-> >>   drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 133 ++++++++++++++++++++++
-> >>   3 files changed, 140 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
-> >> index 04d64bfe3c93..80bca281a748 100644
-> >> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
-> >> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
-> >> @@ -225,9 +225,14 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
-> >>
-> >>   static void ef100_vdpa_delete(struct efx_nic *efx)
-> >>   {
-> >> +       struct vdpa_device *vdpa_dev;
-> >> +
-> >>          if (efx->vdpa_nic) {
-> >> +               vdpa_dev = &efx->vdpa_nic->vdpa_dev;
-> >> +               ef100_vdpa_reset(vdpa_dev);
-> > Any reason we need to reset during delete?
-> ef100_reset_vdpa_device() does the necessary clean-up including freeing
-> irqs, deleting filters and deleting the vrings which is required while
-> removing the vdpa device or unloading the driver.
+Fix compatible string for RV1126 gmac, and constrain it to
+be compatible with Synopsys dwmac 4.20a.
 
-That's fine but the name might be a little bit confusing since vDPA
-reset is not necessary here.
+fix below warning
+$ make CHECK_DTBS=y rv1126-edgeble-neu2-io.dtb
+arch/arm/boot/dts/rv1126-edgeble-neu2-io.dtb: ethernet@ffc40000:
+		 compatible: 'oneOf' conditional failed, one must be fixed:
+        ['rockchip,rv1126-gmac', 'snps,dwmac-4.20a'] is too long
+        'rockchip,rv1126-gmac' is not one of ['rockchip,rk3568-gmac', 'rockchip,rk3588-gmac']
 
-> >
-> >> +
-> >>                  /* replace with _vdpa_unregister_device later */
-> >> -               put_device(&efx->vdpa_nic->vdpa_dev.dev);
-> >> +               put_device(&vdpa_dev->dev);
-> >>                  efx->vdpa_nic = NULL;
-> >>          }
-> >>          efx_mcdi_free_vis(efx);
-> >> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> >> index a33edd6dda12..1b0bbba88154 100644
-> >> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
-> >> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> >> @@ -186,6 +186,7 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
-> >>                            enum ef100_vdpa_mac_filter_type type);
-> >>   int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvqs);
-> >>   void ef100_vdpa_irq_vectors_free(void *data);
-> >> +int ef100_vdpa_reset(struct vdpa_device *vdev);
-> >>
-> >>   static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
-> >>   {
-> >> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> >> index 132ddb4a647b..718b67f6da90 100644
-> >> --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> >> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> >> @@ -251,6 +251,62 @@ static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
-> >>          return false;
-> >>   }
-> >>
-> >> +static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
-> >> +{
-> >> +       int i;
-> >> +
-> >> +       WARN_ON(!mutex_is_locked(&vdpa_nic->lock));
-> >> +
-> >> +       if (!vdpa_nic->status)
-> >> +               return;
-> >> +
-> >> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
-> >> +       vdpa_nic->status = 0;
-> >> +       vdpa_nic->features = 0;
-> >> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
-> >> +               reset_vring(vdpa_nic, i);
-> >> +}
-> >> +
-> >> +/* May be called under the rtnl lock */
-> >> +int ef100_vdpa_reset(struct vdpa_device *vdev)
-> >> +{
-> >> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> >> +
-> >> +       /* vdpa device can be deleted anytime but the bar_config
-> >> +        * could still be vdpa and hence efx->state would be STATE_VDPA.
-> >> +        * Accordingly, ensure vdpa device exists before reset handling
-> >> +        */
-> >> +       if (!vdpa_nic)
-> >> +               return -ENODEV;
-> >> +
-> >> +       mutex_lock(&vdpa_nic->lock);
-> >> +       ef100_reset_vdpa_device(vdpa_nic);
-> >> +       mutex_unlock(&vdpa_nic->lock);
-> >> +       return 0;
-> >> +}
-> >> +
-> >> +static int start_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
-> >> +{
-> >> +       int rc = 0;
-> >> +       int i, j;
-> >> +
-> >> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
-> >> +               if (can_create_vring(vdpa_nic, i)) {
-> >> +                       rc = create_vring(vdpa_nic, i);
-> > So I think we can safely remove the create_vring() in set_vq_ready()
-> > since it's undefined behaviour if set_vq_ready() is called after
-> > DRIVER_OK.
-> Is this (undefined) behavior documented in the virtio spec?
+Fixes: b36fe2f43662 ("dt-bindings: net: rockchip-dwmac: add rv1126 compatible")
+Reviewed-by: Jagan Teki <jagan@edgeble.ai>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Anand Moon <anand@edgeble.ai>
+---
+v4: none
+v3: added Ack and Rev from Rob and Jagan.
+v2: drop SoB of Jagan Teki
+    added Fix tags and update the commit message of the warning.
+---
+ Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This part is kind of tricky:
-
-PCI transport has a queue_enable field. And recently,
-VIRTIO_F_RING_RESET was introduced. Let's start without that first:
-
-In
-
-4.1.4.3.2 Driver Requirements: Common configuration structure layout
-
-It said:
-
-"The driver MUST configure the other virtqueue fields before enabling
-the virtqueue with queue_enable."
-
-and
-
-"The driver MUST NOT write a 0 to queue_enable."
-
-My understanding is that:
-
-1) Write 0 is forbidden
-2) Write 1 after DRIVER_OK is undefined behaviour (or need to clarify)
-
-With VIRTIO_F_RING_RESET is negotiated:
-
-"
-If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1
-to queue_reset to reset the queue, the driver MUST NOT consider queue
-reset to be complete until it reads back 0 in queue_reset. The driver
-MAY re-enable the queue by writing 1 to queue_enable after ensuring
-that other virtqueue fields have been set up correctly. The driver MAY
-set driver-writeable queue configuration values to different values
-than those that were used before the queue reset. (see 2.6.1).
-"
-
-Write 1 to queue_enable after DRIVER_OK and after the queue is reset is allowed.
-
-Thanks
-
-
-> If so, can
-> you please point me to the section of virtio spec that calls this order
-> (set_vq_ready() after setting DRIVER_OK) undefined? Is it just that the
-> queue can't be enabled after DRIVER_OK or the reverse (disabling the
-> queue) after DRIVER_OK is not allowed?
-> >
-> >> +                       if (rc)
-> >> +                               goto clear_vring;
-> >> +               }
-> >> +       }
-> >> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_STARTED;
-> >> +       return rc;
-> >> +
-> >> +clear_vring:
-> >> +       for (j = 0; j < i; j++)
-> >> +               if (vdpa_nic->vring[j].vring_created)
-> >> +                       delete_vring(vdpa_nic, j);
-> >> +       return rc;
-> >> +}
-> >> +
-> >>   static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
-> >>                                       u16 idx, u64 desc_area, u64 driver_area,
-> >>                                       u64 device_area)
-> >> @@ -568,6 +624,80 @@ static u32 ef100_vdpa_get_vendor_id(struct vdpa_device *vdev)
-> >>          return EF100_VDPA_VENDOR_ID;
-> >>   }
-> >>
-> >> +static u8 ef100_vdpa_get_status(struct vdpa_device *vdev)
-> >> +{
-> >> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> >> +       u8 status;
-> >> +
-> >> +       mutex_lock(&vdpa_nic->lock);
-> >> +       status = vdpa_nic->status;
-> >> +       mutex_unlock(&vdpa_nic->lock);
-> >> +       return status;
-> >> +}
-> >> +
-> >> +static void ef100_vdpa_set_status(struct vdpa_device *vdev, u8 status)
-> >> +{
-> >> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> >> +       u8 new_status;
-> >> +       int rc;
-> >> +
-> >> +       mutex_lock(&vdpa_nic->lock);
-> >> +       if (!status) {
-> >> +               dev_info(&vdev->dev,
-> >> +                        "%s: Status received is 0. Device reset being done\n",
-> >> +                        __func__);
-> >> +               ef100_reset_vdpa_device(vdpa_nic);
-> >> +               goto unlock_return;
-> >> +       }
-> >> +       new_status = status & ~vdpa_nic->status;
-> >> +       if (new_status == 0) {
-> >> +               dev_info(&vdev->dev,
-> >> +                        "%s: New status same as current status\n", __func__);
-> >> +               goto unlock_return;
-> >> +       }
-> >> +       if (new_status & VIRTIO_CONFIG_S_FAILED) {
-> >> +               ef100_reset_vdpa_device(vdpa_nic);
-> >> +               goto unlock_return;
-> >> +       }
-> >> +
-> >> +       if (new_status & VIRTIO_CONFIG_S_ACKNOWLEDGE &&
-> >> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> > As replied before, I think there's no need to check
-> > EF100_VDPA_STATE_INITIALIZED, otherwise it could be a bug somewhere.
-> Ok. Will remove the check against EF100_VDPA_STATE_INITIALIZED.
-> >> +               vdpa_nic->status |= VIRTIO_CONFIG_S_ACKNOWLEDGE;
-> >> +               new_status &= ~VIRTIO_CONFIG_S_ACKNOWLEDGE;
-> >> +       }
-> >> +       if (new_status & VIRTIO_CONFIG_S_DRIVER &&
-> >> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> >> +               vdpa_nic->status |= VIRTIO_CONFIG_S_DRIVER;
-> >> +               new_status &= ~VIRTIO_CONFIG_S_DRIVER;
-> >> +       }
-> >> +       if (new_status & VIRTIO_CONFIG_S_FEATURES_OK &&
-> >> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> >> +               vdpa_nic->status |= VIRTIO_CONFIG_S_FEATURES_OK;
-> >> +               vdpa_nic->vdpa_state = EF100_VDPA_STATE_NEGOTIATED;
-> > I think we can simply map EF100_VDPA_STATE_NEGOTIATED to
-> > VIRTIO_CONFIG_S_FEATURES_OK.
-> >
-> > E.g the code doesn't fail the feature negotiation by clearing the
-> > VIRTIO_CONFIG_S_FEATURES_OK when ef100_vdpa_set_driver_feature fails?
-> Ok.
-> >
-> > Thanks
->
-> Regards,
->
-> Gautam
->
+diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+index 42fb72b6909d..04936632fcbb 100644
+--- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+@@ -49,11 +49,11 @@ properties:
+               - rockchip,rk3368-gmac
+               - rockchip,rk3399-gmac
+               - rockchip,rv1108-gmac
+-              - rockchip,rv1126-gmac
+       - items:
+           - enum:
+               - rockchip,rk3568-gmac
+               - rockchip,rk3588-gmac
++              - rockchip,rv1126-gmac
+           - const: snps,dwmac-4.20a
+ 
+   clocks:
+-- 
+2.39.0
 
