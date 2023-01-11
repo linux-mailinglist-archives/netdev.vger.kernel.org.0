@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36FC9665239
+	by mail.lfdr.de (Postfix) with ESMTP id 8443566523A
 	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 04:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232554AbjAKDR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 22:17:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
+        id S233179AbjAKDRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 22:17:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbjAKDRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 22:17:22 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8750313D66
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:17:21 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id z4-20020a17090a170400b00226d331390cso15675319pjd.5
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:17:21 -0800 (PST)
+        with ESMTP id S231579AbjAKDRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 22:17:23 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE0513D06
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:17:22 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id m7-20020a17090a730700b00225ebb9cd01so18571688pjk.3
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 19:17:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7ziUbJeTFsQYm5JeFZurTZRkyo/IR+1XCeqcNEjCGOY=;
-        b=z+CmJubwIbONojA/WNNq7oI7gTgyWDDec8SdJmt6yTSxLt6mQR3DYFNE3JlW6XK1j6
-         k8jDBEYVQsLxIdu3Iz3qFegjC6mV1JXnJN9tttOkcRmITPf3s40tmlzNr0HF2qBI9HXa
-         Db9IK9haFfRsQT1w4qXc/sCZ0k0E5dHEtwzRZ323738v0dCI4XW7/3pDtNZ/fQNfHNf4
-         SXewOF342sAcWr2v0W8m1LGzleml2mcKDCmzH8hRGbpf7SWfjRgnGppoIvHVKSmSzmn/
-         pyJlVJluaCu4zRjryDV/als+8bEcTGwxRo1RPAPN0V8UVGq57xKH197+mY6CqNAxPob4
-         wMvA==
+        bh=QTIDmb64m6AEUf4Y7zL+qw9wvZsnktFS4l2duhJJc1w=;
+        b=30jXRwYOM5h92unnhzwFFawg5skZUqiP6WfkKhEgDbCZ35NOTaz/ECSmjUsafqFuNG
+         VbGyAZiS3r5514d04Ue8I1AP0DeFz1f9aA36h4p9PZCHW5YUHO/liDrFgJCQSdHcQBYe
+         7Hf2sPY/GYuMzLiHq2+9twpam5A3q70rcRa0in4xQ9FPAZW6xBcme7dt7NECRB8zTrzt
+         wTfxqoiK6bZVgjqaBL/hUKAw2JZqglPQXEX6qmW+EDb2uuowteP1UsAfpbyyQneyPYWP
+         uOEX7vXWZMnpdip6YN5u0FrLLvQcBYiXmhM7PfYqWV2K/U4msVmjcnzQC6BHc7x2Erp4
+         WOcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7ziUbJeTFsQYm5JeFZurTZRkyo/IR+1XCeqcNEjCGOY=;
-        b=s3vOeGcs3JWvJPdGusyVoaOCu32Aq/5uT6NR/QsOIvASB0y1Skv2GfR/jr4T6r9bWF
-         CBXF3l10BclswrsKAetUd737AIlM5A/41Dnx/Rd24dc3Ay6EkwmGba1sZiJdrv+FL3rl
-         RN1lDzTYmVpU386jRCiWLkaLldhNKtqchLNsNT/WOOEk0HAm6W4jLDufbefAuSZ6/hun
-         +wemaDeItQe6Iwt8Gzg+eUI+5CadPVqpyqx7v4fIm0mHMiUjZOe9EJOB+WOXuyK68Fnu
-         yQdax+DG6OukiFJ4yKEcLL5YiBBoRJ03xGb/COdVtJGqNaAhmjkD7SJJlgC6ek7pxqL6
-         GPqw==
-X-Gm-Message-State: AFqh2kq7onrB97iH5Z1oELIUHpj9wjSxzwxhryyJ5NWgFWDQb+ppD/QM
-        r/qmbjE8twOvIGyxeGBTdiTWwSgcfHSNouzuR/w=
-X-Google-Smtp-Source: AMrXdXu0CvDA/LWY5Ox/cnxl2jVnJfpltgh6ubIUHPY7DBAvs5jrNwQjt3QxK5Yx8AWPZIu2nUfxLw==
-X-Received: by 2002:a17:902:e5cd:b0:192:9140:ee76 with SMTP id u13-20020a170902e5cd00b001929140ee76mr71203659plf.37.1673407040572;
-        Tue, 10 Jan 2023 19:17:20 -0800 (PST)
+        bh=QTIDmb64m6AEUf4Y7zL+qw9wvZsnktFS4l2duhJJc1w=;
+        b=mFAtL7NzmRvX1LCEe+/rxO7Yv0K/fxPyO7eL1DjfrX6FoC4nW/pYSE39Uli2/53dnm
+         znU+D19BFoQQAhBQqrs6RkrmAd1dxxrNNPLkmmtJsARtVp/J/wjBY735oGQZq+fESR+l
+         2WNR2IzISfVlkux3In6//cpQ2daFlw29XsBu3WvtBWnpF9lKjX1nheAeZgbH+l1kpqG2
+         +nyAbRDaXdimOpFMoBe6QzwxXCVg5/sxCpnc2htPRlX7rR9A+QR7b9Vqn+fNYRisO8KS
+         NbVJ31spFKyDk33XedONDq4xIm4vMPXh2y3v+fcZhAydae8NZS+45yW9/jzjjUPAhaXm
+         AM0Q==
+X-Gm-Message-State: AFqh2krkQ0WTnoyKI1+caCu9uNR5U7yO4sbBUiuqFSvkTyT5XwQO8awF
+        6IQnZFC6qDr//tHKWP8hpzFXNCXulZ3Yl9NFhqA=
+X-Google-Smtp-Source: AMrXdXtny0YpRFZOvcjjMxKPqVX6i0uWm95elazWdbTnf5W7VA9an26gMaKRvBrf5rUSwWpsm3454w==
+X-Received: by 2002:a17:902:ce90:b0:192:8a1e:3293 with SMTP id f16-20020a170902ce9000b001928a1e3293mr72595429plg.63.1673407041586;
+        Tue, 10 Jan 2023 19:17:21 -0800 (PST)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id h5-20020a170902f7c500b0019337bf957dsm4226756plw.296.2023.01.10.19.17.19
+        by smtp.gmail.com with ESMTPSA id h5-20020a170902f7c500b0019337bf957dsm4226756plw.296.2023.01.10.19.17.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jan 2023 19:17:20 -0800 (PST)
+        Tue, 10 Jan 2023 19:17:21 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 07/10] tipc: use SPDX
-Date:   Tue, 10 Jan 2023 19:17:09 -0800
-Message-Id: <20230111031712.19037-8-stephen@networkplumber.org>
+Subject: [PATCH iproute2 08/10] tc: replace GPL-BSD boilerplate in codel and fq
+Date:   Tue, 10 Jan 2023 19:17:10 -0800
+Message-Id: <20230111031712.19037-9-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230111031712.19037-1-stephen@networkplumber.org>
 References: <20230111031712.19037-1-stephen@networkplumber.org>
@@ -69,390 +69,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace boilerplate GPL text with SPDX
+Replace legal boilerplate with SPDX instead.
+These algorithms are dual licensed.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- tipc/bearer.c    | 6 +-----
- tipc/bearer.h    | 6 +-----
- tipc/cmdl.c      | 6 +-----
- tipc/cmdl.h      | 6 +-----
- tipc/link.c      | 6 +-----
- tipc/link.h      | 6 +-----
- tipc/media.c     | 6 +-----
- tipc/media.h     | 6 +-----
- tipc/misc.c      | 6 +-----
- tipc/misc.h      | 6 +-----
- tipc/msg.c       | 6 +-----
- tipc/msg.h       | 6 +-----
- tipc/nametable.c | 6 +-----
- tipc/nametable.h | 6 +-----
- tipc/node.c      | 6 +-----
- tipc/node.h      | 6 +-----
- tipc/peer.c      | 6 +-----
- tipc/peer.h      | 6 +-----
- tipc/socket.c    | 6 +-----
- tipc/socket.h    | 6 +-----
- tipc/tipc.c      | 6 +-----
- 21 files changed, 21 insertions(+), 105 deletions(-)
+ tc/q_codel.c    | 32 +-------------------------------
+ tc/q_fq.c       | 32 +-------------------------------
+ tc/q_fq_codel.c | 32 +-------------------------------
+ 3 files changed, 3 insertions(+), 93 deletions(-)
 
-diff --git a/tipc/bearer.c b/tipc/bearer.c
-index 968293bc9160..bb434f5f74bc 100644
---- a/tipc/bearer.c
-+++ b/tipc/bearer.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
+diff --git a/tc/q_codel.c b/tc/q_codel.c
+index c72a5779ba3b..03b6f92f117c 100644
+--- a/tc/q_codel.c
++++ b/tc/q_codel.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
  /*
-  * bearer.c	TIPC bearer functionality.
+  * Codel - The Controlled-Delay Active Queue Management algorithm
   *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
+@@ -5,37 +6,6 @@
+  *  Copyright (C) 2011-2012 Van Jacobson <van@pollere.com>
+  *  Copyright (C) 2012 Michael D. Taht <dave.taht@bufferbloat.net>
+  *  Copyright (C) 2012,2015 Eric Dumazet <edumazet@google.com>
 - *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions, and the following disclaimer,
+- *    without modification.
+- * 2. Redistributions in binary form must reproduce the above copyright
+- *    notice, this list of conditions and the following disclaimer in the
+- *    documentation and/or other materials provided with the distribution.
+- * 3. The names of the authors may not be used to endorse or promote products
+- *    derived from this software without specific prior written permission.
+- *
+- * Alternatively, provided that this notice is retained in full, this
+- * software may be distributed under the terms of the GNU General
+- * Public License ("GPL") version 2, in which case the provisions of the
+- * GPL apply INSTEAD OF those given above.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+- * DAMAGE.
+- *
   */
  
-diff --git a/tipc/bearer.h b/tipc/bearer.h
-index c0d099630b27..a93446592b26 100644
---- a/tipc/bearer.h
-+++ b/tipc/bearer.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
+ #include <stdio.h>
+diff --git a/tc/q_fq.c b/tc/q_fq.c
+index 8dbfc41a1e05..0589800af0ea 100644
+--- a/tc/q_fq.c
++++ b/tc/q_fq.c
+@@ -1,38 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
  /*
-  * bearer.h	TIPC bearer functionality.
+  * Fair Queue
   *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
+  *  Copyright (C) 2013-2015 Eric Dumazet <edumazet@google.com>
 - *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions, and the following disclaimer,
+- *    without modification.
+- * 2. Redistributions in binary form must reproduce the above copyright
+- *    notice, this list of conditions and the following disclaimer in the
+- *    documentation and/or other materials provided with the distribution.
+- * 3. The names of the authors may not be used to endorse or promote products
+- *    derived from this software without specific prior written permission.
+- *
+- * Alternatively, provided that this notice is retained in full, this
+- * software may be distributed under the terms of the GNU General
+- * Public License ("GPL") version 2, in which case the provisions of the
+- * GPL apply INSTEAD OF those given above.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+- * DAMAGE.
+- *
   */
  
-diff --git a/tipc/cmdl.c b/tipc/cmdl.c
-index feaac2da175f..152ddb517ebb 100644
---- a/tipc/cmdl.c
-+++ b/tipc/cmdl.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
+ #include <stdio.h>
+diff --git a/tc/q_fq_codel.c b/tc/q_fq_codel.c
+index b7552e294fd0..9c9d7bc132a3 100644
+--- a/tc/q_fq_codel.c
++++ b/tc/q_fq_codel.c
+@@ -1,38 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
  /*
-  * cmdl.c	Framework for handling command line options.
+  * Fair Queue Codel
   *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
+  *  Copyright (C) 2012,2015 Eric Dumazet <edumazet@google.com>
 - *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions, and the following disclaimer,
+- *    without modification.
+- * 2. Redistributions in binary form must reproduce the above copyright
+- *    notice, this list of conditions and the following disclaimer in the
+- *    documentation and/or other materials provided with the distribution.
+- * 3. The names of the authors may not be used to endorse or promote products
+- *    derived from this software without specific prior written permission.
+- *
+- * Alternatively, provided that this notice is retained in full, this
+- * software may be distributed under the terms of the GNU General
+- * Public License ("GPL") version 2, in which case the provisions of the
+- * GPL apply INSTEAD OF those given above.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+- * DAMAGE.
+- *
   */
  
-diff --git a/tipc/cmdl.h b/tipc/cmdl.h
-index dcade362e692..18fe51bf24a7 100644
---- a/tipc/cmdl.h
-+++ b/tipc/cmdl.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * cmdl.h	Framework for handling command line options.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/link.c b/tipc/link.c
-index 53f49c8937db..f91c300016f2 100644
---- a/tipc/link.c
-+++ b/tipc/link.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * link.c	TIPC link functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/link.h b/tipc/link.h
-index 6dc95e5b69b9..a0d4603580c5 100644
---- a/tipc/link.h
-+++ b/tipc/link.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * link.c	TIPC link functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/media.c b/tipc/media.c
-index a3fec681cbf4..5ff0c8c489f1 100644
---- a/tipc/media.c
-+++ b/tipc/media.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * media.c	TIPC link functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/media.h b/tipc/media.h
-index 8584af74b72e..f1b4b54055a2 100644
---- a/tipc/media.h
-+++ b/tipc/media.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * media.h	TIPC link functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/misc.c b/tipc/misc.c
-index 6175bf07d07c..32d4a5e0b1d1 100644
---- a/tipc/misc.c
-+++ b/tipc/misc.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * misc.c	Miscellaneous TIPC helper functions.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/misc.h b/tipc/misc.h
-index 59309f68f201..d00d7c9caa2b 100644
---- a/tipc/misc.h
-+++ b/tipc/misc.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * misc.h	Miscellaneous TIPC helper functions.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/msg.c b/tipc/msg.c
-index 1225691c9a81..731b0fa76784 100644
---- a/tipc/msg.c
-+++ b/tipc/msg.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * msg.c	Messaging (netlink) helper functions.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/msg.h b/tipc/msg.h
-index 56af5a705fb9..118a26647559 100644
---- a/tipc/msg.h
-+++ b/tipc/msg.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * msg.h	Messaging (netlink) helper functions.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/nametable.c b/tipc/nametable.c
-index b09ed5fc7280..5162f7fcf479 100644
---- a/tipc/nametable.c
-+++ b/tipc/nametable.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * nametable.c	TIPC nametable functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/nametable.h b/tipc/nametable.h
-index e0473e18e75b..c4df8d9d209a 100644
---- a/tipc/nametable.h
-+++ b/tipc/nametable.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * nametable.h	TIPC nametable functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/node.c b/tipc/node.c
-index bf592a074635..e645d374cd82 100644
---- a/tipc/node.c
-+++ b/tipc/node.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * node.c	TIPC node functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/node.h b/tipc/node.h
-index afee1fd06039..4a986d078bfb 100644
---- a/tipc/node.h
-+++ b/tipc/node.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * node.h	TIPC node functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/peer.c b/tipc/peer.c
-index ed18efc552fa..5a583fb9185e 100644
---- a/tipc/peer.c
-+++ b/tipc/peer.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * peer.c	TIPC peer functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/peer.h b/tipc/peer.h
-index 89722616529e..2bd0a2a37b15 100644
---- a/tipc/peer.h
-+++ b/tipc/peer.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * peer.h	TIPC peer functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/socket.c b/tipc/socket.c
-index 597ffd91af52..4d376e075885 100644
---- a/tipc/socket.c
-+++ b/tipc/socket.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * socket.c	TIPC socket functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/socket.h b/tipc/socket.h
-index 9d1b64872f53..c4341bb213d6 100644
---- a/tipc/socket.h
-+++ b/tipc/socket.h
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * socket.h	TIPC socket functionality.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
-diff --git a/tipc/tipc.c b/tipc/tipc.c
-index 9f23a4bfd25d..56af052cbbcd 100644
---- a/tipc/tipc.c
-+++ b/tipc/tipc.c
-@@ -1,11 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * tipc.	TIPC utility frontend.
-  *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- *
-  * Authors:	Richard Alpe <richard.alpe@ericsson.com>
-  */
- 
+ #include <stdio.h>
 -- 
 2.39.0
 
