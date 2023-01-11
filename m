@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 808826662D5
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 19:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C35B6662DA
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 19:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235618AbjAKScc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 13:32:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
+        id S233322AbjAKSel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 13:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235237AbjAKScO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 13:32:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCA332E9E
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 10:32:07 -0800 (PST)
+        with ESMTP id S232042AbjAKSea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 13:34:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F8537241
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 10:34:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73001B81BB0
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 18:32:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97CD4C433EF;
-        Wed, 11 Jan 2023 18:32:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7354B61DCE
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 18:34:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC00C433D2;
+        Wed, 11 Jan 2023 18:34:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673461925;
-        bh=fuegRIrKcYhdBdPTyBvj0e1F5huQR29yrRVWgpTHyn0=;
+        s=k20201202; t=1673462063;
+        bh=IpJTaUEJjMTq5oX8LbaaunnRyiqEmlfRKOFdFDrg4T0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=t4FgrJu9ZUp2FHROOljdypjskrBoGvkpURib+tMvwSQVN/7IVogoLWO4MAlGIOJq3
-         hNyCvVYaSpHDeCbQhbmdPlVeszYfM39vnnmYf4/+Ln+e5bxey+/y7+C8xeaTyTbPzB
-         Ot1Fmm+Hgu+TTB9zMnoxBahfc+giet4WSTf0Av3qf1C90Lfrtoq/E79ueeCW8BDrg3
-         B/a/mPNkXeWUQQKJEzgIAn8ipsxytWOQmFAcv5GNJk6UHQQVizJzsspdWLsPnHq8Zq
-         LzhNkSi5WndR8FYSltt1MU9ut74lyi0kTkiRSViPieDqlnKDt2GQRudYW0LxgoTAMA
-         7+rUZsyAScXeQ==
-Date:   Wed, 11 Jan 2023 10:32:03 -0800
+        b=IZX0aSveFFJPF0G9+QZRMZGqFelpep4jL3PGyhzqGmD3DikmkdiRHXRMi4gHBiJcm
+         wON7y2c0MlhfGVx64CjG374gfqY62A3A0jeLn/erBudNvN33jsic/3GtOGDG8XUfsF
+         Fu3cc0OOOllwClxQYlBugok5w3ZGynN7w4IHG/pfhobUXypc7hBy52OoHhK/RsTUpm
+         fayPSF68/15ZRXn0qAZfqAzQAYdW1+VdLq6XddrFWrTOb6buX6HCrNBJtnZcAAxfvs
+         YPsOnntcs5iDlM8p4te2wJVYSOa8YFcdPACyEx5+fgFdsXX9DTd+jXe0OnkTU0vi0R
+         t7r+rB8/WgPtw==
+Date:   Wed, 11 Jan 2023 10:34:22 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Saeed Mahameed <saeed@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -39,11 +39,11 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
-Subject: Re: [net-next 05/15] net/mlx5e: kTLS, Add debugfs
-Message-ID: <20230111103203.0834b3ce@kernel.org>
-In-Reply-To: <20230111053045.413133-6-saeed@kernel.org>
+Subject: Re: [net-next 08/15] net/mlx5e: Add hairpin debugfs files
+Message-ID: <20230111103422.102265b3@kernel.org>
+In-Reply-To: <20230111053045.413133-9-saeed@kernel.org>
 References: <20230111053045.413133-1-saeed@kernel.org>
-        <20230111053045.413133-6-saeed@kernel.org>
+        <20230111053045.413133-9-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,8 +56,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Jan 2023 21:30:35 -0800 Saeed Mahameed wrote:
-> Add TLS debugfs to improve observability by exposing the size of the tls
-> TX pool.
+On Tue, 10 Jan 2023 21:30:38 -0800 Saeed Mahameed wrote:
+> +	debugfs_create_file("hairpin_num_queues", 0644, tc->dfs_root,
+> +			    &tc->hairpin_params, &fops_hairpin_queues);
+> +	debugfs_create_file("hairpin_queue_size", 0644, tc->dfs_root,
+> +			    &tc->hairpin_params, &fops_hairpin_queue_size);
 
-What is the TLS TX pool?
+debugfs should be read-only, please LMK if I'm missing something,
+otherwise this series is getting reverted
