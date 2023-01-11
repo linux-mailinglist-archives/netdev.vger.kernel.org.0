@@ -2,159 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CFCF665DA2
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:22:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B09D2665DA3
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 15:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235015AbjAKOV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 09:21:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
+        id S233768AbjAKOWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 09:22:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbjAKOVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:21:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4A55F44
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:21:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673446871;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S2KPbS/SEYeEU4JdPiymEdfVDyvIp5gFWxNtorg1DK8=;
-        b=SGMFrX0Wzrcc1MTz2SQCZ9CtVPsWmUl3AzWst/e4fU3tt5il+oY9HKaKSUJzxzq3vtKd4n
-        AFlpUWOq60RIk1AnysI+FqPu3Y3kvx2Yt0TZL6AOqLe66EmUGvdnUuFEqrdEYGD5R1J4y3
-        tV1jR1PkMY/2XxfPVXSx59E792r+FjY=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-303-ArlfuTeqO-mW8H1C-4rWXg-1; Wed, 11 Jan 2023 09:21:10 -0500
-X-MC-Unique: ArlfuTeqO-mW8H1C-4rWXg-1
-Received: by mail-ej1-f71.google.com with SMTP id sa32-20020a1709076d2000b0084d4593797eso6827372ejc.16
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:21:09 -0800 (PST)
+        with ESMTP id S232757AbjAKOWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 09:22:45 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836DD5F44
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:22:44 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id a25so6672940qto.10
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 06:22:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VVjhSFOKYk8lj7tH/HeB64jnnMWr5QkaCoMuZrz43To=;
+        b=g2QzgZz/DzKGQ8EI25LuA0BU5rCetVPOHMJ1+wt2gas6RLGcthahZbNTFmAxpkP4SA
+         0xSIAoapI2uDD9sbW3DwBwiHsmPBBCVDX565OyMkT6WDjbB09ESfYamD9VtQevwx5OTz
+         H+mO8lfAKJHwZU4HJWpduCZab2S0CzMafLFfY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S2KPbS/SEYeEU4JdPiymEdfVDyvIp5gFWxNtorg1DK8=;
-        b=74wrDiqNTEM1xxlodCKdWaUvqmfKOlOWZyjTaC7hnp3STD8TOJsLstFI0se6/Fo59K
-         jVjtc+njBtrnvYxt31BUdYpGbYD7ztGVdK70j/aFzD+uE+fKQAxua2TgO2/qJrKV9sBr
-         50et7WVdxnRaXnlx6SlLRzxlHdN8fi6fqHePq3LwYS0gVpp0lIWCbduL6IqiH9txd5Ht
-         hMZVjBHwYnDEol/wqo3vIhaYfKtBDuZ4MLRn1Tb2fSXz+t2aL5i3b6Npr8LY7wea2vKu
-         kfM+sXaMukDlx9UZGmt4RbWsz5h4e+kmyOCnt/Y+lhd1f4jfiDLJ74qCoQ9PLQ9hLZtu
-         xl+A==
-X-Gm-Message-State: AFqh2krPlb37gUsd/7CtmWXtmBI13FzySXW9WXW30qQvQlDqF4e/uoFV
-        XdtqLKwYecGc9vPHMhHgWSiGGOJHuUmdckX2t/4PpdEGx0+xEBMyKbHOz0EosMn7B5VKC0x52+V
-        YB3ipayTAgWUI/4sK
-X-Received: by 2002:a17:907:2587:b0:7c0:e7ad:fb0f with SMTP id ad7-20020a170907258700b007c0e7adfb0fmr51315070ejc.20.1673446868121;
-        Wed, 11 Jan 2023 06:21:08 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXuaWxJhnTXv7aycQTAtJPqKsgkEpqFLA7DaJ3DcobVJDtNfu/sYPSJYiSzA4spvi1Lwm9DwJg==
-X-Received: by 2002:a17:907:2587:b0:7c0:e7ad:fb0f with SMTP id ad7-20020a170907258700b007c0e7adfb0fmr51315026ejc.20.1673446867121;
-        Wed, 11 Jan 2023 06:21:07 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906059100b007933047f923sm6255801ejn.118.2023.01.11.06.21.06
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VVjhSFOKYk8lj7tH/HeB64jnnMWr5QkaCoMuZrz43To=;
+        b=1KraPSn7d+zXsLhn+rFpaCG5FpYwC6EVjqBCKZX8Z2QnyZIt697ig3vBv+Fjz2TV1r
+         bUkZR2o3K+dJtUjctbOfTLSWQC7RT0MhOUW0eSxHEmmCg/URVhmvrxLbRAtoWak6o5w1
+         8pTsnL8FEjb4WryZSypCEU/I4tXdq3+8uoZ5CUNsDuFna5nDBqAsjiVDwoTcqdSL8W0o
+         t0QEa0HvpAb6wowvH2P6y330PPg1RdaWq/QLukXkRRX/brK9cC11l7yOaHwEgBhhm8ce
+         0kj3c9FcH1U3dWb2nYSk1fx/RFpRKvVJqCxi87j2ItGygHfzgLjoP3SSLHP3GFsniba5
+         YScg==
+X-Gm-Message-State: AFqh2kpjmiRdbl/f8XOY9CShzt/KntonQitTVPMsSQakL0lS302og1FS
+        RcVMNlhTs3i+jhwpudNSL87Nyg==
+X-Google-Smtp-Source: AMrXdXsLgjfrxzET0DaHvCzLcqKkpiPl9UVmjTQSwnf794+HqY5p1b7IUSMTWfuwFbAREiWSyytYSA==
+X-Received: by 2002:a05:622a:229f:b0:3a7:f552:fd5f with SMTP id ay31-20020a05622a229f00b003a7f552fd5fmr98034520qtb.50.1673446963580;
+        Wed, 11 Jan 2023 06:22:43 -0800 (PST)
+Received: from C02YVCJELVCG ([192.19.144.250])
+        by smtp.gmail.com with ESMTPSA id r3-20020ac84243000000b003a5430ee366sm7580243qtm.60.2023.01.11.06.22.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 06:21:06 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 385909004A5; Wed, 11 Jan 2023 15:21:06 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Shawn Bohrer <sbohrer@cloudflare.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, bjorn@kernel.org, kernel-team@cloudflare.com,
-        davem@davemloft.net
-Subject: Re: [PATCH] veth: Fix race with AF_XDP exposing old or
- uninitialized descriptors
-In-Reply-To: <CAJ8uoz2ZL54EbZw+jTCQowjmC=MBzdpVzn=uQNcM7K+sCH7K5Q@mail.gmail.com>
-References: <Y5pO+XL54ZlzZ7Qe@sbohrer-cf-dell>
- <20221220185903.1105011-1-sbohrer@cloudflare.com>
- <e6b0414dbc7e97857fee5936ed04efca81b1d472.camel@redhat.com>
- <CAJ8uoz2ZL54EbZw+jTCQowjmC=MBzdpVzn=uQNcM7K+sCH7K5Q@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 11 Jan 2023 15:21:06 +0100
-Message-ID: <877cxtgnjh.fsf@toke.dk>
+        Wed, 11 Jan 2023 06:22:43 -0800 (PST)
+From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
+X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
+Date:   Wed, 11 Jan 2023 09:22:40 -0500
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, somnath.kotur@broadcom.com,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com
+Subject: Re: [PATCH net] bnxt: make sure we return pages to the pool
+Message-ID: <Y77GMD58O1CktpI+@C02YVCJELVCG>
+References: <20230111042547.987749-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230111042547.987749-1-kuba@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Magnus Karlsson <magnus.karlsson@gmail.com> writes:
+On Tue, Jan 10, 2023 at 08:25:47PM -0800, Jakub Kicinski wrote:
+> Before the commit under Fixes the page would have been released
+> from the pool before the napi_alloc_skb() call, so normal page
+> freeing was fine (released page == no longer in the pool).
+> 
+> After the change we just mark the page for recycling so it's still
+> in the pool if the skb alloc fails, we need to recycle.
+> 
+> Same commit added the same bug in the new bnxt_rx_multi_page_skb().
 
-> On Thu, Dec 22, 2022 at 11:18 AM Paolo Abeni <pabeni@redhat.com> wrote:
->>
->> On Tue, 2022-12-20 at 12:59 -0600, Shawn Bohrer wrote:
->> > When AF_XDP is used on on a veth interface the RX ring is updated in two
->> > steps.  veth_xdp_rcv() removes packet descriptors from the FILL ring
->> > fills them and places them in the RX ring updating the cached_prod
->> > pointer.  Later xdp_do_flush() syncs the RX ring prod pointer with the
->> > cached_prod pointer allowing user-space to see the recently filled in
->> > descriptors.  The rings are intended to be SPSC, however the existing
->> > order in veth_poll allows the xdp_do_flush() to run concurrently with
->> > another CPU creating a race condition that allows user-space to see old
->> > or uninitialized descriptors in the RX ring.  This bug has been observed
->> > in production systems.
->> >
->> > To summarize, we are expecting this ordering:
->> >
->> > CPU 0 __xsk_rcv_zc()
->> > CPU 0 __xsk_map_flush()
->> > CPU 2 __xsk_rcv_zc()
->> > CPU 2 __xsk_map_flush()
->> >
->> > But we are seeing this order:
->> >
->> > CPU 0 __xsk_rcv_zc()
->> > CPU 2 __xsk_rcv_zc()
->> > CPU 0 __xsk_map_flush()
->> > CPU 2 __xsk_map_flush()
->> >
->> > This occurs because we rely on NAPI to ensure that only one napi_poll
->> > handler is running at a time for the given veth receive queue.
->> > napi_schedule_prep() will prevent multiple instances from getting
->> > scheduled. However calling napi_complete_done() signals that this
->> > napi_poll is complete and allows subsequent calls to
->> > napi_schedule_prep() and __napi_schedule() to succeed in scheduling a
->> > concurrent napi_poll before the xdp_do_flush() has been called.  For the
->> > veth driver a concurrent call to napi_schedule_prep() and
->> > __napi_schedule() can occur on a different CPU because the veth xmit
->> > path can additionally schedule a napi_poll creating the race.
->>
->> The above looks like a generic problem that other drivers could hit.
->> Perhaps it could be worthy updating the xdp_do_flush() doc text to
->> explicitly mention it must be called before napi_complete_done().
->
-> Good observation. I took a quick peek at this and it seems there are
-> at least 5 more drivers that can call napi_complete_done() before
-> xdp_do_flush():
->
-> drivers/net/ethernet/qlogic/qede/
-> drivers/net/ethernet/freescale/dpaa2
-> drivers/net/ethernet/freescale/dpaa
-> drivers/net/ethernet/microchip/lan966x
-> drivers/net/virtio_net.c
->
-> The question is then if this race can occur on these five drivers.
-> Dpaa2 has AF_XDP zero-copy support implemented, so it can suffer from
-> this race as the Tx zero-copy path is basically just a napi_schedule()
-> and it can be called/invoked from multiple processes at the same time.
-> In regards to the others, I do not know.
->
-> Would it be prudent to just switch the order of xdp_do_flush() and
-> napi_complete_done() in all these drivers, or would that be too
-> defensive?
+Good catch, thank you.
 
-We rely on being inside a single NAPI instance trough to the
-xdp_do_flush() call for RCU protection of all in-kernel data structures
-as well[0]. Not sure if this leads to actual real-world bugs for the
-in-kernel path, but conceptually it's wrong at least. So yeah, I think
-we should definitely swap the order everywhere and document this!
+> Fixes: 1dc4c557bfed ("bnxt: adding bnxt_xdp_build_skb to build skb from multibuffer xdp_buff")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 
--Toke
-
-[0] See https://lore.kernel.org/r/20210624160609.292325-1-toke@redhat.com
-
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> index 16ce7a90610c..240a7e8a7652 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> @@ -993,7 +993,7 @@ static struct sk_buff *bnxt_rx_multi_page_skb(struct bnxt *bp,
+>  			     DMA_ATTR_WEAK_ORDERING);
+>  	skb = build_skb(page_address(page), PAGE_SIZE);
+>  	if (!skb) {
+> -		__free_page(page);
+> +		page_pool_recycle_direct(rxr->page_pool, page);
+>  		return NULL;
+>  	}
+>  	skb_mark_for_recycle(skb);
+> @@ -1031,7 +1031,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
+>  
+>  	skb = napi_alloc_skb(&rxr->bnapi->napi, payload);
+>  	if (!skb) {
+> -		__free_page(page);
+> +		page_pool_recycle_direct(rxr->page_pool, page);
+>  		return NULL;
+>  	}
+>  
+> -- 
+> 2.38.1
+> 
