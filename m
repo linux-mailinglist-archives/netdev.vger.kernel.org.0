@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6EE36652CD
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:24:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4598B6652BA
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 05:22:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235839AbjAKEYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Jan 2023 23:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
+        id S229781AbjAKEWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Jan 2023 23:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235672AbjAKEX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:23:26 -0500
+        with ESMTP id S229819AbjAKEWM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Jan 2023 23:22:12 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB1513DF7
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:22:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D0B764C
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 20:22:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=U72xqlqZdFtENPRRx+9rCkghzEjYY0Lo68usGx26lnQ=; b=SZcAgEFK5V6x+xk6wG+iTbrW/C
-        ZYV9UVKgyflsHxh8K95OvNqqX8XX16of+BuJRNQSLsjbYuYlPwdFtdzOogmClk+DmLkCLXgq2a0mN
-        yGWIuZMyTg8ZAK/HidKMe0isCU0y0i7tDYG9KTgHsTkj4rCN58jEnCZxrxNkytz1wrIJsP9KPb338
-        fzPOU0pmVzJhlmyljsRCab2kuspC/mZ7AmBdjvfZL5CgTZXbLempfP0zgHe2vTxte5X8bnKqlFnOI
-        t80FAFzByJiqtw6mmdapM90Xb7S+Ey5tDnocdR+CvainRlHDYYgXMG/UOtWvH0VWFOvcQ05Aqr5m+
-        H2o6FVmg==;
+        bh=XRtyI2AR8pOTz2SSpH+3UHWp1L/rvdwrom4dzGOvnRw=; b=ZDskqu3zfZn3VgAYmF+JbJqtI0
+        94mnjg38S92TQGUUiTpG6inMfSkjNqVAYKkDQFrzJ12zJzn0vG9MwI0hHaeBDxqXozHbbv5AZmy5S
+        8t8LjVDAc47qXM2Oh9QcKYFLG7P7pfNKPf+tVtYEmjRQA07lzx1C9GIq+KAV7jOPScMWkIpwPLFSb
+        y1Zq7qKFlnZbZVZYROP3p1pgntgjy9D3eYUIDrZutNjHBMuP3lkupvE2LdqnxMMkQ1ymOXXXryMIV
+        LkTVYeU7lbllQf2h9b9+j9+Uhp7Zup2SF5Ymr70IFQIMBhK4amiHpj6qDPsm+Pl6HfGFDeHK6o5Hh
+        0jqE3kPQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pFScz-003nyA-C0; Wed, 11 Jan 2023 04:22:17 +0000
+        id 1pFScz-003nyE-Eq; Wed, 11 Jan 2023 04:22:17 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     Jesper Dangaard Brouer <hawk@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Shakeel Butt <shakeelb@google.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH v3 15/26] page_pool: Remove __page_pool_put_page()
-Date:   Wed, 11 Jan 2023 04:22:03 +0000
-Message-Id: <20230111042214.907030-16-willy@infradead.org>
+Subject: [PATCH v3 16/26] page_pool: Use netmem in page_pool_drain_frag()
+Date:   Wed, 11 Jan 2023 04:22:04 +0000
+Message-Id: <20230111042214.907030-17-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230111042214.907030-1-willy@infradead.org>
 References: <20230111042214.907030-1-willy@infradead.org>
@@ -51,35 +51,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This wrapper is no longer used.
+We're not quite ready to change the API of page_pool_drain_frag(),
+but we can remove the use of several wrappers by using the netmem
+throughout.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- net/core/page_pool.c | 8 --------
- 1 file changed, 8 deletions(-)
+ net/core/page_pool.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index b925a4dcb09b..c495e3a16e83 100644
+index c495e3a16e83..cd469a9970e7 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -607,14 +607,6 @@ __page_pool_put_netmem(struct page_pool *pool, struct netmem *nmem,
+@@ -672,17 +672,17 @@ static struct page *page_pool_drain_frag(struct page_pool *pool,
+ 	long drain_count = BIAS_MAX - pool->frag_users;
+ 
+ 	/* Some user is still using the page frag */
+-	if (likely(page_pool_defrag_page(page, drain_count)))
++	if (likely(page_pool_defrag_netmem(nmem, drain_count)))
+ 		return NULL;
+ 
+-	if (page_ref_count(page) == 1 && !page_is_pfmemalloc(page)) {
++	if (netmem_ref_count(nmem) == 1 && !netmem_is_pfmemalloc(nmem)) {
+ 		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+ 			page_pool_dma_sync_for_device(pool, nmem, -1);
+ 
+ 		return page;
+ 	}
+ 
+-	page_pool_return_page(pool, page);
++	page_pool_return_netmem(pool, nmem);
  	return NULL;
  }
  
--static __always_inline struct page *
--__page_pool_put_page(struct page_pool *pool, struct page *page,
--		     unsigned int dma_sync_size, bool allow_direct)
--{
--	return netmem_page(__page_pool_put_netmem(pool, page_netmem(page),
--						dma_sync_size, allow_direct));
--}
--
- void page_pool_put_defragged_netmem(struct page_pool *pool, struct netmem *nmem,
- 				  unsigned int dma_sync_size, bool allow_direct)
- {
 -- 
 2.35.1
 
