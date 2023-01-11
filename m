@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5156665E7
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 22:58:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 503466665F5
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 23:04:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235625AbjAKV6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 16:58:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
+        id S235885AbjAKWEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 17:04:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbjAKV62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 16:58:28 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10ED3D5CE
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 13:58:25 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id g20so12451371pfb.3
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 13:58:25 -0800 (PST)
+        with ESMTP id S231801AbjAKWEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 17:04:48 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E8562D8;
+        Wed, 11 Jan 2023 14:04:47 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id fy8so40248070ejc.13;
+        Wed, 11 Jan 2023 14:04:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8Obkb0kzjvD/4Rh3qw6c/69fgaEhJbsYAq/Q6o2FDWQ=;
-        b=HuuDX4tRBSTJnI+TIu8jzSsRF7dl6LoIO6huUTPB1oglJ+Q/xpRDxGkM88AO9Eqv9q
-         jq42xRqQnU0fFyJReqLTrhoghELhEvuL/QHgumVvAiLYyiNF1/hWkUZpJglE0LopXv1w
-         i+odRdzdU5XeRPqU4787IMalsxWpYhfOsyTB5MwAXqn/MMZoe6zxpze9+MNxAy2Qh9ix
-         hHB+UPWTwoUtuOSRxGyMToOEJ7WcENuql09xWPt4vLsKgZFQiGDO3hOsC3nn/G4StOEL
-         9Vc16MNUkXCTDJjFhXQ8FKUSnylUgct4p4QGUL5zXJWM0II68M3DN42L4KwbsrcWZlsb
-         F0mg==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=T1dXRDRPPx3RSo9jZ102bsVIy4ioIH6GmEeAyxARso4=;
+        b=ejx8GFwrl5rqAft/O2RXK/RL3OpyKy8u6db6ZuMEZsh46AKvvCjLc2QipypDU2OtEe
+         H190jIOUHN/PJnXoyRNwCQyQaC2sSy+wvilTvGCFB+l7+VjDnWjUgWxZpgb/er3MJDTZ
+         UhzQYlT7P5i3Lcx504BnPvgokdfQbu6vhPRYt+9RMyvKQBq57anV68VDajLaopCd+5ML
+         1fySatG4lKZL6Ubi1AAiZ+7FZRsYPwCMzBXB8oNJcIc7b45+0CwwU9RcCxv3e1oAx+7D
+         EvBHskM4QTi5bhmhJ3BawgAQ6+iOKQuXzeBw/JsQ4zJDQCj2ZiCDvNcRfZk6Zefw+QF5
+         X4lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8Obkb0kzjvD/4Rh3qw6c/69fgaEhJbsYAq/Q6o2FDWQ=;
-        b=y4HURPlTX4zmutJZlI0lploFCUjR+ej7Qi5pwcUPovcqs8BXbeBBgbopNdqTrhEc9q
-         vMx3dgiNe0/OCcBHdkPcZoSeW8kvPedpGSDwWfKZGQ2CNc1R2ALtAizEd2QgK5eDCruc
-         vGcNoY1G4oUppi42LZ364PFeBnr+iSMQ/Mw2y1MULJzHt+0vxeedTKAINmhpEP8GPFL4
-         M1/VJq0pto/vKtqghcVgIkPdHF9os6aIx/mIkZsb78NoHkhtyLdf1GwHXaexpRbE2Ts7
-         nLi5NSjHrQswKzqFvOCx3zZe/fUdtHsYFN8HYbU66gmYNkzFjsriU8cXx/KNrH77NNTp
-         +A0A==
-X-Gm-Message-State: AFqh2kpXt8F4H1fXOd62+icUOOaVbzYCPrkODcAWSuBHFZbmmlX4l2fI
-        K7rftqxw3sV/FuflO4vKrvi//g==
-X-Google-Smtp-Source: AMrXdXsIR82tbAtz9jygOyB/cpYtAQoBqPBu+GzWlRZYvwVPZLbir8tBLdXO7HHJIXbLe1BXNjVG4A==
-X-Received: by 2002:a05:6a00:2a0b:b0:585:4ca7:5c4b with SMTP id ce11-20020a056a002a0b00b005854ca75c4bmr4234358pfb.2.1673474305267;
-        Wed, 11 Jan 2023 13:58:25 -0800 (PST)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id 5-20020a621505000000b005772d55df03sm10447621pfv.35.2023.01.11.13.58.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Jan 2023 13:58:24 -0800 (PST)
-Message-ID: <507593a5-3606-8a92-e599-dd8711df519e@kernel.dk>
-Date:   Wed, 11 Jan 2023 14:58:23 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T1dXRDRPPx3RSo9jZ102bsVIy4ioIH6GmEeAyxARso4=;
+        b=669+YZU8yzY4FumSgps5qmMmcD3pfAPt6B/OLjJ3QozHVho15L7MkEUtE9dqwYkwCk
+         VxysL7YGAA+KYxE3BKzrjRRwnFfrSoULdmoWaDbTRiNbdxC18cOxXBMmnFPX86SilNFG
+         jrRRAXeLi952Sh4sGyFFhrjQlh/M3kPR2YrMLAsi+Mu1avUNY0xcup3yR7G8rd8AC2W9
+         9vWWSXPA1cWmVH45pzImX4igkEymdDNVVPMghHobx0csuIu/veDhNWb1kcb4+xgVzqVQ
+         m+4HFX9xG83bKa0HJM8j7nw2/oOZOfVAu5LVDEYETcVGxUwg5w0x0JzOgUd79W5BtSvi
+         vJVQ==
+X-Gm-Message-State: AFqh2kpTSnEbAjhngbLP1Otf1UFXoHzy6ruMtwdvXl3Xa0behMO1UsiL
+        HdYehZcElRuXfuFDgbJmzRw=
+X-Google-Smtp-Source: AMrXdXupw10V6/JOE/zO66L/Qs5NRfT3z2C5LZ6xsFGcUQI70K5j0wgHzMMXsL1gIEUS6/9VLDcDCQ==
+X-Received: by 2002:a17:906:9f07:b0:7ec:27d7:1838 with SMTP id fy7-20020a1709069f0700b007ec27d71838mr79039390ejc.22.1673474685661;
+        Wed, 11 Jan 2023 14:04:45 -0800 (PST)
+Received: from skbuf ([188.25.255.127])
+        by smtp.gmail.com with ESMTPSA id mb9-20020a170906eb0900b0084d34eec68esm5675635ejb.213.2023.01.11.14.04.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Jan 2023 14:04:45 -0800 (PST)
+Date:   Thu, 12 Jan 2023 00:04:42 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>, jbe@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 1/6] dsa: lan9303: align dsa_switch_ops
+ members
+Message-ID: <20230111220442.ztrll45sr2lvsgpi@skbuf>
+References: <20230109211849.32530-1-jerry.ray@microchip.com>
+ <20230109211849.32530-2-jerry.ray@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH] caif: don't assume iov_iter type
-Content-Language: en-US
-To:     Keith Busch <kbusch@meta.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-References: <20230111184245.3784393-1-kbusch@meta.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20230111184245.3784393-1-kbusch@meta.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230109211849.32530-2-jerry.ray@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/23 11:42 AM, Keith Busch wrote:
-> From: Keith Busch <kbusch@kernel.org>
+On Mon, Jan 09, 2023 at 03:18:44PM -0600, Jerry Ray wrote:
+> Whitespace preparatory patch, making the dsa_switch_ops table consistent.
+> No code is added or removed.
 > 
-> The details of the iov_iter types are appropriately abstracted, so
-> there's no need to check for specific type fields. Just let the
-> abstractions handle it.
-> 
-> This is preparing for io_uring/net's io_send to utilize the more
-> efficient ITER_UBUF.
+> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
+> ---
 
-Looks good to me - the correct return here would be -EFAULT as well,
-not -EINVAL. Which is what will happen once memcpy_from_msg() is
-called anyway.
-
-Reviewed-by: Jens Axboe <axboe@kernel.dk>
-
--- 
-Jens Axboe
-
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
