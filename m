@@ -2,158 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F746655C1
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:12:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C9E6655DB
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 09:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbjAKIMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 03:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
+        id S231167AbjAKITr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 03:19:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231635AbjAKIL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:11:58 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2053.outbound.protection.outlook.com [40.107.94.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD4C5F82
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:11:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZyhNyeRWBWqIUpIHwFGPENu7qrE9gXph3uc/nTpdrWTZAB2gj5RQu6ckx79GM2ksCNuggwZiD0SRiNL+/zV3Cjrgf01pwTUrNsEqQg6jP2niKs3sGhjRqJ3VBwrDjJPaP2TiotoC7rb86mhaJhnbrUjyG1VBvgnbqISOPKhoNQQsqiLicWt4yM6wDDcnLvt5PLnsdSSFXArnN2tU2xn/03p/kJaV9bK8i4CXuyEV29dVBxxCRpIZN3mKUsiE06YShHosyDBOl+g6IVN1hpRmJTYPGvh/8tSAAuXGs/GyeKQQhIyhlyL1dpXPpDDGohoooBbG4pToqnCPTu2+txefag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yFWdUIk+RrKw1LZ1pyI8ZYwzmIrr9n10EnUwq7EYIow=;
- b=P+bXLr/Q3PYQxPgFhTeYpj7QYpxbHHOtKiEuBiNBlk1BLS3JkG6okmk236qjDPVhvbo59MqZ07TJCiE27Bopl3K4BTtBjMuUCFO9y6x160dDoBt/NVYJfznFsr98gBH9TG/uZa4QBRQtd3ahzzOcZk/frU1pC9A+VmpG3xjQsmQgk0PhRwQhCMLqX/X4zcfbmfUKZbaellZJYsYNa33IREAyije3mU/aN3Ou70S4Y1sSaA/1WvTX/UD8BofvPeUH4+HofjQpD54BZqXM1b0qjSlS78cvmI/tcQrq96uC90r7yS7PgMcz0tzFLMJ2Edbx9osHomXK6P4fCPMPq3c2gg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yFWdUIk+RrKw1LZ1pyI8ZYwzmIrr9n10EnUwq7EYIow=;
- b=gjfHqCnZFOrZOdx/DoFTAReXkNDZASfFskIh4RZKvIYjInRb5gG+nq69a/GQvWokR1TYuYfRaXgBUxZ2lp9OrhSQXwK0La9ge9QoUUgbK679m/CTRSpf+Xj+WLpgVtrVeMxe75L4/s2FgtyMH2FTAOSzW13TrrHLFPlX2kwtA2nAZWXNf6GqfoqBl2HROubUH/0SV8+Rp8FPxxE4rdaxw8qkqD8hrI8Cyu7jogysgIJzmDSvyEzuKzUnij2P/xyKIgz3YPhxUR1PtQgct87qLGBGjASbhp6QzOYSrn2TpFg3rG/7YxXwmEDtCgFD+jFTws45U93vGLAy2FMdmGL2qg==
-Received: from MW4PR04CA0042.namprd04.prod.outlook.com (2603:10b6:303:6a::17)
- by DM8PR12MB5413.namprd12.prod.outlook.com (2603:10b6:8:3b::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.13; Wed, 11 Jan 2023 08:11:56 +0000
-Received: from CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6a:cafe::5f) by MW4PR04CA0042.outlook.office365.com
- (2603:10b6:303:6a::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18 via Frontend
- Transport; Wed, 11 Jan 2023 08:11:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT034.mail.protection.outlook.com (10.13.174.248) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6002.13 via Frontend Transport; Wed, 11 Jan 2023 08:11:55 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 11 Jan
- 2023 00:11:45 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 11 Jan
- 2023 00:11:45 -0800
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Wed, 11 Jan
- 2023 00:11:42 -0800
-From:   <ehakim@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <raeds@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <sd@queasysnail.net>,
-        <atenart@kernel.org>, Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH net-next v8 2/2] macsec: dump IFLA_MACSEC_OFFLOAD attribute as part of macsec dump
-Date:   Wed, 11 Jan 2023 10:11:12 +0200
-Message-ID: <20230111081112.21067-3-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20230111081112.21067-1-ehakim@nvidia.com>
-References: <20230111081112.21067-1-ehakim@nvidia.com>
+        with ESMTP id S231294AbjAKITk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 03:19:40 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D32D5F99
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:19:38 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id jl4so15997649plb.8
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 00:19:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=XGrxh5RU1Q9X5xnd06++hlbzr5xDY2Wv8eguXMCmuQ8=;
+        b=BorcWx8o+oTOqTKzgqgjnCr6QxuUNH80ocGTwKkMrgzdxxsO85cZLtVLDfq0KAUquO
+         UpyT7BK9pVj+RFGaTAX7QIGZbUfFEC9rTG0ABk1Cp0pSYehAYz6hFTApsJcaTlZr5mFF
+         QOMUtg+dGAVne2avL1kqxz1seqMMnui7rp12UrA/c9WPjRcUxGuy2Bht8+jNjofhTi7J
+         EoX9LYnN2Uc4WBGBs4XqztUZ+UcjYNKGmrFHBJko7PfUJD5QHv9oxF+fshFqBV5etVVK
+         jj7pNtYybJAbT+mNHSK/hX3pYvpU+clq1Gi5/DLnOi+RJbgwWBWFIeBhRv5dr3uzMR/5
+         2t8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XGrxh5RU1Q9X5xnd06++hlbzr5xDY2Wv8eguXMCmuQ8=;
+        b=8M1WUUJswxpdvCuu6NlU0MUbwRAXwFRqUUA+ucFXohy7fXv807dfgdJ1J8ZjWqRy6S
+         Spg/u6XhzoO60GIELIYvpmcJqDJowaYzqqq7JZYiGjjF/NzhYFDJ09ETV6xwFim2gO1U
+         TQL9u+hTGGEQu7kUlLOEq6gxrR18UTS3wawN4F0/1b1PiRHTmZkK8RKNHCpVqFR/wYlz
+         6cN/qPNUmRZ31QbvDvnqer+CTkNMWT47O0nkcpLhRql/RMJFHLgLh0NCK59ByiY/m3/r
+         qmB7RLv5q6394fWLs27XC0KE+jPVoPu5LFdVv2qTWdPC/x5yuafEX+izdoNiTJQhSZM1
+         prDA==
+X-Gm-Message-State: AFqh2koe+iNtSuQxCAagHBVgK7v6CPnCiHJLuuqNNIM6PQMbHtz7LkYr
+        lXXH3QzOK7XXzs6TlLfoD6hBvoLauHGlnolc98jc4Q==
+X-Google-Smtp-Source: AMrXdXv8HEGTtHE38l6uIqkffBd2HJNr7lYLCc9XR2w8PzGrwGHjx8fKXytQGmrKPSCOQLMTsj6lrA==
+X-Received: by 2002:a17:902:c94b:b0:189:76ef:e112 with SMTP id i11-20020a170902c94b00b0018976efe112mr95588728pla.41.1673425177760;
+        Wed, 11 Jan 2023 00:19:37 -0800 (PST)
+Received: from localhost (thunderhill.nvidia.com. [216.228.112.22])
+        by smtp.gmail.com with ESMTPSA id v7-20020a1709028d8700b00186bc66d2cbsm9582949plo.73.2023.01.11.00.19.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Jan 2023 00:19:37 -0800 (PST)
+Date:   Wed, 11 Jan 2023 09:19:34 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        Maciek Machnikowski <maciek@machnikowski.net>,
+        'Vadim Fedorenko' <vfedorenko@novek.ru>,
+        'Jonathan Lemon' <jonathan.lemon@gmail.com>,
+        'Paolo Abeni' <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [RFC PATCH v4 0/4] Create common DPLL/clock configuration API
+Message-ID: <Y75xFlEDCThGtMDq@nanopsycho>
+References: <20221206184740.28cb7627@kernel.org>
+ <10bb01d90a45$77189060$6549b120$@gmail.com>
+ <20221207152157.6185b52b@kernel.org>
+ <6e252f6d-283e-7138-164f-092709bc1292@machnikowski.net>
+ <Y5MW/7jpMUXAGFGX@nanopsycho>
+ <a8f9792b-93f1-b0b7-2600-38ac3c0e3832@machnikowski.net>
+ <20221209083104.2469ebd6@kernel.org>
+ <Y5czl6HgY2GPKR4v@nanopsycho>
+ <DM6PR11MB46571573010AB727E1BE99AE9BFE9@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <20230110120549.4d764609@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT034:EE_|DM8PR12MB5413:EE_
-X-MS-Office365-Filtering-Correlation-Id: cf8a5175-5327-44f9-b9cb-08daf3ab8126
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QdQFFahnZCax/Meb4igxL79FsTVxRgpKgTr6x21d5H8g30Mhyrv6v6SkJLebLNbySWqUMOOYlvRW9xnnDNFgLCB1tnM/VCxmDWRKsAXHHpLcRDTT3B5P2I0Sy0XDTnOUZ9h/ob7JV5IF+P9Q+IF9aXPVd6ucFmcI+ipXnhDurGHdWVkh26CdcT2NV4Pg3UvSQvjfjA/dVqrEA5HMk/8Qea5C+WIpKmaO2OrHzlKUb1qb2yV81zKRaejKjRCFuYns4Q6THRbdYI3K2u0HfEIbtpz6BaKhHf4VzVytss3Plwsw6eNhngS12CAi8NPmyLDAZZ3/Ic62nUvSt4yT4TUbLVzcfaUIdCtLLEksp/XLXxy2mMeZk7r9xbvuaXts7lOVsnvdK+rDksKT1UreBafOHnoo13OAOZKZX2F6vFekBfw3iLADYoVjjWddmu7POlLsijt58z7Hx1CdnoE+MI+kWvnyPqMhc62LgCcHhE/5iprSQpGIDniS0Ef6GU6wD7DRyA116icN3NF7q1vFmVuxnIIGUFmNW0pN7qxcM2Z8D0uNr+XrlgmAzlpWOK6zILNLAWJrq8krAvabMIf9lglFaTd+XspQk3P0hUs4qLZX91SCoqv0V3rp2TWLrToAPD14FjSSbKv+fBLXMpKWjctBi/I/GdZWxFGnUoVHkrbKReSNoVAC5NcvCJmPLqfFQCskOh05S8M/TQ/+KMqi5Pqopg==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199015)(46966006)(36840700001)(40470700004)(36756003)(7636003)(82740400003)(70586007)(6916009)(336012)(8676002)(70206006)(4326008)(86362001)(82310400005)(40460700003)(26005)(186003)(2616005)(356005)(1076003)(316002)(40480700001)(478600001)(7696005)(54906003)(5660300002)(107886003)(2906002)(6666004)(2876002)(41300700001)(8936002)(47076005)(426003)(83380400001)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 08:11:55.7008
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf8a5175-5327-44f9-b9cb-08daf3ab8126
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5413
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230110120549.4d764609@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emeel Hakim <ehakim@nvidia.com>
+Tue, Jan 10, 2023 at 09:05:49PM CET, kuba@kernel.org wrote:
+>On Mon, 9 Jan 2023 14:43:01 +0000 Kubalewski, Arkadiusz wrote:
+>> This is a simplified network switch board example.
+>> It has 2 synchronization channels, where each channel:
+>> - provides clk to 8 PHYs driven by separated MAC chips,
+>> - controls 2 DPLLs.
+>> 
+>> Basically only given FW has control over its PHYs, so also a control over it's
+>> MUX inputs.
+>> All external sources are shared between the channels.
+>> 
+>> This is why we believe it is not best idea to enclose multiple DPLLs with one
+>> object:
+>> - sources are shared even if DPLLs are not a single synchronizer chip,
+>> - control over specific MUX type input shall be controllable from different
+>> driver/firmware instances.
+>> 
+>> As we know the proposal of having multiple DPLLs in one object was a try to
+>> simplify currently implemented shared pins. We fully support idea of having
+>> interfaces as simple as possible, but at the same time they shall be flexible
+>> enough to serve many use cases.
+>
+>I must be missing context from other discussions but what is this
+>proposal trying to solve? Well implemented shared pins is all we need.
 
-Support dumping offload netlink attribute in macsec's device
-attributes dump.
-Change macsec_get_size to consider the offload attribute in
-the calculations of the required room for dumping the device
-netlink attributes.
+There is an entity containing the pins. The synchronizer chip. One
+synchronizer chip contains 1-n DPLLs. The source pins are connected
+to each DPLL (usually). What we missed in the original model was the
+synchronizer entity. If we have it, we don't need any notion of somehow
+floating pins as independent entities being attached to one or many
+DPLL refcounted, etc. The synchronizer device holds them in
+straightforward way.
 
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
----
-V1 -> V2: Update commit message
- drivers/net/macsec.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 31f8627d6a1d..41e1054c6f26 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -4246,16 +4246,22 @@ static size_t macsec_get_size(const struct net_device *dev)
- 		nla_total_size(1) + /* IFLA_MACSEC_SCB */
- 		nla_total_size(1) + /* IFLA_MACSEC_REPLAY_PROTECT */
- 		nla_total_size(1) + /* IFLA_MACSEC_VALIDATION */
-+		nla_total_size(1) + /* IFLA_MACSEC_OFFLOAD */
- 		0;
- }
- 
- static int macsec_fill_info(struct sk_buff *skb,
- 			    const struct net_device *dev)
- {
--	struct macsec_secy *secy = &macsec_priv(dev)->secy;
--	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
-+	struct macsec_tx_sc *tx_sc;
-+	struct macsec_dev *macsec;
-+	struct macsec_secy *secy;
- 	u64 csid;
- 
-+	macsec = macsec_priv(dev);
-+	secy = &macsec->secy;
-+	tx_sc = &secy->tx_sc;
-+
- 	switch (secy->key_len) {
- 	case MACSEC_GCM_AES_128_SAK_LEN:
- 		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_128 : MACSEC_DEFAULT_CIPHER_ID;
-@@ -4280,6 +4286,7 @@ static int macsec_fill_info(struct sk_buff *skb,
- 	    nla_put_u8(skb, IFLA_MACSEC_SCB, tx_sc->scb) ||
- 	    nla_put_u8(skb, IFLA_MACSEC_REPLAY_PROTECT, secy->replay_protect) ||
- 	    nla_put_u8(skb, IFLA_MACSEC_VALIDATION, secy->validate_frames) ||
-+	    nla_put_u8(skb, IFLA_MACSEC_OFFLOAD, macsec->offload) ||
- 	    0)
- 		goto nla_put_failure;
- 
--- 
-2.21.3
-
+Example of a synchronizer chip:
+https://www.renesas.com/us/en/products/clocks-timing/jitter-attenuators-frequency-translation/8a34044-multichannel-dpll-dco-four-eight-channels#overview
