@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 428B3665487
-	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 07:26:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 965A766548B
+	for <lists+netdev@lfdr.de>; Wed, 11 Jan 2023 07:26:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbjAKG0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 01:26:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S234853AbjAKG0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 01:26:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231834AbjAKG0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 01:26:05 -0500
+        with ESMTP id S233118AbjAKG0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 01:26:07 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14262B4
-        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 22:26:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF4E6266
+        for <netdev@vger.kernel.org>; Tue, 10 Jan 2023 22:26:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673418362; x=1704954362;
+  t=1673418366; x=1704954366;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LCMBYOQEImmQnlYG+sEPbPrGF7SeTCEvCUuI80iJCqA=;
-  b=CwzZBuIma4QQspkYc4dFL2ux7Pz/sXlAz55JBi6R8qtrt9hJalOWs8wt
-   7mnkziphhX8Hn9Jl4BKQP/bdkFJ8byyvqZumGL0AP5/iPU8ha4lml7vod
-   MPVRshlRILeQIDK7Gu+W5i5KgJvXoXQvAfs8IGpG7xFZHAbtXHYHBnPVW
-   jHJq7MzMqugddGPW5eUCnZCkEXtmc87u8XJ3ebUmSMxCU3Pb0q6/T5AU6
-   82rGYDCO1ifnUOWI6eNg8flZcjU8oGdrPTFbfGTRI8GwmFBduC6VVbu0P
-   HbqAAfwqcQYay+z7yNSk8m0dtClbAkQA8fEn9Mu9gv2niLYuQOmC0fKhW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="306856843"
+  bh=tfl+TZX1hJlu4Ck/htRTg69QLtwb7yPVBOViQqZOUG4=;
+  b=MNcR3xFe545yEVZNolPgU5OdzqKzMYklkdLmyV44mPAW30jT+gFksF4A
+   4HOQ5JHmNQHosj+SoS/oejA6hid+Al6SNyUAdtS+eMVLa/jLxoXptmCC3
+   EDIczxsa6THX8wPCPfpI3ZsCeo2khJBYSXEfHNHr0ytW09HQEz2osZMoF
+   QdhgZeWMq29lpKewiq1kt5faZlXtm/qhCw2U/IMg5RQ1f2EHI+yjpNG+W
+   zI/UBI1oqljM5PIepmRiIi7xo5OAZg4yo6I7jUSMr/6Wi8tqxEswnsRyA
+   f8d01PGa652eDMmvdd/SDW3gGBycaPg1+vbW5SttAv+R21EJp8t6O2J52
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="306856855"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="306856843"
+   d="scan'208";a="306856855"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 22:26:02 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="607256939"
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="607256944"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="607256939"
+   d="scan'208";a="607256944"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orsmga003.jf.intel.com with ESMTP; 10 Jan 2023 22:25:59 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 7439784; Wed, 11 Jan 2023 08:26:33 +0200 (EET)
+        id 7D382130; Wed, 11 Jan 2023 08:26:33 +0200 (EET)
 From:   Mika Westerberg <mika.westerberg@linux.intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -49,9 +49,9 @@ Cc:     Michael Jamet <michael.jamet@intel.com>,
         Yehezkel Bernat <YehezkelShB@gmail.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         netdev@vger.kernel.org
-Subject: [PATCH v2 1/3] net: thunderbolt: Move into own directory
-Date:   Wed, 11 Jan 2023 08:26:31 +0200
-Message-Id: <20230111062633.1385-2-mika.westerberg@linux.intel.com>
+Subject: [PATCH v2 2/3] net: thunderbolt: Add debugging when sending/receiving control packets
+Date:   Wed, 11 Jan 2023 08:26:32 +0200
+Message-Id: <20230111062633.1385-3-mika.westerberg@linux.intel.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230111062633.1385-1-mika.westerberg@linux.intel.com>
 References: <20230111062633.1385-1-mika.westerberg@linux.intel.com>
@@ -66,107 +66,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We will be adding tracepoints to the driver so instead of littering the
-main network driver directory, move the driver into its own directory.
-While there, rename the module to thunderbolt_net (with underscore) to
-match with the thunderbolt_dma_test convention.
+These can be useful when debugging possible issues around USB4NET
+control packet exchange.
 
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Acked-by: Yehezkel Bernat <YehezkelShB@gmail.com>
 ---
- MAINTAINERS                                       |  2 +-
- drivers/net/Kconfig                               | 13 +------------
- drivers/net/Makefile                              |  4 +---
- drivers/net/thunderbolt/Kconfig                   | 12 ++++++++++++
- drivers/net/thunderbolt/Makefile                  |  3 +++
- drivers/net/{thunderbolt.c => thunderbolt/main.c} |  0
- 6 files changed, 18 insertions(+), 16 deletions(-)
- create mode 100644 drivers/net/thunderbolt/Kconfig
- create mode 100644 drivers/net/thunderbolt/Makefile
- rename drivers/net/{thunderbolt.c => thunderbolt/main.c} (100%)
+ drivers/net/thunderbolt/main.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f61eb221415b..d3a02bbf32fe 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -20767,7 +20767,7 @@ M:	Mika Westerberg <mika.westerberg@linux.intel.com>
- M:	Yehezkel Bernat <YehezkelShB@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
--F:	drivers/net/thunderbolt.c
-+F:	drivers/net/thunderbolt/
+diff --git a/drivers/net/thunderbolt/main.c b/drivers/net/thunderbolt/main.c
+index 990484776f2d..bd0c2af1172d 100644
+--- a/drivers/net/thunderbolt/main.c
++++ b/drivers/net/thunderbolt/main.c
+@@ -305,6 +305,8 @@ static int tbnet_logout_request(struct tbnet *net)
  
- THUNDERX GPIO DRIVER
- M:	Robert Richter <rric@kernel.org>
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 9e63b8c43f3e..950a09f021dd 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -583,18 +583,7 @@ config FUJITSU_ES
- 	  This driver provides support for Extended Socket network device
- 	  on Extended Partitioning of FUJITSU PRIMEQUEST 2000 E2 series.
- 
--config USB4_NET
--	tristate "Networking over USB4 and Thunderbolt cables"
--	depends on USB4 && INET
--	help
--	  Select this if you want to create network between two computers
--	  over a USB4 and Thunderbolt cables. The driver supports Apple
--	  ThunderboltIP protocol and allows communication with any host
--	  supporting the same protocol including Windows and macOS.
--
--	  To compile this driver a module, choose M here. The module will be
--	  called thunderbolt-net.
--
-+source "drivers/net/thunderbolt/Kconfig"
- source "drivers/net/hyperv/Kconfig"
- 
- config NETDEVSIM
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 6ce076462dbf..e26f98f897c5 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -84,8 +84,6 @@ obj-$(CONFIG_HYPERV_NET) += hyperv/
- obj-$(CONFIG_NTB_NETDEV) += ntb_netdev.o
- 
- obj-$(CONFIG_FUJITSU_ES) += fjes/
--
--thunderbolt-net-y += thunderbolt.o
--obj-$(CONFIG_USB4_NET) += thunderbolt-net.o
-+obj-$(CONFIG_USB4_NET) += thunderbolt/
- obj-$(CONFIG_NETDEVSIM) += netdevsim/
- obj-$(CONFIG_NET_FAILOVER) += net_failover.o
-diff --git a/drivers/net/thunderbolt/Kconfig b/drivers/net/thunderbolt/Kconfig
-new file mode 100644
-index 000000000000..e127848c8cbd
---- /dev/null
-+++ b/drivers/net/thunderbolt/Kconfig
-@@ -0,0 +1,12 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config USB4_NET
-+	tristate "Networking over USB4 and Thunderbolt cables"
-+	depends on USB4 && INET
-+	help
-+	  Select this if you want to create network between two computers
-+	  over a USB4 and Thunderbolt cables. The driver supports Apple
-+	  ThunderboltIP protocol and allows communication with any host
-+	  supporting the same protocol including Windows and macOS.
+ static void start_login(struct tbnet *net)
+ {
++	netdev_dbg(net->dev, "login started\n");
 +
-+	  To compile this driver a module, choose M here. The module will be
-+	  called thunderbolt_net.
-diff --git a/drivers/net/thunderbolt/Makefile b/drivers/net/thunderbolt/Makefile
-new file mode 100644
-index 000000000000..dd644c8775d9
---- /dev/null
-+++ b/drivers/net/thunderbolt/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0
-+obj-$(CONFIG_USB4_NET) := thunderbolt_net.o
-+thunderbolt_net-objs := main.o
-diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt/main.c
-similarity index 100%
-rename from drivers/net/thunderbolt.c
-rename to drivers/net/thunderbolt/main.c
+ 	mutex_lock(&net->connection_lock);
+ 	net->login_sent = false;
+ 	net->login_received = false;
+@@ -318,6 +320,8 @@ static void stop_login(struct tbnet *net)
+ {
+ 	cancel_delayed_work_sync(&net->login_work);
+ 	cancel_work_sync(&net->connected_work);
++
++	netdev_dbg(net->dev, "login stopped\n");
+ }
+ 
+ static inline unsigned int tbnet_frame_size(const struct tbnet_frame *tf)
+@@ -374,6 +378,8 @@ static void tbnet_tear_down(struct tbnet *net, bool send_logout)
+ 		int ret, retries = TBNET_LOGOUT_RETRIES;
+ 
+ 		while (send_logout && retries-- > 0) {
++			netdev_dbg(net->dev, "sending logout request %u\n",
++				   retries);
+ 			ret = tbnet_logout_request(net);
+ 			if (ret != -ETIMEDOUT)
+ 				break;
+@@ -400,6 +406,8 @@ static void tbnet_tear_down(struct tbnet *net, bool send_logout)
+ 	net->login_sent = false;
+ 	net->login_received = false;
+ 
++	netdev_dbg(net->dev, "network traffic stopped\n");
++
+ 	mutex_unlock(&net->connection_lock);
+ }
+ 
+@@ -431,12 +439,15 @@ static int tbnet_handle_packet(const void *buf, size_t size, void *data)
+ 
+ 	switch (pkg->hdr.type) {
+ 	case TBIP_LOGIN:
++		netdev_dbg(net->dev, "remote login request received\n");
+ 		if (!netif_running(net->dev))
+ 			break;
+ 
+ 		ret = tbnet_login_response(net, route, sequence,
+ 					   pkg->hdr.command_id);
+ 		if (!ret) {
++			netdev_dbg(net->dev, "remote login response sent\n");
++
+ 			mutex_lock(&net->connection_lock);
+ 			net->login_received = true;
+ 			net->remote_transmit_path = pkg->transmit_path;
+@@ -458,9 +469,12 @@ static int tbnet_handle_packet(const void *buf, size_t size, void *data)
+ 		break;
+ 
+ 	case TBIP_LOGOUT:
++		netdev_dbg(net->dev, "remote logout request received\n");
+ 		ret = tbnet_logout_response(net, route, sequence, command_id);
+-		if (!ret)
++		if (!ret) {
++			netdev_dbg(net->dev, "remote logout response sent\n");
+ 			queue_work(system_long_wq, &net->disconnect_work);
++		}
+ 		break;
+ 
+ 	default:
+@@ -612,6 +626,8 @@ static void tbnet_connected_work(struct work_struct *work)
+ 	if (!connected)
+ 		return;
+ 
++	netdev_dbg(net->dev, "login successful, enabling paths\n");
++
+ 	ret = tb_xdomain_alloc_in_hopid(net->xd, net->remote_transmit_path);
+ 	if (ret != net->remote_transmit_path) {
+ 		netdev_err(net->dev, "failed to allocate Rx HopID\n");
+@@ -647,6 +663,8 @@ static void tbnet_connected_work(struct work_struct *work)
+ 
+ 	netif_carrier_on(net->dev);
+ 	netif_start_queue(net->dev);
++
++	netdev_dbg(net->dev, "network traffic started\n");
+ 	return;
+ 
+ err_free_tx_buffers:
+@@ -668,8 +686,13 @@ static void tbnet_login_work(struct work_struct *work)
+ 	if (netif_carrier_ok(net->dev))
+ 		return;
+ 
++	netdev_dbg(net->dev, "sending login request, retries=%u\n",
++		   net->login_retries);
++
+ 	ret = tbnet_login_request(net, net->login_retries % 4);
+ 	if (ret) {
++		netdev_dbg(net->dev, "sending login request failed, ret=%d\n",
++			   ret);
+ 		if (net->login_retries++ < TBNET_LOGIN_RETRIES) {
+ 			queue_delayed_work(system_long_wq, &net->login_work,
+ 					   delay);
+@@ -677,6 +700,8 @@ static void tbnet_login_work(struct work_struct *work)
+ 			netdev_info(net->dev, "ThunderboltIP login timed out\n");
+ 		}
+ 	} else {
++		netdev_dbg(net->dev, "received login reply\n");
++
+ 		net->login_retries = 0;
+ 
+ 		mutex_lock(&net->connection_lock);
 -- 
 2.39.0
 
