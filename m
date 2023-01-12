@@ -2,144 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA87C667116
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 12:39:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C7F667130
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 12:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234195AbjALLjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 06:39:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
+        id S236717AbjALLrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 06:47:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236775AbjALLii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 06:38:38 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2050.outbound.protection.outlook.com [40.107.6.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FB6183B7;
-        Thu, 12 Jan 2023 03:29:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mIoo5CnWG/CsrV2Xdp7Xso+mrEHi9yFzAJMhIUNXHhUBFLDkrWB+TfzWiBs/AzfPUes1C5b2kwJ/plCPCs8faRqw+fG+cdpW9hl1I1cTXBK+Qd/Bhl2q2Ae1pdFw6pFrhPIa999Srv6XbA2VIkrS/VtvhJSQdRmOb/wGlnny4D2uHxCpa1LcptLMTCGaDiQbWYiLkiOFUmyPHq+uj5u+/JBL/Yv10DJiUVT2TwnApGdkykjK6Oe7ZsjvIWRukILraUy8Bj4Y0f1t20vVEAAO4vCAg3tWbwwa3Y+P//+O32RfxECcGLDcMvvszD6Hl2HRh1w1519bBEDn+5ssJXhJMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FcrahsnI1jNzxfUdfsCjjTpdO3BRr7NE6EToWuu1nrA=;
- b=KfOY1pQI8XyJ1v711Kp8JJAaqEnp6GpBxbH00pWrRtBkn+XdfgW7dH1TWKIgKJXFqeLi48g8K6FLk0TNeUIulXJLS03Az3NH24790UaINOcdxFHQiu8xJJX+66XLDJ+rrFHGWGhgMI5GtMEJ8KK+MPkFHGW5VsenbujF6yW+YK4tGBvrfwsHRQ6j5mqPtUP+VK1qvguZAxh9ZOJFqQc6HqXr4Q9bR49vi1kL6Eq4pGN6wzxpo5MtM28ZhMj1xbSlSFzbLCKB6rp+CC5L9UM6Rj802OphSRpTbK4I3BZz+xWjZtQxfTcVVlI7Z6jXCiIwXQTnNOKsadM2Lu4Px7IBPg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FcrahsnI1jNzxfUdfsCjjTpdO3BRr7NE6EToWuu1nrA=;
- b=pHU/ZSs053ICDNsF5C/iKg9tc4V2fz079RKDWVPaPVDzfidO+jHMombZlYHDWvYmyYO4vGPEbU+Q3RmB+LHJwj5HY/x0WJUQeJXLsgO2eNoSg0gAwgGoy4d1ODFhojGMC53rIV2LNPj3/zkFhKLI/0tW23pZcn2dQlAZD//kPhU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PAXPR04MB8829.eurprd04.prod.outlook.com (2603:10a6:102:20c::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Thu, 12 Jan
- 2023 11:29:27 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.5986.018; Thu, 12 Jan 2023
- 11:29:27 +0000
-Date:   Thu, 12 Jan 2023 13:29:22 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 net-next 00/12] ethtool support for IEEE 802.3 MAC
- Merge layer
-Message-ID: <20230112112922.z2h4swask3pdzxlj@skbuf>
-References: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: BE1P281CA0137.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:7c::7) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S232163AbjALLqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 06:46:35 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24774101CB
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 03:37:37 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id o16-20020a056602225000b006e032e361ccso11046922ioo.13
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 03:37:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wNqj14hq1ZmMXk1ki/tpD2RyflNBufk7g6Rn75mefPk=;
+        b=7m/WwQ9TyJRjdyFSE5tmOW+y5yVUK2PIstjC2BubprEoBKojVU/j6pKGkjQNb9w8iL
+         0/Je00SzW+VB2QfaAKzkU4gtw+MBAcIDw2eYJq8gOszQsvEAO1qLXagUg236SLLIfFRi
+         bvo10+AcAV9XNHAzHL25xCLYFqqy7zYkB6iaqZXLBIuAcCUp03NYRWuazpu43fsKuwf0
+         GByefMeZUNYvQ39cl6gXVC35Io1Mze6ILM5GjE4+m4Nj6HswKJp04yHcPougHhNocT+8
+         5/xhP/V6ZUpZbEA5FsUfm0vdOrJ4eNHVd1vHFwVVmKW2bGsKG1mxXEEr2xjDPB3chRDP
+         yvdw==
+X-Gm-Message-State: AFqh2koyfZ4WGdW0EWefXw35I6CRm2qPMxiCvUW50LH5CTm62pjZjVBn
+        d7spWE+ZuBrdl6qPWJYTP+u8TDH+/4FuuNG/h1UW7enWcTcz
+X-Google-Smtp-Source: AMrXdXunL+1Lgm4hPngP0/gYdfSj1aFp5ubVrdX479epzsfjt3JEbaGt1aHfc2kM2TclTwPSXvYXIod4yPltKwm3prJ4fdyZ7rf7
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8829:EE_
-X-MS-Office365-Filtering-Correlation-Id: 648e1bd5-c7c6-4ca9-c1f0-08daf49042b8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JUOEUJ1f6FEUPm9hgO4C4DhSZCqDDWydKXcvo99QKSqU/Ho2U4gTzXlRhRPH9ygCbrqmfzUGBJhYb/7PboQdq9XRMUv9eb+XSIjGbtj+itLdHcFcnCQ2xUvaWx+9412BpLxfZudUOEoowCF8Ckua4xN5Rk/vIUmYWwmFKpmpPKY6i0yjRVf8E0XMZSE+3Ovzls7motoD+/bPLOGIefoshRkUMegHP67tpG4SYeMECggPhfrCNPYWNVt80ZSsBCY0C0PlBTiycRQLrApBoDHm2sTyZdl2Osdgb0ViKJOv0n8C9mfCj0UNezb0ImVsP9RXe/vppdEnAkH1lhmAgE8+f9OWAbzb+j6UN4YGW2nXMbTlY1scyrlnwXQ/3B24xg2/m/7jDFb8/i6Vcvoze8znOK+JwIZs1yEDYkHxMKbruvYF0Yn8hGSpzpdu8WSJ8CWjCRgciIBwV6EkbJkWwXO8OxhgaSCpnhIBZ5z0vMw7OxmZFAl1+FOg2NpiBCrwmpYy7aaeHUs7uo1AMgh09c0Ctmj9uFWjsyd3y5v9R+/qgjihcCVyNpPrip2VYuOoMCYLKMjDlEG9GiZ2dt4UjFDDXoRLS8hPgppPoz3J+xkCEUo4pr7fu+EWjL7Qgry7FmSA2X55B7vI4Y9GfMFpfGon97xIG54M89ONhmJCQZVSbKA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(136003)(376002)(346002)(366004)(396003)(39860400002)(451199015)(6506007)(38100700002)(6666004)(478600001)(33716001)(6486002)(966005)(66946007)(66556008)(66476007)(8676002)(6916009)(8936002)(86362001)(41300700001)(4326008)(4744005)(7416002)(44832011)(54906003)(5660300002)(316002)(83380400001)(1076003)(2906002)(186003)(9686003)(6512007)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ctZ1YK1Z0JvU5eKf4E3bKsyRoJ+E1e402uHByFJ3mdeyX6UdegQf4tLn/HrT?=
- =?us-ascii?Q?pQpIc4I0DlQ4fi2tgQF8V++iixC0404D2Pp8GZ1EMAeyuAF+E0Sj33ldCe6J?=
- =?us-ascii?Q?ZyIpoNGg55fA8kjSVc6xFkSP10/XG3q4OdpvCgQ/SM6O7RHszikDpSYE5Yco?=
- =?us-ascii?Q?mNC7Wq+4qvC9pTX9/tzqbfUIKxNlYWWe/zQFu7IlXEG7nfvngr7ustW8FBcc?=
- =?us-ascii?Q?gclFdTi9ZMoGLgOgNBSmjyByHdqtjGlR9tXAxkRlhfa8N4FFIpFQo/0LqVOP?=
- =?us-ascii?Q?1AdJp4rDzK3MwsdVlFotwZpDAZ4u/kjoFoF0nCV6JUxjjPpN4kpm0EwaonIC?=
- =?us-ascii?Q?w1XfbKI9zwdJsfEXiAd9qNNidf+aexoTQAqOVyk19yuxbsyRXfsi3C+Q0eeb?=
- =?us-ascii?Q?rT9idJcE/WsGazDe8FQAMkUv5vUvsTRdI0yIVhkLkqGJcckbT6ad4Qn8vtlj?=
- =?us-ascii?Q?ppUfBrEgjs2eX+I28E6pCPBrKzM1a6xcI3veQro2xLGTRBwWC7Rac1naNBAy?=
- =?us-ascii?Q?2Z3AxyWFyEIPL/dkpvrgqSBPAK4wDqiVp/eiB/H8xbs7Yl9lgPsTroQQhS9U?=
- =?us-ascii?Q?TZEOy89puKYykvS+jauNC1LNeJ6k/ykDRjNjqnWalSzvN4gJQnRFxAeKK+3g?=
- =?us-ascii?Q?+1p2LMMrmrsSLOiKDHqO2YzDRw48r+PrBNtl7SdoBMFBpV1M5fCeCWXGADmx?=
- =?us-ascii?Q?jxghQJFpQNU38ny/hK2yzZZZX0ZPZl1X1vKuGam/QQBTOtbiYPAVFms6zXUx?=
- =?us-ascii?Q?FZuFJLM+dOZ1SHLfSiqMRJ+zZfzo8K4Vd9zq2MPp9kGsXenrDHcKWBBXRnaV?=
- =?us-ascii?Q?v8WtORb5Zo4MYUa9zuSyNP2U1qOLvZvrkyp3JK2S/zNJx3fEfn+Guwq787OG?=
- =?us-ascii?Q?TYQLZELhWSrLttiwOW7C2IXKPfPhIEi05UVyb3EvzoP0bJbQXrLAeuuTK0oJ?=
- =?us-ascii?Q?4OGhGiRtf57uxUb0GHWehxY/aQs3KnOWAXP1u/YX7dX+DkU9JiGXLzI3Yi9l?=
- =?us-ascii?Q?ceCbMKeYcGNncQ5TcTTopyuGx8CXH1sMRQ0FpuGc+ZXmX6TR6Ip2EnzIYBcT?=
- =?us-ascii?Q?W2oJLN5Dwp5NCmUeUQdkYYrGZa8Mm+akCPlXZc8q+RJVYiwr3rJAmcZn1xOT?=
- =?us-ascii?Q?fsKRLX7SM+ZeN17TtAPQwJS3Ky0roByVpAWNVlQEe0x1jzELZvLlJ1+eP9yw?=
- =?us-ascii?Q?Ps0be02+NIVIEFVVaMl0oMQk6oul8ur8S04trBxzl+OtgAi1CqKV5XdKYuf8?=
- =?us-ascii?Q?H30Dm1IffTGT6dfpmLipliISdZ+4pCUnFkCEumL6SImGjhLzz6oXP4pI9DU3?=
- =?us-ascii?Q?vntS29TiGFajOpGWvan1OgHEon2TXzxFnlDyTenwlbmAS2DnqFRABKF5M8PK?=
- =?us-ascii?Q?KUSJFBJjfMtHUbII9MflngpR6SjUlpR+oAHg2nyJR53bjOoaGcYmR2ABWAxy?=
- =?us-ascii?Q?tILQrZLOEjeyTr9T1xThvkefIcQlHDwqijSZNVkmOOtTo+4nT7s2FOrS6QOy?=
- =?us-ascii?Q?S1T9cUQEF7rUb4R3Kwlbq2GWqZ/2BvXOLqLyTNslWeSgxFoAF6UGdF5QEfpW?=
- =?us-ascii?Q?FBodLvsSS0HUS+fcX7r+LuniJldgsuxnX3nsENN4Z0tH2MFc3HTV9wXyCQS+?=
- =?us-ascii?Q?yA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 648e1bd5-c7c6-4ca9-c1f0-08daf49042b8
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 11:29:26.9468
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8XiK991QEf3nKFK129KSsCF0wBWySITNLPirpePJgYLaZwDmxPVmIchPt1hFt2SFi29KtR+xZylv7ZS0oAhpQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8829
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:d111:0:b0:6bc:2a47:a874 with SMTP id
+ l17-20020a6bd111000000b006bc2a47a874mr6363310iob.126.1673523456454; Thu, 12
+ Jan 2023 03:37:36 -0800 (PST)
+Date:   Thu, 12 Jan 2023 03:37:36 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000253b7305f20f8be8@google.com>
+Subject: [syzbot] WARNING in rate_control_rate_init
+From:   syzbot <syzbot+352621ea3116a4a2c99b@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, trix@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 06:16:54PM +0200, Vladimir Oltean wrote:
-> This is a continuation of my work started here:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20220816222920.1952936-1-vladimir.oltean@nxp.com/
-> 
-> I've decided to focus just on the MAC Merge layer for now, which is why
-> I am able to submit this patch set as non-RFC.
+Hello,
 
-As it happens, this patch set seems to conflict with the recently merged
-8580e16c28f3 ("net/ethtool: add netlink interface for the PLCA RS").
-It is still possible to apply and test on a set of kernel UAPI headers
-prior to that commit, so I will leave reviewers/testers more time to
-comment, and will not resend kernel + user space patches just for this
-fact.
+syzbot found the following issue on:
+
+HEAD commit:    f23395b4049c Merge branch 'net-wangxun-adjust-code-structu..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12f87d76480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=46221e8203c7aca6
+dashboard link: https://syzkaller.appspot.com/bug?extid=352621ea3116a4a2c99b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/5aa1ecd77028/disk-f23395b4.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/7d8e9efbea4d/vmlinux-f23395b4.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/001988a09954/bzImage-f23395b4.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+352621ea3116a4a2c99b@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 10778 at net/mac80211/rate.c:48 rate_control_rate_init+0x4ed/0x6b0 net/mac80211/rate.c:48
+Modules linked in:
+CPU: 0 PID: 10778 Comm: syz-executor.5 Not tainted 6.2.0-rc2-syzkaller-00314-gf23395b4049c #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+RIP: 0010:rate_control_rate_init+0x4ed/0x6b0 net/mac80211/rate.c:48
+Code: f8 48 c7 c2 c0 31 7c 8b be 19 03 00 00 48 c7 c7 80 31 7c 8b c6 05 f0 d3 16 05 01 e8 ba f5 78 00 e9 33 fe ff ff e8 13 74 3a f8 <0f> 0b e8 0c 32 24 f8 31 ff 89 c3 89 c6 e8 71 70 3a f8 84 db 74 27
+RSP: 0018:ffffc900145b7280 EFLAGS: 00010216
+RAX: 0000000000002825 RBX: ffff88801cad46e0 RCX: ffffc9000b3ca000
+RDX: 0000000000040000 RSI: ffffffff8946de7d RDI: 0000000000000005
+RBP: ffff888042a78000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
+R13: 0000000000000000 R14: ffff88801c738de0 R15: ffff88807b9bc000
+FS:  00007f6d736d4700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f752b9ad988 CR3: 0000000029022000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ sta_apply_auth_flags.constprop.0+0x424/0x4a0 net/mac80211/cfg.c:1569
+ sta_apply_parameters+0xaf8/0x16f0 net/mac80211/cfg.c:1896
+ ieee80211_add_station+0x3d0/0x620 net/mac80211/cfg.c:1961
+ rdev_add_station net/wireless/rdev-ops.h:201 [inline]
+ nl80211_new_station+0x1288/0x1c60 net/wireless/nl80211.c:7398
+ genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
+ genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
+ genl_rcv_msg+0x4ff/0x7e0 net/netlink/genetlink.c:1065
+ netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2564
+ genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
+ netlink_unicast_kernel net/netlink/af_netlink.c:1330 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1356
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1932
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2476
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2530
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2559
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f6d7288c0c9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f6d736d4168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f6d729abf80 RCX: 00007f6d7288c0c9
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00007f6d728e7ae9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffff260419f R14: 00007f6d736d4300 R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
