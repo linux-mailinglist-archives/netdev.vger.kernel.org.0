@@ -2,47 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE791667EFE
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 20:25:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D555667F0F
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 20:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240399AbjALTZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 14:25:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S240511AbjALT1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 14:27:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240203AbjALTYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:24:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A2E1D0D6
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:14:53 -0800 (PST)
+        with ESMTP id S231948AbjALT0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:26:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273A965A7
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:20:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98B43B81FF6
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2192FC433EF;
-        Thu, 12 Jan 2023 19:14:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2F36B81FF6
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:20:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DD56C433EF;
+        Thu, 12 Jan 2023 19:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673550891;
-        bh=saV/tQHscwTp/w0sksVXGA/Cjas4M75TH/eZPXFxs0E=;
+        s=k20201202; t=1673551222;
+        bh=CoaPy7eX8iA2Gtt8hwFizNzWitdwiIbIQH3fQKRb7H0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RD0NuINsZub50eF9vyt2J/qoHyOAvTVyGS7AFlrck+s6ZbAQ7HtY+tn23UAJhzNZY
-         9dhpBWfSbm1HuSvLMi7wTBo7h7Ol6rLplebMPIU4t45/iWOO69km8P5q82OALmPLKV
-         4n3Or9IeLxelsy1sYX5TleGNtj9p00Aq/f0NTSFFa2ATosWY+KjBlrHxd3/s5pNoW8
-         jd1mS+XOV0hkqGooXDaNfn+vXlvUMxc8YMmNYCgb/3y3z6Ip5y8cGPMWtx+XASaKOv
-         mfonPHQT6/wyGlQ6R9zikoZdhIKkQ1YIsnj292wUzHN6DX6A0Qx9yiFMxyS9JIXuM3
-         FbmQ8m7g1AMmA==
-Date:   Thu, 12 Jan 2023 11:14:50 -0800
+        b=onZae/FIbJpuznTnRakbTt3GZ4r1E0hRtynfdqpbJ10/eGIG8+fpHqT6OzddOd+8x
+         YhqNdmqkx/U9ba10EP5WYYDknI5Tst9+2l60/OyZA/8pMdSTgwUirZt8lmIwIaiyyP
+         Y7ZF0URZV2u0Vhg2hyuZB2d8wtmrN17cdZYmEnkb1Fdwfbz0bTefE7eqNb0RsA0H6S
+         yNR8Rur4Vc5cjHIuSphWmv9gRlSulxnv14jhUZgHcfI08mlz/GkhBV+d1W1rbIwNS1
+         49cO1NKsuTPDrIc/XFC3UdOAJEZ5EQ7rsLaMnQvos0NZwz/qkExCMPMoyUcf5i65/i
+         TdplcqiqJyOzw==
+Date:   Thu, 12 Jan 2023 11:20:21 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Palczewski, Mateusz" <mateusz.palczewski@intel.com>
-Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [PATCH net v2] ice: Fix deadlock on the rtnl_mutex
-Message-ID: <20230112111450.2eefe7b6@kernel.org>
-In-Reply-To: <DM4PR11MB5293E8540016AA8AB2E139F587FD9@DM4PR11MB5293.namprd11.prod.outlook.com>
-References: <20230105120518.29776-1-mateusz.palczewski@intel.com>
-        <20230105104517.79cd83ed@kernel.org>
-        <DM4PR11MB5293E8540016AA8AB2E139F587FD9@DM4PR11MB5293.namprd11.prod.outlook.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters
+ after the instance
+Message-ID: <20230112112021.0ff88cdb@kernel.org>
+In-Reply-To: <Y7+xv6gKaU+Horrk@unreal>
+References: <20230106063402.485336-1-kuba@kernel.org>
+        <20230106063402.485336-8-kuba@kernel.org>
+        <Y7gaWTGHTwL5PIWn@nanopsycho>
+        <20230106132251.29565214@kernel.org>
+        <14cdb494-1823-607a-2952-3c316a9f1212@intel.com>
+        <Y72T11cDw7oNwHnQ@nanopsycho>
+        <20230110122222.57b0b70e@kernel.org>
+        <Y76CHc18xSlcXdWJ@nanopsycho>
+        <20230111084549.258b32fb@kernel.org>
+        <f5d9201b-fb73-ebfe-3ad3-4172164a33f3@intel.com>
+        <Y7+xv6gKaU+Horrk@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,17 +64,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Jan 2023 13:31:06 +0000 Palczewski, Mateusz wrote:
-> >Why do cases which jump to err_vectors no need any changes?  
->
-> During my testing I saw no issues with cases when goto err_vectors
-> were used. Did You manage to have other results? 
+On Thu, 12 Jan 2023 09:07:43 +0200 Leon Romanovsky wrote:
+> As a user, I don't want to see any late dynamic object addition which is
+> not triggered by me explicitly. As it doesn't make any sense to add
+> various delays per-vendor/kernel in configuration scripts just because
+> not everything is ready. Users need predictability, lazy addition of
+> objects adds chaos instead.
+> 
+> Agree with Jakub, it is anti-pattern.
 
-I'm just reviewing the code.
+To be clear my preference would be to always construct the three from
+the root. Register the main instance, then sub-objects. I mean - you
+tried forcing the opposite order and it only succeeded in 90-something
+percent of cases. There's always special cases.
 
-Exhaustively testing all the cases is probably very hard,
-which is why we generally try to reason about the code
-from first principles.
-
-IOW "it didn't fail in my testing" is rarely a sufficient proof
-upstream.
+I don't understand your concern about user experience here. We have
+notifications for each sub-object. Plus I think drivers should hold 
+the instance lock throughout the probe routine. I don't see a scenario
+in which registering the main instance first would lead to retry/sleep
+hacks in user space, do you? I'm talking about devlink and the subobjs
+we have specifically.
