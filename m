@@ -2,67 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E421667FB4
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 20:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 817C4668378
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 21:08:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbjALT4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 14:56:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
+        id S237088AbjALUGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 15:06:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbjALT4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:56:30 -0500
+        with ESMTP id S239706AbjALT7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:59:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EF2DD2
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:56:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF9238A1
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:59:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B79FB81E62
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:56:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A664DC433D2;
-        Thu, 12 Jan 2023 19:56:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD737B81E5F
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:59:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D6FC4339B;
+        Thu, 12 Jan 2023 19:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673553375;
-        bh=FrPA5f/bauN+r9llVROYv0FY25BDNcGYLO+tJfidgxk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AJz7Vw4vh3wIBV21TmyLvmCo8c90K+plBpa3km57v2lDeOcGoK/iqCdee0JN3P87H
-         cyMfmKQ/DEj+1asGV1f6uGlDG5cOjHBOQ2KscBH1+OPYhdOz4XXdn4/wx/frOk84G6
-         9VgcEM2sZkSxQYN1+i6PSnhTsA1J5XjMp9+TjQIY0ERQK8uNjGVQbj6g4oTz24Nj4b
-         YhAfuk4yYRs2E+Fblgdyj/zOx40xfBkWT7uyjdsqzQ7Mqf+SDdjQ76ZgD7QWcU2NpB
-         RQw1pjF0Vt5k2Zc/nFjrxYLcOwUAkHRFgB7cVzIBfpzUfNOR1kjmBMPD9liJ6pfK/1
-         A4jzOTy/I32Nw==
-Date:   Thu, 12 Jan 2023 11:56:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Gal Pressman <gal@nvidia.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>
-Subject: Re: [PATCH V1 net-next 0/5] Add devlink support to ena
-Message-ID: <20230112115613.0a33f6c4@kernel.org>
-In-Reply-To: <pj41zltu0vn9o7.fsf@u570694869fb251.ant.amazon.com>
-References: <20230108103533.10104-1-darinzon@amazon.com>
-        <20230109164500.7801c017@kernel.org>
-        <574f532839dd4e93834dbfc776059245@amazon.com>
-        <20230110124418.76f4b1f8@kernel.org>
-        <865255fd30cd4339966425ea1b1bd8f9@amazon.com>
-        <20230111110043.036409d0@kernel.org>
-        <29a2fdae8f344ff48aeb223d1c3c78ad@amazon.com>
-        <20230111120003.1a2e2357@kernel.org>
-        <f2fd4262-58b7-147d-2784-91f2431c53df@nvidia.com>
-        <pj41zltu0vn9o7.fsf@u570694869fb251.ant.amazon.com>
+        s=k20201202; t=1673553543;
+        bh=89zvIK/2JcZrndkW3y9+dlieAuFcvu2Gm+arpmVwGzM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DRUDqg2VagHDjQfLWi/x11dCu8e9XCgZuEu4UTrCsqLW683rzvE4rrrHZ68GxHuDy
+         O8RF+MZ7bftl3JFrEmbrgu1S6DxogA+XVvl0BQa8OJZK+FIXCgGbrQNAIDq99EK4cH
+         9aRsCHH48DkYaoNxQwr00r7UagSqgS2pup0ygroIbgeU8XWqvViB1j7f0YrRuZzZnc
+         uSifRmfZb6Lxhkgg3od7L4J9QB+lVw5llfRL/ox6nvIl/SuItafUsO6PAK9es7EyXv
+         UdqVmG/z//APqqvWhsRUb3uFeyQUtBWWVz4AsSYLJrWm9XqgS4lraC8NV3aRcMrqN4
+         VlFgqCFyRsCJg==
+Date:   Thu, 12 Jan 2023 21:58:58 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters after
+ the instance
+Message-ID: <Y8BmgpxAuqJKe8Pc@unreal>
+References: <Y7gaWTGHTwL5PIWn@nanopsycho>
+ <20230106132251.29565214@kernel.org>
+ <14cdb494-1823-607a-2952-3c316a9f1212@intel.com>
+ <Y72T11cDw7oNwHnQ@nanopsycho>
+ <20230110122222.57b0b70e@kernel.org>
+ <Y76CHc18xSlcXdWJ@nanopsycho>
+ <20230111084549.258b32fb@kernel.org>
+ <f5d9201b-fb73-ebfe-3ad3-4172164a33f3@intel.com>
+ <Y7+xv6gKaU+Horrk@unreal>
+ <Y8AgaVjRGgWtbq5X@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y8AgaVjRGgWtbq5X@nanopsycho>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -72,28 +63,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Jan 2023 15:47:13 +0200 Shay Agroskin wrote:
-> Gal Pressman <gal@nvidia.com> writes:
-> > TX copybreak? When the user sets it to > 96 bytes, use the large 
-> > LLQ.
+On Thu, Jan 12, 2023 at 03:59:53PM +0100, Jiri Pirko wrote:
+> Thu, Jan 12, 2023 at 08:07:43AM CET, leon@kernel.org wrote:
+> >On Wed, Jan 11, 2023 at 01:29:03PM -0800, Jacob Keller wrote:
+> >> 
+> >> 
+> >> On 1/11/2023 8:45 AM, Jakub Kicinski wrote:
+> >> > On Wed, 11 Jan 2023 10:32:13 +0100 Jiri Pirko wrote:
+> >> >>>> I'm confused. You want to register objects after instance register?  
+> >> >>>
+> >> >>> +1, I think it's an anti-pattern.  
+> >> >>
+> >> >> Could you elaborate a bit please?
+> >> > 
+> >> > Mixing registering sub-objects before and after the instance is a bit
+> >> > of an anti-pattern. Easy to introduce bugs during reload and reset /
+> >> > error recovery. I thought that's what you were saying as well.
+> >> 
+> >> I was thinking of a case where an object is dynamic and might get added
+> >> based on events occurring after the devlink was registered.
+> >> 
+> >> But the more I think about it the less that makes sense. What events
+> >> would cause a whole subobject to be registerd which we wouldn't already
+> >> know about during initialization of devlink?
+> >> 
+> >> We do need some dynamic support because situations like "add port" will
+> >> add a port and then the ports subresources after the main devlink, but I
+> >> think that is already supported well and we'd add the port sub-resources
+> >> at the same time as the port.
+> >> 
+> >> But thinking more on this, there isn't really another good example since
+> >> we'd register things like health reporters, regions, resources, etc all
+> >> during initialization. Each of these sub objects may have dynamic
+> >> portions (ex: region captures, health events, etc) but the need for the
+> >> object should be known about during init time if its supported by the
+> >> device driver.
 > >
-> > BTW, shouldn't ethtool's tx_push reflect the fact that LLQs are 
-> > being
-> > used? I don't see it used in ena.  
+> >As a user, I don't want to see any late dynamic object addition which is
+> >not triggered by me explicitly. As it doesn't make any sense to add
+> >various delays per-vendor/kernel in configuration scripts just because
+> >not everything is ready. Users need predictability, lazy addition of
+> >objects adds chaos instead.
+> >
+> >Agree with Jakub, it is anti-pattern.
 > 
-> Using tx copybreak does sound like it can work for our use 
-> case. Thanks for the tip Gal (:
+> Yeah, but, we have reload. And during reload, instance is still
+> registered yet the subobject disappear and reappear. So that would be
+> inconsistent with the init/fini flow.
 > 
-> Jakub, do you see an issue with utilizing tx_copybreak ethtool 
-> parameter instead of the devlink param in this patchset ?
+> Perhaps during reload we should emulate complete fini/init notification
+> flow to the user?
 
-IDK, the semantics don't feel close enough.
+"reload" is triggered by me explicitly and I will get success/fail result
+at the end. There is no much meaning in subobject notifications during
+that operation.
 
-As a user I'd set tx_copybreak only on systems which have IOMMU enabled 
-(or otherwise have high cost of DMA mapping), to save CPU cycles.
-
-The ena feature does not seem to be about CPU cycle saving (likely 
-the opposite, in fact), and does not operate on full segments AFAIU.
-
-Hence my preference to expose it as a new tx_push_buf_len, combining
-the semantics of tx_push and rx_buf_len.
+Thanks
