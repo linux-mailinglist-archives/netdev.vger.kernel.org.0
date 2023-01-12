@@ -2,211 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D294D667DBF
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 19:18:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26850667DE0
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 19:21:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238976AbjALSS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 13:18:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+        id S240286AbjALSVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 13:21:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240180AbjALSSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 13:18:01 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749A392
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 09:48:42 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id o7-20020a17090a0a0700b00226c9b82c3aso21767654pjo.3
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 09:48:42 -0800 (PST)
+        with ESMTP id S240611AbjALSVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 13:21:08 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F136BBE3C;
+        Thu, 12 Jan 2023 09:56:32 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JsTSCd+wONXXHvmtPrb9906Dr9NSF7/Q2r8d1+8w1EqGhA3OUkj4ypqmNrOKjDOjzzSi1W/l9Xi1JkftWmkIhsqYuq2Hp731WXXn78L8lZpss5QryowoYgblsp5flhr6R1TymmZupFTHLONnT4Rf4b6mXZrYCvx5JH0Fm6EDGgpEP1e5s9XAIu6T3qoSfXVAkFM+7ABvojI2sBivXarPvD+HtolXZEMlD9vSAD8wU+yHD8LBueBbAVkby2oYxRqFw5VOGe8fUkXPLa7B6EhjLhypLHsWWPrOxgEZ+kmkPs1yBzsOy4oriPyoIt/d012HNmMmI1QazUl1YN1wXK5lXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vuRJYGVT/Vh49Xb904JLBrCmEXn3TP7z+ALpsSWKcjM=;
+ b=Cu7uyRu8eUlEcU/SD3SDSuiutiRnka9AO3dAoWofwumhr/UUGjOiXAmUiKjkN5gNg+CtNCKpYSd9QI9WJBb7n39hAmo8AXoWYPEkWGht2lLK6sYPUQnHzP33Wm11c6otSpQEJG5UJf0oUINzyVGTnefEH19/+tDU8DabBQJjuNjU1QMpM3+/jqdQh3JQpAGHG5ZHGPESmLlAnQxvzai84CxNU9tD3a9ykW49/sTmli9ltNTYz1H0ds+o+4iyHduaT+VEdlmjrEiT8HgLj3Xr70uRj326aSn9YtIdbDjILiUDvowmfNQ9jWjCDMJFMXYslXYZkJunjVrRWHeHLVoyKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=kYVWJ7k+UIIearLYPWflHxKDCw5KkZwLx7uD7gLMcvY=;
-        b=le4gQYWqcsLi6cm1r0GlaaA/f2Y9bh5ws97Arg1Pptoibl6tSgsHsNeIH6zbgKZ7Ts
-         K3ge4m5QVx1xtODcToUReVsYvRkV6ajalmlNTNvhWIF3SBPrmdRQEYmNG+SAD+8dAtHL
-         sCJgcx5mDPOfbuyFQpBmZv8CpQRgpOG84J+ZGJAKQb1KTUmJAUWGDbgPEAScNiMxAFc1
-         PTI9C4/Nk06EN/+tkrmDiOBfMgpMdutTX+A2dSOizw3DoJkj3tdq7HCE55VPfCCMeB6D
-         E/yMAWzW5W1p30hx0E0WRLfID9QrjLMdyHUK0CdFvgVHn28sLg//QQvaX7n+Jc0uI43e
-         0awQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kYVWJ7k+UIIearLYPWflHxKDCw5KkZwLx7uD7gLMcvY=;
-        b=B40JGz4yKoPaPTq/nmHbZM2VOOJ/lqviwzqA30QsdQopc7E3Zxs45Ko9AhZw0uTZ5K
-         TSJM1a6yCrDtjZAJxy+oKixfkrVMdwNRnilzpPaT+nFJHDFrE+Z6UmKkov8oy/78lGWb
-         kSOZLnNl+TCrJ2ID0GZjpUy7i2aFjp6H874MLsg33gby/FdXhOFzQeVIkH+AmfUnIbn6
-         E/lXeiMzY30U7eMmtu9xgAx1w5Y7M5Ur3o2iP4xTffiMyT2JQtKy5Rth9uJspdpTiMd5
-         yO1X2v6bHv26dASRZUho4ldRCHAiQN+tvMCEtZDzUQMj9OUVlfU2ItK8zTNW42bn3eyR
-         NIKA==
-X-Gm-Message-State: AFqh2kqi8aP2Jxgn4lhZ7ZiMtP+LRURp6eXmQVFcpMT2OZN79cuORzTQ
-        c1OHH9VALRRuSPIh5JAJSMs=
-X-Google-Smtp-Source: AMrXdXukPYww9XqE44i3QuCLuKSJYXPEKJZOPV5bZJy9Q/HikQoeNL4IkbmS2nPx+ng+F92vK23hiA==
-X-Received: by 2002:a17:90a:8d01:b0:226:e787:d3e8 with SMTP id c1-20020a17090a8d0100b00226e787d3e8mr23389185pjo.38.1673545721882;
-        Thu, 12 Jan 2023 09:48:41 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.117.20])
-        by smtp.googlemail.com with ESMTPSA id bj5-20020a17090b088500b00212e5068e17sm11001756pjb.40.2023.01.12.09.48.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 09:48:41 -0800 (PST)
-Message-ID: <0031e545f7f26a36a213712480ed6d157d0fc47a.camel@gmail.com>
-Subject: Re: [PATCH net] net: enetc: avoid deadlock in
- enetc_tx_onestep_tstamp()
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vuRJYGVT/Vh49Xb904JLBrCmEXn3TP7z+ALpsSWKcjM=;
+ b=V5Rw+HTfn0Mu83QQJ3As7F05N7tTqEVDf/47nGlntvCM+mnLQFZj0kEzO82qrvhO5eyMRFUSrZ8Bh3EIJwqPQKY0/Hv3STAnTSoDSeoD4bN2V/iQQdo3vysknuFFEAlyuKSpuDW20Ny8NTAs7ETlrEpapfNxv43Y0S04EeKyi/E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by SN7PR10MB6548.namprd10.prod.outlook.com
+ (2603:10b6:806:2ab::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.12; Thu, 12 Jan
+ 2023 17:56:29 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2015:3589:3e96:2acd]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2015:3589:3e96:2acd%5]) with mapi id 15.20.6002.012; Thu, 12 Jan 2023
+ 17:56:28 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Y . b . Lu" <yangbo.lu@nxp.com>
-Date:   Thu, 12 Jan 2023 09:48:40 -0800
-In-Reply-To: <20230112105440.1786799-1-vladimir.oltean@nxp.com>
-References: <20230112105440.1786799-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        =?UTF-8?q?n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH v7 net-next 00/10] dt-binding preparation for ocelot switches
+Date:   Thu, 12 Jan 2023 07:56:03 -1000
+Message-Id: <20230112175613.18211-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BY3PR03CA0002.namprd03.prod.outlook.com
+ (2603:10b6:a03:39a::7) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|SN7PR10MB6548:EE_
+X-MS-Office365-Filtering-Correlation-Id: e1771c84-3c66-41ba-c0e6-08daf4c6548b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Nk/B+jlyoDc+uNeCGAfJq71wyv59XHQ/Thbxj+DEhWnReROg5KbF0OSiOGxTHXaomAhRVHQIpKQGKGFoycwGNndV5oCC/QGs/5ym23n1ytvCqh3EfaSG6a6k6R/BMtLmlXdTXNActThqvVeVcciFL5k1Mgn9P5s3vEEvFyUcc9Hd7Mkobrs5NErEJAxowOa4y5aFCWhiSrykx1N8PRUMGpB7aYDPP3RQhmydU93Yv4nhA3WtYmYh+APljdXHyKaBgYCLbeMy6J2vSZGmErlUCVxbnRuw9BmAVmTHhno2Y6UWpPc1IQQn4LE7rKphli/Mh5ByRI4v95wQTLWuqbWzucBeyIsvWnS1hV+qkQ8iin0qq8FPcvThmgGK4w4CRu2TVujFmhJWmrPmpgonDQBboH7WEFprHBKlKbkIntj8qgGm83Qk+jrA7VS0eDCaT1N/YLhzmvpoQPvYnKbQ9HpXgEImoSFGyNi7Vdvp5VH8UA7i0vMdQ5Ra6TkL4PVEmOb8immVfFck5zyl2yTaFhqDtkLWWHkGkd1lS7oOGkPfbTh/tmOdh7LsT5tNx5OfKRxmlbH1EVurebsem+90BOFH85YNTVNNMbhE2zE8hfzpQDlSY0d8FJb4Bnmz2DRu81ZIzrQWfr8giPbXzBuuGxFOQg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(136003)(376002)(366004)(39830400003)(346002)(451199015)(66476007)(41300700001)(66556008)(66946007)(8676002)(7406005)(5660300002)(7416002)(316002)(44832011)(54906003)(66899015)(4326008)(8936002)(2906002)(86362001)(38100700002)(478600001)(36756003)(6486002)(52116002)(6666004)(186003)(6506007)(1076003)(2616005)(6512007)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YnpWY00zZTlmZTJSeWNOa01peTZxakV2ZnEyVzJyd0p5UzRVWlF3cXlEdjNl?=
+ =?utf-8?B?UXFyakQ2UUNWZUdSWFU1QUxXMjBPSyt3OERXd1VyS29XVW1HbnhodjViOWVr?=
+ =?utf-8?B?Q0tsY0R3K2FPQjFiQWFXOXVsdmFRWXp4WDZROEZDYndZMGV4SEt3N2p0QVBB?=
+ =?utf-8?B?cHBHQ2w3MUV1QThMNGJyYks0QTNabHMxN016RGx0c1pBQlptdEliaVl1QzVS?=
+ =?utf-8?B?SHd2bTZLNVgrNTZSMFdYWWtNY21MMzJocFpGYXIrY1QxVFM2aHBLSlJrbmpY?=
+ =?utf-8?B?MEVTOHIvcXp6MDFKNXFpdnI1L05sbS9PVFpsSUk3cWN6cmZISmZ5UHEyRjMy?=
+ =?utf-8?B?ck5nS2NFaGtnUEdyVGRzdndpdGwrT2pTUzNKVG1OQlpaRjNhdGZKdWZ0Z1d0?=
+ =?utf-8?B?YTlSNG9QSmFxTVlhVjZQWjlEc2YvVUxQc2UyL1AxbXo0Yzh2cEhlZms4ZVFN?=
+ =?utf-8?B?cmhvcEF6MmRJL1pXckVjbDNuRjRNaXlRUW1DUXRTbVNodXNHazg5UzVIY0c5?=
+ =?utf-8?B?ZnpJSFVqVFdLR3F5K2lJT3ZaZkRLbkFWSVYvV2szanJ2Q2p6TWUrSk5iWWJS?=
+ =?utf-8?B?OHdOeVFOUEtuQ3kxNWwrUDR6VVNxWFBsK0VRdjEwblErbjkyV09ad2lSdSty?=
+ =?utf-8?B?UFN6TDNDY2FxdzArUitTRDRoMzhKMmY1b2V2QXhKR2lKZmFZVFpRbEVyeHhj?=
+ =?utf-8?B?SFBqdEZRVE4zTjBZUUwydlVDNS9NWWRsdFVmOFFvN1RqSlVqTkJjYTZKUHVI?=
+ =?utf-8?B?UEw4R216SW9ISDd6a0ROdEVFMXpDRUpQVVhyL2tDYW0xWEZnMXl5N2ZaL0VP?=
+ =?utf-8?B?TlJMT1N2VjFxTG0zSVNPZy9JY1ZLQlNwYVNZeHJVeTJ2L1BTMGdlV1U4Q2R3?=
+ =?utf-8?B?MXJwQmFvNzJHY2dqaHdBQkxOVmU5N1pLMHR2VXZkOC81Q0tpR0V1MitpSVpS?=
+ =?utf-8?B?cmZ0VXgrYjh4aU5YV2hQakU3MkI0V2t3c0NRVk1SbU5kR24zckRNVTV0b2s4?=
+ =?utf-8?B?Ykpnc2N3SXpUakUxQXZvVnJtdzczait5U2NwWWJQVm9qT0ZuRytoemhETUFj?=
+ =?utf-8?B?dkhkL1gvZnBTMHpHNnVEMWJMYm1xd1lBbERhVDhjdWZRT0pPT05jZjF0THUv?=
+ =?utf-8?B?R3picWNlYk1FQlFoVjY5cjg5Ym9UbUF0ai9jZXRkeW43Q3dNNEhzaDQ4WHha?=
+ =?utf-8?B?M2pGY3ZRcDRqTFFRZDBaa0Y4Yk1RaXAyWWJiNmk1TFp0RFFXdDdONE5xS0J2?=
+ =?utf-8?B?RlE5NWtNclBRTHU1M2pxMkNWSklmd0dzNG5Qc3hVWExQdnJUVkc5UUE5ay9x?=
+ =?utf-8?B?aU5kTVQyam9LMEphZXZUZ2RVMnpydkovcEVPM2xGVkg0TVVKSUo1NkFscVJx?=
+ =?utf-8?B?bnorZWN2UkFiZ29URmJUemZjRkhPWlE2RVFNWUF4SndHNEd6UWNJS01TL1pI?=
+ =?utf-8?B?bTcrazJOcVlmNUcxU3VaL1ZNMUo4YnphdGkvRVVBc2Q5b1JhaVVTQkZsbUp4?=
+ =?utf-8?B?MURlbUEyOG43WkQzcVMrSXRvd1ZyMGs4czdHK28vZFJ5ZENnTFQ5Ry9YN0kr?=
+ =?utf-8?B?YjdleFdwTVloanhjdGdNdnlMemVMT3JmazZXdlNiaTlKcVZPM1FwbDV4Z1Fx?=
+ =?utf-8?B?OVNaaUhaK1N3VjRpYlpXNk1OUFo1d3JUZmpnUUdndnd4aXREclQxcGc5c3BW?=
+ =?utf-8?B?Z1FEVVY4NVMvYUtxMjNYR0pnYzJDZWs2UVR1SkxkdUVlZjhhdHJMSU5aZXN6?=
+ =?utf-8?B?SmpFOXZsK1FmUml3VTJvZXVZLzVwOW5BUkIxOW5iRk9vY0U1bUhvNnd2Vms3?=
+ =?utf-8?B?RHhYR3A3dFF2WkNpNDlqNm8yZ0JYdFRSaVdmcTh3UUJZK2FhS1g2QTcrN3dF?=
+ =?utf-8?B?QU9CeFpZcmNWdGY2eUZFL1g0WEI4ZW1sdXF1UStNeFVKQ0dRdmJTNmZreG1o?=
+ =?utf-8?B?eWovazlIWmx2UFEwZnUycWNYdDRGOUpuZ2VSRXhheXBVT2M0U3VvM2NMamJo?=
+ =?utf-8?B?Z3Z3SDBWT0ZVdzlrYXVLY3BpNWp3dTNuOHRGNVRQdEUzYkJtd2hsUjY4dUlD?=
+ =?utf-8?B?dzA2eTNZZWE2eUNhT0poL1p5dWdaWkFESjRIR3VUcmtIL05IanJsM2tqR0ow?=
+ =?utf-8?B?NS9sMS9WN2lyTGlYL2RwVWl6K1lWS2RUcXNkNVFZRUZndFR6QjlOcmdhMEQv?=
+ =?utf-8?B?N0FUWGw4UE90L0FKZGcxUjNUZXNacDJITzlOVlRmclkvYlgzaXNCY281b2da?=
+ =?utf-8?Q?+xQ+RkV2MfAPb1skRGSeFq2opJThTQuivQ0anB1HEw=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1771c84-3c66-41ba-c0e6-08daf4c6548b
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 17:56:28.8462
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FdDB5/vxWA8qf9EIEUg/aUJcX23+kDqH+52mi/X51QsVRvXxs90n5Fiq9DFyjaQqH2BhnC4W6XLlkwNUqN3ePRJe4Tr4WJ3EVw0M7BwgEgE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB6548
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-01-12 at 12:54 +0200, Vladimir Oltean wrote:
-> This lockdep splat says it better than I could:
->=20
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
-> WARNING: inconsistent lock state
-> 6.2.0-rc2-07010-ga9b9500ffaac-dirty #967 Not tainted
-> --------------------------------
-> inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
-> kworker/1:3/179 [HC0[0]:SC0[0]:HE1:SE1] takes:
-> ffff3ec4036ce098 (_xmit_ETHER#2){+.?.}-{3:3}, at: netif_freeze_queues+0x5=
-c/0xc0
-> {IN-SOFTIRQ-W} state was registered at:
->   _raw_spin_lock+0x5c/0xc0
->   sch_direct_xmit+0x148/0x37c
->   __dev_queue_xmit+0x528/0x111c
->   ip6_finish_output2+0x5ec/0xb7c
->   ip6_finish_output+0x240/0x3f0
->   ip6_output+0x78/0x360
->   ndisc_send_skb+0x33c/0x85c
->   ndisc_send_rs+0x54/0x12c
->   addrconf_rs_timer+0x154/0x260
->   call_timer_fn+0xb8/0x3a0
->   __run_timers.part.0+0x214/0x26c
->   run_timer_softirq+0x3c/0x74
->   __do_softirq+0x14c/0x5d8
->   ____do_softirq+0x10/0x20
->   call_on_irq_stack+0x2c/0x5c
->   do_softirq_own_stack+0x1c/0x30
->   __irq_exit_rcu+0x168/0x1a0
->   irq_exit_rcu+0x10/0x40
->   el1_interrupt+0x38/0x64
-> irq event stamp: 7825
-> hardirqs last  enabled at (7825): [<ffffdf1f7200cae4>] exit_to_kernel_mod=
-e+0x34/0x130
-> hardirqs last disabled at (7823): [<ffffdf1f708105f0>] __do_softirq+0x550=
-/0x5d8
-> softirqs last  enabled at (7824): [<ffffdf1f7081050c>] __do_softirq+0x46c=
-/0x5d8
-> softirqs last disabled at (7811): [<ffffdf1f708166e0>] ____do_softirq+0x1=
-0/0x20
->=20
-> other info that might help us debug this:
->  Possible unsafe locking scenario:
->=20
->        CPU0
->        ----
->   lock(_xmit_ETHER#2);
->   <Interrupt>
->     lock(_xmit_ETHER#2);
->=20
->  *** DEADLOCK ***
->=20
-> 3 locks held by kworker/1:3/179:
->  #0: ffff3ec400004748 ((wq_completion)events){+.+.}-{0:0}, at: process_on=
-e_work+0x1f4/0x6c0
->  #1: ffff80000a0bbdc8 ((work_completion)(&priv->tx_onestep_tstamp)){+.+.}=
--{0:0}, at: process_one_work+0x1f4/0x6c0
->  #2: ffff3ec4036cd438 (&dev->tx_global_lock){+.+.}-{3:3}, at: netif_tx_lo=
-ck+0x1c/0x34
->=20
-> Workqueue: events enetc_tx_onestep_tstamp
-> Call trace:
->  print_usage_bug.part.0+0x208/0x22c
->  mark_lock+0x7f0/0x8b0
->  __lock_acquire+0x7c4/0x1ce0
->  lock_acquire.part.0+0xe0/0x220
->  lock_acquire+0x68/0x84
->  _raw_spin_lock+0x5c/0xc0
->  netif_freeze_queues+0x5c/0xc0
->  netif_tx_lock+0x24/0x34
->  enetc_tx_onestep_tstamp+0x20/0x100
->  process_one_work+0x28c/0x6c0
->  worker_thread+0x74/0x450
->  kthread+0x118/0x11c
->=20
-> but I'll say it anyway: the enetc_tx_onestep_tstamp() work item runs in
-> process context, therefore with softirqs enabled (i.o.w., it can be
-> interrupted by a softirq). If we hold the netif_tx_lock() when there is
-> an interrupt, and the NET_TX softirq then gets scheduled, this will take
-> the netif_tx_lock() a second time and deadlock the kernel.
->=20
-> To solve this, use netif_tx_lock_bh(), which blocks softirqs from
-> running.
->=20
-> Fixes: 7294380c5211 ("enetc: support PTP Sync packet one-step timestampin=
-g")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/enetc/enetc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/e=
-thernet/freescale/enetc/enetc.c
-> index 5ad0b259e623..0a990d35fe58 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-> @@ -2288,14 +2288,14 @@ static void enetc_tx_onestep_tstamp(struct work_s=
-truct *work)
-> =20
->  	priv =3D container_of(work, struct enetc_ndev_priv, tx_onestep_tstamp);
-> =20
-> -	netif_tx_lock(priv->ndev);
-> +	netif_tx_lock_bh(priv->ndev);
-> =20
->  	clear_bit_unlock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS, &priv->flags);
->  	skb =3D skb_dequeue(&priv->tx_skbs);
->  	if (skb)
->  		enetc_start_xmit(skb, priv->ndev);
-> =20
-> -	netif_tx_unlock(priv->ndev);
-> +	netif_tx_unlock_bh(priv->ndev);
->  }
-> =20
->  static void enetc_tx_onestep_tstamp_init(struct enetc_ndev_priv *priv)
+Ocelot switches have the abilitiy to be used internally via
+memory-mapped IO or externally via SPI or PCIe. This brings up issues
+for documentation, where the same chip might be accessed internally in a
+switchdev manner, or externally in a DSA configuration. This patch set
+is perparation to bring DSA functionality to the VSC7512, utilizing as
+much as possible with an almost identical VSC7514 chip.
 
+This patch set changed quite a bit from v2, so I'll omit the background
+of how those sets came to be. Rob offered a lot of very useful guidance.
+My thanks.
 
-Looking at the patch this fixes I had a question. You have the tx_skbs
-in the enet_ndev_priv struct and from what I can tell it looks like you
-support multiple Tx queues. Is there a risk of corrupting the queue if
-multiple Tx queues attempt to request the onestep timestamp?
+At the end of the day, with this patch set, there should be a framework
+to document Ocelot switches (and any switch) in scenarios where they can
+be controlled internally (ethernet-switch) or externally (dsa-switch).
 
-My thought is that you might be better off looking at splitting your
-queues up so that they are contained within the enetc_bdr struct. Then
-you would only need the individual Tx queue lock instead of having to
-take the global Tx queue lock.
+---
 
-Also I am confused. Why do you clear the TSTAMP_IN_PROGRESS flag in
-enetc_tx_onestep_timestamp before checking the state of the queue? It
-seems like something you should only be clearing once the queue is
-empty.
+v6 -> v7
+  * Add Reviewed / Acked on patch 1
+  * Clean up descriptions on Ethernet / DSA switch port bindings
 
+v5 -> v6
+  * Rebase so it applies to net-next cleanly.
+  * No other changes - during the last submission round I said I'd
+    submit v6 with a change to move $dsa-port.yaml to outside the allOf
+    list. In retrospect that wasn't the right thing to do, because later
+    in the patch series the $dsa-port.yaml is removed outright. So I
+    believe the submission in v5 to keep "type: object" was correct.
+
+v4 -> v5
+  * Sync DSA maintainers with MAINTAINERS file (new patch 1)
+  * Undo move of port description of mediatek,mt7530.yaml (patch 4)
+  * Move removal of "^(ethernet-)?switch(@.*)?$" in dsa.yaml from patch 4
+    to patch 8
+  * Add more consistent capitalization in title lines and better Ethernet
+    switch port description. (patch 8)
+
+v3 -> v4
+  * Renamed "base" to "ethernet-ports" to avoid confusion with the concept
+    of a base class.
+  * Squash ("dt-bindings: net: dsa: mediatek,mt7530: fix port description location")
+    patch into ("dt-bindings: net: dsa: utilize base definitions for standard dsa
+    switches")
+  * Corrections to fix confusion about additonalProperties vs unevaluatedProperties.
+    See specific patches for details.
+
+v2 -> v3
+  * Restructured everything to use a "base" iref for devices that don't
+    have additional properties, and simply a "ref" for devices that do.
+  * New patches to fix up brcm,sf2, qca8k, and mt7530
+  * Fix unevaluatedProperties errors from previous sets (see specific
+    patches for more detail)
+  * Removed redundant "Device Tree Binding" from titles, where applicable.
+
+v1 -> v2
+  * Two MFD patches were brought into the MFD tree, so are dropped
+  * Add first patch 1/6 to allow DSA devices to add ports and port
+    properties
+  * Test qca8k against new dt-bindings and fix warnings. (patch 2/6)
+  * Add tags (patch 3/6)
+  * Fix vsc7514 refs and properties
+
+---
+
+Colin Foster (10):
+  dt-bindings: dsa: sync with maintainers
+  dt-bindings: net: dsa: sf2: fix brcm,use-bcm-hdr documentation
+  dt-bindings: net: dsa: qca8k: remove address-cells and size-cells from
+    switch node
+  dt-bindings: net: dsa: utilize base definitions for standard dsa
+    switches
+  dt-bindings: net: dsa: allow additional ethernet-port properties
+  dt-bindings: net: dsa: qca8k: utilize shared dsa.yaml
+  dt-bindings: net: dsa: mediatek,mt7530: remove unnecessary dsa-port
+    reference
+  dt-bindings: net: add generic ethernet-switch
+  dt-bindings: net: add generic ethernet-switch-port binding
+  dt-bindings: net: mscc,vsc7514-switch: utilize generic
+    ethernet-switch.yaml
+
+ .../bindings/net/dsa/arrow,xrs700x.yaml       |  2 +-
+ .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 +-
+ .../devicetree/bindings/net/dsa/brcm,sf2.yaml | 15 +++--
+ .../devicetree/bindings/net/dsa/dsa-port.yaml | 30 ++-------
+ .../devicetree/bindings/net/dsa/dsa.yaml      | 49 +++++++--------
+ .../net/dsa/hirschmann,hellcreek.yaml         |  2 +-
+ .../bindings/net/dsa/mediatek,mt7530.yaml     |  6 +-
+ .../bindings/net/dsa/microchip,ksz.yaml       |  2 +-
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  2 +-
+ .../bindings/net/dsa/mscc,ocelot.yaml         |  2 +-
+ .../bindings/net/dsa/nxp,sja1105.yaml         |  2 +-
+ .../devicetree/bindings/net/dsa/qca8k.yaml    | 14 +----
+ .../devicetree/bindings/net/dsa/realtek.yaml  |  2 +-
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  2 +-
+ .../bindings/net/ethernet-switch-port.yaml    | 26 ++++++++
+ .../bindings/net/ethernet-switch.yaml         | 62 +++++++++++++++++++
+ .../bindings/net/mscc,vsc7514-switch.yaml     | 31 +---------
+ MAINTAINERS                                   |  2 +
+ 18 files changed, 145 insertions(+), 108 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/ethernet-switch.yaml
+
+-- 
+2.25.1
 
