@@ -2,869 +2,588 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B129A6671CF
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 13:13:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2310E6671D3
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 13:14:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbjALMN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 07:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
+        id S231685AbjALMN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 07:13:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233363AbjALMNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 07:13:09 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2101.outbound.protection.outlook.com [40.107.102.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE01C44378
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 04:11:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lWpRzvcODpbrgoAotVv3DKygy4s8xWQIcFU/D7jLZWsMBWlHCWOaFu25WJtKJ/yckV535MotSYIwOIV6TfT9BZQVWGd1xgY+IdvOurJ5pVkc0ZKLF2UUcXEnPcaDWK8lEka5DAXmFgRdKdl2/IK7ELtjhERGQRyrBVeEzcv61zsYtAKeAzS45ja+BTS20RasMK4SszK0QQafQKpXACizJ6BkkYWlCuqR4bEsf+uE1Ls7m84bGzj5Dku97Ig9gH+122AA4cgkh+zO0KQ9xMqgmH80//6l3BaGl3N0UpAg8RPoUq95QsDdFzCl8lyZsH7g46PTByzVtdi2G2bGl9u4hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MDRt8JoBhglpHGgFDP13aD+P3uz5PerQ1fvR9t3VTCo=;
- b=UQ/B6537Vjek/Hnkrrs6TxrQ3ol00cEnbaSQIwTakYuulEopHm4qsQ8jyjWuliaVfKl0DGEATxjFtKjEqk2m2Q1unq3cUdJp0+3+CsTsbJA8u51hBbpHvDWKQHMroY2wonZsPktdBm7gxj8/+SbUjqPXwk0PVG04jh9JyM11lkahBD6o0RXrFNkllxfV9zhNnHgIfUVtKsVzv6lVbDFEMR3LkszsB83u07u/gWCCmT5HP73fSz4APQPSaK0nd+cVcGqBTiUDdCktNnmGUk0JNnyIVmmsi/ttpAXo7paPsGcqPoktBkkMTBu2pnwcK7Sj3Y05Vuae2OmRZ5HEQg83oA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MDRt8JoBhglpHGgFDP13aD+P3uz5PerQ1fvR9t3VTCo=;
- b=heyyKVnurIenA6niiHqQ4y2EgXy+NiZX0DWJkB/CJdUzco1Su+f2rD9HfLV1Ja+RzpcwZNf5FEygLxLddsmyw0kBHS1fErj8dkUSKlExQWbmK/P091Z8HfZqLvu4Z+NoSqZQG5b7bXilkUGuOa9sQGJ0cD3qUqzZldXX3kRPp4I=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM8PR13MB5125.namprd13.prod.outlook.com (2603:10b6:8:30::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.19; Thu, 12 Jan
- 2023 12:11:48 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%6]) with mapi id 15.20.5986.018; Thu, 12 Jan 2023
- 12:11:48 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Bin Chen <bin.chen@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v2 net-next] nfp: add DCB IEEE support
-Date:   Thu, 12 Jan 2023 13:11:02 +0100
-Message-Id: <20230112121102.469739-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM9P195CA0029.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:21f::34) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S231588AbjALMNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 07:13:15 -0500
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFF22600;
+        Thu, 12 Jan 2023 04:12:13 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VZR2Acy_1673525527;
+Received: from 30.221.129.161(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VZR2Acy_1673525527)
+          by smtp.aliyun-inc.com;
+          Thu, 12 Jan 2023 20:12:08 +0800
+Content-Type: multipart/mixed; boundary="------------AGgUHRPn8FTngxiFshQUw0p5"
+Message-ID: <b25f56de-7913-2a56-950f-dfe0defd6936@linux.alibaba.com>
+Date:   Thu, 12 Jan 2023 20:12:06 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM8PR13MB5125:EE_
-X-MS-Office365-Filtering-Correlation-Id: 61c5a40a-bdc8-4a70-7de7-08daf4962e0f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UMwpwI/Wp+j4mpURefeTgt/flTtjXzmvMHCPP+b/pnu1CK2yKtNZCSYkOa73MT+K7hyUokhHqSMYR/OTJrIlrZGnq25TUbp6x3HdaxdLcB+XlCzIxMuXQlhk+dvCCks/HvB0+8cZiXl8tTf/VH9uF7AIek4sJyaCecj/4sgcGGUWjPiqPoNZwxDJCkmnD/y/xOPc3eQZ2/VNWT03oUtFiVRBLxwIwQwy2ieLRrp2STsLW+df0WrB1DttkhMIwFnnl3xJ2m4yd/tcs7yvhjbV/fgujYZ0rnEPH84TP2rXg2G9pZ/YBV2pheVspkpSh3z3WC9FnBmPMnvPo9ESKTCsRGDUOt1+9FeAb8zim7Q0hcHPxH6TfeMl+X+MQveONSRefIsbbGEryO+sg7GCTnQbsBn9XhRjqmgcwgmpWzdQKI4Sl0gn/niENd4hQvzVVRF/ydth48+rsXHPv0W/d6xcODw810wgJ+czZArG4IysctJDqou1uHBvgcXgUhIYa51IXZ+W4MsS/JS3tTDmN6twwcpStBvjzhs0vW+IhOWxxelbS0702aGJwbfrb6SQL4wvE8Vpktk3ftj+XFBRuNKSGw7uqhxCa8QS8ikfkCqT35R2197798tV5XT+MzvJN7aydMOvOzLFTJXxDUrmBxK281dgHi6JykH5RICAyoDAOJWjL0rlvw4qcNgyfMV394qK
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(376002)(39840400004)(366004)(136003)(451199015)(8936002)(5660300002)(83380400001)(41300700001)(38100700002)(86362001)(36756003)(2906002)(44832011)(30864003)(478600001)(186003)(52116002)(6512007)(6506007)(6486002)(8676002)(4326008)(66476007)(66946007)(316002)(66556008)(1076003)(110136005)(2616005)(54906003)(107886003)(6666004)(309714004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SZWqtXgSNSN7Uki5ZiUWg1wxnIr2MRNXBgIqNy2M8vCfoAgaG343qvgIZWXq?=
- =?us-ascii?Q?vHF1Vk2eA0rz6MV4u6Td3ofz4I/KTin48DA/cfqd+iIDECFeLf7xkD4CiGR4?=
- =?us-ascii?Q?IsuAFohS+yE0mW4l23OMuoFBm/yNXsovXxsywnc4oP1j5g3CrJ0nd2xj+LEq?=
- =?us-ascii?Q?0G+xBjhhnCRsEUaSgQGZaZTPyoU2ZoNc4Zk/JNVR2YHqaZiESPVVrGLIG614?=
- =?us-ascii?Q?sAZxnrNzZabvjbKTPIbTuc5y/6yq4FfTCwtD4lZBkhRcDYPie515Oe+rxmHZ?=
- =?us-ascii?Q?39gEWa6iplXvUwiAwG2E74B263kdczRmnlb7igxTVncPBUIO9hN4luWphHQ2?=
- =?us-ascii?Q?Xg1UeZtBn/44bFMAUxw4CTCRjRIIJj5Ttun+CpB+oS0mhoyYv1wka2KgXXkR?=
- =?us-ascii?Q?Y+8p6LCtr8HXTxIfdbKE/QZaWb/IM27gdXctWYYOQl8BG3cM+TC2Pq5E3KvS?=
- =?us-ascii?Q?6hjwd8TeUvfM6qAvg0JvvPIOasulMUiu0Gvu6wl555H1g29ZFeDgHslxjbvZ?=
- =?us-ascii?Q?cqsDwygeJj27aLEAQRGDubVVbqCUV7DDAIjN5/2K23/VGmM/Cg7ZLV/npUi1?=
- =?us-ascii?Q?TVjHp0Il7qjexp88u4EXy4VBkWjW/A/SkIHPIVZ1RE5OyBItAkyyH6iOoyzq?=
- =?us-ascii?Q?BuonuZzU9RE54Mm/Jkb2qFPjLuFIxU9NtpfS+EHVCmnHLIp6DyoYa37qaGKh?=
- =?us-ascii?Q?Aja+BDtBiBX59qYKtj3SnRz4Y/F5B/GFe+NHnobYpjbC9XClUq0TMApbErrB?=
- =?us-ascii?Q?nxFo79UkIoCpS7DBcsv75Y96IrkIhU2uHmF+tb/odyDQfCn+6k00MIfJIP2j?=
- =?us-ascii?Q?0yA/FeLzvONxr73etmbUi7R7XhLQps0UqMGjlKIrgK3Ap5oONJJXOhlpaw32?=
- =?us-ascii?Q?bObZESkJHK7qNNQaWw/nQnWs2AIZ7L2Rl8bki0joPGkG1Q+2PDe0jZelvtfM?=
- =?us-ascii?Q?WG84phwQOUOqtc2u6wEBzs8SlE9aXWwKwf0EcxIbfRgyw35pTcTe0oMhPwuE?=
- =?us-ascii?Q?iCkTlywYHxkMNJmLUqGDjiTh3bTle7NsLGwWgO9aMojUDuczoCgvWVUQ6t45?=
- =?us-ascii?Q?EM+J6wEVIauaZIRFhfsmwqTSYSmqxEJ8h+zWhDXG6zv4u9RT9aUtSvLukJ5g?=
- =?us-ascii?Q?IxkDZ9JyjWHkOYc+SPIssA73Tr+a+DPXwKo2LFs6Jbh6QzsXYtlT5A1p8vZ/?=
- =?us-ascii?Q?lSemN7bdeCaToLFAyAWxWrHu6QUr5vFM9ds1WV2/0MVBzGA53RhAWwM63u7Z?=
- =?us-ascii?Q?QMdSMFOAkBQk9hSyHxYYPKqPbPVIoa11EjpXQq7XDi0vH2TdC7+y9VarxdFL?=
- =?us-ascii?Q?XGoePex+sEUuqARXo2YNCYPo8Zv0S5t3w/atS4t/cFUC6RaRR/om0OQsHbJe?=
- =?us-ascii?Q?K9BMCiF+A0NCrcF2ZMq5cl4pYTzW5McyHyUfD+oibAWZY34ntoAixLLgBiqU?=
- =?us-ascii?Q?ni65Ic2YkRG+F9zZKrc+xFwsEY/6QumZlwCRzepUt8ZoClHWQY6t3A8XbTbN?=
- =?us-ascii?Q?0iBxRZJp35s8aZPP2hXDS/1ilch4AUmqYtcWa4RUKpC4cFRPYME0WDbIBEmW?=
- =?us-ascii?Q?SSNEzpM0zFLHejfVR5VrEsOT38BT2VXTe/e7UUxJAA0TxqNvFr47T7kAVWOO?=
- =?us-ascii?Q?qYFmRyF1zv6lvctty+P6fbAvbM01rTGnxQWp6G8BAvJ59y26TVhUS2QJDO7A?=
- =?us-ascii?Q?t5u0CQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61c5a40a-bdc8-4a70-7de7-08daf4962e0f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 12:11:48.4353
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eOHpnfHlJALt+byzdrDt6f/kS9nHVh/D3RadPfnrRaB8AXXXccnj8cQkadlTzsvaRrtZwPhr3q5S91+6hTH7Z8ftFSyRQpHmYGpFT1OqbtM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR13MB5125
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+From:   Wen Gu <guwen@linux.alibaba.com>
+Subject: Re: [RFC PATCH net-next v2 0/5] net/smc:Introduce SMC-D based
+ loopback acceleration
+To:     Alexandra Winter <wintera@linux.ibm.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1671506505-104676-1-git-send-email-guwen@linux.alibaba.com>
+ <42f2972f1dfe45a2741482f36fbbda5b5a56d8f1.camel@linux.ibm.com>
+ <4a9b0ff0-8f03-1bfd-d09c-6deb3a9bb39e@linux.alibaba.com>
+ <4c7b0f4d-d57d-0aab-4ddd-6a4f15661e8d@linux.ibm.com>
+In-Reply-To: <4c7b0f4d-d57d-0aab-4ddd-6a4f15661e8d@linux.ibm.com>
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NUMERIC_HTTP_ADDR,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bin Chen <bin.chen@corigine.com>
+This is a multi-part message in MIME format.
+--------------AGgUHRPn8FTngxiFshQUw0p5
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Add basic DCB IEEE support. This includes support for ETS, max-rate,
-and DSCP to user priority mapping.
 
-DCB may be configured using iproute2's dcb command.
-Example usage:
-  dcb ets set dev $dev tc-tsa 0:ets 1:ets 2:ets 3:ets 4:ets 5:ets \
-    6:ets 7:ets tc-bw 0:0 1:80 2:0 3:0 4:0 5:0 6:20 7:0
-  dcb maxrate set dev $dev tc-maxrate 1:1000bit
 
-And DCB configuration can be shown using:
-  dcb ets show dev $dev
-  dcb maxrate show dev $dev
+On 2023/1/5 00:09, Alexandra Winter wrote:
+> 
+> 
+> On 21.12.22 14:14, Wen Gu wrote:
+>>
+>>
+>> On 2022/12/20 22:02, Niklas Schnelle wrote:
+>>
+>>> On Tue, 2022-12-20 at 11:21 +0800, Wen Gu wrote:
+>>>> Hi, all
+>>>>
+>>>> # Background
+>>>>
+>>>> As previously mentioned in [1], we (Alibaba Cloud) are trying to use SMC
+>>>> to accelerate TCP applications in cloud environment, improving inter-host
+>>>> or inter-VM communication.
+>>>>
+>>>> In addition of these, we also found the value of SMC-D in scenario of local
+>>>> inter-process communication, such as accelerate communication between containers
+>>>> within the same host. So this RFC tries to provide a SMC-D loopback solution
+>>>> in such scenario, to bring a significant improvement in latency and throughput
+>>>> compared to TCP loopback.
+>>>>
+>>>> # Design
+>>>>
+>>>> This patch set provides a kind of SMC-D loopback solution.
+>>>>
+>>>> Patch #1/5 and #2/5 provide an SMC-D based dummy device, preparing for the
+>>>> inter-process communication acceleration. Except for loopback acceleration,
+>>>> the dummy device can also meet the requirements mentioned in [2], which is
+>>>> providing a way to test SMC-D logic for broad community without ISM device.
+>>>>
+>>>>    +------------------------------------------+
+>>>>    |  +-----------+           +-----------+   |
+>>>>    |  | process A |           | process B |   |
+>>>>    |  +-----------+           +-----------+   |
+>>>>    |       ^                        ^         |
+>>>>    |       |    +---------------+   |         |
+>>>>    |       |    |   SMC stack   |   |         |
+>>>>    |       +--->| +-----------+ |<--|         |
+>>>>    |            | |   dummy   | |             |
+>>>>    |            | |   device  | |             |
+>>>>    |            +-+-----------+-+             |
+>>>>    |                   VM                     |
+>>>>    +------------------------------------------+
+>>>>
+>>>> Patch #3/5, #4/5, #5/5 provides a way to avoid data copy from sndbuf to RMB
+>>>> and improve SMC-D loopback performance. Through extending smcd_ops with two
+>>>> new semantic: attach_dmb and detach_dmb, sender's sndbuf shares the same
+>>>> physical memory region with receiver's RMB. The data copied from userspace
+>>>> to sender's sndbuf directly reaches the receiver's RMB without unnecessary
+>>>> memory copy in the same kernel.
+>>>>
+>>>>    +----------+                     +----------+
+>>>>    | socket A |                     | socket B |
+>>>>    +----------+                     +----------+
+>>>>          |                               ^
+>>>>          |         +---------+           |
+>>>>     regard as      |         | ----------|
+>>>>     local sndbuf   |  B's    |     regard as
+>>>>          |         |  RMB    |     local RMB
+>>>>          |-------> |         |
+>>>>                    +---------+
+>>>
+>>> Hi Wen Gu,
+>>>
+>>> I maintain the s390 specific PCI support in Linux and would like to
+>>> provide a bit of background on this. You're surely wondering why we
+>>> even have a copy in there for our ISM virtual PCI device. To understand
+>>> why this copy operation exists and why we need to keep it working, one
+>>> needs a bit of s390 aka mainframe background.
+>>>
+>>> On s390 all (currently supported) native machines have a mandatory
+>>> machine level hypervisor. All OSs whether z/OS or Linux run either on
+>>> this machine level hypervisor as so called Logical Partitions (LPARs)
+>>> or as second/third/… level guests on e.g. a KVM or z/VM hypervisor that
+>>> in turn runs in an LPAR. Now, in terms of memory this machine level
+>>> hypervisor sometimes called PR/SM unlike KVM, z/VM, or VMWare is a
+>>> partitioning hypervisor without paging. This is one of the main reasons
+>>> for the very-near-native performance of the machine hypervisor as the
+>>> memory of its guests acts just like native RAM on other systems. It is
+>>> never paged out and always accessible to IOMMU translated DMA from
+>>> devices without the need for pinning pages and besides a trivial
+>>> offset/limit adjustment an LPAR's MMU does the same amount of work as
+>>> an MMU on a bare metal x86_64/ARM64 box.
+>>>
+>>> It also means however that when SMC-D is used to communicate between
+>>> LPARs via an ISM device there is  no way of mapping the DMBs to the
+>>> same physical memory as there exists no MMU-like layer spanning
+>>> partitions that could do such a mapping. Meanwhile for machine level
+>>> firmware including the ISM virtual PCI device it is still possible to
+>>> _copy_ memory between different memory partitions. So yeah while I do
+>>> see the appeal of skipping the memcpy() for loopback or even between
+>>> guests of a paging hypervisor such as KVM, which can map the DMBs on
+>>> the same physical memory, we must keep in mind this original use case
+>>> requiring a copy operation.
+>>>
+>>> Thanks,
+>>> Niklas
+>>>
+>>
+>> Hi Niklas,
+>>
+>> Thank you so much for the complete and detailed explanation! This provides
+>> me a brand new perspective of s390 device that we hadn't dabbled in before.
+>> Now I understand why shared memory is unavailable between different LPARs.
+>>
+>> Our original intention of proposing loopback device and the incoming device
+>> (virtio-ism) for inter-VM is to use SMC-D to accelerate communication in the
+>> case with no existing s390 ISM devices. In our conception, s390 ISM device,
+>> loopback device and virtio-ism device are parallel and are abstracted by smcd_ops.
+>>
+>>   +------------------------+
+>>   |          SMC-D         |
+>>   +------------------------+
+>>   -------- smcd_ops ---------
+>>   +------+ +------+ +------+
+>>   | s390 | | loop | |virtio|
+>>   | ISM  | | back | | -ism |
+>>   | dev  | | dev  | | dev  |
+>>   +------+ +------+ +------+
+>>
+>> We also believe that keeping the existing design and behavior of s390 ISM
+>> device is unshaken. What we want to get support for is some smcd_ops extension
+>> for devices with optional beneficial capability, such as nocopy here (Let's call
+>> it this for now), which is really helpful for us in inter-process and inter-VM
+>> scenario.
+>>
+>> And coincided with IBM's intention to add APIs between SMC-D and devices to
+>> support various devices for SMC-D, as mentioned in [2], we send out this RFC and
+>> the incoming virio-ism RFC, to provide some examples.
+>>
+>>>>
+>>>> # Benchmark Test
+>>>>
+>>>>    * Test environments:
+>>>>         - VM with Intel Xeon Platinum 8 core 2.50GHz, 16 GiB mem.
+>>>>         - SMC sndbuf/RMB size 1MB.
+>>>>
+>>>>    * Test object:
+>>>>         - TCP: run on TCP loopback.
+>>>>         - domain: run on UNIX domain.
+>>>>         - SMC lo: run on SMC loopback device with patch #1/5 ~ #2/5.
+>>>>         - SMC lo-nocpy: run on SMC loopback device with patch #1/5 ~ #5/5.
+>>>>
+>>>> 1. ipc-benchmark (see [3])
+>>>>
+>>>>    - ./<foo> -c 1000000 -s 100
+>>>>
+>>>>                          TCP              domain              SMC-lo             SMC-lo-nocpy
+>>>> Message
+>>>> rate (msg/s)         75140      129548(+72.41)    152266(+102.64%)         151914(+102.17%)
+>>>
+>>> Interesting that it does beat UNIX domain sockets. Also, see my below
+>>> comment for nginx/wrk as this seems very similar.
+>>>
+>>>>
+>>>> 2. sockperf
+>>>>
+>>>>    - serv: <smc_run> taskset -c <cpu> sockperf sr --tcp
+>>>>    - clnt: <smc_run> taskset -c <cpu> sockperf { tp | pp } --tcp --msg-size={ 64000 for tp | 14 for pp } -i 127.0.0.1 -t 30
+>>>>
+>>>>                          TCP                  SMC-lo             SMC-lo-nocpy
+>>>> Bandwidth(MBps)   4943.359        4936.096(-0.15%)        8239.624(+66.68%)
+>>>> Latency(us)          6.372          3.359(-47.28%)            3.25(-49.00%)
+>>>>
+>>>> 3. iperf3
+>>>>
+>>>>    - serv: <smc_run> taskset -c <cpu> iperf3 -s
+>>>>    - clnt: <smc_run> taskset -c <cpu> iperf3 -c 127.0.0.1 -t 15
+>>>>
+>>>>                          TCP                  SMC-lo             SMC-lo-nocpy
+>>>> Bitrate(Gb/s)         40.5            41.4(+2.22%)            76.4(+88.64%)
+>>>>
+>>>> 4. nginx/wrk
+>>>>
+>>>>    - serv: <smc_run> nginx
+>>>>    - clnt: <smc_run> wrk -t 8 -c 500 -d 30 http://127.0.0.1:80
+>>>>
+>>>>                          TCP                  SMC-lo             SMC-lo-nocpy
+>>>> Requests/s       154643.22      220894.03(+42.84%)        226754.3(+46.63%)
+>>>
+>>>
+>>> This result is very interesting indeed. So with the much more realistic
+>>> nginx/wrk workload it seems to copy hurts much less than the
+>>> iperf3/sockperf would suggest while SMC-D itself seems to help more.
+>>> I'd hope that this translates to actual applications as well. Maybe
+>>> this makes SMC-D based loopback interesting even while keeping the
+>>> copy, at least until we can come up with a sane way to work a no-copy
+>>> variant into SMC-D?
+>>>
+>>
+>> I agree, nginx/wrk workload is much more realistic for many applications.
+>>
+>> But we also encounter many other cases similar to sockperf on the cloud, which
+>> requires high throughput, such as AI training and big data.
+>>
+>> So avoidance of copying between DMBs can help these cases a lot :)
+>>
+>>>>
+>>>>
+>>>> # Discussion
+>>>>
+>>>> 1. API between SMC-D and ISM device
+>>>>
+>>>> As Jan mentioned in [2], IBM are working on placing an API between SMC-D
+>>>> and the ISM device for easier use of different "devices" for SMC-D.
+>>>>
+>>>> So, considering that the introduction of attach_dmb or detach_dmb can
+>>>> effectively avoid data copying from sndbuf to RMB and brings obvious
+>>>> throughput advantages in inter-VM or inter-process scenarios, can the
+>>>> attach/detach semantics be taken into consideration when designing the
+>>>> API to make it a standard ISM device behavior?
+>>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>>>
+>>> Due to the reasons explained above this behavior can't be emulated by
+>>> ISM devices at least not when crossing partitions. Not sure if we can
+>>> still incorporate it in the API and allow for both copying and
+>>> remapping SMC-D like devices, it definitely needs careful consideration
+>>> and I think also a better understanding of the benefit for real world
+>>> workloads.
+>>>
+>>
+>> Here I am not rigorous.
+>>
+>> Nocopy shouldn't be a standard ISM device behavior indeed. Actually we hope it be a
+>> standard optional _SMC-D_ device behavior and defined by smcd_ops.
+>>
+>> For devices don't support these options, like ISM device on s390 architecture,
+>> .attach_dmb/.detach_dmb and other reasonable extensions (which will be proposed to
+>> discuss in incoming virtio-ism RFC) can be set to NULL or return invalid. And for
+>> devices do support, they may be used for improving performance in some cases.
+>>
+>> In addition, can I know more latest news about the API design? :) , like its scale, will
+>> it be a almost refactor of existing interface or incremental patching? and its object,
+>> will it be tailored for exact ISM behavior or to reserve some options for other devices,
+>> like nocopy here? From my understanding of [2], it might be the latter?
+>>
+>>>>
+>>>> Maybe our RFC of SMC-D based inter-process acceleration (this one) and
+>>>> inter-VM acceleration (will coming soon, which is the update of [1])
+>>>> can provide some examples for new API design. And we are very glad to
+>>>> discuss this on the mail list.
+>>>>
+>>>> 2. Way to select different ISM-like devices
+>>>>
+>>>> With the proposal of SMC-D loopback 'device' (this RFC) and incoming
+>>>> device used for inter-VM acceleration as update of [1], SMC-D has more
+>>>> options to choose from. So we need to consider that how to indicate
+>>>> supported devices, how to determine which one to use, and their priority...
+>>>
+>>> Agree on this part, though it is for the SMC maintainers to decide, I
+>>> think we would definitely want to be able to use any upcoming inter-VM
+>>> devices on s390 possibly also in conjunction with ISM devices for
+>>> communication across partitions.
+>>>
+>>
+>> Yes, this part needs to be discussed with SMC maintainers. And thank you, we are very glad
+>> if our devices can be applied on s390 through the efforts.
+>>
+>>
+>> Best Regards,
+>> Wen Gu
+>>
+>>>>
+>>>> IMHO, this may require an update of CLC message and negotiation mechanism.
+>>>> Again, we are very glad to discuss this with you on the mailing list.
+> 
+> As described in
+> SMC protocol (including SMC-D): https://www.ibm.com/support/pages/system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%202_2.pdf
+> the CLC messages provide a list of up to 8 ISM devices to chose from.
+> So I would hope that we can use the existing protocol.
+> 
+> The challenge will be to define GID (Global Interface ID) and CHID (a fabric ID) in
+> a meaningful way for the new devices.
+> There is always smcd_ops->query_remote_gid()  as a safety net. But the idea is that
+> a CHID mismatch is a fast way to tell that these 2 interfaces do match.
+> 
+> 
 
-Signed-off-by: Bin Chen <bin.chen@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
-Changes since v1
-* Squashed series into single patch
-* Sanitised copyright
-* Provided example configuration commands in commit message
-* Corrected return values of nfp_nic_dcbnl_ieee_{getmaxrate,delcapp}()
-* Drop unrelated include change in bpf/main.c
-* Updated patch description
+Hi Winter and all,
 
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/Makefile   |   2 +
- .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |   1 +
- drivers/net/ethernet/netronome/nfp/nic/dcb.c  | 571 ++++++++++++++++++
- drivers/net/ethernet/netronome/nfp/nic/main.c |  39 +-
- drivers/net/ethernet/netronome/nfp/nic/main.h |  46 ++
- 5 files changed, 657 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/netronome/nfp/nic/dcb.c
- create mode 100644 drivers/net/ethernet/netronome/nfp/nic/main.h
+Thanks for your reply and suggestions! And sorry for my late reply because it took me
+some time to understand SMC-Dv2 protocol and implementation.
 
-diff --git a/drivers/net/ethernet/netronome/nfp/Makefile b/drivers/net/ethernet/netronome/nfp/Makefile
-index 8a250214e289..c90d35f5ebca 100644
---- a/drivers/net/ethernet/netronome/nfp/Makefile
-+++ b/drivers/net/ethernet/netronome/nfp/Makefile
-@@ -83,3 +83,5 @@ endif
- nfp-$(CONFIG_NFP_NET_IPSEC) += crypto/ipsec.o nfd3/ipsec.o
- 
- nfp-$(CONFIG_NFP_DEBUG) += nfp_net_debugfs.o
-+
-+nfp-$(CONFIG_DCB) += nic/dcb.o
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h b/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
-index 51124309ae1f..a4096050c9bd 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
-@@ -413,6 +413,7 @@
- #define NFP_NET_CFG_MBOX_CMD_IPSEC 3
- #define NFP_NET_CFG_MBOX_CMD_PCI_DSCP_PRIOMAP_SET	5
- #define NFP_NET_CFG_MBOX_CMD_TLV_CMSG			6
-+#define NFP_NET_CFG_MBOX_CMD_DCB_UPDATE			7
- 
- #define NFP_NET_CFG_MBOX_CMD_MULTICAST_ADD		8
- #define NFP_NET_CFG_MBOX_CMD_MULTICAST_DEL		9
-diff --git a/drivers/net/ethernet/netronome/nfp/nic/dcb.c b/drivers/net/ethernet/netronome/nfp/nic/dcb.c
-new file mode 100644
-index 000000000000..bb498ac6bd7d
---- /dev/null
-+++ b/drivers/net/ethernet/netronome/nfp/nic/dcb.c
-@@ -0,0 +1,571 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/* Copyright (C) 2023 Corigine, Inc. */
-+
-+#include <linux/device.h>
-+#include <linux/netdevice.h>
-+#include <net/dcbnl.h>
-+
-+#include "../nfp_app.h"
-+#include "../nfp_net.h"
-+#include "../nfp_main.h"
-+#include "../nfpcore/nfp_cpp.h"
-+#include "../nfpcore/nfp_nffw.h"
-+#include "../nfp_net_sriov.h"
-+
-+#include "main.h"
-+
-+#define NFP_DCB_TRUST_PCP	1
-+#define NFP_DCB_TRUST_DSCP	2
-+#define NFP_DCB_TRUST_INVALID	0xff
-+
-+#define NFP_DCB_TSA_VENDOR	1
-+#define NFP_DCB_TSA_STRICT	2
-+#define NFP_DCB_TSA_ETS		3
-+
-+#define NFP_DCB_GBL_ENABLE	BIT(0)
-+#define NFP_DCB_QOS_ENABLE	BIT(1)
-+#define NFP_DCB_DISABLE		0
-+#define NFP_DCB_ALL_QOS_ENABLE	(NFP_DCB_GBL_ENABLE | NFP_DCB_QOS_ENABLE)
-+
-+#define NFP_DCB_UPDATE_MSK_SZ	4
-+#define NFP_DCB_TC_RATE_MAX	0xffff
-+
-+#define NFP_DCB_DATA_OFF_DSCP2IDX	0
-+#define NFP_DCB_DATA_OFF_PCP2IDX	64
-+#define NFP_DCB_DATA_OFF_TSA		80
-+#define NFP_DCB_DATA_OFF_IDX_BW_PCT	88
-+#define NFP_DCB_DATA_OFF_RATE		96
-+#define NFP_DCB_DATA_OFF_CAP		112
-+#define NFP_DCB_DATA_OFF_ENABLE		116
-+#define NFP_DCB_DATA_OFF_TRUST		120
-+
-+#define NFP_DCB_MSG_MSK_ENABLE	BIT(31)
-+#define NFP_DCB_MSG_MSK_TRUST	BIT(30)
-+#define NFP_DCB_MSG_MSK_TSA	BIT(29)
-+#define NFP_DCB_MSG_MSK_DSCP	BIT(28)
-+#define NFP_DCB_MSG_MSK_PCP	BIT(27)
-+#define NFP_DCB_MSG_MSK_RATE	BIT(26)
-+#define NFP_DCB_MSG_MSK_PCT	BIT(25)
-+
-+static struct nfp_dcb *get_dcb_priv(struct nfp_net *nn)
-+{
-+	struct nfp_dcb *dcb = &((struct nfp_app_nic_private *)nn->app_priv)->dcb;
-+
-+	return dcb;
-+}
-+
-+static u8 nfp_tsa_ieee2nfp(u8 tsa)
-+{
-+	switch (tsa) {
-+	case IEEE_8021QAZ_TSA_STRICT:
-+		return NFP_DCB_TSA_STRICT;
-+	case IEEE_8021QAZ_TSA_ETS:
-+		return NFP_DCB_TSA_ETS;
-+	default:
-+		return NFP_DCB_TSA_VENDOR;
-+	}
-+}
-+
-+static int nfp_nic_dcbnl_ieee_getets(struct net_device *dev,
-+				     struct ieee_ets *ets)
-+{
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_dcb *dcb;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		ets->prio_tc[i] = dcb->prio2tc[i];
-+		ets->tc_tx_bw[i] = dcb->tc_tx_pct[i];
-+		ets->tc_tsa[i] = dcb->tc_tsa[i];
-+	}
-+
-+	return 0;
-+}
-+
-+static bool nfp_refresh_tc2idx(struct nfp_net *nn)
-+{
-+	u8 tc2idx[IEEE_8021QAZ_MAX_TCS];
-+	bool change = false;
-+	struct nfp_dcb *dcb;
-+	int maxstrict = 0;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		tc2idx[i] = i;
-+		if (dcb->tc_tsa[i] == IEEE_8021QAZ_TSA_STRICT)
-+			maxstrict = i;
-+	}
-+
-+	if (maxstrict > 0 && dcb->tc_tsa[0] != IEEE_8021QAZ_TSA_STRICT) {
-+		tc2idx[0] = maxstrict;
-+		tc2idx[maxstrict] = 0;
-+	}
-+
-+	for (unsigned int j = 0; j < IEEE_8021QAZ_MAX_TCS; j++) {
-+		if (dcb->tc2idx[j] != tc2idx[j]) {
-+			change = true;
-+			dcb->tc2idx[j] = tc2idx[j];
-+		}
-+	}
-+
-+	return change;
-+}
-+
-+static int nfp_fill_maxrate(struct nfp_net *nn, u64 *max_rate_array)
-+{
-+	struct nfp_app *app  = nn->app;
-+	struct nfp_dcb *dcb;
-+	u32 ratembps;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		/* Convert bandwidth from kbps to mbps. */
-+		ratembps = max_rate_array[i] / 1024;
-+
-+		/* Reject input values >= NFP_DCB_TC_RATE_MAX */
-+		if (ratembps >= NFP_DCB_TC_RATE_MAX) {
-+			nfp_warn(app->cpp, "ratembps(%d) must less than %d.",
-+				 ratembps, NFP_DCB_TC_RATE_MAX);
-+			return -EINVAL;
-+		}
-+		/* Input value 0 mapped to NFP_DCB_TC_RATE_MAX for firmware. */
-+		if (ratembps == 0)
-+			ratembps = NFP_DCB_TC_RATE_MAX;
-+
-+		writew((u16)ratembps, dcb->dcbcfg_tbl +
-+		       dcb->cfg_offset + NFP_DCB_DATA_OFF_RATE + dcb->tc2idx[i] * 2);
-+		/* for rate value from user space, need to sync to dcb structure */
-+		if (dcb->tc_maxrate != max_rate_array)
-+			dcb->tc_maxrate[i] = max_rate_array[i];
-+	}
-+
-+	return 0;
-+}
-+
-+static int update_dscp_maxrate(struct net_device *dev, u32 *update)
-+{
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_dcb *dcb;
-+	int err;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	err = nfp_fill_maxrate(nn, dcb->tc_maxrate);
-+	if (err)
-+		return err;
-+
-+	*update |= NFP_DCB_MSG_MSK_RATE;
-+
-+	/* We only refresh dscp in dscp trust mode. */
-+	if (dcb->dscp_cnt > 0) {
-+		for (unsigned int i = 0; i < NFP_NET_MAX_DSCP; i++) {
-+			writeb(dcb->tc2idx[dcb->prio2tc[dcb->dscp2prio[i]]],
-+			       dcb->dcbcfg_tbl + dcb->cfg_offset +
-+			       NFP_DCB_DATA_OFF_DSCP2IDX + i);
-+		}
-+		*update |= NFP_DCB_MSG_MSK_DSCP;
-+	}
-+
-+	return 0;
-+}
-+
-+static void nfp_nic_set_trust(struct nfp_net *nn, u32 *update)
-+{
-+	struct nfp_dcb *dcb;
-+	u8 trust;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	if (dcb->trust_status != NFP_DCB_TRUST_INVALID)
-+		return;
-+
-+	trust = dcb->dscp_cnt > 0 ? NFP_DCB_TRUST_DSCP : NFP_DCB_TRUST_PCP;
-+	writeb(trust, dcb->dcbcfg_tbl + dcb->cfg_offset +
-+	       NFP_DCB_DATA_OFF_TRUST);
-+
-+	dcb->trust_status = trust;
-+	*update |= NFP_DCB_MSG_MSK_TRUST;
-+}
-+
-+static void nfp_nic_set_enable(struct nfp_net *nn, u32 enable, u32 *update)
-+{
-+	struct nfp_dcb *dcb;
-+	u32 value = 0;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	value = readl(dcb->dcbcfg_tbl + dcb->cfg_offset +
-+		      NFP_DCB_DATA_OFF_ENABLE);
-+	if (value != enable) {
-+		writel(enable, dcb->dcbcfg_tbl + dcb->cfg_offset +
-+		       NFP_DCB_DATA_OFF_ENABLE);
-+		*update |= NFP_DCB_MSG_MSK_ENABLE;
-+	}
-+}
-+
-+static int dcb_ets_check(struct net_device *dev, struct ieee_ets *ets)
-+{
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_app *app = nn->app;
-+	bool ets_exists = false;
-+	int sum = 0;
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		/* For ets mode, check bw percentage sum. */
-+		if (ets->tc_tsa[i] == IEEE_8021QAZ_TSA_ETS) {
-+			ets_exists = true;
-+			sum += ets->tc_tx_bw[i];
-+		} else if (ets->tc_tx_bw[i]) {
-+			nfp_warn(app->cpp, "ETS BW for strict/vendor TC must be 0.");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	if (ets_exists && sum != 100) {
-+		nfp_warn(app->cpp, "Failed to validate ETS BW: sum must be 100.");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static void nfp_nic_fill_ets(struct nfp_net *nn)
-+{
-+	struct nfp_dcb *dcb;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		writeb(dcb->tc2idx[dcb->prio2tc[i]],
-+		       dcb->dcbcfg_tbl + dcb->cfg_offset + NFP_DCB_DATA_OFF_PCP2IDX + i);
-+		writeb(dcb->tc_tx_pct[i], dcb->dcbcfg_tbl +
-+		       dcb->cfg_offset + NFP_DCB_DATA_OFF_IDX_BW_PCT + dcb->tc2idx[i]);
-+		writeb(nfp_tsa_ieee2nfp(dcb->tc_tsa[i]), dcb->dcbcfg_tbl +
-+		       dcb->cfg_offset + NFP_DCB_DATA_OFF_TSA + dcb->tc2idx[i]);
-+	}
-+}
-+
-+static void nfp_nic_ets_init(struct nfp_net *nn, u32 *update)
-+{
-+	struct nfp_dcb *dcb = get_dcb_priv(nn);
-+
-+	if (dcb->ets_init)
-+		return;
-+
-+	nfp_nic_fill_ets(nn);
-+	dcb->ets_init = true;
-+	*update |= NFP_DCB_MSG_MSK_TSA | NFP_DCB_MSG_MSK_PCT | NFP_DCB_MSG_MSK_PCP;
-+}
-+
-+static int nfp_nic_dcbnl_ieee_setets(struct net_device *dev,
-+				     struct ieee_ets *ets)
-+{
-+	const u32 cmd = NFP_NET_CFG_MBOX_CMD_DCB_UPDATE;
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_app *app = nn->app;
-+	struct nfp_dcb *dcb;
-+	u32 update = 0;
-+	bool change;
-+	int err;
-+
-+	err = dcb_ets_check(dev, ets);
-+	if (err)
-+		return err;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		dcb->prio2tc[i] = ets->prio_tc[i];
-+		dcb->tc_tx_pct[i] = ets->tc_tx_bw[i];
-+		dcb->tc_tsa[i] = ets->tc_tsa[i];
-+	}
-+
-+	change = nfp_refresh_tc2idx(nn);
-+	nfp_nic_fill_ets(nn);
-+	dcb->ets_init = true;
-+	if (change || !dcb->rate_init) {
-+		err = update_dscp_maxrate(dev, &update);
-+		if (err) {
-+			nfp_warn(app->cpp,
-+				 "nfp dcbnl ieee setets ERROR:%d.",
-+				 err);
-+			return err;
-+		}
-+
-+		dcb->rate_init = true;
-+	}
-+	nfp_nic_set_enable(nn, NFP_DCB_ALL_QOS_ENABLE, &update);
-+	nfp_nic_set_trust(nn, &update);
-+	err = nfp_net_mbox_lock(nn, NFP_DCB_UPDATE_MSK_SZ);
-+	if (err)
-+		return err;
-+
-+	nn_writel(nn, nn->tlv_caps.mbox_off + NFP_NET_CFG_MBOX_SIMPLE_VAL,
-+		  update | NFP_DCB_MSG_MSK_TSA | NFP_DCB_MSG_MSK_PCT |
-+		  NFP_DCB_MSG_MSK_PCP);
-+
-+	return nfp_net_mbox_reconfig_and_unlock(nn, cmd);
-+}
-+
-+static int nfp_nic_dcbnl_ieee_getmaxrate(struct net_device *dev,
-+					 struct ieee_maxrate *maxrate)
-+{
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_dcb *dcb;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
-+		maxrate->tc_maxrate[i] = dcb->tc_maxrate[i];
-+
-+	return 0;
-+}
-+
-+static int nfp_nic_dcbnl_ieee_setmaxrate(struct net_device *dev,
-+					 struct ieee_maxrate *maxrate)
-+{
-+	const u32 cmd = NFP_NET_CFG_MBOX_CMD_DCB_UPDATE;
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_app *app = nn->app;
-+	struct nfp_dcb *dcb;
-+	u32 update = 0;
-+	int err;
-+
-+	err = nfp_fill_maxrate(nn, maxrate->tc_maxrate);
-+	if (err) {
-+		nfp_warn(app->cpp,
-+			 "nfp dcbnl ieee setmaxrate ERROR:%d.",
-+			 err);
-+		return err;
-+	}
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	dcb->rate_init = true;
-+	nfp_nic_set_enable(nn, NFP_DCB_ALL_QOS_ENABLE, &update);
-+	nfp_nic_set_trust(nn, &update);
-+	nfp_nic_ets_init(nn, &update);
-+
-+	err = nfp_net_mbox_lock(nn, NFP_DCB_UPDATE_MSK_SZ);
-+	if (err)
-+		return err;
-+
-+	nn_writel(nn, nn->tlv_caps.mbox_off + NFP_NET_CFG_MBOX_SIMPLE_VAL,
-+		  update | NFP_DCB_MSG_MSK_RATE);
-+
-+	return nfp_net_mbox_reconfig_and_unlock(nn, cmd);
-+}
-+
-+static int nfp_nic_set_trust_status(struct nfp_net *nn, u8 status)
-+{
-+	const u32 cmd = NFP_NET_CFG_MBOX_CMD_DCB_UPDATE;
-+	struct nfp_dcb *dcb;
-+	u32 update = 0;
-+	int err;
-+
-+	dcb = get_dcb_priv(nn);
-+	if (!dcb->rate_init) {
-+		err = nfp_fill_maxrate(nn, dcb->tc_maxrate);
-+		if (err)
-+			return err;
-+
-+		update |= NFP_DCB_MSG_MSK_RATE;
-+		dcb->rate_init = true;
-+	}
-+
-+	err = nfp_net_mbox_lock(nn, NFP_DCB_UPDATE_MSK_SZ);
-+	if (err)
-+		return err;
-+
-+	nfp_nic_ets_init(nn, &update);
-+	writeb(status, dcb->dcbcfg_tbl + dcb->cfg_offset +
-+	       NFP_DCB_DATA_OFF_TRUST);
-+	nfp_nic_set_enable(nn, NFP_DCB_ALL_QOS_ENABLE, &update);
-+	nn_writel(nn, nn->tlv_caps.mbox_off + NFP_NET_CFG_MBOX_SIMPLE_VAL,
-+		  update | NFP_DCB_MSG_MSK_TRUST);
-+
-+	err = nfp_net_mbox_reconfig_and_unlock(nn, cmd);
-+	if (err)
-+		return err;
-+
-+	dcb->trust_status = status;
-+
-+	return 0;
-+}
-+
-+static int nfp_nic_set_dscp2prio(struct nfp_net *nn, u8 dscp, u8 prio)
-+{
-+	const u32 cmd = NFP_NET_CFG_MBOX_CMD_DCB_UPDATE;
-+	struct nfp_dcb *dcb;
-+	u8 idx, tc;
-+	int err;
-+
-+	err = nfp_net_mbox_lock(nn, NFP_DCB_UPDATE_MSK_SZ);
-+	if (err)
-+		return err;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	tc = dcb->prio2tc[prio];
-+	idx = dcb->tc2idx[tc];
-+
-+	writeb(idx, dcb->dcbcfg_tbl + dcb->cfg_offset +
-+	       NFP_DCB_DATA_OFF_DSCP2IDX + dscp);
-+
-+	nn_writel(nn, nn->tlv_caps.mbox_off +
-+		  NFP_NET_CFG_MBOX_SIMPLE_VAL, NFP_DCB_MSG_MSK_DSCP);
-+
-+	err = nfp_net_mbox_reconfig_and_unlock(nn, cmd);
-+	if (err)
-+		return err;
-+
-+	dcb->dscp2prio[dscp] = prio;
-+
-+	return 0;
-+}
-+
-+static int nfp_nic_dcbnl_ieee_setapp(struct net_device *dev,
-+				     struct dcb_app *app)
-+{
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct dcb_app old_app;
-+	struct nfp_dcb *dcb;
-+	bool is_new;
-+	int err;
-+
-+	if (app->selector != IEEE_8021QAZ_APP_SEL_DSCP)
-+		return -EINVAL;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	/* Save the old entry info */
-+	old_app.selector = IEEE_8021QAZ_APP_SEL_DSCP;
-+	old_app.protocol = app->protocol;
-+	old_app.priority = dcb->dscp2prio[app->protocol];
-+
-+	/* Check trust status */
-+	if (!dcb->dscp_cnt) {
-+		err = nfp_nic_set_trust_status(nn, NFP_DCB_TRUST_DSCP);
-+		if (err)
-+			return err;
-+	}
-+
-+	/* Check if the new mapping is same as old or in init stage */
-+	if (app->priority != old_app.priority || app->priority == 0) {
-+		err = nfp_nic_set_dscp2prio(nn, app->protocol, app->priority);
-+		if (err)
-+			return err;
-+	}
-+
-+	/* Delete the old entry if exists */
-+	is_new = !!dcb_ieee_delapp(dev, &old_app);
-+
-+	/* Add new entry and update counter */
-+	err = dcb_ieee_setapp(dev, app);
-+	if (err)
-+		return err;
-+
-+	if (is_new)
-+		dcb->dscp_cnt++;
-+
-+	return 0;
-+}
-+
-+static int nfp_nic_dcbnl_ieee_delapp(struct net_device *dev,
-+				     struct dcb_app *app)
-+{
-+	struct nfp_net *nn = netdev_priv(dev);
-+	struct nfp_dcb *dcb;
-+	int err;
-+
-+	if (app->selector != IEEE_8021QAZ_APP_SEL_DSCP)
-+		return -EINVAL;
-+
-+	dcb = get_dcb_priv(nn);
-+
-+	/* Check if the dcb_app param match fw */
-+	if (app->priority != dcb->dscp2prio[app->protocol])
-+		return -ENOENT;
-+
-+	/* Set fw dscp mapping to 0 */
-+	err = nfp_nic_set_dscp2prio(nn, app->protocol, 0);
-+	if (err)
-+		return err;
-+
-+	/* Delete app from dcb list */
-+	err = dcb_ieee_delapp(dev, app);
-+	if (err)
-+		return err;
-+
-+	/* Decrease dscp counter */
-+	dcb->dscp_cnt--;
-+
-+	/* If no dscp mapping is configured, trust pcp */
-+	if (dcb->dscp_cnt == 0)
-+		return nfp_nic_set_trust_status(nn, NFP_DCB_TRUST_PCP);
-+
-+	return 0;
-+}
-+
-+static const struct dcbnl_rtnl_ops nfp_nic_dcbnl_ops = {
-+	/* ieee 802.1Qaz std */
-+	.ieee_getets	= nfp_nic_dcbnl_ieee_getets,
-+	.ieee_setets	= nfp_nic_dcbnl_ieee_setets,
-+	.ieee_getmaxrate = nfp_nic_dcbnl_ieee_getmaxrate,
-+	.ieee_setmaxrate = nfp_nic_dcbnl_ieee_setmaxrate,
-+	.ieee_setapp	= nfp_nic_dcbnl_ieee_setapp,
-+	.ieee_delapp	= nfp_nic_dcbnl_ieee_delapp,
-+};
-+
-+int nfp_nic_dcb_init(struct nfp_net *nn)
-+{
-+	struct nfp_app *app = nn->app;
-+	struct nfp_dcb *dcb;
-+	int err;
-+
-+	dcb = get_dcb_priv(nn);
-+	dcb->cfg_offset = NFP_DCB_CFG_STRIDE * nn->id;
-+	dcb->dcbcfg_tbl = nfp_pf_map_rtsym(app->pf, "net.dcbcfg_tbl",
-+					   "_abi_dcb_cfg",
-+					   dcb->cfg_offset, &dcb->dcbcfg_tbl_area);
-+	if (IS_ERR(dcb->dcbcfg_tbl)) {
-+		if (PTR_ERR(dcb->dcbcfg_tbl) != -ENOENT) {
-+			err = PTR_ERR(dcb->dcbcfg_tbl);
-+			dcb->dcbcfg_tbl = NULL;
-+			nfp_err(app->cpp,
-+				"Failed to map dcbcfg_tbl area, min_size %u.\n",
-+				dcb->cfg_offset);
-+			return err;
-+		}
-+		dcb->dcbcfg_tbl = NULL;
-+	}
-+
-+	if (dcb->dcbcfg_tbl) {
-+		for (unsigned int i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+			dcb->prio2tc[i] = i;
-+			dcb->tc2idx[i] = i;
-+			dcb->tc_tx_pct[i] = 0;
-+			dcb->tc_maxrate[i] = 0;
-+			dcb->tc_tsa[i] = IEEE_8021QAZ_TSA_VENDOR;
-+		}
-+		dcb->trust_status = NFP_DCB_TRUST_INVALID;
-+		dcb->rate_init = false;
-+		dcb->ets_init = false;
-+
-+		nn->dp.netdev->dcbnl_ops = &nfp_nic_dcbnl_ops;
-+	}
-+
-+	return 0;
-+}
-+
-+void nfp_nic_dcb_clean(struct nfp_net *nn)
-+{
-+	struct nfp_dcb *dcb;
-+
-+	dcb = get_dcb_priv(nn);
-+	if (dcb->dcbcfg_tbl_area)
-+		nfp_cpp_area_release_free(dcb->dcbcfg_tbl_area);
-+}
-diff --git a/drivers/net/ethernet/netronome/nfp/nic/main.c b/drivers/net/ethernet/netronome/nfp/nic/main.c
-index aea8579206ee..f78c2447d45b 100644
---- a/drivers/net/ethernet/netronome/nfp/nic/main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nic/main.c
-@@ -5,6 +5,8 @@
- #include "../nfpcore/nfp_nsp.h"
- #include "../nfp_app.h"
- #include "../nfp_main.h"
-+#include "../nfp_net.h"
-+#include "main.h"
- 
- static int nfp_nic_init(struct nfp_app *app)
- {
-@@ -28,13 +30,46 @@ static void nfp_nic_sriov_disable(struct nfp_app *app)
- {
- }
- 
-+static int nfp_nic_vnic_init(struct nfp_app *app, struct nfp_net *nn)
-+{
-+	nfp_nic_dcb_init(nn);
-+
-+	return 0;
-+}
-+
-+static int nfp_nic_vnic_alloc(struct nfp_app *app, struct nfp_net *nn,
-+			      unsigned int id)
-+{
-+	struct nfp_app_nic_private *app_pri = nn->app_priv;
-+	int err;
-+
-+	err = nfp_app_nic_vnic_alloc(app, nn, id);
-+	if (err)
-+		return err;
-+
-+	if (sizeof(*app_pri)) {
-+		nn->app_priv = kzalloc(sizeof(*app_pri), GFP_KERNEL);
-+		if (!nn->app_priv)
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+static void nfp_nic_vnic_free(struct nfp_app *app, struct nfp_net *nn)
-+{
-+	kfree(nn->app_priv);
-+}
-+
- const struct nfp_app_type app_nic = {
- 	.id		= NFP_APP_CORE_NIC,
- 	.name		= "nic",
- 
- 	.init		= nfp_nic_init,
--	.vnic_alloc	= nfp_app_nic_vnic_alloc,
--
-+	.vnic_alloc	= nfp_nic_vnic_alloc,
-+	.vnic_free	= nfp_nic_vnic_free,
- 	.sriov_enable	= nfp_nic_sriov_enable,
- 	.sriov_disable	= nfp_nic_sriov_disable,
-+
-+	.vnic_init      = nfp_nic_vnic_init,
- };
-diff --git a/drivers/net/ethernet/netronome/nfp/nic/main.h b/drivers/net/ethernet/netronome/nfp/nic/main.h
-new file mode 100644
-index 000000000000..7ba04451b8ba
---- /dev/null
-+++ b/drivers/net/ethernet/netronome/nfp/nic/main.h
-@@ -0,0 +1,46 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/* Copyright (C) 2023 Corigine, Inc. */
-+
-+#ifndef __NFP_NIC_H__
-+#define __NFP_NIC_H__ 1
-+
-+#include <linux/netdevice.h>
-+
-+#ifdef CONFIG_DCB
-+/* DCB feature definitions */
-+#define NFP_NET_MAX_DSCP	4
-+#define NFP_NET_MAX_TC		IEEE_8021QAZ_MAX_TCS
-+#define NFP_NET_MAX_PRIO	8
-+#define NFP_DCB_CFG_STRIDE	256
-+
-+struct nfp_dcb {
-+	u8 dscp2prio[NFP_NET_MAX_DSCP];
-+	u8 prio2tc[NFP_NET_MAX_PRIO];
-+	u8 tc2idx[IEEE_8021QAZ_MAX_TCS];
-+	u64 tc_maxrate[IEEE_8021QAZ_MAX_TCS];
-+	u8 tc_tx_pct[IEEE_8021QAZ_MAX_TCS];
-+	u8 tc_tsa[IEEE_8021QAZ_MAX_TCS];
-+	u8 dscp_cnt;
-+	u8 trust_status;
-+	bool rate_init;
-+	bool ets_init;
-+
-+	struct nfp_cpp_area *dcbcfg_tbl_area;
-+	u8 __iomem *dcbcfg_tbl;
-+	u32 cfg_offset;
-+};
-+
-+int nfp_nic_dcb_init(struct nfp_net *nn);
-+void nfp_nic_dcb_clean(struct nfp_net *nn);
-+#else
-+static inline int nfp_nic_dcb_init(struct nfp_net *nn) {return 0; }
-+static inline void nfp_nic_dcb_clean(struct nfp_net *nn) {}
-+#endif
-+
-+struct nfp_app_nic_private {
-+#ifdef CONFIG_DCB
-+	struct nfp_dcb dcb;
-+#endif
-+};
-+
-+#endif
--- 
-2.30.2
+I agree with your opinion. The existing SMC-Dv2 protocol whose CLC messages include
+ism_dev[] list can solve the devices negotiation problem. And I am very willing to use
+the existing protocol, because we all know that the protocol update is a long and complex
+process.
 
+If I understand correctly, SMC-D loopback(dummy) device can coordinate with existing
+SMC-Dv2 protocol as follows. If there is any mistake, please point out.
+
+
+# Initialization
+
+- Initialize the loopback device with unique GID [Q-1].
+
+- Register the loopback device as SMC-Dv2-capable device with a system_eid whose 24th
+    or 28th byte is non-zero [Q-2], so that this system's smc_ism_v2_capable will be set
+    to TRUE and SMC-Dv2 is available.
+
+
+# Proposal
+
+- Find the loopback device from the smcd_dev_list in smc_find_ism_v2_device_clnt();
+
+- Record the SEID, GID and CHID[Q-3] of loopback device in the v2 extension part of CLC
+    proposal message.
+
+
+# Accept
+
+- Check the GID/CHID list and SEID in CLC proposal message, and find local matched ISM
+    device from smcd_dev_list in smc_find_ism_v2_device_serv(). If both sides of the
+    communication are in the same VM and share the same loopback device, the SEID, GID and
+    CHID will match and loopback device will be chosen [Q-4].
+
+- Record the loopback device's GID/CHID and matched SEID into CLC accept message.
+
+
+# Confirm
+
+- Confirm the server-selected device (loopback device) accordingto CLC accept messages.
+
+- Record the loopback device's GID/CHID and server-selected SEID in CLC confirm message.
+
+
+Follow the above process, I supplement a patch based on this RFC in the email attachment.
+With the attachment patch, SMC-D loopback will switch to use SMC-Dv2 protocol.
+
+
+
+And in the above process, there are something I want to consult and discuss, which is marked
+with '[Q-*]' in the above description.
+
+# [Q-1]:
+
+The GID of loopback device is randomly generated in this RFC patch set, but I will find a way
+to unique the GID in formal patches. Any suggestions are welcome.
+
+
+# [Q-2]:
+
+In Linux implementation, the system_eid of the first registered smcd device will determinate
+system's smc_ism_v2_capable (see smcd_register_dev()).
+
+And I wonder that
+
+1) How to define the system_eid? It can be inferred from the code that the 24th and 28th byte
+     are special for SMC-Dv2. So in attachment patch, I define the loopback device SEID as
+
+     static struct smc_lo_systemeid LO_SYSTEM_EID = {
+             .seid_string = "SMC-SYSZ-LOSEID000000000",
+             .serial_number = "1000",
+             .type = "1000",
+     };
+
+     Is there anything else I need to pay attention to?
+
+
+2) Seems only the first added smcd device determinate the system smc_ism_v2_capable? If two
+     different smcd devices respectively with v1-indicated and v2-indicated system_eid, will
+     the order in which they are registered affects the result of smc_ism_v2_capable ?
+
+
+# [Q-3]:
+
+In attachment patch, I define a special CHID (0xFFFF) for loopback device, as a kind of
+'unassociated ISM CHID' that not associated with any IP (OSA or HiperSockets) interfaces.
+
+What's your opinion about this?
+
+
+# [Q-4]:
+
+In current Linux implementation, server will select the first successfully initialized device
+from the candidates as the final selected one in smc_find_ism_v2_device_serv().
+
+for (i = 0; i < matches; i++) {
+	ini->smcd_version = SMC_V2;
+	ini->is_smcd = true;
+	ini->ism_selected = i;
+	rc = smc_listen_ism_init(new_smc, ini);
+	if (rc) {
+		smc_find_ism_store_rc(rc, ini);
+		/* try next active ISM device */
+		continue;
+	}
+	return; /* matching and usable V2 ISM device found */
+}
+
+IMHO, maybe candidate devices should have different priorities? For example, the loopback device
+may be preferred to use if loopback is available.
+
+
+Best Regards,
+Wen Gu
+
+>>>>
+>>>> [1] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/
+>>>> [2] https://lore.kernel.org/netdev/35d14144-28f7-6129-d6d3-ba16dae7a646@linux.ibm.com/
+>>>> [3] https://github.com/goldsborough/ipc-bench
+>>>>
+>>>> v1->v2
+>>>>    1. Fix some build WARNINGs complained by kernel test rebot
+>>>>       Reported-by: kernel test robot <lkp@intel.com>
+>>>>    2. Add iperf3 test data.
+>>>>
+>>>> Wen Gu (5):
+>>>>     net/smc: introduce SMC-D loopback device
+>>>>     net/smc: choose loopback device in SMC-D communication
+>>>>     net/smc: add dmb attach and detach interface
+>>>>     net/smc: avoid data copy from sndbuf to peer RMB in SMC-D loopback
+>>>>     net/smc: logic of cursors update in SMC-D loopback connections
+>>>>
+>>>>    include/net/smc.h      |   3 +
+>>>>    net/smc/Makefile       |   2 +-
+>>>>    net/smc/af_smc.c       |  88 +++++++++++-
+>>>>    net/smc/smc_cdc.c      |  59 ++++++--
+>>>>    net/smc/smc_cdc.h      |   1 +
+>>>>    net/smc/smc_clc.c      |   4 +-
+>>>>    net/smc/smc_core.c     |  62 +++++++++
+>>>>    net/smc/smc_core.h     |   2 +
+>>>>    net/smc/smc_ism.c      |  39 +++++-
+>>>>    net/smc/smc_ism.h      |   2 +
+>>>>    net/smc/smc_loopback.c | 358 +++++++++++++++++++++++++++++++++++++++++++++++++
+>>>>    net/smc/smc_loopback.h |  63 +++++++++
+>>>>    12 files changed, 662 insertions(+), 21 deletions(-)
+>>>>    create mode 100644 net/smc/smc_loopback.c
+>>>>    create mode 100644 net/smc/smc_loopback.h
+>>>>
+--------------AGgUHRPn8FTngxiFshQUw0p5
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-net-smc-define-SEID-and-CHID-of-loopback-device.patch"
+Content-Disposition: attachment;
+ filename*0="0001-net-smc-define-SEID-and-CHID-of-loopback-device.patch"
+Content-Transfer-Encoding: base64
+
+RnJvbSBiYzk0OTg0ZDU5OWUyZThjYmM0MDhjNDI4OTY5NzM3NDVjNTMzYmI3IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBXZW4gR3UgPGd1d2VuQGxpbnV4LmFsaWJhYmEuY29t
+PgpEYXRlOiBTYXQsIDcgSmFuIDIwMjMgMTY6NTg6MzcgKzA4MDAKU3ViamVjdDogW1BBVENI
+XSBuZXQvc21jOiBkZWZpbmUgU0VJRCBhbmQgQ0hJRCBvZiBsb29wYmFjayBkZXZpY2UKClRo
+aXMgcGF0Y2ggZGVmaW5lcyBTRUlEIGFuZCBDSElEIG9mIGxvb3BiYWNrIGRldmljZSBhbmQg
+dGFrZSBpdCBhcwpTTUMtRHYyIGRldmljZS4KCkJlc2lkZXMsIHRoaXMgcGF0Y2ggZGVsZXRl
+IHRoZSBtb3N0IGxvZ2ljIG9mIFJGQyBwYXRjaCAyLzUgYXMgd2VsbApiZWNhdXNlIGRldmlj
+ZSBzZWxlY3Rpb24gd2lsbCBiZSBjb3ZlcmVkIGJ5IFNNQy1EdjIgcHJvdG9jb2wuCgpTaWdu
+ZWQtb2ZmLWJ5OiBXZW4gR3UgPGd1d2VuQGxpbnV4LmFsaWJhYmEuY29tPgotLS0KIG5ldC9z
+bWMvYWZfc21jLmMgICAgICAgfCA1MCArKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQogbmV0L3NtYy9zbWNfY2xjLmMgICAgICB8ICA0ICstLS0K
+IG5ldC9zbWMvc21jX2xvb3BiYWNrLmMgfCAxMSArKysrKysrLS0tLQogMyBmaWxlcyBjaGFu
+Z2VkLCAxMyBpbnNlcnRpb25zKCspLCA1MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9u
+ZXQvc21jL2FmX3NtYy5jIGIvbmV0L3NtYy9hZl9zbWMuYwppbmRleCBjN2RlNTY2Li40Mzk2
+MzkyIDEwMDY0NAotLS0gYS9uZXQvc21jL2FmX3NtYy5jCisrKyBiL25ldC9zbWMvYWZfc21j
+LmMKQEAgLTk3OSwyOCArOTc5LDYgQEAgc3RhdGljIGludCBzbWNfZmluZF9pc21fZGV2aWNl
+KHN0cnVjdCBzbWNfc29jayAqc21jLCBzdHJ1Y3Qgc21jX2luaXRfaW5mbyAqaW5pKQogCXJl
+dHVybiAwOwogfQogCi0vKiBjaGVjayBpZiB0aGVyZSBpcyBhIGxvIGRldmljZSBhdmFpbGFi
+bGUgZm9yIHRoaXMgY29ubmVjdGlvbi4gKi8KLXN0YXRpYyBpbnQgc21jX2ZpbmRfbG9fZGV2
+aWNlKHN0cnVjdCBzbWNfc29jayAqc21jLCBzdHJ1Y3Qgc21jX2luaXRfaW5mbyAqaW5pKQot
+ewotCXN0cnVjdCBzbWNkX2RldiAqc2RldjsKLQotCW11dGV4X2xvY2soJnNtY2RfZGV2X2xp
+c3QubXV0ZXgpOwotCWxpc3RfZm9yX2VhY2hfZW50cnkoc2RldiwgJnNtY2RfZGV2X2xpc3Qu
+bGlzdCwgbGlzdCkgewotCQlpZiAoc2Rldi0+aXNfbG9vcGJhY2sgJiYgIXNkZXYtPmdvaW5n
+X2F3YXkgJiYKLQkJICAgICghaW5pLT5pc21fcGVlcl9naWRbMF0gfHwKLQkJICAgICAhc21j
+X2lzbV9jYW50YWxrKGluaS0+aXNtX3BlZXJfZ2lkWzBdLCBpbmktPnZsYW5faWQsCi0JCQkJ
+ICAgICAgc2RldikpKSB7Ci0JCQlpbmktPmlzbV9kZXZbMF0gPSBzZGV2OwotCQkJYnJlYWs7
+Ci0JCX0KLQl9Ci0JbXV0ZXhfdW5sb2NrKCZzbWNkX2Rldl9saXN0Lm11dGV4KTsKLQlpZiAo
+IWluaS0+aXNtX2RldlswXSkKLQkJcmV0dXJuIFNNQ19DTENfREVDTF9OT1NNQ0RERVY7Ci0J
+aW5pLT5pc21fY2hpZFswXSA9IHNtY19pc21fZ2V0X2NoaWQoaW5pLT5pc21fZGV2WzBdKTsK
+LQlyZXR1cm4gMDsKLX0KLQogLyogaXMgY2hpZCB1bmlxdWUgZm9yIHRoZSBpc20gZGV2aWNl
+cyB0aGF0IGFyZSBhbHJlYWR5IGRldGVybWluZWQ/ICovCiBzdGF0aWMgYm9vbCBzbWNfZmlu
+ZF9pc21fdjJfaXNfdW5pcXVlX2NoaWQodTE2IGNoaWQsIHN0cnVjdCBzbWNfaW5pdF9pbmZv
+ICppbmksCiAJCQkJCSAgIGludCBjbnQpCkBAIC0xMDY2LDE5ICsxMDQ0LDEwIEBAIHN0YXRp
+YyBpbnQgc21jX2ZpbmRfcHJvcG9zYWxfZGV2aWNlcyhzdHJ1Y3Qgc21jX3NvY2sgKnNtYywK
+IHsKIAlpbnQgcmMgPSAwOwogCi0JLyogVE9ETzoKLQkgKiBIb3cgdG8gaW5kaWNhdGUgdG8g
+cGVlciBpZiBpc20gZGV2aWNlIGFuZCBsb29wYmFjawotCSAqIGRldmljZSBhcmUgYm90aCBh
+dmFpbGFibGUgPwotCSAqCi0JICogVGhlIFJGQyBwYXRjaCBoYXNuJ3QgcmVzb2x2ZWQgdGhp
+cywganVzdCBzaW1wbHkgYWx3YXlzCi0JICogY2hvb3NlcyBsb29wYmFjayBkZXZpY2UgZmly
+c3QsIGFuZCBmYWxsYmFjayBpZiBsb29wYmFjawotCSAqIGNvbW11bmljYXRpb24gaXMgaW1w
+b3NzaWJsZS4KLQkgKi8KIAkvKiBjaGVjayBpZiB0aGVyZSBpcyBhbiBpc20gb3IgbG9vcGJh
+Y2sgZGV2aWNlIGF2YWlsYWJsZSAqLwogCWlmICghKGluaS0+c21jZF92ZXJzaW9uICYgU01D
+X1YxKSB8fAotCSAgICAoc21jX2ZpbmRfbG9fZGV2aWNlKHNtYywgaW5pKSAmJgotCSAgICAo
+c21jX2ZpbmRfaXNtX2RldmljZShzbWMsIGluaSkgfHwKLQkgICAgc21jX2Nvbm5lY3RfaXNt
+X3ZsYW5fc2V0dXAoc21jLCBpbmkpKSkpCisJICAgIHNtY19maW5kX2lzbV9kZXZpY2Uoc21j
+LCBpbmkpIHx8CisJICAgIHNtY19jb25uZWN0X2lzbV92bGFuX3NldHVwKHNtYywgaW5pKSkK
+IAkJaW5pLT5zbWNkX3ZlcnNpb24gJj0gflNNQ19WMTsKIAkvKiBlbHNlIElTTSBWMSBpcyBz
+dXBwb3J0ZWQgZm9yIHRoaXMgY29ubmVjdGlvbiAqLwogCkBAIC0yMTc4LDE4ICsyMTQ3LDkg
+QEAgc3RhdGljIHZvaWQgc21jX2ZpbmRfaXNtX3YxX2RldmljZV9zZXJ2KHN0cnVjdCBzbWNf
+c29jayAqbmV3X3NtYywKIAlpbmktPmlzX3NtY2QgPSB0cnVlOyAvKiBwcmVwYXJlIElTTSBj
+aGVjayAqLwogCWluaS0+aXNtX3BlZXJfZ2lkWzBdID0gbnRvaGxsKHBjbGNfc21jZC0+aXNt
+LmdpZCk7CiAKLQkvKiBUT0RPOgotCSAqIEhvdyB0byBrbm93IHRoYXQgcGVlciBoYXMgYm90
+aCBsb29wYmFjayBhbmQgaXNtIGRldmljZSA/Ci0JICoKLQkgKiBUaGUgUkZDIHBhdGNoIGhh
+c24ndCByZXNvbHZlZCB0aGlzLCBzaW1wbHkgdHJpZXMgbG9vcGJhY2sKLQkgKiBkZXZpY2Ug
+Zmlyc3QsIHRoZW4gaXNtIGRldmljZS4KLQkgKi8KLQkvKiBmaW5kIGF2YWlsYWJsZSBsb29w
+YmFjayBvciBpc20gZGV2aWNlICovCi0JaWYgKHNtY19maW5kX2xvX2RldmljZShuZXdfc21j
+LCBpbmkpKSB7Ci0JCXJjID0gc21jX2ZpbmRfaXNtX2RldmljZShuZXdfc21jLCBpbmkpOwot
+CQlpZiAocmMpCi0JCQlnb3RvIG5vdF9mb3VuZDsKLQl9CisJcmMgPSBzbWNfZmluZF9pc21f
+ZGV2aWNlKG5ld19zbWMsIGluaSk7CisJaWYgKHJjKQorCQlnb3RvIG5vdF9mb3VuZDsKIAog
+CWluaS0+aXNtX3NlbGVjdGVkID0gMDsKIAlyYyA9IHNtY19saXN0ZW5faXNtX2luaXQobmV3
+X3NtYywgaW5pKTsKZGlmZiAtLWdpdCBhL25ldC9zbWMvc21jX2NsYy5jIGIvbmV0L3NtYy9z
+bWNfY2xjLmMKaW5kZXggMzg4NzY5Mi4uZGZiOTc5NyAxMDA2NDQKLS0tIGEvbmV0L3NtYy9z
+bWNfY2xjLmMKKysrIGIvbmV0L3NtYy9zbWNfY2xjLmMKQEAgLTQ4Niw5ICs0ODYsNyBAQCBz
+dGF0aWMgaW50IHNtY19jbGNfcHJmeF9zZXQ0X3JjdShzdHJ1Y3QgZHN0X2VudHJ5ICpkc3Qs
+IF9fYmUzMiBpcHY0LAogCQlyZXR1cm4gLUVOT0RFVjsKIAogCWluX2Rldl9mb3JfZWFjaF9p
+ZmFfcmN1KGlmYSwgaW5fZGV2KSB7Ci0JCS8qIGFkZCBsb29wYmFjayBzdXBwb3J0ICovCi0J
+CWlmIChpbmV0X2FkZHJfdHlwZShkZXZfbmV0KGRzdC0+ZGV2KSwgaXB2NCkgIT0gUlROX0xP
+Q0FMICYmCi0JCSAgICAhaW5ldF9pZmFfbWF0Y2goaXB2NCwgaWZhKSkKKwkJaWYgKCFpbmV0
+X2lmYV9tYXRjaChpcHY0LCBpZmEpKQogCQkJY29udGludWU7CiAJCXByb3AtPnByZWZpeF9s
+ZW4gPSBpbmV0X21hc2tfbGVuKGlmYS0+aWZhX21hc2spOwogCQlwcm9wLT5vdXRnb2luZ19z
+dWJuZXQgPSBpZmEtPmlmYV9hZGRyZXNzICYgaWZhLT5pZmFfbWFzazsKZGlmZiAtLWdpdCBh
+L25ldC9zbWMvc21jX2xvb3BiYWNrLmMgYi9uZXQvc21jL3NtY19sb29wYmFjay5jCmluZGV4
+IDNkZWRjYzQuLjY0MmIyNDEgMTAwNjQ0Ci0tLSBhL25ldC9zbWMvc21jX2xvb3BiYWNrLmMK
+KysrIGIvbmV0L3NtYy9zbWNfbG9vcGJhY2suYwpAQCAtMTksMTMgKzE5LDE0IEBACiAjaW5j
+bHVkZSAic21jX2xvb3BiYWNrLmgiCiAKICNkZWZpbmUgRFJWX05BTUUgInNtY19sb2RldiIK
+KyNkZWZpbmUgTE9fQ0hJRAkweEZGRkYJLyogc3BlY2lmaWMgZm9yIGxvIGRldiAqLwogCiBz
+dHJ1Y3Qgc21jX2xvX2RldiAqbG9fZGV2OwogCiBzdGF0aWMgc3RydWN0IHNtY19sb19zeXN0
+ZW1laWQgTE9fU1lTVEVNX0VJRCA9IHsKIAkuc2VpZF9zdHJpbmcgPSAiU01DLVNZU1otTE9T
+RUlEMDAwMDAwMDAwIiwKLQkuc2VyaWFsX251bWJlciA9ICIwMDAwIiwKLQkudHlwZSA9ICIw
+MDAwIiwKKwkuc2VyaWFsX251bWJlciA9ICIxMDAwIiwKKwkudHlwZSA9ICIxMDAwIiwKIH07
+CiAKIHN0YXRpYyBpbnQgc21jX2xvX3F1ZXJ5X3JnaWQoc3RydWN0IHNtY2RfZGV2ICpzbWNk
+LCB1NjQgcmdpZCwgdTMyIHZpZF92YWxpZCwKQEAgLTMzLDcgKzM0LDkgQEAgc3RhdGljIGlu
+dCBzbWNfbG9fcXVlcnlfcmdpZChzdHJ1Y3Qgc21jZF9kZXYgKnNtY2QsIHU2NCByZ2lkLCB1
+MzIgdmlkX3ZhbGlkLAogewogCXN0cnVjdCBzbWNfbG9fZGV2ICpsZGV2ID0gc21jZC0+cHJp
+djsKIAotCS8qIHJldHVybiBsb2NhbCBnaWQgKi8KKwlpZiAoIXZpZF92YWxpZCB8fCB2aWQg
+IT0gSVNNX1JFU0VSVkVEX1ZMQU5JRCkKKwkJcmV0dXJuIC1FSU5WQUw7CisJLyogcmdpZCBz
+aG91bGQgYmUgZXF1YWwgdG8gbGdpZCAqLwogCWlmICghbGRldiB8fCByZ2lkICE9IGxkZXYt
+PmxnaWQpCiAJCXJldHVybiAtRU5FVFVOUkVBQ0g7CiAJcmV0dXJuIDA7CkBAIC0yNTUsNyAr
+MjU4LDcgQEAgc3RhdGljIHU4ICpzbWNfbG9fZ2V0X3N5c3RlbV9laWQodm9pZCkKIAogc3Rh
+dGljIHUxNiBzbWNfbG9fZ2V0X2NoaWQoc3RydWN0IHNtY2RfZGV2ICpzbWNkKQogewotCXJl
+dHVybiAwOworCXJldHVybiBMT19DSElEOwogfQogCiBzdGF0aWMgY29uc3Qgc3RydWN0IHNt
+Y2Rfb3BzIGxvX29wcyA9IHsKLS0gCjEuOC4zLjEKCg==
+
+--------------AGgUHRPn8FTngxiFshQUw0p5--
