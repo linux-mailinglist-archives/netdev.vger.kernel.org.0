@@ -2,65 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 952E06679E1
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A446679DB
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:51:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239662AbjALPxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:53:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36084 "EHLO
+        id S231673AbjALPvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:51:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240312AbjALPwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:52:47 -0500
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F89C1123
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:41:02 -0800 (PST)
+        with ESMTP id S240365AbjALPvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:51:15 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D7B6B5F0
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:40:08 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id v6so2714686ejg.6
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:40:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1673538063; x=1705074063;
-  h=references:from:to:cc:subject:date:in-reply-to:
-   message-id:mime-version;
-  bh=oUK2ACBDt68b8+5N1drGEA/zCC5P130zN9Q9P8hW2Zw=;
-  b=j4BN6L/N3sPjSzmfIe3uGv9XffjuK+egVCWYrhDcriF2kriImcB+xrCN
-   moupfCQp1X1iZ+zS8xSn+R0hLuiNbsZH1hYZue1Hhe7w/8+d8jbgywRhH
-   jT2NYZkgkRu05NLrpiJ+uXirug6saZkveVGtujCGsULGQ6WKXl6/oi2eH
-   g=;
-X-IronPort-AV: E=Sophos;i="5.97,211,1669075200"; 
-   d="scan'208";a="170568498"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 15:40:57 +0000
-Received: from EX13D46EUB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id 21A3882414;
-        Thu, 12 Jan 2023 15:40:56 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX13D46EUB002.ant.amazon.com (10.43.166.241) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Thu, 12 Jan 2023 15:40:54 +0000
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.162.56) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.1118.7; Thu, 12 Jan 2023 15:40:51 +0000
-References: <20230111042214.907030-1-willy@infradead.org>
- <20230111042214.907030-6-willy@infradead.org>
-User-agent: mu4e 1.6.10; emacs 28.0.91
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-CC:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v3 05/26] page_pool: Start using netmem in allocation path.
-Date:   Thu, 12 Jan 2023 17:36:58 +0200
-In-Reply-To: <20230111042214.907030-6-willy@infradead.org>
-Message-ID: <pj41zlpmbjn4ld.fsf@u570694869fb251.ant.amazon.com>
+        d=diag.uniroma1.it; s=google;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=CpfC1agUnmzyoZZWBRoVh/rstX0bSG6U2Rx017qkZOc=;
+        b=Lccs8JCjtT8tvXvXAvToicHvTm9vNcaGj2Rq+AQEFMpeMwat3KQBRSopOk8grhmlI2
+         7b47C4MeOIEY999UnUda8YgP4Sp3xAS2siNa6oVFuSqn0/SyjWfwHRIHHFGDA+jr2V4w
+         VZW8LoqBg8fLshw6t4BRwJFOXrE8hTLhDpKOo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CpfC1agUnmzyoZZWBRoVh/rstX0bSG6U2Rx017qkZOc=;
+        b=Lpx12KlTHgI1TZPfRToRkxxTGG3jREIm5NdO2nZBj2DAdH3kr5KleHk7C6NmsG7WlK
+         mlZ1hQJ7W8IXoMcysWT4B5eF10FRiypXtFhHwaWIf+1RAaGHCcDqsAHZJpn3CwL3vlTE
+         /WGTBajHEE6XSM76irfN3JsO0jeH/nmBPJSofjWNJav1RlR63CuRap1hS0Yl9b4Z+ENI
+         vJfOLnn0oh0DCpgF49ppCtzbvsQS+g+Wc/XPQhO/WYi8rXbmBcCFblcn9OYe3tFBrvOu
+         MoJP0c7xNjMe6eOrgYw+CUnichoTmHA3+aq4ncwlbfpR53vwk6WPtVRPcnbRKnkxK+xR
+         Cv4g==
+X-Gm-Message-State: AFqh2kr19u7cWSEcczwoXzbMURrYugRSjLpNa/tulWNaf+uGM0r6ZZdT
+        2qhuTXqwVrPZX32Q/K/QLv97AA==
+X-Google-Smtp-Source: AMrXdXvSm19hZ8PVHAwxvKt0Rd/kB+K50OQngadyFFyrnY6AW36Fve0rnWx4DFTNR7Fb0/BWk2Dmqg==
+X-Received: by 2002:a17:907:c28b:b0:84d:12d8:e1e9 with SMTP id tk11-20020a170907c28b00b0084d12d8e1e9mr13049194ejc.41.1673538005453;
+        Thu, 12 Jan 2023 07:40:05 -0800 (PST)
+Received: from [192.168.17.2] (wolkje-127.labs.vu.nl. [130.37.198.127])
+        by smtp.gmail.com with ESMTPSA id ti11-20020a170907c20b00b007c10bb5b4b8sm7482215ejc.224.2023.01.12.07.40.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Jan 2023 07:40:05 -0800 (PST)
+From:   Pietro Borrello <borrello@diag.uniroma1.it>
+Date:   Thu, 12 Jan 2023 15:39:23 +0000
+Subject: [PATCH] inet: fix fast path in __inet_hash_connect()
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.162.56]
-X-ClientProxiedBy: EX13D39UWB003.ant.amazon.com (10.43.161.215) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230112-inet_hash_connect_bind_head-v1-1-7e3c770157c8@diag.uniroma1.it>
+X-B4-Tracking: v=1; b=H4sIAKwpwGMC/x2NQQrDIBAAvxL2XEHtxfYrpciqa91DN8WVEgj5e
+ 02Pw8DMDkqdSeG+7NDpy8qrTHCXBXJDeZHhMhm89VfrnDcsNGJDbTGvIpRHTCwlNsJiQvUl30K1
+ ITmYhYRKJnWU3M7GG3VQP8WnU+Xtv308j+MHK9kjMIYAAAA=
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pietro Borrello <borrello@diag.uniroma1.it>
+X-Mailer: b4 0.11.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1673538005; l=2065;
+ i=borrello@diag.uniroma1.it; s=20221223; h=from:subject:message-id;
+ bh=TUFvhV+TThpBJm91TM7GvgXaWlgYoPc+aQtxNdrmdCo=;
+ b=47ox2+rz52E0JCplO2ia51eqiQPQdDDhXRsuRwXGWqSwTQsk5agiApjN5hBjrPT1A3g2x93OQZu7
+ 7UWU16pHBnuijykhpqk5H2IStcZYQnVZUJLD3h+0j0f7N5UdqOZB
+X-Developer-Key: i=borrello@diag.uniroma1.it; a=ed25519;
+ pk=4xRQbiJKehl7dFvrG33o2HpveMrwQiUPKtIlObzKmdY=
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,40 +82,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+__inet_hash_connect() has a fast path taken if sk_head(&tb->owners) is
+equal to the sk parameter.
+sk_head() returns the list_entry() with respect to the sk_node field.
+However entries in the tb->owners list are inserted with respect to the
+sk_bind_node field with sk_add_bind_node().
+Thus the check would never pass and the fast path never execute.
 
-"Matthew Wilcox (Oracle)" <willy@infradead.org> writes:
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+---
+ include/net/sock.h         | 10 ++++++++++
+ net/ipv4/inet_hashtables.c |  2 +-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-> Convert __page_pool_alloc_page_order() and 
-> __page_pool_alloc_pages_slow()
-> ...
->  TRACE_EVENT(page_pool_update_nid,
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 437241aba5a7..4e985502c569 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> ...
->  
-> @@ -421,7 +422,8 @@ static struct page 
-> *__page_pool_alloc_pages_slow(struct page_pool *pool,
->  		page = NULL;
->  	}
->  
-> -	/* When page just alloc'ed is should/must have refcnt 
-> 1. */
-> +	/* When page just allocated it should have refcnt 1 (but 
-> may have
-> +	 * speculative references) */
+diff --git a/include/net/sock.h b/include/net/sock.h
+index dcd72e6285b2..23fc403284db 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -860,6 +860,16 @@ static inline void sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_hea
+ 	__sk_nulls_add_node_rcu(sk, list);
+ }
+ 
++static inline struct sock *__sk_bind_head(const struct hlist_head *head)
++{
++	return hlist_entry(head->first, struct sock, sk_bind_node);
++}
++
++static inline struct sock *sk_bind_head(const struct hlist_head *head)
++{
++	return hlist_empty(head) ? NULL : __sk_bind_head(head);
++}
++
+ static inline void __sk_del_bind_node(struct sock *sk)
+ {
+ 	__hlist_del(&sk->sk_bind_node);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index d039b4e732a3..a805e086fb48 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -998,7 +998,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 						  hinfo->bhash_size)];
+ 		tb = inet_csk(sk)->icsk_bind_hash;
+ 		spin_lock_bh(&head->lock);
+-		if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
++		if (sk_bind_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+ 			inet_ehash_nolisten(sk, NULL, NULL);
+ 			spin_unlock_bh(&head->lock);
+ 			return 0;
 
-Sorry for the pity comment, but the comment style here is 
-inconsistent
-https://www.kernel.org/doc/html/v4.11/process/coding-style.html#commenting
+---
+base-commit: 1b929c02afd37871d5afb9d498426f83432e71c2
+change-id: 20230112-inet_hash_connect_bind_head-8f2dc98f08b1
 
-You should have the last '*/' to be on its own line
-(again sorry for not giving more useful feedback... then again, 
-it's a rather simply fix (: )
-
-Shay
-
->  	return page;
->  }
-
+Best regards,
+-- 
+Pietro Borrello <borrello@diag.uniroma1.it>
