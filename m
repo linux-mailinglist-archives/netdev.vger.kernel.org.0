@@ -2,198 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECCF4666A7F
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 05:44:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAD0666A86
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 05:47:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236655AbjALEoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 23:44:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
+        id S235975AbjALEqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 23:46:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238979AbjALEmo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 23:42:44 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD98193D7
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 20:42:29 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30C3vtGI001257;
-        Wed, 11 Jan 2023 20:42:24 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=mS1TBG1Sfcd9WuRJ72+xsPDz8LuxPBVXNKgaF/9HwBU=;
- b=T8CUMcW8CSjFXsuikIMSCDT+aeoQ3fmzf+UubDi04x890/nMDPBcV4KEK8lL3VR5Oap5
- BwiI1aA71/57+PEAdPGPPpC9g77TT17TlVoeqm1a9t8c1t3HYIKUU4iFLXei9j3wosAJ
- P4RkQtNqoMJtS7KX/HQUH4t5ERYVnyGAiwMfD6KHY92+1vitX4u/39zhXTFwGbobVMJY
- KqziM7ZIe0i/E4rCHEQDxuASpwUix3oMalNj2noAeitJoKDTnh8rZKOJvTUlun1n8U7K
- C/Vq+AkEsCexzu+TjkPmaliKMRV2BAn8h53C17o6g7rewdUyU0CNBjbqPQKzUyGLKN5g Sg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n23b2gsdt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Jan 2023 20:42:24 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 11 Jan
- 2023 20:42:22 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Wed, 11 Jan 2023 20:42:22 -0800
-Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 233833F70AB;
-        Wed, 11 Jan 2023 20:42:18 -0800 (PST)
-From:   Srujana Challa <schalla@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
-Subject: [PATCH v2 net-next,8/8] octeontx2-af: add mbox to return CPT_AF_FLT_INT info
-Date:   Thu, 12 Jan 2023 10:11:47 +0530
-Message-ID: <20230112044147.931159-9-schalla@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230112044147.931159-1-schalla@marvell.com>
-References: <20230112044147.931159-1-schalla@marvell.com>
+        with ESMTP id S230269AbjALEqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 23:46:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA74E10CD
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 20:46:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B5C5B81D89
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 04:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D3A1C433EF;
+        Thu, 12 Jan 2023 04:46:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673498806;
+        bh=Ak+Rz7gbko+WLE5xia8sjLPsKVkFD9Dz2zDvW6nijKM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MyMj/SBJPn05NLtdrkrRTgXwWYkwGCpj4B1OM03MZIxfhoy2K7JfbElScFEWeSM3c
+         E5uJ8zDcL5ybmAtq9tC8J5OkNOM3PV2A1ifAPdYdE76ZMgOkcLI190DW1Buzt+ZkKn
+         Z8QEIeLREJurL2BYjxKZuT5UD/EAenSX15GCjzfOvYk+4UGazTDNbMyj9C61WMBh6o
+         eh0P6Je9i+eAY3xQE3vhLugX/N6iqxAFWXiX3Lh3tLMfWrpmJwd+LJC4A1Jsi7SinD
+         qe1egyWNB47Cnb/+gW2cfsuW7RBTq8juLLvbTHYDSOvARoSAmKKcI8khKamNlNeLBf
+         JluF+JjNjTl/w==
+Date:   Wed, 11 Jan 2023 20:46:44 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Aurelien Aptel <aaptel@nvidia.com>
+Cc:     linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
+        sagi@grimberg.me, hch@lst.de, kbusch@kernel.org, axboe@fb.com,
+        chaitanyak@nvidia.com, davem@davemloft.net,
+        aurelien.aptel@gmail.com, smalin@nvidia.com, malin1024@gmail.com,
+        ogerlitz@nvidia.com, yorayz@nvidia.com, borisp@nvidia.com
+Subject: Re: [PATCH v8 03/25] net/ethtool: add ULP_DDP_{GET,SET} operations
+ for caps and stats
+Message-ID: <20230111204644.040d0a9d@kernel.org>
+In-Reply-To: <20230109133116.20801-4-aaptel@nvidia.com>
+References: <20230109133116.20801-1-aaptel@nvidia.com>
+        <20230109133116.20801-4-aaptel@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: M6wYyopeUMDbucK62luK3KUEMKCRb-nh
-X-Proofpoint-ORIG-GUID: M6wYyopeUMDbucK62luK3KUEMKCRb-nh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-12_02,2023-01-11_03,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a new mailbox to return CPT faulted engines bitmap
-and recovered engines bitmap.
+On Mon,  9 Jan 2023 15:30:54 +0200 Aurelien Aptel wrote:
+> - 2 new netlink messages:
+>   * ULP_DDP_GET: returns a bitset of supported and active capabilities
+>   * ULP_DDP_SET: tries to activate requested bitset and returns results
+> 
+> - 2 new netdev ethtool_ops operations:
+>   * ethtool_ops->get_ulp_ddp_stats(): retrieve device statistics
+>   * ethtool_ops->set_ulp_ddp_capabilities(): try to apply
+>     capability changes
 
-Signed-off-by: Srujana Challa <schalla@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/mbox.h  | 17 +++++++++
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  4 +++
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 35 +++++++++++++++++++
- 3 files changed, 56 insertions(+)
+The implementation of stats is not what I had in mind. 
+None of the stats you listed under "Statistics" in the documentation
+look nVidia specific. The implementation should look something like
+the pause frame stats (struct ethtool_pause_stats etc) but you can add
+the dynamic string set if you like. 
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index abe86778b064..5727d67e0259 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -196,6 +196,8 @@ M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
- 			       msg_rsp)                                 \
- M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
- M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
-+M(CPT_FLT_ENG_INFO,     0xA09, cpt_flt_eng_info, cpt_flt_eng_info_req,	\
-+			       cpt_flt_eng_info_rsp)			\
- /* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
- M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
- M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
-@@ -1706,6 +1708,21 @@ struct cpt_lf_rst_req {
- 	u32 rsvd;
- };
- 
-+/* Mailbox message format to request for CPT faulted engines */
-+struct cpt_flt_eng_info_req {
-+	struct mbox_msghdr hdr;
-+	int blkaddr;
-+	bool reset;
-+	u32 rsvd;
-+};
-+
-+struct cpt_flt_eng_info_rsp {
-+	struct mbox_msghdr hdr;
-+	u64 flt_eng_map[CPT_10K_AF_INT_VEC_RVU];
-+	u64 rcvrd_eng_map[CPT_10K_AF_INT_VEC_RVU];
-+	u64 rsvd;
-+};
-+
- struct sdp_node_info {
- 	/* Node to which this PF belons to */
- 	u8 node_id;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 2f480c73ef55..5eea2b6cf6bd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -108,6 +108,8 @@ struct rvu_block {
- 	u64  lfreset_reg;
- 	unsigned char name[NAME_SIZE];
- 	struct rvu *rvu;
-+	u64 cpt_flt_eng_map[3];
-+	u64 cpt_rcvrd_eng_map[3];
- };
- 
- struct nix_mcast {
-@@ -526,6 +528,8 @@ struct rvu {
- 	struct list_head	mcs_intrq_head;
- 	/* mcs interrupt queue lock */
- 	spinlock_t		mcs_intrq_lock;
-+	/* CPT interrupt lock */
-+	spinlock_t		cpt_intr_lock;
- };
- 
- static inline void rvu_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index d7ca7e953683..f047185f38e0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -70,6 +70,14 @@ static irqreturn_t cpt_af_flt_intr_handler(int vec, void *ptr)
- 
- 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), grp);
- 		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val | 1ULL);
-+
-+		spin_lock(&rvu->cpt_intr_lock);
-+		block->cpt_flt_eng_map[vec] |= BIT_ULL(i);
-+		val = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_STS(eng));
-+		val = val & 0x3;
-+		if (val == 0x1 || val == 0x2)
-+			block->cpt_rcvrd_eng_map[vec] |= BIT_ULL(i);
-+		spin_unlock(&rvu->cpt_intr_lock);
- 	}
- 	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(vec), reg);
- 
-@@ -899,6 +907,31 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
- 	return 0;
- }
- 
-+int rvu_mbox_handler_cpt_flt_eng_info(struct rvu *rvu, struct cpt_flt_eng_info_req *req,
-+				      struct cpt_flt_eng_info_rsp *rsp)
-+{
-+	struct rvu_block *block;
-+	unsigned long flags;
-+	int blkaddr, vec;
-+
-+	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	block = &rvu->hw->block[blkaddr];
-+	for (vec = 0; vec < CPT_10K_AF_INT_VEC_RVU; vec++) {
-+		spin_lock_irqsave(&rvu->cpt_intr_lock, flags);
-+		rsp->flt_eng_map[vec] = block->cpt_flt_eng_map[vec];
-+		rsp->rcvrd_eng_map[vec] = block->cpt_rcvrd_eng_map[vec];
-+		if (req->reset) {
-+			block->cpt_flt_eng_map[vec] = 0x0;
-+			block->cpt_rcvrd_eng_map[vec] = 0x0;
-+		}
-+		spin_unlock_irqrestore(&rvu->cpt_intr_lock, flags);
-+	}
-+	return 0;
-+}
-+
- static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
- {
- 	struct cpt_rxc_time_cfg_req req, prev;
-@@ -1182,5 +1215,7 @@ int rvu_cpt_init(struct rvu *rvu)
- {
- 	/* Retrieve CPT PF number */
- 	rvu->cpt_pf_num = get_cpt_pf_num(rvu);
-+	spin_lock_init(&rvu->cpt_intr_lock);
-+
- 	return 0;
- }
--- 
-2.25.1
-
+If given implementation does not support one of the stats it will not
+fill in the value and netlink will skip over it. The truly vendor-
+-specific stats (if any) can go to the old ethtool -S.
