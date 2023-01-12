@@ -2,102 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 311A9666FC3
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 11:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C60E666FCB
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 11:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238149AbjALKgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 05:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
+        id S235396AbjALKhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 05:37:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236789AbjALKfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 05:35:22 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DDD50F7F;
-        Thu, 12 Jan 2023 02:30:07 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 30CATjjR1796956
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Thu, 12 Jan 2023 10:29:47 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 30CATenM3820531
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Thu, 12 Jan 2023 11:29:40 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1673519380; bh=q65tD7oXhhlM7mbc/basdUYlkSC0DmP9LIm8r+kgxPs=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=e0p2iZbr9VQv3xhxrP9rgnAGktc78I+tRa0D7180JoL8SHqlLOmiBSIMaKbQF/B//
-         MpwvVcOu6Is/1Fxk/zXyZLv3D3apsDjBidioB5xANWJWPSAEYiYBNeoBWM5QRQ++fr
-         22P+rfGT1GbXXhfS9ioP/8yU73hV8LMwq00jC5gQ=
-Received: (nullmailer pid 181829 invoked by uid 1000);
-        Thu, 12 Jan 2023 10:29:40 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Greg KH <greg@kroah.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] r8152; preserve device list format
-Organization: m
-References: <87k01s6tkr.fsf@miraculix.mork.no>
-        <20230112100100.180708-1-bjorn@mork.no> <Y7/dBXrI2QkiBFlW@kroah.com>
-        <87cz7k6ooc.fsf@miraculix.mork.no>
-Date:   Thu, 12 Jan 2023 11:29:40 +0100
-In-Reply-To: <87cz7k6ooc.fsf@miraculix.mork.no> (=?utf-8?Q?=22Bj=C3=B8rn?=
- Mork"'s message of
-        "Thu, 12 Jan 2023 11:18:59 +0100")
-Message-ID: <878ri86o6j.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S236584AbjALKhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 05:37:14 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4925059FA4
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 02:31:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i0PB3d36wsLUj61Hbg5fQn9PvDzjvsp2EiDijoSKDQ+EoRuqNI4n1lCWK0sgpREM1gv9Tf2kRvLGaL0rMtDJNq463PBX0Sr4ExK0856MFcCDMBNw0K5DPkVhtSsydn3hXeT0hMd1a+2reONOJgXEe/JJsP9gekKqAiHk0DFLoBFwfjKnzIbZp8K+Z0q4TjPlLAtbuwtgxacv/FSID6QIj8qyh1RkfCSr6k4u3Ucxx0AcDDLSt/6Fyd/arVECe8VSiXns5Bx9PMULd+yH7NETMvijuL8w42F2D7FtTaFp1y99SbQ8ZF1JVFIgVfs+fl79gDX6lvRJOb7UdQW99nxQpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7Wvd1IX3BnPgNqJs3kb86juG1YItU3XQE5Y7uQTyGN8=;
+ b=J4hn9roOZjRplZlECU0g4U2ByNQieVVXm77wGgsFiZrCC5bBc5WIr7UE9Ai9fPdFSN4TW0WD7QE+bTjVO57erqG+QLgj5iNJgJ74wW5+Z5Vv+OmFtNxc0nO9A+t194ZEOdNMdTmP1zwJTYboQfxdigGeSEX4XNgLqMo9HscMfd9QWgapnWBu39fvDYBJCioRS8+x62QxluSJ0NuUS9zVkxzzBT1W0wKXEzq7sXxFB2IVYyGo6EDsYR9dfy1VP3arEQCP/zTkuQg6pQvqLrhBaR09aaiLMWT48Jj9MVN3OaG2IaCVRVJ5O8hp8HF8gtp2kWDJE73xLF2IeFSuOEypmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7Wvd1IX3BnPgNqJs3kb86juG1YItU3XQE5Y7uQTyGN8=;
+ b=X8aHTttxizVNhHtkg8XpgNh1Afhh87MxVF/G/1SIhIz/IzedwHtNEdmKZn33Rv3Xq1jqlUplHEBOjbiftEohk9TgDUVHcqFDZREgDTwOqRWTs+Z+hbBik/x1Aj7v8iDm/XCGUGXmhoxtPPan6b6AmJNxYUadqjYEMn2Cu2VtKCzQJe3PDM0E+JIVkeEcbl5ewmF76mLiX06ZsbRN7edaaA1mfm0jAjHKxBcemRF5ZSJv/6CjovPBw+jYuXrrDSU6a505I9WuAyo/rQGZptwAPwBpeIV4Iu0L9NJRIm/CLcjhuJnWa1MUaihXRGnJsTTMVLAoZsk6F7+gwJSZpIr43Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
+ PH7PR12MB5903.namprd12.prod.outlook.com (2603:10b6:510:1d7::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Thu, 12 Jan
+ 2023 10:31:13 +0000
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::d01c:4567:fb90:72b9]) by DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::d01c:4567:fb90:72b9%3]) with mapi id 15.20.6002.013; Thu, 12 Jan 2023
+ 10:31:13 +0000
+Message-ID: <f2fd4262-58b7-147d-2784-91f2431c53df@nvidia.com>
+Date:   Thu, 12 Jan 2023 12:31:04 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH V1 net-next 0/5] Add devlink support to ena
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Arinzon, David" <darinzon@amazon.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+References: <20230108103533.10104-1-darinzon@amazon.com>
+ <20230109164500.7801c017@kernel.org>
+ <574f532839dd4e93834dbfc776059245@amazon.com>
+ <20230110124418.76f4b1f8@kernel.org>
+ <865255fd30cd4339966425ea1b1bd8f9@amazon.com>
+ <20230111110043.036409d0@kernel.org>
+ <29a2fdae8f344ff48aeb223d1c3c78ad@amazon.com>
+ <20230111120003.1a2e2357@kernel.org>
+From:   Gal Pressman <gal@nvidia.com>
+In-Reply-To: <20230111120003.1a2e2357@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0048.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:4a::20) To DS7PR12MB6288.namprd12.prod.outlook.com
+ (2603:10b6:8:93::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6288:EE_|PH7PR12MB5903:EE_
+X-MS-Office365-Filtering-Correlation-Id: b48565be-c156-4c06-0e2a-08daf48820d3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MVUTH6eoi6StHyu8L+vcIwgxShzYFSBzhCPaZlz66D9T8Smx0K17PiaSsgcxG4hxxWaUisUDaUzGkH2TEDVO1UFFN/+QCP+MiyMh1XNWUA+GvPXWFx1uk7SIDuY0d2q/peYjV7B+h3QQpfcooRi7AYw3hFaf/eNuq0/FwqXVGzZzxzV2kUEyI97nLn4E2gSaQHkM0w88nHWhCD9iNvaeHV9PqresYx/SwekFmhwDZebbw0jHWG2pj8Z+JVv9Gh5R9XpUC7MYlJ0dJj+fk7SuyydBGkCu7hHV478g2fMqlpib8oG6vnCF/zi/Jo4EM13DspHwViUcHJPTwBhsTjQxA0LMpAR2rgbTnXRVF++YpgIT66XZ4kneoZeQtjJlG5z7sL3tFgyZcAMayUH6Amd7YSe327NEapfqYp+LwB9/wrdYdv+ltte4YmAleLuSbr+//edjxYVZg0u9Ii5SwZ+zPjR5N+ICHvlj77bhiJeBPXayNgWyA/HnL7MwAqyXHv3WWsMtmwoWj9D/eo9rGtQm6OSbutm+o6XgGwOAp6sRiRaxAbZSGALlY8/ZZfZNsyG9AvH9NuqlmVGDuygRvx/4lryPgTiONakxYLadhzozN38rXQJNIhVi3VEonnuOi1b54cjbHDMa+/HFS3hTs2RQL3HWkQQtayB66b/LIIFmOK+0pff/Op96xebQS/YzEZSb4GRVut+VQxrWOy+wOHb4HQZlmP8xY4nEBieDABChvkU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(366004)(376002)(346002)(451199015)(38100700002)(86362001)(8676002)(54906003)(31696002)(41300700001)(66476007)(66946007)(4326008)(66556008)(110136005)(2906002)(478600001)(5660300002)(7416002)(4744005)(316002)(8936002)(6512007)(2616005)(6506007)(186003)(26005)(53546011)(6486002)(6666004)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z1Nrb3llM1RQdVBWV1BXZVZOcGhydFB4a01iU1pQWnVReWJBMzM5ODdlUHdZ?=
+ =?utf-8?B?amJKYzRFQ0taRlR2LzVpVUNLODBFRUJIVmtjd1NRLzJKN2NFUExXY3pYNDZn?=
+ =?utf-8?B?YmtsVFltMlhXYmFrdDhLbjJIOGJQaWIwTFRjTHFibHE5OHAwYiswci93Z29X?=
+ =?utf-8?B?VnR6ell1TGdJMkQzSlN0ZUlBUnJvMVB3N0ZrVUFFM2Z5ZVd1RWdmU09TV3Mv?=
+ =?utf-8?B?Rkp2MjhwcWhJWHNmT2pPdDRoWEVQVXEyeWpLS1QrYVdzd0cxNFVwRlhQZGpK?=
+ =?utf-8?B?SDhaYkNoTkRpZlMrbm8xSm1ZY216Z2VBRnBRcVdkS3E3MnhuVDdjbXZMd3Y4?=
+ =?utf-8?B?T1k5WFVWbnU2WXQ0cUsxRWphNFBNbEtvZ0pGTGpoNHJQZ0YvcDg0MGp6Q01w?=
+ =?utf-8?B?bWU4TCsvN1VSLzB4K0h6WHdJV2xac2VRZGd6eFlhcDU4S2JIU2hQTDRldmIr?=
+ =?utf-8?B?YU1jbkhWUS8rS3gyRDE2dEh3a09tNVNyVDFVUlh6UjlSMW5BV0NDQjJqNnNU?=
+ =?utf-8?B?S0RNWUhpay9zWWpBM1AyenEwRm83TWJIY1hWMGVNVzVGb1VZbkNPY3NSUm9L?=
+ =?utf-8?B?aFRtUGhQLzlVa1JzVWI2eTNyblhkcFRkeVBVNHFUOStwUUN0U1RqMHdlZWsx?=
+ =?utf-8?B?Q1JQQTVaeHZ2Rjdkb1h3Rld3N1F0YThIMEVpakdTOHVNSGdaaE9QU2szVHMv?=
+ =?utf-8?B?TEg1aEE0a1ZkcThiZTZWeEdkN0VQamZ3eUZSN1FJdFpKb2dseHYvd2EwOUpz?=
+ =?utf-8?B?Y2lGNnc0QS8vSVBzY2hndWlsUFZXaWRWNDIrSjR6amZyUk4xV2p2bmhOUnZJ?=
+ =?utf-8?B?ZitSZUJJTkFURUJPTTVHalhvd2dMbjBWV2NwRDZ4RjEvQVZSTUU1UlVZN1VO?=
+ =?utf-8?B?N2FDcEhGZWlBeUttWXI0VW1aYVpycE1rZzdDNUZqZ21KNU4zSW1LYmxBZTB2?=
+ =?utf-8?B?QVZpVUEwWUM4TkhyR3htNXZkenAzdys1R09xUUZRWG1DR0FSM0N4bS8rSGF3?=
+ =?utf-8?B?U3RkQnc0Ym5hL3Y3bWdSMXdFM1lGZWZmRmo0ekIySDlLSUIwQW5oMzI0UGRm?=
+ =?utf-8?B?QzIwbmU5ZS9ka2NPWFhMNlV3NzIvMVk2S1hCM2M0b3piTW84SnoxcVF4VVMy?=
+ =?utf-8?B?M2tLeTdaemJjT2ZEMmd3QWlrZnVCNVBCemg1OTl3SHYxNEZMOTNLK051M1Vq?=
+ =?utf-8?B?SDZCaE8rUCsrOGxEcVVqMU1ZelhDYUViRTNMTkd4eXlwUFgzbXlNTS9ONm84?=
+ =?utf-8?B?REcya1RIZVRLOUR6amROSjhZV3JWbFRhc3k4NWVIWlR3S3BIYmlDYWt2TkRt?=
+ =?utf-8?B?R2lGb291RjM3dGZHVnU4dTlvY0l0RHBPVGlPVVc0M09PNGxyNWRGbjNVQ1VG?=
+ =?utf-8?B?ZDkvaTIxa3o3UnYzSHNhV3VRUjhqWG53ek9LRDRlOFJZUjdrTGJVQjVDR3V6?=
+ =?utf-8?B?V1RFaVR2ZVlTRlZIamJvRjBhVG4zbkk4TnlLdFVFY1VCWk9ROGZZTXVuTm13?=
+ =?utf-8?B?eitFY2xWY0FmaVBwcWNYSkliaDNGUXlNdG5ESGxjNmxsbEpWRUcxUnd4Zlgx?=
+ =?utf-8?B?eUpxSVZMeTU1Ny9OR1BtQmNvaTNyUi9lNTJtM0tLZnV1QWpxMVl4ZWxCR2hz?=
+ =?utf-8?B?SERvNnRCUGhRY0tLNENQQlNmQnZZSVVxODlnOUZ6aXdZb0JlLzVxdFM1L0ZX?=
+ =?utf-8?B?WmpHVmNPM29DOUk4WTBnakxFOHk5SE5vZ2hQT2hib1g0UHVqOHYzQlVtdDV2?=
+ =?utf-8?B?OE9MZzlUc2ZZQUsrTXFWcVFYZ1JueDhDYVpRRndXMFNYWlIxM1lMWkszRXVu?=
+ =?utf-8?B?cEZSS1A2Z1pSOXRrWDU4bWxybVlOdXl4elAzQm00Y0dTemsyVDBadFZEcmlG?=
+ =?utf-8?B?aGxYWFY1c2VFdFN1SkIvYzlkL0hqbHZERytZbEp1bUxaeFU4aWFMaGo2R2N0?=
+ =?utf-8?B?c3lpV2dUMERsdnBMbTFTQjE3VU0yeE5paUpZMXQwckJoVTQ2cUczYStpalEx?=
+ =?utf-8?B?YmFnRjE3Y1R3MlFCdU5vVkc4RnpFMDlFS1hLTjZRdVZ3Z2dVUnBmNEd0bUMy?=
+ =?utf-8?B?TkNubXJubkZONHBzUkRsVThCYXV2WCtzTzJhMUFSWGJrSjFrM3E3T05DZ1Bt?=
+ =?utf-8?Q?/cPv4Bvs8dSGMxhDAklDOT4K0?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b48565be-c156-4c06-0e2a-08daf48820d3
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 10:31:13.2122
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2UmrSOR8JRJz+kAwCGvi/EAL9Qml+vKkxHTBXS015pbAvrGENoImWQ8yCayLbLQl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5903
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B8rn Mork <bjorn@mork.no> writes:
-> Greg KH <greg@kroah.com> writes:
->
->> No need for this, just backport the original change to older kernels and
->> all will be fine.
->>
->> Don't live with stuff you don't want to because of stable kernels,
->> that's not how this whole process works at all :)
->
-> OK, thanks.  Will prepare a patch for stable instead then.
->
-> But I guess the original patch is unacceptable for stable as-is? It
-> changes how Linux react to these devces, and includes a completely new
-> USB device driver (i.e not interface driver).
+On 11/01/2023 22:00, Jakub Kicinski wrote:
+> On Wed, 11 Jan 2023 19:31:39 +0000 Arinzon, David wrote:
+>> If the packet network headers are not within the size of the LLQ entry, then the packet will
+>> be dropped. So I'll say that c) describes the impact the best given that certain types of
+>> traffic will not succeed or have disruptions due to dropped TX packets.
+> 
+> I see. Sounds like it could be a fit for
+> DEVLINK_ATTR_ESWITCH_INLINE_MODE ? But that one configures the depth of
+> the headers copied inline, rather than bytes. We could add a value for
+> "tunneled" and have that imply 256B LLQ in case of ena.
+> 
+> The other option is to introduce the concept of "max length of inline
+> data" to ethtool, and add a new netlink attribute to ethtool -g.
 
-Doh!  I gotta start thinking before I send email.  Will start right
-after sending this one ;-)
+TX copybreak? When the user sets it to > 96 bytes, use the large LLQ.
 
-We cannot backport the device-id table change to stable without taking
-the rest of the patch. The strategy used by the old driver needs two
-entries per device ID, which is why the macro was there.
-
-So the question is: Can commit ec51fbd1b8a2 ("r8152: add USB device
-driver for config selection") be accepted in stable?
-
-( Direct link for convenience since it's not yet in mainline:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/=
-drivers/net/usb/r8152.c?id=3Dec51fbd1b8a2bca2948dede99c14ec63dc57ff6b
-)
-
-This is not within the rules as I read them, but it's your call...
-
-
-Bj=C3=B8rn
-
-
+BTW, shouldn't ethtool's tx_push reflect the fact that LLQs are being
+used? I don't see it used in ena.
