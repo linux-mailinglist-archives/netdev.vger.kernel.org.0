@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65D5E667A48
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 17:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58F64667A65
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 17:12:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234284AbjALQFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 11:05:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47008 "EHLO
+        id S230299AbjALQMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 11:12:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232316AbjALQEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 11:04:55 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C2558D12;
-        Thu, 12 Jan 2023 07:56:12 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id tz12so45850154ejc.9;
-        Thu, 12 Jan 2023 07:56:11 -0800 (PST)
+        with ESMTP id S232390AbjALQLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 11:11:44 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D349713E92
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 08:05:36 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id c124so19180493ybb.13
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 08:05:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pDQZ8VZwl5KhjAItQfxHiU6aWmum35dmJVfQv+8C2E8=;
-        b=KIkiQMQDsWJqtqoECLPbne0v0wW1pWL+l7x53ZS3nhj0+nyq3tfma+Wuu7F36FlSy4
-         Hw1SnjNkfnspSkIo7eWtxOGMGMPhQf9A8HfEp4elCNdn1lmZRLHWppRnRocc+eRxPTFw
-         i9G/sN1NmxO3dONdrtNrMOjGv0oGdMBxSp4EP5dKQJqvLc6QrN9mlOst7s8v8I2BRnEP
-         xNtBP21W/dWArmI9/NeREtGxWFswhiyMcQAgn/81Habm0Iv3HCRhvgbvMNJQiaqZSrWN
-         kfDGzwSZJp3WzwSyp/5HMLkNXwFUb1cL41NC7q2kC377tcstoC7bGXk/jv+ct/Jmt76S
-         N60g==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=27xqJWdcru6xXrx9U2TMVWvDMNXWrOANKcIbhlsNAL4=;
+        b=EmEZxVAAgKHQ/nmPUB4gKobtgXf43rCTC8hXPKl4NmXER2qFaXuEaNbH2usLOKZaqx
+         rDopsVKcV9prVQM6dmU01FHlPOLUN+irqAQVD6YkEW/lbw5a7mghl5bviijzEZX+HsYZ
+         pGt4j4X5YWXHg5QC/zHjzZSjrthanc0OA6NzLHvPgl7lU8kQdlgcX1vroOw6ZGaBChbR
+         TTwQhn3cKS1AXkDIpdACkCrXxSAPqy5c8j0CsDzld9Z8T9R2vRD0Drtd8mm+ZELVZ0MG
+         9WquxnaElHDqE9fRgxL/EajktTeZf6L+3m59wU/yDjSHzYi5c+G99zOq8oOqCGyNTq2f
+         K2Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pDQZ8VZwl5KhjAItQfxHiU6aWmum35dmJVfQv+8C2E8=;
-        b=PLzbLtpivuysxtm3QA1CMmjkPzCh7r2KDe8TZqrmGZ/d11OHmU+no3fJOTK14Yu8N/
-         bQFxlBQjQASli4sFPGYiIWmuXyXumCEAdkgq/JoNkwCN0Hj4H+4DAtEkm10dmovZZvYF
-         ukOyaMsYC/NlQ+rNeK4HdZ8cQBauS0AuFPJnajaN0GxDhu3+K8vvlhr4lK9FPl9CuIhp
-         MD0T3jVyC7I43iiIescKQ5oQn7zj8YcFy3sDns23ZAV7WM1pKMr9reegmBY/pJ5iRLsZ
-         8UvQ2uTPOvozQsHGfvsOQGmuApXTURkCCpGodmmkL75mu6EFc8QHBBNX7EXOguGwE1jy
-         QjiA==
-X-Gm-Message-State: AFqh2kptS1FnWF7mM3wJ9EnbHiK/NEQt+KfFFS0f+yyf77OOR7+HENpo
-        nNkzOdfuLnyBNpMvaQXp3e8=
-X-Google-Smtp-Source: AMrXdXtcXj/CoCVbXdVH+MgdQm67oQMAHqK0KedNvXi1zhVc6k+s50ZPdBsRa5075TN1J4E1LxFEBg==
-X-Received: by 2002:a17:907:8b09:b0:7c1:bb5:5704 with SMTP id sz9-20020a1709078b0900b007c10bb55704mr69946814ejc.26.1673538970523;
-        Thu, 12 Jan 2023 07:56:10 -0800 (PST)
-Received: from gvm01 (net-5-89-66-224.cust.vodafonedsl.it. [5.89.66.224])
-        by smtp.gmail.com with ESMTPSA id n12-20020a1709062bcc00b007ae38d837c5sm7650059ejg.174.2023.01.12.07.56.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 07:56:09 -0800 (PST)
-Date:   Thu, 12 Jan 2023 16:56:11 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=27xqJWdcru6xXrx9U2TMVWvDMNXWrOANKcIbhlsNAL4=;
+        b=wg9KQUUDjDXLHZu6xWOBoxrLOGlVFcpdo21H8sEL05EKGqTBre2/pge9eojK475j8s
+         KsPBPQU6+0SWeQYXJkW4yAygJRN4mRnSL2e9pWO+aNxnIwCaFpjbERBRGFEtkpqtMDLD
+         r/VyjzjikMaiEHX3NhilTacqxBSfn0/qqYoEsUz1bDbfJWabGCAZwGDP2rRJw+JDOJxK
+         Aq5verwCoTUpx4dOKIzHN7ZHviSmKP1IZH6RAFh32MznUVT++pqt8UzkXR1roybqO6oR
+         niVPu0x8YfWrvCkLsCqyqb+tQcHxJEmZuAx6FBw/9eDWEbw/qx1KA7dQ0pJbfJ30hLrD
+         Lorg==
+X-Gm-Message-State: AFqh2kreC+lul7bb+bZDFvSGqcvGU2i3mNRVjpTAROz6fqDwHWpRpkrH
+        ORCa7cnOLn2lRQZhjHwJbp8V/r5ZP4CmsiiRyL9fKw==
+X-Google-Smtp-Source: AMrXdXtwOctqGK9jY1AxTHfRdkyjmn1PF3rsbX2d+2rOMcVYA7w70nO1j0wmh6GgdUqj2V68T4GjgDJ7+UOIDc5D2q0=
+X-Received: by 2002:a5b:309:0:b0:703:e000:287 with SMTP id j9-20020a5b0309000000b00703e0000287mr8176328ybp.171.1673539535959;
+ Thu, 12 Jan 2023 08:05:35 -0800 (PST)
+MIME-Version: 1.0
+References: <20230110191725.22675-1-admin@netgeek.ovh> <20230110191725.22675-2-admin@netgeek.ovh>
+In-Reply-To: <20230110191725.22675-2-admin@netgeek.ovh>
+From:   Willem de Bruijn <willemb@google.com>
+Date:   Thu, 12 Jan 2023 11:04:58 -0500
+Message-ID: <CA+FuTSdq5E7GMUghfoXMrs5_muv6VbhFym8DEhw=rAgStuvkQg@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] net/af_packet: fix tx skb network header on
+ SOCK_RAW sockets over VLAN device
+To:     =?UTF-8?Q?Herv=C3=A9_Boisse?= <admin@netgeek.ovh>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
-        sbhatta@marvell.com, linux-doc@vger.kernel.org,
-        wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
-        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
-Subject: [PATCH v2 net-next 1/1] plca.c: fix obvious mistake in checking
- retval
-Message-ID: <df38c69a85bf528f3e6e672f00be4dc9cdd6298e.1673538908.git.piergiorgio.beruto@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,68 +72,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch addresses a wrong fix that was done during the review
-process. The intention was to substitute "if(ret < 0)" with
-"if(ret)". Unfortunately, in this specific file the intended fix did not
-meet the code. After additional review, it seems like if(ret < 0) was
-actually the right thing to do. So this patch reverts those changes.
+On Tue, Jan 10, 2023 at 2:38 PM Herv=C3=A9 Boisse <admin@netgeek.ovh> wrote=
+:
+>
+> When an application sends a packet on a SOCK_RAW socket over a VLAN devic=
+e,
+> there is a possibility that the skb network header is incorrectly set.
+>
+> The issue happens when the device used to send the packet is a VLAN devic=
+e
+> whose underlying device has no VLAN tx hardware offloading support.
+> In that case, the VLAN driver reports a LL header size increased by 4 byt=
+es
+> to take into account the tag that will be added in software.
+>
+> However, the socket user has no clue about that and still provides a norm=
+al
+> LL header without tag.
 
-Fixes: 8580e16c28f3 ("net/ethtool: add netlink interface for the PLCA RS")
-Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- net/ethtool/plca.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+This is arguably a mistake.
 
-diff --git a/net/ethtool/plca.c b/net/ethtool/plca.c
-index d9bb13ffc654..be7404dc9ef2 100644
---- a/net/ethtool/plca.c
-+++ b/net/ethtool/plca.c
-@@ -61,7 +61,7 @@ static int plca_get_cfg_prepare_data(const struct ethnl_req_info *req_base,
- 	}
- 
- 	ret = ethnl_ops_begin(dev);
--	if (!ret)
-+	if (ret < 0)
- 		goto out;
- 
- 	memset(&data->plca_cfg, 0xff,
-@@ -151,7 +151,7 @@ int ethnl_set_plca_cfg(struct sk_buff *skb, struct genl_info *info)
- 					 tb[ETHTOOL_A_PLCA_HEADER],
- 					 genl_info_net(info), info->extack,
- 					 true);
--	if (!ret)
-+	if (ret < 0)
- 		return ret;
- 
- 	dev = req_info.dev;
-@@ -171,7 +171,7 @@ int ethnl_set_plca_cfg(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	ret = ethnl_ops_begin(dev);
--	if (!ret)
-+	if (ret < 0)
- 		goto out_rtnl;
- 
- 	memset(&plca_cfg, 0xff, sizeof(plca_cfg));
-@@ -189,7 +189,7 @@ int ethnl_set_plca_cfg(struct sk_buff *skb, struct genl_info *info)
- 		goto out_ops;
- 
- 	ret = ops->set_plca_cfg(dev->phydev, &plca_cfg, info->extack);
--	if (!ret)
-+	if (ret < 0)
- 		goto out_ops;
- 
- 	ethtool_notify(dev, ETHTOOL_MSG_PLCA_NTF, NULL);
-@@ -233,7 +233,7 @@ static int plca_get_status_prepare_data(const struct ethnl_req_info *req_base,
- 	}
- 
- 	ret = ethnl_ops_begin(dev);
--	if (!ret)
-+	if (ret < 0)
- 		goto out;
- 
- 	memset(&data->plca_st, 0xff,
--- 
-2.37.4
+A process using PF_PACKET to write to a device must know the link layer typ=
+e.
+SOCK_RAW should prepare a header equivalent to dev_hard_header (which
+prepares it for SOCK_DGRAM). vlan_dev_hard_header clearly adds both the
+Ethernet header and VLAN tag.
 
+If applications assume virtual VLAN device exposes an Ethernet link layer,
+then net/8021q/vlan_dev.c needs to expose that, including that hard_header_=
+len.
+
+
+> This results in the network header of the skb being shifted 4 bytes too f=
+ar
+> in the packet. This shift makes tc classifiers fail as they point to
+> incorrect data.
+>
+> Move network header right after underlying VLAN device LL header size
+> without tag, regardless of hardware offloading support. That is, the
+> expected LL header size from socket user.
+>
+> Signed-off-by: Herv=C3=A9 Boisse <admin@netgeek.ovh>
+> ---
+>  net/packet/af_packet.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index c18274f65b17..be892fd498a6 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -1933,6 +1933,18 @@ static void packet_parse_headers(struct sk_buff *s=
+kb, struct socket *sock)
+>                 skb->protocol =3D dev_parse_header_protocol(skb);
+>         }
+>
+> +       /* VLAN device may report bigger LL header size due to reserved r=
+oom for
+> +        * tag on devices without hardware offloading support
+> +        */
+> +       if (is_vlan_dev(skb->dev) &&
+> +           (sock->type =3D=3D SOCK_RAW || sock->type =3D=3D SOCK_PACKET)=
+) {
+
+Let's also try very hard to avoid adding branches in the hot path for
+cases this rare.
+
+
+> +               struct net_device *real_dev =3D vlan_dev_real_dev(skb->de=
+v);
+> +
+> +               depth =3D real_dev->hard_header_len;
+> +               if (pskb_may_pull(skb, depth))
+> +                       skb_set_network_header(skb, depth);
+> +       }
+> +
+>         /* Move network header to the right position for VLAN tagged pack=
+ets */
+>         if (likely(skb->dev->type =3D=3D ARPHRD_ETHER) &&
+>             eth_type_vlan(skb->protocol) &&
+> --
+> 2.38.2
+>
