@@ -2,137 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CB3D6679C0
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:45:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952E06679E1
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbjALPpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:45:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S239662AbjALPxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:53:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240430AbjALPpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:45:13 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2DCE85
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:36:14 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id b9-20020a17090a7ac900b00226ef160dcaso19552719pjl.2
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:36:14 -0800 (PST)
+        with ESMTP id S240312AbjALPwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:52:47 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F89C1123
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:41:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=AoAOW8YnhW4elfXYGAwjnnLaTgWYwivE9o+kPAJCPfs=;
-        b=fJYemohf6lG6oXeYLKv62/TtScQa+5O4Ef7RMfpCpAXKSTNlpFgknHmVwaqEXvAv1U
-         sr3j9ED71FuE/PRSovytxOynFVLVDgpXMDIriB4JjFnIVVfzEU8Buhpo5vigaYi+Q6Rt
-         XESJTTyDZtLU695itE+Y+IQwrmt0+U+bDL4jsS02QqyoTL8fc273+9KLvFLil69lcYcp
-         pnF1ojk6IHf/uYNm40ZQgS11Ty3xLYOum7Yxz1IsRHMqIULkh63F+PGY49spqDvWddoV
-         A+4qsI6C9bXTUi6yPZQVmSUrkof/qOARvw2z06YrDi150fhHFJQaNQzLxS53LNMFr8GS
-         /pQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AoAOW8YnhW4elfXYGAwjnnLaTgWYwivE9o+kPAJCPfs=;
-        b=T6riXSiBYQpTADNLSPMXl/PWPUu6Lfkbzh4YktEmWRoIIlhmXJ7uzkUYwMat51tken
-         s7cF1XsYrq+Ci/qWn8SJVozDsDBdrluhJXuOh40zmDz+2MZiJhRHYcwfO8i2PLGX0RXN
-         C3yfRqOl/xugmyOdu/F/jqYGTD49M6OQqV1y4Ia6SHjvAN9Jh/GO2rQ0BghSeNWjkLvS
-         68WZo3SVwGiSCtBs9ISyt16X/yY6AImF/XFkkLQ/LiEf2fLQZJt2vYZHejY40l+CH3Yn
-         vQsZPo9eY3ABCHff/9YkHvokEMaNTAXKTZVXdVPs5I7flXhe8F2WSnMFL9Qg/7qm1mIR
-         quwQ==
-X-Gm-Message-State: AFqh2kpGouhNvjZbzni6ceFFO1k5dYSVpICJ/EgnX60amrPKUPxrO4EB
-        u2iG8hAMojC/eKkT75akbYAdYUcrKdy8jcAvkxg=
-X-Google-Smtp-Source: AMrXdXuj6wpX6PRy3uQ9V5FOtyGprWSvJNUbGsyE7ivyAa+3L0VdbaNM8aku4PakNpbYtYbNAczytXGzl1hNfOLAoeg=
-X-Received: by 2002:a17:90b:98:b0:226:412e:2de3 with SMTP id
- bb24-20020a17090b009800b00226412e2de3mr4369417pjb.178.1673537773324; Thu, 12
- Jan 2023 07:36:13 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1673538063; x=1705074063;
+  h=references:from:to:cc:subject:date:in-reply-to:
+   message-id:mime-version;
+  bh=oUK2ACBDt68b8+5N1drGEA/zCC5P130zN9Q9P8hW2Zw=;
+  b=j4BN6L/N3sPjSzmfIe3uGv9XffjuK+egVCWYrhDcriF2kriImcB+xrCN
+   moupfCQp1X1iZ+zS8xSn+R0hLuiNbsZH1hYZue1Hhe7w/8+d8jbgywRhH
+   jT2NYZkgkRu05NLrpiJ+uXirug6saZkveVGtujCGsULGQ6WKXl6/oi2eH
+   g=;
+X-IronPort-AV: E=Sophos;i="5.97,211,1669075200"; 
+   d="scan'208";a="170568498"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 15:40:57 +0000
+Received: from EX13D46EUB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id 21A3882414;
+        Thu, 12 Jan 2023 15:40:56 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX13D46EUB002.ant.amazon.com (10.43.166.241) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Thu, 12 Jan 2023 15:40:54 +0000
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.162.56) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.1118.7; Thu, 12 Jan 2023 15:40:51 +0000
+References: <20230111042214.907030-1-willy@infradead.org>
+ <20230111042214.907030-6-willy@infradead.org>
+User-agent: mu4e 1.6.10; emacs 28.0.91
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+CC:     Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        "Jesper Dangaard Brouer" <brouer@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: Re: [PATCH v3 05/26] page_pool: Start using netmem in allocation path.
+Date:   Thu, 12 Jan 2023 17:36:58 +0200
+In-Reply-To: <20230111042214.907030-6-willy@infradead.org>
+Message-ID: <pj41zlpmbjn4ld.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-References: <20230110115359.10163-1-lanhao@huawei.com> <f2e3a02cd2a584aa1ed036e90c5c71764e0b8373.camel@gmail.com>
- <7a93e4f9-0db4-a520-e5fd-8e52d860c2cf@huawei.com>
-In-Reply-To: <7a93e4f9-0db4-a520-e5fd-8e52d860c2cf@huawei.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 12 Jan 2023 07:36:01 -0800
-Message-ID: <CAKgT0Uc2vLv+R2DbKf5yAoLZ5nD3+F7yw65SLSvERVtiy4RKRA@mail.gmail.com>
-Subject: Re: [PATCH net] net: hns3: fix wrong use of rss size during VF rss config
-To:     Hao Lan <lanhao@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, edumazet@google.com, pabeni@redhat.com,
-        richardcochran@gmail.com, shenjian15@huawei.com,
-        wangjie125@huawei.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.162.56]
+X-ClientProxiedBy: EX13D39UWB003.ant.amazon.com (10.43.161.215) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 6:56 PM Hao Lan <lanhao@huawei.com> wrote:
->
->
->
-> On 2023/1/12 0:31, Alexander H Duyck wrote:
-> > On Tue, 2023-01-10 at 19:53 +0800, Hao Lan wrote:
-> >> From: Jie Wang <wangjie125@huawei.com>
-> >>
-> >> Currently, it used old rss size to get current tc mode. As a result, the
-> >> rss size is updated, but the tc mode is still configured based on the old
-> >> rss size.
-> >>
-> >> So this patch fixes it by using the new rss size in both process.
-> >>
-> >> Fixes: 93969dc14fcd ("net: hns3: refactor VF rss init APIs with new common rss init APIs")
-> >> Signed-off-by: Jie Wang <wangjie125@huawei.com>
-> >> Signed-off-by: Hao Lan <lanhao@huawei.com>
-> >> ---
-> >>  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> >> index 081bd2c3f289..e84e5be8e59e 100644
-> >> --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> >> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> >> @@ -3130,7 +3130,7 @@ static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
-> >>
-> >>      hclgevf_update_rss_size(handle, new_tqps_num);
-> >>
-> >> -    hclge_comm_get_rss_tc_info(cur_rss_size, hdev->hw_tc_map,
-> >> +    hclge_comm_get_rss_tc_info(kinfo->rss_size, hdev->hw_tc_map,
-> >>                                 tc_offset, tc_valid, tc_size);
-> >>      ret = hclge_comm_set_rss_tc_mode(&hdev->hw.hw, tc_offset,
-> >>                                       tc_valid, tc_size);
-> >
-> > I can see how this was confused. It isn't really clear that handle is
-> > being used to update the kinfo->rss_size value. Maybe think about
-> > adding a comment to prevent someone from reverting this without
-> > realizing that? It might also be useful to do a follow-on patch for
-> > net-next that renames cur_rss_size to orig_rss_size to make it more
-> > obvious that the value is changing.
-> >
-> > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-> > .
-> >
-> Hi Alexander Duyck,
-> Thank you for your reviewed.And thank you for your valuable advice.
-> Would it be better if we changed it to the following.
->
-> -       u16 cur_rss_size = kinfo->rss_size;
-> -       u16 cur_tqps = kinfo->num_tqps;
-> +       u16 orig_rss_size = kinfo->rss_size;
-> +       u16 orig_tqps = kinfo->num_tqps;
->         u32 *rss_indir;
->         unsigned int i;
->         int ret;
->
->         hclgevf_update_rss_size(handle, new_tqps_num);
->
-> -       hclge_comm_get_rss_tc_info(cur_rss_size, hdev->hw_tc_map,
-> +       /* RSS size will be updated after hclgevf_update_rss_size,
-> +        * so we use kinfo->rss_size instead of orig_rss_size.
-> +        */
-> +       hclge_comm_get_rss_tc_info(kinfo->rss_size, hdev->hw_tc_map,
 
-Yes, something like this would make it more obvious that these fields
-are changing.
+"Matthew Wilcox (Oracle)" <willy@infradead.org> writes:
+
+> Convert __page_pool_alloc_page_order() and 
+> __page_pool_alloc_pages_slow()
+> ...
+>  TRACE_EVENT(page_pool_update_nid,
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 437241aba5a7..4e985502c569 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> ...
+>  
+> @@ -421,7 +422,8 @@ static struct page 
+> *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>  		page = NULL;
+>  	}
+>  
+> -	/* When page just alloc'ed is should/must have refcnt 
+> 1. */
+> +	/* When page just allocated it should have refcnt 1 (but 
+> may have
+> +	 * speculative references) */
+
+Sorry for the pity comment, but the comment style here is 
+inconsistent
+https://www.kernel.org/doc/html/v4.11/process/coding-style.html#commenting
+
+You should have the last '*/' to be on its own line
+(again sorry for not giving more useful feedback... then again, 
+it's a rather simply fix (: )
+
+Shay
+
+>  	return page;
+>  }
+
