@@ -2,233 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EBBA667F5D
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 20:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C454E667F94
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 20:46:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235751AbjALTbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 14:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
+        id S239940AbjALTqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 14:46:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232481AbjALTbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:31:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9292AC3
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:25:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673551514;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LmPmuQ9gL4nLxbYEYTDRNpgHfjXbGiU/X0vTwjJsUoQ=;
-        b=KON7PGeoI1hAgMipbM4g6zhRxep5K+a2dMkGMxja+D0Nmw8/RbaG4XKVzLCsynxldGA2jJ
-        Ni1w4CfF9AsgM4L3dWZhr0gwxNsliCWYRFC2D0QRXtKncw0Zo4bkbpItDGAyQLV5uoy0QG
-        PQb1TsYeZZCYIiNWR3BJo0IX/4ILA4E=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-52-hi1cYDrwMVSxMWKZZrzh9Q-1; Thu, 12 Jan 2023 14:25:13 -0500
-X-MC-Unique: hi1cYDrwMVSxMWKZZrzh9Q-1
-Received: by mail-wr1-f70.google.com with SMTP id g24-20020adfa498000000b002bbeb5fc4b7so3176232wrb.10
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:25:13 -0800 (PST)
+        with ESMTP id S240191AbjALTpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:45:25 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C6025F3
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:39:37 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id l13-20020a056e021c0d00b003034e24b866so14423194ilh.22
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:39:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LmPmuQ9gL4nLxbYEYTDRNpgHfjXbGiU/X0vTwjJsUoQ=;
-        b=Ve8XbSKnOoIiKDHA5O2iPk6wPM5UJjZuVcGqr/GbEfuevnpsim7wofYS7Kvdnt58jQ
-         hG8J1auLdC1+XdLHPhrkSEZT1+IKQL3NP6P1+6nc0PZowC3IIFd5Ru23UhXmydcH99oz
-         mgJhEKqbgUEB3Q9upqn5qGUBm/lyDM3uEnOUyKmYtNdq+2cjpJOqbFhhNS0i250DIy73
-         HDzMnADUFkaE0nSeF0uMblIqZftaNLbc9FGhlZPOE/uijrluQJlinOuuyEO7+0k9nZQb
-         IoqEBSaCevVCqH77ZS+m3DUQpaOUWtaUPinrAuHNkQ8IzqnzM3Q88en83NZalpkJugfI
-         xYyA==
-X-Gm-Message-State: AFqh2krinN8T3vzljull0Ix6Hl8V5MmqdTQMSOVa7G6/Bzz3kHrSL3SR
-        rrHmmiks6tStZBtDMm4emkiwpk7U1jnyLJoaXkYZTPeSXBADTFFllWjYoGFV82IiGgSKX0keFbw
-        bxFLLnH7/KN026XB8
-X-Received: by 2002:a05:600c:4d25:b0:3d3:5b7a:1791 with SMTP id u37-20020a05600c4d2500b003d35b7a1791mr67368474wmp.41.1673551507511;
-        Thu, 12 Jan 2023 11:25:07 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXudbazJdSZY97fD0GpKHa91U1CL2WPC7qDBoANZ6AvIHOdBj2VZRTJZPvsFFt47yTk0WsoEMA==
-X-Received: by 2002:a05:600c:4d25:b0:3d3:5b7a:1791 with SMTP id u37-20020a05600c4d2500b003d35b7a1791mr67368456wmp.41.1673551507237;
-        Thu, 12 Jan 2023 11:25:07 -0800 (PST)
-Received: from localhost (net-188-216-77-84.cust.vodafonedsl.it. [188.216.77.84])
-        by smtp.gmail.com with ESMTPSA id k30-20020a05600c1c9e00b003d9b89a39b2sm25395568wms.10.2023.01.12.11.25.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 11:25:05 -0800 (PST)
-Date:   Thu, 12 Jan 2023 20:25:03 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        sujuan.chen@mediatek.com, daniel@makrotopia.org, leon@kernel.org
-Subject: Re: [PATCH v5 net-next 5/5] net: ethernet: mtk_wed: add
- reset/reset_complete callbacks
-Message-ID: <Y8Bej+76EiNyApWE@lore-desk>
-References: <cover.1673457624.git.lorenzo@kernel.org>
- <0a22f0c81e87fde34e3444e1bc83012a17498e8e.1673457624.git.lorenzo@kernel.org>
- <02cfb1dd78f6efb1ae3077de24fa357091168d39.camel@gmail.com>
- <Y8A0r6IA+l5RzDXq@lore-desk>
- <CAKgT0UeX0n0b887MWUXiO54-PBMhxgSKPTab9AX3LPk3R4fS+w@mail.gmail.com>
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eo/N/LBiGFgmNgJk/2vZn4x6VJgF0Ie165FrN6AxRj4=;
+        b=feSSP/wEgzl9xNFxJQxYiFl3crwPjMfk4Tw7fs+p9Bc/mhc/SWaOdW/7JMRcAFGL2M
+         YlmpPVpeEJeygrvFt/sFFdCTurFt41acpjYsAqqTOTv8oVY1yDW7/tN/5WUBk6Wzrp9l
+         5QXzriDpxxel2JrdOlIBzx2AiPYDGaVrQl+hsRbKs0leFj9OpDwf+pIDyAPy+KXEC+l8
+         izBWQVlE51X7UYIIhwDm6pYSBbTkRbu3WyylBv66i+1ltaXzDFl7N3KKtYDyiK20zW0u
+         Fb+PLHunEg9wYoxwPtZuEIdsXR/egi/NHqtmJd0kIrdumtw2/d8uZjlIEylFq61H7Bh4
+         lORQ==
+X-Gm-Message-State: AFqh2kpojU6x07d6AxHqbg2WxCq4bawHjURzPL7MZwaH4Pzew1NFm1ZP
+        KHBqGnTUT7/BAYuWJ4yVXrpVbQc32TxKg/gvuJaQSwEYVzLX
+X-Google-Smtp-Source: AMrXdXve9XCmqdMojD1kQmgVRDIQEXJIdenBjdyFCbE6JFFt+K1RfVASSS5CojXKxHks4Pf8Bvzt/WjAIuTxI1rtQXbJoV/NYB52
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0WJ3yzgKXgDJAM2z"
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UeX0n0b887MWUXiO54-PBMhxgSKPTab9AX3LPk3R4fS+w@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:6a2e:0:b0:38c:87aa:4590 with SMTP id
+ l46-20020a026a2e000000b0038c87aa4590mr9616951jac.33.1673552376932; Thu, 12
+ Jan 2023 11:39:36 -0800 (PST)
+Date:   Thu, 12 Jan 2023 11:39:36 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f0b41905f2164644@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in sock_def_wakeup
+From:   syzbot <syzbot+d0b651ccb99ec9dfb265@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
---0WJ3yzgKXgDJAM2z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+syzbot found the following issue on:
 
-> On Thu, Jan 12, 2023 at 8:26 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
-te:
-> >
-> > > On Wed, 2023-01-11 at 18:22 +0100, Lorenzo Bianconi wrote:
-> > > > Introduce reset and reset_complete wlan callback to schedule WLAN d=
-river
-> > > > reset when ethernet/wed driver is resetting.
-> > > >
-> > > > Tested-by: Daniel Golle <daniel@makrotopia.org>
-> > > > Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> > > > Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > ---
-> > > >  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  7 ++++
-> > > >  drivers/net/ethernet/mediatek/mtk_wed.c     | 40 +++++++++++++++++=
-++++
-> > > >  drivers/net/ethernet/mediatek/mtk_wed.h     |  8 +++++
-> > > >  include/linux/soc/mediatek/mtk_wed.h        |  2 ++
-> > > >  4 files changed, 57 insertions(+)
-> > > >
-> > >
-> > > Do we have any updates on the implementation that would be making use
-> > > of this? It looks like there was a discussion for the v2 of this set =
-to
-> > > include a link to an RFC posting that would make use of this set.
-> >
-> > I posted the series to linux-wireless mailing list adding netdev one in=
- cc:
-> > https://lore.kernel.org/linux-wireless/cover.1673103214.git.lorenzo@ker=
-nel.org/T/#md34b4ffcb07056794378fa4e8079458ecca69109
->=20
-> Thanks. It would be useful to include this link in the next revision
-> to make it easier to review.
+HEAD commit:    0a093b2893c7 Add linux-next specific files for 20230112
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=15758fbe480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=835f3591019836d5
+dashboard link: https://syzkaller.appspot.com/bug?extid=d0b651ccb99ec9dfb265
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1663f4a6480000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147293a4480000
 
-ack, will do.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/8111a570d6cb/disk-0a093b28.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/ecc135b7fc9a/vmlinux-0a093b28.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/ca8d73b446ea/bzImage-0a093b28.xz
 
->=20
-> > >
-> > > > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/=
-net/ethernet/mediatek/mtk_eth_soc.c
-> > > > index 1af74e9a6cd3..0147e98009c2 100644
-> > > > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > > @@ -3924,6 +3924,11 @@ static void mtk_pending_work(struct work_str=
-uct *work)
-> > > >     set_bit(MTK_RESETTING, &eth->state);
-> > > >
-> > > >     mtk_prepare_for_reset(eth);
-> > > > +   mtk_wed_fe_reset();
-> > > > +   /* Run again reset preliminary configuration in order to avoid =
-any
-> > > > +    * possible race during FE reset since it can run releasing RTN=
-L lock.
-> > > > +    */
-> > > > +   mtk_prepare_for_reset(eth);
-> > > >
-> > > >     /* stop all devices to make sure that dma is properly shut down=
- */
-> > > >     for (i =3D 0; i < MTK_MAC_COUNT; i++) {
-> > > > @@ -3961,6 +3966,8 @@ static void mtk_pending_work(struct work_stru=
-ct *work)
-> > > >
-> > > >     clear_bit(MTK_RESETTING, &eth->state);
-> > > >
-> > > > +   mtk_wed_fe_reset_complete();
-> > > > +
-> > > >     rtnl_unlock();
-> > > >  }
-> > > >
-> > > > diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/=
-ethernet/mediatek/mtk_wed.c
-> > > > index a6271449617f..4854993f2941 100644
-> > > > --- a/drivers/net/ethernet/mediatek/mtk_wed.c
-> > > > +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-> > > > @@ -206,6 +206,46 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
-> > > >     iounmap(reg);
-> > > >  }
-> > > >
-> > > > +void mtk_wed_fe_reset(void)
-> > > > +{
-> > > > +   int i;
-> > > > +
-> > > > +   mutex_lock(&hw_lock);
-> > > > +
-> > > > +   for (i =3D 0; i < ARRAY_SIZE(hw_list); i++) {
-> > > > +           struct mtk_wed_hw *hw =3D hw_list[i];
-> > > > +           struct mtk_wed_device *dev =3D hw->wed_dev;
-> > > > +
-> > > > +           if (!dev || !dev->wlan.reset)
-> > > > +                   continue;
-> > > > +
-> > > > +           /* reset callback blocks until WLAN reset is completed =
-*/
-> > > > +           if (dev->wlan.reset(dev))
-> > > > +                   dev_err(dev->dev, "wlan reset failed\n");
-> > >
-> > > The reason why having the consumer would be useful are cases like thi=
-s.
-> > > My main concern is if the error value might be useful to actually
-> > > expose rather than just treating it as a boolean. Usually for things
-> > > like this I prefer to see the result captured and if it indicates err=
-or
-> > > we return the error value since this could be one of several possible
-> > > causes for the error assuming this returns an int and not a bool.
-> >
-> > we can have 2 independent wireless chips connected here so, if the firs=
-t one
-> > fails, should we exit or just log the error?
->=20
-> I would think you should log the error. I notice in your wireless
-> implementation you can return BUSY or TIMEOUT. Rather than doing the
-> dev_err in your reset function to distinguish between the two you
-> could just return the error and leave the printing of the error to
-> this dev_err message.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d0b651ccb99ec9dfb265@syzkaller.appspotmail.com
 
-ack, will do.
+==================================================================
+BUG: KASAN: use-after-free in __wake_up_common+0x637/0x650 kernel/sched/wait.c:100
+Read of size 8 at addr ffff88802c2fe8f0 by task syz-executor198/5085
 
->=20
-> Also a follow-on question I had. It looks like reset_complete returns
-> an int but it is being ignored and in your implementation it is just
-> returning 0. Should that be a void instead of an int?
->=20
+CPU: 1 PID: 5085 Comm: syz-executor198 Not tainted 6.2.0-rc3-next-20230112-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:306 [inline]
+ print_report+0x15e/0x45d mm/kasan/report.c:417
+ kasan_report+0xc0/0xf0 mm/kasan/report.c:517
+ __wake_up_common+0x637/0x650 kernel/sched/wait.c:100
+ __wake_up_common_lock+0xd4/0x140 kernel/sched/wait.c:138
+ sock_def_wakeup+0xea/0x2d0 net/core/sock.c:3274
+ sctp_cmd_new_state net/sctp/sm_sideeffect.c:922 [inline]
+ sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1334 [inline]
+ sctp_side_effects net/sctp/sm_sideeffect.c:1199 [inline]
+ sctp_do_sm+0x4080/0x5290 net/sctp/sm_sideeffect.c:1170
+ sctp_primitive_ABORT+0x9f/0xc0 net/sctp/primitive.c:104
+ sctp_close+0x23f/0x940 net/sctp/socket.c:1524
+ inet_release+0x132/0x270 net/ipv4/af_inet.c:428
+ inet6_release+0x50/0x70 net/ipv6/af_inet6.c:489
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x1c/0x20 net/socket.c:1365
+ __fput+0x27c/0xa90 fs/file_table.c:321
+ task_work_run+0x16f/0x270 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xb17/0x2a90 kernel/exit.c:867
+ do_group_exit+0xd4/0x2a0 kernel/exit.c:1012
+ __do_sys_exit_group kernel/exit.c:1023 [inline]
+ __se_sys_exit_group kernel/exit.c:1021 [inline]
+ __x64_sys_exit_group+0x3e/0x50 kernel/exit.c:1021
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7ffbdc4ba909
+Code: Unable to access opcode bytes at 0x7ffbdc4ba8df.
+RSP: 002b:00007fffe16dc638 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007ffbdc52e290 RCX: 00007ffbdc4ba909
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 000000000000001c
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffbdc52e290
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
 
-ack, will do.
+Allocated by task 5085:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ __kasan_slab_alloc+0x7f/0x90 mm/kasan/common.c:325
+ kasan_slab_alloc include/linux/kasan.h:186 [inline]
+ slab_post_alloc_hook mm/slab.h:769 [inline]
+ kmem_cache_alloc_bulk+0x3aa/0x730 mm/slub.c:4033
+ __io_alloc_req_refill+0xcc/0x40b io_uring/io_uring.c:1062
+ io_alloc_req_refill io_uring/io_uring.h:348 [inline]
+ io_submit_sqes.cold+0x7c/0xc2 io_uring/io_uring.c:2407
+ __do_sys_io_uring_enter+0x9e4/0x2c10 io_uring/io_uring.c:3429
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Regards,
-Lorenzo
+Freed by task 33:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ kasan_save_free_info+0x2e/0x40 mm/kasan/generic.c:518
+ ____kasan_slab_free mm/kasan/common.c:236 [inline]
+ ____kasan_slab_free+0x160/0x1c0 mm/kasan/common.c:200
+ kasan_slab_free include/linux/kasan.h:162 [inline]
+ slab_free_hook mm/slub.c:1781 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1807
+ slab_free mm/slub.c:3787 [inline]
+ kmem_cache_free+0xec/0x4e0 mm/slub.c:3809
+ io_req_caches_free+0x1a9/0x1e6 io_uring/io_uring.c:2737
+ io_ring_exit_work+0x2e7/0xc80 io_uring/io_uring.c:2967
+ process_one_work+0x9bf/0x1750 kernel/workqueue.c:2293
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2440
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
 
---0WJ3yzgKXgDJAM2z
-Content-Type: application/pgp-signature; name="signature.asc"
+The buggy address belongs to the object at ffff88802c2fe8c0
+ which belongs to the cache io_kiocb of size 216
+The buggy address is located 48 bytes inside of
+ 216-byte region [ffff88802c2fe8c0, ffff88802c2fe998)
 
------BEGIN PGP SIGNATURE-----
+The buggy address belongs to the physical page:
+page:ffffea0000b0bf80 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x2c2fe
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 ffff88801c496640 dead000000000122 0000000000000000
+raw: 0000000000000000 00000000800c000c 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 5085, tgid 5085 (syz-executor198), ts 57450140651, free_ts 57437968497
+ prep_new_page mm/page_alloc.c:2549 [inline]
+ get_page_from_freelist+0x11bb/0x2d50 mm/page_alloc.c:4324
+ __alloc_pages+0x1cb/0x5c0 mm/page_alloc.c:5590
+ alloc_pages+0x1aa/0x270 mm/mempolicy.c:2281
+ alloc_slab_page mm/slub.c:1851 [inline]
+ allocate_slab+0x25f/0x350 mm/slub.c:1998
+ new_slab mm/slub.c:2051 [inline]
+ ___slab_alloc+0xa91/0x1400 mm/slub.c:3193
+ __kmem_cache_alloc_bulk mm/slub.c:3951 [inline]
+ kmem_cache_alloc_bulk+0x23d/0x730 mm/slub.c:4026
+ __io_alloc_req_refill+0xcc/0x40b io_uring/io_uring.c:1062
+ io_alloc_req_refill io_uring/io_uring.h:348 [inline]
+ io_submit_sqes.cold+0x7c/0xc2 io_uring/io_uring.c:2407
+ __do_sys_io_uring_enter+0x9e4/0x2c10 io_uring/io_uring.c:3429
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1451 [inline]
+ free_pcp_prepare+0x4d0/0x910 mm/page_alloc.c:1501
+ free_unref_page_prepare mm/page_alloc.c:3387 [inline]
+ free_unref_page_list+0x176/0xcd0 mm/page_alloc.c:3528
+ release_pages+0xcb1/0x1330 mm/swap.c:1072
+ tlb_batch_pages_flush+0xa8/0x1a0 mm/mmu_gather.c:97
+ tlb_flush_mmu_free mm/mmu_gather.c:292 [inline]
+ tlb_flush_mmu mm/mmu_gather.c:299 [inline]
+ tlb_finish_mmu+0x14b/0x7e0 mm/mmu_gather.c:391
+ exit_mmap+0x202/0x7c0 mm/mmap.c:3100
+ __mmput+0x128/0x4c0 kernel/fork.c:1212
+ mmput+0x60/0x70 kernel/fork.c:1234
+ exec_mmap fs/exec.c:1034 [inline]
+ begin_new_exec+0x1027/0x2f80 fs/exec.c:1293
+ load_elf_binary+0x801/0x4ff0 fs/binfmt_elf.c:1001
+ search_binary_handler fs/exec.c:1736 [inline]
+ exec_binprm fs/exec.c:1778 [inline]
+ bprm_execve fs/exec.c:1853 [inline]
+ bprm_execve+0x7fd/0x1ae0 fs/exec.c:1809
+ do_execveat_common+0x72c/0x880 fs/exec.c:1960
+ do_execve fs/exec.c:2034 [inline]
+ __do_sys_execve fs/exec.c:2110 [inline]
+ __se_sys_execve fs/exec.c:2105 [inline]
+ __x64_sys_execve+0x93/0xc0 fs/exec.c:2105
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY8BejwAKCRA6cBh0uS2t
-rNRqAP44D4ZAWSKiwRwNPElbUUvRAK0RmgBpCWsQmQIkdtwnBAD/bR6fE/qNYTES
-kcCwEEWC2oLr5ZnqbHFpa/WTweWNBwI=
-=IXq4
------END PGP SIGNATURE-----
+Memory state around the buggy address:
+ ffff88802c2fe780: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88802c2fe800: fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc fc
+>ffff88802c2fe880: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
+                                                             ^
+ ffff88802c2fe900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88802c2fe980: fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
 
---0WJ3yzgKXgDJAM2z--
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
