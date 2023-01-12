@@ -2,385 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50EAF667913
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:24:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C97AB66793E
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbjALPXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:23:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
+        id S232835AbjALP3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:29:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbjALPW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:56 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAB061472;
-        Thu, 12 Jan 2023 07:15:29 -0800 (PST)
-Received: from mwalle01.sab.local (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 1682519E1;
-        Thu, 12 Jan 2023 16:15:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673536528;
+        with ESMTP id S231422AbjALP2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:28:37 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3034FD5D
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:21:14 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1673536873;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=M63+6MCstsrkrL79YC4nH8Ygb4Uiw61YneTbHbcZv4o=;
-        b=HCr8AYDbVE/BRcy4f1FgkMaJKmd3QIOm1dWxMogbOow4MoeU6V239gDO62iCVAPmvK1Mpy
-        d2a6tV9WARK31SJCS7hSczdPDHEu4UuYLxrzhoC/F5Awfj4TZLW1g704BhLwnLKJNeY5ck
-        z2IZ2tFclfnGyEwbM3nNUbof4zg6F2PtlDadtm3JbgkrNqJ4a7i40Nq6wbZ6dcnJDzzPJe
-        QUONECMSdmK2GgwMsBj7Dn337At3tlUQpK3PZNXLcE/17f3Xo9ivObRFWdck1EjuqSi+LY
-        aL4urJi5AL/U9GatVV/eeVh9QcVy/BUy3D2yk5yJBJb+wGoND3qlh6W+CYcaaQ==
-From:   Michael Walle <michael@walle.cc>
-Date:   Thu, 12 Jan 2023 16:15:16 +0100
-Subject: [PATCH net-next 10/10] enetc: Separate C22 and C45 transactions
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230112-net-next-c45-seperation-part-2-v1-10-5eeaae931526@walle.cc>
-References: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
-In-Reply-To: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        bh=81fdmIDOKEpQUuJCNLx9f4fsWVxoz85PZzHPAPKpm5c=;
+        b=srxwD8VPdYPDg41s0LCzg0mbj76LOsHKsU4bMrOlTkiZVFUhwu+5oagsMFywExbPbHKE15
+        ADVbM/0GlBxiPjHuy/QcuT5CFRgsG51qiPYKVF8tjTxWym2t63AFDwfPBzn6RcWeyJBKqQ
+        2bELHZJW/izcutOLv/yHoRguVbFEm1zzTkG5xVCF40xHxSgOv+lN6Cpj0zJHepBtM2C3SI
+        dKH03a+ItdSOIt1+EWBPtG7nvEKIKA1iVyemVLmazTSv7id1u7eYfZXi1Y0iZPJgCWRqR1
+        j2fYJzHubCTjhw+XxrEyz9xFkDhUEDR5qCh+8UugdcKMps2UEtaNzKP+ek5UzQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1673536873;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=81fdmIDOKEpQUuJCNLx9f4fsWVxoz85PZzHPAPKpm5c=;
+        b=O6AU1BuzNrwn5H7HgZiA8gDh6cPhqEK8BAEvFRUtruIVoYMyZk248muE7F8NnClQMuHqts
+        l5FG7Eo//ZhALpBQ==
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Li Yang <leoyang.li@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linuxppc-dev@lists.ozlabs.org, Andrew Lunn <andrew@lunn.ch>,
-        Michael Walle <michael@walle.cc>
-X-Mailer: b4 0.11.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: dsa: mv88e6xxx: Enable PTP receive for
+ mv88e6390
+In-Reply-To: <Y8AGFJlQBEhTqQs7@lunn.ch>
+References: <20230112091224.43116-1-kurt@linutronix.de>
+ <Y8AGFJlQBEhTqQs7@lunn.ch>
+Date:   Thu, 12 Jan 2023 16:21:11 +0100
+Message-ID: <87k01rrd7c.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-The enetc MDIO bus driver can perform both C22 and C45 transfers.
-Create separate functions for each and register the C45 versions using
-the new API calls where appropriate.
+On Thu Jan 12 2023, Andrew Lunn wrote:
+> On Thu, Jan 12, 2023 at 10:12:24AM +0100, Kurt Kanzenbach wrote:
+>> The switch receives management traffic such as STP and LLDP. However, PTP
+>> messages are not received, only transmitted.
+>>=20
+>> Ideally, the switch would trap all PTP messages to the management CPU. T=
+his
+>> particular switch has a PTP block which identifies PTP messages and trap=
+s them
+>> to a dedicated port. There is a register to program this destination. Th=
+is is
+>> not used at the moment.
+>>=20
+>> Therefore, program it to the same port as the MGMT traffic is trapped to=
+. This
+>> allows to receive PTP messages as soon as timestamping is enabled.
+>>=20
+>> In addition, the datasheet mentions that this register is not valid e.g.=
+, for
+>> 6190 variants. So, add a new PTP operation which is only added for the b=
+oth 6390
+>> devices.
+>
+> I assume this also works for the 6290? Please could you also update
+> its _ops structure?
 
-This driver is shared with the Felix DSA switch, so update that at the
-same time.
+According to the datasheet, yes. I'll add this one, too.
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c             |   6 +-
- drivers/net/ethernet/freescale/enetc/enetc_mdio.c  | 119 +++++++++++++++------
- .../net/ethernet/freescale/enetc/enetc_pci_mdio.c  |   6 +-
- drivers/net/ethernet/freescale/enetc/enetc_pf.c    |  12 ++-
- include/linux/fsl/enetc_mdio.h                     |  21 +++-
- 5 files changed, 121 insertions(+), 43 deletions(-)
+Thanks,
+Kurt
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 01ac70fd7ddf..cbcc457499f3 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -954,8 +954,10 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 		return -ENOMEM;
- 
- 	bus->name = "VSC9959 internal MDIO bus";
--	bus->read = enetc_mdio_read;
--	bus->write = enetc_mdio_write;
-+	bus->read = enetc_mdio_read_c22;
-+	bus->write = enetc_mdio_write_c22;
-+	bus->read_c45 = enetc_mdio_read_c45;
-+	bus->write_c45 = enetc_mdio_write_c45;
- 	bus->parent = dev;
- 	mdio_priv = bus->priv;
- 	mdio_priv->hw = hw;
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
-index 1c8f5cc6dec4..998aaa394e9c 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
-@@ -55,7 +55,8 @@ static int enetc_mdio_wait_complete(struct enetc_mdio_priv *mdio_priv)
- 				  is_busy, !is_busy, 10, 10 * 1000);
- }
- 
--int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
-+int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id, int regnum,
-+			 u16 value)
- {
- 	struct enetc_mdio_priv *mdio_priv = bus->priv;
- 	u32 mdio_ctl, mdio_cfg;
-@@ -63,14 +64,39 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
- 	int ret;
- 
- 	mdio_cfg = ENETC_EMDIO_CFG;
--	if (regnum & MII_ADDR_C45) {
--		dev_addr = (regnum >> 16) & 0x1f;
--		mdio_cfg |= MDIO_CFG_ENC45;
--	} else {
--		/* clause 22 (ie 1G) */
--		dev_addr = regnum & 0x1f;
--		mdio_cfg &= ~MDIO_CFG_ENC45;
--	}
-+	dev_addr = regnum & 0x1f;
-+	mdio_cfg &= ~MDIO_CFG_ENC45;
-+
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
-+
-+	ret = enetc_mdio_wait_complete(mdio_priv);
-+	if (ret)
-+		return ret;
-+
-+	/* set port and dev addr */
-+	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
-+
-+	/* write the value */
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, value);
-+
-+	ret = enetc_mdio_wait_complete(mdio_priv);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(enetc_mdio_write_c22);
-+
-+int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id, int dev_addr,
-+			 int regnum, u16 value)
-+{
-+	struct enetc_mdio_priv *mdio_priv = bus->priv;
-+	u32 mdio_ctl, mdio_cfg;
-+	int ret;
-+
-+	mdio_cfg = ENETC_EMDIO_CFG;
-+	mdio_cfg |= MDIO_CFG_ENC45;
- 
- 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
- 
-@@ -83,13 +109,11 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
- 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
- 
- 	/* set the register address */
--	if (regnum & MII_ADDR_C45) {
--		enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
- 
--		ret = enetc_mdio_wait_complete(mdio_priv);
--		if (ret)
--			return ret;
--	}
-+	ret = enetc_mdio_wait_complete(mdio_priv);
-+	if (ret)
-+		return ret;
- 
- 	/* write the value */
- 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, value);
-@@ -100,9 +124,9 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(enetc_mdio_write);
-+EXPORT_SYMBOL_GPL(enetc_mdio_write_c45);
- 
--int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
-+int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
- {
- 	struct enetc_mdio_priv *mdio_priv = bus->priv;
- 	u32 mdio_ctl, mdio_cfg;
-@@ -110,14 +134,51 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
- 	int ret;
- 
- 	mdio_cfg = ENETC_EMDIO_CFG;
--	if (regnum & MII_ADDR_C45) {
--		dev_addr = (regnum >> 16) & 0x1f;
--		mdio_cfg |= MDIO_CFG_ENC45;
--	} else {
--		dev_addr = regnum & 0x1f;
--		mdio_cfg &= ~MDIO_CFG_ENC45;
-+	dev_addr = regnum & 0x1f;
-+	mdio_cfg &= ~MDIO_CFG_ENC45;
-+
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
-+
-+	ret = enetc_mdio_wait_complete(mdio_priv);
-+	if (ret)
-+		return ret;
-+
-+	/* set port and device addr */
-+	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
-+
-+	/* initiate the read */
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
-+
-+	ret = enetc_mdio_wait_complete(mdio_priv);
-+	if (ret)
-+		return ret;
-+
-+	/* return all Fs if nothing was there */
-+	if (enetc_mdio_rd(mdio_priv, ENETC_MDIO_CFG) & MDIO_CFG_RD_ER) {
-+		dev_dbg(&bus->dev,
-+			"Error while reading PHY%d reg at %d.%d\n",
-+			phy_id, dev_addr, regnum);
-+		return 0xffff;
- 	}
- 
-+	value = enetc_mdio_rd(mdio_priv, ENETC_MDIO_DATA) & 0xffff;
-+
-+	return value;
-+}
-+EXPORT_SYMBOL_GPL(enetc_mdio_read_c22);
-+
-+int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id, int dev_addr,
-+			int regnum)
-+{
-+	struct enetc_mdio_priv *mdio_priv = bus->priv;
-+	u32 mdio_ctl, mdio_cfg;
-+	u16 value;
-+	int ret;
-+
-+	mdio_cfg = ENETC_EMDIO_CFG;
-+	mdio_cfg |= MDIO_CFG_ENC45;
-+
- 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
- 
- 	ret = enetc_mdio_wait_complete(mdio_priv);
-@@ -129,13 +190,11 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
- 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
- 
- 	/* set the register address */
--	if (regnum & MII_ADDR_C45) {
--		enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
-+	enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
- 
--		ret = enetc_mdio_wait_complete(mdio_priv);
--		if (ret)
--			return ret;
--	}
-+	ret = enetc_mdio_wait_complete(mdio_priv);
-+	if (ret)
-+		return ret;
- 
- 	/* initiate the read */
- 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
-@@ -156,7 +215,7 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
- 
- 	return value;
- }
--EXPORT_SYMBOL_GPL(enetc_mdio_read);
-+EXPORT_SYMBOL_GPL(enetc_mdio_read_c45);
- 
- struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs)
- {
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-index dafb26f81f95..a1b595bd7993 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-@@ -39,8 +39,10 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
- 	}
- 
- 	bus->name = ENETC_MDIO_BUS_NAME;
--	bus->read = enetc_mdio_read;
--	bus->write = enetc_mdio_write;
-+	bus->read = enetc_mdio_read_c22;
-+	bus->write = enetc_mdio_write_c22;
-+	bus->read_c45 = enetc_mdio_read_c45;
-+	bus->write_c45 = enetc_mdio_write_c45;
- 	bus->parent = dev;
- 	mdio_priv = bus->priv;
- 	mdio_priv->hw = hw;
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 9f6c4f5c0a6c..bc012deedab4 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -848,8 +848,10 @@ static int enetc_mdio_probe(struct enetc_pf *pf, struct device_node *np)
- 		return -ENOMEM;
- 
- 	bus->name = "Freescale ENETC MDIO Bus";
--	bus->read = enetc_mdio_read;
--	bus->write = enetc_mdio_write;
-+	bus->read = enetc_mdio_read_c22;
-+	bus->write = enetc_mdio_write_c22;
-+	bus->read_c45 = enetc_mdio_read_c45;
-+	bus->write_c45 = enetc_mdio_write_c45;
- 	bus->parent = dev;
- 	mdio_priv = bus->priv;
- 	mdio_priv->hw = &pf->si->hw;
-@@ -885,8 +887,10 @@ static int enetc_imdio_create(struct enetc_pf *pf)
- 		return -ENOMEM;
- 
- 	bus->name = "Freescale ENETC internal MDIO Bus";
--	bus->read = enetc_mdio_read;
--	bus->write = enetc_mdio_write;
-+	bus->read = enetc_mdio_read_c22;
-+	bus->write = enetc_mdio_write_c22;
-+	bus->read_c45 = enetc_mdio_read_c45;
-+	bus->write_c45 = enetc_mdio_write_c45;
- 	bus->parent = dev;
- 	bus->phy_mask = ~0;
- 	mdio_priv = bus->priv;
-diff --git a/include/linux/fsl/enetc_mdio.h b/include/linux/fsl/enetc_mdio.h
-index 2d9203314865..df25fffdc0ae 100644
---- a/include/linux/fsl/enetc_mdio.h
-+++ b/include/linux/fsl/enetc_mdio.h
-@@ -37,16 +37,27 @@ struct enetc_mdio_priv {
- 
- #if IS_REACHABLE(CONFIG_FSL_ENETC_MDIO)
- 
--int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum);
--int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value);
-+int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum);
-+int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id, int regnum,
-+			 u16 value);
-+int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad, int regnum);
-+int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id, int devad, int regnum,
-+			 u16 value);
- struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs);
- 
- #else
- 
--static inline int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
-+static inline int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id,
-+				      int regnum)
- { return -EINVAL; }
--static inline int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum,
--				   u16 value)
-+static inline int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id,
-+				       int regnum, u16 value)
-+{ return -EINVAL; }
-+static inline int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id,
-+				      int devad, int regnum)
-+{ return -EINVAL; }
-+static inline int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id,
-+				       int devad, int regnum, u16 value)
- { return -EINVAL; }
- struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs)
- { return ERR_PTR(-EINVAL); }
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-2.30.2
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPAJWcTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgji6EACSXRFI7gJCEYTMx6U6EW8934Yyzepo
+TDPvq85nwkqlskmfcwXiLJyQCWcMvPfw/Y/ulbXSAaGC/OJ9ETHGG3VmEi2Fm565
+KJWEbhgRszsgb9SJw5BMt0wdikgWbZ4kPybzxpC+GKQLO3qxsyNF6XQJieaDxk3k
+t3d3zK37ZcW6cNfTbWl02JthBzA5pQiIqUsH6laWACug/oHQNt+aFdbe6J4snnph
+tRhFGi35A+UGa6H8ggoECVzKfb81R5R87TmAN2L86SeuWj2sp/V9uEFevuIz6JEu
+7XHGRafMukEQDvWJaSz0iPsHhyXtrm4f1DufhkNIybmJB1fCSnC+IFCa6V8/lXWR
+sirRaDk/IWpm9YCJUgGkOGSpEqIPDCERqoJs6OGfYhWoCbnoS99nCD6KlSlfMEPS
+JIrW7Hf6Pagy7d4sg8jucpglaYYm2B1tV5mpVUpbqvZHhxNFiRxUIbASxfpQ8IWB
+UVQ9mQ70HZ1vXyXVgcyR5KcdrpGSDJDcKtCJXD8F1BMd0jJdM9Ko9WNczIB0ul4x
+r4l2D+sldsluuiNQqPKXcl1Qpn6XfBlm5tczgEKpOoJ1RRZUBsn8G4RYb7Wx3w7t
+QBOpaNiprrd9LkQHuCcMJ2+DqBnpBADIykU/QWNBUD00+QCB6cOQhnZmlh7Wg3bo
+liQbk4UgRRhhFg==
+=Yr/g
+-----END PGP SIGNATURE-----
+--=-=-=--
