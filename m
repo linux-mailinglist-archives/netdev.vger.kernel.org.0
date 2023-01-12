@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE326671DB
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 13:16:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D07B66720E
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 13:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbjALMQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 07:16:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
+        id S231202AbjALMXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 07:23:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjALMPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 07:15:42 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C5DDEC9;
-        Thu, 12 Jan 2023 04:15:40 -0800 (PST)
+        with ESMTP id S231641AbjALMXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 07:23:35 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6331917E03;
+        Thu, 12 Jan 2023 04:23:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673525740; x=1705061740;
+  t=1673526214; x=1705062214;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=S/CsC1crUsHX+7qdWyQgxbmLypY6YkFCeiYk/iwwmSI=;
-  b=R1a6s8Pv9hGeC3MF2KmHR56q+kYA/DXSRxyYDsAhR+5auPLViB3Jw/sy
-   RjoY77jmIjhe+1+cKxfou1p96g9m1nfeNAbcnkOPSJLYxGEZ7BIkeFHbK
-   nAeC05rnx3DbkZcCNIbmcbyK98UTx/lMdZ6fNrfcRtfzTQX8SQZ9rKwBa
-   U0ksjqfCbKbX2jdCUf6ySYdr7swmYesKhxKPYkcMwFw1nA52NQmfi6FAX
-   DmqZPbzy2kaCZokFDy/GcxuO1R+JmbPBVlhpEuFRLeqD+whnp9CKDjfU8
-   mze74snH6APe96YMyzkMTHgcSVSZtwyeL/R8jJ7L9y8GbVHlOnUrJxJrd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="324926049"
+  bh=w22ALu6M42Nbr1FWw7o3agufp6Avkg4zbT4eYPaauTY=;
+  b=D8mNV1AvDGQgpl/WwX4lexgmpP22HbNZ/xtrFDYAgexiGa23bQdUzqiS
+   2fAeZH/pLwSxqdGLfqFeltVhSsoEIWIwGnODcZd/Lp9ziLklljobPVGA+
+   iY61ATKtMbRGKzMJfYwjfHtpzq8cxUlj5/96rI6qu4zyJOKd2OibZsQe8
+   03njLzkarTiOpzLc5+amyg4h7Ij2TVp9PA/DoKe3nutMDBsz4rZzp7fF5
+   tDY26YuBREboETChyjs3ud4TOtAMTvUuxz/MWzh2UkyRZzALBpiqlvRNb
+   8gK2SglsFzfhSL9yMEKz/86Av2OrTqoiGDM4WH6+VD8fsPL4Q2KeFH54l
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="323751249"
 X-IronPort-AV: E=Sophos;i="5.97,319,1669104000"; 
-   d="scan'208";a="324926049"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 04:15:39 -0800
+   d="scan'208";a="323751249"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 04:23:32 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="657781862"
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="746538065"
 X-IronPort-AV: E=Sophos;i="5.97,319,1669104000"; 
-   d="scan'208";a="657781862"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga002.jf.intel.com with ESMTP; 12 Jan 2023 04:15:39 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+   d="scan'208";a="746538065"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Jan 2023 04:23:32 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 12 Jan 2023 04:15:38 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.1.2507.16; Thu, 12 Jan 2023 04:23:32 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 12 Jan 2023 04:15:38 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ 15.1.2507.16; Thu, 12 Jan 2023 04:23:31 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Thu, 12 Jan 2023 04:15:38 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.172)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Thu, 12 Jan 2023 04:23:31 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Thu, 12 Jan 2023 04:15:38 -0800
+ 15.1.2507.16; Thu, 12 Jan 2023 04:23:31 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aSPX5JuEjcx5PhVuPHag/NJ8a9cQENARhMFPrFWVw/QVhoYYSNt60F3y8viIZ8tFJMSNbKGmyT1a9+h21fWu1gJZYMeaThrC46hZB7+Onyzdxaorl5+HynCU4AC1+nYRTXA7HFSoa4QGTVx6Bz7NjQU4RqjJcL3GA0A4u+2bqd/5R9VwMfl196MhX6wsoCiDn6/mFaf1sgvcQVZ2HBAV69TeVpDfsJH8JdtnMq95QCNOWHqm2tre2zoa2GiwBNirxfKOfVtvF4IFNjnHJq2fJbKYSOZ7skpLR13iKMI95RkMUv6LvLMibW2+LNtf7W4kIEM3j9gu5//ZIv+XComGdg==
+ b=i+YrXKB/RCTo96wfAOwIdtnlTkwY1mhSMC0kv6G2ExduKrqpP1FAsBQhzPh7MRteiHPtUK3u6gs1MUaEwx63GIBGVyRvrND9NRTj8oEVRXOma4Cx70Q8x5og+OHJL7Djurx+WLgrf0Xrg+9bt/z23UXqoNGZTZ+hTkJwi1aGlS8pC8CNcxQrFrpcn3K2zbfQT7Rn2TIyHA20dKjlORTshkV6miopZyW+xjYZSDLuxQ5909wLQxOAvwecvrAUDLZDOYpCLQZPyFb3/+oC89q5tP9HF1m2yaYwF+7bZ8pOjAYlIJ8ri0wnpV82UPGzOtJv5zA0SCgLajy8OZkeZyF49Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pMs/B5Osu/hioH4in5cKDWvFEQaRPPe+0VJaKAxkbEQ=;
- b=KvhwcMQIAfhju7V3jU2XzSPtQ2srY7Ohy/Eu5w5Yuu+I+bx3aH1PZdvXhG93GmW2XKhExdFEL+XGq+91ccPARiCOn7DK0I2yxpIa+x6eSmTl2xpEi/4sw23n+zXf9FZ0YbEoNUEKh5vymo9A6T/kpOPb1LFunKKymXWJFV8aOeH20pEkbV8fkhG5QnXYicpspMGpQWdNbQcaamnFVqM+e+0saqIcE0Hu3iC8AHY9/1+t80uj30GAm85AeJFBBDhb4vopbK0S50giUpItFQw5A28G0fHt6ivY4FoW0nbglL7Pp3TXTpw+M0hhlkLilXZ1htYUNuz8BRO5hFhDn2QSmQ==
+ bh=O4w/4/oJ2HEDUxn44sVgV8ykM3Otigw5eCBKplhOHIE=;
+ b=Fe3CDhup31zgTUJRF1iQGUn0yUWmnAJprROOn2QbawUwAozQ+2hZtcM6KvlQeYIt1qWqiPdJWQp9fM2MXue6PK7NclN6KuNrdb1C6G3YO8DyenSe1JEwknrbO7RIYUVLXihQRdDkN8WxfXa965/uKnQ7mA3edufhWtcNdPqxSLLe4dOtWU3tB5pzu9ZHkd0IsP3Qzb05r+TriuyVYafBLCi4Cop3Gf8fW7nJ9RfbnX3ocReUOruzTiiloFd6/RWofnxJuo9l3ri2PCvtFCFcFaaJ5gwT6Pp5IjTynPO0p4MpXlhmkZxE2OQAj2qzBCwq3jHqrzZA7h+pC1+o2sAaig==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- PH7PR11MB7549.namprd11.prod.outlook.com (2603:10b6:510:27b::12) with
+ BL1PR11MB5556.namprd11.prod.outlook.com (2603:10b6:208:314::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Thu, 12 Jan
- 2023 12:15:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Thu, 12 Jan
+ 2023 12:23:29 +0000
 Received: from DM6PR11MB4657.namprd11.prod.outlook.com
  ([fe80::5006:f262:3103:f080]) by DM6PR11MB4657.namprd11.prod.outlook.com
  ([fe80::5006:f262:3103:f080%8]) with mapi id 15.20.6002.013; Thu, 12 Jan 2023
- 12:15:30 +0000
+ 12:23:29 +0000
 From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        Maciek Machnikowski <maciek@machnikowski.net>,
-        'Vadim Fedorenko' <vfedorenko@novek.ru>,
-        "'Jonathan Lemon'" <jonathan.lemon@gmail.com>,
-        'Paolo Abeni' <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
         "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
 Subject: RE: [RFC PATCH v4 0/4] Create common DPLL/clock configuration API
 Thread-Topic: [RFC PATCH v4 0/4] Create common DPLL/clock configuration API
-Thread-Index: AQHZBDr1K1GsCJct2UayQH1vPDEq/65XZyGAgAMK4oCAAFcrAIAG+ucAgAC+YICAAJp7gIABOqIAgAEc44CAADKwAIAAJ6gAgASMcoCALA0RgIAB7ReAgADNAgCAAF4QcIAAEyqAgAAChKCAABESgIAAA3/A
-Date:   Thu, 12 Jan 2023 12:15:30 +0000
-Message-ID: <DM6PR11MB4657A41D59E6B1162EA6AFDB9BFD9@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <Y5MW/7jpMUXAGFGX@nanopsycho>
- <a8f9792b-93f1-b0b7-2600-38ac3c0e3832@machnikowski.net>
- <20221209083104.2469ebd6@kernel.org> <Y5czl6HgY2GPKR4v@nanopsycho>
- <DM6PR11MB46571573010AB727E1BE99AE9BFE9@DM6PR11MB4657.namprd11.prod.outlook.com>
- <20230110120549.4d764609@kernel.org> <Y75xFlEDCThGtMDq@nanopsycho>
- <DM6PR11MB4657AC41BBF714A280B578D49BFC9@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y77QEajGlJewGKy1@nanopsycho>
- <DM6PR11MB4657DC9A41A69B71A42DD22F9BFC9@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y77gf1ekbSMdY83b@nanopsycho>
-In-Reply-To: <Y77gf1ekbSMdY83b@nanopsycho>
+Thread-Index: AQHZBDr1K1GsCJct2UayQH1vPDEq/66a+AIA
+Date:   Thu, 12 Jan 2023 12:23:29 +0000
+Message-ID: <DM6PR11MB4657BF81BEBC10E6EC5044149BFD9@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20221129213724.10119-1-vfedorenko@novek.ru>
+In-Reply-To: <20221129213724.10119-1-vfedorenko@novek.ru>
 Accept-Language: pl-PL, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -106,248 +97,179 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|PH7PR11MB7549:EE_
-x-ms-office365-filtering-correlation-id: 15b9a662-b6d1-4733-77a8-08daf496b29c
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|BL1PR11MB5556:EE_
+x-ms-office365-filtering-correlation-id: 53c24ce6-4289-4ae0-8ad4-08daf497d00d
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8S3lOQT1wWWY1bzPWDLP/F/j90LqVjE2WiM6QzQ2vSBBF1jDWvwjR/1/kUakLNaDqOXLLvPg1L1dYtEU+huCn6xXEinLsNUcAVp5yqQy5ufK6ZOzmxNiA3QZH6cjSsIJm/UjtIHN5gUN3P/pLH7RLsXMi16dVxzLRtArgX55n4jAk0qEPYW9Kj/TWSGWEqv/wrGCAwC17dU2duvKRwaKnMbNE0tKpsfQ8bMxqzYJaEyVJADuY8o1stjV2SLYIUS8twjW5ZDbibfDZ4jREudmt2hgtEU52KH+zgq3juj5gO9lybGtKuxejLmddwMiuQvPpWIaREGQWhhM4V39IQ6ms9GEVi7SCFIMmBtgbnyrZZ7+7hDrP9xOFopTfCd85nqUZvaoucOiVVHaTWESn5AGDlirbwnJZm5lnXhpGxBAUJoj99XZEVuKfZRHWlNUSzmlZVRIOp52/cuyLvD4N3anSUc9iSg8ARSy5YX/RiPnIsE10ojGCcJRhHmuNR22z3BS6O8OMq+4lr4bVU7BeFg5sh5Si1bD+FUQnI44L6Yq7kd2KIhXKvGb94/sPlnAAZxNf/I4jGSpoW+EKQVHk5E3QJYAuiZi5jPQbaZLFPSSvNmU/eUqVGa9q0Ab/w7F9Ht3p8dSK/4Wa8Mzvx8VCYY77mQtHWzMrAZAN/f8JoKVOB4+I99EjUCTlODueUotRVaQb1PQuRKngoM+FZSrCXY3nABEF6ODzuDmdoSEzdSU1cU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(39860400002)(396003)(136003)(376002)(346002)(451199015)(2906002)(71200400001)(6506007)(7696005)(26005)(478600001)(9686003)(186003)(55016003)(8676002)(83380400001)(66446008)(66946007)(64756008)(54906003)(316002)(76116006)(66556008)(66476007)(6916009)(4326008)(41300700001)(33656002)(82960400001)(122000001)(38100700002)(52536014)(38070700005)(86362001)(8936002)(5660300002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: qO0nVBfI2KSU5T702EI8nCTicd+OXXgWTnxqkr8ZijxIn1A+L/Yo+Bvds7udAy8l7GJzgYQFEMTAEvMzynrwLhAKLk7h+tWNBxg5NkjHQ/ULsTJ7o/GxjiNOgmcDfg4CoQgODduizVwRL4ngBmjJG2FtTQbQYf3nF5XzmrU8hFAhFNUr9OSKE1OIKg2AkGj45NWbUVq7rjN0Td1oGFIZbwptDmnS/Ze5Z7xoKh5NkcXjvHSOZYsBNn89FOu3MH6lreb46y1HQQubz3zGa/CM08PGHW1uErVk6QMWDKI5dtZaUdXgBjsIVfpVeZccnAAoCjFPhZEwaLBmNB4Dqllai28ZotLeKuus9CZJGz6Z8gXdBzzI9KRvMzx3uTZBqquxDqxLVHo5Pk6aAHCivld4vfq9kVTKuRGezmHpiwx4IigtjBV1Ler5NGs/Ku6sVbt5aDBXvinsAWEihYe5DRoZ7kNRbiUIznl/t2j+swQR02vRzHVbcBbREULVkSlepqhqk/VMDLGNtWq2IgxlN5C1JjKRGIi2i7DHJysp2LCiyJYgMBxc4QBdj4tY5z+kgBO2Ajg1i/EIXEIwhOI+s+pu+TAa9WHggnju/jfG3ttw7FqrjDQqm3+RChBfFBoHVIFZ9L24BFiCA+3GGrJ//u4ri9KlI2zn906TFG6rIZJpbJZOr3+UICGt3L3ffEF/Z3H3sWLAo60CgLUoYWvZfQcdkQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(376002)(39860400002)(396003)(366004)(346002)(451199015)(122000001)(82960400001)(38100700002)(83380400001)(86362001)(38070700005)(41300700001)(66556008)(4326008)(8676002)(66446008)(55016003)(76116006)(66476007)(64756008)(54906003)(316002)(110136005)(66946007)(71200400001)(2906002)(8936002)(5660300002)(52536014)(9686003)(186003)(26005)(478600001)(7696005)(6506007)(33656002);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Hr5DRquMq02BCIv+pjwNDB4t6C1nfcdopfXVLCElrPyv5/JNYUFb909CJ5n9?=
- =?us-ascii?Q?FTyxaISOu6xBLCSMd4/QDkwnyvlqwxuPXrq9Mng65gAsevJ8bWerF1W6RN3l?=
- =?us-ascii?Q?t8JR2UgZM1J2FW1LB5TFQzYlGvHVN3+pGpk68kmw/QXcAre07XJy2kK7p6bK?=
- =?us-ascii?Q?9T3MNSLGZhiHrYCzayV/9hlTtl7AABq4gohiNRibaoh4Ys1xtWhUcNAkJYiV?=
- =?us-ascii?Q?z0rX0BJ5hYBySA01bUfkI/LOAHKuC8vHwOppUowHhR0UYjvTzA58LcIQwWHy?=
- =?us-ascii?Q?E3ljCUxq5mCkgx3+vhJoMoHljAGOPoiz3kpSm7DbqX40ivTyVgrGeYLVR6Nl?=
- =?us-ascii?Q?5DTtbqiJzERGr2+AbRDNf8dXyNOqR4kOcmSdWU0ILZUTysTz8OBRDnrKopzu?=
- =?us-ascii?Q?TOWWgAUGddvqHi40NwhD8f24E2jMXP7TFXxTtD/HLYeyj3XTIzKksWQoPHRe?=
- =?us-ascii?Q?ZZMDu7o3x030+7egjYgbRZcKgGNazRmlx8YvmaPhT7S5fkrUw+2psqKdaEoQ?=
- =?us-ascii?Q?pX5T1cSLCeu2E9XuV1vHcGJVs9ph4cumzb964dOG1XWRQsLkjPhFmd+MEaSj?=
- =?us-ascii?Q?6DIDikwydlWB3i5xN/WqNhTdd82YjEAPu10Ywb7vWP9jWok9JXukAH5GNRo9?=
- =?us-ascii?Q?FpDgHWENuqD5KTVsNrEVMbH0qqT9FyMDqoLKbFr0/j3GULHSGtlC/m+GR4an?=
- =?us-ascii?Q?42X5aOxeTiPeUREGXBFDg2yPbIPjMqTQgjdAXOyyTVJSfbVkRBNsng9aGYS6?=
- =?us-ascii?Q?vQi7z5L72+N1MrLbHh4gD3/nkhDzHmA9FQnqk7iDPrSMjxd+4Q3bmvQrON9K?=
- =?us-ascii?Q?mfNStaaxaJsMpOceHpUiHavYSskm/VTlMJULq5IMvaJVUxUdtqCnhQvJeKqc?=
- =?us-ascii?Q?AHtNJAy7MwSdPsgU2qGvyxqrWR0dWf85mbL38EArGPzvpe0xU8D+EuH5mLO1?=
- =?us-ascii?Q?gh/BfTvWff35mViNFaxJFTohVPl8/ZsLalgZue96bf3I1dCnCLVpgjgiZDt+?=
- =?us-ascii?Q?gxqg9rWqp9m2YQqocjbW0O+vHgvH5+smssgndmOOSkA8umY0Ivrj8PcEp3Pn?=
- =?us-ascii?Q?3y6w5lVCG9N9lAvk4U76otjwfC7vnv8bTxCPKQslLlQslDOO/zJipSBVbJWr?=
- =?us-ascii?Q?d79riGQWkisUL3bgYw+Vc9eW9jmtAaIZuTNYSgKMKmCEbIuofhMJUCRvwAYr?=
- =?us-ascii?Q?T383Hnyy7LBrGkZvg6Kk88XoF1QNOnT8M6dTFogYjEbgjSrzfJLFfA6XI/MK?=
- =?us-ascii?Q?0TXsQUOYpv3Ng6+MUgESylM+F2OMZqS236e2QTeNM9rfuZ4yHWPTf/zOwSwo?=
- =?us-ascii?Q?73MgwXJRhfcPhB01tc3ddlRdbwCW+zSOZlw6YWaThWcBNKV4XRGQnUnSUOQg?=
- =?us-ascii?Q?lTRV8U9PW+pDZ+aR8MQO7yRU+p4N67WutK0kFbnEcCBabUaV+OwDKLisX49S?=
- =?us-ascii?Q?RnDD6voMwuMxz040cIAKnysSxkdpmAkotn/oicvX4kyrI8CE9b37r13tftS1?=
- =?us-ascii?Q?K7/jF+WIVJssd37H25jfQOvEWiJLMmqdxeGwbnNoyYynF8AuJ0iIdH5xjku8?=
- =?us-ascii?Q?8XIJc3Q7wiegTiaZcCpplWRo6CO1ieASZ1tFz+FQMP5gM23Li62kbPSi1y4p?=
- =?us-ascii?Q?bg=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?efL2qpNemim1pmQEswKj1PY88lgubylZYi734Hkri5m1NMslES2hvOJhFvrx?=
+ =?us-ascii?Q?jbK6urPBZpoZV631F1u+FUW/mCWpyhVnMO1LR1lNGM2WZoRKMwbKJn1DvpuR?=
+ =?us-ascii?Q?vYGE5DUM45GOhqkj+FfVrTq2hn7mmJuUrYlqT17IYsLNOEUrYdSa1JzewJxr?=
+ =?us-ascii?Q?vngLryi3fB3WQJdso/RqHo+BrrLFNJtYIyeFK61D8cWIvWnynLYRqJpjxWyW?=
+ =?us-ascii?Q?9A/ruzrca2JYjx7VidiEFxtLmk+ggELqnkQU08r00VBv3wvjasbvowu6BWIa?=
+ =?us-ascii?Q?wl7znEsXhd80kvdAyKpHAz8EzGhun6xB30hY+iUabbKLugyk33lwM0Bcx0sJ?=
+ =?us-ascii?Q?PtobOg1y+RprTSoHJLYGuiRw1dx4hJoMklp29LLi4z54/lImeaDsQYKJGQEq?=
+ =?us-ascii?Q?/jeJ+DIj+EvEREwK37v51HGSYAkrT34ycJ3LfWkqJzn3U+JuPeBhDXrurH1r?=
+ =?us-ascii?Q?mplDZjrme6KdQ3Pr9urM+IHovjrMS4+V1IvLMdg3ohSvhxhLkuw4UApF9NS9?=
+ =?us-ascii?Q?vG3ZQV5wE5wSwiNwKu+ZPAL5KQ5T0J6ASSmoaPGvGEPZ8FVNe1hXdqRgEJc6?=
+ =?us-ascii?Q?cNRsJKW6G8KpBoRsytA3SwbJ/zs8ed2JA0dPZmuwAG+/5avaeLDEBxB+4b9X?=
+ =?us-ascii?Q?LBFRAgphoZAuX3uU3EJbynTJR2loI0DZR9Udrmnn9cY89OiA2EbXL64CJGS2?=
+ =?us-ascii?Q?qG35KmypNvrdaJjOzCDAjCFQ3ZdQJXp9F5zKdqtGsMid7gC8cC1SLKh9dnqo?=
+ =?us-ascii?Q?9rcYmYVoVJ/N4Hp5NcFkkGEImEVwpgHKxQ0ZG0ugUScFPryiCT28EMMHNTmD?=
+ =?us-ascii?Q?Wqip9TZ5OuE3UuksEfr72sDg7xKKfxAVq0xCCM5tm44Kw08ul5/3bgBVozPW?=
+ =?us-ascii?Q?PJOFKRc1U5U6eUIF4gBy1uz97PhqL/ubZh4UKgOe3tokMX5vGrotxkPCuDjn?=
+ =?us-ascii?Q?onmguztjG4OrqKUFVpZmtft2S+RH6WwqQCsn1VO/JJ01r/QLvJzA+mrLfKKr?=
+ =?us-ascii?Q?lIe7eB5NTnI511YM0C0jO4yRjirvP2OeO5B1B5IBWWcCfzaXMlbCR5vmF9g8?=
+ =?us-ascii?Q?Ibuqq1OzUdPqrZKZtcKMhy2rI1hMz/o5yzwzk+KbmApgvz87VX77DNqAnMWk?=
+ =?us-ascii?Q?8Lnu0WnnbaEp+xPEKBDZ0D8AsI11f9iPi2EUTFGRkHZZM79qDQyOMeJ1jERy?=
+ =?us-ascii?Q?UIMMApLLSYvprLBU8cCdIb8iyb8NisIwZQN+RZzVjEm3m+MznqoHKugvcWJv?=
+ =?us-ascii?Q?fX8EJrPlSSLDULtkZDpEqQcn/Pmp64UDitVcTS9CcYD9HDG04t6UnQ6wqy9d?=
+ =?us-ascii?Q?ALaKgcKcyyCDdsWoHQTO8aJBbV5zPGXN7SQpXvoW/kSHuDPyvnhU1+NxKC/v?=
+ =?us-ascii?Q?eCwbyHh7OS9fT9hR/56x7To4kiWo+lLTOvVppRZ1+ZJs9fUquRqKspopdmaS?=
+ =?us-ascii?Q?KnDidB2BU4Flnvgoxx11sZEOc5i0ctsiiEDR8QGiyg7vLCepaYGQEEoZJT53?=
+ =?us-ascii?Q?MRTC4r+nIDoBy27GekGcY9xg80Wv0IqaiP+A21y2BsgSZtyuN9C5QhojKYGj?=
+ =?us-ascii?Q?j+j+vhdClDs9C71knqqxsLtDLDJGrWbT3+1Ir5IJ8lK331ay5VJLj+rPoD49?=
+ =?us-ascii?Q?mA=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15b9a662-b6d1-4733-77a8-08daf496b29c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2023 12:15:30.4735
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53c24ce6-4289-4ae0-8ad4-08daf497d00d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2023 12:23:29.3977
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QIvmlFHGduILk1Ta0Yjehb5rWxY4IXBYF30ftfJMtRH7k409Kq1IjE/fNYU4/XGfuL9yAKBOjhzviN8AmjJu3bOMskxljeoM40DuXdzRHDI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7549
+X-MS-Exchange-CrossTenant-userprincipalname: Tbp5klDMR8FQ4EjKdP3oDdhBX/hWnp4Mq0rVL7FfedYFnfncvH0AOZG5iMhY5h8lgfAyK8OQcVOZJoj3/ywfz664/BML5z4uAiHRgJ51sIE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5556
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->From: Jiri Pirko <jiri@resnulli.us>
->Sent: Wednesday, January 11, 2023 5:15 PM
->To: Kubalewski, Arkadiusz <arkadiusz.kubalewski@intel.com>
+>From: Vadim Fedorenko <vfedorenko@novek.ru>
+>Sent: Tuesday, November 29, 2022 10:37 PM
 >
->Wed, Jan 11, 2023 at 04:30:44PM CET, arkadiusz.kubalewski@intel.com wrote:
->>>From: Jiri Pirko <jiri@resnulli.us>
->>>Sent: Wednesday, January 11, 2023 4:05 PM
->>>To: Kubalewski, Arkadiusz <arkadiusz.kubalewski@intel.com>
->>>
->>>Wed, Jan 11, 2023 at 03:16:59PM CET, arkadiusz.kubalewski@intel.com
->wrote:
->>>>>From: Jiri Pirko <jiri@resnulli.us>
->>>>>Sent: Wednesday, January 11, 2023 9:20 AM
->>>>>
->>>>>Tue, Jan 10, 2023 at 09:05:49PM CET, kuba@kernel.org wrote:
->>>>>>On Mon, 9 Jan 2023 14:43:01 +0000 Kubalewski, Arkadiusz wrote:
->>>>>>> This is a simplified network switch board example.
->>>>>>> It has 2 synchronization channels, where each channel:
->>>>>>> - provides clk to 8 PHYs driven by separated MAC chips,
->>>>>>> - controls 2 DPLLs.
->>>>>>>
->>>>>>> Basically only given FW has control over its PHYs, so also a contro=
-l
->>>>>over it's
->>>>>>> MUX inputs.
->>>>>>> All external sources are shared between the channels.
->>>>>>>
->>>>>>> This is why we believe it is not best idea to enclose multiple DPLL=
-s
->>>>>with one
->>>>>>> object:
->>>>>>> - sources are shared even if DPLLs are not a single synchronizer
->chip,
->>>>>>> - control over specific MUX type input shall be controllable from
->>>>>different
->>>>>>> driver/firmware instances.
->>>>>>>
->>>>>>> As we know the proposal of having multiple DPLLs in one object was =
-a
->>>try
->>>>>to
->>>>>>> simplify currently implemented shared pins. We fully support idea o=
-f
->>>>>having
->>>>>>> interfaces as simple as possible, but at the same time they shall b=
-e
->>>>>flexible
->>>>>>> enough to serve many use cases.
->>>>>>
->>>>>>I must be missing context from other discussions but what is this
->>>>>>proposal trying to solve? Well implemented shared pins is all we need=
-.
->>>>>
->>>>>There is an entity containing the pins. The synchronizer chip. One
->>>>>synchronizer chip contains 1-n DPLLs. The source pins are connected
->>>>>to each DPLL (usually). What we missed in the original model was the
->>>>>synchronizer entity. If we have it, we don't need any notion of someho=
-w
->>>>>floating pins as independent entities being attached to one or many
->>>>>DPLL refcounted, etc. The synchronizer device holds them in
->>>>>straightforward way.
->>>>>
->>>>>Example of a synchronizer chip:
->>>>>https://www.renesas.com/us/en/products/clocks-timing/jitter-
->attenuators-
->>>>>frequency-translation/8a34044-multichannel-dpll-dco-four-eight-
->>>>>channels#overview
->>>>
->>>>Not really, as explained above, multiple separated synchronizer chips
->can
->>>be
->>>>connected to the same external sources.
->>>>This is why I wrote this email, to better explain need for references
->>>between
->>>>DPLLs and shared pins.
->>>>Synchronizer chip object with multiple DPLLs would have sense if the
->pins
->>>would
->>>>only belong to that single chip, but this is not true.
->>>
->>>I don't understand how it is physically possible that 2 pins belong to 2
->>>chips. Could you draw this to me?
->>>
->>
->>Well, sure, I was hoping this is clear, without extra connections on the
->draw:
+>Implement common API for clock/DPLL configuration and status reporting.
+>The API utilises netlink interface as transport for commands and event
+>notifications. This API aim to extend current pin configuration and make i=
+t
+>flexible and easy to cover special configurations.
 >
->Okay, now I understand. It is not a shared pin but shared source for 2
->pins.
+>v3 -> v4:
+> * redesign framework to make pins dynamically allocated (Arkadiusz)
+> * implement shared pins (Arkadiusz)
+>v2 -> v3:
+> * implement source select mode (Arkadiusz)
+> * add documentation
+> * implementation improvements (Jakub)
+>v1 -> v2:
+> * implement returning supported input/output types
+> * ptp_ocp: follow suggestions from Jonathan
+> * add linux-clk mailing list
+>v0 -> v1:
+> * fix code style and errors
+> * add linux-arm mailing list
 >
+>
+>Arkadiusz Kubalewski (1):
+>  dpll: add dpll_attr/dpll_pin_attr helper classes
+>
+>Vadim Fedorenko (3):
+>  dpll: Add DPLL framework base functions
+>  dpll: documentation on DPLL subsystem interface
+>  ptp_ocp: implement DPLL ops
+>
+> Documentation/networking/dpll.rst  | 271 ++++++++
+> Documentation/networking/index.rst |   1 +
+> MAINTAINERS                        |   8 +
+> drivers/Kconfig                    |   2 +
+> drivers/Makefile                   |   1 +
+> drivers/dpll/Kconfig               |   7 +
+> drivers/dpll/Makefile              |  11 +
+> drivers/dpll/dpll_attr.c           | 278 +++++++++
+> drivers/dpll/dpll_core.c           | 760 +++++++++++++++++++++++
+> drivers/dpll/dpll_core.h           | 176 ++++++
+> drivers/dpll/dpll_netlink.c        | 963 +++++++++++++++++++++++++++++
+> drivers/dpll/dpll_netlink.h        |  24 +
+> drivers/dpll/dpll_pin_attr.c       | 456 ++++++++++++++
+> drivers/ptp/Kconfig                |   1 +
+> drivers/ptp/ptp_ocp.c              | 123 ++--
+> include/linux/dpll.h               | 261 ++++++++
+> include/linux/dpll_attr.h          | 433 +++++++++++++
+> include/uapi/linux/dpll.h          | 263 ++++++++
+> 18 files changed, 4002 insertions(+), 37 deletions(-)  create mode 100644
+>Documentation/networking/dpll.rst  create mode 100644 drivers/dpll/Kconfig
+>create mode 100644 drivers/dpll/Makefile  create mode 100644
+>drivers/dpll/dpll_attr.c  create mode 100644 drivers/dpll/dpll_core.c
+>create mode 100644 drivers/dpll/dpll_core.h  create mode 100644
+>drivers/dpll/dpll_netlink.c  create mode 100644 drivers/dpll/dpll_netlink.=
+h
+>create mode 100644 drivers/dpll/dpll_pin_attr.c  create mode 100644
+>include/linux/dpll.h  create mode 100644 include/linux/dpll_attr.h  create
+>mode 100644 include/uapi/linux/dpll.h
+>
+>--
+>2.27.0
 
-Yes, exactly.
+New thread with regard of our yesterday's call.
 
->
->>+----------+
->>|i0 - GPS  |--------------\
->>+----------+              |
->>+----------+              |
->>|i1 - SMA1 |------------\ |
->>+----------+            | |
->>+----------+            | |
->>|i2 - SMA2 |----------\ | |
->>+----------+          | | |
->>                      | | |
->>+---------------------|-|-|-------------------------------------------+
->>| Channel A / FW0     | | |     +-------------+   +---+   +--------+  |
->>|                     | | |-i0--|Synchronizer0|---|   |---| PHY0.0 |--|
->
->One pin here               ^^^
->
->>|         +---+       | | |     |             |   |   |   +--------+  |
->>| PHY0.0--|   |       | |---i1--|             |---| M |---| PHY0.1 |--|
->>|         |   |       | | |     | +-----+     |   | A |   +--------+  |
->>| PHY0.1--| M |       |-----i2--| |DPLL0|     |   | C |---| PHY0.2 |--|
->>|         | U |       | | |     | +-----+     |   | 0 |   +--------+  |
->>| PHY0.2--| X |--+----------i3--| +-----+     |---|   |---| ...    |--|
->>|         | 0 |  |    | | |     | |DPLL1|     |   |   |   +--------+  |
->>| ...   --|   |  | /--------i4--| +-----+     |---|   |---| PHY0.7 |--|
->>|         |   |  | |  | | |     +-------------+   +---+   +--------+  |
->>| PHY0.7--|   |  | |  | | |                                           |
->>|         +---+  | |  | | |                                           |
->>+----------------|-|--|-|-|-------------------------------------------+
->>| Channel B / FW1| |  | | |     +-------------+   +---+   +--------+  |
->>|                | |  | | \-i0--|Synchronizer1|---|   |---| PHY1.0 |--|
->
->And second pin here        ^^^
->
->There are 2 separate pins. Sure, they need to have the same config as
->they are connected to the same external entity (GPS, SMA1, SMA2).
->
->Perhaps we need to have a board description using dts to draw this
->picture so the drivers can use this schema in order to properly
->configure this?
->
->My point is, you are trying to hardcode the board geometry in the
->driver. Is that correct?
->
+Is it possible to initialize a multiple output MUX?
+Yes it is. Let's consider 4 input/2 output MUX and DPLL it connects with:
+            +---+  =20
+          --|   |  =20
+  +---+     |   |  =20
+--|   |   --| D |--
+  |   |     | P |  =20
+--| M |-----| L |--
+  | U |     | L |  =20
+--| X |-----|   |--
+  |   |     |   |  =20
+--|   |   --|   |  =20
+  +---+     +---+ =20
+=20
+Basically dpll pins are initialized and assigned ids, like:
+5 inputs (0-4), 3 outputs (5-7).
+   +---+  =20
+0--|   |  =20
+   |   |  =20
+1--| D |--5
+   | P |  =20
+2--| L |--6
+   | L |  =20
+3--|   |--7
+   |   |  =20
+4--|   |  =20
+   +---+
 
-Well, we are trying to have userspace-friendly interface :)
-As we discussed yesterday dts is more of embedded world thing and we don't
-want to go that far, the driver knows the hardware it is using, thus it
-shall be enough if it has all the information needed for initialization.
-At least that is what I understood.
+Then we would create and register muxed pins with existing dpll pins.
+Each muxed pin is allocated and registered with each parent it can provide
+signal with, like below (number in bracket is parent idx):
+                           +---+  =20
+                        0--|   |  =20
+                +---+      |   |  =20
+ 8(2) /  9(3)---|   |   1--| D |--5
+                |   |      | P |  =20
+10(2) / 11(3)---| M |---2--| L |--6
+                | U |      | L |  =20
+12(2) / 13(3)---| X |---3--|   |--7
+                |   |      |   |  =20
+14(2) / 15(3)---|   |   4--|   |  =20
+                +---+      +---+
+
+Controlling the mux input/output:
+In this case selecting pin #8 would provide its signal into DPLLs input#2 a=
+nd
+selecting #9 would provide its signal into DPLLs input#3.
 
 BR,
 Arkadiusz
-
->
->>|         +---+  | |  | |       |             |   |   |   +--------+  |
->>| PHY1.0--|   |  | |  | \---i1--|             |---| M |---| PHY1.1 |--|
->>|         |   |  | |  |         | +-----+     |   | A |   +--------+  |
->>| PHY1.1--| M |  | |  \-----i2--| |DPLL0|     |   | C |---| PHY1.2 |--|
->>|         | U |  | |            | +-----+     |   | 1 |   +--------+  |
->>| PHY1.2--| X |  \-|--------i3--| +-----+     |---|   |---| ...    |--|
->>|         | 1 |    |            | |DPLL1|     |   |   |   +--------+  |
->>| ...   --|   |----+--------i4--| +-----+     |---|   |---| PHY1.7 |--|
->>|         |   |                 +-------------+   +---+   +--------+  |
->>| PHY1.7--|   |                                                       |
->>|         +---+                                                       |
->>+---------------------------------------------------------------------+
->>
->>>
->>>>As the pins are shared between multiple DPLLs (both inside 1 integrated
->>>circuit
->>>>and between multiple integrated circuits), all of them shall have
->current
->>>state
->>>>of the source or output.
->>>>Pins still need to be shared same as they would be inside of one
->>>synchronizer
->>>>chip.
->>>
->>>Do I understand correctly that you connect one synchronizer output to
->>>the input of the second synchronizer chip?
->>
->>No, I don't recall such use case. At least nothing that needs to exposed
->>in the DPLL subsystem itself.
->>
->>BR,
->>Arkadiusz
->>
->>>
->>>>
->>>>BR,
->>>>Arkadiusz
