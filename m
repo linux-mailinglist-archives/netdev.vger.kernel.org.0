@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00299666A7A
+	by mail.lfdr.de (Postfix) with ESMTP id 53C9C666A78
 	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 05:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236570AbjALEm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 23:42:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34958 "EHLO
+        id S236679AbjALEm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 23:42:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236414AbjALEmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 23:42:25 -0500
+        with ESMTP id S236749AbjALEm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 23:42:26 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24BB4E42F
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 20:42:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCE6496E8
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 20:42:06 -0800 (PST)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30C3vuvJ001311;
-        Wed, 11 Jan 2023 20:41:57 -0800
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30C3vtGC001257;
+        Wed, 11 Jan 2023 20:42:01 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=p0D23KBpv4fRKp5Iy9t0AC2RwN2ZFq6GmggyczF6ZiE=;
- b=Gxejh1WLTvK1iQ1COwyOx8krrYMaXRmi2gY1itRJesZ72+Vz3LfmBBa2F5T4ho4XmOPj
- Mea8q9Pk1C+U8shFiYu6vteMv8AF8/hFKxBU1gKPMiGzrCvKUVSzElhUNdpbyUJGJmt4
- jeJT0F2npBJliAbIVnXWnRil+/EejBwLavDYbLu6Qy2mnaxWaiLR5udu3gL2htqxaJk0
- ram84p0wFPIjPzN7sguxSMsUD7Xi+Hu/KmTgMzXA8XdiNm1zqu1EXaZMiAi0b23MS27c
- wAot25aWXCDt5aTtsaQR1vyXXmvDBdBpuHrrZpJNMPoaCwAU3He0iRZ3O8+SM4tX3H5X nw== 
+ bh=QbyOzCAGtlZfAwujj3c5wFMCTSoi9jLOix7Ii/F5Zjk=;
+ b=DVeullUqUwe5URXOVH+Rarxmrv3Bmqql0QjVP6eSdZ0sC3oIhHBw7TKMqbj1fHN6jclS
+ DCjNzDzcRAvHdvhQEDoCHi6Fg2JG0O/ZQPnC707bhTmoqo8Ge5V2yrz++kWisWtZqvO+
+ IozzDiOpLL0VGIbBdep41chN6kpo+FMz2EuycE/4C28W4jI9optbWmZyf+lGLbEVpyFF
+ OIrJx9Appqw9Cxc+CVe5VcqUe2PdygxUwqz/XPYclTH7auvvX6Cp9Wxl39kEPdYARqWC
+ u8GhYsG0XrySNlJ0cCOG5kTigL4Pw8siuEaug2GxYHW1+eVwMs+D6Jo2kjlhc9l3rko1 og== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n23b2gscs-1
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n23b2gscx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Jan 2023 20:41:57 -0800
+        Wed, 11 Jan 2023 20:42:00 -0800
 Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 11 Jan
- 2023 20:41:55 -0800
+ 2023 20:41:59 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Wed, 11 Jan 2023 20:41:55 -0800
+ Transport; Wed, 11 Jan 2023 20:41:59 -0800
 Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 0A51F3F7051;
-        Wed, 11 Jan 2023 20:41:51 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id D918A3F7080;
+        Wed, 11 Jan 2023 20:41:55 -0800 (PST)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
-Subject: [PATCH v2 net-next,1/8] octeontx2-af: recover CPT engine when it gets fault
-Date:   Thu, 12 Jan 2023 10:11:40 +0530
-Message-ID: <20230112044147.931159-2-schalla@marvell.com>
+Subject: [PATCH v2 net-next,2/8] octeontx2-af: add mbox for CPT LF reset
+Date:   Thu, 12 Jan 2023 10:11:41 +0530
+Message-ID: <20230112044147.931159-3-schalla@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230112044147.931159-1-schalla@marvell.com>
 References: <20230112044147.931159-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: XSB9YCCznZMCMW1h6koFkxNaYIJbzNcd
-X-Proofpoint-ORIG-GUID: XSB9YCCznZMCMW1h6koFkxNaYIJbzNcd
+X-Proofpoint-GUID: 9cP-PF42P2w87N6cike_XNGGI-F-ZEVr
+X-Proofpoint-ORIG-GUID: 9cP-PF42P2w87N6cike_XNGGI-F-ZEVr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2023-01-12_02,2023-01-11_03,2022-06-22_01
@@ -68,190 +68,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CPT engine has uncorrectable errors, it will get halted and
-must be disabled and re-enabled. This patch adds code for the same.
+Adds a new mailbox to reset a requested CPT LF.
 
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 110 +++++++++++++-----
- 1 file changed, 80 insertions(+), 30 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  8 +++++
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 33 +++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index d2584ebb7a70..b121e3d9f561 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -195,6 +195,7 @@ M(CPT_STATS,            0xA05, cpt_sts, cpt_sts_req, cpt_sts_rsp)	\
+ M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
+ 			       msg_rsp)                                 \
+ M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
++M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
+ /* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
+ M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
+ M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
+@@ -1692,6 +1693,13 @@ struct cpt_inst_lmtst_req {
+ 	u64 rsvd;
+ };
+ 
++/* Mailbox message format to request for CPT LF reset */
++struct cpt_lf_rst_req {
++	struct mbox_msghdr hdr;
++	u32 slot;
++	u32 rsvd;
++};
++
+ struct sdp_node_info {
+ 	/* Node to which this PF belons to */
+ 	u8 node_id;
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index 38bbae5d9ae0..1ed16ce515bb 100644
+index 1ed16ce515bb..1cd34914cb86 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -37,34 +37,60 @@
- 	(_rsp)->free_sts_##etype = free_sts;                        \
- })
- 
--static irqreturn_t rvu_cpt_af_flt_intr_handler(int irq, void *ptr)
-+static irqreturn_t cpt_af_flt_intr_handler(int vec, void *ptr)
- {
- 	struct rvu_block *block = ptr;
- 	struct rvu *rvu = block->rvu;
- 	int blkaddr = block->addr;
--	u64 reg0, reg1, reg2;
--
--	reg0 = rvu_read64(rvu, blkaddr, CPT_AF_FLTX_INT(0));
--	reg1 = rvu_read64(rvu, blkaddr, CPT_AF_FLTX_INT(1));
--	if (!is_rvu_otx2(rvu)) {
--		reg2 = rvu_read64(rvu, blkaddr, CPT_AF_FLTX_INT(2));
--		dev_err_ratelimited(rvu->dev,
--				    "Received CPTAF FLT irq : 0x%llx, 0x%llx, 0x%llx",
--				     reg0, reg1, reg2);
--	} else {
--		dev_err_ratelimited(rvu->dev,
--				    "Received CPTAF FLT irq : 0x%llx, 0x%llx",
--				     reg0, reg1);
-+	u64 reg, val;
-+	int i, eng;
-+	u8 grp;
-+
-+	reg = rvu_read64(rvu, blkaddr, CPT_AF_FLTX_INT(vec));
-+	dev_err_ratelimited(rvu->dev, "Received CPTAF FLT%d irq : 0x%llx", vec, reg);
-+
-+	i = -1;
-+	while ((i = find_next_bit((unsigned long *)&reg, 64, i + 1)) < 64) {
-+		switch (vec) {
-+		case 0:
-+			eng = i;
-+			break;
-+		case 1:
-+			eng = i + 64;
-+			break;
-+		case 2:
-+			eng = i + 128;
-+			break;
-+		}
-+		grp = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng)) & 0xFF;
-+		/* Disable and enable the engine which triggers fault */
-+		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), 0x0);
-+		val = rvu_read64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng));
-+		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val & ~1ULL);
-+
-+		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL2(eng), grp);
-+		rvu_write64(rvu, blkaddr, CPT_AF_EXEX_CTL(eng), val | 1ULL);
- 	}
--
--	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(0), reg0);
--	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(1), reg1);
--	if (!is_rvu_otx2(rvu))
--		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(2), reg2);
-+	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT(vec), reg);
- 
- 	return IRQ_HANDLED;
+@@ -851,6 +851,39 @@ int rvu_mbox_handler_cpt_ctx_cache_sync(struct rvu *rvu, struct msg_req *req,
+ 	return rvu_cpt_ctx_flush(rvu, req->hdr.pcifunc);
  }
  
-+static irqreturn_t rvu_cpt_af_flt0_intr_handler(int irq, void *ptr)
++int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
++				  struct msg_rsp *rsp)
 +{
-+	return cpt_af_flt_intr_handler(CPT_AF_INT_VEC_FLT0, ptr);
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++	int cptlf, blkaddr, ret;
++	u16 actual_slot;
++	u64 ctl, ctl2;
++
++	blkaddr = rvu_get_blkaddr_from_slot(rvu, BLKTYPE_CPT, pcifunc,
++					    req->slot, &actual_slot);
++	if (blkaddr < 0)
++		return CPT_AF_ERR_LF_INVALID;
++
++	block = &rvu->hw->block[blkaddr];
++
++	cptlf = rvu_get_lf(rvu, block, pcifunc, actual_slot);
++	if (cptlf < 0)
++		return CPT_AF_ERR_LF_INVALID;
++	ctl = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
++	ctl2 = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
++
++	ret = rvu_lf_reset(rvu, block, cptlf);
++	if (ret)
++		dev_err(rvu->dev, "Failed to reset blkaddr %d LF%d\n",
++			block->addr, cptlf);
++
++	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), ctl);
++	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), ctl2);
++
++	return 0;
 +}
 +
-+static irqreturn_t rvu_cpt_af_flt1_intr_handler(int irq, void *ptr)
-+{
-+	return cpt_af_flt_intr_handler(CPT_AF_INT_VEC_FLT1, ptr);
-+}
-+
-+static irqreturn_t rvu_cpt_af_flt2_intr_handler(int irq, void *ptr)
-+{
-+	return cpt_af_flt_intr_handler(CPT_10K_AF_INT_VEC_FLT2, ptr);
-+}
-+
- static irqreturn_t rvu_cpt_af_rvu_intr_handler(int irq, void *ptr)
+ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
  {
- 	struct rvu_block *block = ptr;
-@@ -119,8 +145,10 @@ static void cpt_10k_unregister_interrupts(struct rvu_block *block, int off)
- 	int i;
- 
- 	/* Disable all CPT AF interrupts */
--	for (i = 0; i < CPT_10K_AF_INT_VEC_RVU; i++)
--		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(i), 0x1);
-+	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(0), ~0ULL);
-+	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(1), ~0ULL);
-+	rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(2), 0xFFFF);
-+
- 	rvu_write64(rvu, blkaddr, CPT_AF_RVU_INT_ENA_W1C, 0x1);
- 	rvu_write64(rvu, blkaddr, CPT_AF_RAS_INT_ENA_W1C, 0x1);
- 
-@@ -151,7 +179,7 @@ static void cpt_unregister_interrupts(struct rvu *rvu, int blkaddr)
- 
- 	/* Disable all CPT AF interrupts */
- 	for (i = 0; i < CPT_AF_INT_VEC_RVU; i++)
--		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(i), 0x1);
-+		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1C(i), ~0ULL);
- 	rvu_write64(rvu, blkaddr, CPT_AF_RVU_INT_ENA_W1C, 0x1);
- 	rvu_write64(rvu, blkaddr, CPT_AF_RAS_INT_ENA_W1C, 0x1);
- 
-@@ -172,16 +200,31 @@ static int cpt_10k_register_interrupts(struct rvu_block *block, int off)
- {
- 	struct rvu *rvu = block->rvu;
- 	int blkaddr = block->addr;
-+	irq_handler_t flt_fn;
- 	int i, ret;
- 
- 	for (i = CPT_10K_AF_INT_VEC_FLT0; i < CPT_10K_AF_INT_VEC_RVU; i++) {
- 		sprintf(&rvu->irq_name[(off + i) * NAME_SIZE], "CPTAF FLT%d", i);
-+
-+		switch (i) {
-+		case CPT_10K_AF_INT_VEC_FLT0:
-+			flt_fn = rvu_cpt_af_flt0_intr_handler;
-+			break;
-+		case CPT_10K_AF_INT_VEC_FLT1:
-+			flt_fn = rvu_cpt_af_flt1_intr_handler;
-+			break;
-+		case CPT_10K_AF_INT_VEC_FLT2:
-+			flt_fn = rvu_cpt_af_flt2_intr_handler;
-+			break;
-+		}
- 		ret = rvu_cpt_do_register_interrupt(block, off + i,
--						    rvu_cpt_af_flt_intr_handler,
--						    &rvu->irq_name[(off + i) * NAME_SIZE]);
-+						    flt_fn, &rvu->irq_name[(off + i) * NAME_SIZE]);
- 		if (ret)
- 			goto err;
--		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1S(i), 0x1);
-+		if (i == CPT_10K_AF_INT_VEC_FLT2)
-+			rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1S(i), 0xFFFF);
-+		else
-+			rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1S(i), ~0ULL);
- 	}
- 
- 	ret = rvu_cpt_do_register_interrupt(block, off + CPT_10K_AF_INT_VEC_RVU,
-@@ -208,8 +251,8 @@ static int cpt_register_interrupts(struct rvu *rvu, int blkaddr)
- {
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	struct rvu_block *block;
-+	irq_handler_t flt_fn;
- 	int i, offs, ret = 0;
--	char irq_name[16];
- 
- 	if (!is_block_implemented(rvu->hw, blkaddr))
- 		return 0;
-@@ -226,13 +269,20 @@ static int cpt_register_interrupts(struct rvu *rvu, int blkaddr)
- 		return cpt_10k_register_interrupts(block, offs);
- 
- 	for (i = CPT_AF_INT_VEC_FLT0; i < CPT_AF_INT_VEC_RVU; i++) {
--		snprintf(irq_name, sizeof(irq_name), "CPTAF FLT%d", i);
-+		sprintf(&rvu->irq_name[(offs + i) * NAME_SIZE], "CPTAF FLT%d", i);
-+		switch (i) {
-+		case CPT_AF_INT_VEC_FLT0:
-+			flt_fn = rvu_cpt_af_flt0_intr_handler;
-+			break;
-+		case CPT_AF_INT_VEC_FLT1:
-+			flt_fn = rvu_cpt_af_flt1_intr_handler;
-+			break;
-+		}
- 		ret = rvu_cpt_do_register_interrupt(block, offs + i,
--						    rvu_cpt_af_flt_intr_handler,
--						    irq_name);
-+						    flt_fn, &rvu->irq_name[(offs + i) * NAME_SIZE]);
- 		if (ret)
- 			goto err;
--		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1S(i), 0x1);
-+		rvu_write64(rvu, blkaddr, CPT_AF_FLTX_INT_ENA_W1S(i), ~0ULL);
- 	}
- 
- 	ret = rvu_cpt_do_register_interrupt(block, offs + CPT_AF_INT_VEC_RVU,
+ 	struct cpt_rxc_time_cfg_req req;
 -- 
 2.25.1
 
