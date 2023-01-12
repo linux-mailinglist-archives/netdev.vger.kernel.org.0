@@ -2,40 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FFF6670EB
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 12:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA87C667116
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 12:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233662AbjALLaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 06:30:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44536 "EHLO
+        id S234195AbjALLjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 06:39:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbjALL17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 06:27:59 -0500
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBC825E6;
-        Thu, 12 Jan 2023 03:20:21 -0800 (PST)
-Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
-        (envelope-from <n0-1@orbyte.nwl.cc>)
-        id 1pFvd5-0004qc-G6; Thu, 12 Jan 2023 12:20:19 +0100
-Date:   Thu, 12 Jan 2023 12:20:19 +0100
-From:   Phil Sutter <phil@netfilter.org>
-To:     netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
-        lwn@lwn.net
-Subject: [ANNOUNCE] iptables 1.8.9 release
-Message-ID: <Y7/s83d8D0z1QYt1@orbyte.nwl.cc>
-Mail-Followup-To: Phil Sutter <phil@netfilter.org>,
-        netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
-        lwn@lwn.net
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="s0pKw1af8TI9v0z2"
+        with ESMTP id S236775AbjALLii (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 06:38:38 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2050.outbound.protection.outlook.com [40.107.6.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FB6183B7;
+        Thu, 12 Jan 2023 03:29:29 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mIoo5CnWG/CsrV2Xdp7Xso+mrEHi9yFzAJMhIUNXHhUBFLDkrWB+TfzWiBs/AzfPUes1C5b2kwJ/plCPCs8faRqw+fG+cdpW9hl1I1cTXBK+Qd/Bhl2q2Ae1pdFw6pFrhPIa999Srv6XbA2VIkrS/VtvhJSQdRmOb/wGlnny4D2uHxCpa1LcptLMTCGaDiQbWYiLkiOFUmyPHq+uj5u+/JBL/Yv10DJiUVT2TwnApGdkykjK6Oe7ZsjvIWRukILraUy8Bj4Y0f1t20vVEAAO4vCAg3tWbwwa3Y+P//+O32RfxECcGLDcMvvszD6Hl2HRh1w1519bBEDn+5ssJXhJMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FcrahsnI1jNzxfUdfsCjjTpdO3BRr7NE6EToWuu1nrA=;
+ b=KfOY1pQI8XyJ1v711Kp8JJAaqEnp6GpBxbH00pWrRtBkn+XdfgW7dH1TWKIgKJXFqeLi48g8K6FLk0TNeUIulXJLS03Az3NH24790UaINOcdxFHQiu8xJJX+66XLDJ+rrFHGWGhgMI5GtMEJ8KK+MPkFHGW5VsenbujF6yW+YK4tGBvrfwsHRQ6j5mqPtUP+VK1qvguZAxh9ZOJFqQc6HqXr4Q9bR49vi1kL6Eq4pGN6wzxpo5MtM28ZhMj1xbSlSFzbLCKB6rp+CC5L9UM6Rj802OphSRpTbK4I3BZz+xWjZtQxfTcVVlI7Z6jXCiIwXQTnNOKsadM2Lu4Px7IBPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FcrahsnI1jNzxfUdfsCjjTpdO3BRr7NE6EToWuu1nrA=;
+ b=pHU/ZSs053ICDNsF5C/iKg9tc4V2fz079RKDWVPaPVDzfidO+jHMombZlYHDWvYmyYO4vGPEbU+Q3RmB+LHJwj5HY/x0WJUQeJXLsgO2eNoSg0gAwgGoy4d1ODFhojGMC53rIV2LNPj3/zkFhKLI/0tW23pZcn2dQlAZD//kPhU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8829.eurprd04.prod.outlook.com (2603:10a6:102:20c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Thu, 12 Jan
+ 2023 11:29:27 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.5986.018; Thu, 12 Jan 2023
+ 11:29:27 +0000
+Date:   Thu, 12 Jan 2023 13:29:22 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        Pranavi Somisetty <pranavi.somisetty@amd.com>,
+        Harini Katakam <harini.katakam@amd.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v2 net-next 00/12] ethtool support for IEEE 802.3 MAC
+ Merge layer
+Message-ID: <20230112112922.z2h4swask3pdzxlj@skbuf>
+References: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_NONE autolearn=no
+In-Reply-To: <20230111161706.1465242-1-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: BE1P281CA0137.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:7c::7) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8829:EE_
+X-MS-Office365-Filtering-Correlation-Id: 648e1bd5-c7c6-4ca9-c1f0-08daf49042b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JUOEUJ1f6FEUPm9hgO4C4DhSZCqDDWydKXcvo99QKSqU/Ho2U4gTzXlRhRPH9ygCbrqmfzUGBJhYb/7PboQdq9XRMUv9eb+XSIjGbtj+itLdHcFcnCQ2xUvaWx+9412BpLxfZudUOEoowCF8Ckua4xN5Rk/vIUmYWwmFKpmpPKY6i0yjRVf8E0XMZSE+3Ovzls7motoD+/bPLOGIefoshRkUMegHP67tpG4SYeMECggPhfrCNPYWNVt80ZSsBCY0C0PlBTiycRQLrApBoDHm2sTyZdl2Osdgb0ViKJOv0n8C9mfCj0UNezb0ImVsP9RXe/vppdEnAkH1lhmAgE8+f9OWAbzb+j6UN4YGW2nXMbTlY1scyrlnwXQ/3B24xg2/m/7jDFb8/i6Vcvoze8znOK+JwIZs1yEDYkHxMKbruvYF0Yn8hGSpzpdu8WSJ8CWjCRgciIBwV6EkbJkWwXO8OxhgaSCpnhIBZ5z0vMw7OxmZFAl1+FOg2NpiBCrwmpYy7aaeHUs7uo1AMgh09c0Ctmj9uFWjsyd3y5v9R+/qgjihcCVyNpPrip2VYuOoMCYLKMjDlEG9GiZ2dt4UjFDDXoRLS8hPgppPoz3J+xkCEUo4pr7fu+EWjL7Qgry7FmSA2X55B7vI4Y9GfMFpfGon97xIG54M89ONhmJCQZVSbKA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(136003)(376002)(346002)(366004)(396003)(39860400002)(451199015)(6506007)(38100700002)(6666004)(478600001)(33716001)(6486002)(966005)(66946007)(66556008)(66476007)(8676002)(6916009)(8936002)(86362001)(41300700001)(4326008)(4744005)(7416002)(44832011)(54906003)(5660300002)(316002)(83380400001)(1076003)(2906002)(186003)(9686003)(6512007)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ctZ1YK1Z0JvU5eKf4E3bKsyRoJ+E1e402uHByFJ3mdeyX6UdegQf4tLn/HrT?=
+ =?us-ascii?Q?pQpIc4I0DlQ4fi2tgQF8V++iixC0404D2Pp8GZ1EMAeyuAF+E0Sj33ldCe6J?=
+ =?us-ascii?Q?ZyIpoNGg55fA8kjSVc6xFkSP10/XG3q4OdpvCgQ/SM6O7RHszikDpSYE5Yco?=
+ =?us-ascii?Q?mNC7Wq+4qvC9pTX9/tzqbfUIKxNlYWWe/zQFu7IlXEG7nfvngr7ustW8FBcc?=
+ =?us-ascii?Q?gclFdTi9ZMoGLgOgNBSmjyByHdqtjGlR9tXAxkRlhfa8N4FFIpFQo/0LqVOP?=
+ =?us-ascii?Q?1AdJp4rDzK3MwsdVlFotwZpDAZ4u/kjoFoF0nCV6JUxjjPpN4kpm0EwaonIC?=
+ =?us-ascii?Q?w1XfbKI9zwdJsfEXiAd9qNNidf+aexoTQAqOVyk19yuxbsyRXfsi3C+Q0eeb?=
+ =?us-ascii?Q?rT9idJcE/WsGazDe8FQAMkUv5vUvsTRdI0yIVhkLkqGJcckbT6ad4Qn8vtlj?=
+ =?us-ascii?Q?ppUfBrEgjs2eX+I28E6pCPBrKzM1a6xcI3veQro2xLGTRBwWC7Rac1naNBAy?=
+ =?us-ascii?Q?2Z3AxyWFyEIPL/dkpvrgqSBPAK4wDqiVp/eiB/H8xbs7Yl9lgPsTroQQhS9U?=
+ =?us-ascii?Q?TZEOy89puKYykvS+jauNC1LNeJ6k/ykDRjNjqnWalSzvN4gJQnRFxAeKK+3g?=
+ =?us-ascii?Q?+1p2LMMrmrsSLOiKDHqO2YzDRw48r+PrBNtl7SdoBMFBpV1M5fCeCWXGADmx?=
+ =?us-ascii?Q?jxghQJFpQNU38ny/hK2yzZZZX0ZPZl1X1vKuGam/QQBTOtbiYPAVFms6zXUx?=
+ =?us-ascii?Q?FZuFJLM+dOZ1SHLfSiqMRJ+zZfzo8K4Vd9zq2MPp9kGsXenrDHcKWBBXRnaV?=
+ =?us-ascii?Q?v8WtORb5Zo4MYUa9zuSyNP2U1qOLvZvrkyp3JK2S/zNJx3fEfn+Guwq787OG?=
+ =?us-ascii?Q?TYQLZELhWSrLttiwOW7C2IXKPfPhIEi05UVyb3EvzoP0bJbQXrLAeuuTK0oJ?=
+ =?us-ascii?Q?4OGhGiRtf57uxUb0GHWehxY/aQs3KnOWAXP1u/YX7dX+DkU9JiGXLzI3Yi9l?=
+ =?us-ascii?Q?ceCbMKeYcGNncQ5TcTTopyuGx8CXH1sMRQ0FpuGc+ZXmX6TR6Ip2EnzIYBcT?=
+ =?us-ascii?Q?W2oJLN5Dwp5NCmUeUQdkYYrGZa8Mm+akCPlXZc8q+RJVYiwr3rJAmcZn1xOT?=
+ =?us-ascii?Q?fsKRLX7SM+ZeN17TtAPQwJS3Ky0roByVpAWNVlQEe0x1jzELZvLlJ1+eP9yw?=
+ =?us-ascii?Q?Ps0be02+NIVIEFVVaMl0oMQk6oul8ur8S04trBxzl+OtgAi1CqKV5XdKYuf8?=
+ =?us-ascii?Q?H30Dm1IffTGT6dfpmLipliISdZ+4pCUnFkCEumL6SImGjhLzz6oXP4pI9DU3?=
+ =?us-ascii?Q?vntS29TiGFajOpGWvan1OgHEon2TXzxFnlDyTenwlbmAS2DnqFRABKF5M8PK?=
+ =?us-ascii?Q?KUSJFBJjfMtHUbII9MflngpR6SjUlpR+oAHg2nyJR53bjOoaGcYmR2ABWAxy?=
+ =?us-ascii?Q?tILQrZLOEjeyTr9T1xThvkefIcQlHDwqijSZNVkmOOtTo+4nT7s2FOrS6QOy?=
+ =?us-ascii?Q?S1T9cUQEF7rUb4R3Kwlbq2GWqZ/2BvXOLqLyTNslWeSgxFoAF6UGdF5QEfpW?=
+ =?us-ascii?Q?FBodLvsSS0HUS+fcX7r+LuniJldgsuxnX3nsENN4Z0tH2MFc3HTV9wXyCQS+?=
+ =?us-ascii?Q?yA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 648e1bd5-c7c6-4ca9-c1f0-08daf49042b8
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 11:29:26.9468
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8XiK991QEf3nKFK129KSsCF0wBWySITNLPirpePJgYLaZwDmxPVmIchPt1hFt2SFi29KtR+xZylv7ZS0oAhpQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8829
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -43,252 +130,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 11, 2023 at 06:16:54PM +0200, Vladimir Oltean wrote:
+> This is a continuation of my work started here:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20220816222920.1952936-1-vladimir.oltean@nxp.com/
+> 
+> I've decided to focus just on the MAC Merge layer for now, which is why
+> I am able to submit this patch set as non-RFC.
 
---s0pKw1af8TI9v0z2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi!
-
-The Netfilter project proudly presents:
-
-        iptables 1.8.9
-
-This release contains new features:
-
-* arptables-nft: Support --exact flag
-* Add --enable-profiling configure option, preparing for gcov/gprof
-* Support more chunk types in sctp extension
-* Print '--' in ip6tables' 'opt' column for consistency with iptables
-* More verbose error messages if iptables-nft-restore fails
-* Support '-p Length' with ebtables-nft, needed for 802_3 extension
-* Merge all NAT extensions into a single DSO
-* Install ebtables-translate tool
-
-... and fixes:
-
-* Misc compiler warnings
-* Duplicate ETH_ALEN definition when building against musl libc
-* Failing out-of-tree build
-* Avoid symbol pollution by limiting scope of some in xtables.h
-* Increase testsuites' code-coverage
-* Using --init-table would crash ebtables-restore, reject it properly
-* Fix potential read from garbage in string extension
-* Add missing nf_log.h kernel header to dist
-* Fix listing format with overly long 'prot' column entries
-* Print numeric protocol values with --numeric
-* Broken ebtables' among match with MAC+IP address entries
-* Occasional wrong line number reported by failing iptables-nft-restore
-* Multiple rules using among match broke ebtables-restore
-* Renaming a chain in legacy iptables could crash the program
-* A second bitwise expression in a rule would mangle the first one
-* More strictly reject rules with unexpected content
-* Many xtables-translate fixes
-* Misc memory leaks and garbage access, satisfy valgrind's leak checker
-
-... and documentation updates:
-
-* Iptables exits when setuid, mention this in man page
-* Improve NFQUEUE queue-balance documentation
-
-You can download the new release from:
-
-https://netfilter.org/projects/iptables/downloads.html#iptables-1.8.9
-
-In case of bugs, file them via:
-
-* https://bugzilla.netfilter.org
-
-Happy firewalling!
-
---s0pKw1af8TI9v0z2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment; filename="changes-iptables-1.8.9.txt"
-Content-Transfer-Encoding: 8bit
-
-Anton Luka Šijanec (1):
-      xtables-monitor: add missing spaces in printed str
-
-Ben Brown (1):
-      build: Fix error during out of tree build
-
-Erik Skultety (1):
-      iptables: xshared: Ouptut '--' in the opt field in ipv6's fake mode
-
-Florian Westphal (19):
-      iptables.8: mention that iptables exits when setuid
-      extensions: libxt_conntrack: remove always-false conditionals
-      nft: fix ebtables among match when mac+ip addresses are used
-      nft: support dissection of meta pkktype mode
-      nft: prefer native 'meta pkttype' instead of xt match
-      extensions: libxt_pkttype: support otherhost
-      nft: support ttl/hoplimit dissection
-      nft: prefer payload to ttl/hl module
-      nft: un-break among match with concatenation
-      Revert "nft: prefer payload to ttl/hl module"/'meta pkttype' match.
-      nft: track each register individually
-      tests: extend native delinearize script
-      nft: check for unknown meta keys
-      iptables-nft: exit nonzero when iptables-save cannot decode all expressions
-      xlate: get rid of escape_quotes
-      extensions: change expected output for new format
-      xlate-test: avoid shell entanglements
-      nft-bridge: work around recent "among" decode breakage
-      extensions: add xt_statistics random mode translation
-
-Markus Mayer (1):
-      netfilter: add nf_log.h
-
-Nick Hainke (1):
-      treewide: use uint* instead of u_int*
-
-Pablo Neira Ayuso (2):
-      nft: replace nftnl_.*_nlmsg_build_hdr() by nftnl_nlmsg_build_hdr()
-      nft-shared: replace nftnl_expr_get_data() by nftnl_expr_get()
-
-Phil Sutter (136):
-      xshared: Fix build for -Werror=format-security
-      Revert "fix build for missing ETH_ALEN definition"
-      tests: shell: Check overhead in iptables-save and -restore
-      libxtables: Unexport init_extensions*() declarations
-      arptables: Support -x/--exact flag
-      iptables-legacy: Drop redundant include of xtables-multi.h
-      xshared: Make some functions static
-      Makefile: Add --enable-profiling configure option
-      tests: shell: Add some more rules to 0002-verbose-output_0
-      tests: shell: Extend iptables-xml test a bit
-      tests: shell: Extend zero counters test a bit further
-      extensions: libebt_standard.t: Test logical-{in,out} as well
-      ebtables-restore: Deny --init-table
-      extensions: string: Do not print default --to value
-      extensions: string: Review parse_string() function
-      extensions: string: Fix and enable tests
-      nft: Exit if nftnl_alloc_expr fails
-      libxtables: Move struct xtables_afinfo into xtables.h
-      libxtables: Define XT_OPTION_OFFSET_SCALE in xtables.h
-      libxtables: Fix unsupported extension warning corner case
-      tests: shell: Fix testcases for changed ip6tables opts output
-      xshared: Fix for missing space after 'prot' column
-      xshared: Print protocol numbers if --numeric was given
-      xtables-restore: Extend failure error message
-      nft: Expand extended error reporting to nft_cmd, too
-      tests: shell: Test delinearization of native nftables expressions
-      ebtables: Drop unused OPT_* defines
-      ebtables: Eliminate OPT_TABLE
-      ebtables: Merge OPT_* flags with xshared ones
-      nft-shared: Introduce __get_cmp_data()
-      ebtables: Support '-p Length'
-      ebtables: Fix among match
-      nft: Fix meta statement parsing
-      nft-bridge: Drop 'sreg_count' variable
-      tests: iptables-test: Simplify '-N' option a bit
-      tests: iptables-test: Simplify execute_cmd() calling
-      tests: iptables-test: Pass netns to execute_cmd()
-      tests: iptables-test: Test both variants by default
-      extensions: among: Remove pointless fall through
-      extensions: among: Fix for use with ebtables-restore
-      extensions: libebt_stp: Eliminate duplicate space in output
-      extensions: libip6t_dst: Fix output for empty options
-      extensions: TCPOPTSTRIP: Do not print empty options
-      extensions: libebt_log: Avoid empty log-prefix in output
-      tests: IDLETIMER.t: Fix syntax, support for restore input
-      tests: libebt_stp.t: Drop duplicate whitespace
-      tests: shell: Fix expected output for ip6tables dst match
-      tests: shell: Fix expected ebtables log target output
-      libiptc: Fix for segfault when renaming a chain
-      nft: Fix compile with -DDEBUG
-      extensions: NFQUEUE: Document queue-balance limitation
-      tests: iptables-test: Implement fast test mode
-      tests: iptables-test: Cover for obligatory -j CONTINUE in ebtables
-      tests: *.t: Fix expected output for simple calls
-      tests: *.t: Fix for hexadecimal output
-      tests: libebt_redirect.t: Plain redirect prints with trailing whitespace
-      tests: libxt_length.t: Fix odd use-case output
-      tests: libxt_recent.t: Add missing default values
-      tests: libxt_tos.t, libxt_TOS.t: Add missing masks in output
-      tests: libebt_vlan.t: Drop trailing whitespace from rules
-      tests: libxt_connlimit.t: Add missing default values
-      tests: *.t: Add missing all-one's netmasks to expected output
-      extensions: DNAT: Fix bad IP address error reporting
-      extensions: *NAT: Drop NF_NAT_RANGE_PROTO_RANDOM* flag checks
-      extensions: DNAT: Use __DNAT_xlate for REDIRECT, too
-      extensions: DNAT: Generate print, save and xlate callbacks
-      extensions: DNAT: Rename some symbols
-      extensions: Merge SNAT, DNAT, REDIRECT and MASQUERADE
-      tests: xlate-test: Cleanup file reading loop
-      tests: xlate-test.py: Introduce run_proc()
-      tests: xlate-test: Replay results for reverse direction testing
-      xshared: Share make_delete_mask() between ip{,6}tables
-      nft-shared: Introduce port_match_single_to_range()
-      extensions: libip*t_LOG: Merge extensions
-      extensions: libebt_ip: Include kernel header
-      extensions: libebt_arp, libebt_ip: Use xtables_ipparse_any()
-      extensions: Collate ICMP types/codes in libxt_icmp.h
-      extensions: Unify ICMP parser into libxt_icmp.h
-      Drop extra newline from xtables_error() calls
-      extensions: mark: Test double bitwise in a rule
-      extensions: libebt_mark: Fix mark target xlate
-      extensions: libebt_mark: Fix xlate test case
-      extensions: libebt_redirect: Fix xlate return code
-      extensions: libipt_ttl: Sanitize xlate callback
-      extensions: CONNMARK: Fix xlate callback
-      extensions: MARK: Sanitize MARK_xlate()
-      extensions: TCPMSS: Use xlate callback for IPv6, too
-      extensions: TOS: Fix v1 xlate callback
-      extensions: ecn: Sanitize xlate callback
-      extensions: tcp: Translate TCP option match
-      extensions: libebt_log: Add comment to clarify xlate callback
-      extensions: frag: Add comment to clarify xlate callback
-      extensions: ipcomp: Add comment to clarify xlate callback
-      libxtables: xt_xlate_add() to take care of spacing
-      extensions: Leverage xlate auto-spacing
-      extensions: libxt_conntrack: Drop extra whitespace in xlate
-      extensions: xlate: Format sets consistently
-      tests: shell: Test selective ebtables flushing
-      tests: shell: Fix valgrind mode for 0008-unprivileged_0
-      iptables-restore: Free handle with --test also
-      iptables-xml: Free allocated chain strings
-      nft: Plug memleak in nft_rule_zero_counters()
-      iptables: Plug memleaks in print_firewall()
-      xtables: Introduce xtables_clear_iptables_command_state()
-      iptables: Properly clear iptables_command_state object
-      xshared: Free data after printing help
-      libiptc: Eliminate garbage access
-      ebtables: Implement --check command
-      tests: xlate: Use --check to verify replay
-      nft: Fix for comparing ifname matches against nft-generated ones
-      nft: Fix match generator for '! -i +'
-      nft: Recognize INVAL/D interface name
-      xtables-translate: Fix for interfaces with asterisk mid-string
-      ebtables: Fix MAC address match translation
-      Makefile: Create LZMA-compressed dist-files
-      Drop INCOMPATIBILITIES file
-      Drop libiptc/linux_stddef.h
-      Makefile: Generate ip6tables man pages on the fly
-      extensions: Makefile: Merge initext targets
-      iptables/Makefile: Reorg variable assignments
-      iptables/Makefile: Split nft-variant man page list
-      Makefile: Fix for 'make distcheck'
-      Makefile: Generate .tar.xz archive with 'make dist'
-      include/Makefile: xtables-version.h is generated
-      tests: Adjust testsuite return codes to automake guidelines
-      Makefile.am: Integrate testsuites
-      nft: Parse icmp header matches
-      arptables: Check the mandatory ar_pln match
-      nft: Increase rule parser strictness
-      nft: Make rule parsing errors fatal
-      nft: Reject tcp/udp extension without proper protocol match
-      gitignore: Ignore utils/nfsynproxy
-      gitignore: Ignore generated ip6tables man pages
-      ebtables-translate: Install symlink
-      Makefile: Replace brace expansion
-      configure: Bump version for 1.8.9 release
-
-Yi Chen (1):
-      tests: add ebtables among testcase
-
-Yuxuan Luo (1):
-      xt_sctp: support a couple of new chunk types
-
-
---s0pKw1af8TI9v0z2--
+As it happens, this patch set seems to conflict with the recently merged
+8580e16c28f3 ("net/ethtool: add netlink interface for the PLCA RS").
+It is still possible to apply and test on a set of kernel UAPI headers
+prior to that commit, so I will leave reviewers/testers more time to
+comment, and will not resend kernel + user space patches just for this
+fact.
