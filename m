@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 301AA66729B
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 13:52:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB4BE6672CC
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 14:01:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbjALMv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 07:51:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
+        id S233994AbjALNBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 08:01:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjALMv4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 07:51:56 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49131131;
-        Thu, 12 Jan 2023 04:51:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Ka0B6ZRYHP+Z/pIWCv9PAnb+5byUzLYOug/EwehsPSU=; b=a0M6V+AkuXSXH8M3porhaxRO5u
-        JTD2y44bQVmythEQF8tkoYLs0rSzNzlPatKKr+2Ln1kFfWnkI+12Yp02hGU+EFJkaXkNx0mSExkYg
-        IUsKZW+qmEBsIgjiiJdkt6KhVp6Zscm+ICEjIWjV5BGPp1IIbauiNNZ9LEuzlnRJfi6A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pFx3P-001rbu-HM; Thu, 12 Jan 2023 13:51:35 +0100
-Date:   Thu, 12 Jan 2023 13:51:35 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
-        sbhatta@marvell.com, linux-doc@vger.kernel.org,
-        wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
-        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
-Subject: Re: [PATCH net-next 1/1] plca.c: fix obvious mistake in checking
- retval
-Message-ID: <Y8ACVykpY11Sq/Pg@lunn.ch>
-References: <f6b7050dcfb07714fb3abdb89829a3820e6a555c.1673458121.git.piergiorgio.beruto@gmail.com>
+        with ESMTP id S232996AbjALNAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 08:00:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6542157900;
+        Thu, 12 Jan 2023 04:58:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7392D60AC6;
+        Thu, 12 Jan 2023 12:58:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECCEC433EF;
+        Thu, 12 Jan 2023 12:58:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1673528293;
+        bh=D3nneqHedZvyKHPM/6g/ukFvUrU8cEN4MzJmLMER4WQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EKgIOzeDfF66LR9/+ePXrH9jj5zH5Qu+kEYGRgxRaK5znqZKlNXVepAK/pD/bhnym
+         RFGBt0mLv9t6Rrpq9B5CxPXif0hrp+Yj4EX4KT0NyinNAKskgM1FKBzjblv1Lx5jjC
+         pqPhBKes99TzMlyJJZXBkwt17NITK7BCihKt4hwA=
+Date:   Thu, 12 Jan 2023 13:58:10 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Nikita Zhandarovich <n.zhandarovich@fintech.ru>
+Cc:     stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH 5.10 0/1] mt76: move mt76_init_tx_queue in common code
+Message-ID: <Y8AD4jdyOpqrPT9a@kroah.com>
+References: <20230112115850.9208-1-n.zhandarovich@fintech.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f6b7050dcfb07714fb3abdb89829a3820e6a555c.1673458121.git.piergiorgio.beruto@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230112115850.9208-1-n.zhandarovich@fintech.ru>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 06:30:48PM +0100, Piergiorgio Beruto wrote:
-> This patch addresses a wrong fix that was done during the review
-> process. The intention was to substitute "if(ret < 0)" with
-> "if(ret)". Unfortunately, in this specific file the intended fix did not
-> meet the code.
+On Thu, Jan 12, 2023 at 03:58:49AM -0800, Nikita Zhandarovich wrote:
+> Svace has identified unchecked return value of mt7615_init_tx_queue
+> function in 5.10 branch, even though it makes sense to track it
+> instead. This issue is fixed in upstream version by Lorenzo's patch.
 > 
-> Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+> The same patch can be cleanly applied to the 5.10 branch.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+I do not understand, what issue/bug does this fix?  And how can you
+trigger it?  And why only worry about the 5.10.y kernel branch?
 
-    Andrew
+thanks,
+
+greg k-h
