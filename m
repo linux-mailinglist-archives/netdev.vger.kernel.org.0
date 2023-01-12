@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE357667908
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F348E667902
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240392AbjALPXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:23:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
+        id S229840AbjALPXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:23:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234760AbjALPWx (ORCPT
+        with ESMTP id S235143AbjALPWx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:53 -0500
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C165F90B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6BA5E0A0;
         Thu, 12 Jan 2023 07:15:26 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id AEFE013A8;
-        Thu, 12 Jan 2023 16:15:23 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 699BC15D5;
+        Thu, 12 Jan 2023 16:15:24 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673536524;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=X+EXB67jHQWbpiH7doIgNE3IzkUk0cDpvd28eCdXdHc=;
-        b=v1SObeTRNLJpjdepJB7CjLj8we54Y2ol5tw/KNMZVQv/PCNAjn3qGES8Opj1EierfvQF2F
-        5yXBRSR2/bR4rGjF3f64jjLhK0xiIaoJ2HGEy7J2goNbvFdIH6YX+BXYKYk/9ibd1bZMpe
-        ekpCdU+EDimoTFVuAhwLDCCWUR/bzXM5qJJtcCY4dJjI+C2VBipzT70njkYRSA+msRchXp
-        IUCtZqNJqkS1JPJpluCwl1g2ZA8fpPd2FY/r6FSyGGZzPIQjH6LTLVu28AexHrJxIEXHOy
-        +o64u1du+Gp9RBHKJVQRomZh+G3l8tVm2sz00HHeXQUFjRQwn6uS9wCXJvuCqQ==
+        bh=QGlMvwVE0XBFSe9hGJvTgj13A12QmBDoi6rAazqMrhA=;
+        b=ZscdTe8D24J1musI5j2G7C9p7+ZQ5A+f8En3gxFovHFbVirPpUojaZkfg333kVIDkDF3u1
+        JkLizYnIr5ACFDZnrUbxG7bosetMyVxoGTk4vVHb3dlVYWpyrNR3Gv8VlK90gXxJzafZ6J
+        xAmzBjKWMTol8QKlyKKhzrU2+AzcReoW6O5Lkwhj8E3BH6xgVrvjvKNoB3/nprPu4gTFIA
+        YStEnuS/eof5Rt7PsXK7P80//8ogCCMooFjZwakakV+TeFA6h3WcMwkRo12ls99PGFIO4e
+        d0VputPdm1yE5Q/e/hkRFikGmt7mi5GgxQNdqBEw9dFiWC7f9diy0rkmOmtt7A==
 From:   Michael Walle <michael@walle.cc>
-Date:   Thu, 12 Jan 2023 16:15:07 +0100
-Subject: [PATCH net-next 01/10] net: mdio: cavium: Separate C22 and C45 transactions
+Date:   Thu, 12 Jan 2023 16:15:08 +0100
+Subject: [PATCH net-next 02/10] net: mdio: i2c: Separate C22 and C45 transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230112-net-next-c45-seperation-part-2-v1-1-5eeaae931526@walle.cc>
+Message-Id: <20230112-net-next-c45-seperation-part-2-v1-2-5eeaae931526@walle.cc>
 References: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 In-Reply-To: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -86,249 +86,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-The cavium IP can perform both C22 and C45 transfers.  Create separate
-functions for each and register the C45 versions in both the octeon
-and thunder bus driver.
+The MDIO over I2C bus driver can perform both C22 and C45 transfers.
+Create separate functions for each and register the C45 versions using
+the new API calls.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/mdio/mdio-cavium.c  | 111 +++++++++++++++++++++++++++++-----------
- drivers/net/mdio/mdio-cavium.h  |   9 +++-
- drivers/net/mdio/mdio-octeon.c  |   6 ++-
- drivers/net/mdio/mdio-thunder.c |   6 ++-
- 4 files changed, 95 insertions(+), 37 deletions(-)
+ drivers/net/mdio/mdio-i2c.c | 32 +++++++++++++++++++++++---------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-cavium.c b/drivers/net/mdio/mdio-cavium.c
-index 95ce274c1be1..fd81546a4d3d 100644
---- a/drivers/net/mdio/mdio-cavium.c
-+++ b/drivers/net/mdio/mdio-cavium.c
-@@ -26,7 +26,7 @@ static void cavium_mdiobus_set_mode(struct cavium_mdiobus *p,
+diff --git a/drivers/net/mdio/mdio-i2c.c b/drivers/net/mdio/mdio-i2c.c
+index bf8bf5e20faf..9577a1842997 100644
+--- a/drivers/net/mdio/mdio-i2c.c
++++ b/drivers/net/mdio/mdio-i2c.c
+@@ -30,7 +30,8 @@ static unsigned int i2c_mii_phy_addr(int phy_id)
+ 	return phy_id + 0x40;
  }
  
- static int cavium_mdiobus_c45_addr(struct cavium_mdiobus *p,
--				   int phy_id, int regnum)
-+				   int phy_id, int devad, int regnum)
+-static int i2c_mii_read_default(struct mii_bus *bus, int phy_id, int reg)
++static int i2c_mii_read_default_c45(struct mii_bus *bus, int phy_id, int devad,
++				    int reg)
  {
- 	union cvmx_smix_cmd smi_cmd;
- 	union cvmx_smix_wr_dat smi_wr;
-@@ -38,12 +38,10 @@ static int cavium_mdiobus_c45_addr(struct cavium_mdiobus *p,
- 	smi_wr.s.dat = regnum & 0xffff;
- 	oct_mdio_writeq(smi_wr.u64, p->register_base + SMI_WR_DAT);
+ 	struct i2c_adapter *i2c = bus->priv;
+ 	struct i2c_msg msgs[2];
+@@ -41,8 +42,8 @@ static int i2c_mii_read_default(struct mii_bus *bus, int phy_id, int reg)
+ 		return 0xffff;
  
--	regnum = (regnum >> 16) & 0x1f;
--
- 	smi_cmd.u64 = 0;
- 	smi_cmd.s.phy_op = 0; /* MDIO_CLAUSE_45_ADDRESS */
- 	smi_cmd.s.phy_adr = phy_id;
--	smi_cmd.s.reg_adr = regnum;
-+	smi_cmd.s.reg_adr = devad;
- 	oct_mdio_writeq(smi_cmd.u64, p->register_base + SMI_CMD);
- 
- 	do {
-@@ -59,28 +57,51 @@ static int cavium_mdiobus_c45_addr(struct cavium_mdiobus *p,
- 	return 0;
+ 	p = addr;
+-	if (reg & MII_ADDR_C45) {
+-		*p++ = 0x20 | ((reg >> 16) & 31);
++	if (devad >= 0) {
++		*p++ = 0x20 | devad;
+ 		*p++ = reg >> 8;
+ 	}
+ 	*p++ = reg;
+@@ -64,8 +65,8 @@ static int i2c_mii_read_default(struct mii_bus *bus, int phy_id, int reg)
+ 	return data[0] << 8 | data[1];
  }
  
--int cavium_mdiobus_read(struct mii_bus *bus, int phy_id, int regnum)
-+int cavium_mdiobus_read_c22(struct mii_bus *bus, int phy_id, int regnum)
+-static int i2c_mii_write_default(struct mii_bus *bus, int phy_id, int reg,
+-				 u16 val)
++static int i2c_mii_write_default_c45(struct mii_bus *bus, int phy_id,
++				     int devad, int reg, u16 val)
  {
- 	struct cavium_mdiobus *p = bus->priv;
- 	union cvmx_smix_cmd smi_cmd;
- 	union cvmx_smix_rd_dat smi_rd;
--	unsigned int op = 1; /* MDIO_CLAUSE_22_READ */
- 	int timeout = 1000;
+ 	struct i2c_adapter *i2c = bus->priv;
+ 	struct i2c_msg msg;
+@@ -76,8 +77,8 @@ static int i2c_mii_write_default(struct mii_bus *bus, int phy_id, int reg,
+ 		return 0;
  
--	if (regnum & MII_ADDR_C45) {
--		int r = cavium_mdiobus_c45_addr(p, phy_id, regnum);
-+	cavium_mdiobus_set_mode(p, C22);
-+
-+	smi_cmd.u64 = 0;
-+	smi_cmd.s.phy_op = 1; /* MDIO_CLAUSE_22_READ */;
-+	smi_cmd.s.phy_adr = phy_id;
-+	smi_cmd.s.reg_adr = regnum;
-+	oct_mdio_writeq(smi_cmd.u64, p->register_base + SMI_CMD);
-+
-+	do {
-+		/* Wait 1000 clocks so we don't saturate the RSL bus
-+		 * doing reads.
-+		 */
-+		__delay(1000);
-+		smi_rd.u64 = oct_mdio_readq(p->register_base + SMI_RD_DAT);
-+	} while (smi_rd.s.pending && --timeout);
-+
-+	if (smi_rd.s.val)
-+		return smi_rd.s.dat;
-+	else
-+		return -EIO;
-+}
-+EXPORT_SYMBOL(cavium_mdiobus_read_c22);
+ 	p = data;
+-	if (reg & MII_ADDR_C45) {
+-		*p++ = (reg >> 16) & 31;
++	if (devad >= 0) {
++		*p++ = devad;
+ 		*p++ = reg >> 8;
+ 	}
+ 	*p++ = reg;
+@@ -94,6 +95,17 @@ static int i2c_mii_write_default(struct mii_bus *bus, int phy_id, int reg,
+ 	return ret < 0 ? ret : 0;
+ }
  
--		if (r < 0)
--			return r;
-+int cavium_mdiobus_read_c45(struct mii_bus *bus, int phy_id, int devad,
-+			    int regnum)
++static int i2c_mii_read_default_c22(struct mii_bus *bus, int phy_id, int reg)
 +{
-+	struct cavium_mdiobus *p = bus->priv;
-+	union cvmx_smix_cmd smi_cmd;
-+	union cvmx_smix_rd_dat smi_rd;
-+	int timeout = 1000;
-+	int r;
- 
--		regnum = (regnum >> 16) & 0x1f;
--		op = 3; /* MDIO_CLAUSE_45_READ */
--	} else {
--		cavium_mdiobus_set_mode(p, C22);
--	}
-+	r = cavium_mdiobus_c45_addr(p, phy_id, devad, regnum);
-+	if (r < 0)
-+		return r;
- 
- 	smi_cmd.u64 = 0;
--	smi_cmd.s.phy_op = op;
-+	smi_cmd.s.phy_op = 3; /* MDIO_CLAUSE_45_READ */
- 	smi_cmd.s.phy_adr = phy_id;
- 	smi_cmd.s.reg_adr = regnum;
- 	oct_mdio_writeq(smi_cmd.u64, p->register_base + SMI_CMD);
-@@ -98,36 +119,64 @@ int cavium_mdiobus_read(struct mii_bus *bus, int phy_id, int regnum)
- 	else
- 		return -EIO;
- }
--EXPORT_SYMBOL(cavium_mdiobus_read);
-+EXPORT_SYMBOL(cavium_mdiobus_read_c45);
- 
--int cavium_mdiobus_write(struct mii_bus *bus, int phy_id, int regnum, u16 val)
-+int cavium_mdiobus_write_c22(struct mii_bus *bus, int phy_id, int regnum,
-+			     u16 val)
- {
- 	struct cavium_mdiobus *p = bus->priv;
- 	union cvmx_smix_cmd smi_cmd;
- 	union cvmx_smix_wr_dat smi_wr;
--	unsigned int op = 0; /* MDIO_CLAUSE_22_WRITE */
- 	int timeout = 1000;
- 
--	if (regnum & MII_ADDR_C45) {
--		int r = cavium_mdiobus_c45_addr(p, phy_id, regnum);
-+	cavium_mdiobus_set_mode(p, C22);
- 
--		if (r < 0)
--			return r;
-+	smi_wr.u64 = 0;
-+	smi_wr.s.dat = val;
-+	oct_mdio_writeq(smi_wr.u64, p->register_base + SMI_WR_DAT);
- 
--		regnum = (regnum >> 16) & 0x1f;
--		op = 1; /* MDIO_CLAUSE_45_WRITE */
--	} else {
--		cavium_mdiobus_set_mode(p, C22);
--	}
-+	smi_cmd.u64 = 0;
-+	smi_cmd.s.phy_op = 0; /* MDIO_CLAUSE_22_WRITE */;
-+	smi_cmd.s.phy_adr = phy_id;
-+	smi_cmd.s.reg_adr = regnum;
-+	oct_mdio_writeq(smi_cmd.u64, p->register_base + SMI_CMD);
-+
-+	do {
-+		/* Wait 1000 clocks so we don't saturate the RSL bus
-+		 * doing reads.
-+		 */
-+		__delay(1000);
-+		smi_wr.u64 = oct_mdio_readq(p->register_base + SMI_WR_DAT);
-+	} while (smi_wr.s.pending && --timeout);
-+
-+	if (timeout <= 0)
-+		return -EIO;
-+
-+	return 0;
++	return i2c_mii_read_default_c45(bus, phy_id, -1, reg);
 +}
-+EXPORT_SYMBOL(cavium_mdiobus_write_c22);
 +
-+int cavium_mdiobus_write_c45(struct mii_bus *bus, int phy_id, int devad,
-+			     int regnum, u16 val)
++static int i2c_mii_write_default_c22(struct mii_bus *bus, int phy_id, int reg,
++				     u16 val)
 +{
-+	struct cavium_mdiobus *p = bus->priv;
-+	union cvmx_smix_cmd smi_cmd;
-+	union cvmx_smix_wr_dat smi_wr;
-+	int timeout = 1000;
-+	int r;
++	return i2c_mii_write_default_c45(bus, phy_id, -1, reg, val);
++}
 +
-+	r = cavium_mdiobus_c45_addr(p, phy_id, devad, regnum);
-+	if (r < 0)
-+		return r;
+ /* RollBall SFPs do not access internal PHY via I2C address 0x56, but
+  * instead via address 0x51, when SFP page is set to 0x03 and password to
+  * 0xffffffff.
+@@ -403,8 +415,10 @@ struct mii_bus *mdio_i2c_alloc(struct device *parent, struct i2c_adapter *i2c,
+ 		mii->write = i2c_mii_write_rollball;
+ 		break;
+ 	default:
+-		mii->read = i2c_mii_read_default;
+-		mii->write = i2c_mii_write_default;
++		mii->read = i2c_mii_read_default_c22;
++		mii->write = i2c_mii_write_default_c22;
++		mii->read_c45 = i2c_mii_read_default_c45;
++		mii->write_c45 = i2c_mii_write_default_c45;
+ 		break;
+ 	}
  
- 	smi_wr.u64 = 0;
- 	smi_wr.s.dat = val;
- 	oct_mdio_writeq(smi_wr.u64, p->register_base + SMI_WR_DAT);
- 
- 	smi_cmd.u64 = 0;
--	smi_cmd.s.phy_op = op;
-+	smi_cmd.s.phy_op = 1; /* MDIO_CLAUSE_45_WRITE */
- 	smi_cmd.s.phy_adr = phy_id;
--	smi_cmd.s.reg_adr = regnum;
-+	smi_cmd.s.reg_adr = devad;
- 	oct_mdio_writeq(smi_cmd.u64, p->register_base + SMI_CMD);
- 
- 	do {
-@@ -143,7 +192,7 @@ int cavium_mdiobus_write(struct mii_bus *bus, int phy_id, int regnum, u16 val)
- 
- 	return 0;
- }
--EXPORT_SYMBOL(cavium_mdiobus_write);
-+EXPORT_SYMBOL(cavium_mdiobus_write_c45);
- 
- MODULE_DESCRIPTION("Common code for OCTEON and Thunder MDIO bus drivers");
- MODULE_AUTHOR("David Daney");
-diff --git a/drivers/net/mdio/mdio-cavium.h b/drivers/net/mdio/mdio-cavium.h
-index a2245d436f5d..71b8e20cd664 100644
---- a/drivers/net/mdio/mdio-cavium.h
-+++ b/drivers/net/mdio/mdio-cavium.h
-@@ -114,5 +114,10 @@ static inline u64 oct_mdio_readq(void __iomem *addr)
- #define oct_mdio_readq(addr)		readq(addr)
- #endif
- 
--int cavium_mdiobus_read(struct mii_bus *bus, int phy_id, int regnum);
--int cavium_mdiobus_write(struct mii_bus *bus, int phy_id, int regnum, u16 val);
-+int cavium_mdiobus_read_c22(struct mii_bus *bus, int phy_id, int regnum);
-+int cavium_mdiobus_write_c22(struct mii_bus *bus, int phy_id, int regnum,
-+			     u16 val);
-+int cavium_mdiobus_read_c45(struct mii_bus *bus, int phy_id, int devad,
-+			    int regnum);
-+int cavium_mdiobus_write_c45(struct mii_bus *bus, int phy_id, int devad,
-+			     int regnum, u16 val);
-diff --git a/drivers/net/mdio/mdio-octeon.c b/drivers/net/mdio/mdio-octeon.c
-index e096e68ac667..7c65c547d377 100644
---- a/drivers/net/mdio/mdio-octeon.c
-+++ b/drivers/net/mdio/mdio-octeon.c
-@@ -58,8 +58,10 @@ static int octeon_mdiobus_probe(struct platform_device *pdev)
- 	snprintf(bus->mii_bus->id, MII_BUS_ID_SIZE, "%px", bus->register_base);
- 	bus->mii_bus->parent = &pdev->dev;
- 
--	bus->mii_bus->read = cavium_mdiobus_read;
--	bus->mii_bus->write = cavium_mdiobus_write;
-+	bus->mii_bus->read = cavium_mdiobus_read_c22;
-+	bus->mii_bus->write = cavium_mdiobus_write_c22;
-+	bus->mii_bus->read_c45 = cavium_mdiobus_read_c45;
-+	bus->mii_bus->write_c45 = cavium_mdiobus_write_c45;
- 
- 	platform_set_drvdata(pdev, bus);
- 
-diff --git a/drivers/net/mdio/mdio-thunder.c b/drivers/net/mdio/mdio-thunder.c
-index 822d2cdd2f35..3847ee92c109 100644
---- a/drivers/net/mdio/mdio-thunder.c
-+++ b/drivers/net/mdio/mdio-thunder.c
-@@ -93,8 +93,10 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
- 		bus->mii_bus->name = KBUILD_MODNAME;
- 		snprintf(bus->mii_bus->id, MII_BUS_ID_SIZE, "%llx", r.start);
- 		bus->mii_bus->parent = &pdev->dev;
--		bus->mii_bus->read = cavium_mdiobus_read;
--		bus->mii_bus->write = cavium_mdiobus_write;
-+		bus->mii_bus->read = cavium_mdiobus_read_c22;
-+		bus->mii_bus->write = cavium_mdiobus_write_c22;
-+		bus->mii_bus->read_c45 = cavium_mdiobus_read_c45;
-+		bus->mii_bus->write_c45 = cavium_mdiobus_write_c45;
- 
- 		err = of_mdiobus_register(bus->mii_bus, node);
- 		if (err)
 
 -- 
 2.30.2
