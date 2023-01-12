@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 817C4668378
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 21:08:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7966B66841E
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 21:40:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237088AbjALUGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 15:06:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44346 "EHLO
+        id S239903AbjALUkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 15:40:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239706AbjALT7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 14:59:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF9238A1
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 11:59:06 -0800 (PST)
+        with ESMTP id S234857AbjALUjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 15:39:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EBA755FC
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 12:10:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD737B81E5F
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:59:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D6FC4339B;
-        Thu, 12 Jan 2023 19:59:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D1FEB81E63
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 20:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94EBEC433F1;
+        Thu, 12 Jan 2023 20:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673553543;
-        bh=89zvIK/2JcZrndkW3y9+dlieAuFcvu2Gm+arpmVwGzM=;
+        s=k20201202; t=1673554163;
+        bh=HXbbtE1BU+bRzyX9Z4jq9tQpU7/4qylgKPDSCDfwKsw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DRUDqg2VagHDjQfLWi/x11dCu8e9XCgZuEu4UTrCsqLW683rzvE4rrrHZ68GxHuDy
-         O8RF+MZ7bftl3JFrEmbrgu1S6DxogA+XVvl0BQa8OJZK+FIXCgGbrQNAIDq99EK4cH
-         9aRsCHH48DkYaoNxQwr00r7UagSqgS2pup0ygroIbgeU8XWqvViB1j7f0YrRuZzZnc
-         uSifRmfZb6Lxhkgg3od7L4J9QB+lVw5llfRL/ox6nvIl/SuItafUsO6PAK9es7EyXv
-         UdqVmG/z//APqqvWhsRUb3uFeyQUtBWWVz4AsSYLJrWm9XqgS4lraC8NV3aRcMrqN4
-         VlFgqCFyRsCJg==
-Date:   Thu, 12 Jan 2023 21:58:58 +0200
+        b=mvUzqorcDGDZFA6SBb4SJHLNEvrkUh+MEbLlklqC8jAj5kdYDx1bph7wIF7ubxqnM
+         0z/Ic/g6Jk1bVbQMi8BgsvKutZMWeW6f/52UT3bHgLPhztmaW+Hzh4a0OgxlFhtpJC
+         oDH0IfMGKaND2HYXarzeSpzAoYQ9A6MhHV52sboTjqun2KuyPE9yHb89YxRSQ0jH7t
+         hvX51wTKWtWbotDrlt14kNxv8/0u6MLyKfAykMH8SeeB49URsaAR0w/0AqG7rnKm0d
+         9w6KhnMY4dNmNwFSYAQvP/MW3xVTfIhtDUhiYjA+Ru/2jhn4lTjjO/9KZqwuHXpfD3
+         nmmLMnF8c7VRA==
+Date:   Thu, 12 Jan 2023 22:09:18 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
         netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
 Subject: Re: [PATCH net-next 7/9] devlink: allow registering parameters after
  the instance
-Message-ID: <Y8BmgpxAuqJKe8Pc@unreal>
+Message-ID: <Y8Bo7m3zl4WhRBtW@unreal>
 References: <Y7gaWTGHTwL5PIWn@nanopsycho>
  <20230106132251.29565214@kernel.org>
  <14cdb494-1823-607a-2952-3c316a9f1212@intel.com>
@@ -49,11 +49,11 @@ References: <Y7gaWTGHTwL5PIWn@nanopsycho>
  <20230111084549.258b32fb@kernel.org>
  <f5d9201b-fb73-ebfe-3ad3-4172164a33f3@intel.com>
  <Y7+xv6gKaU+Horrk@unreal>
- <Y8AgaVjRGgWtbq5X@nanopsycho>
+ <20230112112021.0ff88cdb@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y8AgaVjRGgWtbq5X@nanopsycho>
+In-Reply-To: <20230112112021.0ff88cdb@kernel.org>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,59 +63,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 12, 2023 at 03:59:53PM +0100, Jiri Pirko wrote:
-> Thu, Jan 12, 2023 at 08:07:43AM CET, leon@kernel.org wrote:
-> >On Wed, Jan 11, 2023 at 01:29:03PM -0800, Jacob Keller wrote:
-> >> 
-> >> 
-> >> On 1/11/2023 8:45 AM, Jakub Kicinski wrote:
-> >> > On Wed, 11 Jan 2023 10:32:13 +0100 Jiri Pirko wrote:
-> >> >>>> I'm confused. You want to register objects after instance register?  
-> >> >>>
-> >> >>> +1, I think it's an anti-pattern.  
-> >> >>
-> >> >> Could you elaborate a bit please?
-> >> > 
-> >> > Mixing registering sub-objects before and after the instance is a bit
-> >> > of an anti-pattern. Easy to introduce bugs during reload and reset /
-> >> > error recovery. I thought that's what you were saying as well.
-> >> 
-> >> I was thinking of a case where an object is dynamic and might get added
-> >> based on events occurring after the devlink was registered.
-> >> 
-> >> But the more I think about it the less that makes sense. What events
-> >> would cause a whole subobject to be registerd which we wouldn't already
-> >> know about during initialization of devlink?
-> >> 
-> >> We do need some dynamic support because situations like "add port" will
-> >> add a port and then the ports subresources after the main devlink, but I
-> >> think that is already supported well and we'd add the port sub-resources
-> >> at the same time as the port.
-> >> 
-> >> But thinking more on this, there isn't really another good example since
-> >> we'd register things like health reporters, regions, resources, etc all
-> >> during initialization. Each of these sub objects may have dynamic
-> >> portions (ex: region captures, health events, etc) but the need for the
-> >> object should be known about during init time if its supported by the
-> >> device driver.
-> >
-> >As a user, I don't want to see any late dynamic object addition which is
-> >not triggered by me explicitly. As it doesn't make any sense to add
-> >various delays per-vendor/kernel in configuration scripts just because
-> >not everything is ready. Users need predictability, lazy addition of
-> >objects adds chaos instead.
-> >
-> >Agree with Jakub, it is anti-pattern.
+On Thu, Jan 12, 2023 at 11:20:21AM -0800, Jakub Kicinski wrote:
+> On Thu, 12 Jan 2023 09:07:43 +0200 Leon Romanovsky wrote:
+> > As a user, I don't want to see any late dynamic object addition which is
+> > not triggered by me explicitly. As it doesn't make any sense to add
+> > various delays per-vendor/kernel in configuration scripts just because
+> > not everything is ready. Users need predictability, lazy addition of
+> > objects adds chaos instead.
+> > 
+> > Agree with Jakub, it is anti-pattern.
 > 
-> Yeah, but, we have reload. And during reload, instance is still
-> registered yet the subobject disappear and reappear. So that would be
-> inconsistent with the init/fini flow.
+> To be clear my preference would be to always construct the three from
+> the root. Register the main instance, then sub-objects. I mean - you
+> tried forcing the opposite order and it only succeeded in 90-something
+> percent of cases. There's always special cases.
 > 
-> Perhaps during reload we should emulate complete fini/init notification
-> flow to the user?
+> I don't understand your concern about user experience here. We have
+> notifications for each sub-object. Plus I think drivers should hold 
+> the instance lock throughout the probe routine. I don't see a scenario
+> in which registering the main instance first would lead to retry/sleep
+> hacks in user space, do you? I'm talking about devlink and the subobjs
+> we have specifically.
 
-"reload" is triggered by me explicitly and I will get success/fail result
-at the end. There is no much meaning in subobject notifications during
-that operation.
+The term "dynamic object addition" means for me what driver authors will
+be able to add objects anytime in lifetime of the driver. I'm pretty sure
+that once you allow that, we will see zoo here. Over time, you will get
+everything from .probe() to workqueues. The latter caused me to write
+about retry/sleep hacks.
+
+If you success to force everyone to add objects in .probe() only, it
+will be very close to what I tried to achieve.
 
 Thanks
