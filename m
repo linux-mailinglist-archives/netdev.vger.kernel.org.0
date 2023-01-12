@@ -2,119 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C97AB66793E
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 216EA66796C
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:36:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232835AbjALP3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
+        id S240401AbjALPgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:36:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbjALP2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:28:37 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3034FD5D
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 07:21:14 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1673536873;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=81fdmIDOKEpQUuJCNLx9f4fsWVxoz85PZzHPAPKpm5c=;
-        b=srxwD8VPdYPDg41s0LCzg0mbj76LOsHKsU4bMrOlTkiZVFUhwu+5oagsMFywExbPbHKE15
-        ADVbM/0GlBxiPjHuy/QcuT5CFRgsG51qiPYKVF8tjTxWym2t63AFDwfPBzn6RcWeyJBKqQ
-        2bELHZJW/izcutOLv/yHoRguVbFEm1zzTkG5xVCF40xHxSgOv+lN6Cpj0zJHepBtM2C3SI
-        dKH03a+ItdSOIt1+EWBPtG7nvEKIKA1iVyemVLmazTSv7id1u7eYfZXi1Y0iZPJgCWRqR1
-        j2fYJzHubCTjhw+XxrEyz9xFkDhUEDR5qCh+8UugdcKMps2UEtaNzKP+ek5UzQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1673536873;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=81fdmIDOKEpQUuJCNLx9f4fsWVxoz85PZzHPAPKpm5c=;
-        b=O6AU1BuzNrwn5H7HgZiA8gDh6cPhqEK8BAEvFRUtruIVoYMyZk248muE7F8NnClQMuHqts
-        l5FG7Eo//ZhALpBQ==
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S235171AbjALPfj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:35:39 -0500
+X-Greylist: delayed 158343 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 Jan 2023 07:26:12 PST
+Received: from netgeek.ovh (ks.netgeek.ovh [IPv6:2001:41d0:a:271e::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D985FAF;
+        Thu, 12 Jan 2023 07:26:12 -0800 (PST)
+Received: from quaddy.sgn (unknown [IPv6:2a01:cb19:83f8:d500:21d:60ff:fedb:90ab])
+        by ks.netgeek.ovh (Postfix) with ESMTPSA id F372B152;
+        Thu, 12 Jan 2023 16:26:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=netgeek.ovh;
+        s=default; t=1673537171;
+        bh=3etuJSk1QFYh09LyrRX3nJ+AUux/LmBLhAzOGdCxjwU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=mOWUIxS3WNMLPOwYovm3Xk70mdgT9DVAy0MWW4cIhIu+1nboaVb4ebub//9kSo2ip
+         iZjpyfHIggBvbCIk9uWXJMu4BX1IZuxAxoX9vUSbS42Oek7zT03f0bmEvbzRaaoASH
+         CqGYtRJZBdFzMBAvE24YtRVP9R5O109e0GShsMubIpE3St7wF4qS5vhY8CeKTJ3iLu
+         lKWrPIkjKHhbZnWzFEhqo4tTDseQtIf+qzIci0XNdY5zHwr5RSDjyeIwfDFhiPUNf3
+         W0oH2m08PMkJWGoHCd2b66a4M8OyDjglT/YnG8A8lThImNG1zJar3S/49s+f2tC7Im
+         F48lTVf/cgWNw==
+Date:   Thu, 12 Jan 2023 16:27:35 +0100
+From:   =?unknown-8bit?B?SGVydsOp?= Boisse <admin@netgeek.ovh>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: dsa: mv88e6xxx: Enable PTP receive for
- mv88e6390
-In-Reply-To: <Y8AGFJlQBEhTqQs7@lunn.ch>
-References: <20230112091224.43116-1-kurt@linutronix.de>
- <Y8AGFJlQBEhTqQs7@lunn.ch>
-Date:   Thu, 12 Jan 2023 16:21:11 +0100
-Message-ID: <87k01rrd7c.fsf@kurt>
+        Jakub Kicinski <kuba@kernel.org>, admin@netgeek.ovh,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net/af_packet: fix tx skb network header on
+ SOCK_RAW sockets over VLAN device
+Message-ID: <Y8Am5wAxC48N12PE@quaddy.sgn>
+References: <20230110191725.22675-1-admin@netgeek.ovh>
+ <20230110191725.22675-2-admin@netgeek.ovh>
+ <fa5895ae62e0f9c1eb8f662295ca920d1da7e88f.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=unknown-8bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fa5895ae62e0f9c1eb8f662295ca920d1da7e88f.camel@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
 
-On Thu Jan 12 2023, Andrew Lunn wrote:
-> On Thu, Jan 12, 2023 at 10:12:24AM +0100, Kurt Kanzenbach wrote:
->> The switch receives management traffic such as STP and LLDP. However, PTP
->> messages are not received, only transmitted.
->>=20
->> Ideally, the switch would trap all PTP messages to the management CPU. T=
-his
->> particular switch has a PTP block which identifies PTP messages and trap=
-s them
->> to a dedicated port. There is a register to program this destination. Th=
-is is
->> not used at the moment.
->>=20
->> Therefore, program it to the same port as the MGMT traffic is trapped to=
-. This
->> allows to receive PTP messages as soon as timestamping is enabled.
->>=20
->> In addition, the datasheet mentions that this register is not valid e.g.=
-, for
->> 6190 variants. So, add a new PTP operation which is only added for the b=
-oth 6390
->> devices.
->
-> I assume this also works for the 6290? Please could you also update
-> its _ops structure?
+Hello,
 
-According to the datasheet, yes. I'll add this one, too.
+On Thu, Jan 12, 2023 at 01:48:51PM +0100, Paolo Abeni wrote:
+> I'm unsure I read correctly the use case: teh user-space application is
+> providing an L2 header and is expecting the Linux stack to add a vlan
+> tag? Or the linux application is sending packets on top of a vlan
+> device and desire no tag on the egress packet? or something else?
 
-Thanks,
-Kurt
+The userland app does not care about the device being a VLAN one or not. Just a regular Ethernet device on which to send raw frames.
+This means the app provides a standard 14 byte Ethernet header on the socket and does not matter about any VLAN tag.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Then, the goal is to be able to alter those packets at the qdisc level with tc filters.
+But, when such packets are sent on top of a VLAN device whose real device does not support VLAN tx offloading, the bad position of the skb network header makes this task impossible.
 
------BEGIN PGP SIGNATURE-----
+To give a concrete example, here are few commands to show the problem easily:
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPAJWcTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgji6EACSXRFI7gJCEYTMx6U6EW8934Yyzepo
-TDPvq85nwkqlskmfcwXiLJyQCWcMvPfw/Y/ulbXSAaGC/OJ9ETHGG3VmEi2Fm565
-KJWEbhgRszsgb9SJw5BMt0wdikgWbZ4kPybzxpC+GKQLO3qxsyNF6XQJieaDxk3k
-t3d3zK37ZcW6cNfTbWl02JthBzA5pQiIqUsH6laWACug/oHQNt+aFdbe6J4snnph
-tRhFGi35A+UGa6H8ggoECVzKfb81R5R87TmAN2L86SeuWj2sp/V9uEFevuIz6JEu
-7XHGRafMukEQDvWJaSz0iPsHhyXtrm4f1DufhkNIybmJB1fCSnC+IFCa6V8/lXWR
-sirRaDk/IWpm9YCJUgGkOGSpEqIPDCERqoJs6OGfYhWoCbnoS99nCD6KlSlfMEPS
-JIrW7Hf6Pagy7d4sg8jucpglaYYm2B1tV5mpVUpbqvZHhxNFiRxUIbASxfpQ8IWB
-UVQ9mQ70HZ1vXyXVgcyR5KcdrpGSDJDcKtCJXD8F1BMd0jJdM9Ko9WNczIB0ul4x
-r4l2D+sldsluuiNQqPKXcl1Qpn6XfBlm5tczgEKpOoJ1RRZUBsn8G4RYb7Wx3w7t
-QBOpaNiprrd9LkQHuCcMJ2+DqBnpBADIykU/QWNBUD00+QCB6cOQhnZmlh7Wg3bo
-liQbk4UgRRhhFg==
-=Yr/g
------END PGP SIGNATURE-----
---=-=-=--
+# modprobe dummy
+# ip link add link dummy0 dummy0.832 type vlan id 832
+# tc qdisc replace dev dummy0.832 root handle 1: prio
+# tc filter del dev dummy0.832
+# tc filter add dev dummy0.832 parent 1: prio 1 protocol ip u32 match u8 0 0 action pedit pedit munge ip tos set 0xc0
+# ip link set dummy0 up
+# ip link set dummy0.832 up
+
+Then start an application that uses AF_PACKET+SOCK_RAW sockets over the VLAN device:
+
+# dhclient -v dummy0.832
+
+If you look at the emitted packets on dummy0, you will see that the 0xc0 byte of the IPv4 TOS/DSCP field is not set.
+Instead, the 0xc0 tos byte is written 4 bytes too far, in the last byte of the IPv4 Identification field.
+
+
+Hervé
+
