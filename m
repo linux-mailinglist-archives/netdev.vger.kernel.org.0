@@ -2,84 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC5C668486
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 21:54:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B406684D2
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240704AbjALUyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 15:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
+        id S240231AbjALVAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 16:00:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240346AbjALUxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 15:53:06 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AE9140C1
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 12:29:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ut0oHZmUlSfWhXqfYECviDD2lPh/AxfnTisdiH5avRU=; b=ZQcgPjxHaCEk/Lal32rwDDMJ/Y
-        08HVaIlsTyAt1AuAJY3Z19GSABtssiTOb9qBOFa2BPwFdDqQEuhZEtkR5oxAwMLzcYYwGgxCpIBPR
-        Rh8kI9Bi7iBw++y8ObLRizfZgNv/JOSvyvfC0xd3qptwfYJ97qTeerTT7dss+kwHyr6A4eP8FhAII
-        IZva3xCtS3gppU6kQxwqfYU2PC2hRvs9yIvt3IhY49oDM/A9DocOuL4RWBR6G88onJNWZcJIamRL1
-        6GUTy2x4Vr7/6d3AZv+WVpmBh8Lwtbej9ynQ6mzY7NoeMDw8NkKlk4gSPQDrA9IJcGXDRXcJvEJ22
-        H5ANJGjw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pG4Ct-005RyA-Ub; Thu, 12 Jan 2023 20:29:51 +0000
-Date:   Thu, 12 Jan 2023 20:29:51 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v3 05/26] page_pool: Start using netmem in allocation
- path.
-Message-ID: <Y8Btv2hwEkP02jnY@casper.infradead.org>
-References: <20230111042214.907030-1-willy@infradead.org>
- <20230111042214.907030-6-willy@infradead.org>
- <pj41zlpmbjn4ld.fsf@u570694869fb251.ant.amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <pj41zlpmbjn4ld.fsf@u570694869fb251.ant.amazon.com>
+        with ESMTP id S240686AbjALU6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 15:58:07 -0500
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793C63DBEE;
+        Thu, 12 Jan 2023 12:42:24 -0800 (PST)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 30CKfiZ2012540;
+        Thu, 12 Jan 2023 21:41:50 +0100
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id DCE721208DB;
+        Thu, 12 Jan 2023 21:41:40 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1673556101; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wG8TA0zvqM8XSTGO+kuG0U8acSvdjSIWtmKxCQ68rf0=;
+        b=eheIYTybggC+Bb8/Fb7GuCZdV1DxR1KxHie/HufpA1Bn39rXct09i849V+ryU7oFJ4XSv1
+        DrXk7Y977+04sSDw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1673556101; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wG8TA0zvqM8XSTGO+kuG0U8acSvdjSIWtmKxCQ68rf0=;
+        b=Ghz8JhwYKe+4M6O16p4F7ebY4qsy0Bn3K4IviEmEdPYR3X7hH5VFF8yvVFttabVuj56WH+
+        UgdCUfPqLj9xWuCLsv7TfCqTiL2/fbGkLrho1r5h4Hj/SWX03tpYlfU5kwL4fpBhgz/qzD
+        3cZBGbLHCDY4hCFuzwgfBLj+rYHDpb7oWF8HPT07w2Dy1cVFnNJnC50KeGARu2iN8dSjC5
+        p4fI6ZXoNf0B673OLVZX5eOsU4kCJdT9IuDTUQ9g+S+Pq3Uf7IAXo4lglQKu+7cTeBkFov
+        OhlpFLq3CeQumFyb/dm+QVky5njb9ey3nwSx8A2G/twTm72WrNoAXPhdnF3wuA==
+Date:   Thu, 12 Jan 2023 21:41:40 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Jon Maxwell <jmaxwell37@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        martin.lau@kernel.org, joel@joelfernandes.org, paulmck@kernel.org,
+        eyal.birger@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next v2] ipv6: remove max_size check inline with ipv4
+Message-Id: <20230112214140.b490f5e77e46d9cdab53d2b2@uniroma2.it>
+In-Reply-To: <20230112012532.311021-1-jmaxwell37@gmail.com>
+References: <20230112012532.311021-1-jmaxwell37@gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 12, 2023 at 05:36:58PM +0200, Shay Agroskin wrote:
-> 
-> "Matthew Wilcox (Oracle)" <willy@infradead.org> writes:
-> 
-> > Convert __page_pool_alloc_page_order() and
-> > __page_pool_alloc_pages_slow()
-> > ...
-> >  TRACE_EVENT(page_pool_update_nid,
-> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> > index 437241aba5a7..4e985502c569 100644
-> > --- a/net/core/page_pool.c
-> > +++ b/net/core/page_pool.c
-> > ...
-> >   @@ -421,7 +422,8 @@ static struct page
-> > *__page_pool_alloc_pages_slow(struct page_pool *pool,
-> >  		page = NULL;
-> >  	}
-> >   -	/* When page just alloc'ed is should/must have refcnt 1. */
-> > +	/* When page just allocated it should have refcnt 1 (but may have
-> > +	 * speculative references) */
-> 
-> Sorry for the pity comment, but the comment style here is inconsistent
-> https://www.kernel.org/doc/html/v4.11/process/coding-style.html#commenting
-> 
-> You should have the last '*/' to be on its own line
-> (again sorry for not giving more useful feedback... then again, it's a
-> rather simply fix (: )
+Hi Jon,
 
-But networking doesn't follow that part of coding style.
+On Thu, 12 Jan 2023 12:25:32 +1100
+Jon Maxwell <jmaxwell37@gmail.com> wrote:
+
+> v2: Correct syntax error in net/ipv6/route.c
+> 
+> In ip6_dst_gc() replace: 
+> 
+> if (entries > gc_thresh)
+> 
+> With:
+> 
+> if (entries > ops->gc_thresh)
+> 
+> Sending Ipv6 packets in a loop via a raw socket triggers an issue where a 
+> route is cloned by ip6_rt_cache_alloc() for each packet sent. This quickly 
+> consumes the Ipv6 max_size threshold which defaults to 4096 resulting in 
+> these warnings:
+> 
+> [1]   99.187805] dst_alloc: 7728 callbacks suppressed
+> [2] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> .
+> .
+> [300] Route cache is full: consider increasing sysctl net.ipv6.route.max_size.
+> 
+> When this happens the packet is dropped and sendto() gets a network is 
+> unreachable error:
+> 
+> # ./a.out -s 
+> 
+> remaining pkt 200557 errno 101
+> remaining pkt 196462 errno 101
+> .
+> .
+> remaining pkt 126821 errno 101
+> 
+> Implement David Aherns suggestion to remove max_size check seeing that Ipv6 
+> has a GC to manage memory usage. Ipv4 already does not check max_size.
+> 
+> Here are some memory comparisons for Ipv4 vs Ipv6 with the patch:
+> 
+> Test by running 5 instances of a program that sends UDP packets to a raw 
+> socket 5000000 times. Compare Ipv4 and Ipv6 performance with a similar 
+> program.
+> 
+> Ipv4: 
+> 
+
+is it supposed to be Ipv6, right?
+
+Ciao,
+Andrea
+
+> Before test:
+> 
+> # grep -e Slab -e Free /proc/meminfo
+> MemFree:        29427108 kB
+> Slab:             237612 kB
+> 
+> # grep dst_cache /proc/slabinfo
+> ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+> xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+> ip_dst_cache        2881   3990    192   42    2 : tunables    0    0    0 
+> 
+> During test:
+> 
+> # grep -e Slab -e Free /proc/meminfo
+> MemFree:        29417608 kB
+> Slab:             247712 kB
+> 
+> # grep dst_cache /proc/slabinfo
+> ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+> xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+> ip_dst_cache       44394  44394    192   42    2 : tunables    0    0    0 
+> 
+> After test:
+> 
+> # grep -e Slab -e Free /proc/meminfo
+> MemFree:        29422308 kB
+> Slab:             238104 kB
+> 
+> # grep dst_cache /proc/slabinfo
+> ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+> xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+> ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0 
+> 
+> Ipv6 with patch:
+> 
+> Errno 101 errors are not observed anymore with the patch.
+> 
+> Before test:
+> 
+> # grep -e Slab -e Free /proc/meminfo
+> MemFree:        29422308 kB
+> Slab:             238104 kB
+> 
+> # grep dst_cache /proc/slabinfo
+> ip6_dst_cache       1912   2528    256   32    2 : tunables    0    0    0 
+> xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0 
+> ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0 
+> 
+> During Test:
+> 
+> # grep -e Slab -e Free /proc/meminfo
+> MemFree:        29431516 kB
+> Slab:             240940 kB
+> 
+> # grep dst_cache /proc/slabinfo
+> ip6_dst_cache      11980  12064    256   32    2 : tunables    0    0    0
+> xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0
+> ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0
+> 
+> After Test:
+> 
+> # grep -e Slab -e Free /proc/meminfo
+> MemFree:        29441816 kB
+> Slab:             238132 kB
+> 
+> # grep dst_cache /proc/slabinfo
+> ip6_dst_cache       1902   2432    256   32    2 : tunables    0    0    0
+> xfrm_dst_cache         0      0    320   25    2 : tunables    0    0    0
+> ip_dst_cache        3048   4116    192   42    2 : tunables    0    0    0
+> 
+> Tested-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+> ---
+>  include/net/dst_ops.h |  2 +-
+>  net/core/dst.c        |  8 ++------
+>  net/ipv6/route.c      | 13 +++++--------
+>  3 files changed, 8 insertions(+), 15 deletions(-)
+> 
+> diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+> index 88ff7bb2bb9b..632086b2f644 100644
+> --- a/include/net/dst_ops.h
+> +++ b/include/net/dst_ops.h
+> @@ -16,7 +16,7 @@ struct dst_ops {
+>  	unsigned short		family;
+>  	unsigned int		gc_thresh;
+>  
+> -	int			(*gc)(struct dst_ops *ops);
+> +	void			(*gc)(struct dst_ops *ops);
+>  	struct dst_entry *	(*check)(struct dst_entry *, __u32 cookie);
+>  	unsigned int		(*default_advmss)(const struct dst_entry *);
+>  	unsigned int		(*mtu)(const struct dst_entry *);
+> diff --git a/net/core/dst.c b/net/core/dst.c
+> index 6d2dd03dafa8..31c08a3386d3 100644
+> --- a/net/core/dst.c
+> +++ b/net/core/dst.c
+> @@ -82,12 +82,8 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+>  
+>  	if (ops->gc &&
+>  	    !(flags & DST_NOCOUNT) &&
+> -	    dst_entries_get_fast(ops) > ops->gc_thresh) {
+> -		if (ops->gc(ops)) {
+> -			pr_notice_ratelimited("Route cache is full: consider increasing sysctl net.ipv6.route.max_size.\n");
+> -			return NULL;
+> -		}
+> -	}
+> +	    dst_entries_get_fast(ops) > ops->gc_thresh)
+> +		ops->gc(ops);
+>  
+>  	dst = kmem_cache_alloc(ops->kmem_cachep, GFP_ATOMIC);
+>  	if (!dst)
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index e74e0361fd92..b643dda68d31 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -91,7 +91,7 @@ static struct dst_entry *ip6_negative_advice(struct dst_entry *);
+>  static void		ip6_dst_destroy(struct dst_entry *);
+>  static void		ip6_dst_ifdown(struct dst_entry *,
+>  				       struct net_device *dev, int how);
+> -static int		 ip6_dst_gc(struct dst_ops *ops);
+> +static void		 ip6_dst_gc(struct dst_ops *ops);
+>  
+>  static int		ip6_pkt_discard(struct sk_buff *skb);
+>  static int		ip6_pkt_discard_out(struct net *net, struct sock *sk, struct sk_buff *skb);
+> @@ -3284,11 +3284,10 @@ struct dst_entry *icmp6_dst_alloc(struct net_device *dev,
+>  	return dst;
+>  }
+>  
+> -static int ip6_dst_gc(struct dst_ops *ops)
+> +static void ip6_dst_gc(struct dst_ops *ops)
+>  {
+>  	struct net *net = container_of(ops, struct net, ipv6.ip6_dst_ops);
+>  	int rt_min_interval = net->ipv6.sysctl.ip6_rt_gc_min_interval;
+> -	int rt_max_size = net->ipv6.sysctl.ip6_rt_max_size;
+>  	int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+>  	int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+>  	unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+> @@ -3296,11 +3295,10 @@ static int ip6_dst_gc(struct dst_ops *ops)
+>  	int entries;
+>  
+>  	entries = dst_entries_get_fast(ops);
+> -	if (entries > rt_max_size)
+> +	if (entries > ops->gc_thresh)
+>  		entries = dst_entries_get_slow(ops);
+>  
+> -	if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> -	    entries <= rt_max_size)
+> +	if (time_after(rt_last_gc + rt_min_interval, jiffies))
+>  		goto out;
+>  
+>  	fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
+> @@ -3310,7 +3308,6 @@ static int ip6_dst_gc(struct dst_ops *ops)
+>  out:
+>  	val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
+>  	atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
+> -	return entries > rt_max_size;
+>  }
+>  
+>  static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
+> @@ -6512,7 +6509,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+>  #endif
+>  
+>  	net->ipv6.sysctl.flush_delay = 0;
+> -	net->ipv6.sysctl.ip6_rt_max_size = 4096;
+> +	net->ipv6.sysctl.ip6_rt_max_size = INT_MAX;
+>  	net->ipv6.sysctl.ip6_rt_gc_min_interval = HZ / 2;
+>  	net->ipv6.sysctl.ip6_rt_gc_timeout = 60*HZ;
+>  	net->ipv6.sysctl.ip6_rt_gc_interval = 30*HZ;
+> -- 
+> 2.31.1
