@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F348E667902
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:23:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE40966790F
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbjALPXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:23:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S232957AbjALPXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:23:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235143AbjALPWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:53 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6BA5E0A0;
-        Thu, 12 Jan 2023 07:15:26 -0800 (PST)
+        with ESMTP id S235827AbjALPWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:55 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DAE16484;
+        Thu, 12 Jan 2023 07:15:27 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 699BC15D5;
+        by mail.3ffe.de (Postfix) with ESMTPSA id C96DD15E8;
         Thu, 12 Jan 2023 16:15:24 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1673536524;
+        t=1673536525;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QGlMvwVE0XBFSe9hGJvTgj13A12QmBDoi6rAazqMrhA=;
-        b=ZscdTe8D24J1musI5j2G7C9p7+ZQ5A+f8En3gxFovHFbVirPpUojaZkfg333kVIDkDF3u1
-        JkLizYnIr5ACFDZnrUbxG7bosetMyVxoGTk4vVHb3dlVYWpyrNR3Gv8VlK90gXxJzafZ6J
-        xAmzBjKWMTol8QKlyKKhzrU2+AzcReoW6O5Lkwhj8E3BH6xgVrvjvKNoB3/nprPu4gTFIA
-        YStEnuS/eof5Rt7PsXK7P80//8ogCCMooFjZwakakV+TeFA6h3WcMwkRo12ls99PGFIO4e
-        d0VputPdm1yE5Q/e/hkRFikGmt7mi5GgxQNdqBEw9dFiWC7f9diy0rkmOmtt7A==
+        bh=nh59coj550doZXKUioyBaJXnHjL7eqqxkdyADzKG0aw=;
+        b=0PJqU0bpJyUWyXm+SQSGiXNKZ9/LdYWX4cRQNkbqH1J4qqJSPWjumCvh8aqI+OzDwYyXMc
+        buhluiqJESGW4pmr0bKQzF+OPMsYKo+NOdVOg1nDPaY2JBuiq7jIv2M/qlO6uQ0KVXhRTW
+        pVYedVbZBwkSgdL2mEyP6QgF30yZYJMLkspl+lksS3LZT7JxwVl/agdJWk5tgfQY+RiQzY
+        4tCDnZkHvhEQmytDQj2YB/59IBbqjirwac+SFzVMcDFEbvy43drC2Ox3UB+o0HJ66ae1tV
+        h6VkNjDTFS0n6JS6LUz5upzcF6riFGAShqaBM05hG1rp8dtA2rTlI3Z2dDJeog==
 From:   Michael Walle <michael@walle.cc>
-Date:   Thu, 12 Jan 2023 16:15:08 +0100
-Subject: [PATCH net-next 02/10] net: mdio: i2c: Separate C22 and C45 transactions
+Date:   Thu, 12 Jan 2023 16:15:09 +0100
+Subject: [PATCH net-next 03/10] net: mdio: mux-bcm-iproc: Separate C22 and C45
+ transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230112-net-next-c45-seperation-part-2-v1-2-5eeaae931526@walle.cc>
+Message-Id: <20230112-net-next-c45-seperation-part-2-v1-3-5eeaae931526@walle.cc>
 References: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 In-Reply-To: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -86,94 +87,122 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-The MDIO over I2C bus driver can perform both C22 and C45 transfers.
+The MDIO mux broadcom iproc can perform both C22 and C45 transfers.
 Create separate functions for each and register the C45 versions using
 the new API calls.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/mdio/mdio-i2c.c | 32 +++++++++++++++++++++++---------
- 1 file changed, 23 insertions(+), 9 deletions(-)
+Apparently, in the c45 case, the reg value including the MII_ADDR_C45
+bit is written to the hardware. Looks weird, that a "random" software
+bit is written to a register. Florian is that correct? Also, with this
+patch this flag isn't set anymore.
+---
+ drivers/net/mdio/mdio-mux-bcm-iproc.c | 54 ++++++++++++++++++++++++++++-------
+ 1 file changed, 43 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-i2c.c b/drivers/net/mdio/mdio-i2c.c
-index bf8bf5e20faf..9577a1842997 100644
---- a/drivers/net/mdio/mdio-i2c.c
-+++ b/drivers/net/mdio/mdio-i2c.c
-@@ -30,7 +30,8 @@ static unsigned int i2c_mii_phy_addr(int phy_id)
- 	return phy_id + 0x40;
- }
- 
--static int i2c_mii_read_default(struct mii_bus *bus, int phy_id, int reg)
-+static int i2c_mii_read_default_c45(struct mii_bus *bus, int phy_id, int devad,
-+				    int reg)
+diff --git a/drivers/net/mdio/mdio-mux-bcm-iproc.c b/drivers/net/mdio/mdio-mux-bcm-iproc.c
+index 014c0baedbd2..956d54846b62 100644
+--- a/drivers/net/mdio/mdio-mux-bcm-iproc.c
++++ b/drivers/net/mdio/mdio-mux-bcm-iproc.c
+@@ -98,7 +98,7 @@ static int iproc_mdio_wait_for_idle(void __iomem *base, bool result)
+  * Return value: Successful Read operation returns read reg values and write
+  *      operation returns 0. Failure operation returns negative error code.
+  */
+-static int start_miim_ops(void __iomem *base,
++static int start_miim_ops(void __iomem *base, bool c45,
+ 			  u16 phyid, u32 reg, u16 val, u32 op)
  {
- 	struct i2c_adapter *i2c = bus->priv;
- 	struct i2c_msg msgs[2];
-@@ -41,8 +42,8 @@ static int i2c_mii_read_default(struct mii_bus *bus, int phy_id, int reg)
- 		return 0xffff;
+ 	u32 param;
+@@ -112,7 +112,7 @@ static int start_miim_ops(void __iomem *base,
+ 	param = readl(base + MDIO_PARAM_OFFSET);
+ 	param |= phyid << MDIO_PARAM_PHY_ID;
+ 	param |= val << MDIO_PARAM_PHY_DATA;
+-	if (reg & MII_ADDR_C45)
++	if (c45)
+ 		param |= BIT(MDIO_PARAM_C45_SEL);
  
- 	p = addr;
--	if (reg & MII_ADDR_C45) {
--		*p++ = 0x20 | ((reg >> 16) & 31);
-+	if (devad >= 0) {
-+		*p++ = 0x20 | devad;
- 		*p++ = reg >> 8;
- 	}
- 	*p++ = reg;
-@@ -64,8 +65,8 @@ static int i2c_mii_read_default(struct mii_bus *bus, int phy_id, int reg)
- 	return data[0] << 8 | data[1];
+ 	writel(param, base + MDIO_PARAM_OFFSET);
+@@ -131,28 +131,58 @@ static int start_miim_ops(void __iomem *base,
+ 	return ret;
  }
  
--static int i2c_mii_write_default(struct mii_bus *bus, int phy_id, int reg,
--				 u16 val)
-+static int i2c_mii_write_default_c45(struct mii_bus *bus, int phy_id,
-+				     int devad, int reg, u16 val)
+-static int iproc_mdiomux_read(struct mii_bus *bus, int phyid, int reg)
++static int iproc_mdiomux_read_c22(struct mii_bus *bus, int phyid, int reg)
  {
- 	struct i2c_adapter *i2c = bus->priv;
- 	struct i2c_msg msg;
-@@ -76,8 +77,8 @@ static int i2c_mii_write_default(struct mii_bus *bus, int phy_id, int reg,
- 		return 0;
+ 	struct iproc_mdiomux_desc *md = bus->priv;
+ 	int ret;
  
- 	p = data;
--	if (reg & MII_ADDR_C45) {
--		*p++ = (reg >> 16) & 31;
-+	if (devad >= 0) {
-+		*p++ = devad;
- 		*p++ = reg >> 8;
- 	}
- 	*p++ = reg;
-@@ -94,6 +95,17 @@ static int i2c_mii_write_default(struct mii_bus *bus, int phy_id, int reg,
- 	return ret < 0 ? ret : 0;
+-	ret = start_miim_ops(md->base, phyid, reg, 0, MDIO_CTRL_READ_OP);
++	ret = start_miim_ops(md->base, false, phyid, reg, 0, MDIO_CTRL_READ_OP);
+ 	if (ret < 0)
+-		dev_err(&bus->dev, "mdiomux read operation failed!!!");
++		dev_err(&bus->dev, "mdiomux c22 read operation failed!!!");
+ 
+ 	return ret;
  }
  
-+static int i2c_mii_read_default_c22(struct mii_bus *bus, int phy_id, int reg)
+-static int iproc_mdiomux_write(struct mii_bus *bus,
+-			       int phyid, int reg, u16 val)
++static int iproc_mdiomux_read_c45(struct mii_bus *bus, int phyid, int devad,
++				  int reg)
 +{
-+	return i2c_mii_read_default_c45(bus, phy_id, -1, reg);
++	struct iproc_mdiomux_desc *md = bus->priv;
++	int ret;
++
++	ret = start_miim_ops(md->base, true, phyid, reg | devad << 16, 0,
++			     MDIO_CTRL_READ_OP);
++	if (ret < 0)
++		dev_err(&bus->dev, "mdiomux read c45 operation failed!!!");
++
++	return ret;
 +}
 +
-+static int i2c_mii_write_default_c22(struct mii_bus *bus, int phy_id, int reg,
-+				     u16 val)
++static int iproc_mdiomux_write_c22(struct mii_bus *bus,
++				   int phyid, int reg, u16 val)
 +{
-+	return i2c_mii_write_default_c45(bus, phy_id, -1, reg, val);
++	struct iproc_mdiomux_desc *md = bus->priv;
++	int ret;
++
++	/* Write val at reg offset */
++	ret = start_miim_ops(md->base, false, phyid, reg, val,
++			     MDIO_CTRL_WRITE_OP);
++	if (ret < 0)
++		dev_err(&bus->dev, "mdiomux write c22 operation failed!!!");
++
++	return ret;
 +}
 +
- /* RollBall SFPs do not access internal PHY via I2C address 0x56, but
-  * instead via address 0x51, when SFP page is set to 0x03 and password to
-  * 0xffffffff.
-@@ -403,8 +415,10 @@ struct mii_bus *mdio_i2c_alloc(struct device *parent, struct i2c_adapter *i2c,
- 		mii->write = i2c_mii_write_rollball;
- 		break;
- 	default:
--		mii->read = i2c_mii_read_default;
--		mii->write = i2c_mii_write_default;
-+		mii->read = i2c_mii_read_default_c22;
-+		mii->write = i2c_mii_write_default_c22;
-+		mii->read_c45 = i2c_mii_read_default_c45;
-+		mii->write_c45 = i2c_mii_write_default_c45;
- 		break;
- 	}
++static int iproc_mdiomux_write_c45(struct mii_bus *bus,
++				   int phyid, int devad, int reg, u16 val)
+ {
+ 	struct iproc_mdiomux_desc *md = bus->priv;
+ 	int ret;
  
+ 	/* Write val at reg offset */
+-	ret = start_miim_ops(md->base, phyid, reg, val, MDIO_CTRL_WRITE_OP);
++	ret = start_miim_ops(md->base, true, phyid, reg | devad << 16, val,
++			     MDIO_CTRL_WRITE_OP);
+ 	if (ret < 0)
+-		dev_err(&bus->dev, "mdiomux write operation failed!!!");
++		dev_err(&bus->dev, "mdiomux write c45 operation failed!!!");
+ 
+ 	return ret;
+ }
+@@ -223,8 +253,10 @@ static int mdio_mux_iproc_probe(struct platform_device *pdev)
+ 	bus->name = "iProc MDIO mux bus";
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-%d", pdev->name, pdev->id);
+ 	bus->parent = &pdev->dev;
+-	bus->read = iproc_mdiomux_read;
+-	bus->write = iproc_mdiomux_write;
++	bus->read = iproc_mdiomux_read_c22;
++	bus->write = iproc_mdiomux_write_c22;
++	bus->read_c45 = iproc_mdiomux_read_c45;
++	bus->write_c45 = iproc_mdiomux_write_c45;
+ 
+ 	bus->phy_mask = ~0;
+ 	bus->dev.of_node = pdev->dev.of_node;
 
 -- 
 2.30.2
