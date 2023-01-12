@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E13EC668627
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:51:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF60668622
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:50:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232377AbjALVu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 16:50:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40684 "EHLO
+        id S240756AbjALVuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 16:50:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241042AbjALVsq (ORCPT
+        with ESMTP id S241041AbjALVsq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 16:48:46 -0500
-Received: from DM5PR00CU002-vft-obe.outbound.protection.outlook.com (mail-centralusazon11021022.outbound.protection.outlook.com [52.101.62.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CCA389A;
-        Thu, 12 Jan 2023 13:43:25 -0800 (PST)
+Received: from DM5PR00CU002-vft-obe.outbound.protection.outlook.com (mail-centralusazon11021023.outbound.protection.outlook.com [52.101.62.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1EC102D;
+        Thu, 12 Jan 2023 13:43:27 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L8FiUSKzwF5exMoWdp8/O6UOv5PsQMXxGW2VpjasXIL7tqCx08Ivek+TwLa1I+d8Ck63w4RtA1R56rpFdemiJbkvX5H8RS0OYYuCxj2Wys+fNu30YHI5DjOLLrTUifh5y9lgxbMQrn9TypIRpgmzD8eqc8L9bhOXQWotadSzl30o6gjDVx2lSM00jEAUsC+T+ipB3B4YGc9l/CYsLsKN4LBNTCNQpwjthwq3H1/2CJVO6C71dvR44DvvDXX/XIIpCm6S54A2iAKGcJOmo2y8wZdtUWe8XmfJm+x8rDhpQXYiMMy8zdfz1Aj8bzK8xCIktgo6EG0Q9WmyeOKPYIkGdQ==
+ b=amw8+DpPXEvy6z6I0/XOnb9x7n12+ln8eR32NTa9qGxOOvgp+L6W/5mpYFkiBSQUELUpQRc0LzMab1Uxu67LLAZoosQ8SdtPIbKTasX8QFLh3cQjFNxUrq025RAY9KbCe5YM3t61Pvpybh+m7uQHrVgxoIsZxyiWUniMHT4iaWLyZ8UE0Doo5X7OR7oSE/bdUx74GcECMuQUEWWrI8QRsfJVQg6mFqGo7pGtTpStOc8ZdnqJXlhXtuK0iuarVE4/ZdJAnJOkvcZXbA24lMsxI4fYj3EJ2YmBe1a77toctsQXJhlE+lpC6p5k9ldzL5kMA+GTbetllWkCB5lP2JCaLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WhqYaUVvCGoXTFbigkpwdviSAiVGP+4IiVWor9azP/0=;
- b=RysvgL7IYJYZLPJoq4DOzZZ5KmSIf/JDAXoT1EsK47NzVJ/zJ8AO0ekQRkTDpvS08AE2plfCrhYcG+OlHiD6TQ7ye6sXzG9OTPzMKqWych67wKxLr6zqMjZ+vvqHoZiUthbNP7j5UAOkrFDLyriwBlj1kTlgy+ftP2uSTE9am3CeqckagyqKqi2UWV1OV3RyrJEYSP0gQCJGlM8GGqrC9dX5k79WK35CsKhiTU7qigtCuvyS/AsNCsBdR9/z75GW8bwQdykmRA2lznCDdr8fYwH40Us89/+JO0AbhhTJ4IMsibpUewNF68IjvZS6A+tQSWXC7eXrjIXbgkUO8i/jeQ==
+ bh=jD9pfgsXC/ndFVpJuhAnkZy+5QE47BR86CO0Zblfv3U=;
+ b=PlcFQRnpG8mCDZyEQImRyyvT+j8ZRwR/atyxHLJ+cwv7K8Y7fOqTupt1G+2MxdlgVv/RP6yhwbkcdwLG8aa96fS08zSq86fgZxduP/IxgB7g/1NnRSmz91BMMKc/lvCkdZf3JdfLKWODYopfFr9RlsihiEuGjAUQ56h2FBLU2MybM12PNMsngOFjmP8A2Rl9Okv7nH3H+sIKfo79ZgfWdm1F/wNE2NZbUNGSW/2ZUOJ0aLr+c619aVN44N9olniTN6fxxOJM/UPPxKIyhJMi/ZMbGXJYNq0iC2KgSkf5Gyyp7YZ918buufSCqqavLd9FYVwZk9pSnvslu/ly7pCVgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WhqYaUVvCGoXTFbigkpwdviSAiVGP+4IiVWor9azP/0=;
- b=VWW+/D1vJIwpnAZje+FVO166nMH+1d0Iol3wXGWC33ZTALanuHDF0Bx5RbrOhm72icHa48kDGMzS/+06wDlUrJlMNuOBQbShFARdhhv0YZxexb46gJnTKbWBCquvBlDTGAY9jP3Da1s0fmfoDddTtTuXV5WoGGMHCzdmiemT4gk=
+ bh=jD9pfgsXC/ndFVpJuhAnkZy+5QE47BR86CO0Zblfv3U=;
+ b=i6PNi8i+EayUf/Djf9/HssQhdavIq3EJnD8Q+yuXLUVtIlrrLuYyS3A0pOtvD0aC9fDVlmNZ39o/SNRGL5PjwYpyQdc3Z1Q/iNcedpVP6JJWmuIugmu50qYFcqjmBYatfrO6ITJGrJPxgRsqwyxIraJz6uZuP2lXtc7J1vJJTH0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
  by MW4PR21MB1953.namprd21.prod.outlook.com (2603:10b6:303:74::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6023.4; Thu, 12 Jan
- 2023 21:43:22 +0000
+ 2023 21:43:24 +0000
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::ef06:2e2c:3620:46a7]) by DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::ef06:2e2c:3620:46a7%8]) with mapi id 15.20.6023.006; Thu, 12 Jan 2023
- 21:43:22 +0000
+ 21:43:24 +0000
 From:   Michael Kelley <mikelley@microsoft.com>
 To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
@@ -58,9 +58,9 @@ To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
         iommu@lists.linux.dev
 Cc:     mikelley@microsoft.com
-Subject: [PATCH v5 12/14] Drivers: hv: Don't remap addresses that are above shared_gpa_boundary
-Date:   Thu, 12 Jan 2023 13:42:31 -0800
-Message-Id: <1673559753-94403-13-git-send-email-mikelley@microsoft.com>
+Subject: [PATCH v5 13/14] PCI: hv: Add hypercalls to read/write MMIO space
+Date:   Thu, 12 Jan 2023 13:42:32 -0800
+Message-Id: <1673559753-94403-14-git-send-email-mikelley@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
 References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
@@ -72,50 +72,50 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|MW4PR21MB1953:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0e65d253-3731-4b59-0372-08daf4e606ba
+X-MS-Office365-Filtering-Correlation-Id: f5d15fab-a550-469a-56f3-08daf4e60811
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AZ6ZvO9PMGnEUIWlEsxYJ8g5W0U3yFWKuVifsPbRYX1uOpdnuPxKmi+0gSttTociH3TXyO+07YKchvbYs9LklwaHjdVsSYcfUPCaZIbual5rN6NFwZgatYekcRttjA6XLBIiJCiiCHKrb3ThK4c8+O5IYxRRst646LyG2yzfD4DJdm4awGAxzdgS+WL29f0bhSm482m5kdLyXt2lSq62gqqq3szqJRiqs9PFNRMolINj/QpNMb/5rfrIcvM6BvmCjhrxq82ik4loPLfjJenOW/oomlSPgbAyLZXczoj9Yhne0oQXtIbdw1fcEWK7CF0qQbRLjmjlFpliFtz8pr38yK8hG0/dLvlbKlycai955D8Hc+sGYWfTqT7LCNXFSJfXpewTGcQREI4hukeU9Acqe+RB17F0rBCwBikZYD524physiPMbAYJkZGK6pyUq7s17tn6yYHoEs59CroKzKuc3aO7zOvZEcMzoOT8ww/huRVt94myJff7CM3OPuusNLsNAq834WCbjr9XVeIkON6HAJwOWPr6qj9W7sTGjPXY7w9J+SbS9ufZhmK1OIKSNxqNh81qgyQ5FhcSTPmkb8eB9q7f1JXkjZtZIr/fL3QCnUkxqKMw4d+2bPR0vOZ4L/OLlcjoiyt/bJ8DRS4hXbV7/BK2eKKD6szre17yVXM3vx9vxTEkv9qelS/N30KmVDE43RiaPmSuRBPVlSxxh0I/m6rnWuBIj1YEvz8Autt/Ok71TvXHdJTM5+rLGgZhZBUHwOn9EwnWnxAoKbHX7at9Yg==
+X-Microsoft-Antispam-Message-Info: Ms0DEdWZk3IJlpHAG5zftJBaPLGyn2r1Pd0OLD2e92cmksIKrtrM5iauBV3gphJfY915miSw3g9rgnvQWFJpOsl5cBnapws9XFMFqRRKt33SLxiVNDapWQDZ7Uz42+S2wZTIYcNpRY2DST8bojlflDt0KoWZcexy/6fvckTIKltr6oTSuJ+ZvQtJWtg4njR7YaWntWi/+0/wsvIIRFKR6xd47wOiedNeU0qHHaVF0NmhX+FN8r7h8bx7n1AdVY7WDzZUzvqOqwmuGm3i5nP7ZpquRTIx3grNaDzRoociKMMZmBfFenhg+nwK5Btr0Tn38Chf79Obg6CXFSvCA2qXtJYcVMqS0RR/joMksifaCsH8Vk0AbqReBpmE64mBGj3n3GXb4wbSyOM2dMrEHg0t1bknROBl1bSi4NOTZzIqFOGBP4VqPG0a8NNdUXNx+nUmTydiqcku/JdDZ8zM4jkRzh79TUEiOXVnngTMu8E9F/jBRy6/L5khpqMbngAnxfwBDIul0VtlaqAxgQ4zdXXU/xu3aiAmGPOpA6o93Zm7k3TKQkHZ4EX+FWZ8E0dAu7/QX07oY7WwjmxtEoSIUCLMOUpTJg3p6eBiaW1AbRM9He+NpI18wGqbMdGrxLLfmS50wjeKuEfUJbpQLQP1CtX64NZY3yBT7whQvHMoYYIXsz/y+PEGBBsFg4f2xei8XN9rw1Brp9TK+kSIwCpwe11OtLRvZhnFtOg0Rdc6WdgAhcBQN152igG0pjSuQbxuzitPmbcSxF9D3isVjF9L9BzXfA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(136003)(346002)(376002)(396003)(451199015)(186003)(26005)(6512007)(82960400001)(82950400001)(6486002)(86362001)(52116002)(478600001)(2906002)(5660300002)(4326008)(8676002)(38350700002)(66556008)(66476007)(316002)(7406005)(38100700002)(10290500003)(41300700001)(921005)(36756003)(66946007)(7416002)(2616005)(8936002)(6506007)(6666004)(107886003)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4S9xlEUN20fs4A+FklWjD/1bQdQaXDss8nT0WeUgCKMl/Z0dU1Wk3Kr/jjOG?=
- =?us-ascii?Q?3knbLmFspj5bQ+e+/sYpc7x2UOCjYqMyQCg3Q5h6QazKZ9wfmhSj2zgGXoxF?=
- =?us-ascii?Q?ZuwKJtsKEAbPNgQM/3fp9fU8hjNa+iM9dqfkhkyDFWiSXPuRwbBSHUarPnlR?=
- =?us-ascii?Q?hlEhpBf/fFguambRFi8WiSh26JqtkQAcQ2Rku+QveOuhS8er0C5+PtGOnDXD?=
- =?us-ascii?Q?obZVu/oBNaThi/qaqXk7kEmx4mq/RELckyxJna85Ihk0agY6d/GT2xR3RFVt?=
- =?us-ascii?Q?wCyX+w2TA1RH8jC8b9QU1otU4lBUM1hHJK9g3tAR/saVbI2V0nMiuO6wvHA/?=
- =?us-ascii?Q?yFJzbDFB7ViC/5O6OU0YaJ2gHNlOBhdLqymLQR9yWIFMKyrLr6ypycYtDDXO?=
- =?us-ascii?Q?8o6I9Kfd4DYyvQ+5urFFv7Ch/x98H4fU9rFcj4a6eMquWNRTDn95NcByQXIm?=
- =?us-ascii?Q?z/z1asFslWtoUY021T7PbHvtr4DfMZNPLT+dFoo/aGROkDuR6TAu7i4SFhk1?=
- =?us-ascii?Q?WM0lM0X/XGe0L6xEG2q6JdIptwIQp5GcFyk9pDgFO2Krqmz3n95yxW03ES2O?=
- =?us-ascii?Q?AVx1dD5ERl8lXANc2dbzdP/KJo/rIiuaoWy5phsUlDSUrAH9wk1ujZOqkzFt?=
- =?us-ascii?Q?XhOuWThddFLHfBTWfnk0syzDhmN1SS6ae0S318Fui6nVUBUD6kJthbKAMoK1?=
- =?us-ascii?Q?MplidyGJrKp8nW/CkJY6wSHagNq0Lk+funxPp6rX+0LeQzuaprj5jbR2Odrq?=
- =?us-ascii?Q?L7DtIBOWvI+2RzAeA5pRm9HkgFF1PCy0SB9yOlFEaFEjg4LKtudS05c8ck3n?=
- =?us-ascii?Q?YPRK0dJ9L7XR2C6zCd4YrIntIL3xgu1HXQlt1KkluAFWVQhC84rhwmp8RWUW?=
- =?us-ascii?Q?BTKTRynwAFDHFmcPNwYADbvFnJEfoXXx02gWOlgfsZn2MAcnULPstmgzA8Bf?=
- =?us-ascii?Q?yAtS5GYv2lE/1EaXg13C9pRczQsu3tbS28/YueRSbrRsqvjD+HNK1uhRLydk?=
- =?us-ascii?Q?VPYM+gp8RpqUVU/NhIH+fxt96fGUq6jK9hAy8gscfmQ2GnHkia8mUEt0aSCb?=
- =?us-ascii?Q?MX+c9QiSeZcvXJa8SWhG6B/dCpM+HJ9hLCnnGx94U32KgXBjosZLTxxm77Yj?=
- =?us-ascii?Q?yK3dqjGrKg2F06ABzpnO6aMTIKJzVn3BeIWl1ZoZ9uSmfK9tlQNMIN6pyqUQ?=
- =?us-ascii?Q?En6TElkNVCBCagaARjXgIf7BsThtf0Y07WxQwa10105gkAZJs6FWzv8E6fSO?=
- =?us-ascii?Q?9YMV5wlKlzL0QMfTON9RNnh6xddpmP54Ab4JoqStZjTDkpFyhKIQGyenQJAg?=
- =?us-ascii?Q?RP1gx7dCxHYjLGtVtohXg3e5r8RpDDM3bS24/Z1Mr6JqEVOrpg5lwcfvPTEZ?=
- =?us-ascii?Q?wG+0F4SHVydlkemO3cMRmCCZzydW56JYAnn8xq7/ASU+2hVnqThu44YvecvI?=
- =?us-ascii?Q?BL9UbrJ+ca33g1gqHs9Da8XXkukHztuqgzqZ5b6+b46Pa1cA9eBNJ3P123bc?=
- =?us-ascii?Q?6ZDz+UI43ZWJvOE/y3kdtAeuwmGJ45lv4JOsQUekxct0plqmwdNe3zuSqS/3?=
- =?us-ascii?Q?IAHTS+M/B9So870aPOC0rVAAY3x9bmEsq+fjgwgn?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?k8n2d9qv1zc7wV4B9EFb2PPFNsg3gX9mkQQ7IQpzcxgNxfo11fIdG22c7hp+?=
+ =?us-ascii?Q?BkTczidtdN0ghwD9Uxe3p9tfT8p5/IA7B+4A5QRi+r1R6Il2rTaDLLRL3dzD?=
+ =?us-ascii?Q?MHwNh63fEt4NpVIm7XR6yQOvZJDvCZDJsoOq7lg466cy+xLeJkt/VR7KYsV6?=
+ =?us-ascii?Q?RrmhIX2e2Z0TKt0h2k30xpAsgj9KMBRhqCxEY7Cr22DkdOMCNEbIq332NwKx?=
+ =?us-ascii?Q?k3F3U3Tl/UPEp14aDkOfcwwzfC6Cn6ynJtP9c9lZa2v8Ce5lDvxp3S02Zk7S?=
+ =?us-ascii?Q?MsQzIu7XqqjhGdNd4Cb6MI+CasdyGoxGl7BSAqfaWOujdh47GYgfWH0fONWT?=
+ =?us-ascii?Q?E91aeJq8HhUmUbJZqdU3kyEmUYJjjP0IRerycanKbTTRHsP/8/W1ZzjHCnIJ?=
+ =?us-ascii?Q?Yaq8yLOJY/jwrSqaMOVveRjRdINm2skVO3uiEDW7o2nRDh3TG/NLcEK2Hqk4?=
+ =?us-ascii?Q?zybxCvtZMZvLfs4JPBBpA724DwCWVoVVxhBZuGNEjw5RMR3dC+/vW1zg0kxu?=
+ =?us-ascii?Q?e5XvgrHd+0YWQ4VNw7R0yPy33pe3PO7nZGpxzgMbpjNHwwCBRAddFEhdB8xa?=
+ =?us-ascii?Q?38PkbuKkKHsq4vxPiEgXx73DkHREK9CyOuoSVVtyPd8VrI3sc1LuN4EDoeEt?=
+ =?us-ascii?Q?SR3EEsv4DS5bGQdWrbW0SktrguGgIsPnKUCtBK/oWSBAFuGVNyvArA9OgnCz?=
+ =?us-ascii?Q?u8gtLw6CHP13amCpn3k/Ocj8Wx70YRVjLVnKHmlsJg0wlFkVGAY9f1wUu2ia?=
+ =?us-ascii?Q?+cPV5xsSwVL4uQU5yUXHTNMI9rSXiVxEN9nXZA39tzbTXWw2o4NQ0GXR/7Dn?=
+ =?us-ascii?Q?8KWqia+aF5F2ep2zwgYohqEK+h93B3L1ZUdQngVwv+m3xUKAIFMrBEjkVtb8?=
+ =?us-ascii?Q?qjlnZY9ivu8wCa+OrGDmvVHFg3T64Fsk6HuXacWbhxmkt/uScd5/TlI/VIrg?=
+ =?us-ascii?Q?gUHhTfT+W4e0uTdzZX7SpNKw5rqKgCuenyhSG0dLIqrjFv2jniVI88CW1GOe?=
+ =?us-ascii?Q?+a0Vjzx7jZPx5dYnCaYnTrmIsjWPv+/c8Zb1iusDFOPx0550kezkMJKKF2b6?=
+ =?us-ascii?Q?VTvwKaztia6oc1955QfDUkxxgfT5Kh7vNvSX6lJ9oDqS4kGXXruZ1cZCfW9a?=
+ =?us-ascii?Q?DxVjdY1WalwjVo4f5AdnslG57rcK2ds7b1GfrwhNYTL1hpoFNEh3z3BeDG2V?=
+ =?us-ascii?Q?v5XxC8z8uf1rQTWWBWVfF8FY0zntSys1g9iqh/klrB38zLR/sgAtbUQUUFgt?=
+ =?us-ascii?Q?eYwAQmbCtGTDkOCcsCyNiW3SJcvLuOOVum/IaMdG15Cx1HOhbQlwRbMGrbzY?=
+ =?us-ascii?Q?+KTrLDOTFVC8Vf7n2ldGwlONpqm7Xf1eudmEPVUuWvjO5HTtC4G7zCkhTXPS?=
+ =?us-ascii?Q?r3/YS0k4A9k8TZ3MMYvilhNz29UTsflRw6fESuBxugbtMEiko8Za/W0fBJDB?=
+ =?us-ascii?Q?xJyQhQ0ZImQG/uQTtYzsP6tJWVpNBsF9bYVX4JLgO1Z27HmQBeJsUKatbgjR?=
+ =?us-ascii?Q?0XsM9lrHm9E8e1OYNKcjrqmOzTP52p4vzUp983Ixko1UpKup6++djkJrDOD7?=
+ =?us-ascii?Q?xgXpjSfuZ5qLQLZ/GI105/BwvcIALOXsxp2syjHF?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e65d253-3731-4b59-0372-08daf4e606ba
+X-MS-Exchange-CrossTenant-Network-Message-Id: f5d15fab-a550-469a-56f3-08daf4e60811
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 21:43:22.0730
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 21:43:24.2762
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t8vrkjm65WbsZ7gnDQ5L8/pksjsN4jxo8GN2v7ZoejAcYOkAy8zcLYgIoABmCDqg9e4Py9+X2+dffnaRHpdGqA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: t0X4CXtOj74GlmNd2UCH97j+hSaZc1zYWY47YIrLXaL0V7/S8mECFf81SFg0fvwwHcAWEyG8nUS39R4bW9P0PA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1953
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -127,109 +127,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the vTOM bit now treated as a protection flag and not part of
-the physical address, avoid remapping physical addresses with vTOM set
-since technically such addresses aren't valid.  Use ioremap_cache()
-instead of memremap() to ensure that the mapping provides decrypted
-access, which will correctly set the vTOM bit as a protection flag.
+To support PCI pass-thru devices in Confidential VMs, Hyper-V
+has added hypercalls to read and write MMIO space. Add the
+appropriate definitions to hyperv-tlfs.h and implement
+functions to make the hypercalls.
 
-While this change is not required for correctness with the current
-implementation of memremap(), for general code hygiene it's better to
-not depend on the mapping functions doing something reasonable with
-a physical address that is out-of-range.
-
-While here, fix typos in two error messages.
-
+Co-developed-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
 Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
 ---
- arch/x86/hyperv/hv_init.c |  7 +++++--
- drivers/hv/hv.c           | 23 +++++++++++++----------
- 2 files changed, 18 insertions(+), 12 deletions(-)
+ arch/x86/include/asm/hyperv-tlfs.h  |  3 ++
+ drivers/pci/controller/pci-hyperv.c | 64 +++++++++++++++++++++++++++++++++++++
+ include/asm-generic/hyperv-tlfs.h   | 22 +++++++++++++
+ 3 files changed, 89 insertions(+)
 
-diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index edbc67e..a5f9474 100644
---- a/arch/x86/hyperv/hv_init.c
-+++ b/arch/x86/hyperv/hv_init.c
-@@ -63,7 +63,10 @@ static int hyperv_init_ghcb(void)
- 	 * memory boundary and map it here.
- 	 */
- 	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
--	ghcb_va = memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 08e822b..db2202d9 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -119,6 +119,9 @@
+ /* Recommend using enlightened VMCS */
+ #define HV_X64_ENLIGHTENED_VMCS_RECOMMENDED		BIT(14)
+ 
++/* Use hypercalls for MMIO config space access */
++#define HV_X64_USE_MMIO_HYPERCALLS			BIT(21)
 +
-+	/* Mask out vTOM bit. ioremap_cache() maps decrypted */
-+	ghcb_gpa &= ~ms_hyperv.shared_gpa_boundary;
-+	ghcb_va = (void *)ioremap_cache(ghcb_gpa, HV_HYP_PAGE_SIZE);
- 	if (!ghcb_va)
- 		return -ENOMEM;
+ /*
+  * CPU management features identification.
+  * These are HYPERV_CPUID_CPU_MANAGEMENT_FEATURES.EAX bits.
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index 084f531..bbe6e36 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1041,6 +1041,70 @@ static int wslot_to_devfn(u32 wslot)
+ 	return PCI_DEVFN(slot_no.bits.dev, slot_no.bits.func);
+ }
  
-@@ -217,7 +220,7 @@ static int hv_cpu_die(unsigned int cpu)
- 	if (hv_ghcb_pg) {
- 		ghcb_va = (void **)this_cpu_ptr(hv_ghcb_pg);
- 		if (*ghcb_va)
--			memunmap(*ghcb_va);
-+			iounmap(*ghcb_va);
- 		*ghcb_va = NULL;
- 	}
++static void hv_pci_read_mmio(struct device *dev, phys_addr_t gpa, int size, u32 *val)
++{
++	struct hv_mmio_read_input *in;
++	struct hv_mmio_read_output *out;
++	u64 ret;
++
++	/*
++	 * Must be called with interrupts disabled so it is safe
++	 * to use the per-cpu input argument page.  Use it for
++	 * both input and output.
++	 */
++	in = *this_cpu_ptr(hyperv_pcpu_input_arg);
++	out = *this_cpu_ptr(hyperv_pcpu_input_arg) + sizeof(*in);
++	in->gpa = gpa;
++	in->size = size;
++
++	ret = hv_do_hypercall(HVCALL_MMIO_READ, in, out);
++	if (hv_result_success(ret)) {
++		switch (size) {
++		case 1:
++			*val = *(u8 *)(out->data);
++			break;
++		case 2:
++			*val = *(u16 *)(out->data);
++			break;
++		default:
++			*val = *(u32 *)(out->data);
++			break;
++		}
++	} else
++		dev_err(dev, "MMIO read hypercall error %llx addr %llx size %d\n",
++				ret, gpa, size);
++}
++
++static void hv_pci_write_mmio(struct device *dev, phys_addr_t gpa, int size, u32 val)
++{
++	struct hv_mmio_write_input *in;
++	u64 ret;
++
++	/*
++	 * Must be called with interrupts disabled so it is safe
++	 * to use the per-cpu input argument memory.
++	 */
++	in = *this_cpu_ptr(hyperv_pcpu_input_arg);
++	in->gpa = gpa;
++	in->size = size;
++	switch (size) {
++	case 1:
++		*(u8 *)(in->data) = val;
++		break;
++	case 2:
++		*(u16 *)(in->data) = val;
++		break;
++	default:
++		*(u32 *)(in->data) = val;
++		break;
++	}
++
++	ret = hv_do_hypercall(HVCALL_MMIO_WRITE, in, NULL);
++	if (!hv_result_success(ret))
++		dev_err(dev, "MMIO write hypercall error %llx addr %llx size %d\n",
++				ret, gpa, size);
++}
++
+ /*
+  * PCI Configuration Space for these root PCI buses is implemented as a pair
+  * of pages in memory-mapped I/O space.  Writing to the first page chooses
+diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
+index e29ccab..c1cc3ec 100644
+--- a/include/asm-generic/hyperv-tlfs.h
++++ b/include/asm-generic/hyperv-tlfs.h
+@@ -168,6 +168,8 @@ struct ms_hyperv_tsc_page {
+ #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE 0x00af
+ #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST 0x00b0
+ #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY 0x00db
++#define HVCALL_MMIO_READ			0x0106
++#define HVCALL_MMIO_WRITE			0x0107
  
-diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
-index 4d6480d..410e6c4 100644
---- a/drivers/hv/hv.c
-+++ b/drivers/hv/hv.c
-@@ -217,11 +217,13 @@ void hv_synic_enable_regs(unsigned int cpu)
- 	simp.simp_enabled = 1;
+ /* Extended hypercalls */
+ #define HV_EXT_CALL_QUERY_CAPABILITIES		0x8001
+@@ -795,4 +797,24 @@ struct hv_memory_hint {
+ 	union hv_gpa_page_range ranges[];
+ } __packed;
  
- 	if (hv_isolation_type_snp()) {
-+		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
-+		u64 base = (simp.base_simp_gpa << HV_HYP_PAGE_SHIFT) &
-+				~ms_hyperv.shared_gpa_boundary;
- 		hv_cpu->synic_message_page
--			= memremap(simp.base_simp_gpa << HV_HYP_PAGE_SHIFT,
--				   HV_HYP_PAGE_SIZE, MEMREMAP_WB);
-+			= (void *)ioremap_cache(base, HV_HYP_PAGE_SIZE);
- 		if (!hv_cpu->synic_message_page)
--			pr_err("Fail to map syinc message page.\n");
-+			pr_err("Fail to map synic message page.\n");
- 	} else {
- 		simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
- 			>> HV_HYP_PAGE_SHIFT;
-@@ -234,12 +236,13 @@ void hv_synic_enable_regs(unsigned int cpu)
- 	siefp.siefp_enabled = 1;
- 
- 	if (hv_isolation_type_snp()) {
--		hv_cpu->synic_event_page =
--			memremap(siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT,
--				 HV_HYP_PAGE_SIZE, MEMREMAP_WB);
--
-+		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
-+		u64 base = (siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT) &
-+				~ms_hyperv.shared_gpa_boundary;
-+		hv_cpu->synic_event_page
-+			= (void *)ioremap_cache(base, HV_HYP_PAGE_SIZE);
- 		if (!hv_cpu->synic_event_page)
--			pr_err("Fail to map syinc event page.\n");
-+			pr_err("Fail to map synic event page.\n");
- 	} else {
- 		siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
- 			>> HV_HYP_PAGE_SHIFT;
-@@ -316,7 +319,7 @@ void hv_synic_disable_regs(unsigned int cpu)
- 	 */
- 	simp.simp_enabled = 0;
- 	if (hv_isolation_type_snp())
--		memunmap(hv_cpu->synic_message_page);
-+		iounmap(hv_cpu->synic_message_page);
- 	else
- 		simp.base_simp_gpa = 0;
- 
-@@ -326,7 +329,7 @@ void hv_synic_disable_regs(unsigned int cpu)
- 	siefp.siefp_enabled = 0;
- 
- 	if (hv_isolation_type_snp())
--		memunmap(hv_cpu->synic_event_page);
-+		iounmap(hv_cpu->synic_event_page);
- 	else
- 		siefp.base_siefp_gpa = 0;
- 
++/* Data structures for HVCALL_MMIO_READ and HVCALL_MMIO_WRITE */
++#define HV_HYPERCALL_MMIO_MAX_DATA_LENGTH 64
++
++struct hv_mmio_read_input {
++	u64 gpa;
++	u32 size;
++	u32 reserved;
++} __packed;
++
++struct hv_mmio_read_output {
++	u8 data[HV_HYPERCALL_MMIO_MAX_DATA_LENGTH];
++} __packed;
++
++struct hv_mmio_write_input {
++	u64 gpa;
++	u32 size;
++	u32 reserved;
++	u8 data[HV_HYPERCALL_MMIO_MAX_DATA_LENGTH];
++} __packed;
++
+ #endif
 -- 
 1.8.3.1
 
