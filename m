@@ -2,399 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3FD566865D
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 23:08:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 277C26686B1
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 23:19:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238133AbjALWIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 17:08:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
+        id S232588AbjALWS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 17:18:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239533AbjALWHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 17:07:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF2476AE8
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 13:55:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673560512;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o2pqGz5pxnSufN+M86D4kyp6huaACG/FfcB/U9shMco=;
-        b=TyIjyWBXMkazfyLSDibpqxXFfOII3dGzdniraIunj0Gma7Co02J/wpPMQwckjSfp1bv7Ik
-        3o0cMkaTDt/wjsWHaf6tAZBYEoBH8nM0eoE+rjx7kI7OGiswarraThCx66xURLYYRwWVSY
-        wjyaP8egN4SIMyEoIKfVNQvSBZldTgE=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-455-JUMLCd3tNCun1aZQNAUerA-1; Thu, 12 Jan 2023 16:55:11 -0500
-X-MC-Unique: JUMLCd3tNCun1aZQNAUerA-1
-Received: by mail-ej1-f71.google.com with SMTP id qw20-20020a1709066a1400b007c1727f7c55so13455833ejc.2
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 13:55:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=o2pqGz5pxnSufN+M86D4kyp6huaACG/FfcB/U9shMco=;
-        b=yZ5MAAz9Yv34WSDOKqz+QEpzo2pxhZCZ/mIqzjNrBnVoNpjsNqRba1+3HIQ0t2FQdl
-         DaTvp8owsNCJcYITwGjAPIMrw3yY0PH9lv+rdJJ1cKiP6vjzke4SXO0IZ0kGthggVmXM
-         V47Q9lxlSs3LeeYQGY5FyPg4xgrWZiBmKL81TUIjOwpS4ctetFi5YsCiLy660GOlL/TI
-         q1T822UPwdDUm9laUHHH7MW+XZGAPmsSiyBL35Sp+ahun31qH03dBeQef7AquWdoQ3Fs
-         7UvrS/JiYvuPhB4I2lWrZm+vgIAtGMBdmuCg3SED/z+VnDaorTpkLYHFBGx5Qpm41LWj
-         mN4g==
-X-Gm-Message-State: AFqh2kp1rNviLaSlGDkHxp2Tb3B0a5/SnRMidPBWWHECwo0KsRs2rlw1
-        DdthcxAOkFvz5/M5pdLA8HtVa+khgfhYfW0nwXm9YXhFcsJd66Cn+ICSksKADCFfekPiD2h04A7
-        6qwE7mbPI2lMg9CA6
-X-Received: by 2002:a17:907:2bed:b0:7c0:dd80:e95e with SMTP id gv45-20020a1709072bed00b007c0dd80e95emr1031470ejc.51.1673560507465;
-        Thu, 12 Jan 2023 13:55:07 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXskfiIzt1rRtcZmMG8KEcbynfep73CDRMmHyuGL20jYnjmciHfnH5BK2mK79hQJV+1g26p9+A==
-X-Received: by 2002:a17:907:2bed:b0:7c0:dd80:e95e with SMTP id gv45-20020a1709072bed00b007c0dd80e95emr1031428ejc.51.1673560506631;
-        Thu, 12 Jan 2023 13:55:06 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id r2-20020a17090609c200b007bd28b50305sm7861149eje.200.2023.01.12.13.55.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 13:55:05 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3667E900729; Thu, 12 Jan 2023 22:55:05 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
+        with ESMTP id S232521AbjALWSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 17:18:22 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A936B5DB
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 14:10:17 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R4E4WO91wymUOBzdQ/7lEdlZB46ij00tEwiyCZ/NyZ3j5cVgMU3hXbgKksrNKO+0YwgupHO3FYt2UNITcHJ4J3Tx6MIdvnhuQ+ZR8NmHM4ZbkKAtUui7k1Rr37hKsM1Tsj/ihRf+BLBzgZVWFH1lnWI+nIH8cLcOVFC39bIir715/t17Ng4+Lvu2u2csPpoje6hWcvO4sUnVty24k8x7BS/Z/1xyxmV9Z6qP//TGZnbMdTQ4cfgUqz3WXdyYNLq5ZOfiQQzOJtGGNYLAecQV0n7IKTEI3Ng+uYzKfbMQuttKokbk6zfoVVHo8tajnqz9MuuTWYYUnM6/Gq8RagJrKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NAdmeIT7nl0AA6UONsTd9HUml3H/lYIcISxACklypts=;
+ b=YwkTU3aNVk5ux59BJyL5IhajAZDulEqk0k70TbVljSQ2xFCJ5RbyZXAHQOKtLf3uIeY/0AdG3/3I388MaPUnw+/pc4asW8uQ3t+wFeBslR8kFmCrCJ2cfDzXWOsx4XQzbEG3Iqt2A68qjsFXNEHSa0qow2mTklJsBmhWbdQd+hPQX+bfCWgQv4BvqpA9rCWJyR/J6J5YrFS0XE0iaMSCcu0PmE731wvTUfliJk+AQf49tdm3ZAAVDeyLuRw+w++zLCpdI8gWoqcGwe38wFFg7vg/xjUiPkTt3pwoa1pMHtOGcojRKEqXUBdqiiaXLgjn0P3csU6Qb8gp8JRe1/sBsw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NAdmeIT7nl0AA6UONsTd9HUml3H/lYIcISxACklypts=;
+ b=J/MmsTz/qPxbh+KkZ2g9VGXwfjKZkK7VvBpw1Z1qpWR0jP7ra7PPXzoGP02+JXgV03ZR8NcatHhLdElnYBohJvxzItDict13joVzkxUq5ompFxM88Vvr+otLaiHSNmmADF9L7R6N3nXJcS75gkg5OcCVa2EqXj9BQFmEV7a6yhOLmTekc+TH6aHk4scvbyCiqrtJSUCtn61vF1+Klyfx+yaH0FPtOqrDx3rcvFpra3mqG9dai4O6zEGobFD8/NLsjUpoiJaBQfJ5INjaX1KDk9EvW/8S8J0Sl3TwIL9bbWmczmuj++6cpW59o86Owjx0Zmnka3XK16h56RWOmRpJxA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
+ by IA1PR12MB7687.namprd12.prod.outlook.com (2603:10b6:208:421::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Thu, 12 Jan
+ 2023 22:10:15 +0000
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::8031:8093:2f25:f2ab]) by BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::8031:8093:2f25:f2ab%7]) with mapi id 15.20.5986.018; Thu, 12 Jan 2023
+ 22:10:15 +0000
+From:   Rahul Rameshbabu <rrameshbabu@nvidia.com>
+To:     Maxim Mikityanskiy <maxtram95@gmail.com>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v7 15/17] net/mlx5e: Introduce
- wrapper for xdp_buff
-In-Reply-To: <87k01rfojm.fsf@toke.dk>
-References: <20230112003230.3779451-1-sdf@google.com>
- <20230112003230.3779451-16-sdf@google.com>
- <a0bac9bd-6772-64d4-8fd5-756ff4d8c2ad@gmail.com>
- <CAKH8qBsUOdRax0m5XM8guudSX_VYpJuMz_mzdMJegDsq4_ezwA@mail.gmail.com>
- <87k01rfojm.fsf@toke.dk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 12 Jan 2023 22:55:05 +0100
-Message-ID: <87h6wvfmfa.fsf@toke.dk>
+        Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net v2] sch_htb: Avoid grafting on
+ htb_destroy_class_offload when destroying htb
+References: <20230111203732.51363-1-rrameshbabu@nvidia.com>
+        <Y7/8rXHmchlG2qqE@mail.gmail.com>
+Date:   Thu, 12 Jan 2023 14:10:01 -0800
+In-Reply-To: <Y7/8rXHmchlG2qqE@mail.gmail.com> (Maxim Mikityanskiy's message
+        of "Thu, 12 Jan 2023 14:27:25 +0200")
+Message-ID: <87v8lbtneu.fsf@nvidia.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR03CA0121.namprd03.prod.outlook.com
+ (2603:10b6:a03:33c::6) To BYAPR12MB2743.namprd12.prod.outlook.com
+ (2603:10b6:a03:61::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|IA1PR12MB7687:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9ad26a85-2a59-4468-7893-08daf4e9c828
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oo7sBVO7GQ8sW8YqYkC159W0ZWwrFNiMDq3EMXFpRwejkUxMlIqzEUYyIvAFXamS/axUsbcki5QM8iEbfdCR9gvnkZDs34/ggqvgL3Vs7Up42zTWq3GUaHeVyNZIv352THeNJ1xK3xVPX+UkW/gIsiBxNoXNwUhPE6oMN1ixNhSBnqeac+AeMDzqM/zPT7RBcaornrguh2TmPC5AgN8ClMyJumBDdGSP9yWcGyuSRZK+i+hbd/cLaikSsq2DblQc4L+yN8RP9LjrhCnFBEqTCi1cpzumqW0xx4/wdGL8L7gTGravkmj7otx4uDIvjVDs4oihBQf3bjul0hSiAHvfZJXw1AZo7RjbadgSa/RzmjXNW9EwZPK2VpaebmD6rPwad5k9/jKg3KpOYHFyU3n5bPirTfpkNT5NV77VPTJgyo9dIbTWnCW+EeL1iGoRxjqY62se8BYB2UQfC4icHGfbzuKq7OE1MIpsyKXsUJU6yhWh9uVti9BguPAZFFfGt7eVYLNhxYW22lF8qhT918jdGEy3jdVuybeYjYglFwqWl8kf4+BZrgB5ONjjP3SeTYHfbmJ/h8rXDCHkFy3XUadDq8ovb9d5mraVgPPSu2Q0VKHbETPhPCGbgUQeuRg6+dhGG5h/nunqkHd74mEw4ywrCHWP3Gs5sxktbe3T5Fi8QUT/ZM+sb4R71Ed6saXQ4gahYNb2bBQKEd7f6B1jtQBZgvXNNqPZJOo7iyfVngwTxw8errgXkFJo7L8IUfDSSbALRFOn7zNdSt6/gBdW0terdA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(396003)(39860400002)(366004)(451199015)(41300700001)(4326008)(2616005)(8676002)(83380400001)(66946007)(6916009)(54906003)(36756003)(66476007)(316002)(66556008)(86362001)(5660300002)(8936002)(38100700002)(2906002)(6506007)(6486002)(966005)(6512007)(6666004)(478600001)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?T5YE32JMXiBwtCgopRsjmICcdATjC+j8jcJBVSRV2S+qNCr+9MVhf+v97BBV?=
+ =?us-ascii?Q?/orjf4KjkeNcEjN+KaAI0wCkiUJxz4SgPHvHsVtbmB2dd5y51Uzttu1saUIo?=
+ =?us-ascii?Q?UMqyL7Upo6uGWetVEHHwzdOjp5p5Q0pXjQItpyfGhitid0CYY/pl9stCnRus?=
+ =?us-ascii?Q?BpRxIRmNaGUyyWIgjSf5TF9K/hFXA3emlPaaz5hpu8alw9/kc6CpzV+QaTKx?=
+ =?us-ascii?Q?L4WOlDXzynraL5wBHZ6aw5C7qfqvc3vIJo6y2SHGgzlkZKxWt2exXKZkC56C?=
+ =?us-ascii?Q?eEXnNDhQC9pQT/nBj267/vw41ADoH1p9nBbMd5LdmeuDe7kW4KpEJRpXyRhH?=
+ =?us-ascii?Q?9LRQec7iAhopZGQuof+kiRGeQ+2T87XIr64bkHO2YtFcT4Lv1wZLlk1xTLb/?=
+ =?us-ascii?Q?VJUkrp9ArNY47VHkEiccIEBpobRZm0SquGO8Uf6GAHzudLu5GJEKMxosf/uS?=
+ =?us-ascii?Q?7MH9tY78HgpF3bYxZVvXYQaT8LUEY0UfDlT8MGrKzLx37A56RHamFxgOViNV?=
+ =?us-ascii?Q?MGxP0F8pXOt/1folNLYN1FWNfGR1Xgn2lXlNBFlQuDNPb6kTb7m7ogSr0zWe?=
+ =?us-ascii?Q?tjKDuZ8T1pMplnWs5tYUjzM0x7fvaBsF/JNXjw76XxosoaEyqgM/+QWKFGMy?=
+ =?us-ascii?Q?xXKDu2Sw+JxozeXYk7qtT2kotGUDqNt8XFhRyDVBI12WP866M6XeSjGgGMFN?=
+ =?us-ascii?Q?7lIA+HYmZwbj9ZPgZqglLtNw/a0Tym0Q1xI8PEHLgABPlXcedNrr0cR/8Iym?=
+ =?us-ascii?Q?1RVDeTQl3Gu/lqpDIJUXqZwBWPhX1VyTPXB2qnS9NYyVGip0QgpE0HQVbpuu?=
+ =?us-ascii?Q?tWyl/X7qQqO7ZzOdWbnd4MOiLFpF7vXOiXLmuroyCCNQRJ3Dw/axTBaQSV8Q?=
+ =?us-ascii?Q?MB79aFEtzTx4Llsuu8Xi8kLZ/v9fFM5ycxW7V9nKMGVOXFf2Sw94jYl9Q76Q?=
+ =?us-ascii?Q?juM8GGfWgU2wmrN9fezidGD29Sie+CLnrbCL5U9K7vIKOu9PYWisRoHfXTNi?=
+ =?us-ascii?Q?ECzf8hooI7XImKeiLw2NkFSAOvyxX4FDRc8Ei0iGktln2w5fR0S0jotJv6y7?=
+ =?us-ascii?Q?DbDL8+7YdpWioN1RdexeOXUkico46Fjiwgh2b40XMsHg2IluvlJ6vVY12IHh?=
+ =?us-ascii?Q?DVlhVm3BWa7GVAmvfBQXIXsZY8skO86ymoM0Ecq1NLZXct8HPicPZ3jQ3F8O?=
+ =?us-ascii?Q?+k/S6/XS3PvK3/0nv5dYFWzONMt443fck6wEh8hy+oOwa+lvrmwze67x1RYp?=
+ =?us-ascii?Q?hAR0aAGRK5lmc8D0sGF6S2X0YWW5VQboD56mI0guxRNi9Axayp9m00MpJKuA?=
+ =?us-ascii?Q?4dKEgev64uwkGkJ6jAiyCSTvbfLEwjY7K9r52fuXGEtWcOnpXnx6+uZBr1v/?=
+ =?us-ascii?Q?2DHpCZ9A0L2wYyZbACzs96nrPvsrNHHaIN7plvohLJWVxgyp+51CW9ShoO8h?=
+ =?us-ascii?Q?uxqTZwHgD3NWU+Y5o6YUg7NVcpe+QB0mCV049Y1oPLtHeoj+wiJMExwixLnd?=
+ =?us-ascii?Q?LzzNDS38gZJHqSAOmkbjDOuNhkChgeevcxT0hGnCh4duXOsmW3uyzIjt2r/c?=
+ =?us-ascii?Q?vAo59j36JDzJQLj2bS6aG3FP08bmw67/Oa5bY8RUFkgHTHeJJQayL6eLE+jp?=
+ =?us-ascii?Q?HdZpzpP4N9VKybtwOPmsVj8Nj1NR1YqR1bHmCKTZ8M6fq0rwNV7Zle0xaXc/?=
+ =?us-ascii?Q?BKRC7w=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ad26a85-2a59-4468-7893-08daf4e9c828
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 22:10:15.0874
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Nt+IJilSyZj9+QFC1gFG/tXoCQOSF9NqffVQvih2NwKag71KMSGFqoIEDFJibuwhxrcF9XJlCHjLl/xGnACP6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7687
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
+Maxim Mikityanskiy <maxtram95@gmail.com> writes:
 
-> Stanislav Fomichev <sdf@google.com> writes:
+> On Wed, Jan 11, 2023 at 12:37:33PM -0800, Rahul Rameshbabu wrote:
+>> When destroying the htb, the caller may already have grafted a new qdisc
+>> that is not part of the htb structure being destroyed.
+>> htb_destroy_class_offload should not peek at the qdisc of the netdev queue.
+>> Peek at old qdisc and graft only when deleting a leaf class in the htb,
+>> rather than when deleting the htb itself.
+>> 
+>> This fix resolves two use cases.
+>> 
+>>   1. Using tc to destroy the htb.
+>>   2. Using tc to replace the htb with another qdisc (which also leads to
+>>      the htb being destroyed).
 >
->> On Thu, Jan 12, 2023 at 12:07 AM Tariq Toukan <ttoukan.linux@gmail.com> =
-wrote:
->>>
->>>
->>>
->>> On 12/01/2023 2:32, Stanislav Fomichev wrote:
->>> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>> >
->>> > Preparation for implementing HW metadata kfuncs. No functional change.
->>> >
->>> > Cc: Tariq Toukan <tariqt@nvidia.com>
->>> > Cc: Saeed Mahameed <saeedm@nvidia.com>
->>> > Cc: John Fastabend <john.fastabend@gmail.com>
->>> > Cc: David Ahern <dsahern@gmail.com>
->>> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
->>> > Cc: Jakub Kicinski <kuba@kernel.org>
->>> > Cc: Willem de Bruijn <willemb@google.com>
->>> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
->>> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
->>> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
->>> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
->>> > Cc: Maryam Tahhan <mtahhan@redhat.com>
->>> > Cc: xdp-hints@xdp-project.net
->>> > Cc: netdev@vger.kernel.org
->>> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
->>> > ---
->>> >   drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
->>> >   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  3 +-
->>> >   .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  6 +-
->>> >   .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 25 ++++----
->>> >   .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 58 +++++++++-------=
----
->>> >   5 files changed, 50 insertions(+), 43 deletions(-)
->>> >
->>> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/n=
-et/ethernet/mellanox/mlx5/core/en.h
->>> > index 2d77fb8a8a01..af663978d1b4 100644
->>> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
->>> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
->>> > @@ -469,6 +469,7 @@ struct mlx5e_txqsq {
->>> >   union mlx5e_alloc_unit {
->>> >       struct page *page;
->>> >       struct xdp_buff *xsk;
->>> > +     struct mlx5e_xdp_buff *mxbuf;
->>>
->>> In XSK files below you mix usage of both alloc_units[page_idx].mxbuf and
->>> alloc_units[page_idx].xsk, while both fields share the memory of a unio=
-n.
->>>
->>> As struct mlx5e_xdp_buff wraps struct xdp_buff, I think that you just
->>> need to change the existing xsk field type from struct xdp_buff *xsk
->>> into struct mlx5e_xdp_buff *xsk and align the usage.
->>
->> Hmmm, good point. I'm actually not sure how it works currently.
->> mlx5e_alloc_unit.mxbuf doesn't seem to be initialized anywhere? Toke,
->> am I missing something?
+> Please elaborate in the commit message what exactly was broken in these
+> cases, i.e. premature dev_activate in both cases, and also accidental
+> overwriting of the qdisc in case 2.
+
+Ack.
+
 >
-> It's initialised piecemeal in different places; but yeah, we're mixing
-> things a bit...
+>> 
+>> Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+>> Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+>> Cc: Eric Dumazet <edumazet@google.com>
+>> Cc: Maxim Mikityanskiy <maxtram95@gmail.com>
+>> ---
+>>  net/sched/sch_htb.c | 23 +++++++++++++----------
+>>  1 file changed, 13 insertions(+), 10 deletions(-)
+>> 
+>> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+>> index 2238edece1a4..360ce8616fd2 100644
+>> --- a/net/sched/sch_htb.c
+>> +++ b/net/sched/sch_htb.c
+>> @@ -1557,14 +1557,13 @@ static int htb_destroy_class_offload(struct Qdisc *sch, struct htb_class *cl,
+>>  
+>>  	WARN_ON(!q);
+>>  	dev_queue = htb_offload_get_queue(cl);
+>> -	old = htb_graft_helper(dev_queue, NULL);
+>> -	if (destroying)
+>> -		/* Before HTB is destroyed, the kernel grafts noop_qdisc to
+>> -		 * all queues.
+>> +	if (!destroying) {
+>> +		old = htb_graft_helper(dev_queue, NULL);
+>> +		/* Last qdisc grafted should be the same as cl->leaf.q when
+>> +		 * calling htb_destroy
 >
->> I'm thinking about something like this:
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> b/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> index af663978d1b4..2d77fb8a8a01 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> @@ -469,7 +469,6 @@ struct mlx5e_txqsq {
->>  union mlx5e_alloc_unit {
->>         struct page *page;
->>         struct xdp_buff *xsk;
->> -       struct mlx5e_xdp_buff *mxbuf;
->>  };
+> Did you mean "when calling htb_delete"?
 >
-> Hmm, for consistency with the non-XSK path we should rather go the other
-> direction and lose the xsk member, moving everything to mxbuf? Let me
-> give that a shot...
+> Worth also commenting that on destroying, graft is done by qdisc_graft,
+> and the latter also qdisc_puts the old one. Just to explain why we skip
+> steps on destroying.
+>
 
-Something like the below?
+Yes, I did mean htb_delete. Ack.
 
--Toke
+>>  		 */
+>> -		WARN_ON(!(old->flags & TCQ_F_BUILTIN));
+>> -	else
+>>  		WARN_ON(old != q);
+>> +	}
+>>  
+>>  	if (cl->parent) {
+>>  		_bstats_update(&cl->parent->bstats_bias,
+>> @@ -1581,10 +1580,14 @@ static int htb_destroy_class_offload(struct Qdisc *sch, struct htb_class *cl,
+>>  	};
+>>  	err = htb_offload(qdisc_dev(sch), &offload_opt);
+>>  
+>> -	if (!err || destroying)
+>> -		qdisc_put(old);
+>> -	else
+>> -		htb_graft_helper(dev_queue, old);
+>> +	/* htb_offload related errors when destroying cannot be handled */
+>> +	WARN_ON(err && destroying);
+>
+> Not sure whether we want to WARN on this error...
+>
+> On destroying, we call htb_offload with TC_HTB_LEAF_DEL_LAST_FORCE,
+> which makes the mlx5e driver proceed with deleting the node even if it
+> failed to create a replacement node. Normally it cancels the deletion to
+> keep the integrity of hardware structures, but on htb_destroy it doesn't
+> matter, because everything is going to be torn down anyway. An error is
+> still returned by the driver, but it's safe to ignore it, not worth a
+> WARN at all.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/eth=
-ernet/mellanox/mlx5/core/en.h
-index 6de02d8aeab8..cb9cdb6421c5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -468,7 +468,6 @@ struct mlx5e_txqsq {
-=20
- union mlx5e_alloc_unit {
- 	struct page *page;
--	struct xdp_buff *xsk;
- 	struct mlx5e_xdp_buff *mxbuf;
- };
-=20
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net=
-/ethernet/mellanox/mlx5/core/en/xdp.h
-index cb568c62aba0..95694a25ec31 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-@@ -33,6 +33,7 @@
- #define __MLX5_EN_XDP_H__
-=20
- #include <linux/indirect_call_wrapper.h>
-+#include <net/xdp_sock_drv.h>
-=20
- #include "en.h"
- #include "en/txrx.h"
-@@ -112,6 +113,21 @@ static inline void mlx5e_xmit_xdp_doorbell(struct mlx5=
-e_xdpsq *sq)
- 	}
- }
-=20
-+static inline struct mlx5e_xdp_buff *mlx5e_xsk_buff_alloc(struct xsk_buff_=
-pool *pool)
-+{
-+	return (struct mlx5e_xdp_buff *)xsk_buff_alloc(pool);
-+}
-+
-+static inline void mlx5e_xsk_buff_free(struct mlx5e_xdp_buff *mxbuf)
-+{
-+	xsk_buff_free(&mxbuf->xdp);
-+}
-+
-+static inline dma_addr_t mlx5e_xsk_buff_xdp_get_frame_dma(struct mlx5e_xdp=
-_buff *mxbuf)
-+{
-+	return xsk_buff_xdp_get_frame_dma(&mxbuf->xdp);
-+}
-+
- /* Enable inline WQEs to shift some load from a congested HCA (HW) to
-  * a less congested cpu (SW).
-  */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index 8bf3029abd3c..1f166dbb7f22 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -3,7 +3,6 @@
-=20
- #include "rx.h"
- #include "en/xdp.h"
--#include <net/xdp_sock_drv.h>
- #include <linux/filter.h>
-=20
- /* RX data path */
-@@ -21,7 +20,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 	if (unlikely(!xsk_buff_can_alloc(rq->xsk_pool, rq->mpwqe.pages_per_wqe)))
- 		goto err;
-=20
--	BUILD_BUG_ON(sizeof(wi->alloc_units[0]) !=3D sizeof(wi->alloc_units[0].xs=
-k));
-+	BUILD_BUG_ON(sizeof(wi->alloc_units[0]) !=3D sizeof(wi->alloc_units[0].mx=
-buf));
- 	XSK_CHECK_PRIV_TYPE(struct mlx5e_xdp_buff);
- 	batch =3D xsk_buff_alloc_batch(rq->xsk_pool, (struct xdp_buff **)wi->allo=
-c_units,
- 				     rq->mpwqe.pages_per_wqe);
-@@ -33,8 +32,8 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 	 * the first error, which will mean there are no more valid descriptors.
- 	 */
- 	for (; batch < rq->mpwqe.pages_per_wqe; batch++) {
--		wi->alloc_units[batch].xsk =3D xsk_buff_alloc(rq->xsk_pool);
--		if (unlikely(!wi->alloc_units[batch].xsk))
-+		wi->alloc_units[batch].mxbuf =3D mlx5e_xsk_buff_alloc(rq->xsk_pool);
-+		if (unlikely(!wi->alloc_units[batch].mxbuf))
- 			goto err_reuse_batch;
- 	}
-=20
-@@ -44,7 +43,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
-=20
- 	if (likely(rq->mpwqe.umr_mode =3D=3D MLX5E_MPWRQ_UMR_MODE_ALIGNED)) {
- 		for (i =3D 0; i < batch; i++) {
--			dma_addr_t addr =3D xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
-+			dma_addr_t addr =3D mlx5e_xsk_buff_xdp_get_frame_dma(wi->alloc_units[i]=
-.mxbuf);
-=20
- 			umr_wqe->inline_mtts[i] =3D (struct mlx5_mtt) {
- 				.ptag =3D cpu_to_be64(addr | MLX5_EN_WR),
-@@ -53,7 +52,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		}
- 	} else if (unlikely(rq->mpwqe.umr_mode =3D=3D MLX5E_MPWRQ_UMR_MODE_UNALIG=
-NED)) {
- 		for (i =3D 0; i < batch; i++) {
--			dma_addr_t addr =3D xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
-+			dma_addr_t addr =3D mlx5e_xsk_buff_xdp_get_frame_dma(wi->alloc_units[i]=
-.mxbuf);
-=20
- 			umr_wqe->inline_ksms[i] =3D (struct mlx5_ksm) {
- 				.key =3D rq->mkey_be,
-@@ -65,7 +64,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		u32 mapping_size =3D 1 << (rq->mpwqe.page_shift - 2);
-=20
- 		for (i =3D 0; i < batch; i++) {
--			dma_addr_t addr =3D xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
-+			dma_addr_t addr =3D mlx5e_xsk_buff_xdp_get_frame_dma(wi->alloc_units[i]=
-.mxbuf);
-=20
- 			umr_wqe->inline_ksms[i << 2] =3D (struct mlx5_ksm) {
- 				.key =3D rq->mkey_be,
-@@ -91,7 +90,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		__be32 frame_size =3D cpu_to_be32(rq->xsk_pool->chunk_size);
-=20
- 		for (i =3D 0; i < batch; i++) {
--			dma_addr_t addr =3D xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
-+			dma_addr_t addr =3D mlx5e_xsk_buff_xdp_get_frame_dma(wi->alloc_units[i]=
-.mxbuf);
-=20
- 			umr_wqe->inline_klms[i << 1] =3D (struct mlx5_klm) {
- 				.key =3D rq->mkey_be,
-@@ -137,7 +136,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 i=
-x)
-=20
- err_reuse_batch:
- 	while (--batch >=3D 0)
--		xsk_buff_free(wi->alloc_units[batch].xsk);
-+		mlx5e_xsk_buff_free(wi->alloc_units[batch].mxbuf);
-=20
- err:
- 	rq->stats->buff_alloc_err++;
-@@ -156,7 +155,7 @@ int mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq=
-, u16 ix, int wqe_bulk)
- 	 * allocate XDP buffers straight into alloc_units.
- 	 */
- 	BUILD_BUG_ON(sizeof(rq->wqe.alloc_units[0]) !=3D
--		     sizeof(rq->wqe.alloc_units[0].xsk));
-+		     sizeof(rq->wqe.alloc_units[0].mxbuf));
- 	buffs =3D (struct xdp_buff **)rq->wqe.alloc_units;
- 	contig =3D mlx5_wq_cyc_get_size(wq) - ix;
- 	if (wqe_bulk <=3D contig) {
-@@ -177,8 +176,9 @@ int mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq=
-, u16 ix, int wqe_bulk)
- 		/* Assumes log_num_frags =3D=3D 0. */
- 		frag =3D &rq->wqe.frags[j];
-=20
--		addr =3D xsk_buff_xdp_get_frame_dma(frag->au->xsk);
-+		addr =3D mlx5e_xsk_buff_xdp_get_frame_dma(frag->au->mxbuf);
- 		wqe->data[0].addr =3D cpu_to_be64(addr + rq->buff.headroom);
-+		frag->au->mxbuf->rq =3D rq;
- 	}
-=20
- 	return alloc;
-@@ -199,12 +199,13 @@ int mlx5e_xsk_alloc_rx_wqes(struct mlx5e_rq *rq, u16 =
-ix, int wqe_bulk)
- 		/* Assumes log_num_frags =3D=3D 0. */
- 		frag =3D &rq->wqe.frags[j];
-=20
--		frag->au->xsk =3D xsk_buff_alloc(rq->xsk_pool);
--		if (unlikely(!frag->au->xsk))
-+		frag->au->mxbuf =3D mlx5e_xsk_buff_alloc(rq->xsk_pool);
-+		if (unlikely(!frag->au->mxbuf))
- 			return i;
-=20
--		addr =3D xsk_buff_xdp_get_frame_dma(frag->au->xsk);
-+		addr =3D mlx5e_xsk_buff_xdp_get_frame_dma(frag->au->mxbuf);
- 		wqe->data[0].addr =3D cpu_to_be64(addr + rq->buff.headroom);
-+		frag->au->mxbuf->rq =3D rq;
- 	}
-=20
- 	return wqe_bulk;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_rx.c
-index 7b08653be000..4313165709cb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -41,7 +41,6 @@
- #include <net/gro.h>
- #include <net/udp.h>
- #include <net/tcp.h>
--#include <net/xdp_sock_drv.h>
- #include "en.h"
- #include "en/txrx.h"
- #include "en_tc.h"
-@@ -434,7 +433,7 @@ static inline void mlx5e_free_rx_wqe(struct mlx5e_rq *r=
-q,
- 		 * put into the Reuse Ring, because there is no way to return
- 		 * the page to the userspace when the interface goes down.
- 		 */
--		xsk_buff_free(wi->au->xsk);
-+		mlx5e_xsk_buff_free(wi->au->mxbuf);
- 		return;
- 	}
-=20
-@@ -515,7 +514,7 @@ mlx5e_free_rx_mpwqe(struct mlx5e_rq *rq, struct mlx5e_m=
-pw_info *wi, bool recycle
- 		 */
- 		for (i =3D 0; i < rq->mpwqe.pages_per_wqe; i++)
- 			if (no_xdp_xmit || !test_bit(i, wi->xdp_xmit_bitmap))
--				xsk_buff_free(alloc_units[i].xsk);
-+				mlx5e_xsk_buff_free(alloc_units[i].mxbuf);
- 	} else {
- 		for (i =3D 0; i < rq->mpwqe.pages_per_wqe; i++)
- 			if (no_xdp_xmit || !test_bit(i, wi->xdp_xmit_bitmap))
+I see. This makes sense to me.
 
+>
+> Another error flow, when the firmware command to delete a node fails for
+> some reason, doesn't even lead to returning an error, because the worst
+> that happens is a leak of hardware resources, and we can't do anything
+> meaningful about it at that stage.
+
+This was what I was trying to catch with the WARN_ON, with the hope that
+at worst it wouldn't have any false positives. However, if there are
+errors due to certain operation modes like TC_HTB_LEAF_DEL_LAST_FORCE
+where the htb is still destroyed, this WARN_ON seems to be problematic
+more than helpful. Will remove in my next revision.
+
+>
+> So, I don't think this WARN_ON is helpful, unless you also want to
+> change the way mlx5e returns errors.
+>
+>> +	if (!destroying) {
+>> +		if (!err)
+>> +			qdisc_put(old);
+>> +		else
+>> +			htb_graft_helper(dev_queue, old);
+>> +	}
+>
+> Looks good. I also suggest removing NULL-initialization of old to make
+> sure one will get a compiler warning about an uninitialized variable if
+> one changes the code in the future and accidentally uses old in the
+> destroying flow.
+
+Ack.
+
+>
+>>  
+>>  	if (last_child)
+>>  		return err;
+>> -- 
+>> 2.36.2
+>> 
+>> Previous related discussions
+>> 
+>> [1] https://lore.kernel.org/netdev/20230110202003.25452-1-rrameshbabu@nvidia.com/
+>> [2] https://lore.kernel.org/netdev/20230104174744.22280-1-rrameshbabu@nvidia.com/
+>> [3] https://lore.kernel.org/all/CANn89iJSsFPBp5dYm3y6Jbbpuwbb9P+X3gmqk6zow0VWgx1Q-A@mail.gmail.com/
