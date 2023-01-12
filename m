@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7B26672EF
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 14:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D6E66730D
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 14:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233260AbjALNJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 08:09:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
+        id S233571AbjALNTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 08:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbjALNJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 08:09:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A224FD53
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 05:08:59 -0800 (PST)
+        with ESMTP id S233616AbjALNS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 08:18:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EFE32240
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 05:18:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673528938;
+        s=mimecast20190719; t=1673529494;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nCRS/MpkyPeaVrlVLdkBcx6JcO4jj78Pqfq4rjjeatI=;
-        b=dSP+GfkcK+FNkoMF7B0v8fqIVbBug4pISHwTK4HMHzDYVFW865TaazM5pBpmOhduo1ju0x
-        sPqrhWC+4cWmoiyCr27a+JSND5sb9bPveZPj5z8cMLXdMNXpEwqGal7LFG/26anDh/HKj9
-        zbmkqYjvevh5Owku1SG3AW0ecewdyGc=
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
- [209.85.219.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=FczANLzjWLC+T8ElqheikTdKGOmFGdHTPNpppfFzGN8=;
+        b=DdUbo8gfY2cuJNk2kTeWr1H1IOGSYwsOKefpcGbqxA22I1bmBfpqu7k3EuBMh1b4L66fd8
+        jDDXTX4xqDanlazu8VmvzrRcOVv3UEE0n8/REJ36RjZsAatLJavrM/rVTwxmMef8N2gmkH
+        tDfMVbNH4mjUTZncc8vstldgsx2impo=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-197-ZLWBJtzZNkSjpQMae58-PQ-1; Thu, 12 Jan 2023 08:08:57 -0500
-X-MC-Unique: ZLWBJtzZNkSjpQMae58-PQ-1
-Received: by mail-yb1-f197.google.com with SMTP id i17-20020a25bc11000000b007b59a5b74aaso19067493ybh.7
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 05:08:57 -0800 (PST)
+ us-mta-340-VN0YoBbcN6W32lvTQLQxZw-1; Thu, 12 Jan 2023 08:18:12 -0500
+X-MC-Unique: VN0YoBbcN6W32lvTQLQxZw-1
+Received: by mail-qk1-f198.google.com with SMTP id i4-20020a05620a248400b006febc1651bbso12952389qkn.4
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 05:18:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:user-agent:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=nCRS/MpkyPeaVrlVLdkBcx6JcO4jj78Pqfq4rjjeatI=;
-        b=hTaHH8DMK0s4jFgtuMcxwczZ4YGArvaVLDWyn1dtGznQv+Mi3PrcZFlyYKkS2NJmcH
-         x4JLXxRyHgv6Gc5u6KtHHMeuH4P4VV3eG4pbX5aYVJUosCUIy7R5kOm2H2QERebC77MD
-         1cMrDazY+hZdO581rtZZXsfu6uLwoSJkJ3NkXxlhpNayvfmgGpY462Dzi3wpmPSd+qcV
-         uCDBWQ+mBiCSx8EFNYKt5qVp8F1jBo7OqOAgxakJ9Xb2pdzJcPkoaNKew5onut5eWc9e
-         woo/1D2SsBfuc3encJIp4SAEJoFozwmedxaOZzoiJj0a6M+eCieF/4xq/big2MdagnI2
-         Aohw==
-X-Gm-Message-State: AFqh2krBKh/rv/6ltDbx7CEH5XCWgKocnEPg4qRM1eOaj/wDsrTlya9X
-        L9Qb3VvmA3+ZKwRaE/1pr5eMY353AsC5pTsgcmuxOMZ4ZxUU66uNQYh8BqEsJDRE2o8PHL8YXm0
-        c1jekjMmEW1PB4+YM
-X-Received: by 2002:a05:7500:16cc:b0:f0:4692:cc0 with SMTP id ce12-20020a05750016cc00b000f046920cc0mr1298086gab.28.1673528937048;
-        Thu, 12 Jan 2023 05:08:57 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtVkkADuVZjTJe4BA/F7Hbb10OyHI3PlW0oPb18BdiV3GHvC5tzK1mPBMMc0FP3iW/BXGLyqQ==
-X-Received: by 2002:a05:7500:16cc:b0:f0:4692:cc0 with SMTP id ce12-20020a05750016cc00b000f046920cc0mr1298060gab.28.1673528936660;
-        Thu, 12 Jan 2023 05:08:56 -0800 (PST)
+        bh=FczANLzjWLC+T8ElqheikTdKGOmFGdHTPNpppfFzGN8=;
+        b=eoitHIiLmtiHR1FzxVg/BdQ81Ii8uWIGy8K2LfPf2MzEw2XyL2oNiRQxIfw9rx2Xbx
+         LcihR9y/75Ip1OWQ+2P1CwqyqkAQV9adlhdB0Abj8eIRrDhRq1y8r40RQ1fdIF4GYqPL
+         +TIGnqS33yWVbjJm4Ldw684cYb0qFCHBUa+RyCXlaKlRox5HazGz3X6nQidtxAzyNY8c
+         aoRSVEJNCxfdYerMt9cSfbtyZUHi2HwPCnajks7ufeNP6kbccVixLdaKvIQ9aPytwsJv
+         9VSUJYaYNZun8/l0/XWFkwoyOLwAElPGqiK0U+GPWUln8V6OoZcmMeXLXzwrDnI4CmgK
+         LsDg==
+X-Gm-Message-State: AFqh2kpDQM63TBtAWC5bwvmeKKtu418pos/O5a5hlYTlTjKMFnJu/LWz
+        vKpOOcgepG5vaMlN+mBIUTtcExn0wMFApW4mJaWHayyvey0H0Qfm1/skP6fL3ZvxLTdgR2amG00
+        AI+ia2RS9Tgk4MjZb
+X-Received: by 2002:ac8:7518:0:b0:3b1:e5f9:18ff with SMTP id u24-20020ac87518000000b003b1e5f918ffmr1804469qtq.20.1673529492485;
+        Thu, 12 Jan 2023 05:18:12 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsfPFfGQIjYijbYxLudiBr+DXnAeK2jzCSeesQ6/OqmioqEwm4dgYxW86tbRldRc2d8JmNtzA==
+X-Received: by 2002:ac8:7518:0:b0:3b1:e5f9:18ff with SMTP id u24-20020ac87518000000b003b1e5f918ffmr1804457qtq.20.1673529492270;
+        Thu, 12 Jan 2023 05:18:12 -0800 (PST)
 Received: from gerbillo.redhat.com (146-241-113-183.dyn.eolo.it. [146.241.113.183])
-        by smtp.gmail.com with ESMTPSA id j9-20020a05620a288900b006f9f714cb6asm10549640qkp.50.2023.01.12.05.08.54
+        by smtp.gmail.com with ESMTPSA id d8-20020ac84e28000000b0039c7b9522ecsm9050129qtw.35.2023.01.12.05.18.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 05:08:56 -0800 (PST)
-Message-ID: <bd39d0ffec879ccff7bff79f9ff16a727a3f8301.camel@redhat.com>
-Subject: Re: [PATCH net-next] r8152: add vendor/device ID pair for Microsoft
- Devkit
+        Thu, 12 Jan 2023 05:18:11 -0800 (PST)
+Message-ID: <989d0a69c3f6c571e6bfc234a744d0183c4a269a.camel@redhat.com>
+Subject: Re: [Patch net v2 1/2] l2tp: convert l2tp_tunnel_list to idr
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>
-Date:   Thu, 12 Jan 2023 14:08:53 +0100
-In-Reply-To: <20230112115659.27fb453d@donnerap.cambridge.arm.com>
-References: <20230111133228.190801-1-andre.przywara@arm.com>
-         <20230111213143.71f2ad7e@kernel.org>
-         <20230112105137.7b09e70b@donnerap.cambridge.arm.com>
-         <4c48269962dafbb641d5b0c38ec5b7bf951f3b4d.camel@redhat.com>
-         <20230112115659.27fb453d@donnerap.cambridge.arm.com>
+To:     Tom Parkin <tparkin@katalix.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, saeed@kernel.org, gnault@redhat.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 Jan 2023 14:18:08 +0100
+In-Reply-To: <20230111112910.GA4173@katalix.com>
+References: <20230110210030.593083-1-xiyou.wangcong@gmail.com>
+         <20230110210030.593083-2-xiyou.wangcong@gmail.com>
+         <20230111112910.GA4173@katalix.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
@@ -86,49 +84,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-01-12 at 11:56 +0000, Andre Przywara wrote:
-> On Thu, 12 Jan 2023 12:39:01 +0100
-> Paolo Abeni <pabeni@redhat.com> wrote:
-> 
-> Hi,
-> 
-> > On Thu, 2023-01-12 at 10:51 +0000, Andre Przywara wrote:
-> > > On Wed, 11 Jan 2023 21:31:43 -0800 Jakub Kicinski <kuba@kernel.org> wrote:  
-> > > > Hm, we have a patch in net-next which reformats the entries:
-> > > > ec51fbd1b8a2bca2948dede99c14ec63dc57ff6b
-> > > > 
-> > > > Would you like this ID to be also added in stable? We could just 
-> > > > apply it to net, and deal with the conflict locally. But if you 
-> > > > don't care about older kernels then better if you rebase.  
-> > > 
-> > > Stable would be nice, but only to v6.1. I think I don't care
-> > > about older kernels.
-> > > So what about if I resend this one here, based on top of the reformat
-> > > patch, with a:
-> > > Cc: <stable@vger.kernel.org> # 6.1.x
-> > > line in there, and then reply to the email that the automatic backport
-> > > failed, with a tailored patch for v6.1?
-> > > Alternatively I can send an explicit stable backport email once this one
-> > > is merged.  
+On Wed, 2023-01-11 at 11:29 +0000, Tom Parkin wrote:
+> On  Tue, Jan 10, 2023 at 13:00:29 -0800, Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
 > > 
-> > Note that we can merge this kind of changes via the -net tree. No
-> > repost will be needed. We can merge it as is on -net and you can follow
-> > the option 2 from the stable kernel rules doc, with no repost nor
-> > additional mangling for stable will be needed.
+> > l2tp uses l2tp_tunnel_list to track all registered tunnels and
+> > to allocate tunnel ID's. IDR can do the same job.
 > > 
-> > If you are ok with the above let me know.
+> > More importantly, with IDR we can hold the ID before a successful
+> > registration so that we don't need to worry about late error
+> > handling, it is not easy to rollback socket changes.
+> > 
+> > This is a preparation for the following fix.
+> > 
+> > Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> > Cc: Guillaume Nault <gnault@redhat.com>
+> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > ---
+> >  net/l2tp/l2tp_core.c | 85 ++++++++++++++++++++++----------------------
+> >  1 file changed, 42 insertions(+), 43 deletions(-)
+> > 
+> > diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> > index 9a1415fe3fa7..894bc9ff0e71 100644
+> > --- a/net/l2tp/l2tp_core.c
+> > +++ b/net/l2tp/l2tp_core.c
+> <snip>
+> > @@ -1455,12 +1456,19 @@ static int l2tp_validate_socket(const struct sock *sk, const struct net *net,
+> >  int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+> >  			 struct l2tp_tunnel_cfg *cfg)
+> >  {
+> > -	struct l2tp_tunnel *tunnel_walk;
+> > -	struct l2tp_net *pn;
+> > +	struct l2tp_net *pn = l2tp_pernet(net);
+> > +	u32 tunnel_id = tunnel->tunnel_id;
+> >  	struct socket *sock;
+> >  	struct sock *sk;
+> >  	int ret;
+> >  
+> > +	spin_lock_bh(&pn->l2tp_tunnel_idr_lock);
+> > +	ret = idr_alloc_u32(&pn->l2tp_tunnel_idr, NULL, &tunnel_id, tunnel_id,
+> > +			    GFP_ATOMIC);
+> > +	spin_unlock_bh(&pn->l2tp_tunnel_idr_lock);
+> > +	if (ret)
+> > +		return ret;
+> > +
 > 
-> That sounds good to me, but that will then trigger a merge conflict when
-> net-next (with the reformat patch) is merged? I guess it's easy enough to
-> solve, but that would be extra work on your side. If you are fine with
-> that, it's OK for me.
+> I believe idr_alloc_u32 will return one of ENOSPC or ENOMEM on
+> failure, whereas previously this ID check explicitly returned EEXIST
+> when there was an existing tunnel in the list with the specified ID.
+> 
+> The return code is directly reflected back to userspace in the
+> pppol2tp case at least (via. the connect handler).
+> 
+> I don't know whether the failure return code could be considered part
+> of the userspace API or not, but should we be trying to return the
+> same error code for the "that ID is already in use" case?
 
-Fine by us (well, probably poor Jakub will end-up handling the
-conflict, but AFAIK he is ok with this specific case).
+I agree it would be better to preserve this specific error num. I fear
+otherwise the patch could break existing applications (e.g. retrying
+with a different id vs giving-up depending on the error number)
 
-I'll merge the patch on net.
-
-Cheers,
+Thanks!
 
 Paolo
 
