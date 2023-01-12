@@ -2,116 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D221C6668ED
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 03:30:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F10C2666922
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 03:56:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234760AbjALCan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 21:30:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
+        id S233380AbjALC4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 21:56:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235156AbjALCae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 21:30:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0434A3D9DC;
-        Wed, 11 Jan 2023 18:30:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61707B81DAB;
-        Thu, 12 Jan 2023 02:30:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EDCA6C433EF;
-        Thu, 12 Jan 2023 02:30:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673490626;
-        bh=w2IwsGN0o3LLtYByqFZPHgmCpcA2+aIo6UWPI7ZDCLY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nybjHTRU6F+cAyj0d+mT5bpEpf8Ib8P6tQxsUYb1++uz6gPb2J+dYwiHkYTJVR8Md
-         uaK7YZR0kmAKdp2trM4QoC4cBL+XxHr+GKHnFYGEdP631s+D+RIj8RcoY5VHm8Eo+K
-         WhhXNoy6UKdthL9fj918KqNLPI2MpV8TaTMllN9CC2uIFx4+pUvAqfLokv9MtOkYUc
-         rm4U0/efwnWEAKsRkXfEDnA648aG+ljz8F0S5K1iFpNEgvYdcmfArkqdfdnAITtNDS
-         t9ngw6jys7qTmJ6Cqo/nRhRUyg0JaliJu075k9nXZ0EFeOgJu75FjPo6momU/WLQyL
-         q+X82mFxgSRYw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BEA02E45233;
-        Thu, 12 Jan 2023 02:30:25 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230329AbjALC4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 21:56:09 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651615F8E
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 18:56:07 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Nspwq1Y4szJqBd;
+        Thu, 12 Jan 2023 10:51:55 +0800 (CST)
+Received: from [10.67.102.37] (10.67.102.37) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 12 Jan
+ 2023 10:56:02 +0800
+Subject: Re: [PATCH net] net: hns3: fix wrong use of rss size during VF rss
+ config
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+References: <20230110115359.10163-1-lanhao@huawei.com>
+ <f2e3a02cd2a584aa1ed036e90c5c71764e0b8373.camel@gmail.com>
+CC:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <richardcochran@gmail.com>, <shenjian15@huawei.com>,
+        <wangjie125@huawei.com>, <netdev@vger.kernel.org>
+From:   Hao Lan <lanhao@huawei.com>
+Message-ID: <7a93e4f9-0db4-a520-e5fd-8e52d860c2cf@huawei.com>
+Date:   Thu, 12 Jan 2023 10:56:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v3 00/15] selftests/xsk: speed-ups, fixes,
- and new XDP programs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167349062577.27632.8804687487948517842.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 Jan 2023 02:30:25 +0000
-References: <20230111093526.11682-1-magnus.karlsson@gmail.com>
-In-Reply-To: <20230111093526.11682-1-magnus.karlsson@gmail.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, bpf@vger.kernel.org, yhs@fb.com,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, tirthendu.sarkar@intel.com,
-        jonathan.lemon@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <f2e3a02cd2a584aa1ed036e90c5c71764e0b8373.camel@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.37]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
 
-On Wed, 11 Jan 2023 10:35:11 +0100 you wrote:
-> This is a patch set of various performance improvements, fixes, and
-> the introduction of more than one XDP program to the xsk selftests
-> framework so we can test more things in the future such as upcoming
-> multi-buffer and metadata support for AF_XDP. The new programs just
-> reuse the framework that all the other eBPF selftests use. The new
-> feature is used to implement one new test that does XDP_DROP on every
-> other packet. More tests using this will be added in future commits.
+On 2023/1/12 0:31, Alexander H Duyck wrote:
+> On Tue, 2023-01-10 at 19:53 +0800, Hao Lan wrote:
+>> From: Jie Wang <wangjie125@huawei.com>
+>>
+>> Currently, it used old rss size to get current tc mode. As a result, the
+>> rss size is updated, but the tc mode is still configured based on the old
+>> rss size.
+>>
+>> So this patch fixes it by using the new rss size in both process.
+>>
+>> Fixes: 93969dc14fcd ("net: hns3: refactor VF rss init APIs with new common rss init APIs")
+>> Signed-off-by: Jie Wang <wangjie125@huawei.com>
+>> Signed-off-by: Hao Lan <lanhao@huawei.com>
+>> ---
+>>  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+>> index 081bd2c3f289..e84e5be8e59e 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+>> @@ -3130,7 +3130,7 @@ static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
+>>  
+>>  	hclgevf_update_rss_size(handle, new_tqps_num);
+>>  
+>> -	hclge_comm_get_rss_tc_info(cur_rss_size, hdev->hw_tc_map,
+>> +	hclge_comm_get_rss_tc_info(kinfo->rss_size, hdev->hw_tc_map,
+>>  				   tc_offset, tc_valid, tc_size);
+>>  	ret = hclge_comm_set_rss_tc_mode(&hdev->hw.hw, tc_offset,
+>>  					 tc_valid, tc_size);
 > 
-> [...]
+> I can see how this was confused. It isn't really clear that handle is
+> being used to update the kinfo->rss_size value. Maybe think about
+> adding a comment to prevent someone from reverting this without
+> realizing that? It might also be useful to do a follow-on patch for
+> net-next that renames cur_rss_size to orig_rss_size to make it more
+> obvious that the value is changing.
+> 
+> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> .
+> 
+Hi Alexander Duyck,
+Thank you for your reviewed.And thank you for your valuable advice.
+Would it be better if we changed it to the following.
 
-Here is the summary with links:
-  - [bpf-next,v3,01/15] selftests/xsk: print correct payload for packet dump
-    https://git.kernel.org/bpf/bpf-next/c/2d0b2ae2871a
-  - [bpf-next,v3,02/15] selftests/xsk: do not close unused file descriptors
-    https://git.kernel.org/bpf/bpf-next/c/5adaf52776a4
-  - [bpf-next,v3,03/15] selftests/xsk: submit correct number of frames in populate_fill_ring
-    https://git.kernel.org/bpf/bpf-next/c/1e04f23bccf9
-  - [bpf-next,v3,04/15] selftests/xsk: print correct error codes when exiting
-    https://git.kernel.org/bpf/bpf-next/c/085dcccfb7d3
-  - [bpf-next,v3,05/15] selftests/xsk: remove unused variable outstanding_tx
-    https://git.kernel.org/bpf/bpf-next/c/a4ca62277b6a
-  - [bpf-next,v3,06/15] selftests/xsk: add debug option for creating netdevs
-    https://git.kernel.org/bpf/bpf-next/c/703bfd371013
-  - [bpf-next,v3,07/15] selftests/xsk: replace asm acquire/release implementations
-    https://git.kernel.org/bpf/bpf-next/c/efe620e5ba03
-  - [bpf-next,v3,08/15] selftests/xsk: remove namespaces
-    https://git.kernel.org/bpf/bpf-next/c/64aef77d750e
-  - [bpf-next,v3,09/15] selftests/xsk: load and attach XDP program only once per mode
-    https://git.kernel.org/bpf/bpf-next/c/aa61d81f397c
-  - [bpf-next,v3,10/15] selftests/xsk: remove unnecessary code in control path
-    https://git.kernel.org/bpf/bpf-next/c/6b3c0821caa4
-  - [bpf-next,v3,11/15] selftests/xsk: get rid of built-in XDP program
-    https://git.kernel.org/bpf/bpf-next/c/f0a249df1b07
-  - [bpf-next,v3,12/15] selftests/xsk: add test when some packets are XDP_DROPed
-    https://git.kernel.org/bpf/bpf-next/c/80bea9acabb7
-  - [bpf-next,v3,13/15] selftests/xsk: merge dual and single thread dispatchers
-    https://git.kernel.org/bpf/bpf-next/c/7f881984073a
-  - [bpf-next,v3,14/15] selftests/xsk: automatically restore packet stream
-    https://git.kernel.org/bpf/bpf-next/c/e67b2554f301
-  - [bpf-next,v3,15/15] selftests/xsk: automatically switch XDP programs
-    https://git.kernel.org/bpf/bpf-next/c/7d8319a7cc66
+-	u16 cur_rss_size = kinfo->rss_size;
+-	u16 cur_tqps = kinfo->num_tqps;
++	u16 orig_rss_size = kinfo->rss_size;
++	u16 orig_tqps = kinfo->num_tqps;
+ 	u32 *rss_indir;
+ 	unsigned int i;
+ 	int ret;
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ 	hclgevf_update_rss_size(handle, new_tqps_num);
 
-
+-	hclge_comm_get_rss_tc_info(cur_rss_size, hdev->hw_tc_map,
++	/* RSS size will be updated after hclgevf_update_rss_size,
++	 * so we use kinfo->rss_size instead of orig_rss_size.
++	 */
++	hclge_comm_get_rss_tc_info(kinfo->rss_size, hdev->hw_tc_map,
