@@ -2,95 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF520668565
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:31:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4EFF66856B
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:32:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240555AbjALVbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 16:31:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
+        id S234697AbjALVcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 16:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240704AbjALVaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 16:30:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0400B1AA17
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 13:09:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673557761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qRZmqvXhb2nF8oyfgDRdsPHD4BOhp1E6vlAaM7IvjKQ=;
-        b=UlfDa9DfnBhyE5AWaPB34tkTDP5WNk7h+29/QQyhAyz8A0b1zK/nAf5Kn+qmOuboTJQbMa
-        4EQ3of7ceV5DPILkwTYIJU5kDBx9hPciZr7KnygvPhYoVF8Z1RBgOpc0TP5NyKwOfTqpJQ
-        uHY6w2ijsmNGWdiB7xw2ES0m3uoiz2Y=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-473-_sMfFTuoPQKnkQ0bbD_0LQ-1; Thu, 12 Jan 2023 16:09:20 -0500
-X-MC-Unique: _sMfFTuoPQKnkQ0bbD_0LQ-1
-Received: by mail-ed1-f70.google.com with SMTP id m7-20020a056402510700b00488d1fcdaebso12971422edd.9
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 13:09:20 -0800 (PST)
+        with ESMTP id S240622AbjALVbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 16:31:17 -0500
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCCF2718D;
+        Thu, 12 Jan 2023 13:14:15 -0800 (PST)
+Received: by mail-vs1-xe33.google.com with SMTP id o63so20359512vsc.10;
+        Thu, 12 Jan 2023 13:14:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9G8E/pbF0yCVEwppEfeZ3APRR94ekY7sl663Hc09EMo=;
+        b=CLGQjrQB/cXT4ivLFkBZ2uFfRzV2B4EuZw/fwRZDs/OamGqTfErZRyoEF5zSftNssA
+         aXo/J943u3z52xiiyn9ozbhsyoQruIu2fecHP/z+SDB5JICNMpxq0KcptZnYMIhrShBM
+         YfC96q6zTGqcqq9hX2DPYulrMchhsuMtmAzxE/31s8E9O7Mmo6W9CLXhI76inUfSWyDe
+         +cHCugoc13oZ7d5vWOFEfSgOP8LUmFvg/dNuqBbCgACKDXztYEDpxaveJOoNssA3MPUw
+         vfhD6ahNx593rmXHQEFQIlfxRB/Tly17byXrAoAyTruXS4oWhtjl0KJfWf3LFxNyESR/
+         QMaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qRZmqvXhb2nF8oyfgDRdsPHD4BOhp1E6vlAaM7IvjKQ=;
-        b=MbE7x0R/a328AfD1OaBDeeRQ+Ih/cwULzhfmh3O3hshpfndwMPk9C1tNRe6MfCE17U
-         NKidKTi4lBWugP4a5AIkSrn02nPUnVhpufSmLpQ8ylmbyV1qmB7y1IhWpLFjOjT11ecO
-         5Vqr1f6Nhf3iSCtD/CuOvMGOGKJStT/+s1c9arhsTFl59GPuw9OwC7XAxo09p4kG3cMs
-         sMaACq0OE35xuCzk1EzfBlQoXyCzeuDn/MLNpoves/uXEENI0fkFf+Nsm0jz5bNXoe9O
-         xpTCRTTO4dSTkcwVaxoo61Y1lXfVrHxM0w96REmLJCTFXs6G/s0B0gpp08lic6n+wlzo
-         9DgQ==
-X-Gm-Message-State: AFqh2kq4N5blcVP0ttv3T0riipq3qxGF6P2Pj2F8HD6jpV5QbU+eZsE+
-        3IC3M547QR3ySe0RSubDlIIi8swzdBXhVhfO9P8nr3zPNQCxBOQVLtqjckp5fq2evhtQaFJxkkc
-        PoiruSDgYcx0p34SZ
-X-Received: by 2002:a17:907:a788:b0:7fd:ec83:b8b8 with SMTP id vx8-20020a170907a78800b007fdec83b8b8mr68328456ejc.19.1673557759237;
-        Thu, 12 Jan 2023 13:09:19 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvnI2Xp7NQNgDDqPzkdNmTMwZjxoSIACaNZJ4Kh+MujVfoi7pKt8VZYEZWPa/tk3CaBBUxymw==
-X-Received: by 2002:a17:907:a788:b0:7fd:ec83:b8b8 with SMTP id vx8-20020a170907a78800b007fdec83b8b8mr68328433ejc.19.1673557758922;
-        Thu, 12 Jan 2023 13:09:18 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s17-20020a1709060c1100b0084d21db0691sm7846755ejf.179.2023.01.12.13.09.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 13:09:18 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 940CE90071B; Thu, 12 Jan 2023 22:09:17 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v7 15/17] net/mlx5e: Introduce
- wrapper for xdp_buff
-In-Reply-To: <CAKH8qBsUOdRax0m5XM8guudSX_VYpJuMz_mzdMJegDsq4_ezwA@mail.gmail.com>
-References: <20230112003230.3779451-1-sdf@google.com>
- <20230112003230.3779451-16-sdf@google.com>
- <a0bac9bd-6772-64d4-8fd5-756ff4d8c2ad@gmail.com>
- <CAKH8qBsUOdRax0m5XM8guudSX_VYpJuMz_mzdMJegDsq4_ezwA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 12 Jan 2023 22:09:17 +0100
-Message-ID: <87k01rfojm.fsf@toke.dk>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9G8E/pbF0yCVEwppEfeZ3APRR94ekY7sl663Hc09EMo=;
+        b=lwjcP3LJom48fO1xI6g9ucOsFcUDiY7e9TDNmB0yMoqTXIQ0g/NFPD6Nw8EmKJ8UPR
+         B0/amOG1IzkTrJgSAuaF+jdli4a+MdM8b8ms+TsNbig/hd9JHAFLHJRTYyuuZk9TtkOO
+         NciDpX/2nKuWLD2eqO4TSWInuvXC9i3/YdICrVBFjN4LDudJyGdpPnaRvqquXN+iUuVn
+         M9+YtW7VzVe7Nlu+FBh7apNLWvDTCZeHchaUTNhhoBuRC4x1TI5AYX74qRyM/+hVxGu5
+         xnGeQaSQPMUd5yWmKzZBZRtDzvF7w7bX9HVyvss8xvTIBEYrEUnKYNiQkcNcy+FaP3j9
+         zPtQ==
+X-Gm-Message-State: AFqh2krS2JFMCgndhPoxuBH0FWuORdvREHS7W9bwnSiLHm3g3/qK7+Q0
+        AM/cor2P+S94j2iXunX8WxA=
+X-Google-Smtp-Source: AMrXdXvqOpDKUMfAeRKnyAEn0jSg0Xdln+Y3NUo/FVdyWNh9GqqApDbAMshix//ZhSV0K8IXOyErgA==
+X-Received: by 2002:a05:6102:32d3:b0:3d1:657e:39ff with SMTP id o19-20020a05610232d300b003d1657e39ffmr335281vss.30.1673558054609;
+        Thu, 12 Jan 2023 13:14:14 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id u15-20020a37ab0f000000b006f9c2be0b4bsm11202593qke.135.2023.01.12.13.13.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Jan 2023 13:14:14 -0800 (PST)
+Message-ID: <2fd5c783-94f1-1896-c6b9-431a754aec14@gmail.com>
+Date:   Thu, 12 Jan 2023 13:13:51 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next 03/10] net: mdio: mux-bcm-iproc: Separate C22 and
+ C45 transactions
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Li Yang <leoyang.li@nxp.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linuxppc-dev@lists.ozlabs.org, Andrew Lunn <andrew@lunn.ch>
+References: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
+ <20230112-net-next-c45-seperation-part-2-v1-3-5eeaae931526@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230112-net-next-c45-seperation-part-2-v1-3-5eeaae931526@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -98,85 +105,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev <sdf@google.com> writes:
+On 1/12/23 07:15, Michael Walle wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+> 
+> The MDIO mux broadcom iproc can perform both C22 and C45 transfers.
+> Create separate functions for each and register the C45 versions using
+> the new API calls.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+> Apparently, in the c45 case, the reg value including the MII_ADDR_C45
+> bit is written to the hardware. Looks weird, that a "random" software
+> bit is written to a register. Florian is that correct? Also, with this
+> patch this flag isn't set anymore.
 
-> On Thu, Jan 12, 2023 at 12:07 AM Tariq Toukan <ttoukan.linux@gmail.com> w=
-rote:
->>
->>
->>
->> On 12/01/2023 2:32, Stanislav Fomichev wrote:
->> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> >
->> > Preparation for implementing HW metadata kfuncs. No functional change.
->> >
->> > Cc: Tariq Toukan <tariqt@nvidia.com>
->> > Cc: Saeed Mahameed <saeedm@nvidia.com>
->> > Cc: John Fastabend <john.fastabend@gmail.com>
->> > Cc: David Ahern <dsahern@gmail.com>
->> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
->> > Cc: Jakub Kicinski <kuba@kernel.org>
->> > Cc: Willem de Bruijn <willemb@google.com>
->> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
->> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
->> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
->> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
->> > Cc: Maryam Tahhan <mtahhan@redhat.com>
->> > Cc: xdp-hints@xdp-project.net
->> > Cc: netdev@vger.kernel.org
->> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> > ---
->> >   drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
->> >   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  3 +-
->> >   .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  6 +-
->> >   .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 25 ++++----
->> >   .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 58 +++++++++--------=
---
->> >   5 files changed, 50 insertions(+), 43 deletions(-)
->> >
->> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/en.h
->> > index 2d77fb8a8a01..af663978d1b4 100644
->> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> > @@ -469,6 +469,7 @@ struct mlx5e_txqsq {
->> >   union mlx5e_alloc_unit {
->> >       struct page *page;
->> >       struct xdp_buff *xsk;
->> > +     struct mlx5e_xdp_buff *mxbuf;
->>
->> In XSK files below you mix usage of both alloc_units[page_idx].mxbuf and
->> alloc_units[page_idx].xsk, while both fields share the memory of a union.
->>
->> As struct mlx5e_xdp_buff wraps struct xdp_buff, I think that you just
->> need to change the existing xsk field type from struct xdp_buff *xsk
->> into struct mlx5e_xdp_buff *xsk and align the usage.
->
-> Hmmm, good point. I'm actually not sure how it works currently.
-> mlx5e_alloc_unit.mxbuf doesn't seem to be initialized anywhere? Toke,
-> am I missing something?
-
-It's initialised piecemeal in different places; but yeah, we're mixing
-things a bit...
-
-> I'm thinking about something like this:
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> index af663978d1b4..2d77fb8a8a01 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -469,7 +469,6 @@ struct mlx5e_txqsq {
->  union mlx5e_alloc_unit {
->         struct page *page;
->         struct xdp_buff *xsk;
-> -       struct mlx5e_xdp_buff *mxbuf;
->  };
-
-Hmm, for consistency with the non-XSK path we should rather go the other
-direction and lose the xsk member, moving everything to mxbuf? Let me
-give that a shot...
-
--Toke
+We should be masking the MII_ADDR_C45 bit because the MDIO_ADDR_OFFSET 
+only defines bits 0 through 20 as being read/write and bits above being 
+read-only. In practice, this is probably not making any difference or harm.
+-- 
+Florian
 
