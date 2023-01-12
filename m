@@ -2,82 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1719667147
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 12:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A12667166
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 12:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236413AbjALLvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 06:51:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60282 "EHLO
+        id S230495AbjALL5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 06:57:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbjALLvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 06:51:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE9C18B3F;
-        Thu, 12 Jan 2023 03:40:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6603062015;
-        Thu, 12 Jan 2023 11:40:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64BEEC433EF;
-        Thu, 12 Jan 2023 11:40:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1673523652;
-        bh=2tx5v7AAONozVAirkomQrh2CmhT+HtyfG5InFeBthBw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qk7VBO6XwJC52EIeTVWvLDnAqT4I3WQXxaP6zk/Gbihm0+OK+mvQDlrICv4JnTzbH
-         0itfBVv77HLIOx2/V1Mdg6P7HgYhfTqniLLd7m6S1eIz9aEuJh3ZG1cto0IgH0z05I
-         b6lapY4ckaKpZrIV/QaRpzFFurov1t9HaUFGSa2s=
-Date:   Thu, 12 Jan 2023 12:40:50 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Paul Holzinger <pholzing@redhat.com>
-Cc:     stable@vger.kernel.org, regressions@lists.linux.dev,
-        netdev@vger.kernel.org
-Subject: Re: [Regression] 6.0.16-6.0.18 kernel no longer return EADDRINUSE
- from bind
-Message-ID: <Y7/xwk9lmaNwrDwo@kroah.com>
-References: <CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com>
+        with ESMTP id S231660AbjALL4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 06:56:44 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20594564EB;
+        Thu, 12 Jan 2023 03:49:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=tA9VcsOS7NQTEj8noepMWEcGNsFK3ovKo6+otF7zRi8=; b=iPoVPVcLC6fC9NBlhZx1jP5Any
+        sKQTYc62BtEy81wLa6HoSwoQ7DvMCh4CD3e29gV9kkdxBrnGW7hSqX9hstN2wEnbz94+dGr4dbJKU
+        /cMIV4nM59AknDpRhdo3NkTntuug1pJSyfDu4M1O8b0VlWVt+J/pt3Q0TnO3B28ElG1MSaJBoEfoA
+        QbVA16zDr9QZWF2BO8WFQLLn6QVWKraWhSSAQvGnruO7hBBGgswEzxJsl9SJRI+ccMiGUz9/YdExM
+        acUB37cBxEs+2oF1+CC4zOF8BT3bVY/TWe8WwUfuZXnhhBVNU/Pja6ipY8fXDLdUlqIGO7ab1u1Lp
+        RjF5169w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36066)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pFw4f-0006Dj-Pb; Thu, 12 Jan 2023 11:48:49 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pFw4V-0002Au-S8; Thu, 12 Jan 2023 11:48:39 +0000
+Date:   Thu, 12 Jan 2023 11:48:39 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, jbe@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 6/6] dsa: lan9303: Migrate to PHYLINK
+Message-ID: <Y7/zlzcyTsF+z0cN@shell.armlinux.org.uk>
+References: <20230109211849.32530-1-jerry.ray@microchip.com>
+ <20230109211849.32530-7-jerry.ray@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230109211849.32530-7-jerry.ray@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 04:52:21PM +0100, Paul Holzinger wrote:
-> Hi all,
-> 
-> Since updating to 6.0.16 the bind() system call no longer fails with
-> EADDRINUSE when the address is already in use.
-> Instead bind() returns 1 in such a case, which is not a valid return
-> value for this system call.
-> 
-> It works with the 6.0.15 kernel and earlier, 6.1.4 and 6.2-rc3 also
-> seem to work.
-> 
-> Fedora bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2159066
-> 
-> To reproduce you can just run `ncat -l 5000` two times, the second one
-> should fail. However it just uses a random port instead.
-> 
-> As far as I can tell this problem is caused by
-> https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
-> which did not backport commit 7a7160edf1bf properly.
-> The line `int ret = -EADDRINUSE, port = snum, l3mdev;` is missing in
-> net/ipv4/inet_connection_sock.c.
-> This is the working 6.1 patch:
-> https://lore.kernel.org/all/20221228144339.969733443@linuxfoundation.org/
+On Mon, Jan 09, 2023 at 03:18:49PM -0600, Jerry Ray wrote:
+> +static void lan9303_phylink_get_caps(struct dsa_switch *ds, int port,
+> +				     struct phylink_config *config)
+> +{
+> +	struct lan9303 *chip = ds->priv;
+> +
+> +	dev_dbg(chip->dev, "%s(%d) entered.", __func__, port);
+> +
+> +	config->mac_capabilities = MAC_10 | MAC_100 | MAC_ASYM_PAUSE |
+> +				   MAC_SYM_PAUSE;
 
-As 6.0.y is now end-of-life, is there anything keeping you on that
-kernel tree?  If you send a fix-up patch for this, I'll gladly apply it
-and push out one more 6.0 release with it.
+You indicate that pause modes are supported, but...
 
-thanks,
-g
-reg k-h
+> +static void lan9303_phylink_mac_link_up(struct dsa_switch *ds, int port,
+> +					unsigned int mode,
+> +					phy_interface_t interface,
+> +					struct phy_device *phydev, int speed,
+> +					int duplex, bool tx_pause,
+> +					bool rx_pause)
+> +{
+> +	u32 ctl;
+> +
+> +	/* On this device, we are only interested in doing something here if
+> +	 * this is the xMII port. All other ports are 10/100 phys using MDIO
+> +	 * to control there link settings.
+> +	 */
+> +	if (port != 0)
+> +		return;
+> +
+> +	ctl = lan9303_phy_read(ds, port, MII_BMCR);
+> +
+> +	ctl &= ~BMCR_ANENABLE;
+> +
+> +	if (speed == SPEED_100)
+> +		ctl |= BMCR_SPEED100;
+> +	else if (speed == SPEED_10)
+> +		ctl &= ~BMCR_SPEED100;
+> +	else
+> +		dev_err(ds->dev, "unsupported speed: %d\n", speed);
+> +
+> +	if (duplex == DUPLEX_FULL)
+> +		ctl |= BMCR_FULLDPLX;
+> +	else
+> +		ctl &= ~BMCR_FULLDPLX;
+> +
+> +	lan9303_phy_write(ds, port, MII_BMCR, ctl);
+
+There is no code here to program the resolved pause modes. Is it handled
+internally within the switch? (Please add a comment to this effect
+either in get_caps or here.)
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
