@@ -2,118 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AAC4666F4B
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 11:16:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3C9666F5F
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 11:18:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbjALKP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 05:15:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
+        id S238527AbjALKR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 05:17:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236952AbjALKNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 05:13:42 -0500
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFCD33D69;
-        Thu, 12 Jan 2023 02:12:27 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 66E7F5C00FF;
-        Thu, 12 Jan 2023 05:12:24 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Thu, 12 Jan 2023 05:12:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1673518344; x=
-        1673604744; bh=vEhta7zMZrchbjHApsTWQNVEwRZyW+Qr5Tm1UgjUS68=; b=S
-        /cdkq7wd6o/lMcnkf0KzrxSckHt8rkcmgQ/7bjXsCCNu2wzJehxZZiYVCtdHlOux
-        b8BGjlNV8lLg/2uyWXuRnZoT1DkepLgH6K71+CKU6lg1tZNSnxD4swoPEHZNN0dW
-        AWbTNZfm0EQCBiQ3sMxRPxkx+bYZRbsh8Muf032sbyYjDFkGNMlF4aodoQOzOdGC
-        XM81nJSYZMXdYnbhI1s6J7sL1YITcmS/g3SE9aDJyaBFmDM4uWObODbvfYsmPnLk
-        Re3E8mJX6Z10tOILlkCVEj+IyuLnq7kp07LFmQkpg0VPboyCaDBHtdLgXdT3837g
-        W6Hwk/Ltc0TDiq6N4MoCg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1673518344; x=
-        1673604744; bh=vEhta7zMZrchbjHApsTWQNVEwRZyW+Qr5Tm1UgjUS68=; b=I
-        lC3zCD38qxnJMOfi/LxaGEZbv8L542ffFDUM/e/hNEwyFNW0lISQeSc9qwRCBT1X
-        xaiUIaWwaOcnRAPHg3xxKOtz8Olsm2MOfE06FjM23BrSMMgR+6X23pRs9rKVBIzS
-        hn8st4/DL+u3p5ZnXMLhxhtGWQi0vCmWrO5ryuHBs5VrwQQ+CmacoJeGkEedVZ1Z
-        IF2+xL9r6XSy6tAwdYMjhUuLCyJ65Oi/gd8xVoaxEjrRxDP6H89abA+bsk2InuIZ
-        oy/a9FgoySYSlT//wN4csVDM1kmFv6DogVuyNNHshafDzc8aISVUIUvKduDnBN6w
-        16S3Buj9r7iWu1tn4RuSA==
-X-ME-Sender: <xms:CN2_Y1Zf9ugX6PoAuPFmSkaJlDxDIRQ040dMQOPEOkxkbnZvy4HKXA>
-    <xme:CN2_Y8b3y0ms7Jaid71Nj8QidSSn-sHFLEajFBuxI4zxC0ABB64450gFBxC_8wwRF
-    9NP0qsgljWveA>
-X-ME-Received: <xmr:CN2_Y3-7XMJ9YFJ3z5Ha_hy9cCskGa-EWJjEbMBcTwwvg3ZRPLVExpWm2oI2YdwM2kkQJKlIbS9LzJHx7F6ONmvSaSNZFCjSRYL3Kg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrleeigdduvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepgeevve
-    etgfevjeffffevleeuhfejfeegueevfeetudejudefudetjedttdehueffnecuffhomhgr
-    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:CN2_Yzpb51HchpD8N9XvcI61SLVuaZ8Qa7m33SHXytDqGr3Bo-U13g>
-    <xmx:CN2_Ywq4M10qlLZrTtvWpJMNSgKS9iz0QjQ6D09m7Br1VC4YMaNGyA>
-    <xmx:CN2_Y5T0fPyfAy881qb2nX5PcWdBgRkJbM7OeGM41VQQYgqyqqfLew>
-    <xmx:CN2_Y-a98dfR5giMhqiLZaWDNahtmJAbtNAAyKA7L_C4J7cycKbH5Q>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 12 Jan 2023 05:12:23 -0500 (EST)
-Date:   Thu, 12 Jan 2023 11:12:21 +0100
-From:   Greg KH <greg@kroah.com>
-To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] r8152; preserve device list format
-Message-ID: <Y7/dBXrI2QkiBFlW@kroah.com>
-References: <87k01s6tkr.fsf@miraculix.mork.no>
- <20230112100100.180708-1-bjorn@mork.no>
+        with ESMTP id S239865AbjALKPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 05:15:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA78BF2;
+        Thu, 12 Jan 2023 02:15:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D99AE61FCA;
+        Thu, 12 Jan 2023 10:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DCBCC433EF;
+        Thu, 12 Jan 2023 10:15:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673518551;
+        bh=eZSAfDKuRBo0xGVikbboiQneetQV4uSvYjwwu4EYGa0=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=WyHIKPds/xpQeQuBcbJcgTRVOWErVVr9bdlytmSVrh8GXxP84ll9AGmqGGdZ9hCR3
+         nzkwBoAxRLsYKBhMa5rvZhg6LUbHNhDc1eDEkO7E8iOEVT4Sr421gJlWPvyR/9kChw
+         /tQzlqY8OCLcJ9UL9sJfZryQbVNxD5Zc3dFv7aivqlGkfR6XBb2Jjm0HSksIXH4b5z
+         Hs8FP8OeXz+pyzN2Q3i9WgfRHz0OKiwsk+WJgiWu/bIl3G8Y8lAv/t5k+93Nh+rl0H
+         DIPCYmLJ1MwL+7au6LbsizTKzRQs47Oil/CbPkeNvIqvdljdK+4LKVt0ZDR615CWne
+         v+GFMCyekccUg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Abhishek Kumar <kuabhs@chromium.org>
+Cc:     Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH] ath10k: snoc: enable threaded napi on WCN3990
+References: <20221220075215.1.Ic12e347e0d61a618124b742614e82bbd5d770173@changeid>
+        <56d4941a-ad35-37ca-48ca-5f1bf7a86d25@quicinc.com>
+        <CACTWRwt7oQrCyHf=ZF6dW8TtRhOfa14XMZW39cYZWi4hhszcqg@mail.gmail.com>
+Date:   Thu, 12 Jan 2023 12:15:42 +0200
+In-Reply-To: <CACTWRwt7oQrCyHf=ZF6dW8TtRhOfa14XMZW39cYZWi4hhszcqg@mail.gmail.com>
+        (Abhishek Kumar's message of "Wed, 28 Dec 2022 16:01:38 -0800")
+Message-ID: <87tu0wcb3l.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230112100100.180708-1-bjorn@mork.no>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 12, 2023 at 11:01:00AM +0100, Bjørn Mork wrote:
-> This is a partial revert of commit ec51fbd1b8a2 ("r8152:
-> add USB device driver for config selection")
-> 
-> Keep a simplified version of the REALTEK_USB_DEVICE macro
-> to avoid unnecessary reformatting of the device list. This
-> makes new device ID additions apply cleanly across driver
-> versions.
-> 
-> Fixes: ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
-> Signed-off-by: Bjørn Mork <bjorn@mork.no>
-> ---
-> The patch in
-> https://lore.kernel.org/lkml/20230111133228.190801-1-andre.przywara@arm.com/
-> will apply cleanly on top of this.
-> 
-> This fix will also prevent a lot of stable backporting hassle.
+Abhishek Kumar <kuabhs@chromium.org> writes:
 
-No need for this, just backport the original change to older kernels and
-all will be fine.
+>> > --- a/drivers/net/wireless/ath/ath10k/snoc.c
+>> > +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+>> > @@ -927,6 +927,9 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
+>> >
+>> >       bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
+>> >
+>> > +     if (ar->hw_params.enable_threaded_napi)
+>> > +             dev_set_threaded(&ar->napi_dev, true);
+>> > +
+>>
+>> Since this is done in the API specific to WCN3990, we do not need
+>> hw_param for this.
+>
+> Just so that I am clear, are you suggesting to enable this by default
+> in snoc.c, similar to what you did in
+>
+> https://lore.kernel.org/all/20220905071805.31625-2-quic_mpubbise@quicinc.com/
+>
+> If my understanding is correct and there is no objection, I can remove
+> hw_param and enable it by default on snoc.c . I used hw_param because,
+> as I see it, threaded NAPI can have some adverse effect on the cache
+> utilization and power.
 
-Don't live with stuff you don't want to because of stable kernels,
-that's not how this whole process works at all :)
+WCN3990 is the only device using SNOC bus so the hw_param is not needed.
+It's safe to call dev_set_threaded() in ath10k_snoc_hif_start()
+unconditionally as it only affects WCN3990.
 
-thanks,
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-greg k-h
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
