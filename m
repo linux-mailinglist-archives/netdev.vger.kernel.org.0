@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A96FB666A79
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 05:43:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB1B9666A80
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 05:44:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239489AbjALEnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Jan 2023 23:43:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        id S229911AbjALEoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Jan 2023 23:44:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236584AbjALEme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 23:42:34 -0500
+        with ESMTP id S236805AbjALEmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Jan 2023 23:42:36 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A7DDF1F
-        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 20:42:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442FE10070
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 20:42:21 -0800 (PST)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30C3xh2u004841;
-        Wed, 11 Jan 2023 20:42:12 -0800
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30C3wHjV002937;
+        Wed, 11 Jan 2023 20:42:16 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=sEqiRpmSJHk+r/mLJ0syfwGrgE/Xez82s9VTJeYLOGg=;
- b=NhUxx7Frh+ay0QB2lD+KJDKaF9nikpYCaQKo2PFtrdr4n+InAxabRlJQ3p3hPh/nk0XD
- +tAQC06ZGggkReOTlV3yqwpDpn0LyGi2zpbjcLCC8xg/gxFoAVLn5NIEZpmX/e7bU4mR
- V68BirZ87tbc9MM3EVHlZT0PdAXBU68jy15RSOkJFKTWvcOqNPbi35bTaD2X9NfQuMiV
- 2yKtls2ikqycEYvdJ8treHJTuZBC2StnDhBqpSOAa54lhm3TPWq3RxHR59rIgNNM/gX1
- flMFvXbli6mOqyf4+PelWIUr3oybECu95SD5wK2HIAzoGjB2zqur95MiT4NgaupcDcXJ rg== 
+ bh=jerIKPcBXMZOatrJD0ZvBQ9s9yoxfZL8SyXRBj19Duc=;
+ b=gRknyyXl2ZLMhETlNwqNwj1sDHc2cP/2HCjipM/k/K261m0ueS/IiEIQa0z92e85SSHi
+ ALRTPRwvLTE9G8AhriPbZdckrq7Hxzm2EtIhGEiSu94mgu4680qBnhcWwMxmH/TP9UtI
+ AjM5jjvx9+ZuJBO0auwG64kyI192JrYriHPuqJfKDWKxb98DWK95IpQq26PEyFGJko3o
+ 5n8ea3kKoyp10UwV2luEKWBrqHn0YaMInYnS37bTcgtZmHDwMygGmHUpUTmfwNqxH57H
+ boISsgTDwbrS8Al71FXFkHICl0caTZLy4qTzq70bFv4EiLbDvA05RgLuzcbNLqcNEBz1 eQ== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n23b2gsdb-1
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3n23b2gsde-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Jan 2023 20:42:12 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+        Wed, 11 Jan 2023 20:42:16 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Wed, 11 Jan
- 2023 20:42:11 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Wed, 11 Jan 2023 20:42:10 -0800
+ 2023 20:42:14 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Wed, 11 Jan 2023 20:42:14 -0800
 Received: from localhost.localdomain (unknown [10.28.36.175])
-        by maili.marvell.com (Postfix) with ESMTP id 5EB973F7092;
-        Wed, 11 Jan 2023 20:42:07 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 73F893F7051;
+        Wed, 11 Jan 2023 20:42:11 -0800 (PST)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <jerinj@marvell.com>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>,
-        Nithin Dabilpuram <ndabilpuram@marvell.com>
-Subject: [PATCH v2 net-next,5/8] octeontx2-af: restore rxc conf after teardown sequence
-Date:   Thu, 12 Jan 2023 10:11:44 +0530
-Message-ID: <20230112044147.931159-6-schalla@marvell.com>
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <schalla@marvell.com>
+Subject: [PATCH v2 net-next,6/8] octeontx2-af: update CPT inbound inline IPsec config mailbox
+Date:   Thu, 12 Jan 2023 10:11:45 +0530
+Message-ID: <20230112044147.931159-7-schalla@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230112044147.931159-1-schalla@marvell.com>
 References: <20230112044147.931159-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: 0uIrGxsii8efiUM8dl2LTF6yZ9sI1gQr
-X-Proofpoint-ORIG-GUID: 0uIrGxsii8efiUM8dl2LTF6yZ9sI1gQr
+X-Proofpoint-GUID: FTBGrG3gWCqiPyZZs8yCt8UyEYSl38jj
+X-Proofpoint-ORIG-GUID: FTBGrG3gWCqiPyZZs8yCt8UyEYSl38jj
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2023-01-12_02,2023-01-11_03,2022-06-22_01
@@ -69,81 +68,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nithin Dabilpuram <ndabilpuram@marvell.com>
+Updates CPT inbound inline IPsec configure mailbox to take
+CPT credit, opcode, credit_th and bpid from VF.
+This patch also adds a mailbox to read inbound IPsec
+configuration.
 
-Restore rxc timeout and threshold config after teardown
-sequence is complete as it is global config and not
-per CPT LF.
-
-Signed-off-by: Nithin Dabilpuram <ndabilpuram@marvell.com>
+Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 22 +++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  6 ++-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 46 +++++++++++++++++--
+ 2 files changed, 47 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index f970cb9b0bff..302ff549284e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -812,10 +812,21 @@ int rvu_mbox_handler_cpt_sts(struct rvu *rvu, struct cpt_sts_req *req,
- #define RXC_ZOMBIE_COUNT  GENMASK_ULL(60, 48)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index b121e3d9f561..9eac73bfc9cb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -298,6 +298,8 @@ M(NIX_BANDPROF_FREE,	0x801e, nix_bandprof_free, nix_bandprof_free_req,   \
+ 				msg_rsp)				    \
+ M(NIX_BANDPROF_GET_HWINFO, 0x801f, nix_bandprof_get_hwinfo, msg_req,		\
+ 				nix_bandprof_get_hwinfo_rsp)		    \
++M(NIX_READ_INLINE_IPSEC_CFG, 0x8023, nix_read_inline_ipsec_cfg,		\
++				msg_req, nix_inline_ipsec_cfg)		\
+ /* MCS mbox IDs (range 0xA000 - 0xBFFF) */					\
+ M(MCS_ALLOC_RESOURCES,	0xa000, mcs_alloc_resources, mcs_alloc_rsrc_req,	\
+ 				mcs_alloc_rsrc_rsp)				\
+@@ -1197,7 +1199,7 @@ struct nix_inline_ipsec_cfg {
+ 	u32 cpt_credit;
+ 	struct {
+ 		u8 egrp;
+-		u8 opcode;
++		u16 opcode;
+ 		u16 param1;
+ 		u16 param2;
+ 	} gen_cfg;
+@@ -1206,6 +1208,8 @@ struct nix_inline_ipsec_cfg {
+ 		u8 cpt_slot;
+ 	} inst_qsel;
+ 	u8 enable;
++	u16 bpid;
++	u32 credit_th;
+ };
  
- static void cpt_rxc_time_cfg(struct rvu *rvu, struct cpt_rxc_time_cfg_req *req,
--			     int blkaddr)
-+			     int blkaddr, struct cpt_rxc_time_cfg_req *save)
+ /* Per NIX LF inline IPSec configuration */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 6b8747ebc08c..89e94569e74c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -4731,6 +4731,10 @@ int rvu_mbox_handler_nix_lso_format_cfg(struct rvu *rvu,
+ #define CPT_INST_QSEL_PF_FUNC GENMASK_ULL(23, 8)
+ #define CPT_INST_QSEL_SLOT    GENMASK_ULL(7, 0)
+ 
++#define CPT_INST_CREDIT_TH    GENMASK_ULL(53, 32)
++#define CPT_INST_CREDIT_BPID  GENMASK_ULL(30, 22)
++#define CPT_INST_CREDIT_CNT   GENMASK_ULL(21, 0)
++
+ static void nix_inline_ipsec_cfg(struct rvu *rvu, struct nix_inline_ipsec_cfg *req,
+ 				 int blkaddr)
  {
- 	u64 dfrg_reg;
+@@ -4767,14 +4771,23 @@ static void nix_inline_ipsec_cfg(struct rvu *rvu, struct nix_inline_ipsec_cfg *r
+ 			    val);
  
-+	if (save) {
-+		/* Save older config */
-+		dfrg_reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_DFRG);
-+		save->zombie_thres = FIELD_GET(RXC_ZOMBIE_THRES, dfrg_reg);
-+		save->zombie_limit = FIELD_GET(RXC_ZOMBIE_LIMIT, dfrg_reg);
-+		save->active_thres = FIELD_GET(RXC_ACTIVE_THRES, dfrg_reg);
-+		save->active_limit = FIELD_GET(RXC_ACTIVE_LIMIT, dfrg_reg);
+ 		/* Set CPT credit */
+-		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
+-			    req->cpt_credit);
++		val = rvu_read64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx));
++		if ((val & 0x3FFFFF) != 0x3FFFFF)
++			rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
++				    0x3FFFFF - val);
 +
-+		save->step = rvu_read64(rvu, blkaddr, CPT_AF_RXC_TIME_CFG);
-+	}
-+
- 	dfrg_reg = FIELD_PREP(RXC_ZOMBIE_THRES, req->zombie_thres);
- 	dfrg_reg |= FIELD_PREP(RXC_ZOMBIE_LIMIT, req->zombie_limit);
- 	dfrg_reg |= FIELD_PREP(RXC_ACTIVE_THRES, req->active_thres);
-@@ -840,7 +851,7 @@ int rvu_mbox_handler_cpt_rxc_time_cfg(struct rvu *rvu,
- 	    !is_cpt_vf(rvu, req->hdr.pcifunc))
- 		return CPT_AF_ERR_ACCESS_DENIED;
++		val = FIELD_PREP(CPT_INST_CREDIT_CNT, req->cpt_credit);
++		val |= FIELD_PREP(CPT_INST_CREDIT_BPID, req->bpid);
++		val |= FIELD_PREP(CPT_INST_CREDIT_TH, req->credit_th);
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx), val);
+ 	} else {
+ 		rvu_write64(rvu, blkaddr, NIX_AF_RX_IPSEC_GEN_CFG, 0x0);
+ 		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_INST_QSEL(cpt_idx),
+ 			    0x0);
+-		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
+-			    0x3FFFFF);
++		val = rvu_read64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx));
++		if ((val & 0x3FFFFF) != 0x3FFFFF)
++			rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
++				    0x3FFFFF - val);
+ 	}
+ }
  
--	cpt_rxc_time_cfg(rvu, req, blkaddr);
-+	cpt_rxc_time_cfg(rvu, req, blkaddr, NULL);
+@@ -4792,6 +4805,30 @@ int rvu_mbox_handler_nix_inline_ipsec_cfg(struct rvu *rvu,
+ 	return 0;
+ }
+ 
++int rvu_mbox_handler_nix_read_inline_ipsec_cfg(struct rvu *rvu,
++					       struct msg_req *req,
++					       struct nix_inline_ipsec_cfg *rsp)
++
++{
++	u64 val;
++
++	if (!is_block_implemented(rvu->hw, BLKADDR_CPT0))
++		return 0;
++
++	val = rvu_read64(rvu, BLKADDR_NIX0, NIX_AF_RX_IPSEC_GEN_CFG);
++	rsp->gen_cfg.egrp = FIELD_GET(IPSEC_GEN_CFG_EGRP, val);
++	rsp->gen_cfg.opcode = FIELD_GET(IPSEC_GEN_CFG_OPCODE, val);
++	rsp->gen_cfg.param1 = FIELD_GET(IPSEC_GEN_CFG_PARAM1, val);
++	rsp->gen_cfg.param2 = FIELD_GET(IPSEC_GEN_CFG_PARAM2, val);
++
++	val = rvu_read64(rvu, BLKADDR_NIX0, NIX_AF_RX_CPTX_CREDIT(0));
++	rsp->cpt_credit = FIELD_GET(CPT_INST_CREDIT_CNT, val);
++	rsp->credit_th = FIELD_GET(CPT_INST_CREDIT_TH, val);
++	rsp->bpid = FIELD_GET(CPT_INST_CREDIT_BPID, val);
++
++	return 0;
++}
++
+ int rvu_mbox_handler_nix_inline_ipsec_lf_cfg(struct rvu *rvu,
+ 					     struct nix_inline_ipsec_lf_cfg *req,
+ 					     struct msg_rsp *rsp)
+@@ -4835,6 +4872,7 @@ int rvu_mbox_handler_nix_inline_ipsec_lf_cfg(struct rvu *rvu,
  
  	return 0;
  }
-@@ -886,7 +897,7 @@ int rvu_mbox_handler_cpt_lf_reset(struct rvu *rvu, struct cpt_lf_rst_req *req,
- 
- static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
- {
--	struct cpt_rxc_time_cfg_req req;
-+	struct cpt_rxc_time_cfg_req req, prev;
- 	int timeout = 2000;
- 	u64 reg;
- 
-@@ -902,7 +913,7 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
- 	req.active_thres = 1;
- 	req.active_limit = 1;
- 
--	cpt_rxc_time_cfg(rvu, &req, blkaddr);
-+	cpt_rxc_time_cfg(rvu, &req, blkaddr, &prev);
- 
- 	do {
- 		reg = rvu_read64(rvu, blkaddr, CPT_AF_RXC_ACTIVE_STS);
-@@ -928,6 +939,9 @@ static void cpt_rxc_teardown(struct rvu *rvu, int blkaddr)
- 
- 	if (timeout == 0)
- 		dev_warn(rvu->dev, "Poll for RXC zombie count hits hard loop counter\n");
 +
-+	/* Restore config */
-+	cpt_rxc_time_cfg(rvu, &prev, blkaddr, NULL);
- }
- 
- #define INFLIGHT   GENMASK_ULL(8, 0)
+ void rvu_nix_reset_mac(struct rvu_pfvf *pfvf, int pcifunc)
+ {
+ 	bool from_vf = !!(pcifunc & RVU_PFVF_FUNC_MASK);
 -- 
 2.25.1
 
