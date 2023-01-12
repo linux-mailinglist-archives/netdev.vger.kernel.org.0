@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D697666ADC
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 06:31:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72078666AE5
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 06:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236472AbjALFbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 00:31:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
+        id S236483AbjALFhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 00:37:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235957AbjALFbs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 00:31:48 -0500
+        with ESMTP id S236584AbjALFhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 00:37:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAE21B9F9;
-        Wed, 11 Jan 2023 21:31:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBEB44D707
+        for <netdev@vger.kernel.org>; Wed, 11 Jan 2023 21:37:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91DFBB81DBE;
-        Thu, 12 Jan 2023 05:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84DEC433D2;
-        Thu, 12 Jan 2023 05:31:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B47CB81DBE
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 05:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4B1C433EF;
+        Thu, 12 Jan 2023 05:37:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673501504;
-        bh=k6K4XfraXrxIB9XWz/v1a+l1ie9WasxsA+o7stisLAo=;
+        s=k20201202; t=1673501861;
+        bh=wduHFmSddmsD6ora5UU/pzL1LMWtRVWA6DKWeInV2Jk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uzE8iQ4SeEZAe3EAL0HfEtS8gbqKAxACJQZidwntvEd1mddf6vPsHvwUD18Bd0fUo
-         2RnbPZJN/JWzT7UvuXBIKPuGskpAouaDHbZXHWOC5vI3NGDgQTTnSv1zXYNB5+NsYy
-         qEQ7YaxLBxm12xkQJi3WPjyYh8Kj9ceap4m1Er94PUVA3fT7fWvaFZUfGnTvo0f46+
-         LusmFlqnrNEXQ8wIqsUieSRl0N2Rx3H8kvppjyZPqUZbe/Gwe8K28CjUzqp9D1EMUD
-         RCFp8GnnRw6oTCS6iXv+x7foAyfBSKCKpqjNwvA6Dr3O+md/yMYZjWeHx2RjcGwtod
-         IDnIl7PadwrZw==
-Date:   Wed, 11 Jan 2023 21:31:43 -0800
+        b=NFL74zkyaIj7w8/ogYrDw53n9c91V2wkqo1nkgEDe5TXjaN7haSikHRsi4qXIkAYn
+         2dCjQHHYkEvrDCxp/aVCXSDB7Fr+dq7BoyZObzyFsUxIeg+yVS/y03/EJC+lK4BQqW
+         IATonDvMAa3dVK++fZA/ySsA5U/+7LpBcLS+i14hso3ZvFFW12/N+5XdFgVnny0zIQ
+         rV2wis9OaC/pWhu2jrVJ20piirbwUF/3Pi00QI9qnn/H0JW1kUvXiPuHJ0TrTzprUR
+         n9EHcTZ/Vy4uCM3mpXItxhDLNVRPC043y1BtvdJVeoa3P87LfpjbcBENEyKMBMhFid
+         oV4/0XhOCbt6Q==
+Date:   Wed, 11 Jan 2023 21:37:39 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andre Przywara <andre.przywara@arm.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] r8152: add vendor/device ID pair for Microsoft
- Devkit
-Message-ID: <20230111213143.71f2ad7e@kernel.org>
-In-Reply-To: <20230111133228.190801-1-andre.przywara@arm.com>
-References: <20230111133228.190801-1-andre.przywara@arm.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, lorenzo.bianconi@redhat.com, nbd@nbd.name,
+        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        sujuan.chen@mediatek.com
+Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: get rid of queue lock
+ for tx queue
+Message-ID: <20230111213739.3e3e24a9@kernel.org>
+In-Reply-To: <61c985987cae6571bd25b51d414b09496d80dbe5.1673457839.git.lorenzo@kernel.org>
+References: <61c985987cae6571bd25b51d414b09496d80dbe5.1673457839.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,18 +55,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Jan 2023 13:32:28 +0000 Andre Przywara wrote:
-> The Microsoft Devkit 2023 is a an ARM64 based machine featuring a
-> Realtek 8153 USB3.0-to-GBit Ethernet adapter. As in their other
-> machines, Microsoft uses a custom USB device ID.
-> 
-> Add the respective ID values to the driver. This makes Ethernet work on
-> the MS Devkit device. The chip has been visually confirmed to be a
-> RTL8153.
+On Wed, 11 Jan 2023 18:26:29 +0100 Lorenzo Bianconi wrote:
+> This patch is based on the following patch not applied yet:
 
-Hm, we have a patch in net-next which reformats the entries:
-ec51fbd1b8a2bca2948dede99c14ec63dc57ff6b
-
-Would you like this ID to be also added in stable? We could just 
-apply it to net, and deal with the conflict locally. But if you 
-don't care about older kernels then better if you rebase.
+The patchwork automation does not support any sort of patch dependency
+tracking (it's probably quite doable, some special tag pointing at a
+series ID in patchwork, but I ain't got the time..)
+You'll have to repost.
