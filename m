@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2DB7666C18
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 09:07:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4569A666C2B
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 09:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239687AbjALIHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 03:07:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        id S239479AbjALINU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 03:13:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238774AbjALIH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 03:07:28 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B23048831;
-        Thu, 12 Jan 2023 00:07:25 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id z11so25769436ede.1;
-        Thu, 12 Jan 2023 00:07:25 -0800 (PST)
+        with ESMTP id S236706AbjALINS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 03:13:18 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE964914F;
+        Thu, 12 Jan 2023 00:13:12 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id z11so25786295ede.1;
+        Thu, 12 Jan 2023 00:13:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=CbhF/nnSJPwM2+rbbAW9sDr9asQP06rO56ZNRMmJ5Fk=;
-        b=N5FTNt+xG/Sz+q4+gZzkgbPaTj84jHnLeFwdrg5xGbgmr+D9/choE46LyGuu7MisoH
-         tgXpWFC7koZU74la0/dgGXayzalbQBa3FaugpO2knQK5KmXR+n/053VCza+ROzE9h1PH
-         +JBeTLatPN/v1wUYAlTTOGnDPH5RMu9Gf59kxa55aTuelr/qBmh79kztbW/9/Rwg4q1J
-         TYHi0vPxQUXaij0Sw5+7AQd+44ZXn/1GEuK99pfCdwa5vru4eDQN6SrpSsJO6n20caJ8
-         ZyeDTsDYz1BJUeYoTvQnVKNc8Dvg+9AvgdxInxlH9OaELRfVPX+pZqBCRNjCq4SC2OC6
-         EQqA==
+        bh=cqyDICBAxrdsnOD7wBMuaiF4C9/qfdt2gsUqsheYnFc=;
+        b=l5dNb/EDOXcm6xLV3w61wP4WPlSJhAVIg2c+/1vIq9RsYhKEfymo+84WdfJlY3zoA2
+         Csa3PX4AFyjl1/mNE9ngrLQFA1nceobH3iWVvq8P8HrLEp6DVDavsNLtQNO+AYfTpN/I
+         AL2iqmWY/SIgkwxPGEGotK8kHE9l8mtW0eQ5Q/7wwPwnA6pP6KgHVOnV8OLLTYJ4ipST
+         QcmPFmi4+BA+KWFT+7OwIS51CSRz1XBfWP+bsU7NQywm+AuWyt+nzAwcj+WKzvOgTkmf
+         F943am6F/FyEoNlXLd9ZPD7pPLdaNieI4BEspn4vrFKvUQoiCOeQfSeIl6fR3D7BTq1C
+         iBGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CbhF/nnSJPwM2+rbbAW9sDr9asQP06rO56ZNRMmJ5Fk=;
-        b=d/zUjD6CCF/Xvj6Wl4TdjjE1db1Zs29LzEfKO/1PmdThstuSzV5eR7vAnmUNrHoUw1
-         Vq6vU6kLcGQ582EopNxeUjLXEYp23PO8p5/lySnxkUuOvTF3wyRn2e73t8CJLu2UvycQ
-         fgCEJ7o+V+ziwNaF7mOFhI/eNHNqZQE+8nq/vngLPyDI3Chv2Yz2ehchAvQjamYINkCY
-         xAJ82VZ1ubTThWJkcMum4kzskNwi3Onu17CLrQqdi1Wg08GqTjDxGWnE37+VgEWggk21
-         YlsPDtND80o1g3QDK4AdpxZB0TYN3X4L9m7TF48SAZ0v3FydqOG0Vh7CcSAw8qi6OTuy
-         +1ew==
-X-Gm-Message-State: AFqh2krAt47GFJ1UsfmlF/4Kf5Rlws218ARwScfyyxQGHgG03WZ9XC+S
-        jJ0IHyiCnFZj3Fg1KYOqqvA=
-X-Google-Smtp-Source: AMrXdXtGiYH6c1xl+TLPb2WFGew1k2Hk3MAWLvnj/C29vnxGb6+FKKPkbK0tBRDrW+CK7RCnlri0rw==
-X-Received: by 2002:a05:6402:528c:b0:48e:c073:9453 with SMTP id en12-20020a056402528c00b0048ec0739453mr30507056edb.15.1673510843900;
-        Thu, 12 Jan 2023 00:07:23 -0800 (PST)
+        bh=cqyDICBAxrdsnOD7wBMuaiF4C9/qfdt2gsUqsheYnFc=;
+        b=CwWi71jDEq55PoV+RT5rO35ibDIz9eWY5LlFJeXYvWMB3Y3zpwElseNcaUXfq2ms8s
+         1NOz6XSbW+woZsmiH6uNVS6g2hcAyyFzoc0CF0yMu5z4RZFayW0ME5ybD72bbY6e5U/9
+         X8pYoRYis5kJydyeDrvkcECDpyxEVJ3Sr3ptC3XGeha7ECpXQrw4nRSMT9bHWI5YqBft
+         COWwSpd/kM7kYzwnmMCtioBWLsK03O6CsFogEMfZHI8SBRM1CHMKnyLM0QDtdMwtpdgW
+         9/dJSNM3Hd2GOGzNNiYxrpDY/ENy7SX40FdMiE3fgss36hNjcaSlLFNXQFSOgZTwMjwC
+         vjPQ==
+X-Gm-Message-State: AFqh2kqtAg56XEOvsaXdovY3hho/e+EK8s5LdaynK4xDZMCtvEuyoOh7
+        Q9saOHVwPFnudE7Mw4fpM00=
+X-Google-Smtp-Source: AMrXdXutS61H8NR6uMSkX3fqXHK08nxe8itZNKlYFnwJTMjLEh/aXp4ySqyLK6DK7Vi/d1MCFLtK9g==
+X-Received: by 2002:aa7:d789:0:b0:497:4f53:ee8f with SMTP id s9-20020aa7d789000000b004974f53ee8fmr18489357edq.39.1673511190775;
+        Thu, 12 Jan 2023 00:13:10 -0800 (PST)
 Received: from [192.168.0.105] ([77.126.9.245])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b007bff9fb211fsm7051222ejo.57.2023.01.12.00.07.20
+        by smtp.gmail.com with ESMTPSA id r12-20020a170906364c00b0084c70c27407sm7060544ejb.84.2023.01.12.00.13.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Jan 2023 00:07:23 -0800 (PST)
-Message-ID: <a0bac9bd-6772-64d4-8fd5-756ff4d8c2ad@gmail.com>
-Date:   Thu, 12 Jan 2023 10:07:20 +0200
+        Thu, 12 Jan 2023 00:13:10 -0800 (PST)
+Message-ID: <9545d379-9894-c7b6-d000-4f8eb6705bb1@gmail.com>
+Date:   Thu, 12 Jan 2023 10:13:07 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH bpf-next v7 15/17] net/mlx5e: Introduce wrapper for
- xdp_buff
+Subject: Re: [PATCH bpf-next v7 16/17] net/mlx5e: Support RX XDP metadata
 Content-Language: en-US
 To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -75,9 +74,9 @@ Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
         netdev@vger.kernel.org
 References: <20230112003230.3779451-1-sdf@google.com>
- <20230112003230.3779451-16-sdf@google.com>
+ <20230112003230.3779451-17-sdf@google.com>
 From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20230112003230.3779451-16-sdf@google.com>
+In-Reply-To: <20230112003230.3779451-17-sdf@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -95,7 +94,9 @@ X-Mailing-List: netdev@vger.kernel.org
 On 12/01/2023 2:32, Stanislav Fomichev wrote:
 > From: Toke Høiland-Jørgensen <toke@redhat.com>
 > 
-> Preparation for implementing HW metadata kfuncs. No functional change.
+> Support RX hash and timestamp metadata kfuncs. We need to pass in the cqe
+> pointer to the mlx5e_skb_from* functions so it can be retrieved from the
+> XDP ctx to do this.
 > 
 > Cc: Tariq Toukan <tariqt@nvidia.com>
 > Cc: Saeed Mahameed <saeedm@nvidia.com>
@@ -114,302 +115,390 @@ On 12/01/2023 2:32, Stanislav Fomichev wrote:
 > Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 > Signed-off-by: Stanislav Fomichev <sdf@google.com>
 > ---
->   drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
->   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  3 +-
->   .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  6 +-
->   .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 25 ++++----
->   .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 58 +++++++++----------
->   5 files changed, 50 insertions(+), 43 deletions(-)
+>   drivers/net/ethernet/mellanox/mlx5/core/en.h  |  5 +-
+>   .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  5 ++
+>   .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 23 +++++++++
+>   .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  5 ++
+>   .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 10 ++++
+>   .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |  2 +
+>   .../net/ethernet/mellanox/mlx5/core/en_main.c |  6 +++
+>   .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 49 ++++++++++---------
+>   8 files changed, 80 insertions(+), 25 deletions(-)
 > 
 > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> index 2d77fb8a8a01..af663978d1b4 100644
+> index af663978d1b4..6de02d8aeab8 100644
 > --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
 > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -469,6 +469,7 @@ struct mlx5e_txqsq {
->   union mlx5e_alloc_unit {
->   	struct page *page;
->   	struct xdp_buff *xsk;
-> +	struct mlx5e_xdp_buff *mxbuf;
-
-In XSK files below you mix usage of both alloc_units[page_idx].mxbuf and 
-alloc_units[page_idx].xsk, while both fields share the memory of a union.
-
-As struct mlx5e_xdp_buff wraps struct xdp_buff, I think that you just 
-need to change the existing xsk field type from struct xdp_buff *xsk 
-into struct mlx5e_xdp_buff *xsk and align the usage.
-
->   };
+> @@ -627,10 +627,11 @@ struct mlx5e_rq;
+>   typedef void (*mlx5e_fp_handle_rx_cqe)(struct mlx5e_rq*, struct mlx5_cqe64*);
+>   typedef struct sk_buff *
+>   (*mlx5e_fp_skb_from_cqe_mpwrq)(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+> -			       u16 cqe_bcnt, u32 head_offset, u32 page_idx);
+> +			       struct mlx5_cqe64 *cqe, u16 cqe_bcnt,
+> +			       u32 head_offset, u32 page_idx);
+>   typedef struct sk_buff *
+>   (*mlx5e_fp_skb_from_cqe)(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+> -			 u32 cqe_bcnt);
+> +			 struct mlx5_cqe64 *cqe, u32 cqe_bcnt);
+>   typedef bool (*mlx5e_fp_post_rx_wqes)(struct mlx5e_rq *rq);
+>   typedef void (*mlx5e_fp_dealloc_wqe)(struct mlx5e_rq*, u16);
+>   typedef void (*mlx5e_fp_shampo_dealloc_hd)(struct mlx5e_rq*, u16, u16, bool);
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> index 853f312cd757..757c012ece27 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+> @@ -73,6 +73,11 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget);
+>   void mlx5e_free_rx_descs(struct mlx5e_rq *rq);
+>   void mlx5e_free_rx_in_progress_descs(struct mlx5e_rq *rq);
 >   
->   /* XDP packets can be transmitted in different ways. On completion, we need to
+> +static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
+> +{
+> +	return config->rx_filter == HWTSTAMP_FILTER_ALL;
+> +}
+> +
+>   /* TX */
+>   netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev);
+>   bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget);
 > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> index 20507ef2f956..31bb6806bf5d 100644
+> index 31bb6806bf5d..d10d31e12ba2 100644
 > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
 > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> @@ -158,8 +158,9 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+> @@ -156,6 +156,29 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+>   	return true;
+>   }
 >   
+> +int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+> +{
+> +	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
+> +
+> +	if (unlikely(!mlx5e_rx_hw_stamp(_ctx->rq->tstamp)))
+> +		return -EOPNOTSUPP;
+> +
+> +	*timestamp =  mlx5e_cqe_ts_to_ns(_ctx->rq->ptp_cyc2time,
+> +					 _ctx->rq->clock, get_cqe_ts(_ctx->cqe));
+> +	return 0;
+> +}
+> +
+> +int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
+> +{
+> +	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
+> +
+> +	if (unlikely(!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH)))
+> +		return -EOPNOTSUPP;
+> +
+> +	*hash = be32_to_cpu(_ctx->cqe->rss_hash_result);
+> +	return 0;
+> +}
+> +
 >   /* returns true if packet was consumed by xdp */
 >   bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
-> -		      struct bpf_prog *prog, struct xdp_buff *xdp)
-> +		      struct bpf_prog *prog, struct mlx5e_xdp_buff *mxbuf)
->   {
-> +	struct xdp_buff *xdp = &mxbuf->xdp;
->   	u32 act;
->   	int err;
->   
+>   		      struct bpf_prog *prog, struct mlx5e_xdp_buff *mxbuf)
 > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-> index bc2d9034af5b..389818bf6833 100644
+> index 389818bf6833..cb568c62aba0 100644
 > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
 > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-> @@ -44,10 +44,14 @@
->   	(MLX5E_XDP_INLINE_WQE_MAX_DS_CNT * MLX5_SEND_WQE_DS - \
->   	 sizeof(struct mlx5_wqe_inline_seg))
+> @@ -46,6 +46,8 @@
 >   
-> +struct mlx5e_xdp_buff {
-> +	struct xdp_buff xdp;
-> +};
-> +
+>   struct mlx5e_xdp_buff {
+>   	struct xdp_buff xdp;
+> +	struct mlx5_cqe64 *cqe;
+> +	struct mlx5e_rq *rq;
+>   };
+>   
 >   struct mlx5e_xsk_param;
->   int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
->   bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
-> -		      struct bpf_prog *prog, struct xdp_buff *xdp);
-> +		      struct bpf_prog *prog, struct mlx5e_xdp_buff *mlctx);
->   void mlx5e_xdp_mpwqe_complete(struct mlx5e_xdpsq *sq);
->   bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq);
->   void mlx5e_free_xdpsq_descs(struct mlx5e_xdpsq *sq);
+> @@ -60,6 +62,9 @@ void mlx5e_xdp_rx_poll_complete(struct mlx5e_rq *rq);
+>   int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
+>   		   u32 flags);
+>   
+> +int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp);
+> +int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash);
+> +
+>   INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
+>   							  struct mlx5e_xmit_data *xdptxd,
+>   							  struct skb_shared_info *sinfo,
 > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-> index c91b54d9ff27..9cff82d764e3 100644
+> index 9cff82d764e3..8bf3029abd3c 100644
 > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
 > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-> @@ -22,6 +22,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
->   		goto err;
+> @@ -49,6 +49,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+>   			umr_wqe->inline_mtts[i] = (struct mlx5_mtt) {
+>   				.ptag = cpu_to_be64(addr | MLX5_EN_WR),
+>   			};
+> +			wi->alloc_units[i].mxbuf->rq = rq;
+>   		}
+>   	} else if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)) {
+>   		for (i = 0; i < batch; i++) {
+> @@ -58,6 +59,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+>   				.key = rq->mkey_be,
+>   				.va = cpu_to_be64(addr),
+>   			};
+> +			wi->alloc_units[i].mxbuf->rq = rq;
+>   		}
+>   	} else if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_TRIPLE)) {
+>   		u32 mapping_size = 1 << (rq->mpwqe.page_shift - 2);
+> @@ -81,6 +83,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+>   				.key = rq->mkey_be,
+>   				.va = cpu_to_be64(rq->wqe_overflow.addr),
+>   			};
+> +			wi->alloc_units[i].mxbuf->rq = rq;
+>   		}
+>   	} else {
+>   		__be32 pad_size = cpu_to_be32((1 << rq->mpwqe.page_shift) -
+> @@ -100,6 +103,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+>   				.va = cpu_to_be64(rq->wqe_overflow.addr),
+>   				.bcount = pad_size,
+>   			};
+> +			wi->alloc_units[i].mxbuf->rq = rq;
+>   		}
+>   	}
 >   
->   	BUILD_BUG_ON(sizeof(wi->alloc_units[0]) != sizeof(wi->alloc_units[0].xsk));
-> +	XSK_CHECK_PRIV_TYPE(struct mlx5e_xdp_buff);
->   	batch = xsk_buff_alloc_batch(rq->xsk_pool, (struct xdp_buff **)wi->alloc_units,
->   				     rq->mpwqe.pages_per_wqe);
+> @@ -230,6 +234,7 @@ static struct sk_buff *mlx5e_xsk_construct_skb(struct mlx5e_rq *rq, struct xdp_b
 >   
-> @@ -233,7 +234,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+>   struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+>   						    struct mlx5e_mpw_info *wi,
+> +						    struct mlx5_cqe64 *cqe,
+>   						    u16 cqe_bcnt,
 >   						    u32 head_offset,
 >   						    u32 page_idx)
->   {
-> -	struct xdp_buff *xdp = wi->alloc_units[page_idx].xsk;
-> +	struct mlx5e_xdp_buff *mxbuf = wi->alloc_units[page_idx].mxbuf;
->   	struct bpf_prog *prog;
->   
->   	/* Check packet size. Note LRO doesn't use linear SKB */
-> @@ -249,9 +250,9 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+> @@ -250,6 +255,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
 >   	 */
 >   	WARN_ON_ONCE(head_offset);
 >   
-> -	xsk_buff_set_size(xdp, cqe_bcnt);
-> -	xsk_buff_dma_sync_for_cpu(xdp, rq->xsk_pool);
-> -	net_prefetch(xdp->data);
-> +	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
-> +	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
-> +	net_prefetch(mxbuf->xdp.data);
->   
->   	/* Possible flows:
->   	 * - XDP_REDIRECT to XSKMAP:
-> @@ -269,7 +270,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
->   	 */
->   
->   	prog = rcu_dereference(rq->xdp_prog);
-> -	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, xdp))) {
-> +	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, mxbuf))) {
->   		if (likely(__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)))
->   			__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
->   		return NULL; /* page/packet was consumed by XDP */
-> @@ -278,14 +279,14 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
->   	/* XDP_PASS: copy the data from the UMEM to a new SKB and reuse the
->   	 * frame. On SKB allocation failure, NULL is returned.
->   	 */
-> -	return mlx5e_xsk_construct_skb(rq, xdp);
-> +	return mlx5e_xsk_construct_skb(rq, &mxbuf->xdp);
->   }
+> +	/* mxbuf->rq is set on allocation, but cqe is per-packet so set it here */
+> +	mxbuf->cqe = cqe;
+>   	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
+>   	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
+>   	net_prefetch(mxbuf->xdp.data);
+> @@ -284,6 +291,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
 >   
 >   struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
 >   					      struct mlx5e_wqe_frag_info *wi,
+> +					      struct mlx5_cqe64 *cqe,
 >   					      u32 cqe_bcnt)
 >   {
-> -	struct xdp_buff *xdp = wi->au->xsk;
-> +	struct mlx5e_xdp_buff *mxbuf = wi->au->mxbuf;
->   	struct bpf_prog *prog;
->   
->   	/* wi->offset is not used in this function, because xdp->data and the
-> @@ -295,17 +296,17 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
+>   	struct mlx5e_xdp_buff *mxbuf = wi->au->mxbuf;
+> @@ -296,6 +304,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
 >   	 */
 >   	WARN_ON_ONCE(wi->offset);
 >   
-> -	xsk_buff_set_size(xdp, cqe_bcnt);
-> -	xsk_buff_dma_sync_for_cpu(xdp, rq->xsk_pool);
-> -	net_prefetch(xdp->data);
-> +	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
-> +	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
-> +	net_prefetch(mxbuf->xdp.data);
+> +	/* mxbuf->rq is set on allocation, but cqe is per-packet so set it here */
+> +	mxbuf->cqe = cqe;
+>   	xsk_buff_set_size(&mxbuf->xdp, cqe_bcnt);
+>   	xsk_buff_dma_sync_for_cpu(&mxbuf->xdp, rq->xsk_pool);
+>   	net_prefetch(mxbuf->xdp.data);
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
+> index 087c943bd8e9..cefc0ef6105d 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
+> @@ -13,11 +13,13 @@ int mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq, u16 ix, int wqe_bulk);
+>   int mlx5e_xsk_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, int wqe_bulk);
+>   struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+>   						    struct mlx5e_mpw_info *wi,
+> +						    struct mlx5_cqe64 *cqe,
+>   						    u16 cqe_bcnt,
+>   						    u32 head_offset,
+>   						    u32 page_idx);
+>   struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
+>   					      struct mlx5e_wqe_frag_info *wi,
+> +					      struct mlx5_cqe64 *cqe,
+>   					      u32 cqe_bcnt);
 >   
->   	prog = rcu_dereference(rq->xdp_prog);
-> -	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, xdp)))
-> +	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, mxbuf)))
->   		return NULL; /* page/packet was consumed by XDP */
+>   #endif /* __MLX5_EN_XSK_RX_H__ */
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index cff5f2e29e1e..be942c060774 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -4913,6 +4913,11 @@ const struct net_device_ops mlx5e_netdev_ops = {
+>   #endif
+>   };
 >   
->   	/* XDP_PASS: copy the data from the UMEM to a new SKB. The frame reuse
->   	 * will be handled by mlx5e_free_rx_wqe.
->   	 * On SKB allocation failure, NULL is returned.
->   	 */
-> -	return mlx5e_xsk_construct_skb(rq, xdp);
-> +	return mlx5e_xsk_construct_skb(rq, &mxbuf->xdp);
->   }
+> +static const struct xdp_metadata_ops mlx5_xdp_metadata_ops = {
+> +	.xmo_rx_timestamp		= mlx5e_xdp_rx_timestamp,
+> +	.xmo_rx_hash			= mlx5e_xdp_rx_hash,
+> +};
+> +
+
+Instead of exposing every single xdp function in the xdp header, move 
+this struct into the en/xdp.c, and expose it via en/xdp.h.
+
+See example struct and its usage:
+	netdev->ethtool_ops       = &mlx5e_ethtool_ops;
+
+>   static u32 mlx5e_choose_lro_timeout(struct mlx5_core_dev *mdev, u32 wanted_timeout)
+>   {
+>   	int i;
+> @@ -5053,6 +5058,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+>   	SET_NETDEV_DEV(netdev, mdev->device);
+>   
+>   	netdev->netdev_ops = &mlx5e_netdev_ops;
+> +	netdev->xdp_metadata_ops = &mlx5_xdp_metadata_ops;
+>   
+>   	mlx5e_dcbnl_build_netdev(netdev);
+>   
 > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> index c8820ab22169..6affdddf5bcf 100644
+> index 6affdddf5bcf..7b08653be000 100644
 > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> @@ -1575,11 +1575,11 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
+> @@ -62,10 +62,12 @@
+>   
+>   static struct sk_buff *
+>   mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+> -				u16 cqe_bcnt, u32 head_offset, u32 page_idx);
+> +				struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
+> +				u32 page_idx);
+>   static struct sk_buff *
+>   mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+> -				   u16 cqe_bcnt, u32 head_offset, u32 page_idx);
+> +				   struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
+> +				   u32 page_idx);
+>   static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+>   static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+>   static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+> @@ -76,11 +78,6 @@ const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic = {
+>   	.handle_rx_cqe_mpwqe_shampo = mlx5e_handle_rx_cqe_mpwrq_shampo,
+>   };
+>   
+> -static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
+> -{
+> -	return config->rx_filter == HWTSTAMP_FILTER_ALL;
+> -}
+> -
+>   static inline void mlx5e_read_cqe_slot(struct mlx5_cqwq *wq,
+>   				       u32 cqcc, void *data)
+>   {
+> @@ -1575,16 +1572,19 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
 >   	return skb;
 >   }
 >   
-> -static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, void *va, u16 headroom,
-> -				u32 len, struct xdp_buff *xdp)
-> +static void mlx5e_fill_mxbuf(struct mlx5e_rq *rq, void *va, u16 headroom,
-> +			     u32 len, struct mlx5e_xdp_buff *mxbuf)
+> -static void mlx5e_fill_mxbuf(struct mlx5e_rq *rq, void *va, u16 headroom,
+> -			     u32 len, struct mlx5e_xdp_buff *mxbuf)
+> +static void mlx5e_fill_mxbuf(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+> +			     void *va, u16 headroom, u32 len,
+> +			     struct mlx5e_xdp_buff *mxbuf)
 >   {
-> -	xdp_init_buff(xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
-> -	xdp_prepare_buff(xdp, va, headroom, len, true);
-> +	xdp_init_buff(&mxbuf->xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
-> +	xdp_prepare_buff(&mxbuf->xdp, va, headroom, len, true);
+>   	xdp_init_buff(&mxbuf->xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
+>   	xdp_prepare_buff(&mxbuf->xdp, va, headroom, len, true);
+> +	mxbuf->cqe = cqe;
+> +	mxbuf->rq = rq;
 >   }
 >   
 >   static struct sk_buff *
-> @@ -1606,16 +1606,16 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
->   
->   	prog = rcu_dereference(rq->xdp_prog);
->   	if (prog) {
-> -		struct xdp_buff xdp;
-> +		struct mlx5e_xdp_buff mxbuf;
->   
->   		net_prefetchw(va); /* xdp_frame data area */
-> -		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
-> -		if (mlx5e_xdp_handle(rq, au->page, prog, &xdp))
-> +		mlx5e_fill_mxbuf(rq, cqe, va, rx_headroom, cqe_bcnt, &mxbuf);
-> +		if (mlx5e_xdp_handle(rq, au->page, prog, &mxbuf))
->   			return NULL; /* page/packet was consumed by XDP */
->   
-> -		rx_headroom = xdp.data - xdp.data_hard_start;
-> -		metasize = xdp.data - xdp.data_meta;
-> -		cqe_bcnt = xdp.data_end - xdp.data;
-> +		rx_headroom = mxbuf.xdp.data - mxbuf.xdp.data_hard_start;
-> +		metasize = mxbuf.xdp.data - mxbuf.xdp.data_meta;
-> +		cqe_bcnt = mxbuf.xdp.data_end - mxbuf.xdp.data;
->   	}
->   	frag_size = MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
->   	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt, metasize);
-> @@ -1637,9 +1637,9 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+>   mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+> -			  u32 cqe_bcnt)
+> +			  struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
+>   {
 >   	union mlx5e_alloc_unit *au = wi->au;
 >   	u16 rx_headroom = rq->buff.headroom;
->   	struct skb_shared_info *sinfo;
-> +	struct mlx5e_xdp_buff mxbuf;
->   	u32 frag_consumed_bytes;
->   	struct bpf_prog *prog;
-> -	struct xdp_buff xdp;
->   	struct sk_buff *skb;
->   	dma_addr_t addr;
->   	u32 truesize;
-> @@ -1654,8 +1654,8 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+> @@ -1630,7 +1630,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+>   
+>   static struct sk_buff *
+>   mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
+> -			     u32 cqe_bcnt)
+> +			     struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
+>   {
+>   	struct mlx5e_rq_frag_info *frag_info = &rq->wqe.info.arr[0];
+>   	struct mlx5e_wqe_frag_info *head_wi = wi;
+> @@ -1654,7 +1654,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
 >   	net_prefetchw(va); /* xdp_frame data area */
 >   	net_prefetch(va + rx_headroom);
 >   
-> -	mlx5e_fill_xdp_buff(rq, va, rx_headroom, frag_consumed_bytes, &xdp);
-> -	sinfo = xdp_get_shared_info_from_buff(&xdp);
-> +	mlx5e_fill_mxbuf(rq, va, rx_headroom, frag_consumed_bytes, &mxbuf);
-> +	sinfo = xdp_get_shared_info_from_buff(&mxbuf.xdp);
+> -	mlx5e_fill_mxbuf(rq, va, rx_headroom, frag_consumed_bytes, &mxbuf);
+> +	mlx5e_fill_mxbuf(rq, cqe, va, rx_headroom, frag_consumed_bytes, &mxbuf);
+>   	sinfo = xdp_get_shared_info_from_buff(&mxbuf.xdp);
 >   	truesize = 0;
 >   
->   	cqe_bcnt -= frag_consumed_bytes;
-> @@ -1673,13 +1673,13 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
->   		dma_sync_single_for_cpu(rq->pdev, addr + wi->offset,
->   					frag_consumed_bytes, rq->buff.map_dir);
+> @@ -1777,7 +1777,7 @@ static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+>   			      mlx5e_skb_from_cqe_linear,
+>   			      mlx5e_skb_from_cqe_nonlinear,
+>   			      mlx5e_xsk_skb_from_cqe_linear,
+> -			      rq, wi, cqe_bcnt);
+> +			      rq, wi, cqe, cqe_bcnt);
+>   	if (!skb) {
+>   		/* probably for XDP */
+>   		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
+> @@ -1830,7 +1830,7 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+>   	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
+>   			      mlx5e_skb_from_cqe_linear,
+>   			      mlx5e_skb_from_cqe_nonlinear,
+> -			      rq, wi, cqe_bcnt);
+> +			      rq, wi, cqe, cqe_bcnt);
+>   	if (!skb) {
+>   		/* probably for XDP */
+>   		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
+> @@ -1889,7 +1889,7 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
+>   	skb = INDIRECT_CALL_2(rq->mpwqe.skb_from_cqe_mpwrq,
+>   			      mlx5e_skb_from_cqe_mpwrq_linear,
+>   			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
+> -			      rq, wi, cqe_bcnt, head_offset, page_idx);
+> +			      rq, wi, cqe, cqe_bcnt, head_offset, page_idx);
+>   	if (!skb)
+>   		goto mpwrq_cqe_out;
 >   
-> -		if (!xdp_buff_has_frags(&xdp)) {
-> +		if (!xdp_buff_has_frags(&mxbuf.xdp)) {
->   			/* Init on the first fragment to avoid cold cache access
->   			 * when possible.
->   			 */
->   			sinfo->nr_frags = 0;
->   			sinfo->xdp_frags_size = 0;
-> -			xdp_buff_set_frags_flag(&xdp);
-> +			xdp_buff_set_frags_flag(&mxbuf.xdp);
->   		}
+> @@ -1940,7 +1940,8 @@ mlx5e_fill_skb_data(struct sk_buff *skb, struct mlx5e_rq *rq,
 >   
->   		frag = &sinfo->frags[sinfo->nr_frags++];
-> @@ -1688,7 +1688,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
->   		skb_frag_size_set(frag, frag_consumed_bytes);
+>   static struct sk_buff *
+>   mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+> -				   u16 cqe_bcnt, u32 head_offset, u32 page_idx)
+> +				   struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
+> +				   u32 page_idx)
+>   {
+>   	union mlx5e_alloc_unit *au = &wi->alloc_units[page_idx];
+>   	u16 headlen = min_t(u16, MLX5E_RX_MAX_HEAD, cqe_bcnt);
+> @@ -1979,7 +1980,8 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
 >   
->   		if (page_is_pfmemalloc(au->page))
-> -			xdp_buff_set_frag_pfmemalloc(&xdp);
-> +			xdp_buff_set_frag_pfmemalloc(&mxbuf.xdp);
->   
->   		sinfo->xdp_frags_size += frag_consumed_bytes;
->   		truesize += frag_info->frag_stride;
-> @@ -1701,7 +1701,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
->   	au = head_wi->au;
->   
->   	prog = rcu_dereference(rq->xdp_prog);
-> -	if (prog && mlx5e_xdp_handle(rq, au->page, prog, &xdp)) {
-> +	if (prog && mlx5e_xdp_handle(rq, au->page, prog, &mxbuf)) {
->   		if (test_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
->   			int i;
->   
-> @@ -1711,22 +1711,22 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
->   		return NULL; /* page/packet was consumed by XDP */
->   	}
->   
-> -	skb = mlx5e_build_linear_skb(rq, xdp.data_hard_start, rq->buff.frame0_sz,
-> -				     xdp.data - xdp.data_hard_start,
-> -				     xdp.data_end - xdp.data,
-> -				     xdp.data - xdp.data_meta);
-> +	skb = mlx5e_build_linear_skb(rq, mxbuf.xdp.data_hard_start, rq->buff.frame0_sz,
-> +				     mxbuf.xdp.data - mxbuf.xdp.data_hard_start,
-> +				     mxbuf.xdp.data_end - mxbuf.xdp.data,
-> +				     mxbuf.xdp.data - mxbuf.xdp.data_meta);
->   	if (unlikely(!skb))
->   		return NULL;
->   
->   	page_ref_inc(au->page);
->   
-> -	if (unlikely(xdp_buff_has_frags(&xdp))) {
-> +	if (unlikely(xdp_buff_has_frags(&mxbuf.xdp))) {
->   		int i;
->   
->   		/* sinfo->nr_frags is reset by build_skb, calculate again. */
->   		xdp_update_skb_shared_info(skb, wi - head_wi - 1,
->   					   sinfo->xdp_frags_size, truesize,
-> -					   xdp_buff_is_frag_pfmemalloc(&xdp));
-> +					   xdp_buff_is_frag_pfmemalloc(&mxbuf.xdp));
->   
->   		for (i = 0; i < sinfo->nr_frags; i++) {
->   			skb_frag_t *frag = &sinfo->frags[i];
-> @@ -2007,19 +2007,19 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
->   
->   	prog = rcu_dereference(rq->xdp_prog);
->   	if (prog) {
-> -		struct xdp_buff xdp;
-> +		struct mlx5e_xdp_buff mxbuf;
+>   static struct sk_buff *
+>   mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+> -				u16 cqe_bcnt, u32 head_offset, u32 page_idx)
+> +				struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
+> +				u32 page_idx)
+>   {
+>   	union mlx5e_alloc_unit *au = &wi->alloc_units[page_idx];
+>   	u16 rx_headroom = rq->buff.headroom;
+> @@ -2010,7 +2012,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+>   		struct mlx5e_xdp_buff mxbuf;
 >   
 >   		net_prefetchw(va); /* xdp_frame data area */
-> -		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
-> -		if (mlx5e_xdp_handle(rq, au->page, prog, &xdp)) {
-> +		mlx5e_fill_mxbuf(rq, va, rx_headroom, cqe_bcnt, &mxbuf);
-> +		if (mlx5e_xdp_handle(rq, au->page, prog, &mxbuf)) {
+> -		mlx5e_fill_mxbuf(rq, va, rx_headroom, cqe_bcnt, &mxbuf);
+> +		mlx5e_fill_mxbuf(rq, cqe, va, rx_headroom, cqe_bcnt, &mxbuf);
+>   		if (mlx5e_xdp_handle(rq, au->page, prog, &mxbuf)) {
 >   			if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
 >   				__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
->   			return NULL; /* page/packet was consumed by XDP */
->   		}
+> @@ -2174,8 +2176,8 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
+>   		if (likely(head_size))
+>   			*skb = mlx5e_skb_from_cqe_shampo(rq, wi, cqe, header_index);
+>   		else
+> -			*skb = mlx5e_skb_from_cqe_mpwrq_nonlinear(rq, wi, cqe_bcnt, data_offset,
+> -								  page_idx);
+> +			*skb = mlx5e_skb_from_cqe_mpwrq_nonlinear(rq, wi, cqe, cqe_bcnt,
+> +								  data_offset, page_idx);
+>   		if (unlikely(!*skb))
+>   			goto free_hd_entry;
 >   
-> -		rx_headroom = xdp.data - xdp.data_hard_start;
-> -		metasize = xdp.data - xdp.data_meta;
-> -		cqe_bcnt = xdp.data_end - xdp.data;
-> +		rx_headroom = mxbuf.xdp.data - mxbuf.xdp.data_hard_start;
-> +		metasize = mxbuf.xdp.data - mxbuf.xdp.data_meta;
-> +		cqe_bcnt = mxbuf.xdp.data_end - mxbuf.xdp.data;
+> @@ -2249,7 +2251,8 @@ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cq
+>   			      mlx5e_skb_from_cqe_mpwrq_linear,
+>   			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
+>   			      mlx5e_xsk_skb_from_cqe_mpwrq_linear,
+> -			      rq, wi, cqe_bcnt, head_offset, page_idx);
+> +			      rq, wi, cqe, cqe_bcnt, head_offset,
+> +			      page_idx);
+>   	if (!skb)
+>   		goto mpwrq_cqe_out;
+>   
+> @@ -2494,7 +2497,7 @@ static void mlx5i_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+>   	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
+>   			      mlx5e_skb_from_cqe_linear,
+>   			      mlx5e_skb_from_cqe_nonlinear,
+> -			      rq, wi, cqe_bcnt);
+> +			      rq, wi, cqe, cqe_bcnt);
+>   	if (!skb)
+>   		goto wq_free_wqe;
+>   
+> @@ -2586,7 +2589,7 @@ static void mlx5e_trap_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe
+>   		goto free_wqe;
 >   	}
->   	frag_size = MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
->   	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt, metasize);
+>   
+> -	skb = mlx5e_skb_from_cqe_nonlinear(rq, wi, cqe_bcnt);
+> +	skb = mlx5e_skb_from_cqe_nonlinear(rq, wi, cqe, cqe_bcnt);
+>   	if (!skb)
+>   		goto free_wqe;
+>   
