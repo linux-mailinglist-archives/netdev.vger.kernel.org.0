@@ -2,179 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF221667DA7
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 19:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D294D667DBF
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 19:18:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240273AbjALSOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 13:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
+        id S238976AbjALSS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 13:18:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240552AbjALSNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 13:13:52 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DC66DBBB
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 09:43:20 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id m26-20020a05600c3b1a00b003d9811fcaafso15713115wms.5
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 09:43:20 -0800 (PST)
+        with ESMTP id S240180AbjALSSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 13:18:01 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749A392
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 09:48:42 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id o7-20020a17090a0a0700b00226c9b82c3aso21767654pjo.3
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 09:48:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3e5PBlGJNiXnH3XwFb6/nJ5M/bSXc0/rRRFPQw8A51M=;
-        b=zQXXh8ieB1e2x1HIq9SMzCtwStEEFHMtKWzpbnXpd/2CDancPQSwJjAnn3tJuNHSQz
-         cw52GdKy2buAYmJ67ykJTuE9AdUYvTIvnveJRELMXxX5eUdHdmgsx68kD5caVrRd+YYm
-         BN52TiyqaQ5Oa+9HkstlrEcup1mdv02RCfMv0p8zpLK+6tAd2qCYr2XkokPD3U9NDOLJ
-         xOZ2U3ftJuEuKpm2zTX/est7NFdkW+ZuGc6En9WzO5l9tQ3ohmY+Mq7D5EsL/Up/Tyb1
-         DAIjm7ijZQMk2DicW3ZwFCmVtp+H8WoMJuhx3tGUGd/DbgqnRLM5iEsxNXQwel/I2FLy
-         G4bg==
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kYVWJ7k+UIIearLYPWflHxKDCw5KkZwLx7uD7gLMcvY=;
+        b=le4gQYWqcsLi6cm1r0GlaaA/f2Y9bh5ws97Arg1Pptoibl6tSgsHsNeIH6zbgKZ7Ts
+         K3ge4m5QVx1xtODcToUReVsYvRkV6ajalmlNTNvhWIF3SBPrmdRQEYmNG+SAD+8dAtHL
+         sCJgcx5mDPOfbuyFQpBmZv8CpQRgpOG84J+ZGJAKQb1KTUmJAUWGDbgPEAScNiMxAFc1
+         PTI9C4/Nk06EN/+tkrmDiOBfMgpMdutTX+A2dSOizw3DoJkj3tdq7HCE55VPfCCMeB6D
+         E/yMAWzW5W1p30hx0E0WRLfID9QrjLMdyHUK0CdFvgVHn28sLg//QQvaX7n+Jc0uI43e
+         0awQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3e5PBlGJNiXnH3XwFb6/nJ5M/bSXc0/rRRFPQw8A51M=;
-        b=LYNFNts2FLv80Sx6JumXmYf6UMiMc/bCSRfVhSmqP1SFdJzt8iOyWN2OlJdAMXoZjC
-         jQ+iijd88yUmqkrb46sChn0BXvFLcCtPcsRAia9V7c7mWp+CYVtsL/JM3EOeOsjNpaTl
-         el366nGhKuZ7b9NKX+vMDpw9JBn7YzJiJUn8ArYbdaAoywrHeBIC9oMT7Y0+i2Zd2X0K
-         X7GvwMs+uk+4mS/RASCgkhCmwvKeoJLtfE3HVo0psBE3VMZVAvJkhFepo7GFkYmIpFml
-         LCsi6dvcNpaeJdOjHsylEo0W9hsSmgSY8X8EFtIpeYm4qm+JCHrWOXOsStIYebV2XH9I
-         Raww==
-X-Gm-Message-State: AFqh2kq2JPftNcZWqKICE1kWNkUQWwpBR73JMMkbRXgXlp6BZIgXzbxd
-        0FgAnoR63TK1LqHlP7J6LsYZzA==
-X-Google-Smtp-Source: AMrXdXvsmad4+iB2Sb/Sj//efn71Od0my1o0QKk8x4Q6YxNY4qhjSBwlePQg5j6h89T1z1GdCI98dw==
-X-Received: by 2002:a05:600c:3b87:b0:3d2:813:138a with SMTP id n7-20020a05600c3b8700b003d20813138amr59967266wms.35.1673545398942;
-        Thu, 12 Jan 2023 09:43:18 -0800 (PST)
-Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id hg9-20020a05600c538900b003cfa622a18asm26448769wmb.3.2023.01.12.09.43.17
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kYVWJ7k+UIIearLYPWflHxKDCw5KkZwLx7uD7gLMcvY=;
+        b=B40JGz4yKoPaPTq/nmHbZM2VOOJ/lqviwzqA30QsdQopc7E3Zxs45Ko9AhZw0uTZ5K
+         TSJM1a6yCrDtjZAJxy+oKixfkrVMdwNRnilzpPaT+nFJHDFrE+Z6UmKkov8oy/78lGWb
+         kSOZLnNl+TCrJ2ID0GZjpUy7i2aFjp6H874MLsg33gby/FdXhOFzQeVIkH+AmfUnIbn6
+         E/lXeiMzY30U7eMmtu9xgAx1w5Y7M5Ur3o2iP4xTffiMyT2JQtKy5Rth9uJspdpTiMd5
+         yO1X2v6bHv26dASRZUho4ldRCHAiQN+tvMCEtZDzUQMj9OUVlfU2ItK8zTNW42bn3eyR
+         NIKA==
+X-Gm-Message-State: AFqh2kqi8aP2Jxgn4lhZ7ZiMtP+LRURp6eXmQVFcpMT2OZN79cuORzTQ
+        c1OHH9VALRRuSPIh5JAJSMs=
+X-Google-Smtp-Source: AMrXdXukPYww9XqE44i3QuCLuKSJYXPEKJZOPV5bZJy9Q/HikQoeNL4IkbmS2nPx+ng+F92vK23hiA==
+X-Received: by 2002:a17:90a:8d01:b0:226:e787:d3e8 with SMTP id c1-20020a17090a8d0100b00226e787d3e8mr23389185pjo.38.1673545721882;
+        Thu, 12 Jan 2023 09:48:41 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.117.20])
+        by smtp.googlemail.com with ESMTPSA id bj5-20020a17090b088500b00212e5068e17sm11001756pjb.40.2023.01.12.09.48.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 09:43:18 -0800 (PST)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Thu, 12 Jan 2023 18:42:53 +0100
-Subject: [PATCH net 3/3] selftests: mptcp: userspace: validate v4-v6 subflows mix
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230112-upstream-net-20230112-netlink-v4-v6-v1-3-6a8363a221d2@tessares.net>
-References: <20230112-upstream-net-20230112-netlink-v4-v6-v1-0-6a8363a221d2@tessares.net>
-In-Reply-To: <20230112-upstream-net-20230112-netlink-v4-v6-v1-0-6a8363a221d2@tessares.net>
-To:     "David S. Miller" <davem@davemloft.net>,
+        Thu, 12 Jan 2023 09:48:41 -0800 (PST)
+Message-ID: <0031e545f7f26a36a213712480ed6d157d0fc47a.camel@gmail.com>
+Subject: Re: [PATCH net] net: enetc: avoid deadlock in
+ enetc_tx_onestep_tstamp()
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kishen Maloor <kishen.maloor@intel.com>,
-        Florian Westphal <fw@strlen.de>, Shuah Khan <shuah@kernel.org>
-Cc:     netdev@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        stable@vger.kernel.org
-X-Mailer: b4 0.11.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3020;
- i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=wMA47rRwNHClCs5+kkPqR8S9uOx26T8C//wUolPsOEs=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjwEayQrKg1fBLIH/Ag9LK+jbOuR/y6ESuubk4Qg62
- Xu6uf2qJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY8BGsgAKCRD2t4JPQmmgc1/ND/
- 4v+GObwwQJ0B5N50mp9+s+fUPH6lM5J8yQ2LrA9D0KBmeCLBYcZnQgoNAMSWDLuLg9+AIYHvvlyDzy
- rPO4l+UZpFnbKYIUfKZPpXpF4pvIJAcjjl7lCJzNCerjJbmPWvEULd5a97uOxMqECScgfurVYrfPMb
- oOsBJFJO7CHwzavV3vqRc2ZpxYrKVhNCrnakBqeyCMu+zUpCImV7fcjCRHXBlvcpFNAiX2D232dgVR
- aSzBjHXWzTFX1gXjPX2altHxIPYsCRIko4EkrxUOVspn49+418BaNCjS4YRxEDH/Ye6jE5TWRouVuE
- hMo6BOZuYv4K8W9E+IuBuAHy38JFI1MKmHlD8MrAMWeH5CAwgSHUVKrNrkfd9XTpZyWG6eWFBUjd0b
- vy/P3W/nRU2UwXHNApC3fpgn6kJpNPAIuyC8zjHHs68XJt51696qiiQoZWpuBidFAZ6dTr8EPuRCT4
- y3J0Xq/9bevMAk6uBldNrFMnMWx11tKeZapRGkoEGeIDkfxz4AwkggwKLWGuRD7W523yGpvsoWDPvX
- akmNFsOwK53zOjAaQERrFf7oAo8hmyvJzb6FcCfFotBpOct7wnS1X41sXp9g94BN/63CJd4JMLlj0i
- 31/aftWgNI74VaaxXTATynQPz3Yw3g9DD3s86hAnsIW4pxXEQrYhbEQigSng==
-X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
- fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Y . b . Lu" <yangbo.lu@nxp.com>
+Date:   Thu, 12 Jan 2023 09:48:40 -0800
+In-Reply-To: <20230112105440.1786799-1-vladimir.oltean@nxp.com>
+References: <20230112105440.1786799-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+MIME-Version: 1.0
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MPTCP protocol supports having subflows in both IPv4 and IPv6. In Linux,
-it is possible to have that if the MPTCP socket has been created with
-AF_INET6 family without the IPV6_V6ONLY option.
+On Thu, 2023-01-12 at 12:54 +0200, Vladimir Oltean wrote:
+> This lockdep splat says it better than I could:
+>=20
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+> WARNING: inconsistent lock state
+> 6.2.0-rc2-07010-ga9b9500ffaac-dirty #967 Not tainted
+> --------------------------------
+> inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
+> kworker/1:3/179 [HC0[0]:SC0[0]:HE1:SE1] takes:
+> ffff3ec4036ce098 (_xmit_ETHER#2){+.?.}-{3:3}, at: netif_freeze_queues+0x5=
+c/0xc0
+> {IN-SOFTIRQ-W} state was registered at:
+>   _raw_spin_lock+0x5c/0xc0
+>   sch_direct_xmit+0x148/0x37c
+>   __dev_queue_xmit+0x528/0x111c
+>   ip6_finish_output2+0x5ec/0xb7c
+>   ip6_finish_output+0x240/0x3f0
+>   ip6_output+0x78/0x360
+>   ndisc_send_skb+0x33c/0x85c
+>   ndisc_send_rs+0x54/0x12c
+>   addrconf_rs_timer+0x154/0x260
+>   call_timer_fn+0xb8/0x3a0
+>   __run_timers.part.0+0x214/0x26c
+>   run_timer_softirq+0x3c/0x74
+>   __do_softirq+0x14c/0x5d8
+>   ____do_softirq+0x10/0x20
+>   call_on_irq_stack+0x2c/0x5c
+>   do_softirq_own_stack+0x1c/0x30
+>   __irq_exit_rcu+0x168/0x1a0
+>   irq_exit_rcu+0x10/0x40
+>   el1_interrupt+0x38/0x64
+> irq event stamp: 7825
+> hardirqs last  enabled at (7825): [<ffffdf1f7200cae4>] exit_to_kernel_mod=
+e+0x34/0x130
+> hardirqs last disabled at (7823): [<ffffdf1f708105f0>] __do_softirq+0x550=
+/0x5d8
+> softirqs last  enabled at (7824): [<ffffdf1f7081050c>] __do_softirq+0x46c=
+/0x5d8
+> softirqs last disabled at (7811): [<ffffdf1f708166e0>] ____do_softirq+0x1=
+0/0x20
+>=20
+> other info that might help us debug this:
+>  Possible unsafe locking scenario:
+>=20
+>        CPU0
+>        ----
+>   lock(_xmit_ETHER#2);
+>   <Interrupt>
+>     lock(_xmit_ETHER#2);
+>=20
+>  *** DEADLOCK ***
+>=20
+> 3 locks held by kworker/1:3/179:
+>  #0: ffff3ec400004748 ((wq_completion)events){+.+.}-{0:0}, at: process_on=
+e_work+0x1f4/0x6c0
+>  #1: ffff80000a0bbdc8 ((work_completion)(&priv->tx_onestep_tstamp)){+.+.}=
+-{0:0}, at: process_one_work+0x1f4/0x6c0
+>  #2: ffff3ec4036cd438 (&dev->tx_global_lock){+.+.}-{3:3}, at: netif_tx_lo=
+ck+0x1c/0x34
+>=20
+> Workqueue: events enetc_tx_onestep_tstamp
+> Call trace:
+>  print_usage_bug.part.0+0x208/0x22c
+>  mark_lock+0x7f0/0x8b0
+>  __lock_acquire+0x7c4/0x1ce0
+>  lock_acquire.part.0+0xe0/0x220
+>  lock_acquire+0x68/0x84
+>  _raw_spin_lock+0x5c/0xc0
+>  netif_freeze_queues+0x5c/0xc0
+>  netif_tx_lock+0x24/0x34
+>  enetc_tx_onestep_tstamp+0x20/0x100
+>  process_one_work+0x28c/0x6c0
+>  worker_thread+0x74/0x450
+>  kthread+0x118/0x11c
+>=20
+> but I'll say it anyway: the enetc_tx_onestep_tstamp() work item runs in
+> process context, therefore with softirqs enabled (i.o.w., it can be
+> interrupted by a softirq). If we hold the netif_tx_lock() when there is
+> an interrupt, and the NET_TX softirq then gets scheduled, this will take
+> the netif_tx_lock() a second time and deadlock the kernel.
+>=20
+> To solve this, use netif_tx_lock_bh(), which blocks softirqs from
+> running.
+>=20
+> Fixes: 7294380c5211 ("enetc: support PTP Sync packet one-step timestampin=
+g")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/enetc/enetc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/e=
+thernet/freescale/enetc/enetc.c
+> index 5ad0b259e623..0a990d35fe58 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+> @@ -2288,14 +2288,14 @@ static void enetc_tx_onestep_tstamp(struct work_s=
+truct *work)
+> =20
+>  	priv =3D container_of(work, struct enetc_ndev_priv, tx_onestep_tstamp);
+> =20
+> -	netif_tx_lock(priv->ndev);
+> +	netif_tx_lock_bh(priv->ndev);
+> =20
+>  	clear_bit_unlock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS, &priv->flags);
+>  	skb =3D skb_dequeue(&priv->tx_skbs);
+>  	if (skb)
+>  		enetc_start_xmit(skb, priv->ndev);
+> =20
+> -	netif_tx_unlock(priv->ndev);
+> +	netif_tx_unlock_bh(priv->ndev);
+>  }
+> =20
+>  static void enetc_tx_onestep_tstamp_init(struct enetc_ndev_priv *priv)
 
-Here, a new IPv4 subflow is being added to the initial IPv6 connection,
-then being removed using Netlink commands.
 
-Cc: stable@vger.kernel.org # v5.19+
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
----
- tools/testing/selftests/net/mptcp/userspace_pm.sh | 47 +++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+Looking at the patch this fixes I had a question. You have the tx_skbs
+in the enet_ndev_priv struct and from what I can tell it looks like you
+support multiple Tx queues. Is there a risk of corrupting the queue if
+multiple Tx queues attempt to request the onestep timestamp?
 
-diff --git a/tools/testing/selftests/net/mptcp/userspace_pm.sh b/tools/testing/selftests/net/mptcp/userspace_pm.sh
-index a29deb9fa024..ab2d581f28a1 100755
---- a/tools/testing/selftests/net/mptcp/userspace_pm.sh
-+++ b/tools/testing/selftests/net/mptcp/userspace_pm.sh
-@@ -752,6 +752,52 @@ test_subflows()
- 	   "$server4_token" > /dev/null 2>&1
- }
- 
-+test_subflows_v4_v6_mix()
-+{
-+	# Attempt to add a listener at 10.0.2.1:<subflow-port>
-+	ip netns exec "$ns1" ./pm_nl_ctl listen 10.0.2.1\
-+	   $app6_port > /dev/null 2>&1 &
-+	local listener_pid=$!
-+
-+	# ADD_ADDR4 from server to client machine reusing the subflow port on
-+	# the established v6 connection
-+	:>"$client_evts"
-+	ip netns exec "$ns1" ./pm_nl_ctl ann 10.0.2.1 token "$server6_token" id\
-+	   $server_addr_id dev ns1eth2 > /dev/null 2>&1
-+	stdbuf -o0 -e0 printf "ADD_ADDR4 id:%d 10.0.2.1 (ns1) => ns2, reuse port\t\t" $server_addr_id
-+	sleep 0.5
-+	verify_announce_event "$client_evts" "$ANNOUNCED" "$client6_token" "10.0.2.1"\
-+			      "$server_addr_id" "$app6_port"
-+
-+	# CREATE_SUBFLOW from client to server machine
-+	:>"$client_evts"
-+	ip netns exec "$ns2" ./pm_nl_ctl csf lip 10.0.2.2 lid 23 rip 10.0.2.1 rport\
-+	   $app6_port token "$client6_token" > /dev/null 2>&1
-+	sleep 0.5
-+	verify_subflow_events "$client_evts" "$SUB_ESTABLISHED" "$client6_token"\
-+			      "$AF_INET" "10.0.2.2" "10.0.2.1" "$app6_port" "23"\
-+			      "$server_addr_id" "ns2" "ns1"
-+
-+	# Delete the listener from the server ns, if one was created
-+	kill_wait $listener_pid
-+
-+	sport=$(sed --unbuffered -n 's/.*\(sport:\)\([[:digit:]]*\).*$/\2/p;q' "$client_evts")
-+
-+	# DESTROY_SUBFLOW from client to server machine
-+	:>"$client_evts"
-+	ip netns exec "$ns2" ./pm_nl_ctl dsf lip 10.0.2.2 lport "$sport" rip 10.0.2.1 rport\
-+	   $app6_port token "$client6_token" > /dev/null 2>&1
-+	sleep 0.5
-+	verify_subflow_events "$client_evts" "$SUB_CLOSED" "$client6_token" \
-+			      "$AF_INET" "10.0.2.2" "10.0.2.1" "$app6_port" "23"\
-+			      "$server_addr_id" "ns2" "ns1"
-+
-+	# RM_ADDR from server to client machine
-+	ip netns exec "$ns1" ./pm_nl_ctl rem id $server_addr_id token\
-+	   "$server6_token" > /dev/null 2>&1
-+	sleep 0.5
-+}
-+
- test_prio()
- {
- 	local count
-@@ -861,6 +907,7 @@ make_connection "v6"
- test_announce
- test_remove
- test_subflows
-+test_subflows_v4_v6_mix
- test_prio
- test_listener
- 
+My thought is that you might be better off looking at splitting your
+queues up so that they are contained within the enetc_bdr struct. Then
+you would only need the individual Tx queue lock instead of having to
+take the global Tx queue lock.
 
--- 
-2.37.2
+Also I am confused. Why do you clear the TSTAMP_IN_PROGRESS flag in
+enetc_tx_onestep_timestamp before checking the state of the queue? It
+seems like something you should only be clearing once the queue is
+empty.
+
+
