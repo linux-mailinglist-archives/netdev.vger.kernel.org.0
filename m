@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 489FF667909
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7271667915
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240387AbjALPX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:23:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38276 "EHLO
+        id S229747AbjALPXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:23:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232268AbjALPWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:54 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916385E674;
-        Thu, 12 Jan 2023 07:15:28 -0800 (PST)
+        with ESMTP id S236821AbjALPWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:55 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E8D6146B;
+        Thu, 12 Jan 2023 07:15:29 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 1D4191695;
+        by mail.3ffe.de (Postfix) with ESMTPSA id 8107916A3;
         Thu, 12 Jan 2023 16:15:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673536526;
@@ -26,20 +26,19 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail20220821
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UL8X5iPeOEkFpX+tWxIlqjpBa+Q45KGX7u55pnVrDdE=;
-        b=ly1tq+6t5Kx2ZJeBlBEa+kI3AKPOQXKu7okt4KuckBRVJ7FE4rA7VV48JJxe1K/AZxKrLs
-        mrux6tALW07R9EkqKAW6KBeN5HmP1MNXTQdrXpUVwaOwBI24pQkefVZfC67JrH4Oq4OyWo
-        fE0dUN0aIgAvzFrcltvcYAb/t+J+FIKXy32u4DZ6b5tOkkWAO6eGJxD0KvuLYo3V0z3pZg
-        xS2cnn4T48RjuheFVPasaWI3D3tmhZ8Ttl+g6HwHqhMjLMb3kplmKxYPSFpXsezbRXFiJR
-        yu0VH8lbaMa/4oS/k59AGb8tUIKXH3rWAlS5YYHfvRp+6GoUfbMqyylROyQzlw==
+        bh=rwJHVT/sthynx13hNDgfbweyywm6KR7oWSc3hnaT8yA=;
+        b=xSdW0KUuTFACwN8P5e+7WOnj87FwYebBGrG57fwIEFEdLXbBMqq3DtW1I6sLHYIWD6h+ev
+        lT469vVYlcZpsj/CIQkydYULCrG87roTkfucR96tWJfp0hgr9gf+7IUjAiVOmNWM94JGZp
+        RBENMSAAlfMcGu8bXrLdG+mKAUU9Yw0iTbs4iVjI7RRE4GGeBObFNvmvz8iN9PXVn9BHf2
+        cQT2xbmRr7dJjvW+jA+KxYSfy9kj+bIVFH8mncTHKvroLuPeCdDPgCeYFjad/RIUFBRBIU
+        XNs/h2JL1FzHBf3jztCv5X35YKxa7QkHtEjxwu0n1OZ4GxfhoE2nH+26S8PXUA==
 From:   Michael Walle <michael@walle.cc>
-Date:   Thu, 12 Jan 2023 16:15:12 +0100
-Subject: [PATCH net-next 06/10] net: ethernet: mtk_eth_soc: Separate C22 and
- C45 transactions
+Date:   Thu, 12 Jan 2023 16:15:13 +0100
+Subject: [PATCH net-next 07/10] net: lan743x: Separate C22 and C45 transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230112-net-next-c45-seperation-part-2-v1-6-5eeaae931526@walle.cc>
+Message-Id: <20230112-net-next-c45-seperation-part-2-v1-7-5eeaae931526@walle.cc>
 References: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 In-Reply-To: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -87,248 +86,194 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-The mediatek bus driver can perform both C22 and C45 transfers.
-Create separate functions for each and register the C45 versions using
-the new API calls.
+The microchip lan743x MDIO bus driver can perform both C22 and C45
+transfers in some variants. Create separate functions for each and
+register the C45 versions using the new API calls where appropriate.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 178 +++++++++++++++++-----------
- 1 file changed, 112 insertions(+), 66 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 106 +++++++++++++-------------
+ 1 file changed, 51 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index e3de9a53b2d9..dc50e0b227a6 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -215,8 +215,8 @@ static int mtk_mdio_busy_wait(struct mtk_eth *eth)
- 	return -ETIMEDOUT;
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 534840f9a7ca..e205edf477de 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -792,7 +792,7 @@ static int lan743x_mac_mii_wait_till_not_busy(struct lan743x_adapter *adapter)
+ 				  !(data & MAC_MII_ACC_MII_BUSY_), 0, 1000000);
  }
  
--static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
--			   u32 write_data)
-+static int _mtk_mdio_write_c22(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
-+			       u32 write_data)
+-static int lan743x_mdiobus_read(struct mii_bus *bus, int phy_id, int index)
++static int lan743x_mdiobus_read_c22(struct mii_bus *bus, int phy_id, int index)
  {
- 	int ret;
+ 	struct lan743x_adapter *adapter = bus->priv;
+ 	u32 val, mii_access;
+@@ -814,8 +814,8 @@ static int lan743x_mdiobus_read(struct mii_bus *bus, int phy_id, int index)
+ 	return (int)(val & 0xFFFF);
+ }
  
-@@ -224,35 +224,13 @@ static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
+-static int lan743x_mdiobus_write(struct mii_bus *bus,
+-				 int phy_id, int index, u16 regval)
++static int lan743x_mdiobus_write_c22(struct mii_bus *bus,
++				     int phy_id, int index, u16 regval)
+ {
+ 	struct lan743x_adapter *adapter = bus->priv;
+ 	u32 val, mii_access;
+@@ -835,12 +835,10 @@ static int lan743x_mdiobus_write(struct mii_bus *bus,
+ 	return ret;
+ }
+ 
+-static u32 lan743x_mac_mmd_access(int id, int index, int op)
++static u32 lan743x_mac_mmd_access(int id, int dev_addr, int op)
+ {
+-	u16 dev_addr;
+ 	u32 ret;
+ 
+-	dev_addr = (index >> 16) & 0x1f;
+ 	ret = (id << MAC_MII_ACC_PHY_ADDR_SHIFT_) &
+ 		MAC_MII_ACC_PHY_ADDR_MASK_;
+ 	ret |= (dev_addr << MAC_MII_ACC_MIIMMD_SHIFT_) &
+@@ -858,7 +856,8 @@ static u32 lan743x_mac_mmd_access(int id, int index, int op)
+ 	return ret;
+ }
+ 
+-static int lan743x_mdiobus_c45_read(struct mii_bus *bus, int phy_id, int index)
++static int lan743x_mdiobus_read_c45(struct mii_bus *bus, int phy_id,
++				    int dev_addr, int index)
+ {
+ 	struct lan743x_adapter *adapter = bus->priv;
+ 	u32 mmd_access;
+@@ -868,32 +867,30 @@ static int lan743x_mdiobus_c45_read(struct mii_bus *bus, int phy_id, int index)
+ 	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
  	if (ret < 0)
  		return ret;
- 
--	if (phy_reg & MII_ADDR_C45) {
--		mtk_w32(eth, PHY_IAC_ACCESS |
--			     PHY_IAC_START_C45 |
--			     PHY_IAC_CMD_C45_ADDR |
--			     PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
--			     PHY_IAC_ADDR(phy_addr) |
--			     PHY_IAC_DATA(mdiobus_c45_regad(phy_reg)),
--			MTK_PHY_IAC);
--
--		ret = mtk_mdio_busy_wait(eth);
+-	if (index & MII_ADDR_C45) {
+-		/* Load Register Address */
+-		lan743x_csr_write(adapter, MAC_MII_DATA, (u32)(index & 0xffff));
+-		mmd_access = lan743x_mac_mmd_access(phy_id, index,
+-						    MMD_ACCESS_ADDRESS);
+-		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
+-		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
 -		if (ret < 0)
 -			return ret;
--
--		mtk_w32(eth, PHY_IAC_ACCESS |
--			     PHY_IAC_START_C45 |
--			     PHY_IAC_CMD_WRITE |
--			     PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
--			     PHY_IAC_ADDR(phy_addr) |
--			     PHY_IAC_DATA(write_data),
--			MTK_PHY_IAC);
--	} else {
--		mtk_w32(eth, PHY_IAC_ACCESS |
--			     PHY_IAC_START_C22 |
--			     PHY_IAC_CMD_WRITE |
--			     PHY_IAC_REG(phy_reg) |
--			     PHY_IAC_ADDR(phy_addr) |
--			     PHY_IAC_DATA(write_data),
--			MTK_PHY_IAC);
+-		/* Read Data */
+-		mmd_access = lan743x_mac_mmd_access(phy_id, index,
+-						    MMD_ACCESS_READ);
+-		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
+-		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
+-		if (ret < 0)
+-			return ret;
+-		ret = lan743x_csr_read(adapter, MAC_MII_DATA);
+-		return (int)(ret & 0xFFFF);
 -	}
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		PHY_IAC_START_C22 |
-+		PHY_IAC_CMD_WRITE |
-+		PHY_IAC_REG(phy_reg) |
-+		PHY_IAC_ADDR(phy_addr) |
-+		PHY_IAC_DATA(write_data),
-+		MTK_PHY_IAC);
  
- 	ret = mtk_mdio_busy_wait(eth);
- 	if (ret < 0)
-@@ -261,7 +239,8 @@ static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
- 	return 0;
+-	ret = lan743x_mdiobus_read(bus, phy_id, index);
+-	return ret;
++	/* Load Register Address */
++	lan743x_csr_write(adapter, MAC_MII_DATA, index);
++	mmd_access = lan743x_mac_mmd_access(phy_id, dev_addr,
++					    MMD_ACCESS_ADDRESS);
++	lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
++	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
++	if (ret < 0)
++		return ret;
++
++	/* Read Data */
++	mmd_access = lan743x_mac_mmd_access(phy_id, dev_addr,
++					    MMD_ACCESS_READ);
++	lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
++	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
++	if (ret < 0)
++		return ret;
++
++	ret = lan743x_csr_read(adapter, MAC_MII_DATA);
++	return (int)(ret & 0xFFFF);
  }
  
--static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
-+static int _mtk_mdio_write_c45(struct mtk_eth *eth, u32 phy_addr,
-+			       u32 devad, u32 phy_reg, u32 write_data)
+-static int lan743x_mdiobus_c45_write(struct mii_bus *bus,
+-				     int phy_id, int index, u16 regval)
++static int lan743x_mdiobus_write_c45(struct mii_bus *bus, int phy_id,
++				     int dev_addr, int index, u16 regval)
  {
- 	int ret;
- 
-@@ -269,33 +248,82 @@ static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
+ 	struct lan743x_adapter *adapter = bus->priv;
+ 	u32 mmd_access;
+@@ -903,26 +900,23 @@ static int lan743x_mdiobus_c45_write(struct mii_bus *bus,
+ 	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
  	if (ret < 0)
  		return ret;
- 
--	if (phy_reg & MII_ADDR_C45) {
--		mtk_w32(eth, PHY_IAC_ACCESS |
--			     PHY_IAC_START_C45 |
--			     PHY_IAC_CMD_C45_ADDR |
--			     PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
--			     PHY_IAC_ADDR(phy_addr) |
--			     PHY_IAC_DATA(mdiobus_c45_regad(phy_reg)),
--			MTK_PHY_IAC);
--
--		ret = mtk_mdio_busy_wait(eth);
+-	if (index & MII_ADDR_C45) {
+-		/* Load Register Address */
+-		lan743x_csr_write(adapter, MAC_MII_DATA, (u32)(index & 0xffff));
+-		mmd_access = lan743x_mac_mmd_access(phy_id, index,
+-						    MMD_ACCESS_ADDRESS);
+-		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
+-		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
 -		if (ret < 0)
 -			return ret;
--
--		mtk_w32(eth, PHY_IAC_ACCESS |
--			     PHY_IAC_START_C45 |
--			     PHY_IAC_CMD_C45_READ |
--			     PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
--			     PHY_IAC_ADDR(phy_addr),
--			MTK_PHY_IAC);
+-		/* Write Data */
+-		lan743x_csr_write(adapter, MAC_MII_DATA, (u32)regval);
+-		mmd_access = lan743x_mac_mmd_access(phy_id, index,
+-						    MMD_ACCESS_WRITE);
+-		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
+-		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
 -	} else {
--		mtk_w32(eth, PHY_IAC_ACCESS |
--			     PHY_IAC_START_C22 |
--			     PHY_IAC_CMD_C22_READ |
--			     PHY_IAC_REG(phy_reg) |
--			     PHY_IAC_ADDR(phy_addr),
--			MTK_PHY_IAC);
+-		ret = lan743x_mdiobus_write(bus, phy_id, index, regval);
 -	}
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		PHY_IAC_START_C45 |
-+		PHY_IAC_CMD_C45_ADDR |
-+		PHY_IAC_REG(devad) |
-+		PHY_IAC_ADDR(phy_addr) |
-+		PHY_IAC_DATA(phy_reg),
-+		MTK_PHY_IAC);
-+
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
-+
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		PHY_IAC_START_C45 |
-+		PHY_IAC_CMD_WRITE |
-+		PHY_IAC_REG(devad) |
-+		PHY_IAC_ADDR(phy_addr) |
-+		PHY_IAC_DATA(write_data),
-+		MTK_PHY_IAC);
-+
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int _mtk_mdio_read_c22(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
-+{
-+	int ret;
-+
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
-+
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		PHY_IAC_START_C22 |
-+		PHY_IAC_CMD_C22_READ |
-+		PHY_IAC_REG(phy_reg) |
-+		PHY_IAC_ADDR(phy_addr),
-+		MTK_PHY_IAC);
-+
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
-+
-+	return mtk_r32(eth, MTK_PHY_IAC) & PHY_IAC_DATA_MASK;
-+}
-+
-+static int _mtk_mdio_read_c45(struct mtk_eth *eth, u32 phy_addr,
-+			      u32 devad, u32 phy_reg)
-+{
-+	int ret;
-+
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
-+
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		PHY_IAC_START_C45 |
-+		PHY_IAC_CMD_C45_ADDR |
-+		PHY_IAC_REG(devad) |
-+		PHY_IAC_ADDR(phy_addr) |
-+		PHY_IAC_DATA(phy_reg),
-+		MTK_PHY_IAC);
-+
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
-+
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		PHY_IAC_START_C45 |
-+		PHY_IAC_CMD_C45_READ |
-+		PHY_IAC_REG(devad) |
-+		PHY_IAC_ADDR(phy_addr),
-+		MTK_PHY_IAC);
  
- 	ret = mtk_mdio_busy_wait(eth);
- 	if (ret < 0)
-@@ -304,19 +332,35 @@ static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
- 	return mtk_r32(eth, MTK_PHY_IAC) & PHY_IAC_DATA_MASK;
+-	return ret;
++	/* Load Register Address */
++	lan743x_csr_write(adapter, MAC_MII_DATA, (u32)index);
++	mmd_access = lan743x_mac_mmd_access(phy_id, dev_addr,
++					    MMD_ACCESS_ADDRESS);
++	lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
++	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
++	if (ret < 0)
++		return ret;
++
++	/* Write Data */
++	lan743x_csr_write(adapter, MAC_MII_DATA, (u32)regval);
++	mmd_access = lan743x_mac_mmd_access(phy_id, dev_addr,
++					    MMD_ACCESS_WRITE);
++	lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
++
++	return lan743x_mac_mii_wait_till_not_busy(adapter);
  }
  
--static int mtk_mdio_write(struct mii_bus *bus, int phy_addr,
--			  int phy_reg, u16 val)
-+static int mtk_mdio_write_c22(struct mii_bus *bus, int phy_addr,
-+			      int phy_reg, u16 val)
-+{
-+	struct mtk_eth *eth = bus->priv;
-+
-+	return _mtk_mdio_write_c22(eth, phy_addr, phy_reg, val);
-+}
-+
-+static int mtk_mdio_write_c45(struct mii_bus *bus, int phy_addr,
-+			      int devad, int phy_reg, u16 val)
-+{
-+	struct mtk_eth *eth = bus->priv;
-+
-+	return _mtk_mdio_write_c45(eth, phy_addr, devad, phy_reg, val);
-+}
-+
-+static int mtk_mdio_read_c22(struct mii_bus *bus, int phy_addr, int phy_reg)
- {
- 	struct mtk_eth *eth = bus->priv;
- 
--	return _mtk_mdio_write(eth, phy_addr, phy_reg, val);
-+	return _mtk_mdio_read_c22(eth, phy_addr, phy_reg);
- }
- 
--static int mtk_mdio_read(struct mii_bus *bus, int phy_addr, int phy_reg)
-+static int mtk_mdio_read_c45(struct mii_bus *bus, int phy_addr, int devad,
-+			     int phy_reg)
- {
- 	struct mtk_eth *eth = bus->priv;
- 
--	return _mtk_mdio_read(eth, phy_addr, phy_reg);
-+	return _mtk_mdio_read_c45(eth, phy_addr, devad, phy_reg);
- }
- 
- static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *eth,
-@@ -760,8 +804,10 @@ static int mtk_mdio_init(struct mtk_eth *eth)
+ static int lan743x_sgmii_wait_till_not_busy(struct lan743x_adapter *adapter)
+@@ -3286,8 +3280,10 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
+ 			netif_dbg(adapter, drv, adapter->netdev,
+ 				  "SGMII operation\n");
+ 			adapter->mdiobus->probe_capabilities = MDIOBUS_C22_C45;
+-			adapter->mdiobus->read = lan743x_mdiobus_c45_read;
+-			adapter->mdiobus->write = lan743x_mdiobus_c45_write;
++			adapter->mdiobus->read = lan743x_mdiobus_read_c22;
++			adapter->mdiobus->write = lan743x_mdiobus_write_c22;
++			adapter->mdiobus->read_c45 = lan743x_mdiobus_read_c45;
++			adapter->mdiobus->write_c45 = lan743x_mdiobus_write_c45;
+ 			adapter->mdiobus->name = "lan743x-mdiobus-c45";
+ 			netif_dbg(adapter, drv, adapter->netdev,
+ 				  "lan743x-mdiobus-c45\n");
+@@ -3300,15 +3296,15 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
+ 				  "RGMII operation\n");
+ 			// Only C22 support when RGMII I/F
+ 			adapter->mdiobus->probe_capabilities = MDIOBUS_C22;
+-			adapter->mdiobus->read = lan743x_mdiobus_read;
+-			adapter->mdiobus->write = lan743x_mdiobus_write;
++			adapter->mdiobus->read = lan743x_mdiobus_read_c22;
++			adapter->mdiobus->write = lan743x_mdiobus_write_c22;
+ 			adapter->mdiobus->name = "lan743x-mdiobus";
+ 			netif_dbg(adapter, drv, adapter->netdev,
+ 				  "lan743x-mdiobus\n");
+ 		}
+ 	} else {
+-		adapter->mdiobus->read = lan743x_mdiobus_read;
+-		adapter->mdiobus->write = lan743x_mdiobus_write;
++		adapter->mdiobus->read = lan743x_mdiobus_read_c22;
++		adapter->mdiobus->write = lan743x_mdiobus_write_c22;
+ 		adapter->mdiobus->name = "lan743x-mdiobus";
+ 		netif_dbg(adapter, drv, adapter->netdev, "lan743x-mdiobus\n");
  	}
- 
- 	eth->mii_bus->name = "mdio";
--	eth->mii_bus->read = mtk_mdio_read;
--	eth->mii_bus->write = mtk_mdio_write;
-+	eth->mii_bus->read = mtk_mdio_read_c22;
-+	eth->mii_bus->write = mtk_mdio_write_c22;
-+	eth->mii_bus->read_c45 = mtk_mdio_read_c45;
-+	eth->mii_bus->write_c45 = mtk_mdio_write_c45;
- 	eth->mii_bus->probe_capabilities = MDIOBUS_C22_C45;
- 	eth->mii_bus->priv = eth;
- 	eth->mii_bus->parent = eth->dev;
 
 -- 
 2.30.2
