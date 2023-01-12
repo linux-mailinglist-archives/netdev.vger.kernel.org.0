@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99FB2667911
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:24:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50EAF667913
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 16:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232553AbjALPXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 10:23:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
+        id S233557AbjALPXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 10:23:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235265AbjALPW4 (ORCPT
+        with ESMTP id S231785AbjALPW4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 10:22:56 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFB261470;
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAB061472;
         Thu, 12 Jan 2023 07:15:29 -0800 (PST)
 Received: from mwalle01.sab.local (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id A55EB16E0;
-        Thu, 12 Jan 2023 16:15:27 +0100 (CET)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 1682519E1;
+        Thu, 12 Jan 2023 16:15:28 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
         t=1673536528;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=80Acs2WYYpj+pnZcfpfbf8Ss/qQYwMe4n+th9ivgh1s=;
-        b=hDUshVdYr6kbwBwi2X0/NSxkLTLHvnXh16ebqQ1vmqVRXwZ3CcRXKv4eaajXkBrbjWgkI8
-        wXkzYC3kTJ7ChaPu3pQIgwOAp6VPWhMgJMGVf/Z044FHvUq8wHT7PTehN5IjgRAJmLyF5F
-        6J3bt72Qn2h15RChH53HekFdcUPOlAXYu01RE24QvKX5eJw3XHL/1xshGn1nSOCXN0k1EM
-        TPUd5KqUBhJM0v0gntCvS3tEsK62VbF0WwQGT5Vc8nANbO5rPL+RtF7PuAAd3HgWOkV2Gz
-        A4/bDB7gtm1K+1dzBNzKybu7CiMStl5SpMnnnW7kkJty/ATr1pwPBHG8LtZ/eQ==
+        bh=M63+6MCstsrkrL79YC4nH8Ygb4Uiw61YneTbHbcZv4o=;
+        b=HCr8AYDbVE/BRcy4f1FgkMaJKmd3QIOm1dWxMogbOow4MoeU6V239gDO62iCVAPmvK1Mpy
+        d2a6tV9WARK31SJCS7hSczdPDHEu4UuYLxrzhoC/F5Awfj4TZLW1g704BhLwnLKJNeY5ck
+        z2IZ2tFclfnGyEwbM3nNUbof4zg6F2PtlDadtm3JbgkrNqJ4a7i40Nq6wbZ6dcnJDzzPJe
+        QUONECMSdmK2GgwMsBj7Dn337At3tlUQpK3PZNXLcE/17f3Xo9ivObRFWdck1EjuqSi+LY
+        aL4urJi5AL/U9GatVV/eeVh9QcVy/BUy3D2yk5yJBJb+wGoND3qlh6W+CYcaaQ==
 From:   Michael Walle <michael@walle.cc>
-Date:   Thu, 12 Jan 2023 16:15:15 +0100
-Subject: [PATCH net-next 09/10] net: stmmac: Separate C22 and C45 transactions
- for xgmac
+Date:   Thu, 12 Jan 2023 16:15:16 +0100
+Subject: [PATCH net-next 10/10] enetc: Separate C22 and C45 transactions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230112-net-next-c45-seperation-part-2-v1-9-5eeaae931526@walle.cc>
+Message-Id: <20230112-net-next-c45-seperation-part-2-v1-10-5eeaae931526@walle.cc>
 References: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 In-Reply-To: <20230112-net-next-c45-seperation-part-2-v1-0-5eeaae931526@walle.cc>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -87,292 +86,301 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-The stmmac MDIO bus driver in variant gmac4 can perform both C22 and
-C45 transfers. Create separate functions for each and register the
-C45 versions using the new API calls where appropriate.
+The enetc MDIO bus driver can perform both C22 and C45 transfers.
+Create separate functions for each and register the C45 versions using
+the new API calls where appropriate.
+
+This driver is shared with the Felix DSA switch, so update that at the
+same time.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 200 +++++++++++++++-------
- 1 file changed, 138 insertions(+), 62 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c             |   6 +-
+ drivers/net/ethernet/freescale/enetc/enetc_mdio.c  | 119 +++++++++++++++------
+ .../net/ethernet/freescale/enetc/enetc_pci_mdio.c  |   6 +-
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c    |  12 ++-
+ include/linux/fsl/enetc_mdio.h                     |  21 +++-
+ 5 files changed, 121 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 4836a40df1af..d2cb22f49ce5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -234,8 +234,29 @@ static int stmmac_xgmac2_mdio_write_c45(struct mii_bus *bus, int phyaddr,
- 					phydata);
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 01ac70fd7ddf..cbcc457499f3 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -954,8 +954,10 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 		return -ENOMEM;
+ 
+ 	bus->name = "VSC9959 internal MDIO bus";
+-	bus->read = enetc_mdio_read;
+-	bus->write = enetc_mdio_write;
++	bus->read = enetc_mdio_read_c22;
++	bus->write = enetc_mdio_write_c22;
++	bus->read_c45 = enetc_mdio_read_c45;
++	bus->write_c45 = enetc_mdio_write_c45;
+ 	bus->parent = dev;
+ 	mdio_priv = bus->priv;
+ 	mdio_priv->hw = hw;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+index 1c8f5cc6dec4..998aaa394e9c 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+@@ -55,7 +55,8 @@ static int enetc_mdio_wait_complete(struct enetc_mdio_priv *mdio_priv)
+ 				  is_busy, !is_busy, 10, 10 * 1000);
  }
  
-+static int stmmac_mdio_read(struct stmmac_priv *priv, int data, u32 value)
-+{
-+	unsigned int mii_address = priv->hw->mii.addr;
-+	unsigned int mii_data = priv->hw->mii.data;
-+	u32 v;
-+
-+	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
-+			       100, 10000))
-+		return -EBUSY;
-+
-+	writel(data, priv->ioaddr + mii_data);
-+	writel(value, priv->ioaddr + mii_address);
-+
-+	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
-+			       100, 10000))
-+		return -EBUSY;
-+
-+	/* Read the data from the MII data register */
-+	return readl(priv->ioaddr + mii_data) & MII_DATA_MASK;
-+}
-+
- /**
-- * stmmac_mdio_read
-+ * stmmac_mdio_read_c22
-  * @bus: points to the mii_bus structure
-  * @phyaddr: MII addr
-  * @phyreg: MII reg
-@@ -244,15 +265,12 @@ static int stmmac_xgmac2_mdio_write_c45(struct mii_bus *bus, int phyaddr,
-  * accessing the PHY registers.
-  * Fortunately, it seems this has no drawback for the 7109 MAC.
-  */
--static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
-+static int stmmac_mdio_read_c22(struct mii_bus *bus, int phyaddr, int phyreg)
+-int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
++int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id, int regnum,
++			 u16 value)
  {
- 	struct net_device *ndev = bus->priv;
- 	struct stmmac_priv *priv = netdev_priv(ndev);
--	unsigned int mii_address = priv->hw->mii.addr;
--	unsigned int mii_data = priv->hw->mii.data;
- 	u32 value = MII_BUSY;
- 	int data = 0;
--	u32 v;
+ 	struct enetc_mdio_priv *mdio_priv = bus->priv;
+ 	u32 mdio_ctl, mdio_cfg;
+@@ -63,14 +64,39 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
+ 	int ret;
  
- 	data = pm_runtime_resume_and_get(priv->device);
- 	if (data < 0)
-@@ -265,60 +283,94 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
- 		& priv->hw->mii.clk_csr_mask;
- 	if (priv->plat->has_gmac4) {
- 		value |= MII_GMAC4_READ;
--		if (phyreg & MII_ADDR_C45) {
--			value |= MII_GMAC4_C45E;
--			value &= ~priv->hw->mii.reg_mask;
--			value |= ((phyreg >> MII_DEVADDR_C45_SHIFT) <<
--			       priv->hw->mii.reg_shift) &
--			       priv->hw->mii.reg_mask;
--
--			data |= (phyreg & MII_REGADDR_C45_MASK) <<
--				MII_GMAC4_REG_ADDR_SHIFT;
--		}
- 	}
- 
--	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
--			       100, 10000)) {
--		data = -EBUSY;
--		goto err_disable_clks;
--	}
-+	data = stmmac_mdio_read(priv, data, value);
- 
--	writel(data, priv->ioaddr + mii_data);
--	writel(value, priv->ioaddr + mii_address);
-+	pm_runtime_put(priv->device);
- 
--	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
--			       100, 10000)) {
--		data = -EBUSY;
--		goto err_disable_clks;
-+	return data;
-+}
-+
-+/**
-+ * stmmac_mdio_read_c45
-+ * @bus: points to the mii_bus structure
-+ * @phyaddr: MII addr
-+ * @devad: device address to read
-+ * @phyreg: MII reg
-+ * Description: it reads data from the MII register from within the phy device.
-+ * For the 7111 GMAC, we must set the bit 0 in the MII address register while
-+ * accessing the PHY registers.
-+ * Fortunately, it seems this has no drawback for the 7109 MAC.
-+ */
-+static int stmmac_mdio_read_c45(struct mii_bus *bus, int phyaddr, int devad,
-+				int phyreg)
-+{
-+	struct net_device *ndev = bus->priv;
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	u32 value = MII_BUSY;
-+	int data = 0;
-+
-+	data = pm_runtime_get_sync(priv->device);
-+	if (data < 0) {
-+		pm_runtime_put_noidle(priv->device);
-+		return data;
- 	}
- 
--	/* Read the data from the MII data register */
--	data = (int)readl(priv->ioaddr + mii_data) & MII_DATA_MASK;
-+	value |= (phyaddr << priv->hw->mii.addr_shift)
-+		& priv->hw->mii.addr_mask;
-+	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
-+	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
-+		& priv->hw->mii.clk_csr_mask;
-+	value |= MII_GMAC4_READ;
-+	value |= MII_GMAC4_C45E;
-+	value &= ~priv->hw->mii.reg_mask;
-+	value |= (devad << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
-+
-+	data |= phyreg << MII_GMAC4_REG_ADDR_SHIFT;
-+
-+	data = stmmac_mdio_read(priv, data, value);
- 
--err_disable_clks:
- 	pm_runtime_put(priv->device);
- 
- 	return data;
- }
- 
-+static int stmmac_mdio_write(struct stmmac_priv *priv, int data, u32 value)
-+{
-+	unsigned int mii_address = priv->hw->mii.addr;
-+	unsigned int mii_data = priv->hw->mii.data;
-+	u32 v;
-+
-+	/* Wait until any existing MII operation is complete */
-+	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
-+			       100, 10000))
-+		return -EBUSY;
-+
-+	/* Set the MII address register to write */
-+	writel(data, priv->ioaddr + mii_data);
-+	writel(value, priv->ioaddr + mii_address);
-+
-+	/* Wait until any existing MII operation is complete */
-+	return readl_poll_timeout(priv->ioaddr + mii_address, v,
-+				  !(v & MII_BUSY), 100, 10000);
-+}
-+
- /**
-- * stmmac_mdio_write
-+ * stmmac_mdio_write_c22
-  * @bus: points to the mii_bus structure
-  * @phyaddr: MII addr
-  * @phyreg: MII reg
-  * @phydata: phy data
-  * Description: it writes the data into the MII register from within the device.
-  */
--static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
--			     u16 phydata)
-+static int stmmac_mdio_write_c22(struct mii_bus *bus, int phyaddr, int phyreg,
-+				 u16 phydata)
- {
- 	struct net_device *ndev = bus->priv;
- 	struct stmmac_priv *priv = netdev_priv(ndev);
--	unsigned int mii_address = priv->hw->mii.addr;
--	unsigned int mii_data = priv->hw->mii.data;
- 	int ret, data = phydata;
- 	u32 value = MII_BUSY;
--	u32 v;
- 
- 	ret = pm_runtime_resume_and_get(priv->device);
- 	if (ret < 0)
-@@ -330,38 +382,57 @@ static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
- 
- 	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
- 		& priv->hw->mii.clk_csr_mask;
--	if (priv->plat->has_gmac4) {
-+	if (priv->plat->has_gmac4)
- 		value |= MII_GMAC4_WRITE;
--		if (phyreg & MII_ADDR_C45) {
--			value |= MII_GMAC4_C45E;
--			value &= ~priv->hw->mii.reg_mask;
--			value |= ((phyreg >> MII_DEVADDR_C45_SHIFT) <<
--			       priv->hw->mii.reg_shift) &
--			       priv->hw->mii.reg_mask;
--
--			data |= (phyreg & MII_REGADDR_C45_MASK) <<
--				MII_GMAC4_REG_ADDR_SHIFT;
--		}
+ 	mdio_cfg = ENETC_EMDIO_CFG;
+-	if (regnum & MII_ADDR_C45) {
+-		dev_addr = (regnum >> 16) & 0x1f;
+-		mdio_cfg |= MDIO_CFG_ENC45;
 -	} else {
-+	else
- 		value |= MII_WRITE;
+-		/* clause 22 (ie 1G) */
+-		dev_addr = regnum & 0x1f;
+-		mdio_cfg &= ~MDIO_CFG_ENC45;
 -	}
- 
--	/* Wait until any existing MII operation is complete */
--	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
--			       100, 10000)) {
--		ret = -EBUSY;
--		goto err_disable_clks;
-+	ret = stmmac_mdio_write(priv, data, value);
++	dev_addr = regnum & 0x1f;
++	mdio_cfg &= ~MDIO_CFG_ENC45;
 +
-+	pm_runtime_put(priv->device);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
 +
-+	return ret;
-+}
-+
-+/**
-+ * stmmac_mdio_write_c45
-+ * @bus: points to the mii_bus structure
-+ * @phyaddr: MII addr
-+ * @phyreg: MII reg
-+ * @devad: device address to read
-+ * @phydata: phy data
-+ * Description: it writes the data into the MII register from within the device.
-+ */
-+static int stmmac_mdio_write_c45(struct mii_bus *bus, int phyaddr,
-+				 int devad, int phyreg, u16 phydata)
-+{
-+	struct net_device *ndev = bus->priv;
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int ret, data = phydata;
-+	u32 value = MII_BUSY;
-+
-+	ret = pm_runtime_get_sync(priv->device);
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(priv->device);
++	ret = enetc_mdio_wait_complete(mdio_priv);
++	if (ret)
 +		return ret;
++
++	/* set port and dev addr */
++	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
++
++	/* write the value */
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, value);
++
++	ret = enetc_mdio_wait_complete(mdio_priv);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(enetc_mdio_write_c22);
++
++int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id, int dev_addr,
++			 int regnum, u16 value)
++{
++	struct enetc_mdio_priv *mdio_priv = bus->priv;
++	u32 mdio_ctl, mdio_cfg;
++	int ret;
++
++	mdio_cfg = ENETC_EMDIO_CFG;
++	mdio_cfg |= MDIO_CFG_ENC45;
+ 
+ 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
+ 
+@@ -83,13 +109,11 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
+ 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
+ 
+ 	/* set the register address */
+-	if (regnum & MII_ADDR_C45) {
+-		enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
+ 
+-		ret = enetc_mdio_wait_complete(mdio_priv);
+-		if (ret)
+-			return ret;
+-	}
++	ret = enetc_mdio_wait_complete(mdio_priv);
++	if (ret)
++		return ret;
+ 
+ 	/* write the value */
+ 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, value);
+@@ -100,9 +124,9 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(enetc_mdio_write);
++EXPORT_SYMBOL_GPL(enetc_mdio_write_c45);
+ 
+-int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
++int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
+ {
+ 	struct enetc_mdio_priv *mdio_priv = bus->priv;
+ 	u32 mdio_ctl, mdio_cfg;
+@@ -110,14 +134,51 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	int ret;
+ 
+ 	mdio_cfg = ENETC_EMDIO_CFG;
+-	if (regnum & MII_ADDR_C45) {
+-		dev_addr = (regnum >> 16) & 0x1f;
+-		mdio_cfg |= MDIO_CFG_ENC45;
+-	} else {
+-		dev_addr = regnum & 0x1f;
+-		mdio_cfg &= ~MDIO_CFG_ENC45;
++	dev_addr = regnum & 0x1f;
++	mdio_cfg &= ~MDIO_CFG_ENC45;
++
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
++
++	ret = enetc_mdio_wait_complete(mdio_priv);
++	if (ret)
++		return ret;
++
++	/* set port and device addr */
++	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
++
++	/* initiate the read */
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
++
++	ret = enetc_mdio_wait_complete(mdio_priv);
++	if (ret)
++		return ret;
++
++	/* return all Fs if nothing was there */
++	if (enetc_mdio_rd(mdio_priv, ENETC_MDIO_CFG) & MDIO_CFG_RD_ER) {
++		dev_dbg(&bus->dev,
++			"Error while reading PHY%d reg at %d.%d\n",
++			phy_id, dev_addr, regnum);
++		return 0xffff;
  	}
  
--	/* Set the MII address register to write */
--	writel(data, priv->ioaddr + mii_data);
--	writel(value, priv->ioaddr + mii_address);
-+	value |= (phyaddr << priv->hw->mii.addr_shift)
-+		& priv->hw->mii.addr_mask;
-+	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
++	value = enetc_mdio_rd(mdio_priv, ENETC_MDIO_DATA) & 0xffff;
++
++	return value;
++}
++EXPORT_SYMBOL_GPL(enetc_mdio_read_c22);
++
++int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id, int dev_addr,
++			int regnum)
++{
++	struct enetc_mdio_priv *mdio_priv = bus->priv;
++	u32 mdio_ctl, mdio_cfg;
++	u16 value;
++	int ret;
++
++	mdio_cfg = ENETC_EMDIO_CFG;
++	mdio_cfg |= MDIO_CFG_ENC45;
++
+ 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
  
--	/* Wait until any existing MII operation is complete */
--	ret = readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
--				 100, 10000);
-+	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
-+		& priv->hw->mii.clk_csr_mask;
-+
-+	value |= MII_GMAC4_WRITE;
-+	value |= MII_GMAC4_C45E;
-+	value &= ~priv->hw->mii.reg_mask;
-+	value |= (devad << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
-+
-+	data |= phyreg << MII_GMAC4_REG_ADDR_SHIFT;
-+
-+	ret = stmmac_mdio_write(priv, data, value);
+ 	ret = enetc_mdio_wait_complete(mdio_priv);
+@@ -129,13 +190,11 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
  
--err_disable_clks:
- 	pm_runtime_put(priv->device);
+ 	/* set the register address */
+-	if (regnum & MII_ADDR_C45) {
+-		enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
  
- 	return ret;
-@@ -499,8 +570,13 @@ int stmmac_mdio_register(struct net_device *ndev)
- 			dev_err(dev, "Unsupported phy_addr (max=%d)\n",
- 					MII_XGMAC_MAX_C22ADDR);
- 	} else {
--		new_bus->read = &stmmac_mdio_read;
--		new_bus->write = &stmmac_mdio_write;
-+		new_bus->read = &stmmac_mdio_read_c22;
-+		new_bus->write = &stmmac_mdio_write_c22;
-+		if (priv->plat->has_gmac4) {
-+			new_bus->read_c45 = &stmmac_mdio_read_c45;
-+			new_bus->write_c45 = &stmmac_mdio_write_c45;
-+		}
-+
- 		max_addr = PHY_MAX_ADDR;
+-		ret = enetc_mdio_wait_complete(mdio_priv);
+-		if (ret)
+-			return ret;
+-	}
++	ret = enetc_mdio_wait_complete(mdio_priv);
++	if (ret)
++		return ret;
+ 
+ 	/* initiate the read */
+ 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
+@@ -156,7 +215,7 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 
+ 	return value;
+ }
+-EXPORT_SYMBOL_GPL(enetc_mdio_read);
++EXPORT_SYMBOL_GPL(enetc_mdio_read_c45);
+ 
+ struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs)
+ {
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+index dafb26f81f95..a1b595bd7993 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+@@ -39,8 +39,10 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
  	}
  
+ 	bus->name = ENETC_MDIO_BUS_NAME;
+-	bus->read = enetc_mdio_read;
+-	bus->write = enetc_mdio_write;
++	bus->read = enetc_mdio_read_c22;
++	bus->write = enetc_mdio_write_c22;
++	bus->read_c45 = enetc_mdio_read_c45;
++	bus->write_c45 = enetc_mdio_write_c45;
+ 	bus->parent = dev;
+ 	mdio_priv = bus->priv;
+ 	mdio_priv->hw = hw;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 9f6c4f5c0a6c..bc012deedab4 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -848,8 +848,10 @@ static int enetc_mdio_probe(struct enetc_pf *pf, struct device_node *np)
+ 		return -ENOMEM;
+ 
+ 	bus->name = "Freescale ENETC MDIO Bus";
+-	bus->read = enetc_mdio_read;
+-	bus->write = enetc_mdio_write;
++	bus->read = enetc_mdio_read_c22;
++	bus->write = enetc_mdio_write_c22;
++	bus->read_c45 = enetc_mdio_read_c45;
++	bus->write_c45 = enetc_mdio_write_c45;
+ 	bus->parent = dev;
+ 	mdio_priv = bus->priv;
+ 	mdio_priv->hw = &pf->si->hw;
+@@ -885,8 +887,10 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+ 		return -ENOMEM;
+ 
+ 	bus->name = "Freescale ENETC internal MDIO Bus";
+-	bus->read = enetc_mdio_read;
+-	bus->write = enetc_mdio_write;
++	bus->read = enetc_mdio_read_c22;
++	bus->write = enetc_mdio_write_c22;
++	bus->read_c45 = enetc_mdio_read_c45;
++	bus->write_c45 = enetc_mdio_write_c45;
+ 	bus->parent = dev;
+ 	bus->phy_mask = ~0;
+ 	mdio_priv = bus->priv;
+diff --git a/include/linux/fsl/enetc_mdio.h b/include/linux/fsl/enetc_mdio.h
+index 2d9203314865..df25fffdc0ae 100644
+--- a/include/linux/fsl/enetc_mdio.h
++++ b/include/linux/fsl/enetc_mdio.h
+@@ -37,16 +37,27 @@ struct enetc_mdio_priv {
+ 
+ #if IS_REACHABLE(CONFIG_FSL_ENETC_MDIO)
+ 
+-int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum);
+-int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value);
++int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum);
++int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id, int regnum,
++			 u16 value);
++int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad, int regnum);
++int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id, int devad, int regnum,
++			 u16 value);
+ struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs);
+ 
+ #else
+ 
+-static inline int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
++static inline int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id,
++				      int regnum)
+ { return -EINVAL; }
+-static inline int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum,
+-				   u16 value)
++static inline int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id,
++				       int regnum, u16 value)
++{ return -EINVAL; }
++static inline int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id,
++				      int devad, int regnum)
++{ return -EINVAL; }
++static inline int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id,
++				       int devad, int regnum, u16 value)
+ { return -EINVAL; }
+ struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs)
+ { return ERR_PTR(-EINVAL); }
 
 -- 
 2.30.2
