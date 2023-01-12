@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D411E668600
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:50:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF236685EF
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 22:49:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232801AbjALVtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 16:49:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40816 "EHLO
+        id S240405AbjALVtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 16:49:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240949AbjALVsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 16:48:40 -0500
-Received: from DM5PR00CU002-vft-obe.outbound.protection.outlook.com (mail-centralusazon11021015.outbound.protection.outlook.com [52.101.62.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23C8B42;
-        Thu, 12 Jan 2023 13:43:08 -0800 (PST)
+        with ESMTP id S240968AbjALVsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 16:48:41 -0500
+Received: from DM5PR00CU002-vft-obe.outbound.protection.outlook.com (mail-centralusazon11021018.outbound.protection.outlook.com [52.101.62.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B1CB4B;
+        Thu, 12 Jan 2023 13:43:11 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BXLiThsE49Ob4Sw51vvlrnTJL67fompncRrtd2IWVs0/GgUwYi7l2ASGitkxbRaGr3wgQggLf47vt8Tih+OdlD46GidwPsWjfvMTWYz9IoI/pEt9wArfswpKFuIevuRwZxRE/tQvMIZVYvza4AHkHPCTMvMHVWRHlI8hOJzhyXdPzyEQ11TaTod6wfY/VABVYrhjcg1K0kOEcmfJ3cYCwq9rMwXmiYgamFaobLXcHC9HSX5BMjftWqEsFjkKHATozYL6X9DUgNdxWmm8NwwfgHjsKXSi6kShHnQ0oadWqzFjd+fA0P/2csovpO03I1N+ybhEmh7Y+GGGR1xjDxa+OQ==
+ b=BtMNtXHBNo3zAh41Dg5PmdAZTslKguV8jNTpaZ8e65ziSNQ0JOFdTs8EOWvonhFjaVWgoDg6ErUhHjAZN48wQxhGt24Vl2Xvb4LLOd+gLMoKDIRLysYflAzuOpHPa6fci2fcAwVLWJPFZBuCyTcuybuPO4Xmv46Ye0jGvTwpiuse/YnGHh8blq+cCbDPSSi1ygFx2QJy9R/EW96cromQ8QikmdZk416vMmwQZigLfHwTZd513IJcF/+rRmOYp5gW9X4kYDQ+NUzI2Kwv/92WYWk3atsKM3tBe4co6+Hv2HazjfdRx83MyiWwte6Qfuhc+vEjP84wmN6sBNTztinwJg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VezcU7/usf/P2gz28QoctXZiJW9x05+beUA8cfnfEUE=;
- b=BMvDsBQdevK1/gN8KS6179jZhqjwpJIKZMDLc2D08D+p79z+EGzHZyxaCV7f30greIT/92zqaAn/HIgdyqQZ/rXVCJ6PS3O6UGdVJCkMQ67K8qZ+lAWwyOvellIorTvkYeNdhwTWjYvjo1j9nsnNrYYFQHxGNGVE1pe2A6azCtKiPiMt1OezrhdH8UVaxCavY0pOejSuU/bBOQvuvYMd6XlZQteIGmhBolchfibxpYKGJGmziiyHSRnNhYoCrL28ahhwXZizmbqM/BrgbGr1Hx01DIWOhw9YmsYawdqFboNUV2vRw1TH+AEFNLRGaWciIicu8ZuwLWtXMlR08giaJA==
+ bh=jo/7z2NizQa93c/Nkl/lSx9vly8AsdrlK083lzTJtbQ=;
+ b=gGZpKfzsqfL2c92WCSTS3odAv++fRh3PL1DJUz/Qhw+IGxrkK4CzOdpFWLDpSIS5T82ldMU+WXxUiiDvJhvcLB9BcIL47QDNVMEk/rMUgUD1pHdnz7gYGBGjnpMCOE5wgTfMU+VtdQmkGjvcPppvAtxstoTzEaSucCRclAs210IJmvD63UONMiztZTJEqkWys93oVXnZzYOZBuG2MwiYodQvQX9fbJDr/sZzv6IyQvC9JKn7CVdWaNhzw7ldoEXRszTrLsYNdS5FMSKzLN31EarPXYEcUgx4PMBZIJQQdZRHhMfG1M23VvhT7ZzIqbce3B2embfo5twIH7t4lgm/vg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VezcU7/usf/P2gz28QoctXZiJW9x05+beUA8cfnfEUE=;
- b=f9SpmWeteCFfzh1eSWFXfVOM0x39JthsBepXn1y80TNObvwAokB30xpRXlTIk7w3U9B7Eb9b78HF+jRzXJpodwAXVoX17DY0PIeXyu21/ucX3mgh9DA3E5YDPt83foRAcjkRrKGCABOUyrSB6uiIvTtKL+ZSfvYeszXUkab4GJA=
+ bh=jo/7z2NizQa93c/Nkl/lSx9vly8AsdrlK083lzTJtbQ=;
+ b=I8CAG3lhekwsPJbSXAEFgnZbTjW4zAcjIcbgNoIZ5nXY7uSP2cFhb/+LgQ7G2uPBjVSgPC3a51h+ETjQFGaN0CDlMCbqErpXpcDTsplqjKYjRBjIRNk2Nsi5q6APTkMO3Yh+eK/wawV6zw5/vhh0cYxpm94Ign1i/ArwRt1AYiE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
  by MW4PR21MB1953.namprd21.prod.outlook.com (2603:10b6:303:74::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6023.4; Thu, 12 Jan
- 2023 21:43:07 +0000
+ 2023 21:43:09 +0000
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::ef06:2e2c:3620:46a7]) by DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::ef06:2e2c:3620:46a7%8]) with mapi id 15.20.6023.006; Thu, 12 Jan 2023
- 21:43:07 +0000
+ 21:43:09 +0000
 From:   Michael Kelley <mikelley@microsoft.com>
 To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
@@ -58,9 +58,9 @@ To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
         iommu@lists.linux.dev
 Cc:     mikelley@microsoft.com
-Subject: [PATCH v5 05/14] init: Call mem_encrypt_init() after Hyper-V hypercall init is done
-Date:   Thu, 12 Jan 2023 13:42:24 -0800
-Message-Id: <1673559753-94403-6-git-send-email-mikelley@microsoft.com>
+Subject: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range to map as encrypted
+Date:   Thu, 12 Jan 2023 13:42:25 -0800
+Message-Id: <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
 References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
@@ -72,50 +72,50 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|MW4PR21MB1953:EE_
-X-MS-Office365-Filtering-Correlation-Id: a2946810-864f-4db1-03fa-08daf4e5fdb0
+X-MS-Office365-Filtering-Correlation-Id: 06e037a5-3427-4573-1658-08daf4e5fef4
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oQdjp5Prs1sTDQ4ddPHzuG6+inHiS/T7RaiEP8sXx9cx9xDPIvawpQblsMX/v9trIRDBAOT7uMmtNLPlx9RHTxM7RHETcbrquRLRMvUYAvsrsl5QpdpRlLp+wDm542HkFzwwrlyHrGnvjuDn0I6FMBKJQWv1AGw5yZscdI6X/iGD4sebDCNhrK64+1Sv2MDfJhaYzqddtwXHVK2Jqh7+EMQ+B0EYXnFE8S4ulbM4qRhVo8Ex8wWTVYq4nIBf4QfMMj+b49qZhR0MGxXdX1fTq2qi8X/JQDTgIKQGVm5dGFHDx5fMHc1vERDUlFQ7vwSfJnjhuQZCjnU33N9NLB+sbatCVspudE/RJS1Wq8QfKxZEEfLi0PlD27R2ZQeENJplXHoaifmwazvHpy300dUnMf8+PEhGMQm3yMezQUtKhpwZ3TLIe0MBBlPL232cN40j4EIa7bPdcgSHElPOxSANXWcj4IDbW98sf9ysrg/Lic6hspG/I7x4WwMTx98jJbnHMVKdoF2pOhosX1oxt2rZj3tpvou5+f/XW+V4H53kzr42YW/4buOmacNWSCfJQBi9pdpX3d9elMMGviQYyIR0CvG/GTuw/cSsxwAXTQuc7YdUg2OAb3DHXfyNOYjJPTfcUs4jrAoY3768eyXA+0ipsRZm6mroOn6XkDiZU3iOXcs98325AaaVsVFNPfWkI031/ymPpG/jlxF6uEk/QJShM92bQ/UagbUKuY0afCLdQpyRbf/4TBAe5R8sN2IZhE5O5MgKlKXUCexGY82czu/UCQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(136003)(346002)(376002)(396003)(451199015)(186003)(26005)(6512007)(82960400001)(82950400001)(6486002)(86362001)(52116002)(478600001)(2906002)(5660300002)(4326008)(8676002)(38350700002)(66556008)(66476007)(316002)(7406005)(38100700002)(10290500003)(41300700001)(921005)(36756003)(66946007)(7416002)(2616005)(8936002)(6506007)(6666004)(107886003)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: LQOQgocwf1XVaSPUTxKvESH4cZeWMXhFCWV1iAgKQNMqCJPh0MBKJXi53taucGpJ5lyblNpDkCabXI6pXpM5Oit3OfUCrMXBmBdB8a0IflkPm3oMMp/ADGjj1YW4s23H654p5aLY124rQT41CNyCYsy+AhpQcdkWZIjlaWqCvaO95rIZ0xI7UhwIqL0NFdSapZcKgzt6gLUY+kyEjw5mdbPLxzuY1ueoFhHK7DvP8b+8dVgPsXkWqvUWJl+et/Rv/ZEtQSvQTTQqZeA4FkMh7ndMxZAt5lZQornhpHq6YGryaP5q+uXRwBYNll647tSawv5CdAN9Ptdyw+bxVFPvUkoxOtuH4sVfG/zdbIJpKXTGUVdwP96fRiVS8NcCRlXZ7LNxgBt3wOPCvQgnAnZGMm5fLxkrVwRIEzNPRIxQxPRuKffvDjQM0mFQ8dLZbf8YyKZCxzWM4urpTFKL8XTv9cVhB5p3JO+2mfkLcdNuYNmxLfTivCsoJksQ9SORgDHAuYkSjXEHgPJUF9kSAtNLSMYlVAA3TKWIyfi6iTFNtk0HmQYItIDApTIMMjuemI2Im8d/9n6NNPjRIJ7Mm0B5R3/F+clFE3+PJQVuCUMiOIp+lw6++c/sT6ceZM2wgSyC4HwkbnfyUc7mKSy5TNwh6hV/pfr7eHwFTUmB7YxvETmgHhbN1oAitQ7Hu4Si9fCZ3Xbu+LJqGyHkZFY2Rd8kF42mb850luGOi4nIdtRurPmuWXFhJ3P+g0K/q62aU+XjN8LaTi2jPNZ9+2yFRTxNHw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(136003)(346002)(376002)(396003)(451199015)(186003)(26005)(6512007)(82960400001)(82950400001)(6486002)(86362001)(52116002)(478600001)(2906002)(5660300002)(4326008)(8676002)(38350700002)(66556008)(66476007)(316002)(7406005)(38100700002)(10290500003)(41300700001)(921005)(36756003)(66946007)(7416002)(2616005)(66899015)(8936002)(6506007)(6666004)(107886003)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z9DvJmHw5Lp8gCuGcH7PIUbadftp6PVFf83fnsUaN2FlpqNMM+g3BAJGcrZc?=
- =?us-ascii?Q?MEw1m4P3ub5I1Ljcff96U9KO1iuQjd4VchlKSOtZ3k3W2QmkXb1dfTpM4OZS?=
- =?us-ascii?Q?TZ4qaUiikiduX95oxBEK7QHGPda5NxmW0JiIu85aT1t6Q5Yi7+g5/I4rvrZ+?=
- =?us-ascii?Q?J1LP3oAJvg6YLSYKnBeutWITnEy381dJv15VutJcfo1VI3mELIGwxumx6j7Y?=
- =?us-ascii?Q?tOjVO8bPMm6gQ7TJydAG4xx45xJ1CwykouOs4gLvcNwABuT1vlhSy4uVS6tb?=
- =?us-ascii?Q?pAc8QBj7MaxjvGt15ioNdc4uTGktdgZFiH77rZ/dCrEM8trE8F4ttHBl96wQ?=
- =?us-ascii?Q?2TodNNivFgsHu+4YOrxbINeI332KOBEM+p2ntLWwDpzStAwxG8UoDRadGeSv?=
- =?us-ascii?Q?/7rCsKNCH2PLWoY0g2APOunRZvn8fiCgeyvmtVPBK8YaEaMTHFlS7SYye8UL?=
- =?us-ascii?Q?VL8BNI6xTcGbfzMKe6fj+Xpeay3qG9XsLT6GEgTgE3SduuRW8kqvwTpcDpl3?=
- =?us-ascii?Q?RdAasuHO3+CFKpCT8QTww7yjtSpZCvSJ39LruDjK9MMC2Y2DM9a2Qw5wpjQb?=
- =?us-ascii?Q?6YRo34prwa0XjCNSJ4Yt7Mkr5Q7Ki0GxYSXkiaICasnNIlQMAnFJXRTdj5fk?=
- =?us-ascii?Q?SOk0pILp9oUIzQoimaf2Dn8Y57Kwp0OGEFs851bNMzau3AHXwS52DT0OCDDz?=
- =?us-ascii?Q?fHTAtfc1+tr4HVZGa8xWfH8hSp7oy+E3FmFEcaU7tq5yohqccNXkMRQjJdhu?=
- =?us-ascii?Q?qPVh9cQrM/6o3vfKCLMhygGo1sKzDjUT4U8wzvXhPmagbd/nPU4FFDZFAmeT?=
- =?us-ascii?Q?vbztTn2pQeJ40etAQfTLdywlyx42GnkzFW5y2VPGSbgJt7TiUDn6Co6130th?=
- =?us-ascii?Q?xnfyBNbtod2vX2FaLjKjwd2QmkZxXT1c7/cwNwiiUmKryzXXmooSbJEsTqs2?=
- =?us-ascii?Q?RwtLpzKieMvj3p8RXzqSEgtY/Nkf1EZO/qOmwFB6oMOJPRPnAfiB8Sd9Ls0d?=
- =?us-ascii?Q?1aokX2BEydd1/8fXkzM62V8hO/gWeQYlmGJtJG6Yie1sOfdJ8HfMRa5eKtfK?=
- =?us-ascii?Q?HYSqaVVi84/A9YzWwru8TZdA7OSX4W59UWJktm2j+DBaFwQR+obIA1JKHvr8?=
- =?us-ascii?Q?hMv3NahLBi/MiVU+JEGW8QIX1USPBqmqLgxXQ6h3pxXfr/IEbhwJzLQUvl9a?=
- =?us-ascii?Q?nMpJs+2PGncNHpwJ5Jov5Eg5BuaaibOIn4061i2O3zZtfu7MERytnTWsfXe7?=
- =?us-ascii?Q?Q5AZB54FdIVz2cSFSdGwkaxoXPUwYg+DbEgtu4zXtPD0s81k6e0jnpOp24E8?=
- =?us-ascii?Q?VReyQYsZA5XIrQkXyW5ATF9F3LuZO4Z/7Hm/Gn5el8saFMmdFj+p523bIzXr?=
- =?us-ascii?Q?9NgcOT1q47hqR0GqUqPbLqgZo0RFZyz1gDuWlu+FnLMHxxXajw7A26OJ7c24?=
- =?us-ascii?Q?iSeD1+eH6ncYhI21EKE5XE8U4eW1WQzZf+YlYpAgSZfS886ajDdUsroFC0cC?=
- =?us-ascii?Q?zvb0j25HO6MaHAm5xiR38Rf+0YGWEv7YP/wWQP48/HL+MDhBHZ9nLdgWXfzn?=
- =?us-ascii?Q?oR5FTLPRPCLgXQPJEJOYWzzRVPw75cr37zhO10Gu?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4EeAElfzrssHOARVqJ96ZUUUTyVWHsSXPfTKG5Peag2AxFtJqRHUAIMFqLXX?=
+ =?us-ascii?Q?9zR935l8pHrfQgGOUKW/GXLyEzsLA4zl+i2uoOaR1+xSTMyod8a0tFF4J573?=
+ =?us-ascii?Q?+/X2C6lJELgrMtMgHqPbhPNAsL0zq40KjGhgG5eqmgel0krgicpIC7rr46Sb?=
+ =?us-ascii?Q?SB8b5a9x2uys0gDB7Gfc2altNkZ+IN/offvnS5iGtsMte9oXXxEHMCbJFioE?=
+ =?us-ascii?Q?UZ9IYc3AOgTi1yXzQ99oR8729wsu/3F6Psh8A8XCuIDWSp4j9AF4hXECIakG?=
+ =?us-ascii?Q?tHXk8pHWxKho6rEb1gZ+5YddJ+0aWIvAtYIyI3EkVmRUxp1K/M778zcYg0O4?=
+ =?us-ascii?Q?3HhzAAUuUQhNtdmXhzYHJewdyNkBR970xt9eBEgkMNVYgOom+na449Ny1ACu?=
+ =?us-ascii?Q?u5Ex14ItjqSPiGiq7s4cI+sr185+Sif0dY9GmA48sJter84h+2jS2aRtZsh4?=
+ =?us-ascii?Q?M+b49Ontj4CSblGIRz2XTxxoq4EV2Z9idI/BPXPvh7YrowkTVkzhQIrN84Sy?=
+ =?us-ascii?Q?x8/5frtPA3DJnNIcXdNILw8+Ptz5PpcPapAATJoE2XPP3fMqb8JEf/7/yW3i?=
+ =?us-ascii?Q?wg4qgj5pqhFKjhPy2ZjLnuBMgiuGQAWCm2gbFMHA3jHkwNcELWdhrGA+0puI?=
+ =?us-ascii?Q?nuABHLyIuSWBVyWcCfXQfK9ZksxhJGkQ670ZgSOp7G312dLRU87vxUpJPh+Q?=
+ =?us-ascii?Q?y9NyLWBMJyUqbPGN0Xy0vG7YZc1DFxrMeNce3RxV8LfsEWL3vqCej1Z+Z/Vv?=
+ =?us-ascii?Q?QSOSytzBmcAC/Tf1n8psCClDt0IqMbZDVM3YXDQj7TZAGlqD1vrolSOmu7mP?=
+ =?us-ascii?Q?Z6Mnfvn6cTaM4afLXI8wpKtN+Me0lS36uW0Y0jNvjwwTihNm7dv/qnAnTq2d?=
+ =?us-ascii?Q?k0063UJLuahpKaCqBgCsnm0pVL4ZjrLZhbOi+6QpNID5z8yuLkCYN2T0QSsz?=
+ =?us-ascii?Q?KSMobDR5iC718JOyOeodIHRsgOaZ7IE+XuuymhQbncBY2GeF0zRXG7Q5EhJM?=
+ =?us-ascii?Q?TdBJmLeUz0ddiqxF990mBTEWHQlwUGWMPxw6IC/ihhujHN6vUGiS4G/o/WcY?=
+ =?us-ascii?Q?nX8ylZ6WZYLz3HQN2ibXLJCS3+S8RtccaUddfpR4E2A8V3epOraIyzjD9HQw?=
+ =?us-ascii?Q?BrfgLEj1+bqy16CSpfbUG5S+i6Qg0uOPePjJXc5Dho8jFWJERUSwEY1KTDWv?=
+ =?us-ascii?Q?CB+x+MeVCbRSCutyRN90cb0Oa8J2AZ/FxcwV8c2T7NGViwAujp6lkJFCajbv?=
+ =?us-ascii?Q?SEh0rOn6g+8xpT2U47d7mtN8MEXH0qAA5B3r84t2AIcoZWddBhNVQ8N7gVzI?=
+ =?us-ascii?Q?m1EzEEJg6cW5Mkomk+SKuFWBIdAC1ksSeFew81j88vjuU/po9v5+s55wfu/B?=
+ =?us-ascii?Q?rdHsIFISkIGX5jeSbvNaLLhybrBglgpSgwLoxm4w1Zw47Q5tstdxeB0ZMH6i?=
+ =?us-ascii?Q?2rHiejlDBxXpXYQnflDuTGwYKRXv2NyCCt848C8rhJVfm16MuD9Y4D/1zEMG?=
+ =?us-ascii?Q?d8EqQvulToPru41VvKqWukUNxKN5g+nuqhTSQVn7MddTvfxB3rYeaTIiOyX/?=
+ =?us-ascii?Q?NUR1ep/sJAGntWxeMlcuvSeVKIVTSMzth4EYNGkQ?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2946810-864f-4db1-03fa-08daf4e5fdb0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06e037a5-3427-4573-1658-08daf4e5fef4
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 21:43:06.8611
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 21:43:09.0006
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MbkltPDjB9OC3jb9+Ko8lDIpv7j3P4ODfpRbDSPelO0S+W+IRDE/K+eVjTz8IdqXQyxVEhlID7nhwpg6MMZb3g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: gxjgmQqaSS/UXLfI6SBTxRsLQqm0qxOGvVyeR3MEFs14y7NEW/IBWHSJjGQ8PTQp4ZSEICEQNH0B3Ubio0LY7Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1953
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -127,60 +127,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Full Hyper-V initialization, including support for hypercalls, is done
-as an apic_post_init callback via late_time_init().  mem_encrypt_init()
-needs to make hypercalls when it marks swiotlb memory as decrypted.
-But mem_encrypt_init() is currently called a few lines before
-late_time_init(), so the hypercalls don't work.
+In a AMD SEV-SNP VM using vTOM, devices in MMIO space may be provided by
+the paravisor and need to be mapped as encrypted.  Provide a function
+for the hypervisor to specify the address range for such devices.
+In __ioremap_caller(), map addresses in this range as encrypted.
 
-Fix this by moving mem_encrypt_init() after late_time_init() and
-related clock initializations. The intervening initializations don't
-do any I/O that requires the swiotlb, so moving mem_encrypt_init()
-slightly later has no impact.
+Only a single range is supported. If multiple devices need to be
+mapped encrypted, the paravisor must place them within the single
+contiguous range.
 
 Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
 ---
- init/main.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/io.h |  2 ++
+ arch/x86/mm/ioremap.c     | 27 ++++++++++++++++++++++++++-
+ 2 files changed, 28 insertions(+), 1 deletion(-)
 
-diff --git a/init/main.c b/init/main.c
-index e1c3911..5a7c466 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1088,14 +1088,6 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	 */
- 	locking_selftest();
+diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+index e902564..72eb366 100644
+--- a/arch/x86/include/asm/io.h
++++ b/arch/x86/include/asm/io.h
+@@ -169,6 +169,8 @@ static inline unsigned int isa_virt_to_bus(volatile void *address)
+ }
+ #define isa_bus_to_virt		phys_to_virt
  
--	/*
--	 * This needs to be called before any devices perform DMA
--	 * operations that might use the SWIOTLB bounce buffers. It will
--	 * mark the bounce buffers as decrypted so that their usage will
--	 * not cause "plain-text" data to be decrypted when accessed.
--	 */
--	mem_encrypt_init();
--
- #ifdef CONFIG_BLK_DEV_INITRD
- 	if (initrd_start && !initrd_below_start_ok &&
- 	    page_to_pfn(virt_to_page((void *)initrd_start)) < min_low_pfn) {
-@@ -1112,6 +1104,17 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 		late_time_init();
- 	sched_clock_init();
- 	calibrate_delay();
++extern void ioremap_set_encrypted_range(resource_size_t addr, unsigned long size);
 +
+ /*
+  * The default ioremap() behavior is non-cached; if you need something
+  * else, you probably want one of the following.
+diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+index 6453fba..8db5846 100644
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -37,6 +37,10 @@ struct ioremap_desc {
+ 	unsigned int flags;
+ };
+ 
++/* Range of "other" addresses to treat as encrypted when remapping */
++resource_size_t other_encrypted_start;
++resource_size_t other_encrypted_end;
++
+ /*
+  * Fix up the linear direct mapping of the kernel to avoid cache attribute
+  * conflicts.
+@@ -108,14 +112,35 @@ static unsigned int __ioremap_check_encrypted(struct resource *res)
+ }
+ 
+ /*
++ * Allow a hypervisor to specify an additional range of addresses to
++ * treat as encrypted when remapping.
++ */
++void ioremap_set_encrypted_range(resource_size_t addr, unsigned long size)
++{
++	other_encrypted_start = addr;
++	other_encrypted_end = addr + size - 1;
++}
++
++/*
+  * The EFI runtime services data area is not covered by walk_mem_res(), but must
+- * be mapped encrypted when SEV is active.
++ * be mapped encrypted when SEV is active. Also check the hypervisor specified
++ * "other" address range to treat as encrypted.
+  */
+ static void __ioremap_check_other(resource_size_t addr, struct ioremap_desc *desc)
+ {
+ 	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+ 		return;
+ 
 +	/*
-+	 * This needs to be called before any devices perform DMA
-+	 * operations that might use the SWIOTLB bounce buffers. It will
-+	 * mark the bounce buffers as decrypted so that their usage will
-+	 * not cause "plain-text" data to be decrypted when accessed. It
-+	 * must be called after late_time_init() so that Hyper-V x86/x64
-+	 * hypercalls work when the SWIOTLB bounce buffers are decrypted.
++	 * Check for an address within the "other" encrypted address range. If such
++	 * a range is set, it must include the entire space used by the device,
++	 * so we don't need to deal with a partial fit.
 +	 */
-+	mem_encrypt_init();
++	if ((addr >= other_encrypted_start) && (addr <= other_encrypted_end)) {
++		desc->flags |= IORES_MAP_ENCRYPTED;
++		return;
++	}
 +
- 	pid_idr_init();
- 	anon_vma_init();
- #ifdef CONFIG_X86
+ 	if (!IS_ENABLED(CONFIG_EFI))
+ 		return;
+ 
 -- 
 1.8.3.1
 
