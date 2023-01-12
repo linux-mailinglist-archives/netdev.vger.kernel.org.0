@@ -2,154 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00491666F0E
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 11:06:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AAC4666F4B
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 11:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239716AbjALKGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 05:06:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
+        id S231775AbjALKP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 05:15:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbjALKFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 05:05:11 -0500
-Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEE7186E0;
-        Thu, 12 Jan 2023 02:01:42 -0800 (PST)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
-        (authenticated bits=0)
-        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 30CA1Jc81795562
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Thu, 12 Jan 2023 10:01:20 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 30CA1EsE3816905
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Thu, 12 Jan 2023 11:01:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1673517674; bh=tOuAEvT9QbZA1yHsnnoh3aX1wkDxXxd0nH+tePPAzec=;
-        h=From:To:Cc:Subject:Date:Message-Id:References:From;
-        b=D4qUMaDiDGLhc9I4tmGuj8L3KNMLwXM4vwFWO4WpQtC3IkvvZ/qKcwb3dfys8pWhc
-         MrgVFDfmLtwIKmEv13erZtM8Oj816aelJL17cD9mOOC6M6fp0BYncMIqkJGEBmSzh6
-         +JjEW6ptBjbZKD7UNQtpvm26FEliRJsIAzbPiFnA=
-Received: (nullmailer pid 180761 invoked by uid 1000);
-        Thu, 12 Jan 2023 10:01:14 -0000
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andre Przywara <andre.przywara@arm.com>,
+        with ESMTP id S236952AbjALKNm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 05:13:42 -0500
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFCD33D69;
+        Thu, 12 Jan 2023 02:12:27 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 66E7F5C00FF;
+        Thu, 12 Jan 2023 05:12:24 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 12 Jan 2023 05:12:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1673518344; x=
+        1673604744; bh=vEhta7zMZrchbjHApsTWQNVEwRZyW+Qr5Tm1UgjUS68=; b=S
+        /cdkq7wd6o/lMcnkf0KzrxSckHt8rkcmgQ/7bjXsCCNu2wzJehxZZiYVCtdHlOux
+        b8BGjlNV8lLg/2uyWXuRnZoT1DkepLgH6K71+CKU6lg1tZNSnxD4swoPEHZNN0dW
+        AWbTNZfm0EQCBiQ3sMxRPxkx+bYZRbsh8Muf032sbyYjDFkGNMlF4aodoQOzOdGC
+        XM81nJSYZMXdYnbhI1s6J7sL1YITcmS/g3SE9aDJyaBFmDM4uWObODbvfYsmPnLk
+        Re3E8mJX6Z10tOILlkCVEj+IyuLnq7kp07LFmQkpg0VPboyCaDBHtdLgXdT3837g
+        W6Hwk/Ltc0TDiq6N4MoCg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1673518344; x=
+        1673604744; bh=vEhta7zMZrchbjHApsTWQNVEwRZyW+Qr5Tm1UgjUS68=; b=I
+        lC3zCD38qxnJMOfi/LxaGEZbv8L542ffFDUM/e/hNEwyFNW0lISQeSc9qwRCBT1X
+        xaiUIaWwaOcnRAPHg3xxKOtz8Olsm2MOfE06FjM23BrSMMgR+6X23pRs9rKVBIzS
+        hn8st4/DL+u3p5ZnXMLhxhtGWQi0vCmWrO5ryuHBs5VrwQQ+CmacoJeGkEedVZ1Z
+        IF2+xL9r6XSy6tAwdYMjhUuLCyJ65Oi/gd8xVoaxEjrRxDP6H89abA+bsk2InuIZ
+        oy/a9FgoySYSlT//wN4csVDM1kmFv6DogVuyNNHshafDzc8aISVUIUvKduDnBN6w
+        16S3Buj9r7iWu1tn4RuSA==
+X-ME-Sender: <xms:CN2_Y1Zf9ugX6PoAuPFmSkaJlDxDIRQ040dMQOPEOkxkbnZvy4HKXA>
+    <xme:CN2_Y8b3y0ms7Jaid71Nj8QidSSn-sHFLEajFBuxI4zxC0ABB64450gFBxC_8wwRF
+    9NP0qsgljWveA>
+X-ME-Received: <xmr:CN2_Y3-7XMJ9YFJ3z5Ha_hy9cCskGa-EWJjEbMBcTwwvg3ZRPLVExpWm2oI2YdwM2kkQJKlIbS9LzJHx7F6ONmvSaSNZFCjSRYL3Kg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrleeigdduvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepgeevve
+    etgfevjeffffevleeuhfejfeegueevfeetudejudefudetjedttdehueffnecuffhomhgr
+    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:CN2_Yzpb51HchpD8N9XvcI61SLVuaZ8Qa7m33SHXytDqGr3Bo-U13g>
+    <xmx:CN2_Ywq4M10qlLZrTtvWpJMNSgKS9iz0QjQ6D09m7Br1VC4YMaNGyA>
+    <xmx:CN2_Y5T0fPyfAy881qb2nX5PcWdBgRkJbM7OeGM41VQQYgqyqqfLew>
+    <xmx:CN2_Y-a98dfR5giMhqiLZaWDNahtmJAbtNAAyKA7L_C4J7cycKbH5Q>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 12 Jan 2023 05:12:23 -0500 (EST)
+Date:   Thu, 12 Jan 2023 11:12:21 +0100
+From:   Greg KH <greg@kroah.com>
+To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
         Paolo Abeni <pabeni@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH net-next] r8152; preserve device list format
-Date:   Thu, 12 Jan 2023 11:01:00 +0100
-Message-Id: <20230112100100.180708-1-bjorn@mork.no>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <87k01s6tkr.fsf@miraculix.mork.no>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] r8152; preserve device list format
+Message-ID: <Y7/dBXrI2QkiBFlW@kroah.com>
 References: <87k01s6tkr.fsf@miraculix.mork.no>
+ <20230112100100.180708-1-bjorn@mork.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.7 at canardo
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230112100100.180708-1-bjorn@mork.no>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a partial revert of commit ec51fbd1b8a2 ("r8152:
-add USB device driver for config selection")
+On Thu, Jan 12, 2023 at 11:01:00AM +0100, Bjørn Mork wrote:
+> This is a partial revert of commit ec51fbd1b8a2 ("r8152:
+> add USB device driver for config selection")
+> 
+> Keep a simplified version of the REALTEK_USB_DEVICE macro
+> to avoid unnecessary reformatting of the device list. This
+> makes new device ID additions apply cleanly across driver
+> versions.
+> 
+> Fixes: ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
+> Signed-off-by: Bjørn Mork <bjorn@mork.no>
+> ---
+> The patch in
+> https://lore.kernel.org/lkml/20230111133228.190801-1-andre.przywara@arm.com/
+> will apply cleanly on top of this.
+> 
+> This fix will also prevent a lot of stable backporting hassle.
 
-Keep a simplified version of the REALTEK_USB_DEVICE macro
-to avoid unnecessary reformatting of the device list. This
-makes new device ID additions apply cleanly across driver
-versions.
+No need for this, just backport the original change to older kernels and
+all will be fine.
 
-Fixes: ec51fbd1b8a2 ("r8152: add USB device driver for config selection")
-Signed-off-by: BjÃ¸rn Mork <bjorn@mork.no>
----
-The patch in
-https://lore.kernel.org/lkml/20230111133228.190801-1-andre.przywara@arm.com/
-will apply cleanly on top of this.
+Don't live with stuff you don't want to because of stable kernels,
+that's not how this whole process works at all :)
 
-This fix will also prevent a lot of stable backporting hassle.
+thanks,
 
-Sorry for not thinking the change completely through before
-submitting.  I should never have touched the rtl8152_table.
-
-
-BjÃ¸rn
-
- drivers/net/usb/r8152.c | 48 +++++++++++++++++++++--------------------
- 1 file changed, 25 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 66e70b5f8417..3d4631dae00f 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -9817,34 +9817,36 @@ static void rtl8152_disconnect(struct usb_interface *intf)
- 	}
- }
- 
-+#define REALTEK_USB_DEVICE(vend, prod)	{ USB_DEVICE(vend, prod) }
-+
- /* table of devices that work with this driver */
- static const struct usb_device_id rtl8152_table[] = {
- 	/* Realtek */
--	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8050) },
--	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8053) },
--	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8152) },
--	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8153) },
--	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8155) },
--	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x8156) },
-+	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8050),
-+	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8053),
-+	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8152),
-+	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8153),
-+	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8155),
-+	REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8156),
- 
- 	/* Microsoft */
--	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab) },
--	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6) },
--	{ USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927) },
--	{ USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x304f) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3054) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3062) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3069) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x3082) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x7205) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x720c) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x7214) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0x721e) },
--	{ USB_DEVICE(VENDOR_ID_LENOVO,  0xa387) },
--	{ USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041) },
--	{ USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff) },
--	{ USB_DEVICE(VENDOR_ID_TPLINK,  0x0601) },
-+	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab),
-+	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6),
-+	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927),
-+	REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3054),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3082),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x721e),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041),
-+	REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff),
-+	REALTEK_USB_DEVICE(VENDOR_ID_TPLINK,  0x0601),
- 	{}
- };
- 
--- 
-2.30.2
-
+greg k-h
