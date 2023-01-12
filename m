@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D1866743A
-	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 15:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 867436674F5
+	for <lists+netdev@lfdr.de>; Thu, 12 Jan 2023 15:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234004AbjALOEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 09:04:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
+        id S235724AbjALOQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 09:16:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234697AbjALODn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 09:03:43 -0500
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB2D532AC;
-        Thu, 12 Jan 2023 06:03:39 -0800 (PST)
-Received: by mail-wm1-f44.google.com with SMTP id m8-20020a05600c3b0800b003d96f801c48so16636083wms.0;
-        Thu, 12 Jan 2023 06:03:39 -0800 (PST)
+        with ESMTP id S234805AbjALOPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 09:15:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417E854D8A
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 06:06:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673532416;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bc4MH9gSH4A9sVuPt5vzeujHazYmopcQscWwIhT/mu4=;
+        b=E1DUPWISYW7GBbmbZd0IQq3EkEVWuO0JoxDiIpaRT3bQrckI8Pzc7ymJQQVOmQkF53EJ1a
+        wvVPjyoccm19290VxBrwl7YKk8XwEOGRrFUfmEqpWTWCZMgim7TU43/xQld4x/cliW/6rj
+        ZAWBog0KoY+DaTki9Cdl2QZxovv5iuY=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-623-gAtp7NTSMEKOh1PsXjP7Iw-1; Thu, 12 Jan 2023 09:06:55 -0500
+X-MC-Unique: gAtp7NTSMEKOh1PsXjP7Iw-1
+Received: by mail-wr1-f69.google.com with SMTP id o5-20020adfba05000000b0029064ccbe46so3471427wrg.9
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 06:06:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=i3Z/l312HDGa8/vxCVX5Bvnphzfpdnx1DzW2sgn2w3w=;
-        b=v80kbZiV7gUQK3JkihkyW0n0zmacdGefviOzKmistHUr6t5Su7EgMGMeg1BW9nJo7n
-         FZiosCHJETey/iPopc58wHbqBYezWpJELXgAqbHpk80faXsXqxJmR8iQCp0P/mE1D3VB
-         sRsXRIhjziR1ItYxAj5fYIkLZMQwu3nAvei1tVXXrm7w34DqLRpFBRD9u4IsvqfF16yr
-         P+l0MUO8NR+5qO9PcGBFYyKvYs449ZVd5VHpDOT3SZx83uw4RMjvoLQSIVgT+9GVGq1C
-         /HGDAi1kNtAw+JWayk2Qd/44RBexkoK0duELVRiHISLfrvZ+XJmCSxBWj8z5uZcNXfTE
-         zLSg==
-X-Gm-Message-State: AFqh2ko85HwjjU8mAXNHbdbB9HCM7hH50UnMQMFJdiW5j2V1ujoG8kQw
-        7pIsQ2avsfX4HUGF480zwx4=
-X-Google-Smtp-Source: AMrXdXvSq19ZKhD7XOusPuFTaVJTAHVinLgrUB+UQu5hH5s7XUOSBwHw7yRRNmdQxULBGKzHgvC0tw==
-X-Received: by 2002:a05:600c:3509:b0:3c6:e60f:3f6f with SMTP id h9-20020a05600c350900b003c6e60f3f6fmr54630895wmq.38.1673532218180;
-        Thu, 12 Jan 2023 06:03:38 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id y6-20020a1c4b06000000b003da119d7251sm2673448wma.21.2023.01.12.06.03.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 06:03:37 -0800 (PST)
-Date:   Thu, 12 Jan 2023 14:03:35 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Michael Kelley <mikelley@microsoft.com>, wei.liu@kernel.org,
-        hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-        decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
-        kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
-        hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-        mingo@redhat.com, dave.hansen@linux.intel.com,
-        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        isaku.yamahata@intel.com, dan.j.williams@intel.com,
-        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-        iommu@lists.linux.dev
-Subject: Re: [Patch v4 00/13] Add PCI pass-thru support to Hyper-V
- Confidential VMs
-Message-ID: <Y8ATN9mPCx6P4vB6@liuwe-devbox-debian-v2>
-References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <Y7xhLCgCq0MOsqxH@zn.tnic>
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bc4MH9gSH4A9sVuPt5vzeujHazYmopcQscWwIhT/mu4=;
+        b=WPLO4rJcHjz9A7Ugctj4J0TLtCnHHhU/D9+8aOLbFEJr8Rtyy0/+YwVxV7ys3k+lUd
+         /VVuifIhcvO8O6kxkHKJ3r+9XomR8TOQu8Z+RW7Omrwu19uCbp9do96MHRBhlSYyhDk9
+         DXdwl5SgvjvDtP1kqEulJfSk/WEvEngEqXzGRzrVDinhpW0M+XWWcLi4fOM/QQ+S9Jwk
+         G3n+X2iTEgkojy7SIdXdytrh2ImO+VCZfDAoEgXCE0FdjeSN6GkQzNbZrvqrF0uY3c5y
+         ZuZWuWiokSvb12y8gcg/A9WHfwyfasS7JFbvRwVB/kNTBgzi0pnFStZNUrxrfyKk/1mT
+         RaJA==
+X-Gm-Message-State: AFqh2kpVTmPeT+/dEP2Y+RAs+b3M/Ed0gKyq3YfqLCw85a6gHgTRJ1QM
+        AIDknrAwUvB1XLtTmjAJFB9D6v/bRuYPjlP3Rwaqflrx6HXz4UlCKx0DNw4ZDAMK+wNevdhLEVn
+        3iESeI+nwoSGDV3s=
+X-Received: by 2002:a05:600c:35cc:b0:3d3:3c93:af34 with SMTP id r12-20020a05600c35cc00b003d33c93af34mr66344770wmq.2.1673532413405;
+        Thu, 12 Jan 2023 06:06:53 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXuEt8zNgUQNpMiLc+g3OtEPMR6NYsI6mMq8SlYl+k0EuA0s5e4dBt3/qHK52Cq2Cxf5pfhIpg==
+X-Received: by 2002:a05:600c:35cc:b0:3d3:3c93:af34 with SMTP id r12-20020a05600c35cc00b003d33c93af34mr66344746wmq.2.1673532413104;
+        Thu, 12 Jan 2023 06:06:53 -0800 (PST)
+Received: from [192.168.122.188] (hellmouth.gulag.org.uk. [85.158.153.62])
+        by smtp.gmail.com with ESMTPSA id j6-20020a05600c42c600b003b492753826sm20486502wme.43.2023.01.12.06.06.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Jan 2023 06:06:52 -0800 (PST)
+From:   Jeremy Harris <jeharris@redhat.com>
+X-Google-Original-From: Jeremy Harris <jgh@redhat.com>
+Message-ID: <2ff79a56-bf32-731b-a6ab-94654b8a3b31@redhat.com>
+Date:   Thu, 12 Jan 2023 14:06:50 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7xhLCgCq0MOsqxH@zn.tnic>
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [RFC PATCH net-next 0/7] NIC driver Rx ring ECN
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <20230111143427.1127174-1-jgh@redhat.com>
+ <20230111104618.74022e83@kernel.org>
+Content-Language: en-GB
+In-Reply-To: <20230111104618.74022e83@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 07:47:08PM +0100, Borislav Petkov wrote:
-> On Thu, Dec 01, 2022 at 07:30:18PM -0800, Michael Kelley wrote:
-> > This patch series adds support for PCI pass-thru devices to Hyper-V
-> > Confidential VMs (also called "Isolation VMs"). But in preparation, it
-> > first changes how private (encrypted) vs. shared (decrypted) memory is
-> > handled in Hyper-V SEV-SNP guest VMs. The new approach builds on the
-> > confidential computing (coco) mechanisms introduced in the 5.19 kernel
-> > for TDX support and significantly reduces the amount of Hyper-V specific
-> > code. Furthermore, with this new approach a proposed RFC patch set for
-> > generic DMA layer functionality[1] is no longer necessary.
-> 
-> In any case, this is starting to get ready - how do we merge this?
-> 
-> I apply the x86 bits and give Wei an immutable branch to add the rest of the
-> HyperV stuff ontop?
+On 11/01/2023 18:46, Jakub Kicinski wrote:
+> Do you have any reason to believe that it actually helps anything?
 
-I can take all the patches if that's easier for you. I don't think
-anyone else is depending on the x86 patches in this series.
+I've not measured actual drop-rates, no.
 
-Giving me an immutable branch works too.
+> NAPI with typical budget of 64 is easily exhausted (you just need
+> two TSO frames arriving at once with 1500 MTU).
 
-Thanks,
-Wei.
+I see typical systems with 300, not 64 - but it's a valid point.
+It's not the right measurement to try to control.
+Perhaps I should work harder to locate the ring size within
+the bnx2 and bnx2x drivers.
 
+If I managed that (it being already the case for the xgene example)
+would your opinions change?
+
+> Host level congestion is better detected using time / latency signals.
+> Timestamp the packet at the NIC and compare the Rx time to current time
+> when processing by the driver.
 > 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
+> Google search "Google Swift congestion control".
+
+Nice, but
+- requires we wait for timestamping-NICs
+- does not address Rx drops due to Rx ring-buffer overflow
+
+-- 
+Cheers,
+   Jeremy
+
