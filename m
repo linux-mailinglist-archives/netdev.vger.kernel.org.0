@@ -2,79 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0AF6698A5
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6B266698C4
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:38:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241314AbjAMNes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 08:34:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
+        id S241770AbjAMNic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 08:38:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241563AbjAMNdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:33:51 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6F86087A;
-        Fri, 13 Jan 2023 05:27:04 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id v10so29956722edi.8;
-        Fri, 13 Jan 2023 05:27:04 -0800 (PST)
+        with ESMTP id S241702AbjAMNiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:38:06 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F87B3E0E0
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 05:32:13 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-4c15c4fc8ccso284384407b3.4
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 05:32:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LcdSKrbHecxVl2sx8d298kE2LQz+kg4JRhbTRziN4YE=;
-        b=SPKHnH0Z7GNksZOapygKhxeLEZp0s/6Ob/2ihugvaz0eaNIP96o7pQyHDWCqGPelt0
-         47uTTj84/XoAW38OPeTZOFFaINRWY20zqtpww83IUqIG69+a8hDOzpsp1bQTT5Veodk6
-         CZVWnzm6c4WK/fbfEJ5PqTYfP+l1R7RwBerhNpbEQ+dI7XIVOakOj27iQl2jSDt57d3U
-         Afh+aAnqtlg/BWlZ3h9JruBajcYlOk8l9fBGMhsH/zH5qrLuSC4+9y+EANeu6KDf0ntT
-         RalOFjmNGnUUbny3K3ZEv0XX8VH3XcHdXoAC4DDDvhlE0lPStsz3Ydn1zXp2xAi6oS0B
-         aESg==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=No+5RPSlt/2AA9DS36alYfiIviplsrD4U7z1/DjK3kw=;
+        b=VJodeieRVB3/PNGRPY0aEuQS+oK4CIr7AMdUy5heO7OE7pVFTK1A164V81193yuMKY
+         o0oUSJN0YXwRO9v+Ezx7Gqn/ryTWa//kwbqXH3tngvFiYZGyvgx8YIiykr/aNB1DW48e
+         N0GbzuKPFr92tZyDVjjUmcOMVYyyySKxOlloYTGTinRJW/jHY6W1Ks5OY2dsvq2+RNlC
+         zByCYr+/SoxFMEY29qhMwONLMsOUIXHsGRC0yYIZO6xlP9PwBZYL/QzSCItRcijl/ECw
+         d67/fCqKvUg15ic9ZBUdQDMG1O2qlcwbgzC0LiRIPvIv+3nnIOosPA/oyQqI12S6iRlD
+         98PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LcdSKrbHecxVl2sx8d298kE2LQz+kg4JRhbTRziN4YE=;
-        b=NMDqqkMrFMdo4c2R+XYPHMbQ78l6tCrQ/UE226uaeye2ZuZRPxCnXUJ6+m2K6Kg3u2
-         BbQRIafMjxrtMHUl4Q9crZ7cI0a0B/vzvrJNhpQnawoYZfzgwLQQXxeRM4A7RvmGrk9A
-         O0RS3YsNMV9JPRe3nQPcQ3ASA4J58FlUA0bq8kOWffakYTCXcGATxYGNqJTfUoM4cnia
-         pI+s6qxC1nf1NTbAcO+9ZNaAi+lwOKdNNNyl74v9aKBbW4pS8/SfCxTh9vFFzCLvSvCi
-         EGtzevuzwr5z5jn1GnB610Yh5pEwsi4V/vTPPQ7vhusTTgJLpAgTdf5oqYLuJWTC92Ur
-         QSJA==
-X-Gm-Message-State: AFqh2kpCCciG9yDe7kZUt2YjT8ikmOF4LclMfZpowLxsrVADFEnaQ2Cd
-        Hnv82yTWedoZf+JfQPc9sGI=
-X-Google-Smtp-Source: AMrXdXtGDIxyQG8nzLJy07aBvT8JPW8rrV0yCRZVOxkXaiujZ7px5ZR6Roz+YVT2fntQ/PDWeGW4KA==
-X-Received: by 2002:aa7:c597:0:b0:499:b53f:1c56 with SMTP id g23-20020aa7c597000000b00499b53f1c56mr15504765edq.38.1673616422673;
-        Fri, 13 Jan 2023 05:27:02 -0800 (PST)
-Received: from gvm01 (net-5-89-66-224.cust.vodafonedsl.it. [5.89.66.224])
-        by smtp.gmail.com with ESMTPSA id eg49-20020a05640228b100b00488117821ffsm8265377edb.31.2023.01.13.05.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 05:27:02 -0800 (PST)
-Date:   Fri, 13 Jan 2023 14:26:58 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=No+5RPSlt/2AA9DS36alYfiIviplsrD4U7z1/DjK3kw=;
+        b=GHolyml4aoFYQNsHshcsCNaqVEC29HwmX09elQ7LsgwmX+2aENY63BoOVw7oe9VA57
+         IAWwcDc+g1hhgBcZg1+vZqa9muYokNKP9nCqtL9Nahj/O1vbQN8pDPbT7q7f2zq1WudN
+         794FkQLZzAHPm1ayNSp0MNi69DbUfiVOlzvwLBmv3GqOnGOWUBfqip6riUPZtiv7Ihs1
+         43+Sbqv2pXZFd3cKke9qJRNPp9/RiPYm8zIjTis/iMp5zy6oJgz2GQ7ci7DdDVPXErKL
+         vNAznd/Z2fZjHVWbpD+q0vCKkKBLnZNd/aLzwanP53FKTcmh47x+7tfVQKBObOlRaZyU
+         c9uA==
+X-Gm-Message-State: AFqh2ko4DVSAJiotOijjM7KaYxbMphtF6Z0PmXvCriNcSZSmmoNBPUnK
+        n3wta7z8CmHb8TvzAr4Lt9Wu5QjRUo4FvIuch9bowQ==
+X-Google-Smtp-Source: AMrXdXuSKQsOMei1jTS5XnCajfRHRM/lBu1DeqBAVORpif81/tgq+9lb2f2D2pRAJV8vNH24eG1wgdez+fAcuOgg8ic=
+X-Received: by 2002:a81:6d85:0:b0:3f2:e8b7:a6ec with SMTP id
+ i127-20020a816d85000000b003f2e8b7a6ecmr2828684ywc.332.1673616732259; Fri, 13
+ Jan 2023 05:32:12 -0800 (PST)
+MIME-Version: 1.0
+References: <f2277af8951a51cfee2fb905af8d7a812b7beaf4.1673616357.git.piergiorgio.beruto@gmail.com>
+In-Reply-To: <f2277af8951a51cfee2fb905af8d7a812b7beaf4.1673616357.git.piergiorgio.beruto@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 13 Jan 2023 14:32:01 +0100
+Message-ID: <CANn89iJajiWoi4qv6=VvcrgBFhRHFbc7Dy7Mbic+j=gBsWgt3g@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 1/1] plca.c: fix obvious mistake in checking retval
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
         mailhol.vincent@wanadoo.fr, sudheer.mogilappagari@intel.com,
         sbhatta@marvell.com, linux-doc@vger.kernel.org,
         wangjie125@huawei.com, corbet@lwn.net, lkp@intel.com,
-        gal@nvidia.com, gustavoars@kernel.org
-Subject: Re: [PATCH v2 net-next 1/1] plca.c: fix obvious mistake in checking
- retval
-Message-ID: <Y8FcImfvUAVa4NoB@gvm01>
-References: <df38c69a85bf528f3e6e672f00be4dc9cdd6298e.1673538908.git.piergiorgio.beruto@gmail.com>
- <Y8EU9bCLj6UOz7g8@debian.me>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y8EU9bCLj6UOz7g8@debian.me>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        gal@nvidia.com, gustavoars@kernel.org, bagasdotme@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,20 +76,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 03:23:17PM +0700, Bagas Sanjaya wrote:
-> On Thu, Jan 12, 2023 at 04:56:11PM +0100, Piergiorgio Beruto wrote:
-> > This patch addresses a wrong fix that was done during the review
-> > process. The intention was to substitute "if(ret < 0)" with
-> > "if(ret)". Unfortunately, in this specific file the intended fix did not
-> > meet the code. After additional review, it seems like if(ret < 0) was
-> > actually the right thing to do. So this patch reverts those changes.
-> 
-> Try to reword the patch description without writing "This patch does foo"
-> (prefer imperative mood over descriptive one).
-> 
-> Thanks.
-> 
-> -- 
-> An old man doll... just what I always wanted! - Clara
-Fixed. Thanks.
+On Fri, Jan 13, 2023 at 2:26 PM Piergiorgio Beruto
+<piergiorgio.beruto@gmail.com> wrote:
+>
+> Revert a wrong fix that was done during the review process. The
+> intention was to substitute "if(ret < 0)" with "if(ret)".
+> Unfortunately, the intended fix did not meet the code.
+> Besides, after additional review, it was decided that "if(ret < 0)"
+> was actually the right thing to do.
+>
+> Fixes: 8580e16c28f3 ("net/ethtool: add netlink interface for the PLCA RS")
+> Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+Reviewed-by: Eric Dumazet <edumazet@google.com>
