@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07B89668A5E
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 04:47:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D5C668A5F
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 04:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233966AbjAMDq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 22:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56824 "EHLO
+        id S233836AbjAMDrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 22:47:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbjAMDqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 22:46:50 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F2812D3C
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:46:49 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id m7-20020a17090a730700b00225ebb9cd01so25709955pjk.3
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:46:49 -0800 (PST)
+        with ESMTP id S233786AbjAMDq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 22:46:56 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5239F5BA3E
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:46:53 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id v23so17300427plo.1
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 19:46:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6PUZsgimpsJsXrpUtcdF1Z0n4ZOe69d6YX+6ZJE1e3g=;
-        b=pDcNdI5PsMCbQsbXR8Mx5MYzVY7T6BA+wLPIqu3YVsS/+ugJzdoR5m/LYFawwcx597
-         0ZcVxiHHAR+zr4KjuKIjqKKg0vMgYyTxM/4ribLq5G1hXJXMu/fE18s7eZJbUoL4Cb2h
-         /k9uTj5Qj42USHWtdXJTwiIiWMN6mpHCmI8SN7pJlTX5pNWZg9+jAjj8ij8bLWbQaHV6
-         ww0mVB3Tm+j7tO9yU/+tdlQ0aDKF26nymAj2foNohlNRZCAJDRwVPigCda+5s/4jOMDD
-         o174HJYG2v34hg9/OCb8RSFIzgApFRHvOEZEfYzU9bv2+REgzAIgEPeM5fCQZGTxYmpT
-         PgIA==
+        bh=oGY0Ud7lxEA2K2nFB1bOa84NTcJFNuyNcaeOborJ0W0=;
+        b=Q1I2kR0MxiClEawHNzam/F4ffVp2b6SD71vlW5hyM8lZ9VuaTXvJMFL1T42wP5sv4N
+         4WrCRnmD+sdjhJChPgPyoOLiNSHAUsZBBL2vOTQRcsZDIgfF2JOwwg2IVG7bN/mhyA5g
+         x2ZJC4ExovLsD05K5J0oIqKl0p1fzgviWnMHmzsDx4tcYFsgppxczwPE7aFRnysi2Gmm
+         RJ/u8GV8zXjZuBBvvKXBkko0ke5T4W53knA5oKdpwO/hVtI2duSg203BJO5sVcXLOlW7
+         X23O92HDnwABYXh8ia8WwbjhpuSN9VQwun1jdnP5kl0OHl6GzLZnJEP546r21yWu13d0
+         oFZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6PUZsgimpsJsXrpUtcdF1Z0n4ZOe69d6YX+6ZJE1e3g=;
-        b=R30Zn3DdhHAkAMe8SkaXy8toEh3P5aOHt2hxSTtQK2kWb80NXKgZ3+QH1m5ayRD1i/
-         Xmks4uBQiYsKKwbSWmcGAICkcMog/cWG40HGd2ovIoPuC+6ZhXLu7EJpU+G4tTfH4X3p
-         krT189YmQOT84rnTPBeeaiFUvwe7evdDmwXHQ8CEZn0X3xWeGcyZY4Ht53POrcBF6Bz+
-         VbQjFXBBKqWt3har2nMS7/w29tfBvNRN9XOEW7dvQlBTNpPV2SMmh7aQamrlCoIIBZdm
-         pYrL+ENBGzEKknhHbr2ACT6T0wcaeOiUxCngL5U9vIBPIERHTOzf2Ek/sMAV2OPow5+2
-         oxjA==
-X-Gm-Message-State: AFqh2koeV3IZ3voSZsuULSCyN0NMzAFzoC0PYsMdNp7pxnKLv7HhnLJV
-        3Q5hBXHU+ML6P9dGj13q2UnKocjC9te1CqRu
-X-Google-Smtp-Source: AMrXdXu8D1RlBjmxROFlRyVS8FUBMW7oeohjrSJj7yrrNNC5FFM3NgockETFuUVYJietdch3kl+Nvg==
-X-Received: by 2002:a17:903:330b:b0:193:30be:d146 with SMTP id jk11-20020a170903330b00b0019330bed146mr16400858plb.63.1673581608842;
-        Thu, 12 Jan 2023 19:46:48 -0800 (PST)
+        bh=oGY0Ud7lxEA2K2nFB1bOa84NTcJFNuyNcaeOborJ0W0=;
+        b=yzw0iU4fU38KOWDLwDmUVooGlDph0vjVhrV+nlpbv76gHgTM2LpmMIH3n0Khef1eDU
+         pIvSKFEeqXrAE9830hwzOrmr0XdRpjTmMb0bMzdVWhLoEe5crKSpjudQk/rh+UcEh6EM
+         B/YT7exYzF1un15EXbHMVD5oDuyA8QC23mCsh43KodlykQmzEQLw3hi9r0569fyRApgs
+         K5hVqgtmwL4Bdf8hcjIkkXWpUzRyG0b1wTSDE/pvItrN8KZndgN75kMb+Qqd5LrWIgja
+         M3GBwzkaFM77r7+6C6ckiia2xoKlJHAtkFDGJcHaHBrPXLmhKoAg0kKjfQWpoQuWl6XB
+         iMYg==
+X-Gm-Message-State: AFqh2kpbh5NxZTKsNt6ViFvNUJI0tcC5MjshcUAnY2yzr+CpjOMh74nH
+        WFphBqUrg+j2PRImIw/A5vtOJI2FDYfOWsNi
+X-Google-Smtp-Source: AMrXdXspTzWnpYDnF2FusNU0JNwQx0Yz1kfgXLxhNfw/JEVtAfNuMJLa+V10akRLuvPEbhjmgaPHuw==
+X-Received: by 2002:a17:902:ec89:b0:185:441e:2314 with SMTP id x9-20020a170902ec8900b00185441e2314mr104749570plg.10.1673581612488;
+        Thu, 12 Jan 2023 19:46:52 -0800 (PST)
 Received: from localhost.localdomain ([2409:8a02:781c:2330:c2cc:a0ba:7da8:3e4b])
-        by smtp.gmail.com with ESMTPSA id u6-20020a170902e80600b0019251e959b1sm12897497plg.262.2023.01.12.19.46.45
+        by smtp.gmail.com with ESMTPSA id u6-20020a170902e80600b0019251e959b1sm12897497plg.262.2023.01.12.19.46.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 19:46:48 -0800 (PST)
+        Thu, 12 Jan 2023 19:46:51 -0800 (PST)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -60,12 +60,13 @@ Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Paolo Abeni <pabeni@redhat.com>,
         David Ahern <dsahern@kernel.org>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH iproute2-next 1/2] Revert "tc/tc_monitor: print netlink extack message"
-Date:   Fri, 13 Jan 2023 11:46:16 +0800
-Message-Id: <20230113034617.2767057-1-liuhangbin@gmail.com>
+Subject: [PATCH iproute2-next 2/2] tc: add new attr TCA_EXT_WARN_MSG
+Date:   Fri, 13 Jan 2023 11:46:17 +0800
+Message-Id: <20230113034617.2767057-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230113034353.2766735-1-liuhangbin@gmail.com>
+In-Reply-To: <20230113034617.2767057-1-liuhangbin@gmail.com>
 References: <20230113034353.2766735-1-liuhangbin@gmail.com>
+ <20230113034617.2767057-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,28 +79,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 0cc5533b ("tc/tc_monitor: print netlink extack message")
-as the commit mentioned is not applied to upstream.
+Currently, when the rule is not to be exclusively executed by the
+hardware, extack is not passed along and offloading failures don't
+get logged. Add a new attr TCA_EXT_WARN_MSG to log the extack message
+so we can monitor the HW failures. e.g.
+
+  # tc monitor
+  added chain dev enp3s0f1np1 parent ffff: chain 0
+  added filter dev enp3s0f1np1 ingress protocol all pref 49152 flower chain 0 handle 0x1
+    ct_state +trk+new
+    not_in_hw
+          action order 1: gact action drop
+           random type none pass val 0
+           index 1 ref 1 bind 1
+
+  Warning: mlx5_core: matching on ct_state +new isn't supported.
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- tc/tc_monitor.c | 3 ---
- 1 file changed, 3 deletions(-)
+ include/uapi/linux/rtnetlink.h | 1 +
+ tc/m_action.c                  | 6 ++++++
+ tc/tc_filter.c                 | 5 +++++
+ tc/tc_qdisc.c                  | 6 ++++++
+ 4 files changed, 18 insertions(+)
 
-diff --git a/tc/tc_monitor.c b/tc/tc_monitor.c
-index 64f31491..b656cfbc 100644
---- a/tc/tc_monitor.c
-+++ b/tc/tc_monitor.c
-@@ -42,9 +42,6 @@ static int accept_tcmsg(struct rtnl_ctrl_data *ctrl,
- 	if (timestamp)
- 		print_timestamp(fp);
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index f4a540c0..217b25b9 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -635,6 +635,7 @@ enum {
+ 	TCA_INGRESS_BLOCK,
+ 	TCA_EGRESS_BLOCK,
+ 	TCA_DUMP_FLAGS,
++	TCA_EXT_WARN_MSG,
+ 	__TCA_MAX
+ };
  
--	if (n->nlmsg_type == NLMSG_DONE)
--		nl_dump_ext_ack_done(n, 0, 0);
--
- 	if (n->nlmsg_type == RTM_NEWTFILTER ||
- 	    n->nlmsg_type == RTM_DELTFILTER ||
- 	    n->nlmsg_type == RTM_NEWCHAIN ||
+diff --git a/tc/m_action.c b/tc/m_action.c
+index b3fd0193..7121c2fb 100644
+--- a/tc/m_action.c
++++ b/tc/m_action.c
+@@ -590,6 +590,12 @@ int print_action(struct nlmsghdr *n, void *arg)
+ 
+ 	open_json_object(NULL);
+ 	tc_dump_action(fp, tb[TCA_ACT_TAB], tot_acts ? *tot_acts:0, false);
++
++	if (tb[TCA_EXT_WARN_MSG]) {
++		print_string(PRINT_ANY, "Warn", "%s ", rta_getattr_str(tb[TCA_EXT_WARN_MSG]));
++		print_nl();
++	}
++
+ 	close_json_object();
+ 
+ 	return 0;
+diff --git a/tc/tc_filter.c b/tc/tc_filter.c
+index 71be2e81..dac74f58 100644
+--- a/tc/tc_filter.c
++++ b/tc/tc_filter.c
+@@ -371,6 +371,11 @@ int print_filter(struct nlmsghdr *n, void *arg)
+ 		print_nl();
+ 	}
+ 
++	if (tb[TCA_EXT_WARN_MSG]) {
++		print_string(PRINT_ANY, "Warn", "%s ", rta_getattr_str(tb[TCA_EXT_WARN_MSG]));
++		print_nl();
++	}
++
+ 	close_json_object();
+ 	fflush(fp);
+ 	return 0;
+diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
+index 33a6665e..a84602b4 100644
+--- a/tc/tc_qdisc.c
++++ b/tc/tc_qdisc.c
+@@ -346,6 +346,12 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+ 			print_nl();
+ 		}
+ 	}
++
++	if (tb[TCA_EXT_WARN_MSG]) {
++		print_string(PRINT_ANY, "Warn", "%s ", rta_getattr_str(tb[TCA_EXT_WARN_MSG]));
++		print_nl();
++	}
++
+ 	close_json_object();
+ 	fflush(fp);
+ 	return 0;
 -- 
 2.38.1
 
