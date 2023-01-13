@@ -2,231 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B23E6696CB
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 13:20:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EFC16696D3
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 13:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbjAMMUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 07:20:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        id S230335AbjAMMWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 07:22:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240584AbjAMMUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 07:20:04 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65D47D9C8;
-        Fri, 13 Jan 2023 04:13:40 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 69FBB85232;
-        Fri, 13 Jan 2023 13:13:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1673612019;
-        bh=J/U7KHP4KXz5e0asbqFdbCzP2TxQPDvlfoOPqB7U9+k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yg3Rsrc72KpSIlP884baLc/K1DhWGtMkPhWNqSmHfyJLK3hZh5bNnZI3ycNCfTgER
-         6jLVzjcdQ0hJvkt45btW1k6VteUZGA0ZOKRAE0AnkYzqDc5q56DP65NIcBjDoV7dXJ
-         Ans3+3BaFPQ8vv+ehXPR331OuJUfRBNKLw65IR//kDhDwl32uP9sQ50hluwVQn99+B
-         HebEUH0nMmzLxHKYfxoiKhLg3jGE0WHISj7Rvp0Ev87nInuLm1x0UXs9clPjSt7YQN
-         UVehQ71cZCCFMZ51cp3djFu/lXzNNfwejxTcj7rMdgCPwqq55wb3t5i/KaiQOvAzNL
-         e8+SEoLzpHc8g==
-Date:   Fri, 13 Jan 2023 13:13:31 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dsa: marvell: Provide per device information
- about max frame size
-Message-ID: <20230113131331.28ba7997@wsk>
-In-Reply-To: <20230106145109.mrv2n3ppcz52jwa2@skbuf>
-References: <20230106101651.1137755-1-lukma@denx.de>
-        <20230106101651.1137755-1-lukma@denx.de>
-        <20230106145109.mrv2n3ppcz52jwa2@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S234305AbjAMMWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 07:22:01 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63453D5DD
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 04:16:33 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id l139so22091888ybl.12
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 04:16:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+PtZnNS70XnntmnTOZy027lj3AuB4jtCCxH9ncjY8es=;
+        b=taE3+ILiaxDnaLaoP7hhjNDlyCmeAS1Ea6O0cbhB3nYeaiL+auDT7eShoUNDqu7idQ
+         TkB2svZoeXd4C7V8qrxxHG1/bsV+JvjJzDUomhRJa+sYEVmrufFML8PZ9Sf+PJdVtEnP
+         P8wgiX+huEmNwcMvZ3WQ5ECWawz+4zaIAUPm4CZWx6VfOdVqIcbrmO427wfn/ic4IE5/
+         dGfx8i8yzi9rCYzq5JhsnTojbQWhzkBTlQJvWD2cNqPk0JNJq1J71VJJ0fWsysmhVtDA
+         NAQSHl8ornL4fLxaAIK1xwLstPy+Fp/C/oX6zJo23qUsnj93H4ermFn3H2HzFyHJRWAV
+         HmQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+PtZnNS70XnntmnTOZy027lj3AuB4jtCCxH9ncjY8es=;
+        b=IT+rYXawd8ISqsG7HfoDm4BfBmX3tBgyMbuRGC2ReIeHkNbRtA1Yb1bEGxuYcMgt0h
+         U4F7UI4baI0B/V2QsRjxP3LzIvT+isM0B8HAXYIGekmlo+iZ2mi5uGqAQsVjM41epSPr
+         O+raIo8wibReOvCvUKNJBJ/FOO/32ZFzlSCVndV7hPG0XjMgeNjdOa5FGVqeRRP5aEIe
+         6TAjddS45NbJNxaLSyU4khNDoP6EWiLoZ315am4mId1ZX4pIK+HA4vRPxF+gF1eJ3Ipc
+         NLvdjPjOgMUpjKNOjQOLM7KCTbQwry7EYmImgaedDzwz9sau7lqvcwB2Bzppbya0038n
+         0jWw==
+X-Gm-Message-State: AFqh2kqLa5veHOBcMm1/9SpJny7Aa0y2QvlvTdvChD36YYt661W/TmgN
+        kvrFjarawP5/NC2VeOTItgyuYI8l955H4Wu6LJmB8w==
+X-Google-Smtp-Source: AMrXdXt0Y+QjUw/o9mD1oQ+G3Pi3+hxyuaceEp5S65q86Ac7MDswDFZkH6r9B84JF9Msych+He0D+l0AZ/zNaF5ndRI=
+X-Received: by 2002:a25:46c6:0:b0:7b8:a0b8:f7ec with SMTP id
+ t189-20020a2546c6000000b007b8a0b8f7ecmr3315906yba.36.1673612192479; Fri, 13
+ Jan 2023 04:16:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/WnDPSNFgBRDqwg_7+UoGrH1";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230112-inet_hash_connect_bind_head-v2-1-5ec926ddd985@diag.uniroma1.it>
+In-Reply-To: <20230112-inet_hash_connect_bind_head-v2-1-5ec926ddd985@diag.uniroma1.it>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 13 Jan 2023 13:16:20 +0100
+Message-ID: <CANn89iJekPT_HsJ6vfQf=Vk8AXqgQjoU=FscBHGVSRcvdfaKDA@mail.gmail.com>
+Subject: Re: [PATCH v2] inet: fix fast path in __inet_hash_connect()
+To:     Pietro Borrello <borrello@diag.uniroma1.it>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/WnDPSNFgBRDqwg_7+UoGrH1
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Jan 13, 2023 at 12:40 PM Pietro Borrello
+<borrello@diag.uniroma1.it> wrote:
+>
+> __inet_hash_connect() has a fast path taken if sk_head(&tb->owners) is
+> equal to the sk parameter.
+> sk_head() returns the hlist_entry() with respect to the sk_node field.
+> However entries in the tb->owners list are inserted with respect to the
+> sk_bind_node field with sk_add_bind_node().
+> Thus the check would never pass and the fast path never execute.
+>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+> ---
+> Changes in v2:
+> - nit: s/list_entry/hlist_entry/
+> - Link to v1: https://lore.kernel.org/r/20230112-inet_hash_connect_bind_head-v1-1-7e3c770157c8@diag.uniroma1.it
+> ---
+>  include/net/sock.h         | 10 ++++++++++
+>  net/ipv4/inet_hashtables.c |  2 +-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index dcd72e6285b2..23fc403284db 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -860,6 +860,16 @@ static inline void sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_hea
+>         __sk_nulls_add_node_rcu(sk, list);
+>  }
+>
+> +static inline struct sock *__sk_bind_head(const struct hlist_head *head)
+> +{
+> +       return hlist_entry(head->first, struct sock, sk_bind_node);
+> +}
+> +
+> +static inline struct sock *sk_bind_head(const struct hlist_head *head)
+> +{
+> +       return hlist_empty(head) ? NULL : __sk_bind_head(head);
+> +}
+> +
+>  static inline void __sk_del_bind_node(struct sock *sk)
+>  {
+>         __hlist_del(&sk->sk_bind_node);
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index d039b4e732a3..a805e086fb48 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -998,7 +998,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+>                                                   hinfo->bhash_size)];
+>                 tb = inet_csk(sk)->icsk_bind_hash;
+>                 spin_lock_bh(&head->lock);
+> -               if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+> +               if (sk_bind_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+>                         inet_ehash_nolisten(sk, NULL, NULL);
 
-Hi Vladimir,
+1) Given this path was never really used, we have no coverage.
 
-> On Fri, Jan 06, 2023 at 11:16:49AM +0100, Lukasz Majewski wrote:
-> > Different Marvell DSA switches support different size of max frame
-> > bytes to be sent. This value corresponds to the memory allocated
-> > in switch to store single frame.
-> >=20
-> > For example mv88e6185 supports max 1632 bytes, which is now
-> > in-driver standard value. On the other hand - mv88e6250 supports
-> > 2048 bytes. To be more interresting - devices supporting jumbo
-> > frames - use yet another value (10240 bytes)
-> >=20
-> > As this value is internal and may be different for each switch IC,
-> > new entry in struct mv88e6xxx_info has been added to store it.
-> >=20
-> > This commit doesn't change the code functionality - it just provides
-> > the max frame size value explicitly - up till now it has been
-> > assigned depending on the callback provided by the IC driver
-> > (e.g. .set_max_frame_size, .port_set_jumbo_size).
-> >=20
-> > Signed-off-by: Lukasz Majewski <lukma@denx.de>
-> >=20
-> > ---
-> > Changes for v2:
-> > - Define max_frame_size with default value of 1632 bytes,
-> > - Set proper value for the mv88e6250 switch SoC (linkstreet) family
-> >=20
-> > Changes for v3:
-> > - Add default value for 1632B of the max frame size (to avoid
-> > problems with not defined values)
-> >=20
-> > Changes for v4:
-> > - Rework the mv88e6xxx_get_max_mtu() by using per device defined
-> >   max_frame_size value
-> >=20
-> > - Add WARN_ON_ONCE() when max_frame_size is not defined
-> >=20
-> > - Add description for the new 'max_frame_size' member of
-> > mv88e6xxx_info ---
-> >  drivers/net/dsa/mv88e6xxx/chip.c | 41
-> > ++++++++++++++++++++++++++++---- drivers/net/dsa/mv88e6xxx/chip.h |
-> >  6 +++++ 2 files changed, 42 insertions(+), 5 deletions(-)
-> >=20
-> > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c
-> > b/drivers/net/dsa/mv88e6xxx/chip.c index 242b8b325504..fc6d98c4a029
-> > 100644 --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > @@ -3545,11 +3545,10 @@ static int mv88e6xxx_get_max_mtu(struct
-> > dsa_switch *ds, int port) {
-> >  	struct mv88e6xxx_chip *chip =3D ds->priv;
-> > =20
-> > -	if (chip->info->ops->port_set_jumbo_size)
-> > -		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN -
-> > ETH_FCS_LEN;
-> > -	else if (chip->info->ops->set_max_frame_size)
-> > -		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN -
-> > ETH_FCS_LEN;
-> > -	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
-> > +	WARN_ON_ONCE(!chip->info->max_frame_size);
-> > +
-> > +	return chip->info->max_frame_size - VLAN_ETH_HLEN -
-> > EDSA_HLEN
-> > +		- ETH_FCS_LEN; =20
->=20
-> VLAN_ETH_HLEN (18) + EDSA_HLEN (8) + ETH_FCS_LEN (4) =3D 30
->=20
-> >  }
-> > =20
-> >  static int mv88e6xxx_change_mtu(struct dsa_switch *ds, int port,
-> > int new_mtu) @@ -4955,6 +4954,7 @@ static const struct
-> > mv88e6xxx_ops mv88e6250_ops =3D { .avb_ops =3D &mv88e6352_avb_ops,
-> >  	.ptp_ops =3D &mv88e6250_ptp_ops,
-> >  	.phylink_get_caps =3D mv88e6250_phylink_get_caps,
-> > +	.set_max_frame_size =3D mv88e6185_g1_set_max_frame_size,
-> >  };
-> > =20
-> >  static const struct mv88e6xxx_ops mv88e6290_ops =3D {
-> > @@ -5543,6 +5543,7 @@ static const struct mv88e6xxx_info
-> > mv88e6xxx_table[] =3D { .num_internal_phys =3D 5,
-> >  		.max_vid =3D 4095,
-> >  		.max_sid =3D 63,
-> > +		.max_frame_size =3D 1522, =20
->=20
-> 1522 - 30 =3D 1492.
->=20
-> I don't believe that there are switches which don't support the
-> standard MTU of 1500 ?!
+2) Given that we do not check inet_ehash_nolisten() return code here.
 
-I think that this commit [1], made the adjustment to fix yet another
-issue.
+I would recommend _not_ adding the Fixes: tag, and target net-next tree
 
-It looks like the missing 8 bytes are added in the
-mv88e6xxx_change_mtu() function.
+In fact, I would remove this dead code, and reduce complexity.
 
->=20
-> >  		.port_base_addr =3D 0x10,
-> >  		.phy_base_addr =3D 0x0,
-> >  		.global1_addr =3D 0x1b, =20
->=20
-> Note that I see this behavior isn't new. But I've simulated it, and it
-> will produce the following messages on probe:
->=20
-> [    7.425752] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY
-> [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=3DPOLL) [
-> 7.437516] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to
-> 1500 on port 0 [    7.588585] mscc_felix 0000:00:00.5 swp1
-> (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514
-> SyncE] (irq=3DPOLL) [    7.600433] mscc_felix 0000:00:00.5: nonfatal
-> error -34 setting MTU to 1500 on port 1 [    7.752613] mscc_felix
-> 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver
-> [Microsemi GE VSC8514 SyncE] (irq=3DPOLL) [    7.764457] mscc_felix
-> 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 2 [
-> 7.900771] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY
-> [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=3DPOLL) [
-> 7.912501] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to
-> 1500 on port 3
->=20
-> I wonder, shouldn't we first fix that, and apply this patch set
-> afterwards?
-
-IMHO, it is up to Andrew to decide how to proceed, as the
-aforementioned patch [1] is an attempt to fix yet another issue [2].
+I doubt the difference is going to be noticed.
+(We have to access the ehash bucket anyway)
 
 
-
-Links:
-
-[1] -
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
-id=3Db9c587fed61cf88bd45822c3159644445f6d5aa6
-
-[2] -
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
-id=3D1baf0fac10fbe3084975d7cb0a4378eb18871482
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/WnDPSNFgBRDqwg_7+UoGrH1
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmPBSusACgkQAR8vZIA0
-zr39sQgAmvQlm34Ino/bdyQl4HVlGaXQYKK8lr5Ogu3YrpegMVLAm7vwdxE5FA+p
-svWH0FMsCSzfLaWpVXI5tYIjJSGGXccynOfsOKmfRag3Kb8tn5zcV0KHH9Jz1WyN
-rxj7Tp5lf921fEGexW1dSYUQWoDI/nVwm88hmabbea8wovDwa9Szj+DhVLaI/Asd
-xKKvlV7IXICXFrUgLVD8MKhOcCaEAc7gHd4w2PKy0nMmRWCyO5XQT+91Nm5OK+QU
-oJT2tu7xE1vfrwDI2atM5mXi/CuLskyQL1xc4lpB71XJ7TUhsUfnJKXG5K8f5LkI
-gYoKmY25x4cE4UQ+IwQFiV+z2yX9xQ==
-=TyKL
------END PGP SIGNATURE-----
-
---Sig_/WnDPSNFgBRDqwg_7+UoGrH1--
+>                         spin_unlock_bh(&head->lock);
+>                         return 0;
+>
+> ---
+> base-commit: 1b929c02afd37871d5afb9d498426f83432e71c2
+> change-id: 20230112-inet_hash_connect_bind_head-8f2dc98f08b1
+>
+> Best regards,
+> --
+> Pietro Borrello <borrello@diag.uniroma1.it>
