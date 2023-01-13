@@ -2,130 +2,359 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF309668C6F
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:20:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C0C4668C75
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:22:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232479AbjAMGUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:20:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
+        id S229615AbjAMGWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:22:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239005AbjAMGT2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:19:28 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B108C1ADB2;
-        Thu, 12 Jan 2023 22:19:15 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30CNQvAD015973;
-        Thu, 12 Jan 2023 22:19:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=vcvaXIxm8VoCVqBzy152plEY4O4C6l50HsiNo8UrGjs=;
- b=JOQBIVgXYT4LE5yjchU7kxkonAV5SwjQopjsdYpD+DjeTIpOQ/SQdWY52XFOhnWnBb5v
- 3m7pj4PYAMQWvdjf9LGNMGtyXwarvXCrRSS9627mIn0i3hR0RP1xb8FxxQXtOwoSXKqN
- myZoIZSoSox8BwSltAWeFv4t/VkD33k6sJXBZqwXj8aYRpJwK/12AsmYXeBQ0snD/sLU
- pxd4jyBGiWJET9Q44G8KubDVqGavfscYtH3Uh/etvLdY1NXcrUZkwfqZnQZKsG0NNkeP
- uNelS19nrdNwbzPs+oVLOIDn9rVlGMoef4AcroA58dyQl/rvINgeROhL2euIMryhp2Hk Eg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3n1k573pt1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 12 Jan 2023 22:19:08 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 12 Jan
- 2023 22:19:06 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Thu, 12 Jan 2023 22:19:06 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 44C103F7073;
-        Thu, 12 Jan 2023 22:19:03 -0800 (PST)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <pabeni@redhat.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>,
-        <gakula@marvell.com>, <sgoutham@marvell.com>
-Subject: [net PATCH v2] octeontx2-pf: Avoid use of GFP_KERNEL in atomic context
-Date:   Fri, 13 Jan 2023 11:49:02 +0530
-Message-ID: <20230113061902.6061-1-gakula@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S235477AbjAMGVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:21:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3525CF87
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 22:20:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673590817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZA/WXC5prDy/5mOBtGNQhQSiRmA3vqaLzTAXUcArX8A=;
+        b=JDgkpmr69D1meVHd+XYL0Pupd5Mh18N9LkQ/F1pUmp8lEkQaf6jvkLuh9OcNilu1mcXLFR
+        8qXjbrYN+juokgtUEQoJJpfH15LQnNH8i5ZTQwdwr8/4s1/o/3f/YGO6pUn4t4MVyXmhln
+        Mjn+D/Md9ju4LhUPFmg8eqiAiS7aRuo=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-507-F8OBdiL4P52yrranRhvXBg-1; Fri, 13 Jan 2023 01:20:16 -0500
+X-MC-Unique: F8OBdiL4P52yrranRhvXBg-1
+Received: by mail-oo1-f70.google.com with SMTP id i10-20020a4a900a000000b004f1f4aa7f3bso5748281oog.7
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 22:20:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZA/WXC5prDy/5mOBtGNQhQSiRmA3vqaLzTAXUcArX8A=;
+        b=l3oFQ/mQtWUrmTlX7rAIFdldzNxLmYEM+eolE2FKKxMdIMdfDP3D/uYOCEXchkmM8T
+         vuhL4ZEkEpf85M6MpSMoC528aDr1Id8sfKpC8t1ecUJVHPbQY7UhU8rdn3M3H9bgoTTd
+         ORefPchJXF5vhtIg0SE3zpd2SR+jfYscKl02VcymQMwtqTy3p8Ek7Vue9H0U1zj+q0wn
+         qkzODaZWKdpSwl57HcVNkmneBBlghGzvdWHsMM4WzgSv55fLUmVOIpMSAoxMMWeBUmvz
+         IuYNNbeoBb76J9nRH0111j9M8CC+sOCXpoG3n/xt/dKmMGHLJzNqtmdX7Bdn/ynNFhTm
+         0gdw==
+X-Gm-Message-State: AFqh2kqthL0+rSPcGe2t6vGYGaBqUXt8iBHPIPeLjBhB0s1vSpA2HHeD
+        PLnwUoxXbmpZjBBOPuLXyF9MJ9yt+PELvnvs0D6P83L1OHvdmOSqZbbs+Bv4EutfkPcKycj0Ka2
+        e9lAyhjqEC3fo+FjMpL8Y6m8g9ZdVl4Si
+X-Received: by 2002:a54:4e89:0:b0:35c:303d:fe37 with SMTP id c9-20020a544e89000000b0035c303dfe37mr3472247oiy.35.1673590815534;
+        Thu, 12 Jan 2023 22:20:15 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsU/Rq3/n+Yp2sdFV+SfWqkAMT4t8sRS+vgwm5fkhkFFhkbRPz5Lr57Igz/s5HUh9xq1Chg/dqzKQLEyyb3LMQ=
+X-Received: by 2002:a54:4e89:0:b0:35c:303d:fe37 with SMTP id
+ c9-20020a544e89000000b0035c303dfe37mr3472233oiy.35.1673590815235; Thu, 12 Jan
+ 2023 22:20:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: uIVel31LeyPoIc0OA-MOk8Uuau4Tbwr9
-X-Proofpoint-GUID: uIVel31LeyPoIc0OA-MOk8Uuau4Tbwr9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-12_14,2023-01-12_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-9-gautam.dawar@amd.com>
+ <CACGkMEtGCbUBZRFh7EUJyymuWZ9uxiAOeJHA6h-dGa9Y3pDZGw@mail.gmail.com>
+ <c5956679-82c1-336b-3190-de32db1c0926@amd.com> <CACGkMEvVnAQ2t4piV3U-hACELvUozRKJOiCCcQLp5ch2TQ9r4w@mail.gmail.com>
+ <CACGkMEt866q9CR_4JNUX+35gyV4ykYPiviLHeYfgqKCmrqXZ4A@mail.gmail.com> <289dc054-4cb7-e31c-69b4-b02a62a2fe16@amd.com>
+In-Reply-To: <289dc054-4cb7-e31c-69b4-b02a62a2fe16@amd.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 13 Jan 2023 14:20:03 +0800
+Message-ID: <CACGkMEv6vy31646YfLYEyLqeeJcn1sKnUy9z_9++2dkTSAEPPw@mail.gmail.com>
+Subject: Re: [PATCH net-next 08/11] sfc: implement device status related vdpa
+ config operations
+To:     Gautam Dawar <gdawar@amd.com>
+Cc:     Gautam Dawar <gautam.dawar@amd.com>, linux-net-drivers@amd.com,
+        netdev@vger.kernel.org, eperezma@redhat.com, tanuj.kamde@amd.com,
+        Koushik.Dutta@amd.com, harpreet.anand@amd.com,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using GFP_KERNEL in preemption disable context, causing below warning
-when CONFIG_DEBUG_ATOMIC_SLEEP is enabled.
+On Fri, Jan 13, 2023 at 2:11 PM Gautam Dawar <gdawar@amd.com> wrote:
+>
+>
+> On 1/13/23 09:58, Jason Wang wrote:
+> > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+> >
+> >
+> > On Wed, Jan 11, 2023 at 2:36 PM Jason Wang <jasowang@redhat.com> wrote:
+> >> On Mon, Jan 9, 2023 at 6:21 PM Gautam Dawar <gdawar@amd.com> wrote:
+> >>>
+> >>> On 12/14/22 12:15, Jason Wang wrote:
+> >>>> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+> >>>>
+> >>>>
+> >>>> On Wed, Dec 7, 2022 at 10:57 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
+> >>>>> vDPA config opertions to handle get/set device status and device
+> >>>>> reset have been implemented.
+> >>>>>
+> >>>>> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+> >>>>> ---
+> >>>>>    drivers/net/ethernet/sfc/ef100_vdpa.c     |   7 +-
+> >>>>>    drivers/net/ethernet/sfc/ef100_vdpa.h     |   1 +
+> >>>>>    drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 133 ++++++++++++++++++++++
+> >>>>>    3 files changed, 140 insertions(+), 1 deletion(-)
+> >>>>>
+> >>>>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
+> >>>>> index 04d64bfe3c93..80bca281a748 100644
+> >>>>> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
+> >>>>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
+> >>>>> @@ -225,9 +225,14 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
+> >>>>>
+> >>>>>    static void ef100_vdpa_delete(struct efx_nic *efx)
+> >>>>>    {
+> >>>>> +       struct vdpa_device *vdpa_dev;
+> >>>>> +
+> >>>>>           if (efx->vdpa_nic) {
+> >>>>> +               vdpa_dev = &efx->vdpa_nic->vdpa_dev;
+> >>>>> +               ef100_vdpa_reset(vdpa_dev);
+> >>>> Any reason we need to reset during delete?
+> >>> ef100_reset_vdpa_device() does the necessary clean-up including freeing
+> >>> irqs, deleting filters and deleting the vrings which is required while
+> >>> removing the vdpa device or unloading the driver.
+> >> That's fine but the name might be a little bit confusing since vDPA
+> >> reset is not necessary here.
+> >>
+> >>>>> +
+> >>>>>                   /* replace with _vdpa_unregister_device later */
+> >>>>> -               put_device(&efx->vdpa_nic->vdpa_dev.dev);
+> >>>>> +               put_device(&vdpa_dev->dev);
+> >>>>>                   efx->vdpa_nic = NULL;
+> >>>>>           }
+> >>>>>           efx_mcdi_free_vis(efx);
+> >>>>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> >>>>> index a33edd6dda12..1b0bbba88154 100644
+> >>>>> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
+> >>>>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> >>>>> @@ -186,6 +186,7 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
+> >>>>>                             enum ef100_vdpa_mac_filter_type type);
+> >>>>>    int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvqs);
+> >>>>>    void ef100_vdpa_irq_vectors_free(void *data);
+> >>>>> +int ef100_vdpa_reset(struct vdpa_device *vdev);
+> >>>>>
+> >>>>>    static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
+> >>>>>    {
+> >>>>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+> >>>>> index 132ddb4a647b..718b67f6da90 100644
+> >>>>> --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+> >>>>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+> >>>>> @@ -251,6 +251,62 @@ static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
+> >>>>>           return false;
+> >>>>>    }
+> >>>>>
+> >>>>> +static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
+> >>>>> +{
+> >>>>> +       int i;
+> >>>>> +
+> >>>>> +       WARN_ON(!mutex_is_locked(&vdpa_nic->lock));
+> >>>>> +
+> >>>>> +       if (!vdpa_nic->status)
+> >>>>> +               return;
+> >>>>> +
+> >>>>> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
+> >>>>> +       vdpa_nic->status = 0;
+> >>>>> +       vdpa_nic->features = 0;
+> >>>>> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
+> >>>>> +               reset_vring(vdpa_nic, i);
+> >>>>> +}
+> >>>>> +
+> >>>>> +/* May be called under the rtnl lock */
+> >>>>> +int ef100_vdpa_reset(struct vdpa_device *vdev)
+> >>>>> +{
+> >>>>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+> >>>>> +
+> >>>>> +       /* vdpa device can be deleted anytime but the bar_config
+> >>>>> +        * could still be vdpa and hence efx->state would be STATE_VDPA.
+> >>>>> +        * Accordingly, ensure vdpa device exists before reset handling
+> >>>>> +        */
+> >>>>> +       if (!vdpa_nic)
+> >>>>> +               return -ENODEV;
+> >>>>> +
+> >>>>> +       mutex_lock(&vdpa_nic->lock);
+> >>>>> +       ef100_reset_vdpa_device(vdpa_nic);
+> >>>>> +       mutex_unlock(&vdpa_nic->lock);
+> >>>>> +       return 0;
+> >>>>> +}
+> >>>>> +
+> >>>>> +static int start_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
+> >>>>> +{
+> >>>>> +       int rc = 0;
+> >>>>> +       int i, j;
+> >>>>> +
+> >>>>> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
+> >>>>> +               if (can_create_vring(vdpa_nic, i)) {
+> >>>>> +                       rc = create_vring(vdpa_nic, i);
+> >>>> So I think we can safely remove the create_vring() in set_vq_ready()
+> >>>> since it's undefined behaviour if set_vq_ready() is called after
+> >>>> DRIVER_OK.
+> >>> Is this (undefined) behavior documented in the virtio spec?
+> >> This part is kind of tricky:
+> >>
+> >> PCI transport has a queue_enable field. And recently,
+> >> VIRTIO_F_RING_RESET was introduced. Let's start without that first:
+> >>
+> >> In
+> >>
+> >> 4.1.4.3.2 Driver Requirements: Common configuration structure layout
+> >>
+> >> It said:
+> >>
+> >> "The driver MUST configure the other virtqueue fields before enabling
+> >> the virtqueue with queue_enable."
+> >>
+> >> and
+> >>
+> >> "The driver MUST NOT write a 0 to queue_enable."
+> >>
+> >> My understanding is that:
+> >>
+> >> 1) Write 0 is forbidden
+> >> 2) Write 1 after DRIVER_OK is undefined behaviour (or need to clarify)
+> >>
+> >> With VIRTIO_F_RING_RESET is negotiated:
+> >>
+> >> "
+> >> If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1
+> >> to queue_reset to reset the queue, the driver MUST NOT consider queue
+> >> reset to be complete until it reads back 0 in queue_reset. The driver
+> >> MAY re-enable the queue by writing 1 to queue_enable after ensuring
+> >> that other virtqueue fields have been set up correctly. The driver MAY
+> >> set driver-writeable queue configuration values to different values
+> >> than those that were used before the queue reset. (see 2.6.1).
+> >> "
+> >>
+> >> Write 1 to queue_enable after DRIVER_OK and after the queue is reset is allowed.
+> >>
+> >> Thanks
+> > Btw, I just realized that we need to stick to the current behaviour,
+> > that is to say, to allow set_vq_ready() to be called after DRIVER_OK.
+>
+> So, both set_vq_ready() and DRIVER_OK are required for vring creation
+> and their order doesn't matter. Is that correct?
 
-[   32.542271] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:274
-[   32.550883] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper/0
-[   32.558707] preempt_count: 1, expected: 0
-[   32.562710] RCU nest depth: 0, expected: 0
-[   32.566800] CPU: 3 PID: 1 Comm: swapper/0 Tainted: G        W          6.2.0-rc2-00269-gae9dcb91c606 #7
-[   32.576188] Hardware name: Marvell CN106XX board (DT)
-[   32.581232] Call trace:
-[   32.583670]  dump_backtrace.part.0+0xe0/0xf0
-[   32.587937]  show_stack+0x18/0x30
-[   32.591245]  dump_stack_lvl+0x68/0x84
-[   32.594900]  dump_stack+0x18/0x34
-[   32.598206]  __might_resched+0x12c/0x160
-[   32.602122]  __might_sleep+0x48/0xa0
-[   32.605689]  __kmem_cache_alloc_node+0x2b8/0x2e0
-[   32.610301]  __kmalloc+0x58/0x190
-[   32.613610]  otx2_sq_aura_pool_init+0x1a8/0x314
-[   32.618134]  otx2_open+0x1d4/0x9d0
+Yes.
 
-To avoid use of GFP_ATOMIC for memory allocation, disable preemption 
-after all memory allocation is done.
+>
+> Also, will set_vq_ready(0) after DRIVER_OK result in queue deletion?
 
-Fixes: 4af1b64f80fb ("octeontx2-pf: Fix lmtst ID used in aura free")
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
-v1-v2:
-- Moved get_cpu to avolid use of GFP_ATOMIC. 
-- reworked commit message.
+I think it should be treated as suspended or stopped. Since the device
+should survive from kicking the vq even if the driver does
+set_vq_ready(0).
 
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 88f8772a61cd..497b777b6a34 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -1370,7 +1370,6 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 	if (err)
- 		goto fail;
- 
--	get_cpu();
- 	/* Allocate pointers and free them to aura/pool */
- 	for (qidx = 0; qidx < hw->tot_tx_queues; qidx++) {
- 		pool_id = otx2_get_pool_idx(pfvf, AURA_NIX_SQ, qidx);
-@@ -1388,13 +1387,14 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 			err = otx2_alloc_rbuf(pfvf, pool, &bufptr);
- 			if (err)
- 				goto err_mem;
-+			get_cpu();
- 			pfvf->hw_ops->aura_freeptr(pfvf, pool_id, bufptr);
-+			put_cpu();
- 			sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
- 		}
- 	}
- 
- err_mem:
--	put_cpu();
- 	return err ? -ENOMEM : 0;
- 
- fail:
--- 
-2.25.1
+>
+> >
+> > It is needed for the cvq trap and migration for control virtqueue:
+> >
+> > https://www.mail-archive.com/qemu-devel@nongnu.org/msg931491.html
+> >
+> > Thanks
+> >
+> >
+> >>
+> >>> If so, can
+> >>> you please point me to the section of virtio spec that calls this order
+> >>> (set_vq_ready() after setting DRIVER_OK) undefined? Is it just that the
+> >>> queue can't be enabled after DRIVER_OK or the reverse (disabling the
+> >>> queue) after DRIVER_OK is not allowed?
+> >>>>> +                       if (rc)
+> >>>>> +                               goto clear_vring;
+> >>>>> +               }
+> >>>>> +       }
+> >>>>> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_STARTED;
+> >>>>> +       return rc;
+> >>>>> +
+> >>>>> +clear_vring:
+> >>>>> +       for (j = 0; j < i; j++)
+> >>>>> +               if (vdpa_nic->vring[j].vring_created)
+> >>>>> +                       delete_vring(vdpa_nic, j);
+> >>>>> +       return rc;
+> >>>>> +}
+> >>>>> +
+> >>>>>    static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
+> >>>>>                                        u16 idx, u64 desc_area, u64 driver_area,
+> >>>>>                                        u64 device_area)
+> >>>>> @@ -568,6 +624,80 @@ static u32 ef100_vdpa_get_vendor_id(struct vdpa_device *vdev)
+> >>>>>           return EF100_VDPA_VENDOR_ID;
+> >>>>>    }
+> >>>>>
+> >>>>> +static u8 ef100_vdpa_get_status(struct vdpa_device *vdev)
+> >>>>> +{
+> >>>>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+> >>>>> +       u8 status;
+> >>>>> +
+> >>>>> +       mutex_lock(&vdpa_nic->lock);
+> >>>>> +       status = vdpa_nic->status;
+> >>>>> +       mutex_unlock(&vdpa_nic->lock);
+> >>>>> +       return status;
+> >>>>> +}
+> >>>>> +
+> >>>>> +static void ef100_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+> >>>>> +{
+> >>>>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+> >>>>> +       u8 new_status;
+> >>>>> +       int rc;
+> >>>>> +
+> >>>>> +       mutex_lock(&vdpa_nic->lock);
+> >>>>> +       if (!status) {
+> >>>>> +               dev_info(&vdev->dev,
+> >>>>> +                        "%s: Status received is 0. Device reset being done\n",
+> >>>>> +                        __func__);
+> >>>>> +               ef100_reset_vdpa_device(vdpa_nic);
+> >>>>> +               goto unlock_return;
+> >>>>> +       }
+> >>>>> +       new_status = status & ~vdpa_nic->status;
+> >>>>> +       if (new_status == 0) {
+> >>>>> +               dev_info(&vdev->dev,
+> >>>>> +                        "%s: New status same as current status\n", __func__);
+> >>>>> +               goto unlock_return;
+> >>>>> +       }
+> >>>>> +       if (new_status & VIRTIO_CONFIG_S_FAILED) {
+> >>>>> +               ef100_reset_vdpa_device(vdpa_nic);
+> >>>>> +               goto unlock_return;
+> >>>>> +       }
+> >>>>> +
+> >>>>> +       if (new_status & VIRTIO_CONFIG_S_ACKNOWLEDGE &&
+> >>>>> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
+> >>>> As replied before, I think there's no need to check
+> >>>> EF100_VDPA_STATE_INITIALIZED, otherwise it could be a bug somewhere.
+> >>> Ok. Will remove the check against EF100_VDPA_STATE_INITIALIZED.
+> >>>>> +               vdpa_nic->status |= VIRTIO_CONFIG_S_ACKNOWLEDGE;
+> >>>>> +               new_status &= ~VIRTIO_CONFIG_S_ACKNOWLEDGE;
+> >>>>> +       }
+> >>>>> +       if (new_status & VIRTIO_CONFIG_S_DRIVER &&
+> >>>>> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
+> >>>>> +               vdpa_nic->status |= VIRTIO_CONFIG_S_DRIVER;
+> >>>>> +               new_status &= ~VIRTIO_CONFIG_S_DRIVER;
+> >>>>> +       }
+> >>>>> +       if (new_status & VIRTIO_CONFIG_S_FEATURES_OK &&
+> >>>>> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
+> >>>>> +               vdpa_nic->status |= VIRTIO_CONFIG_S_FEATURES_OK;
+> >>>>> +               vdpa_nic->vdpa_state = EF100_VDPA_STATE_NEGOTIATED;
+> >>>> I think we can simply map EF100_VDPA_STATE_NEGOTIATED to
+> >>>> VIRTIO_CONFIG_S_FEATURES_OK.
+> >>>>
+> >>>> E.g the code doesn't fail the feature negotiation by clearing the
+> >>>> VIRTIO_CONFIG_S_FEATURES_OK when ef100_vdpa_set_driver_feature fails?
+> >>> Ok.
+> >>>> Thanks
+> >>> Regards,
+> >>>
+> >>> Gautam
+> >>>
+>
 
