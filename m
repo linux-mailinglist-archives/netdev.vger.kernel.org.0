@@ -2,48 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F8566881B
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 01:09:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAC9F668836
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 01:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbjAMAJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 19:09:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
+        id S240698AbjAMAMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 19:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232708AbjAMAJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 19:09:07 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F7C40848
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 16:09:05 -0800 (PST)
+        with ESMTP id S240282AbjAMALn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 19:11:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F32E5DE44;
+        Thu, 12 Jan 2023 16:11:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D44C1CE1EF3
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 00:09:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E76C433EF;
-        Fri, 13 Jan 2023 00:09:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEDEBB8203A;
+        Fri, 13 Jan 2023 00:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E97C43398;
+        Fri, 13 Jan 2023 00:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673568542;
-        bh=aIlW1HbwoeeRgiUHNLsa+JPHrvzQVzl90//RJ6b0tRs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AsgcGCMfd+mfOVI8cFvHCsqehZWPinSVpD9a//Z3GU8Tn2S1wxXenNif6dzhaV/T8
-         hoaXtUa/u3kuFQmWdYQx1EBZAmDXf3TDIZWkVhpFVlIfh8s/I3/fypTyLxrjAmjEVb
-         iFDuaa61IWI1CLQrS62r146wsEXRcBiuNR/IfG2sjuFI5cjHtpBDyS9zCwjKBDJPkO
-         DHcO8EFkWRh+CUzoeMZiURgtiYMixW5jwYnA/8iRb4UScRWNa9Vf8nn+//7vBPviXk
-         XeLSZGKp1FEdnLgmyX2GS8xeBoHo+h/0sdYHhuc+zohj77eLJEOqhacIOnyN1xeW11
-         hFMQ373O5NjDQ==
-Date:   Thu, 12 Jan 2023 16:09:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeremy Harris <jeharris@redhat.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 0/7] NIC driver Rx ring ECN
-Message-ID: <20230112160900.5fdb5b20@kernel.org>
-In-Reply-To: <2ff79a56-bf32-731b-a6ab-94654b8a3b31@redhat.com>
-References: <20230111143427.1127174-1-jgh@redhat.com>
-        <20230111104618.74022e83@kernel.org>
-        <2ff79a56-bf32-731b-a6ab-94654b8a3b31@redhat.com>
+        s=k20201202; t=1673568695;
+        bh=cTMHlhoolXwxR+XWJBWwI7YWwhu4f9xOx3xMf+RE4lA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pTZivndYQVJZ7qcUIoycYCQuR3FWm4j4olw3ymlzBFIWDmypktz+JBWgUZyG37z/h
+         9TOoTAntfGOC6CwehiC/RIn3QVh54uR9LANH38Hc9BrLXqwXmEFFjJ1GybFGZN9qJ2
+         p/nt9DApSWtPO2U2vINfXjBFPdEXTzfCk3OSPwC1HDRNFU3fKntGLe2bhtwK5o3Ajz
+         62N2tfEN2+7J5ZTMhaG2VtqXFMkJJPZQaHuevHhtdiMR8xkK0Hy8cn6qFDnFsPFNyp
+         rA6QLyCi5QUCoZHusJcTL8202gfEJ/v8zPPqjZxxFatURUvPFNAGP+O2LfgQaY+ZOS
+         sN8PGszh/4Ojw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id A2C0C5C11A4; Thu, 12 Jan 2023 16:11:34 -0800 (PST)
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@meta.com,
+        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        John Ogness <john.ogness@linutronix.de>
+Subject: [PATCH rcu v2 07/20] drivers/net: Remove "select SRCU"
+Date:   Thu, 12 Jan 2023 16:11:19 -0800
+Message-Id: <20230113001132.3375334-7-paulmck@kernel.org>
+X-Mailer: git-send-email 2.31.1.189.g2e36527f23
+In-Reply-To: <20230113001103.GA3374173@paulmck-ThinkPad-P17-Gen-1>
+References: <20230113001103.GA3374173@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -53,58 +59,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Jan 2023 14:06:50 +0000 Jeremy Harris wrote:
-> On 11/01/2023 18:46, Jakub Kicinski wrote:
-> > Do you have any reason to believe that it actually helps anything?  
-> 
-> I've not measured actual drop-rates, no.
-> 
-> > NAPI with typical budget of 64 is easily exhausted (you just need
-> > two TSO frames arriving at once with 1500 MTU).  
-> 
-> I see typical systems with 300, not 64
+Now that the SRCU Kconfig option is unconditionally selected, there is
+no longer any point in selecting it.  Therefore, remove the "select SRCU"
+Kconfig statements.
 
-Say more? I thought you were going by NAPI budget which should be 64
-in bnx2x.
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: <netdev@vger.kernel.org>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+---
+ drivers/net/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-> - but it's a valid point.
-> It's not the right measurement to try to control.
-> Perhaps I should work harder to locate the ring size within
-> the bnx2 and bnx2x drivers.
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 9e63b8c43f3e2..12910338ea1a0 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -334,7 +334,6 @@ config NETCONSOLE_DYNAMIC
+ 
+ config NETPOLL
+ 	def_bool NETCONSOLE
+-	select SRCU
+ 
+ config NET_POLL_CONTROLLER
+ 	def_bool NETPOLL
+-- 
+2.31.1.189.g2e36527f23
 
-Perhaps the older devices give you some extra information here.
-Normally on the Rx path you don't know how long the queue is,
-you just check whether the next descriptor has been filled or not.
-"Looking ahead" may be costly because you're accessing the same 
-memory as the device.
-
-> If I managed that (it being already the case for the xgene example)
-> would your opinions change?
-
-It may be cool if we can retrofit some second-order signal into 
-the time-based machinery. The problem is that we don't actually 
-have any time-based machinery upstream, yet :(
-And designing interfaces for a decade-old HW seems shortsighted.
-
-> > Host level congestion is better detected using time / latency signals.
-> > Timestamp the packet at the NIC and compare the Rx time to current time
-> > when processing by the driver.
-> > 
-> > Google search "Google Swift congestion control".  
-> 
-> Nice, but
-> - requires we wait for timestamping-NICs
-
-Grep for HWTSTAMP_FILTER_ALL, there's HW out there.
-
-> - does not address Rx drops due to Rx ring-buffer overflow
-
-It's a stronger signal than "continuous run of packets".
-You can have a standing queue of 2 packets, and keep processing 
-for ever. There's no congestion, or overload. You'd see that 
-timestamps are recent.
-
-I experimented last year with implementing CoDel on the input queues,
-worked pretty well (scroll down ~half way):
-
-https://developers.facebook.com/blog/post/2022/04/25/investigating-tcp-self-throttling-triggered-overload/
