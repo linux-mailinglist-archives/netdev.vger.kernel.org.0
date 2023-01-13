@@ -2,322 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2AC668965
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 03:08:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB24966897E
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 03:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbjAMCIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Jan 2023 21:08:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49308 "EHLO
+        id S231400AbjAMCTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Jan 2023 21:19:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232830AbjAMCIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 21:08:51 -0500
+        with ESMTP id S231331AbjAMCTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Jan 2023 21:19:22 -0500
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF54A5472A
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 18:08:48 -0800 (PST)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NtPtY4YqgzRrJv;
-        Fri, 13 Jan 2023 10:07:01 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Fri, 13 Jan 2023 10:08:46 +0800
-From:   Hao Lan <lanhao@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <richardcochran@gmail.com>, <shenjian15@huawei.com>,
-        <wangjie125@huawei.com>, <netdev@vger.kernel.org>
-Subject: [PATCH net-next 2/2] net: hns3: add vf fault process in hns3 ras
-Date:   Fri, 13 Jan 2023 10:08:29 +0800
-Message-ID: <20230113020829.48451-3-lanhao@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20230113020829.48451-1-lanhao@huawei.com>
-References: <20230113020829.48451-1-lanhao@huawei.com>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4529E574C7
+        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 18:19:20 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NtQ6f43y4zRrFK;
+        Fri, 13 Jan 2023 10:17:30 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 13 Jan
+ 2023 10:19:14 +0800
+Subject: Re: [PATCH v3 00/26] Split netmem from struct page
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>
+CC:     <brouer@redhat.com>, Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>
+References: <20230111042214.907030-1-willy@infradead.org>
+ <e9bb4841-6f9d-65c2-0f78-b307615b009a@huawei.com>
+ <Y763vcTFUZvWNgYv@casper.infradead.org>
+ <9cdc89f3-8c00-3673-5fdb-4f5bebd95d7a@redhat.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <9857b63e-5f7d-e45a-d837-bae8737c3c55@huawei.com>
+Date:   Fri, 13 Jan 2023 10:19:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+In-Reply-To: <9cdc89f3-8c00-3673-5fdb-4f5bebd95d7a@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
  dggpemm500005.china.huawei.com (7.185.36.74)
 X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+On 2023/1/12 18:15, Jesper Dangaard Brouer wrote:> On 11/01/2023 14.21, Matthew Wilcox wrote:
+>> On Wed, Jan 11, 2023 at 04:25:46PM +0800, Yunsheng Lin wrote:
+>>> On 2023/1/11 12:21, Matthew Wilcox (Oracle) wrote:
+>>>> The MM subsystem is trying to reduce struct page to a single pointer.
+>>>> The first step towards that is splitting struct page by its individual
+>>>> users, as has already been done with folio and slab.  This patchset does
+>>>> that for netmem which is used for page pools.
+>>> As page pool is only used for rx side in the net stack depending on the
+>>> driver, a lot more memory for the net stack is from page_frag_alloc_align(),
+>>> kmem cache, etc.
+>>> naming it netmem seems a little overkill, perhaps a more specific name for
+>>> the page pool? such as pp_cache.
+>>>
+>>> @Jesper & Ilias
+>>> Any better idea?
+> 
+> I like the 'netmem' name.
 
-Currently hns3 driver supports vf fault detect feature. Several ras caused
-by VF resources don't need to do PF function reset for recovery. The driver
-only needs to reset the specified VF.
+Fair enough.
+I just pointed out why netmem might not be appropriate when we are not
+figuring out how netmem will work through the whole networking stack yet.
+It is eventually your and david/jakub's call to decide the naming anyway.
 
-So this patch adds process in ras module. New process will get detailed
-information about ras and do the most correct measures based on these
-accurate information.
+> 
+>>> And it seem some API may need changing too, as we are not pooling 'pages'
+>>> now.
+> 
+> IMHO it would be overkill to rename the page_pool to e.g. netmem_pool.
+> as it would generate too much churn and will be hard to follow in git
+> as the code filename page_pool.c would also have to be renamed.
+> It guess we keep page_pool for historical reasons ;-)
 
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Hao Lan <lanhao@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   1 +
- .../hns3/hns3_common/hclge_comm_cmd.h         |   1 +
- .../hisilicon/hns3/hns3pf/hclge_err.c         | 113 +++++++++++++++++-
- .../hisilicon/hns3/hns3pf/hclge_err.h         |   2 +
- .../hisilicon/hns3/hns3pf/hclge_main.c        |   3 +-
- .../hisilicon/hns3/hns3pf/hclge_main.h        |   1 +
- 6 files changed, 115 insertions(+), 6 deletions(-)
+I think this is a matter of conflict between backward and forward maintainability.
+IMHO we should prefer forward maintainability over backward maintainability.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index cd85c360335d..76a6230ccfee 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -265,6 +265,7 @@ enum hnae3_reset_type {
- 	HNAE3_GLOBAL_RESET,
- 	HNAE3_IMP_RESET,
- 	HNAE3_NONE_RESET,
-+	HNAE3_VF_EXP_RESET,
- 	HNAE3_MAX_RESET,
- };
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
-index ca3692dc2848..8f823cdc0543 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
-@@ -92,6 +92,7 @@ enum hclge_opcode_type {
- 	HCLGE_OPC_DFX_SSU_REG_2		= 0x004F,
- 
- 	HCLGE_OPC_QUERY_DEV_SPECS	= 0x0050,
-+	HCLGE_OPC_GET_QUEUE_ERR_VF      = 0x0067,
- 
- 	/* MAC command */
- 	HCLGE_OPC_CONFIG_MAC_MODE	= 0x0301,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index 6efd768cc07c..cf8f3882304a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -1299,10 +1299,12 @@ static const struct hclge_hw_type_id hclge_hw_type_id_st[] = {
- 		.msg = "tqp_int_ecc_error"
- 	}, {
- 		.type_id = PF_ABNORMAL_INT_ERROR,
--		.msg = "pf_abnormal_int_error"
-+		.msg = "pf_abnormal_int_error",
-+		.cause_by_vf = true
- 	}, {
- 		.type_id = MPF_ABNORMAL_INT_ERROR,
--		.msg = "mpf_abnormal_int_error"
-+		.msg = "mpf_abnormal_int_error",
-+		.cause_by_vf = true
- 	}, {
- 		.type_id = COMMON_ERROR,
- 		.msg = "common_error"
-@@ -2757,7 +2759,7 @@ void hclge_handle_occurred_error(struct hclge_dev *hdev)
- 		hclge_handle_error_info_log(ae_dev);
- }
- 
--static void
-+static bool
- hclge_handle_error_type_reg_log(struct device *dev,
- 				struct hclge_mod_err_info *mod_info,
- 				struct hclge_type_reg_err_info *type_reg_info)
-@@ -2768,6 +2770,7 @@ hclge_handle_error_type_reg_log(struct device *dev,
- 	u8 mod_id, total_module, type_id, total_type, i, is_ras;
- 	u8 index_module = MODULE_NONE;
- 	u8 index_type = NONE_ERROR;
-+	bool cause_by_vf = false;
- 
- 	mod_id = mod_info->mod_id;
- 	type_id = type_reg_info->type_id & HCLGE_ERR_TYPE_MASK;
-@@ -2786,6 +2789,7 @@ hclge_handle_error_type_reg_log(struct device *dev,
- 	for (i = 0; i < total_type; i++) {
- 		if (type_id == hclge_hw_type_id_st[i].type_id) {
- 			index_type = i;
-+			cause_by_vf = hclge_hw_type_id_st[i].cause_by_vf;
- 			break;
- 		}
- 	}
-@@ -2803,6 +2807,8 @@ hclge_handle_error_type_reg_log(struct device *dev,
- 	dev_err(dev, "reg_value:\n");
- 	for (i = 0; i < type_reg_info->reg_num; i++)
- 		dev_err(dev, "0x%08x\n", type_reg_info->hclge_reg[i]);
-+
-+	return cause_by_vf;
- }
- 
- static void hclge_handle_error_module_log(struct hnae3_ae_dev *ae_dev,
-@@ -2813,6 +2819,7 @@ static void hclge_handle_error_module_log(struct hnae3_ae_dev *ae_dev,
- 	struct device *dev = &hdev->pdev->dev;
- 	struct hclge_mod_err_info *mod_info;
- 	struct hclge_sum_err_info *sum_info;
-+	bool cause_by_vf = false;
- 	u8 mod_num, err_num, i;
- 	u32 offset = 0;
- 
-@@ -2841,12 +2848,16 @@ static void hclge_handle_error_module_log(struct hnae3_ae_dev *ae_dev,
- 
- 			type_reg_info = (struct hclge_type_reg_err_info *)
- 					    &buf[offset++];
--			hclge_handle_error_type_reg_log(dev, mod_info,
--							type_reg_info);
-+			if (hclge_handle_error_type_reg_log(dev, mod_info,
-+							    type_reg_info))
-+				cause_by_vf = true;
- 
- 			offset += type_reg_info->reg_num;
- 		}
- 	}
-+
-+	if (hnae3_ae_dev_vf_fault_supported(hdev->ae_dev) && cause_by_vf)
-+		set_bit(HNAE3_VF_EXP_RESET, &ae_dev->hw_err_reset_req);
- }
- 
- static int hclge_query_all_err_bd_num(struct hclge_dev *hdev, u32 *bd_num)
-@@ -2938,3 +2949,95 @@ int hclge_handle_error_info_log(struct hnae3_ae_dev *ae_dev)
- out:
- 	return ret;
- }
-+
-+static bool hclge_reset_vf_in_bitmap(struct hclge_dev *hdev,
-+				     unsigned long *bitmap)
-+{
-+	struct hclge_vport *vport;
-+	bool exist_set = false;
-+	int func_id;
-+	int ret;
-+
-+	func_id = find_first_bit(bitmap, HCLGE_VPORT_NUM);
-+	if (func_id == PF_VPORT_ID)
-+		return false;
-+
-+	while (func_id != HCLGE_VPORT_NUM) {
-+		vport = hclge_get_vf_vport(hdev,
-+					   func_id - HCLGE_VF_VPORT_START_NUM);
-+		if (!vport) {
-+			dev_err(&hdev->pdev->dev, "invalid func id(%d)\n",
-+				func_id);
-+			return false;
-+		}
-+
-+		dev_info(&hdev->pdev->dev, "do function %d recovery.", func_id);
-+
-+		ret = hclge_reset_tqp(&vport->nic);
-+		if (ret) {
-+			dev_err(&hdev->pdev->dev,
-+				"failed to reset tqp, ret = %d.", ret);
-+			return false;
-+		}
-+
-+		ret = hclge_func_reset_cmd(hdev, func_id);
-+		if (ret) {
-+			dev_err(&hdev->pdev->dev,
-+				"failed to reset func %d, ret = %d.",
-+				func_id, ret);
-+			return false;
-+		}
-+
-+		exist_set = true;
-+		clear_bit(func_id, bitmap);
-+		func_id = find_first_bit(bitmap, HCLGE_VPORT_NUM);
-+	}
-+
-+	return exist_set;
-+}
-+
-+static void hclge_get_vf_fault_bitmap(struct hclge_desc *desc,
-+				      unsigned long *bitmap)
-+{
-+#define HCLGE_FIR_FAULT_BYTES	24
-+#define HCLGE_SEC_FAULT_BYTES	8
-+
-+	u8 *buff;
-+
-+	memcpy(bitmap, desc[0].data, HCLGE_FIR_FAULT_BYTES);
-+	buff = (u8 *)bitmap + HCLGE_FIR_FAULT_BYTES;
-+	memcpy(buff, desc[1].data, HCLGE_SEC_FAULT_BYTES);
-+}
-+
-+int hclge_handle_vf_queue_err_ras(struct hclge_dev *hdev)
-+{
-+	unsigned long vf_fault_bitmap[BITS_TO_LONGS(HCLGE_VPORT_NUM)];
-+	struct hclge_desc desc[2];
-+	bool cause_by_vf = false;
-+	int ret;
-+
-+	if (!hnae3_ae_dev_vf_fault_supported(hdev->ae_dev) ||
-+	    !test_and_clear_bit(HNAE3_VF_EXP_RESET,
-+				&hdev->ae_dev->hw_err_reset_req))
-+		return 0;
-+
-+	hclge_comm_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_GET_QUEUE_ERR_VF,
-+					true);
-+	desc[0].flag |= cpu_to_le16(HCLGE_COMM_CMD_FLAG_NEXT);
-+	hclge_comm_cmd_setup_basic_desc(&desc[1], HCLGE_OPC_GET_QUEUE_ERR_VF,
-+					true);
-+
-+	ret = hclge_comm_cmd_send(&hdev->hw.hw, desc, 2);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"failed to get vf bitmap, ret = %d.\n", ret);
-+		return ret;
-+	}
-+	hclge_get_vf_fault_bitmap(desc, vf_fault_bitmap);
-+
-+	cause_by_vf = hclge_reset_vf_in_bitmap(hdev, vf_fault_bitmap);
-+	if (cause_by_vf)
-+		hdev->ae_dev->hw_err_reset_req = 0;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
-index 86be6fb32990..68b738affa66 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
-@@ -196,6 +196,7 @@ struct hclge_hw_module_id {
- struct hclge_hw_type_id {
- 	enum hclge_err_type_list type_id;
- 	const char *msg;
-+	bool cause_by_vf; /* indicate the error may from vf exception */
- };
- 
- struct hclge_sum_err_info {
-@@ -228,4 +229,5 @@ int hclge_handle_hw_msix_error(struct hclge_dev *hdev,
- 			       unsigned long *reset_requests);
- int hclge_handle_error_info_log(struct hnae3_ae_dev *ae_dev);
- int hclge_handle_mac_tnl(struct hclge_dev *hdev);
-+int hclge_handle_vf_queue_err_ras(struct hclge_dev *hdev);
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 07ad5f35219e..a1f1f72db8a6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3520,7 +3520,7 @@ static int hclge_get_status(struct hnae3_handle *handle)
- 	return hdev->hw.mac.link;
- }
- 
--static struct hclge_vport *hclge_get_vf_vport(struct hclge_dev *hdev, int vf)
-+struct hclge_vport *hclge_get_vf_vport(struct hclge_dev *hdev, int vf)
- {
- 	if (!pci_num_vf(hdev->pdev)) {
- 		dev_err(&hdev->pdev->dev,
-@@ -4559,6 +4559,7 @@ static void hclge_handle_err_recovery(struct hclge_dev *hdev)
- 	if (hclge_find_error_source(hdev)) {
- 		hclge_handle_error_info_log(ae_dev);
- 		hclge_handle_mac_tnl(hdev);
-+		hclge_handle_vf_queue_err_ras(hdev);
- 	}
- 
- 	hclge_handle_err_reset_request(hdev);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 13f23d606e77..73cfc26f5389 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -1148,4 +1148,5 @@ int hclge_dbg_dump_rst_info(struct hclge_dev *hdev, char *buf, int len);
- int hclge_push_vf_link_status(struct hclge_vport *vport);
- int hclge_enable_vport_vlan_filter(struct hclge_vport *vport, bool request_en);
- int hclge_mac_update_stats(struct hclge_dev *hdev);
-+struct hclge_vport *hclge_get_vf_vport(struct hclge_dev *hdev, int vf);
- #endif
--- 
-2.30.0
+And greg offers a possible way to fix the backport problem:
+https://www.spinics.net/lists/kernel/msg4648826.html
 
+For git history, I suppose that is a pain we have to pay for the future
+maintainability.
+
+> 
+>> I raised the question of naming in v1, six weeks ago, and nobody had
+>> any better names.  Seems a little unfair to ignore the question at first
+>> and then bring it up now.  I'd hate to miss the merge window because of
+>> a late-breaking major request like this.
+>>
+>> https://lore.kernel.org/netdev/20221130220803.3657490-1-willy@infradead.org/
+>>
+>> I'd like to understand what we think we'll do in networking when we trim
+>> struct page down to a single pointer,  All these usages that aren't from
+>> page_pool -- what information does networking need to track per-allocation?
+>> Would it make sense for the netmem to describe all memory used by the
+>> networking stack, and have allocators other than page_pool also return
+>> netmem, 
+> 
+> This is also how I see the future, that other netstack "allocators" can
+> return and work-with 'netmem' objects.   IMHO we are already cramming
+
+I am not sure how "other netstack 'allocators' can return and work-with
+'netmem' objects" works, I suppose putting different union for different
+allocators in struct netmem like struct page does? Isn't that bringing
+the similar problem Matthew is trying to fix in this patchset?
+
+
+> too many use-cases into page_pool (like the frag support Yunsheng
+> added).  IMHO there are room for other netstack "allocators" that can
+
+I do not understand why frag support is viewed as "cramming use-cases to
+page pool".
+In my defence, the frag support for rx is fix in the page pool, it just
+extend the page pool to return smaller buffer than before. If I create other
+allocator for that, I might invent a lot of wheel page pool already invented.
+
+> utilize netmem.  The page_pool is optimized for RX-NAPI workloads, using
+> it for other purposes is a mistake IMHO.  People should create other
+> netstack "allocators" that solves their specific use-cases.  E.g. The TX
+> path likely needs another "allocator" optimized for this TX use-case.
+> 
