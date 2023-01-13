@@ -2,66 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42D7466990A
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 921D8669930
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:55:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239173AbjAMNup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 08:50:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
+        id S241483AbjAMNzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 08:55:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238573AbjAMNuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:50:22 -0500
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C5E736FD
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 05:45:10 -0800 (PST)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-4bf16baa865so283925557b3.13
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 05:45:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=N9gSuTuOIeRoyvXTslypN3S9Y3n9ZhQxFv0DvHbjXOo=;
-        b=XUWtnSngwMqp0UV7+YoSQSR43zlVXU4xZV+OghNp2zfKJqKNZSWd+UoXUp9v9V9uvB
-         ffGPgkM6bVmmhPDO8sh0LaGP514Je2D3rR9qM6QE9iWzkKJY7KKgxtXraU1tkwAy9s0Q
-         SiybHuuvqpsSllMrAUzECDUxWETqLcic3sRQ09XfY/HkTdOTJFnzTV/T4IW9cG/r3Clu
-         dWjoFsMVpqnqojQgsNhZfLDf38ymkZZ8mdyq+4YHqzoreBb3gQDswu46hWUfdIrqNG3H
-         TathLmKvrjhS7oOIJ1AwWwFFDhO50clncGTZuQpI880Km2p4YABs/aZZY2fgvA3/EgUM
-         znzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=N9gSuTuOIeRoyvXTslypN3S9Y3n9ZhQxFv0DvHbjXOo=;
-        b=oSLHZ8yQWMncAiAzhkVQGpNiaUIy5DntRzFQ7ZIPMdep88OFuRIIXj5ZzkAwltibH0
-         CMQU0B9SDxLyq3KQ3EnQIvwHTOG0KkyyEbiwEbtHXGkhh4x8kNwSAK3kaWHiMHhIp/h7
-         xorAE+fNKkCyJoYSMW7iivpsk0dFGxI4+49GkrenbSGw22XQ57sGK+AXlL83QsQyfgGk
-         AAGWV6m61VBAkuBoz2Fz00KSTOKWQMOPGAq/DHNCqI17ujYZc0EGS47Snj5kFsvB74F9
-         hwHwnAzAK8xQ41UtD56Eb2VSr8jVb7CKlnbdp4Fd6r2u/Hkl98/TQsg2mNV+tGie7QIX
-         NCGw==
-X-Gm-Message-State: AFqh2kpc4nfsGLKulrhwrsIDXADAW4KdB7cwhRIt/KzIrQcTzNIb9wzZ
-        qiXdcE82bhp0D0uqjrxzjafYRqLgXfWI9iYk9xmVCg==
-X-Google-Smtp-Source: AMrXdXtJH9fhqngsU/znGp5Pce6WNzdeRxElK/cgmqsxhsBn2wn0OeFj/fgiLxP0V8CiM2Wny3plPb1rZ6Kc6GkYCFs=
-X-Received: by 2002:a05:690c:313:b0:37e:6806:a5f9 with SMTP id
- bg19-20020a05690c031300b0037e6806a5f9mr3612977ywb.47.1673617509336; Fri, 13
- Jan 2023 05:45:09 -0800 (PST)
+        with ESMTP id S240603AbjAMNzO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:55:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE2A6085E
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 05:52:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1673617919;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QXTffDYYJCXYBqBf0FqQRae4Pnf8pp6FZUyduUKOU38=;
+        b=ZEsVEX6MY6VpBIyJHSRgDaAEbtZZdFLs32fhPdFzDuaAZxj/70I+Mvm4rw1NBODhDB4mBn
+        5zruCRaX5jHlFDevaZa4a1GwiUNCaPTx4NAHRCIRoyEOBxZNajDXaGlSoiYDLOV7Pn+MqZ
+        4JEERJif0RKzP9mWw4jX9JnAB7BXkXM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-617-ixhFJkc-Obq2pY4kl4RO8w-1; Fri, 13 Jan 2023 08:51:56 -0500
+X-MC-Unique: ixhFJkc-Obq2pY4kl4RO8w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CA78B3C0D85E;
+        Fri, 13 Jan 2023 13:51:55 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-208-34.brq.redhat.com [10.40.208.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 89DE34078904;
+        Fri, 13 Jan 2023 13:51:55 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 86CCD30721A6C;
+        Fri, 13 Jan 2023 14:51:54 +0100 (CET)
+Subject: [PATCH net-next V2 0/2] net: use kmem_cache_free_bulk in
+ kfree_skb_list
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        pabeni@redhat.com
+Date:   Fri, 13 Jan 2023 14:51:54 +0100
+Message-ID: <167361788585.531803.686364041841425360.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-References: <20230113133503.58336-1-sensor1010@163.com>
-In-Reply-To: <20230113133503.58336-1-sensor1010@163.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 13 Jan 2023 14:44:58 +0100
-Message-ID: <CANn89iKDXQ_nvnXBp5Q99P67AW-jFTNkpEmYdESDWitf0Nt4vw@mail.gmail.com>
-Subject: Re: [PATCH v1] wireless/at76c50x-usb.c : Use devm_kzalloc replaces kmalloc
-To:     Lizhe <sensor1010@163.com>
-Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, johannes.berg@intel.com,
-        alexander@wetzel-home.de, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,39 +64,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 2:35 PM Lizhe <sensor1010@163.com> wrote:
->
-> use devm_kzalloc replaces kamlloc
->
-> Signed-off-by: Lizhe <sensor1010@163.com>
-> ---
->  drivers/net/wireless/atmel/at76c50x-usb.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
-> index 009bca34ece3..ebd8ef525557 100644
-> --- a/drivers/net/wireless/atmel/at76c50x-usb.c
-> +++ b/drivers/net/wireless/atmel/at76c50x-usb.c
-> @@ -2444,7 +2444,7 @@ static int at76_probe(struct usb_interface *interface,
->
->         udev = usb_get_dev(interface_to_usbdev(interface));
->
-> -       fwv = kmalloc(sizeof(*fwv), GFP_KERNEL);
-> +       fwv = devm_kzalloc(sizeof(*fwv), GFP_KERNEL);
+The kfree_skb_list function walks SKB (via skb->next) and frees them
+individually to the SLUB/SLAB allocator (kmem_cache). It is more
+efficient to bulk free them via the kmem_cache_free_bulk API.
 
-Have you compiled this patch ?
+Netstack NAPI fastpath already uses kmem_cache bulk alloc and free
+APIs for SKBs.
 
->         if (!fwv) {
->                 ret = -ENOMEM;
->                 goto exit;
-> @@ -2535,7 +2535,6 @@ static int at76_probe(struct usb_interface *interface,
->                 at76_delete_device(priv);
->
->  exit:
-> -       kfree(fwv);
->         if (ret < 0)
->                 usb_put_dev(udev);
->         return ret;
-> --
-> 2.17.1
->
+The kfree_skb_list call got an interesting optimization in commit
+520ac30f4551 ("net_sched: drop packets after root qdisc lock is
+released") that can create a list of SKBs "to_free" e.g. when qdisc
+enqueue fails or deliberately chooses to drop . It isn't a normal data
+fastpath, but the situation will likely occur when system/qdisc are
+under heavy workloads, thus it makes sense to use a faster API for
+freeing the SKBs.
+
+E.g. the (often distro default) qdisc fq_codel will drop batches of
+packets from fattest elephant flow, default capped at 64 packets (but
+adjustable via tc argument drop_batch).
+
+Performance measurements done in [1]:
+ [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/kfree_skb_list01.org
+
+---
+
+Jesper Dangaard Brouer (2):
+      net: fix call location in kfree_skb_list_reason
+      net: kfree_skb_list use kmem_cache_free_bulk
+
+
+ net/core/skbuff.c | 68 +++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 57 insertions(+), 11 deletions(-)
+
+--
+
