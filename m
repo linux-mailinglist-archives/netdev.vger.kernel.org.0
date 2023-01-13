@@ -2,64 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC711669CE8
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 16:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDCA6669D0A
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 17:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbjAMPvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 10:51:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
+        id S229771AbjAMQAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 11:00:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbjAMPuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 10:50:15 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC6A84BC9
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 07:43:15 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id c26so12024372pfp.10
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 07:43:15 -0800 (PST)
+        with ESMTP id S230341AbjAMP7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 10:59:35 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2A087910
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 07:50:49 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id v30so31709984edb.9
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 07:50:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EE+5vXR6A4AKhBg4Wq8Kn/uiwfPM/feLwvp278kmBtE=;
-        b=d2fMtUDL1R6ivdSKzNoAbCBkl00yQktMhsAXaR2jXN0nra7IIc+bY9EyfDzj1WoXCF
-         m3C+UWFRzP0th/64Arnib0WLh749BCWdQESt7NaHgD8u9OY1/H00wWUoa0anh0ncK+t7
-         bvdxgzgsruMJwO+US5fZy1Kz0AsxonUV1kieXoX8dJ8nLOhfU1FDs0X0H9fk2UPge11u
-         KqUEwJJ3XS43BiFBQiJkxrcocrYQdnMaLVfHJd6s/T/RC7FTywLT1w4V8fgw+l4HN3Uj
-         AiC0QCUD2neZ66rBS19DqZycDG3YlVNwvka7lQsCjClHW9kdINdOTzrvSn7JZJdQrvTZ
-         Q7Fg==
+        bh=Sne7IxwR3g4oWt9fVB2kj6IgmNoJJ6G8CQCq3BEz2C0=;
+        b=QW4IJ6axteTm8Eq3nxRyUaxSEPYzw5SY5Kh06aWmRIRjc1CV/UPClcj32g8PqdCEsK
+         X0v8PN1C4/QMFwHRKVSkrgiTxqoG+mFTfcMxc4aoLU5BR9spS7H5uGcZbv7PP4Sugzbz
+         lQpUPpsQVaxAz+j/92oeEXroqGcygs8fmrHBqWb8hUWEY4IZL3SwvFve2B+2RmVf6wqj
+         0w8X5nbxNVLEo9yTLIRMHrQWAzjTIn+gUP4JrA2SHUUQTZEX+vxnpQByEp6vmjJj/uZi
+         STN8EoVpTW1Ty0frncDEX8z52NnsYOwpGHwYHr/Xc++7WEAxza+wS/N+wvdNvZtp1oZP
+         ImBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=EE+5vXR6A4AKhBg4Wq8Kn/uiwfPM/feLwvp278kmBtE=;
-        b=B1njTxlf+wcCDLyTtd+15+7WWvUzHhdIGB13HW1NBro0Vx7r4XEnWHEuCtmB525r1J
-         OerKnDLUhQ5B/H+87q1kcoeEoAkkN1pn/4J7xXM3oCpMUhndJE8AtYs/gm1J2cmVgmE5
-         4gcv1PN6gj+stmkccuEaYS0OdXfNAkLQGQuHb2fHMQANxg6BGDx2i8wQtFG7liK/Lx1z
-         s/JvoaT4M9C+DO+5DQ7Meb0lJ6yhbywfvripzjDpRz7vvSigrArrJDQcwvb2o56fdDPo
-         Q3794GUQxK/6VoUrhyhrpKSYdA9ismEmFutwhuI25lBm0b25rMNEH4v1lumzuvo0YNkJ
-         Sl9w==
-X-Gm-Message-State: AFqh2kqgvVvxBMKYO6/KHaIQQ+GNGA91v5oZMrmeLJbMr49CrbpPiCN9
-        eHwwasw2ZuQGhV0+/tbfc9ue++Ex4TlC+pI3DkC2/+Nq
-X-Google-Smtp-Source: AMrXdXubLX3osZ9coC8wO/YlymcavKWLiyQM8odDvV4K+15WI+b0EltWadxFXgU+QF7J01XzCmS7gLqTC8/zs2Zkdx8=
-X-Received: by 2002:a62:2945:0:b0:582:4d0c:6f5c with SMTP id
- p66-20020a622945000000b005824d0c6f5cmr3649978pfp.44.1673624594512; Fri, 13
- Jan 2023 07:43:14 -0800 (PST)
+        bh=Sne7IxwR3g4oWt9fVB2kj6IgmNoJJ6G8CQCq3BEz2C0=;
+        b=zzFGsWZi1XmtyGlCq+c3XODNBYYxpr2rOQmDr4s8rcLGmz5ZuFBfops4Ja9fMZ+/QU
+         hO3kAZJcLrEARBhrpVTTWc0HgRyLL6NH/6JzkSWqvaMAQoRCjpC8MoNkXGg2TNWLmKNH
+         EBkyO3O0KksihhJc8PHAKuG/+GDLBdXyBSvLDMMXSvv6NbudNKK8h1fDjKcsvxzFDQ+6
+         K6gJj2H4fcaFEzcpz/PZd9njopxp4dNwiIk3QZzud9pEs6/jTOgLiR7kzYurPz9lwJXu
+         DkOYW7PRqELXeJZyEppad7eu4Nxu6cYh4bZ/NEu4vU2YTItX9A/NjYykhLU8GvWf287r
+         n/0w==
+X-Gm-Message-State: AFqh2krCzWiY1DZvisJGVvAz9s3aPRuGUuLLE3rVLPotA0zh1/Vnr2uO
+        js5ETwp+P4FDAye+q8PeYX5N8u5jaFHQN/1nXgU=
+X-Google-Smtp-Source: AMrXdXvI2WP06TjJmgLoSXrMRSMsgNlkyq/2YnWWVkR3qY1vX92DonHGwBPEYFEwYfAjqaXu1rxdNc7tln7T0sqmsrk=
+X-Received: by 2002:a05:6402:50e:b0:499:b405:98b9 with SMTP id
+ m14-20020a056402050e00b00499b40598b9mr2559604edv.385.1673625047319; Fri, 13
+ Jan 2023 07:50:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20230112140743.7438-1-u9012063@gmail.com>
-In-Reply-To: <20230112140743.7438-1-u9012063@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 13 Jan 2023 07:43:02 -0800
-Message-ID: <CAKgT0UfANmVSfGue37zO+D692rnPn8WNX3p8FKRPZ=90yzObTg@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next v13] vmxnet3: Add XDP support.
-To:     William Tu <u9012063@gmail.com>
-Cc:     netdev@vger.kernel.org, jsankararama@vmware.com, gyang@vmware.com,
-        doshir@vmware.com, gerhard@engleder-embedded.com,
-        alexandr.lobakin@intel.com, bang@vmware.com, tuc@vmware.com
+References: <20230111130520.483222-1-dnlplm@gmail.com> <b8f798f7b29a257741ba172d43456c3a79454e9c.camel@gmail.com>
+In-Reply-To: <b8f798f7b29a257741ba172d43456c3a79454e9c.camel@gmail.com>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Fri, 13 Jan 2023 16:43:19 +0100
+Message-ID: <CAGRyCJGFhNfbHs=qhdOg9DYOq_tLOska2r2B08WTBbnFyXXjhw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 0/3] add tx packets aggregation to ethtool and rmnet
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Gal Pressman <gal@nvidia.com>, Dave Taht <dave.taht@gmail.com>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,98 +76,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 12, 2023 at 6:07 AM William Tu <u9012063@gmail.com> wrote:
->
-> The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIRECT.
->
-> Background:
-> The vmxnet3 rx consists of three rings: ring0, ring1, and dataring.
-> For r0 and r1, buffers at r0 are allocated using alloc_skb APIs and dma
-> mapped to the ring's descriptor. If LRO is enabled and packet size larger
-> than 3K, VMXNET3_MAX_SKB_BUF_SIZE, then r1 is used to mapped the rest of
-> the buffer larger than VMXNET3_MAX_SKB_BUF_SIZE. Each buffer in r1 is
-> allocated using alloc_page. So for LRO packets, the payload will be in one
-> buffer from r0 and multiple from r1, for non-LRO packets, only one
-> descriptor in r0 is used for packet size less than 3k.
->
-> When receiving a packet, the first descriptor will have the sop (start of
-> packet) bit set, and the last descriptor will have the eop (end of packet)
-> bit set. Non-LRO packets will have only one descriptor with both sop and
-> eop set.
->
-> Other than r0 and r1, vmxnet3 dataring is specifically designed for
-> handling packets with small size, usually 128 bytes, defined in
-> VMXNET3_DEF_RXDATA_DESC_SIZE, by simply copying the packet from the backend
-> driver in ESXi to the ring's memory region at front-end vmxnet3 driver, in
-> order to avoid memory mapping/unmapping overhead. In summary, packet size:
->     A. < 128B: use dataring
->     B. 128B - 3K: use ring0 (VMXNET3_RX_BUF_SKB)
->     C. > 3K: use ring0 and ring1 (VMXNET3_RX_BUF_SKB + VMXNET3_RX_BUF_PAGE)
-> As a result, the patch adds XDP support for packets using dataring
-> and r0 (case A and B), not the large packet size when LRO is enabled.
->
-> XDP Implementation:
-> When user loads and XDP prog, vmxnet3 driver checks configurations, such
-> as mtu, lro, and re-allocate the rx buffer size for reserving the extra
-> headroom, XDP_PACKET_HEADROOM, for XDP frame. The XDP prog will then be
-> associated with every rx queue of the device. Note that when using dataring
-> for small packet size, vmxnet3 (front-end driver) doesn't control the
-> buffer allocation, as a result we allocate a new page and copy packet
-> from the dataring to XDP frame.
->
-> The receive side of XDP is implemented for case A and B, by invoking the
-> bpf program at vmxnet3_rq_rx_complete and handle its returned action.
-> The vmxnet3_process_xdp(), vmxnet3_process_xdp_small() function handles
-> the ring0 and dataring case separately, and decides the next journey of
-> the packet afterward.
->
-> For TX, vmxnet3 has split header design. Outgoing packets are parsed
-> first and protocol headers (L2/L3/L4) are copied to the backend. The
-> rest of the payload are dma mapped. Since XDP_TX does not parse the
-> packet protocol, the entire XDP frame is dma mapped for transmission
-> and transmitted in a batch. Later on, the frame is freed and recycled
-> back to the memory pool.
->
-> Performance:
-> Tested using two VMs inside one ESXi vSphere 7.0 machine, using single
-> core on each vmxnet3 device, sender using DPDK testpmd tx-mode attached
-> to vmxnet3 device, sending 64B or 512B UDP packet.
->
-> VM1 txgen:
-> $ dpdk-testpmd -l 0-3 -n 1 -- -i --nb-cores=3 \
-> --forward-mode=txonly --eth-peer=0,<mac addr of vm2>
-> option: add "--txonly-multi-flow"
-> option: use --txpkts=512 or 64 byte
->
-> VM2 running XDP:
-> $ ./samples/bpf/xdp_rxq_info -d ens160 -a <options> --skb-mode
-> $ ./samples/bpf/xdp_rxq_info -d ens160 -a <options>
-> options: XDP_DROP, XDP_PASS, XDP_TX
->
-> To test REDIRECT to cpu 0, use
-> $ ./samples/bpf/xdp_redirect_cpu -d ens160 -c 0 -e drop
->
-> Single core performance comparison with skb-mode.
-> 64B:      skb-mode -> native-mode
-> XDP_DROP: 1.6Mpps -> 2.4Mpps
-> XDP_PASS: 338Kpps -> 367Kpps
-> XDP_TX:   1.1Mpps -> 2.3Mpps
-> REDIRECT-drop: 1.3Mpps -> 2.3Mpps
->
-> 512B:     skb-mode -> native-mode
-> XDP_DROP: 863Kpps -> 1.3Mpps
-> XDP_PASS: 275Kpps -> 376Kpps
-> XDP_TX:   554Kpps -> 1.2Mpps
-> REDIRECT-drop: 659Kpps -> 1.2Mpps
->
-> Limitations:
-> a. LRO will be disabled when users load XDP program
-> b. MTU will be checked and limit to
->    VMXNET3_MAX_SKB_BUF_SIZE(3K) - XDP_PACKET_HEADROOM(256) -
->    SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
->
-> Signed-off-by: William Tu <u9012063@gmail.com>
+Hello Alexander,
 
-I don't see anything else that jumps out at me as needing to be addressed.
+Il giorno ven 13 gen 2023 alle ore 00:00 Alexander H Duyck
+<alexander.duyck@gmail.com> ha scritto:
+>
+> On Wed, 2023-01-11 at 14:05 +0100, Daniele Palmas wrote:
+> > Hello maintainers and all,
+> >
+> > this patchset implements tx qmap packets aggregation in rmnet and generic
+> > ethtool support for that.
+> >
+> > Some low-cat Thread-x based modems are not capable of properly reaching the maximum
+> > allowed throughput both in tx and rx during a bidirectional test if tx packets
+> > aggregation is not enabled.
+>
+> One question I would have about this is if you are making use of Byte
+> Queue Limits and netdev_xmit_more at all? I know for high speed devices
+> most of us added support for xmit_more because PCIe bandwidth was
+> limiting when we were writing the Tx ring indexes/doorbells with every
+> packet. To overcome that we added netdev_xmit_more which told us when
+> the Qdisc had more packets to give us. This allowed us to better
+> utilize the PCIe bus by bursting packets through without adding
+> additional latency.
+>
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+no, I was not aware of BQL: this development has been basically
+modelled on what other mobile broadband drivers do (e.g.
+cdc_mbim/cdc_ncm, Qualcomm downstream rmnet implementation), that are
+not using BQL.
+
+If I understand properly documentation
+
+rmnet0/queues/tx-0/byte_queue_limits/limit_max
+
+would be the candidate for replacing ETHTOOL_A_COALESCE_TX_AGGR_MAX_BYTES.
+
+But I can't find anything for ETHTOOL_A_COALESCE_TX_AGGR_MAX_FRAMES
+and ETHTOOL_A_COALESCE_TX_AGGR_TIME_USECS, something that should work
+in combination with the bytes limit: at least the first one is
+mandatory, since the modem can't receive more than a certain number
+(this is a variable value depending on the modem model and is
+collected through userspace tools).
+
+ETHTOOL_A_COALESCE_TX_AGGR_MAX_FRAMES works also as a way to determine
+that tx aggregation has been enabled by the userspace tool managing
+the qmi requests, otherwise no aggregation should be performed.
+
+> > I verified this problem with rmnet + qmi_wwan by using a MDM9207 Cat. 4 based modem
+> > (50Mbps/150Mbps max throughput). What is actually happening is pictured at
+> > https://drive.google.com/file/d/1gSbozrtd9h0X63i6vdkNpN68d-9sg8f9/view
+> >
+> > Testing with iperf TCP, when rx and tx flows are tested singularly there's no issue
+> > in tx and minor issues in rx (not able to reach max throughput). When there are concurrent
+> > tx and rx flows, tx throughput has an huge drop. rx a minor one, but still present.
+> >
+> > The same scenario with tx aggregation enabled is pictured at
+> > https://drive.google.com/file/d/1jcVIKNZD7K3lHtwKE5W02mpaloudYYih/view
+> > showing a regular graph.
+> >
+> > This issue does not happen with high-cat modems (e.g. SDX20), or at least it
+> > does not happen at the throughputs I'm able to test currently: maybe the same
+> > could happen when moving close to the maximum rates supported by those modems.
+> > Anyway, having the tx aggregation enabled should not hurt.
+> >
+> > The first attempt to solve this issue was in qmi_wwan qmap implementation,
+> > see the discussion at https://lore.kernel.org/netdev/20221019132503.6783-1-dnlplm@gmail.com/
+> >
+> > However, it turned out that rmnet was a better candidate for the implementation.
+> >
+> > Moreover, Greg and Jakub suggested also to use ethtool for the configuration:
+> > not sure if I got their advice right, but this patchset add also generic ethtool
+> > support for tx aggregation.
+>
+> I have concerns about this essentially moving queueing disciplines down
+> into the device. The idea of doing Tx aggregation seems like something
+> that should be done with the qdisc rather than the device driver.
+> Otherwise we are looking at having multiple implementations of this
+> aggregation floating around. It seems like it would make more sense to
+> have this batching happen at the qdisc layer, and then the qdisc layer
+> would pass down a batch of frames w/ xmit_more set to indicate it is
+> flushing the batch.
+
+Honestly, I'm not expert enough to give a reliable opinion about this.
+
+I feel like these settings are more related to the hardware, requiring
+also a configuration on the hardware itself done by the user, so
+ethtool would seem to me a good choice, but I may be biased since I
+did this development :-)
+
+Thanks,
+Daniele
