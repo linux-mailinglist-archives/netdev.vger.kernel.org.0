@@ -2,132 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75EDF66A730
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:41:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4083D66A74A
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:57:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbjAMXlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 18:41:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
+        id S231326AbjAMX5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 18:57:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbjAMXlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:41:52 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA4D8D397
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:41:51 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id k12so2875033plk.0
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:41:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=q6MHYbwLCd4MXDktCkUEHbUjwJCPzByBEFcKICE41Wc=;
-        b=oTZuy2QPWn8Ttcvpqg8Wf+v1IVfqF7e+evU+pjT9cDt2BTwDYJE0G5bkNpMF6ezT3g
-         +SEvjpRmiSNsLRYN9qdquMxFrzldCiMPoVdF6prKORkPqeIap777PZoxpIHMOGBqf/A2
-         umpAryvMGRtP/6LszPqvra+mLhvn9hhxyqa3s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q6MHYbwLCd4MXDktCkUEHbUjwJCPzByBEFcKICE41Wc=;
-        b=a/nb7Hz1iLKWwl6OfWJ9IAQ/tk2ro2koFLrGDprFohTyt7pzCedWjXMn5TXDIItot4
-         1GJ6aP1KMchEv5Gz9tzPX4TTBHyoKTFwIbInH3GTxENlc0vhBjgeXqLwj0NWeaZ72Gq8
-         UdxUXj+1bdeh7hXevCzLQFqXftaDW+cuHP0PpYnsSEzrx5GxN0Gd2ivgXU0U44HC43fz
-         Yf2c4/FkHXKzwAcz2RkkeTB/Fovr1NdS+lo+Dq/fJemNOdhyTfNt+FHIsBBjOXjuZE4Q
-         /lZKS7pSoVlRb/7c6uX9JLHqXrLemO4WajoNN6dXGuE6/2+SuyPeNNV58plOeIY3SIiJ
-         9mGA==
-X-Gm-Message-State: AFqh2ko8yafvimI+b4n3MxWjfMZBI8tpf/7ncoLxUWzdaO3pkB0CPoa+
-        ++6R3p/kav8J+YSQ65jC8hqTuw==
-X-Google-Smtp-Source: AMrXdXuZ+U95h1w+2Ck1r1tekdH9Z21e+CKOPUB5dzyfgK6c9cASSF6xg9nIODJAgNZMvedmhtP+eA==
-X-Received: by 2002:a05:6a20:c906:b0:b4:f66a:99a9 with SMTP id gx6-20020a056a20c90600b000b4f66a99a9mr43708881pzb.60.1673653310583;
-        Fri, 13 Jan 2023 15:41:50 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id v14-20020a17090a4ece00b002194319662asm14592813pjl.42.2023.01.13.15.41.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 15:41:50 -0800 (PST)
-From:   coverity-bot <keescook@chromium.org>
-X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
-Date:   Fri, 13 Jan 2023 15:41:49 -0800
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Coverity: genphy_c45_plca_set_cfg(): UNINIT
-Message-ID: <202301131541.741EBE0@keescook>
+        with ESMTP id S231224AbjAMX5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:57:43 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB277466F
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:57:41 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id DE8385C6F0;
+        Fri, 13 Jan 2023 23:57:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1673654258; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=n/Vx8UJUHuHTIzKG7+ocWPm84VMGhwGCVMYDbmIXrJs=;
+        b=gHr/m2RduLJ/BDvGk7nspPc3o7JJZuiEziDKm/Jzc+HUcLYQnqNoKvaOoSv5/MEnyehcgc
+        0QRvy5CIEehreImVYhYq+lQEf6tq/Fjlv+4NuQhirjjI8kwmP+1y2QCdK2Bk0m8kRKK3Ig
+        WydPl8mKdQffpCG3GZLzwHExQox/pQ4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1673654258;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=n/Vx8UJUHuHTIzKG7+ocWPm84VMGhwGCVMYDbmIXrJs=;
+        b=qYUCEZTKUk6syGfxpGPMFSexTVWC60SKF8gDA8P6ERMi7lS5uTMJ3GlF6nMgqlSfF4VucK
+        8eCLhfGIce9AB3BA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D21462C141;
+        Fri, 13 Jan 2023 23:57:38 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id ACAB860330; Sat, 14 Jan 2023 00:57:38 +0100 (CET)
+Date:   Sat, 14 Jan 2023 00:57:38 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH ethtool 1/3] misc: Fix build with kernel headers < v4.11
+Message-ID: <20230113235738.wyaf3rg63olkwixw@lion.mk-sys.cz>
+References: <20230113233148.235543-1-f.fainelli@gmail.com>
+ <20230113233148.235543-2-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="2vyyi26fe2shrq3h"
 Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230113233148.235543-2-f.fainelli@gmail.com>
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
 
-This is an experimental semi-automated report about issues detected by
-Coverity from a scan of next-20230113 as part of the linux-next scan project:
-https://scan.coverity.com/projects/linux-next-weekly-scan
+--2vyyi26fe2shrq3h
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-You're getting this email because you were associated with the identified
-lines of code (noted below) that were touched by commits:
+On Fri, Jan 13, 2023 at 03:31:46PM -0800, Florian Fainelli wrote:
+> Not all toolchain kernel headers may contain upstream commit
+> 2618be7dccf8739b89e1906b64bd8d551af351e6 ("uapi: fix linux/if.h
+> userspace compilation errors") which is included in v4.11 and onwards.
+> Err on the side of caution by including sys/socket.h ahead of including
+> linux/if.h.
+>=20
+> Fixes: 1fa60003a8b8 ("misc: header includes cleanup")
+> Reported-by: Markus Mayer <mmayer@broadcom.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  internal.h | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/internal.h b/internal.h
+> index b80f77afa4c0..f7aaaf5229f4 100644
+> --- a/internal.h
+> +++ b/internal.h
+> @@ -21,6 +21,7 @@
+>  #include <unistd.h>
+>  #include <endian.h>
+>  #include <sys/ioctl.h>
+> +#include <sys/socket.h>
+>  #include <linux/if.h>
+> =20
+>  #include "json_writer.h"
 
-  Wed Jan 11 08:35:02 2023 +0000
-    493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
+No objection but I wonder if it wouldn't make sense to add linux/if.h to
+the header copies in uapi/ instead as then we could also drop the
+fallback definition of ALTIFNAMSIZ and perhaps more similar hacks.
 
-Coverity reported the following:
+Michal
 
-*** CID 1530573:    (UNINIT)
-drivers/net/phy/phy-c45.c:1036 in genphy_c45_plca_set_cfg()
-1030     				return ret;
-1031
-1032     			val = ret;
-1033     		}
-1034
-1035     		if (plca_cfg->node_cnt >= 0)
-vvv     CID 1530573:    (UNINIT)
-vvv     Using uninitialized value "val".
-1036     			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
-1037     			      (plca_cfg->node_cnt << 8);
-1038
-1039     		if (plca_cfg->node_id >= 0)
-1040     			val = (val & ~MDIO_OATC14_PLCA_ID) |
-1041     			      (plca_cfg->node_id);
-drivers/net/phy/phy-c45.c:1076 in genphy_c45_plca_set_cfg()
-1070     				return ret;
-1071
-1072     			val = ret;
-1073     		}
-1074
-1075     		if (plca_cfg->burst_cnt >= 0)
-vvv     CID 1530573:    (UNINIT)
-vvv     Using uninitialized value "val".
-1076     			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
-1077     			      (plca_cfg->burst_cnt << 8);
-1078
-1079     		if (plca_cfg->burst_tmr >= 0)
-1080     			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
-1081     			      (plca_cfg->burst_tmr);
+--2vyyi26fe2shrq3h
+Content-Type: application/pgp-signature; name="signature.asc"
 
-If this is a false positive, please let us know so we can mark it as
-such, or teach the Coverity rules to be smarter. If not, please make
-sure fixes get into linux-next. :) For patches fixing this, please
-include these lines (but double-check the "Fixes" first):
+-----BEGIN PGP SIGNATURE-----
 
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Addresses-Coverity-ID: 1530573 ("UNINIT")
-Fixes: 493323416fed ("drivers/net/phy: add helpers to get/set PLCA configuration")
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmPB7+0ACgkQ538sG/LR
+dpUH0gf/dzEcNgyveKQXD4iFgRj+CHxTNPexKV49WlXd/Vm6IDqk1sm+YXfFzx5t
+FOc/sKttEOSN6znfl+c2Kdkj7I8dwgh7Lr+/qIT2zN/hkd7MfdOJBmVH6uLsi80D
+nTS3BwSHSz3Bc7hNov4FTlKyAwJZMeLrMK3xhscHy5mtiD1sLPlnCoP+kpRbu50V
+oG1kKTkhwT9sdEC8OzDMYUbwOlM1mvxR16ZJ6sU7Ki/i4iSETY8wrW3NcDbg5PHq
+tC3TQCyfXkQLPmsZBX+IJVDYRytZ8SiNd0/jsEOnwfDONokQHp0gHUAW49ubs+jH
+BN45B1ijwuL6oATGcTXayKXHwDEicw==
+=il/w
+-----END PGP SIGNATURE-----
 
-Thanks for your attention!
-
--- 
-Coverity-bot
+--2vyyi26fe2shrq3h--
