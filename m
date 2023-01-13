@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4E736698ED
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:44:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE256698EB
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 14:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241010AbjAMNoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 08:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
+        id S241785AbjAMNn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 08:43:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240277AbjAMNmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:42:40 -0500
-Received: from m12.mail.163.com (m12.mail.163.com [123.126.96.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0714F249;
-        Fri, 13 Jan 2023 05:36:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=5R8MW5PsrFpUHW2/Qs
-        o1Ea/UZDqrP1AU/pa+y91SHfc=; b=i34dA0h1bYou2dmJ0i8xL4wac/UEIJTh2c
-        ZrR19AzAxyKn1dyPwzDxUEyxRltsoWTQ3FROg6F5klG+LYAXg6Te6ntK8IuWyAgy
-        +pjS/OgbcKFwTelRZiI8PFZJ7shsndqYDeSUD2pBXfmcs8wcoz6DIlenHdNfjwd8
-        TLT+SYQCc=
-Received: from localhost.localdomain (unknown [114.107.204.148])
-        by smtp20 (Coremail) with SMTP id H91pCgDnZMAKXsFj1Gk1AQ--.2429S4;
-        Fri, 13 Jan 2023 21:35:46 +0800 (CST)
-From:   Lizhe <sensor1010@163.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, johannes.berg@intel.com,
-        alexander@wetzel-home.de
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lizhe <sensor1010@163.com>
-Subject: [PATCH v1] wireless/at76c50x-usb.c : Use devm_kzalloc replaces kmalloc
-Date:   Fri, 13 Jan 2023 05:35:03 -0800
-Message-Id: <20230113133503.58336-1-sensor1010@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: H91pCgDnZMAKXsFj1Gk1AQ--.2429S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtrWkXF4DCFWxJr43tw43Jrb_yoWfZFc_uF
-        4Igrn7JFWUJFs2gry7Cr47ZFySkF1xXFn7uanxKay3uw12vrW8ZrZ5ZFyavFZrurWfAFy3
-        Ar1DtFy5ZayvgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRXtxfUUUUUU==
-X-Originating-IP: [114.107.204.148]
-X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/1tbiSBT1q1+FgsklaAABsf
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S241792AbjAMNmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 08:42:16 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63117A23C;
+        Fri, 13 Jan 2023 05:36:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6tMz3uj91sZWGT4+8mYXTqsk5KW2CRLjomXJqZADZa0=; b=Bz6kN7EjszZZCYeO0ZCPouGgE0
+        3rT2En9B2v6DZL8BTPZx/dwSTLZCK2LQUApPo/v7i6Fcc+YnJVZaV6zt+SmQAy35VJsGvfz4r0LmQ
+        fdMEkKA9KG1F7kaHeSHj8esnEuHkNy1fJy8IMR4q9v9EdKPHAo9RRuEQx+10MwBU4pGFK6OMLWQEq
+        ymngc/Cb899QZEz3JZz6xwOU67eqcSN/5XpU87D7BnnzqH6q6VUpVsiyxtN/dmvfkE8Jd6J3sWi/M
+        UnzSM83R1o7JcxcMLxi50uAaV3GhW9d3kxcOS/Zo2t+8ITJOhF9DVyU6vIqFd4wYKmozyCE2nVKoa
+        B+OdVHzw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36090)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pGKED-0007tu-0L; Fri, 13 Jan 2023 13:36:16 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pGKEC-0003By-0R; Fri, 13 Jan 2023 13:36:16 +0000
+Date:   Fri, 13 Jan 2023 13:36:15 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: Re: 6.1: possible bug with netfilter conntrack?
+Message-ID: <Y8FeT7pAUDeILb/X@shell.armlinux.org.uk>
+References: <Y8CR3CvOIAa6QIZ4@shell.armlinux.org.uk>
+ <Y8CaaCoOAx6XzWq/@shell.armlinux.org.uk>
+ <20230112234503.GB19463@breakpoint.cc>
+ <Y8E8uX9gLBBywmf5@shell.armlinux.org.uk>
+ <20230113125629.GD19463@breakpoint.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230113125629.GD19463@breakpoint.cc>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-use devm_kzalloc replaces kamlloc
+On Fri, Jan 13, 2023 at 01:56:29PM +0100, Florian Westphal wrote:
+> Right, this is silly.  I'll see about this; the rst packet
+> bypasses conntrack because nf_send_reset attaches the exising
+> entry of the packet its replying to -- tcp conntrack gets skipped for
+> the generated RST.
+> 
+> But this is also the case in 5.16, so no idea why this is surfacing now.
 
-Signed-off-by: Lizhe <sensor1010@163.com>
----
- drivers/net/wireless/atmel/at76c50x-usb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Maybe it's just down to a change in the traffic characteristics that
+now makes it a problem, and it appearing after upgrading to 6.1 is
+just coincidence?
 
-diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
-index 009bca34ece3..ebd8ef525557 100644
---- a/drivers/net/wireless/atmel/at76c50x-usb.c
-+++ b/drivers/net/wireless/atmel/at76c50x-usb.c
-@@ -2444,7 +2444,7 @@ static int at76_probe(struct usb_interface *interface,
- 
- 	udev = usb_get_dev(interface_to_usbdev(interface));
- 
--	fwv = kmalloc(sizeof(*fwv), GFP_KERNEL);
-+	fwv = devm_kzalloc(sizeof(*fwv), GFP_KERNEL);
- 	if (!fwv) {
- 		ret = -ENOMEM;
- 		goto exit;
-@@ -2535,7 +2535,6 @@ static int at76_probe(struct usb_interface *interface,
- 		at76_delete_device(priv);
- 
- exit:
--	kfree(fwv);
- 	if (ret < 0)
- 		usb_put_dev(udev);
- 	return ret;
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
