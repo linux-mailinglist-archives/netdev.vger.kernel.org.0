@@ -2,86 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEAD5669A47
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 15:33:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45CAA669AA2
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 15:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbjAMOdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 09:33:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
+        id S230115AbjAMOhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 09:37:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbjAMOcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 09:32:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEECC2675;
-        Fri, 13 Jan 2023 06:25:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00EEA61EEC;
-        Fri, 13 Jan 2023 14:25:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DA2C433D2;
-        Fri, 13 Jan 2023 14:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673619926;
-        bh=1pZBYp1XzZda5BFRWCG19b48xYjRl0QwW3PCvy5dCgE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=OjLb9b1eE9wS0eoLqvu7ZMjLTvH1hAGXXwECuE/dLadjS/HIcs6XAJXUUN6DkgqDY
-         tJZALLc/MrgYJhJoCeHG5/TvOIBfHvjc6zMklxhdFUSd8PI/a58zB8XXsKks6Wy5i1
-         oQOWg0nPQjKBV7h78ug4XotrRfF1PprOJ5WYr2aMdUYgbsyw0Joplmolf3pyZ1YoTp
-         VX+4u8o8wts9idIbu4VlIPdX+cXcORn5EYVct7tYXgoTdPGv+joCPaioCbKaUKTlzS
-         iO5zSh32asg931jtKi0LDZo9rzjDrD/mWD/OLAwFg8EPpZHaqe/zZ6Aw551WIwy+in
-         ztYb0kuOw9M2Q==
-Message-ID: <64bf2456-e1cb-3b4a-af19-454cf0bb86aa@kernel.org>
-Date:   Fri, 13 Jan 2023 16:25:20 +0200
+        with ESMTP id S230047AbjAMOfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 09:35:32 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593E25D8B0
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 06:28:20 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pGL1f-0006Gx-Tq; Fri, 13 Jan 2023 15:27:23 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pGL1f-005mzE-79; Fri, 13 Jan 2023 15:27:23 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pGL1b-00CkPU-8B; Fri, 13 Jan 2023 15:27:19 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Abel Vesa <abelvesa@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v1 00/20] ARM: imx: make Ethernet refclock configurable
+Date:   Fri, 13 Jan 2023 15:26:58 +0100
+Message-Id: <20230113142718.3038265-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpsw/cpts: Fix CPTS
- release action
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, linux@armlinux.org.uk,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, vigneshr@ti.com, srk@ti.com
-References: <20230113104816.132815-1-s-vadapalli@ti.com>
-Content-Language: en-US
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20230113104816.132815-1-s-vadapalli@ti.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Most of i.MX SoC variants have configurable FEC/Ethernet reference clock
+used by RMII specification. This functionality is located in the
+general purpose registers (GRPx) and till now was not implemented as
+part of SoC clock tree.
 
+With this patch set, we move forward and add this missing functionality
+to some of i.MX clk drivers. So, we will be able to configure clock topology
+by using devicetree and be able to troubleshoot clock dependencies
+by using clk_summary etc.
 
-On 13/01/2023 12:48, Siddharth Vadapalli wrote:
-> The am65_cpts_release() function is registered as a devm_action in the
-> am65_cpts_create() function in am65-cpts driver. When the am65-cpsw driver
-> invokes am65_cpts_create(), am65_cpts_release() is added in the set of devm
-> actions associated with the am65-cpsw driver's device.
-> 
-> In the event of probe failure or probe deferral, the platform_drv_probe()
-> function invokes dev_pm_domain_detach() which powers off the CPSW and the
-> CPSW's CPTS hardware, both of which share the same power domain. Since the
-> am65_cpts_disable() function invoked by the am65_cpts_release() function
-> attempts to reset the CPTS hardware by writing to its registers, the CPTS
-> hardware is assumed to be powered on at this point. However, the hardware
-> is powered off before the devm actions are executed.
-> 
-> Fix this by getting rid of the devm action for am65_cpts_release() and
-> invoking it directly on the cleanup and exit paths.
-> 
-> Fixes: f6bd59526ca5 ("net: ethernet: ti: introduce am654 common platform time sync driver")
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+Currently implemented and tested i.MX6Q, i.MX6DL and i.MX6UL variants.
 
-Reviewed-by: Roger Quadros <rogerq@kernel.org>
+Oleksij Rempel (20):
+  clk: imx: add clk-gpr-mux driver
+  clk: imx6q: add ethernet refclock mux support
+  ARM: imx6q: skip ethernet refclock reconfiguration if enet_clk_ref is
+    present
+  ARM: imx6q: use of_clk_get_by_name() instead of_clk_get() to get ptp
+    clock
+  ARM: dts: imx6qdl: use enet_clk_ref instead of enet_out for the FEC
+    node
+  ARM: dts: imx6dl-lanmcu: configure ethernet reference clock parent
+  ARM: dts: imx6dl-alti6p: configure ethernet reference clock parent
+  ARM: dts: imx6dl-plybas: configure ethernet reference clock parent
+  ARM: dts: imx6dl-plym2m: configure ethernet reference clock parent
+  ARM: dts: imx6dl-prtmvt: configure ethernet reference clock parent
+  ARM: dts: imx6dl-victgo: configure ethernet reference clock parent
+  ARM: dts: imx6q-prtwd2: configure ethernet reference clock parent
+  ARM: dts: imx6qdl-skov-cpu: configure ethernet reference clock parent
+  ARM: dts: imx6dl-eckelmann-ci4x10: configure ethernet reference clock
+    parent
+  clk: imx: add imx_obtain_fixed_of_clock()
+  clk: imx6ul: fix enet1 gate configuration
+  clk: imx6ul: add ethernet refclock mux support
+  ARM: dts: imx6ul: set enet_clk_ref to CLK_ENETx_REF_SEL
+  ARM: mach-imx: imx6ul: remove not optional ethernet refclock overwrite
+  ARM: dts: imx6ul-prti6g: configure ethernet reference clock parent
 
-cheers,
--roger
+ arch/arm/boot/dts/imx6dl-alti6p.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts |  13 +-
+ arch/arm/boot/dts/imx6dl-lanmcu.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-plybas.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-plym2m.dts           |  12 +-
+ arch/arm/boot/dts/imx6dl-prtmvt.dts           |  11 +-
+ arch/arm/boot/dts/imx6dl-victgo.dts           |  12 +-
+ arch/arm/boot/dts/imx6q-prtwd2.dts            |  17 ++-
+ arch/arm/boot/dts/imx6qdl-skov-cpu.dtsi       |  12 +-
+ arch/arm/boot/dts/imx6qdl.dtsi                |   4 +-
+ arch/arm/boot/dts/imx6ul-prti6g.dts           |  14 ++-
+ arch/arm/boot/dts/imx6ul.dtsi                 |  10 +-
+ arch/arm/mach-imx/mach-imx6q.c                |  12 +-
+ arch/arm/mach-imx/mach-imx6ul.c               |  20 ---
+ drivers/clk/imx/Makefile                      |   1 +
+ drivers/clk/imx/clk-gpr-mux.c                 | 119 ++++++++++++++++++
+ drivers/clk/imx/clk-imx6q.c                   |  13 ++
+ drivers/clk/imx/clk-imx6ul.c                  |  33 ++++-
+ drivers/clk/imx/clk.c                         |  14 +++
+ drivers/clk/imx/clk.h                         |   8 ++
+ include/dt-bindings/clock/imx6qdl-clock.h     |   4 +-
+ include/dt-bindings/clock/imx6ul-clock.h      |   7 +-
+ include/linux/mfd/syscon/imx6q-iomuxc-gpr.h   |   6 +-
+ 23 files changed, 297 insertions(+), 81 deletions(-)
+ create mode 100644 drivers/clk/imx/clk-gpr-mux.c
+
+-- 
+2.30.2
+
