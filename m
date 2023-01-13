@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFAC5668D76
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5863E668CEC
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240856AbjAMG3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:29:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        id S241274AbjAMG35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:29:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240774AbjAMG0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:26:53 -0500
+        with ESMTP id S235576AbjAMG1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:27:07 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3459D5BA1B;
-        Thu, 12 Jan 2023 22:25:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505765C1CD;
+        Thu, 12 Jan 2023 22:25:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=rVY6HIQ2gsxs3KQUArU5ZItu96aUMGaCnBVCkBolLI4=; b=ols2YTxab2DrJGg/MQYB8ngvh4
-        2GoCDaxIyG+UAHbvOUlJ/MTpkGQk/zC0l52K8fRdGCh6xMOqaRHM59+Har1MJwW5GZ1oIM8J1v6cl
-        v924PZCU1h7/cErrZGJLDf2ruP988FQahKVzQEBHwrRCAM/xOd4ablpxwpIBi2Dzk7vQ1BDy4V+TQ
-        dqloToyE27AJgXr+JXEIwOPYaAaoOKLxFMcUXxJ57SFcQFrHFAGomvQDIv8XCOuHCX2Y1kobqXrc2
-        ty++rGr4ThHs7RrC4NZXSNWldVwrTlxjqdnliCAjLPmDCbm4H8GwMbq6rM7kE4zp74SS2ufg5ameo
-        Hg6kc6cw==;
+        bh=mVSad5lHjsb+kxcSGYOjz7Q3t7OZ/7w3LWvLI7wl90c=; b=dTK4NKZNZ24B+Iy3vetLl8In0m
+        6QyXKjhgkJrMmLcUyhOZKbm0vIupFnylr7pYV8S2hu8IL5FEJ97IN1LaPho1YjqLe7sI4/ONQJffd
+        HrN4knY96XfBH5Dg16XcB4D80tb+duR4+tun9eS3VUi93MmJDYYqXUhNRhigBMvcX6O86ZVpgYnP0
+        Oxo0qqd0c7Q9G2IGb9v1zvuuBflZwymgNPjOxWZjze2G/7PRQRiTyI0cvMRK8B8AtZNO1IocwGSOj
+        LywcuT2MFfxcH/2VNQ6voqoVr4Z3t4S8OtiyGNcDIfWd6cbKEA49ubHxa8fQ7cQSeujuP6MMQBLYI
+        oC2zjRYw==;
 Received: from [2001:4bb8:181:656b:9509:7d20:8d39:f895] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pGDUf-000m3E-Fe; Fri, 13 Jan 2023 06:24:49 +0000
+        id 1pGDUi-000m58-BO; Fri, 13 Jan 2023 06:24:53 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Yoshinori Sato <ysato@users.sourceforge.jp>,
         Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
@@ -45,9 +45,9 @@ Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-sh@vger.kernel.org
-Subject: [PATCH 19/22] fbdev: remove sh7760fb
-Date:   Fri, 13 Jan 2023 07:23:36 +0100
-Message-Id: <20230113062339.1909087-20-hch@lst.de>
+Subject: [PATCH 20/22] media: remove sh_vou
+Date:   Fri, 13 Jan 2023 07:23:37 +0100
+Message-Id: <20230113062339.1909087-21-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230113062339.1909087-1-hch@lst.de>
 References: <20230113062339.1909087-1-hch@lst.de>
@@ -56,8 +56,8 @@ Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_PDS_OTHER_BAD_TLD
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -68,652 +68,1422 @@ Now that arch/sh is removed this driver is dead code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/video/fbdev/Kconfig    |  17 +-
- drivers/video/fbdev/Makefile   |   1 -
- drivers/video/fbdev/sh7760fb.c | 587 ---------------------------------
- 3 files changed, 1 insertion(+), 604 deletions(-)
- delete mode 100644 drivers/video/fbdev/sh7760fb.c
+ drivers/media/platform/renesas/Kconfig  |    9 -
+ drivers/media/platform/renesas/Makefile |    1 -
+ drivers/media/platform/renesas/sh_vou.c | 1375 -----------------------
+ 3 files changed, 1385 deletions(-)
+ delete mode 100644 drivers/media/platform/renesas/sh_vou.c
 
-diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
-index b2bed599e6c6ea..cba0ba512a6ddb 100644
---- a/drivers/video/fbdev/Kconfig
-+++ b/drivers/video/fbdev/Kconfig
-@@ -1861,7 +1861,7 @@ config FB_W100
- config FB_SH_MOBILE_LCDC
- 	tristate "SuperH Mobile LCDC framebuffer support"
- 	depends on FB && HAVE_CLK && HAS_IOMEM
--	depends on SUPERH || ARCH_RENESAS || COMPILE_TEST
-+	depends on ARCH_RENESAS || COMPILE_TEST
- 	select FB_SYS_FILLRECT
- 	select FB_SYS_COPYAREA
- 	select FB_SYS_IMAGEBLIT
-@@ -2048,21 +2048,6 @@ config FB_COBALT
- 	tristate "Cobalt server LCD frame buffer support"
- 	depends on FB && MIPS_COBALT
+diff --git a/drivers/media/platform/renesas/Kconfig b/drivers/media/platform/renesas/Kconfig
+index 0231672a7e1c32..935b24b864380e 100644
+--- a/drivers/media/platform/renesas/Kconfig
++++ b/drivers/media/platform/renesas/Kconfig
+@@ -31,15 +31,6 @@ config VIDEO_RCAR_ISP
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called rcar-isp.
  
--config FB_SH7760
--	bool "SH7760/SH7763/SH7720/SH7721 LCDC support"
--	depends on FB && (CPU_SUBTYPE_SH7760 || CPU_SUBTYPE_SH7763 \
--		|| CPU_SUBTYPE_SH7720 || CPU_SUBTYPE_SH7721)
--	select FB_CFB_FILLRECT
--	select FB_CFB_COPYAREA
--	select FB_CFB_IMAGEBLIT
+-config VIDEO_SH_VOU
+-	tristate "SuperH VOU video output driver"
+-	depends on V4L_PLATFORM_DRIVERS
+-	depends on VIDEO_DEV && I2C
+-	depends on ARCH_SHMOBILE || COMPILE_TEST
+-	select VIDEOBUF2_DMA_CONTIG
 -	help
--	  Support for the SH7760/SH7763/SH7720/SH7721 integrated
--	  (D)STN/TFT LCD Controller.
--	  Supports display resolutions up to 1024x1024 pixel, grayscale and
--	  color operation, with depths ranging from 1 bpp to 8 bpp monochrome
--	  and 8, 15 or 16 bpp color; 90 degrees clockwise display rotation for
--	  panels <= 320 pixel horizontal resolution.
+-	  Support for the Video Output Unit (VOU) on SuperH SoCs.
 -
- config FB_DA8XX
- 	tristate "DA8xx/OMAP-L1xx/AM335x Framebuffer support"
- 	depends on FB && HAVE_CLK && HAS_IOMEM
-diff --git a/drivers/video/fbdev/Makefile b/drivers/video/fbdev/Makefile
-index 7795c4126706fd..9941a30522b4b3 100644
---- a/drivers/video/fbdev/Makefile
-+++ b/drivers/video/fbdev/Makefile
-@@ -97,7 +97,6 @@ obj-$(CONFIG_FB_MAXINE)		  += maxinefb.o
- obj-$(CONFIG_FB_METRONOME)        += metronomefb.o
- obj-$(CONFIG_FB_BROADSHEET)       += broadsheetfb.o
- obj-$(CONFIG_FB_S1D13XXX)	  += s1d13xxxfb.o
--obj-$(CONFIG_FB_SH7760)		  += sh7760fb.o
- obj-$(CONFIG_FB_IMX)              += imxfb.o
- obj-$(CONFIG_FB_S3C)		  += s3c-fb.o
- obj-$(CONFIG_FB_S3C2410)	  += s3c2410fb.o
-diff --git a/drivers/video/fbdev/sh7760fb.c b/drivers/video/fbdev/sh7760fb.c
+ source "drivers/media/platform/renesas/rcar-vin/Kconfig"
+ source "drivers/media/platform/renesas/rzg2l-cru/Kconfig"
+ 
+diff --git a/drivers/media/platform/renesas/Makefile b/drivers/media/platform/renesas/Makefile
+index 55854e8688870f..1ae7d825073df3 100644
+--- a/drivers/media/platform/renesas/Makefile
++++ b/drivers/media/platform/renesas/Makefile
+@@ -13,4 +13,3 @@ obj-$(CONFIG_VIDEO_RENESAS_CEU) += renesas-ceu.o
+ obj-$(CONFIG_VIDEO_RENESAS_FCP) += rcar-fcp.o
+ obj-$(CONFIG_VIDEO_RENESAS_FDP1) += rcar_fdp1.o
+ obj-$(CONFIG_VIDEO_RENESAS_JPU) += rcar_jpu.o
+-obj-$(CONFIG_VIDEO_SH_VOU) += sh_vou.o
+diff --git a/drivers/media/platform/renesas/sh_vou.c b/drivers/media/platform/renesas/sh_vou.c
 deleted file mode 100644
-index 5978a892123226..00000000000000
---- a/drivers/video/fbdev/sh7760fb.c
+index ca4310e26c49ee..00000000000000
+--- a/drivers/media/platform/renesas/sh_vou.c
 +++ /dev/null
-@@ -1,587 +0,0 @@
+@@ -1,1375 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0
 -/*
-- * SH7760/SH7763 LCDC Framebuffer driver.
+- * SuperH Video Output Unit (VOU) driver
 - *
-- * (c) 2006-2008 MSC Vertriebsges.m.b.H.,
-- *             Manuel Lauss <mano@roarinelk.homelinux.net>
-- * (c) 2008 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
-- *
-- * PLEASE HAVE A LOOK AT Documentation/fb/sh7760fb.rst!
-- *
-- * Thanks to Siegfried Schaefer <s.schaefer at schaefer-edv.de>
-- *     for his original source and testing!
-- *
-- * sh7760_setcolreg get from drivers/video/sh_mobile_lcdcfb.c
+- * Copyright (C) 2010, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 - */
 -
--#include <linux/completion.h>
--#include <linux/delay.h>
 -#include <linux/dma-mapping.h>
--#include <linux/fb.h>
+-#include <linux/delay.h>
+-#include <linux/errno.h>
+-#include <linux/fs.h>
+-#include <linux/i2c.h>
+-#include <linux/init.h>
 -#include <linux/interrupt.h>
--#include <linux/io.h>
 -#include <linux/kernel.h>
--#include <linux/module.h>
 -#include <linux/platform_device.h>
+-#include <linux/pm_runtime.h>
 -#include <linux/slab.h>
+-#include <linux/videodev2.h>
+-#include <linux/module.h>
 -
--#include <asm/sh7760fb.h>
+-#include <media/drv-intf/sh_vou.h>
+-#include <media/v4l2-common.h>
+-#include <media/v4l2-device.h>
+-#include <media/v4l2-ioctl.h>
+-#include <media/v4l2-mediabus.h>
+-#include <media/videobuf2-v4l2.h>
+-#include <media/videobuf2-dma-contig.h>
 -
--struct sh7760fb_par {
--	void __iomem *base;
--	int irq;
+-/* Mirror addresses are not available for all registers */
+-#define VOUER	0
+-#define VOUCR	4
+-#define VOUSTR	8
+-#define VOUVCR	0xc
+-#define VOUISR	0x10
+-#define VOUBCR	0x14
+-#define VOUDPR	0x18
+-#define VOUDSR	0x1c
+-#define VOUVPR	0x20
+-#define VOUIR	0x24
+-#define VOUSRR	0x28
+-#define VOUMSR	0x2c
+-#define VOUHIR	0x30
+-#define VOUDFR	0x34
+-#define VOUAD1R	0x38
+-#define VOUAD2R	0x3c
+-#define VOUAIR	0x40
+-#define VOUSWR	0x44
+-#define VOURCR	0x48
+-#define VOURPR	0x50
 -
--	struct sh7760fb_platdata *pd;	/* display information */
--
--	dma_addr_t fbdma;	/* physical address */
--
--	int rot;		/* rotation enabled? */
--
--	u32 pseudo_palette[16];
--
--	struct platform_device *dev;
--	struct resource *ioarea;
--	struct completion vsync;	/* vsync irq event */
+-enum sh_vou_status {
+-	SH_VOU_IDLE,
+-	SH_VOU_INITIALISING,
+-	SH_VOU_RUNNING,
 -};
 -
--static irqreturn_t sh7760fb_irq(int irq, void *data)
--{
--	struct completion *c = data;
+-#define VOU_MIN_IMAGE_WIDTH	16
+-#define VOU_MAX_IMAGE_WIDTH	720
+-#define VOU_MIN_IMAGE_HEIGHT	16
 -
--	complete(c);
+-struct sh_vou_buffer {
+-	struct vb2_v4l2_buffer vb;
+-	struct list_head list;
+-};
+-
+-static inline struct
+-sh_vou_buffer *to_sh_vou_buffer(struct vb2_v4l2_buffer *vb2)
+-{
+-	return container_of(vb2, struct sh_vou_buffer, vb);
+-}
+-
+-struct sh_vou_device {
+-	struct v4l2_device v4l2_dev;
+-	struct video_device vdev;
+-	struct sh_vou_pdata *pdata;
+-	spinlock_t lock;
+-	void __iomem *base;
+-	/* State information */
+-	struct v4l2_pix_format pix;
+-	struct v4l2_rect rect;
+-	struct list_head buf_list;
+-	v4l2_std_id std;
+-	int pix_idx;
+-	struct vb2_queue queue;
+-	struct sh_vou_buffer *active;
+-	enum sh_vou_status status;
+-	unsigned sequence;
+-	struct mutex fop_lock;
+-};
+-
+-/* Register access routines for sides A, B and mirror addresses */
+-static void sh_vou_reg_a_write(struct sh_vou_device *vou_dev, unsigned int reg,
+-			       u32 value)
+-{
+-	__raw_writel(value, vou_dev->base + reg);
+-}
+-
+-static void sh_vou_reg_ab_write(struct sh_vou_device *vou_dev, unsigned int reg,
+-				u32 value)
+-{
+-	__raw_writel(value, vou_dev->base + reg);
+-	__raw_writel(value, vou_dev->base + reg + 0x1000);
+-}
+-
+-static void sh_vou_reg_m_write(struct sh_vou_device *vou_dev, unsigned int reg,
+-			       u32 value)
+-{
+-	__raw_writel(value, vou_dev->base + reg + 0x2000);
+-}
+-
+-static u32 sh_vou_reg_a_read(struct sh_vou_device *vou_dev, unsigned int reg)
+-{
+-	return __raw_readl(vou_dev->base + reg);
+-}
+-
+-static void sh_vou_reg_a_set(struct sh_vou_device *vou_dev, unsigned int reg,
+-			     u32 value, u32 mask)
+-{
+-	u32 old = __raw_readl(vou_dev->base + reg);
+-
+-	value = (value & mask) | (old & ~mask);
+-	__raw_writel(value, vou_dev->base + reg);
+-}
+-
+-static void sh_vou_reg_b_set(struct sh_vou_device *vou_dev, unsigned int reg,
+-			     u32 value, u32 mask)
+-{
+-	sh_vou_reg_a_set(vou_dev, reg + 0x1000, value, mask);
+-}
+-
+-static void sh_vou_reg_ab_set(struct sh_vou_device *vou_dev, unsigned int reg,
+-			      u32 value, u32 mask)
+-{
+-	sh_vou_reg_a_set(vou_dev, reg, value, mask);
+-	sh_vou_reg_b_set(vou_dev, reg, value, mask);
+-}
+-
+-struct sh_vou_fmt {
+-	u32		pfmt;
+-	unsigned char	bpp;
+-	unsigned char	bpl;
+-	unsigned char	rgb;
+-	unsigned char	yf;
+-	unsigned char	pkf;
+-};
+-
+-/* Further pixel formats can be added */
+-static struct sh_vou_fmt vou_fmt[] = {
+-	{
+-		.pfmt	= V4L2_PIX_FMT_NV12,
+-		.bpp	= 12,
+-		.bpl	= 1,
+-		.yf	= 0,
+-		.rgb	= 0,
+-	},
+-	{
+-		.pfmt	= V4L2_PIX_FMT_NV16,
+-		.bpp	= 16,
+-		.bpl	= 1,
+-		.yf	= 1,
+-		.rgb	= 0,
+-	},
+-	{
+-		.pfmt	= V4L2_PIX_FMT_RGB24,
+-		.bpp	= 24,
+-		.bpl	= 3,
+-		.pkf	= 2,
+-		.rgb	= 1,
+-	},
+-	{
+-		.pfmt	= V4L2_PIX_FMT_RGB565,
+-		.bpp	= 16,
+-		.bpl	= 2,
+-		.pkf	= 3,
+-		.rgb	= 1,
+-	},
+-	{
+-		.pfmt	= V4L2_PIX_FMT_RGB565X,
+-		.bpp	= 16,
+-		.bpl	= 2,
+-		.pkf	= 3,
+-		.rgb	= 1,
+-	},
+-};
+-
+-static void sh_vou_schedule_next(struct sh_vou_device *vou_dev,
+-				 struct vb2_v4l2_buffer *vbuf)
+-{
+-	dma_addr_t addr1, addr2;
+-
+-	addr1 = vb2_dma_contig_plane_dma_addr(&vbuf->vb2_buf, 0);
+-	switch (vou_dev->pix.pixelformat) {
+-	case V4L2_PIX_FMT_NV12:
+-	case V4L2_PIX_FMT_NV16:
+-		addr2 = addr1 + vou_dev->pix.width * vou_dev->pix.height;
+-		break;
+-	default:
+-		addr2 = 0;
+-	}
+-
+-	sh_vou_reg_m_write(vou_dev, VOUAD1R, addr1);
+-	sh_vou_reg_m_write(vou_dev, VOUAD2R, addr2);
+-}
+-
+-static void sh_vou_stream_config(struct sh_vou_device *vou_dev)
+-{
+-	unsigned int row_coeff;
+-#ifdef __LITTLE_ENDIAN
+-	u32 dataswap = 7;
+-#else
+-	u32 dataswap = 0;
+-#endif
+-
+-	switch (vou_dev->pix.pixelformat) {
+-	default:
+-	case V4L2_PIX_FMT_NV12:
+-	case V4L2_PIX_FMT_NV16:
+-		row_coeff = 1;
+-		break;
+-	case V4L2_PIX_FMT_RGB565:
+-		dataswap ^= 1;
+-		fallthrough;
+-	case V4L2_PIX_FMT_RGB565X:
+-		row_coeff = 2;
+-		break;
+-	case V4L2_PIX_FMT_RGB24:
+-		row_coeff = 3;
+-		break;
+-	}
+-
+-	sh_vou_reg_a_write(vou_dev, VOUSWR, dataswap);
+-	sh_vou_reg_ab_write(vou_dev, VOUAIR, vou_dev->pix.width * row_coeff);
+-}
+-
+-/* Locking: caller holds fop_lock mutex */
+-static int sh_vou_queue_setup(struct vb2_queue *vq,
+-		       unsigned int *nbuffers, unsigned int *nplanes,
+-		       unsigned int sizes[], struct device *alloc_devs[])
+-{
+-	struct sh_vou_device *vou_dev = vb2_get_drv_priv(vq);
+-	struct v4l2_pix_format *pix = &vou_dev->pix;
+-	int bytes_per_line = vou_fmt[vou_dev->pix_idx].bpp * pix->width / 8;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	if (*nplanes)
+-		return sizes[0] < pix->height * bytes_per_line ? -EINVAL : 0;
+-	*nplanes = 1;
+-	sizes[0] = pix->height * bytes_per_line;
+-	return 0;
+-}
+-
+-static int sh_vou_buf_prepare(struct vb2_buffer *vb)
+-{
+-	struct sh_vou_device *vou_dev = vb2_get_drv_priv(vb->vb2_queue);
+-	struct v4l2_pix_format *pix = &vou_dev->pix;
+-	unsigned bytes_per_line = vou_fmt[vou_dev->pix_idx].bpp * pix->width / 8;
+-	unsigned size = pix->height * bytes_per_line;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	if (vb2_plane_size(vb, 0) < size) {
+-		/* User buffer too small */
+-		dev_warn(vou_dev->v4l2_dev.dev, "buffer too small (%lu < %u)\n",
+-			 vb2_plane_size(vb, 0), size);
+-		return -EINVAL;
+-	}
+-
+-	vb2_set_plane_payload(vb, 0, size);
+-	return 0;
+-}
+-
+-/* Locking: caller holds fop_lock mutex and vq->irqlock spinlock */
+-static void sh_vou_buf_queue(struct vb2_buffer *vb)
+-{
+-	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+-	struct sh_vou_device *vou_dev = vb2_get_drv_priv(vb->vb2_queue);
+-	struct sh_vou_buffer *shbuf = to_sh_vou_buffer(vbuf);
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&vou_dev->lock, flags);
+-	list_add_tail(&shbuf->list, &vou_dev->buf_list);
+-	spin_unlock_irqrestore(&vou_dev->lock, flags);
+-}
+-
+-static int sh_vou_start_streaming(struct vb2_queue *vq, unsigned int count)
+-{
+-	struct sh_vou_device *vou_dev = vb2_get_drv_priv(vq);
+-	struct sh_vou_buffer *buf, *node;
+-	int ret;
+-
+-	vou_dev->sequence = 0;
+-	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0,
+-					 video, s_stream, 1);
+-	if (ret < 0 && ret != -ENOIOCTLCMD) {
+-		list_for_each_entry_safe(buf, node, &vou_dev->buf_list, list) {
+-			vb2_buffer_done(&buf->vb.vb2_buf,
+-					VB2_BUF_STATE_QUEUED);
+-			list_del(&buf->list);
+-		}
+-		vou_dev->active = NULL;
+-		return ret;
+-	}
+-
+-	buf = list_entry(vou_dev->buf_list.next, struct sh_vou_buffer, list);
+-
+-	vou_dev->active = buf;
+-
+-	/* Start from side A: we use mirror addresses, so, set B */
+-	sh_vou_reg_a_write(vou_dev, VOURPR, 1);
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s: first buffer status 0x%x\n",
+-		__func__, sh_vou_reg_a_read(vou_dev, VOUSTR));
+-	sh_vou_schedule_next(vou_dev, &buf->vb);
+-
+-	buf = list_entry(buf->list.next, struct sh_vou_buffer, list);
+-
+-	/* Second buffer - initialise register side B */
+-	sh_vou_reg_a_write(vou_dev, VOURPR, 0);
+-	sh_vou_schedule_next(vou_dev, &buf->vb);
+-
+-	/* Register side switching with frame VSYNC */
+-	sh_vou_reg_a_write(vou_dev, VOURCR, 5);
+-
+-	sh_vou_stream_config(vou_dev);
+-	/* Enable End-of-Frame (VSYNC) interrupts */
+-	sh_vou_reg_a_write(vou_dev, VOUIR, 0x10004);
+-
+-	/* Two buffers on the queue - activate the hardware */
+-	vou_dev->status = SH_VOU_RUNNING;
+-	sh_vou_reg_a_write(vou_dev, VOUER, 0x107);
+-	return 0;
+-}
+-
+-static void sh_vou_stop_streaming(struct vb2_queue *vq)
+-{
+-	struct sh_vou_device *vou_dev = vb2_get_drv_priv(vq);
+-	struct sh_vou_buffer *buf, *node;
+-	unsigned long flags;
+-
+-	v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0,
+-					 video, s_stream, 0);
+-	/* disable output */
+-	sh_vou_reg_a_set(vou_dev, VOUER, 0, 1);
+-	/* ...but the current frame will complete */
+-	sh_vou_reg_a_set(vou_dev, VOUIR, 0, 0x30000);
+-	msleep(50);
+-	spin_lock_irqsave(&vou_dev->lock, flags);
+-	list_for_each_entry_safe(buf, node, &vou_dev->buf_list, list) {
+-		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+-		list_del(&buf->list);
+-	}
+-	vou_dev->active = NULL;
+-	spin_unlock_irqrestore(&vou_dev->lock, flags);
+-}
+-
+-static const struct vb2_ops sh_vou_qops = {
+-	.queue_setup		= sh_vou_queue_setup,
+-	.buf_prepare		= sh_vou_buf_prepare,
+-	.buf_queue		= sh_vou_buf_queue,
+-	.start_streaming	= sh_vou_start_streaming,
+-	.stop_streaming		= sh_vou_stop_streaming,
+-	.wait_prepare		= vb2_ops_wait_prepare,
+-	.wait_finish		= vb2_ops_wait_finish,
+-};
+-
+-/* Video IOCTLs */
+-static int sh_vou_querycap(struct file *file, void  *priv,
+-			   struct v4l2_capability *cap)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	strscpy(cap->card, "SuperH VOU", sizeof(cap->card));
+-	strscpy(cap->driver, "sh-vou", sizeof(cap->driver));
+-	strscpy(cap->bus_info, "platform:sh-vou", sizeof(cap->bus_info));
+-	return 0;
+-}
+-
+-/* Enumerate formats, that the device can accept from the user */
+-static int sh_vou_enum_fmt_vid_out(struct file *file, void  *priv,
+-				   struct v4l2_fmtdesc *fmt)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	if (fmt->index >= ARRAY_SIZE(vou_fmt))
+-		return -EINVAL;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	fmt->pixelformat = vou_fmt[fmt->index].pfmt;
+-
+-	return 0;
+-}
+-
+-static int sh_vou_g_fmt_vid_out(struct file *file, void *priv,
+-				struct v4l2_format *fmt)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	fmt->type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+-	fmt->fmt.pix = vou_dev->pix;
+-
+-	return 0;
+-}
+-
+-static const unsigned char vou_scale_h_num[] = {1, 9, 2, 9, 4};
+-static const unsigned char vou_scale_h_den[] = {1, 8, 1, 4, 1};
+-static const unsigned char vou_scale_h_fld[] = {0, 2, 1, 3};
+-static const unsigned char vou_scale_v_num[] = {1, 2, 4};
+-static const unsigned char vou_scale_v_den[] = {1, 1, 1};
+-static const unsigned char vou_scale_v_fld[] = {0, 1};
+-
+-static void sh_vou_configure_geometry(struct sh_vou_device *vou_dev,
+-				      int pix_idx, int w_idx, int h_idx)
+-{
+-	struct sh_vou_fmt *fmt = vou_fmt + pix_idx;
+-	unsigned int black_left, black_top, width_max,
+-		frame_in_height, frame_out_height, frame_out_top;
+-	struct v4l2_rect *rect = &vou_dev->rect;
+-	struct v4l2_pix_format *pix = &vou_dev->pix;
+-	u32 vouvcr = 0, dsr_h, dsr_v;
+-
+-	if (vou_dev->std & V4L2_STD_525_60) {
+-		width_max = 858;
+-		/* height_max = 262; */
+-	} else {
+-		width_max = 864;
+-		/* height_max = 312; */
+-	}
+-
+-	frame_in_height = pix->height / 2;
+-	frame_out_height = rect->height / 2;
+-	frame_out_top = rect->top / 2;
+-
+-	/*
+-	 * Cropping scheme: max useful image is 720x480, and the total video
+-	 * area is 858x525 (NTSC) or 864x625 (PAL). AK8813 / 8814 starts
+-	 * sampling data beginning with fixed 276th (NTSC) / 288th (PAL) clock,
+-	 * of which the first 33 / 25 clocks HSYNC must be held active. This
+-	 * has to be configured in CR[HW]. 1 pixel equals 2 clock periods.
+-	 * This gives CR[HW] = 16 / 12, VPR[HVP] = 138 / 144, which gives
+-	 * exactly 858 - 138 = 864 - 144 = 720! We call the out-of-display area,
+-	 * beyond DSR, specified on the left and top by the VPR register "black
+-	 * pixels" and out-of-image area (DPR) "background pixels." We fix VPR
+-	 * at 138 / 144 : 20, because that's the HSYNC timing, that our first
+-	 * client requires, and that's exactly what leaves us 720 pixels for the
+-	 * image; we leave VPR[VVP] at default 20 for now, because the client
+-	 * doesn't seem to have any special requirements for it. Otherwise we
+-	 * could also set it to max - 240 = 22 / 72. Thus VPR depends only on
+-	 * the selected standard, and DPR and DSR are selected according to
+-	 * cropping. Q: how does the client detect the first valid line? Does
+-	 * HSYNC stay inactive during invalid (black) lines?
+-	 */
+-	black_left = width_max - VOU_MAX_IMAGE_WIDTH;
+-	black_top = 20;
+-
+-	dsr_h = rect->width + rect->left;
+-	dsr_v = frame_out_height + frame_out_top;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev,
+-		"image %ux%u, black %u:%u, offset %u:%u, display %ux%u\n",
+-		pix->width, frame_in_height, black_left, black_top,
+-		rect->left, frame_out_top, dsr_h, dsr_v);
+-
+-	/* VOUISR height - half of a frame height in frame mode */
+-	sh_vou_reg_ab_write(vou_dev, VOUISR, (pix->width << 16) | frame_in_height);
+-	sh_vou_reg_ab_write(vou_dev, VOUVPR, (black_left << 16) | black_top);
+-	sh_vou_reg_ab_write(vou_dev, VOUDPR, (rect->left << 16) | frame_out_top);
+-	sh_vou_reg_ab_write(vou_dev, VOUDSR, (dsr_h << 16) | dsr_v);
+-
+-	/*
+-	 * if necessary, we could set VOUHIR to
+-	 * max(black_left + dsr_h, width_max) here
+-	 */
+-
+-	if (w_idx)
+-		vouvcr |= (1 << 15) | (vou_scale_h_fld[w_idx - 1] << 4);
+-	if (h_idx)
+-		vouvcr |= (1 << 14) | vou_scale_v_fld[h_idx - 1];
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "0x%08x: scaling 0x%x\n",
+-		fmt->pfmt, vouvcr);
+-
+-	/* To produce a colour bar for testing set bit 23 of VOUVCR */
+-	sh_vou_reg_ab_write(vou_dev, VOUVCR, vouvcr);
+-	sh_vou_reg_ab_write(vou_dev, VOUDFR,
+-			    fmt->pkf | (fmt->yf << 8) | (fmt->rgb << 16));
+-}
+-
+-struct sh_vou_geometry {
+-	struct v4l2_rect output;
+-	unsigned int in_width;
+-	unsigned int in_height;
+-	int scale_idx_h;
+-	int scale_idx_v;
+-};
+-
+-/*
+- * Find input geometry, that we can use to produce output, closest to the
+- * requested rectangle, using VOU scaling
+- */
+-static void vou_adjust_input(struct sh_vou_geometry *geo, v4l2_std_id std)
+-{
+-	/* The compiler cannot know, that best and idx will indeed be set */
+-	unsigned int best_err = UINT_MAX, best = 0, img_height_max;
+-	int i, idx = 0;
+-
+-	if (std & V4L2_STD_525_60)
+-		img_height_max = 480;
+-	else
+-		img_height_max = 576;
+-
+-	/* Image width must be a multiple of 4 */
+-	v4l_bound_align_image(&geo->in_width,
+-			      VOU_MIN_IMAGE_WIDTH, VOU_MAX_IMAGE_WIDTH, 2,
+-			      &geo->in_height,
+-			      VOU_MIN_IMAGE_HEIGHT, img_height_max, 1, 0);
+-
+-	/* Select scales to come as close as possible to the output image */
+-	for (i = ARRAY_SIZE(vou_scale_h_num) - 1; i >= 0; i--) {
+-		unsigned int err;
+-		unsigned int found = geo->output.width * vou_scale_h_den[i] /
+-			vou_scale_h_num[i];
+-
+-		if (found > VOU_MAX_IMAGE_WIDTH)
+-			/* scales increase */
+-			break;
+-
+-		err = abs(found - geo->in_width);
+-		if (err < best_err) {
+-			best_err = err;
+-			idx = i;
+-			best = found;
+-		}
+-		if (!err)
+-			break;
+-	}
+-
+-	geo->in_width = best;
+-	geo->scale_idx_h = idx;
+-
+-	best_err = UINT_MAX;
+-
+-	/* This loop can be replaced with one division */
+-	for (i = ARRAY_SIZE(vou_scale_v_num) - 1; i >= 0; i--) {
+-		unsigned int err;
+-		unsigned int found = geo->output.height * vou_scale_v_den[i] /
+-			vou_scale_v_num[i];
+-
+-		if (found > img_height_max)
+-			/* scales increase */
+-			break;
+-
+-		err = abs(found - geo->in_height);
+-		if (err < best_err) {
+-			best_err = err;
+-			idx = i;
+-			best = found;
+-		}
+-		if (!err)
+-			break;
+-	}
+-
+-	geo->in_height = best;
+-	geo->scale_idx_v = idx;
+-}
+-
+-/*
+- * Find output geometry, that we can produce, using VOU scaling, closest to
+- * the requested rectangle
+- */
+-static void vou_adjust_output(struct sh_vou_geometry *geo, v4l2_std_id std)
+-{
+-	unsigned int best_err = UINT_MAX, best = geo->in_width,
+-		width_max, height_max, img_height_max;
+-	int i, idx_h = 0, idx_v = 0;
+-
+-	if (std & V4L2_STD_525_60) {
+-		width_max = 858;
+-		height_max = 262 * 2;
+-		img_height_max = 480;
+-	} else {
+-		width_max = 864;
+-		height_max = 312 * 2;
+-		img_height_max = 576;
+-	}
+-
+-	/* Select scales to come as close as possible to the output image */
+-	for (i = 0; i < ARRAY_SIZE(vou_scale_h_num); i++) {
+-		unsigned int err;
+-		unsigned int found = geo->in_width * vou_scale_h_num[i] /
+-			vou_scale_h_den[i];
+-
+-		if (found > VOU_MAX_IMAGE_WIDTH)
+-			/* scales increase */
+-			break;
+-
+-		err = abs(found - geo->output.width);
+-		if (err < best_err) {
+-			best_err = err;
+-			idx_h = i;
+-			best = found;
+-		}
+-		if (!err)
+-			break;
+-	}
+-
+-	geo->output.width = best;
+-	geo->scale_idx_h = idx_h;
+-	if (geo->output.left + best > width_max)
+-		geo->output.left = width_max - best;
+-
+-	pr_debug("%s(): W %u * %u/%u = %u\n", __func__, geo->in_width,
+-		 vou_scale_h_num[idx_h], vou_scale_h_den[idx_h], best);
+-
+-	best_err = UINT_MAX;
+-
+-	/* This loop can be replaced with one division */
+-	for (i = 0; i < ARRAY_SIZE(vou_scale_v_num); i++) {
+-		unsigned int err;
+-		unsigned int found = geo->in_height * vou_scale_v_num[i] /
+-			vou_scale_v_den[i];
+-
+-		if (found > img_height_max)
+-			/* scales increase */
+-			break;
+-
+-		err = abs(found - geo->output.height);
+-		if (err < best_err) {
+-			best_err = err;
+-			idx_v = i;
+-			best = found;
+-		}
+-		if (!err)
+-			break;
+-	}
+-
+-	geo->output.height = best;
+-	geo->scale_idx_v = idx_v;
+-	if (geo->output.top + best > height_max)
+-		geo->output.top = height_max - best;
+-
+-	pr_debug("%s(): H %u * %u/%u = %u\n", __func__, geo->in_height,
+-		 vou_scale_v_num[idx_v], vou_scale_v_den[idx_v], best);
+-}
+-
+-static int sh_vou_try_fmt_vid_out(struct file *file, void *priv,
+-				  struct v4l2_format *fmt)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-	struct v4l2_pix_format *pix = &fmt->fmt.pix;
+-	unsigned int img_height_max;
+-	int pix_idx;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	pix->field = V4L2_FIELD_INTERLACED;
+-	pix->colorspace = V4L2_COLORSPACE_SMPTE170M;
+-	pix->ycbcr_enc = pix->quantization = 0;
+-
+-	for (pix_idx = 0; pix_idx < ARRAY_SIZE(vou_fmt); pix_idx++)
+-		if (vou_fmt[pix_idx].pfmt == pix->pixelformat)
+-			break;
+-
+-	if (pix_idx == ARRAY_SIZE(vou_fmt))
+-		return -EINVAL;
+-
+-	if (vou_dev->std & V4L2_STD_525_60)
+-		img_height_max = 480;
+-	else
+-		img_height_max = 576;
+-
+-	v4l_bound_align_image(&pix->width,
+-			      VOU_MIN_IMAGE_WIDTH, VOU_MAX_IMAGE_WIDTH, 2,
+-			      &pix->height,
+-			      VOU_MIN_IMAGE_HEIGHT, img_height_max, 1, 0);
+-	pix->bytesperline = pix->width * vou_fmt[pix_idx].bpl;
+-	pix->sizeimage = pix->height * ((pix->width * vou_fmt[pix_idx].bpp) >> 3);
+-
+-	return 0;
+-}
+-
+-static int sh_vou_set_fmt_vid_out(struct sh_vou_device *vou_dev,
+-				struct v4l2_pix_format *pix)
+-{
+-	unsigned int img_height_max;
+-	struct sh_vou_geometry geo;
+-	struct v4l2_subdev_format format = {
+-		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+-		/* Revisit: is this the correct code? */
+-		.format.code = MEDIA_BUS_FMT_YUYV8_2X8,
+-		.format.field = V4L2_FIELD_INTERLACED,
+-		.format.colorspace = V4L2_COLORSPACE_SMPTE170M,
+-	};
+-	struct v4l2_mbus_framefmt *mbfmt = &format.format;
+-	int pix_idx;
+-	int ret;
+-
+-	if (vb2_is_busy(&vou_dev->queue))
+-		return -EBUSY;
+-
+-	for (pix_idx = 0; pix_idx < ARRAY_SIZE(vou_fmt); pix_idx++)
+-		if (vou_fmt[pix_idx].pfmt == pix->pixelformat)
+-			break;
+-
+-	geo.in_width = pix->width;
+-	geo.in_height = pix->height;
+-	geo.output = vou_dev->rect;
+-
+-	vou_adjust_output(&geo, vou_dev->std);
+-
+-	mbfmt->width = geo.output.width;
+-	mbfmt->height = geo.output.height;
+-	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, pad,
+-					 set_fmt, NULL, &format);
+-	/* Must be implemented, so, don't check for -ENOIOCTLCMD */
+-	if (ret < 0)
+-		return ret;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s(): %ux%u -> %ux%u\n", __func__,
+-		geo.output.width, geo.output.height, mbfmt->width, mbfmt->height);
+-
+-	if (vou_dev->std & V4L2_STD_525_60)
+-		img_height_max = 480;
+-	else
+-		img_height_max = 576;
+-
+-	/* Sanity checks */
+-	if ((unsigned)mbfmt->width > VOU_MAX_IMAGE_WIDTH ||
+-	    (unsigned)mbfmt->height > img_height_max ||
+-	    mbfmt->code != MEDIA_BUS_FMT_YUYV8_2X8)
+-		return -EIO;
+-
+-	if (mbfmt->width != geo.output.width ||
+-	    mbfmt->height != geo.output.height) {
+-		geo.output.width = mbfmt->width;
+-		geo.output.height = mbfmt->height;
+-
+-		vou_adjust_input(&geo, vou_dev->std);
+-	}
+-
+-	/* We tried to preserve output rectangle, but it could have changed */
+-	vou_dev->rect = geo.output;
+-	pix->width = geo.in_width;
+-	pix->height = geo.in_height;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s(): %ux%u\n", __func__,
+-		pix->width, pix->height);
+-
+-	vou_dev->pix_idx = pix_idx;
+-
+-	vou_dev->pix = *pix;
+-
+-	sh_vou_configure_geometry(vou_dev, pix_idx,
+-				  geo.scale_idx_h, geo.scale_idx_v);
+-
+-	return 0;
+-}
+-
+-static int sh_vou_s_fmt_vid_out(struct file *file, void *priv,
+-				struct v4l2_format *fmt)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-	int ret = sh_vou_try_fmt_vid_out(file, priv, fmt);
+-
+-	if (ret)
+-		return ret;
+-	return sh_vou_set_fmt_vid_out(vou_dev, &fmt->fmt.pix);
+-}
+-
+-static int sh_vou_enum_output(struct file *file, void *fh,
+-			      struct v4l2_output *a)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	if (a->index)
+-		return -EINVAL;
+-	strscpy(a->name, "Video Out", sizeof(a->name));
+-	a->type = V4L2_OUTPUT_TYPE_ANALOG;
+-	a->std = vou_dev->vdev.tvnorms;
+-	return 0;
+-}
+-
+-static int sh_vou_g_output(struct file *file, void *fh, unsigned int *i)
+-{
+-	*i = 0;
+-	return 0;
+-}
+-
+-static int sh_vou_s_output(struct file *file, void *fh, unsigned int i)
+-{
+-	return i ? -EINVAL : 0;
+-}
+-
+-static u32 sh_vou_ntsc_mode(enum sh_vou_bus_fmt bus_fmt)
+-{
+-	switch (bus_fmt) {
+-	default:
+-		pr_warn("%s(): Invalid bus-format code %d, using default 8-bit\n",
+-			__func__, bus_fmt);
+-		fallthrough;
+-	case SH_VOU_BUS_8BIT:
+-		return 1;
+-	case SH_VOU_BUS_16BIT:
+-		return 0;
+-	case SH_VOU_BUS_BT656:
+-		return 3;
+-	}
+-}
+-
+-static int sh_vou_s_std(struct file *file, void *priv, v4l2_std_id std_id)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-	int ret;
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s(): 0x%llx\n", __func__, std_id);
+-
+-	if (std_id == vou_dev->std)
+-		return 0;
+-
+-	if (vb2_is_busy(&vou_dev->queue))
+-		return -EBUSY;
+-
+-	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, video,
+-					 s_std_output, std_id);
+-	/* Shall we continue, if the subdev doesn't support .s_std_output()? */
+-	if (ret < 0 && ret != -ENOIOCTLCMD)
+-		return ret;
+-
+-	vou_dev->rect.top = vou_dev->rect.left = 0;
+-	vou_dev->rect.width = VOU_MAX_IMAGE_WIDTH;
+-	if (std_id & V4L2_STD_525_60) {
+-		sh_vou_reg_ab_set(vou_dev, VOUCR,
+-			sh_vou_ntsc_mode(vou_dev->pdata->bus_fmt) << 29, 7 << 29);
+-		vou_dev->rect.height = 480;
+-	} else {
+-		sh_vou_reg_ab_set(vou_dev, VOUCR, 5 << 29, 7 << 29);
+-		vou_dev->rect.height = 576;
+-	}
+-
+-	vou_dev->pix.width = vou_dev->rect.width;
+-	vou_dev->pix.height = vou_dev->rect.height;
+-	vou_dev->pix.bytesperline =
+-		vou_dev->pix.width * vou_fmt[vou_dev->pix_idx].bpl;
+-	vou_dev->pix.sizeimage = vou_dev->pix.height *
+-		((vou_dev->pix.width * vou_fmt[vou_dev->pix_idx].bpp) >> 3);
+-	vou_dev->std = std_id;
+-	sh_vou_set_fmt_vid_out(vou_dev, &vou_dev->pix);
+-
+-	return 0;
+-}
+-
+-static int sh_vou_g_std(struct file *file, void *priv, v4l2_std_id *std)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	dev_dbg(vou_dev->v4l2_dev.dev, "%s()\n", __func__);
+-
+-	*std = vou_dev->std;
+-
+-	return 0;
+-}
+-
+-static int sh_vou_log_status(struct file *file, void *priv)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	pr_info("VOUER:   0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUER));
+-	pr_info("VOUCR:   0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUCR));
+-	pr_info("VOUSTR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUSTR));
+-	pr_info("VOUVCR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUVCR));
+-	pr_info("VOUISR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUISR));
+-	pr_info("VOUBCR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUBCR));
+-	pr_info("VOUDPR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUDPR));
+-	pr_info("VOUDSR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUDSR));
+-	pr_info("VOUVPR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUVPR));
+-	pr_info("VOUIR:   0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUIR));
+-	pr_info("VOUSRR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUSRR));
+-	pr_info("VOUMSR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUMSR));
+-	pr_info("VOUHIR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUHIR));
+-	pr_info("VOUDFR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUDFR));
+-	pr_info("VOUAD1R: 0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUAD1R));
+-	pr_info("VOUAD2R: 0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUAD2R));
+-	pr_info("VOUAIR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUAIR));
+-	pr_info("VOUSWR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOUSWR));
+-	pr_info("VOURCR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOURCR));
+-	pr_info("VOURPR:  0x%08x\n", sh_vou_reg_a_read(vou_dev, VOURPR));
+-	return 0;
+-}
+-
+-static int sh_vou_g_selection(struct file *file, void *fh,
+-			      struct v4l2_selection *sel)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-
+-	if (sel->type != V4L2_BUF_TYPE_VIDEO_OUTPUT)
+-		return -EINVAL;
+-	switch (sel->target) {
+-	case V4L2_SEL_TGT_COMPOSE:
+-		sel->r = vou_dev->rect;
+-		break;
+-	case V4L2_SEL_TGT_COMPOSE_DEFAULT:
+-	case V4L2_SEL_TGT_COMPOSE_BOUNDS:
+-		sel->r.left = 0;
+-		sel->r.top = 0;
+-		sel->r.width = VOU_MAX_IMAGE_WIDTH;
+-		if (vou_dev->std & V4L2_STD_525_60)
+-			sel->r.height = 480;
+-		else
+-			sel->r.height = 576;
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-	return 0;
+-}
+-
+-/* Assume a dull encoder, do all the work ourselves. */
+-static int sh_vou_s_selection(struct file *file, void *fh,
+-			      struct v4l2_selection *sel)
+-{
+-	struct v4l2_rect *rect = &sel->r;
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-	struct v4l2_subdev_selection sd_sel = {
+-		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+-		.target = V4L2_SEL_TGT_COMPOSE,
+-	};
+-	struct v4l2_pix_format *pix = &vou_dev->pix;
+-	struct sh_vou_geometry geo;
+-	struct v4l2_subdev_format format = {
+-		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+-		/* Revisit: is this the correct code? */
+-		.format.code = MEDIA_BUS_FMT_YUYV8_2X8,
+-		.format.field = V4L2_FIELD_INTERLACED,
+-		.format.colorspace = V4L2_COLORSPACE_SMPTE170M,
+-	};
+-	unsigned int img_height_max;
+-	int ret;
+-
+-	if (sel->type != V4L2_BUF_TYPE_VIDEO_OUTPUT ||
+-	    sel->target != V4L2_SEL_TGT_COMPOSE)
+-		return -EINVAL;
+-
+-	if (vb2_is_busy(&vou_dev->queue))
+-		return -EBUSY;
+-
+-	if (vou_dev->std & V4L2_STD_525_60)
+-		img_height_max = 480;
+-	else
+-		img_height_max = 576;
+-
+-	v4l_bound_align_image(&rect->width,
+-			      VOU_MIN_IMAGE_WIDTH, VOU_MAX_IMAGE_WIDTH, 1,
+-			      &rect->height,
+-			      VOU_MIN_IMAGE_HEIGHT, img_height_max, 1, 0);
+-
+-	if (rect->width + rect->left > VOU_MAX_IMAGE_WIDTH)
+-		rect->left = VOU_MAX_IMAGE_WIDTH - rect->width;
+-
+-	if (rect->height + rect->top > img_height_max)
+-		rect->top = img_height_max - rect->height;
+-
+-	geo.output = *rect;
+-	geo.in_width = pix->width;
+-	geo.in_height = pix->height;
+-
+-	/* Configure the encoder one-to-one, position at 0, ignore errors */
+-	sd_sel.r.width = geo.output.width;
+-	sd_sel.r.height = geo.output.height;
+-	/*
+-	 * We first issue a S_SELECTION, so that the subsequent S_FMT delivers the
+-	 * final encoder configuration.
+-	 */
+-	v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, pad,
+-				   set_selection, NULL, &sd_sel);
+-	format.format.width = geo.output.width;
+-	format.format.height = geo.output.height;
+-	ret = v4l2_device_call_until_err(&vou_dev->v4l2_dev, 0, pad,
+-					 set_fmt, NULL, &format);
+-	/* Must be implemented, so, don't check for -ENOIOCTLCMD */
+-	if (ret < 0)
+-		return ret;
+-
+-	/* Sanity checks */
+-	if ((unsigned)format.format.width > VOU_MAX_IMAGE_WIDTH ||
+-	    (unsigned)format.format.height > img_height_max ||
+-	    format.format.code != MEDIA_BUS_FMT_YUYV8_2X8)
+-		return -EIO;
+-
+-	geo.output.width = format.format.width;
+-	geo.output.height = format.format.height;
+-
+-	/*
+-	 * No down-scaling. According to the API, current call has precedence:
+-	 * https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/crop.html#cropping-structures
+-	 */
+-	vou_adjust_input(&geo, vou_dev->std);
+-
+-	/* We tried to preserve output rectangle, but it could have changed */
+-	vou_dev->rect = geo.output;
+-	pix->width = geo.in_width;
+-	pix->height = geo.in_height;
+-
+-	sh_vou_configure_geometry(vou_dev, vou_dev->pix_idx,
+-				  geo.scale_idx_h, geo.scale_idx_v);
+-
+-	return 0;
+-}
+-
+-static irqreturn_t sh_vou_isr(int irq, void *dev_id)
+-{
+-	struct sh_vou_device *vou_dev = dev_id;
+-	static unsigned long j;
+-	struct sh_vou_buffer *vb;
+-	static int cnt;
+-	u32 irq_status = sh_vou_reg_a_read(vou_dev, VOUIR), masked;
+-	u32 vou_status = sh_vou_reg_a_read(vou_dev, VOUSTR);
+-
+-	if (!(irq_status & 0x300)) {
+-		if (printk_timed_ratelimit(&j, 500))
+-			dev_warn(vou_dev->v4l2_dev.dev, "IRQ status 0x%x!\n",
+-				 irq_status);
+-		return IRQ_NONE;
+-	}
+-
+-	spin_lock(&vou_dev->lock);
+-	if (!vou_dev->active || list_empty(&vou_dev->buf_list)) {
+-		if (printk_timed_ratelimit(&j, 500))
+-			dev_warn(vou_dev->v4l2_dev.dev,
+-				 "IRQ without active buffer: %x!\n", irq_status);
+-		/* Just ack: buf_release will disable further interrupts */
+-		sh_vou_reg_a_set(vou_dev, VOUIR, 0, 0x300);
+-		spin_unlock(&vou_dev->lock);
+-		return IRQ_HANDLED;
+-	}
+-
+-	masked = ~(0x300 & irq_status) & irq_status & 0x30304;
+-	dev_dbg(vou_dev->v4l2_dev.dev,
+-		"IRQ status 0x%x -> 0x%x, VOU status 0x%x, cnt %d\n",
+-		irq_status, masked, vou_status, cnt);
+-
+-	cnt++;
+-	/* side = vou_status & 0x10000; */
+-
+-	/* Clear only set interrupts */
+-	sh_vou_reg_a_write(vou_dev, VOUIR, masked);
+-
+-	vb = vou_dev->active;
+-	if (list_is_singular(&vb->list)) {
+-		/* Keep cycling while no next buffer is available */
+-		sh_vou_schedule_next(vou_dev, &vb->vb);
+-		spin_unlock(&vou_dev->lock);
+-		return IRQ_HANDLED;
+-	}
+-
+-	list_del(&vb->list);
+-
+-	vb->vb.vb2_buf.timestamp = ktime_get_ns();
+-	vb->vb.sequence = vou_dev->sequence++;
+-	vb->vb.field = V4L2_FIELD_INTERLACED;
+-	vb2_buffer_done(&vb->vb.vb2_buf, VB2_BUF_STATE_DONE);
+-
+-	vou_dev->active = list_entry(vou_dev->buf_list.next,
+-				     struct sh_vou_buffer, list);
+-
+-	if (list_is_singular(&vou_dev->buf_list)) {
+-		/* Keep cycling while no next buffer is available */
+-		sh_vou_schedule_next(vou_dev, &vou_dev->active->vb);
+-	} else {
+-		struct sh_vou_buffer *new = list_entry(vou_dev->active->list.next,
+-						struct sh_vou_buffer, list);
+-		sh_vou_schedule_next(vou_dev, &new->vb);
+-	}
+-
+-	spin_unlock(&vou_dev->lock);
 -
 -	return IRQ_HANDLED;
 -}
 -
--/* wait_for_lps - wait until power supply has reached a certain state. */
--static int wait_for_lps(struct sh7760fb_par *par, int val)
+-static int sh_vou_hw_init(struct sh_vou_device *vou_dev)
 -{
+-	struct sh_vou_pdata *pdata = vou_dev->pdata;
+-	u32 voucr = sh_vou_ntsc_mode(pdata->bus_fmt) << 29;
 -	int i = 100;
--	while (--i && ((ioread16(par->base + LDPMMR) & 3) != val))
--		msleep(1);
 -
--	if (i <= 0)
+-	/* Disable all IRQs */
+-	sh_vou_reg_a_write(vou_dev, VOUIR, 0);
+-
+-	/* Reset VOU interfaces - registers unaffected */
+-	sh_vou_reg_a_write(vou_dev, VOUSRR, 0x101);
+-	while (--i && (sh_vou_reg_a_read(vou_dev, VOUSRR) & 0x101))
+-		udelay(1);
+-
+-	if (!i)
 -		return -ETIMEDOUT;
 -
--	return 0;
--}
+-	dev_dbg(vou_dev->v4l2_dev.dev, "Reset took %dus\n", 100 - i);
 -
--/* en/disable the LCDC */
--static int sh7760fb_blank(int blank, struct fb_info *info)
--{
--	struct sh7760fb_par *par = info->par;
--	struct sh7760fb_platdata *pd = par->pd;
--	unsigned short cntr = ioread16(par->base + LDCNTR);
--	unsigned short intr = ioread16(par->base + LDINTR);
--	int lps;
+-	if (pdata->flags & SH_VOU_PCLK_FALLING)
+-		voucr |= 1 << 28;
+-	if (pdata->flags & SH_VOU_HSYNC_LOW)
+-		voucr |= 1 << 27;
+-	if (pdata->flags & SH_VOU_VSYNC_LOW)
+-		voucr |= 1 << 26;
+-	sh_vou_reg_ab_set(vou_dev, VOUCR, voucr, 0xfc000000);
 -
--	if (blank == FB_BLANK_UNBLANK) {
--		intr |= VINT_START;
--		cntr = LDCNTR_DON2 | LDCNTR_DON;
--		lps = 3;
--	} else {
--		intr &= ~VINT_START;
--		cntr = LDCNTR_DON2;
--		lps = 0;
--	}
+-	/* Manual register side switching at first */
+-	sh_vou_reg_a_write(vou_dev, VOURCR, 4);
+-	/* Default - fixed HSYNC length, can be made configurable is required */
+-	sh_vou_reg_ab_write(vou_dev, VOUMSR, 0x800000);
 -
--	if (pd->blank)
--		pd->blank(blank);
--
--	iowrite16(intr, par->base + LDINTR);
--	iowrite16(cntr, par->base + LDCNTR);
--
--	return wait_for_lps(par, lps);
--}
--
--static int sh7760_setcolreg (u_int regno,
--	u_int red, u_int green, u_int blue,
--	u_int transp, struct fb_info *info)
--{
--	u32 *palette = info->pseudo_palette;
--
--	if (regno >= 16)
--		return -EINVAL;
--
--	/* only FB_VISUAL_TRUECOLOR supported */
--
--	red >>= 16 - info->var.red.length;
--	green >>= 16 - info->var.green.length;
--	blue >>= 16 - info->var.blue.length;
--	transp >>= 16 - info->var.transp.length;
--
--	palette[regno] = (red << info->var.red.offset) |
--		(green << info->var.green.offset) |
--		(blue << info->var.blue.offset) |
--		(transp << info->var.transp.offset);
+-	sh_vou_set_fmt_vid_out(vou_dev, &vou_dev->pix);
 -
 -	return 0;
 -}
 -
--static int sh7760fb_get_color_info(struct device *dev,
--				   u16 lddfr, int *bpp, int *gray)
+-/* File operations */
+-static int sh_vou_open(struct file *file)
 -{
--	int lbpp, lgray;
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-	int err;
 -
--	lgray = lbpp = 0;
+-	if (mutex_lock_interruptible(&vou_dev->fop_lock))
+-		return -ERESTARTSYS;
 -
--	switch (lddfr & LDDFR_COLOR_MASK) {
--	case LDDFR_1BPP_MONO:
--		lgray = 1;
--		lbpp = 1;
--		break;
--	case LDDFR_2BPP_MONO:
--		lgray = 1;
--		lbpp = 2;
--		break;
--	case LDDFR_4BPP_MONO:
--		lgray = 1;
--	case LDDFR_4BPP:
--		lbpp = 4;
--		break;
--	case LDDFR_6BPP_MONO:
--		lgray = 1;
--	case LDDFR_8BPP:
--		lbpp = 8;
--		break;
--	case LDDFR_16BPP_RGB555:
--	case LDDFR_16BPP_RGB565:
--		lbpp = 16;
--		lgray = 0;
--		break;
--	default:
--		dev_dbg(dev, "unsupported LDDFR bit depth.\n");
--		return -EINVAL;
--	}
--
--	if (bpp)
--		*bpp = lbpp;
--	if (gray)
--		*gray = lgray;
--
--	return 0;
--}
--
--static int sh7760fb_check_var(struct fb_var_screeninfo *var,
--			      struct fb_info *info)
--{
--	struct fb_fix_screeninfo *fix = &info->fix;
--	struct sh7760fb_par *par = info->par;
--	int ret, bpp;
--
--	/* get color info from register value */
--	ret = sh7760fb_get_color_info(info->dev, par->pd->lddfr, &bpp, NULL);
--	if (ret)
--		return ret;
--
--	var->bits_per_pixel = bpp;
--
--	if ((var->grayscale) && (var->bits_per_pixel == 1))
--		fix->visual = FB_VISUAL_MONO10;
--	else if (var->bits_per_pixel >= 15)
--		fix->visual = FB_VISUAL_TRUECOLOR;
--	else
--		fix->visual = FB_VISUAL_PSEUDOCOLOR;
--
--	/* TODO: add some more validation here */
--	return 0;
--}
--
--/*
-- * sh7760fb_set_par - set videomode.
-- *
-- * NOTE: The rotation, grayscale and DSTN codepaths are
-- *     totally untested!
-- */
--static int sh7760fb_set_par(struct fb_info *info)
--{
--	struct sh7760fb_par *par = info->par;
--	struct fb_videomode *vm = par->pd->def_mode;
--	unsigned long sbase, dstn_off, ldsarl, stride;
--	unsigned short hsynp, hsynw, htcn, hdcn;
--	unsigned short vsynp, vsynw, vtln, vdln;
--	unsigned short lddfr, ldmtr;
--	int ret, bpp, gray;
--
--	par->rot = par->pd->rotate;
--
--	/* rotate only works with xres <= 320 */
--	if (par->rot && (vm->xres > 320)) {
--		dev_dbg(info->dev, "rotation disabled due to display size\n");
--		par->rot = 0;
--	}
--
--	/* calculate LCDC reg vals from display parameters */
--	hsynp = vm->right_margin + vm->xres;
--	hsynw = vm->hsync_len;
--	htcn = vm->left_margin + hsynp + hsynw;
--	hdcn = vm->xres;
--	vsynp = vm->lower_margin + vm->yres;
--	vsynw = vm->vsync_len;
--	vtln = vm->upper_margin + vsynp + vsynw;
--	vdln = vm->yres;
--
--	/* get color info from register value */
--	ret = sh7760fb_get_color_info(info->dev, par->pd->lddfr, &bpp, &gray);
--	if (ret)
--		return ret;
--
--	dev_dbg(info->dev, "%dx%d %dbpp %s (orientation %s)\n", hdcn,
--		vdln, bpp, gray ? "grayscale" : "color",
--		par->rot ? "rotated" : "normal");
--
--#ifdef CONFIG_CPU_LITTLE_ENDIAN
--	lddfr = par->pd->lddfr | (1 << 8);
--#else
--	lddfr = par->pd->lddfr & ~(1 << 8);
--#endif
--
--	ldmtr = par->pd->ldmtr;
--
--	if (!(vm->sync & FB_SYNC_HOR_HIGH_ACT))
--		ldmtr |= LDMTR_CL1POL;
--	if (!(vm->sync & FB_SYNC_VERT_HIGH_ACT))
--		ldmtr |= LDMTR_FLMPOL;
--
--	/* shut down LCDC before changing display parameters */
--	sh7760fb_blank(FB_BLANK_POWERDOWN, info);
--
--	iowrite16(par->pd->ldickr, par->base + LDICKR);	/* pixclock */
--	iowrite16(ldmtr, par->base + LDMTR);	/* polarities */
--	iowrite16(lddfr, par->base + LDDFR);	/* color/depth */
--	iowrite16((par->rot ? 1 << 13 : 0), par->base + LDSMR);	/* rotate */
--	iowrite16(par->pd->ldpmmr, par->base + LDPMMR);	/* Power Management */
--	iowrite16(par->pd->ldpspr, par->base + LDPSPR);	/* Power Supply Ctrl */
--
--	/* display resolution */
--	iowrite16(((htcn >> 3) - 1) | (((hdcn >> 3) - 1) << 8),
--		  par->base + LDHCNR);
--	iowrite16(vdln - 1, par->base + LDVDLNR);
--	iowrite16(vtln - 1, par->base + LDVTLNR);
--	/* h/v sync signals */
--	iowrite16((vsynp - 1) | ((vsynw - 1) << 12), par->base + LDVSYNR);
--	iowrite16(((hsynp >> 3) - 1) | (((hsynw >> 3) - 1) << 12),
--		  par->base + LDHSYNR);
--	/* AC modulation sig */
--	iowrite16(par->pd->ldaclnr, par->base + LDACLNR);
--
--	stride = (par->rot) ? vtln : hdcn;
--	if (!gray)
--		stride *= (bpp + 7) >> 3;
--	else {
--		if (bpp == 1)
--			stride >>= 3;
--		else if (bpp == 2)
--			stride >>= 2;
--		else if (bpp == 4)
--			stride >>= 1;
--		/* 6 bpp == 8 bpp */
--	}
--
--	/* if rotated, stride must be power of 2 */
--	if (par->rot) {
--		unsigned long bit = 1 << 31;
--		while (bit) {
--			if (stride & bit)
--				break;
--			bit >>= 1;
+-	err = v4l2_fh_open(file);
+-	if (err)
+-		goto done_open;
+-	if (v4l2_fh_is_singular_file(file) &&
+-	    vou_dev->status == SH_VOU_INITIALISING) {
+-		/* First open */
+-		err = pm_runtime_resume_and_get(vou_dev->v4l2_dev.dev);
+-		if (err < 0) {
+-			v4l2_fh_release(file);
+-			goto done_open;
 -		}
--		if (stride & ~bit)
--			stride = bit << 1;	/* not P-o-2, round up */
+-		err = sh_vou_hw_init(vou_dev);
+-		if (err < 0) {
+-			pm_runtime_put(vou_dev->v4l2_dev.dev);
+-			v4l2_fh_release(file);
+-		} else {
+-			vou_dev->status = SH_VOU_IDLE;
+-		}
 -	}
--	iowrite16(stride, par->base + LDLAOR);
+-done_open:
+-	mutex_unlock(&vou_dev->fop_lock);
+-	return err;
+-}
 -
--	/* set display mem start address */
--	sbase = (unsigned long)par->fbdma;
--	if (par->rot)
--		sbase += (hdcn - 1) * stride;
+-static int sh_vou_release(struct file *file)
+-{
+-	struct sh_vou_device *vou_dev = video_drvdata(file);
+-	bool is_last;
 -
--	iowrite32(sbase, par->base + LDSARU);
--
--	/*
--	 * for DSTN need to set address for lower half.
--	 * I (mlau) don't know which address to set it to,
--	 * so I guessed at (stride * yres/2).
--	 */
--	if (((ldmtr & 0x003f) >= LDMTR_DSTN_MONO_8) &&
--	    ((ldmtr & 0x003f) <= LDMTR_DSTN_COLOR_16)) {
--
--		dev_dbg(info->dev, " ***** DSTN untested! *****\n");
--
--		dstn_off = stride;
--		if (par->rot)
--			dstn_off *= hdcn >> 1;
--		else
--			dstn_off *= vdln >> 1;
--
--		ldsarl = sbase + dstn_off;
--	} else
--		ldsarl = 0;
--
--	iowrite32(ldsarl, par->base + LDSARL);	/* mem for lower half of DSTN */
--
--	info->fix.line_length = stride;
--
--	sh7760fb_check_var(&info->var, info);
--
--	sh7760fb_blank(FB_BLANK_UNBLANK, info);	/* panel on! */
--
--	dev_dbg(info->dev, "hdcn  : %6d htcn  : %6d\n", hdcn, htcn);
--	dev_dbg(info->dev, "hsynw : %6d hsynp : %6d\n", hsynw, hsynp);
--	dev_dbg(info->dev, "vdln  : %6d vtln  : %6d\n", vdln, vtln);
--	dev_dbg(info->dev, "vsynw : %6d vsynp : %6d\n", vsynw, vsynp);
--	dev_dbg(info->dev, "clksrc: %6d clkdiv: %6d\n",
--		(par->pd->ldickr >> 12) & 3, par->pd->ldickr & 0x1f);
--	dev_dbg(info->dev, "ldpmmr: 0x%04x ldpspr: 0x%04x\n", par->pd->ldpmmr,
--		par->pd->ldpspr);
--	dev_dbg(info->dev, "ldmtr : 0x%04x lddfr : 0x%04x\n", ldmtr, lddfr);
--	dev_dbg(info->dev, "ldlaor: %ld\n", stride);
--	dev_dbg(info->dev, "ldsaru: 0x%08lx ldsarl: 0x%08lx\n", sbase, ldsarl);
--
+-	mutex_lock(&vou_dev->fop_lock);
+-	is_last = v4l2_fh_is_singular_file(file);
+-	_vb2_fop_release(file, NULL);
+-	if (is_last) {
+-		/* Last close */
+-		vou_dev->status = SH_VOU_INITIALISING;
+-		sh_vou_reg_a_set(vou_dev, VOUER, 0, 0x101);
+-		pm_runtime_put(vou_dev->v4l2_dev.dev);
+-	}
+-	mutex_unlock(&vou_dev->fop_lock);
 -	return 0;
 -}
 -
--static const struct fb_ops sh7760fb_ops = {
--	.owner = THIS_MODULE,
--	.fb_blank = sh7760fb_blank,
--	.fb_check_var = sh7760fb_check_var,
--	.fb_setcolreg = sh7760_setcolreg,
--	.fb_set_par = sh7760fb_set_par,
--	.fb_fillrect = cfb_fillrect,
--	.fb_copyarea = cfb_copyarea,
--	.fb_imageblit = cfb_imageblit,
+-/* sh_vou display ioctl operations */
+-static const struct v4l2_ioctl_ops sh_vou_ioctl_ops = {
+-	.vidioc_querycap		= sh_vou_querycap,
+-	.vidioc_enum_fmt_vid_out	= sh_vou_enum_fmt_vid_out,
+-	.vidioc_g_fmt_vid_out		= sh_vou_g_fmt_vid_out,
+-	.vidioc_s_fmt_vid_out		= sh_vou_s_fmt_vid_out,
+-	.vidioc_try_fmt_vid_out		= sh_vou_try_fmt_vid_out,
+-	.vidioc_reqbufs			= vb2_ioctl_reqbufs,
+-	.vidioc_create_bufs		= vb2_ioctl_create_bufs,
+-	.vidioc_querybuf		= vb2_ioctl_querybuf,
+-	.vidioc_qbuf			= vb2_ioctl_qbuf,
+-	.vidioc_dqbuf			= vb2_ioctl_dqbuf,
+-	.vidioc_prepare_buf		= vb2_ioctl_prepare_buf,
+-	.vidioc_streamon		= vb2_ioctl_streamon,
+-	.vidioc_streamoff		= vb2_ioctl_streamoff,
+-	.vidioc_expbuf			= vb2_ioctl_expbuf,
+-	.vidioc_g_output		= sh_vou_g_output,
+-	.vidioc_s_output		= sh_vou_s_output,
+-	.vidioc_enum_output		= sh_vou_enum_output,
+-	.vidioc_s_std			= sh_vou_s_std,
+-	.vidioc_g_std			= sh_vou_g_std,
+-	.vidioc_g_selection		= sh_vou_g_selection,
+-	.vidioc_s_selection		= sh_vou_s_selection,
+-	.vidioc_log_status		= sh_vou_log_status,
 -};
 -
--static void sh7760fb_free_mem(struct fb_info *info)
+-static const struct v4l2_file_operations sh_vou_fops = {
+-	.owner		= THIS_MODULE,
+-	.open		= sh_vou_open,
+-	.release	= sh_vou_release,
+-	.unlocked_ioctl	= video_ioctl2,
+-	.mmap		= vb2_fop_mmap,
+-	.poll		= vb2_fop_poll,
+-	.write		= vb2_fop_write,
+-};
+-
+-static const struct video_device sh_vou_video_template = {
+-	.name		= "sh_vou",
+-	.fops		= &sh_vou_fops,
+-	.ioctl_ops	= &sh_vou_ioctl_ops,
+-	.tvnorms	= V4L2_STD_525_60, /* PAL only supported in 8-bit non-bt656 mode */
+-	.vfl_dir	= VFL_DIR_TX,
+-	.device_caps	= V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_READWRITE |
+-			  V4L2_CAP_STREAMING,
+-};
+-
+-static int sh_vou_probe(struct platform_device *pdev)
 -{
--	struct sh7760fb_par *par = info->par;
+-	struct sh_vou_pdata *vou_pdata = pdev->dev.platform_data;
+-	struct v4l2_rect *rect;
+-	struct v4l2_pix_format *pix;
+-	struct i2c_adapter *i2c_adap;
+-	struct video_device *vdev;
+-	struct sh_vou_device *vou_dev;
+-	struct resource *reg_res;
+-	struct v4l2_subdev *subdev;
+-	struct vb2_queue *q;
+-	int irq, ret;
 -
--	if (!info->screen_base)
--		return;
+-	reg_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	irq = platform_get_irq(pdev, 0);
 -
--	dma_free_coherent(info->dev, info->screen_size,
--			  info->screen_base, par->fbdma);
--
--	par->fbdma = 0;
--	info->screen_base = NULL;
--	info->screen_size = 0;
--}
--
--/* allocate the framebuffer memory. This memory must be in Area3,
-- * (dictated by the DMA engine) and contiguous, at a 512 byte boundary.
-- */
--static int sh7760fb_alloc_mem(struct fb_info *info)
--{
--	struct sh7760fb_par *par = info->par;
--	void *fbmem;
--	unsigned long vram;
--	int ret, bpp;
--
--	if (info->screen_base)
--		return 0;
--
--	/* get color info from register value */
--	ret = sh7760fb_get_color_info(info->dev, par->pd->lddfr, &bpp, NULL);
--	if (ret) {
--		printk(KERN_ERR "colinfo\n");
--		return ret;
--	}
--
--	/* min VRAM: xres_min = 16, yres_min = 1, bpp = 1: 2byte -> 1 page
--	   max VRAM: xres_max = 1024, yres_max = 1024, bpp = 16: 2MB */
--
--	vram = info->var.xres * info->var.yres;
--	if (info->var.grayscale) {
--		if (bpp == 1)
--			vram >>= 3;
--		else if (bpp == 2)
--			vram >>= 2;
--		else if (bpp == 4)
--			vram >>= 1;
--	} else if (bpp > 8)
--		vram *= 2;
--	if ((vram < 1) || (vram > 1024 * 2048)) {
--		dev_dbg(info->dev, "too much VRAM required. Check settings\n");
+-	if (!vou_pdata || !reg_res || irq <= 0) {
+-		dev_err(&pdev->dev, "Insufficient VOU platform information.\n");
 -		return -ENODEV;
 -	}
 -
--	if (vram < PAGE_SIZE)
--		vram = PAGE_SIZE;
--
--	fbmem = dma_alloc_coherent(info->dev, vram, &par->fbdma, GFP_KERNEL);
--
--	if (!fbmem)
+-	vou_dev = devm_kzalloc(&pdev->dev, sizeof(*vou_dev), GFP_KERNEL);
+-	if (!vou_dev)
 -		return -ENOMEM;
 -
--	if ((par->fbdma & SH7760FB_DMA_MASK) != SH7760FB_DMA_MASK) {
--		sh7760fb_free_mem(info);
--		dev_err(info->dev, "kernel gave me memory at 0x%08lx, which is"
--			"unusable for the LCDC\n", (unsigned long)par->fbdma);
--		return -ENOMEM;
--	}
+-	INIT_LIST_HEAD(&vou_dev->buf_list);
+-	spin_lock_init(&vou_dev->lock);
+-	mutex_init(&vou_dev->fop_lock);
+-	vou_dev->pdata = vou_pdata;
+-	vou_dev->status = SH_VOU_INITIALISING;
+-	vou_dev->pix_idx = 1;
 -
--	info->screen_base = fbmem;
--	info->screen_size = vram;
--	info->fix.smem_start = (unsigned long)info->screen_base;
--	info->fix.smem_len = info->screen_size;
+-	rect = &vou_dev->rect;
+-	pix = &vou_dev->pix;
 -
--	return 0;
--}
+-	/* Fill in defaults */
+-	vou_dev->std		= V4L2_STD_NTSC_M;
+-	rect->left		= 0;
+-	rect->top		= 0;
+-	rect->width		= VOU_MAX_IMAGE_WIDTH;
+-	rect->height		= 480;
+-	pix->width		= VOU_MAX_IMAGE_WIDTH;
+-	pix->height		= 480;
+-	pix->pixelformat	= V4L2_PIX_FMT_NV16;
+-	pix->field		= V4L2_FIELD_INTERLACED;
+-	pix->bytesperline	= VOU_MAX_IMAGE_WIDTH;
+-	pix->sizeimage		= VOU_MAX_IMAGE_WIDTH * 2 * 480;
+-	pix->colorspace		= V4L2_COLORSPACE_SMPTE170M;
 -
--static int sh7760fb_probe(struct platform_device *pdev)
--{
--	struct fb_info *info;
--	struct resource *res;
--	struct sh7760fb_par *par;
--	int ret;
+-	vou_dev->base = devm_ioremap_resource(&pdev->dev, reg_res);
+-	if (IS_ERR(vou_dev->base))
+-		return PTR_ERR(vou_dev->base);
 -
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (unlikely(res == NULL)) {
--		dev_err(&pdev->dev, "invalid resource\n");
--		return -EINVAL;
--	}
+-	ret = devm_request_irq(&pdev->dev, irq, sh_vou_isr, 0, "vou", vou_dev);
+-	if (ret < 0)
+-		return ret;
 -
--	info = framebuffer_alloc(sizeof(struct sh7760fb_par), &pdev->dev);
--	if (!info)
--		return -ENOMEM;
--
--	par = info->par;
--	par->dev = pdev;
--
--	par->pd = pdev->dev.platform_data;
--	if (!par->pd) {
--		dev_dbg(info->dev, "no display setup data!\n");
--		ret = -ENODEV;
--		goto out_fb;
--	}
--
--	par->ioarea = request_mem_region(res->start,
--					 resource_size(res), pdev->name);
--	if (!par->ioarea) {
--		dev_err(&pdev->dev, "mmio area busy\n");
--		ret = -EBUSY;
--		goto out_fb;
--	}
--
--	par->base = ioremap(res->start, resource_size(res));
--	if (!par->base) {
--		dev_err(&pdev->dev, "cannot remap\n");
--		ret = -ENODEV;
--		goto out_res;
--	}
--
--	iowrite16(0, par->base + LDINTR);	/* disable vsync irq */
--	par->irq = platform_get_irq(pdev, 0);
--	if (par->irq >= 0) {
--		ret = request_irq(par->irq, sh7760fb_irq, 0,
--				  "sh7760-lcdc", &par->vsync);
--		if (ret) {
--			dev_err(&pdev->dev, "cannot grab IRQ\n");
--			par->irq = -ENXIO;
--		} else
--			disable_irq_nosync(par->irq);
--	}
--
--	fb_videomode_to_var(&info->var, par->pd->def_mode);
--
--	ret = sh7760fb_alloc_mem(info);
--	if (ret) {
--		dev_dbg(info->dev, "framebuffer memory allocation failed!\n");
--		goto out_unmap;
--	}
--
--	info->pseudo_palette = par->pseudo_palette;
--
--	/* fixup color register bitpositions. These are fixed by hardware */
--	info->var.red.offset = 11;
--	info->var.red.length = 5;
--	info->var.red.msb_right = 0;
--
--	info->var.green.offset = 5;
--	info->var.green.length = 6;
--	info->var.green.msb_right = 0;
--
--	info->var.blue.offset = 0;
--	info->var.blue.length = 5;
--	info->var.blue.msb_right = 0;
--
--	info->var.transp.offset = 0;
--	info->var.transp.length = 0;
--	info->var.transp.msb_right = 0;
--
--	strcpy(info->fix.id, "sh7760-lcdc");
--
--	/* set the DON2 bit now, before cmap allocation, as it will randomize
--	 * palette memory.
--	 */
--	iowrite16(LDCNTR_DON2, par->base + LDCNTR);
--	info->fbops = &sh7760fb_ops;
--
--	ret = fb_alloc_cmap(&info->cmap, 256, 0);
--	if (ret) {
--		dev_dbg(info->dev, "Unable to allocate cmap memory\n");
--		goto out_mem;
--	}
--
--	ret = register_framebuffer(info);
+-	ret = v4l2_device_register(&pdev->dev, &vou_dev->v4l2_dev);
 -	if (ret < 0) {
--		dev_dbg(info->dev, "cannot register fb!\n");
--		goto out_cmap;
+-		dev_err(&pdev->dev, "Error registering v4l2 device\n");
+-		return ret;
 -	}
--	platform_set_drvdata(pdev, info);
 -
--	printk(KERN_INFO "%s: memory at phys 0x%08lx-0x%08lx, size %ld KiB\n",
--	       pdev->name,
--	       (unsigned long)par->fbdma,
--	       (unsigned long)(par->fbdma + info->screen_size - 1),
--	       info->screen_size >> 10);
+-	vdev = &vou_dev->vdev;
+-	*vdev = sh_vou_video_template;
+-	if (vou_pdata->bus_fmt == SH_VOU_BUS_8BIT)
+-		vdev->tvnorms |= V4L2_STD_PAL;
+-	vdev->v4l2_dev = &vou_dev->v4l2_dev;
+-	vdev->release = video_device_release_empty;
+-	vdev->lock = &vou_dev->fop_lock;
+-
+-	video_set_drvdata(vdev, vou_dev);
+-
+-	/* Initialize the vb2 queue */
+-	q = &vou_dev->queue;
+-	q->type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+-	q->io_modes = VB2_MMAP | VB2_DMABUF | VB2_WRITE;
+-	q->drv_priv = vou_dev;
+-	q->buf_struct_size = sizeof(struct sh_vou_buffer);
+-	q->ops = &sh_vou_qops;
+-	q->mem_ops = &vb2_dma_contig_memops;
+-	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+-	q->min_buffers_needed = 2;
+-	q->lock = &vou_dev->fop_lock;
+-	q->dev = &pdev->dev;
+-	ret = vb2_queue_init(q);
+-	if (ret)
+-		goto ei2cgadap;
+-
+-	vdev->queue = q;
+-	INIT_LIST_HEAD(&vou_dev->buf_list);
+-
+-	pm_runtime_enable(&pdev->dev);
+-	pm_runtime_resume(&pdev->dev);
+-
+-	i2c_adap = i2c_get_adapter(vou_pdata->i2c_adap);
+-	if (!i2c_adap) {
+-		ret = -ENODEV;
+-		goto ei2cgadap;
+-	}
+-
+-	ret = sh_vou_hw_init(vou_dev);
+-	if (ret < 0)
+-		goto ereset;
+-
+-	subdev = v4l2_i2c_new_subdev_board(&vou_dev->v4l2_dev, i2c_adap,
+-			vou_pdata->board_info, NULL);
+-	if (!subdev) {
+-		ret = -ENOMEM;
+-		goto ei2cnd;
+-	}
+-
+-	ret = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
+-	if (ret < 0)
+-		goto evregdev;
 -
 -	return 0;
 -
--out_cmap:
--	sh7760fb_blank(FB_BLANK_POWERDOWN, info);
--	fb_dealloc_cmap(&info->cmap);
--out_mem:
--	sh7760fb_free_mem(info);
--out_unmap:
--	if (par->irq >= 0)
--		free_irq(par->irq, &par->vsync);
--	iounmap(par->base);
--out_res:
--	release_mem_region(res->start, resource_size(res));
--out_fb:
--	framebuffer_release(info);
+-evregdev:
+-ei2cnd:
+-ereset:
+-	i2c_put_adapter(i2c_adap);
+-ei2cgadap:
+-	pm_runtime_disable(&pdev->dev);
+-	v4l2_device_unregister(&vou_dev->v4l2_dev);
 -	return ret;
 -}
 -
--static int sh7760fb_remove(struct platform_device *dev)
+-static int sh_vou_remove(struct platform_device *pdev)
 -{
--	struct fb_info *info = platform_get_drvdata(dev);
--	struct sh7760fb_par *par = info->par;
+-	struct v4l2_device *v4l2_dev = platform_get_drvdata(pdev);
+-	struct sh_vou_device *vou_dev = container_of(v4l2_dev,
+-						struct sh_vou_device, v4l2_dev);
+-	struct v4l2_subdev *sd = list_entry(v4l2_dev->subdevs.next,
+-					    struct v4l2_subdev, list);
+-	struct i2c_client *client = v4l2_get_subdevdata(sd);
 -
--	sh7760fb_blank(FB_BLANK_POWERDOWN, info);
--	unregister_framebuffer(info);
--	fb_dealloc_cmap(&info->cmap);
--	sh7760fb_free_mem(info);
--	if (par->irq >= 0)
--		free_irq(par->irq, &par->vsync);
--	iounmap(par->base);
--	release_mem_region(par->ioarea->start, resource_size(par->ioarea));
--	framebuffer_release(info);
--
+-	pm_runtime_disable(&pdev->dev);
+-	video_unregister_device(&vou_dev->vdev);
+-	i2c_put_adapter(client->adapter);
+-	v4l2_device_unregister(&vou_dev->v4l2_dev);
 -	return 0;
 -}
 -
--static struct platform_driver sh7760_lcdc_driver = {
--	.driver = {
--		   .name = "sh7760-lcdc",
--		   },
--	.probe = sh7760fb_probe,
--	.remove = sh7760fb_remove,
+-static struct platform_driver sh_vou = {
+-	.remove  = sh_vou_remove,
+-	.driver  = {
+-		.name	= "sh-vou",
+-	},
 -};
 -
--module_platform_driver(sh7760_lcdc_driver);
+-module_platform_driver_probe(sh_vou, sh_vou_probe);
 -
--MODULE_AUTHOR("Nobuhiro Iwamatsu, Manuel Lauss");
--MODULE_DESCRIPTION("FBdev for SH7760/63 integrated LCD Controller");
+-MODULE_DESCRIPTION("SuperH VOU driver");
+-MODULE_AUTHOR("Guennadi Liakhovetski <g.liakhovetski@gmx.de>");
 -MODULE_LICENSE("GPL v2");
+-MODULE_VERSION("0.1.0");
+-MODULE_ALIAS("platform:sh-vou");
 -- 
 2.39.0
 
