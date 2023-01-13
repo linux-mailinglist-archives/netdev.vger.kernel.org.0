@@ -2,359 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C0C4668C75
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EEE7668C70
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjAMGWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:22:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
+        id S236639AbjAMGVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:21:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235477AbjAMGVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:21:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3525CF87
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 22:20:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673590817;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZA/WXC5prDy/5mOBtGNQhQSiRmA3vqaLzTAXUcArX8A=;
-        b=JDgkpmr69D1meVHd+XYL0Pupd5Mh18N9LkQ/F1pUmp8lEkQaf6jvkLuh9OcNilu1mcXLFR
-        8qXjbrYN+juokgtUEQoJJpfH15LQnNH8i5ZTQwdwr8/4s1/o/3f/YGO6pUn4t4MVyXmhln
-        Mjn+D/Md9ju4LhUPFmg8eqiAiS7aRuo=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-507-F8OBdiL4P52yrranRhvXBg-1; Fri, 13 Jan 2023 01:20:16 -0500
-X-MC-Unique: F8OBdiL4P52yrranRhvXBg-1
-Received: by mail-oo1-f70.google.com with SMTP id i10-20020a4a900a000000b004f1f4aa7f3bso5748281oog.7
-        for <netdev@vger.kernel.org>; Thu, 12 Jan 2023 22:20:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZA/WXC5prDy/5mOBtGNQhQSiRmA3vqaLzTAXUcArX8A=;
-        b=l3oFQ/mQtWUrmTlX7rAIFdldzNxLmYEM+eolE2FKKxMdIMdfDP3D/uYOCEXchkmM8T
-         vuhL4ZEkEpf85M6MpSMoC528aDr1Id8sfKpC8t1ecUJVHPbQY7UhU8rdn3M3H9bgoTTd
-         ORefPchJXF5vhtIg0SE3zpd2SR+jfYscKl02VcymQMwtqTy3p8Ek7Vue9H0U1zj+q0wn
-         qkzODaZWKdpSwl57HcVNkmneBBlghGzvdWHsMM4WzgSv55fLUmVOIpMSAoxMMWeBUmvz
-         IuYNNbeoBb76J9nRH0111j9M8CC+sOCXpoG3n/xt/dKmMGHLJzNqtmdX7Bdn/ynNFhTm
-         0gdw==
-X-Gm-Message-State: AFqh2kqthL0+rSPcGe2t6vGYGaBqUXt8iBHPIPeLjBhB0s1vSpA2HHeD
-        PLnwUoxXbmpZjBBOPuLXyF9MJ9yt+PELvnvs0D6P83L1OHvdmOSqZbbs+Bv4EutfkPcKycj0Ka2
-        e9lAyhjqEC3fo+FjMpL8Y6m8g9ZdVl4Si
-X-Received: by 2002:a54:4e89:0:b0:35c:303d:fe37 with SMTP id c9-20020a544e89000000b0035c303dfe37mr3472247oiy.35.1673590815534;
-        Thu, 12 Jan 2023 22:20:15 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsU/Rq3/n+Yp2sdFV+SfWqkAMT4t8sRS+vgwm5fkhkFFhkbRPz5Lr57Igz/s5HUh9xq1Chg/dqzKQLEyyb3LMQ=
-X-Received: by 2002:a54:4e89:0:b0:35c:303d:fe37 with SMTP id
- c9-20020a544e89000000b0035c303dfe37mr3472233oiy.35.1673590815235; Thu, 12 Jan
- 2023 22:20:15 -0800 (PST)
+        with ESMTP id S236486AbjAMGU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:20:27 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAFF5C928;
+        Thu, 12 Jan 2023 22:20:22 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UGXWNrW0DXRSpqsxZ1dXY7iaC81wOxOK3ZtmYWdwv6rWlDQQB9vDelwuuTFqFnYJ+TTsZEfvWyF+N+MOtv5e3whqkx4i/kwIN3LwKQr5DMRudimm3SVo73cuWwPSn02DK6Ek/1CuwYWI7N6QTMFmtBqgP9CG1XVMRUXXu2x7Nn+0YzH6SW3x3nN3Pu0tFHQ4uWOnO5gYwH5I5/VyqW+r/Vjazoleemboxto2xzIpYMg08hENSzq83Yf4Qi2i+L6t3AcFuaMPffVdCFr2JMgyj7AfD8lYrX/U69XYrpxWIG12H1fh1DblSmaOZyqlWAhFl4KRAD/FwUoPVYv77OnCqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bKuxlAI6YpDtvn/krLpVz+hzEwh7xhIX12pLy6AtZCw=;
+ b=df71Er9kqd3XR0ytugfyPUl4TUVI8Mg6SoEKOIm0rmNokYNsWROV+lIZ7w/IV3lxUDfj6VxOnIqbYTDo0I/tYTr48XQ4txaYvK+ked6b3Dx00HGbHVbibmPg64MEw0oSCPdHOfQX1plEEs5WbvgVod7b13N7tXo2vMx5MMlhCylLF3x0L+ugcoET2nyGP7xbHKmYTHouuG92oZP2C6lZHQ6Cug+2CkTjaGegU3/Myx4qcTvFrmQd7LY9yXPm/xXTNKfBzKLV8IWU5Ohg0zG5TZPrU2tsEj7Kyc79AFK3m+ByP0JSJvrg18KMeTRgcr2awPJFjI2dNKoTFgInuHro2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bKuxlAI6YpDtvn/krLpVz+hzEwh7xhIX12pLy6AtZCw=;
+ b=a1jRCxT97Q8//ZrBxmB5bClzJvFQ7ieP5Y5wAGfW9sxtene4gZmyRLMEmqTY3RLVQeMqAQxiS1U2fR909IMar1h9KfRDO3WK9gXpj5XLaVt8KiFam5k7rNdWWhklotEEUxFg5mhuCuLoWslvckfcJNuGy12RqxbI3PKIechJ6RDYKldEHzP1LhwFqRlU49fN7jkuW+wsMYYt5+1C01ItLgkvcwt7OOthjnYEuoFl6MwdVgvqJlK3QmH09vt3QPIZoZ0QFn+Puaav71LjsjPV8cW2fdKEa/1ur5gOnhj0ZSthBbaSEy1DFJPb0itfQDWObUGBae2AMwgAP8TU7TYVmQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
+ by BL1PR12MB5223.namprd12.prod.outlook.com (2603:10b6:208:315::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Fri, 13 Jan
+ 2023 06:20:20 +0000
+Received: from BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::8031:8093:2f25:f2ab]) by BYAPR12MB2743.namprd12.prod.outlook.com
+ ([fe80::8031:8093:2f25:f2ab%7]) with mapi id 15.20.5986.018; Fri, 13 Jan 2023
+ 06:20:20 +0000
+From:   Rahul Rameshbabu <rrameshbabu@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hariprasad Kelam <hkelam@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <edumazet@google.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, Maxim Mikityanskiy <maxtram95@gmail.com>
+Subject: Re: [net-next PATCH 0/5] octeontx2-pf: HTB offload support
+References: <20230112173120.23312-1-hkelam@marvell.com>
+        <20230112210738.72393731@kernel.org>
+Date:   Thu, 12 Jan 2023 22:20:06 -0800
+In-Reply-To: <20230112210738.72393731@kernel.org> (Jakub Kicinski's message of
+        "Thu, 12 Jan 2023 21:07:38 -0800")
+Message-ID: <87ilhbx8fd.fsf@nvidia.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR11CA0047.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::24) To BYAPR12MB2743.namprd12.prod.outlook.com
+ (2603:10b6:a03:61::28)
 MIME-Version: 1.0
-References: <20221207145428.31544-1-gautam.dawar@amd.com> <20221207145428.31544-9-gautam.dawar@amd.com>
- <CACGkMEtGCbUBZRFh7EUJyymuWZ9uxiAOeJHA6h-dGa9Y3pDZGw@mail.gmail.com>
- <c5956679-82c1-336b-3190-de32db1c0926@amd.com> <CACGkMEvVnAQ2t4piV3U-hACELvUozRKJOiCCcQLp5ch2TQ9r4w@mail.gmail.com>
- <CACGkMEt866q9CR_4JNUX+35gyV4ykYPiviLHeYfgqKCmrqXZ4A@mail.gmail.com> <289dc054-4cb7-e31c-69b4-b02a62a2fe16@amd.com>
-In-Reply-To: <289dc054-4cb7-e31c-69b4-b02a62a2fe16@amd.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 13 Jan 2023 14:20:03 +0800
-Message-ID: <CACGkMEv6vy31646YfLYEyLqeeJcn1sKnUy9z_9++2dkTSAEPPw@mail.gmail.com>
-Subject: Re: [PATCH net-next 08/11] sfc: implement device status related vdpa
- config operations
-To:     Gautam Dawar <gdawar@amd.com>
-Cc:     Gautam Dawar <gautam.dawar@amd.com>, linux-net-drivers@amd.com,
-        netdev@vger.kernel.org, eperezma@redhat.com, tanuj.kamde@amd.com,
-        Koushik.Dutta@amd.com, harpreet.anand@amd.com,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|BL1PR12MB5223:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3b274341-d2fe-4ec4-dd9d-08daf52e3f3e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hF3D1J2C/8YFjSb8XjoaLaV+5Q28u2hlXw69o5nfNQTBfWdGGWtwJN8ftLsC2aVKsrzW59FsC6bqiAYKd+Jw51Mch4kEEt3MZ+k4qAUd4UOHkF3xbTNaPuGhlqaPm+du+ZcOApKbgqB3xzZU7EWGBN9KeVK06cyqJn2vdZKyTYMlTOtCm43K96xluq0Owb+7e6jy00n6PCeQnIV8bbh+yakYqEs9Lkofuo3xlLtFkqc5CFGtbroWVRQN8isOW19/67ILCEDKhyhNQUr/SJIRyHPGHFofblqMI2NNkgPA0NHmXTp/nMIMw9bUL2D/s6oxNGwKaW7labP/zl1WwPEtiZNlAbcUt/EK/uNUVMnnjU7WxoD4UZxGj5q8JZ6+yfaR7utRS1mfiLQcBKaziOAjRpPw3lh/qg+cNNEh/fiKmZ8tja0JtKKnx6UKumVo4+00QPyhQ2az7C5uDuzSh9Nqv0EQBj5HOHvIiUYyiZAWsmO8m43Y57xrg0xM/DHjUBQIAXJMnR9NlqprXiZ2EH9zoBsJLfH61dLIuy12ppxvkOKEVO9u+RZxMUo4d0EVbj9GTHLQWIvCme2AS0nmRxiFc/HzHxYNfAtKkOECxQEGMh54CLXJJtCz+gPJisKueODJzkumUVKX42FbyudKh3t2EclpmeIcar1IbMWOxfsH81RTcxWrfkmZsW/61Kcux7l1P77dPJRzJCWtpvn4DK61JQzMaxfmMGPhNiw7kFnP8Tc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(346002)(136003)(396003)(451199015)(478600001)(6486002)(966005)(41300700001)(6512007)(38100700002)(86362001)(316002)(54906003)(2616005)(66556008)(66946007)(186003)(66476007)(36756003)(5660300002)(7416002)(6506007)(2906002)(6666004)(8676002)(6916009)(4326008)(83380400001)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GOMRKLKqVCqa74zgQ5ORnKkU47l9IPT+NCwRZLSpvUbeTFcEhKDaiDGQDG/9?=
+ =?us-ascii?Q?4gEOuxUVP3l0kcXsiVBaCpoVGkuQeYmv05dhNmFxDk+8bgoPr6p3Hpiy15X+?=
+ =?us-ascii?Q?duWYZTy9V1hG6lxlXtLUF01DWWOS1RfSpxEIB4atMe5wpuYFtmXWekPNH7+Y?=
+ =?us-ascii?Q?sH2Tay0RymjvGvQoZtDNTRYe+VUsPiLZiV1gpBLv1iwuUhO5Eg8zOKJuJGo2?=
+ =?us-ascii?Q?AFmGKeZL51LbGjsbldo1+SNdD+K9rBccq1Un5k5gtiO9+Xm76caltlSQXvYN?=
+ =?us-ascii?Q?sEU/WK+HryffGbMvjuhR8XqTfq8mi3K+Ek6A9ehddtZUUT9lIarxxh6YARRd?=
+ =?us-ascii?Q?NgJRelT4puRgHvVIJHBdQ+1+Lk53FOnEigIDSyufm/+EhZLhp60ECbfdNIqv?=
+ =?us-ascii?Q?CMtOqrbQop0WYSetkGsKYk9/GAA0mjoq30Of7eb7CXhQZ2YM7C7aSEt1Y0vB?=
+ =?us-ascii?Q?BC49aqo7/X/J86+TR4yRUkC35b7fPEDn33vhAg7qVV1bLnn3Mfls3LZzoieY?=
+ =?us-ascii?Q?BL07XE4u3JrnMDhV7H1l+H0mr2Z9c6ZE3NWAxcuDYI253t8Q2WBCUUASli3C?=
+ =?us-ascii?Q?YPMfgB9ue/bC7b+xZstuYRoZaAuO60BX+BSdWAAChaJvVR7mB1xidfLY+lwR?=
+ =?us-ascii?Q?czmRvvswzzhqjw1zVv9RC5S/x+bCSVYVH/0bm2cfhjIBuxU+LxsGxjGmo+6y?=
+ =?us-ascii?Q?5C92wlw9nq/l9AZ5fSNaGN1TX6z7ROI6KfV9aqnslLLLgRWvyeNwECZ3e8xl?=
+ =?us-ascii?Q?Fnr6aCfnP7ZTPp/pD1Xyy2PUmPYjxjYZb7SiHpsWS7InnRCZ52D4TE2cUNhP?=
+ =?us-ascii?Q?0MS67Azp+X+MdP436vPkk6+642hUQLbLOo1uxLx4cvzH7tY97DiPj6Xmyw3z?=
+ =?us-ascii?Q?VblGc30MVicvEpxs5zN8Ry02PA5r2wGSx1MbVc0G65OiFbO0icrgjHuOnG4+?=
+ =?us-ascii?Q?TjgwoYk62ynnHvJwPVnU44gWkWqWcbVVBOcES1HCq4w/sNCTgnasPHpZexF+?=
+ =?us-ascii?Q?j9o8BbTPbQuNOxR/5e2A8w8RrHmVJR+0QlZD562eskkQnV95Nh5XDbtrnhXn?=
+ =?us-ascii?Q?8U2IJvMbZewmCMDK5hO8z3lyzYfjE1eWbtBqCO37odj5jLwBcVqK9AbSv856?=
+ =?us-ascii?Q?TPwhViLWw2UXHz+H88LrkKex6OayQEmZXybJi/IrsOl4B8a1Hw6kkvTSY9CS?=
+ =?us-ascii?Q?sWvaxyILmJGp73mXCT6GxUDgoxx5oHbGUhokjmUsULM7d+mGKCdooe+/xXpo?=
+ =?us-ascii?Q?8uiGo2sqHiF58VEmI+Au3bZGfeWl7lwciPIzQc6iHD/Hl9PXp983XS+jVbiC?=
+ =?us-ascii?Q?EwyJFnfebPBTrk5p/IefR513NRcvTm7ejOxEnsAs94KONI1za0SBFwDXTo6l?=
+ =?us-ascii?Q?bmPuqlZYFE6sMpKcaoooZ+0MI1OkS6fcHfeDr8cR1T/9svxmg/VRkRt3/8WW?=
+ =?us-ascii?Q?n9OwYdYW7qoqdnLHohLoE8rs8QyJ8Cw9R57hg3o043r5QZGK88IBH1S+vTWh?=
+ =?us-ascii?Q?L2T9LFzVrpMM/r80k5GVdEbcNovWKjEvymJ5pgWQJggMEHXthP3UxfUvLgP4?=
+ =?us-ascii?Q?54iIAblV+wy2e5/ngN5EiE1nbzomt8hi3yFuDyr2eGyuNiO/gHDUcoZxULTg?=
+ =?us-ascii?Q?SmqOvNzxIdgNKHEG6heHsjW+pHpDMHxaEz2yBmG/I2/7BLMAfHybbv8pFYLQ?=
+ =?us-ascii?Q?UhcNSQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b274341-d2fe-4ec4-dd9d-08daf52e3f3e
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2023 06:20:20.6294
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q/9KG0WpXJUOXjhiuu1nypOcsp7co8hzvF2oCVlrhpI82F1I3ktaxTPBlXhL0umY3kWm0ujBvBpko2cd9BwLbQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5223
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 2:11 PM Gautam Dawar <gdawar@amd.com> wrote:
->
->
-> On 1/13/23 09:58, Jason Wang wrote:
-> > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> >
-> >
-> > On Wed, Jan 11, 2023 at 2:36 PM Jason Wang <jasowang@redhat.com> wrote:
-> >> On Mon, Jan 9, 2023 at 6:21 PM Gautam Dawar <gdawar@amd.com> wrote:
-> >>>
-> >>> On 12/14/22 12:15, Jason Wang wrote:
-> >>>> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> >>>>
-> >>>>
-> >>>> On Wed, Dec 7, 2022 at 10:57 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
-> >>>>> vDPA config opertions to handle get/set device status and device
-> >>>>> reset have been implemented.
-> >>>>>
-> >>>>> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
-> >>>>> ---
-> >>>>>    drivers/net/ethernet/sfc/ef100_vdpa.c     |   7 +-
-> >>>>>    drivers/net/ethernet/sfc/ef100_vdpa.h     |   1 +
-> >>>>>    drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 133 ++++++++++++++++++++++
-> >>>>>    3 files changed, 140 insertions(+), 1 deletion(-)
-> >>>>>
-> >>>>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
-> >>>>> index 04d64bfe3c93..80bca281a748 100644
-> >>>>> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
-> >>>>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
-> >>>>> @@ -225,9 +225,14 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
-> >>>>>
-> >>>>>    static void ef100_vdpa_delete(struct efx_nic *efx)
-> >>>>>    {
-> >>>>> +       struct vdpa_device *vdpa_dev;
-> >>>>> +
-> >>>>>           if (efx->vdpa_nic) {
-> >>>>> +               vdpa_dev = &efx->vdpa_nic->vdpa_dev;
-> >>>>> +               ef100_vdpa_reset(vdpa_dev);
-> >>>> Any reason we need to reset during delete?
-> >>> ef100_reset_vdpa_device() does the necessary clean-up including freeing
-> >>> irqs, deleting filters and deleting the vrings which is required while
-> >>> removing the vdpa device or unloading the driver.
-> >> That's fine but the name might be a little bit confusing since vDPA
-> >> reset is not necessary here.
-> >>
-> >>>>> +
-> >>>>>                   /* replace with _vdpa_unregister_device later */
-> >>>>> -               put_device(&efx->vdpa_nic->vdpa_dev.dev);
-> >>>>> +               put_device(&vdpa_dev->dev);
-> >>>>>                   efx->vdpa_nic = NULL;
-> >>>>>           }
-> >>>>>           efx_mcdi_free_vis(efx);
-> >>>>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> >>>>> index a33edd6dda12..1b0bbba88154 100644
-> >>>>> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
-> >>>>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
-> >>>>> @@ -186,6 +186,7 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
-> >>>>>                             enum ef100_vdpa_mac_filter_type type);
-> >>>>>    int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvqs);
-> >>>>>    void ef100_vdpa_irq_vectors_free(void *data);
-> >>>>> +int ef100_vdpa_reset(struct vdpa_device *vdev);
-> >>>>>
-> >>>>>    static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
-> >>>>>    {
-> >>>>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> >>>>> index 132ddb4a647b..718b67f6da90 100644
-> >>>>> --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> >>>>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-> >>>>> @@ -251,6 +251,62 @@ static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
-> >>>>>           return false;
-> >>>>>    }
-> >>>>>
-> >>>>> +static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
-> >>>>> +{
-> >>>>> +       int i;
-> >>>>> +
-> >>>>> +       WARN_ON(!mutex_is_locked(&vdpa_nic->lock));
-> >>>>> +
-> >>>>> +       if (!vdpa_nic->status)
-> >>>>> +               return;
-> >>>>> +
-> >>>>> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
-> >>>>> +       vdpa_nic->status = 0;
-> >>>>> +       vdpa_nic->features = 0;
-> >>>>> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
-> >>>>> +               reset_vring(vdpa_nic, i);
-> >>>>> +}
-> >>>>> +
-> >>>>> +/* May be called under the rtnl lock */
-> >>>>> +int ef100_vdpa_reset(struct vdpa_device *vdev)
-> >>>>> +{
-> >>>>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> >>>>> +
-> >>>>> +       /* vdpa device can be deleted anytime but the bar_config
-> >>>>> +        * could still be vdpa and hence efx->state would be STATE_VDPA.
-> >>>>> +        * Accordingly, ensure vdpa device exists before reset handling
-> >>>>> +        */
-> >>>>> +       if (!vdpa_nic)
-> >>>>> +               return -ENODEV;
-> >>>>> +
-> >>>>> +       mutex_lock(&vdpa_nic->lock);
-> >>>>> +       ef100_reset_vdpa_device(vdpa_nic);
-> >>>>> +       mutex_unlock(&vdpa_nic->lock);
-> >>>>> +       return 0;
-> >>>>> +}
-> >>>>> +
-> >>>>> +static int start_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
-> >>>>> +{
-> >>>>> +       int rc = 0;
-> >>>>> +       int i, j;
-> >>>>> +
-> >>>>> +       for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
-> >>>>> +               if (can_create_vring(vdpa_nic, i)) {
-> >>>>> +                       rc = create_vring(vdpa_nic, i);
-> >>>> So I think we can safely remove the create_vring() in set_vq_ready()
-> >>>> since it's undefined behaviour if set_vq_ready() is called after
-> >>>> DRIVER_OK.
-> >>> Is this (undefined) behavior documented in the virtio spec?
-> >> This part is kind of tricky:
-> >>
-> >> PCI transport has a queue_enable field. And recently,
-> >> VIRTIO_F_RING_RESET was introduced. Let's start without that first:
-> >>
-> >> In
-> >>
-> >> 4.1.4.3.2 Driver Requirements: Common configuration structure layout
-> >>
-> >> It said:
-> >>
-> >> "The driver MUST configure the other virtqueue fields before enabling
-> >> the virtqueue with queue_enable."
-> >>
-> >> and
-> >>
-> >> "The driver MUST NOT write a 0 to queue_enable."
-> >>
-> >> My understanding is that:
-> >>
-> >> 1) Write 0 is forbidden
-> >> 2) Write 1 after DRIVER_OK is undefined behaviour (or need to clarify)
-> >>
-> >> With VIRTIO_F_RING_RESET is negotiated:
-> >>
-> >> "
-> >> If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1
-> >> to queue_reset to reset the queue, the driver MUST NOT consider queue
-> >> reset to be complete until it reads back 0 in queue_reset. The driver
-> >> MAY re-enable the queue by writing 1 to queue_enable after ensuring
-> >> that other virtqueue fields have been set up correctly. The driver MAY
-> >> set driver-writeable queue configuration values to different values
-> >> than those that were used before the queue reset. (see 2.6.1).
-> >> "
-> >>
-> >> Write 1 to queue_enable after DRIVER_OK and after the queue is reset is allowed.
-> >>
-> >> Thanks
-> > Btw, I just realized that we need to stick to the current behaviour,
-> > that is to say, to allow set_vq_ready() to be called after DRIVER_OK.
->
-> So, both set_vq_ready() and DRIVER_OK are required for vring creation
-> and their order doesn't matter. Is that correct?
+CCed Maxim Mikityanskiy since he has authored and done an extensive
+amount of work on HTB offload support.
 
-Yes.
-
+On Thu, 12 Jan, 2023 21:07:38 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
+> On Thu, 12 Jan 2023 23:01:15 +0530 Hariprasad Kelam wrote:
+>> octeontx2 silicon and CN10K transmit interface consists of five
+>> transmit levels starting from MDQ, TL4 to TL1. Once packets are
+>> submitted to MDQ, hardware picks all active MDQs using strict
+>> priority, and MDQs having the same priority level are chosen using
+>> round robin. Each packet will traverse MDQ, TL4 to TL1 levels.
+>> Each level contains an array of queues to support scheduling and
+>> shaping.
+>> 
+>> As HTB supports classful queuing mechanism by supporting rate and
+>> ceil and allow the user to control the absolute bandwidth to
+>> particular classes of traffic the same can be achieved by
+>> configuring shapers and schedulers on different transmit levels.
+>> 
+>> This series of patches adds support for HTB offload,
+>> 
+>> Patch1: Allow strict priority parameter in HTB offload mode.
+>> 
+>> Patch2: defines APIs such that the driver can dynamically initialize/
+>>         deinitialize the send queues.
+>> 
+>> Patch3: Refactors transmit alloc/free calls as preparation for QOS
+>>         offload code.
+>> 
+>> Patch4: Adds devlink support for the user to configure round-robin
+>>         priority at TL1
+>> 
+>> Patch5:  Adds actual HTB offload support.
 >
-> Also, will set_vq_ready(0) after DRIVER_OK result in queue deletion?
-
-I think it should be treated as suspended or stopped. Since the device
-should survive from kicking the vq even if the driver does
-set_vq_ready(0).
-
-Thanks
-
+> Rahul, since you're working on fixing the HTB offload warn - 
+> would you mind reviewing this series?
 >
-> >
-> > It is needed for the cvq trap and migration for control virtqueue:
-> >
-> > https://www.mail-archive.com/qemu-devel@nongnu.org/msg931491.html
-> >
-> > Thanks
-> >
-> >
-> >>
-> >>> If so, can
-> >>> you please point me to the section of virtio spec that calls this order
-> >>> (set_vq_ready() after setting DRIVER_OK) undefined? Is it just that the
-> >>> queue can't be enabled after DRIVER_OK or the reverse (disabling the
-> >>> queue) after DRIVER_OK is not allowed?
-> >>>>> +                       if (rc)
-> >>>>> +                               goto clear_vring;
-> >>>>> +               }
-> >>>>> +       }
-> >>>>> +       vdpa_nic->vdpa_state = EF100_VDPA_STATE_STARTED;
-> >>>>> +       return rc;
-> >>>>> +
-> >>>>> +clear_vring:
-> >>>>> +       for (j = 0; j < i; j++)
-> >>>>> +               if (vdpa_nic->vring[j].vring_created)
-> >>>>> +                       delete_vring(vdpa_nic, j);
-> >>>>> +       return rc;
-> >>>>> +}
-> >>>>> +
-> >>>>>    static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
-> >>>>>                                        u16 idx, u64 desc_area, u64 driver_area,
-> >>>>>                                        u64 device_area)
-> >>>>> @@ -568,6 +624,80 @@ static u32 ef100_vdpa_get_vendor_id(struct vdpa_device *vdev)
-> >>>>>           return EF100_VDPA_VENDOR_ID;
-> >>>>>    }
-> >>>>>
-> >>>>> +static u8 ef100_vdpa_get_status(struct vdpa_device *vdev)
-> >>>>> +{
-> >>>>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> >>>>> +       u8 status;
-> >>>>> +
-> >>>>> +       mutex_lock(&vdpa_nic->lock);
-> >>>>> +       status = vdpa_nic->status;
-> >>>>> +       mutex_unlock(&vdpa_nic->lock);
-> >>>>> +       return status;
-> >>>>> +}
-> >>>>> +
-> >>>>> +static void ef100_vdpa_set_status(struct vdpa_device *vdev, u8 status)
-> >>>>> +{
-> >>>>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-> >>>>> +       u8 new_status;
-> >>>>> +       int rc;
-> >>>>> +
-> >>>>> +       mutex_lock(&vdpa_nic->lock);
-> >>>>> +       if (!status) {
-> >>>>> +               dev_info(&vdev->dev,
-> >>>>> +                        "%s: Status received is 0. Device reset being done\n",
-> >>>>> +                        __func__);
-> >>>>> +               ef100_reset_vdpa_device(vdpa_nic);
-> >>>>> +               goto unlock_return;
-> >>>>> +       }
-> >>>>> +       new_status = status & ~vdpa_nic->status;
-> >>>>> +       if (new_status == 0) {
-> >>>>> +               dev_info(&vdev->dev,
-> >>>>> +                        "%s: New status same as current status\n", __func__);
-> >>>>> +               goto unlock_return;
-> >>>>> +       }
-> >>>>> +       if (new_status & VIRTIO_CONFIG_S_FAILED) {
-> >>>>> +               ef100_reset_vdpa_device(vdpa_nic);
-> >>>>> +               goto unlock_return;
-> >>>>> +       }
-> >>>>> +
-> >>>>> +       if (new_status & VIRTIO_CONFIG_S_ACKNOWLEDGE &&
-> >>>>> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> >>>> As replied before, I think there's no need to check
-> >>>> EF100_VDPA_STATE_INITIALIZED, otherwise it could be a bug somewhere.
-> >>> Ok. Will remove the check against EF100_VDPA_STATE_INITIALIZED.
-> >>>>> +               vdpa_nic->status |= VIRTIO_CONFIG_S_ACKNOWLEDGE;
-> >>>>> +               new_status &= ~VIRTIO_CONFIG_S_ACKNOWLEDGE;
-> >>>>> +       }
-> >>>>> +       if (new_status & VIRTIO_CONFIG_S_DRIVER &&
-> >>>>> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> >>>>> +               vdpa_nic->status |= VIRTIO_CONFIG_S_DRIVER;
-> >>>>> +               new_status &= ~VIRTIO_CONFIG_S_DRIVER;
-> >>>>> +       }
-> >>>>> +       if (new_status & VIRTIO_CONFIG_S_FEATURES_OK &&
-> >>>>> +           vdpa_nic->vdpa_state == EF100_VDPA_STATE_INITIALIZED) {
-> >>>>> +               vdpa_nic->status |= VIRTIO_CONFIG_S_FEATURES_OK;
-> >>>>> +               vdpa_nic->vdpa_state = EF100_VDPA_STATE_NEGOTIATED;
-> >>>> I think we can simply map EF100_VDPA_STATE_NEGOTIATED to
-> >>>> VIRTIO_CONFIG_S_FEATURES_OK.
-> >>>>
-> >>>> E.g the code doesn't fail the feature negotiation by clearing the
-> >>>> VIRTIO_CONFIG_S_FEATURES_OK when ef100_vdpa_set_driver_feature fails?
-> >>> Ok.
-> >>>> Thanks
-> >>> Regards,
-> >>>
-> >>> Gautam
-> >>>
->
+> https://lore.kernel.org/all/20230112173120.23312-1-hkelam@marvell.com/
 
+I will take a look at the series and respond to the components I can
+verify.
