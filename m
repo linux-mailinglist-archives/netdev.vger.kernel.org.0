@@ -2,160 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 990FA66A69F
-	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:01:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8014066A700
+	for <lists+netdev@lfdr.de>; Sat, 14 Jan 2023 00:24:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbjAMXBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 18:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
+        id S231438AbjAMXYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 18:24:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbjAMXBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:01:32 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B8C3AA84
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:01:28 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id 200so11069923pfx.7
-        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:01:28 -0800 (PST)
+        with ESMTP id S231426AbjAMXYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 18:24:18 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009936084B
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:24:17 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id 207so1174028pfv.5
+        for <netdev@vger.kernel.org>; Fri, 13 Jan 2023 15:24:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=CAQbYGMaML5fa/DHmVz3EfKdwA/KXc1FwDFGQHrppL0=;
-        b=lWOjbvh4IuNBwa2ZzT3rgGJypVyC6Zc1Wqnrkimn/SW2ehJDGWbXXULefjgfyeo5Qd
-         Ws/jQ8cVwT2F36JNS9xaTdmsIAN7AC/ZZFbjr86PEUU0ytQMeSqtMi+y/vQl+/pgo4U8
-         E46GRUr/SaBCvobUxYpqR1y/6gYHKe34xATJo=
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=FNBX4IUuGCsk3iScEzWUZQTuYhBGbsHeymdyFMhVUUo=;
+        b=UGm5XVLZ/Pf8mEHaqhlTVc3mvoLqx4t5aN0Wq+EvFeDu4Ou3DksaHCq7Xqnlg+tssg
+         4Op9MTtWSCHUqbsMVchfpEiR+Wyy4OuwH2SLwpXFMArzD0NdBM5znXELBDVhrsb4TfZi
+         ea1zK0tu8FHtrdqaKd+QsMwx8eFMe7/tZPIsY5C1iedYStuFXaMQQ0D7VXzh0NxRP4KY
+         33w0BLROdaySpI6EBCG34nzgD+Ae6gAB1ORh3waKXitbQry6FVCTl8IvP9yml1+Olxt3
+         zjKBAE/UzhKowPcL6KkcffuMCK1XdIQH4WSIGJ2uJuVFrc5tbYN7QDEiePkrMAbMivK2
+         dJeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CAQbYGMaML5fa/DHmVz3EfKdwA/KXc1FwDFGQHrppL0=;
-        b=K8BVe0yWhCp9IOwlh10u0fdPfpaWIc1kLs6TggQiaFLnO1sdfsfOGV2bZlCIKZv/K4
-         O0g8JHYIjrZymhY7XSO2lK89DwAz/3t8OGQhUAZ5FQNe3Fe57GYTGKvE4OiULobOYGRJ
-         0DctayIaFUlegykyhmOWod1PhUxxRFeaK0uMBjkWUSA5e7JNbem44myCDf11GI9uCXbq
-         GeXEddlzF70O2MPnG6Rg92pCFTFALbukEtz7x+h4Ju2zzs1pSIHbi4uy7jH+NnEddoJQ
-         iWtucMs5IHPH7VqxaoBjS50UuDrMQuW9NAlLzG2+jFT0TZ6Xr5+Wl+z4ivYcirdYKwvU
-         CK9g==
-X-Gm-Message-State: AFqh2kraydF5dHR/dwbPw2SsG4XvmUqCIckB13gDjYUqy5K1BR0PMvMG
-        7+w/ErSN7rpQ6JzNEcKMCfCkyw==
-X-Google-Smtp-Source: AMrXdXuOJHsk34k6YZdu/AFcyBDgW6AnnR45JuuXxTcdyhIWnIr9mExAvL0atVo6SvjzWEr0Ka3Jeg==
-X-Received: by 2002:a05:6a00:4212:b0:583:fb14:ddc1 with SMTP id cd18-20020a056a00421200b00583fb14ddc1mr28709488pfb.17.1673650888393;
-        Fri, 13 Jan 2023 15:01:28 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id v67-20020a622f46000000b00581ad007a9fsm14121533pfv.153.2023.01.13.15.01.27
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FNBX4IUuGCsk3iScEzWUZQTuYhBGbsHeymdyFMhVUUo=;
+        b=JkoeQpveKp8R0Bf23BRGm77s0xnbHKf3cLE2GA2bLkC0Ji9DR15OpNrFim/+h17a2M
+         Yp6eVSBEv2ADuvnkPWqpxdPR8K59RuHNCR/lUrr/QKVgzXh9wMq51v3Zoj6Bt5mZAYeJ
+         ozADDVuhSMrryQgr7AfeuXzmeeisx1D+E9tEXymwzedFK04iwcR2u7rJKvh6mdwhEp7B
+         i2KqfXuNLznkZYjqb9Tq5dp9shgwgMVPBteckCJ1ycT2rJpgikj4ydbJC4fbfylLHAI+
+         nnRFwdzCv5Yt5crtE16cyfYykmO4Fc1t0ictjwSf7+/LyIXPbWc8RJVUEM9gNWH44f/m
+         2WnQ==
+X-Gm-Message-State: AFqh2kqIaPrgCykikywS89zFv25iKIZxTvLAPgnmOAdSUIF9QMl2l5Hf
+        G/a5tI0o1Vkv4uQF1eXh08k=
+X-Google-Smtp-Source: AMrXdXuHNLwKi8xWKTozMMZzYnETcsNN3hEIwBwD19VFIxtKaNulpVxuR8G0u7nnncfhnRzChZEApA==
+X-Received: by 2002:aa7:9143:0:b0:580:cfbd:3fd3 with SMTP id 3-20020aa79143000000b00580cfbd3fd3mr76390862pfi.26.1673652257329;
+        Fri, 13 Jan 2023 15:24:17 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.117.20])
+        by smtp.googlemail.com with ESMTPSA id n125-20020a622783000000b00582cb9deb5asm14602446pfn.176.2023.01.13.15.24.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 15:01:27 -0800 (PST)
-Date:   Fri, 13 Jan 2023 15:01:26 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Yupeng Li <liyupeng@zbhlos.com>, tariqt@nvidia.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Caicai <caizp2008@163.com>
-Subject: Re: [PATCH 1/1] net/mlx4: Fix build error use array_size() helper in
- copy_to_user()
-Message-ID: <202301131453.D93C967D4@keescook>
-References: <20230107072725.673064-1-liyupeng@zbhlos.com>
- <Y7wb1hCpJiGEdbav@ziepe.ca>
- <202301131039.7354AD35CF@keescook>
+        Fri, 13 Jan 2023 15:24:16 -0800 (PST)
+Message-ID: <92b98f45dcd65facac78133c6250d9d96ea1a25f.camel@gmail.com>
+Subject: Re: [PATCH net-next 1/2] virtio_net: Fix short frame length check
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Parav Pandit <parav@nvidia.com>, mst@redhat.com,
+        jasowang@redhat.com, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     edumazet@google.com, pabeni@redhat.com,
+        virtualization@lists.linux-foundation.org
+Date:   Fri, 13 Jan 2023 15:24:15 -0800
+In-Reply-To: <20230113223619.162405-2-parav@nvidia.com>
+References: <20230113223619.162405-1-parav@nvidia.com>
+         <20230113223619.162405-2-parav@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <202301131039.7354AD35CF@keescook>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 13, 2023 at 10:41:01AM -0800, Kees Cook wrote:
-> On Mon, Jan 09, 2023 at 09:51:18AM -0400, Jason Gunthorpe wrote:
-> > On Sat, Jan 07, 2023 at 03:27:25PM +0800, Yupeng Li wrote:
-> > > When CONFIG_64BIT was disabled, check_copy_size() was declared with
-> > > attribute error: copy source size is too small, array_size() for 32BIT
-> > > was wrong size, some compiled msg with error like:
-> > > 
-> > >   CALL    scripts/checksyscalls.sh
-> > >   CC [M]  drivers/net/ethernet/mellanox/mlx4/cq.o
-> > > In file included from ./arch/x86/include/asm/preempt.h:7,
-> > >                  from ./include/linux/preempt.h:78,
-> > >                  from ./include/linux/percpu.h:6,
-> > >                  from ./include/linux/context_tracking_state.h:5,
-> > >                  from ./include/linux/hardirq.h:5,
-> > >                  from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
-> > > In function ‘check_copy_size’,
-> > >     inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:168:6,
-> > >     inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
-> > >     inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
-> > > ./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
-> > >   228 |    __bad_copy_from();
-> > >       |    ^~~~~~~~~~~~~~~~~
-> > > make[6]: *** [scripts/Makefile.build:250：drivers/net/ethernet/mellanox/mlx4/cq.o] 错误 1
-> > > make[5]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox/mlx4] 错误 2
-> > > make[5]: *** 正在等待未完成的任务....
-> > > make[4]: *** [scripts/Makefile.build:500：drivers/net/ethernet/mellanox] 错误 2
-> > > make[3]: *** [scripts/Makefile.build:500：drivers/net/ethernet] 错误 2
-> > > make[3]: *** 正在等待未完成的任务....
-> > > make[2]: *** [scripts/Makefile.build:500：drivers/net] 错误 2
-> > > make[2]: *** 正在等待未完成的任务....
-> > > make[1]: *** [scripts/Makefile.build:500：drivers] 错误 2
-> > > make: *** [Makefile:1992：.] 错误 2
-> > > 
-> > > Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-> > > Reviewed-by: Caicai <caizp2008@163.com>
-> > > ---
-> > >  drivers/net/ethernet/mellanox/mlx4/cq.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> > > index 4d4f9cf9facb..7dadd7227480 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> > > @@ -315,7 +315,11 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
-> > >  		}
-> > >  	} else {
-> > >  		err = copy_to_user((void __user *)buf, init_ents,
-> > > +#ifdef CONFIG_64BIT
-> > >  				   array_size(entries, cqe_size)) ?
-> > > +#else
-> > > +				   entries * cqe_size) ?
-> > > +#endif
-> > >  			-EFAULT : 0;
-> > 
-> > This can't possibly make sense, Kees?
-> 
-> Uuuuh, that's really weird. What compiler version and arch? I'll see if
-> I can reproduce this.
+On Sat, 2023-01-14 at 00:36 +0200, Parav Pandit wrote:
+> A smallest Ethernet frame defined by IEEE 802.3 is 60 bytes without any
+> preemble and CRC.
+>=20
+> Current code only checks for minimal 14 bytes of Ethernet header length.
+> Correct it to consider the minimum Ethernet frame length.
+>=20
+> Fixes: 296f96fcfc16 ("Net driver using virtio")
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> ---
+>  drivers/net/virtio_net.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 7723b2a49d8e..d45e140b6852 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1248,7 +1248,7 @@ static void receive_buf(struct virtnet_info *vi, st=
+ruct receive_queue *rq,
+>  	struct sk_buff *skb;
+>  	struct virtio_net_hdr_mrg_rxbuf *hdr;
+> =20
+> -	if (unlikely(len < vi->hdr_len + ETH_HLEN)) {
+> +	if (unlikely(len < vi->hdr_len + ETH_ZLEN)) {
+>  		pr_debug("%s: short packet %i\n", dev->name, len);
+>  		dev->stats.rx_length_errors++;
+>  		if (vi->mergeable_rx_bufs) {
 
-I can't reproduce this. I'm assuming this is being seen on a 32-bit
-loongarch build? I have no idea how to get that compiler. Neither Debian
-nor Fedora seem to package it. (It looks like it was added in GCC 12?)
-Perhaps it's just "mips"? But I also can't figure out how to choose a
-32-bit mips build. Wheee.
+I'm not sure I agree with this change as packets are only 60B if they
+have gone across the wire as they are usually padded out on the
+transmit side. There may be cases where software routed packets may not
+be 60B.
 
-Anyway, I would assume this is a compiler bug around inlining or the
-check_mul_overflow implementation?
-
-static inline size_t __must_check size_mul(size_t factor1, size_t factor2)
-{
-        size_t bytes;
-
-        if (check_mul_overflow(factor1, factor2, &bytes))
-                return SIZE_MAX;
-
-        return bytes;
-}
-
-#define array_size(a, b)        size_mul(a, b)
-
-
--Kees
-
--- 
-Kees Cook
+As such rather than changing out ETH_HLEN for ETH_ZLEN I wonder if we
+should look at maybe making this a "<=3D" comparison instead since that
+is the only case I can think of where the packet would end up being
+entirely empty after eth_type_trans is called and we would be passing
+an skb with length 0.
