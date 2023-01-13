@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C69668D1A
-	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:30:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F65A668D52
+	for <lists+netdev@lfdr.de>; Fri, 13 Jan 2023 07:31:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241296AbjAMGaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Jan 2023 01:30:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33444 "EHLO
+        id S241255AbjAMG3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Jan 2023 01:29:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240712AbjAMG0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:26:13 -0500
+        with ESMTP id S240753AbjAMG0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Jan 2023 01:26:49 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AF759FA7;
-        Thu, 12 Jan 2023 22:24:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873DE5BA14;
+        Thu, 12 Jan 2023 22:24:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=4Cn32+DwniiE8Ivc8k8ZYXVlFs6gh/3Rw72W3/GZ4ag=; b=Fve8lBIQorfiJ/FhMD6e1GvYXc
-        rGSPgQTVMyq0dxlP00mFanqHXFeH9t17eVtoz/JRWr+oFTQ0ynGMwYJHt5mfB04KzdaQjOX8Iu9fs
-        nIQCq/R62BjdnWiSBeuBxN7hx5e4sYqYWJU6VIfqx17ddSCZZlu7ubY/3XF9PkfW4XzApYx2Cd9k9
-        zs2s4D1MofDj9wf4eoTSyb6ybNKwpiGOqGQt9CBguMf+78gDheVOOw6bNmSUU/Blr1SaKqbcwa66y
-        6cpVyf3vy//XvyjihCdST/c6G+qVI++1b+7abn1kff1W7YyuOYJBrAFCIknOxvbFhCUglhpOxZ9Fo
-        xk7GnO7w==;
+        bh=iukbm4IkjfomIK3EfPQb3pM2uZtgleJjPX7CiCdGPsw=; b=bctQ26YIIgDNETWqWEH1faeoiC
+        5ktgEfTapXGrurmR9U4e7rnZhY6Cwur/HNcTFDEguI7nrrjhQMk5LJZRnXQk/Lh/SgAsj5oUR1cNC
+        6SWrceAqwQKLhXM4b9+5hQvSpMqgJj6Fi1i/TaketNXyVfW/AwoYVQnx70z7dzq4fJub9GsHbuyZ5
+        HDmhDiNuu8m8OdZDuEJyIrydgrmSdNheR0U9+6Rotsg72jUQftqVDSCn6tM1GTULxOLQT60TelhnY
+        qeYO2LcPFeCb7ZL/Bxwy4AWEhdIRBjlajWtTjxyUMXW5KzAfXsUm2V07QOaprHacrHX0gFnJIBipd
+        ZAhGSquQ==;
 Received: from [2001:4bb8:181:656b:9509:7d20:8d39:f895] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pGDUW-000lwz-NO; Fri, 13 Jan 2023 06:24:41 +0000
+        id 1pGDUZ-000lye-Sk; Fri, 13 Jan 2023 06:24:44 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Yoshinori Sato <ysato@users.sourceforge.jp>,
         Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
@@ -45,9 +45,9 @@ Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-sh@vger.kernel.org
-Subject: [PATCH 16/22] spi: remove spi-sh-sci
-Date:   Fri, 13 Jan 2023 07:23:33 +0100
-Message-Id: <20230113062339.1909087-17-hch@lst.de>
+Subject: [PATCH 17/22] spi: remove spi-jcore
+Date:   Fri, 13 Jan 2023 07:23:34 +0100
+Message-Id: <20230113062339.1909087-18-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230113062339.1909087-1-hch@lst.de>
 References: <20230113062339.1909087-1-hch@lst.de>
@@ -68,245 +68,283 @@ Now that arch/sh is removed this driver is dead code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/spi/Kconfig      |   7 --
- drivers/spi/Makefile     |   1 -
- drivers/spi/spi-sh-sci.c | 197 ---------------------------------------
- 3 files changed, 205 deletions(-)
- delete mode 100644 drivers/spi/spi-sh-sci.c
+ drivers/spi/Kconfig     |   7 --
+ drivers/spi/Makefile    |   1 -
+ drivers/spi/spi-jcore.c | 235 ----------------------------------------
+ 3 files changed, 243 deletions(-)
+ delete mode 100644 drivers/spi/spi-jcore.c
 
 diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 7508dcef909c78..76f3bc6f8c81fc 100644
+index 76f3bc6f8c81fc..17c75f5c19be75 100644
 --- a/drivers/spi/Kconfig
 +++ b/drivers/spi/Kconfig
-@@ -882,13 +882,6 @@ config SPI_SH_MSIOF
- 	help
- 	  SPI driver for SuperH and SH Mobile MSIOF blocks.
+@@ -483,13 +483,6 @@ config SPI_INTEL_PLATFORM
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called spi-intel-platform.
  
--config SPI_SH_SCI
--	tristate "SuperH SCI SPI controller"
--	depends on SUPERH
--	select SPI_BITBANG
+-config SPI_JCORE
+-	tristate "J-Core SPI Master"
+-	depends on OF && (SUPERH || COMPILE_TEST)
 -	help
--	  SPI driver for SuperH SCI blocks.
+-	  This enables support for the SPI master controller in the J-Core
+-	  synthesizable, open source SoC.
 -
- config SPI_SH_HSPI
- 	tristate "SuperH HSPI controller"
- 	depends on ARCH_RENESAS || COMPILE_TEST
+ config SPI_LM70_LLP
+ 	tristate "Parallel port adapter for LM70 eval board (DEVELOPMENT)"
+ 	depends on PARPORT
 diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
-index 342a7eb5181c9b..27d877440c6539 100644
+index 27d877440c6539..2d03fcefc11ea2 100644
 --- a/drivers/spi/Makefile
 +++ b/drivers/spi/Makefile
-@@ -118,7 +118,6 @@ obj-$(CONFIG_SPI_S3C64XX)		+= spi-s3c64xx.o
- obj-$(CONFIG_SPI_SC18IS602)		+= spi-sc18is602.o
- obj-$(CONFIG_SPI_SH_HSPI)		+= spi-sh-hspi.o
- obj-$(CONFIG_SPI_SH_MSIOF)		+= spi-sh-msiof.o
--obj-$(CONFIG_SPI_SH_SCI)		+= spi-sh-sci.o
- obj-$(CONFIG_SPI_SIFIVE)		+= spi-sifive.o
- obj-$(CONFIG_SPI_SLAVE_MT27XX)          += spi-slave-mt27xx.o
- obj-$(CONFIG_SPI_SN_F_OSPI)		+= spi-sn-f-ospi.o
-diff --git a/drivers/spi/spi-sh-sci.c b/drivers/spi/spi-sh-sci.c
+@@ -67,7 +67,6 @@ obj-$(CONFIG_SPI_INTEL)			+= spi-intel.o
+ obj-$(CONFIG_SPI_INTEL_PCI)		+= spi-intel-pci.o
+ obj-$(CONFIG_SPI_INTEL_PLATFORM)	+= spi-intel-platform.o
+ obj-$(CONFIG_SPI_LANTIQ_SSC)		+= spi-lantiq-ssc.o
+-obj-$(CONFIG_SPI_JCORE)			+= spi-jcore.o
+ obj-$(CONFIG_SPI_LM70_LLP)		+= spi-lm70llp.o
+ obj-$(CONFIG_SPI_LP8841_RTC)		+= spi-lp8841-rtc.o
+ obj-$(CONFIG_SPI_MESON_SPICC)		+= spi-meson-spicc.o
+diff --git a/drivers/spi/spi-jcore.c b/drivers/spi/spi-jcore.c
 deleted file mode 100644
-index 8f30531e141867..00000000000000
---- a/drivers/spi/spi-sh-sci.c
+index 74c8319c29f170..00000000000000
+--- a/drivers/spi/spi-jcore.c
 +++ /dev/null
-@@ -1,197 +0,0 @@
+@@ -1,235 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0-only
 -/*
-- * SH SCI SPI interface
+- * J-Core SPI controller driver
 - *
-- * Copyright (c) 2008 Magnus Damm
+- * Copyright (C) 2012-2016 Smart Energy Instruments, Inc.
 - *
-- * Based on S3C24XX GPIO based SPI driver, which is:
-- *   Copyright (c) 2006 Ben Dooks
-- *   Copyright (c) 2006 Simtec Electronics
+- * Current version by Rich Felker
+- * Based loosely on initial version by Oleksandr G Zhadan
+- *
 - */
--
--#include <linux/kernel.h>
--#include <linux/delay.h>
--#include <linux/spinlock.h>
--#include <linux/platform_device.h>
--
--#include <linux/spi/spi.h>
--#include <linux/spi/spi_bitbang.h>
+-#include <linux/init.h>
+-#include <linux/interrupt.h>
+-#include <linux/errno.h>
 -#include <linux/module.h>
+-#include <linux/platform_device.h>
+-#include <linux/spi/spi.h>
+-#include <linux/clk.h>
+-#include <linux/err.h>
+-#include <linux/io.h>
+-#include <linux/of.h>
+-#include <linux/delay.h>
 -
--#include <asm/spi.h>
--#include <asm/io.h>
+-#define DRV_NAME	"jcore_spi"
 -
--struct sh_sci_spi {
--	struct spi_bitbang bitbang;
+-#define CTRL_REG	0x0
+-#define DATA_REG	0x4
 -
--	void __iomem *membase;
--	unsigned char val;
--	struct sh_spi_info *info;
--	struct platform_device *dev;
+-#define JCORE_SPI_CTRL_XMIT		0x02
+-#define JCORE_SPI_STAT_BUSY		0x02
+-#define JCORE_SPI_CTRL_LOOP		0x08
+-#define JCORE_SPI_CTRL_CS_BITS		0x15
+-
+-#define JCORE_SPI_WAIT_RDY_MAX_LOOP	2000000
+-
+-struct jcore_spi {
+-	struct spi_master *master;
+-	void __iomem *base;
+-	unsigned int cs_reg;
+-	unsigned int speed_reg;
+-	unsigned int speed_hz;
+-	unsigned int clock_freq;
 -};
 -
--#define SCSPTR(sp)	(sp->membase + 0x1c)
--#define PIN_SCK		(1 << 2)
--#define PIN_TXD		(1 << 0)
--#define PIN_RXD		PIN_TXD
--#define PIN_INIT	((1 << 1) | (1 << 3) | PIN_SCK | PIN_TXD)
--
--static inline void setbits(struct sh_sci_spi *sp, int bits, int on)
+-static int jcore_spi_wait(void __iomem *ctrl_reg)
 -{
--	/*
--	 * We are the only user of SCSPTR so no locking is required.
--	 * Reading bit 2 and 0 in SCSPTR gives pin state as input.
--	 * Writing the same bits sets the output value.
--	 * This makes regular read-modify-write difficult so we
--	 * use sp->val to keep track of the latest register value.
--	 */
+-	unsigned timeout = JCORE_SPI_WAIT_RDY_MAX_LOOP;
 -
--	if (on)
--		sp->val |= bits;
+-	do {
+-		if (!(readl(ctrl_reg) & JCORE_SPI_STAT_BUSY))
+-			return 0;
+-		cpu_relax();
+-	} while (--timeout);
+-
+-	return -EBUSY;
+-}
+-
+-static void jcore_spi_program(struct jcore_spi *hw)
+-{
+-	void __iomem *ctrl_reg = hw->base + CTRL_REG;
+-
+-	if (jcore_spi_wait(ctrl_reg))
+-		dev_err(hw->master->dev.parent,
+-			"timeout waiting to program ctrl reg.\n");
+-
+-	writel(hw->cs_reg | hw->speed_reg, ctrl_reg);
+-}
+-
+-static void jcore_spi_chipsel(struct spi_device *spi, bool value)
+-{
+-	struct jcore_spi *hw = spi_master_get_devdata(spi->master);
+-	u32 csbit = 1U << (2 * spi->chip_select);
+-
+-	dev_dbg(hw->master->dev.parent, "chipselect %d\n", spi->chip_select);
+-
+-	if (value)
+-		hw->cs_reg |= csbit;
 -	else
--		sp->val &= ~bits;
+-		hw->cs_reg &= ~csbit;
 -
--	iowrite8(sp->val, SCSPTR(sp));
+-	jcore_spi_program(hw);
 -}
 -
--static inline void setsck(struct spi_device *dev, int on)
+-static void jcore_spi_baudrate(struct jcore_spi *hw, int speed)
 -{
--	setbits(spi_master_get_devdata(dev->master), PIN_SCK, on);
+-	if (speed == hw->speed_hz)
+-		return;
+-	hw->speed_hz = speed;
+-	if (speed >= hw->clock_freq / 2)
+-		hw->speed_reg = 0;
+-	else
+-		hw->speed_reg = ((hw->clock_freq / 2 / speed) - 1) << 27;
+-	jcore_spi_program(hw);
+-	dev_dbg(hw->master->dev.parent, "speed=%d reg=0x%x\n",
+-		speed, hw->speed_reg);
 -}
 -
--static inline void setmosi(struct spi_device *dev, int on)
+-static int jcore_spi_txrx(struct spi_master *master, struct spi_device *spi,
+-			  struct spi_transfer *t)
 -{
--	setbits(spi_master_get_devdata(dev->master), PIN_TXD, on);
--}
+-	struct jcore_spi *hw = spi_master_get_devdata(master);
 -
--static inline u32 getmiso(struct spi_device *dev)
--{
--	struct sh_sci_spi *sp = spi_master_get_devdata(dev->master);
+-	void __iomem *ctrl_reg = hw->base + CTRL_REG;
+-	void __iomem *data_reg = hw->base + DATA_REG;
+-	u32 xmit;
 -
--	return (ioread8(SCSPTR(sp)) & PIN_RXD) ? 1 : 0;
--}
+-	/* data buffers */
+-	const unsigned char *tx;
+-	unsigned char *rx;
+-	unsigned int len;
+-	unsigned int count;
 -
--#define spidelay(x) ndelay(x)
+-	jcore_spi_baudrate(hw, t->speed_hz);
 -
--#include "spi-bitbang-txrx.h"
+-	xmit = hw->cs_reg | hw->speed_reg | JCORE_SPI_CTRL_XMIT;
+-	tx = t->tx_buf;
+-	rx = t->rx_buf;
+-	len = t->len;
 -
--static u32 sh_sci_spi_txrx_mode0(struct spi_device *spi,
--				 unsigned nsecs, u32 word, u8 bits,
--				 unsigned flags)
--{
--	return bitbang_txrx_be_cpha0(spi, nsecs, 0, flags, word, bits);
--}
+-	for (count = 0; count < len; count++) {
+-		if (jcore_spi_wait(ctrl_reg))
+-			break;
 -
--static u32 sh_sci_spi_txrx_mode1(struct spi_device *spi,
--				 unsigned nsecs, u32 word, u8 bits,
--				 unsigned flags)
--{
--	return bitbang_txrx_be_cpha1(spi, nsecs, 0, flags, word, bits);
--}
+-		writel(tx ? *tx++ : 0, data_reg);
+-		writel(xmit, ctrl_reg);
 -
--static u32 sh_sci_spi_txrx_mode2(struct spi_device *spi,
--				 unsigned nsecs, u32 word, u8 bits,
--				 unsigned flags)
--{
--	return bitbang_txrx_be_cpha0(spi, nsecs, 1, flags, word, bits);
--}
+-		if (jcore_spi_wait(ctrl_reg))
+-			break;
 -
--static u32 sh_sci_spi_txrx_mode3(struct spi_device *spi,
--				 unsigned nsecs, u32 word, u8 bits,
--				 unsigned flags)
--{
--	return bitbang_txrx_be_cpha1(spi, nsecs, 1, flags, word, bits);
--}
--
--static void sh_sci_spi_chipselect(struct spi_device *dev, int value)
--{
--	struct sh_sci_spi *sp = spi_master_get_devdata(dev->master);
--
--	if (sp->info->chip_select)
--		(sp->info->chip_select)(sp->info, dev->chip_select, value);
--}
--
--static int sh_sci_spi_probe(struct platform_device *dev)
--{
--	struct resource	*r;
--	struct spi_master *master;
--	struct sh_sci_spi *sp;
--	int ret;
--
--	master = spi_alloc_master(&dev->dev, sizeof(struct sh_sci_spi));
--	if (master == NULL) {
--		dev_err(&dev->dev, "failed to allocate spi master\n");
--		ret = -ENOMEM;
--		goto err0;
+-		if (rx)
+-			*rx++ = readl(data_reg);
 -	}
 -
--	sp = spi_master_get_devdata(master);
+-	spi_finalize_current_transfer(master);
 -
--	platform_set_drvdata(dev, sp);
--	sp->info = dev_get_platdata(&dev->dev);
--	if (!sp->info) {
--		dev_err(&dev->dev, "platform data is missing\n");
--		ret = -ENOENT;
--		goto err1;
--	}
+-	if (count < len)
+-		return -EREMOTEIO;
 -
--	/* setup spi bitbang adaptor */
--	sp->bitbang.master = master;
--	sp->bitbang.master->bus_num = sp->info->bus_num;
--	sp->bitbang.master->num_chipselect = sp->info->num_chipselect;
--	sp->bitbang.chipselect = sh_sci_spi_chipselect;
--
--	sp->bitbang.txrx_word[SPI_MODE_0] = sh_sci_spi_txrx_mode0;
--	sp->bitbang.txrx_word[SPI_MODE_1] = sh_sci_spi_txrx_mode1;
--	sp->bitbang.txrx_word[SPI_MODE_2] = sh_sci_spi_txrx_mode2;
--	sp->bitbang.txrx_word[SPI_MODE_3] = sh_sci_spi_txrx_mode3;
--
--	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
--	if (r == NULL) {
--		ret = -ENOENT;
--		goto err1;
--	}
--	sp->membase = ioremap(r->start, resource_size(r));
--	if (!sp->membase) {
--		ret = -ENXIO;
--		goto err1;
--	}
--	sp->val = ioread8(SCSPTR(sp));
--	setbits(sp, PIN_INIT, 1);
--
--	ret = spi_bitbang_start(&sp->bitbang);
--	if (!ret)
--		return 0;
--
--	setbits(sp, PIN_INIT, 0);
--	iounmap(sp->membase);
-- err1:
--	spi_master_put(sp->bitbang.master);
-- err0:
--	return ret;
--}
--
--static int sh_sci_spi_remove(struct platform_device *dev)
--{
--	struct sh_sci_spi *sp = platform_get_drvdata(dev);
--
--	spi_bitbang_stop(&sp->bitbang);
--	setbits(sp, PIN_INIT, 0);
--	iounmap(sp->membase);
--	spi_master_put(sp->bitbang.master);
 -	return 0;
 -}
 -
--static struct platform_driver sh_sci_spi_drv = {
--	.probe		= sh_sci_spi_probe,
--	.remove		= sh_sci_spi_remove,
--	.driver		= {
--		.name	= "spi_sh_sci",
+-static int jcore_spi_probe(struct platform_device *pdev)
+-{
+-	struct device_node *node = pdev->dev.of_node;
+-	struct jcore_spi *hw;
+-	struct spi_master *master;
+-	struct resource *res;
+-	u32 clock_freq;
+-	struct clk *clk;
+-	int err = -ENODEV;
+-
+-	master = spi_alloc_master(&pdev->dev, sizeof(struct jcore_spi));
+-	if (!master)
+-		return err;
+-
+-	/* Setup the master state. */
+-	master->num_chipselect = 3;
+-	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
+-	master->transfer_one = jcore_spi_txrx;
+-	master->set_cs = jcore_spi_chipsel;
+-	master->dev.of_node = node;
+-	master->bus_num = pdev->id;
+-
+-	hw = spi_master_get_devdata(master);
+-	hw->master = master;
+-	platform_set_drvdata(pdev, hw);
+-
+-	/* Find and map our resources */
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		goto exit_busy;
+-	if (!devm_request_mem_region(&pdev->dev, res->start,
+-				     resource_size(res), pdev->name))
+-		goto exit_busy;
+-	hw->base = devm_ioremap(&pdev->dev, res->start,
+-					resource_size(res));
+-	if (!hw->base)
+-		goto exit_busy;
+-
+-	/*
+-	 * The SPI clock rate controlled via a configurable clock divider
+-	 * which is applied to the reference clock. A 50 MHz reference is
+-	 * most suitable for obtaining standard SPI clock rates, but some
+-	 * designs may have a different reference clock, and the DT must
+-	 * make the driver aware so that it can properly program the
+-	 * requested rate. If the clock is omitted, 50 MHz is assumed.
+-	 */
+-	clock_freq = 50000000;
+-	clk = devm_clk_get(&pdev->dev, "ref_clk");
+-	if (!IS_ERR(clk)) {
+-		if (clk_prepare_enable(clk) == 0) {
+-			clock_freq = clk_get_rate(clk);
+-			clk_disable_unprepare(clk);
+-		} else
+-			dev_warn(&pdev->dev, "could not enable ref_clk\n");
+-	}
+-	hw->clock_freq = clock_freq;
+-
+-	/* Initialize all CS bits to high. */
+-	hw->cs_reg = JCORE_SPI_CTRL_CS_BITS;
+-	jcore_spi_baudrate(hw, 400000);
+-
+-	/* Register our spi controller */
+-	err = devm_spi_register_master(&pdev->dev, master);
+-	if (err)
+-		goto exit;
+-
+-	return 0;
+-
+-exit_busy:
+-	err = -EBUSY;
+-exit:
+-	spi_master_put(master);
+-	return err;
+-}
+-
+-static const struct of_device_id jcore_spi_of_match[] = {
+-	{ .compatible = "jcore,spi2" },
+-	{},
+-};
+-MODULE_DEVICE_TABLE(of, jcore_spi_of_match);
+-
+-static struct platform_driver jcore_spi_driver = {
+-	.probe = jcore_spi_probe,
+-	.driver = {
+-		.name = DRV_NAME,
+-		.of_match_table = jcore_spi_of_match,
 -	},
 -};
--module_platform_driver(sh_sci_spi_drv);
 -
--MODULE_DESCRIPTION("SH SCI SPI Driver");
--MODULE_AUTHOR("Magnus Damm <damm@opensource.se>");
+-module_platform_driver(jcore_spi_driver);
+-
+-MODULE_DESCRIPTION("J-Core SPI driver");
+-MODULE_AUTHOR("Rich Felker <dalias@libc.org>");
 -MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:spi_sh_sci");
+-MODULE_ALIAS("platform:" DRV_NAME);
 -- 
 2.39.0
 
